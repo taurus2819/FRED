@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -505,34 +506,34 @@ public class SampleDE implements DataEntryForm {
 					break;
 				case GRAIN_SIZE_P :
 				case GRAIN_SIZE_S :
-					DataEntryUtils.parseDropDownID("Grainsize", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'GrainSize'",	state);
+					DataEntryUtils.checkDropDownID("Grainsize", "SELECT * FROM lookup WHERE lookup_id = ? AND fieldname = ?", new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(value), "GrainSize"}, state);
 					break;
 				case GS_COMP :
 					if (!(value.equals("Y") || value.equals("N")))
 						throw new DataInputException("GS Comparator", value + " is not a valid option");
 					break;
 				case BEDDING_THICKNESS :
-					DataEntryUtils.parseDropDownID("Bedding Thickness", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'BedThick'", state);
+					DataEntryUtils.checkDropDownID("Bedding Thickness", "SELECT * FROM lookup WHERE lookup_id = ? AND fieldname = ?", new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(value), "BedThick"}, state);
 					break;
 				case BEDDING_P :
 				case BEDDING_S :
-					DataEntryUtils.parseDropDownID("Bedding", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'Bedding'", state);
+					DataEntryUtils.checkDropDownID("Bedding", "SELECT * FROM lookup WHERE lookup_id = ? AND fieldname = ?", new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(value), "Bedding"}, state);
 					break;
 				case WEATHERING :
-					DataEntryUtils.parseDropDownID("Weathering", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'Weathering'", state);
+					DataEntryUtils.checkDropDownID("Weathering", "SELECT * FROM lookup WHERE lookup_id = ? AND fieldname = ?", new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(value), "Weathering"}, state);
 					break;
 				case HARDNESS :
-					DataEntryUtils.parseDropDownID("Hardness", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'Hardness'", state);
+					DataEntryUtils.checkDropDownID("Hardness", "SELECT * FROM lookup WHERE lookup_id = ? AND fieldname = ?", new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(value), "Hardness"}, state);
 					break;
 				case CARBONATE :
-					DataEntryUtils.parseDropDownID("Carbonate", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'Carbonate'", state);
+					DataEntryUtils.checkDropDownID("Carbonate", "SELECT * FROM lookup WHERE lookup_id = ? AND fieldname = ?", new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(value), "Carbonate"}, state);
 					break;
 				case COLOUR_MOD :
-					DataEntryUtils.parseDropDownID("Shade", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'ColourMod'", state);
+					DataEntryUtils.checkDropDownID("Shade", "SELECT * FROM lookup WHERE lookup_id = ? AND fieldname = ?", new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(value), "ColourMod"}, state);
 					break;
 				case COLOUR_P :
 				case COLOUR_S :
-					DataEntryUtils.parseDropDownID("Colour", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'RockColour'", state);
+					DataEntryUtils.checkDropDownID("Colour", "SELECT * FROM lookup WHERE lookup_id = ? AND fieldname = ?", new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(value), "RockColour"}, state);
 					break;
 				case WET :
 					if (!(value.equals("Wet") || value.equals("Dry")))

@@ -2,23 +2,15 @@ package nz.cri.gns.fred.dataentry;
 
 public class RoundedDate {
 
-	private String dateStr;
+	private java.sql.Date date;
 	private String dateRnd;
 
 	public RoundedDate() {
 	}
 
-	public RoundedDate(String dateStr, String dateRnd) {
-		this.dateStr = dateStr;
+	public RoundedDate(java.sql.Date date, String dateRnd) {
+		this.date = date;
 		this.dateRnd = dateRnd;
-	}
-
-	public void setDateString(String dateStr) {
-		this.dateStr = dateStr;
-	}
-
-	public String getDateString() {
-		return dateStr;
 	}
 
 	public void setDateRouding(String dateRnd) {
@@ -27,6 +19,18 @@ public class RoundedDate {
 
 	public String getDateRounding() {
 		return dateRnd;
+	}
+
+	public void setDate(java.sql.Date date) {
+		this.date = date;
+	}
+
+	public java.sql.Date getDate() {
+		return date;
+	}
+	
+	public String getDateString() {
+		return date.getDate() + "/" + date.getMonth() + "/" + (date.getYear() + 1900);
 	}
 
 }

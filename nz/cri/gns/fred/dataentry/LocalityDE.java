@@ -46,9 +46,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		throws SQLException, IOException, DataInputException {
 		this.user = user;
 		this.state = state;
-		if (!(featureType.equals(Feature.OUTCROP_LOCALITY)
-			|| featureType.equals(Feature.DRILLHOLE_LOCALITY)
-			|| featureType.equals(Feature.VERTICAL_SECTION_LOCALITY)))
+		if (!(featureType.equals(Feature.OUTCROP_LOCALITY) || featureType.equals(Feature.DRILLHOLE_LOCALITY) || featureType.equals(Feature.VERTICAL_SECTION_LOCALITY)))
 			throw new DataInputException("Feature Type", "Invalid value");
 		this.featureType = featureType;
 		this.folder = new Folder(folderID, user, state);
@@ -87,21 +85,28 @@ public abstract class LocalityDE implements DataEntryForm {
 			setField(WORKING_COMMENTS, workComm);
 		}
 		if (sample.get(Sample.ORIG_SYSTEM_ID) != null) {
-			int origSystemID = sample.getAsInt(Sample.ORIG_SYSTEM_ID);
-			if (origSystemID == 38) {
-				setField(GRID_REF, "NZMG:" + sample.getAsString(Sample.ORIG_COORD).replace('|',	'*'));
-			} else if (origSystemID == 16) {
-				setField(GRID_REF, "TruncNZMG:"	+ sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
-			} else if (origSystemID == 29) {
-				setField(GRID_REF, "NZGD49:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|',	'*'));
-			} else if (origSystemID == 28) {
-				setField(GRID_REF, "WGS84:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
-			} else if (origSystemID == 7) {
-				setField(GRID_REF, "CHAT:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));				
-			} else if (origSystemID == 67) {
-				setField(GRID_REF, "AUCK:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));				
-			} else if (origSystemID == 68) {
-				setField(GRID_REF, "CAMP:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));				
+			switch (sample.getAsInt(Sample.ORIG_SYSTEM_ID)) {
+				case 38 :
+					setField(GRID_REF, "NZMG:" + sample.getAsString(Sample.ORIG_COORD).replace('|',	'*'));
+					break;
+				case 16 :
+					setField(GRID_REF, "TruncNZMG:"	+ sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
+					break;
+				case 29 :
+					setField(GRID_REF, "NZGD49:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|',	'*'));
+					break;
+				case 28 :
+					setField(GRID_REF, "WGS84:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
+					break;
+				case 7: 
+					setField(GRID_REF, "CHAT:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
+					break;				
+				case 67 :
+					setField(GRID_REF, "AUCK:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
+					break;				
+				case 68 :
+					setField(GRID_REF, "CAMP:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
+					break;				
 			}
 		}
 		setField(METHOD, sample.getAsString(Sample.METHOD_ID));
@@ -116,11 +121,9 @@ public abstract class LocalityDE implements DataEntryForm {
 	}
 
 	public Integer getFeatureID() {
-		if (feature != null) {
+		if (feature != null)
 			return new Integer(feature.getFeatureID());
-		} else {
-			return null;
-		}
+		return null;
 	}
 
 	public String getFeatureType() {
@@ -156,9 +159,8 @@ public abstract class LocalityDE implements DataEntryForm {
 	}
 
 	protected String getFieldForHTML(int field) {
-		if (getTempField(field) != null) {
+		if (getTempField(field) != null)
 			return getTempField(field);
-		}
 		return getField(field);
 	}
 
@@ -176,13 +178,13 @@ public abstract class LocalityDE implements DataEntryForm {
 			ResultSet rs;
 			switch (field) {
 				case REGISTRATION_AREA :
-					DataEntryUtils.parseDropDownID("Registration Area", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'RegArea'", state);
+					DataEntryUtils.checkDropDownID("Registration Area", "SELECT * FROM lookup WHERE lookup_id = ? AND fieldname = ?", new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(value), "RegArea"}, state);
 					break;
 				case GRID_REF :
 					parseCoord(value);
 					break;
 				case METHOD :
-					DataEntryUtils.parseDropDownID("Method", "SELECT * FROM SC.Method WHERE Method_ID = " + value, state);
+					DataEntryUtils.checkDropDownID("Method", "SELECT * FROM sc.method WHERE method_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(value)}, state);
 					break;
 				case ACCURACY :
 					try {
@@ -308,12 +310,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			conn.executeQuery(
 				"SELECT Method_ID, Nom_Accuracy_XY FROM SC.Method WHERE Nom_Accuracy_XY IS NOT NULL ORDER BY Method_ID");
 		while (rs.next()) {
-			out.write(
-				"datumMethod["
-					+ rs.getString(1)
-					+ "] = '"
-					+ FREDUtils.noNulls(rs.getString(2))
-					+ "';\n");
+			out.write("datumMethod[" + rs.getString(1) + "] = '" + FREDUtils.noNulls(rs.getString(2)) + "';\n");
 		}
 		out.write(
 			"function setAccuracy(datID, form) {\nif (datID != \"-\") { form.Accuracy.value = datumMethod[datID]; }\n}\n");
@@ -524,7 +521,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		QueryDescriptor qd = new QueryDescriptor("audit_table");
 		qd.addQueryColumn("status", Types.VARCHAR, "working");
 		qd.addQueryColumn("submitted_by_id", Types.NUMERIC, null);
-		qd.addQueryColumn("approved_date", Types.DATE, null);
+		qd.addQueryColumn("submitted_date", Types.DATE, null);
 		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getAsInt(Feature.AUDIT_ID)));
 		DBUtils.doUpdate(qd, "audit_id = ?", conn);
 		conn.releaseStatement();

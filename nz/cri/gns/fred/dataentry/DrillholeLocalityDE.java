@@ -4,14 +4,16 @@ import java.io.IOException;
 import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.db.QueryDescriptor;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 public class DrillholeLocalityDE extends LocalityDE {
@@ -57,14 +59,10 @@ public class DrillholeLocalityDE extends LocalityDE {
 			ResultSet rs;
 			switch (field) {
 				case OPERATING_COMPANY :
-					rs =
-						conn.executeQuery(
-							"SELECT Person_ID FROM Person_View WHERE Name = "
-								+ JspUtils.sqlEscape(value.trim()));
+					String query = "SELECT Person_ID FROM Person_View WHERE Name = ?";
+					rs = conn.executeQuery(query, new int[] {Types.VARCHAR}, new Object[] {value.trim()});
 					if (!rs.next())
-						throw new DataInputException(
-							"Operating Company",
-							"Invalid value");
+						throw new DataInputException("Operating Company", "Invalid value");
 					personID = rs.getString(1);
 					break;
 				case SPUD_DATE :
@@ -75,27 +73,19 @@ public class DrillholeLocalityDE extends LocalityDE {
 					break;
 				case DATUM_TYPE :
 					if (!(value.equals("RT") || value.equals("KB") || value.equals("Seafloor")))
-						throw new DataInputException(
-							"Datum Type",
-							"Invalid Data");
+						throw new DataInputException("Datum Type", "Invalid Data");
 					break;
 				case DATUM_ELEVATION :
 					if (!FREDUtils.isNumeric(value))
-						throw new DataInputException(
-							"Datum Elevation",
-							"Invalid Data");
+						throw new DataInputException("Datum Elevation",	"Invalid Data");
 					break;
 				case KICK_OFF_DEPTH :
 					if (!FREDUtils.isNumeric(value))
-						throw new DataInputException(
-							"Kick-off Depth",
-							"Invalid Data");
+						throw new DataInputException("Kick-off Depth", "Invalid Data");
 					break;
 				case TERMINATION_DEPTH :
 					if (!FREDUtils.isNumeric(value))
-						throw new DataInputException(
-							"Termination Depth",
-							"Invalid Data");
+						throw new DataInputException("Termination Depth", "Invalid Data");
 					break;
 			}
 		} catch (IOException e) {
@@ -122,30 +112,24 @@ public class DrillholeLocalityDE extends LocalityDE {
 	public void makeDataEntryHTML(Writer out)
 		throws IOException, SQLException {
 		out.write("<table border='0' cellspacing='0' cellpadding='2'>\n");
-		out.write(
-			"<tr><td class='heading' colspan='2'>Drillhole Name</td><td><input type='text' name='FeatName' value='"
+		out.write("<tr><td class='heading' colspan='2'>Drillhole Name</td><td><input type='text' name='FeatName' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(DRILLHOLE_NAME))
 				+ "'></td></tr>\n");
 		super.makeDataEntryHTML(out);
-		out.write(
-			"<tr><td class='heading'>Operating Company</td><td></td><td><input type='text' name='Person' value='"
+		out.write("<tr><td class='heading'>Operating Company</td><td></td><td><input type='text' name='Person' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(OPERATING_COMPANY))
 				+ "' size='40'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=OpComp\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write(
-			"<tr><td class='heading'>Drilling Dates</td><td class='smallheading'>Spud Date</td><td><input type='text' name='StartDate' value='"
+		out.write("<tr><td class='heading'>Drilling Dates</td><td class='smallheading'>Spud Date</td><td><input type='text' name='StartDate' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(SPUD_DATE))
 				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Date&Field=StartDate\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write(
-			"<tr><td class='heading'></td><td class='smallheading'>Completion Date</td><td><input type='text' name='FinishDate' value='"
+		out.write("<tr><td class='heading'></td><td class='smallheading'>Completion Date</td><td><input type='text' name='FinishDate' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(COMPLETION_DATE))
 				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Date&Field=FinishDate\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write(
-			"<tr><td class='heading'>Licence Area</td><td></td><td><input type='text' name='LicArea' value='"
+		out.write("<tr><td class='heading'>Licence Area</td><td></td><td><input type='text' name='LicArea' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(LICENCE_AREA))
 				+ "' size='40'></td></tr>");
 		out.write("<tr><td class='heading'>Datum Elevation</td><td></td>");
-		out.write(
-			"<td class='smallheading'><select name='DatumType'><option value='-'"
+		out.write("<td class='smallheading'><select name='DatumType'><option value='-'"
 				+ ((getFieldForHTML(DATUM_TYPE) == null) ? " selected" : "")
 				+ ">-- Choose --</option><option value='RT'"
 				+ ((getFieldForHTML(DATUM_TYPE) != null
@@ -163,16 +147,13 @@ public class DrillholeLocalityDE extends LocalityDE {
 					? " selected"
 					: "")
 				+ ">Seafloor</option></select>&nbsp;&nbsp;");
-		out.write(
-			"<input type='text' name='DatumEl' value='"
+		out.write("<input type='text' name='DatumEl' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(DATUM_ELEVATION))
 				+ "' size='10'>&nbsp;m&nbsp;asl</td></tr>\n");
-		out.write(
-			"<tr><td class='heading'>Drillhole Depths</td><td class='smallheading'>Kick-off</td><td class='smallheading'><input type='text' name='StartDepth' value='"
+		out.write("<tr><td class='heading'>Drillhole Depths</td><td class='smallheading'>Kick-off</td><td class='smallheading'><input type='text' name='StartDepth' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(KICK_OFF_DEPTH))
 				+ "'>&nbsp;m</td></tr>\n");
-		out.write(
-			"<tr><td class='heading'></td><td class='smallheading'>Termination (TD)</td><td class='smallheading'><input type='text' name='FinishDepth' value='"
+		out.write("<tr><td class='heading'></td><td class='smallheading'>Termination (TD)</td><td class='smallheading'><input type='text' name='FinishDepth' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(TERMINATION_DEPTH))
 				+ "'>&nbsp;m</td></tr>\n");
 		out.write("</table>\n");
@@ -186,40 +167,29 @@ public class DrillholeLocalityDE extends LocalityDE {
 			conn.getConnection().setAutoCommit(false);
 			try {
 				super.save();
-				conn.executeUpdate(
-					"UPDATE Feature SET Person_ID = "
-						+ JspUtils.sqlEscape(personID)
-						+ ((spudDate != null)
-							? ", Start_Date = TO_DATE('"
-								+ spudDate.getDateString()
-								+ "'), Start_Date_Rounding = "
-								+ JspUtils.sqlEscape(spudDate.getDateRounding())
-							: ", Start_Date = NULL, Start_Date_Rounding = NULL")
-						+ ((compDate != null)
-							? ", Finish_Date = TO_DATE('"
-								+ compDate.getDateString()
-								+ "'), Finish_Date_Rounding = "
-								+ JspUtils.sqlEscape(compDate.getDateRounding())
-							: ", Finish_Date = NULL, Finish_Date_Rounding = NULL")
-						+ ", Drillhole_Licence_Name = "
-						+ JspUtils.sqlEscape(fields[LICENCE_AREA])
-						+ ", Datum_Type = "
-						+ JspUtils.sqlEscape(fields[DATUM_TYPE])
-						+ ", Datum_Elevation = "
-						+ JspUtils.sqlEscape(fields[DATUM_ELEVATION])
-						+ ", Start_Depth = "
-						+ JspUtils.sqlEscape(fields[KICK_OFF_DEPTH])
-						+ ", Finish_Depth = "
-						+ JspUtils.sqlEscape(fields[TERMINATION_DEPTH])
-						+ " WHERE Feature_ID = "
-						+ feature.getFeatureID());
+				QueryDescriptor qd = new QueryDescriptor("feature");
+				qd.addQueryColumn("person_id", Types.NUMERIC, ((personID != null) ? new Integer(personID) : null));
+				qd.addQueryColumn("start_date", Types.DATE ,((spudDate != null) ? spudDate.getDate() : null));
+				qd.addQueryColumn("start_date_rounding", Types.VARCHAR, spudDate.getDateRounding());
+				qd.addQueryColumn("finish_date", Types.DATE ,((compDate != null) ? compDate.getDate() : null));
+				qd.addQueryColumn("finish_date_rounding", Types.VARCHAR, compDate.getDateRounding());
+				qd.addQueryColumn("drillhole_licence_name", Types.VARCHAR, fields[LICENCE_AREA]);
+				qd.addQueryColumn("datum_type", Types.VARCHAR, fields[DATUM_TYPE]);
+				qd.addQueryColumn("datum_elevation", Types.NUMERIC, ((fields[DATUM_ELEVATION] != null) ? new Integer(fields[DATUM_ELEVATION]) : null));
+				qd.addQueryColumn("start_depth", Types.NUMERIC, ((fields[KICK_OFF_DEPTH] != null) ? new Integer(fields[KICK_OFF_DEPTH]) : null));
+				qd.addQueryColumn("finish_depth", Types.NUMERIC, ((fields[TERMINATION_DEPTH] != null) ? new Integer(fields[TERMINATION_DEPTH]) : null));
+				qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getFeatureID()));
+				DBUtils.doUpdate(qd, "feature_id = ?", conn);
 				conn.getConnection().commit();
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = true;
 				feature = new Feature(feature.getFeatureID(), user, state, true);
 				if (feature.getSampleCount() == 0) {
-					conn.executeUpdate("INSERT INTO Sample (Feature_ID, Audit_ID) VALUES (" + feature.getFeatureID() + ", " + feature.getAsString(Feature.AUDIT_ID) + ")");
+					qd = new QueryDescriptor("sample");
+					qd.addQueryColumn("feature_id", Types.NUMERIC, new Integer(feature.getFeatureID()));
+					qd.addQueryColumn("audit_id", Types.NUMERIC, new Integer(feature.getAsInt(Feature.AUDIT_ID)));
+					DBUtils.doInsertUsingSequence(qd, "sample_id", "sample_seq", conn, false);
 					feature = new Feature(feature.getFeatureID(), user, state, true);
 				}
 				int sampleID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
