@@ -74,7 +74,7 @@ public class FolderUtils {
 		form.submit();
 	}
 	
-	public static void submitRecord(String recID, String recType, String foldID, User user, PageState state) throws FolderUtilException, NumberFormatException, DataInputException, InvalidCredentialsException, SQLException, IOException {
+	public static void submitRecord(String recID, User user, PageState state) throws FolderUtilException, NumberFormatException, DataInputException, InvalidCredentialsException, SQLException, IOException {
 		RecordDE form = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(recID), user, state);
 		form.submit();
 	}

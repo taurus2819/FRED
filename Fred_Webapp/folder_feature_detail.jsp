@@ -56,9 +56,17 @@
 				else if (actionType.equals("DeleteSamp") && folder.isAllowedDeleteLocalities()) {
 					FolderUtils.deleteSample(request.getParameter("SampID"), user, state);
 				}
+				 //Delete record
+				else if (actionType.equals("DeleteRec") && folder.isAllowedDeleteLocalities()) {
+					FolderUtils.deleteRecord(request.getParameter("RecID"), user, state);
+				}
 				// submit working locality
 				else if (actionType.equals("Submit") && folder.isAllowedSubmitLocalities()) {
 					FolderUtils.submitLocality(request.getParameter("FeatID"), user, state);
+				}
+				// submit working record
+				else if (actionType.equals("SubmitRec") && folder.isAllowedSubmitLocalities()) {
+					FolderUtils.submitRecord(request.getParameter("RecID"), user, state);
 				}
 				//Revoke waiting records
 				else if (actionType.equals("Revoke") && folder.isAllowedSubmitLocalities()) {
@@ -163,7 +171,7 @@
 						out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this sample\") == true) {document.FoldForm.ActionType.value=\"DeleteSamp\";document.FoldForm.SampID.value=\"" + sample.getSampleID() + "\";document.FoldForm.submit();}' title='Delete Sample'><img src='images/delete.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					out.print("</td><td></td><td>");
 					if (folder.isAllowedCreateLocalities())
-						out.print("<a href='data_entry.jsp?FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "' title='Add Adoption Record'><img src='images/new_ado.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+						out.print("<a href='data_entry.jsp?Type=ADO&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "' title='Add Adoption Record'><img src='images/new_ado.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					out.print("</td><td>");
 					//if (folder.isAllowedCreateLocalities())
 					//	out.print("<a href='pal_data_entry.jsp?FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "' title='Add Paleontology Record'><img src='images/new_pal.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
@@ -171,49 +179,48 @@
 					out.println("</tr>");
 				}
 
-				for (Iterator k = sample.getAsVector(Sample.WORKING_RECORDS).iterator(); k.hasNext(); ) {
+				for (Iterator k = sample.getAsVector(Sample.RECORDS).iterator(); k.hasNext(); ) {
 					KeyValueObject kvo = (KeyValueObject) k.next();
 					int recID = Integer.parseInt(kvo.getKey());
 					String recType = kvo.getValue();
-					Record record = Record.getData(recID, user, state);
-					if (!recType.equals("SMP") && (record.get(Record.WORKING_FOLDER_ID) == null || record.getAsInt(Record.WORKING_FOLDER_ID) == (folder.getFolderID()))) {
-						String imageName;
-						if (recType.equals("ADO")) {
-							imageName = "ado.gif";
-						} else {
-							imageName = "pal.gif";
-							//check for provisional taxa
-							//rs2 = statement2.executeQuery("SELECT * FROM Taxa_View WHERE Record_ID = " + rs.getString(1) + " AND Status = 'Provisional'");
-							//if (rs2.next()) {
-							//	provFlag = true;
-							//}
+					try {
+						Record record = Record.getData(recID, user, state);
+						if (recType.equals("ADO") && (record.get(Record.WORKING_FOLDER_ID) == null || record.getAsInt(Record.WORKING_FOLDER_ID) == (folder.getFolderID()))) {
+							String imageName;
+							if (recType.equals("ADO")) {
+								imageName = "ado.gif";
+							} else {
+								imageName = "pal.gif";
+								//check for provisional taxa
+								//rs2 = statement2.executeQuery("SELECT * FROM Taxa_View WHERE Record_ID = " + rs.getString(1) + " AND Status = 'Provisional'");
+								//if (rs2.next()) {
+								//	provFlag = true;
+								//}
+							}
+							out.print("<tr><td><img src='images/child.gif' width='20' height='20' /><img src='images/" + imageName + "' width='20' height='20' /></td><td class='smalltext'");
+							//if (provFlag) { returnVal.append(" style='color: #FF0000'"); }
+							out.print(">" + record.getAsString(Record.RECORD_NAME) + "&nbsp;&nbsp;</td><td class='smalltext' style='color: #FF0000'>");
+							if (record.getAsString(Record.STATUS).equals("working")) {
+								out.print("working&nbsp;&nbsp;</td><td class='smalltext'>");
+								if (record.get(Record.LAST_CHANGE) != null)
+									out.print(DateFormat.getDateInstance(DateFormat.LONG).format(record.getAsDate(Record.LAST_CHANGE)) + "&nbsp;&nbsp;");
+								out.print("</td>");
+							} else {
+								out.print("</td><td></td>");
+							}
+							out.print("<td></td><td>");
+							//Record Options
+							if (record.getAsString(Record.STATUS).equals("working") && folder.isAllowedEditLocalities())
+								out.println("<a href='data_entry.jsp?Type=" + recType + "&FoldID=" + folder.getFolderID() + "&RecID=" + recID + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Record' /></a><img src='images/blank.gif' height='20' width='2' />");
+							out.println("</td><td></td><td>");
+							if (record.getAsString(Record.STATUS).equals("working") && folder.isAllowedDeleteLocalities())
+								out.println("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this record\") == true) {document.FoldForm.ActionType.value=\"DeleteRec\";document.FoldForm.RecID.value=\"" + recID + "\";document.FoldForm.submit();}'><img src='images/delete.gif' border='0' height='20' width='20' alt='Delete Record' /></a><img src='images/blank.gif' height='20' width='2' />");
+							out.println("</td><td>");
+							if (record.getAsString(Record.STATUS).equals("working") && folder.isAllowedSubmitLocalities())
+								out.println("<a href='#' onClick='document.FoldForm.ActionType.value=\"SubmitRec\";document.FoldForm.RecID.value=\"" + recID + "\";document.FoldForm.submit();'><img src='images/submit.gif' border='0' height='20' width='20' alt='Submit Record' /></a><img src='images/blank.gif' height='20' width='2' />");
+							out.println("</td></tr>");
 						}
-						out.print("<tr><td><img src='images/child.gif' width='20' height='20' /><img src='images/" + imageName + "' width='20' height='20' /></td><td colspan='3' class='smallheading'");
-						//if (provFlag) { returnVal.append(" style='color: #FF0000'"); }
-						out.print(">" + record.getAsString(Record.RECORD_NAME) + "</td><td class='smalltext'>");
-						if (record.get(Record.LAST_CHANGE) != null)
-							out.print(DateFormat.getDateInstance(DateFormat.LONG).format(record.getAsDate(Record.LAST_CHANGE)));
-						out.print("&nbsp;</td><td>");
-/*						//Record Options
-						if (recType.equals("SMP") && (userRights & 2) != 0) {
-							returnVal.append("<a href='samp_prop_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-						}
-						else if (recType.equals("ADO") && (userRights & 2) != 0) {
-							returnVal.append("<a href='ado_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-						}
-						else if (recType.equals("PAL") && (userRights & 2) != 0) {
-							returnVal.append("<a href='pal_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-						}
-						returnVal.append("</td><td></td><td>");
-						if ((userRights & 8) != 0) {
-							returnVal.append("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this record\") == true) {document.FoldForm.ActionType.value=\"DeleteRec\";document.FoldForm.RecID.value=\"" + rs.getString(1) + "\";document.FoldForm.submit();}' title='Delete Record'><img src='images/delete.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-						}
-						returnVal.append("</td><td>");
-						if ((locType.equals("Drill") || recType.equals("ADO") || (recType.equals("PAL")) && !provFlag) && (userRights & 16) != 0 && locStatus.equals("approved")) {
-							returnVal.append("<a href='#' onClick='document.FoldForm.ActionType.value=\"SubmitRec\";document.FoldForm.RecID.value=\"" + rs.getString(1) + "\";document.FoldForm.RecType.value=\"" + rs.getString(4) + "\";document.FoldForm.submit();' title='Submit Record'><img src='images/submit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-						}
-*/						out.println("</td></tr>");
-					}
+					} catch (Exception e) {}
 				}
 				out.println("<tr><td colspan='11'><img src='images/line.gif' height='3' width='550' /></td></tr>");
 			}
@@ -222,6 +229,7 @@
 			out.println("<input type='hidden' name='FoldID' value='" + folder.getFolderID() + "'>");
 			out.println("<input type='hidden' name='FeatID' value='" + featID + "'>");
 			out.println("<input type='hidden' name='SampID' value=''>");
+			out.println("<input type='hidden' name='RecID' value=''>");
 			out.println("<input type='hidden' name='NewFeatName' value=''>");
 
 			out.println("</table></p>");

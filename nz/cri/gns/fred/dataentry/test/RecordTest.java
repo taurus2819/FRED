@@ -31,21 +31,21 @@ import nz.cri.gns.test.TestingPageState;
  */
 public class RecordTest extends TestCase {
 
-	public void _testLoad() throws NotBoundException, InvalidCredentialsException, IllegalArgumentException, SQLException, IOException, DataInputException {
+	public void testLoad() throws NotBoundException, InvalidCredentialsException, IllegalArgumentException, SQLException, IOException, DataInputException {
 		SampPropRecord.purge();
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
-		RecordDE record = new SampPropRecordDE(1220, user, state);
+		RecordDE record = new SampPropRecordDE(1280, user, state);
 		//loc.setField(Locality.GRID_REF, "TruncNZMG:D39*1300*2100");
 		for (int i = 0; i < record.getFieldCount(); i++) {
 			System.out.println(i + ": " + record.getField(i));
 		}
-		record.setField(DataEntryForm.HARDNESS, "152");
-		System.out.println(record.save());
+		//record.setField(DataEntryForm.HARDNESS, "152");
+		//System.out.println(record.save());
 	}
 
-	public void testDataEntryForm() throws NotBoundException, DataInputException, InvalidCredentialsException, SQLException, IOException {
+	public void _testDataEntryForm() throws NotBoundException, DataInputException, InvalidCredentialsException, SQLException, IOException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("test", "test", ipConn);

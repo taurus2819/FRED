@@ -55,17 +55,10 @@ public class FREDUtils {
 		throws IOException, SQLException {
 		if (user == null)
 			return false;
-		if (!status.equals("approved")) {
-			return (
-				(getUserWorkingLocalityRights(user, featID, state) & 1) > 0);
-		}
+		if (!status.equals("approved"))
+			return ((getUserWorkingLocalityRights(user, featID, state) & 1) > 0);
 		if (securityClassID != null) {
-			DBConnection conn = getIPConnection(state);
-			SecurityClass sc =
-				new SecurityClass(Integer.parseInt(securityClassID), conn);
-			SecurityClassAccess sca =
-				new SecurityClassAccess(sc, Right.ANY_RIGHT);
-			return sca.isAccessibleTo(user, conn);
+			return checkSecurityClass(Integer.parseInt(securityClassID), user, state);
 		} else {
 			return false;
 		}
@@ -80,19 +73,22 @@ public class FREDUtils {
 		throws IOException, SQLException {
 		if (user == null)
 			return false;
-		if (!status.equals("approved")) {
+		if (!status.equals("approved"))
 			return ((getUserWorkingRecordRights(user, recID, state) & 1) > 0);
-		}
 		if (securityClassID != null) {
-			DBConnection conn = getIPConnection(state);
-			SecurityClass sc =
-				new SecurityClass(Integer.parseInt(securityClassID), conn);
-			SecurityClassAccess sca =
-				new SecurityClassAccess(sc, Right.ANY_RIGHT);
-			return sca.isAccessibleTo(user, conn);
+			return checkSecurityClass(Integer.parseInt(securityClassID), user, state);
 		} else {
 			return false;
 		}
+	}
+
+	private static boolean checkSecurityClass(int secClassID, User user, PageState state) throws IOException, SQLException {
+		DBConnection conn = getIPConnection(state);
+		SecurityClass sc =
+			new SecurityClass(secClassID, conn);
+		SecurityClassAccess sca =
+			new SecurityClassAccess(sc, Right.ANY_RIGHT);
+		return sca.isAccessibleTo(user, conn);		
 	}
 
 	public static int getUserWorkingLocalityRights(
