@@ -30,9 +30,9 @@ public class FolderList {
 			adminFolders = new Vector();
 			while (rs.next()) {
 				if (rs.getString(1).equals("personal")) {
-					personalFolders.add(new Folder(rs.getInt(2), user, state));
+					personalFolders.add(new Integer(rs.getInt(2)));
 				} else {
-					adminFolders.add(new Folder(rs.getInt(2), user, state));
+					adminFolders.add(new Integer(rs.getInt(2)));
 				}
 			}
 			conn.releaseStatement();

@@ -35,12 +35,12 @@ public class FeatureData {
 		this.id = id;
 		pool.add(this);
 		String query =
-			"SELECT FEATURE_ID, SITE_ID, F.AUDIT_ID, MASTERFILE_ID, LOCALITY, REG_AREA_ID, COMMENTS, "
-				+ "FEATURE_TYPE, FEATURE_NAME, DRILLHOLE_LICENCE_NAME, START_DATE, START_DATE_ROUNDING, FINISH_DATE, "
-				+ "FINISH_DATE_ROUNDING, PERSON_ID, DATUM_TYPE, DATUM_ELEVATION, START_DEPTH, FINISH_DEPTH, "
-				+ "Security_Class_ID, Status, Fd.Name "
-				+ "FROM Feature F, Audit_Table A, Folder Fd "
-				+ "WHERE F.Audit_ID = A.Audit_ID(+) AND F.Masterfile_ID = Fd.Folder_ID(+) AND Feature_ID = ?";
+			"SELECT f.feature_id, f.site_id, f.audit_id, f.masterfile_id, fd.name, f.locality, f.reg_area_id, f.comments, "
+				+ "f.feature_type, f.feature_name, f.drillhole_licence_name, f.start_date, f.start_date_rounding, f.finish_date, "
+				+ "f.finish_date_rounding, f.person_id, f.datum_type, f.datum_elevation, f.start_depth, f.finish_depth, "
+				+ "a.security_class_id, a.status, a.working_folder_id, DECODE(a.modified_date, NULL, a.created_date, a.modified_date) AS last_change "
+				+ "FROM feature f, audit_table a, folder fd "
+				+ "WHERE f.audit_id = a.audit_id AND f.masterfile_id = fd.folder_id(+) AND feature_id = ?";	
 		data[0] = new Integer(this.id);
 		try {
 			ResultSet rs = conn.executeQuery(query, types, data);
@@ -52,51 +52,49 @@ public class FeatureData {
 			values[Feature.SITE_ID] = ((rs.getString(2) != null) ? new Integer(rs.getInt(2)) : null);
 			values[Feature.AUDIT_ID] = ((rs.getString(3) != null) ? new Integer(rs.getInt(3)) : null);
 			values[Feature.MASTERFILE_ID] = ((rs.getString(4) != null) ? new Integer(rs.getInt(4)) : null);
-			values[Feature.MASTERFILE_NAME] = rs.getString(22);
-			values[Feature.LOCALITY] = rs.getString(5);
-			values[Feature.REG_AREA_ID] = ((rs.getString(6) != null) ? new Integer(rs.getInt(6)) : null);
-			values[Feature.COMMENTS] = rs.getString(7);
-			values[Feature.FEATURE_TYPE] = rs.getString(8);
-			values[Feature.FEATURE_NAME] = rs.getString(9);
-			values[Feature.DRILLHOLE_LICENCE_NAME] = rs.getString(10);
-			values[Feature.START_DATE] = rs.getDate(11);
-			values[Feature.START_DATE_ROUNDING] = rs.getString(12);
-			values[Feature.FINISH_DATE] = rs.getDate(13);
-			values[Feature.FINISH_DATE_ROUNDING] = rs.getString(14);
-			values[Feature.PERSON_ID] = ((rs.getString(15) != null) ? new Integer(rs.getInt(15)) : null);
-			values[Feature.DATUM_TYPE] = rs.getString(16);
-			values[Feature.DATUM_ELEVATION] = ((rs.getString(17) != null) ? new Double(rs.getDouble(17)) : null);
-			values[Feature.START_DEPTH] = ((rs.getString(18) != null) ? new Double(rs.getDouble(18)) : null);
-			values[Feature.FINISH_DEPTH] = ((rs.getString(19) != null) ? new Double(rs.getDouble(19)) : null);
-			values[Feature.SECURITY_CLASS_ID] = ((rs.getString(20) != null) ? new Integer(rs.getInt(20)) : null);
-			values[Feature.STATUS] = rs.getString(21);
+			values[Feature.MASTERFILE_NAME] = rs.getString(5);
+			values[Feature.LOCALITY] = rs.getString(6);
+			values[Feature.REG_AREA_ID] = ((rs.getString(7) != null) ? new Integer(rs.getInt(7)) : null);
+			values[Feature.COMMENTS] = rs.getString(8);
+			values[Feature.FEATURE_TYPE] = rs.getString(9);
+			values[Feature.FEATURE_NAME] = rs.getString(10);
+			values[Feature.DRILLHOLE_LICENCE_NAME] = rs.getString(11);
+			values[Feature.START_DATE] = rs.getDate(12);
+			values[Feature.START_DATE_ROUNDING] = rs.getString(13);
+			values[Feature.FINISH_DATE] = rs.getDate(14);
+			values[Feature.FINISH_DATE_ROUNDING] = rs.getString(15);
+			values[Feature.PERSON_ID] = ((rs.getString(16) != null) ? new Integer(rs.getInt(16)) : null);
+			values[Feature.DATUM_TYPE] = rs.getString(17);
+			values[Feature.DATUM_ELEVATION] = ((rs.getString(18) != null) ? new Double(rs.getDouble(18)) : null);
+			values[Feature.START_DEPTH] = ((rs.getString(19) != null) ? new Double(rs.getDouble(19)) : null);
+			values[Feature.FINISH_DEPTH] = ((rs.getString(20) != null) ? new Double(rs.getDouble(20)) : null);
+			values[Feature.SECURITY_CLASS_ID] = ((rs.getString(21) != null) ? new Integer(rs.getInt(21)) : null);
+			values[Feature.STATUS] = rs.getString(22);
+			values[Feature.WORKING_FOLDER_ID] = ((rs.getString(23) != null) ? new Integer(rs.getInt(23)) : null);
+			values[Feature.LAST_CHANGE] = rs.getDate(24);
 			rs.close();
-			query = "SELECT Sample_ID FROM Sample WHERE Feature_ID = ? ORDER BY Top_Depth";
+			query = "SELECT sample_id FROM sample WHERE feature_id = ? ORDER BY top_depth";
 			data[0] = values[Feature.FEATURE_ID];
 			rs = conn.executeQuery(query, types, data);
-			//ResultSet rs2;
 			Vector samp = new Vector();
 			while (rs.next()) {
 				samp.add(new Integer(rs.getInt(1)));
 			}
 			values[Feature.SAMPLES] = samp;
 			rs.close();
-			query = "SELECT DISTINCT Sample_Name, Feature_Last_Change, Feature_Working_Folder_ID FROM Sample_All_View WHERE Feature_ID = ? ORDER BY Sample_Name";
+			query = "SELECT DISTINCT sample_name FROM feature_view WHERE feature_id = ? ORDER BY sample_name";
 			data[0] = values[Feature.FEATURE_ID];
 			rs = conn.executeQuery(query, types, data);
 			if (rs.next()) {
 				String sampName = rs.getString(1);
-				values[Feature.LAST_CHANGE] = rs.getDate(2);
-				values[Feature.WORKING_FOLDER_ID] = ((rs.getString(3) != null) ? new Integer(rs.getInt(3)) : null);
 				while (rs.next()) {
 					sampName += ", " + rs.getString(1);
 				}
 				values[Feature.SAMPLE_NAMES] = sampName;
 			}
-			
 			rs.close();
 			if (values[Feature.FEATURE_NAME] != null) {
-				query = "SELECT Well_Name FROM Petroleum.Petroleum_Well WHERE UPPER(Well_Name) = ?";
+				query = "SELECT well_name FROM petroleum.petroleum_well WHERE UPPER(well_name) = ?";
 				types[0] = Types.VARCHAR;
 				data[0] = values[Feature.FEATURE_NAME].toString().toUpperCase();
 				try {
@@ -235,18 +233,13 @@ public class FeatureData {
 			pool.removeMe(f);
 			f = null;
 		}
-		if (f == null) {
+		if (f == null)
 			f = new FeatureData(id, state);
-		}
 		return f;
 	}
 
 	public String toString() {
 		return (values[9]).toString();
 	}
-	
-	//public void finalize() throws Throwable {
-	//	pool.removeMe(this);
-	//}
 
 }

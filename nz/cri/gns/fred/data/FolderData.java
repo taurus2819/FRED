@@ -190,6 +190,9 @@ public class FolderData {
 		}
 		if (f == null) {
 			f = new FolderData(id, state);
+			System.out.println("Creating new folder " + f.getAsString(Folder.NAME));
+		} else {
+			System.out.println("Re-using existing folder " + f.getAsString(Folder.NAME));
 		}
 		return f;
 	}

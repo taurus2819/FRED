@@ -511,6 +511,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getFeatureID()));
 		DBUtils.doUpdate(qd, "feature_id = ?", conn);
 		feature = new Feature(feature.getFeatureID(), user, state, true);
+		Folder folder = new Folder(mfID, user, state, true);
 		return feature.getFeatureID();
 	}
 
@@ -527,6 +528,9 @@ public abstract class LocalityDE implements DataEntryForm {
 		DBUtils.doUpdate(qd, "audit_id = ?", conn);
 		conn.releaseStatement();
 		feature = new Feature(feature.getFeatureID(), user, state, true);
+		try {
+			Folder folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
+		} catch (Exception e) {}
 	}
 
 	public void approve(FRNumber frNum) throws SQLException, IOException, InvalidCredentialsException {
@@ -558,6 +562,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		DBUtils.doUpdate(qd, "audit_id = ?", conn);
 		conn.releaseStatement();
 		feature = new Feature(feature.getFeatureID(), user, state, true);
+		Folder folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
 	}
 	
 	public void reject(String comments) throws SQLException, IOException, InvalidCredentialsException {
@@ -567,7 +572,8 @@ public abstract class LocalityDE implements DataEntryForm {
 		qd.addQueryColumn("curator_comments", Types.VARCHAR, comments);
 		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getAsInt(Feature.AUDIT_ID)));
 		DBUtils.doUpdate(qd, "audit_id = ?", conn);
-		feature = new Feature(feature.getFeatureID(), user, state, true);	
+		feature = new Feature(feature.getFeatureID(), user, state, true);
+		Folder folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
 	}
 
 	public void delete() throws IOException, SQLException, InvalidCredentialsException {

@@ -5,7 +5,7 @@
 	PageState state = new PageState(request, response, getServletContext());
 
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 
 	if (request.getParameter("ID") != null) {
 		Folder folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state);
@@ -84,10 +84,10 @@
 
 			out.println("<form name='FoldForm' method='put' action='folder_detail.jsp'>");
 
-			Feature feature;
+			Vector features = new Vector();
 			for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
-				feature = new Feature(((Integer) i.next()).intValue(), user, state, true);
-
+				Feature feature = new Feature(((Integer) i.next()).intValue(), user, state);
+				features.add(feature);
 				String featID  = feature.getAsString(Feature.FEATURE_ID);
 				String sampName = feature.getAsString(Feature.SAMPLE_NAMES);
 				String featType = feature.getAsString(Feature.FEATURE_TYPE);
@@ -128,6 +128,7 @@
 
 				out.println("<tr><td colspan='9'><img src='images/line.gif' height='3' width='550' /></td></tr>");
 			}
+			session.setAttribute("features", features);
 			out.println("<input type='hidden' name='ActionType' value=''>");
 			out.println("<input type='hidden' name='ID' value='" + folder.getFolderID() + "'>");
 			out.println("<input type='hidden' name='FeatID' value=''>");

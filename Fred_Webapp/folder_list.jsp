@@ -42,7 +42,9 @@
 	out.println("<table border='0' cellspacing='0' cellpadding='2' width='550'>");
 
 	FolderList folderList = new FolderList(user, state);
-	Folder folder;
+	session.setAttribute("folderList", folderList);
+
+	Vector folders = new Vector();
 
 	//List Working folders
 	if (folderList.getPersonalFolderCount() > 0) {
@@ -50,7 +52,8 @@
 		out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
 		out.println("<form name='PersForm' method='post' action='folder_list.jsp'>");
 		for (Iterator i = folderList.getPersonalFolders().iterator(); i.hasNext(); ) {
-			folder = (Folder) i.next();
+			Folder folder = new Folder(((Integer) i.next()).intValue(), user, state);
+			folders.add(folder);
 			out.print("<tr><td><a href='folder_detail.jsp?ID=" + folder.getAsString(Folder.FOLDER_ID) + "' class='heading'>" + folder.getAsString(Folder.NAME) + "</a>&nbsp;&nbsp;</td><td></td><td>" + folder.getAsString(Folder.OWNER) + "&nbsp;&nbsp;</td><td>");
 			if (folder.isAllowedAdmin()) {
 				out.print("<a href='folder_user.jsp?FoldID=" + folder.getAsString(Folder.FOLDER_ID) + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a>&nbsp;&nbsp;&nbsp;<a href='#' onClick='if (confirm(\"Are you sure you want to delete this folder\") == true) {document.PersForm.FoldID.value=\"" + folder.getAsString(Folder.FOLDER_ID) + "\";document.PersForm.submit();}' title='Delete Folder'><img src='images/delete.gif' border='0' height='20' width='20' /></a>");
@@ -69,7 +72,8 @@
 		out.println("<tr><th>Masterfile Folder&nbsp;&nbsp;</th><td></td><th>Curator&nbsp;&nbsp;</th><th>Options</th></tr>");
 		out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
 		for (Iterator i = folderList.getAdminFolders().iterator(); i.hasNext(); ) {
-			folder = (Folder) i.next();
+			Folder folder = new Folder(((Integer) i.next()).intValue(), user, state);
+			folders.add(folder);
 			out.print("<tr><td><a href='admin_folder_detail.jsp?ID=" + folder.getAsString(Folder.FOLDER_ID) + "' class='heading'>" + folder.getAsString(Folder.NAME) + "</a>&nbsp;&nbsp;</td><td style='font-size: 14pt; font-weight: bold; color: #FF0000'>");
 			if (folder.getLocalityCount() > 0) { out.print("*"); }
 			out.print("&nbsp;</td><td>" + folder.getAsString(Folder.OWNER) + "&nbsp;&nbsp;</td><td>");
@@ -81,6 +85,7 @@
 		out.println("<tr><td>&nbsp;</td></tr>");
 	}
 
+	session.setAttribute("folders", folders);
 
 	//List Taxonomic groups (if any)
 	nz.cri.gns.intranet.DBConnection connection = FREDUtils.getFREDConnection(state);

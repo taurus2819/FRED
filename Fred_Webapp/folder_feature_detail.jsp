@@ -147,8 +147,10 @@
 				
 					
 				//Samples
+				Vector samples = new Vector();
 				for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
 					Sample sample = new Sample(((Integer) i.next()).intValue(), user, state);
+					samples.add(sample);
 					if (sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_APPROVED) || (sample.get(Sample.SAMPLE_WORKING_FOLDER_ID) != null && sample.getAsInt(Sample.SAMPLE_WORKING_FOLDER_ID) == folder.getFolderID())) {
 						if (!featType.equals(Feature.OUTCROP_LOCALITY) && !sample.getAsString(Sample.DRILLHOLE_DEPTH).equals("Depth Not Specified")) {
 							out.print("<tr><td><a href='detail.jsp?ID=" + sample.getSampleID() + "'><img src='images/drill.gif' height='20' width='20' border='0' alt='View Sample Details' /></a>&nbsp;</td><td>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "&nbsp;&nbsp;</td>");
@@ -229,7 +231,7 @@
 						out.println("<tr><td colspan='9'><img src='images/line.gif' height='3' width='550' /></td></tr>");
 					}
 				}
-	
+				session.setAttribute("samples", samples);
 				out.println("<input type='hidden' name='ActionType' value=''>");
 				out.println("<input type='hidden' name='FoldID' value='" + folder.getFolderID() + "'>");
 				out.println("<input type='hidden' name='FeatID' value='" + featID + "'>");
