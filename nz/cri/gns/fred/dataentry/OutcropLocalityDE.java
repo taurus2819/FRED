@@ -139,7 +139,7 @@ public class OutcropLocalityDE extends LocalityDE {
 		conn.executeUpdate("UPDATE Audit_Table SET Status = 'waiting' WHERE Audit_ID = " + auditID);
 		conn.releaseStatement();
 		try {
-			SampPropRecord spRec = (SampPropRecord) SampPropRecord.getData(sampPropRecordDE.record.getRecordID(), user, state, true);
+			SampPropRecord.getData(sampPropRecordDE.record.getRecordID(), user, state, true);
 		} catch (Exception e) {}
 	}
 }

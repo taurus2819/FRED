@@ -228,19 +228,19 @@ public class DrillholeLocalityDE extends LocalityDE {
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = false;
-				throw new SQLException(e.getMessage());
+				throw e;
 			} catch (IOException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = false;
-				throw new IOException(e.getMessage());
+				throw e;
 			} catch (InvalidCredentialsException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = false;
-				throw new InvalidCredentialsException();
+				throw e;
 			}
 			feature = new Feature(feature.getFeatureID(), user, state, true);
 			int sampleID =

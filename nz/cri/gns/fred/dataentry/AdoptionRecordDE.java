@@ -190,7 +190,6 @@ public class AdoptionRecordDE extends RecordDE {
 		throws InvalidCredentialsException, SQLException, IOException {
 		if (!savedFlag) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
-			ResultSet rs;
 			conn.getConnection().setAutoCommit(false);
 			try {
 				super.save();
@@ -232,19 +231,19 @@ public class AdoptionRecordDE extends RecordDE {
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = false;
-				throw new SQLException(e.getMessage());
+				throw e;
 			} catch (IOException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = false;
-				throw new IOException(e.getMessage());
+				throw e;
 			} catch (InvalidCredentialsException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = false;
-				throw new InvalidCredentialsException();
+				throw e;
 			}
 
 		}

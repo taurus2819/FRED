@@ -188,7 +188,7 @@ public abstract class LocalityDE implements DataEntryForm {
 					break;
 				case ACCURACY :
 					try {
-						Double acc = new Double(value);
+						new Double(value);
 					} catch (Exception e) {
 						throw new DataInputException("Accuracy", "Invalid value");
 					}
