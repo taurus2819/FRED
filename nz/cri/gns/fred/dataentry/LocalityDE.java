@@ -255,6 +255,10 @@ public abstract class LocalityDE implements DataEntryForm {
 			if (feature.getAsString(Feature.STATUS).equals(Audit.STATUS_APPROVED)) {
 				out.write("<tr><td class=\"heading\" colspan=\"4\" style=\"color: #FF0000\">You are editing an approved locality.  Previous edits are shown below.  Please enter comments on the edits you are making in the <em>Edit Comments</em> box below</td></tr>");
 				Audit audit = Audit.getAudit(feature.getAsInt(Feature.AUDIT_ID), state);
+				if (audit.get(Audit.CURATOR_COMMENTS) != null)
+					out.write("<tr><td>" + FREDUtils.noNulls(audit.getAsString(Audit.APPROVED_BY)) + "</td><td class=\"smalltext\">"
+							+ ((audit.get(Audit.APPROVED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.APPROVED_DATE)) : "")
+							+ "</td><td>Curator approval comments: " + audit.getAsString(Audit.CURATOR_COMMENTS) + "</td></tr>");
 				if (audit.get(Audit.EDIT_HISTORY) != null) {
 					for (Iterator i = audit.getAsVector(Audit.EDIT_HISTORY).iterator(); i.hasNext(); ) {
 						AuditEdit ae = (AuditEdit) i.next();
@@ -550,7 +554,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		Folder folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
 	}
 
-	public void approve(FRNumber frNum) throws SQLException, IOException, InvalidCredentialsException {
+	public void approve(FRNumber frNum, String comments) throws SQLException, IOException, InvalidCredentialsException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		//generate FR number record
 		QueryDescriptor qd = new QueryDescriptor("fr_number");
@@ -574,7 +578,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		qd.addQueryColumn("approved_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
 		qd.addQueryColumn("working_folder_id", Types.NUMERIC, null);
 		qd.addQueryColumn("working_comments", Types.VARCHAR, null);
-		qd.addQueryColumn("curator_comments", Types.VARCHAR, null);
+		qd.addQueryColumn("curator_comments", Types.VARCHAR, comments);
 		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getAsInt(Feature.AUDIT_ID)));
 		DBUtils.doUpdate(qd, "audit_id = ?", conn);
 		conn.releaseStatement();

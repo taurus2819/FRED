@@ -405,9 +405,8 @@ public class Sample {
 			bottomDepth = null;
 		if (drillTypeID.equals(""))
 			drillTypeID = null;
-		if (!FREDUtils.isNumeric(topDepth) || (bottomDepth != null && !FREDUtils.isNumeric(bottomDepth)) || (drillTypeID != null && !FREDUtils.isNumeric(drillTypeID))) {
+		if (!FREDUtils.isNumeric(topDepth) || (bottomDepth != null && !FREDUtils.isNumeric(bottomDepth)) || (drillTypeID != null && !FREDUtils.isNumeric(drillTypeID)))
 			throw new DataInputException("Sample Depths", "Data Missing or Invalid");
-		}
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		QueryDescriptor qd;
 		if (sd.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_APPROVED)) {

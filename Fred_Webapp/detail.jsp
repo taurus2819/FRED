@@ -47,15 +47,15 @@
 			
 			if (request.getParameter("ActionType") != null) { //do something
 				String actionType = request.getParameter("ActionType");
-				if (actionType.equals("Accept")) {
+				if (actionType.equals("Approve")) {
 					FRNumber frNum = new FRNumber(request.getParameter("MapSheet"), new Integer(request.getParameter("SerialNum")), request.getParameter("RecollNum"));
-					FolderUtils.approveLocality(sample.getAsString(Sample.FEATURE_ID), frNum, user, state);
+					FolderUtils.approveLocality(sample.getAsString(Sample.FEATURE_ID), frNum, request.getParameter("CurComm"), user, state);
 					sample = new Sample(sample.getSampleID(), user, state, true);
 					response.sendRedirect("admin_folder_detail.jsp?ID=" + sample.getAsString(Sample.MASTERFILE_ID));
 					return;
 				}
 				else if (actionType.equals("Reject")) {
-					FolderUtils.rejectLocality(sample.getAsString(Sample.FEATURE_ID), request.getParameter("RejComm"), user, state);
+					FolderUtils.rejectLocality(sample.getAsString(Sample.FEATURE_ID), request.getParameter("CurComm"), user, state);
 					sample = new Sample(sample.getSampleID(), user, state, true);
 					response.sendRedirect("admin_folder_detail.jsp?ID=" + sample.getAsString(Sample.MASTERFILE_ID));
 					return;
@@ -158,14 +158,15 @@
 					out.println("<input type='hidden' name='ID' value='" + sampID + "'>");
 					out.println("<input type='hidden' name='ActionType' value=''>");
 					out.println("<tr><td colspan='2' class='heading' align='center'>Locality Approval</td></tr>");
-					out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Accept\";document.RevForm.submit();'><img src='images/ok.gif' width='20' height='20' border='0' alt='Approve' /></a>&nbsp;</td><td class='heading'>FR Number</td></tr>");
+					out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Approve\";document.RevForm.submit();'><img src='images/ok.gif' width='20' height='20' border='0' alt='Approve' /></a></td><td class='heading'>Approve</td></tr>");
+					out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Reject\";document.RevForm.submit();'><img src='images/cancel.gif' width='20' height='20' border='0' alt='reject' /></a></td><td class='heading'>Reject</td></tr>");
 					//if (recoll != null) {
 					//	out.println("<tr><td colspan='2'>The submitter has indicated that this record is a recollection of " + recoll + ".  If you agree then amend the FRNumber below as appropriate</td></tr>");
 					//}
 					out.println("<tr><td colspan='2'><input type='text' name='MapSheet' size='9' value='" + frNumber.getMapSheet() + "' />&nbsp;/f&nbsp;<input type='text' name='SerialNum' size='4' value='" + frNumber.getSerialNumber() + "' />&nbsp;<input type='text' name='RecollNum' size='1' value='' /></td></tr>");
 					out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
-					out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Reject\";document.RevForm.submit();'><img src='images/cancel.gif' width='20' height='20' border='0' alt='reject' /></a>&nbsp;</td><td class='heading'>Comments</td></tr>");
-					out.println("<tr><td colspan='2'><textarea name='RejComm' rows='5' cols='25'></textarea></td></tr>");
+					out.println("<tr><td colspan='2' class='heading'>Comments</td></tr>");
+					out.println("<tr><td colspan='2'><textarea name='CurComm' rows='5' cols='25'>" + FREDUtils.noNulls(audit.getAsString(Audit.CURATOR_COMMENTS)) + "</textarea></td></tr>");
 					out.println("</form>");
 					out.println("</table>");
 					out.println("</td></tr>");
