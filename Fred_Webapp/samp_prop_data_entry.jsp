@@ -346,7 +346,7 @@ function parseSedFeat(sedFeat) {
 			<tr><td class='heading'>Not Collected<br><span class='smalltext'>specify fossils seen but not collected</span></td><td></td><td><textarea name='NotColl' cols='40' rows='3'><%=notColl%></textarea></td></tr>
 
 			<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>
-			<tr><td class='heading'>Significance/ Comments</td><td></td><td><textarea name='Sig' cols='40' rows='3'><%=sig%></textarea></td></tr>
+			<tr><td class='heading'> colspan='2'Significance/Comments</td><td><textarea name='Sig' cols='40' rows='3'><%=sig%></textarea></td></tr>
 			<tr><td class='heading'>Stage Limits</td><td class='smallheading'>Inferred</td><td>
 			<table border='0' cellspacing='0'>
 			<tr><td>
@@ -392,8 +392,8 @@ function parseSedFeat(sedFeat) {
 			</table>
 			</td></tr>
 			<tr><td class='heading'>Samples Nearby</td><td></td><td><input type='text' name='PrevSamp' size='40' value='<%=prevSamp%>'></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=PrevSamp", "Supp", "width=600,height=350");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
-			<tr><td class='heading'>Sample Relationships</td><td></td><td><textarea name='SampRel' cols='40' rows='3'><%=sampRel%></textarea></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=SampRel", "Supp", "width=600,height=450");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
-			<tr><td class='heading'>Stratigraphic Relationships</td><td></td><td><textarea name='StratRel' cols='40' rows='3'><%=stratRel%></textarea></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=StratRel", "Supp", "width=600,height=450");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
+			<tr><td class='heading' colspan='2'>Sample Relationships</td><td><textarea name='SampRel' cols='40' rows='3'><%=sampRel%></textarea></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=SampRel", "Supp", "width=600,height=450");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
+			<tr><td class='heading' colspan='2'>Stratigraphic Relationships</td><td><textarea name='StratRel' cols='40' rows='3'><%=stratRel%></textarea></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=StratRel", "Supp", "width=600,height=450");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
 			<tr><td class='heading'>Column/Map</td><td></td><td><input type='text' name='ColMap' size='40' value='<%=colMap%>'></td></tr>
 			<tr><td class='heading'>Attitude</td><td class='smallheading'>Dip</td><td><input type='text' name='Dip' size='3' value='<%=dip%>'></td></tr>
 			<tr><td></td><td class='smallheading'>Dip Dirn.</td><td><select name='DipDir'><option value='' <%=((dipDir.equals("")) ? " selected" : "")%>>-- Choose --</option><option value='N' <%=((dipDir.equals("N")) ? " selected" : "")%>>North</option><option value='NE' <%=((dipDir.equals("NE")) ? " selected" : "")%>>North-East</option><option value='E' <%=((dipDir.equals("E")) ? " selected" : "")%>>East</option><option value='SE' <%=((dipDir.equals("SE")) ? " selected" : "")%>>South-East</option><option value='S' <%=((dipDir.equals("S")) ? " selected" : "")%>>South</option><option value='SW' <%=((dipDir.equals("SW")) ? " selected" : "")%>>South-West</option><option value='W' <%=((dipDir.equals("W")) ? " selected" : "")%>>West</option><option value='NW' <%=((dipDir.equals("NW")) ? " selected" : "")%>>North-West</option></select></td></tr>
@@ -511,11 +511,11 @@ function parseSedFeat(sedFeat) {
 %>
 			</td></tr>
 			<tr><td></td><td class='smallheading'>Wet/Dry</td><td><select name='Wet'><option value='' <%=((wet.equals("")) ? " selected" : "")%>>-- Choose --</option><option value='Wet' <%=((wet.equals("Wet")) ? " selected" : "")%>>Wet</option><option value='Dry' <%=((wet.equals("Dry")) ? " selected" : "")%>>Dry</option></select></td></tr>
-			<tr><td class='heading'>Additional Features</td><td></td><td><input type='text' name='SedFeat' size='40' value='<%=sedFeat%>'></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=SedFeat", "Supp", "width=600,height=350");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
-			<tr><td class='heading'>Inferred Environment</td><td></td><td><select name='DepEnv1'><option value='' <%=((depEnv1.equals("")) ? " selected" : "")%>>-- Choose --</option><option value='Marine' <%=((depEnv1.equals("Marine")) ? " selected" : "")%>>Marine</option><option value='Non-marine' <%=((depEnv1.equals("Non-marine")) ? " selected" : "")%>>Non-marine</option></select></td></tr>
+			<tr><td class='heading' colspan='2'>Additional Features</td><td><input type='text' name='SedFeat' size='40' value='<%=sedFeat%>'></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=SedFeat", "Supp", "width=600,height=350");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
+			<tr><td class='heading' colspan='2'>Inferred Environment</td><td><select name='DepEnv1'><option value='' <%=((depEnv1.equals("")) ? " selected" : "")%>>-- Choose --</option><option value='Marine' <%=((depEnv1.equals("Marine")) ? " selected" : "")%>>Marine</option><option value='Non-marine' <%=((depEnv1.equals("Non-marine")) ? " selected" : "")%>>Non-marine</option></select></td></tr>
 			<tr><td></td><td></td><td><textarea name='DepEnv2' cols='40' rows='3'><%=depEnv2%></textarea></td></tr>
-			<tr><td class='heading'>Nature of Rock Unit</td><td></td><td><textarea name='RockNat' cols='40' rows='3'><%=rockNat%></textarea></td></tr>
-			<tr><td class='heading'>Correspondence</td><td></td><td><textarea name='Corr' cols='40' rows='3'><%=corr%></textarea></td></tr>
+			<tr><td class='heading' colspan='2'>Nature of Rock Unit</td><td><textarea name='RockNat' cols='40' rows='3'><%=rockNat%></textarea></td></tr>
+			<tr><td class='heading' colspan='2'>Correspondence</td><td><textarea name='Corr' cols='40' rows='3'><%=corr%></textarea></td></tr>
 			</table>
 <%		out.println("<table border='0' cellpadding='0' cellspacing='2'>");
 			out.println("<tr><td>&nbsp;</td></tr>");
