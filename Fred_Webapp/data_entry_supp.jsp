@@ -59,7 +59,7 @@ function saveData(type) {
 		if (type == "Coord") {
 			if (checkCoord() == 1) {
 				window.opener.form1.GridRef.value = CoordType.value + ":";
-				if (CoordType.value == "LL49" || CoordType.value == "LL2000") {
+				if (CoordType.value == "NZGD49" || CoordType.value == "WGS84") {
 					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + Country.value.toUpperCase() + "*";
 					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + North.value + "*" + East.value;
 				} else {
@@ -221,7 +221,7 @@ function checkCoord() {
 				East.select();
 				return 0;
 			}
-		} else if (CoordType.value.substring(0, 2) == "LL") { // Lat/Long
+		} else if (CoordType.value == "NZGD49" || CoordType.value == "WGS84") { // Lat/Long
 			if (East.value.length == 0 || isNaN(East.value) || East.value < -180 || East.value > 180) {
 				alert ("Please enter a valid longitude (between -180 and 180 for Lat/Long)");
 				East.select();
@@ -317,10 +317,10 @@ function parseDropDown(val) {
 			out.println("<select name='CoordType'>");
 			out.println("<option value='NZMG' selected>Full NZMG</option>");
 			out.println("<option value='TruncNZMG'>Trunc NZMG</option>");
-			out.println("<option value='LL49'>Lat/Long NZGD49</option>");
-			out.println("<option value='LL2000'>Lat/Long NZGD2000/WGS84</option>");
 			out.println("<option value='AUCK'>Auckland Island TM</option>");
 			out.println("<option value='CAMP'>Campbell Island TM</option>");
+			out.println("<option value='NZGD49'>Lat/Long NZGD49</option>");
+			out.println("<option value='WGS84'>Lat/Long WGS84</option>");
 			out.println("</select></td></tr>");
 			out.println("<tr><td class='heading'>NZMS260 Sheet</td><td><input type='text' name='NZMGSheet' /></td></tr>");
 			out.println("<tr><td class='heading'>Easting/Longitude</td><td><input type='text' name='East' /></td></tr>");

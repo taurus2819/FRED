@@ -87,9 +87,9 @@ public abstract class LocalityDE implements DataEntryForm {
 			} else if (origSystemID == 16) {
 				setField(GRID_REF, "TruncNZMG:"	+ sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
 			} else if (origSystemID == 29) {
-				setField(GRID_REF, "LL49:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|',	'*'));
+				setField(GRID_REF, "NZGD49:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|',	'*'));
 			} else if (origSystemID == 28) {
-				setField(GRID_REF, "LL2000:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
+				setField(GRID_REF, "WGS84:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
 			} else if (origSystemID == 67) {
 				setField(GRID_REF, "AUCK:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));				
 			} else if (origSystemID == 68) {
@@ -336,7 +336,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		out.write(
 			"<tr><td></td><td class='smallheading'>Accuracy</td><td><input type='text' name='Accuracy' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(LocalityDE.ACCURACY))
-				+ "'></td></tr>\n");
+				+ "'>&nbsp;m</td></tr>\n");
 		out.write(
 			"<tr><td></td><td class='smallheading'>Locality<br />Description</td><td><textarea name='Loc' cols='40' rows='5'>"
 				+ FREDUtils.noNulls(getFieldForHTML(LocalityDE.LOCALITY_DESC))
@@ -400,7 +400,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");
 			}
-		} else if (coord.indexOf("LL49:") == 0) {
+		} else if (coord.indexOf("NZGD49:") == 0) {
 			if (coord.indexOf("*") == coord.lastIndexOf("*"))
 			throw new DataInputException("Coordinate", "Invalid value");
 			String north = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
@@ -408,19 +408,20 @@ public abstract class LocalityDE implements DataEntryForm {
 			try {
 				origCoord = new Datum.LatLong(Double.parseDouble(north), Double.parseDouble(east));
 				origSystem = DatumFactory.createNZGD49();
-				countryCode = coord.substring(5, coord.indexOf("*"));
+				countryCode = coord.substring(7, coord.indexOf("*"));
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");
 			}
-		} else if (coord.indexOf("LL2000:") == 0) {
+		} else if (coord.indexOf("WGS84:") == 0) {
 			if (coord.indexOf("*") == coord.lastIndexOf("*"))
 			throw new DataInputException("Coordinate", "Invalid value");
 			String north = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
 			String east = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
+			System.out.println("North: " + north + ", East: " + east);
 			try {
 				origCoord = new Datum.LatLong(Double.parseDouble(north), Double.parseDouble(east));
 				origSystem = DatumFactory.createWGS84();
-				countryCode = coord.substring(7, coord.indexOf("*"));
+				countryCode = coord.substring(6, coord.indexOf("*"));
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");
 			}

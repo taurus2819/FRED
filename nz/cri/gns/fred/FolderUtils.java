@@ -157,25 +157,27 @@ public class FolderUtils {
 	}
 	
 	public static FRNumber getNextFRNumber(String regAreaCode, String nzmsSheet, double latitude, double longitude, PageState state) throws SQLException, IOException {
-		DecimalFormat latdeg = new DecimalFormat("00");
-		DecimalFormat longdeg = new DecimalFormat("000");
+		DecimalFormat latDeg = new DecimalFormat("00");
+		DecimalFormat longDeg = new DecimalFormat("000");
+		String latStr = latDeg.format((Math.floor(Math.abs(latitude))));
+		String longStr = longDeg.format((Math.floor(Math.abs(longitude))));
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		ResultSet rs;
 		
 		String mapSheet = null;
 		if (nzmsSheet != null) {
-			rs = conn.executeQuery("SELECT COUNT(*) FROM SC.Map_Sheet WHERE MS_Series = 'NZMS260' AND MS_Map_Code = " + JspUtils.sqlEscape(nzmsSheet));
+			rs = conn.executeQuery("SELECT * FROM SC.Map_Sheet WHERE MS_Series = 'NZMS260' AND MS_Map_Code = " + JspUtils.sqlEscape(nzmsSheet));
 			if (rs.next()) {
 				mapSheet = nzmsSheet;
 			} else {
-				mapSheet = (latitude >= 0 ? "N" : "S") + (longitude >= 0 ? "E" : "W") + latdeg.format(Math.abs(latitude)) + longdeg.format(Math.abs(longitude));
+				mapSheet = (latitude >= 0 ? "N" : "S") + (longitude >= 0 ? "E" : "W") + latStr + longStr;
 			}
 		}
 		else if (regAreaCode != null && !regAreaCode.equals("NZ") && !regAreaCode.equals("OT")) {
 			mapSheet = regAreaCode;
 		}
 		else {
-			mapSheet = (latitude >= 0 ? "N" : "S") + (longitude >= 0 ? "E" : "W") + latdeg.format(Math.abs(latitude)) + longdeg.format(Math.abs(longitude));
+			mapSheet = (latitude >= 0 ? "N" : "S") + (longitude >= 0 ? "E" : "W") + latStr + longStr;
 		}
 				
 		rs = conn.executeQuery("SELECT MAX(Serial_Number) FROM FR_Number WHERE Map_Sheet = " + JspUtils.sqlEscape(mapSheet) + " AND Serial_Number < 6000");

@@ -20,6 +20,7 @@ import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
+import nz.cri.gns.util.map.Datum;
 
 public class FREDUtils {
 
@@ -392,6 +393,11 @@ public class FREDUtils {
 
 	public static String formatDateForOutput(Date date) {
 		return formatDateForOutput(date, null);
+	}
+
+	public static String formatLatLongForOutput(double latitude, double longitude) {
+		Datum.LatLong latlong = new Datum.LatLong(latitude, longitude);
+		return latlong.getLatAsDegMinSec(2) + "|" + latlong.getLongAsDegMinSec(2);
 	}
 
 	public static Sample getSampleAbove(

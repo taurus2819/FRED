@@ -83,46 +83,24 @@
 		}
 		if (sample.get(Sample.LATITUDE) != null) {
 			if (sample.get(Sample.NZMG_SHEET) != null) {
-				out.print("<tr><td class='heading'>Grid Ref</td><td>New Zealand Map Grid " + sample.getAsString(Sample.NZMG_SHEET) + ":" + nzmg.format(sample.getAsDouble(Sample.NZMG_EAST)) + "|" + nzmg.format(sample.getAsDouble(Sample.NZMG_NORTH)));
+				out.print("<tr><td class='heading'>Grid Ref</td><td>" + sample.getAsString(Sample.NZMG_SHEET) + ":" + nzmg.format(sample.getAsDouble(Sample.NZMG_EAST)) + "|" + nzmg.format(sample.getAsDouble(Sample.NZMG_NORTH)) + " (NZMG)");
 			} else if (sample.getAsInt(Sample.ORIG_SYSTEM_ID) == 29) {
 			} else if (sample.getAsInt(Sample.ORIG_SYSTEM_ID) == 28 || sample.getAsInt(Sample.ORIG_SYSTEM_ID) == 30) {
 				String str = sample.getAsString(Sample.ORIG_COORD);
 				int index = str.indexOf("|");
 				double lat = Double.parseDouble(str.substring(0, index));
 				double lon = Double.parseDouble(str.substring(index+1));
-				out.print("<tr><td class='heading'>Lat/Long</td><td>");
-				if (lat > 0) {
-					out.print(latlong.format(lat) + "&#176N");
-				} else {
-					out.print(latlong.format(Math.abs(lat)) + "&#176S");
-				}
-				out.print("|");
-				if (lon > 0) {
-					out.print(latlong.format(lon) + "&#176E");
-				} else {
-					out.print(latlong.format(Math.abs(lon)) + "&#176W");
-				}
-				out.println(" (" + sample.getAsString(Sample.COORD_SYSTEM) + ")</td></tr>");					
+				out.print("<tr><td class='heading'>Lat/Long</td><td>" + FREDUtils.formatLatLongForOutput(lat, lon) + " (" + sample.getAsString(Sample.COORD_SYSTEM).replaceAll("Lat/long ", "") + ")");
 			} else {
-				out.print("<tr><td class='heading'>Grid Ref</td><td>" + sample.getAsString(Sample.COORD_SYSTEM) + " " + sample.getAsString(Sample.ORIG_COORD));
+				out.print("<tr><td class='heading'>Grid Ref</td><td>" + sample.getAsString(Sample.ORIG_COORD) + " (" + sample.getAsString(Sample.COORD_SYSTEM) + ")");
 			}
-			if (sample.get(Sample.ACCURACY) != null) { out.print(" (&#177 " + sample.getAsInt(Sample.ACCURACY) + "m)"); }
 			out.println("</td></tr>");
 			out.print("<tr><td class='heading'>Lat/Long</td><td>");
-			if (sample.getAsDouble(Sample.LATITUDE) > 0) {
-				out.print(latlong.format(sample.getAsDouble(Sample.LATITUDE)) + "&#176N");
-			} else {
-				out.print(latlong.format(Math.abs(sample.getAsDouble(Sample.LATITUDE))) + "&#176S");
-			}
-			out.print("|");
-			if (sample.getAsDouble(Sample.LONGITUDE) > 0) {
-				out.print(latlong.format(sample.getAsDouble(Sample.LONGITUDE)) + "&#176E");
-			} else {
-				out.print(latlong.format(Math.abs(sample.getAsDouble(Sample.LONGITUDE))) + "&#176W");
-			}
-			out.println(" (NZGD49)</td></tr>");
+			out.print(FREDUtils.formatLatLongForOutput(sample.getAsDouble(Sample.LATITUDE), sample.getAsDouble(Sample.LONGITUDE)));
+			out.println(" (NZGD49 Datum)</td></tr>");
 		}
 		if (sample.get(Sample.METHOD) != null) { out.println("<tr><td class='heading'>Method</td><td>" + sample.getAsString(Sample.METHOD) + "</td></tr>"); }
+		if (sample.get(Sample.ACCURACY) != null) { out.println("<tr><td class='heading'>Accuracy</td><td>&#177 " + sample.getAsInt(Sample.ACCURACY) + "m</td></tr>"); }
 		if (sample.isUserAuthenticated() && sample.get(Sample.LOCALITY) != null) { out.println("<tr><td class='heading'>Locality</td><td>" + sample.getAsString(Sample.LOCALITY) + "</td></tr>"); }
 		if (!featType.equals("Outcrop")) {
 			if (sample.isUserAuthenticated() && sample.get(Sample.PERSON) != null) {

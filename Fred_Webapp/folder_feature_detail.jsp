@@ -73,7 +73,7 @@
 			out.println("<tr><td colspan='2' align='center' class='bigheading' >" + sampName + "</td></tr>");
 			out.println("<tr><td colspan='2' align='center'>" + featType + "</td></tr>");
 			out.println("<tr><td><img src='images/blank.gif' widfth='1' height='10' /></td></tr>");
-			out.println("<tr><td><a href='folder_detail.jsp?ID=" + folder.getFolderID() + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Folder Detail'/></a>&nbsp;&nbsp;</td><td><a href='folder_detail.jsp?ID=" + folder.getFolderID() + "' class='boldlink'>Back to Folder Detail</a></td></tr>");
+			out.println("<tr><td><a href='folder_detail.jsp?ID=" + folder.getFolderID() + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Folder Contents' /></a>&nbsp;&nbsp;</td><td><a href='folder_detail.jsp?ID=" + folder.getFolderID() + "' class='boldlink'>Back to Folder Contents</a></td></tr>");
 			out.println("</table>");
 
 			drawEndNavigation(out);

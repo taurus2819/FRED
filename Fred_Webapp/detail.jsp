@@ -137,7 +137,7 @@
 					//if (recoll != null) {
 					//	out.println("<tr><td colspan='2'>The submitter has indicated that this record is a recollection of " + recoll + ".  If you agree then amend the FRNumber below as appropriate</td></tr>");
 					//}
-					out.println("<tr><td colspan='2'><input type='text' name='MapSheet' size='9' value='" + frNumber.getMapSheet() + "'>&nbsp;/f&nbsp;<input type='text' name='SerialNum' size='4' value='" + frNumber.getSerialNumber() + "'>&nbsp;<input type='text' name='RecollNum' size='1' value=''></td></tr>");
+					out.println("<tr><td colspan='2'><input type='text' name='MapSheet' size='9' value='" + frNumber.getMapSheet() + "' />&nbsp;/f&nbsp;<input type='text' name='SerialNum' size='4' value='" + frNumber.getSerialNumber() + "' />&nbsp;<input type='text' name='RecollNum' size='1' value='' /></td></tr>");
 					out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
 					out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Reject\";document.RevForm.submit();'><img src='images/cancel.gif' width='20' height='20' border='0' alt='reject' /></a>&nbsp;</td><td class='heading'>Comments</td></tr>");
 					out.println("<tr><td colspan='2'><textarea name='RejComm' rows='5' cols='25'></textarea></td></tr>");
@@ -197,46 +197,24 @@
 			if (sample.get(Sample.YARD_FR_ID) != null) { out.println("<tr><td class='heading'>Yard FR Number</td><td>" + sample.getAsString(Sample.YARD_FR_NUMBER) + "</td></tr>"); }
 			if (sample.get(Sample.LATITUDE) != null) {
 				if (sample.get(Sample.NZMG_SHEET) != null) {
-					out.print("<tr><td class='heading'>Grid Ref</td><td>New Zealand Map Grid " + sample.getAsString(Sample.NZMG_SHEET) + ":" + nzmg.format(sample.getAsDouble(Sample.NZMG_EAST)) + "|" + nzmg.format(sample.getAsDouble(Sample.NZMG_NORTH)));
+					out.print("<tr><td class='heading'>Grid Ref</td><td>" + sample.getAsString(Sample.NZMG_SHEET) + ":" + nzmg.format(sample.getAsDouble(Sample.NZMG_EAST)) + "|" + nzmg.format(sample.getAsDouble(Sample.NZMG_NORTH)) + " (NZMG)");
 				} else if (sample.getAsInt(Sample.ORIG_SYSTEM_ID) == 29) {
 				} else if (sample.getAsInt(Sample.ORIG_SYSTEM_ID) == 28 || sample.getAsInt(Sample.ORIG_SYSTEM_ID) == 30) {
 					String str = sample.getAsString(Sample.ORIG_COORD);
 					int index = str.indexOf("|");
 					double lat = Double.parseDouble(str.substring(0, index));
 					double lon = Double.parseDouble(str.substring(index+1));
-					out.print("<tr><td class='heading'>Lat/Long</td><td>");
-					if (lat > 0) {
-						out.print(latlong.format(lat) + "&#176N");
-					} else {
-						out.print(latlong.format(Math.abs(lat)) + "&#176S");
-					}
-					out.print("|");
-					if (lon > 0) {
-						out.print(latlong.format(lon) + "&#176E");
-					} else {
-						out.print(latlong.format(Math.abs(lon)) + "&#176W");
-					}
-					out.println(" (" + sample.getAsString(Sample.COORD_SYSTEM) + ")</td></tr>");					
+					out.print("<tr><td class='heading'>Lat/Long</td><td>" + FREDUtils.formatLatLongForOutput(lat, lon) + " (" + sample.getAsString(Sample.COORD_SYSTEM).replaceAll("Lat/long ", "") + ")");
 				} else {
-					out.print("<tr><td class='heading'>Grid Ref</td><td>" + sample.getAsString(Sample.COORD_SYSTEM) + " " + sample.getAsString(Sample.ORIG_COORD));
+					out.print("<tr><td class='heading'>Grid Ref</td><td>" + sample.getAsString(Sample.ORIG_COORD) + " (" + sample.getAsString(Sample.COORD_SYSTEM) + ")");
 				}
-				if (sample.get(Sample.ACCURACY) != null) { out.print(" (&#177 " + sample.getAsInt(Sample.ACCURACY) + "m)"); }
 				out.println("</td></tr>");
 				out.print("<tr><td class='heading'>Lat/Long</td><td>");
-				if (sample.getAsDouble(Sample.LATITUDE) > 0) {
-					out.print(latlong.format(sample.getAsDouble(Sample.LATITUDE)) + "&#176N");
-				} else {
-					out.print(latlong.format(Math.abs(sample.getAsDouble(Sample.LATITUDE))) + "&#176S");
-				}
-				out.print("|");
-				if (sample.getAsDouble(Sample.LONGITUDE) > 0) {
-					out.print(latlong.format(sample.getAsDouble(Sample.LONGITUDE)) + "&#176E");
-				} else {
-					out.print(latlong.format(Math.abs(sample.getAsDouble(Sample.LONGITUDE))) + "&#176W");
-				}
-				out.println(" (NZGD49)</td></tr>");
+				out.print(FREDUtils.formatLatLongForOutput(sample.getAsDouble(Sample.LATITUDE), sample.getAsDouble(Sample.LONGITUDE)));
+				out.println(" (NZGD49 Datum)</td></tr>");
 			}
 			if (sample.get(Sample.METHOD) != null) { out.println("<tr><td class='heading'>Method</td><td>" + sample.getAsString(Sample.METHOD) + "</td></tr>"); }
+			if (sample.get(Sample.ACCURACY) != null) { out.println("<tr><td class='heading'>Accuracy</td><td>&#177 " + sample.getAsInt(Sample.ACCURACY) + "m</td></tr>"); }
 			if (featType.equals("Outcrop")) {
 				if (sample.get(Sample.FEATURE_NAME) != null) { out.println("<tr><td class='heading'>Field Number</td><td>" + sample.getAsString(Sample.FEATURE_NAME) + "</td></tr>"); }
 			} else {
