@@ -11,7 +11,7 @@
 	boolean authorChk = false, sCountChk = false, sCoordChk = false, commChk = true;
 
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 
 	//if FeatureID given then get SampleID or transer to drillhole
 	if (request.getParameter("FeatID") != null) {
@@ -27,8 +27,10 @@
 			} else {
 				response.sendRedirect("drillhole_detail.jsp?ID=" + featID);
 			}
+			return;
 		} catch (Exception e) {
 			response.sendRedirect("drillhole_detail.jsp?ID=" + featID);
+			return;
 		}
 	}
 
@@ -39,8 +41,6 @@
 	} else {
 		sampID = (String) session.getAttribute("SampleID");
 	}
-
-	drawTop(out, et, request, response);
 
 	if (sampID != null) {
 		try {
@@ -58,7 +58,10 @@
 				}
 				sample = new Sample(sample.getSampleID(), user, state, true);
 				response.sendRedirect("admin_folder_detail.jsp?ID=" + sample.getAsString(Sample.MASTERFILE_ID));
+				return;
 			}
+
+			drawTop(out, et, request, response);
 
 			if (request.getParameter("AuthorChk") != null && request.getParameter("AuthorChk").equals("true")) { authorChk = true; }
 			if (request.getParameter("SCountChk") != null && request.getParameter("SCountChk").equals("true")) { sCountChk = true; }
@@ -502,6 +505,7 @@
 		}
 	}
 	else { //no sampleID
+		drawTop(out, et, request, response);
 		drawEndNavigation(out);
 		out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 		out.println("<tr><td>No SampleID received.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</td></tr>");
