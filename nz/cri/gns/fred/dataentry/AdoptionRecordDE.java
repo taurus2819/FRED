@@ -27,17 +27,17 @@ public class AdoptionRecordDE extends RecordDE {
 
 	public AdoptionRecordDE(User user, int sampleID, int folderID, PageState state)
 		throws SQLException, IOException, DataInputException {
-		super(user, sampleID, folderID, "ADO", state);
+		super(user, sampleID, folderID, Record.ADOPTION_RECORD, state);
 	}
 
 	public AdoptionRecordDE(User user, int folderID, PageState state)
 		throws DataInputException, SQLException, IOException {
-		super(user, folderID, "ADO", state);
+		super(user, folderID, Record.ADOPTION_RECORD, state);
 	}
 
 	public AdoptionRecordDE(int recID, User user, PageState state)
 		throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
-		super(recID, "ADO", user, state);
+		super(recID, Record.ADOPTION_RECORD, user, state);
 		try {
 			setField(ADOPTION_DATE,
 				DataEntryUtils.reverseParseDate(

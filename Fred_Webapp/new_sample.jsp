@@ -21,7 +21,7 @@
 			sample = new Sample(Integer.parseInt(sampID), user, state);
 		Folder folder = new Folder(Integer.parseInt(foldID), user, state);
 		if (folder.isAllowedCreateLocalities()) {
-			if (!feature.getAsString(Feature.FEATURE_TYPE).equals("Outcrop")) {
+			if (!feature.getAsString(Feature.FEATURE_TYPE).equals(Feature.OUTCROP_LOCALITY)) {
 			
 				if (request.getParameter("ActionType") != null) {
 					try {
@@ -102,7 +102,7 @@ function checkDrill() {
 				if (sample != null)
 					out.print(" value='" + FREDUtils.noNulls(sample.getAsString(Sample.BOTTOM_DEPTH)) + "'");
 				out.println("/></td></tr>");
-				if (feature.getAsString(Feature.FEATURE_TYPE).equals("Drillhole")) {
+				if (feature.getAsString(Feature.FEATURE_TYPE).equals(Feature.DRILLHOLE_LOCALITY)) {
 					out.println("<tr><td class='heading'>Type&nbsp;&nbsp;</td><td>");
 					cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
 					cd.name = "DrillType";

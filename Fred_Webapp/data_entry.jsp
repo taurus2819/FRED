@@ -17,7 +17,7 @@
 	
 	try {
 		if (request.getParameter("Err") == null) {
-			if (formType.equals("Outcrop") || formType.equals("Drillhole") || formType.equals("Vertical Section")) {
+			if (formType.equals(Feature.OUTCROP_LOCALITY) || formType.equals(Feature.DRILLHOLE_LOCALITY) || formType.equals(Feature.VERTICAL_SECTION_LOCALITY)) {
 				if (request.getParameter("LoadFeatID") != null) { //copying
 					if (featID == null) {
 						dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), user, Integer.parseInt(foldID), state);

@@ -35,7 +35,7 @@ public abstract class RecordDE implements DataEntryForm {
 	protected RecordDE(User user, int folderID, String recordType, PageState state) throws DataInputException, SQLException, IOException {
 		this.user = user;
 		this.state = state;
-		if (!(recordType.equals("ADO") || recordType.equals("PAL")))
+		if (!(recordType.equals(Record.ADOPTION_RECORD) || recordType.equals(Record.PALEONTOLOGY_RECORD)))
 			throw new DataInputException("Record Type", "Invalid value");
 		this.recordType = recordType;
 		this.folder = new Folder(folderID, user, state);		
@@ -52,9 +52,9 @@ public abstract class RecordDE implements DataEntryForm {
 			this.user = user;
 			this.state = state;
 			this.recordType = recordType;
-			if (recordType.equals("ADO")) {
+			if (recordType.equals(Record.ADOPTION_RECORD)) {
 				this.record = (AdoptionRecord) AdoptionRecord.getData(recID, user, state, true);
-			} else if (recordType.equals("PAL")) {
+			} else if (recordType.equals(Record.PALEONTOLOGY_RECORD)) {
 				this.record = (PaleontologyRecord) PaleontologyRecord.getData(recID, user, state, true);
 			} else {
 				throw new DataInputException("Record Type", "Invalid Value");
@@ -147,10 +147,10 @@ public abstract class RecordDE implements DataEntryForm {
 
 	public void makeNavPanelHTML(Writer out) throws IOException {
 		out.write("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
-		if (recordType.equals("ADO")) {
+		if (recordType.equals(Record.ADOPTION_RECORD)) {
 			out.write("<tr><td colspan='2' align='center'><img src='images/ado.gif' height='20' width='20' /></td></tr>");
 			out.write("<tr><td colspan='2' align='center' class='heading'>Adoption Record</td></tr>\n");
-		} else if (recordType.equals("PAL")) {
+		} else if (recordType.equals(Record.PALEONTOLOGY_RECORD)) {
 			out.write("<tr><td colspan='2' align='center'><img src='images/pal.gif' height='20' width='20' /></td></tr>");
 			out.write("<tr><td colspan='2' align='center' class='heading'>Paleontology Record</td></tr>\n");
 		}

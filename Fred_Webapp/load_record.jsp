@@ -31,13 +31,13 @@
 		if (recType.equals("SMP")) {
 			returnURL = "samp_prop_data_entry.jsp?";
 		}
-		else if (recType.equals("ADO")) {
+		else if (recType.equals(Record.ADOPTION_RECORD)) {
 			returnURL = "ado_data_entry.jsp?";
 		}
-		else if (recType.equals("PAL")) {
+		else if (recType.equals(Record.PALEONTOLOGY_RECORD)) {
 			returnURL = "pal_data_entry.jsp?";
 		}
-		else if (recType.equals("Outcrop") || recType.equals("Drillhole") || recType.equals("VertSect")) {
+		else if (recType.equals(Feature.OUTCROP_LOCALITY) || recType.equals(Feature.DRILLHOLE_LOCALITY) || recType.equals(Feature.VERTICAL_SECTION_LOCALITY)) {
 			returnURL = "feat_data_entry.jsp?Type=" + recType + "&";
 		}
 
@@ -49,8 +49,7 @@
 			userRights = 0;
 		}
 
-		if (recType.equals("Outcrop") || recType.equals("Drillhole") || recType.equals("VertSect")) {
-			if (recType.equals("VertSect")) { recType = "Vertical Section"; }
+		if (recType.equals(Feature.OUTCROP_LOCALITY) || recType.equals(Feature.DRILLHOLE_LOCALITY) || recType.equals(Feature.VERTICAL_LOCALITY)) {
 			out.println("<p>Choose the locality to copy from the list below by clicking on the <img src='images/load.gif' width='20' height='20' /> icon</p>");
 
 			//List records

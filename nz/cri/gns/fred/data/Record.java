@@ -78,6 +78,9 @@ public class Record {
 	public static final int COLLECTION_COMMENTS = 29;
 	public static final int TAXONOMIC_LIST = 30;
 	
+	public static final String ADOPTION_RECORD = "ADO";
+	public static final String PALEONTOLOGY_RECORD = "PAL";	
+	
 	protected static Pool pool = new Pool();
 	protected int id;
 	protected Object[] values = new Object[85];

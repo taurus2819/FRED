@@ -32,17 +32,17 @@ public class PaleontologyRecordDE extends RecordDE {
 
 	public PaleontologyRecordDE(User user, int sampleID, int folderID, PageState state)
 		throws SQLException, IOException, DataInputException {
-		super(user, sampleID, folderID, "PAL", state);
+		super(user, sampleID, folderID, Record.PALEONTOLOGY_RECORD, state);
 	}
 
 	public PaleontologyRecordDE(User user, int folderID, PageState state)
 		throws DataInputException, SQLException, IOException {
-		super(user, folderID, "PAL", state);
+		super(user, folderID, Record.PALEONTOLOGY_RECORD, state);
 	}
 
 	public PaleontologyRecordDE(int recID, User user, PageState state)
 		throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
-		super(recID, "PAL", user, state);
+		super(recID, Record.PALEONTOLOGY_RECORD, user, state);
 		try {
 			setField(IDENTIFICATION_DATE,
 				DataEntryUtils.reverseParseDate(

@@ -217,7 +217,7 @@ public class Sample {
 		int adoCount = 0;
 		for (Iterator i = sd.getAsVector(RECORDS).iterator(); i.hasNext(); ) {
 			KeyValueObject rec = (KeyValueObject)i.next();
-			if (rec.getValue().equals("ADO"))
+			if (rec.getValue().equals(Record.ADOPTION_RECORD))
 				adoCount++;
 		}
 		return adoCount;		
@@ -229,7 +229,7 @@ public class Sample {
 		int palCount = 0;
 		for (Iterator i = sd.getAsVector(RECORDS).iterator(); i.hasNext(); ) {
 			KeyValueObject rec = (KeyValueObject)i.next();
-			if (rec.getValue().equals("PAL"))
+			if (rec.getValue().equals(Record.PALEONTOLOGY_RECORD))
 				palCount++;
 		}
 		return palCount;		

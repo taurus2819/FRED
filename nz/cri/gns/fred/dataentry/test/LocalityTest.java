@@ -18,6 +18,7 @@ import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.FolderUtils;
+import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.dataentry.DataEntryForm;
 import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
 import nz.cri.gns.fred.dataentry.DataInputException;
@@ -38,7 +39,7 @@ public class LocalityTest extends TestCase {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
-		DataEntryForm loc2 = DataEntryFormFactory.getLocalityDataEntryForm("Outcrop", user, 221, state);
+		DataEntryForm loc2 = DataEntryFormFactory.getLocalityDataEntryForm(Feature.OUTCROP_LOCALITY, user, 221, state);
 		loc2.setTempField(DataEntryForm.COLLECTORS, "Morrison, Ben");
 		System.out.println("Collectors (after data entry): " + loc2.getField(DataEntryForm.COLLECTORS) + ":" + loc2.getTempField(DataEntryForm.COLLECTORS));
 		loc2.setFieldsFromTemp();
@@ -125,7 +126,7 @@ public class LocalityTest extends TestCase {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
-		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm("Outcrop",user,221,state);
+		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm(Feature.OUTCROP_LOCALITY,user,221,state);
 		form.save();	
 	}
 	
@@ -152,7 +153,7 @@ public class LocalityTest extends TestCase {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
-		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm("Outcrop", user, 221, state);
+		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm(Feature.OUTCROP_LOCALITY, user, 221, state);
 		form.setTempField(DataEntryForm.FEATURE_NAME, "New Outcrop 11");
 		form.setTempField(DataEntryForm.COLLECTION_DATE, "25/12/2004");
 		form.setFieldsFromTemp();

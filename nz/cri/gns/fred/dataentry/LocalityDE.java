@@ -46,9 +46,9 @@ public abstract class LocalityDE implements DataEntryForm {
 		throws SQLException, IOException, DataInputException {
 		this.user = user;
 		this.state = state;
-		if (!(featureType.equals("Outcrop")
-			|| featureType.equals("Drillhole")
-			|| featureType.equals("Vertical Section")))
+		if (!(featureType.equals(Feature.OUTCROP_LOCALITY)
+			|| featureType.equals(Feature.DRILLHOLE_LOCALITY)
+			|| featureType.equals(Feature.VERTICAL_SECTION_LOCALITY)))
 			throw new DataInputException("Feature Type", "Invalid value");
 		this.featureType = featureType;
 		this.folder = new Folder(folderID, user, state);
@@ -263,7 +263,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		HTMLUtils.makeDropBox(out, conn, cd);
 		out.write("</td></tr>\n");
 		out.write("<tr><td class='heading'>");
-		if (featureType.equals("Drillhole")) {
+		if (featureType.equals(Feature.DRILLHOLE_LOCALITY)) {
 			out.write("Sidetrack of");
 		} else {
 			out.write("Recollection of");

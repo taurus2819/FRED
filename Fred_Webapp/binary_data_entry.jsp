@@ -52,9 +52,9 @@
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 			if (recType.equals("SMP")) {
 				out.println("<tr><td><a href='samp_prop_data_entry.jsp?RecID=" + recID + "&FoldID=" + foldID + "' title='Back'><img src='images/back_arrow.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='samp_prop_data_entry.jsp?RecID=" + recID + "&FoldID=" + foldID + "' class='heading'>Back</a></td></tr>");
-			} else if (recType.equals("ADO")) {
+			} else if (recType.equals(Record.ADOPTION_RECORD)) {
 				out.println("<tr><td><a href='ado_data_entry.jsp?RecID=" + recID + "&FoldID=" + foldID + "' title='Back'><img src='images/back_arrow.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='ado_data_entry.jsp?RecID=" + recID + "&FoldID=" + foldID + "' class='heading'>Back</a></td></tr>");
-			} else if (recType.equals("PAL")) {
+			} else if (recType.equals(Record.PALEONTOLOGY_RECORD)) {
 				out.println("<tr><td><a href='pal_data_entry.jsp?RecID=" + recID + "&FoldID=" + foldID + "' title='Back'><img src='images/back_arrow.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='pal_data_entry.jsp?RecID=" + recID + "&FoldID=" + foldID + "' class='heading'>Back</a></td></tr>");
 			}
 			out.println("</table>");

@@ -61,7 +61,7 @@
 				+ "</td></tr>");
 		out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 
-		if (!featType.equals("Outcrop")) {
+		if (!featType.equals(Feature.OUTCROP_LOCALITY)) {
 			audit = Audit.getAudit(sample.getAsInt(Sample.SAMPLE_AUDIT_ID), state);
 			out.println("<tr><td class=\"bigheading\" colspan=\"3\">Sample</td></tr>");
 			if (!audit.getAsString(Audit.STATUS).equals("approved"))
@@ -99,7 +99,7 @@
 				KeyValueObject rec = (KeyValueObject)i.next();
 				Record record;
 				try {
-					if (rec.getValue().equals("ADO")) {
+					if (rec.getValue().equals(Record.ADOPTION_RECORD)) {
 						record = AdoptionRecord.getData(Integer.parseInt(rec.getKey()), user, state);
 					} else {
 						record = PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state);
@@ -107,7 +107,7 @@
 					audit = Audit.getAudit(record.getAsInt(Record.AUDIT_ID), state);
 	
 					out.println("<tr><td class=\"bigheading\" colspan=\"3\">"
-						+ ((rec.getValue().equals("ADO")) ? "Adoption" : "Paleontology")
+						+ ((rec.getValue().equals(Record.ADOPTION_RECORD)) ? "Adoption" : "Paleontology")
 						+ " <span class=\"heading\">" + record + "</span></td></tr>");
 					if (!audit.getAsString(Audit.STATUS).equals("approved"))
 						out.println("<tr><td class=\"heading\">Status:&nbsp;&nbsp;</td><td style=\"color: #FF0000\">" + audit.getAsString(Audit.STATUS) + "</td></tr>");

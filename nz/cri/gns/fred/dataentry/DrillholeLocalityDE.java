@@ -20,19 +20,13 @@ public class DrillholeLocalityDE extends LocalityDE {
 	private RoundedDate spudDate;
 	private RoundedDate compDate;
 
-	public DrillholeLocalityDE(User user, int folderID, PageState state)
-		throws SQLException, IOException, DataInputException {
-		super(user, folderID, "Drillhole", state);
+	public DrillholeLocalityDE(User user, int folderID, PageState state) throws SQLException, IOException, DataInputException {
+		super(user, folderID, Feature.DRILLHOLE_LOCALITY, state);
 	}
 
-	public DrillholeLocalityDE(int id, User user, PageState state)
-		throws
-			IOException,
-			SQLException,
-			DataInputException,
-			InvalidCredentialsException {
+	public DrillholeLocalityDE(int id, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException {
 		super(id, user, state);
-		if (!featureType.equals("Drillhole"))
+		if (!featureType.equals(Feature.DRILLHOLE_LOCALITY))
 			throw new DataInputException("Feature Type", "Invalid");
 		setField(OPERATING_COMPANY, sample.getAsString(Sample.PERSON));
 		setField(

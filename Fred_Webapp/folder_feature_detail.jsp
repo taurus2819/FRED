@@ -132,7 +132,7 @@
 					out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to revoke this locality\") == true) {document.FoldForm.ActionType.value=\"Revoke\";document.FoldForm.submit();}'><img src='images/revoke.gif' border='0' height='20' width='20' alt='Revoke Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				out.println("</td><td>");
 				if (folder.isAllowedCreateLocalities()) {
-					if (featType.equals("Outcrop")) {
+					if (featType.equals(Feature.OUTCROP_LOCALITY)) {
 						int sampID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
 						Sample sample = new Sample(sampID, user, state);
 						out.print("<a href='data_entry.jsp?Type=ADO&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "&Redirect=" + redirect + "'><img src='images/new_ado.gif' border='0' height='20' width='20' alt='Add Adoption Record' /></a><img src='images/blank.gif' height='20' width='2' />");
@@ -150,7 +150,7 @@
 				for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
 					Sample sample = new Sample(((Integer) i.next()).intValue(), user, state, true);
 					if (sample.getAsString(Sample.SAMPLE_STATUS).equals("approved") || (sample.get(Sample.SAMPLE_WORKING_FOLDER_ID) != null && sample.getAsInt(Sample.SAMPLE_WORKING_FOLDER_ID) == folder.getFolderID())) {
-						if (!featType.equals("Outcrop") && !sample.getAsString(Sample.DRILLHOLE_DEPTH).equals("Depth Not Specified")) {
+						if (!featType.equals(Feature.OUTCROP_LOCALITY) && !sample.getAsString(Sample.DRILLHOLE_DEPTH).equals("Depth Not Specified")) {
 							out.print("<tr><td><a href='detail.jsp?ID=" + sample.getSampleID() + "'><img src='images/drill.gif' height='20' width='20' border='0' alt='View Sample Details' /></a>&nbsp;</td><td>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "&nbsp;&nbsp;</td>");
 							out.print("<td style='color: #FF0000'>");
 							if (!sample.getAsString(Sample.SAMPLE_STATUS).equals("approved")) {
@@ -188,9 +188,9 @@
 							String recType = kvo.getValue();
 							try {
 								Record record = Record.getData(recID, user, state);
-								if (!recType.equals("SMP") && (record.get(Record.WORKING_FOLDER_ID) == null || record.getAsInt(Record.WORKING_FOLDER_ID) == (folder.getFolderID()))) {
+								if (record.get(Record.WORKING_FOLDER_ID) == null || record.getAsInt(Record.WORKING_FOLDER_ID) == folder.getFolderID()) {
 									String imageName;
-									if (recType.equals("ADO")) {
+									if (recType.equals(Record.ADOPTION_RECORD)) {
 										imageName = "ado.gif";
 									} else {
 										imageName = "pal.gif";

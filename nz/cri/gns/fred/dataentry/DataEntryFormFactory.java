@@ -14,11 +14,11 @@ public class DataEntryFormFactory {
 
 	public static LocalityDE getLocalityDataEntryForm(int featureID, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException {
 		Feature feature = new Feature(featureID, user, state);
-	  	if (feature.getAsString(Feature.FEATURE_TYPE).equals("Outcrop")) {
+	  	if (feature.getAsString(Feature.FEATURE_TYPE).equals(Feature.OUTCROP_LOCALITY)) {
 	  		return new OutcropLocalityDE(featureID, user, state);
-	  	} else if (feature.getAsString(Feature.FEATURE_TYPE).equals("Drillhole")) {
+	  	} else if (feature.getAsString(Feature.FEATURE_TYPE).equals(Feature.DRILLHOLE_LOCALITY)) {
 	  		return new DrillholeLocalityDE(featureID, user, state);
-		} else if (feature.getAsString(Feature.FEATURE_TYPE).equals("Vertical Section")) {
+		} else if (feature.getAsString(Feature.FEATURE_TYPE).equals(Feature.VERTICAL_SECTION_LOCALITY)) {
 			return new VertSectLocalityDE(featureID, user, state);
 	  	} else {
 	  		throw new DataInputException("Feature Type", "Invalid");
@@ -26,11 +26,11 @@ public class DataEntryFormFactory {
 	}
 
  	 public static LocalityDE getLocalityDataEntryForm(String type, User user, int folderID, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException {
-		if (type.equals("Outcrop")) {
+		if (type.equals(Feature.OUTCROP_LOCALITY)) {
 			return new OutcropLocalityDE(user, folderID, state);
-		} else if (type.equals("Drillhole")) {
+		} else if (type.equals(Feature.DRILLHOLE_LOCALITY)) {
 			return new DrillholeLocalityDE(user, folderID, state);
-		} else if (type.equals("Vertical Section")) {
+		} else if (type.equals(Feature.VERTICAL_SECTION_LOCALITY)) {
 			return new VertSectLocalityDE(user, folderID, state);
 		} else {
 			throw new DataInputException("Feature Type", "Invalid");
@@ -65,9 +65,9 @@ public class DataEntryFormFactory {
 	
 	public static RecordDE getRecordDataEntryForm(int recordID, User user, PageState state) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
 		Record record = Record.getData(recordID, user, state);
-		if (record.getAsString(Record.RECORD_TYPE).equals("ADO")) {
+		if (record.getAsString(Record.RECORD_TYPE).equals(Record.ADOPTION_RECORD)) {
 			return new AdoptionRecordDE(recordID, user, state);
-		} else if (record.getAsString(Record.RECORD_TYPE).equals("PAL")) {
+		} else if (record.getAsString(Record.RECORD_TYPE).equals(Record.PALEONTOLOGY_RECORD)) {
 			return new PaleontologyRecordDE(recordID, user, state);
 		} else {
 			throw new DataInputException("Feature Type", "Invalid");
@@ -75,9 +75,9 @@ public class DataEntryFormFactory {
 	}
 	
 	public static RecordDE getRecordDataEntryForm(String type, User user, int sampleID, int folderID, PageState state) throws SQLException, IOException, DataInputException {
-		if (type.equals("ADO")) {
+		if (type.equals(Record.ADOPTION_RECORD)) {
 			return new AdoptionRecordDE(user, sampleID, folderID, state);
-		} else if (type.equals("PAL")) {
+		} else if (type.equals(Record.PALEONTOLOGY_RECORD)) {
 			return new PaleontologyRecordDE(user, sampleID, folderID, state);
 		} else {
 			throw new DataInputException("Feature Type", "Invalid");

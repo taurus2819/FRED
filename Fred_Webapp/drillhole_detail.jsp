@@ -42,7 +42,7 @@
 				Audit audit = Audit.getAudit(feature.getAsInt(Feature.AUDIT_ID), state);
 				featType = feature.getAsString(Feature.FEATURE_TYPE);
 		
-				if (!featType.equals("Outcrop")) {
+				if (!featType.equals(Feature.OUTCROP_LOCALITY)) {
 					if (feature.get(Feature.SAMPLES) != null) {
 						int minSampID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
 						Sample sample = new Sample(minSampID, user, state);			
@@ -138,7 +138,7 @@
 						if (sample.isUserAuthenticated() && sample.get(Sample.LOCALITY) != null) { out.println("<tr><td class='heading'>Locality&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.LOCALITY) + "</td></tr>"); }
 						if (sample.isUserAuthenticated() && sample.get(Sample.PERSON) != null) {
 							out.print("<tr><td class='heading'>");
-							if (featType.equals("Drillhole")) {
+							if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
 								out.print("Operating Company");
 							} else {
 								out.print("Section Collector");
@@ -147,7 +147,7 @@
 						}
 						if (sample.isUserAuthenticated() && sample.get(Sample.START_DATE) != null) {
 							out.print("<tr><td class='heading'>");
-							if (featType.equals("Drillhole")) {
+							if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
 								out.print("Spud Date");
 							} else {
 								out.print("Sampling Start Date");
@@ -157,12 +157,12 @@
 						if (sample.isUserAuthenticated() && sample.get(Sample.FINISH_DATE) != null) {
 							out.print("<tr><td class='heading'>Completion Date&nbsp;&nbsp;</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.FINISH_DATE), sample.getAsString(Sample.FINISH_DATE_ROUNDING)) + "</td></tr>");
 						}
-						if (featType.equals("Drillhole") && sample.isUserAuthenticated() && sample.get(Sample.DRILLHOLE_LICENCE_NAME) != null) { out.println("<tr><td class='heading'>Licence Area&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.DRILLHOLE_LICENCE_NAME) + "</td></tr>"); }
+						if (featType.equals(Feature.DRILLHOLE_LOCALITY) && sample.isUserAuthenticated() && sample.get(Sample.DRILLHOLE_LICENCE_NAME) != null) { out.println("<tr><td class='heading'>Licence Area&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.DRILLHOLE_LICENCE_NAME) + "</td></tr>"); }
 						if (sample.isUserAuthenticated() && sample.get(Sample.DATUM_TYPE) != null) { out.println("<tr><td class='heading'>Datum Type&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.DATUM_TYPE) + "</td></tr>"); }
 						if (sample.isUserAuthenticated() && sample.get(Sample.DATUM_ELEVATION) != null) { out.println("<tr><td class='heading'>Datum Elevation&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.DATUM_ELEVATION) + " m asl</td></tr>"); }
 						if (sample.isUserAuthenticated() && sample.get(Sample.START_DEPTH) != null) {
 							out.print("<tr><td class='heading'>");
-							if (featType.equals("Drillhole")) {
+							if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
 								out.print("Kick-off Depth");
 							} else {
 								out.print("Top Horizon");
@@ -171,7 +171,7 @@
 						}
 						if (sample.isUserAuthenticated() && sample.get(Sample.FINISH_DEPTH) != null) {
 							out.print("<tr><td class='heading'>");
-							if (featType.equals("Drillhole")) {
+							if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
 								out.print("Termination Depth");
 							} else {
 								out.print("Base Horizon");
@@ -184,7 +184,7 @@
 							out.println("<p>Click <a href='" + feature.getAsString(Feature.PETWELL_LINK) + "' class='boldlink' target='petwell'>here</a> to link to the GNS Petroleum Wells database</p>");
 	
 						out.println("<p><table border='0' cellspacing='0' cellpadding='2'>");
-						if (featType.equals("Drillhole")) {
+						if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
 							out.println("<tr class='heading'><td>Locality Name&nbsp;&nbsp;</td><td>Sample Depth</td></tr>");
 						} else {
 							out.println("<tr class='heading'><td>Locality Name&nbsp;&nbsp;</td><td>Section Height</td></tr>");

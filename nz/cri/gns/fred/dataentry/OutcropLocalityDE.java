@@ -16,14 +16,14 @@ public class OutcropLocalityDE extends LocalityDE {
 	private SampleDE sampleDE;
 
 	public OutcropLocalityDE(User user, int folderID, PageState state) throws SQLException, IOException, DataInputException {
-		super(user, folderID, "Outcrop", state);
+		super(user, folderID, Feature.OUTCROP_LOCALITY, state);
 		sampleDE = new SampleDE(user, folderID, state);
 		sampleDE.setOutcropSamp(true);
 	}
 	
 	public OutcropLocalityDE(int featureID, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException  {
 		super(featureID, user, state);
-		if (!featureType.equals("Outcrop")) throw new DataInputException("Feature Type", "Invalid");
+		if (!featureType.equals(Feature.OUTCROP_LOCALITY)) throw new DataInputException("Feature Type", "Invalid");
 		sampleDE = new SampleDE(sample.getSampleID(), user, state);
 		sampleDE.setOutcropSamp(true);
 	}

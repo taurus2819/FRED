@@ -117,7 +117,7 @@
 				if (sample.getPaleontologyRecordCount() > 0) {
 					for (Iterator i = sample.getAsVector(Sample.RECORDS).iterator(); i.hasNext(); ) {
 						KeyValueObject rec = (KeyValueObject)i.next();
-						if (rec.getValue().equals("PAL")) {
+						if (rec.getValue().equals(Record.PALEONTOLOGY_RECORD)) {
 							PaleontologyRecord pal = (PaleontologyRecord) PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state);
 							out.println("<tr><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;</td><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' class='heading' target='print'>Print Pal Record</br >" + pal + "</a></td></tr>");
 						}
@@ -215,10 +215,10 @@
 			}
 			if (sample.get(Sample.METHOD) != null) { out.println("<tr><td class='heading'>Method</td><td>" + sample.getAsString(Sample.METHOD) + "</td></tr>"); }
 			if (sample.get(Sample.ACCURACY) != null) { out.println("<tr><td class='heading'>Accuracy</td><td>&#177 " + sample.getAsDouble(Sample.ACCURACY) + "m</td></tr>"); }
-			if (featType.equals("Outcrop")) {
+			if (featType.equals(Feature.OUTCROP_LOCALITY)) {
 				if (sample.get(Sample.FEATURE_NAME) != null) { out.println("<tr><td class='heading'>Field Number</td><td>" + sample.getAsString(Sample.FEATURE_NAME) + "</td></tr>"); }
 			} else {
-				if (featType.equals("Drillhole")) {
+				if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
 					if (sample.get(Sample.FEATURE_NAME) != null) { out.println("<tr><td class='heading'>Drillhole Name</td><td><a href='drillhole_detail.jsp?ID=" + sample.getAsString(Sample.FEATURE_ID) + "'>" + sample.getAsString(Sample.FEATURE_NAME) + "</a></td></tr>"); }
 					if (sample.get(Sample.DRILLHOLE_DEPTH) != null) { out.println("<tr><td class='heading'>Sample Depth</td><td>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td></tr>"); }
 					out.println("<tr><td class='heading'>Other Drillhole Samples</td><td>");
@@ -239,10 +239,10 @@
 				out.println("</td></tr>");
 			}
 			if (sample.isUserAuthenticated() && sample.get(Sample.LOCALITY) != null) { out.println("<tr><td class='heading'>Locality</td><td>" + sample.getAsString(Sample.LOCALITY) + "</td></tr>"); }
-			if (!featType.equals("Outcrop")) {
+			if (!featType.equals(Feature.OUTCROP_LOCALITY)) {
 				if (sample.isUserAuthenticated() && sample.get(Sample.PERSON) != null) {
 					out.print("<tr><td class='heading' width='135'>");
-					if (featType.equals("Drillhole")) {
+					if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
 						out.print("Operating Company");
 					} else {
 						out.print("Section Collector");
@@ -251,7 +251,7 @@
 				}
 				if (sample.isUserAuthenticated() && sample.get(Sample.START_DATE) != null) {
 					out.print("<tr><td class='heading'>");
-					if (featType.equals("Drillhole")) {
+					if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
 						out.print("Spud Date");
 					} else {
 						out.print("Sampling Start Date");
@@ -261,12 +261,12 @@
 				if (sample.isUserAuthenticated() && sample.get(Sample.FINISH_DATE) != null) {
 					out.print("<tr><td class='heading'>Completion Date</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.FINISH_DATE), sample.getAsString(Sample.FINISH_DATE_ROUNDING)) + "</td></tr>");
 				}
-				if (featType.equals("Drillhole") && sample.isUserAuthenticated() && sample.get(Sample.DRILLHOLE_LICENCE_NAME) != null) { out.println("<tr><td class='heading' width='135'>Licence Area</td><td>" + sample.getAsString(Sample.DRILLHOLE_LICENCE_NAME) + "</td></tr>"); }
+				if (featType.equals(Feature.DRILLHOLE_LOCALITY) && sample.isUserAuthenticated() && sample.get(Sample.DRILLHOLE_LICENCE_NAME) != null) { out.println("<tr><td class='heading' width='135'>Licence Area</td><td>" + sample.getAsString(Sample.DRILLHOLE_LICENCE_NAME) + "</td></tr>"); }
 				if (sample.isUserAuthenticated() && sample.get(Sample.DATUM_TYPE) != null) { out.println("<tr><td class='heading' width='135'>Datum Type</td><td>" + sample.getAsString(Sample.DATUM_TYPE) + "</td></tr>"); }
 				if (sample.isUserAuthenticated() && sample.get(Sample.DATUM_ELEVATION) != null) { out.println("<tr><td class='heading' width='135'>Datum Elevation</td><td>" + sample.getAsString(Sample.DATUM_ELEVATION) + " m asl</td></tr>"); }
 				if (sample.isUserAuthenticated() && sample.get(Sample.START_DEPTH) != null) {
 					out.print("<tr><td class='heading' width='135'>");
-					if (featType.equals("Drillhole")) {
+					if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
 						out.print("Kick-off Depth");
 					} else {
 						out.print("Top Horizon");
@@ -275,7 +275,7 @@
 				}
 				if (sample.isUserAuthenticated() && sample.get(Sample.FINISH_DEPTH) != null) {
 					out.print("<tr><td class='heading' width='135'>");
-					if (featType.equals("Drillhole")) {
+					if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
 						out.print("Termination Depth");
 					} else {
 						out.print("Base Horizon");
@@ -388,7 +388,7 @@
 					//Adoption
 					for (Iterator i = sample.getAsVector(Sample.RECORDS).iterator(); i.hasNext(); ) {
 						KeyValueObject rec = (KeyValueObject)i.next();
-						if (rec.getValue().equals("ADO")) {
+						if (rec.getValue().equals(Record.ADOPTION_RECORD)) {
 							try {
 								AdoptionRecord ado = (AdoptionRecord) AdoptionRecord.getData(Integer.parseInt(rec.getKey()), user, state);
 								out.println("<tr><td colspan='2' class='bigheading'>Adoption Data</td></tr>");
@@ -429,7 +429,7 @@
 					//Paleontology
 					for (Iterator i = sample.getAsVector(Sample.RECORDS).iterator(); i.hasNext(); ) {
 						KeyValueObject rec = (KeyValueObject)i.next();
-						if (rec.getValue().equals("PAL")) {
+						if (rec.getValue().equals(Record.PALEONTOLOGY_RECORD)) {
 							try {
 								PaleontologyRecord pal = (PaleontologyRecord) PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state);
 								out.println("<tr><td colspan='2' class='bigheading'>Paleontology Data</td></tr>");

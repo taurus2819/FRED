@@ -44,7 +44,7 @@
 				if (audit.get(Audit.SUBMITTED_DATE) != null) 
 					out.print(DateFormat.getDateInstance(DateFormat.LONG).format(audit.getAsDate(Audit.SUBMITTED_DATE)));
 				out.print("&nbsp;&nbsp;</td><td>" + audit.getAsString(Audit.SUBMITTED_BY) + "&nbsp;&nbsp;</td><td>");
-				out.print("<a href='print_front.jsp?FeatID=" + featID + (feature.getAsString(Feature.FEATURE_TYPE).equals("Outcrop") ? "" : "&FormType=Short") + "' target='print'><img src='images/print.gif' border='0' height='20' width='20' alt='Print Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
+				out.print("<a href='print_front.jsp?FeatID=" + featID + (feature.getAsString(Feature.FEATURE_TYPE).equals(Feature.OUTCROP_LOCALITY) ? "" : "&FormType=Short") + "' target='print'><img src='images/print.gif' border='0' height='20' width='20' alt='Print Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				out.print("</td><td>");
 				if (folder.isAllowedEditLocalities()) 
 					out.print("<a href='data_entry.jsp?Type=" + feature.getAsString(Feature.FEATURE_TYPE) + "&FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
@@ -71,7 +71,7 @@
 				if (audit.get(Audit.APPROVED_DATE) != null) 
 					out.print(DateFormat.getDateInstance(DateFormat.LONG).format(audit.getAsDate(Audit.APPROVED_DATE)));
 				out.print("&nbsp;&nbsp;</td><td>" + audit.getAsString(Audit.APPROVED_BY) + "&nbsp;&nbsp;</td><td>");
-				out.print("<a href='print_front.jsp?FeatID=" + featID + (feature.getAsString(Feature.FEATURE_TYPE).equals("Outcrop") ? "" : "&FormType=Short") + "' target='print'><img src='images/print.gif' border='0' height='20' width='20' alt='Print Locality' /></a>");
+				out.print("<a href='print_front.jsp?FeatID=" + featID + (feature.getAsString(Feature.FEATURE_TYPE).equals(Feature.OUTCROP_LOCALITY) ? "" : "&FormType=Short") + "' target='print'><img src='images/print.gif' border='0' height='20' width='20' alt='Print Locality' /></a>");
 				out.print("</td><td></td></tr>");
 			}
 			connection.releaseStatement();

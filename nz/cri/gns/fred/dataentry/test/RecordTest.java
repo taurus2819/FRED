@@ -42,18 +42,6 @@ public class RecordTest extends TestCase {
 		//form.save();
 	}
 
-	public void _testDataEntryForm2() throws NotBoundException, InvalidCredentialsException, SQLException, IOException, DataInputException, TaxonomicListException {
-		TestingPageState state = new TestingPageState();
-		DBConnection ipConn = FREDUtils.getIPConnection(state);
-		User user = new User("pseudo_ben", "santor32", ipConn);
-		DataEntryForm form = DataEntryFormFactory.getRecordDataEntryForm("SMP", user, 1042, 221, state);
-		for (int i = 0; i < form.getFieldCount(); i++) {
-			System.out.println(i + ": " + form.getField(i));
-		}
-		form.setField(DataEntryForm.HARDNESS, "152");
-		form.save();
-	}
-
 	public void testPalLists() throws NotBoundException, InvalidCredentialsException, SQLException, IOException, DataInputException, TaxonomicListException {
 		PaleontologyRecord.purge();
 		TestingPageState state = new TestingPageState();

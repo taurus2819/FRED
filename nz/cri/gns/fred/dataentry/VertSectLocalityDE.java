@@ -20,19 +20,13 @@ public class VertSectLocalityDE extends LocalityDE {
 	private RoundedDate startDate;
 	private RoundedDate compDate;
 
-	public VertSectLocalityDE(User user, int folderID, PageState state)
-		throws SQLException, IOException, DataInputException {
-		super(user, folderID, "Vertical Section", state);
+	public VertSectLocalityDE(User user, int folderID, PageState state) throws SQLException, IOException, DataInputException {
+		super(user, folderID, Feature.VERTICAL_SECTION_LOCALITY, state);
 	}
 
-	public VertSectLocalityDE(int id, User user, PageState state)
-		throws
-			IOException,
-			SQLException,
-			DataInputException,
-			InvalidCredentialsException {
+	public VertSectLocalityDE(int id, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException {
 		super(id, user, state);
-		if (!featureType.equals("Vertical Section"))
+		if (!featureType.equals(Feature.VERTICAL_SECTION_LOCALITY))
 			throw new DataInputException("Feature Type", "Invalid");
 		setField(SECTION_COLLECTOR, sample.getAsString(Sample.PERSON));
 		setField(

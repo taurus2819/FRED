@@ -48,6 +48,10 @@ public class Feature {
 	public static final int PETWELL_LINK = 22;
 	public static final int WORKING_FOLDER_ID = 26;
 
+	public static final String OUTCROP_LOCALITY = "Outcrop";
+	public static final String DRILLHOLE_LOCALITY = "Drillhole";
+	public static final String VERTICAL_SECTION_LOCALITY = "Vertical Section";
+	
 	private FeatureData fd;
 	private PageState state;
 	private User user;
