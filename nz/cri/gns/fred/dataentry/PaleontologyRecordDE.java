@@ -432,6 +432,9 @@ public class PaleontologyRecordDE extends RecordDE {
 		if (cleanName == null)
 			throw new DataInputException();
 		cleanName = cleanName.replaceAll("\"", "'");
+		cleanName = cleanName.replaceAll("<", "'");
+		cleanName = cleanName.replaceAll(">", "'");
+		cleanName = cleanName.replaceAll("  ", " ");
 		cleanName = cleanTaxaNameOpen(cleanName, "subsp.");
 		cleanName = cleanTaxaNameOpen(cleanName, "subspp.");
 		cleanName = cleanTaxaNameOpen(cleanName, "sp.");
@@ -445,6 +448,7 @@ public class PaleontologyRecordDE extends RecordDE {
 		cleanName = cleanTaxaName(cleanName, "cf.");
 		cleanName = cleanTaxaName(cleanName, "aff.");
 		cleanName = cleanTaxaName(cleanName, "MS.");
+		cleanName = cleanTaxaName(cleanName, "s.s.");
 		cleanName = cleanTaxaName(cleanName, "s.s");
 		cleanName = cleanTaxaName(cleanName, "s.l.");
 		cleanName = cleanTaxaName(cleanName, "gr.");
