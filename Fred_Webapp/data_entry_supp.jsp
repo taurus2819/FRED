@@ -63,7 +63,7 @@ function saveData(type) {
 					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + Country.value.toUpperCase() + "*";
 					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + North.value + "*" + East.value;
 				} else {
-					if (CoordType.value == "NZMS260")
+					if (CoordType.value == "NZMS260" || CoordType.value == "NZMS1S" || CoordType.value == "NZMS1N")
 						window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + MapSheet.value.toUpperCase() + "*";
 					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + East.value + "*" + North.value;
 				}
@@ -220,6 +220,38 @@ function checkCoord() {
 			}
 			if (North.value.length < 3 || North.value.length > 4 || isNaN(North.value)) {
 				alert ("Please enter a valid northing (3 or 4 digits for NZMS260)");
+				North.select();
+				return 0;
+			}
+			if (East.value.length != North.value.length) {
+				alert ("Please enter a valid coordinate - Easting and Northing must be the same number of digits");
+				East.select();
+				return 0;
+			}
+		} else if (CoordType.value == "NZYS" || CoordType.value == "NZYN") {
+			if (East.value.length != 6 || isNaN(East.value)) {
+				alert ("Please enter a valid easting (6 digits for NZ Yard)");
+				East.select();
+				return 0;
+			}
+			if (North.value.length != 6 || isNaN(North.value)) {
+				alert ("Please enter a valid northing (6 digits for NZ Yard)");
+				North.select();
+				return 0;
+			}
+		} else if (CoordType.value == "NZMS1S" || CoordType.value == "NZMS1N") {
+			if (MapSheet.value.length < 3 || MapSheet.value.length > 5) {
+				alert ("Please enter a valid NZMS1 map sheet");
+				MapSheet.select();
+				return 0;
+			}
+			if (East.value.length < 3 || East.value.length > 4 || isNaN(East.value)) {
+				alert ("Please enter a valid easting (3 or 4 digits for NZMS1)");
+				East.select();
+				return 0;
+			}
+			if (North.value.length < 3 || North.value.length > 4 || isNaN(North.value)) {
+				alert ("Please enter a valid northing (3 or 4 digits for NZMS1)");
 				North.select();
 				return 0;
 			}
