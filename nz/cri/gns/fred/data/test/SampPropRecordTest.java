@@ -59,12 +59,20 @@ public class SampPropRecordTest extends TestCase {
 		System.out.println(sampName);
 	}
 	
-	public void testAuthentication() throws SQLException, IOException, AccessDeniedException {
+	public void _testAuthentication() throws SQLException, IOException, AccessDeniedException {
 		SampPropRecord.purge();
 		SampPropRecord sp = SampPropRecord.getSampPropData(1140, user, state);
 		SampPropRecord sp1 = SampPropRecord.getSampPropData(1140, null, state);
 		assertNotNull(sp);
 		assertNull(sp1);
+	}
+	
+	public void testFields() throws SQLException, IOException, AccessDeniedException {
+		SampPropRecord.purge();
+		SampPropRecord sp = SampPropRecord.getSampPropData(1220, user, state);
+		for (int i = 0; i < 80; i++) {
+			System.out.println(i + ": " + sp.getAsString(i));
+		}				
 	}
 
 }

@@ -66,8 +66,11 @@ public abstract class RecordDE implements DataEntryForm {
 	public void setField(int field, String value) throws DataInputException {
 		if (value != null && (value.equals("") || value.equals("-") || value.equals("null")))
 			value = null;
-		if (value != null)
+		if (value != null) {
 			parseField(field, value);
+		} else {
+			resetHiddenField(field);
+		}
 		fields[field] = value;
 		savedFlag = false;
 	}
@@ -91,6 +94,9 @@ public abstract class RecordDE implements DataEntryForm {
 				}
 				break;
 		}
+	}
+
+	protected void resetHiddenField(int field) {
 	}
 
 	protected void parseAge(String stageStart, String stageStop, String fieldName) throws DataInputException {

@@ -5,13 +5,13 @@ public class Relationship {
 	private String relationship;
 	private String relationshipType;
 	private String distanceRelation;
-	private Integer relatedFeatureId;
+	private Integer relatedFeatureID;
 	private String relatedSampleName;
 	private String relatedStratUnit;
 	private Double distance;
 	private Double distanceRange;
 	private String distanceMod;
-	private Integer relationTypeId;
+	private Integer relationTypeID;
 	private String relationType;
 
 	public Relationship() {
@@ -45,12 +45,12 @@ public class Relationship {
 		return distanceRelation;
 	}
 
-	public void setRelatedFeatureId(Integer relatedFeatureID) {
-		this.relatedFeatureId = relatedFeatureID;
+	public void setRelatedFeatureID(Integer relatedFeatureID) {
+		this.relatedFeatureID = relatedFeatureID;
 	}
 
-	public Integer getRelatedFeatureId() {
-		return relatedFeatureId;
+	public Integer getRelatedFeatureID() {
+		return relatedFeatureID;
 	}
 
 	public void setRelatedSampleName(String relatedSampleName) {
@@ -93,12 +93,12 @@ public class Relationship {
 		return distanceMod;
 	}
 
-	public void setRelationTypeId(Integer typeId) {
-		this.relationTypeId = typeId;
+	public void setRelationTypeID(Integer typeId) {
+		this.relationTypeID = typeId;
 	}
 
-	public Integer getRelationTypeId() {
-		return relationTypeId;
+	public Integer getRelationTypeID() {
+		return relationTypeID;
 	}
 
 	public void setRelationType(String type) {

@@ -1,11 +1,14 @@
 package nz.cri.gns.fred.dataentry;
 
+import java.io.IOException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.intranet.DBConnection;
+import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 
@@ -102,4 +105,21 @@ public class DataEntryUtils {
 		}
 	}
 
+	public static String getStageID(String stageStartID, String startMod, String stageStopID, String stopMod, PageState state) throws IOException, SQLException {
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		String stageID = null;
+		if (stageStartID != null) {
+			ResultSet rs = conn.executeQuery("SELECT Get_Stage_ID(" + stageStartID + ", " + JspUtils.sqlEscape(startMod) + ", " + JspUtils.sqlEscape(stageStopID) + ", " + JspUtils.sqlEscape(stopMod) + ") FROM DUAL");
+			rs.next();
+			if (rs.getString(1) != null) {
+				stageID = rs.getString(1);
+			} else {
+				rs = conn.executeQuery("SELECT Stage_Seq.NEXTVAL FROM DUAL");
+				rs.next();
+				stageID = rs.getString(1);
+				conn.executeUpdate("INSERT INTO Stage (Stage_ID, Stage_Lower_ID, Stage_Lower_Mod, Stage_Upper_ID, Stage_Upper_Mod) VALUES (" + stageID + ", " + stageStartID + ", " + JspUtils.sqlEscape(startMod) + ", " + JspUtils.sqlEscape(stageStopID) + ", " + JspUtils.sqlEscape(stopMod) + ")");
+			}
+		}
+		return stageID;
+	}
 }

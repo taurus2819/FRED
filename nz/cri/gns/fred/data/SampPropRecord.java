@@ -112,7 +112,7 @@ public class SampPropRecord extends Record {
 				+ "BED_THICKNESS, BEDDING, PRIMARY_BEDDING_ID, PRIMARY_BEDDING, SECONDARY_BEDDING_ID, SECONDARY_BEDDING, "
 				+ "WEATHERING_ID, WEATHERING, HARDNESS_ID, HARDNESS, CARBONATE_ID, CARBONATE, COLOUR, COLOUR_MODIFIER_ID, "
 				+ "COLOUR_MODIFIER, PRIMARY_COLOUR_ID, PRIMARY_COLOUR, SECONDARY_COLOUR_ID, SECONDARY_COLOUR, WET, "
-				+ "SED_FEATURE, ROCK_NATURE, DEPOSITION_ENV, CORRESPONDENCE "
+				+ "ROCK_NATURE, DEPOSITION_ENV, CORRESPONDENCE "
 				+ "FROM Sample_Property_All_View WHERE Record_ID = ?";
 		data[0] = new Integer(this.id);
 		try {
@@ -308,7 +308,7 @@ public class SampPropRecord extends Record {
 				Relationship rel = new Relationship(rs.getString(1));
 				rel.setRelationshipType(rs.getString(2));
 				rel.setDistanceRelation(rs.getString(3));
-				rel.setRelatedFeatureId(
+				rel.setRelatedFeatureID(
 					((rs.getString(4) != null)
 						? new Integer(rs.getInt(4))
 						: null));
@@ -323,7 +323,7 @@ public class SampPropRecord extends Record {
 						? new Double(rs.getDouble(8))
 						: null));
 				rel.setDistanceMod(rs.getString(9));
-				rel.setRelationTypeId(
+				rel.setRelationTypeID(
 					((rs.getString(10) != null)
 						? new Integer(rs.getInt(10))
 						: null));

@@ -15,6 +15,8 @@ import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.AccessDeniedException;
+import nz.cri.gns.fred.data.SampPropRecord;
+import nz.cri.gns.fred.dataentry.DataEntryForm;
 import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.fred.dataentry.RecordDE;
 import nz.cri.gns.fred.dataentry.SampPropRecordDE;
@@ -30,20 +32,17 @@ import nz.cri.gns.test.TestingPageState;
 public class RecordTest extends TestCase {
 
 	public static void testLoad() throws NotBoundException, InvalidCredentialsException, IllegalArgumentException, SQLException, IOException, AccessDeniedException, DataInputException {
+		SampPropRecord.purge();
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
-		RecordDE record = new SampPropRecordDE(400, user, state);
+		RecordDE record = new SampPropRecordDE(1220, user, state);
 		//loc.setField(Locality.GRID_REF, "TruncNZMG:D39*1300*2100");
 		for (int i = 0; i < record.getFieldCount(); i++) {
 			System.out.println(i + ": " + record.getField(i));
 		}
-		//record.makeNavPanelHTML(new PrintWriter(System.out));
-		//Locality loc2 = LocalityFactory.copyLocality(661, 1282, user, state);
-		//for (int i = 0; i < loc2.getFieldCount(); i++) {
-		//	System.out.println(i + ": " + loc2.getField(i));
-		//}
-		//System.out.println(loc2.save());
+		record.setField(DataEntryForm.HARDNESS, "152");
+		System.out.println(record.save());
 	}
 
 }

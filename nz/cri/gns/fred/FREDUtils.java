@@ -422,6 +422,14 @@ public class FREDUtils {
 		return (in == null || in.equals("null")) ? "" : in;
 	}
 
+	public static String noNulls(Integer in) {
+		return (in == null) ? "" : in.toString();
+	}
+
+	public static String noNulls(Double in) {
+		return (in == null) ? "" : in.toString();
+	}
+
 	public static String makeNulls(String in) {
 		return (in == null || in.length() == 0) ? null : "'" + in + "'";
 	}
