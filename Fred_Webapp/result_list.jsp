@@ -117,7 +117,7 @@
 				featIDs.append("," + (String) it.next());
 			}
 
-			rs = statement.executeQuery("SELECT feature_id, fr_number, feature_type, feature_name, yard_fr_number FROM feature_view WHERE feature_id IN (" + featIDs + ") ORDER BY fr_number");
+			rs = statement.executeQuery("SELECT DISTINCT feature_id, fr_number, feature_type, feature_name, yard_fr_number FROM feature_view WHERE feature_id IN (" + featIDs + ") ORDER BY fr_number");
 			while (rs.next()) {
 				out.println("<tr><td class='heading'><a href='detail.jsp?FeatID=" + rs.getString(1) + "'>" + rs.getString(2) + "</a>&nbsp;&nbsp;</td><td>" + rs.getString(3) + "</td><td>" +FREDUtils.noNulls(rs.getString(5)) + "&nbsp;&nbsp;</td><td>" +FREDUtils.noNulls(rs.getString(4)) + "</td></tr>");
 			}
