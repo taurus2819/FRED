@@ -11,7 +11,7 @@ import nz.cri.gns.jsp.PageState;
 
 public class DataEntryUtils {
 
-	public static void parseDropDownID(String SQL, String fieldName, PageState state) throws DataInputException {
+	public static void parseDropDownID(String fieldName, String SQL, PageState state) throws DataInputException {
 		try {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			ResultSet rs = conn.executeQuery(SQL);

@@ -17,6 +17,7 @@ import nz.cri.gns.fred.data.AccessDeniedException;
 import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.Relationship;
 import nz.cri.gns.fred.data.SampPropRecord;
+import nz.cri.gns.fred.data.SedFeature;
 import nz.cri.gns.fred.data.SentTo;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
@@ -112,6 +113,41 @@ public class SampPropRecordDE extends RecordDE {
 		setField(STRIKE, record.getAsString(SampPropRecord.STRIKE));
 		setField(FACING, record.getAsString(SampPropRecord.FACING));
 		setField(GRAIN_SIZE_P, record.getAsString(SampPropRecord.PRIMARY_GRAINSIZE_ID));
+		setField(GRAIN_SIZE_S, record.getAsString(SampPropRecord.SECONDARY_GRAINSIZE_ID));
+		setField(GS_COMP, record.getAsString(SampPropRecord.COMPARATOR_USED));
+		setField(BEDDING_THICKNESS, record.getAsString(SampPropRecord.BED_THICK_ID));
+		setField(BEDDING_P, record.getAsString(SampPropRecord.PRIMARY_BEDDING_ID));
+		setField(BEDDING_S, record.getAsString(SampPropRecord.SECONDARY_BEDDING_ID));
+		setField(WEATHERING, record.getAsString(SampPropRecord.WEATHERING_ID));
+		setField(HARDNESS, record.getAsString(SampPropRecord.HARDNESS_ID));
+		setField(CARBONATE, record.getAsString(SampPropRecord.CARBONATE_ID));
+		setField(COLOUR_MOD, record.getAsString(SampPropRecord.COLOUR_MODIFIER_ID));
+		setField(COLOUR_P, record.getAsString(SampPropRecord.PRIMARY_COLOUR_ID));
+		setField(COLOUR_S, record.getAsString(SampPropRecord.SECONDARY_COLOUR_ID));
+		setField(WET, record.getAsString(SampPropRecord.WET));
+		if (record.get(SampPropRecord.SED_FEATURE) != null) {
+			StringBuffer sF = new StringBuffer();
+			for (Iterator i = record.getAsVector(SampPropRecord.SED_FEATURE).iterator(); i.hasNext(); ) {
+				SedFeature sFeat = (SedFeature) i.next();
+				sF.append(sFeat.getFeat());
+				if (sFeat.getAbundant() != null) sF.append("*");
+				sF.append(";");			}
+			setField(SED_FEATURES, sF.toString());
+		}
+		String depEnv = record.getAsString(SampPropRecord.DEPOSITION_ENV);
+		if (depEnv != null) {
+			if (depEnv.indexOf("Marine:") != -1) {
+				setField(DEP_ENVIRONMENT_1, "Marine");
+				setField(DEP_ENVIRONMENT_2, depEnv.substring(7, depEnv.length()).trim());
+			} else if (depEnv.indexOf("Non-marine:") != -1) {
+				setField(DEP_ENVIRONMENT_1, "Non-marine");
+				setField(DEP_ENVIRONMENT_2, depEnv.substring(11, depEnv.length()).trim());
+			} else {
+				setField(DEP_ENVIRONMENT_2, depEnv);
+			}
+		}
+		setField(ROCK_NATURE, record.getAsString(SampPropRecord.ROCK_NATURE));
+		setField(CORRESPONDENCE, record.getAsString(SampPropRecord.CORRESPONDENCE));
 			
 	}
 
@@ -328,9 +364,44 @@ public class SampPropRecordDE extends RecordDE {
 						throw new DataInputException("Facing", value + " is not a valid option");
 					break;
 				case GRAIN_SIZE_P :
-					DataEntryUtils.parseDropDownID("Primary Grainsize", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'GrainSize'", state);
+				case GRAIN_SIZE_S :
+					DataEntryUtils.parseDropDownID("Grainsize", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'GrainSize'", state);
 					break;
-
+				case GS_COMP :
+					if (!(value.equals("Y") || value.equals("N")))
+						throw new DataInputException("GS Comparator", value + " is not a valid option");
+					break;
+				case BEDDING_THICKNESS :
+					DataEntryUtils.parseDropDownID("Bedding Thickness", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'BedThick'", state);
+					break;
+				case BEDDING_P :
+				case BEDDING_S :
+					DataEntryUtils.parseDropDownID("Bedding", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'Bedding'", state);
+					break;
+				case WEATHERING :
+					DataEntryUtils.parseDropDownID("Weathering", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'Weathering'", state);
+					break;
+				case HARDNESS :
+					DataEntryUtils.parseDropDownID("Hardness", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'Hardness'", state);
+					break;
+				case CARBONATE :
+					DataEntryUtils.parseDropDownID("Carbonate", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'Carbonate'", state);
+					break;
+				case COLOUR_MOD :
+					DataEntryUtils.parseDropDownID("Shade", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'ColourMod'", state);
+					break;
+				case COLOUR_P :
+				case COLOUR_S :
+					DataEntryUtils.parseDropDownID("Colour", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'RockColour'", state);
+					break;
+				case WET :
+					if (!(value.equals("Wet") || value.equals("Dry")))
+						throw new DataInputException("Wet", value + " is not a valid option");
+					break;
+				case DEP_ENVIRONMENT_1 :
+					if (!(value.equals("Marine") || value.equals("Non-marine")))
+						throw new DataInputException("Deposition Environment", value + " is not a valid option");
+					break;
 			}
 
 		} catch (IOException e) {

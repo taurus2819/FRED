@@ -7,6 +7,9 @@ public class SedFeature {
 	private String feat;
 	private String abundant;
 
+	public SedFeature() {
+	}
+
 	public SedFeature(String sedFeature) {
 		this.sedFeature = sedFeature;
 	}

@@ -33,7 +33,7 @@ public class RecordTest extends TestCase {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
-		RecordDE record = new SampPropRecordDE(161, user, state);
+		RecordDE record = new SampPropRecordDE(400, user, state);
 		//loc.setField(Locality.GRID_REF, "TruncNZMG:D39*1300*2100");
 		for (int i = 0; i < record.getFieldCount(); i++) {
 			System.out.println(i + ": " + record.getField(i));
