@@ -291,9 +291,8 @@ public class SampleData {
 			values[Sample.RELATIONSHIP_STRAT] = ((stratRelVec.size() > 0) ? stratRelVec : null);
 			rs.close();
 
-			query =
-				"SELECT SEDIMENTARY_FEATURE, SED_FEATURE_ID, SED_FEATURE, ABUNDANT "
-					+ "FROM Sedimentary_Feature_View WHERE Sample_ID = ?";
+			query =	"SELECT sedimentary_feature, sed_feature_id, sed_feature, abundant "
+					+ "FROM sedimentary_feature_view WHERE sample_id = ?";
 			rs = conn.executeQuery(query, types, data);
 			Vector sfVec = new Vector();
 			while (rs.next()) {
@@ -314,7 +313,11 @@ public class SampleData {
 		try {
 			DocumentAttacher attacher = DocumentAttacher.createFREDSampleDocumentAttacher(state.session, state.context);
 			sampMR = attacher.getDocumentsForId(id);
-			attacher = DocumentAttacher.createFREDFeatureDocumentAttacher(state.session, state.context);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		try {
+			DocumentAttacher attacher = DocumentAttacher.createFREDFeatureDocumentAttacher(state.session, state.context);
 			featMR = attacher.getDocumentsForId(getAsInt(Sample.FEATURE_ID));
 		} catch (Exception e) {
 			System.out.println(e);

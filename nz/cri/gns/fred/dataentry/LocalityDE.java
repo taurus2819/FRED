@@ -271,7 +271,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		out.write(
 			"<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
 
-		out.write("<tr><td class='heading' colspan='2'>Attached Files/Images<br /><span class='smalltext'>Click <a href='binary_data_entry.jsp?ID=" + feature.getFeatureID() + "&RecType=" + feature.getFeatureType() + "&FoldID=" + folder.getFolderID() + "'>here</a> to add/edit</span></td><td>");
+		out.write("<tr><td class='heading' colspan='2'>Attached Files/Images<br /><span class='smalltext'>Click <a href='binary_data_entry.jsp?ID=" + feature.getFeatureID() + "&RecType=" + feature.getFeatureType() + "&FoldID=" + folder.getFolderID() + " 'target='fredBinary'>here</a> to add/edit</span></td><td>");
 		try {
 			if (feature != null && feature.getMetadataRecordsCount() > 0) {	
 				MetadataRecord[] mr = feature.getMetadataRecords();

@@ -1,5 +1,5 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*"
+		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, nz.cri.gns.intranet.*, java.sql.*, nz.cri.gns.auth.*"
 %><%
 	PageState state = new PageState(request, response, getServletContext());
 	DBConnection connection = FREDUtils.getFREDConnection(state);
@@ -726,7 +726,7 @@ function parseDropDown(val) {
 		}
 	}
 
-	out.println("<tr><td><a href='javascript: window.close();' title='close'><img src='images/close.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='javascript: window.close();' class='heading'>Close</a></td></tr>");
+	out.println("<tr><td><a href='javascript: window.close();'><img src='images/close.gif' height='20' width='20' border='0' alt='Close' /></a>&nbsp;&nbsp;</td><td><a href='javascript: window.close();' class='heading'>Close</a></td></tr>");
 	out.println("</table></form>");
 
 	out.println("</td></tr></table>");

@@ -1,5 +1,5 @@
 <%@		page extends="nz.cri.gns.fred.FREDIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, nz.cri.gns.db.metadata.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
+		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, nz.cri.gns.db.metadata.*, java.net.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
 %><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 	User user = (User)getUser(session);
@@ -320,7 +320,7 @@
 						out.println("</tr><tr>");
 						y = 2;
 					}
-					out.print("<td width='150' align='center' class='smalltext'><img border='0' src='http://falcon:8000/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
+					out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
 				}
 				out.println("</td></tr></table></td></tr>");
 			}
@@ -417,7 +417,7 @@
 							out.println("</tr><tr>");
 							y = 2;
 						}
-						out.print("<td width='150' align='center' class='smalltext'><img border='0' src='http://falcon:8000/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
+						out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
 					}
 					out.println("</td></tr></table></td></tr>");
 				}
@@ -455,7 +455,7 @@
 											out.println("</tr><tr>");
 											y = 2;
 										}
-										out.print("<td width='150' align='center' class='smalltext'><img border='0' src='http://falcon:8000/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
+										out.print("<td width='150' align='center' class='smalltext'><a href='/online/DigitalDocument?src=" + mr[x].getCode() + "'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</a></td>");
 									}
 									out.println("</td></tr></table></td></tr>");
 								}
@@ -529,7 +529,7 @@
 											out.println("</tr><tr>");
 											y = 2;
 										}
-										out.print("<td width='150' align='center' class='smalltext'><img border='0' src='http://falcon:8000/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
+										out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
 									}
 									out.println("</td></tr></table></td></tr>");
 								}

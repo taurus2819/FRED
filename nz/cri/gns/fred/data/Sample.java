@@ -261,7 +261,7 @@ public class Sample {
 	public int getFeatureMetadataRecordsCount() throws InvalidCredentialsException {
 		if (!authenticated)
 			throw new InvalidCredentialsException();
-		if (sd.sampMR != null)
+		if (sd.featMR != null)
 			return sd.featMR.length;
 		return 0;
 	}	

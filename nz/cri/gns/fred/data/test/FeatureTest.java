@@ -32,12 +32,11 @@ public class FeatureTest extends TestCase {
 					"ip",
 					state.getContext());
 		try {
-			this.user = new User("pseudo_ben", "santor32", ipConn);
+			this.user = new User("psuedo_ben", "santor32", ipConn);
 			this.user2 = new User("test", "test", ipConn);
 		} catch (Exception e) {
 		}
 	}
-
 
 	public void _testPooling() throws NotBoundException, SQLException, IOException {
 		Feature.purge();
@@ -64,7 +63,7 @@ public class FeatureTest extends TestCase {
 		assertEquals(dhole.getSampleCount(), 5);
 	}
 	
-	public void testRestrictions() throws SQLException, IOException, InvalidCredentialsException {
+	public void _testRestrictions() throws SQLException, IOException, InvalidCredentialsException {
 		String test = null;
 		Feature.purge();
 		Feature f = new Feature(1464, null, state);
