@@ -43,7 +43,7 @@
 	}
 
 	if (sampID != null) {
-		//try {
+		try {
 			Sample sample = new Sample(Integer.parseInt(sampID), user, state);
 			
 			if (request.getParameter("ActionType") != null) { //do something
@@ -51,13 +51,21 @@
 				if (actionType.equals("Accept")) {
 					FRNumber frNum = new FRNumber(request.getParameter("MapSheet"), new Integer(request.getParameter("SerialNum")), request.getParameter("RecollNum"));
 					FolderUtils.approveLocality(sample.getAsString(Sample.FEATURE_ID), frNum, user, state);
+					sample = new Sample(sample.getSampleID(), user, state, true);
+					response.sendRedirect("admin_folder_detail.jsp?ID=" + sample.getAsString(Sample.MASTERFILE_ID));
+					return;
 				}
 				else if (actionType.equals("Reject")) {
 					FolderUtils.rejectLocality(sample.getAsString(Sample.FEATURE_ID), request.getParameter("RejComm"), user, state);
+					sample = new Sample(sample.getSampleID(), user, state, true);
+					response.sendRedirect("admin_folder_detail.jsp?ID=" + sample.getAsString(Sample.MASTERFILE_ID));
+					return;
 				}
-				sample = new Sample(sample.getSampleID(), user, state, true);
-				response.sendRedirect("admin_folder_detail.jsp?ID=" + sample.getAsString(Sample.MASTERFILE_ID));
-				return;
+				else if (actionType.equals("AddtoFold") && !request.getParameter("FoldID").equals("-")) {
+					FolderUtils.addLocality(sample.getAsString(Sample.FEATURE_ID), request.getParameter("FoldID"), user, state);
+					Folder folder = new Folder(Integer.parseInt(request.getParameter("FoldID")), user, state, true);
+					out.println("<script language=\"JavaScript\">alert(\"Locality Added to " + folder.getAsString(Folder.NAME) + " folder\");</script>");
+				}
 			}
 
 			drawTop(out, et, request, response);
@@ -113,6 +121,24 @@
 
 				out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 				out.println("<tr><td colspan='2'><table border='0'>");
+				
+				//Generate list of users folders
+				FolderList folderList = new FolderList(user, state);
+				if (folderList.getPersonalFolderCount() > 0) {
+					out.println("<form name=\"FolderForm\" method=\"post\" action=\"detail.jsp\">");
+					out.println("<tr><td colspan=\"2\"><select name=\"FoldID\"><option value=\"-\">-- Choose --</option>");
+					for (Iterator i = folderList.getPersonalFolders().iterator(); i.hasNext(); ) {
+						KeyValueObject kv = (KeyValueObject) i.next();
+						out.println("<option value=\"" + kv.getKey() + "\">" + ((kv.getValue().length() <= 17) ? kv.getValue() : kv.getValue().substring(0, 17)) + "</option>");
+					}
+					out.println("</select></td></tr>");
+					out.println("<tr><td><a href=\"#\" onClick=\"FolderForm.submit();\"><img src=\"images/folder.gif\" height=\"20\" width=\"20\" border=\"0\" alt=\"Add to Folder\" /></a></td><td><a href=\"#\" onClick=\"FolderForm.submit();\" class=\"heading\">Add to Folder</a></td></tr>");
+					out.println("<input type=\"hidden\" name=\"ID\" value=\"" + sampID + "\" />");
+					out.println("<input type=\"hidden\" name=\"ActionType\" value=\"AddtoFold\" />");
+					out.println("</form>");
+					out.println("<tr><td>&nbsp;</td></tr>");
+				}
+				
 				out.println("<tr><td><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;</td><td><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' class='heading' target='print'>Print Front</a></td></tr>");
 				if (sample.getPaleontologyRecordCount() > 0) {
 					for (Iterator i = sample.getAsVector(Sample.RECORDS).iterator(); i.hasNext(); ) {
@@ -503,13 +529,13 @@
 	
 			if (user ==  null) { out.println("<tr><td colspan='2'>More data may be available for this locality for <a href='login.jsp?loginpage=" + URLEncoder.encode("/fred/detail.jsp") + "' class='boldlink'>logged</a> in users</td></tr>"); }
 			out.println("</table></td></tr></table>");
-		//}
-		//catch (Exception e) { // no record or not approved
-		//	drawEndNavigation(out);
-		//	out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-		//	out.println("<tr><td>Either the sample doesn't exist or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</td></tr>");
-		//	out.println("</table>");
-		//}
+		}
+		catch (Exception e) { // no record or not approved
+			drawEndNavigation(out);
+			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
+			out.println("<tr><td>Either the sample doesn't exist or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</td></tr>");
+			out.println("</table>");
+		}
 	} 
 	else { //no sampleID
 		drawTop(out, et, request, response);

@@ -88,6 +88,17 @@ public class FolderUtils {
 		conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(folderID), new Integer(featureID)});
 	}
 
+	public static void addLocality(String featureID, String folderID, User user, PageState state) throws IOException, SQLException, InvalidCredentialsException, FolderUtilException {
+		Feature feature = new Feature(Integer.parseInt(featureID), user, state);
+		if (!feature.getAsString(Feature.STATUS).equals(Audit.STATUS_APPROVED))
+			throw new FolderUtilException("Cannot add a working locality");
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		try {
+			String query = "INSERT INTO folder_content (folder_id, feature_id) VALUES (?, ?)";
+			conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(folderID), new Integer(featureID)});
+		} catch (Exception e) {}		
+	}
+
 	public static void submitLocality(String featureID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
 		LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featureID), user, state);
 		form.submit();
