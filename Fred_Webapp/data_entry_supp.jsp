@@ -599,10 +599,10 @@ function parseDropDown(val) {
 			out.println("<tr><td class='heading' colspan='2'>Stratigraphic Relationships</td></tr>");
 			out.println("<tr><td colspan='2'>Please select a relationship type and enter an optional distance or range of distances (in metres).  Enter a stratigraphic unit name in the text box.  You can select a unit from the NZ StratLex drop-down box if appropriate.<br />You may add multiple units by clicking the Add To Main Form icon between each unit and then Close to end.</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
-			out.println("<tr><td class='heading'>Distance&nbsp;(m)</td>");
+			out.println("<tr><td class='heading'>Distance</td>");
 			out.println("<td class='heading'><select name='DistMod'><option value='-' selected></option><option value='c. '>c.</option></select>&nbsp;&nbsp;");
-			out.println("<input type='text' name='Distance' />&nbsp;-&nbsp;");
-			out.println("<input type='text' name='DistRange' /></td></tr>");
+			out.println("<input type='text' name='Distance' />&nbsp;m&nbsp;-&nbsp;");
+			out.println("<input type='text' name='DistRange' />&nbsp;m</td></tr>");
 			out.print("<tr><td class='heading'>Relationship</td><td>");
 			cd = new ComboDescriptor("Lookup", "Name", "Name");
 			cd.name = "Rel";
