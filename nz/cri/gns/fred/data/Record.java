@@ -108,11 +108,11 @@ public class Record {
 		this.id = id;
 		pool.add(this);
 		String query =
-			"SELECT RECORD_ID, FEATURE_ID, SAMPLE_ID, FEATURE_STATUS, SAMPLE_STATUS, "
-				+ "SAMPLE_SECURITY_CLASS_ID, FEATURE_NAME, SAMPLE_NAME, AUDIT_ID, "
-				+ "STATUS, created_date, WORKING_FOLDER_ID, WORKING_COMMENTS, "
-				+ "SECURITY_CLASS_ID, RECORD_TYPE, RECORD_NAME "
-				+ "FROM Record_All_View WHERE Record_ID = ?";
+			"SELECT record_id, feature_id, sample_id, feature_status, sample_status, "
+				+ "sample_security_class_id, feature_name, sample_name, audit_id, "
+				+ "status, created_date, working_folder_id, working_comments, "
+				+ "security_class_id, record_type, record_name "
+				+ "FROM record_all_view WHERE record_id = ?";
 		data[0] = new Integer(this.id);
 		try {
 			ResultSet rs = conn.executeQuery(query, types, data);

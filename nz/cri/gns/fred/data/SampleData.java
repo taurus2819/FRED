@@ -40,7 +40,7 @@ public class SampleData {
 		this.id = id;
 		pool.add(this);
 		String query =
-			"SELECT Feature_ID, Sample_ID, Feature_Type,Sample_Name, FR_ID, FR_Number, Yard_FR_ID, Yard_FR_Number, Feature_Name, Map_Sheet, Serial_Number, "
+			"SELECT Feature_ID, Sample_ID, Feature_Type, Sample_Name, FR_ID, FR_Number, Yard_FR_ID, Yard_FR_Number, Feature_Name, Map_Sheet, Serial_Number, "
 			+ "Recollection_Number, Yard_Map_Sheet, Yard_Serial_Number, Yard_Recollection_Number, Drillhole_Depth, Top_Depth, Bottom_Depth, Drill_Type_ID, "
 			+ "Drill_Type, Masterfile_ID, Masterfile_Name, Reg_Area_ID, Reg_Area_Name, Reg_Area_Code, Feature_Audit_ID, Feature_Status, Feature_Created_Date, "
 			+ "Feature_Working_Folder_ID, Feature_Working_Comments, Feature_Security_Class_ID, Sample_Audit_ID, Sample_Status, Sample_Created_Date, "
@@ -354,8 +354,7 @@ public class SampleData {
 	 * Attempts to return the given field as a Date.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an Date.
 	 */
-	protected java.util.Date getAsDate(int field)
-		throws IllegalArgumentException {
+	protected java.util.Date getAsDate(int field) throws IllegalArgumentException {
 		try {
 			Object thing = values[field];
 			return (java.util.Date) thing;

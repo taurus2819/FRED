@@ -264,7 +264,6 @@ public class FREDUtils {
 			while (rs.next())
 				userRights = userRights | rs.getInt(1);
 		}
-		System.out.println("User: " + user.getFullName() + " has rights: " + userRights + " for feature " + featureID);
 		return userRights;
 	}
 

@@ -56,7 +56,7 @@ public class Sample {
 	public static final int FEATURE_SECURITY_CLASS_ID = 30;
 	public static final int SAMPLE_AUDIT_ID = 129;
 	public static final int SAMPLE_STATUS = 130;
-	public static final int SAMPLE_CREATED_DATE = 132;
+	public static final int SAMPLE_CREATED_DATE = 131;
 	public static final int SAMPLE_WORKING_FOLDER_ID = 132;
 	public static final int SAMPLE_WORKING_COMMENTS = 133;
 	public static final int SAMPLE_SECURITY_CLASS_ID = 134;
