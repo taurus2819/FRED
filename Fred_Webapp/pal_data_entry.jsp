@@ -22,11 +22,12 @@
 %><%
 	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
 	Statement statement = connection.statement;
-	ResultSet rs;
+	Statement statement2 = connection.getExtraStatement();
+	ResultSet rs, rs2;
 	DocumentAttacher attacher = DocumentAttacher.createFREDDocumentAttacher(session, application);
 	User user = getUser(session);
-	String recID = "0", loadRecID, foldID, sampID, workComm = "", dateRnd = "", palDateUnk = "", identifier = "", stageStart = null, startMod = "", stageStop = null, stopMod = "", stComm = "", labID = null, labNum = "", collComm = "", taxa = "";
-	int userID = user.getPersonId(), userRights = 0, execUp;
+	String recID = "0", loadRecID, foldID, sampID, workComm = "", dateRnd = "", palDateUnk = "", identifier = "", stageStart = null, startMod = "", stageStop = null, stopMod = "", stComm = "", labID = null, sectID = null, labNum = "", collComm = "", taxa = "";
+	int userID = user.getPersonId(), userRights = 0, execUp, count;
 	java.util.Date palDate = new java.util.Date();
 	ComboDescriptor cd;
 
@@ -143,7 +144,12 @@ function parseTaxa(taxa) {
 						palDateUnk = " checked";
 					}
 					stComm = noNulls(rs.getString(3));
-					if (rs.getString(4) != null) { labID = rs.getString(4); }
+					if (rs.getString(4) != null) {
+						sectID = rs.getString(4);
+						rs2 = statement2.executeQuery("SELECT Lab_ID FROM Lab_Section WHERE Lab_Section_ID = " + rs.getString(4));
+						rs2.next();
+						labID = rs2.getString(1);
+					}
 					labNum = noNulls(rs.getString(5));
 					collComm = noNulls(rs.getString(6));
 				}
@@ -168,13 +174,45 @@ function parseTaxa(taxa) {
 		//form creation if proper rights
 		if (((userRights & 4) != 0 && recID.equals("0")) || ((userRights & 2) !=0 && recID != null)) {
 
-			out.println("<form name='form1' method='post' action='pal_data_proc.jsp'>");
+			out.println("<form name='form1' method='get' action='al_data_proc.jsp'>");
 			out.println("<input type='hidden' name='FoldID' value='" + foldID + "'>");
 			out.println("<input type='hidden' name='RecID' value='" + recID + "'>");
 			out.println("<input type='hidden' name='SampID' value='" + sampID + "'>");
 			out.println("<input type='hidden' name='SaveType' value=''>");
-			
-			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
+
+			//build array of labs sections
+			out.println("<script language='JavaScript'>");
+			rs = statement.executeQuery("SELECT DISTINCT Lab_ID FROM Lab_Section");
+			while (rs.next()) {
+				out.println("a" + rs.getString(1) + " = new Array();");
+				rs2 = statement2.executeQuery("SELECT Lab_Section_ID, Code FROM Lab_Section WHERE Lab_ID = " + rs.getString(1));
+				count = 0;
+				while (rs2.next()) {
+					out.println("a" + rs.getString(1) + "[" + count++ + "] = new Array('" + rs2.getString(1) + "','" + rs2.getString(2) + "');");
+				}
+			}
+			out.println("</script>");
+%>
+<script>
+// this function fires when the makes list box is changed
+function swapSection(frm){
+	if (frm.LabID.options[frm.LabID.options.selectedIndex].value!='-'){
+		// grab the correct array - a + the make id selected
+		var aArray = eval("a"+frm.LabID.options[frm.LabID.options.selectedIndex].value);
+		// set the number of options in sections to the length of the array
+		frm.SectID.options.length = aArray.length + 1;
+		//loop thru aArray adding each element to the models list box
+		for(i = 0;i<aArray.length;i++){
+			frm.SectID.options[i+1].value = aArray[i][0];
+			frm.SectID.options[i+1].text = aArray[i][1];
+		}
+	} else {
+		frm.SectID.options.length = 1;
+	}
+}
+</script>
+
+<%			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
 			out.println("<tr><td colspan='2' align='center'><img src='images/pal.gif' height='20' width='20' /></td></tr>");
 			out.println("<tr><td colspan='2' align='center' class='heading'>Paleontology Record</td></tr>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
@@ -243,19 +281,28 @@ function parseTaxa(taxa) {
 			</table>
 			</td></tr>
 			<tr><td class='heading'>Stage Comments</td><td></td><td><textarea name='StComm' cols='40' rows='2'><%=stComm%></textarea></td></tr>
-			<tr><td class='heading'>Laboratory</td><td class='smallheading'>Name</td><td>
-<%			cd = new ComboDescriptor("Lab_View", "Lab_Section_ID", "Full_Lab_Name");
-			cd.name = "LabID";
-			cd.prompt = "-- Choose --";
-			cd.selected = labID;
-			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			<tr><td class='heading'>Laboratory</td><td class='smallheading'>Name</td><td><select name='LabID' onChange='swapSection(this.form)'><option value='-'>-- Choose --</option>
+<%			rs = statement.executeQuery("SELECT DISTINCT Lab_ID, Lab_Name FROM Lab_View ORDER BY Lab_Name");
+			while (rs.next()) {
+				out.print("<option value='" + rs.getString(1) + "'");
+				if (labID != null && labID.equals(rs.getString(1))) { out.print(" selected"); }
+				out.print(">" + rs.getString(2) + "</option>");
+			}
+			out.println("</select></td></tr>");
 %>
-			</td></tr>
-			<tr><td></td><td class='smallheading'>Number</td><td><input type='text' name='LabNum' size='40' value='<%=labNum%>'></td><td></td></tr>
+			<tr><td></td><td class='smallheading'>Code</td><td class='smallheading'><select name='SectID'><option value='-' selected>-- Choose --</option></select>&nbsp;&nbsp;&nbsp;
+			Number&nbsp;&nbsp;<input type='text' name='LabNum' size='20' value='<%=labNum%>'></td><td></td></tr>
+<%			if (sectID != null) {
+				out.println("<script language='JavaScript'>");
+				out.println("swapSection(form1);");
+				out.println("for(i=0;i<form1.SectID.options.length;i++){ if (form1.SectID.options[i].value=='" + sectID + "') { form1.SectID.options.selectedIndex = i; }}");
+				out.println("</script>");
+		}
+%>
 			<tr><td class='heading'>Collection Comments</td><td></td><td><textarea name='CollComm' cols='40' rows='2'><%=collComm%></textarea></td></tr>
 			<tr><td class='heading'>Taxonomic List</td><td></td><td><textarea name='Taxa' cols='40' rows='20'><%=taxa%></textarea></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=Taxa", "Supp", "width=600,height=500");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
 			</table>
-<%		out.println("<table border='0' cellpadding='0' cellspacing='2'>");
+<%			out.println("<table border='0' cellpadding='0' cellspacing='2'>");
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.println("<tr><td><a href='#' onClick='if (saveForm(form1)) {form1.submit();}' title='Save'><img src='images/save.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='#' onClick='if (saveForm(form1)) {form1.submit();}' class='heading'>Save</a></td></tr>");
 			if ((userRights & 16) != 0) {

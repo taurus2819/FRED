@@ -143,7 +143,7 @@
 			}
 
 			//Create PALEONTOLOGY entry
-			execUp = statement.executeUpdate("INSERT INTO Paleontology (Record_ID, Identifier_ID, Identification_Date, Date_Rounding, Stage_ID, Stage_Comments, Lab_Section_ID, Lab_Number, Collection_Comments) VALUES (" + recID + ", " + JspUtils.sqlEscape(identifierID) + ", TO_DATE('" + palDate + "'), '" + request.getParameter("DateRnd") + "', " + JspUtils.sqlEscape(stageID) + ", " + JspUtils.sqlEscape(request.getParameter("StComm")) + ", " + makeDropDownNulls(request.getParameter("LabID")) + ", " + JspUtils.sqlEscape(request.getParameter("LabNum")) + ", " + JspUtils.sqlEscape(request.getParameter("CollComm")) + ")");
+			execUp = statement.executeUpdate("INSERT INTO Paleontology (Record_ID, Identifier_ID, Identification_Date, Date_Rounding, Stage_ID, Stage_Comments, Lab_Section_ID, Lab_Number, Collection_Comments) VALUES (" + recID + ", " + JspUtils.sqlEscape(identifierID) + ", TO_DATE('" + palDate + "'), '" + request.getParameter("DateRnd") + "', " + JspUtils.sqlEscape(stageID) + ", " + JspUtils.sqlEscape(request.getParameter("StComm")) + ", " + makeDropDownNulls(request.getParameter("SectID")) + ", " + JspUtils.sqlEscape(request.getParameter("LabNum")) + ", " + JspUtils.sqlEscape(request.getParameter("CollComm")) + ")");
 
 			statement2.close();
 
