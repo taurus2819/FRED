@@ -1,5 +1,5 @@
 <%@page	extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
+		import="nz.cri.gns.db.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
 %><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 	nz.cri.gns.intranet.DBConnection frConn = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
@@ -10,7 +10,7 @@
 	DecimalFormat latlong = new DecimalFormat("#00.0000");
 	SimpleDateFormat yearFormatter = new SimpleDateFormat ("yyyy");
 	SimpleDateFormat monthFormatter = new SimpleDateFormat ("MMM yyyy");
-	String featType = "", featID, palID, status = "", query;
+	String featType, featID, palID, status = "", query;
 	int[] types = {Types.NUMERIC};
 	Object data[];
 	data = new Object[1];
@@ -21,15 +21,15 @@
 	ExtranetTemplate et = getExtranetTemplate();
 	//et.setDisplayLoadingMessage(true);
 
-	drawTop(out, et, request, response);
-
 	if (request.getParameter("ID") != null) {
 		featID = request.getParameter("ID");
 		session.setAttribute("FeatureID", featID);
 	} else {
 		featID = (String) session.getAttribute("FeatureID");
 	}
-	
+
+	drawTop(out, et, request, response);
+
 	if (featID != null) {
 
 		//create connection:  userConnection if logged in, otherwise FR
@@ -39,48 +39,48 @@
 			connection = frConn;
 		}
 
-		query = "SELECT Feature_Name FROM FR.Sample_View WHERE Feature_Type <> 'Outcrop' AND Feature_ID = ?";
-		data[0] = new Integer(Integer.parseInt(featID));
-		rs = connection.executeQuery(query, types, data);
+		Feature feature = Feature.getFeature(Integer.parseInt(featID), user, state);
+		Audit audit = Audit.getAudit(feature.getAsInt(Feature.AUDIT_ID), state);
+		featType = feature.getAsString(Feature.FEATURE_TYPE);
 
-		if (rs.next()) {
-			out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
+		if (!featType.equals("Outcrop")) {
+/*			out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
 			query = "SELECT S.Feature_Name, S.Feature_Type, S.Masterfile_Name, S.Status, A.Created_By, A.Created_Date, A.Modified_By, A.Modified_Date, A.Submitted_By, A.Submitted_Date, A.Approved_By, A.Approved_Date FROM FR.Sample_View S, FR.Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = ?";
 			data[0] = new Integer(Integer.parseInt(featID));
 			rs = frConn.executeQuery(query, types, data);
 			rs.next();
 			featType = rs.getString(2);
-			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
-			out.println("<tr><td colspan='2' align='center' class='bigheading' >" + rs.getString(1) + "</td></tr>");
+*/			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
+			out.println("<tr><td colspan='2' align='center' class='bigheading' >" + feature.getAsString(Feature.FEATURE_NAME) + "</td></tr>");
 			out.println("<tr><td colspan='2' align='center'>" + featType + "</td></tr>");
-			if (rs.getString(3) != null) {
-				out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + rs.getString(3) + "</td></tr>");
+			if (fullSample.get(fullSample.MASTERFILE_NAME) != null) {
+				out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + fullSample.getAsString(FullSample.MASTERFILE_NAME) + "</td></tr>");
 			}
-			if (!rs.getString(4).equals("approved")) {
-				out.println("<tr><td class='smallheading'>Status:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + rs.getString(4) + "</td></tr>");
+			if (!audit.getAsString(Audit.STATUS).equals("approved")) {
+				out.println("<tr><td class='smallheading'>Status:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + audit.getAsString(Audit.STATUS) + "</td></tr>");
 			}
-			if (rs.getString(5) != null || rs.getString(6) != null) {
+			if (audit.get(Audit.CREATED_BY) != null || audit.get(Audit.CREATED_DATE) != null) {
 				out.println("<tr><td class='smallheading'>Created:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(5) != null) { out.print(rs.getString(5) + "<br />"); }
-				if (rs.getString(6) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(6))); }
+				if (audit.get(Audit.CREATED_BY) != null) { out.print(audit.getAsString(Audit.CREATED_BY) + "<br />"); }
+				if (audit.get(Audit.CREATED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.CREATED_DATE))); }
 				out.println("</td></tr>");
 			}
-			if (rs.getString(7) != null || rs.getString(8) != null) {
+			if (audit.get(Audit.MODIFIED_BY) != null || audit.get(Audit.MODIFIED_DATE) != null) {
 				out.println("<tr><td class='smallheading'>Edited:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(7) != null) { out.print(rs.getString(7) + "<br />"); }
-				if (rs.getString(8) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(8))); }
+				if (audit.get(Audit.MODIFIED_BY) != null) { out.print(audit.getAsString(Audit.MODIFIED_BY) + "<br />"); }
+				if (audit.get(Audit.MODIFIED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.MODIFIED_DATE))); }
 				out.println("</td></tr>");
 			}
-			if (rs.getString(9) != null || rs.getString(10) != null) {
+			if (audit.get(Audit.SUBMITTED_BY) != null || audit.get(Audit.SUBMITTED_DATE) != null) {
 				out.println("<tr><td class='smallheading'>Submitted:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(9) != null) { out.print(rs.getString(9) + "<br />"); }
-				if (rs.getString(10) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(10))); }
+				if (audit.get(Audit.SUBMITTED_BY) != null) { out.print(audit.getAsString(Audit.SUBMITTED_BY) + "<br />"); }
+				if (audit.get(Audit.SUBMITTED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.SUBMITTED_DATE))); }
 				out.println("</td></tr>");
 			}
-			if (rs.getString(11) != null || rs.getString(12) != null) {
+			if (audit.get(Audit.APPROVED_BY) != null || audit.get(Audit.APPROVED_DATE) != null) {
 				out.println("<tr><td class='smallheading'>Approved:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(11) != null) { out.print(rs.getString(11) + "<br />"); }
-				if (rs.getString(12) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(12))); }
+				if (audit.get(Audit.APPROVED_BY) != null) { out.print(audit.getAsString(Audit.APPROVED_BY) + "<br />"); }
+				if (audit.get(Audit.APPROVED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.APPROVED_DATE))); }
 				out.println("</td></tr>");
 			}
 			out.println("</table>");

@@ -388,7 +388,7 @@ public class FullSample {
 	 * @throws AccessDeniedException where user not allowed access to this row
 	 */
 	public static FullSample getFullSample(int id, User user, PageState state)
-		throws SQLException, IOException, AccessDeniedException {
+		throws SQLException, IOException {
 		FullSample f =
 			(FullSample) fullSamplePool.retrieve(new FullSampleFinder(id));
 		if (f == null) {

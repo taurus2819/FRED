@@ -68,7 +68,7 @@
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
 			out.println("<tr><td colspan='2' align='center' class='bigheading' >" + fullSample.getAsString(FullSample.SAMPLE_NAME) + "</td></tr>");
 			out.println("<tr><td colspan='2' align='center'>" + featType + "</td></tr>");
-			if (fullSample.get(fullSample.MASTERFILE_NAME) != null) {
+			if (fullSample.get(FullSample.MASTERFILE_NAME) != null) {
 				out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + fullSample.getAsString(FullSample.MASTERFILE_NAME) + "</td></tr>");
 			}
 			if (!audit.getAsString(Audit.STATUS).equals("approved")) {
@@ -98,7 +98,7 @@
 				if (audit.get(Audit.APPROVED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.APPROVED_DATE))); }
 				out.println("</td></tr>");
 			}
-				if (user != null) {
+			if (user != null) {
 				out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 				out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + sampID + "' title='Print' target='print'><img src='images/print.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' width='10' height='1' border='0' /><a href='print_front.jsp?ID=" + sampID + "' class='heading' target='print'>Print Front</a></td></tr>");
 				out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
