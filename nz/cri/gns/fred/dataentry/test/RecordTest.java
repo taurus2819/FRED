@@ -7,7 +7,9 @@
 package nz.cri.gns.fred.dataentry.test;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 
 import junit.framework.TestCase;
@@ -20,6 +22,7 @@ import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
 import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.fred.dataentry.RecordDE;
 import nz.cri.gns.fred.dataentry.SampPropRecordDE;
+import nz.cri.gns.fred.dataentry.TaxonomicListException;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.test.TestingPageState;
 
@@ -45,7 +48,7 @@ public class RecordTest extends TestCase {
 		//System.out.println(record.save());
 	}
 
-	public void _testDataEntryForm() throws NotBoundException, DataInputException, InvalidCredentialsException, SQLException, IOException {
+	public void _testDataEntryForm() throws NotBoundException, InvalidCredentialsException, SQLException, IOException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("test", "test", ipConn);
@@ -57,7 +60,7 @@ public class RecordTest extends TestCase {
 		//form.save();
 	}
 
-	public void _testDataEntryForm2() throws NotBoundException, DataInputException, InvalidCredentialsException, SQLException, IOException {
+	public void _testDataEntryForm2() throws NotBoundException, InvalidCredentialsException, SQLException, IOException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
@@ -69,17 +72,14 @@ public class RecordTest extends TestCase {
 		form.save();
 	}
 
-	public void testAdoSave() throws NotBoundException, DataInputException, InvalidCredentialsException, SQLException, IOException {
+	public void testPalLists() throws NotBoundException, DataInputException, InvalidCredentialsException, SQLException, IOException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
-		DataEntryForm form = DataEntryFormFactory.getRecordDataEntryForm(1400, user, state);
+		DataEntryForm form = DataEntryFormFactory.getRecordDataEntryForm(1340, user, state);
 		for (int i = 0; i < form.getFieldCount(); i++) {
 			System.out.println(i + ": " + form.getField(i));
-		}
-		form.setField(DataEntryForm.ADOPTION_DATE, "27/1/1973");
-		form.setField(DataEntryForm.ADOPTORS, "Morrison, Ben");
-		System.out.println(form.save());	
+		}	
 	}
 
 }

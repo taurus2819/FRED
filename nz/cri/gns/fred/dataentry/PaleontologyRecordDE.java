@@ -16,6 +16,8 @@ import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.PaleontologyRecord;
 import nz.cri.gns.fred.data.Record;
 import nz.cri.gns.fred.data.Sample;
+import nz.cri.gns.fred.data.Taxa;
+import nz.cri.gns.fred.data.TaxaGroup;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
@@ -25,6 +27,8 @@ public class PaleontologyRecordDE extends RecordDE {
 	private RoundedDate identDate;
 	private Vector identifiers;
 	private String lab;
+	private Vector taxaList;
+	private Vector newTaxaList;
 
 	public PaleontologyRecordDE(User user, int sampleID, int folderID, PageState state)
 		throws SQLException, IOException, DataInputException {
@@ -39,38 +43,61 @@ public class PaleontologyRecordDE extends RecordDE {
 	public PaleontologyRecordDE(int recID, User user, PageState state)
 		throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
 		super(recID, "PAL", user, state);
-		setField(IDENTIFICATION_DATE,
-			DataEntryUtils.reverseParseDate(
-				record.getAsDate(Record.IDENTIFICATION_DATE),
-				record.getAsString(Record.IDENTIFICATION_DATE_ROUNDING)));
-		if (record.get(Record.IDENTIFIER) != null) {
-			StringBuffer identName = new StringBuffer();
-			for (Iterator i = record.getAsVector(Record.IDENTIFIER).iterator(); i.hasNext();) {
-				KeyValueObject ident = (KeyValueObject) i.next();
-				identName.append(ident.getValue() + "\n");
+		try {
+			setField(IDENTIFICATION_DATE,
+				DataEntryUtils.reverseParseDate(
+					record.getAsDate(Record.IDENTIFICATION_DATE),
+					record.getAsString(Record.IDENTIFICATION_DATE_ROUNDING)));
+			if (record.get(Record.IDENTIFIER) != null) {
+				StringBuffer identName = new StringBuffer();
+				for (Iterator i = record.getAsVector(Record.IDENTIFIER).iterator(); i.hasNext();) {
+					KeyValueObject ident = (KeyValueObject) i.next();
+					identName.append(ident.getValue() + "\n");
+				}
+				setField(IDENTIFIERS, identName.toString());
 			}
-			setField(IDENTIFIERS, identName.toString());
+			setField(
+				IDT_AGE_START,
+				record.getAsString(Record.STAGE_LOWER_ID));
+			setField(
+				IDT_START_MOD,
+				record.getAsString(Record.STAGE_LOWER_MOD));
+			setField(
+				IDT_AGE_STOP,
+				record.getAsString(Record.STAGE_UPPER_ID));
+			setField(
+				IDT_STOP_MOD,
+				record.getAsString(Record.STAGE_UPPER_MOD));
+			setField(STAGE_COMMENTS, record.getAsString(Record.STAGE_COMMENTS));
+			setField(LAB_SECTION, record.getAsString(Record.LAB_SECTION_ID));
+			setField(LAB_NUMBER, record.getAsString(Record.LAB_NUMBER));
+			setField(COLLECTION_COMMENTS, record.getAsString(Record.COLLECTION_COMMENTS));
+			if (record.get(Record.TAXONOMIC_LIST) != null) {
+				StringBuffer taxaList = new StringBuffer();
+				for (Iterator i = record.getAsVector(Record.TAXONOMIC_LIST).iterator(); i.hasNext();) {
+					TaxaGroup tGroup = (TaxaGroup) i.next();
+					if (tGroup.getTaxaList() != null) {
+						for (Iterator j = tGroup.getTaxaList().iterator(); j.hasNext();) {
+							Taxa t = (Taxa) j.next();
+							taxaList.append(tGroup.getGroupName() + "*" + t.getTaxonomicName() + "*" + FREDUtils.noNulls(t.getAuthor()) + "*" + FREDUtils.noNulls(t.getSpecimenCount()) + "*" + FREDUtils.noNulls(t.getSpecimenCoords()) + "*" + FREDUtils.noNulls(t.getComments()) + "\n");
+						}
+					} else {
+						taxaList.append(tGroup.getGroupName() + "*****\n");
+					}
+				}
+				setField(TAXA_LIST, taxaList.toString());
+			}
+		} catch (TaxonomicListException e) {
+			for (Iterator i = newTaxaList.iterator(); i.hasNext();) {
+				Taxa t = (Taxa) i.next();
+				System.out.println(t.getGroupID());
+			}
+			throw new DataInputException("Taxonomic List",  "Data Error");
 		}
-		setField(
-			IDT_AGE_START,
-			record.getAsString(Record.STAGE_LOWER_ID));
-		setField(
-			IDT_START_MOD,
-			record.getAsString(Record.STAGE_LOWER_MOD));
-		setField(
-			IDT_AGE_STOP,
-			record.getAsString(Record.STAGE_UPPER_ID));
-		setField(
-			IDT_STOP_MOD,
-			record.getAsString(Record.STAGE_UPPER_MOD));
-		setField(STAGE_COMMENTS, record.getAsString(Record.STAGE_COMMENTS));
-		setField(LAB_SECTION, record.getAsString(Record.LAB_SECTION_ID));
-		setField(LAB_NUMBER, record.getAsString(Record.LAB_NUMBER));
-		setField(COLLECTION_COMMENTS, record.getAsString(Record.COLLECTION_COMMENTS));
 	}
 
 	protected void parseField(int field, String value)
-		throws DataInputException {
+		throws DataInputException, TaxonomicListException {
 		super.parseField(field, value);
 		try {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
@@ -127,6 +154,76 @@ public class PaleontologyRecordDE extends RecordDE {
 					} catch (Exception e) {
 						throw new DataInputException("Laboratory", "Value not in list");
 					}
+					break;
+				case TAXA_LIST :
+					taxaList = new Vector();
+					newTaxaList = new Vector();
+					while (value.length() > 0) {
+						if (value.indexOf("\n") == -1)
+							value =  value + "\n";
+						String taxaLine = value.substring(0, value.indexOf("\n")).trim();
+						String taxaGroup, taxaName, taxaAuthor, taxaSpecCoord, taxaComm;
+						Integer taxaSpecCount;
+						//try {
+							taxaGroup = taxaLine.substring(0, taxaLine.indexOf("*"));
+							taxaName = taxaLine.substring(taxaGroup.length() + 1, taxaLine.indexOf("*", taxaGroup.length() + 1));
+							taxaAuthor = taxaLine.substring(taxaGroup.length() + taxaName.length() + 2, taxaLine.indexOf("*", taxaGroup.length() + taxaName.length() + 2));
+							String taxaSpecCountStr = taxaLine.substring(taxaGroup.length() + taxaName.length() + taxaAuthor.length() + 3, taxaLine.indexOf("*", taxaGroup.length() + taxaName.length() + taxaAuthor.length() + 3));
+							taxaSpecCount = ((taxaSpecCountStr.equals("")) ? null : new Integer(taxaSpecCountStr));
+							taxaSpecCoord = taxaLine.substring(taxaGroup.length() + taxaName.length() + taxaAuthor.length() + taxaSpecCountStr.length() + 4, taxaLine.indexOf("*", taxaGroup.length() + taxaName.length() + taxaAuthor.length() + taxaSpecCountStr.length() + 4));
+							taxaComm = taxaLine.substring(taxaLine.lastIndexOf("*") + 1, taxaLine.length());
+						//} catch (Exception e) {
+						//	throw new DataInputException("Taxanomic", taxaLine + " not valid");
+						//}
+
+						//check TaxaGroup against lookup values
+						rs = conn.executeQuery("SELECT Lookup_ID FROM Lookup WHERE Name = " + JspUtils.sqlEscape(taxaGroup) + " AND FieldName = 'TaxaGroup'");
+						Taxa taxa = new Taxa();
+						try {
+							rs.next();
+							taxa.setGroupID(new Integer(rs.getInt(1)));
+							taxa.setGroupName(taxaGroup);
+						} catch (Exception e) {  // not valid group
+							throw new DataInputException("Taxonomic", taxaGroup + " not a valid taxonomic group");
+						}
+						taxa.setAuthor(taxaAuthor);
+						taxa.setSpecimenCount(taxaSpecCount);
+						taxa.setSpecimenCoords(taxaSpecCoord);
+						taxa.setComments(taxaComm);
+						//clean TaxaName
+						String cleanName = taxaName;
+						cleanName = cleanTaxaNameOpen(cleanName, "subsp.");
+						cleanName = cleanTaxaNameOpen(cleanName, "subspp.");
+						cleanName = cleanTaxaNameOpen(cleanName, "sp.");
+						cleanName = cleanTaxaNameOpen(cleanName, "spp.");
+						cleanName = cleanTaxaNameOpen(cleanName, "subgen.");
+						cleanName = cleanTaxaNameOpen(cleanName, "gen.");
+						cleanName = cleanTaxaNameOpen(cleanName, "subfam.");
+						cleanName = cleanTaxaNameOpen(cleanName, "fam.");
+						cleanName = cleanTaxaName(cleanName, "indet.");
+						cleanName = cleanTaxaName(cleanName, "?");
+						cleanName = cleanTaxaName(cleanName, "cf.");
+						cleanName = cleanTaxaName(cleanName, "aff.");
+						cleanName = cleanTaxaName(cleanName, "MS.");
+						cleanName = cleanTaxaName(cleanName, "s.s");
+						cleanName = cleanTaxaName(cleanName, "s.l.");
+						cleanName = cleanTaxaName(cleanName, "gr.");
+						//check TaxaName against thesaurus
+						rs = conn.executeQuery("SELECT Taxa_ID FROM Taxonomic_Lookup WHERE Taxonomic_Name = " + JspUtils.sqlEscape(cleanName) + " AND Status IN ('approved', 'provisional')");
+						try {
+							rs.next();
+							taxa.setTaxaID(new Integer(rs.getInt(1)));
+							taxa.setTaxonomicName(taxaName);
+							taxaList.add(taxa);
+						} catch (Exception e) {  // not valid name
+							taxa.setTaxonomicName(taxaName);
+							newTaxaList.add(taxa);
+						}
+						value = value.substring(value.indexOf("\n") + 1, value.length()).trim();
+					}
+					if (newTaxaList.size() > 0)
+						throw new TaxonomicListException(newTaxaList);
+					break;
 			}
 		} catch (IOException e) {
 			throw new DataInputException();
@@ -145,6 +242,9 @@ public class PaleontologyRecordDE extends RecordDE {
 				break;
 			case LAB_SECTION :
 				lab = null;
+				break;
+			case TAXA_LIST :
+				taxaList = null;
 				break;
 		}
 	}
@@ -245,7 +345,8 @@ public class PaleontologyRecordDE extends RecordDE {
 			out.write(
 				"<tr><td class='heading' colspan='2'>Collection Comments</td><td><textarea name='CollComm' cols='40' rows='2'>"
 					+ FREDUtils.noNulls(getField(COLLECTION_COMMENTS))
-					+ "</textarea></td></tr>\n");			
+					+ "</textarea></td></tr>\n");
+			out.write("<tr><td class='heading'>Taxonomic List</td><td></td><td><textarea name='Taxa' cols='40' rows='20'>" + getField(TAXA_LIST) + "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Taxa\", \"Supp\", \"width=600,height=500\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
 			super.makeEndBitHTML(out);
 	}
 
@@ -298,6 +399,17 @@ public class PaleontologyRecordDE extends RecordDE {
 								+ ")");
 					}
 				}
+				
+				
+				//Create PAL_LIST entry
+				if (taxaList != null) {
+					for (Iterator i = taxaList.iterator(); i.hasNext();) {
+						Taxa taxa = (Taxa) i.next();
+						conn.executeUpdate("INSERT INTO Pal_List (Record_ID, Group_ID, Taxa_ID, Taxonomic_Name, Specimen_Count, Specimen_Coords, Comments) VALUES ("
+							+ record.getRecordID() + ", " + taxa.getGroupID() + ", " + taxa.getTaxaID() + ", " + JspUtils.sqlEscape(taxa.getTaxonomicName()) + ", " + JspUtils.sqlEscape(taxa.getSpecimenCount()) + ", " + JspUtils.sqlEscape(taxa.getSpecimenCoords()) + ", " + JspUtils.sqlEscape(taxa.getComments()) + ")");
+					}
+				}
+				
 				conn.getConnection().commit();
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
@@ -332,6 +444,48 @@ public class PaleontologyRecordDE extends RecordDE {
 	}
 
 	protected void checkMandatoryFields() throws DataInputException {
+	}
+
+	private String cleanAlphaChar (String taxaName, String checkString) {
+		int len = taxaName.length();
+		int pos = 0;
+		boolean ok = true;
+		while (ok) {
+			pos = taxaName.indexOf(checkString, pos + 1);
+			if (pos > 0 && pos + checkString.length() < len) {
+				pos = pos + checkString.length();
+				if (pos + 1 == len || pos + 2 == len) {
+					taxaName = taxaName.substring(0, pos);
+				} else if (taxaName.indexOf(" ", pos + 1) <= pos + 2 && taxaName.indexOf(" ", pos + 1) > 0) {
+					taxaName = taxaName.substring(0, pos) + "  " + taxaName.substring(pos + 2, taxaName.length());
+				}
+			} else {
+				ok = false;
+			}
+		}
+		return taxaName;
+	}
+	
+	private String cleanTaxaName (String taxaName, String checkString) {
+		while (taxaName.indexOf(checkString) >= 0) {
+			taxaName = taxaName.substring(0, taxaName.indexOf(checkString)).trim() + " " + taxaName.substring(taxaName.indexOf(checkString) + checkString.length(), taxaName.length()).trim();
+			taxaName = taxaName.trim();
+		}
+		return taxaName;
+	}
+	
+	private String cleanTaxaNameOpen (String taxaName, String checkString) {
+		taxaName = cleanAlphaChar(taxaName, checkString);
+		taxaName = cleanTaxaName(taxaName, "n." + checkString + "indet.");
+		taxaName = cleanTaxaName(taxaName, "n. " + checkString + "indet.");
+		taxaName = cleanTaxaName(taxaName, "n." + checkString + " indet.");
+		taxaName = cleanTaxaName(taxaName, "n. " + checkString + " indet.");
+		taxaName = cleanTaxaName(taxaName, "n." + checkString);
+		taxaName = cleanTaxaName(taxaName, "n. " + checkString);
+		taxaName = cleanTaxaName(taxaName, checkString + "indet.");
+		taxaName = cleanTaxaName(taxaName, checkString + " indet.");
+		taxaName = cleanTaxaName(taxaName, checkString);
+		return taxaName;
 	}
 
 }

@@ -49,207 +49,206 @@ public class SampPropRecordDE extends RecordDE {
 	public SampPropRecordDE(int recID, User user, PageState state)
 		throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
 		super(recID, "SMP", user, state);
-		setField(
-			COLLECTION_DATE,
-			DataEntryUtils.reverseParseDate(
-				record.getAsDate(Record.COLLECTION_DATE),
-				record.getAsString(Record.COLLECTION_DATE_ROUNDING)));
-		if (record.get(Record.COLLECTOR) != null) {
-			StringBuffer collName = new StringBuffer();
-			for (Iterator i =
-				record.getAsVector(Record.COLLECTOR).iterator();
-				i.hasNext();
-				) {
-				KeyValueObject coll = (KeyValueObject) i.next();
-				collName.append(coll.getValue() + "\n");
-			}
-			setField(COLLECTORS, collName.toString());
-		}
-		setField(STRAT_NAME, record.getAsString(Record.STRAT_UNIT));
-		setField(FOSSILS_IN_PLACE, record.getAsString(Record.IN_PLACE));
-		if (record.get(Record.SENT_TO) != null) {
-			StringBuffer sTStr = new StringBuffer();
-			for (Iterator i =
-				record.getAsVector(Record.SENT_TO).iterator();
-				i.hasNext();
-				) {
-				SentTo sT = (SentTo) i.next();
-				sTStr.append(
-					sT.getFossilGroup()
-						+ "*"
-						+ FREDUtils.noNulls(sT.getPerson())
-						+ "*"
-						+ FREDUtils.noNulls(sT.getLab())
-						+ "*"
-						+ FREDUtils.noNulls(sT.getComments())
-						+ "\n");
-			}
-			setField(SENT_TO, sTStr.toString());
-		}
-		setField(
-			NOT_COLLECTED,
-			record.getAsString(Record.NOT_COLLECTED));
-		setField(
-			SIGNIFICANCE_COMMENTS,
-			record.getAsString(Record.SIGNIFICANCE));
-		setField(
-			INF_AGE_START,
-			record.getAsString(Record.INFERRED_STAGE_LOWER_ID));
-		setField(
-			INF_START_MOD,
-			record.getAsString(Record.INFERRED_STAGE_LOWER_MOD));
-		setField(
-			INF_AGE_STOP,
-			record.getAsString(Record.INFERRED_STAGE_UPPER_ID));
-		setField(
-			INF_STOP_MOD,
-			record.getAsString(Record.INFERRED_STAGE_UPPER_MOD));
-		setField(
-			KNW_AGE_START,
-			record.getAsString(Record.KNOWN_STAGE_LOWER_ID));
-		setField(
-			KNW_START_MOD,
-			record.getAsString(Record.KNOWN_STAGE_LOWER_MOD));
-		setField(
-			KNW_AGE_STOP,
-			record.getAsString(Record.KNOWN_STAGE_UPPER_ID));
-		setField(
-			KNW_STOP_MOD,
-			record.getAsString(Record.KNOWN_STAGE_UPPER_MOD));
-		if (record.get(Record.RELATIONSHIP_NEARBY) != null) {
-			StringBuffer prevSamp = new StringBuffer();
-			for (Iterator i =
-				record
-					.getAsVector(Record.RELATIONSHIP_NEARBY)
-					.iterator();
-				i.hasNext();
-				) {
-				Relationship rel = (Relationship) i.next();
-				prevSamp.append(rel.getRelatedSampleName() + ";");
-			}
-			setField(PREVIOUS_SAMPLE, prevSamp.toString());
-		}
-		if (record.get(Record.RELATIONSHIP_SAMPLE) != null) {
-			StringBuffer sampRel = new StringBuffer();
-			for (Iterator i =
-				record
-					.getAsVector(Record.RELATIONSHIP_SAMPLE)
-					.iterator();
-				i.hasNext();
-				) {
-				Relationship rel = (Relationship) i.next();
-				if (rel.getDistance() != null) {
-					if (rel.getDistanceMod() != null)
-						sampRel.append("c. ");
-					sampRel.append(FREDUtils.noNulls(rel.getDistance()));
-					if (rel.getDistanceRange() != null)
-						sampRel.append(" - " + rel.getDistanceRange());
+		try {
+			setField(
+				COLLECTION_DATE,
+				DataEntryUtils.reverseParseDate(
+					record.getAsDate(Record.COLLECTION_DATE),
+					record.getAsString(Record.COLLECTION_DATE_ROUNDING)));
+			if (record.get(Record.COLLECTOR) != null) {
+				StringBuffer collName = new StringBuffer();
+				for (Iterator i =
+					record.getAsVector(Record.COLLECTOR).iterator();
+					i.hasNext();
+					) {
+					KeyValueObject coll = (KeyValueObject) i.next();
+					collName.append(coll.getValue() + "\n");
 				}
-				sampRel.append(
-					" "
-						+ rel.getRelationType()
-						+ " "
-						+ rel.getRelatedSampleName()
-						+ "\n");
+				setField(COLLECTORS, collName.toString());
 			}
-			setField(SAMPLE_RELATIONSHIP, sampRel.toString());
-		}
-		if (record.get(Record.RELATIONSHIP_STRAT) != null) {
-			StringBuffer stratRel = new StringBuffer();
-			for (Iterator i =
-				record
-					.getAsVector(Record.RELATIONSHIP_STRAT)
-					.iterator();
-				i.hasNext();
-				) {
-				Relationship rel = (Relationship) i.next();
-				if (rel.getDistance() != null) {
-					if (rel.getDistanceMod() != null)
-						stratRel.append("c. ");
-					stratRel.append(FREDUtils.noNulls(rel.getDistance()));
-					if (rel.getDistanceRange() != null)
-						stratRel.append(" - " + rel.getDistanceRange());
+			setField(STRAT_NAME, record.getAsString(Record.STRAT_UNIT));
+			setField(FOSSILS_IN_PLACE, record.getAsString(Record.IN_PLACE));
+			if (record.get(Record.SENT_TO) != null) {
+				StringBuffer sTStr = new StringBuffer();
+				for (Iterator i =
+					record.getAsVector(Record.SENT_TO).iterator();
+					i.hasNext();
+					) {
+					SentTo sT = (SentTo) i.next();
+					sTStr.append(
+						sT.getFossilGroup()
+							+ "*"
+							+ FREDUtils.noNulls(sT.getPerson())
+							+ "*"
+							+ FREDUtils.noNulls(sT.getLab())
+							+ "*"
+							+ FREDUtils.noNulls(sT.getComments())
+							+ "\n");
 				}
-				stratRel.append(
-					" "
-						+ rel.getRelationType()
-						+ " "
-						+ rel.getRelatedStratUnit()
-						+ "\n");
+				setField(SENT_TO, sTStr.toString());
 			}
-			setField(STRAT_RELATIONSHIP, stratRel.toString());
-		}
-		setField(COLUMN_MAP, record.getAsString(Record.COLUMN_MAP));
-		setField(DIP, record.getAsString(Record.DIP));
-		setField(
-			DIP_DIRECTION,
-			record.getAsString(Record.DIP_DIRECTION));
-		setField(STRIKE, record.getAsString(Record.STRIKE));
-		setField(FACING, record.getAsString(Record.FACING));
-		setField(
-			GRAIN_SIZE_P,
-			record.getAsString(Record.PRIMARY_GRAINSIZE_ID));
-		setField(
-			GRAIN_SIZE_S,
-			record.getAsString(Record.SECONDARY_GRAINSIZE_ID));
-		setField(GS_COMP, record.getAsString(Record.COMPARATOR_USED));
-		setField(
-			BEDDING_THICKNESS,
-			record.getAsString(Record.BED_THICK_ID));
-		setField(
-			BEDDING_P,
-			record.getAsString(Record.PRIMARY_BEDDING_ID));
-		setField(
-			BEDDING_S,
-			record.getAsString(Record.SECONDARY_BEDDING_ID));
-		setField(WEATHERING, record.getAsString(Record.WEATHERING_ID));
-		setField(HARDNESS, record.getAsString(Record.HARDNESS_ID));
-		setField(CARBONATE, record.getAsString(Record.CARBONATE_ID));
-		setField(
-			COLOUR_MOD,
-			record.getAsString(Record.COLOUR_MODIFIER_ID));
-		setField(
-			COLOUR_P,
-			record.getAsString(Record.PRIMARY_COLOUR_ID));
-		setField(
-			COLOUR_S,
-			record.getAsString(Record.SECONDARY_COLOUR_ID));
-		setField(WET, record.getAsString(Record.WET));
-		if (record.get(Record.SED_FEATURE) != null) {
-			StringBuffer sF = new StringBuffer();
-			for (Iterator i =
-				record.getAsVector(Record.SED_FEATURE).iterator();
-				i.hasNext();
-				) {
-				SedFeature sFeat = (SedFeature) i.next();
-				sF.append(sFeat.getFeat());
-				if (sFeat.getAbundant() != null)
-					sF.append("*");
-				sF.append(";");
+			setField(
+				NOT_COLLECTED,
+				record.getAsString(Record.NOT_COLLECTED));
+			setField(
+				SIGNIFICANCE_COMMENTS,
+				record.getAsString(Record.SIGNIFICANCE));
+			setField(
+				INF_AGE_START,
+				record.getAsString(Record.INFERRED_STAGE_LOWER_ID));
+			setField(
+				INF_START_MOD,
+				record.getAsString(Record.INFERRED_STAGE_LOWER_MOD));
+			setField(
+				INF_AGE_STOP,
+				record.getAsString(Record.INFERRED_STAGE_UPPER_ID));
+			setField(
+				INF_STOP_MOD,
+				record.getAsString(Record.INFERRED_STAGE_UPPER_MOD));
+			setField(
+				KNW_AGE_START,
+				record.getAsString(Record.KNOWN_STAGE_LOWER_ID));
+			setField(
+				KNW_START_MOD,
+				record.getAsString(Record.KNOWN_STAGE_LOWER_MOD));
+			setField(
+				KNW_AGE_STOP,
+				record.getAsString(Record.KNOWN_STAGE_UPPER_ID));
+			setField(
+				KNW_STOP_MOD,
+				record.getAsString(Record.KNOWN_STAGE_UPPER_MOD));
+			if (record.get(Record.RELATIONSHIP_NEARBY) != null) {
+				StringBuffer prevSamp = new StringBuffer();
+				for (Iterator i =
+					record
+						.getAsVector(Record.RELATIONSHIP_NEARBY)
+						.iterator();
+					i.hasNext();
+					) {
+					Relationship rel = (Relationship) i.next();
+					prevSamp.append(rel.getRelatedSampleName() + ";");
+				}
+				setField(PREVIOUS_SAMPLE, prevSamp.toString());
 			}
-			setField(SED_FEATURES, sF.toString());
-		}
-		String depEnv = record.getAsString(Record.DEPOSITION_ENV);
-		if (depEnv != null) {
-			if (depEnv.indexOf("Marine:") != -1) {
-				setField(DEP_ENVIRONMENT_1, "Marine");
-				setField(
-					DEP_ENVIRONMENT_2,
-					depEnv.substring(7, depEnv.length()).trim());
-			} else if (depEnv.indexOf("Non-marine:") != -1) {
-				setField(DEP_ENVIRONMENT_1, "Non-marine");
-				setField(
-					DEP_ENVIRONMENT_2,
-					depEnv.substring(11, depEnv.length()).trim());
-			} else {
-				setField(DEP_ENVIRONMENT_2, depEnv);
+			if (record.get(Record.RELATIONSHIP_SAMPLE) != null) {
+				StringBuffer sampRel = new StringBuffer();
+				for (Iterator i =
+					record
+						.getAsVector(Record.RELATIONSHIP_SAMPLE)
+						.iterator();
+					i.hasNext();
+					) {
+					Relationship rel = (Relationship) i.next();
+					if (rel.getDistance() != null) {
+						if (rel.getDistanceMod() != null)
+							sampRel.append("c. ");
+						sampRel.append(FREDUtils.noNulls(rel.getDistance()));
+						if (rel.getDistanceRange() != null)
+							sampRel.append(" - " + rel.getDistanceRange());
+					}
+					sampRel.append(
+						" "
+							+ rel.getRelationType()
+							+ " "
+							+ rel.getRelatedSampleName()
+							+ "\n");
+				}
+				setField(SAMPLE_RELATIONSHIP, sampRel.toString());
 			}
-		}
-		setField(ROCK_NATURE, record.getAsString(Record.ROCK_NATURE));
-		setField(
-			CORRESPONDENCE,
-			record.getAsString(Record.CORRESPONDENCE));
-
+			if (record.get(Record.RELATIONSHIP_STRAT) != null) {
+				StringBuffer stratRel = new StringBuffer();
+				for (Iterator i =
+					record
+						.getAsVector(Record.RELATIONSHIP_STRAT)
+						.iterator();
+					i.hasNext();
+					) {
+					Relationship rel = (Relationship) i.next();
+					if (rel.getDistance() != null) {
+						if (rel.getDistanceMod() != null)
+							stratRel.append("c. ");
+						stratRel.append(FREDUtils.noNulls(rel.getDistance()));
+						if (rel.getDistanceRange() != null)
+							stratRel.append(" - " + rel.getDistanceRange());
+					}
+					stratRel.append(
+						" "
+							+ rel.getRelationType()
+							+ " "
+							+ rel.getRelatedStratUnit()
+							+ "\n");
+				}
+				setField(STRAT_RELATIONSHIP, stratRel.toString());
+			}
+			setField(COLUMN_MAP, record.getAsString(Record.COLUMN_MAP));
+			setField(DIP, record.getAsString(Record.DIP));
+			setField(
+				DIP_DIRECTION,
+				record.getAsString(Record.DIP_DIRECTION));
+			setField(STRIKE, record.getAsString(Record.STRIKE));
+			setField(FACING, record.getAsString(Record.FACING));
+			setField(
+				GRAIN_SIZE_P,
+				record.getAsString(Record.PRIMARY_GRAINSIZE_ID));
+			setField(
+				GRAIN_SIZE_S,
+				record.getAsString(Record.SECONDARY_GRAINSIZE_ID));
+			setField(GS_COMP, record.getAsString(Record.COMPARATOR_USED));
+			setField(
+				BEDDING_THICKNESS,
+				record.getAsString(Record.BED_THICK_ID));
+			setField(
+				BEDDING_P,
+				record.getAsString(Record.PRIMARY_BEDDING_ID));
+			setField(
+				BEDDING_S,
+				record.getAsString(Record.SECONDARY_BEDDING_ID));
+			setField(WEATHERING, record.getAsString(Record.WEATHERING_ID));
+			setField(HARDNESS, record.getAsString(Record.HARDNESS_ID));
+			setField(CARBONATE, record.getAsString(Record.CARBONATE_ID));
+			setField(
+				COLOUR_MOD,
+				record.getAsString(Record.COLOUR_MODIFIER_ID));
+			setField(
+				COLOUR_P,
+				record.getAsString(Record.PRIMARY_COLOUR_ID));
+			setField(
+				COLOUR_S,
+				record.getAsString(Record.SECONDARY_COLOUR_ID));
+			setField(WET, record.getAsString(Record.WET));
+			if (record.get(Record.SED_FEATURE) != null) {
+				StringBuffer sF = new StringBuffer();
+				for (Iterator i =
+					record.getAsVector(Record.SED_FEATURE).iterator();
+					i.hasNext();
+					) {
+					SedFeature sFeat = (SedFeature) i.next();
+					sF.append(sFeat.getFeat());
+					if (sFeat.getAbundant() != null)
+						sF.append("*");
+					sF.append(";");
+				}
+				setField(SED_FEATURES, sF.toString());
+			}
+			String depEnv = record.getAsString(Record.DEPOSITION_ENV);
+			if (depEnv != null) {
+				if (depEnv.indexOf("Marine:") != -1) {
+					setField(DEP_ENVIRONMENT_1, "Marine");
+					setField(
+						DEP_ENVIRONMENT_2,
+						depEnv.substring(7, depEnv.length()).trim());
+				} else if (depEnv.indexOf("Non-marine:") != -1) {
+					setField(DEP_ENVIRONMENT_1, "Non-marine");
+					setField(
+						DEP_ENVIRONMENT_2,
+						depEnv.substring(11, depEnv.length()).trim());
+				} else {
+					setField(DEP_ENVIRONMENT_2, depEnv);
+				}
+			}
+			setField(ROCK_NATURE, record.getAsString(Record.ROCK_NATURE));
+			setField(CORRESPONDENCE, record.getAsString(Record.CORRESPONDENCE));
+		} catch (TaxonomicListException e) {}
 	}
 
 	public void setOutcropSamp(boolean outcropSamp) {
@@ -257,7 +256,7 @@ public class SampPropRecordDE extends RecordDE {
 	}
 
 	protected void parseField(int field, String value)
-		throws DataInputException {
+		throws DataInputException, TaxonomicListException {
 		super.parseField(field, value);
 		try {
 			DBConnection conn = FREDUtils.getFREDConnection(state);

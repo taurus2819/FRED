@@ -48,38 +48,42 @@ public abstract class RecordDE implements DataEntryForm {
 	}
 
 	public RecordDE(int recID, String recordType, User user, PageState state) throws InvalidCredentialsException, DataInputException, SQLException, IOException {
-		this.user = user;
-		this.state = state;
-		this.recordType = recordType;
-		if (recordType.equals("SMP")) {
-			this.record = (SampPropRecord) SampPropRecord.getData(recID, user, state);
-		} else if (recordType.equals("ADO")) {
-			this.record = (AdoptionRecord) AdoptionRecord.getData(recID, user, state);
-		} else if (recordType.equals("PAL")) {
-			this.record = (PaleontologyRecord) PaleontologyRecord.getData(recID, user, state);
-		} else {
-			throw new DataInputException("Record Type", "Invalid Value");
-		}
-		if (record.getAsString(Record.STATUS).equals("approved"))
-			throw new DataInputException("Record", "Record not editable");
-		DBConnection conn = FREDUtils.getFREDConnection(state);
-		ResultSet rs = conn.executeQuery("SELECT Sample_ID FROM Record WHERE Record_ID = " + recID);
-		rs.next();
-		this.sample = new Sample(rs.getInt(1), user, state);
-		setField(WORKING_COMMENTS, record.getAsString(Record.WORKING_COMMENTS));
 		try {
-			setField(SECURITY_TYPE, String.valueOf(FREDUtils.getSecurityType(record.getAsInt(Record.SECURITY_CLASS_ID), user, state)));
-		} catch (Exception e) {
-			setField(SECURITY_TYPE, "21");
+			this.user = user;
+			this.state = state;
+			this.recordType = recordType;
+			if (recordType.equals("SMP")) {
+				this.record = (SampPropRecord) SampPropRecord.getData(recID, user, state, true);
+			} else if (recordType.equals("ADO")) {
+				this.record = (AdoptionRecord) AdoptionRecord.getData(recID, user, state, true);
+			} else if (recordType.equals("PAL")) {
+				this.record = (PaleontologyRecord) PaleontologyRecord.getData(recID, user, state, true);
+			} else {
+				throw new DataInputException("Record Type", "Invalid Value");
+			}
+			if (record.getAsString(Record.STATUS).equals("approved"))
+				throw new DataInputException("Record", "Record not editable");
+			DBConnection conn = FREDUtils.getFREDConnection(state);
+			ResultSet rs = conn.executeQuery("SELECT Sample_ID FROM Record WHERE Record_ID = " + recID);
+			rs.next();
+			this.sample = new Sample(rs.getInt(1), user, state);
+			setField(WORKING_COMMENTS, record.getAsString(Record.WORKING_COMMENTS));
+			try {
+				setField(SECURITY_TYPE, String.valueOf(FREDUtils.getSecurityType(record.getAsInt(Record.SECURITY_CLASS_ID), user, state)));
+			} catch (Exception e) {
+				setField(SECURITY_TYPE, "21");
+			}
+			folder = new Folder(record.getAsInt(Record.WORKING_FOLDER_ID), user, state);
+		} catch (TaxonomicListException e) {
+			throw new DataInputException("Taxonomic List",  "Data Error");
 		}
-		folder = new Folder(record.getAsInt(Record.WORKING_FOLDER_ID), user, state);
 	}
 
 	public int getFieldCount() {
 		return fields.length;
 	}
 
-	public void setField(int field, String value) throws DataInputException {
+	public void setField(int field, String value) throws DataInputException, TaxonomicListException {
 		if (value != null && (value.equals("") || value.equals("-") || value.equals("null")))
 			value = null;
 		if (value != null) {
@@ -100,7 +104,7 @@ public abstract class RecordDE implements DataEntryForm {
 		savedFlag = false;
 	}
 
-	protected void parseField(int field, String value) throws DataInputException {
+	protected void parseField(int field, String value) throws DataInputException, TaxonomicListException {
 		switch (field) {
 			case SECURITY_TYPE :
 				try {

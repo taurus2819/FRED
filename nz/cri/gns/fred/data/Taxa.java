@@ -3,11 +3,16 @@ package nz.cri.gns.fred.data;
 public class Taxa {
 
 	private String taxonomicName;
-	private Integer taxaId;
+	private Integer taxaID;
 	private String author;
 	private Integer specimenCount;
 	private String specimenCoords;
 	private String comments;
+	private Integer groupID;
+	private String groupName;
+
+	public Taxa() {
+	}
 
 	public Taxa(String taxonomicName) {
 		this.taxonomicName = taxonomicName;
@@ -25,12 +30,12 @@ public class Taxa {
 		return taxonomicName;
 	}
 
-	public void setTaxaId(Integer taxaId) {
-		this.taxaId = taxaId;
+	public void setTaxaID(Integer taxaID) {
+		this.taxaID = taxaID;
 	}
 
-	public Integer getTaxaId() {
-		return taxaId;
+	public Integer getTaxaID() {
+		return taxaID;
 	}
 
 	public void setAuthor(String author) {
@@ -63,5 +68,21 @@ public class Taxa {
 
 	public String getComments() {
 		return comments;
+	}
+
+	public void setGroupID(Integer groupID) {
+		this.groupID = groupID;
+	}
+
+	public Integer getGroupID() {
+		return groupID;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+
+	public String getGroupName() {
+		return groupName;
 	}
 }

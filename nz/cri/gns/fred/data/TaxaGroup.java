@@ -5,8 +5,11 @@ import java.util.Vector;
 public class TaxaGroup {
 
 	private String groupName;
-	private Integer groupId;
+	private Integer groupID;
 	private Vector taxaList;
+
+	public TaxaGroup() {
+	}
 
 	public TaxaGroup(String groupName) {
 		this.groupName = groupName;
@@ -24,12 +27,12 @@ public class TaxaGroup {
 		return groupName;
 	}
 	
-	public void setGroupId(Integer groupId) {
-		this.groupId = groupId;
+	public void setGroupID(Integer groupID) {
+		this.groupID = groupID;
 	}
 
-	public Integer getGroupId() {
-		return groupId;
+	public Integer getGroupID() {
+		return groupID;
 	}
 
 	public void setTaxaList(Vector taxaList) {

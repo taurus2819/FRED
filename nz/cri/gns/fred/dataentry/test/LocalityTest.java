@@ -21,6 +21,7 @@ import nz.cri.gns.fred.dataentry.DataEntryForm;
 import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
 import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.fred.dataentry.LocalityDE;
+import nz.cri.gns.fred.dataentry.TaxonomicListException;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.test.TestingPageState;
 
@@ -32,7 +33,7 @@ import nz.cri.gns.test.TestingPageState;
  */
 public class LocalityTest extends TestCase {
 
-	public void _testSave() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public void _testSave() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);

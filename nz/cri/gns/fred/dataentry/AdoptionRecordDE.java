@@ -38,27 +38,29 @@ public class AdoptionRecordDE extends RecordDE {
 	public AdoptionRecordDE(int recID, User user, PageState state)
 		throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
 		super(recID, "ADO", user, state);
-		setField(ADOPTION_DATE,
-			DataEntryUtils.reverseParseDate(
-				record.getAsDate(Record.ADOPTION_DATE),
-				record.getAsString(Record.ADOPTION_DATE_ROUNDING)));
-		if (record.get(Record.COLLECTOR) != null) {
-			StringBuffer adoptName = new StringBuffer();
-			for (Iterator i = record.getAsVector(Record.ADOPTOR).iterator(); i.hasNext();) {
-				KeyValueObject adopt = (KeyValueObject) i.next();
-				adoptName.append(adopt.getValue() + "\n");
+		try {
+			setField(ADOPTION_DATE,
+				DataEntryUtils.reverseParseDate(
+					record.getAsDate(Record.ADOPTION_DATE),
+					record.getAsString(Record.ADOPTION_DATE_ROUNDING)));
+			if (record.get(Record.COLLECTOR) != null) {
+				StringBuffer adoptName = new StringBuffer();
+				for (Iterator i = record.getAsVector(Record.ADOPTOR).iterator(); i.hasNext();) {
+					KeyValueObject adopt = (KeyValueObject) i.next();
+					adoptName.append(adopt.getValue() + "\n");
+				}
+				setField(ADOPTORS, adoptName.toString());
 			}
-			setField(ADOPTORS, adoptName.toString());
-		}
-		setField(ADO_AGE_START, record.getAsString(Record.ADOPTED_STAGE_LOWER_ID));
-		setField(ADO_START_MOD, record.getAsString(Record.ADOPTED_STAGE_LOWER_MOD));
-		setField(ADO_AGE_STOP, record.getAsString(Record.ADOPTED_STAGE_UPPER_ID));
-		setField(ADO_STOP_MOD, record.getAsString(Record.ADOPTED_STAGE_UPPER_MOD));
-		setField(ADO_COMMENTS, record.getAsString(Record.COMMENTS));
+			setField(ADO_AGE_START, record.getAsString(Record.ADOPTED_STAGE_LOWER_ID));
+			setField(ADO_START_MOD, record.getAsString(Record.ADOPTED_STAGE_LOWER_MOD));
+			setField(ADO_AGE_STOP, record.getAsString(Record.ADOPTED_STAGE_UPPER_ID));
+			setField(ADO_STOP_MOD, record.getAsString(Record.ADOPTED_STAGE_UPPER_MOD));
+			setField(ADO_COMMENTS, record.getAsString(Record.COMMENTS));
+		} catch (TaxonomicListException e) {}
 	}
 
 	protected void parseField(int field, String value)
-		throws DataInputException {
+		throws DataInputException, TaxonomicListException {
 		super.parseField(field, value);
 		try {
 			DBConnection conn = FREDUtils.getFREDConnection(state);

@@ -46,7 +46,9 @@ public class OutcropLocalityDE extends LocalityDE {
 		if (field < 30) {
 			super.setField(field, value);
 		} else {
-			sampPropRecordDE.setField(field, value);
+			try {
+				sampPropRecordDE.setField(field, value);
+			} catch (TaxonomicListException e) {}
 		}
 		savedFlag = false;
 	}

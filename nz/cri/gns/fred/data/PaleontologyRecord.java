@@ -100,19 +100,19 @@ public class PaleontologyRecord extends Record {
 			Vector taxaGroupVec = new Vector();
 			while (rs.next()) {
 				TaxaGroup taxaGroup = new TaxaGroup(rs.getString(1));
-				taxaGroup.setGroupId(
+				taxaGroup.setGroupID(
 					((rs.getString(2) != null)
 						? new Integer(rs.getInt(2))
 						: null));
 				query =
 					"SELECT P.Taxonomic_Name, P.Taxa_ID, T.Author, P.Specimen_Count, P.Specimen_Coords, P.Comments FROM Pal_List P, Taxonomic_Lookup T WHERE P.Taxa_ID = T.Taxa_ID AND Record_ID = ? AND T.Group_ID = "
-						+ taxaGroup.getGroupId()
+						+ taxaGroup.getGroupID()
 						+ " ORDER BY P.Taxonomic_Name";
 				ResultSet rs2 = conn.executeQuery(query, types, data);
 				Vector taxaVec = new Vector();
 				while (rs2.next()) {
 					Taxa taxa = new Taxa(rs2.getString(1));
-					taxa.setTaxaId(
+					taxa.setTaxaID(
 						((rs2.getString(2) != null)
 							? new Integer(rs2.getInt(2))
 							: null));
@@ -163,7 +163,7 @@ public class PaleontologyRecord extends Record {
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
 	public static Record getData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, InvalidCredentialsException {
-		Record rec = (AdoptionRecord) pool.retrieve(new DataFinder(id));
+		Record rec = (PaleontologyRecord) pool.retrieve(new DataFinder(id));
 		if (forceRefresh && rec != null) {
 			pool.removeMe(rec);
 			rec = null;

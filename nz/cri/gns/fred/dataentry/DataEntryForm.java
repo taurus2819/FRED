@@ -102,7 +102,7 @@ public interface DataEntryForm {
 	
 	public int getFieldCount();
 
-	public void setField(int field, String value) throws DataInputException;
+	public void setField(int field, String value) throws DataInputException, TaxonomicListException;
 
 	public String getField(int field);
 
