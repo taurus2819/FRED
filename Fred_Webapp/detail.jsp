@@ -110,7 +110,7 @@
 				out.println("</td></tr>");
 			}
 			
-			if (userID > 0) {
+			if (userID != 0) {
 				out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 				out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + sampID + "' title='Print' target='print'><img src='images/print.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' width='10' height='1' border='0' /><a href='print_front.jsp?ID=" + sampID + "' class='heading' target='print'>Print Front</a></td></tr>");
 				out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
