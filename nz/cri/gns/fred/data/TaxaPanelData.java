@@ -46,7 +46,7 @@ public class TaxaPanelData {
 			values[TaxaPanel.PANEL_ID] = new Integer(rs.getInt(1));
 			values[TaxaPanel.NAME] = rs.getString(2);
 			rs.close();
-			query = "SELECT taxa_id, taxonomic_name, status FROM taxonomic_lookup WHERE group_id = ? ORDER BY UPPER(taxonomic_name)";
+			query = "SELECT taxa_id, taxonomic_name, status FROM taxonomic_lookup WHERE group_id = ? AND taxonomic_name IS NOT NULL ORDER BY UPPER(taxonomic_name)";
 			rs = conn.executeQuery(query, types, data);
 			Vector appVec = new Vector();
 			Vector provVec = new Vector();
