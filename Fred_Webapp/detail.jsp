@@ -15,6 +15,7 @@
 	User user = getUser(session);
 	String sampID, recID, status = "";
 	int userID = 0, i = 1, userRights = 0, execUp;
+	boolean authorChk = false, sCountChk = false, sCoordChk = false, commChk = true;
 
 	if (user != null) { userID = user.getPersonId(); }
 
@@ -38,7 +39,12 @@
 	if (request.getParameter("ID") != null) {
 
 		sampID = request.getParameter("ID");
-
+		
+		if (request.getParameter("AuthorChk") != null && request.getParameter("AuthorChk").equals("true")) { authorChk = true; }
+		if (request.getParameter("SCountChk") != null && request.getParameter("SCountChk").equals("true")) { sCountChk = true; }
+		if (request.getParameter("SCoordChk") != null && request.getParameter("SCoordChk").equals("true")) { sCoordChk = true; }
+		if (request.getParameter("CommChk") != null && request.getParameter("CommChk").equals("false")) { commChk = false; }
+		
 		//check if user can view this record and that record exists
 		rs = statement.executeQuery("SELECT Status, User_Rights FROM Sample_Security_View WHERE Sample_ID = " + sampID + " AND (User_ID IS NULL OR User_ID = " + userID + ")");
 		while (rs.next()) { //accumulate rights over multiple folders
@@ -84,9 +90,46 @@
 				out.println("</td></tr>");
 			}
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
-			out.println("<tr><td><a href='print_front.jsp?ID=" + sampID + "' title='Print' target='print'><img src='images/print.gif' width='20' height='20' border='0' /><img src='images/blank.gif' width='10' height='1' border='0' /></a></td><td><a href='print_front.jsp?ID=" + sampID + "' class='heading' target='print'>Print Front</a></td></tr>");
+			out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + sampID + "' title='Print' target='print'><img src='images/print.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' width='10' height='1' border='0' /><a href='print_front.jsp?ID=" + sampID + "' class='heading' target='print'>Print Front</a></td></tr>");
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
+			out.println("<tr><td class='heading' colspan='2' align='center'>Taxonomic List Options</td></tr>");
+			out.println("<form name='TaxaForm' method='post' action='detail.jsp'>");
+			out.println("<input type='hidden' name='ID' value='" + sampID + "'>");
+			out.println("<input type='hidden' name='AuthorChk' value='" + authorChk + "'>");
+			out.println("<input type='hidden' name='SCountChk' value='" + sCountChk + "'>");
+			out.println("<input type='hidden' name='SCoordChk' value='" + sCoordChk + "'>");
+			out.println("<input type='hidden' name='CommChk' value='" + commChk + "'>");
+			out.print("<tr><td colspan='2' class='heading'>");
+			if (authorChk) {
+				out.print("<a href='#' onClick='document.TaxaForm.AuthorChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
+			} else {
+				out.print("<a href='#' onClick='document.TaxaForm.AuthorChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
+			}
+			out.println("</a><img src='images/blank.gif' width='10' height='1' />Author</td></tr>");
+			out.print("<tr><td colspan='2' class='heading'>");
+			if (sCountChk) {
+				out.print("<a href='#' onClick='document.TaxaForm.SCountChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
+			} else {
+				out.print("<a href='#' onClick='document.TaxaForm.SCountChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
+			}
+			out.println("</a><img src='images/blank.gif' width='10' height='1' />Specimen Count</td></tr>");
+			out.print("<tr><td colspan='2' class='heading'>");
+			if (sCoordChk) {
+				out.print("<a href='#' onClick='document.TaxaForm.SCoordChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
+			} else {
+				out.print("<a href='#' onClick='document.TaxaForm.SCoordChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
+			}
+			out.println("</a><img src='images/blank.gif' width='10' height='1' />Specimen Coord</td></tr>");
+			out.print("<tr><td colspan='2' class='heading'>");
+			if (commChk) {
+				out.print("<a href='#' onClick='document.TaxaForm.CommChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
+			} else {
+				out.print("<a href='#' onClick='document.TaxaForm.CommChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
+			}
+			out.println("</a><img src='images/blank.gif' width='10' height='1' />Comments</td></tr>");
+			out.println("</form>");
 			out.println("</table>");
-
+			
 			drawEndNavigation(out);
 
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
@@ -345,10 +388,20 @@
 							out.println("<tr><td colspan='4' class='heading'>" + rs2.getString(2) + "</td></tr>");
 							rs3 = statement3.executeQuery("SELECT * FROM Pal_List WHERE Record_ID = " + recID + " AND Group_ID = " + rs2.getString(1) + " AND Taxonomic_Name IS NOT NULL");
 							if (rs3.next()) {
-								out.println("<tr class='heading'><td>Taxonomic Name</td><td>Spec Count</td><td>Spec Coords</td><td>Comments</td></tr>");
-								rs3 = statement3.executeQuery("SELECT Taxonomic_Name, Specimen_Count, Specimen_Coords, Comments FROM Pal_List WHERE Record_ID = " + recID + " AND Group_ID = " + rs2.getString(1) + " ORDER BY Taxonomic_Name");
+								out.print("<tr class='heading'><td>Taxonomic Name&nbsp;&nbsp;</td>");
+								if (authorChk) { out.print("<td>Author&nbsp;&nbsp;</td>"); }
+								if (sCountChk) { out.print("<td>Spec Count&nbsp;&nbsp;</td>"); }
+								if (sCoordChk) { out.print("<td>Spec Coord&nbsp;&nbsp;</td>"); }
+								if (commChk) { out.print("<td>Comments&nbsp;&nbsp;</td>"); }
+								out.println("</tr>");
+								rs3 = statement3.executeQuery("SELECT P.Taxonomic_Name, T.Author, P.Specimen_Count, P.Specimen_Coords, P.Comments FROM Pal_List P, Taxonomic_Lookup T WHERE P.Taxa_ID = T.Taxa_ID AND Record_ID = " + recID + " AND T.Group_ID = " + rs2.getString(1) + " ORDER BY P.Taxonomic_Name");
 								while (rs3.next()) {
-									out.println("<tr><td>" + rs3.getString(1) + "</td><td>" + noNulls(rs3.getString(2)) + "</td><td>" + noNulls(rs3.getString(3)) + "</td><td>" + noNulls(rs3.getString(4)) + "</td></tr>");
+									out.print("<tr><td>" + rs3.getString(1) + "&nbsp;&nbsp;</td>");
+									if (authorChk) { out.print("<td><i>" + noNulls(rs3.getString(2)) + "</i>&nbsp;&nbsp;</td>"); }
+									if (sCountChk) { out.print("<td>" + noNulls(rs3.getString(3)) + "&nbsp;&nbsp;</td>"); }
+									if (sCoordChk) { out.print("<td>" + noNulls(rs3.getString(4)) + "&nbsp;&nbsp;</td>"); }
+									if (commChk) { out.print("<td>" + noNulls(rs3.getString(5)) + "&nbsp;&nbsp;</td>"); }
+									out.println("</tr>");
 								}
 							} else {
 								out.println("<tr><td colspan='4'>No fossils listed</td></tr>");
