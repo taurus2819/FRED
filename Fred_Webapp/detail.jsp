@@ -227,17 +227,13 @@
 				if (origID != -1) {
 					Datum datum = sr.getOrigCoordDatum();
 					Datum.Coordinate coord = sr.getOrigCoordAsCoord();	
-					if (!(datum instanceof NZGD49) && !(datum instanceof NZMG)) {
+					if (!(datum.getName().equals("NZGD49") && !(datum.getName().equals("NZMG")))) {
 						if (coord instanceof Datum.LatLong) {
 							out.print("<tr><td class='heading'>Lat/Long</td>");
 						} else {
 							out.print("<tr><td class='heading'>Grid Ref</td>");
 						}
 						out.println("<td>" + datum.getHumanStringFor(coord).replaceAll("Geographic ", "") + "</td></tr>");
-						//if (datum instanceof NZMS260) {
-						//	NZMG nzmg2 = (NZMG) DatumFactory.createDatum("NZMG");
-						//	out.println("<tr><td class='heading'>Grid Ref</td><td>" + nzmg2.getHumanStringFor(((NZMS260) datum).convertToDatum(nzmg2, coord)) + "</td></tr>");
-						//}
 					}
 					try {
 						Datum nzmgDatum = DatumFactory.createDatum("NZMG");
