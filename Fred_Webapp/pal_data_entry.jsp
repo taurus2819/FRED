@@ -174,7 +174,7 @@ function parseTaxa(taxa) {
 		//form creation if proper rights
 		if (((userRights & 4) != 0 && recID.equals("0")) || ((userRights & 2) !=0 && recID != null)) {
 
-			out.println("<form name='form1' method='get' action='al_data_proc.jsp'>");
+			out.println("<form name='form1' method='post' action='pal_data_proc.jsp'>");
 			out.println("<input type='hidden' name='FoldID' value='" + foldID + "'>");
 			out.println("<input type='hidden' name='RecID' value='" + recID + "'>");
 			out.println("<input type='hidden' name='SampID' value='" + sampID + "'>");
@@ -209,6 +209,7 @@ function swapSection(frm){
 	} else {
 		frm.SectID.options.length = 1;
 	}
+	frm.SectID.options.selectedIndex = 0;
 }
 </script>
 

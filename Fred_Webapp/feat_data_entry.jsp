@@ -68,14 +68,14 @@ function submitForm (form) {
 
 function checkForm(form) {
 	with (form) {
-		if (FeatName.value == "") {
-			alert ("Please enter a name");
-			FeatName.select();
-			return false;
-		}
 		if (parseCoord(form, Coord.value) == 0) {
 			alert ("Please enter a valid coordinate (or leave field blank) - use the builder");
 			Coord.select();
+			return false;
+		}
+		if (FeatName.value == "" && Coord.value == "") {
+			alert ("Please either enter a name or a coordinate");
+			FeatName.select();
 			return false;
 		}
 	}
