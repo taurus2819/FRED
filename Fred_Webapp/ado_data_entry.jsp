@@ -1,5 +1,5 @@
 <%@		page extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*"
+		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, java.text.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -25,10 +25,12 @@
 	ResultSet rs;
 	DocumentAttacher attacher = DocumentAttacher.createFREDDocumentAttacher(session, application);
 	User user = getUser(session);
-	String recID = "0", loadRecID, foldID, sampID, workComm = "", dateRnd = "", adoDateUnk = "", adoptor = "", stageStart = null, startMod = "", stageStop = null, stopMod = "", comm = "";
+	String recID = "0", loadRecID, foldID, sampID, workComm = "", adoDate = "", adoptor = "", stageStart = null, startMod = "", stageStop = null, stopMod = "", comm = "";
 	int userID = user.getPersonId(), userRights = 0, execUp;
-	java.util.Date adoDate = new java.util.Date();
 	ComboDescriptor cd;
+	SimpleDateFormat dateFormatter = new SimpleDateFormat ("d/M/yyyy");
+	SimpleDateFormat monthDateFormatter = new SimpleDateFormat ("M/yyyy");
+	SimpleDateFormat yearDateFormatter = new SimpleDateFormat ("yyyy");
 
 	ExtranetTemplate et = getExtranetTemplate();
 
@@ -42,11 +44,11 @@ function saveForm (form) {
 }
 
 function submitForm (form) {
-	form.SaveType.value = "Submit";
 	with (form) {
-		if (AdoDateUnk.checked == true) {
-			alert ("Please enter an adoption date (uncheck Unknown)");
-			AdoDateUnk.focus();
+		SaveType.value = "Submit";
+		if (AdoDate.value == "") {
+			alert ("Please enter an adoption date");
+			AdoDate.select();
 			return false;
 		}
 		if (Adoptor.value == "") {
@@ -60,6 +62,11 @@ function submitForm (form) {
 
 function checkForm(form) {
 	with (form) {
+		if (parseDate(AdoDate.value, DateRnd) == 0) {
+			alert ("Please enter a valid date");
+			AdoDate.select();
+			return false;
+		}
 		if (parseDoubleDropDown(StageStart.value, StageStop.value) == 0) {
 			alert ("Please enter a valid Stage");
 			InfStageStart.focus();
@@ -67,6 +74,32 @@ function checkForm(form) {
 		}
 	}
 	return true;
+}
+
+function parseDate(date, dateRnd) {
+	var day, month, year;
+	if (date == "") { return 1; }
+	if (date.lastIndexOf("/") == date.length - 1) { return 0; } //ends with slash
+	if (date.indexOf("/") == -1 && date.length == 4 && !isNaN(date)) { //year only
+		dateRnd.value = "Year"
+		return 1;
+	}
+	if (date.indexOf("/") == date.lastIndexOf("/")) {
+		dateRnd.value = "Month"
+		day = 1;
+		month = date.substring(0, date.indexOf("/"));
+		year = date.substring(date.indexOf("/") + 1, date.length);
+	} else {
+		day = date.substring(0, date.indexOf("/"));
+		month = date.substring(date.indexOf("/") + 1, date.lastIndexOf("/"));
+		year = date.substring(date.lastIndexOf("/") + 1, date.length);
+	}
+	if (isNaN(day) || parseInt(day, 10) < 0 || parseInt(day, 10) > 31) { return 0; } //bad day
+	if (isNaN(month) || parseInt(month, 10) < 0 || parseInt(month, 10) > 12) { return 0; } //bad month
+	if (isNaN(year) || year.length != 4) { return 0; } //bad year
+	if (parseInt(month, 10) == 2 && parseInt(day, 10) > 28) { return 0; } //bad Feb
+	if ((parseInt(month, 10) == 4 || parseInt(month, 10) == 6 || parseInt(month, 10) == 9 || parseInt(month, 10) == 11) && parseInt(day, 10) > 30) { return 0; } //bad 30 day months
+	return 1;
 }
 
 function parseDoubleDropDown(first, second) {
@@ -107,10 +140,13 @@ function parseDoubleDropDown(first, second) {
 				rs = statement.executeQuery("SELECT Adoption_Date, Date_Rounding, Comments FROM Adoption WHERE Record_ID = " + loadRecID);
 				if (rs.next()) {
 					if (rs.getString(1) != null) {
-						adoDate = rs.getDate(1);
-						dateRnd = noNulls(rs.getString(2));
-					} else { //no date
-						adoDateUnk = " checked";
+						if (rs.getString(2) == null) {
+							adoDate = dateFormatter.format(rs.getDate(1));
+						} else if (rs.getString(2).equals("Month")) {
+							adoDate = monthDateFormatter.format(rs.getDate(1));
+						} else {
+							adoDate = yearDateFormatter.format(rs.getDate(1));
+						}
 					}
 					comm = noNulls(rs.getString(3));
 				}
@@ -178,15 +214,9 @@ function parseDoubleDropDown(first, second) {
 			}
 %>
 			</td></tr>
-
 			<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>
-
-			<tr><td class='heading'>Adoption Date</td><td></td><td>
-<%			HTMLUtils.makeDateDropBox(new java.io.PrintWriter(out), "AdoDate", "form1", null, null, (byte)(HTMLUtils.DATE | HTMLUtils.MONTH_FULL | HTMLUtils.YEAR), adoDate, null, -50, 0, true);
-%>
-			</td></tr>
-			<tr><td></td><td></td><td><input type='checkbox' name='AdoDateUnk'<%=adoDateUnk%>>Unknown</td></tr>
-			<tr><td></td><td class='smallheading'>Rounding</td><td><input type='radio' name='DateRnd' value='' <%=((dateRnd.equals("")) ? " checked" : "")%>>None<img src='images/blank.gif' width='20' height='1' /><input type='radio' name='DateRnd' value='Month'<%=((dateRnd.equals("Month")) ? " checked" : "")%>>Month<img src='images/blank.gif' width='20' height='1' /><input type='radio' name='DateRnd' value='Year'<%=((dateRnd.equals("Year")) ? " checked" : "")%>>Year</td></tr>
+			<tr><td class='heading'>Adoption Date</td><td></td><td><input type='text' name='AdoDate' value='<%=adoDate%>'></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=Date&Field=AdoDate", "Supp", "width=600,height=450");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
+			<input type='hidden' name='DateRnd' value='' />
 			<tr><td class='heading'>Adoptors</td><td></td><td><textarea name='Adoptor' cols='40' rows='2'><%=adoptor%></textarea></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=Adoptor", "Supp", "width=600,height=350");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
 			<tr><td class='heading'>Adopted Stage</td><td></td><td>
 			<table border='0' cellspacing='0'>

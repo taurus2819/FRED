@@ -46,7 +46,7 @@
 	Statement statement2 = connection.getExtraStatement();
 	ResultSet rs;
 	int userRights = 0, execUp, i;
-	String foldID, sampID, recID, auditID = "", featStatus, adoDate = "", stageID = "";
+	String foldID, sampID, recID, auditID = "", featStatus, adoDate = "", dateRnd = "", stageID = "";
 	User user = getUser(session);
 	int userID = user.getPersonId();
 	long[] adoptID = new long[20];
@@ -88,10 +88,16 @@
 			} else {
 				featStatus = "working";
 			}
-
-			//Adoption Date
-			if (request.getParameter("AdoDateUnk") == null) {
-				adoDate = request.getParameter("AdoDateDay") + "-" + request.getParameter("AdoDateMonth") + "-" + request.getParameter("AdoDateYear");
+			//Dates
+			if (!request.getParameter("AdoDate").equals("")) {
+				dateRnd = request.getParameter("DateRnd");
+				if (dateRnd.equals("Year")) {
+					adoDate = "1/1/" + request.getParameter("AdoDate");
+				} else if (dateRnd.equals("Month")) {
+					adoDate = "1/" + request.getParameter("AdoDate");
+				} else {
+					adoDate = request.getParameter("AdoDate");
+				}
 			}
 			//Adoptor_ID
 			if (!request.getParameter("Adoptor").equals("")) {
@@ -147,7 +153,7 @@
 			}
 
 			//Create ADOPTION entry
-			execUp = statement.executeUpdate("INSERT INTO Adoption (Record_ID, Adoption_Date, Date_Rounding, Adopted_Stage_ID, Comments) VALUES (" + recID + ", TO_DATE('" + adoDate + "'), '" + request.getParameter("DateRnd") + "', " + JspUtils.sqlEscape(stageID) + ", " + JspUtils.sqlEscape(request.getParameter("Comm")) + ")");
+			execUp = statement.executeUpdate("INSERT INTO Adoption (Record_ID, Adoption_Date, Date_Rounding, Adopted_Stage_ID, Comments) VALUES (" + recID + ", TO_DATE('" + adoDate + "'), " + JspUtils.sqlEscape(dateRnd) + ", " + JspUtils.sqlEscape(stageID) + ", " + JspUtils.sqlEscape(request.getParameter("Comm")) + ")");
 
 			//Create ADOPTOR entries
 			for (int j = 0; j < adoptID.length; j++) {

@@ -46,7 +46,7 @@
 	Statement statement2 = connection.getExtraStatement();
 	ResultSet rs;
 	int userRights = 0, execUp, i = -1;
-	String foldID, sampID, recID, auditID = "", featStatus, identifierID = "", palDate = "", stageID = "";
+	String foldID, sampID, recID, auditID = "", featStatus, identifierID = "", palDate = "", dateRnd = "", stageID = "";
 	User user = getUser(session);
 	int userID = user.getPersonId();
 	long[] identID = new long[20];
@@ -88,9 +88,16 @@
 			} else {
 				featStatus = "working";
 			}
-			//Identification Date
-			if (request.getParameter("PalDateUnk") == null) {
-				palDate = request.getParameter("PalDateDay") + "-" + request.getParameter("PalDateMonth") + "-" + request.getParameter("PalDateYear");
+			//Dates
+			if (!request.getParameter("PalDate").equals("")) {
+				dateRnd = request.getParameter("DateRnd");
+				if (dateRnd.equals("Year")) {
+					palDate = "1/1/" + request.getParameter("PalDate");
+				} else if (dateRnd.equals("Month")) {
+					palDate = "1/" + request.getParameter("PalDate");
+				} else {
+					palDate = request.getParameter("PalDate");
+				}
 			}
 			//Identifier_ID
 			if (!request.getParameter("Identifier").equals("")) {
@@ -145,7 +152,7 @@
 			}
 
 			//Create PALEONTOLOGY entry
-			execUp = statement.executeUpdate("INSERT INTO Paleontology (Record_ID, Identification_Date, Date_Rounding, Stage_ID, Stage_Comments, Lab_Section_ID, Lab_Number, Collection_Comments) VALUES (" + recID + ", TO_DATE('" + palDate + "'), '" + request.getParameter("DateRnd") + "', " + JspUtils.sqlEscape(stageID) + ", " + JspUtils.sqlEscape(request.getParameter("StComm")) + ", " + makeDropDownNulls(request.getParameter("SectID")) + ", " + JspUtils.sqlEscape(request.getParameter("LabNum")) + ", " + JspUtils.sqlEscape(request.getParameter("CollComm")) + ")");
+			execUp = statement.executeUpdate("INSERT INTO Paleontology (Record_ID, Identification_Date, Date_Rounding, Stage_ID, Stage_Comments, Lab_Section_ID, Lab_Number, Collection_Comments) VALUES (" + recID + ", TO_DATE('" + palDate + "'), " + JspUtils.sqlEscape(dateRnd) + ", " + JspUtils.sqlEscape(stageID) + ", " + JspUtils.sqlEscape(request.getParameter("StComm")) + ", " + makeDropDownNulls(request.getParameter("SectID")) + ", " + JspUtils.sqlEscape(request.getParameter("LabNum")) + ", " + JspUtils.sqlEscape(request.getParameter("CollComm")) + ")");
 
 			//Create IDENTIFIERS entries
 			for (int j = 0; j < identID.length; j++) {

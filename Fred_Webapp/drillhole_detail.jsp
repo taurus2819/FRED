@@ -4,9 +4,7 @@
 %><%
 	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
 	Statement statement = connection.statement;
-	Statement statement2 = connection.getExtraStatement();
-	Statement statement3 = connection.getExtraStatement();
-	ResultSet rs, rs2, rs3;
+	ResultSet rs;
 	DecimalFormat nzmg = new DecimalFormat("######0");
 	DecimalFormat latlong = new DecimalFormat("#00.0000");
 	SimpleDateFormat yearFormatter = new SimpleDateFormat ("yyyy");
@@ -119,7 +117,7 @@
 				if (rs.getString(10) != null) {
 					out.print("<tr><td class='heading'>");
 					if (featType.equals("Drillhole")) {
-						out.print("SPUD Date");
+						out.print("Spud Date");
 					} else {
 						out.print("Sampling Start Date");
 					}
@@ -161,7 +159,7 @@
 					if (featType.equals("Drillhole")) {
 						out.print("Termination Depth");
 					} else {
-						out.print("Bottom Horizon");
+						out.print("Base Horizon");
 					}
 					out.println("</td><td>" + rs.getString(18) + " m</td></tr>");
 				}
@@ -200,7 +198,4 @@
 
 	out.println("</td></tr></table>");
 	drawBottom(out, et);
-
-	statement2.close();
-	statement3.close();
 %>

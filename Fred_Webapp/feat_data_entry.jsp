@@ -200,18 +200,15 @@ function parseDate(date, dateRnd) {
 		if (rs.next()) { userRights = rs.getInt(1); }
 
 		if (!featID.equals("0") || request.getParameter("LoadFeatID") != null) { //editing
-
 			//check whether loading data from this feature or other selected feature (by user clicking Copy From)
 			if (request.getParameter("LoadFeatID") != null) {
 				loadFeatID = request.getParameter("LoadFeatID");
 			} else {
 				loadFeatID = featID;
 			}
-
 			//check rights match folder rights and record is editable
-			rs = statement.executeQuery("SELECT Status FROM Sample_All_View WHERE Feature_ID = " + loadFeatID);
-			rs.next();
-			if (((rs.getString(1).equals("working") || rs.getString(1).equals("rejected")) && (userRights & 2) != 0) || (rs.getString(1).equals("waiting") && (userRights & 64) != 0)) {
+			rs = statement.executeQuery("SELECT Status FROM Sample_All_View WHERE Feature_ID = " + featID);
+			if (featID.equals("0") || (rs.next() && ((rs.getString(1).equals("working") || rs.getString(1).equals("rejected")) && (userRights & 2) != 0) || (rs.getString(1).equals("waiting") && (userRights & 64) != 0))) {
 				//OK
 				//Get FieldNum/Drillhole name from original FeatID not LoadFeatID
 				rs = statement.executeQuery("SELECT Feature_Name FROM Sample_All_View WHERE Feature_ID = " + featID);
@@ -300,7 +297,7 @@ function parseDate(date, dateRnd) {
 			}
 			out.println(" Locality</td></tr>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
-			out.println("<tr><td><a href='load_record.jsp?FoldID=" + foldID + "&FeatID=" + featID + "&RecType=LOC' title='Copy From'><img src='images/load.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='load_record.jsp?FoldID=" + foldID + "&FeatID=" + featID + "&RecType=LOC' class='heading'>Copy From</a></td></tr>");
+			out.println("<tr><td><a href='load_record.jsp?FoldID=" + foldID + "&FeatID=" + featID + "&RecType=" + formType + "' title='Copy From'><img src='images/load.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='load_record.jsp?FoldID=" + foldID + "&FeatID=" + featID + "&RecType=" + formType + "' class='heading'>Copy From</a></td></tr>");
 			out.println("<tr><td><a href='#' onClick='if (saveForm(form1)) {form1.submit();}' title='Save'><img src='images/save.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='#' onClick='if (saveForm(form1)) {form1.submit();}' class='heading'>Save</a></td></tr>");
 			if ((userRights & 16) != 0) {
 				out.println("<tr><td><a href='#' onClick='if (submitForm(form1)) {form1.submit();}' title='Submit to Database'><img src='images/submit.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='#' class='heading' onClick='if (submitForm(form1)) {form1.submit();}' class='heading'>Submit</a></td></tr>");
@@ -362,8 +359,8 @@ function parseDate(date, dateRnd) {
 			<tr><td></td><td class='smallheading'>Locality<br />Description</td><td><textarea name='Loc' cols='40' rows='5'><%=loc%></textarea></td></tr>
 <%			if (formType.equals("Drillhole")) {	%>
 				<tr><td class='heading'>Operating Company</td><td></td><td><input type='text' name='Person' value='<%=person%>' size='40'></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=OpComp", "Supp", "width=600,height=450");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
-				<tr><td class='heading'>Drilling Dates</td><td class='smallheading'>Spud Date</td><td><input type='text' name='StartDate' value='<%=startDate%>'></td></tr>
-				<tr><td class='heading'></td><td class='smallheading'>Completion Date</td><td><input type='text' name='FinishDate' value='<%=finishDate%>'></td></tr>
+				<tr><td class='heading'>Drilling Dates</td><td class='smallheading'>Spud Date</td><td><input type='text' name='StartDate' value='<%=startDate%>'></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=Date&Field=StartDate", "Supp", "width=600,height=450");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
+				<tr><td class='heading'></td><td class='smallheading'>Completion Date</td><td><input type='text' name='FinishDate' value='<%=finishDate%>'></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=Date&Field=FinishDate", "Supp", "width=600,height=450");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
 				<input type='hidden' name='StartDateRnd' value='' />
 				<input type='hidden' name='FinishDateRnd' value='' />
 				<tr><td class='heading'>Licence Area</td><td></td><td><input type='text' name='LicArea' value='<%=licArea%>' size='40'></td></tr>
@@ -374,15 +371,15 @@ function parseDate(date, dateRnd) {
 				<tr><td class='heading'></td><td class='smallheading'>Termination (TD)</td><td class='smallheading'><input type='text' name='FinishDepth' value='<%=finishDepth%>'>&nbsp;m</td></tr>		
 <%			} else if (formType.equals("VertSect")) {	%>
 				<tr><td class='heading'>Section Collector</td><td></td><td><input type='text' name='Person' value='<%=person%>' size='40'></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=VertPerson", "Supp", "width=600,height=450");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
-				<tr><td class='heading'>Sampling Dates</td><td class='smallheading'>Start Date</td><td><input type='text' name='StartDate' value='<%=startDate%>'></td></tr>
-				<tr><td class='heading'></td><td class='smallheading'>Completion Date</td><td><input type='text' name='FinishDate' value='<%=finishDate%>'></td></tr>
+				<tr><td class='heading'>Sampling Dates</td><td class='smallheading'>Start Date</td><td><input type='text' name='StartDate' value='<%=startDate%>'></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=Date&Field=StartDate", "Supp", "width=600,height=450");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
+				<tr><td class='heading'></td><td class='smallheading'>Completion Date</td><td><input type='text' name='FinishDate' value='<%=finishDate%>'></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=Date&Field=FinishDate", "Supp", "width=600,height=450");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
 				<input type='hidden' name='StartDateRnd' value='' />
 				<input type='hidden' name='FinishDateRnd' value='' />
 				<tr><td class='heading'>Datum Elevation</td><td></td>
 				<td class='smallheading'><select name='DatumType'><option value='-'<%=((datumType.equals("")) ? " selected" : "")%>>-- Choose --</option><option value='Top'<%=((datumType.equals("Top")) ? " selected" : "")%>>Top</option><option value='Bottom'<%=((datumType.equals("Bottom")) ? " selected" : "")%>>Bottom</option></select>&nbsp;&nbsp;
 				<input type='text' name='DatumEl' value='<%=datumEl%>' size='10'>&nbsp;m&nbsp;asl</td></tr>
 				<tr><td class='heading'>Section Heights</td><td class='smallheading'>Top Horizon</td><td class='smallheading'><input type='text' name='StartDepth' value='<%=startDepth%>'>&nbsp;m</td></tr>
-				<tr><td class='heading'></td><td class='smallheading'>Bottom Horizon</td><td class='smallheading'><input type='text' name='FinishDepth' value='<%=finishDepth%>'>&nbsp;m</td></tr>				
+				<tr><td class='heading'></td><td class='smallheading'>Base Horizon</td><td class='smallheading'><input type='text' name='FinishDepth' value='<%=finishDepth%>'>&nbsp;m</td></tr>				
 				<input type='hidden' name='LicArea' value='' />
 <%			} else {	%>
 				<input type='hidden' name='Person' value='' />

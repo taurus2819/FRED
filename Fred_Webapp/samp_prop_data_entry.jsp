@@ -1,5 +1,5 @@
 <%@		page extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*"
+		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, java.text.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -26,10 +26,12 @@ try {
 	ResultSet rs;
 	DocumentAttacher attacher = DocumentAttacher.createFREDDocumentAttacher(session, application);
 	User user = getUser(session);
-	String recID = "0", loadRecID, foldID, sampID, featID, workComm = "", dateRnd = "", collDateUnk = "", coll = "", stratName = "", inPlace = "", sentTo = "", notColl = "", sig = "", infStageStart = null, infStartMod = "", infStageStop = null, infStopMod = "", knwStageStart = null, knwStartMod = "", knwStageStop = null, knwStopMod = "", prevSamp = "", sampRel = "", stratRel = "", colMap = "", dip = "", dipDir = "", strike = "", facing = "", grainSizeP = null, grainSizeS = null, gSComp = "", bedThick = null, beddingP = null, beddingS = null, weath = null, hard = null, carb = null, colMod = null, colourP = null, colourS = null, wet = "", sedFeat = "", depEnv1 = "", depEnv2 = "", rockNat = "", corr = "";
+	String recID = "0", loadRecID, foldID, sampID, featID, workComm = "", collDate = "", coll = "", stratName = "", inPlace = "", sentTo = "", notColl = "", sig = "", infStageStart = null, infStartMod = "", infStageStop = null, infStopMod = "", knwStageStart = null, knwStartMod = "", knwStageStop = null, knwStopMod = "", prevSamp = "", sampRel = "", stratRel = "", colMap = "", dip = "", dipDir = "", strike = "", facing = "", grainSizeP = null, grainSizeS = null, gSComp = "", bedThick = null, beddingP = null, beddingS = null, weath = null, hard = null, carb = null, colMod = null, colourP = null, colourS = null, wet = "", sedFeat = "", depEnv1 = "", depEnv2 = "", rockNat = "", corr = "";
 	int userID = user.getPersonId(), userRights = 0, execUp;
-	java.util.Date collDate = new java.util.Date();
 	ComboDescriptor cd;
+	SimpleDateFormat dateFormatter = new SimpleDateFormat ("d/M/yyyy");
+	SimpleDateFormat monthDateFormatter = new SimpleDateFormat ("M/yyyy");
+	SimpleDateFormat yearDateFormatter = new SimpleDateFormat ("yyyy");
 
 	ExtranetTemplate et = getExtranetTemplate();
 
@@ -71,6 +73,11 @@ function submitForm (form) {
 
 function checkForm(form) {
 	with (form) {
+		if (parseDate(CollDate.value, DateRnd) == 0) {
+			alert ("Please enter a valid date");
+			CollDate.select();
+			return false;
+		}
 		if (parseSentTo(SentTo.value) == 0) {
 			alert ("Please enter a valid sent to field - use the builder");
 			SentTo.select();
@@ -128,6 +135,32 @@ function checkForm(form) {
 		}
 	}
 	return true;
+}
+
+function parseDate(date, dateRnd) {
+	var day, month, year;
+	if (date == "") { return 1; }
+	if (date.lastIndexOf("/") == date.length - 1) { return 0; } //ends with slash
+	if (date.indexOf("/") == -1 && date.length == 4 && !isNaN(date)) { //year only
+		dateRnd.value = "Year"
+		return 1;
+	}
+	if (date.indexOf("/") == date.lastIndexOf("/")) {
+		dateRnd.value = "Month"
+		day = 1;
+		month = date.substring(0, date.indexOf("/"));
+		year = date.substring(date.indexOf("/") + 1, date.length);
+	} else {
+		day = date.substring(0, date.indexOf("/"));
+		month = date.substring(date.indexOf("/") + 1, date.lastIndexOf("/"));
+		year = date.substring(date.lastIndexOf("/") + 1, date.length);
+	}
+	if (isNaN(day) || parseInt(day, 10) < 0 || parseInt(day, 10) > 31) { return 0; } //bad day
+	if (isNaN(month) || parseInt(month, 10) < 0 || parseInt(month, 10) > 12) { return 0; } //bad month
+	if (isNaN(year) || year.length != 4) { return 0; } //bad year
+	if (parseInt(month, 10) == 2 && parseInt(day, 10) > 28) { return 0; } //bad Feb
+	if ((parseInt(month, 10) == 4 || parseInt(month, 10) == 6 || parseInt(month, 10) == 9 || parseInt(month, 10) == 11) && parseInt(day, 10) > 30) { return 0; } //bad 30 day months
+	return 1;
 }
 
 function parseSentTo(sentTo) {
@@ -195,10 +228,13 @@ function parseSedFeat(sedFeat) {
 				rs = statement.executeQuery("SELECT Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Column_Map, Dip, Dip_Direction, Strike, Facing, Primary_Grainsize_ID, Secondary_Grainsize_ID, Comparator_Used, Bed_Thick_ID, Primary_Bedding_ID, Secondary_Bedding_ID, Weathering_ID, Hardness_ID, Carbonate_ID, Colour_Modifier_ID, Primary_Colour_ID, Secondary_Colour_ID, Wet, Deposition_Env, Rock_Nature, Correspondence FROM Sample_Property WHERE Record_ID = " + loadRecID);
 				if (rs.next()) {
 					if (rs.getString(1) != null) {
-						collDate = rs.getDate(1);
-						dateRnd = noNulls(rs.getString(2));
-					} else { //no date
-						collDateUnk = " checked";
+						if (rs.getString(2) == null) {
+							collDate = dateFormatter.format(rs.getDate(1));
+						} else if (rs.getString(2).equals("Month")) {
+							collDate = monthDateFormatter.format(rs.getDate(1));
+						} else {
+							collDate = yearDateFormatter.format(rs.getDate(1));
+						}
 					}
 					stratName = noNulls(rs.getString(3));
 					inPlace = noNulls(rs.getString(4));
@@ -332,13 +368,8 @@ function parseSedFeat(sedFeat) {
 			}
 %>
 			<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>
-
-			<tr><td class='heading'>Collection Date</td><td></td><td>
-<%			HTMLUtils.makeDateDropBox(new java.io.PrintWriter(out), "CollDate", "form1", null, null, (byte)(HTMLUtils.DATE | HTMLUtils.MONTH_FULL | HTMLUtils.YEAR), collDate, null, -50, 0, true);
-%>
-			</td></tr>
-			<tr><td></td><td></td><td><input type='checkbox' name='CollDateUnk'<%=collDateUnk%>>Unknown</td></tr>
-			<tr><td></td><td class='smallheading'>Rounding</td><td><input type='radio' name='DateRnd' value='' <%=((dateRnd.equals("")) ? " checked" : "")%>>None<img src='images/blank.gif' height='1' width='20' /><input type='radio' name='DateRnd' value='Month'<%=((dateRnd.equals("Month")) ? " checked" : "")%>>Month<img src='images/blank.gif' height='1' width='20' /><input type='radio' name='DateRnd' value='Year'<%=((dateRnd.equals("Year")) ? " checked" : "")%>>Year</td></tr>
+			<tr><td class='heading'>Collection Date</td><td></td><td><input type='text' name='CollDate' value='<%=collDate%>'></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=Date&Field=CollDate", "Supp", "width=600,height=450");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
+			<input type='hidden' name='DateRnd' value='' />
 			<tr><td class='heading'>Collectors</td><td></td><td><textarea name='Coll' cols='40' rows='2'><%=coll%></textarea></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=Coll", "Supp", "width=600,height=400");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
 			<tr><td class='heading'>Strat Name</td><td></td><td><input type='text' name='StratName' size='40' value='<%=stratName%>'></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=StratName", "Supp", "width=600,height=300");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
 			<tr><td class='heading'>Fossils In Place</td><td></td><td><select name='InPlace'><option value='' <%=((inPlace.equals("")) ? " selected" : "")%>>-- Choose --</option><option value='Yes' <%=((inPlace.equals("Yes")) ? " selected" : "")%>>Yes</option><option value='Almost' <%=((inPlace.equals("Almost")) ? " selected" : "")%>>Almost</option><option value='No'>No</option><option value='Unknown' <%=((inPlace.equals("Unknown")) ? " selected" : "")%>>Unknown</option></select></td></tr>

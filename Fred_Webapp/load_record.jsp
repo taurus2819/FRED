@@ -47,16 +47,16 @@
 		recType = request.getParameter("RecType");
 
 		if (recType.equals("SMP")) {
-			returnURL = "samp_prop_data_entry.jsp";
+			returnURL = "samp_prop_data_entry.jsp?";
 		}
 		else if (recType.equals("ADO")) {
-			returnURL = "ado_data_entry.jsp";
+			returnURL = "ado_data_entry.jsp?";
 		}
 		else if (recType.equals("PAL")) {
-			returnURL = "pal_data_entry.jsp";
+			returnURL = "pal_data_entry.jsp?";
 		}
-		else if (recType.equals("LOC")) {
-			returnURL = "feat_data_entry.jsp";
+		else if (recType.equals("Outcrop") || recType.equals("Drillhole") || recType.equals("VertSect")) {
+			returnURL = "feat_data_entry.jsp?Type=" + recType + "&";
 		}
 
 		//get user rights
@@ -67,16 +67,17 @@
 			userRights = 0;
 		}
 
-		if (recType.equals("LOC")) {
+		if (recType.equals("Outcrop") || recType.equals("Drillhole") || recType.equals("VertSect")) {
+			if (recType.equals("VertSect")) { recType = "Vertical Section"; }
 			out.println("<p>Choose the locality to copy from the list below by clicking on the <img src='images/load.gif' width='20' height='20' /> icon</p>");
 
 			//List records
 			if ((userRights & 1) != 0 && returnURL != null) {
-				rs = statement.executeQuery("SELECT DISTINCT Feature_ID, Sample_Name FROM Folder_Content_View WHERE Folder_ID = " + foldID + " AND Feature_ID <> " + featID + " ORDER BY Sample_Name");
+				rs = statement.executeQuery("SELECT DISTINCT Feature_ID, Sample_Name FROM Folder_Content_View WHERE Folder_ID = " + foldID + " AND Feature_ID <> " + featID + " AND Feature_Type = '" + recType + "' ORDER BY Sample_Name");
 				out.println("<table border='0' cellspacing='0' cellpadding='2'>");
 				out.print("<tr class='heading'><td></td><td>Sample</td></tr>");
 				while (rs.next()) {
-					out.print("<tr><td><a href='" + returnURL + "?FoldID=" + foldID + "&FeatID=" + featID + "&LoadFeatID=" + rs.getString(1) + "' title='Copy Locality'><img src='images/load.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' width='10' height='1' /></td><td>" + rs.getString(2) + "</td></tr>");
+					out.print("<tr><td><a href='" + returnURL + "FoldID=" + foldID + "&FeatID=" + featID + "&LoadFeatID=" + rs.getString(1) + "' title='Copy Locality'><img src='images/load.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' width='10' height='1' /></td><td>" + rs.getString(2) + "</td></tr>");
 				}
 			}
 		}

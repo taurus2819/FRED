@@ -158,14 +158,14 @@
 			rs = statement.executeQuery("SELECT Feature_Seq.NEXTVAL FROM DUAL");
 			rs.next();
 			featID = rs.getString(1);
-			execUp = statement.executeUpdate("INSERT INTO Feature (Feature_ID, Site_ID, Audit_ID, Masterfile_ID, Feature_Type, Feature_Name, Locality, Reg_Area_ID, Comments) SELECT " + featID + " AS FeatID, Site_ID, " + auditID + " AS AuditID, Masterfile_ID, Feature_Type, " + JspUtils.sqlEscape(request.getParameter("NewFeatName")) + " AS FeatName, Locality, Reg_Area_ID, Comments FROM Feature WHERE Feature_ID = " + oldFeatID);
+			execUp = statement.executeUpdate("INSERT INTO Feature (Feature_ID, Site_ID, Audit_ID, Masterfile_ID, Feature_Type, Feature_Name, Locality, Reg_Area_ID, Person_ID, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Drillhole_Licence_Name, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth, Comments) SELECT " + featID + " AS FeatID, Site_ID, " + auditID + " AS AuditID, Masterfile_ID, Feature_Type, " + JspUtils.sqlEscape(request.getParameter("NewFeatName")) + " AS FeatName, Locality, Reg_Area_ID, Person_ID, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Drillhole_Licence_Name, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth, Comments FROM Feature WHERE Feature_ID = " + oldFeatID);
 			rs = statement.executeQuery("SELECT Sample_ID FROM Sample WHERE Feature_ID = " + oldFeatID);
 			while (rs.next()) {
 				oldSampID = rs.getString(1);
 				rs2 = statement2.executeQuery("SELECT Sample_Seq.NEXTVAL FROM DUAL");
 				rs2.next();
 				sampID = rs2.getString(1);
-				execUp = statement2.executeUpdate("INSERT INTO Sample (Sample_ID, Feature_ID, FR_ID, Top_Depth, Bottom_Depth, Drill_Type, Comments) SELECT " + sampID + " AS SampID, " + featID + " AS FeatID, NULL AS FRID, Top_Depth, Bottom_Depth, Drill_Type, Comments FROM Sample WHERE Sample_ID = " + oldSampID);
+				execUp = statement2.executeUpdate("INSERT INTO Sample (Sample_ID, Feature_ID, Top_Depth, Bottom_Depth, Drill_Type_ID, Comments) SELECT " + sampID + " AS SampID, " + featID + " AS FeatID, Top_Depth, Bottom_Depth, Drill_Type_ID, Comments FROM Sample WHERE Sample_ID = " + oldSampID);
 				rs2 = statement2.executeQuery("SELECT Record_ID, Record_Type FROM Record_All_View WHERE Sample_ID = " + oldSampID);
 				while (rs2.next()) {
 					oldRecID = rs2.getString(1);
@@ -184,9 +184,11 @@
 						execUp = statement3.executeUpdate("INSERT INTO Sedimentary_Feature (Record_ID, Sed_Feature_ID, Abundant) SELECT " + recID + " AS RecID, Sed_Feature_ID, Abundant FROM Sedimentary_Feature WHERE Record_ID = " + oldRecID);
 						execUp = statement3.executeUpdate("INSERT INTO Sent_To (Record_ID, Fossil_Group_ID, Person_ID, Lab_ID, Comments) SELECT " + recID + " AS RecID, Fossil_Group_ID, Person_ID, Lab_ID, Comments FROM Sent_To WHERE Record_ID = " + oldRecID);
 					} else if (rs2.getString(2).equals("ADO")) {
-						execUp = statement3.executeUpdate("INSERT INTO Adoption (Record_ID, Adoptor_ID, Adoption_Date, Date_Rounding, Adopted_Stage_ID, Comments) SELECT " + recID + " AS RecID, Adoptor_ID, Adoption_Date, Date_Rounding, Adopted_Stage_ID, Comments FROM Adoption WHERE Record_ID = " + oldRecID);
+						execUp = statement3.executeUpdate("INSERT INTO Adoption (Record_ID, Adoption_Date, Date_Rounding, Adopted_Stage_ID, Comments) SELECT " + recID + " AS RecID, Adoption_Date, Date_Rounding, Adopted_Stage_ID, Comments FROM Adoption WHERE Record_ID = " + oldRecID);
+						execUp = statement3.executeUpdate("INSERT INTO Adoptor (Record_ID, Person_ID) SELECT " + recID + " AS RecID, Person_ID FROM Adoptor WHERE Record_ID = " + oldRecID);
 					} else if (rs2.getString(2).equals("PAL")) {
-						execUp = statement3.executeUpdate("INSERT INTO Paleontology (Record_ID, Identifier_ID, Identification_Date, Date_Rounding, Stage_ID, Stage_Comments, Lab_Section_ID, Lab_Number, Collection_Comments) SELECT " + recID + " AS RecID, Identifier_ID, Identification_Date, Date_Rounding, Stage_ID, Stage_Comments, Lab_Section_ID, Lab_Number, Collection_Comments FROM Paleontology WHERE Record_ID = " + oldRecID);
+						execUp = statement3.executeUpdate("INSERT INTO Paleontology (Record_ID, Identification_Date, Date_Rounding, Stage_ID, Stage_Comments, Lab_Section_ID, Lab_Number, Collection_Comments) SELECT " + recID + " AS RecID, Identification_Date, Date_Rounding, Stage_ID, Stage_Comments, Lab_Section_ID, Lab_Number, Collection_Comments FROM Paleontology WHERE Record_ID = " + oldRecID);
+						execUp = statement3.executeUpdate("INSERT INTO Identifier (Record_ID, Person_ID) SELECT " + recID + " AS RecID, Person_ID FROM Identifier WHERE Record_ID = " + oldRecID);
 						execUp = statement3.executeUpdate("INSERT INTO Pal_List (Pal_List_ID, Record_ID, Group_ID, Taxa_ID, Taxonomic_Name, Specimen_Count, Specimen_Coords, Comments) SELECT Pal_List_Seq.NEXTVAL, " + recID + " AS RecID, Group_ID, Taxa_ID, Taxonomic_Name, Specimen_Count, Specimen_Coords, Comments FROM Pal_List WHERE Record_ID = " + oldRecID);
 					}
 				}

@@ -54,7 +54,7 @@
 	Statement statement2 = connection.getExtraStatement();
 	ResultSet rs;
 	int userRights = 0, execUp, i;
-	String foldID, sampID, recID, auditID = "", featStatus, collDate = "", infStageID = "", knwStageID = "", sRel = "", srLine, srRel, srRelThing, srDistTemp, depEnv;
+	String foldID, sampID, recID, auditID = "", featStatus, collDate = "", dateRnd = "", infStageID = "", knwStageID = "", sRel = "", srLine, srRel, srRelThing, srDistTemp, depEnv;
 	String[] stPersonID = new String[20];
 	String[] stLabID = new String[20];
 	String[] stComm = new String[20];
@@ -112,10 +112,16 @@
 			} else {
 				featStatus = "working";
 			}
-
-			//CollDate
-			if (request.getParameter("CollDateUnk") == null) {
-				collDate = request.getParameter("CollDateDay") + "-" + request.getParameter("CollDateMonth") + "-" + request.getParameter("CollDateYear");
+			//Dates
+			if (!request.getParameter("CollDate").equals("")) {
+				dateRnd = request.getParameter("DateRnd");
+				if (dateRnd.equals("Year")) {
+					collDate = "1/1/" + request.getParameter("CollDate");
+				} else if (dateRnd.equals("Month")) {
+					collDate = "1/" + request.getParameter("CollDate");
+				} else {
+					collDate = request.getParameter("CollDate");
+				}
 			}
 			//Collector_ID
 			if (!request.getParameter("Coll").equals("")) {
@@ -359,7 +365,7 @@
 			}
 
 			//Create SAMPLE_PROPERTY entry
-			execUp = statement.executeUpdate("INSERT INTO Sample_Property (Record_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage_ID, Known_Stage_ID, Column_Map, Dip, Dip_Direction, Strike, Facing, Primary_Grainsize_ID, Secondary_Grainsize_ID, Comparator_Used, Bed_Thick_ID, Primary_Bedding_ID, Secondary_Bedding_ID, Weathering_ID, Hardness_ID, Carbonate_ID, Colour_Modifier_ID, Primary_Colour_ID, Secondary_Colour_ID, Wet, Deposition_Env, Rock_Nature, Correspondence) VALUES (" + recID + ", TO_DATE('" + collDate + "'), '" + request.getParameter("DateRnd") + "', " + JspUtils.sqlEscape(request.getParameter("StratName")) + ", '" + request.getParameter("InPlace") + "', " + JspUtils.sqlEscape(request.getParameter("NotColl")) + ", " + JspUtils.sqlEscape(request.getParameter("Sig")) + ", " + JspUtils.sqlEscape(infStageID) + ", " + JspUtils.sqlEscape(knwStageID) + ", " + JspUtils.sqlEscape(request.getParameter("ColMap")) + ", " + JspUtils.sqlEscape(request.getParameter("Dip")) + ", '" + request.getParameter("DipDir") + "', " + JspUtils.sqlEscape(request.getParameter("Strike")) + ", '" + request.getParameter("Facing") + "', " + makeDropDownNulls(request.getParameter("GrainSizeP")) + ", " + makeDropDownNulls(request.getParameter("GrainSizeS")) + ", '" + request.getParameter("GSComp") + "', " + makeDropDownNulls(request.getParameter("BedThick")) + ", " + makeDropDownNulls(request.getParameter("BeddingP")) + ", " + makeDropDownNulls(request.getParameter("BeddingS")) + ", " + makeDropDownNulls(request.getParameter("Weath")) + ", " + makeDropDownNulls(request.getParameter("Hard")) + ", " + makeDropDownNulls(request.getParameter("Carb")) + ", " + makeDropDownNulls(request.getParameter("ColMod")) + ", " + makeDropDownNulls(request.getParameter("ColourP")) + ", " + makeDropDownNulls(request.getParameter("ColourS")) + ", '" + request.getParameter("Wet") + "', " + JspUtils.sqlEscape(depEnv) + ", " + JspUtils.sqlEscape(request.getParameter("RockNat")) + ", " + JspUtils.sqlEscape(request.getParameter("Corr")) + ")");
+			execUp = statement.executeUpdate("INSERT INTO Sample_Property (Record_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage_ID, Known_Stage_ID, Column_Map, Dip, Dip_Direction, Strike, Facing, Primary_Grainsize_ID, Secondary_Grainsize_ID, Comparator_Used, Bed_Thick_ID, Primary_Bedding_ID, Secondary_Bedding_ID, Weathering_ID, Hardness_ID, Carbonate_ID, Colour_Modifier_ID, Primary_Colour_ID, Secondary_Colour_ID, Wet, Deposition_Env, Rock_Nature, Correspondence) VALUES (" + recID + ", TO_DATE('" + collDate + "'), " + JspUtils.sqlEscape(dateRnd) + ", " + JspUtils.sqlEscape(request.getParameter("StratName")) + ", '" + request.getParameter("InPlace") + "', " + JspUtils.sqlEscape(request.getParameter("NotColl")) + ", " + JspUtils.sqlEscape(request.getParameter("Sig")) + ", " + JspUtils.sqlEscape(infStageID) + ", " + JspUtils.sqlEscape(knwStageID) + ", " + JspUtils.sqlEscape(request.getParameter("ColMap")) + ", " + JspUtils.sqlEscape(request.getParameter("Dip")) + ", '" + request.getParameter("DipDir") + "', " + JspUtils.sqlEscape(request.getParameter("Strike")) + ", '" + request.getParameter("Facing") + "', " + makeDropDownNulls(request.getParameter("GrainSizeP")) + ", " + makeDropDownNulls(request.getParameter("GrainSizeS")) + ", '" + request.getParameter("GSComp") + "', " + makeDropDownNulls(request.getParameter("BedThick")) + ", " + makeDropDownNulls(request.getParameter("BeddingP")) + ", " + makeDropDownNulls(request.getParameter("BeddingS")) + ", " + makeDropDownNulls(request.getParameter("Weath")) + ", " + makeDropDownNulls(request.getParameter("Hard")) + ", " + makeDropDownNulls(request.getParameter("Carb")) + ", " + makeDropDownNulls(request.getParameter("ColMod")) + ", " + makeDropDownNulls(request.getParameter("ColourP")) + ", " + makeDropDownNulls(request.getParameter("ColourS")) + ", '" + request.getParameter("Wet") + "', " + JspUtils.sqlEscape(depEnv) + ", " + JspUtils.sqlEscape(request.getParameter("RockNat")) + ", " + JspUtils.sqlEscape(request.getParameter("Corr")) + ")");
 
 			//Create COLLECTORS entries
 			for (int j = 0; j < collID.length; j++) {

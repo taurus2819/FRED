@@ -26,7 +26,7 @@
 	ComboDescriptor cd;
 	User user = getUser(session);
 	int userID = user.getPersonId(), execUp;
-	String mfID = "0";
+	String mfID = "0", field = "x";
 
 
 	ExtranetTemplate et = new ExtranetTemplate();
@@ -40,6 +40,9 @@
 
 	out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 	out.println("<tr><td>");
+	
+	if (request.getParameter("Field") != null) { field = request.getParameter("Field"); }
+	
 %>
 
 <script language='JavaScript'>
@@ -88,6 +91,10 @@ function saveData(type) {
 		}
 		else if (type == "Recoll") {
 			window.opener.form1.Recoll.value = parseDropDown(SampName.value);
+			window.close();
+		}
+		else if (type == "Date") {
+			window.opener.form1.<%=field%>.value = parseDate(DateDay.value, DateMonth.value, DateYear.value, DateRnd);
 			window.close();
 		}
 		else if (type == "FeatPer") {
@@ -143,6 +150,42 @@ function saveData(type) {
 				window.opener.form1.Taxa.value = window.opener.form1.Taxa.value + parseDropDown(Group.value) + "*" + TaxaName.value + "*" + Author.value + "*" + SpecCount.value + "*" + SpecCoord.value + "*" + Comm.value + "\n";
 			}
 		}
+	}
+}
+
+function parseDate(day, montha, year, rnd) {
+	var month
+	if (montha == "JAN") {
+		month = "1";
+	} else if (montha == "FEB") {
+		month = "2";
+	} else if (montha == "MAR") {
+		month = "3";
+	} else if (montha == "APR") {
+		month = "4";
+	} else if (montha == "MAY") {
+		month = "5";
+	} else if (montha == "JUN") {
+		month = "6";
+	} else if (montha == "JUL") {
+		month = "7";
+	} else if (montha == "AUG") {
+		month = "8";
+	} else if (montha == "SEP") {
+		month = "9";
+	} else if (montha == "OCT") {
+		month = "10";
+	} else if (montha == "NOV") {
+		month = "11";
+	} else if (montha == "DEC") {
+		month = "12";
+	}
+	if (rnd[0].checked) {
+		return day + "/" + month + "/" + year
+	} else if (rnd[1].checked) {
+		return month + "/" + year;
+	} else {
+		return year;
 	}
 }
 
@@ -257,17 +300,6 @@ function parseDropDown(val) {
 	}
 }
 
-function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
-	if (dateUnk == true) { return ""; }
-	if (dateRnd == "null") {
-		return dateDay + "-" + dateMonth + "-" + dateYear;
-	} else if (dateRnd == "Month") {
-		return dateMonth + "-" + dateYear;
-	} else {
-		return dateYear;
-	}
-}
-
 </script>
 
 <form name='form1' method='post' action='data_entry_supp.jsp'>
@@ -310,11 +342,12 @@ function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
 			out.println("<tr><td colspan='2'>Please select a masterfile area from the drop-down list.  The Sample list will then be populated with all submitted samples plus working samples which you have access to in that masterfile area.</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.print("<tr><td class='heading'>Masterfile Area</td><td>");
-			cd = new ComboDescriptor("Masterfile", "Masterfile_ID", "Name");
+			cd = new ComboDescriptor("Folder", "Folder_ID", "Name");
 			cd.name = "MF";
 			cd.prompt = "-- Choose --";
-			cd.orderBy = "Masterfile_ID";
+			cd.orderBy = "Folder_ID";
 			cd.tagParams = "onChange='form1.submit();'";
+			cd.join = "Folder_Type = 'admin'";
 			if (request.getParameter("MF") != null) {
 				cd.selected = request.getParameter("MF");
 				mfID = request.getParameter("MF");
@@ -331,6 +364,20 @@ function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
 			out.println("<tr><td><a href='#' onClick='saveData(\"Recoll\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"Recoll\");return false;' class='heading'>Add to Main Form</a></td></tr>");
+		}
+
+		else if (request.getParameter("Type").equals("Date")) {
+			out.println("<tr><td class='heading' colspan='2'>Date</td></tr>");
+			out.println("<tr><td colspan='2'>Select a date from the drop-down list.  If only the month or year is known then you must still specify a full date, but select the appropriate option</td></tr>");
+			out.println("<tr><td>&nbsp;</td></tr>");
+			out.print("<tr><td class='heading'>Date</td><td>");
+			HTMLUtils.makeDateDropBox(new java.io.PrintWriter(out), "Date", "form1", null, null, (byte)(HTMLUtils.DATE | HTMLUtils.MONTH_FULL | HTMLUtils.YEAR), null, null, -50, 0, true);
+			out.println("</td></tr>");
+			out.println("<tr><td class='heading'>Rounding</td><td><input type='radio' name='DateRnd' value='' checked />None&nbsp;&nbsp;<input type='radio' name='DateRnd' value='Month' />Month&nbsp;&nbsp;<input type='radio' name='DateRnd' value='Year' />Year</td></tr>");
+			out.println("</td></tr></table>");
+			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+			out.println("<tr><td><a href='#' onClick='saveData(\"Date\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"Date\");return false;' class='heading'>Add to Main Form</a></td></tr>");
 		}
 
 		else if (request.getParameter("Type").equals("OpComp")) {
