@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import junit.framework.TestCase;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.fred.AccessDeniedException;
+import nz.cri.gns.db.fred.FREDUtils;
 import nz.cri.gns.db.fred.FullSample;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.ExternalUtils;
@@ -76,6 +77,16 @@ public void testRestrictions() throws SQLException, IOException, AccessDeniedExc
 	} catch (Exception e) {}
 	assertNull(test);
 	System.out.println(f.getAsString(FullSample.SECURITY_CLASS_ID));
+}
+
+public void testDrillholeSamples() throws SQLException, IOException, AccessDeniedException {
+	FullSample.purge();
+	FullSample f = FullSample.getFullSample(3, this.user, this.state);
+	FullSample bf = FREDUtils.getSampleBelow(f, user, this.state);
+	assertEquals(4, bf.getAsInt(FullSample.SAMPLE_ID));
+	FullSample af = FREDUtils.getSampleAbove(f, user, this.state);
+	assertEquals(2, af.getAsInt(FullSample.SAMPLE_ID));
+	assertEquals(3, FullSample.getPoolSize());
 }
 
 }

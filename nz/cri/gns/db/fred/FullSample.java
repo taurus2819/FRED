@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Vector;
 
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.db.pool.Finder;
 import nz.cri.gns.db.pool.Pool;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.ExternalUtils;
-import nz.cri.gns.jsp.FREDConstants;
 import nz.cri.gns.jsp.PageState;
 
 /**
@@ -71,11 +71,12 @@ public class FullSample {
 	public static final int DATUM_ELEVATION = 47;
 	public static final int START_DEPTH = 48;
 	public static final int FINISH_DEPTH = 49;
+	public static final int RECORD = 50;
 
 	private PageState state;
 	private static Pool fullSamplePool = new Pool();
 	private int id;
-	private Object[] values = new Object[50];
+	private Object[] values = new Object[51];
 	private int[] types = { Types.NUMERIC };
 	private Object[] data = new Object[1];
 	private boolean authenticated = false;
@@ -86,12 +87,7 @@ public class FullSample {
 	protected FullSample(int id, PageState state)
 		throws SQLException, IOException {
 		this.state = state;
-		DBConnection conn =
-			ExternalUtils.createDatabaseConnection(
-				state.getSession(),
-				FREDConstants.CONNECTION,
-				FREDConstants.DB_NAME,
-				state.getContext());
+		DBConnection conn = FREDUtils.getFREDConnection(state);
 		this.id = id;
 		fullSamplePool.add(this);
 		String query =
@@ -218,6 +214,15 @@ public class FullSample {
 					? new Double(rs.getDouble(50))
 					: null);
 			rs.close();
+			query = "SELECT Record_ID, Record_Type FROM Record_View WHERE Status = 'approved' AND Sample_ID = ?";
+			rs = conn.executeQuery(query, types, data);
+			Vector rec = new Vector();
+			while (rs.next()) {
+				rec.add(new KeyValueObject(rs.getString(1), rs.getString(2)));
+			}
+			rs.close();
+			values[50] = rec;
+			rs.close();
 			conn.releaseStatement();
 		} catch (SQLException _e) {
 			fullSamplePool.removeMe(this);
@@ -234,7 +239,30 @@ public class FullSample {
 			case SAMPLE_ID :
 			case FEATURE_TYPE :
 			case SAMPLE_NAME :
+			case FR_ID:
+			case FR_NUMBER:
+			case YARD_FR_ID:
+			case YARD_FR_NUMBER:
+			case FEATURE_NAME:
+			case MAP_SHEET:
+			case SERIAL_NUMBER:
+			case RECOLLECTION_NUMBER:
+			case YARD_MAP_SHEET:
+			case YARD_SERIAL_NUMBER:
+			case YARD_RECOLLECTION_NUMBER:
+			case MASTERFILE_ID:
+			case MASTERFILE_NAME:
+			case AUDIT_ID:
 			case SECURITY_CLASS_ID :
+			case SITE_ID:
+			case LATITUDE:
+			case LONGITUDE:
+			case QMAP_SHEET:
+			case NZMG_SHEET:
+			case NZMG_EAST:
+			case NZMG_NORTH:
+			case METHOD:
+			case ACCURACY:
 				return true;
 		}
 		return false;
@@ -285,6 +313,23 @@ public class FullSample {
 			throw new IllegalArgumentException(
 				"Field cannot be returned as a Date, class is "
 					+ values[field].getClass().getName());
+		}
+	}
+
+	/**
+	 * Attempts to return the given field as a Vector.
+	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a Vector.
+	 */
+	public Vector getAsVector(int field) {
+		if (values.length < field)
+			throw new IllegalArgumentException("Invalid field");
+		Object thing = values[field];
+		try {
+			return (Vector) thing;
+		} catch (Exception _e) {
+			throw new IllegalArgumentException(
+				"Field cannot be returned as a Vector, class is "
+					+ thing.getClass().getName());
 		}
 	}
 
@@ -359,6 +404,10 @@ public class FullSample {
 			f.authenticated = true;
 		}
 		return f;
+	}
+
+	public boolean isAuthenticated() {
+		return authenticated;
 	}
 
 	public String toString() {
