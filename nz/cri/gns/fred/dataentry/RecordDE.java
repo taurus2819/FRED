@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
-import nz.cri.gns.fred.data.AccessDeniedException;
 import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.Record;
 import nz.cri.gns.fred.data.Sample;
@@ -43,7 +42,7 @@ public abstract class RecordDE implements DataEntryForm {
 			this.sample = new Sample(sampleID, user, state);
 	}
 
-	public RecordDE(int recID, User user, PageState state) throws InvalidCredentialsException, DataInputException, SQLException, IOException, AccessDeniedException {
+	public RecordDE(int recID, User user, PageState state) throws InvalidCredentialsException, DataInputException, SQLException, IOException {
 		this.user = user;
 		this.state = state;
 		this.record = Record.getData(recID, user, state);
@@ -240,20 +239,17 @@ public abstract class RecordDE implements DataEntryForm {
 		return record.getRecordID();
 	}
 
-	/* (non-Javadoc)
-	 * @see nz.cri.gns.fred.dataentry.DataEntryForm#submit()
-	 */
+
 	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	/* (non-Javadoc)
-	 * @see nz.cri.gns.fred.dataentry.DataEntryForm#delete()
-	 */
 	public void delete() throws IOException, SQLException, InvalidCredentialsException {
-		// TODO Auto-generated method stub
-		
+		if (record != null) {
+			DBConnection conn = FREDUtils.getFREDConnection(state);
+			conn.executeUpdate("DELETE FROM Record WHERE Record_ID = " + record.getRecordID());
+		}
 	}
 
 }

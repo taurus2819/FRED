@@ -82,7 +82,48 @@
 			dataEntryForm.setField(DataEntryForm.KICK_OFF_DEPTH, request.getParameter("StartDepth"));
 			dataEntryForm.setField(DataEntryForm.TERMINATION_DEPTH, request.getParameter("FinishDepth"));
 			
+			//sample property fields
 			dataEntryForm.setField(DataEntryForm.COLLECTION_DATE, request.getParameter("CollDate"));
+			dataEntryForm.setField(DataEntryForm.COLLECTORS, request.getParameter("Coll"));
+			dataEntryForm.setField(DataEntryForm.STRAT_NAME, request.getParameter("StratName"));
+			dataEntryForm.setField(DataEntryForm.FOSSILS_IN_PLACE, request.getParameter("InPlace"));
+			dataEntryForm.setField(DataEntryForm.SENT_TO, request.getParameter("SentTo"));
+			dataEntryForm.setField(DataEntryForm.NOT_COLLECTED, request.getParameter("NotColl"));
+			dataEntryForm.setField(DataEntryForm.SIGNIFICANCE_COMMENTS, request.getParameter("Sig"));
+			dataEntryForm.setField(DataEntryForm.INF_AGE_START, request.getParameter("InfStageStart"));
+			dataEntryForm.setField(DataEntryForm.INF_START_MOD, request.getParameter("InfStartMod"));
+			dataEntryForm.setField(DataEntryForm.INF_AGE_STOP, request.getParameter("InfStageStop"));
+			dataEntryForm.setField(DataEntryForm.INF_STOP_MOD, request.getParameter("InfStopMod"));
+			dataEntryForm.setField(DataEntryForm.KNW_AGE_START, request.getParameter("KnwStageStart"));
+			dataEntryForm.setField(DataEntryForm.KNW_START_MOD, request.getParameter("KnwStartMod"));
+			dataEntryForm.setField(DataEntryForm.KNW_AGE_STOP, request.getParameter("KnwStageStop"));
+			dataEntryForm.setField(DataEntryForm.KNW_STOP_MOD, request.getParameter("KnwStopMod"));
+			dataEntryForm.setField(DataEntryForm.PREVIOUS_SAMPLE, request.getParameter("PrevSamp"));
+			dataEntryForm.setField(DataEntryForm.SAMPLE_RELATIONSHIP, request.getParameter("SampRel"));
+			dataEntryForm.setField(DataEntryForm.STRAT_RELATIONSHIP, request.getParameter("StratRel"));
+			dataEntryForm.setField(DataEntryForm.COLUMN_MAP, request.getParameter("ColMap"));
+			dataEntryForm.setField(DataEntryForm.DIP, request.getParameter("Dip"));
+			dataEntryForm.setField(DataEntryForm.DIP_DIRECTION, request.getParameter("DipDir"));
+			dataEntryForm.setField(DataEntryForm.STRIKE, request.getParameter("Strike"));
+			dataEntryForm.setField(DataEntryForm.FACING, request.getParameter("Facing"));
+			dataEntryForm.setField(DataEntryForm.GRAIN_SIZE_P, request.getParameter("GrainSizeP"));
+			dataEntryForm.setField(DataEntryForm.GRAIN_SIZE_S, request.getParameter("GrainSizeS"));
+			dataEntryForm.setField(DataEntryForm.GS_COMP, request.getParameter("GSComp"));
+			dataEntryForm.setField(DataEntryForm.BEDDING_THICKNESS, request.getParameter("BedThick"));
+			dataEntryForm.setField(DataEntryForm.BEDDING_P, request.getParameter("BeddingP"));
+			dataEntryForm.setField(DataEntryForm.BEDDING_S, request.getParameter("BeddingS"));
+			dataEntryForm.setField(DataEntryForm.WEATHERING, request.getParameter("Weath"));
+			dataEntryForm.setField(DataEntryForm.HARDNESS, request.getParameter("Hard"));
+			dataEntryForm.setField(DataEntryForm.CARBONATE, request.getParameter("Carb"));
+			dataEntryForm.setField(DataEntryForm.COLOUR_MOD, request.getParameter("ColMod"));
+			dataEntryForm.setField(DataEntryForm.COLOUR_P, request.getParameter("ColourP"));
+			dataEntryForm.setField(DataEntryForm.COLOUR_S, request.getParameter("ColourS"));
+			dataEntryForm.setField(DataEntryForm.WET, request.getParameter("Wet"));
+			dataEntryForm.setField(DataEntryForm.SED_FEATURES, request.getParameter("SedFeat"));
+			dataEntryForm.setField(DataEntryForm.DEP_ENVIRONMENT_1, request.getParameter("DepEnv1"));
+			dataEntryForm.setField(DataEntryForm.DEP_ENVIRONMENT_2, request.getParameter("DepEnv2"));
+			dataEntryForm.setField(DataEntryForm.ROCK_NATURE, request.getParameter("RockNat"));
+			dataEntryForm.setField(DataEntryForm.CORRESPONDENCE, request.getParameter("Corr"));
 
 			if (saveType.equals("Submit")) {
 				dataEntryForm.submit();

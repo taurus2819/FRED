@@ -5,8 +5,8 @@ import java.rmi.NotBoundException;
 import java.sql.SQLException;
 
 import junit.framework.TestCase;
+import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
-import nz.cri.gns.fred.data.AccessDeniedException;
 import nz.cri.gns.fred.data.SampPropRecord;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
@@ -37,39 +37,39 @@ public class SampPropRecordTest extends TestCase {
 	}
 
 
-	public void _testPooling() throws NotBoundException, SQLException, IOException, AccessDeniedException {
+	public void _testPooling() throws NotBoundException, SQLException, IOException, InvalidCredentialsException {
 		SampPropRecord.purge();
-		SampPropRecord sv1 = SampPropRecord.getSampPropData(390, this.user, this.state);
-		SampPropRecord sv2 = SampPropRecord.getSampPropData(390, this.user, this.state);
+		SampPropRecord sv1 = (SampPropRecord) SampPropRecord.getData(390, this.user, this.state);
+		SampPropRecord sv2 = (SampPropRecord) SampPropRecord.getData(390, this.user, this.state);
 		assertEquals(sv1.toString(), sv2.toString());
 		assertEquals(1, SampPropRecord.getPoolSize());
-		SampPropRecord sv3 = SampPropRecord.getSampPropData(391, this.user, this.state);
+		SampPropRecord sv3 = (SampPropRecord) SampPropRecord.getData(391, this.user, this.state);
 		assertNotSame(sv1.toString(), sv3.toString());
 		assertEquals(2, SampPropRecord.getPoolSize());
-		SampPropRecord sv4 = SampPropRecord.getSampPropData(390, this.user, this.state);
+		SampPropRecord sv4 = (SampPropRecord) SampPropRecord.getData(390, this.user, this.state);
 		assertEquals(2, SampPropRecord.getPoolSize());
 	}
 	
-	public void _testFRNum() throws SQLException, IOException, AccessDeniedException {
+	public void _testFRNum() throws SQLException, IOException, InvalidCredentialsException {
 		SampPropRecord.purge();
-		SampPropRecord sv = SampPropRecord.getSampPropData(390, this.user, this.state);
+		SampPropRecord sv = (SampPropRecord) SampPropRecord.getData(390, this.user, this.state);
 		String sampName = sv.getAsString(SampPropRecord.SAMPLE_NAME);
 		assertNotNull(sampName);
 		assertEquals("Q22/f7733", sampName);
 		System.out.println(sampName);
 	}
 	
-	public void _testAuthentication() throws SQLException, IOException, AccessDeniedException {
+	public void _testAuthentication() throws SQLException, IOException, InvalidCredentialsException {
 		SampPropRecord.purge();
-		SampPropRecord sp = SampPropRecord.getSampPropData(1140, user, state);
-		SampPropRecord sp1 = SampPropRecord.getSampPropData(1140, null, state);
+		SampPropRecord sp = (SampPropRecord) SampPropRecord.getData(1140, user, state);
+		SampPropRecord sp1 = (SampPropRecord) SampPropRecord.getData(1140, null, state);
 		assertNotNull(sp);
 		assertNull(sp1);
 	}
 	
-	public void testFields() throws SQLException, IOException, AccessDeniedException {
+	public void testFields() throws SQLException, IOException, InvalidCredentialsException {
 		SampPropRecord.purge();
-		SampPropRecord sp = SampPropRecord.getSampPropData(1220, user, state);
+		SampPropRecord sp = (SampPropRecord) SampPropRecord.getData(1220, user, state);
 		for (int i = 0; i < 80; i++) {
 			System.out.println(i + ": " + sp.getAsString(i));
 		}				

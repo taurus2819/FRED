@@ -8,7 +8,6 @@ import junit.framework.TestCase;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
-import nz.cri.gns.fred.data.AccessDeniedException;
 import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
@@ -39,7 +38,7 @@ public class FeatureTest extends TestCase {
 	}
 
 
-	public void testPooling() throws NotBoundException, SQLException, IOException, AccessDeniedException {
+	public void testPooling() throws NotBoundException, SQLException, IOException {
 		Feature.purge();
 		Feature sv1 = new Feature(509, this.user, this.state);
 		Feature sv2 = new Feature(509, this.user2, this.state);
@@ -64,7 +63,7 @@ public class FeatureTest extends TestCase {
 		assertEquals(dhole.getSampleCount(), 5);
 	}
 	
-	public void _testRestrictions() throws SQLException, IOException, AccessDeniedException, InvalidCredentialsException {
+	public void _testRestrictions() throws SQLException, IOException, InvalidCredentialsException {
 		String test = null;
 		Feature.purge();
 		Feature f = new Feature(509, null, state);

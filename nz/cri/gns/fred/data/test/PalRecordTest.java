@@ -6,8 +6,8 @@ import java.sql.SQLException;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
+import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
-import nz.cri.gns.fred.data.AccessDeniedException;
 import nz.cri.gns.fred.data.PaleontologyRecord;
 import nz.cri.gns.fred.data.Taxa;
 import nz.cri.gns.fred.data.TaxaGroup;
@@ -39,21 +39,21 @@ public class PalRecordTest extends TestCase {
 	}
 
 
-	public void testPooling() throws NotBoundException, SQLException, IOException, AccessDeniedException {
+	public void testPooling() throws NotBoundException, SQLException, IOException, InvalidCredentialsException {
 		PaleontologyRecord.purge();
-		PaleontologyRecord sv1 = PaleontologyRecord.getPaleontologyData(781, this.user, this.state);
-		PaleontologyRecord sv2 = PaleontologyRecord.getPaleontologyData(781, this.user, this.state);
+		PaleontologyRecord sv1 = (PaleontologyRecord) PaleontologyRecord.getData(781, this.user, this.state);
+		PaleontologyRecord sv2 = (PaleontologyRecord) PaleontologyRecord.getData(781, this.user, this.state);
 		assertEquals(sv1.toString(), sv2.toString());
 		assertEquals(1, PaleontologyRecord.getPoolSize());
-		PaleontologyRecord sv3 = PaleontologyRecord.getPaleontologyData(223, this.user, this.state);
+		PaleontologyRecord sv3 = (PaleontologyRecord) PaleontologyRecord.getData(223, this.user, this.state);
 		assertNotSame(sv1.toString(), sv3.toString());
 		assertEquals(2, PaleontologyRecord.getPoolSize());
-		PaleontologyRecord sv4 = PaleontologyRecord.getPaleontologyData(781, this.user, this.state);
+		PaleontologyRecord sv4 = (PaleontologyRecord) PaleontologyRecord.getData(781, this.user, this.state);
 		assertEquals(2, PaleontologyRecord.getPoolSize());
 	}
 	
-	public void testPalList() throws NotBoundException, SQLException, IOException, AccessDeniedException {
-		PaleontologyRecord sv1 = PaleontologyRecord.getPaleontologyData(781, this.user, this.state);
+	public void testPalList() throws NotBoundException, SQLException, IOException, InvalidCredentialsException {
+		PaleontologyRecord sv1 = (PaleontologyRecord) PaleontologyRecord.getData(781, this.user, this.state);
 		assertNotNull(sv1.get(PaleontologyRecord.TAXONOMIC_LIST));
 		System.out.println(sv1.getAsVector(PaleontologyRecord.TAXONOMIC_LIST).size());
 		for (Iterator i = sv1.getAsVector(PaleontologyRecord.TAXONOMIC_LIST).iterator(); i.hasNext(); ) {

@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Vector;
 
+import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.pool.Finder;
@@ -208,7 +209,8 @@ public class Record {
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
-	public static Record getData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, AccessDeniedException {
+	public static Record getData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, InvalidCredentialsException {
+		System.out.println("RecordClass");
 		Record rec = (Record) pool.retrieve(new DataFinder(id));
 		if (forceRefresh && rec != null) {
 			pool.removeMe(rec);
@@ -219,7 +221,7 @@ public class Record {
 		}
 		if (!FREDUtils.isAllowedLocality(user, rec.getAsString(FEATURE_SECURITY_CLASS_ID), rec.getAsString(FEATURE_STATUS), rec.getAsString(FEATURE_ID), state)
 				|| !FREDUtils.isAllowedRecord(user, rec.getAsString(SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(RECORD_ID), state)) {
-			throw new AccessDeniedException();
+			throw new InvalidCredentialsException();
 		}
 		return rec;
 	}
@@ -228,7 +230,7 @@ public class Record {
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
-	public static Record getData(int id, User user, PageState state) throws SQLException, IOException, AccessDeniedException {
+	public static Record getData(int id, User user, PageState state) throws SQLException, IOException, InvalidCredentialsException {
 		return getData(id, user, state, false);
 	}
 

@@ -14,7 +14,6 @@ import junit.framework.TestCase;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
-import nz.cri.gns.fred.data.AccessDeniedException;
 import nz.cri.gns.fred.data.SampPropRecord;
 import nz.cri.gns.fred.dataentry.DataEntryForm;
 import nz.cri.gns.fred.dataentry.DataInputException;
@@ -31,7 +30,7 @@ import nz.cri.gns.test.TestingPageState;
  */
 public class RecordTest extends TestCase {
 
-	public static void testLoad() throws NotBoundException, InvalidCredentialsException, IllegalArgumentException, SQLException, IOException, AccessDeniedException, DataInputException {
+	public static void testLoad() throws NotBoundException, InvalidCredentialsException, IllegalArgumentException, SQLException, IOException, DataInputException {
 		SampPropRecord.purge();
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);

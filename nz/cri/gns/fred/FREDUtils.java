@@ -16,7 +16,6 @@ import nz.cri.gns.auth.Right;
 import nz.cri.gns.auth.SecurityClass;
 import nz.cri.gns.auth.SecurityClassAccess;
 import nz.cri.gns.auth.User;
-import nz.cri.gns.fred.data.AccessDeniedException;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
@@ -374,7 +373,6 @@ public class FREDUtils {
 		throws
 			SQLException,
 			IOException,
-			AccessDeniedException,
 			InvalidCredentialsException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		int[] types = { Types.NUMERIC, Types.NUMERIC };
@@ -395,7 +393,6 @@ public class FREDUtils {
 		throws
 			SQLException,
 			IOException,
-			AccessDeniedException,
 			InvalidCredentialsException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		int[] types = { Types.NUMERIC, Types.NUMERIC };

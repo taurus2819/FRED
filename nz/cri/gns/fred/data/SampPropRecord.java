@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
+import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.KeyValueObject;
@@ -384,32 +385,29 @@ public class SampPropRecord extends Record {
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
-	public static SampPropRecord getSampPropData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, AccessDeniedException {
-		SampPropRecord sp = (SampPropRecord) pool.retrieve(new DataFinder(id));
-		if (forceRefresh && sp != null) {
-			pool.removeMe(sp);
-			sp = null;
+	public static Record getData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, InvalidCredentialsException {
+		System.out.println("SampPropRecordClass");
+		Record rec = (SampPropRecord) pool.retrieve(new DataFinder(id));
+		if (forceRefresh && rec != null) {
+			pool.removeMe(rec);
+			rec = null;
 		}
-		if (sp == null) {
-			sp = new SampPropRecord(id, state);
+		if (rec == null) {
+			rec = new SampPropRecord(id, state);
 		}
-		if (!FREDUtils.isAllowedLocality(user, sp.getAsString(FEATURE_SECURITY_CLASS_ID), sp.getAsString(FEATURE_STATUS), sp.getAsString(FEATURE_ID), state)
-				|| !FREDUtils.isAllowedRecord(user, sp.getAsString(SECURITY_CLASS_ID), sp.getAsString(STATUS), sp.getAsString(RECORD_ID), state)) {
-			throw new AccessDeniedException();
+		if (!FREDUtils.isAllowedLocality(user, rec.getAsString(FEATURE_SECURITY_CLASS_ID), rec.getAsString(FEATURE_STATUS), rec.getAsString(FEATURE_ID), state)
+				|| !FREDUtils.isAllowedRecord(user, rec.getAsString(SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(RECORD_ID), state)) {
+			throw new InvalidCredentialsException();
 		}
-		return sp;
+		return rec;
 	}
 
 	/**
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
-	public static SampPropRecord getSampPropData(int id, User user, PageState state) throws SQLException, IOException, AccessDeniedException {
-		return getSampPropData(id, user, state, false);
+	public static Record getData(int id, User user, PageState state) throws SQLException, IOException, InvalidCredentialsException {
+		return getData(id, user, state, false);
 	}
 
-	public String toString() {
-		return (values[0]).toString();
-	}
-	
 }

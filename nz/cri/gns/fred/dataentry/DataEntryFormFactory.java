@@ -5,7 +5,6 @@ import java.sql.SQLException;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
-import nz.cri.gns.fred.data.AccessDeniedException;
 import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.data.Record;
 import nz.cri.gns.jsp.PageState;
@@ -56,7 +55,7 @@ public class DataEntryFormFactory {
 		return toLoc;
 	}
 	
-	public static RecordDE getRecordDataEntryForm(int id, User user, PageState state) throws DataInputException, InvalidCredentialsException, SQLException, IOException, AccessDeniedException {
+	public static RecordDE getRecordDataEntryForm(int id, User user, PageState state) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
 		Record record = Record.getData(id, user, state);
 		if (record.getAsString(Record.RECORD_TYPE).equals("SMP")) {
 			return new SampPropRecordDE(id, user, state);

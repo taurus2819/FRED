@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
+import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.KeyValueObject;
@@ -127,16 +128,28 @@ public class AdoptionRecord extends Record {
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
-	public static AdoptionRecord getAdoptionData(int id, User user, PageState state) throws SQLException, IOException, AccessDeniedException {
-		AdoptionRecord a = (AdoptionRecord) pool.retrieve(new DataFinder(id));
-		if (a == null) {
-			a = new AdoptionRecord(id, state);
+	public static Record getData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, InvalidCredentialsException {
+		Record rec = (AdoptionRecord) pool.retrieve(new DataFinder(id));
+		if (forceRefresh && rec != null) {
+			pool.removeMe(rec);
+			rec = null;
 		}
-		if (!FREDUtils.isAllowedLocality(user, a.getAsString(FEATURE_SECURITY_CLASS_ID), a.getAsString(FEATURE_STATUS), a.getAsString(FEATURE_ID), state)
-				|| !FREDUtils.isAllowedRecord(user, a.getAsString(SECURITY_CLASS_ID), a.getAsString(STATUS), a.getAsString(RECORD_ID), state)) {
-			throw new AccessDeniedException();
+		if (rec == null) {
+			rec = new AdoptionRecord(id, state);
 		}
-		return a;
+		if (!FREDUtils.isAllowedLocality(user, rec.getAsString(FEATURE_SECURITY_CLASS_ID), rec.getAsString(FEATURE_STATUS), rec.getAsString(FEATURE_ID), state)
+				|| !FREDUtils.isAllowedRecord(user, rec.getAsString(SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(RECORD_ID), state)) {
+			throw new InvalidCredentialsException();
+		}
+		return rec;
+	}
+
+	/**
+	 *  Use this to get a new instance of this class. 
+	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
+	 */
+	public static Record getData(int id, User user, PageState state) throws SQLException, IOException, InvalidCredentialsException {
+		return getData(id, user, state, false);
 	}
 
 }

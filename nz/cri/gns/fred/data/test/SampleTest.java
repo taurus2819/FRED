@@ -8,7 +8,6 @@ import junit.framework.TestCase;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
-import nz.cri.gns.fred.data.AccessDeniedException;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
@@ -39,7 +38,7 @@ public class SampleTest extends TestCase {
 	}
 
 
-	public void testPooling() throws NotBoundException, SQLException, IOException, AccessDeniedException {
+	public void testPooling() throws NotBoundException, SQLException, IOException {
 		Sample.purge();
 		Sample sv1 = new Sample(390, this.user, this.state);
 		Sample sv2 = new Sample(390, this.user2, this.state);
@@ -55,7 +54,7 @@ public class SampleTest extends TestCase {
 		assertEquals(sv1.toString(), sv5.toString());
 	}
 	
-	public void testFields() throws IOException, SQLException, AccessDeniedException, InvalidCredentialsException {
+	public void testFields() throws IOException, SQLException, InvalidCredentialsException {
 		Sample.purge();
 		Sample sv = new Sample(601, this.user, this.state);
 		String frNum = sv.getAsString(Sample.FR_NUMBER);
@@ -64,7 +63,7 @@ public class SampleTest extends TestCase {
 		System.out.println(sv.getAsInt(Sample.ACCURACY));
 	}
 	
-	public void testRestrictions() throws SQLException, IOException, AccessDeniedException, InvalidCredentialsException {
+	public void testRestrictions() throws SQLException, IOException, InvalidCredentialsException {
 		String test = null;
 		Sample.purge();
 		Sample f = new Sample(390, null, state);
@@ -88,7 +87,7 @@ public class SampleTest extends TestCase {
 		assertTrue(f2.isUserAuthenticated());		
 	}
 	
-	public void testDrillholeSamples() throws SQLException, IOException, AccessDeniedException, InvalidCredentialsException {
+	public void testDrillholeSamples() throws SQLException, IOException, InvalidCredentialsException {
 		Sample.purge();
 		Sample f = new Sample(3, this.user, this.state);
 		Sample bf = FREDUtils.getSampleBelow(f, user, this.state);
