@@ -1,5 +1,5 @@
 <%@page	extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
+		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
 %><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
@@ -10,8 +10,14 @@
 	SimpleDateFormat yearFormatter = new SimpleDateFormat ("yyyy");
 	SimpleDateFormat monthFormatter = new SimpleDateFormat ("MMM yyyy");
 	User user = getUser(session);
-	String featType = "", featID, palID, status = "";
+	String featType = "", featID, palID, status = "", query;
 	int i = 1, userRights = 0, execUp, userID = 0;
+	int[] types = {Types.NUMERIC};
+	Object data[];
+	data = new Object[1];
+	int[] doubleTypes = {Types.NUMERIC, Types.NUMERIC};
+	Object doubleData[];
+	doubleData = new Object[2];
 
 	if (user != null) { userID = user.getPersonId(); }
 
@@ -22,20 +28,36 @@
 
 	if (request.getParameter("ID") != null) {
 		featID = request.getParameter("ID");
+		session.setAttribute("FeatureID", featID);
+	} else {
+		featID = (String) session.getAttribute("FeatureID");
+	}
+	
+	if (featID != null) {
 
 		//check if user can view this record and that record exists
-		rs = statement.executeQuery("SELECT Status, User_Rights FROM Feature_Security_View WHERE Feature_ID = " + featID + " AND (User_ID IS NULL OR User_ID = " + userID + ")");
+		//rs = statement.executeQuery("SELECT Status, User_Rights FROM Feature_Security_View WHERE Feature_ID = " + featID + " AND (User_ID IS NULL OR User_ID = " + userID + ")");
+		query = "SELECT Status, User_Rights FROM Feature_Security_View WHERE Feature_ID = ? AND (User_ID IS NULL OR User_ID = ?)";
+		doubleData[0] = new Integer(Integer.parseInt(featID));
+		doubleData[1] = new Integer(userID);
+		rs = connection.executeQuery(query, doubleTypes, doubleData);
 		while (rs.next()) { //accumulate rights over multiple folders
 			status = rs.getString(1);
 			userRights = (userRights | rs.getInt(2));
 		}
 
-		rs = statement.executeQuery("SELECT Feature_Name FROM Sample_All_View WHERE Feature_Type <> 'Outcrop' AND Feature_ID = " + featID);
+		//rs = statement.executeQuery("SELECT Feature_Name FROM Sample_All_View WHERE Feature_Type <> 'Outcrop' AND Feature_ID = " + featID);
+		query = "SELECT Feature_Name FROM Sample_All_View WHERE Feature_Type <> 'Outcrop' AND Feature_ID = ?";
+		data[0] = new Integer(Integer.parseInt(featID));
+		rs = connection.executeQuery(query, types, data);
 		
 		if ((userRights & 1) != 0 && rs.next()) { //allowed to view this record and the record is not an outcrop
 
 			out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
-			rs = statement.executeQuery("SELECT S.Feature_Name, S.Feature_Type, S.Masterfile_Name, S.Status, A.Created_By, A.Created_Date, A.Modified_By, A.Modified_Date, A.Submitted_By, A.Submitted_Date, A.Approved_By, A.Approved_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = " + featID);
+			//rs = statement.executeQuery("SELECT S.Feature_Name, S.Feature_Type, S.Masterfile_Name, S.Status, A.Created_By, A.Created_Date, A.Modified_By, A.Modified_Date, A.Submitted_By, A.Submitted_Date, A.Approved_By, A.Approved_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = " + featID);
+			query = "SELECT S.Feature_Name, S.Feature_Type, S.Masterfile_Name, S.Status, A.Created_By, A.Created_Date, A.Modified_By, A.Modified_Date, A.Submitted_By, A.Submitted_Date, A.Approved_By, A.Approved_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = ?";
+			data[0] = new Integer(Integer.parseInt(featID));
+			rs = connection.executeQuery(query, types, data);
 			rs.next();
 			featType = rs.getString(2);
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
@@ -78,7 +100,10 @@
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");
 
-			rs = statement.executeQuery("SELECT NZMG_Sheet, NZMG_East, NZMG_North, Latitude, Longitude, Accuracy, Method, Locality, Person, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Drillhole_Licence_Name, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth FROM Sample_All_View WHERE Feature_ID = " + featID);
+			//rs = statement.executeQuery("SELECT NZMG_Sheet, NZMG_East, NZMG_North, Latitude, Longitude, Accuracy, Method, Locality, Person, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Drillhole_Licence_Name, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth FROM Sample_All_View WHERE Feature_ID = " + featID);
+			query = "SELECT NZMG_Sheet, NZMG_East, NZMG_North, Latitude, Longitude, Accuracy, Method, Locality, Person, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Drillhole_Licence_Name, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth FROM Sample_All_View WHERE Feature_ID = ?";
+			data[0] = new Integer(Integer.parseInt(featID));
+			rs = connection.executeQuery(query, types, data);
 			rs.next();
 
 			out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
@@ -168,13 +193,16 @@
 
 			if (userID != 0) {
 				rs = statement.executeQuery("SELECT Sample_ID, Sample_Name, Drillhole_Depth FROM Sample_All_View WHERE Feature_ID = " + featID + " ORDER BY Top_Depth");
+				query = "SELECT Sample_ID, Sample_Name, Drillhole_Depth FROM Sample_All_View WHERE Feature_ID = ? ORDER BY Top_Depth";
+				data[0] = new Integer(Integer.parseInt(featID));
+				rs = connection.executeQuery(query, types, data);
 				out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
 				out.println("<tr><th>Locality Name<img src='images/blank.gif' height='1' width='20' /></th><th colspan='2'>Sample Depth</th></tr>");
 				while (rs.next()) {
 					out.println("<tr><td class='heading'>" + rs.getString(2) + "<img src='images/blank.gif' height='1' width='20' /></td><td width='25'><img src='images/drill.gif' height='20' width='20' /></td><td><a href='detail.jsp?ID=" + rs.getString(1) + "' class='heading'>" + rs.getString(3) + "</a></td></tr>");
 				}
 			} else {
-				out.println("<tr><td></td></tr><tr><td colspan='2'>More data is available for this locality for logged in users</td></tr>");
+				out.println("<tr><td></td></tr><tr><td colspan='2'>More data is available for this locality for <a href='login.jsp?loginpage=" + URLEncoder.encode("/fred/drillhole_detail.jsp") + "' class='boldlink'>logged</a> in users</td></tr>");
 			}
 			out.println("</table></p>");
 		}
@@ -184,7 +212,7 @@
 			drawEndNavigation(out);
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");
-			out.println("<p><span class='heading'>Error</span></p><p>You do not have rights to view this drillhole, or the drillhole does not exist</p>");
+			out.println("<p>Either there is no record matching the ID you entered or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</p>");
 		}
 	}
 
@@ -193,7 +221,7 @@
 		drawEndNavigation(out);
 		out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 		out.println("<tr><td>");
-		out.println("<p><span class='heading'>Error</span></p><p>Drillhole not specified</p>");
+		out.println("<p>Either there is no record matching the ID you entered or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</p>");
 	}
 
 	out.println("</td></tr></table>");

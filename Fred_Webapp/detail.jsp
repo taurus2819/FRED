@@ -1,5 +1,5 @@
 <%@		page extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, nz.cri.gns.db.metadata.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
+		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, nz.cri.gns.db.metadata.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
 %><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
@@ -45,8 +45,13 @@
 	drawTop(out, et, request, response);
 
 	if (request.getParameter("ID") != null) {
-
 		sampID = request.getParameter("ID");
+		session.setAttribute("SampleID", sampID);
+	} else {
+		sampID = (String) session.getAttribute("SampleID");
+	}
+	
+	if (sampID != null) {
 		
 		if (request.getParameter("AuthorChk") != null && request.getParameter("AuthorChk").equals("true")) { authorChk = true; }
 		if (request.getParameter("SCountChk") != null && request.getParameter("SCountChk").equals("true")) { sCountChk = true; }
@@ -54,9 +59,10 @@
 		if (request.getParameter("CommChk") != null && request.getParameter("CommChk").equals("false")) { commChk = false; }
 		
 		//check if user can view this record and that record exists
-		query = "SELECT Status, User_Rights FROM Sample_Security_View WHERE Sample_ID = ? AND (User_ID IS NULL OR User_ID = " + userID + ")";
-		data[0] = new Integer(Integer.parseInt(sampID));
-		rs = connection.executeQuery(query, types, data);
+		query = "SELECT Status, User_Rights FROM Sample_Security_View WHERE Sample_ID = ? AND (User_ID IS NULL OR User_ID = ?)";
+		doubleData[0] = new Integer(Integer.parseInt(sampID));
+		doubleData[1] = new Integer(userID);
+		rs = connection.executeQuery(query, doubleTypes, doubleData);
 		while (rs.next()) { //accumulate rights over multiple folders
 			status = rs.getString(1);
 			userRights = (userRights | rs.getInt(2));
@@ -103,45 +109,49 @@
 				if (rs.getString(12) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(12))); }
 				out.println("</td></tr>");
 			}
-			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
-			out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + sampID + "' title='Print' target='print'><img src='images/print.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' width='10' height='1' border='0' /><a href='print_front.jsp?ID=" + sampID + "' class='heading' target='print'>Print Front</a></td></tr>");
-			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
-			out.println("<tr><td class='heading' colspan='2' align='center'>Taxonomic List Options</td></tr>");
-			out.println("<form name='TaxaForm' method='post' action='detail.jsp'>");
-			out.println("<input type='hidden' name='ID' value='" + sampID + "'>");
-			out.println("<input type='hidden' name='AuthorChk' value='" + authorChk + "'>");
-			out.println("<input type='hidden' name='SCountChk' value='" + sCountChk + "'>");
-			out.println("<input type='hidden' name='SCoordChk' value='" + sCoordChk + "'>");
-			out.println("<input type='hidden' name='CommChk' value='" + commChk + "'>");
-			out.print("<tr><td colspan='2' class='heading'>");
-			if (authorChk) {
-				out.print("<a href='#' onClick='document.TaxaForm.AuthorChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
-			} else {
-				out.print("<a href='#' onClick='document.TaxaForm.AuthorChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
+			
+			if (userID > 0) {
+				out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
+				out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + sampID + "' title='Print' target='print'><img src='images/print.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' width='10' height='1' border='0' /><a href='print_front.jsp?ID=" + sampID + "' class='heading' target='print'>Print Front</a></td></tr>");
+				out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
+				out.println("<tr><td class='heading' colspan='2' align='center'>Taxonomic List Options</td></tr>");
+				out.println("<form name='TaxaForm' method='post' action='detail.jsp'>");
+				out.println("<input type='hidden' name='ID' value='" + sampID + "'>");
+				out.println("<input type='hidden' name='AuthorChk' value='" + authorChk + "'>");
+				out.println("<input type='hidden' name='SCountChk' value='" + sCountChk + "'>");
+				out.println("<input type='hidden' name='SCoordChk' value='" + sCoordChk + "'>");
+				out.println("<input type='hidden' name='CommChk' value='" + commChk + "'>");
+				out.print("<tr><td colspan='2' class='heading'>");
+				if (authorChk) {
+					out.print("<a href='#' onClick='document.TaxaForm.AuthorChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
+				} else {
+					out.print("<a href='#' onClick='document.TaxaForm.AuthorChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
+				}
+				out.println("</a><img src='images/blank.gif' width='10' height='1' />Author</td></tr>");
+				out.print("<tr><td colspan='2' class='heading'>");
+				if (sCountChk) {
+					out.print("<a href='#' onClick='document.TaxaForm.SCountChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
+				} else {
+					out.print("<a href='#' onClick='document.TaxaForm.SCountChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
+				}
+				out.println("</a><img src='images/blank.gif' width='10' height='1' />Specimen Count</td></tr>");
+				out.print("<tr><td colspan='2' class='heading'>");
+				if (sCoordChk) {
+					out.print("<a href='#' onClick='document.TaxaForm.SCoordChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
+				} else {
+					out.print("<a href='#' onClick='document.TaxaForm.SCoordChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
+				}
+				out.println("</a><img src='images/blank.gif' width='10' height='1' />Specimen Coord</td></tr>");
+				out.print("<tr><td colspan='2' class='heading'>");
+				if (commChk) {
+					out.print("<a href='#' onClick='document.TaxaForm.CommChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
+				} else {
+					out.print("<a href='#' onClick='document.TaxaForm.CommChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
+				}
+				out.println("</a><img src='images/blank.gif' width='10' height='1' />Comments</td></tr>");
+				out.println("</form>");
 			}
-			out.println("</a><img src='images/blank.gif' width='10' height='1' />Author</td></tr>");
-			out.print("<tr><td colspan='2' class='heading'>");
-			if (sCountChk) {
-				out.print("<a href='#' onClick='document.TaxaForm.SCountChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
-			} else {
-				out.print("<a href='#' onClick='document.TaxaForm.SCountChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
-			}
-			out.println("</a><img src='images/blank.gif' width='10' height='1' />Specimen Count</td></tr>");
-			out.print("<tr><td colspan='2' class='heading'>");
-			if (sCoordChk) {
-				out.print("<a href='#' onClick='document.TaxaForm.SCoordChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
-			} else {
-				out.print("<a href='#' onClick='document.TaxaForm.SCoordChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
-			}
-			out.println("</a><img src='images/blank.gif' width='10' height='1' />Specimen Coord</td></tr>");
-			out.print("<tr><td colspan='2' class='heading'>");
-			if (commChk) {
-				out.print("<a href='#' onClick='document.TaxaForm.CommChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
-			} else {
-				out.print("<a href='#' onClick='document.TaxaForm.CommChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
-			}
-			out.println("</a><img src='images/blank.gif' width='10' height='1' />Comments</td></tr>");
-			out.println("</form>");
+		
 			out.println("</table>");
 			
 			drawEndNavigation(out);
@@ -276,7 +286,7 @@
 			if (userID != 0) { //logged in user
 
 				//Sample Property Data
-				query = "SELECT Record_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage, Known_Stage, Column_Map, Dip, Dip_Direction, Strike, Facing, Grainsize, Comparator_Used, Bed_Thickness, Bedding, Weathering, Hardness, Carbonate, Colour, Deposition_Env, Rock_Nature, Correspondence, Record_ID FROM Sample_Property_All_View WHERE Sample_ID = ?";
+				query = "SELECT Record_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage, Known_Stage, Column_Map, Dip, Dip_Direction, Strike, Facing, Grainsize, Comparator_Used, Bed_Thickness, Bedding, Weathering, Hardness, Carbonate, Colour, Deposition_Env, Rock_Nature, Correspondence, Collector_ID, Sent_To_Fossil_Group_ID, Sed_Feature_ID FROM Sample_Property_All_View WHERE Sample_ID = ?";
 				data[0] = new Integer(Integer.parseInt(sampID));
 				rs = connection.executeQuery(query, types, data);
 				preserveStatement = connection.preservePreparedStatement();
@@ -297,37 +307,29 @@
 						out.println("</td></tr>");
 					}
 					//collectors (repeating)
-					query = "SELECT COUNT(*) FROM Collector WHERE Record_ID = ?";
-					data[0] = new Integer(Integer.parseInt(recID));
-					rs2 = connection.executeQuery(query, types, data);
-					rs2.next();
-					if (rs2.getInt(1) > 0) {
-						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Collectors</td>");
+					if (rs.getString(26) != null) {
+						out.print("<tr><td class='heading'>Collectors</td>");
 						query = "SELECT Name FROM Person_View P, Collector C WHERE P.Person_ID = C.Person_ID AND C.Record_ID = ? ORDER BY Name";
 						data[0] = new Integer(Integer.parseInt(recID));
 						rs2 = connection.executeQuery(query, types, data);
 						rs2.next();
 						out.println("<td>" + rs2.getString(1) + "</td></tr>");
 						while (rs2.next()) {
-							out.println("<tr><td>" + rs2.getString(1) + "</td></tr>");
+							out.println("<tr><td></td><td>" + rs2.getString(1) + "</td></tr>");
 						}
 					}
 					if (rs.getString(4) != null) { out.println("<tr><td class='heading'>Strat Name</td><td>" + rs.getString(4) + "</td></tr>"); }
 					if (rs.getString(5) != null) { out.println("<tr><td class='heading'>In Place</td><td>" + rs.getString(5) + "</td></tr>"); }
 					//sent to (repeating)
-					query = "SELECT COUNT(*) FROM Sent_To WHERE Record_ID = ?";
-					data[0] = new Integer(Integer.parseInt(recID));
-					rs2 = connection.executeQuery(query, types, data);
-					rs2.next();
-					if (rs2.getInt(1) > 0) {
-						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Sent To</td>");
+					if (rs.getString(27) != null) {
+						out.print("<tr><td class='heading'>Sent To</td>");
 						query = "SELECT Sent_To FROM Sent_To_View WHERE Record_ID = ? ORDER BY Sent_To";
 						data[0] = new Integer(Integer.parseInt(recID));
 						rs2 = connection.executeQuery(query, types, data);
 						rs2.next();
 						out.print("<td>" + rs2.getString(1) + "</td></tr>");
 						while (rs2.next()) {
-							out.println("<tr><td>" + rs2.getString(1) + "</td></tr>");
+							out.println("<tr><td></td><td>" + rs2.getString(1) + "</td></tr>");
 						}
 					}
 					if (rs.getString(6) != null) { out.println("<tr><td class='heading'>Not Collected</td><td>" + rs.getString(6) + "</td></tr>"); }
@@ -398,25 +400,21 @@
 					if (rs.getString(21) != null) { out.println("<tr><td class='heading'>Carbonate</td><td>" + rs.getString(21) + "</td></tr>"); }
 					if (rs.getString(22) != null) { out.println("<tr><td class='heading'>Colour</td><td>" + rs.getString(22) + "</td></tr>"); }
 					//sed features (repeating)
-					query = "SELECT COUNT(*) FROM Sedimentary_Feature WHERE Record_ID = ?";
-					data[0] = new Integer(Integer.parseInt(recID));
-					rs2 = connection.executeQuery(query, types, data);
-					rs2.next();
-					if (rs2.getInt(1) > 0) {
-						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Additional Features</td>");
+					if (rs.getString(28) != null) {
+						out.print("<tr><td class='heading'>Additional Features</td>");
 						query = "SELECT Sedimentary_Feature FROM Sedimentary_Feature_View WHERE Record_ID = ? ORDER BY Sed_Feature";
 						data[0] = new Integer(Integer.parseInt(recID));
 						rs2 = connection.executeQuery(query, types, data);
 						rs2.next();
 						out.print("<td>" + rs2.getString(1) + "</td></tr>");
 						while (rs2.next()) {
-							out.println("<tr><td>" + rs2.getString(1) + "</td></tr>");
+							out.println("<tr><td></td><td>" + rs2.getString(1) + "</td></tr>");
 						}
 					}
 					if (rs.getString(23) != null) { out.println("<tr><td class='heading'>Inferred Environment</td><td>" + rs.getString(23) + "</td></tr>"); }
 					if (rs.getString(24) != null) { out.println("<tr><td class='heading'>Nature of Rock Unit</td><td>" + rs.getString(24) + "</td></tr>"); }
 					if (rs.getString(25) != null) { out.println("<tr><td class='heading'>Correspondence</td><td>" + rs.getString(25) + "</td></tr>"); }
-					//Image/Files
+/*					//Image/Files
 					MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
 					if (mr != null) {
 						out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
@@ -432,7 +430,7 @@
 						}
 						out.println("</td></tr></table></td></tr>");
 					}
-					out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
+*/					out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
 				}
 				preserveStatement.close();
 
@@ -473,7 +471,7 @@
 					}
 					if (rs.getString(4) != null) { out.println("<tr><td class='heading'>Adopted Stage</td><td>" + rs.getString(4) + "</td></tr>"); }
 					if (rs.getString(5) != null) { out.println("<tr><td class='heading'>Comments</td><td>" + rs.getString(5) + "</td></tr>"); }
-					//Image/Files
+/*					//Image/Files
 					MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
 					if (mr != null) {
 						out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
@@ -489,7 +487,7 @@
 						}
 						out.println("</td></tr></table></td></tr>");
 					}
-					out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
+*/					out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
 				}
 				preserveStatement.close();
 
@@ -534,10 +532,11 @@
 					if (rs.getString(7) != null) { out.println("<tr><td class='heading'>Lab Number</td><td>" + rs.getString(7) + "</td></tr>"); }
 					if (rs.getString(8) != null) { out.println("<tr><td class='heading'>Collection Comments</td><td>" + rs.getString(8) + "</td></tr>"); }
 					//taxa (double repeating)
-					query = "SELECT * FROM Pal_List WHERE Record_ID = ?";
+					query = "SELECT COUNT(*) FROM Pal_List WHERE Record_ID = ?";
 					data[0] = new Integer(Integer.parseInt(recID));
 					rs2 = connection.executeQuery(query, types, data);
-					if (rs2.next()) {
+					rs2.next();
+					if (rs2.getInt(1) > 0) {
 						out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
 						query = "SELECT DISTINCT P.Group_ID, L.Name FROM Pal_List P, Lookup L WHERE P.Group_ID = L.Lookup_ID AND P.Record_ID = ? ORDER BY P.Group_ID";
 						data[0] = new Integer(Integer.parseInt(recID));
@@ -576,7 +575,7 @@
 						preserveStatement2.close();
 						out.println("</td></tr></table></td></tr>");
 					}
-					//Image/Files
+/*					//Image/Files
 					MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
 					if (mr != null) {
 						out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
@@ -592,16 +591,20 @@
 						}
 						out.println("</td></tr></table></td></tr>");
 					}
-				}
+*/				}
 				preserveStatement.close();
+
 			} else {
-				out.println("<tr><td colspan='2'>More data is available for this locality for logged in users</td></tr>");
+				out.println("<tr><td colspan='2'>More data is available for this locality for <a href='login.jsp?loginpage=" + URLEncoder.encode("/fred/detail.jsp") + "' class='boldlink'>logged</a> in users</td></tr>");
 			}
 			out.println("</table></td></tr></table>");
 		}
 
 		else { //no record or no rights
-			out.println("<p><span class='bigheading'>Access denied</span></p>Either there is no record matching the ID you entered or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.");
+			drawEndNavigation(out);
+			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
+			out.println("<tr><td>");
+			out.println("<p>Either there is no record matching the ID you entered or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</p>");
 		}
 	}
 	
