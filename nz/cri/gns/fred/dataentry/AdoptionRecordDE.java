@@ -43,7 +43,7 @@ public class AdoptionRecordDE extends RecordDE {
 				DataEntryUtils.reverseParseDate(
 					record.getAsDate(Record.ADOPTION_DATE),
 					record.getAsString(Record.ADOPTION_DATE_ROUNDING)));
-			if (record.get(Record.COLLECTOR) != null) {
+			if (record.get(Record.ADOPTOR) != null) {
 				StringBuffer adoptName = new StringBuffer();
 				for (Iterator i = record.getAsVector(Record.ADOPTOR).iterator(); i.hasNext();) {
 					KeyValueObject adopt = (KeyValueObject) i.next();
