@@ -100,7 +100,15 @@ function saveData(type) {
 			window.opener.form1.SentTo.value = window.opener.form1.SentTo.value + parseDropDown(Group.value) + "*" + parseDropDown(Person.value) + "*" + parseDropDown(Lab.value) + "*" + Comm.value + "\n";
 		}
 		else if (type == "PrevSamp") {
-			window.opener.form1.PrevSamp.value = window.opener.form1.PrevSamp.value + parseDropDown(SampName.value) + ";";
+			if (SubFeat.value == "-" && WorkFeat.value == "-") {
+				alert("Please select a sample");
+			} else if (SubFeat.value != "-" && WorkFeat.value != "-") {
+				alert("Please only select one sample");
+			} else if (SubFeat.value != "-") {
+				window.opener.form1.PrevSamp.value = window.opener.form1.PrevSamp.value + parseDropDown(SubFeat.value) + ";";
+			} else {
+				window.opener.form1.PrevSamp.value = window.opener.form1.PrevSamp.value + parseDropDown(WorkFeat.value) + ";";
+			}
 		}
 		else if (type == "SampRel") {
 			if (checkRel("Samp") == 1) {
@@ -499,7 +507,7 @@ function parseDropDown(val) {
 			cd.prompt = "-- Choose --";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("<tr><td class='heading'>Comments</td><td><textarea name='Comm' rows='3' cols='40'></textarea></td></tr>");
-	out.println("<tr><td class='heading' colspan='2'>Add to Person List</td></tr>");
+			out.println("<tr><td class='heading' colspan='2'>Add to Person List</td></tr>");
 			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
 			out.println("<tr><td class='smallheading'>Surname</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
 			out.println("<input type='submit' value='Add Person' onClick='return addData(\"Person\");'>");
@@ -511,27 +519,38 @@ function parseDropDown(val) {
 
 		else if (request.getParameter("Type").equals("PrevSamp")) {
 			out.println("<tr><td class='heading' colspan='2'>Previous Samples Nearby</td></tr>");
-			out.println("<tr><td colspan='2'>Please select a masterfile area from the drop-down list.  The Sample list will then be populated with all submitted samples plus working samples which you have access to in that masterfile area.<br />You may add multiple samples by clicking the Add To Main Form icon between each sample and then Close to end.</td></tr>");
+			out.println("<tr><td colspan='2'>Please select a masterfile area from the drop-down list.  The Sample list will then be populated with all submitted samples plus working samples which you have access to in that masterfile area.<br />You may add multiple samples by clicking the Add To Main Form icon between each sample and then Close to end.</td></tr>");			
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.print("<tr><td class='heading'>Masterfile Area</td><td>");
-			cd = new ComboDescriptor("Masterfile", "Masterfile_ID", "Name");
+			cd = new ComboDescriptor("Folder", "Folder_ID", "Name");
 			cd.name = "MF";
 			cd.prompt = "-- Choose --";
-			cd.orderBy = "Masterfile_ID";
 			cd.tagParams = "onChange='form1.submit();'";
-			if (request.getParameter("MF") != null) {
+			cd.join = "Folder_Type = 'admin'";
+			cd.orderBy = "Folder_ID";
+			if (request.getParameter("MF") != null  && !request.getParameter("MF").equals("-")) {
 				cd.selected = request.getParameter("MF");
 				mfID = request.getParameter("MF");
 			}
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("</td></tr>");
-			out.print("<tr><td class='heading'>Sample</td><td>");
-			cd = new ComboDescriptor("Feature_Security_View", "Sample_Name", "Sample_Name");
-			cd.name = "SampName";
+			out.print("<tr><td class='heading'>Submitted Samples</td><td>");
+			cd = new ComboDescriptor("Sample_All_View", "FR_Number", "FR_Number");
+			cd.name = "SubFeat";
 			cd.prompt = "-- Choose --";
-			cd.join = "Masterfile_ID = " + mfID + " AND (Status = 'approved' OR (Folder_Type = 'personal' AND User_ID = " + userID + "))";
+			cd.selectDistinct = true;
+			cd.join = "Masterfile_ID = " + mfID + " AND Status = 'approved'";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
-			out.print("</td></tr></table>");
+			out.println("</td></tr>");
+			out.print("<tr><td class='heading'>Working Samples</td><td>");
+			cd = new ComboDescriptor("Folder_Content_View", "Sample_Name", "Sample_Name");
+			cd.name = "WorkFeat";
+			cd.prompt = "-- Choose --";
+			cd.selectDistinct = true;
+			cd.join = "(Status <> 'approved' AND (Folder_Type = 'personal' AND User_ID = " + user.getPersonId() + "))";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.println("</td></tr>");
+			out.println("</table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
 			out.println("<tr><td><a href='#' onClick='saveData(\"PrevSamp\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"PrevSamp\");return false;' class='heading'>Add to Main Form</a></td></tr>");
