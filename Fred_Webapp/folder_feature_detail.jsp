@@ -5,14 +5,14 @@
 	PageState state = new PageState(request, response, getServletContext());
 
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	if (request.getParameter("FoldID") != null && request.getParameter("FeatID") != null) {
 		int featID = Integer.parseInt(request.getParameter("FeatID"));
 
 		drawTop(out, et, request, response);
 
-		try {
+	//	try {
 			Folder folder = new Folder(Integer.parseInt(request.getParameter("FoldID")), user, state);
 
 			session.setAttribute("dataEntryRedirect", "folder_feature_detail.jsp?FoldID=" + folder.getFolderID() + "&FeatID=" + featID);
@@ -161,6 +161,7 @@
 								out.print(sample.getAsString(Sample.SAMPLE_STATUS) + "&nbsp;&nbsp;");
 								out.println("</td><td>");
 								if (sample.get(Sample.SAMPLE_CREATED_DATE) != null)
+									System.out.println(sample.get(Sample.SAMPLE_CREATED_DATE));
 									out.print(DateFormat.getDateInstance(DateFormat.LONG).format(sample.getAsDate(Sample.SAMPLE_CREATED_DATE)) + "&nbsp;&nbsp;");
 							} else {
 								out.println("</td><td>");
@@ -251,11 +252,11 @@
 				out.println("<p><span class='bigheading'>Access Denied</span><br />");
 				out.println("You don't have rights to edit this locality</p>");
 			}
-		} catch (Exception e) {
+	/*	} catch (Exception e) {
 			drawEndNavigation(out);
 			out.println("<p><span class='bigheading'>Access Denied</span><br />");
 			out.println("You don't have rights to edit this locality</p>");
-		}
+		} */
 	}
 	else {
 		drawTop(out, et, request, response);

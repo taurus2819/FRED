@@ -5,7 +5,7 @@
 	PageState state = new PageState(request, response, getServletContext());
 
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	if (request.getParameter("ID") != null) {
 		Folder folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state);

@@ -529,13 +529,13 @@ public abstract class LocalityDE implements DataEntryForm {
 		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getFeatureID()));
 		DBUtils.doUpdate(qd, "feature_id = ?", conn);
 		feature = new Feature(feature.getFeatureID(), user, state, true);
-		refreshSamples(feature);
+		refreshSamples(feature, user, state);
 		Folder folder = new Folder(mfID, user, state, true);
 		return feature.getFeatureID();
 	}
 
-	public void revoke() throws SQLException, IOException, InvalidCredentialsException {
-		if (feature == null || !feature.getAsString(Feature.STATUS).equals(Audit.STATUS_WAITING) || !isAllowedSubmit)
+	public static void revoke(Feature feature, User user, PageState state) throws SQLException, IOException, InvalidCredentialsException {
+		if (!FREDUtils.isAllowedRevokeLocality(user, feature.getAsString(Feature.STATUS), String.valueOf(feature.getFeatureID()), state))
 			throw new InvalidCredentialsException();
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		QueryDescriptor qd = new QueryDescriptor("audit_table");
@@ -546,10 +546,8 @@ public abstract class LocalityDE implements DataEntryForm {
 		DBUtils.doUpdate(qd, "audit_id = ?", conn);
 		conn.releaseStatement();
 		feature = new Feature(feature.getFeatureID(), user, state, true);
-		refreshSamples(feature);
-		try {
-			Folder folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
-		} catch (Exception e) {}
+		refreshSamples(feature, user, state);
+		Folder folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
 	}
 
 	public void approve(FRNumber frNum) throws SQLException, IOException, InvalidCredentialsException {
@@ -581,7 +579,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		DBUtils.doUpdate(qd, "audit_id = ?", conn);
 		conn.releaseStatement();
 		feature = new Feature(feature.getFeatureID(), user, state, true);
-		refreshSamples(feature);
+		refreshSamples(feature, user, state);
 		Folder folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
 	}
 	
@@ -593,7 +591,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getAsInt(Feature.AUDIT_ID)));
 		DBUtils.doUpdate(qd, "audit_id = ?", conn);
 		feature = new Feature(feature.getFeatureID(), user, state, true);
-		refreshSamples(feature);
+		refreshSamples(feature, user, state);
 		Folder folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
 	}
 
@@ -606,7 +604,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		conn.releaseStatement();
 	}
 	
-	private void refreshSamples(Feature feature) throws InvalidCredentialsException, SQLException, IOException {
+	private static void refreshSamples(Feature feature, User user, PageState state) throws InvalidCredentialsException, SQLException, IOException {
 		if (feature.getSampleCount() > 0) {
 			for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
 				Sample sample = new Sample(((Integer) i.next()).intValue(), user, state, true);

@@ -121,7 +121,6 @@ public class LocalityTest extends TestCase {
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
 		LocalityDE loc = DataEntryFormFactory.getLocalityDataEntryForm(1282, user, state);
-		loc.revoke();
 		loc.submit();
 	}
 	

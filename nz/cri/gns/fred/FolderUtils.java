@@ -119,8 +119,8 @@ public class FolderUtils {
 	}
 	
 	public static void revokeLocality(String featID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
-		LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
-		form.revoke();	
+		 Feature feature = new Feature(Integer.parseInt(featID), user, state);
+		 LocalityDE.revoke(feature, user, state);	
 	}
 	
 	public static void approveLocality(String featID, FRNumber frNum, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {

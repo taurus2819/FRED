@@ -119,11 +119,20 @@ public class FREDUtils {
 	public static boolean isAllowedSubmitLocality(User user, String status, String featureID, PageState state) throws IOException, SQLException {
 		if (user == null || status == null || featureID == null)
 			return false;
-		if (status.equals(Audit.STATUS_APPROVED))
-			return false;	
-		if (status.equals(Audit.STATUS_WAITING))
-			return hasMasterfileRights(user, featureID, state);
+		if (status.equals(Audit.STATUS_APPROVED) || status.equals(Audit.STATUS_WAITING))
+			return false;
 		return (getUserWorkingLocalityRights(user, featureID, state) & Folder.FOLDER_SUBMIT_RIGHT) > 0;		
+	}
+
+	/**
+	 * Returns true if the locality can be revoked by the user
+	 */
+	public static boolean isAllowedRevokeLocality(User user, String status, String featureID, PageState state) throws IOException, SQLException {
+		if (user == null || status == null || featureID == null)
+			return false;
+		if (status.equals(Audit.STATUS_WAITING))
+			return (getUserWorkingLocalityRights(user, featureID, state) & Folder.FOLDER_SUBMIT_RIGHT) > 0;
+		return false;
 	}
 	
 	/**
