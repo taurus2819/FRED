@@ -9,10 +9,9 @@ import java.util.Vector;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.fred.FREDUtils;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.FREDConstants;
 import nz.cri.gns.jsp.PageState;
 
-public class FolderList implements FREDConstants {
+public class FolderList {
 
 	private Vector personalFolders;
 	private Vector adminFolders;

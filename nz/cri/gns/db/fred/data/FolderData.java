@@ -11,7 +11,6 @@ import nz.cri.gns.db.fred.FREDUtils;
 import nz.cri.gns.db.pool.Finder;
 import nz.cri.gns.db.pool.Pool;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.FREDConstants;
 import nz.cri.gns.jsp.PageState;
 
 /**
@@ -19,7 +18,7 @@ import nz.cri.gns.jsp.PageState;
  * Fields map to columns in database - use as arguments for the get methods.
  * Pooling is used so cannot instantiate directly - use static getFolder method instead.
  */
-public class FolderData implements FREDConstants {
+public class FolderData {
 
 	private static Pool pool = new Pool();
 	private int id;
@@ -50,7 +49,7 @@ public class FolderData implements FREDConstants {
 			values[3] = new Integer(rs.getInt(4));
 			values[4] = rs.getString(5);
 			rs.close();
-			//conn.releaseStatement();
+			conn.releaseStatement();
 		} catch (SQLException _e) {
 			pool.removeMe(this);
 			throw DBUtils.fixSQLException(_e, query, conn);

@@ -7,11 +7,10 @@ import java.util.Vector;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.fred.FREDUtils;
-import nz.cri.gns.jsp.FREDConstants;
 import nz.cri.gns.jsp.PageState;
 
 
-public class Folder implements FREDConstants {
+public class Folder {
 
 	public static final int FOLDER_ID = 0;
 	public static final int NAME = 1;

@@ -1,5 +1,5 @@
 <%@page	extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*"
+		import="nz.cri.gns.db.fred.*, nz.cri.gns.db.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -77,6 +77,7 @@
 		out.println("<table border='0' cellspacing='0' cellpadding='2' width='550'>");
 
 		//List Working folders
+		FolderList folderList = new FolderList(user, state);
 		//rs = statement.executeQuery("SELECT * FROM Folder_View WHERE User_ID = " + userID + " AND Folder_Type = 'personal'");
 		query = "SELECT * FROM Folder_View WHERE User_ID = ? AND Folder_Type = 'personal'";
 		data[0] = new Integer(userID);
