@@ -47,9 +47,8 @@ public class OutcropLocalityDE extends LocalityDE {
 		out.write("<tr><td class='heading' colspan='2'>Field Number</td><td><input type='text' name='FeatName' value='" + FREDUtils.noNulls(getField(LocalityDE.FIELD_NUMBER)) + "'></td></tr>\n");
 		super.makeDataEntryHTML(out);
 		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
-		out.write("</table>\n");
 		sampPropRecordDE.makeDataEntryHTML(out);
-		//super.makeEndBitHTML(out);
+		super.makeEndBitHTML(out);
 	}
 
 	public int save() throws SQLException, IOException, InvalidCredentialsException {

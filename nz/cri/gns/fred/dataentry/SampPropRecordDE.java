@@ -332,7 +332,7 @@ public class SampPropRecordDE extends RecordDE {
 			<tr><td class='heading' colspan='2'>Correspondence</td><td><textarea name='Corr' cols='40' rows='3'><%=corr%></textarea></td></tr>
 			</table>
 */
-		super.makeEndBitHTML(out);
+		if (!outcropSamp) super.makeEndBitHTML(out);
 	}
 
 
