@@ -12,6 +12,9 @@
 	int numRecords, userID = 0, startIndex, endIndex, pageNum = 1;
 	boolean useStored;
 	Vector queryRes;
+	int[] types = {Types.NUMERIC};
+	Object data[];
+	data = new Object[1];
 
 	int pageSize=50;
 
