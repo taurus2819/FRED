@@ -74,15 +74,15 @@ public class FolderTest extends TestCase {
 		Folder sv2 = new Folder(18, user2, state);
 		assertEquals(sv.getUserRights(), 63);
 		assertEquals(sv2.getUserRights(), 1);
-		assertTrue(sv.isAllowedDelete());
-		assertFalse(sv2.isAllowedDelete());
-		assertTrue(sv.isAllowedEdit());
+		assertTrue(sv.isAllowedAdmin());
+		assertFalse(sv2.isAllowedAdmin());
+		assertTrue(sv.isAllowedAdmin());
 	}	
 
 	public void testFolderCount() throws SQLException, IOException, InvalidCredentialsException {
 		Folder.purge();
 		Folder sv = new Folder(18, user, state);
-		assertEquals(sv.getAsInt(Folder.LOCALITY_COUNT), 24);
+		assertEquals(sv.getLocalityCount(), 24);
 	}
 
 }

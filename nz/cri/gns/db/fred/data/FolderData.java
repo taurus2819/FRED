@@ -49,10 +49,13 @@ public class FolderData {
 			values[3] = new Integer(rs.getInt(4));
 			values[4] = rs.getString(5);
 			rs.close();
-			query = "SELECT COUNT(*) FROM Folder_Content_View WHERE Folder_ID = ?";
+			query = "SELECT DISTINCT Feature_ID FROM Folder_Content_View WHERE Folder_ID = ?";
 			rs = conn.executeQuery(query, types, data);
-			rs.next();
-			values[5] = new Integer(rs.getInt(1));
+			Vector feats = new Vector();
+			while (rs.next()) {
+				feats.add(new Integer(rs.getInt(1)));
+			}
+			values[5] = feats;
 			rs.close();
 			conn.releaseStatement();
 		} catch (SQLException _e) {

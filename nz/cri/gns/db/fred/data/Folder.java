@@ -17,7 +17,8 @@ public class Folder {
 	public static final int FOLDER_TYPE = 2;
 	public static final int OWNER_ID = 3;
 	public static final int OWNER = 4;
-	public static final int LOCALITY_COUNT = 5;
+	public static final int FEATURES = 5;
+	
 
 	private FolderData fd;
 	private int userRights = 0;
@@ -31,14 +32,41 @@ public class Folder {
 		return userRights;
 	}
 
-	public boolean isAllowedEdit() {
+	public boolean isAllowedReadLocalities() {
+		return ((userRights & 1) != 0);
+	}
+	
+	public boolean isAllowedEditLocalities() {
+		return ((userRights & 2) != 0);
+	}
+
+	public boolean isAllowedCreateLocalities() {
+		return ((userRights & 4) != 0);
+	}
+
+	public boolean isAllowedDeleteLocalities() {
+		return ((userRights & 8) != 0);
+	}
+
+	public boolean isAllowedSubmitLocalities() {
+		return ((userRights & 16) != 0);
+	}
+
+	public boolean isAllowedAdmin() {
 		return ((userRights & 32) != 0);
 	}
 
-	public boolean isAllowedDelete() {
-		return ((userRights & 32) != 0);
+	public boolean isAllowedApproveLocalities() {
+		return ((userRights & 64) != 0);
 	}
-		
+
+	public int getLocalityCount() throws InvalidCredentialsException {
+		if (userRights == 0) {
+			throw new InvalidCredentialsException();
+		}
+		return fd.getAsVector(FEATURES).size();
+	}
+
 	public String toString() {
 		return fd.toString();
 	}

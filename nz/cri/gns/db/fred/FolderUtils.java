@@ -28,7 +28,7 @@ public class FolderUtils {
 	public static void deleteFolder(String foldID, User user, PageState state) throws IOException, InvalidCredentialsException, SQLException, FolderUtilException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		Folder folder = new Folder(Integer.parseInt(foldID), user, state);
-		if (folder.isAllowedDelete() && folder.getAsInt(Folder.LOCALITY_COUNT) == 0) {
+		if (folder.isAllowedAdmin() && folder.getLocalityCount() == 0) {
 			conn.executeUpdate("DELETE FROM Folder WHERE Folder_ID = " + foldID);
 		} else {
 			throw new FolderUtilException("Cannot delete folder as either insufficient privileges or folder not empty");

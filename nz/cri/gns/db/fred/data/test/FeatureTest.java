@@ -59,8 +59,8 @@ public class FeatureTest extends TestCase {
 		Feature.purge();
 		Feature f = new Feature(1163, user, state);
 		Feature dhole = new Feature(1, user, state);
-		assertEquals(f.getAsVector(Feature.SAMPLE).size(), 2);
-		assertEquals(dhole.getAsVector(Feature.SAMPLE).size(), 5);
+		assertEquals(f.getSampleCount(), 2);
+		assertEquals(dhole.getSampleCount(), 5);
 	}
 	
 	public void _testRestrictions() throws SQLException, IOException, AccessDeniedException, InvalidCredentialsException {
@@ -99,7 +99,7 @@ public class FeatureTest extends TestCase {
 		//System.out.println(f.getAsString(Feature.SECURITY_CLASS_ID));
 	}
 	
-	public void _testMultipleUsers() throws SQLException, IOException {
+	public void testMultipleUsers() throws SQLException, IOException {
 		Feature.purge();
 		Feature f = new Feature(562, null, state);
 		Feature f2 = new Feature(562, user, state);

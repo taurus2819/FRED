@@ -23,7 +23,7 @@ public class SampleData {
 
 	private static Pool pool = new Pool();
 	private int id;
-	private Object[] values = new Object[51];
+	private Object[] values = new Object[52];
 	private int[] types = { Types.NUMERIC };
 	private Object[] data = new Object[1];
 
@@ -158,13 +158,19 @@ public class SampleData {
 					? new Double(rs.getDouble(50))
 					: null);
 			rs.close();
-			query = "SELECT Record_ID, Record_Type FROM Record_View WHERE Status = 'approved' AND Sample_ID = ?";
+			query = "SELECT Record_ID, Record_Type, Status FROM Record_All_View WHERE Sample_ID = ?";
 			rs = conn.executeQuery(query, types, data);
 			Vector rec = new Vector();
+			Vector wRec = new Vector();
 			while (rs.next()) {
-				rec.add(new KeyValueObject(rs.getString(1), rs.getString(2)));
+				if (rs.getString(3).equals("approved")) {
+					rec.add(new KeyValueObject(rs.getString(1), rs.getString(2)));
+				} else {
+					wRec.add(new KeyValueObject(rs.getString(1), rs.getString(2)));
+				}
 			}
 			values[50] = rec;
+			values[51] = wRec;
 			rs.close();
 			conn.releaseStatement();
 		} catch (SQLException _e) {

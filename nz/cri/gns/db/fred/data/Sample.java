@@ -65,14 +65,15 @@ public class Sample {
 	public static final int DATUM_ELEVATION = 47;
 	public static final int START_DEPTH = 48;
 	public static final int FINISH_DEPTH = 49;
-	public static final int RECORD = 50;
+	public static final int RECORDS = 50;
+	public static final int WORKING_RECORDS = 51;
 
-	private SampleData fsd;
+	private SampleData sd;
 	private boolean authenticated = false;
 
 	public Sample(int id, User user, PageState state) throws SQLException, IOException {
-		fsd = SampleData.getData(id, state);
-		if (!FREDUtils.isAllowedLocality(user, fsd.getAsString(SECURITY_CLASS_ID), fsd.getAsString(STATUS), fsd.getAsString(FEATURE_ID), state)) {
+		sd = SampleData.getData(id, state);
+		if (!FREDUtils.isAllowedLocality(user, sd.getAsString(SECURITY_CLASS_ID), sd.getAsString(STATUS), sd.getAsString(FEATURE_ID), state)) {
 			authenticated = false;
 		} else {
 			authenticated = true;
@@ -84,46 +85,58 @@ public class Sample {
 	}
 
 	public boolean isApprovedLocality() {
-		return (fsd.getAsString(STATUS).equals("approved"));
+		return (sd.getAsString(STATUS).equals("approved"));
+	}
+
+	public int getRecordCount() throws InvalidCredentialsException {
+		if (!authenticated) {
+			throw new InvalidCredentialsException();
+		}
+		return sd.getAsVector(RECORDS).size();
+	}
+
+	public int getWorkingRecordCount() throws InvalidCredentialsException {
+		if (!authenticated) {
+			throw new InvalidCredentialsException();
+		}
+		return sd.getAsVector(WORKING_RECORDS).size();
 	}
 
 	private boolean isAllowedField(int field) {
 		if (authenticated) {
 			return true;
 		}
-		if (isApprovedLocality()) {
-			switch (field) {
-				case FEATURE_ID :
-				case SAMPLE_ID :
-				case FEATURE_TYPE :
-				case SAMPLE_NAME :
-				case FR_ID:
-				case FR_NUMBER:
-				case YARD_FR_ID:
-				case YARD_FR_NUMBER:
-				case FEATURE_NAME:
-				case MAP_SHEET:
-				case SERIAL_NUMBER:
-				case RECOLLECTION_NUMBER:
-				case YARD_MAP_SHEET:
-				case YARD_SERIAL_NUMBER:
-				case YARD_RECOLLECTION_NUMBER:
-				case DRILLHOLE_DEPTH:
-				case MASTERFILE_ID:
-				case MASTERFILE_NAME:
-				case AUDIT_ID:
-				case SECURITY_CLASS_ID :
-				case SITE_ID:
-				case LATITUDE:
-				case LONGITUDE:
-				case QMAP_SHEET:
-				case NZMG_SHEET:
-				case NZMG_EAST:
-				case NZMG_NORTH:
-				case METHOD:
-				case ACCURACY:
-				return true;
-			}
+		switch (field) {
+			case FEATURE_ID :
+			case SAMPLE_ID :
+			case FEATURE_TYPE :
+			case SAMPLE_NAME :
+			case FR_ID:
+			case FR_NUMBER:
+			case YARD_FR_ID:
+			case YARD_FR_NUMBER:
+			case FEATURE_NAME:
+			case MAP_SHEET:
+			case SERIAL_NUMBER:
+			case RECOLLECTION_NUMBER:
+			case YARD_MAP_SHEET:
+			case YARD_SERIAL_NUMBER:
+			case YARD_RECOLLECTION_NUMBER:
+			case DRILLHOLE_DEPTH:
+			case MASTERFILE_ID:
+			case MASTERFILE_NAME:
+			case AUDIT_ID:
+			case SECURITY_CLASS_ID :
+			case SITE_ID:
+			case LATITUDE:
+			case LONGITUDE:
+			case QMAP_SHEET:
+			case NZMG_SHEET:
+			case NZMG_EAST:
+			case NZMG_NORTH:
+			case METHOD:
+			case ACCURACY:
+			return true;
 		}
 		return false;
 	}
@@ -136,7 +149,7 @@ public class Sample {
 		if (!isAllowedField(field)) {
 			throw new InvalidCredentialsException();
 		}
-		return fsd.getAsInt(field);
+		return sd.getAsInt(field);
 	}
 
 	/**
@@ -147,7 +160,7 @@ public class Sample {
 		if (!isAllowedField(field)) {
 			throw new InvalidCredentialsException();
 		}
-		return fsd.getAsDouble(field);
+		return sd.getAsDouble(field);
 	}
 
 	/**
@@ -158,7 +171,7 @@ public class Sample {
 		if (!isAllowedField(field)) {
 			throw new InvalidCredentialsException();
 		}
-		return fsd.getAsDate(field);
+		return sd.getAsDate(field);
 	}
 
 	/**
@@ -169,7 +182,7 @@ public class Sample {
 		if (!isAllowedField(field)) {
 			throw new InvalidCredentialsException();
 		}
-		return fsd.getAsVector(field);
+		return sd.getAsVector(field);
 	}
 
 	/**
@@ -180,7 +193,7 @@ public class Sample {
 		if (!isAllowedField(field)) {
 			throw new InvalidCredentialsException();
 		}
-		return fsd.getAsString(field);
+		return sd.getAsString(field);
 	}
 
 	/**
@@ -191,7 +204,7 @@ public class Sample {
 		if (!isAllowedField(field)) {
 			throw new InvalidCredentialsException();
 		}
-		return fsd.get(field);
+		return sd.get(field);
 	}
 
 	/**
@@ -209,7 +222,7 @@ public class Sample {
 	}
 
 	public String toString() {
-		return fsd.toString();
+		return sd.toString();
 	}
 
 }

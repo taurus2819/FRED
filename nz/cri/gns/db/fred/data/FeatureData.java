@@ -24,7 +24,7 @@ public class FeatureData {
 	private int id;
 	private int[] types = { Types.NUMERIC };
 	private Object[] data = new Object[1];
-	private Object[] values = new Object[24];
+	private Object[] values = new Object[26];
 
 	/**
 	 * Cannot be called directly. use static getDate method instead.
@@ -106,11 +106,21 @@ public class FeatureData {
 			query = "SELECT Sample_ID FROM Sample_All_View WHERE Feature_ID = ?";
 			data[0] = values[0];
 			rs = conn.executeQuery(query, types, data);
-			Vector rec = new Vector();
+			Vector samp = new Vector();
 			while (rs.next()) {
-				rec.add(new Integer(rs.getInt(1)));
+				samp.add(new Integer(rs.getInt(1)));
 			}
-			values[21] = rec;
+			values[21] = samp;
+			rs.close();
+			query = "SELECT DISTINCT Sample_Name, Last_Change FROM Sample_All_View WHERE Feature_ID = ? ORDER BY Sample_Name";
+			rs = conn.executeQuery(query, types, data);
+			rs.next();
+			String sampName = rs.getString(1);
+			values[25] = rs.getDate(2);
+			while (rs.next()) {
+				sampName += ", " + rs.getString(1);
+			}
+			values[24] = sampName;
 			rs.close();
 			conn.releaseStatement();
 		} catch (SQLException _e) {

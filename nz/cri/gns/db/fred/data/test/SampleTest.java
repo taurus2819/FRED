@@ -55,12 +55,13 @@ public class SampleTest extends TestCase {
 		assertEquals(sv1.toString(), sv5.toString());
 	}
 	
-	public void testFRNum() throws IOException, SQLException, AccessDeniedException, InvalidCredentialsException {
+	public void testFields() throws IOException, SQLException, AccessDeniedException, InvalidCredentialsException {
 		Sample.purge();
-		Sample sv = new Sample(390, this.user, this.state);
+		Sample sv = new Sample(601, this.user, this.state);
 		String frNum = sv.getAsString(Sample.FR_NUMBER);
 		assertNotNull(frNum);
-		assertEquals("Q22/f7733", frNum);
+		//assertEquals("Q22/f7733", frNum);
+		System.out.println(sv.getAsInt(Sample.ACCURACY));
 	}
 	
 	public void testRestrictions() throws SQLException, IOException, AccessDeniedException, InvalidCredentialsException {

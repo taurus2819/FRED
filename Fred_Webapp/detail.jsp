@@ -18,11 +18,11 @@
 		String featID = request.getParameter("FeatID");
 		try {
 			Feature feature = new Feature(Integer.parseInt(request.getParameter("FeatID")), user, state);
-			if (feature.get(Feature.SAMPLE) != null) {
-				if (feature.getAsVector(Feature.SAMPLE).size() > 1) {
+			if (feature.get(Feature.SAMPLES) != null) {
+				if (feature.getAsVector(Feature.SAMPLES).size() > 1) {
 					response.sendRedirect("drillhole_detail.jsp?ID=" + featID);
 				} else {
-					response.sendRedirect("detail.jsp?ID=" + ((Integer) feature.getAsVector(Feature.SAMPLE).firstElement()).toString());
+					response.sendRedirect("detail.jsp?ID=" + ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).toString());
 				}
 			} else {
 				response.sendRedirect("drillhole_detail.jsp?ID=" + featID);
@@ -155,7 +155,7 @@
 				} else {
 					out.print(latlong.format(Math.abs(sample.getAsDouble(Sample.LONGITUDE))) + "&#176W");
 				}
-				if (sample.get(Sample.ACCURACY) != null) { out.print(" (&#177 " + sample.getAsDouble(Sample.ACCURACY) + "m)"); }
+				if (sample.get(Sample.ACCURACY) != null) { out.print(" (&#177 " + sample.getAsInt(Sample.ACCURACY) + "m)"); }
 				out.println("</td></tr>");
 			}
 			if (sample.get(Sample.METHOD) != null) { out.println("<tr><td class='heading'>Method</td><td>" + sample.getAsString(Sample.METHOD) + "</td></tr>"); }
@@ -229,10 +229,10 @@
 			}
 			out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");	
 
-			if (sample.isUserAuthenticated() && sample.get(Sample.RECORD) != null) {
+			if (sample.isUserAuthenticated() && sample.get(Sample.RECORDS) != null) {
 
 				//Sample Property Data
-				for (Iterator i = sample.getAsVector(Sample.RECORD).iterator(); i.hasNext(); ) {
+				for (Iterator i = sample.getAsVector(Sample.RECORDS).iterator(); i.hasNext(); ) {
 					KeyValueObject rec = (KeyValueObject)i.next();
 					if (rec.getValue().equals("SMP")) {
 						try {
@@ -339,7 +339,7 @@
 				}
 	
 				//Adoption
-				for (Iterator i = sample.getAsVector(Sample.RECORD).iterator(); i.hasNext(); ) {
+				for (Iterator i = sample.getAsVector(Sample.RECORDS).iterator(); i.hasNext(); ) {
 					KeyValueObject rec = (KeyValueObject)i.next();
 					if (rec.getValue().equals("ADO")) {
 						try {
@@ -380,7 +380,7 @@
 				}
 	
 				//Paleontology
-				for (Iterator i = sample.getAsVector(Sample.RECORD).iterator(); i.hasNext(); ) {
+				for (Iterator i = sample.getAsVector(Sample.RECORDS).iterator(); i.hasNext(); ) {
 					KeyValueObject rec = (KeyValueObject)i.next();
 					if (rec.getValue().equals("PAL")) {
 						try {

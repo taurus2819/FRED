@@ -24,7 +24,7 @@
 	PageState state = new PageState(request, response, getServletContext());
 
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	if (request.getParameter("ActionType") != null) { //do something
 		String actionType = request.getParameter("ActionType");
@@ -70,11 +70,8 @@
 		for (Iterator i = folderList.getPersonalFolders().iterator(); i.hasNext(); ) {
 			folder = (Folder) i.next();
 			out.print("<tr><td><a href='folder_detail.jsp?ID=" + folder.getAsString(Folder.FOLDER_ID) + "' class='heading'>" + folder.getAsString(Folder.NAME) + "</a>&nbsp;&nbsp;</td><td></td><td>" + folder.getAsString(Folder.OWNER) + "&nbsp;&nbsp;</td><td>");
-			if (folder.isAllowedEdit()) {
-				out.print("<a href='folder_user.jsp?FoldID=" + folder.getAsString(Folder.FOLDER_ID) + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a>&nbsp;&nbsp;&nbsp;");
-			}
-			if (folder.isAllowedDelete()) {
-				out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this folder\") == true) {document.PersForm.FoldID.value=\"" + folder.getAsString(Folder.FOLDER_ID) + "\";document.PersForm.submit();}' title='Delete Folder'><img src='images/delete.gif' border='0' height='20' width='20' /></a>");
+			if (folder.isAllowedAdmin()) {
+				out.print("<a href='folder_user.jsp?FoldID=" + folder.getAsString(Folder.FOLDER_ID) + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a>&nbsp;&nbsp;&nbsp;<a href='#' onClick='if (confirm(\"Are you sure you want to delete this folder\") == true) {document.PersForm.FoldID.value=\"" + folder.getAsString(Folder.FOLDER_ID) + "\";document.PersForm.submit();}' title='Delete Folder'><img src='images/delete.gif' border='0' height='20' width='20' /></a>");
 			}
 			out.println("<img src='images/blank.gif' width='1' height='20' /></td></tr>");
 		}
@@ -91,9 +88,9 @@
 		for (Iterator i = folderList.getAdminFolders().iterator(); i.hasNext(); ) {
 			folder = (Folder) i.next();
 			out.print("<tr><td><a href='admin_folder_detail.jsp?ID=" + folder.getAsString(Folder.FOLDER_ID) + "' class='heading'>" + folder.getAsString(Folder.NAME) + "</a>&nbsp;&nbsp;</td><td style='font-size: 14pt; font-weight: bold; color: #FF0000'>");
-			if (folder.getAsInt(Folder.LOCALITY_COUNT) > 0) { out.print("*"); }
+			if (folder.getLocalityCount() > 0) { out.print("*"); }
 			out.print("&nbsp;</td><td>" + folder.getAsString(Folder.OWNER) + "&nbsp;&nbsp;</td><td>");
-			if (folder.isAllowedEdit()) { 
+			if (folder.isAllowedAdmin()) { 
 				out.print("<a href='folder_user.jsp?FoldID=" + folder.getAsString(Folder.FOLDER_ID) + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a>");
 			}
 			out.println("<img src='images/blank.gif' width='1' height='20' /></td></tr>");
