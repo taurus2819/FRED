@@ -94,7 +94,7 @@ public class PaleontologyRecord extends Record {
 					taxa.setSpecimenCoords(rs2.getString(5));
 					taxa.setComments(rs2.getString(6));
 					taxa.setStatus(rs2.getString(7));
-					if (rs2.getString(7).equals("provisional"))
+					if (rs2.getString(7).equals("provisional") || rs2.getString(7).equals("rejected"))
 						provTaxaCount++;
 					taxaVec.add(taxa);
 				}
