@@ -29,9 +29,9 @@ public class FolderList implements FREDConstants {
 			adminFolders = new Vector();
 			while (rs.next()) {
 				if (rs.getString(1).equals("personal")) {
-					personalFolders.add(Folder.getFolder(rs.getInt(2), user, state));
+					personalFolders.add(new Folder(rs.getInt(2), user, state));
 				} else {
-					adminFolders.add(Folder.getFolder(rs.getInt(2), user, state));
+					adminFolders.add(new Folder(rs.getInt(2), user, state));
 				}
 			}
 			conn.releaseStatement();

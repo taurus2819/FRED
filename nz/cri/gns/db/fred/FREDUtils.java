@@ -14,6 +14,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.Right;
 import nz.cri.gns.auth.SecurityClass;
 import nz.cri.gns.auth.SecurityClassAccess;
@@ -92,7 +93,7 @@ public class FREDUtils implements FREDConstants {
 	}
 
 	public static FullSample getSampleAbove(FullSample sample, User user, PageState state)
-		throws SQLException, IOException, AccessDeniedException {
+		throws SQLException, IOException, AccessDeniedException, InvalidCredentialsException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		int[] types = {Types.NUMERIC, Types.NUMERIC};
 		Object data[] = new Object[2];
@@ -101,11 +102,11 @@ public class FREDUtils implements FREDConstants {
 		data[1] = new Double(sample.getAsDouble(FullSample.TOP_DEPTH));
 		ResultSet rs = conn.executeQuery(query, types, data);
 		rs.next();
-		return FullSample.getFullSample(rs.getInt(1), user, state);
+		return new FullSample(rs.getInt(1), user, state);
 	}
 
 	public static FullSample getSampleBelow(FullSample sample, User user, PageState state)
-		throws SQLException, IOException, AccessDeniedException {
+		throws SQLException, IOException, AccessDeniedException, InvalidCredentialsException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		int[] types = {Types.NUMERIC, Types.NUMERIC};
 		Object data[] = new Object[2];
@@ -114,7 +115,7 @@ public class FREDUtils implements FREDConstants {
 		data[1] = new Double(sample.getAsDouble(FullSample.TOP_DEPTH));
 		ResultSet rs = conn.executeQuery(query, types, data);
 		rs.next();
-		return FullSample.getFullSample(rs.getInt(1), user, state);
+		return new FullSample(rs.getInt(1), user, state);
 	}
 
 }
