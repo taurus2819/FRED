@@ -10,7 +10,7 @@ import nz.cri.gns.db.fred.AccessDeniedException;
 import nz.cri.gns.db.fred.FREDUtils;
 import nz.cri.gns.db.fred.FullSample;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.ExternalUtils;
+import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.test.TestingPageState;
 
 public class FullSampleTest extends TestCase {
@@ -25,7 +25,7 @@ public class FullSampleTest extends TestCase {
 		FullSample.purge();
 		this.state = new TestingPageState();
 			DBConnection ipConn =
-				ExternalUtils.createDatabaseConnection(
+				JspUtils.createDatabaseConnection(
 					state.getSession(),
 					"nz.cri.gns.db.fred.test.ipConn",
 					"ip",

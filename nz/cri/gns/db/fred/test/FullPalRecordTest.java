@@ -12,7 +12,7 @@ import nz.cri.gns.db.fred.FullPaleontologyRecord;
 import nz.cri.gns.db.fred.Taxa;
 import nz.cri.gns.db.fred.TaxaGroup;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.ExternalUtils;
+import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.test.TestingPageState;
 
 public class FullPalRecordTest extends TestCase {
@@ -27,7 +27,7 @@ public class FullPalRecordTest extends TestCase {
 		FullPaleontologyRecord.purge();
 		this.state = new TestingPageState();
 			DBConnection ipConn =
-				ExternalUtils.createDatabaseConnection(
+				JspUtils.createDatabaseConnection(
 					state.getSession(),
 					"nz.cri.gns.db.fred.test.ipConn",
 					"ip",

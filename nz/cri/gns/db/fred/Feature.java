@@ -11,8 +11,8 @@ import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.pool.Finder;
 import nz.cri.gns.db.pool.Pool;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.ExternalUtils;
 import nz.cri.gns.jsp.FREDConstants;
+import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 /**
@@ -61,7 +61,7 @@ public class Feature implements FREDConstants {
 		throws SQLException, IOException {
 		this.state = state;
 		DBConnection conn =
-			ExternalUtils.createDatabaseConnection(
+			JspUtils.createDatabaseConnection(
 				state.getSession(),
 				CONNECTION,
 				DB_NAME,

@@ -19,8 +19,8 @@ import nz.cri.gns.auth.SecurityClass;
 import nz.cri.gns.auth.SecurityClassAccess;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.ExternalUtils;
 import nz.cri.gns.jsp.FREDConstants;
+import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 /**
@@ -32,7 +32,7 @@ import nz.cri.gns.jsp.PageState;
 public class FREDUtils implements FREDConstants {
 
 	public static DBConnection getFREDConnection(PageState state) throws IOException {
-		return ExternalUtils.createDatabaseConnection(
+		return JspUtils.createDatabaseConnection(
 			state.getSession(),
 			FREDConstants.CONNECTION,
 			FREDConstants.DB_NAME,
@@ -47,7 +47,7 @@ public class FREDUtils implements FREDConstants {
 		if (user == null)
 			return false;
 		DBConnection conn =
-			ExternalUtils.createDatabaseConnection(
+			JspUtils.createDatabaseConnection(
 				state.getSession(),
 				"nz.cri.gns.ip.connection",
 				"ip",
