@@ -80,7 +80,7 @@ public class DataEntryUtils {
 			try {
 				int iDay = Integer.parseInt(day);
 				int iMonth = Integer.parseInt(month);
-				int iYear = Integer.parseInt(year);
+				Integer.parseInt(year);
 				if (iDay < 0 || iDay > 31)
 					throw new DataInputException("Date", "Invalid Data");
 				//bad day
