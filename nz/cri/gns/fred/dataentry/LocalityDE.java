@@ -550,7 +550,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		qd = new QueryDescriptor("audit_table");
 		qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_APPROVED);
 		qd.addQueryColumn("approved_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
-		qd.addQueryColumn("approved_date", Types.DATE, FREDUtils.getNowForSQL());
+		qd.addQueryColumn("approved_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
 		qd.addQueryColumn("working_folder_id", Types.NUMERIC, null);
 		qd.addQueryColumn("working_comments", Types.VARCHAR, null);
 		qd.addQueryColumn("curator_comments", Types.VARCHAR, null);
