@@ -14,13 +14,13 @@ import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.HTMLUtils;
 import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.fred.FREDUtils;
+import nz.cri.gns.fred.FolderUtils;
 import nz.cri.gns.fred.data.PaleontologyRecord;
 import nz.cri.gns.fred.data.Record;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.fred.data.Taxa;
 import nz.cri.gns.fred.data.TaxaGroup;
 import nz.cri.gns.intranet.DBConnection;
-//import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 public class PaleontologyRecordDE extends RecordDE {
@@ -165,7 +165,7 @@ public class PaleontologyRecordDE extends RecordDE {
 							String cleanName = getCleanedName(taxaName);
 							//check TaxaName against thesaurus
 							try {
-								String query = "SELECT taxa_id FROM taxonomic_lookup WHERE group_id = ? AND taxonomic_name = ? AND status IN ('approved', 'provisional')";
+								String query = "SELECT taxa_id FROM taxonomic_lookup WHERE group_id = ? AND taxonomic_name = ?";
 								rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {taxa.getGroupID(), cleanName});
 								rs.next();
 								taxa.setTaxaID(new Integer(rs.getInt(1)));
@@ -297,7 +297,12 @@ public class PaleontologyRecordDE extends RecordDE {
 			out.write("<tr><td class='heading' colspan='2'>Collection Comments</td><td><textarea name='CollComm' cols='40' rows='2'>"
 					+ FREDUtils.noNulls(getFieldForHTML(COLLECTION_COMMENTS))
 					+ "</textarea></td></tr>\n");
-			out.write("<tr><td class='heading'>Taxonomic List</td></tr>\n");
+			out.write("<tr><td class='heading' colspan='3'>Taxonomic List");
+			try {
+				if (!FolderUtils.isTaxaApproved(record.getRecordID(), user, state))
+					out.write("<br /><span class=\"smallheading\" style=\"color: #FF0000\">Some taxonomic entries listed below have not been approved and this record can not be submitted.  Click <a href=\"record_taxa_list.jsp?RecID=" + record.getRecordID() + "\" target=\"taxaList\">here</a> for more details</span>");
+			} catch (Exception e) {}
+			out.write("</td></tr>\n");
 			out.write("<tr><td colspan='3'><textarea name='Taxa' cols='80' rows='20'>" + FREDUtils.noNulls(getFieldForHTML(TAXA_LIST)) + "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Taxa\", \"Supp\", \"width=600,height=500\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
 			super.makeEndBitHTML(out);
 	}
@@ -383,8 +388,12 @@ public class PaleontologyRecordDE extends RecordDE {
 	}
 	
 	protected void checkMandatoryFields() throws DataInputException {
-		if (record.getAsInt(Record.PROVISIONAL_TAXA_COUNT) > 0)
-			throw new DataInputException("Mandatory Fields", "Some taxonomic entries provisional");
+		try {
+			if (!FolderUtils.isTaxaApproved(record.getRecordID(), user, state))
+				throw new DataInputException("Mandatory Fields", "Not all taxonomic entries are approved");
+		} catch (Exception e) {
+			throw new DataInputException("Mandatory Fields", "Not all taxonomic entries are approved");
+		}
 	}
 	
 	public static String getCleanedName(String cleanName) throws DataInputException {

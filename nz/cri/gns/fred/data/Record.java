@@ -79,14 +79,14 @@ public class Record {
 	public static final int LAB_NUMBER = 34;
 	public static final int COLLECTION_COMMENTS = 35;
 	public static final int TAXONOMIC_LIST = 36;
-	public static final int PROVISIONAL_TAXA_COUNT = 37;
+	public static final int TAXA_IDS = 37;
 	
 	public static final String ADOPTION_RECORD = "ADO";
 	public static final String PALEONTOLOGY_RECORD = "PAL";	
 	
 	private static Pool pool = new Pool();
 	protected int id;
-	protected Object[] values = new Object[38];
+	protected Object[] values = new Object[39];
 	protected int[] types = { Types.NUMERIC };
 	protected Object[] data = new Object[1];
 	
@@ -284,7 +284,7 @@ public class Record {
 	public String toString() {
 		String person = ((values[PERSON] != null) ? ((KeyValueObject) getAsVector(PERSON).firstElement()).getValue() : "");
 		String date = ((values[RECORD_DATE] != null) ? FREDUtils.formatDateForOutput(getAsDate(RECORD_DATE), getAsString(DATE_ROUNDING)) : "");
-		return ((person.length() + date.length() > 0) ? "(" + person + ((person.length() > 0 && date.length() > 0) ? ", " : "") + date + ")" : "");
+		return ((person.length() + date.length() > 0) ? person + ((person.length() > 0 && date.length() > 0) ? ", " : "") + date : "");
 	}
 	
 }

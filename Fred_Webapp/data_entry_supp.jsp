@@ -12,7 +12,7 @@
 
 
 	ExtranetTemplate et = new ExtranetTemplate();
-	et.setImageURL(new URL("http://data:8000/fred/images/fred.jpg"));
+	et.setImageBase("/fred/images/fred.gif");
 	et.setDisplayLogin(false);
 	et.setShowGnsLogo(false);
 	et.setUseNavigationColumn(false);
@@ -152,7 +152,7 @@ function saveData(type) {
 		}
 		else if (type == "Taxa") {
 			if (checkTaxa() == 1) {
-				window.opener.form1.Taxa.value = window.opener.form1.Taxa.value + parseDropDown(Group.value) + "*" + TaxaName.value + "*" + Author.value + "*" + SpecCount.value + "*" + SpecCoord.value + "*" + Comm.value + "\n";
+				window.opener.form1.Taxa.value = window.opener.form1.Taxa.value + parseDropDown(Group.options[Group.selectedIndex].text) + "*" + TaxaName.value + "*" + Author.value + "*" + SpecCount.value + "*" + SpecCoord.value + "*" + Comm.value + "\n";
 			}
 		}
 	}
@@ -690,28 +690,28 @@ function parseDropDown(val) {
 		else if (request.getParameter("Type").equals("Taxa")) {
 			String groupID = "0";
 			out.println("<tr><td class='heading' colspan='2'>Taxonomic Details</td></tr>");
-			out.println("<tr><td colspan='2'>Please select a Taxonomic Group from the drop-down list.  The Taxonomic Name List will then be filled with appropriate taxa.  Either choose from this list or enter a new name in the Taxonomic Name and Author (optional) boxes.<br />Note: new taxonomic names will be entered into the database as provisional and will be assesed by members of the taxonomic panel.  You will not be able to submit your data until the name has been approved.<br />You may add multiple taxa by clicking the Add To Main Form icon between each taxa and then Close to end.</td></tr>");
+			out.println("<tr><td colspan='2'>Please select a Taxonomic Group from the drop-down list.  The Taxonomic Name List will then be filled with appropriate taxa.  Either choose from this list or enter a new name in the Taxonomic Name and Author (optional) boxes.<br />Note: new taxonomic names will be entered into the database as provisional and will be assesed by members of the taxonomic panel.  You will not be able to submit your record until the name has been approved.<br />You may add multiple taxa by clicking the Add To Main Form icon between each taxa and then Close to end.</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.print("<tr><td class='heading'>Group</td><td>");
-			cd = new ComboDescriptor("Lookup", "Name", "Name");
+			cd = new ComboDescriptor("lookup", "lookup_id", "name");
 			cd.name = "Group";
 			cd.prompt = "-- Choose --";
 			cd.orderBy = "Lookup_ID";
 			cd.join = "FieldName = 'TaxaGroup'";
 			cd.tagParams = "onChange='form1.submit();'";
 			if (request.getParameter("Group") != null) {
-				cd.selected = request.getParameter("Group");
-				rs = statement.executeQuery("SELECT Lookup_ID FROM Lookup WHERE Name = " + JspUtils.sqlEscape(request.getParameter("Group")) + " AND FieldName = 'TaxaGroup'");
-				if (rs.next()) { groupID = rs.getString(1); }
+				groupID = request.getParameter("Group");
+				cd.selected = groupID;
 			}
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("</td></tr>");
-			out.print("<tr><td class='heading'>Taxonomic Name List</td><td>");
-			cd = new ComboDescriptor("Taxonomic_Lookup", "Taxonomic_Name", "Taxonomic_Name");
+			out.print("<tr><td class='heading'>Taxonomic&nbsp;Name&nbsp;List</td><td>");
+			cd = new ComboDescriptor("Taxonomic_Lookup", "Taxa_id", "Taxonomic_Name");
 			cd.name = "TaxaList";
 			cd.prompt = "-- Choose --";
-			cd.tagParams = "onChange='form1.TaxaName.value = parseDropDown(TaxaList.value);'";
-			cd.join = "Group_ID = " + groupID + " AND Status IN ('approved', 'provisional')";
+			cd.orderBy = "UPPER(taxonomic_name)";
+			cd.tagParams = "onChange='form1.TaxaName.value = parseDropDown(TaxaList.options[TaxaList.selectedIndex].text);'";
+			cd.join = "group_id = " + groupID + " AND status IN ('approved', 'provisional') AND taxonomic_name IS NOT NULL";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("</td></tr>");
 			out.println("<tr><td class='heading'>Taxonomic Name</td><td><input type='text' name='TaxaName' size='40' /></td></tr>");

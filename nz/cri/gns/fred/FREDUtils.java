@@ -352,6 +352,18 @@ public class FREDUtils {
 		return secClass;
 	}
 
+	public static boolean isTaxaPanelMember(User user, String groupID, PageState state) throws IOException {
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		String query = "SELECT * FROM taxa_panel WHERE group_id = ? AND panelist_id = ?";
+		try {
+			ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.NUMERIC},
+				 new Object[] {new Integer(user.getPersonId()), new Integer(groupID)});
+			rs.next();
+			return true;
+		} catch (Exception e) {}
+		return false;		
+	}
+
 	/**
 	 * Returns the Sample immediately above the given Sample in a drillhole or vertical section
 	 */

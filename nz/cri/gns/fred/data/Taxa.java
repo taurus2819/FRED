@@ -23,7 +23,6 @@ public class Taxa {
 	private String comments;
 	private Integer groupID;
 	private String groupName;
-	private String status;
 
 	public Taxa() {
 	}
@@ -106,14 +105,6 @@ public class Taxa {
 
 	public String getGroupName() {
 		return groupName;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public String getStatus() {
-		return status;
 	}
 	
 	public void submitProvisional(User user, PageState state) throws SQLException, IOException {

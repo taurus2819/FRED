@@ -45,7 +45,9 @@
 		} else {
 			dataEntryForm = (DataEntryForm) session.getAttribute("dataEntryForm");
 		}
-	} catch (Exception e) {}
+	} catch (Exception e) {
+		out.println(e.getMessage());
+	}
 
 	if (dataEntryForm != null) {
 		

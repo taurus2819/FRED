@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.text.DecimalFormat;
+import java.util.Iterator;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
@@ -15,8 +16,10 @@ import nz.cri.gns.fred.data.Audit;
 import nz.cri.gns.fred.data.FRNumber;
 import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.data.Folder;
+import nz.cri.gns.fred.data.PaleontologyRecord;
 import nz.cri.gns.fred.data.Record;
 import nz.cri.gns.fred.data.Sample;
+import nz.cri.gns.fred.data.TaxonomicLookup;
 import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
 import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.fred.dataentry.LocalityDE;
@@ -259,4 +262,17 @@ public class FolderUtils {
 			return new FRNumber(mapSheet, new Integer(serialNumber), String.valueOf((char) (recollNum + 1)));
 		}
 	}
+	
+	public static boolean isTaxaApproved(int recordID, User user, PageState state) throws SQLException, IOException, InvalidCredentialsException {
+		Record record = PaleontologyRecord.getData(recordID, user, state);
+		if (record.get(Record.TAXA_IDS) !=  null) {
+			for (Iterator i = record.getAsVector(Record.TAXA_IDS).iterator(); i.hasNext(); ) {
+				TaxonomicLookup tl = new TaxonomicLookup(((Integer)i.next()).intValue(), user, state, true);
+				if (!tl.getAsString(TaxonomicLookup.STATUS).equals(TaxonomicLookup.APPROVED_STATUS))
+					return false;
+			}
+		}
+		return true;
+	}
+	
 }

@@ -73,15 +73,15 @@ public class PaleontologyRecord extends Record {
 			}
 			values[IDENTIFIER] = ((identVec.size() > 0) ? identVec : null);
 			rs.close();
-			int provTaxaCount = 0;
 			query = "SELECT DISTINCT L.Name,P.Group_ID FROM Pal_List P, Lookup L WHERE P.Group_ID = L.Lookup_ID AND P.Record_ID = ? ORDER BY UPPER(L.Name)";
 			rs = conn.executeQuery(query, types, data);
 			Statement preserveStatement = conn.preservePreparedStatement();
 			Vector taxaGroupVec = new Vector();
+			Vector taxaIDVec = new Vector();
 			while (rs.next()) {
 				TaxaGroup taxaGroup = new TaxaGroup(rs.getString(1));
 				taxaGroup.setGroupID(((rs.getString(2) != null)	? new Integer(rs.getInt(2))	: null));
-				query =	"SELECT p.taxonomic_name, p.taxa_id, t.author, p.specimen_count, p.specimen_coords, p.comments, t.status "
+				query =	"SELECT p.taxonomic_name, p.taxa_id, t.author, p.specimen_count, p.specimen_coords, p.comments "
 						+ "FROM pal_list p, taxonomic_lookup t WHERE p.taxa_id = t.taxa_id AND p.record_id = ? AND p.group_id = ?"
 						+ " ORDER BY UPPER(p.taxonomic_name)";
 				ResultSet rs2 = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(this.id), taxaGroup.getGroupID()});
@@ -93,10 +93,8 @@ public class PaleontologyRecord extends Record {
 					taxa.setSpecimenCount(((rs2.getString(4) != null) ? new Integer(rs2.getInt(4)) : null));
 					taxa.setSpecimenCoords(rs2.getString(5));
 					taxa.setComments(rs2.getString(6));
-					taxa.setStatus(rs2.getString(7));
-					if (rs2.getString(7).equals("provisional") || rs2.getString(7).equals("rejected"))
-						provTaxaCount++;
 					taxaVec.add(taxa);
+					taxaIDVec.add(new Integer(rs2.getInt(2)));
 				}
 				if (taxaVec.size() > 0) {
 					taxaGroup.setTaxaList(taxaVec);
@@ -105,7 +103,7 @@ public class PaleontologyRecord extends Record {
 				taxaGroupVec.add(taxaGroup);
 			}
 			values[TAXONOMIC_LIST] = ((taxaGroupVec.size() > 0) ? taxaGroupVec : null);
-			values[PROVISIONAL_TAXA_COUNT] = new Integer(provTaxaCount);
+			values[TAXA_IDS] = ((taxaIDVec.size() > 0) ? taxaIDVec : null);
 			rs.close();
 			preserveStatement.close();
 			conn.releaseStatement();

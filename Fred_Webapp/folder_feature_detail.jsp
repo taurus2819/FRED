@@ -90,7 +90,7 @@
 				//List records
 				out.println("<p><span class='heading'>Locality Details</span><br />");
 				out.println("Listed below are the working records for this locality - adoption (blue) and paleontology (green).  Drillhole and Vertical Section localities will also have individual samples listed.<br />");
-				out.println("Paleontology records marked with a red asterix contain provisional taxonomic entries.  These records can not be submitted until the entry is approved</p>");
+				out.println("Paleontology records marked with a red asterix contain taxonomic entries which have not been approved.  These records can not be submitted.</p>");
 
 				//print error message (if any) from folder_actions
 				if (request.getParameter("ErrMsg") != null) {
@@ -150,7 +150,7 @@
 				//Samples
 				Vector samples = new Vector();
 				for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
-					Sample sample = new Sample(((Integer) i.next()).intValue(), user, state);
+					Sample sample = new Sample(((Integer) i.next()).intValue(), user, state, true);
 					samples.add(sample);
 					if (sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_APPROVED) || (sample.get(Sample.SAMPLE_WORKING_FOLDER_ID) != null && sample.getAsInt(Sample.SAMPLE_WORKING_FOLDER_ID) == folder.getFolderID())) {
 						if (!featType.equals(Feature.OUTCROP_LOCALITY) && !sample.getAsString(Sample.DRILLHOLE_DEPTH).equals("Depth Not Specified")) {
@@ -190,17 +190,20 @@
 							KeyValueObject kvo = (KeyValueObject) k.next();
 							int recID = Integer.parseInt(kvo.getKey());
 							String recType = kvo.getValue();
+							boolean badTaxaFlag = false;
 							try {
 								Record record;
 								if (recType.equals(Record.ADOPTION_RECORD)) {
-									record = AdoptionRecord.getData(recID, user, state);
+									record = AdoptionRecord.getData(recID, user, state, true);
 								} else {
-									record = PaleontologyRecord.getData(recID, user, state);
+									record = PaleontologyRecord.getData(recID, user, state, true);
+									if (!FolderUtils.isTaxaApproved(recID, user, state))
+										badTaxaFlag = true;
 								}
 								records.add(record);
 								if (record.get(Record.WORKING_FOLDER_ID) == null || record.getAsInt(Record.WORKING_FOLDER_ID) == folder.getFolderID()) {
 									out.print("<tr><td><img src='images/child.gif' width='20' height='20' /><img src='images/" + recType.toLowerCase() + ".gif" + "' width='20' height='20' /></td><td class='smalltext'>");
-									if (record.get(Record.PROVISIONAL_TAXA_COUNT) != null && record.getAsInt(Record.PROVISIONAL_TAXA_COUNT) > 0)
+									if (badTaxaFlag)
 										out.print("<span class=\"heading\" style=\"color: #FF0000\">*</span>&nbsp;&nbsp;");
 									out.print(FREDUtils.noNulls(record.toString()) + "&nbsp;&nbsp;</td><td class='smalltext' style='color: #FF0000'>");
 									if (record.getAsString(Record.STATUS).equals(Audit.STATUS_WORKING)) {
@@ -219,7 +222,7 @@
 									if (record.getAsString(Record.STATUS).equals(Audit.STATUS_WORKING) && folder.isAllowedDeleteLocalities())
 										out.println("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this record\") == true) {document.FoldForm.ActionType.value=\"DeleteRec\";document.FoldForm.RecID.value=\"" + recID + "\";document.FoldForm.submit();}'><img src='images/delete.gif' border='0' height='20' width='20' alt='Delete Record' /></a><img src='images/blank.gif' height='20' width='2' />");
 									out.println("</td><td>");
-									if (record.getAsString(Record.STATUS).equals(Audit.STATUS_WORKING) && folder.isAllowedSubmitLocalities() && !(record.get(Record.PROVISIONAL_TAXA_COUNT) != null && record.getAsInt(Record.PROVISIONAL_TAXA_COUNT) > 0))
+									if (record.getAsString(Record.STATUS).equals(Audit.STATUS_WORKING) && folder.isAllowedSubmitLocalities() && !badTaxaFlag)
 										out.println("<a href='#' onClick='document.FoldForm.ActionType.value=\"SubmitRec\";document.FoldForm.RecID.value=\"" + recID + "\";document.FoldForm.submit();'><img src='images/submit.gif' border='0' height='20' width='20' alt='Submit Record' /></a><img src='images/blank.gif' height='20' width='2' />");
 									out.println("</td></tr>");
 								}
