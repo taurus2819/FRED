@@ -27,13 +27,15 @@
 	drawTop(out, et, request, response);
 	
 	if (request.getParameter("Type") != null && request.getParameter("FoldID") != null) {
-		String featType = request.getParameter("Type");
+		String formType = request.getParameter("Type");
 		String foldID = request.getParameter("FoldID");
 		String featID = request.getParameter("FeatID");
+		String sampID = request.getParameter("SampID");
+		String recID = request.getParameter("RecID");
 		Folder folder = new Folder(Integer.parseInt(foldID), user, state);
-		
 		DataEntryForm dataEntryForm;
-		if (featType.equals("Outcrop") || featType.equals("Drillhole") || featType.equals("VertSect")) {
+		
+		if (formType.equals("Outcrop") || formType.equals("Drillhole") || formType.equals("VertSect")) {
 			if (request.getParameter("LoadFeatID") != null) { //copying
 				if (featID == null) {
 					dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), user, Integer.parseInt(foldID), state);
@@ -43,13 +45,13 @@
 			} else if (featID != null) { //editing
 				dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
 			} else {
-				dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(featType, user, Integer.parseInt(foldID), state);
+				dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(formType, user, Integer.parseInt(foldID), state);
 			}
 		} else {
 			if (featID != null) { //editing
 				dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(featID), user, state);
 			} else {
-				dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(featType, user, Integer.parseInt(request.getParameter("SampID")), Integer.parseInt(foldID), state);
+				dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(formType, user, Integer.parseInt(request.getParameter("SampID")), Integer.parseInt(foldID), state);
 			}
 		}
 		
@@ -57,10 +59,12 @@
 		if ((folder.isAllowedCreateLocalities() && featID ==  null) || (folder.isAllowedEditLocalities() && featID != null)) {
 
 			out.println("<form name='form1' method='post' action='data_proc.jsp'>");
-			out.println("<input type='hidden' name='Type' value='" + featType + "'>");
+			out.println("<input type='hidden' name='Type' value='" + formType + "'>");
 			out.println("<input type='hidden' name='FoldID' value='" + foldID + "'>");
 			if (featID != null) out.println("<input type='hidden' name='FeatID' value='" + featID + "'>");
-			out.println("<input type='hidden' name='SaveType' value=''>");
+			if (sampID != null) out.println("<input type='hidden' name='SampID' value='" + sampID + "'>");
+			if (recID != null) out.println("<input type='hidden' name='RecID' value='" + recID + "'>");
+			out.println("<input formType='hidden' name='SaveType' value=''>");
 
 			dataEntryForm.makeNavPanelHTML(new PrintWriter(out));
 

@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import junit.framework.TestCase;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.fred.data.Record;
 import nz.cri.gns.fred.data.SampPropRecord;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
@@ -68,11 +69,12 @@ public class SampPropRecordTest extends TestCase {
 	}
 	
 	public void testFields() throws SQLException, IOException, InvalidCredentialsException {
-		SampPropRecord.purge();
+		//SampPropRecord.purge();
+		Record r = Record.getData(1220, user, state);
 		SampPropRecord sp = (SampPropRecord) SampPropRecord.getData(1220, user, state);
-		for (int i = 0; i < 80; i++) {
-			System.out.println(i + ": " + sp.getAsString(i));
-		}				
+		//for (int i = 0; i < 80; i++) {
+		//	System.out.println(i + ": " + sp.getAsString(i));
+		//}				
 	}
 
 }

@@ -236,7 +236,7 @@
 					KeyValueObject rec = (KeyValueObject)i.next();
 					if (rec.getValue().equals("SMP")) {
 						try {
-							SampPropRecord sampProp = SampPropRecord.getSampPropData(Integer.parseInt(rec.getKey()), user, state);
+							SampPropRecord sampProp = (SampPropRecord) SampPropRecord.getData(Integer.parseInt(rec.getKey()), user, state);
 							out.println("<tr><td class='bigheading' colspan='2'>Sample Property Data</td></tr>");
 							//collectors (repeating)
 							if (sampProp.get(SampPropRecord.COLLECTOR) != null) {
@@ -268,7 +268,7 @@
 								out.print("<tr><td class='heading'>Samples Nearby</td><td>");
 								for (Iterator i2 = sampProp.getAsVector(SampPropRecord.RELATIONSHIP_NEARBY).iterator(); i2.hasNext(); ) {
 									Relationship nearRel = (Relationship)i2.next();
-									out.print(nearRel.getDistanceRelation() + " <a href='detail.jsp?FeatID=" + nearRel.getRelatedFeatureId() + "'>" + nearRel.getRelatedSampleName() +"</a><br />");
+									out.print(nearRel.getDistanceRelation() + " <a href='detail.jsp?FeatID=" + nearRel.getRelatedFeatureID() + "'>" + nearRel.getRelatedSampleName() +"</a><br />");
 								}
 							out.print("</td></tr>");
 							}
@@ -277,7 +277,7 @@
 								out.print("<tr><td class='heading'>Sample Relationships</td><td>");
 								for (Iterator i2 = sampProp.getAsVector(SampPropRecord.RELATIONSHIP_SAMPLE).iterator(); i2.hasNext(); ) {
 									Relationship sampRel = (Relationship)i2.next();
-									out.print(sampRel.getDistanceRelation() + " <a href='detail.jsp?FeatID=" + sampRel.getRelatedFeatureId() + "'>" + sampRel.getRelatedSampleName() + "</a><br />");
+									out.print(sampRel.getDistanceRelation() + " <a href='detail.jsp?FeatID=" + sampRel.getRelatedFeatureID() + "'>" + sampRel.getRelatedSampleName() + "</a><br />");
 								}
 							out.print("</td></tr>");
 							}
@@ -343,7 +343,7 @@
 					KeyValueObject rec = (KeyValueObject)i.next();
 					if (rec.getValue().equals("ADO")) {
 						try {
-							AdoptionRecord ado = AdoptionRecord.getAdoptionData(Integer.parseInt(rec.getKey()), user, state);
+							AdoptionRecord ado = (AdoptionRecord) AdoptionRecord.getData(Integer.parseInt(rec.getKey()), user, state);
 							out.println("<tr><td colspan='2' class='bigheading'>Adoption Data</td></tr>");
 							//adoptors (repeating)
 							if (ado.get(AdoptionRecord.ADOPTOR) != null) {
@@ -384,7 +384,7 @@
 					KeyValueObject rec = (KeyValueObject)i.next();
 					if (rec.getValue().equals("PAL")) {
 						try {
-							PaleontologyRecord pal = PaleontologyRecord.getPaleontologyData(Integer.parseInt(rec.getKey()), user, state);
+							PaleontologyRecord pal = (PaleontologyRecord) PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state);
 							out.println("<tr><td colspan='2' class='bigheading'>Paleontology Data</td></tr>");
 							//identifiers (repeating)
 							if (pal.get(PaleontologyRecord.IDENTIFIER) != null) {

@@ -14,6 +14,7 @@ import nz.cri.gns.db.HTMLUtils;
 import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.Folder;
+import nz.cri.gns.fred.data.Record;
 import nz.cri.gns.fred.data.Relationship;
 import nz.cri.gns.fred.data.SampPropRecord;
 import nz.cri.gns.fred.data.SedFeature;
@@ -61,18 +62,18 @@ public class SampPropRecordDE extends RecordDE {
 		recordType = "SMP";
 		folder =
 			new Folder(
-				record.getAsInt(SampPropRecord.WORKING_FOLDER_ID),
+				record.getAsInt(Record.WORKING_FOLDER_ID),
 				user,
 				state);
 		setField(
 			COLLECTION_DATE,
 			DataEntryUtils.reverseParseDate(
-				record.getAsDate(SampPropRecord.COLLECTION_DATE),
-				record.getAsString(SampPropRecord.DATE_ROUNDING)));
-		if (record.get(SampPropRecord.COLLECTOR) != null) {
+				record.getAsDate(Record.COLLECTION_DATE),
+				record.getAsString(Record.DATE_ROUNDING)));
+		if (record.get(Record.COLLECTOR) != null) {
 			StringBuffer collName = new StringBuffer();
 			for (Iterator i =
-				record.getAsVector(SampPropRecord.COLLECTOR).iterator();
+				record.getAsVector(Record.COLLECTOR).iterator();
 				i.hasNext();
 				) {
 				KeyValueObject coll = (KeyValueObject) i.next();
@@ -80,12 +81,12 @@ public class SampPropRecordDE extends RecordDE {
 			}
 			setField(COLLECTORS, collName.toString());
 		}
-		setField(STRAT_NAME, record.getAsString(SampPropRecord.STRAT_UNIT));
-		setField(FOSSILS_IN_PLACE, record.getAsString(SampPropRecord.IN_PLACE));
-		if (record.get(SampPropRecord.SENT_TO) != null) {
+		setField(STRAT_NAME, record.getAsString(Record.STRAT_UNIT));
+		setField(FOSSILS_IN_PLACE, record.getAsString(Record.IN_PLACE));
+		if (record.get(Record.SENT_TO) != null) {
 			StringBuffer sTStr = new StringBuffer();
 			for (Iterator i =
-				record.getAsVector(SampPropRecord.SENT_TO).iterator();
+				record.getAsVector(Record.SENT_TO).iterator();
 				i.hasNext();
 				) {
 				SentTo sT = (SentTo) i.next();
@@ -103,39 +104,39 @@ public class SampPropRecordDE extends RecordDE {
 		}
 		setField(
 			NOT_COLLECTED,
-			record.getAsString(SampPropRecord.NOT_COLLECTED));
+			record.getAsString(Record.NOT_COLLECTED));
 		setField(
 			SIGNIFICANCE_COMMENTS,
-			record.getAsString(SampPropRecord.SIGNIFICANCE));
+			record.getAsString(Record.SIGNIFICANCE));
 		setField(
 			INF_AGE_START,
-			record.getAsString(SampPropRecord.INFERRED_STAGE_LOWER_ID));
+			record.getAsString(Record.INFERRED_STAGE_LOWER_ID));
 		setField(
 			INF_START_MOD,
-			record.getAsString(SampPropRecord.INFERRED_STAGE_LOWER_MOD));
+			record.getAsString(Record.INFERRED_STAGE_LOWER_MOD));
 		setField(
 			INF_AGE_STOP,
-			record.getAsString(SampPropRecord.INFERRED_STAGE_UPPER_ID));
+			record.getAsString(Record.INFERRED_STAGE_UPPER_ID));
 		setField(
 			INF_STOP_MOD,
-			record.getAsString(SampPropRecord.INFERRED_STAGE_UPPER_MOD));
+			record.getAsString(Record.INFERRED_STAGE_UPPER_MOD));
 		setField(
 			KNW_AGE_START,
-			record.getAsString(SampPropRecord.KNOWN_STAGE_LOWER_ID));
+			record.getAsString(Record.KNOWN_STAGE_LOWER_ID));
 		setField(
 			KNW_START_MOD,
-			record.getAsString(SampPropRecord.KNOWN_STAGE_LOWER_MOD));
+			record.getAsString(Record.KNOWN_STAGE_LOWER_MOD));
 		setField(
 			KNW_AGE_STOP,
-			record.getAsString(SampPropRecord.KNOWN_STAGE_UPPER_ID));
+			record.getAsString(Record.KNOWN_STAGE_UPPER_ID));
 		setField(
 			KNW_STOP_MOD,
-			record.getAsString(SampPropRecord.KNOWN_STAGE_UPPER_MOD));
-		if (record.get(SampPropRecord.RELATIONSHIP_NEARBY) != null) {
+			record.getAsString(Record.KNOWN_STAGE_UPPER_MOD));
+		if (record.get(Record.RELATIONSHIP_NEARBY) != null) {
 			StringBuffer prevSamp = new StringBuffer();
 			for (Iterator i =
 				record
-					.getAsVector(SampPropRecord.RELATIONSHIP_NEARBY)
+					.getAsVector(Record.RELATIONSHIP_NEARBY)
 					.iterator();
 				i.hasNext();
 				) {
@@ -144,11 +145,11 @@ public class SampPropRecordDE extends RecordDE {
 			}
 			setField(PREVIOUS_SAMPLE, prevSamp.toString());
 		}
-		if (record.get(SampPropRecord.RELATIONSHIP_SAMPLE) != null) {
+		if (record.get(Record.RELATIONSHIP_SAMPLE) != null) {
 			StringBuffer sampRel = new StringBuffer();
 			for (Iterator i =
 				record
-					.getAsVector(SampPropRecord.RELATIONSHIP_SAMPLE)
+					.getAsVector(Record.RELATIONSHIP_SAMPLE)
 					.iterator();
 				i.hasNext();
 				) {
@@ -169,11 +170,11 @@ public class SampPropRecordDE extends RecordDE {
 			}
 			setField(SAMPLE_RELATIONSHIP, sampRel.toString());
 		}
-		if (record.get(SampPropRecord.RELATIONSHIP_STRAT) != null) {
+		if (record.get(Record.RELATIONSHIP_STRAT) != null) {
 			StringBuffer stratRel = new StringBuffer();
 			for (Iterator i =
 				record
-					.getAsVector(SampPropRecord.RELATIONSHIP_STRAT)
+					.getAsVector(Record.RELATIONSHIP_STRAT)
 					.iterator();
 				i.hasNext();
 				) {
@@ -194,46 +195,46 @@ public class SampPropRecordDE extends RecordDE {
 			}
 			setField(STRAT_RELATIONSHIP, stratRel.toString());
 		}
-		setField(COLUMN_MAP, record.getAsString(SampPropRecord.COLUMN_MAP));
-		setField(DIP, record.getAsString(SampPropRecord.DIP));
+		setField(COLUMN_MAP, record.getAsString(Record.COLUMN_MAP));
+		setField(DIP, record.getAsString(Record.DIP));
 		setField(
 			DIP_DIRECTION,
-			record.getAsString(SampPropRecord.DIP_DIRECTION));
-		setField(STRIKE, record.getAsString(SampPropRecord.STRIKE));
-		setField(FACING, record.getAsString(SampPropRecord.FACING));
+			record.getAsString(Record.DIP_DIRECTION));
+		setField(STRIKE, record.getAsString(Record.STRIKE));
+		setField(FACING, record.getAsString(Record.FACING));
 		setField(
 			GRAIN_SIZE_P,
-			record.getAsString(SampPropRecord.PRIMARY_GRAINSIZE_ID));
+			record.getAsString(Record.PRIMARY_GRAINSIZE_ID));
 		setField(
 			GRAIN_SIZE_S,
-			record.getAsString(SampPropRecord.SECONDARY_GRAINSIZE_ID));
-		setField(GS_COMP, record.getAsString(SampPropRecord.COMPARATOR_USED));
+			record.getAsString(Record.SECONDARY_GRAINSIZE_ID));
+		setField(GS_COMP, record.getAsString(Record.COMPARATOR_USED));
 		setField(
 			BEDDING_THICKNESS,
-			record.getAsString(SampPropRecord.BED_THICK_ID));
+			record.getAsString(Record.BED_THICK_ID));
 		setField(
 			BEDDING_P,
-			record.getAsString(SampPropRecord.PRIMARY_BEDDING_ID));
+			record.getAsString(Record.PRIMARY_BEDDING_ID));
 		setField(
 			BEDDING_S,
-			record.getAsString(SampPropRecord.SECONDARY_BEDDING_ID));
-		setField(WEATHERING, record.getAsString(SampPropRecord.WEATHERING_ID));
-		setField(HARDNESS, record.getAsString(SampPropRecord.HARDNESS_ID));
-		setField(CARBONATE, record.getAsString(SampPropRecord.CARBONATE_ID));
+			record.getAsString(Record.SECONDARY_BEDDING_ID));
+		setField(WEATHERING, record.getAsString(Record.WEATHERING_ID));
+		setField(HARDNESS, record.getAsString(Record.HARDNESS_ID));
+		setField(CARBONATE, record.getAsString(Record.CARBONATE_ID));
 		setField(
 			COLOUR_MOD,
-			record.getAsString(SampPropRecord.COLOUR_MODIFIER_ID));
+			record.getAsString(Record.COLOUR_MODIFIER_ID));
 		setField(
 			COLOUR_P,
-			record.getAsString(SampPropRecord.PRIMARY_COLOUR_ID));
+			record.getAsString(Record.PRIMARY_COLOUR_ID));
 		setField(
 			COLOUR_S,
-			record.getAsString(SampPropRecord.SECONDARY_COLOUR_ID));
-		setField(WET, record.getAsString(SampPropRecord.WET));
-		if (record.get(SampPropRecord.SED_FEATURE) != null) {
+			record.getAsString(Record.SECONDARY_COLOUR_ID));
+		setField(WET, record.getAsString(Record.WET));
+		if (record.get(Record.SED_FEATURE) != null) {
 			StringBuffer sF = new StringBuffer();
 			for (Iterator i =
-				record.getAsVector(SampPropRecord.SED_FEATURE).iterator();
+				record.getAsVector(Record.SED_FEATURE).iterator();
 				i.hasNext();
 				) {
 				SedFeature sFeat = (SedFeature) i.next();
@@ -244,7 +245,7 @@ public class SampPropRecordDE extends RecordDE {
 			}
 			setField(SED_FEATURES, sF.toString());
 		}
-		String depEnv = record.getAsString(SampPropRecord.DEPOSITION_ENV);
+		String depEnv = record.getAsString(Record.DEPOSITION_ENV);
 		if (depEnv != null) {
 			if (depEnv.indexOf("Marine:") != -1) {
 				setField(DEP_ENVIRONMENT_1, "Marine");
@@ -260,10 +261,10 @@ public class SampPropRecordDE extends RecordDE {
 				setField(DEP_ENVIRONMENT_2, depEnv);
 			}
 		}
-		setField(ROCK_NATURE, record.getAsString(SampPropRecord.ROCK_NATURE));
+		setField(ROCK_NATURE, record.getAsString(Record.ROCK_NATURE));
 		setField(
 			CORRESPONDENCE,
-			record.getAsString(SampPropRecord.CORRESPONDENCE));
+			record.getAsString(Record.CORRESPONDENCE));
 
 	}
 

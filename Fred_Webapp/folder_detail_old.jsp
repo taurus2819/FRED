@@ -1,5 +1,5 @@
-<%@page	extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
+<%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
+		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -19,7 +19,182 @@
 					Right.BLOCKED_RIGHT)};
 		}
 	}
-%><%!	private String generateWorkRecords(String sampID, String foldID, int userRights, String locType, String locStatus, nz.cri.gns.intranet.DBConnection connection, int offset) throws java.sql.SQLException {
+%><%
+	User user = getUser(session);
+	PageState state = new PageState(request, response, getServletContext());
+	String foldID, featID, featType, featName, sampName, locStatus;
+	int sampID, wRecordCount;
+	java.util.Date changeDate = new java.util.Date();
+
+	ExtranetTemplate et = getExtranetTemplate();
+	//et.setDisplayLoadingMessage(true);
+
+	drawTop(out, et, request, response);
+
+	if (request.getParameter("ID") != null) {
+		foldID = request.getParameter("ID");
+
+		//print error message (if any) from folder_actions
+		if (request.getParameter("ErrMsg") != null) {
+			out.println(request.getParameter("ErrMsg"));
+		}
+
+		Folder folder = new Folder(Integer.parseInt(foldID), user, state);
+
+		if (folder.isAllowedReadLocalities()) {
+			
+			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
+			out.println("<tr><td colspan='2' align='center'><img src='images/folder.gif' height='20' width='20' /></td></tr>");
+			out.println("<tr><td colspan='2' class='bigheading' align='center'>Folder: " + folder.getAsString(Folder.NAME) + "</td></tr>");
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
+			out.println("<tr><td><a href='folder_list.jsp' title='Back to Folders'><img src='images/back_arrow.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_list.jsp' class='heading'>Back to Folders</a></td></tr>");
+			if (folder.isAllowedCreateLocalities()) {
+				out.println("<tr><td><a href='data_entry.jsp?Type=Outcrop&FoldID=" + foldID + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Outcrop&FoldID=" + foldID + "' class='heading'>New Outcrop Locality</a></td></tr>");
+				out.println("<tr><td><a href='data_entry.jsp?Type=Drillhole&FoldID=" + foldID + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Drillhole&FoldID=" + foldID + "' class='heading'>New Drillhole Locality</a></td></tr>");
+				out.println("<tr><td><a href='data_entry.jsp?Type=VertSect&FoldID=" + foldID + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=VertSect&FoldID=" + foldID + "' class='heading'>New Vertical Section Locality</a></td></tr>");
+				out.println("<tr><td><a href='simple_query.jsp?FoldID=" + foldID + "'><img src='images/search.gif' width='20' height='20' border='0' alt='Search for a Locality' /></a>&nbsp;&nbsp;</td><td><a href='simple_query.jsp?FoldID=" + foldID + "' class='heading'>Search</a></td></tr>");
+			}
+			out.println("</table>");
+
+			drawEndNavigation(out);
+
+			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
+			out.println("<tr><td>");
+
+			//List records
+			out.println("<p>Listed below are the localities you have added to this folder (working localities are named with their field number or drillhole name until they are allocated a Fossil Record Number).<br />Click on the Edit icon to edit locality data or to add/edit record data</p>");
+
+			//Table header
+			out.println("<p><table border='0' cellspacing='0' cellpadding='1' width='550'>");
+			out.print("<tr>");
+			//out.print("<td></td>");
+			out.print("<th colspan='2'>Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Last Change&nbsp;&nbsp;</th><th colspan='7'>Options</th></tr>");
+			out.println("<tr><td colspan='9'><img src='images/line.gif' height='3' width='550' /></td></tr>");
+
+			//Record list
+			out.println("<form name='FoldForm' method='get' action='folder_actions.jsp'>");
+
+			//Feature
+			Feature feature;
+			Sample sample;
+			KeyValueObject recordHeader;
+			Record record;
+			String recType, imageName;
+			for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
+				feature = new Feature(((Integer) i.next()).intValue(), user, state);
+
+				featID  = feature.getAsString(Feature.FEATURE_ID);
+				sampName = feature.getAsString(Feature.SAMPLE_NAMES);
+				featType = feature.getAsString(Feature.FEATURE_TYPE);
+				featName = feature.getAsString(Feature.FEATURE_NAME);
+				locStatus = feature.getAsString(Feature.STATUS);
+				changeDate = feature.getAsDate(Feature.LAST_CHANGE);
+				
+				out.print("<tr><td width='20'><img src='images/loc.gif' height='20' width='20' /></td>");
+				out.print("<td class='heading'><a href='detail.jsp?FeatID=" + featID + "'>" + sampName + "</a>&nbsp;&nbsp;");
+				if (featName != null && !sampName.equals(featName)) { out.print("<br />(" + featName +")&nbsp;&nbsp;"); }
+				out.print("</td><td>" + featType + "&nbsp;&nbsp;</td><td style='color: #FF0000'>");
+				if (!locStatus.equals("approved")) {
+					out.print(locStatus + "&nbsp;&nbsp;</td><td>");
+					if (changeDate != null) { 
+						out.print(DateFormat.getDateInstance(DateFormat.LONG).format(changeDate) + "&nbsp;&nbsp;");
+					}
+					out.print("</td>");
+				} else {
+					out.print("</td><td></td>");
+				}
+				out.print("<td>");
+				if (folder.isAllowedEditLocalities()) {
+					out.print("<a href='data_entry.jsp?Type=" + featType + "&FoldID=" + foldID + "&FeatID=" + featID + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Search for a Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
+				}
+				out.print("</td><td>");
+				if (folder.isAllowedCreateLocalities()) {
+					if (featType.equals("Vertical Section")) featType = "VertSect";
+					out.print("<a href='#' onClick='prmpt=prompt(\"Please enter the new name\", \"New " + featType + "\");if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value=\"CopyFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}'><img src='images/copy.gif' border='0' height='20' width='20' alt='Copy Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
+				}
+				out.print("</td><td>");
+				if ((locStatus.equals("working") || locStatus.equals("rejected")) && folder.isAllowedDeleteLocalities()) {
+					out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this locality\") == true) {document.FoldForm.ActionType.value=\"DeleteFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}'><img src='images/delete.gif' border='0' height='20' width='20' alt='Delete Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
+				}
+				out.print("</td><td>");
+				if ((locStatus.equals("working") || locStatus.equals("rejected")) && folder.isAllowedSubmitLocalities()) {
+					out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to submit this locality\") == true) {document.FoldForm.ActionType.value=\"Submit\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}'><img src='images/submit.gif' border='0' height='20' width='20' alt='Submit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
+				}
+				else if (locStatus.equals("waiting") && folder.isAllowedSubmitLocalities()) {
+					out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to revoke this locality\") == true) {document.FoldForm.ActionType.value=\"Revoke\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}'><img src='images/revoke.gif' border='0' height='20' width='20' alt='Revoke Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
+				}
+				out.println("</td></tr>");
+				
+				//Samples
+				int sampCount = feature.getSampleCount();
+				for (Iterator j = feature.getAsVector(Feature.SAMPLES).iterator(); j.hasNext(); ) {
+					sampID = ((Integer) j.next()).intValue();
+					sample = new Sample(sampID, user, state);
+					wRecordCount = sample.getWorkingRecordCount();
+					if (wRecordCount > 0) {
+						if (sampCount > 1) {
+							out.print("<tr><td width='20'><img src='images/drill.gif' height='20' width='20' alt='' /></td><td colspan='4' class='heading'>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td>");
+							out.print("<td></td><td></td><td></td><td></td>");
+							out.print("<td>");
+							out.print("<a href='samp_prop_data_entry.jsp?FoldID=" + foldID + "&SampID=" + sampID + "' title='Add Sample Property Record'><img src='images/new_sprop.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+							out.print("</td><td>");
+							out.print("<a href='ado_data_entry.jsp?FoldID=" + foldID + "&SampID=" + sampID + "' title='Add Adoption Record'><img src='images/new_ado.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+							out.print("</td><td>");
+							out.print("<a href='pal_data_entry.jsp?FoldID=" + foldID + "&SampID=" + sampID + "' title='Add Paleontology Record'><img src='images/new_pal.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+							out.print("</td>");
+							out.println("</tr>");
+						}
+/*						//Records
+						for (Iterator k = sample.getAsVector(Sample.WORKING_RECORDS).iterator(); k.hasNext(); ) {
+							recordHeader = (KeyValueObject) k.next(); 
+							record = Record.getData(Integer.parseInt(recordHeader.getKey()), user, state);
+							if (record.getAsString(Record.WORKING_FOLDER_ID).equals(foldID)) {
+								recType = recordHeader.getValue();
+								if (recType.equals("SMP")) {
+									imageName = "sprop";
+								}
+								else if (recType.equals("ADO")) {
+									imageName = "ado";
+								}
+								else { //PAL
+									imageName = "pal";
+									//check for provisional taxa
+									//rs2 = statement2.executeQuery("SELECT * FROM Taxa_View WHERE Record_ID = " + rs.getString(1) + " AND Status = 'Provisional'");
+									//if (rs2.next()) {
+									//	provFlag = true;
+									//}
+								}
+								
+								out.print("<tr><td><img src='images/child.gif' width='20' height='20' /><img src='images/" + imageName + ".gif' width='20' height='20' /></td><td colspan='3' class='smallheading'");
+								//if (provFlag) { returnVal.append(" style='color: #FF0000'"); }
+								out.print(">" + record.getAsString(Record.RECORD_NAME) + "</td><td class='smalltext'>");
+								if (record.get(Record.LAST_CHANGE) != null) {
+									out.print(DateFormat.getDateInstance(DateFormat.LONG).format(record.getAsDate(Record.LAST_CHANGE)));
+								}
+								out.print("&nbsp;</td><td>");
+	 							//Record Options
+								if (recType.equals("SMP") && (userRights & 2) != 0) {
+									returnVal.append("<a href='samp_prop_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+								}
+								else if (recType.equals("ADO") && (userRights & 2) != 0) {
+									returnVal.append("<a href='ado_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+								}
+								else if (recType.equals("PAL") && (userRights & 2) != 0) {
+									returnVal.append("<a href='pal_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+								}
+								returnVal.append("</td><td></td><td>");
+								if ((userRights & 8) != 0) {
+									returnVal.append("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this record\") == true) {document.FoldForm.ActionType.value=\"DeleteRec\";document.FoldForm.RecID.value=\"" + rs.getString(1) + "\";document.FoldForm.submit();}' title='Delete Record'><img src='images/delete.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+								}
+								returnVal.append("</td><td>");
+								if ((locType.equals("Drill") || recType.equals("ADO") || (recType.equals("PAL")) && !provFlag) && (userRights & 16) != 0 && locStatus.equals("approved")) {
+									returnVal.append("<a href='#' onClick='document.FoldForm.ActionType.value=\"SubmitRec\";document.FoldForm.RecID.value=\"" + rs.getString(1) + "\";document.FoldForm.RecType.value=\"" + rs.getString(4) + "\";document.FoldForm.submit();' title='Submit Record'><img src='images/submit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+								}
+								out.println("</td></tr>");
+							}
+						}
+	*/					
+/*	private String generateWorkRecords(String sampID, String foldID, int userRights, String locType, String locStatus, nz.cri.gns.intranet.DBConnection connection, int offset) throws java.sql.SQLException {
 			String recType, imageName = "";
 			StringBuffer returnVal;
 			Statement statement = connection.getExtraStatement();
@@ -87,260 +262,13 @@
 			statement.close();
 			statement2.close();
 			return returnVal.toString();
-		}
-%><%
-	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
-	Statement statement = connection.statement;
-	Statement statement2 = connection.getExtraStatement();
-	Statement statement3 = connection.getExtraStatement();
-	Statement statement4;
-	ResultSet rs, rs2, rs3;
-	User user = getUser(session);
-	String foldID, featID, recID, featType, featName, sampID, sampName, auditID, drillSampName, locStatus, query;
-	int userID = user.getPersonId(), i = 0, j = 0, k = 0, tableWidth, recCount, execUp, userRights;
-	boolean sampPropFlag;
-	java.util.Date changeDate = new java.util.Date();
-	int[] types = {Types.NUMERIC};
-	Object data[];
-	data = new Object[1];
-
-	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
-
-	drawTop(out, et, request, response);
-
-	if (request.getParameter("ID") != null) {
-		foldID = request.getParameter("ID");
-
-		//print error message (if any) from folder_actions
-		if (request.getParameter("ErrMsg") != null) {
-			out.println(request.getParameter("ErrMsg"));
-		}
-
-		//get user rights
-		rs = statement.executeQuery("SELECT User_Rights FROM Folder_View WHERE Folder_ID = " + foldID + " AND User_ID = " + userID + " AND Folder_Type = 'personal'");
-		if (rs.next()) {
-			userRights = rs.getInt(1);
-		} else { //no record
-			userRights = 0;
-		}
-
-		rs = statement.executeQuery("SELECT Name FROM Folder WHERE Folder_ID = " + foldID);
-		if ((userRights & 1) != 0 && rs.next()) {
-			
-			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
-			out.println("<tr><td colspan='2' align='center'><img src='images/folder.gif' height='20' width='20' /></td></tr>");
-			out.println("<tr><td colspan='2' class='bigheading' align='center'>Folder: " + rs.getString(1) + "</td></tr>");
-			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
-			out.println("<tr><td><a href='folder_list.jsp' title='Back to Folders'><img src='images/back_arrow.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_list.jsp' class='heading'>Back to Folders</a></td></tr>");
-			if ((userRights & 4) != 0) {
-				out.println("<tr><td><a href='feat_data_entry.jsp?Type=Outcrop&FoldID=" + foldID + "' title='Add New Locality'><img src='images/new.gif' width='20' height='20' border='0' /><img src='images/blank.gif' width='10' height='1' border='0' /></a></td><td><a href='feat_data_entry.jsp?Type=Outcrop&FoldID=" + foldID + "' class='heading'>New Outcrop Locality</a></td></tr>");
-				out.println("<tr><td><a href='feat_data_entry.jsp?Type=Drillhole&FoldID=" + foldID + "' title='Add New Locality'><img src='images/new.gif' width='20' height='20' border='0' /><img src='images/blank.gif' width='10' height='1' border='0' /></a></td><td><a href='feat_data_entry.jsp?Type=Drillhole&FoldID=" + foldID + "' class='heading'>New Drillhole Locality</a></td></tr>");
-				out.println("<tr><td><a href='feat_data_entry.jsp?Type=VertSect&FoldID=" + foldID + "' title='Add New Locality'><img src='images/new.gif' width='20' height='20' border='0' /><img src='images/blank.gif' width='10' height='1' border='0' /></a></td><td><a href='feat_data_entry.jsp?Type=VertSect&FoldID=" + foldID + "' class='heading'>New Vertical Section Locality</a></td></tr>");
-				out.println("<tr><td><a href='simple_query.jsp?FoldID=" + foldID + "' title='Search for a Locality' title='Search for a Locality'><img src='images/search.gif' width='20' height='20' border='0' /><img src='images/blank.gif' width='10' height='1' border='0' /></a></td><td><a href='simple_query.jsp?FoldID=" + foldID + "' class='heading'>Search</a></td></tr>");
-			}
-			out.println("</table>");
-
-			drawEndNavigation(out);
-
-			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-			out.println("<tr><td>");
-
-			//List records
-			out.println("<p>Listed below are the localities you have added to this folder (working localities are named with their field number or drillhole name until they are allocated a Fossil Record Number).  Listed below the localities are working records.  Click on the icons in the Options column to work with these localities.<br /><span class='smalltext'>Note (1):  Outcrop localities can not be submitted until a sample property record has been created (this record will be viewed by the Masterfile curator alongside the locality data).<br />Note (2):  Records can not be submitted until the parent locality has been approved.</span></p>");
-			out.println("<p><span class='smalltext'><img src='images/loc.gif' height='20' width='20' /> = Locality<image src='images/blank.gif' height='20' width='10' />");
-			out.println("<img src='images/drill.gif' height='20' width='20' /> = Drillhole Sample<image src='images/blank.gif' height='20' width='10' /><br />");
-			out.println("<span class='smalltext'><img src='images/sprop.gif' height='20' width='20' /> = Sample Property record<image src='images/blank.gif' height='20' width='10' />");
-			out.println("<img src='images/ado.gif' height='20' width='20' /> = Adoption record<image src='images/blank.gif' height='20' width='10' />");
-			out.println("<img src='images/pal.gif' height='20' width='20' /> = Paleontology record</span></p>");
-
-			//Table header
-			out.println("<p><table border='0' cellspacing='0' cellpadding='1' width='550'>");
-			out.print("<tr>");
-			//out.print("<td></td>");
-			out.print("<th colspan='4'>Name<img src='blank.gif' width='10' height='1' /></th><th>Type<src='images/blank.gif' width='10' height='1' /></th><th>Status<img src='images/blank.gif' width='10' height='1' /></th><th>Last Change<img src='images/blank.gif' width='10' height='1' /></th><th colspan='7'>Options</th></tr>");
-			out.println("<tr><td colspan='14'><img src='images/line.gif' height='3' width='550' /></td></tr>");
-
-			//Record list
-			out.println("<form name='FoldForm' method='get' action='folder_actions.jsp'>");
-
-			//Feature
-			rs3 = statement3.executeQuery("SELECT DISTINCT Feature_ID, Sample_Name FROM Folder_Content_View WHERE Folder_ID = " + foldID + " AND User_ID = " + userID + " ORDER BY Sample_Name");
-			featID = "";
-			while (rs3.next()) {
-				sampPropFlag = false;
-				if (rs3.getString(1).equals(featID)) { continue; }
-				featID = rs3.getString(1);
+		}							
+*/							
+							
+					}
+				}				
 				
-				//rs = statement.executeQuery("SELECT Sample_ID, Sample_Name, Feature_Type, Feature_Name, Status, Last_Change FROM Sample_All_View WHERE Feature_ID = " + featID);
-				query = "SELECT Sample_ID, Sample_Name, Feature_Type, Feature_Name, Status, Last_Change FROM Sample_All_View WHERE Feature_ID = ?";
-				data[0] = new Integer(Integer.parseInt(featID));
-				rs = connection.executeQuery(query, types, data);
-				rs.next();
-				sampID = rs.getString(1);
-				sampName = rs.getString(2);
-				featType = rs.getString(3);
-				if (featType.equals("Vertical Section")) { featType = "VertSect"; }
-				featName = rs.getString(4);
-				locStatus = rs.getString(5);
-				changeDate = rs.getDate(6);
-				if (!featType.equals("Outcrop")) { //drillhole/vertsect so loop through individual samples
-					drillSampName = "";
-					//rs2 = statement2.executeQuery("SELECT DISTINCT Sample_Name FROM Sample_All_View WHERE Feature_ID = " + featID + " ORDER BY Sample_Name");
-					query = "SELECT DISTINCT Sample_Name FROM Sample_All_View WHERE Feature_ID = ? ORDER BY Sample_Name";
-					data[0] = new Integer(Integer.parseInt(featID));
-					rs2 = connection.executeQuery(query, types, data);
-					rs2.next();
-					drillSampName = rs2.getString(1);
-					while (rs2.next()) { drillSampName = drillSampName + ", " + rs2.getString(1); }
-					connection.releaseStatement();
-					out.print("<tr>");
-					//out.print("<td><input type='checkbox' name='Check" + k++ + "' value='" + featID + "'></td>");
-					out.print("<td width='20'><img src='images/loc.gif' height='20' width='20' /></td><td colspan='3' class='heading'>");
-					if (locStatus.equals("approved")) {
-						out.print("<a href='detail.jsp?FeatID=" + featID + "'>" + drillSampName + "</a>");
-					} else {
-						out.print(drillSampName);
-					}
-					out.print("&nbsp;&nbsp;");
-					if (featName != null && !drillSampName.equals(featName)) { out.print("<br />(" + featName +")&nbsp;&nbsp;"); }
-					out.print("</td><td>" + featType + "</td><td class='smallstar'>");
-					if (!locStatus.equals("approved")) {
-						out.print(locStatus + "</td><td>");
-						if (changeDate != null) { 
-							out.print(DateFormat.getDateInstance(DateFormat.LONG).format(changeDate));
-						}
-						out.print("</td>");
-					} else {
-						out.print("</td><td></td>");
-					}
-					out.print("<td>");
-					if ((locStatus.equals("working") || locStatus.equals("rejected")) && (userRights & 2) != 0) {
-						out.print("<a href='feat_data_entry.jsp?Type=" + featType + "&FeatID=" + featID + "&FoldID=" + foldID + "' title='Edit Locality'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-					}
-					out.print("</td><td>");
-					if ((userRights & 4) != 0) {
-						out.print("<a href='#' onClick='prmpt=prompt(\"Please enter the new name\", \"New " + featType + "\");if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value=\"CopyFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Copy Locality'><img src='images/copy.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-					}
-					out.print("</td><td>");
-					if ((locStatus.equals("working") || locStatus.equals("rejected")) && (userRights & 8) != 0) {
-						out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this locality\") == true) {document.FoldForm.ActionType.value=\"DeleteFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Delete Locality'><img src='images/delete.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-					}
-					out.print("</td><td>");
-					if ((locStatus.equals("working") || locStatus.equals("rejected")) && (userRights & 16) != 0) {
-						out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to submit this locality\") == true) {document.FoldForm.ActionType.value=\"Submit\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Submit Locality'><img src='images/submit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-					}
-					else if (locStatus.equals("waiting") && (userRights & 16) != 0) {
-						out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to revoke this locality\") == true) {document.FoldForm.ActionType.value=\"Revoke\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Revoke Locality'><img src='images/revoke.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-					}
-					out.print("</td><td>");
-					out.print("<a href='samp_select.jsp?FoldID=" + foldID + "&FeatID=" + featID + "&ReturnURL=samp_prop_data_entry.jsp' title='Add Sample Property Record'><img src='images/new_sprop.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-					out.print("</td><td>");
-					out.print("<a href='samp_select.jsp?FoldID=" + foldID + "&FeatID=" + featID + "&ReturnURL=ado_data_entry.jsp' title='Add Adoption Record'><img src='images/new_ado.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-					out.print("</td><td>");
-					out.print("<a href='samp_select.jsp?FoldID=" + foldID + "&FeatID=" + featID + "&ReturnURL=pal_data_entry.jsp' title='Add Paleontology Record'><img src='images/new_pal.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-					out.print("</td></tr>");
-
-					//Drillhole Samples
-					//only list if contain working records
-
-					//rs = statement.executeQuery("SELECT DISTINCT S.Sample_ID, S.Drillhole_Depth, S.Top_Depth FROM Sample_All_View S, Record_All_View R WHERE R.Sample_ID = S.Sample_ID AND R.Status = 'working' AND S.Feature_ID = " + featID + " ORDER BY S.Top_Depth");
-					query = "SELECT DISTINCT S.Sample_ID, S.Drillhole_Depth, S.Top_Depth FROM Sample_All_View S, Record_All_View R WHERE R.Sample_ID = S.Sample_ID AND R.Status = 'working' AND S.Feature_ID = ? ORDER BY S.Top_Depth";
-					data[0] = new Integer(Integer.parseInt(featID));
-					rs = connection.executeQuery(query, types, data);
-					statement4 = connection.preservePreparedStatement();
-					while (rs.next()) {
-						sampID = rs.getString(1);
-						//check if sample property
-						//rs2 = statement2.executeQuery("SELECT * FROM Record_All_View WHERE Record_Type = 'SMP' AND Sample_ID = " + sampID); //check if sample property record already created
-						query = "SELECT * FROM Record_All_View WHERE Record_Type = 'SMP' AND Sample_ID = ?";
-						data[0] = new Integer(Integer.parseInt(sampID));
-						rs2 = connection.executeQuery(query, types, data);
-						if (rs2.next()) { sampPropFlag = true; }
-						out.print("<tr>");
-						//out.print("<td></td>");
-						out.print("<td width='20'><img src='images/child.gif' width='20' height='20' /></td><td width='20'><img src='images/drill.gif' height='20' width='20' /></td><td colspan='5' class='heading'>" + rs.getString(2) + "</td><td>");
-						out.print("</td><td></td><td></td><td></td><td>");
-						if (!sampPropFlag) {
-							out.print("<a href='samp_prop_data_entry.jsp?FoldID=" + foldID + "&SampID=" + sampID + "' title='Add Sample Property Record'><img src='images/new_sprop.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-						}
-						out.print("</td><td>");
-						out.print("<a href='ado_data_entry.jsp?FoldID=" + foldID + "&SampID=" + sampID + "' title='Add Adoption Record'><img src='images/new_ado.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-						out.print("</td><td>");
-						out.print("<a href='pal_data_entry.jsp?FoldID=" + foldID + "&SampID=" + sampID + "' title='Add Paleontology Record'><img src='images/new_pal.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-						out.println("</td></tr>");
-						out.println(generateWorkRecords(sampID, foldID, userRights, "Drill", locStatus, connection, 1));
-					}
-					statement4.close();
-				}
-
-				else { //not drillhole so go straight to records
-					sampID = rs.getString(1);
-					//check if sample property
-					//rs2 = statement2.executeQuery("SELECT * FROM Record_All_View WHERE Record_Type = 'SMP' AND Sample_ID = " + sampID); //check if sample property record already created
-					query = "SELECT * FROM Record_All_View WHERE Record_Type = 'SMP' AND Sample_ID = ?";
-					data[0] = new Integer(Integer.parseInt(sampID));
-					rs2 = connection.executeQuery(query, types, data);
-					if (rs2.next()) { sampPropFlag = true; }
-					out.print("<tr>");
-					//out.print("<td><input type='checkbox' name='Check" + k++ + "' value='" + featID + "'></td>");
-					out.print("<td width='20'><img src='images/loc.gif' height='20' width='20' /></td><td colspan='3' class='heading'>");
-					if (locStatus.equals("approved")) {
-						out.print("<a href='detail.jsp?ID=" + sampID + "'>" + sampName + "</a>");
-					} else {
-						out.print(sampName);
-					}
-					out.print("&nbsp;&nbsp;");
-					if (featName != null && !sampName.equals(featName)) { out.print("<br />(" + featName + ")&nbsp;&nbsp;"); }
-					out.print("</td><td>Outcrop</td><td class='smallstar'>");
-					if (!locStatus.equals("approved")) {
-						out.print(locStatus + "</td><td>");
-						if (changeDate != null) { 
-							out.print(DateFormat.getDateInstance(DateFormat.LONG).format(changeDate));
-						}
-						out.print("</td>");
-					} else {
-						out.print("</td><td></td>");
-					}
-					out.print("<td>");
-					if ((locStatus.equals("working") || locStatus.equals("rejected")) && (userRights & 2) != 0) {
-						out.print("<a href='feat_data_entry.jsp?Type=Outcrop&FeatID=" + featID + "&FoldID=" + foldID + " 'title='Edit Locality'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-					}
-					out.print("</td><td>");
-					if ((userRights & 4) != 0) {
-						out.print("<a href='#' onClick='prmpt=prompt(\"Please enter the new fieldnumber\", \"New Outcrop\");if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value=\"CopyFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Copy Locality'><img src='images/copy.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-					}
-					out.print("</td><td>");
-					if ((locStatus.equals("working") || locStatus.equals("rejected")) && (userRights & 8) != 0) {
-						out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this locality\") == true) {document.FoldForm.ActionType.value=\"DeleteFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Delete Locality'><img src='images/delete.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-					}
-					out.print("</td><td>");
-					if ((locStatus.equals("working") || locStatus.equals("rejected")) && (userRights & 16) != 0 && sampPropFlag) {
-						out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to submit this locality\") == true) {document.FoldForm.ActionType.value=\"Submit\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Submit Locality'><img src='images/submit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-					}
-					else if (locStatus.equals("waiting") && (userRights & 16) != 0) {
-						out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to revoke this record\") == true) {document.FoldForm.ActionType.value=\"Revoke\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Revoke Locality'><img src='images/revoke.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-					}
-					out.print("</td><td>");
-					if (!sampPropFlag) {
-						out.print("<a href='samp_prop_data_entry.jsp?FoldID=" + foldID + "&SampID=" + sampID + "' title='Add Sample Property Record'><img src='images/new_sprop.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-					}
-					out.print("</td><td>");
-					out.print("<a href='ado_data_entry.jsp?FoldID=" + foldID + "&SampID=" + sampID + "' title='Add Adoption Record'><img src='images/new_ado.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-					out.print("</td><td>");
-					out.print("<a href='pal_data_entry.jsp?FoldID=" + foldID + "&SampID=" + sampID + "' title='Add Paleontology Record'><img src='images/new_pal.gif' border='0' height='20' width='20'></a>");
-					out.println("</td></tr>");
-					//check if working records
-					//rs2 = statement2.executeQuery("SELECT COUNT(*) FROM Record_All_View WHERE Sample_ID = " + sampID + " AND Working_Folder_ID = " + foldID);
-					query = "SELECT COUNT(*) FROM Record_All_View WHERE Sample_ID = ? AND Working_Folder_ID = " + foldID;
-					data[0] = new Integer(Integer.parseInt(sampID));
-					rs2 = connection.executeQuery(query, types, data);
-					rs2.next();
-					if (rs2.getInt(1) > 0) { //working records
-						out.println(generateWorkRecords(sampID, foldID, userRights, "Outcrop", locStatus, connection, 0));
-					}
-				}
-				out.println("<tr><td colspan='14'><img src='images/line.gif' height='3' width='550' /></td></tr>");
+				out.println("<tr><td colspan='9'><img src='images/line.gif' height='3' width='550' /></td></tr>");
 			}
 			out.println("<input type='hidden' name='ActionType' value=''>");
 			out.println("<input type='hidden' name='ID' value='" + foldID + "'>");
@@ -386,7 +314,4 @@
 
 	out.println("</td></tr></table>");
 	drawBottom(out, et);
-
-	statement2.close();
-	statement3.close();
 %>

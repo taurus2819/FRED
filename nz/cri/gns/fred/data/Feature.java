@@ -1,12 +1,16 @@
 package nz.cri.gns.fred.data;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
+import nz.cri.gns.fred.dataentry.DataInputException;
+import nz.cri.gns.intranet.DBConnection;
+import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 /**
@@ -43,9 +47,11 @@ public class Feature {
 	public static final int SAMPLES = 21;
 
 	private FeatureData fd;
+	private PageState state;
 	private boolean authenticated;
 
 	public Feature(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException {
+		this.state = state;
 		fd = FeatureData.getData(id, state, forceRefresh);
 		if (!FREDUtils.isAllowedLocality(user, fd.getAsString(SECURITY_CLASS_ID), fd.getAsString(STATUS), fd.getAsString(FEATURE_ID), state)) {
 			authenticated = false;
@@ -183,6 +189,30 @@ public class Feature {
 
 	public String toString() {
 		return fd.toString();
+	}
+
+	public int addNewSample(String topDepth, String bottomDepth, String drillTypeID) throws SQLException, IOException, DataInputException {
+		int sampID;
+		if (!FREDUtils.isNumeric(topDepth) || !FREDUtils.isNumeric(bottomDepth) || !FREDUtils.isNumeric(drillTypeID)) {
+			throw new DataInputException();
+		}
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		//check existing samples.  If there is only one - the default one - then replace it with the new one, otherwise add
+		ResultSet rs = conn.executeQuery("SELECT S.Sample_ID FROM Sample_All_View S, Record R WHERE S.Sample_ID = R.Sample_ID(+) AND S.Feature_ID = " + getFeatureID() + " AND S.Drillhole_Depth = 'Depth Not Specified' AND R.Sample_ID IS NULL");
+		if (rs.next()) { //just update existing sample
+			sampID = rs.getInt(1);
+			conn.executeUpdate("UPDATE Sample SET Top_Depth = " + JspUtils.sqlEscape(topDepth) + ", Bottom_Depth = " + JspUtils.sqlEscape(bottomDepth) + ", Drill_Type_ID = " + JspUtils.sqlEscape(drillTypeID) + " WHERE Sample_ID = " + sampID);
+		}
+		else { //can add as no un-used default samples
+			rs = conn.executeQuery("SELECT Sample_Seq.NEXTVAL FROM DUAL");
+			rs.next();
+			sampID = rs.getInt(1);
+			rs = conn.executeQuery("SELECT MIN(FR_ID) FROM Sample WHERE Feature_ID = " + getFeatureID());
+			rs.next();
+			conn.executeUpdate("INSERT INTO Sample (Sample_ID, Feature_ID, FR_ID, Top_Depth, Bottom_Depth, Drill_Type_ID) VALUES (" + sampID + ", " + getFeatureID() + ", " + rs.getString(1) + ", " + JspUtils.sqlEscape(topDepth) + ", " + JspUtils.sqlEscape(bottomDepth) + ", " + JspUtils.sqlEscape(drillTypeID) + ")");
+		}
+		fd = FeatureData.getData(getFeatureID(), state, true);
+		return sampID;
 	}
 
 }

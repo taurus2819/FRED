@@ -21,77 +21,6 @@ import nz.cri.gns.jsp.PageState;
  */
 public class SampPropRecord extends Record {
 
-	public static final int COLLECTOR = 10;
-	public static final int COLLECTION_DATE = 11;
-	public static final int DATE_ROUNDING = 12;
-	public static final int STRAT_UNIT = 13;
-	public static final int IN_PLACE = 14;
-	public static final int SENT_TO = 15;
-	public static final int NOT_COLLECTED = 16;
-	public static final int SIGNIFICANCE = 17;
-	public static final int INFERRED_STAGE_ID = 18;
-	public static final int INFERRED_STAGE = 19;
-	public static final int INFERRED_STAGE_ABBREV = 20;
-	public static final int INFERRED_STAGE_LOWER_ID = 21;
-	public static final int INFERRED_STAGE_LOWER = 22;
-	public static final int INFERRED_STAGE_LOWER_MOD = 23;
-	public static final int INFERRED_STAGE_UPPER_ID = 24;
-	public static final int INFERRED_STAGE_UPPER = 25;
-	public static final int INFERRED_STAGE_UPPER_MOD = 26;
-	public static final int INFERRED_AGE_START = 27;
-	public static final int INFERRED_AGE_STOP = 28;
-	public static final int KNOWN_STAGE_ID = 29;
-	public static final int KNOWN_STAGE = 30;
-	public static final int KNOWN_STAGE_ABBREV = 31;
-	public static final int KNOWN_STAGE_LOWER_ID = 32;
-	public static final int KNOWN_STAGE_LOWER = 33;
-	public static final int KNOWN_STAGE_LOWER_MOD = 34;
-	public static final int KNOWN_STAGE_UPPER_ID = 35;
-	public static final int KNOWN_STAGE_UPPER = 36;
-	public static final int KNOWN_STAGE_UPPER_MOD = 37;
-	public static final int KNOWN_AGE_START = 38;
-	public static final int KNOWN_AGE_STOP = 39;
-	public static final int RELATIONSHIP = 40;
-	public static final int RELATIONSHIP_NEARBY = 77;
-	public static final int RELATIONSHIP_SAMPLE = 78;
-	public static final int RELATIONSHIP_STRAT = 79;
-	public static final int COLUMN_MAP = 41;
-	public static final int DIP = 42;
-	public static final int DIP_DIRECTION = 43;
-	public static final int STRIKE = 44;
-	public static final int FACING = 45;
-	public static final int GRAINSIZE = 46;
-	public static final int PRIMARY_GRAINSIZE_ID = 47;
-	public static final int PRIMARY_GRAINSIZE = 48;
-	public static final int SECONDARY_GRAINSIZE_ID = 49;
-	public static final int SECONDARY_GRAINSIZE = 50;
-	public static final int COMPARATOR_USED = 51;
-	public static final int BED_THICK_ID = 52;
-	public static final int BED_THICKNESS = 53;
-	public static final int BEDDING = 54;
-	public static final int PRIMARY_BEDDING_ID = 55;
-	public static final int PRIMARY_BEDDING = 56;
-	public static final int SECONDARY_BEDDING_ID = 57;
-	public static final int SECONDARY_BEDDING = 58;
-	public static final int WEATHERING_ID = 59;
-	public static final int WEATHERING = 60;
-	public static final int HARDNESS_ID = 61;
-	public static final int HARDNESS = 62;
-	public static final int CARBONATE_ID = 63;
-	public static final int CARBONATE = 64;
-	public static final int COLOUR = 65;
-	public static final int COLOUR_MODIFIER_ID = 66;
-	public static final int COLOUR_MODIFIER = 67;
-	public static final int PRIMARY_COLOUR_ID = 68;
-	public static final int PRIMARY_COLOUR = 69;
-	public static final int SECONDARY_COLOUR_ID = 70;
-	public static final int SECONDARY_COLOUR = 71;
-	public static final int WET = 72;
-	public static final int SED_FEATURE = 73;
-	public static final int ROCK_NATURE = 74;
-	public static final int DEPOSITION_ENV = 75;
-	public static final int CORRESPONDENCE = 76;
-
 	/**
 	 * Cannot be called directly. use static getContactPerson method instead.
 	 */
@@ -301,7 +230,6 @@ public class SampPropRecord extends Record {
 					+ "DISTANCE, DISTANCE_RANGE, DISTANCE_MOD, RELATION_TYPE_ID, RELATION_TYPE "
 					+ "FROM Relationship_View WHERE Record_ID = ?";
 			rs = conn.executeQuery(query, types, data);
-			Vector relVec = new Vector();
 			Vector nearRelVec = new Vector();
 			Vector sampRelVec = new Vector();
 			Vector stratRelVec = new Vector();
@@ -329,7 +257,6 @@ public class SampPropRecord extends Record {
 						? new Integer(rs.getInt(10))
 						: null));
 				rel.setRelationType(rs.getString(11));
-				relVec.add(rel);
 				if (rel.getRelationshipType().equals("Strat")) {
 					stratRelVec.add(rel);
 				} else if (rel.getRelationType().equals("nearby")) {
@@ -339,7 +266,6 @@ public class SampPropRecord extends Record {
 				}
 			}
 			rs.close();
-			values[40] = ((relVec.size() > 0) ? relVec : null);
 			values[77] = ((nearRelVec.size() > 0) ? nearRelVec : null);
 			values[78] = ((sampRelVec.size() > 0) ? sampRelVec : null);
 			values[79] = ((stratRelVec.size() > 0) ? stratRelVec : null);
@@ -386,19 +312,25 @@ public class SampPropRecord extends Record {
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
 	public static Record getData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, InvalidCredentialsException {
-		System.out.println("SampPropRecordClass");
+		System.out.println("Starting");
 		Record rec = (SampPropRecord) pool.retrieve(new DataFinder(id));
+		System.out.println("Finished checking pool");
 		if (forceRefresh && rec != null) {
 			pool.removeMe(rec);
 			rec = null;
+			System.out.println("Finished refreshing pool");
 		}
 		if (rec == null) {
+			System.out.println("Need to create new Record");
 			rec = new SampPropRecord(id, state);
+			System.out.println("Finished creating new Record");
 		}
+		System.out.println("Starting to check security");
 		if (!FREDUtils.isAllowedLocality(user, rec.getAsString(FEATURE_SECURITY_CLASS_ID), rec.getAsString(FEATURE_STATUS), rec.getAsString(FEATURE_ID), state)
 				|| !FREDUtils.isAllowedRecord(user, rec.getAsString(SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(RECORD_ID), state)) {
 			throw new InvalidCredentialsException();
 		}
+		System.out.println("Finished checking security");
 		return rec;
 	}
 

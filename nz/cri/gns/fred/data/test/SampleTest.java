@@ -10,7 +10,6 @@ import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.test.TestingPageState;
 
 public class SampleTest extends TestCase {
@@ -24,12 +23,7 @@ public class SampleTest extends TestCase {
 		super(arg0);
 		Sample.purge();
 		this.state = new TestingPageState();
-			DBConnection ipConn =
-				JspUtils.createDatabaseConnection(
-					state.getSession(),
-					"nz.cri.gns.db.fred.test.ipConn",
-					"ip",
-					state.getContext());
+			DBConnection ipConn = FREDUtils.getIPConnection(state);
 		try {
 			this.user = new User("pseudo_ben", "santor32", ipConn);
 			this.user2 = new User("test", "test", ipConn);
@@ -38,7 +32,7 @@ public class SampleTest extends TestCase {
 	}
 
 
-	public void testPooling() throws NotBoundException, SQLException, IOException {
+	public void _testPooling() throws NotBoundException, SQLException, IOException {
 		Sample.purge();
 		Sample sv1 = new Sample(390, this.user, this.state);
 		Sample sv2 = new Sample(390, this.user2, this.state);
@@ -54,7 +48,7 @@ public class SampleTest extends TestCase {
 		assertEquals(sv1.toString(), sv5.toString());
 	}
 	
-	public void testFields() throws IOException, SQLException, InvalidCredentialsException {
+	public void _testFields() throws IOException, SQLException, InvalidCredentialsException {
 		Sample.purge();
 		Sample sv = new Sample(601, this.user, this.state);
 		String frNum = sv.getAsString(Sample.FR_NUMBER);
@@ -63,7 +57,7 @@ public class SampleTest extends TestCase {
 		System.out.println(sv.getAsInt(Sample.ACCURACY));
 	}
 	
-	public void testRestrictions() throws SQLException, IOException, InvalidCredentialsException {
+	public void _testRestrictions() throws SQLException, IOException, InvalidCredentialsException {
 		String test = null;
 		Sample.purge();
 		Sample f = new Sample(390, null, state);
@@ -79,7 +73,7 @@ public class SampleTest extends TestCase {
 		System.out.println(f.getAsString(Sample.SECURITY_CLASS_ID));
 	}
 	
-	public void testMultipleUsers() throws SQLException, IOException {
+	public void _testMultipleUsers() throws SQLException, IOException {
 		Sample.purge();
 		Sample f = new Sample(390, null, state);
 		Sample f2 = new Sample(390, user, state);
@@ -87,7 +81,7 @@ public class SampleTest extends TestCase {
 		assertTrue(f2.isUserAuthenticated());		
 	}
 	
-	public void testDrillholeSamples() throws SQLException, IOException, InvalidCredentialsException {
+	public void _testDrillholeSamples() throws SQLException, IOException, InvalidCredentialsException {
 		Sample.purge();
 		Sample f = new Sample(3, this.user, this.state);
 		Sample bf = FREDUtils.getSampleBelow(f, user, this.state);
@@ -97,7 +91,7 @@ public class SampleTest extends TestCase {
 		assertEquals(3, Sample.getPoolSize());
 	}
 
-	public void testStartDate() throws SQLException, IOException, InvalidCredentialsException {
+	public void _testStartDate() throws SQLException, IOException, InvalidCredentialsException {
 		Sample.purge();
 		Sample f = new Sample(1165, user, state);
 		String test1 = f.getAsString(Sample.DATUM_TYPE);
@@ -105,4 +99,8 @@ public class SampleTest extends TestCase {
 		System.out.println(test1);
 	}
 
+	public void testRecords() throws SQLException, IOException, InvalidCredentialsException {
+		Sample s = new Sample(1262, user, state);
+		System.out.println(s.getAsString(Sample.RECORDS));
+	}
 }

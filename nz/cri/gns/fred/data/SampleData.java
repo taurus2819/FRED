@@ -163,13 +163,9 @@ public class SampleData {
 			Vector rec = new Vector();
 			Vector wRec = new Vector();
 			while (rs.next()) {
-				if (rs.getString(3).equals("approved")) {
-					rec.add(
-						new KeyValueObject(rs.getString(1), rs.getString(2)));
-				} else {
-					wRec.add(
-						new KeyValueObject(rs.getString(1), rs.getString(2)));
-				}
+				rec.add(new KeyValueObject(rs.getString(1), rs.getString(2)));
+				if (!rs.getString(3).equals("approved"))
+					wRec.add(new KeyValueObject(rs.getString(1), rs.getString(2)));
 			}
 			values[50] = rec;
 			values[51] = wRec;

@@ -31,8 +31,8 @@
 
 		String featType = request.getParameter("Type");
 		String foldID = request.getParameter("FoldID");
-		String featID = request.getParameter("FeatID");
 		String saveType = request.getParameter("SaveType");
+		String featID = request.getParameter("FeatID");
 
 		out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
 		out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
