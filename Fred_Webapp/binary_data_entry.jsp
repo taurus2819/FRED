@@ -25,7 +25,7 @@
 	Statement statement = connection.statement;
 	ResultSet rs;
 	DocumentAttacher attacher = DocumentAttacher.createFREDDocumentAttacher(session, application);
-	User user = getUser(session);
+	User user = (User)getUser(session);
 	String recID, recType, foldID;
 	int userID = user.getPersonId(), userRights = 0, execUp, docID;
 

@@ -5,7 +5,7 @@
 	DBConnection connection = FREDUtils.getFREDConnection(state);
 	Statement statement = connection.statement;
 	ResultSet rs;
-	User user = getUser(session);
+	User user = (User)getUser(session);
 	String foldID, recID, featID, recType, returnURL = null;
 	int userID = user.getPersonId(), userRights;
 

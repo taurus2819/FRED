@@ -11,12 +11,14 @@ import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.test.TestingPageState;
+import nz.cri.gns.test.TestingServletContext;
 import junit.framework.TestCase;
 
 public class FREDUtilsTest extends TestCase {
 
 	public void testSecClass() throws SQLException, InvalidCredentialsException, IOException, MalformedURLException, RemoteException, NotBoundException {
 		TestingPageState state = new TestingPageState();
+		((TestingServletContext)state.getContext()).setInitParameter("dbConnect", "raptor4:1521:dev");
 		User user = new User("pseudo_ben", "santor32", FREDUtils.getIPConnection(state));
 		System.out.println("Public (21) = " + FREDUtils.getSecurityClass(21, user, state));
 		System.out.println("User (22) = " + FREDUtils.getSecurityClass(22, user, state));

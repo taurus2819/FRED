@@ -7,7 +7,7 @@
 	Statement statement = connection.statement;
 	Statement statement2 = connection.getExtraStatement();
 	ResultSet rs, rs2;
-	User user = getUser(session);
+	User user = (User)getUser(session);
 	String whereSQL, tableName, queryString, featID;
 	StringBuffer featIDs;
 	int numRecords, userID = 0, startIndex, endIndex, pageNum = 1;

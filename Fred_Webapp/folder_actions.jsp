@@ -2,7 +2,7 @@
 		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
 %><%
 	PageState state = new PageState(request, response, getServletContext());
-	User user = getUser(session);
+	User user = (User)getUser(session);
 	String featID, recID, mfID, recType, sampID, auditID, drillSampName, errMessage = "";
 	int execUp, recCount, i;
 

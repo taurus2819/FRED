@@ -2,7 +2,7 @@
 		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, nz.cri.gns.auth.*"
 %><%
 	PageState state = new PageState(request, response, getServletContext());
-	User user = getUser(session);
+	User user = (User)getUser(session);
 	ComboDescriptor cd;
 
 	ExtranetTemplate et = getExtranetTemplate();

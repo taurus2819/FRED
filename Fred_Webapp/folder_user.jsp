@@ -5,7 +5,7 @@
 	DBConnection connection = FREDUtils.getFREDConnection(state);
 	Statement statement = connection.statement;
 	ResultSet rs;
-	User user = getUser(session);
+	User user = (User)getUser(session);
 	int userID = user.getPersonId(), execUp, i, userRightValue[], maxRights, rightCode = 0;
 	String userRight[];
 	userRightValue = new int[10];

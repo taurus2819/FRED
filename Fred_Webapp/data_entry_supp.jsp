@@ -6,7 +6,7 @@
 	Statement statement = connection.statement;
 	ResultSet rs;
 	ComboDescriptor cd;
-	User user = getUser(session);
+	User user = (User)getUser(session);
 	int userID = user.getPersonId(), execUp;
 	String mfID = "0", field = "x";
 

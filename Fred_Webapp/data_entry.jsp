@@ -2,7 +2,7 @@
 		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.fred.dataentry.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, java.io.*, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, java.text.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*, nz.cri.gns.util.map.*"
 %><%
 	PageState state = new PageState(request, response, getServletContext());
-	User user = getUser(session);
+	User user = (User)getUser(session);
 	ExtranetTemplate et = getExtranetTemplate();
 
 	drawTop(out, et, request, response);

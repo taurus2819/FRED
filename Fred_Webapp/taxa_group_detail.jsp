@@ -24,7 +24,7 @@
 	DBConnection connection = FREDUtils.getFREDConnection(state);
 	Statement statement = connection.statement;
 	ResultSet rs;
-	User user = getUser(session);
+	User user = (User)getUser(session);
 	String groupID;
 	int userID = user.getPersonId(), execUp;
 
