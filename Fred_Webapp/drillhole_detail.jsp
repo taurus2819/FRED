@@ -19,7 +19,7 @@
 	doubleData = new Object[2];
 
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	drawTop(out, et, request, response);
 
@@ -42,9 +42,8 @@
 		query = "SELECT Feature_Name FROM FR.Sample_View WHERE Feature_Type <> 'Outcrop' AND Feature_ID = ?";
 		data[0] = new Integer(Integer.parseInt(featID));
 		rs = connection.executeQuery(query, types, data);
-		
-		if (rs.next()) {
 
+		if (rs.next()) {
 			out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
 			query = "SELECT S.Feature_Name, S.Feature_Type, S.Masterfile_Name, S.Status, A.Created_By, A.Created_Date, A.Modified_By, A.Modified_Date, A.Submitted_By, A.Submitted_Date, A.Approved_By, A.Approved_Date FROM FR.Sample_View S, FR.Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = ?";
 			data[0] = new Integer(Integer.parseInt(featID));

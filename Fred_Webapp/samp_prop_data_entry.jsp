@@ -57,11 +57,6 @@ function submitForm (form) {
 			Coll.select();
 			return false;
 		}
-		if (StratName.value == "") {
-			alert ("Please enter a stratigraphic name");
-			StratName.select();
-			return false;
-		}
 		if (InPlace.value == "") {
 			alert ("Please select fossil in place");
 			InPlace.focus();

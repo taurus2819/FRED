@@ -76,14 +76,14 @@
 				featStatus = "working";
 			}
 
-			//Location Name
+/*			//Location Name
 			if (request.getParameter("FeatName") != null) {
 				rs = statement.executeQuery("SELECT * FROM Feature_Security_View WHERE User_ID = " + JspUtils.getUser(session) + " AND Feature_ID <> " + featID + " AND Sample_Name = '" + request.getParameter("FeatName") + "'");
 				if (rs.next()) {
 					throw new DataInputException("Name", request.getParameter("FeatName") + " already being used by you.  Please select a unique name");
 				}
 			}
-
+*/
 			//Coords
 			if (request.getParameter("OrigCoord").equals("29")) { //LatLong
 				latitude = Double.parseDouble(request.getParameter("North"));

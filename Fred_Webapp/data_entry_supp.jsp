@@ -84,7 +84,7 @@ function saveData(type) {
 					window.opener.form1.Coord.value = window.opener.form1.Coord.value + Country.value.toUpperCase() + "*";
 					window.opener.form1.Coord.value = window.opener.form1.Coord.value + North.value + "*" + East.value;
 				} else {
-					window.opener.form1.Coord.value = window.opener.form1.Coord.value + East.value + "*" + North.value;
+					window.opener.form1.Coord.value = window.opener.form1.Coord.value + North.value + "*" + East.value;
 				}
 				window.close();
 			}
