@@ -24,7 +24,7 @@
 	Statement statement = connection.statement;
 	ResultSet rs;
 	User user = getUser(session);
-	String formType, featID = "0", loadFeatID, foldID, featName = "", recoll = "", workComm = "", coord = "", locMethod = null, accuracy = "", loc = "", regAreaID = "400";
+	String formType, featID = "0", loadFeatID, foldID, featName = "", recoll = "", workComm = "", coord = "", locMethod = null, accuracy = "", loc = "", regAreaID = "400", person = "", startDate = "", finishDate = "", licArea = "", datumType = "", datumEl = "", startDepth = "", finishDepth = "";
 	int userID = user.getPersonId(), userRights = 0, execUp;
 	java.util.Date adoDate = new java.util.Date();
 	ComboDescriptor cd;
@@ -74,10 +74,47 @@ function checkForm(form) {
 			return false;
 		}
 		if (FeatName.value == "" && Coord.value == "") {
-			alert ("Please either enter a name or a coordinate");
+			alert ("Please either enter either a name or a coordinate");
 			FeatName.select();
 			return false;
 		}
+<%		if (request.getParameter("Type") != null && (request.getParameter("Type").equals("Drillhole") || request.getParameter("Type").equals("VertSect"))) { %>
+		if (parseDate(StartDate.value, StartDateRnd) == 0) {
+			alert ("Please enter a valid date");
+			StartDate.select();
+			return false;
+		}
+		if (parseDate(FinishDate.value, FinishDateRnd) == 0) {
+			alert ("Please enter a valid date");
+			StartDate.select();
+			return false;
+		}
+		if (isNaN(DatumEl.value)) {
+			alert ("Please enter a numeric datum elevation");
+			DatumEl.select();
+			return false;
+		}
+		if (isNaN(StartDepth.value)) {
+			alert ("Please enter a numeric depth");
+			StartDepth.select();
+			return false;
+		}
+		if (isNaN(FinishDepth.value)) {
+			alert ("Please enter a numeric depth");
+			FinishDepth.select();
+			return false;
+		}
+		if (DatumType.value == "-" && DatumEl.value != "") {
+			alert ("Please enter a datum type");
+			DatumType.focus();
+			return false;
+		}
+		if ((StartDepth.value != "" || FinishDepth.value != "") && DatumEl.value == "")  {
+			alert ("Please enter a datum elevation");
+			DatumEl.select();
+			return false;
+		}		
+<%		}	%>
 	}
 	return true;
 }
@@ -122,6 +159,32 @@ function parseCoord(form, coord) {
 	return 1;
 }
 
+function parseDate(date, dateRnd) {
+	var day, month, year;
+	if (date == "") { return 1; }
+	if (date.lastIndexOf("/") == date.length - 1) { return 0; } //ends with slash
+	if (date.indexOf("/") == -1 && date.length == 4 && !isNaN(date)) { //year only
+		dateRnd.value = "Year"
+		return 1;
+	}
+	if (date.indexOf("/") == date.lastIndexOf("/")) {
+		dateRnd.value = "Month"
+		day = 1;
+		month = date.substring(0, date.indexOf("/"));
+		year = date.substring(date.indexOf("/") + 1, date.length);
+	} else {
+		day = date.substring(0, date.indexOf("/"));
+		month = date.substring(date.indexOf("/") + 1, date.lastIndexOf("/"));
+		year = date.substring(date.lastIndexOf("/") + 1, date.length);
+	}
+	if (isNaN(day) || parseInt(day, 10) < 0 || parseInt(day, 10) > 31) { return 0; } //bad day
+	if (isNaN(month) || parseInt(month, 10) < 0 || parseInt(month, 10) > 12) { return 0; } //bad month
+	if (isNaN(year) || year.length != 4) { return 0; } //bad year
+	if (parseInt(month, 10) == 2 && parseInt(day, 10) > 28) { return 0; } //bad Feb
+	if ((parseInt(month, 10) == 4 || parseInt(month, 10) == 6 || parseInt(month, 10) == 9 || parseInt(month, 10) == 11) && parseInt(day, 10) > 30) { return 0; } //bad 30 day months
+	return 1;
+}
+
 </script>
 
 <%
@@ -153,7 +216,7 @@ function parseCoord(form, coord) {
 				if (rs.next()) {
 					featName = noNulls(rs.getString(1));
 				}
-				rs = statement.executeQuery("SELECT Reg_Area_ID, Locality, Working_Comments FROM Sample_All_View WHERE Feature_ID = " + loadFeatID);
+				rs = statement.executeQuery("SELECT Reg_Area_ID, Locality, Working_Comments, Drillhole_Licence_Name, Person, Start_Date, Finish_Date, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth FROM Sample_All_View WHERE Feature_ID = " + loadFeatID);
 				rs.next();
 				if (rs.getString(1) != null) { regAreaID = rs.getString(1); }
 				loc = noNulls(rs.getString(2));
@@ -162,6 +225,14 @@ function parseCoord(form, coord) {
 					recoll = workComm.substring(8, workComm.indexOf("*", 2)).trim();
 					workComm = workComm.substring(workComm.indexOf("*", 2) + 1, workComm.length()).trim();
 				}
+				licArea = noNulls(rs.getString(4));
+				person = noNulls(rs.getString(5));
+				startDate = noNulls(rs.getString(6));
+				finishDate = noNulls(rs.getString(7));
+				datumType = noNulls(rs.getString(8));
+				datumEl = noNulls(rs.getString(9));
+				startDepth = noNulls(rs.getString(10));
+				finishDepth = noNulls(rs.getString(11));
 				rs = statement.executeQuery("SELECT Orig_System_ID, Orig_Coord, Method_ID, Accuracy, Country_Code FROM SC.Site S, Feature F WHERE F.Site_ID = S.Site_ID AND F.Feature_ID = " + loadFeatID);
 				if (rs.next()) {
 					if (rs.getInt(1) == 38) { //Full NZMG
@@ -201,7 +272,15 @@ function parseCoord(form, coord) {
 
 			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
-			out.println("<tr><td colspan='2' align='center' class='heading'>Locality</td></tr>");
+			out.print("<tr><td colspan='2' align='center' class='heading'>");
+			if (formType.equals("Outcrop")) {
+				out.println("Outcrop");
+			} else if (formType.equals("Drillhole")) {
+				out.println("Drillhole");
+			} else if (formType.equals("VertSect")) {
+				out.println("Vertical Section");
+			}
+			out.println(" Locality</td></tr>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 			out.println("<tr><td><a href='load_record.jsp?FoldID=" + foldID + "&FeatID=" + featID + "&RecType=LOC' title='Copy From'><img src='images/load.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='load_record.jsp?FoldID=" + foldID + "&FeatID=" + featID + "&RecType=LOC' class='heading'>Copy From</a></td></tr>");
 			out.println("<tr><td><a href='#' onClick='if (saveForm(form1)) {form1.submit();}' title='Save'><img src='images/save.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='#' onClick='if (saveForm(form1)) {form1.submit();}' class='heading'>Save</a></td></tr>");
@@ -222,7 +301,7 @@ function parseCoord(form, coord) {
 			} else if (formType.equals("Drillhole")) {
 				out.println("<tr><td class='heading' colspan='2'>Drillhole Name</td><td><input type='text' name='FeatName' value='" + featName + "'></td></tr>");
 			} else if (formType.equals("VertSect")) {
-				out.println("<tr><td class='heading' colspan='2'>Vertical Section Name</td><td><input type='text' name='FeatName' value='" + featName + "'></td></tr>");
+				out.println("<tr><td class='heading' colspan='2'>Section Name</td><td><input type='text' name='FeatName' value='" + featName + "'></td></tr>");
 			}
 			out.println("<tr><td class='heading'>Registration Area</td><td></td><td>");
 			cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
@@ -231,9 +310,15 @@ function parseCoord(form, coord) {
 			cd.join = "FieldName = 'RegArea'";
 			cd.orderBy = "Lookup_ID";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.println("</td></tr>");
+			out.print("<tr><td class='heading'>");
+			if (formType.equals("Drillhole")) {
+				out.print("Sidetrack of");
+			} else {
+				out.print("Recollection of");
+			}
 %>
-			</td></tr>
-			<tr><td class='heading'>Recollection Of</td><td></td><td><input type='text' name='Recoll' value='<%=recoll%>' /></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=Recoll", "Supp", "width=600,height=500");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
+			</td><td></td><td><input type='text' name='Recoll' value='<%=recoll%>' /></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=Recoll", "Supp", "width=600,height=500");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
 			<tr><td class='heading' colspan='2'>Working Comments<br><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'><%=workComm%></textarea></td></tr>
 
 			<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>
@@ -256,9 +341,45 @@ function parseCoord(form, coord) {
 %>
 			</td></tr>
 			<tr><td></td><td class='smallheading'>Accuracy</td><td><input type='text' name='Accuracy' value='<%=accuracy%>'></td></tr>
-			<tr><td></td><td class='smallheading'>Locality Description</td><td><textarea name='Loc' cols='40' rows='5'><%=loc%></textarea></td></tr>
+			<tr><td></td><td class='smallheading'>Locality<br />Description</td><td><textarea name='Loc' cols='40' rows='5'><%=loc%></textarea></td></tr>
+<%			if (formType.equals("Drillhole")) {	%>
+				<tr><td class='heading'>Operating Company</td><td></td><td><input type='text' name='Person' value='<%=person%>' size='40'></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=OpComp", "Supp", "width=600,height=450");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
+				<tr><td class='heading'>Drilling Dates</td><td class='smallheading'>Spud Date</td><td><input type='text' name='StartDate' value='<%=startDate%>'></td></tr>
+				<tr><td class='heading'></td><td class='smallheading'>Completion Date</td><td><input type='text' name='FinishDate' value='<%=finishDate%>'></td></tr>
+				<input type='hidden' name='StartDateRnd' value='' />
+				<input type='hidden' name='FinishDateRnd' value='' />
+				<tr><td class='heading'>Licence Area</td><td></td><td><input type='text' name='LicArea' value='<%=licArea%>' size='40'></td></tr>
+				<tr><td class='heading'>Datum Elevation</td><td></td>
+				<td class='smallheading'><select name='DatumType'><option value='-'<%=((datumType.equals("")) ? " selected" : "")%>>-- Choose --</option><option value='RT'<%=((datumType.equals("RT")) ? " selected" : "")%>>RT</option><option value='KB'<%=((datumType.equals("KB")) ? " selected" : "")%>>KB</option></select>&nbsp;&nbsp;
+				<input type='text' name='DatumEl' value='<%=datumEl%>' size='10'>&nbsp;m&nbsp;asl</td></tr>
+				<tr><td class='heading'>Drillhole Depths</td><td class='smallheading'>Kick-off</td><td class='smallheading'><input type='text' name='StartDepth' value='<%=startDepth%>'>&nbsp;m</td></tr>
+				<tr><td class='heading'></td><td class='smallheading'>Termination (TD)</td><td class='smallheading'><input type='text' name='FinishDepth' value='<%=finishDepth%>'>&nbsp;m</td></tr>		
+<%			} else if (formType.equals("VertSect")) {	%>
+				<tr><td class='heading'>Section Collector</td><td></td><td><input type='text' name='Person' value='<%=person%>' size='40'></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=VertPerson", "Supp", "width=600,height=450");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
+				<tr><td class='heading'>Sampling Dates</td><td class='smallheading'>Start Date</td><td><input type='text' name='StartDate' value='<%=startDate%>'></td></tr>
+				<tr><td class='heading'></td><td class='smallheading'>Completion Date</td><td><input type='text' name='FinishDate' value='<%=finishDate%>'></td></tr>
+				<input type='hidden' name='StartDateRnd' value='' />
+				<input type='hidden' name='FinishDateRnd' value='' />
+				<tr><td class='heading'>Datum Elevation</td><td></td>
+				<td class='smallheading'><select name='DatumType'><option value='-'<%=((datumType.equals("")) ? " selected" : "")%>>-- Choose --</option><option value='Top'<%=((datumType.equals("Top")) ? " selected" : "")%>>Top</option><option value='Bottom'<%=((datumType.equals("Bottom")) ? " selected" : "")%>>Bottom</option></select>&nbsp;&nbsp;
+				<input type='text' name='DatumEl' value='<%=datumEl%>' size='10'>&nbsp;m&nbsp;asl</td></tr>
+				<tr><td class='heading'>Section Heights</td><td class='smallheading'>Top Horizon</td><td class='smallheading'><input type='text' name='StartDepth' value='<%=startDepth%>'>&nbsp;m</td></tr>
+				<tr><td class='heading'></td><td class='smallheading'>Bottom Horizon</td><td class='smallheading'><input type='text' name='FinishDepth' value='<%=finishDepth%>'>&nbsp;m</td></tr>				
+				<input type='hidden' name='LicArea' value='' />
+<%			} else {	%>
+				<input type='hidden' name='Person' value='' />
+				<input type='hidden' name='StartDate' value='' />
+				<input type='hidden' name='StartDateRnd' value='' />
+				<input type='hidden' name='FinishDate' value='' />
+				<input type='hidden' name='FinishDateRnd' value='' />
+				<input type='hidden' name='DatumType' value='' />
+				<input type='hidden' name='DatumEl' value='' />
+				<input type='hidden' name='StartDepth' value='' />
+				<input type='hidden' name='FinishDepth' value='' />
+				<input type='hidden' name='LicArea' value='' />
+<%			}	%>
 			</table>
-<%		out.println("<table border='0' cellpadding='0' cellspacing='2'>");
+<%			out.println("<table border='0' cellpadding='0' cellspacing='2'>");
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.println("<tr><td><a href='#' onClick='if (saveForm(form1)) {form1.submit();}' title='Save'><img src='images/save.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='#' onClick='if (saveForm(form1)) {form1.submit();}' class='heading'>Save</a></td></tr>");
 			if ((userRights & 16) != 0) {

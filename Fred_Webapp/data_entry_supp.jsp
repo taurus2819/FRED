@@ -90,6 +90,10 @@ function saveData(type) {
 			window.opener.form1.Recoll.value = parseDropDown(SampName.value);
 			window.close();
 		}
+		else if (type == "FeatPer") {
+			window.opener.form1.Person.value = parseDropDown(Person.value);
+			window.close();
+		}
 		else if (type == "Coll") {
 			window.opener.form1.Coll.value = window.opener.form1.Coll.value + parseDropDown(Person.value) + "\n";
 		}
@@ -329,6 +333,46 @@ function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
 			out.println("<tr><td><a href='#' onClick='saveData(\"Recoll\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"Recoll\");return false;' class='heading'>Add to Main Form</a></td></tr>");
 		}
 
+		else if (request.getParameter("Type").equals("OpComp")) {
+			out.println("<tr><td class='heading' colspan='2'>Operating Company</td></tr>");
+			out.println("<tr><td colspan='2'>Select a person/company from the drop-down list.  New companies can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button.</td></tr>");
+			out.println("<tr><td>&nbsp;</td></tr>");
+			out.print("<tr><td class='heading'>Person/Company</td><td>");
+			cd = new ComboDescriptor("Person_View", "Name", "Name");
+			cd.name = "Person";
+			cd.prompt = "-- Choose --";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.print("</td></tr>");
+			out.println("<tr><td class='heading' colspan='2'>Add to Person List</td></tr>");
+			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
+			out.println("<tr><td class='smallheading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
+			out.println("<input type='submit' value='Add' onClick='return addData(\"Person\");'>");
+			out.println("</td></tr></table>");
+			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+			out.println("<tr><td><a href='#' onClick='saveData(\"FeatPer\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"FeatPer\");return false;' class='heading'>Add to Main Form</a></td></tr>");
+		}
+
+		else if (request.getParameter("Type").equals("VertPerson")) {
+			out.println("<tr><td class='heading' colspan='2'>Section Collector</td></tr>");
+			out.println("<tr><td colspan='2'>Select a person/company from the drop-down list.  New collectors can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button.</td></tr>");
+			out.println("<tr><td>&nbsp;</td></tr>");
+			out.print("<tr><td class='heading'>Person/Company</td><td>");
+			cd = new ComboDescriptor("Person_View", "Name", "Name");
+			cd.name = "Person";
+			cd.prompt = "-- Choose --";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.print("</td></tr>");
+			out.println("<tr><td class='heading' colspan='2'>Add to Person List</td></tr>");
+			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
+			out.println("<tr><td class='smallheading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
+			out.println("<input type='submit' value='Add' onClick='return addData(\"Person\");'>");
+			out.println("</td></tr></table>");
+			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+			out.println("<tr><td><a href='#' onClick='saveData(\"FeatPer\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"FeatPer\");return false;' class='heading'>Add to Main Form</a></td></tr>");
+		}
+		
 		else if (request.getParameter("Type").equals("Coll")) {
 			out.println("<tr><td class='heading' colspan='2'>Collectors</td></tr>");
 			out.println("<tr><td colspan='2'>Select a person/company from the drop-down list.  New collectors can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button<br />You may add multiple collectors by clicking the Add To Main Form icon between each collector and then Close to end.</td></tr>");
@@ -342,7 +386,7 @@ function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
 			out.println("<tr><td class='heading' colspan='2'>Add to Person List</td></tr>");
 			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
 			out.println("<tr><td class='smallheading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
-			out.println("<input type='submit' value='Add Person' onClick='return addData(\"Person\");'>");
+			out.println("<input type='submit' value='Add' onClick='return addData(\"Person\");'>");
 			out.println("</td></tr></table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
@@ -362,7 +406,7 @@ function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
 			out.println("<tr><td class='heading' colspan='2'>Add to Person List</td></tr>");
 			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
 			out.println("<tr><td class='smallheading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
-			out.println("<input type='submit' value='Add Person' onClick='return addData(\"Person\");'>");
+			out.println("<input type='submit' value='Add' onClick='return addData(\"Person\");'>");
 			out.println("</td></tr></table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
@@ -382,7 +426,7 @@ function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
 			out.println("<tr><td class='heading' colspan='2'>Add to Person List</td></tr>");
 			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
 			out.println("<tr><td class='smallheading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
-			out.println("<input type='submit' value='Add Person' onClick='return addData(\"Person\");'>");
+			out.println("<input type='submit' value='Add' onClick='return addData(\"Person\");'>");
 			out.println("</td></tr></table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");

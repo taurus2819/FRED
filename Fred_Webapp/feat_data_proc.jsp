@@ -33,7 +33,7 @@
 	ResultSet rs;
 	int userRights = 0, execUp;
 	double latitude = 0, longitude = 0;
-	String formType, foldID, featID, auditID, siteID, featStatus, recoll = "", origCoord = "";
+	String formType, foldID, featID, auditID, siteID, featStatus, recoll = "", origCoord = "", personID = "", startDate = "", startDateRnd = "", finishDate = "", finishDateRnd = "";
 	User user = getUser(session);
 	int userID = user.getPersonId();
 
@@ -114,7 +114,39 @@
 				}
 			}
 
+			//Person
+			if (!request.getParameter("Person").equals("")) {
+				String person = request.getParameter("Person");
+				rs = statement.executeQuery("SELECT Person_ID FROM Person_View WHERE Name = '" + person.trim() + "'");
+				if (rs.next()) {
+					personID = rs.getString(1);
+				} else {  //Person not in database so throw exception
+					throw new DataInputException("Person/Company", person.trim() + " not in database - add through builder");
+				}
+			}
 
+			//Dates
+			if (!request.getParameter("StartDate").equals("")) {
+				startDateRnd = request.getParameter("StartDateRnd");
+				if (startDateRnd.equals("Year")) {
+					startDate = "1/1/" + request.getParameter("StartDate");
+				} else if (startDateRnd.equals("Month")) {
+					startDate = "1/" + request.getParameter("StartDate");
+				} else {
+					startDate = request.getParameter("StartDate");
+				}
+			}
+			if (!request.getParameter("FinishDate").equals("")) {
+				finishDateRnd = request.getParameter("FinishDateRnd");
+				if (finishDateRnd.equals("Year")) {
+					finishDate = "1/1/" + request.getParameter("FinishDate");
+				} else if (finishDateRnd.equals("Month")) {
+					finishDate = "1/" + request.getParameter("FinishDate");
+				} else {
+					finishDate = request.getParameter("FinishDate");
+				}
+			}
+			
 			//create SITE entry (if coords entered)
 			//check for existing site (and create new one of necessary)
 			if (!request.getParameter("Coord").equals("")) {
@@ -142,7 +174,7 @@
 				rs = statement.executeQuery("SELECT Feature_Seq.NEXTVAL FROM DUAL");
 				rs.next();
 				featID = rs.getString(1);
-				execUp = statement.executeUpdate("INSERT INTO Feature (Feature_ID, Site_ID, Audit_ID, Locality, Feature_Type, Feature_Name, Reg_Area_ID) VALUES (" + featID + ", " + siteID + ", " + auditID + ", " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", '" + formType + "', " + JspUtils.sqlEscape(request.getParameter("FeatName")) + ", " + makeDropDownNulls(request.getParameter("RegAreaID")) + ")");
+				execUp = statement.executeUpdate("INSERT INTO Feature (Feature_ID, Site_ID, Audit_ID, Locality, Feature_Type, Feature_Name, Reg_Area_ID, Drillhole_Licence_Name, Person_ID, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth) VALUES (" + featID + ", " + siteID + ", " + auditID + ", " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", '" + formType + "', " + JspUtils.sqlEscape(request.getParameter("FeatName")) + ", " + makeDropDownNulls(request.getParameter("RegAreaID")) + ", " + JspUtils.sqlEscape(request.getParameter("LicArea")) + ", " + personID + ", TO_DATE('" + startDate + "'), '" + startDateRnd + ", TO_DATE('" + finishDate + "'), '" + finishDateRnd + "', " + makeDropDownNulls(request.getParameter("DatumType")) + ", " + JspUtils.sqlEscape(request.getParameter("DatumEl")) + ", " + JspUtils.sqlEscape(request.getParameter("StartDepth")) + ", " + JspUtils.sqlEscape(request.getParameter("FinishDepth")) + ")");
 				execUp = statement.executeUpdate("INSERT INTO Sample (Feature_ID) VALUES (" + featID + ")");
 			} else { // edit
 				//Update edited by fields
@@ -151,7 +183,7 @@
 				rs.next();
 				auditID = rs.getString(1);
 				execUp = statement.executeUpdate("UPDATE Audit_Table SET Modified_By_ID = " + userID + ", Modified_Date = SYSDATE, Working_Comments = " + JspUtils.sqlEscape(recoll + request.getParameter("WorkComm")) + " WHERE Audit_ID = " + auditID);
-				execUp = statement.executeUpdate("UPDATE Feature SET Site_ID = " + siteID + ", Locality = " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", Feature_Name = " + JspUtils.sqlEscape(request.getParameter("FeatName")) + ", Reg_Area_ID = " + makeDropDownNulls(request.getParameter("RegAreaID")) + " WHERE Feature_ID = " + featID);
+				execUp = statement.executeUpdate("UPDATE Feature SET Site_ID = " + siteID + ", Locality = " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", Feature_Name = " + JspUtils.sqlEscape(request.getParameter("FeatName")) + ", Reg_Area_ID = " + makeDropDownNulls(request.getParameter("RegAreaID")) + ", Drillhole_Licence_Name = " + JspUtils.sqlEscape(request.getParameter("LicArea")) + ", Person_ID = " + JspUtils.sqlEscape(personID) + ", Start_Date = TO_DATE('" + startDate + "'), Start_Date_Rounding = '" + startDateRnd + "', Finish_Date = TO_DATE('" + finishDate + "'), Finish_Date_Rounding = '" + finishDateRnd + "', Datum_Type = " + makeDropDownNulls(request.getParameter("DatumType")) + ", Datum_Elevation = " + JspUtils.sqlEscape(request.getParameter("DatumEl")) + ", Start_Depth = " + JspUtils.sqlEscape(request.getParameter("StartDepth")) + ", Finish_Depth = " + JspUtils.sqlEscape(request.getParameter("FinishDepth")) + " WHERE Feature_ID = " + featID);
 			}
 
 			if (featStatus.equals("waiting")) { //submitted
