@@ -91,6 +91,8 @@ public abstract class LocalityDE implements DataEntryForm {
 				setField(GRID_REF, "NZGD49:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|',	'*'));
 			} else if (origSystemID == 28) {
 				setField(GRID_REF, "WGS84:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
+			} else if (origSystemID == 7) {
+				setField(GRID_REF, "CHAT:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));				
 			} else if (origSystemID == 67) {
 				setField(GRID_REF, "AUCK:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));				
 			} else if (origSystemID == 68) {
@@ -377,6 +379,16 @@ public abstract class LocalityDE implements DataEntryForm {
 			try {
 				origCoord = new TruncNorthingEasting(Double.parseDouble(north), Double.parseDouble(east), sheet, east.length());
 				origSystem = DatumFactory.createDatum("NZMS260");
+				countryCode = "NZ";
+			} catch (Exception e) {
+				throw new DataInputException("Coordinate", "Invalid value");
+			}
+		} else if (coord.indexOf("CHAT:") == 0) {
+			String east = coord.substring(5, coord.indexOf("*"));
+			String north = coord.substring(coord.indexOf("*") + 1, coord.length());
+			try {
+				origCoord =	new NorthingEasting(Double.parseDouble(north), Double.parseDouble(east));
+				origSystem = DatumFactory.createDatum("Chatham Island Grid");
 				countryCode = "NZ";
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");

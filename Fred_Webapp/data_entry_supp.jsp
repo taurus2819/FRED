@@ -239,6 +239,17 @@ function checkCoord() {
 				North.select();
 				return 0;
 			}
+		} else {
+			if (isNaN(East.value)) {
+				alert ("Please enter a numeric easting");
+				East.select();
+				return 0;
+			}
+			if (isNaN(North.value)) {
+				alert ("Please enter a numeric northing");
+				North.select();
+				return 0;
+			}
 		}
 	}
 	return 1;
@@ -318,12 +329,13 @@ function parseDropDown(val) {
 
 		if (request.getParameter("Type").equals("Coord")) {
 			out.println("<tr><td class='heading' colspan='2'>Coordinates</td></tr>");
-			out.println("<tr><td colspan='2'>Please select the type and then enter the coordinates in the appropriate text boxes.<br />For <em>Full NZMG</em> enter 7-digit eastings and northings, for <em>Trunc NZMG</em> enter the map sheet plus either 3 or 4-digit eastings and northings and for <em>Lat/Long</em> enter NZGD49 latitudes and longitudes in decimal degrees (-ve numbers for west and south).</td></tr>");
+			out.println("<tr><td colspan='2'>Please select the type and then enter the coordinates in the appropriate text boxes.<br />For <em>Full NZMG</em> enter 7-digit eastings and northings, for <em>Trunc NZMG</em> enter the map sheet plus either 3 or 4-digit eastings and northings and for <em>Lat/Long</em> enter latitudes and longitudes in decimal degrees (-ve numbers for west and south).</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.println("<tr><td class='heading'>Coord Type</td><td>");
 			out.println("<select name='CoordType'>");
 			out.println("<option value='NZMG' selected>Full NZMG</option>");
 			out.println("<option value='TruncNZMG'>Trunc NZMG</option>");
+			out.println("<option value='CHAT'>Chatham Island Grid</option>");
 			out.println("<option value='AUCK'>Auckland Island TM</option>");
 			out.println("<option value='CAMP'>Campbell Island TM</option>");
 			out.println("<option value='NZGD49'>Lat/Long NZGD49</option>");
