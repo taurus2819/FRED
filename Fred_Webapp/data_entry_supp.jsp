@@ -59,12 +59,14 @@ function saveData(type) {
 		if (type == "Coord") {
 			if (checkCoord() == 1) {
 				window.opener.form1.GridRef.value = CoordType.value + ":";
-				if (CoordType.value == "TruncNZMG") {
-					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + NZMGSheet.value.toUpperCase() + "*";
-				} else if (CoordType.value == "LL49" || CoordType.value == "LL2000") {
+				if (CoordType.value == "LL49" || CoordType.value == "LL2000") {
 					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + Country.value.toUpperCase() + "*";
-				} 
-				window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + East.value + "*" + North.value;
+					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + North.value + "*" + East.value;
+				} else {
+					if (CoordType.value == "TruncNZMG")
+						window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + NZMGSheet.value.toUpperCase() + "*";
+					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + East.value + "*" + North.value;
+				}
 				window.close();
 			}
 		}

@@ -403,8 +403,8 @@ public abstract class LocalityDE implements DataEntryForm {
 		} else if (coord.indexOf("LL49:") == 0) {
 			if (coord.indexOf("*") == coord.lastIndexOf("*"))
 			throw new DataInputException("Coordinate", "Invalid value");
-			String east = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
-			String north = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
+			String north = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
+			String east = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
 			try {
 				origCoord = new Datum.LatLong(Double.parseDouble(north), Double.parseDouble(east));
 				origSystem = DatumFactory.createNZGD49();
@@ -415,8 +415,8 @@ public abstract class LocalityDE implements DataEntryForm {
 		} else if (coord.indexOf("LL2000:") == 0) {
 			if (coord.indexOf("*") == coord.lastIndexOf("*"))
 			throw new DataInputException("Coordinate", "Invalid value");
-			String east = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
-			String north = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
+			String north = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
+			String east = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
 			try {
 				origCoord = new Datum.LatLong(Double.parseDouble(north), Double.parseDouble(east));
 				origSystem = DatumFactory.createWGS84();
