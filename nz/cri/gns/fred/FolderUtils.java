@@ -1,4 +1,3 @@
-
 package nz.cri.gns.fred;
 
 import java.io.IOException;

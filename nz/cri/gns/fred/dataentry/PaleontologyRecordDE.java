@@ -427,28 +427,11 @@ public class PaleontologyRecordDE extends RecordDE {
 
 	protected void checkMandatoryFields() throws DataInputException {
 	}
-
-	private static String cleanAlphaChar (String taxaName, String checkString) {
-		int len = taxaName.length();
-		int pos = 0;
-		boolean ok = true;
-		while (ok) {
-			pos = taxaName.indexOf(checkString, pos + 1);
-			if (pos > 0 && pos + checkString.length() < len) {
-				pos = pos + checkString.length();
-				if (pos + 1 == len || pos + 2 == len) {
-					taxaName = taxaName.substring(0, pos);
-				} else if (taxaName.indexOf(" ", pos + 1) <= pos + 2 && taxaName.indexOf(" ", pos + 1) > 0) {
-					taxaName = taxaName.substring(0, pos) + "  " + taxaName.substring(pos + 2, taxaName.length());
-				}
-			} else {
-				ok = false;
-			}
-		}
-		return taxaName;
-	}
 	
-	public static String getCleanedName(String cleanName) {
+	public static String getCleanedName(String cleanName) throws DataInputException {
+		if (cleanName == null)
+			throw new DataInputException();
+		cleanName = cleanName.replaceAll("\"", "'");
 		cleanName = cleanTaxaNameOpen(cleanName, "subsp.");
 		cleanName = cleanTaxaNameOpen(cleanName, "subspp.");
 		cleanName = cleanTaxaNameOpen(cleanName, "sp.");
@@ -489,4 +472,24 @@ public class PaleontologyRecordDE extends RecordDE {
 		return taxaName;
 	}
 
+	private static String cleanAlphaChar (String taxaName, String checkString) {
+		int len = taxaName.length();
+		int pos = 0;
+		boolean ok = true;
+		while (ok) {
+			pos = taxaName.indexOf(checkString, pos + 1);
+			if (pos > 0 && pos + checkString.length() < len) {
+				pos = pos + checkString.length();
+				if (pos + 1 == len || pos + 2 == len) {
+					taxaName = taxaName.substring(0, pos);
+				} else if (taxaName.indexOf(" ", pos + 1) <= pos + 2 && taxaName.indexOf(" ", pos + 1) > 0) {
+					taxaName = taxaName.substring(0, pos) + "  " + taxaName.substring(pos + 2, taxaName.length());
+				}
+			} else {
+				ok = false;
+			}
+		}
+		return taxaName;
+	}
+	
 }

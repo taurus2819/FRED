@@ -105,7 +105,7 @@ public class PaleontologyRecord extends Record {
 						? new Integer(rs.getInt(2))
 						: null));
 				query =
-					"SELECT P.Taxonomic_Name, P.Taxa_ID, T.Author, P.Specimen_Count, P.Specimen_Coords, P.Comments FROM Pal_List P, Taxonomic_Lookup T WHERE P.Taxa_ID = T.Taxa_ID AND Record_ID = " + values[0] + " AND T.Group_ID = ?"
+					"SELECT P.Taxonomic_Name, P.Taxa_ID, T.Author, P.Specimen_Count, P.Specimen_Coords, P.Comments FROM Pal_List P, Taxonomic_Lookup T WHERE P.Taxa_ID = T.Taxa_ID AND Record_ID = " + values[0] + " AND P.Group_ID = ?"
 						+ " ORDER BY UPPER(P.Taxonomic_Name)";
 				data[0] = taxaGroup.getGroupID();
 				ResultSet rs2 = conn.executeQuery(query, types, data);

@@ -117,13 +117,10 @@ public class AdoptionRecord extends Record {
 		if (forceRefresh && rec != null) {
 			pool.removeMe(rec);
 			rec = null;
-			System.out.println("Purging ado record");
 		}
 		if (rec == null) {
 			rec = new AdoptionRecord(id, state);
-			System.out.println("Creating new ado record");
 		} else {
-			System.out.println("Re-using existing ado record");
 		}
 		if (!FREDUtils.isAllowedLocality(user, rec.getAsString(FEATURE_SECURITY_CLASS_ID), rec.getAsString(FEATURE_STATUS), rec.getAsString(FEATURE_ID), state)
 				|| !FREDUtils.isAllowedRecord(user, rec.getAsString(SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(RECORD_ID), state)) {

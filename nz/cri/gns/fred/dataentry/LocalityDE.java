@@ -137,7 +137,6 @@ public abstract class LocalityDE implements DataEntryForm {
 		}
 		fields[field] = value;
 		savedFlag = false;
-		System.out.println("Field " + field + " set OK");
 	}
 
 	public String getField(int field) {
@@ -377,11 +376,31 @@ public abstract class LocalityDE implements DataEntryForm {
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");
 			}
+		} else if (coord.indexOf("AUCK:") == 0) {
+			String east = coord.substring(5, coord.indexOf("*"));
+			String north = coord.substring(coord.indexOf("*") + 1, coord.length());
+			try {
+				origCoord =	new NorthingEasting(Double.parseDouble(north), Double.parseDouble(east));
+				origSystem = DatumFactory.createAucklandIslandTM();
+				countryCode = "NZ";
+			} catch (Exception e) {
+				throw new DataInputException("Coordinate", "Invalid value");
+			}
+		} else if (coord.indexOf("CAMP:") == 0) {
+			String east = coord.substring(5, coord.indexOf("*"));
+			String north = coord.substring(coord.indexOf("*") + 1, coord.length());
+			try {
+				origCoord =	new NorthingEasting(Double.parseDouble(north), Double.parseDouble(east));
+				origSystem = DatumFactory.createCampbellIslandTM();
+				countryCode = "NZ";
+			} catch (Exception e) {
+				throw new DataInputException("Coordinate", "Invalid value");
+			}
 		} else if (coord.indexOf("LL49:") == 0) {
 			if (coord.indexOf("*") == coord.lastIndexOf("*"))
 			throw new DataInputException("Coordinate", "Invalid value");
-			String north = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
-			String east = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
+			String east = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
+			String north = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
 			try {
 				origCoord = new Datum.LatLong(Double.parseDouble(north), Double.parseDouble(east));
 				origSystem = DatumFactory.createNZGD49();
@@ -392,8 +411,8 @@ public abstract class LocalityDE implements DataEntryForm {
 		} else if (coord.indexOf("LL2000:") == 0) {
 			if (coord.indexOf("*") == coord.lastIndexOf("*"))
 			throw new DataInputException("Coordinate", "Invalid value");
-			String north = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
-			String east = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
+			String east = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
+			String north = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
 			try {
 				origCoord = new Datum.LatLong(Double.parseDouble(north), Double.parseDouble(east));
 				origSystem = DatumFactory.createWGS84();
