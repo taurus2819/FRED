@@ -140,6 +140,7 @@
 				out.print("<a href='samp_select.jsp?FoldID=" + foldID + "&FeatID=" + featID + "&ReturnURL=pal_data_entry.jsp' title='Add Paleontology Record'><img src='images/new_pal.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 				out.println("</td></tr>");
 				
+				//Samples
 				int sampCount = feature.getSampleCount();
 				for (Iterator j = feature.getAsVector(Feature.SAMPLES).iterator(); j.hasNext(); ) {
 					sampleHeader = (SampleHeader) j.next();

@@ -23,6 +23,7 @@
 	User user = getUser(session);
 	PageState state = new PageState(request, response, getServletContext());
 	String foldID, featID, featType, featName, sampName, locStatus;
+	int sampID, wRecordCount;
 	java.util.Date changeDate = new java.util.Date();
 
 	ExtranetTemplate et = getExtranetTemplate();
@@ -75,6 +76,7 @@
 
 			//Feature
 			Feature feature;
+			Sample sample;
 			for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
 				feature = new Feature(((Integer) i.next()).intValue(), user, state);
 
@@ -119,6 +121,148 @@
 					out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to revoke this locality\") == true) {document.FoldForm.ActionType.value=\"Revoke\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Revoke Locality'><img src='images/revoke.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 				}
 				out.println("</td></tr>");
+				
+				//Samples
+				int sampCount = feature.getSampleCount();
+				for (Iterator j = feature.getAsVector(Feature.SAMPLES).iterator(); j.hasNext(); ) {
+					sampID = ((Integer) j.next()).intValue();
+					sample = new Sample(sampID, user, state);
+					wRecordCount = sample.getWorkingRecordCount();
+					if (wRecordCount > 0) {
+						if (sampCount > 1) {
+							out.print("<tr><td width='20'><img src='images/drill.gif' height='20' width='20' /></td><td colspan='4' class='heading'>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td>");
+							out.print("<td></td><td></td><td></td><td></td>");
+							out.print("<td>");
+							out.print("<a href='samp_prop_data_entry.jsp?FoldID=" + foldID + "&SampID=" + sampID + "' title='Add Sample Property Record'><img src='images/new_sprop.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+							out.print("</td><td>");
+							out.print("<a href='ado_data_entry.jsp?FoldID=" + foldID + "&SampID=" + sampID + "' title='Add Adoption Record'><img src='images/new_ado.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+							out.print("</td><td>");
+							out.print("<a href='pal_data_entry.jsp?FoldID=" + foldID + "&SampID=" + sampID + "' title='Add Paleontology Record'><img src='images/new_pal.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+							out.print("</td>");
+							out.println("</tr>");
+						}
+/*						for (Iterator k = sample.getAsVector(Sample.WORKING_RECORDS).iterator(); k.hasNext(); ) {
+							recordHeader = (KeyValueObject) k.next(); 
+							record = Record.getData(Integer.parseInt(recordHeader.getKey()), user, state);
+							if (record.getAsString(Record.WORKING_FOLDER_ID).equals(foldID)) {
+								recType = recordHeader.getValue();
+								if (recType.equals("SMP")) {
+									imageName = "sprop";
+								}
+								else if (recType.equals("ADO")) {
+									imageName = "ado";
+								}
+								else { //PAL
+									imageName = "pal";
+									//check for provisional taxa
+									//rs2 = statement2.executeQuery("SELECT * FROM Taxa_View WHERE Record_ID = " + rs.getString(1) + " AND Status = 'Provisional'");
+									//if (rs2.next()) {
+									//	provFlag = true;
+									//}
+								}
+								
+								out.print("<tr><td><img src='images/child.gif' width='20' height='20' /><img src='images/" + imageName + ".gif' width='20' height='20' /></td><td colspan='3' class='smallheading'");
+								//if (provFlag) { returnVal.append(" style='color: #FF0000'"); }
+								out.print(">" + record.getAsString(Record.RECORD_NAME) + "</td><td class='smalltext'>");
+								if (record.get(Record.LAST_CHANGE) != null) {
+									out.print(DateFormat.getDateInstance(DateFormat.LONG).format(record.getAsDate(Record.LAST_CHANGE)));
+								}
+								out.print("&nbsp;</td><td>");
+*/	 /*							//Record Options
+								if (recType.equals("SMP") && (userRights & 2) != 0) {
+									returnVal.append("<a href='samp_prop_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+								}
+								else if (recType.equals("ADO") && (userRights & 2) != 0) {
+									returnVal.append("<a href='ado_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+								}
+								else if (recType.equals("PAL") && (userRights & 2) != 0) {
+									returnVal.append("<a href='pal_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+								}
+								returnVal.append("</td><td></td><td>");
+								if ((userRights & 8) != 0) {
+									returnVal.append("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this record\") == true) {document.FoldForm.ActionType.value=\"DeleteRec\";document.FoldForm.RecID.value=\"" + rs.getString(1) + "\";document.FoldForm.submit();}' title='Delete Record'><img src='images/delete.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+								}
+								returnVal.append("</td><td>");
+								if ((locType.equals("Drill") || recType.equals("ADO") || (recType.equals("PAL")) && !provFlag) && (userRights & 16) != 0 && locStatus.equals("approved")) {
+									returnVal.append("<a href='#' onClick='document.FoldForm.ActionType.value=\"SubmitRec\";document.FoldForm.RecID.value=\"" + rs.getString(1) + "\";document.FoldForm.RecType.value=\"" + rs.getString(4) + "\";document.FoldForm.submit();' title='Submit Record'><img src='images/submit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+								}
+	*/			/*				out.println("</td></tr>");
+							}
+						}
+				*/		
+/*	private String generateWorkRecords(String sampID, String foldID, int userRights, String locType, String locStatus, nz.cri.gns.intranet.DBConnection connection, int offset) throws java.sql.SQLException {
+			String recType, imageName = "";
+			StringBuffer returnVal;
+			Statement statement = connection.getExtraStatement();
+			Statement statement2 = connection.getExtraStatement();
+			ResultSet rs, rs2;
+			boolean provFlag = false;
+			int[] types = {Types.NUMERIC};
+			Object data[];
+			data = new Object[1];
+			returnVal = new StringBuffer();
+			
+			String query = "SELECT Record_ID, Last_Change, Record_Name, Record_Type FROM Record_All_View WHERE Sample_ID = ? AND Working_Folder_ID = " + foldID;
+			data[0] = new Integer(Integer.parseInt(sampID));
+			try {
+				rs = connection.executeQuery(query, types, data);
+				while (rs.next()) {
+					returnVal.append("<tr>");
+					if (offset == 1) { returnVal.append("<td width='20'><img src='images/blank.gif' width='20' height='20' /></td>"); }
+					recType = rs.getString(4);
+					if (recType.equals("SMP")) {
+						imageName = "sprop";
+					}
+					else if (recType.equals("ADO")) {
+						imageName = "ado";
+					}
+					else if (recType.equals("PAL")) {
+						imageName = "pal";
+						//check for provisional taxa
+						rs2 = statement2.executeQuery("SELECT * FROM Taxa_View WHERE Record_ID = " + rs.getString(1) + " AND Status = 'Provisional'");
+						if (rs2.next()) {
+							provFlag = true;
+						}
+					}
+					returnVal.append("<td width='20'><img src='images/child.gif' width='20' height='20' /></td><td width='20'><img src='images/" + imageName + ".gif' width='20' height='20' /></td><td colspan='" + (4 - offset) + "' class='smallheading'");
+					if (provFlag) { returnVal.append(" style='color: #FF0000'"); }
+					returnVal.append(">" + rs.getString(3) + "</td><td class='smalltext'>");
+					if (rs.getString(2) != null) {
+						returnVal.append(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(2)));
+					}
+					returnVal.append("&nbsp;</td><td>");
+					//Record Options
+					if (recType.equals("SMP") && (userRights & 2) != 0) {
+						returnVal.append("<a href='samp_prop_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+					}
+					else if (recType.equals("ADO") && (userRights & 2) != 0) {
+						returnVal.append("<a href='ado_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+					}
+					else if (recType.equals("PAL") && (userRights & 2) != 0) {
+						returnVal.append("<a href='pal_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+					}
+					returnVal.append("</td><td></td><td>");
+					if ((userRights & 8) != 0) {
+						returnVal.append("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this record\") == true) {document.FoldForm.ActionType.value=\"DeleteRec\";document.FoldForm.RecID.value=\"" + rs.getString(1) + "\";document.FoldForm.submit();}' title='Delete Record'><img src='images/delete.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+					}
+					returnVal.append("</td><td>");
+					if ((locType.equals("Drill") || recType.equals("ADO") || (recType.equals("PAL")) && !provFlag) && (userRights & 16) != 0 && locStatus.equals("approved")) {
+						returnVal.append("<a href='#' onClick='document.FoldForm.ActionType.value=\"SubmitRec\";document.FoldForm.RecID.value=\"" + rs.getString(1) + "\";document.FoldForm.RecType.value=\"" + rs.getString(4) + "\";document.FoldForm.submit();' title='Submit Record'><img src='images/submit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+					}
+					returnVal.append("</td></tr>\n");
+				}
+			} catch (Exception e) {
+			} finally {
+				connection.releaseStatement();
+			}			
+			statement.close();
+			statement2.close();
+			return returnVal.toString();
+		}							
+*/							
+							
+					}
+				}				
 				
 				out.println("<tr><td colspan='9'><img src='images/line.gif' height='3' width='550' /></td></tr>");
 			}

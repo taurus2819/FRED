@@ -20,12 +20,6 @@ import nz.cri.gns.jsp.FREDConstants;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
-/**
- * @author ben
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 public class FREDUtils implements FREDConstants {
 
 	public static DBConnection getFREDConnection(PageState state) throws IOException {
@@ -43,8 +37,7 @@ public class FREDUtils implements FREDConstants {
 			return ((getUserWorkingLocalityRights(user, featID, state) & 1) > 0);
 		}
 		if (securityClassID != null) {
-			DBConnection conn =
-				JspUtils.createDatabaseConnection(
+			DBConnection conn =	JspUtils.createDatabaseConnection(
 					state.getSession(),
 					"nz.cri.gns.ip.connection",
 					"ip",
@@ -83,7 +76,7 @@ public class FREDUtils implements FREDConstants {
 		if (user != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			int userID = user.getPersonId();
-			ResultSet rs = conn.executeQuery("SELECT User_Rights FROM Folder_Content_View WHERE Feature_ID = " + featID + " AND User_ID = " + userID);
+			ResultSet rs = conn.executeQuery("SELECT DISTINCT User_Rights FROM Folder_Content_Short_View WHERE Feature_ID = " + featID + " AND User_ID = " + userID);
 			while (rs.next()) {
 				userRights = userRights | rs.getInt(1);
 			}
@@ -96,7 +89,7 @@ public class FREDUtils implements FREDConstants {
 		if (user != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			int userID = user.getPersonId();
-			ResultSet rs = conn.executeQuery("SELECT User_Rights FROM Folder_Content_View NATURAL JOIN Record WHERE Record_ID = " + recID + " AND User_ID = " + userID);
+			ResultSet rs = conn.executeQuery("SELECT User_Rights FROM Folder_Content_Short_View NATURAL JOIN Record WHERE Record_ID = " + recID + " AND User_ID = " + userID);
 			while (rs.next()) {
 				userRights = userRights | rs.getInt(1);
 			}

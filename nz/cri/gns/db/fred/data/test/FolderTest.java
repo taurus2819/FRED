@@ -84,12 +84,12 @@ public class FolderTest extends TestCase {
 	public void testMultSampName() throws SQLException, IOException, InvalidCredentialsException {
 		Feature feature;
 		Folder.purge();
-		Feature.purge();
+		//Feature.purge();
 		Folder f = new Folder(12, user, state);
 		assertEquals(f.getLocalityCount(), 20);
 		for (Iterator i = f.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
 			feature = new Feature(((Integer) i.next()).intValue(), user, state);
-			System.out.println(feature.getAsString(Feature.FEATURE_ID));
+			System.out.println(feature.getAsString(Feature.FEATURE_ID) + " : " + feature.getAsString(Feature.STATUS) + " : " + Feature.getPoolSize());
 		}
 	}
 

@@ -90,13 +90,15 @@ public class FeatureData {
 					: null);
 			values[23] = rs.getString(21);
 			rs.close();
-			query = "SELECT Sample_ID, Sample_Name, Drillhole_Depth FROM Sample_All_View WHERE Feature_ID = ? ORDER BY Top_Depth";
+			//query = "SELECT Sample_ID, Sample_Name, Drillhole_Depth FROM Sample_All_View WHERE Feature_ID = ? ORDER BY Top_Depth";
+			query = "SELECT Sample_ID FROM Sample WHERE Feature_ID = ?";
 			data[0] = values[0];
 			rs = conn.executeQuery(query, types, data);
-			ResultSet rs2;
+			//ResultSet rs2;
 			Vector samp = new Vector();
 			while (rs.next()) {
-				samp.add(new SampleHeader(rs.getInt(1), rs.getString(2), rs.getString(3)));
+				//samp.add(new SampleHeader(rs.getInt(1), rs.getString(2), rs.getString(3), null));
+				samp.add(new Integer(rs.getInt(1)));
 			}
 			values[21] = samp;
 			rs.close();
