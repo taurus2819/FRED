@@ -3,7 +3,7 @@
 %><%
 
 	ExtranetTemplate et = new ExtranetTemplate();
-	et.setImageURL(new URL("http://data.gns.cri.nz/fred/images/fred.jpg"));
+	et.setImageBase("/fred/images/fred.gif");
 	et.setShowGnsLogo(true);
 	KeyValueObject links[] = new KeyValueObject[1];
 	links[0] = new KeyValueObject("/fred/index.jsp", "FRED Home");
