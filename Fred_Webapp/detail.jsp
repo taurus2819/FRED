@@ -11,7 +11,7 @@
 	boolean authorChk = false, sCountChk = false, sCoordChk = false, commChk = true;
 
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	//if FeatureID given then get SampleID or transer to drillhole
 	if (request.getParameter("FeatID") != null) {
@@ -51,6 +51,7 @@
 				if (actionType.equals("Accept")) {
 					FRNumber frNum = new FRNumber(request.getParameter("MapSheet"), new Integer(request.getParameter("SerialNum")), request.getParameter("RecollNum"));
 					FolderUtils.approveLocality(sample.getAsString(Sample.FEATURE_ID), frNum, user, state);
+									System.out.println("Approved Sample");
 				}
 				else if (actionType.equals("Reject")) {
 					FolderUtils.rejectLocality(sample.getAsString(Sample.FEATURE_ID), request.getParameter("RejComm"), user, state);
@@ -499,7 +500,6 @@
 			out.println("<tr><td>Either the sample doesn't exist or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</td></tr>");
 			out.println("</table>");
 		}
-
 	}
 	else { //no sampleID
 		drawEndNavigation(out);
