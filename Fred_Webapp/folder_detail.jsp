@@ -27,7 +27,7 @@
 	java.util.Date changeDate = new java.util.Date();
 
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	drawTop(out, et, request, response);
 
@@ -77,6 +77,9 @@
 			//Feature
 			Feature feature;
 			Sample sample;
+			KeyValueObject recordHeader;
+			Record record;
+			String recType, imageName;
 			for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
 				feature = new Feature(((Integer) i.next()).intValue(), user, state);
 
@@ -141,7 +144,8 @@
 							out.print("</td>");
 							out.println("</tr>");
 						}
-/*						for (Iterator k = sample.getAsVector(Sample.WORKING_RECORDS).iterator(); k.hasNext(); ) {
+						//Records
+						for (Iterator k = sample.getAsVector(Sample.WORKING_RECORDS).iterator(); k.hasNext(); ) {
 							recordHeader = (KeyValueObject) k.next(); 
 							record = Record.getData(Integer.parseInt(recordHeader.getKey()), user, state);
 							if (record.getAsString(Record.WORKING_FOLDER_ID).equals(foldID)) {
@@ -168,7 +172,7 @@
 									out.print(DateFormat.getDateInstance(DateFormat.LONG).format(record.getAsDate(Record.LAST_CHANGE)));
 								}
 								out.print("&nbsp;</td><td>");
-*/	 /*							//Record Options
+	 /*							//Record Options
 								if (recType.equals("SMP") && (userRights & 2) != 0) {
 									returnVal.append("<a href='samp_prop_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 								}
@@ -186,10 +190,10 @@
 								if ((locType.equals("Drill") || recType.equals("ADO") || (recType.equals("PAL")) && !provFlag) && (userRights & 16) != 0 && locStatus.equals("approved")) {
 									returnVal.append("<a href='#' onClick='document.FoldForm.ActionType.value=\"SubmitRec\";document.FoldForm.RecID.value=\"" + rs.getString(1) + "\";document.FoldForm.RecType.value=\"" + rs.getString(4) + "\";document.FoldForm.submit();' title='Submit Record'><img src='images/submit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 								}
-	*/			/*				out.println("</td></tr>");
+	*/							out.println("</td></tr>");
 							}
 						}
-				*/		
+						
 /*	private String generateWorkRecords(String sampID, String foldID, int userRights, String locType, String locStatus, nz.cri.gns.intranet.DBConnection connection, int offset) throws java.sql.SQLException {
 			String recType, imageName = "";
 			StringBuffer returnVal;

@@ -23,14 +23,15 @@ public class SampleData {
 
 	private static Pool pool = new Pool();
 	private int id;
-	private Object[] values = new Object[52];
+	private Object[] values = new Object[58];
 	private int[] types = { Types.NUMERIC };
 	private Object[] data = new Object[1];
 
 	/**
 	 * Cannot be called directly. use static getContactPerson method instead.
 	 */
-	private SampleData(int id, PageState state) throws SQLException, IOException {
+	private SampleData(int id, PageState state)
+		throws SQLException, IOException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		this.id = id;
 		pool.add(this);
@@ -43,6 +44,7 @@ public class SampleData {
 				+ "SITE_ID, LATITUDE, LONGITUDE, QMAP_SHEET, NZMG_SHEET, NZMG_EAST, NZMG_NORTH, METHOD, "
 				+ "ACCURACY, LOCALITY, DRILLHOLE_LICENCE_NAME, PERSON_ID, PERSON, START_DATE, START_DATE_ROUNDING, "
 				+ "FINISH_DATE, FINISH_DATE_ROUNDING, DATUM_TYPE, DATUM_ELEVATION, START_DEPTH, FINISH_DEPTH "
+				+ "METHOD_ID, ORIG_SYSTEM_ID, COORD_SYSTEM, ORIG_COORD, COUNTRY_CODE, COUNTRY_NAME "
 				+ "FROM Sample_All_View WHERE Sample_ID = ?";
 		data[0] = new Integer(this.id);
 		try {
@@ -157,16 +159,30 @@ public class SampleData {
 				((rs.getString(50) != null)
 					? new Double(rs.getDouble(50))
 					: null);
+			values[52] =
+				((rs.getString(51) != null)
+					? new Integer(rs.getInt(51))
+					: null);
+			values[53] = ((rs.getString(52) != null)
+			? new Integer(rs.getInt(52))
+			: null);
+			values[54] = rs.getString(53);
+			values[55] = rs.getString(54);
+			values[56] = rs.getString(55);
+			values[57] = rs.getString(56);
 			rs.close();
-			query = "SELECT Record_ID, Record_Type, Status FROM Record_All_View WHERE Sample_ID = ? ORDER BY Record_Type, Record_Name";
+			query =
+				"SELECT Record_ID, Record_Type, Status FROM Record_All_View WHERE Sample_ID = ? ORDER BY Record_Type, Record_Name";
 			rs = conn.executeQuery(query, types, data);
 			Vector rec = new Vector();
 			Vector wRec = new Vector();
 			while (rs.next()) {
 				if (rs.getString(3).equals("approved")) {
-					rec.add(new KeyValueObject(rs.getString(1), rs.getString(2)));
+					rec.add(
+						new KeyValueObject(rs.getString(1), rs.getString(2)));
 				} else {
-					wRec.add(new KeyValueObject(rs.getString(1), rs.getString(2)));
+					wRec.add(
+						new KeyValueObject(rs.getString(1), rs.getString(2)));
 				}
 			}
 			values[50] = rec;
@@ -209,7 +225,8 @@ public class SampleData {
 	 * Attempts to return the given field as a Date.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an Date.
 	 */
-	protected java.util.Date getAsDate(int field) throws IllegalArgumentException {
+	protected java.util.Date getAsDate(int field)
+		throws IllegalArgumentException {
 		try {
 			Object thing = values[field];
 			return (java.util.Date) thing;
@@ -293,8 +310,7 @@ public class SampleData {
 	 */
 	protected static SampleData getData(int id, PageState state)
 		throws SQLException, IOException {
-		SampleData f =
-			(SampleData) pool.retrieve(new DataFinder(id));
+		SampleData f = (SampleData) pool.retrieve(new DataFinder(id));
 		if (f == null) {
 			f = new SampleData(id, state);
 		}

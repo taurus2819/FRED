@@ -45,14 +45,20 @@ public class Sample {
 	public static final int WORKING_COMMENTS = 27;
 	public static final int SECURITY_CLASS_ID = 28;
 	public static final int SITE_ID = 29;
+	public static final int COUNTRY_CODE = 56;
+	public static final int COUNTRY_NAME = 57;
 	public static final int LATITUDE = 30;
 	public static final int LONGITUDE = 31;
 	public static final int QMAP_SHEET = 32;
 	public static final int NZMG_SHEET = 33;
 	public static final int NZMG_EAST = 34;
 	public static final int NZMG_NORTH = 35;
+	public static final int METHOD_ID = 52;
 	public static final int METHOD = 36;
 	public static final int ACCURACY = 37;
+	public static final int ORIG_SYSTEM_ID = 53;
+	public static final int COORD_SYSTEM = 54;
+	public static final int ORIG_COORD = 55;
 	public static final int LOCALITY = 38;
 	public static final int DRILLHOLE_LICENCE_NAME = 39;
 	public static final int PERSON_ID = 40;
@@ -128,14 +134,20 @@ public class Sample {
 			case AUDIT_ID:
 			case SECURITY_CLASS_ID :
 			case SITE_ID:
+			case COUNTRY_CODE:
+			case COUNTRY_NAME:
 			case LATITUDE:
 			case LONGITUDE:
 			case QMAP_SHEET:
 			case NZMG_SHEET:
 			case NZMG_EAST:
 			case NZMG_NORTH:
+			case METHOD_ID:
 			case METHOD:
 			case ACCURACY:
+			case ORIG_SYSTEM_ID:
+			case COORD_SYSTEM:
+			case ORIG_COORD:
 			return true;
 		}
 		return false;
