@@ -81,6 +81,10 @@
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");
 
+			//List records
+			out.println("<p><span class='heading'>Locality Details</span><br />");
+			out.println("Listed below are the working records for this locality- adoption (blue) and paleontology (green).  Drillhole and Vertical Section localities will also have individual samples listed.</p>");
+
 			//Table header
 			out.println("<p><table border='0' cellspacing='0' cellpadding='1' width='550'>");
 			out.print("<tr>");

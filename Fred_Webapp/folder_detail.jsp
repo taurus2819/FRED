@@ -62,7 +62,8 @@
 			out.println("<tr><td>");
 
 			//List records
-			out.println("<p>Listed below are the localities you have added to this folder (working localities are named with their field number or drillhole name until they are allocated a Fossil Record Number).<br />");
+			out.println("<p><span class='heading'>Folder Details</span><br />");
+			out.println("Listed below are the localities you have added to this folder (working localities are named with their field number or drillhole name until they are allocated a Fossil Record Number).<br />");
 			out.println("Click on the locality to add/edit locality records</p>");
 
 			//print error message (if any) from folder_actions

@@ -11,17 +11,31 @@
 	if (request.getParameter("FeatID") != null && request.getParameter("FoldID") != null) {
 		String featID = request.getParameter("FeatID");
 		String foldID = request.getParameter("FoldID");
+		String sampID = request.getParameter("SampID");
+		String sampType = request.getParameter("Type");
 
 		Feature feature = new Feature(Integer.parseInt(featID), user, state);
+		Sample sample = null;
+		if (sampID != null)
+			sample = new Sample(Integer.parseInt(sampID), user, state);
 		Folder folder = new Folder(Integer.parseInt(foldID), user, state);
 		if (folder.isAllowedCreateLocalities()) {
 			if (!feature.getAsString(Feature.FEATURE_TYPE).equals("Outcrop")) {
 			
 				if (request.getParameter("ActionType") != null) {
 					try {
-						feature.addNewSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"));
+						if (sampID != null) {
+							sample.editSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"));
+							sample = new Sample(Integer.parseInt(sampID), user, state, true);
+						} else {
+							feature.addNewSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"));
+						}
 					} catch (Exception e) {}
-					response.sendRedirect("folder_feature_detail.jsp?FeatID=" + featID + "&FoldID=" + foldID);
+					if (sampID != null && sampType != null) {
+						response.sendRedirect("data_entry.jsp?Type=" + sampType + "&FoldID=" + foldID + "&SampID=" + sampID + "&Redirect=folder_feature_detail.jsp%3FFoldID%3D" + foldID + "%26FeatID%3D" + featID);
+					} else {
+						response.sendRedirect("folder_feature_detail.jsp?FeatID=" + featID + "&FoldID=" + foldID);
+					}
 					return;
 				}
 				
@@ -74,20 +88,32 @@ function checkDrill() {
 	
 				out.println("<form name='sampForm' method='get' action='new_sample.jsp'>");
 				out.println("<table border='0' cellspacing='3'>");
-				out.println("<tr><td class='heading'>Top Depth&nbsp;&nbsp;</td><td><input type='text' name='TopDepth' /></td></tr>");
-				out.println("<tr><td class='heading'>Bottom Depth&nbsp;&nbsp;</td><td><input type='text' name='BottomDepth' /></td></tr>");
+				out.print("<tr><td class='heading'>Top Depth&nbsp;&nbsp;</td><td><input type='text' name='TopDepth' ");
+				if (sample != null)
+					out.print(" value='" + sample.getAsString(Sample.TOP_DEPTH) + "'");
+				out.println("/></td></tr>");
+				out.print("<tr><td class='heading'>Bottom Depth&nbsp;&nbsp;</td><td><input type='text' name='BottomDepth'");
+				if (sample != null)
+					out.print(" value='" + sample.getAsString(Sample.BOTTOM_DEPTH) + "'");
+				out.println("/></td></tr>");
 				if (feature.getAsString(Feature.FEATURE_TYPE).equals("Drillhole")) {
 					out.println("<tr><td class='heading'>Type&nbsp;&nbsp;</td><td>");
 					cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
 					cd.name = "DrillType";
 					cd.join = "FieldName = 'DrillType'";
 					cd.orderBy = "Lookup_ID";
+					if (sample != null)
+						cd.selected = sample.getAsString(Sample.DRILL_TYPE_ID);
 					HTMLUtils.makeDropBox(new java.io.PrintWriter(out), FREDUtils.getFREDConnection(state), cd);
 				}
 				out.println("</td></tr>");
 				out.println("</table>");
 				out.println("<input type='hidden' name='FeatID' value='" + featID + "' />");
 				out.println("<input type='hidden' name='FoldID' value='" + foldID + "' />");
+				if (sampID != null) {
+					out.println("<input type='hidden' name='SampID' value='" + sampID + "' />");
+					out.println("<input type='hidden' name='Type' value='" + sampType + "' />");
+				}
 				out.println("<input type='hidden' name='ActionType' value='Go' />");
 				out.println("<p><a href='#' onClick='if(checkDrill()) {sampForm.submit();}'><img src='images/ok.gif' height='20' width='20' border='0' alt='Add' /></a>&nbsp;&nbsp;<a href='#' onClick='if(checkDrill()) {sampForm.submit();}' class='heading'>Add</a></p>");
 				out.println("</form>");

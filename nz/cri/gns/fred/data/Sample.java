@@ -9,6 +9,8 @@ import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.fred.FREDUtils;
+import nz.cri.gns.intranet.DBConnection;
+import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 /**
@@ -35,6 +37,7 @@ public class Sample {
 	public static final int DRILLHOLE_DEPTH = 15;
 	public static final int TOP_DEPTH = 16;
 	public static final int BOTTOM_DEPTH = 17;
+	public static final int DRILL_TYPE_ID = 61;
 	public static final int DRILL_TYPE = 18;
 	public static final int MASTERFILE_ID = 19;
 	public static final int MASTERFILE_NAME = 20;
@@ -80,10 +83,12 @@ public class Sample {
 	public static final int SAMPLE_PROPERTY_RECORD_STATUS = 59;
 
 	private SampleData sd;
+	private PageState state;
 	private boolean authenticated = false;
 
 	public Sample(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException {
-		sd = SampleData.getData(id, state, forceRefresh);
+		this.sd = SampleData.getData(id, state, forceRefresh);
+		this.state = state;
 		if (!FREDUtils.isAllowedLocality(user, sd.getAsString(SECURITY_CLASS_ID), sd.getAsString(STATUS), sd.getAsString(FEATURE_ID), state)) {
 			authenticated = false;
 		} else {
@@ -272,6 +277,11 @@ public class Sample {
 
 	public String toString() {
 		return sd.toString();
+	}
+
+	public void editSample(String topDepth, String bottomDepth, String drillTypeID) throws IOException, SQLException {
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		conn.executeUpdate("UPDATE Sample SET Top_Depth = " + JspUtils.sqlEscape(topDepth) + ", Bottom_Depth = " + JspUtils.sqlEscape(bottomDepth) + ", Drill_Type_ID = " + JspUtils.sqlEscape(drillTypeID) + " WHERE Sample_ID = " + getSampleID());
 	}
 
 }

@@ -139,9 +139,9 @@ public class SampPropRecordDE extends RecordDE {
 					i.hasNext();
 					) {
 					Relationship rel = (Relationship) i.next();
+					if (rel.getDistanceMod() != null)
+						sampRel.append(rel.getDistanceMod() + " ");
 					if (rel.getDistance() != null) {
-						if (rel.getDistanceMod() != null)
-							sampRel.append("c. ");
 						sampRel.append(FREDUtils.noNulls(rel.getDistance()));
 						if (rel.getDistanceRange() != null)
 							sampRel.append(" - " + rel.getDistanceRange());
@@ -164,9 +164,9 @@ public class SampPropRecordDE extends RecordDE {
 					i.hasNext();
 					) {
 					Relationship rel = (Relationship) i.next();
+					if (rel.getDistanceMod() != null)
+						stratRel.append(rel.getDistanceMod() + " ");
 					if (rel.getDistance() != null) {
-						if (rel.getDistanceMod() != null)
-							stratRel.append("c. ");
 						stratRel.append(FREDUtils.noNulls(rel.getDistance()));
 						if (rel.getDistanceRange() != null)
 							stratRel.append(" - " + rel.getDistanceRange());
@@ -449,6 +449,12 @@ public class SampPropRecordDE extends RecordDE {
 								srDistance
 									.substring(2, srDistance.length())
 									.trim();
+						} else if (srDistance.indexOf("?") == 0) {
+							srDistMod = "?";
+							srDistance =
+								srDistance
+									.substring(1, srDistance.length())
+									.trim();							
 						}
 						if (srDistance.indexOf("-") >= 0) {
 							srDistance =
@@ -472,7 +478,7 @@ public class SampPropRecordDE extends RecordDE {
 						} else {
 							rs =
 								conn.executeQuery(
-									"SELECT Feature_ID FROM Feature_Content_View WHERE Sample_Name = "
+									"SELECT Feature_ID FROM Folder_Content_View WHERE Sample_Name = "
 										+ JspUtils.sqlEscape(srFeat)
 										+ " AND (Status = 'approved' OR (Folder_Type = 'personal' AND User_ID = "
 										+ user.getPersonId()
@@ -585,6 +591,12 @@ public class SampPropRecordDE extends RecordDE {
 							strDistance =
 								strDistance
 									.substring(2, strDistance.length())
+									.trim();
+						} else if (strDistance.indexOf("?") == 0) {
+							strDistMod = "?";
+							strDistance =
+								strDistance
+									.substring(1, strDistance.length())
 									.trim();
 						}
 						if (strDistance.indexOf("-") >= 0) {

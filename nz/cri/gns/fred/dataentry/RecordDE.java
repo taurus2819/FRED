@@ -199,7 +199,11 @@ public abstract class RecordDE implements DataEntryForm {
 			out.write("<tr><td class='heading'>Sample Name</td><td></td><td class='heading'>" + sample.getAsString(Sample.SAMPLE_NAME));
 			out.write("<br>" + FREDUtils.noNulls(sample.getAsString(Sample.FEATURE_NAME)) + ": " + FREDUtils.noNulls(sample.getAsString(Sample.DRILLHOLE_DEPTH)));
 		} catch (Exception e) {	}
-		out.write("</td></tr>\n");
+		out.write("</td>");
+		try {
+			out.write("<td><a href='new_sample.jsp?FeatID=" + sample.getAsString(Sample.FEATURE_ID) + "&SampID=" + sample.getSampleID() + "&FoldID=" + sample.getAsString(Sample.WORKING_FOLDER_ID) + "&Type=" + recordType + "'><img src='images/edit.gif' width='20' height='20' border='0' alt='Edit' /></a></td>");
+		} catch (Exception e) {}
+		out.write("</tr>\n");
 		out.write("<tr><td class='heading' colspan='2'>Working Comments<br><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'>" + FREDUtils.noNulls(getFieldForHTML(WORKING_COMMENTS)) + "</textarea></td></tr>\n");
 /*			if (!recID.equals("0")) {
 				out.println("<tr><td class='heading' colspan='2'>Attached Files/Images<br><span class='smalltext'>Click <a href='binary_data_entry.jsp?RecID=" + recID + "&RecType=SMP&FoldID=" + foldID + "'>here</a> to add/edit</span></td><td>");

@@ -113,7 +113,16 @@ function saveData(type) {
 				if (DistRange.value != "") {
 					window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + " - " + DistRange.value;
 				}
-				window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + " " + parseDropDown(Rel.value) + " " + parseDropDown(SampName.value) + "\n";
+				window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + " " + parseDropDown(Rel.value) + " ";
+				if (SubFeat.value == "-" && WorkFeat.value == "-") {
+					alert("Please select a sample");
+				} else if (SubFeat.value != "-" && WorkFeat.value != "-") {
+					alert("Please only select one sample");
+				} else if (SubFeat.value != "-") {
+					window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + parseDropDown(SubFeat.value) + "\n";
+				} else {
+					window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + parseDropDown(WorkFeat.value) + "\n";
+				}
 			}
 		}
 		else if (type == "StratRel") {
@@ -246,11 +255,6 @@ function checkRel(type) {
 		if (Rel.value == "-") {
 			alert ("Please select a relationship");
 			Rel.select();
-			return 0;
-		}
-		if (type == "Samp" && SampName.value == "-") {
-			alert ("Please select a sample");
-			FRNum.select();
 			return 0;
 		}
 		if (type == "Strat" && StratName.value == "") {
@@ -547,7 +551,7 @@ function parseDropDown(val) {
 			cd.join = "Masterfile_ID = " + mfID + " AND Status = 'approved'";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("</td></tr>");
-			out.print("<tr><td class='heading'>Working Samples</td><td>");
+			out.print("<tr><td class='heading'>Samples in Folders</td><td>");
 			cd = new ComboDescriptor("Folder_Content_View", "Sample_Name", "Sample_Name");
 			cd.name = "WorkFeat";
 			cd.prompt = "-- Choose --";
@@ -565,21 +569,10 @@ function parseDropDown(val) {
 			out.println("<tr><td class='heading' colspan='2'>Sample Relationships</td></tr>");
 			out.println("<tr><td colspan='2'>Please select a masterfile area from the drop-down list.  The Sample list will then be populated with all submitted samples plus working samples which you have access to in that masterfile area.  Then select a relationship type enter an optional distance (in metres).<br />You may add multiple samples by clicking the Add To Main Form icon between each sample and then Close to end.</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
-			out.print("<tr><td class='heading'>Masterfile Area</td><td>");
-			cd = new ComboDescriptor("Masterfile", "Masterfile_ID", "Name");
-			cd.name = "MF";
-			cd.prompt = "-- Choose --";
-			cd.orderBy = "Masterfile_ID";
-			cd.tagParams = "onChange='form1.submit();'";
-			if (request.getParameter("MF") != null) {
-				cd.selected = request.getParameter("MF");
-				mfID = request.getParameter("MF");
-			}
-			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
-			out.println("<tr><td class='heading'>Distance&nbsp;(m)</td>");
-			out.println("<td class='heading'><select name='DistMod'><option value='-' selected></option><option value='c. '>c.</option></select>&nbsp;&nbsp;");
-			out.println("<input type='text' name='Distance' />&nbsp;-&nbsp;");
-			out.println("<input type='text' name='DistRange' /></td></tr>");
+			out.println("<tr><td class='heading'>Distance</td>");
+			out.println("<td class='heading'><select name='DistMod'><option value='-' selected></option><option value='c. '>c.</option><option value='? '>?</option></select>&nbsp;&nbsp;");
+			out.println("<input type='text' name='Distance' />&nbsp;m&nbsp;-&nbsp;");
+			out.println("<input type='text' name='DistRange' />&nbsp;m</td></tr>");
 			out.print("<tr><td class='heading'>Relationship</td><td>");
 			cd = new ComboDescriptor("Lookup", "Name", "Name");
 			cd.name = "Rel";
@@ -588,13 +581,36 @@ function parseDropDown(val) {
 			cd.join = "FieldName = 'SampRel' AND Name <> 'nearby'";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("</td></tr>");
-			out.print("<tr><td class='heading'>Sample</td><td>");
-			cd = new ComboDescriptor("Feature_Security_View", "Sample_Name", "Sample_Name");
-			cd.name = "SampName";
+			out.print("<tr><td class='heading'>Masterfile Area</td><td>");
+			cd = new ComboDescriptor("Folder", "Folder_ID", "Name");
+			cd.name = "MF";
 			cd.prompt = "-- Choose --";
-			cd.join = "Masterfile_ID = " + mfID + " AND (Status = 'approved' OR (Folder_Type = 'personal' AND User_ID = " + userID + "))";
+			cd.tagParams = "onChange='form1.submit();'";
+			cd.join = "Folder_Type = 'admin'";
+			cd.orderBy = "Folder_ID";
+			if (request.getParameter("MF") != null  && !request.getParameter("MF").equals("-")) {
+				cd.selected = request.getParameter("MF");
+				mfID = request.getParameter("MF");
+			}
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
-			out.print("</td></tr></table>");
+			out.println("</td></tr>");
+			out.print("<tr><td class='heading'>Submitted Samples</td><td>");
+			cd = new ComboDescriptor("Sample_All_View", "FR_Number", "FR_Number");
+			cd.name = "SubFeat";
+			cd.prompt = "-- Choose --";
+			cd.selectDistinct = true;
+			cd.join = "Masterfile_ID = " + mfID + " AND Status = 'approved'";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.println("</td></tr>");
+			out.print("<tr><td class='heading'>Samples in Folders</td><td>");
+			cd = new ComboDescriptor("Folder_Content_View", "Sample_Name", "Sample_Name");
+			cd.name = "WorkFeat";
+			cd.prompt = "-- Choose --";
+			cd.selectDistinct = true;
+			cd.join = "(Status <> 'approved' AND (Folder_Type = 'personal' AND User_ID = " + user.getPersonId() + "))";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.println("</td></tr>");
+			out.println("</table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
 			out.println("<tr><td><a href='#' onClick='saveData(\"SampRel\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"SampRel\");return false;' class='heading'>Add to Main Form</a></td></tr>");
@@ -605,7 +621,7 @@ function parseDropDown(val) {
 			out.println("<tr><td colspan='2'>Please select a relationship type and enter an optional distance or range of distances (in metres).  Enter a stratigraphic unit name in the text box.  You can select a unit from the NZ StratLex drop-down box if appropriate.<br />You may add multiple units by clicking the Add To Main Form icon between each unit and then Close to end.</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.println("<tr><td class='heading'>Distance</td>");
-			out.println("<td class='heading'><select name='DistMod'><option value='-' selected></option><option value='c. '>c.</option></select>&nbsp;&nbsp;");
+			out.println("<td class='heading'><select name='DistMod'><option value='-' selected></option><option value='c. '>c.</option><option value='? '>?</option></select>&nbsp;&nbsp;");
 			out.println("<input type='text' name='Distance' />&nbsp;m&nbsp;-&nbsp;");
 			out.println("<input type='text' name='DistRange' />&nbsp;m</td></tr>");
 			out.print("<tr><td class='heading'>Relationship</td><td>");

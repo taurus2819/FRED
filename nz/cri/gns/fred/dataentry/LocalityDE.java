@@ -89,7 +89,11 @@ public abstract class LocalityDE implements DataEntryForm {
 			} else if (origSystemID == 29) {
 				setField(GRID_REF, "LL49:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|',	'*'));
 			} else if (origSystemID == 28) {
-				setField(GRID_REF, "LL2000:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));				
+				setField(GRID_REF, "LL2000:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
+			} else if (origSystemID == 67) {
+				setField(GRID_REF, "AUCK:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));				
+			} else if (origSystemID == 68) {
+				setField(GRID_REF, "CAMP:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));				
 			}
 		}
 		setField(METHOD, sample.getAsString(Sample.METHOD_ID));
