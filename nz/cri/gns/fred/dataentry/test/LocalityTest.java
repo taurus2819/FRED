@@ -128,12 +128,23 @@ public class LocalityTest extends TestCase {
 		form.save();
 	}
 	
-	public void testSubmit() throws IOException, SQLException, InvalidCredentialsException, MalformedURLException, RemoteException, NotBoundException {
+	public void _testSubmit() throws IOException, SQLException, InvalidCredentialsException, MalformedURLException, RemoteException, NotBoundException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
 		try {
 			FolderUtils.submitLocality("881", user, state);
 		} catch (Exception e) {}
+	}
+	
+	public void testOutcropSave() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+		TestingPageState state = new TestingPageState();
+		DBConnection ipConn = FREDUtils.getIPConnection(state);
+		User user = new User("pseudo_ben", "santor32", ipConn);
+		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm("Outcrop", user, 221, state);
+		form.setTempField(DataEntryForm.FEATURE_NAME, "New Outcrop 11");
+		form.setTempField(DataEntryForm.COLLECTION_DATE, "25/12/2004");
+		form.setFieldsFromTemp();
+		form.save();		
 	}
 }

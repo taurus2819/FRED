@@ -1012,7 +1012,7 @@ public class SampleDE implements DataEntryForm {
 				if (sample == null) {
 					if (!folder.isAllowedCreateLocalities())
 						throw new InvalidCredentialsException();
-					if (auditID == -1) {	
+					if (auditID == -1) {	//ie not an outcrop sample
 					//create new AUDIT record
 						rs = conn.executeQuery("SELECT Audit_Seq.NEXTVAL FROM DUAL");
 						rs.next();
@@ -1038,8 +1038,11 @@ public class SampleDE implements DataEntryForm {
 						"INSERT INTO Sample (Sample_ID, Feature_ID, Audit_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage_ID, Known_Stage_ID, Column_Map, Dip, Dip_Direction, Strike, Facing, Primary_Grainsize_ID, Secondary_Grainsize_ID, Comparator_Used, Bed_Thick_ID, Primary_Bedding_ID, Secondary_Bedding_ID, Weathering_ID, Hardness_ID, Carbonate_ID, Colour_Modifier_ID, Primary_Colour_ID, Secondary_Colour_ID, Wet, Deposition_Env, Rock_Nature, Correspondence) VALUES ("
 							+ sampleID
 							+ ", "
+							+ featureID
+							+ ", "
 							+ auditID
-							+ ((collDate != null) ? ", TO_DATE('" + collDate.getDateString() + "'), " + JspUtils.sqlEscape(collDate.getDateRounding()) : ", NULL, NULL")
+							+ ", "
+							+ ((collDate != null) ? "TO_DATE('" + collDate.getDateString() + "'), " + JspUtils.sqlEscape(collDate.getDateRounding()) : "NULL, NULL")
 							+ ", "
 							+ JspUtils.sqlEscape(getField(STRAT_NAME))
 							+ ", "
@@ -1273,9 +1276,9 @@ public class SampleDE implements DataEntryForm {
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = true;
-				try {
-					sample = new Sample(sample.getSampleID(), user, state, true);
-				} catch (Exception e) {}
+				//try {
+					sample = new Sample(sampleID, user, state, true);
+				//} catch (Exception e) {}
 			} catch (SQLException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);

@@ -439,8 +439,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		}
 	}
 
-	public int save()
-		throws SQLException, IOException, InvalidCredentialsException {
+	public int save() throws SQLException, IOException, InvalidCredentialsException {
 		if (!savedFlag) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			ResultSet rs;

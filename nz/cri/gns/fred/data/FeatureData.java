@@ -84,14 +84,15 @@ public class FeatureData {
 			query = "SELECT DISTINCT Sample_Name, Feature_Last_Change, Feature_Working_Folder_ID FROM Sample_All_View WHERE Feature_ID = ? ORDER BY Sample_Name";
 			data[0] = values[Feature.FEATURE_ID];
 			rs = conn.executeQuery(query, types, data);
-			rs.next();
-			String sampName = rs.getString(1);
-			values[Feature.LAST_CHANGE] = rs.getDate(2);
-			values[Feature.WORKING_FOLDER_ID] = ((rs.getString(3) != null) ? new Integer(rs.getInt(3)) : null);
-			while (rs.next()) {
-				sampName += ", " + rs.getString(1);
+			if (rs.next()) {
+				String sampName = rs.getString(1);
+				values[Feature.LAST_CHANGE] = rs.getDate(2);
+				values[Feature.WORKING_FOLDER_ID] = ((rs.getString(3) != null) ? new Integer(rs.getInt(3)) : null);
+				while (rs.next()) {
+					sampName += ", " + rs.getString(1);
+				}
+				values[Feature.SAMPLE_NAMES] = sampName;
 			}
-			values[Feature.SAMPLE_NAMES] = sampName;
 			
 			rs.close();
 			if (values[Feature.FEATURE_NAME] != null) {
