@@ -29,7 +29,7 @@ public abstract class RecordDE implements DataEntryForm {
 	protected Record record;
 	protected String recordType;
 	private Integer secClassID;
-	protected String[] fields = new String[100];
+	protected String[] fields = new String[80];
 	protected boolean savedFlag = false;
 
 	public RecordDE(User user, int folderID, String recordType, PageState state) throws DataInputException, SQLException, IOException {

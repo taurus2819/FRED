@@ -154,11 +154,11 @@ public class PaleontologyRecordDE extends RecordDE {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			super.makeDataEntryHTML(out);
 			out.write(
-				"<tr><td class='heading'>Adoption Date</td><td></td><td><input type='text' name='PalDate' value='"
+				"<tr><td class='heading'>Identification Date</td><td></td><td><input type='text' name='PalDate' value='"
 					+ FREDUtils.noNulls(getField(IDENTIFICATION_DATE))
 					+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Date&Field=PalDate\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
 			out.write(
-				"<tr><td class='heading'>Adoptors</td><td></td><td><textarea name='Identifier' cols='40' rows='2'>"
+				"<tr><td class='heading'>Identifiers</td><td></td><td><textarea name='Identifier' cols='40' rows='2'>"
 					+ FREDUtils.noNulls(getField(IDENTIFIERS))
 					+ "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Identifier\", \"Supp\", \"width=600,height=400\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
 			out.write(
