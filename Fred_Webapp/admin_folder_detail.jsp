@@ -58,7 +58,7 @@
 			//Recently Approved
 			out.println("<tr><th colspan='5'>Localities Recently Approved</th></tr>");
 			out.println("<tr><th colspan='2'>Locality&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Approved Date&nbsp;&nbsp;</th><th>Approved By&nbsp;&nbsp;</th><th colspan='3'>Options</th></tr>");
-			String query = "SELECT DISTINCT S.Feature_ID, S.FR_Number FROM Sample_All_View S, Audit_Table A WHERE S.Audit_ID = A.Audit_ID AND S.Status = 'approved' AND S.Masterfile_ID = ? AND A.Approved_Date >= (SYSDATE - 7) ORDER BY S.FR_Number";
+			String query = "SELECT DISTINCT S.Feature_ID, S.FR_Number FROM Sample_All_View S, Audit_Table A WHERE S.Feature_Audit_ID = A.Audit_ID AND S.Feature_Status = 'approved' AND S.Masterfile_ID = ? AND A.Approved_Date >= (SYSDATE - 7) ORDER BY S.FR_Number";
 			int[] types = { Types.NUMERIC };
 			Object[] data = { new Integer(folder.getFolderID()) };
 			ResultSet rs = connection.executeQuery(query, types, data);
