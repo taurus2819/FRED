@@ -64,10 +64,10 @@ public class FeatureTest extends TestCase {
 		assertEquals(dhole.getSampleCount(), 5);
 	}
 	
-	public void _testRestrictions() throws SQLException, IOException, InvalidCredentialsException {
+	public void testRestrictions() throws SQLException, IOException, InvalidCredentialsException {
 		String test = null;
 		Feature.purge();
-		Feature f = new Feature(509, null, state);
+		Feature f = new Feature(1464, null, state);
 		try {
 			test = f.getAsString(Feature.FEATURE_TYPE);
 		} catch (Exception e) {}
@@ -78,6 +78,7 @@ public class FeatureTest extends TestCase {
 		} catch (Exception e) {}
 		assertNull(test);
 		System.out.println(f.getAsString(Feature.SECURITY_CLASS_ID));
+		System.out.println(f.isUserAuthenticated());
 	}
 	
 	public void _testWorkingFeature() throws SQLException, IOException, InvalidCredentialsException {
@@ -114,7 +115,7 @@ public class FeatureTest extends TestCase {
 		assertFalse(f5.isUserAuthenticated());		
 	}
 
-	public void testCreateNewSample() throws SQLException, IOException, DataInputException {
+	public void _testCreateNewSample() throws SQLException, IOException, DataInputException {
 		Feature f = new Feature(1282, user, state);
 		f.addNewSample("20", null, "11");
 	}

@@ -46,21 +46,16 @@ public class FREDUtils {
 			state.getContext());
 	}
 
-	public static boolean isAllowedLocality(
-		User user,
-		String securityClassID,
-		String status,
-		String featID,
-		PageState state)
+	public static boolean isAllowedLocality(User user, String securityClassID, String status, String featID, PageState state)
 		throws IOException, SQLException {
 		if (user == null)
 			return false;
 		if (!status.equals("approved"))
 			return (getUserWorkingLocalityRights(user, featID, state) & 1) > 0;
 		if (securityClassID != null) {
-			return checkSecurityClass(Integer.parseInt(securityClassID), user, state);
+			return hasMasterfileRights(user, featID, state) || checkSecurityClass(Integer.parseInt(securityClassID), user, state);
 		} else {
-			return false;
+			return true;
 		}
 	}
 
@@ -71,7 +66,33 @@ public class FREDUtils {
 		if (!status.equals("approved"))
 			return (getUserWorkingRecordRights(user, recID, state) & 1) > 0;
 		if (securityClassID != null) {
-			return checkSecurityClass(Integer.parseInt(securityClassID), user, state);
+			return hasMasterfileRecordRights(user, recID, state) || checkSecurityClass(Integer.parseInt(securityClassID), user, state);
+		} else {
+			return true;
+		}
+	}
+
+	private static boolean hasMasterfileRights(User user, String featID, PageState state) throws IOException, SQLException {
+		if (user == null || featID == null || state == null)
+			return false;
+		int userRights = 0;
+		DBConnection conn = getFREDConnection(state);
+		ResultSet rs = conn.executeQuery("SELECT Masterfile_ID FROM Feature WHERE Feature_ID = " + featID);
+		if (rs.next()) {
+			rs = conn.executeQuery("SELECT User_Rights FROM Folder_View WHERE User_ID = " + user.getPersonId() + " AND Folder_ID = " + rs.getString(1));
+			if (rs.next())
+				userRights = rs.getInt(1);
+		}
+		return (userRights & 1) > 0;
+	}
+
+	private static boolean hasMasterfileRecordRights(User user, String recID, PageState state) throws IOException, SQLException {
+		if (user == null || recID == null || state == null)
+			return false;
+		DBConnection conn = getFREDConnection(state);
+		ResultSet rs = conn.executeQuery("SELECT Feature_ID FROM Record_All_View WHERE Record_ID = " + recID);
+		if (rs.next()) {
+			return hasMasterfileRights(user, rs.getString(1), state);
 		} else {
 			return false;
 		}
@@ -94,10 +115,7 @@ public class FREDUtils {
 		return sca.isAccessibleTo(user, conn);		
 	}
 
-	public static int getUserWorkingLocalityRights(
-		User user,
-		String featID,
-		PageState state)
+	public static int getUserWorkingLocalityRights(User user, String featID, PageState state)
 		throws IOException, SQLException {
 		int userRights = 0;
 		if (user != null) {

@@ -11,7 +11,7 @@
 	boolean authorChk = false, sCountChk = false, sCoordChk = false, commChk = true;
 
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	//if FeatureID given then get SampleID or transer to drillhole
 	if (request.getParameter("FeatID") != null) {
@@ -51,13 +51,12 @@
 				if (actionType.equals("Accept")) {
 					FRNumber frNum = new FRNumber(request.getParameter("MapSheet"), new Integer(request.getParameter("SerialNum")), request.getParameter("RecollNum"));
 					FolderUtils.approveLocality(sample.getAsString(Sample.FEATURE_ID), frNum, user, state);
-					//response.sendRedirect("admin_folder_detail.jsp?ID=" + foldID + "&PrintID=" + featID);
 				}
 				else if (actionType.equals("Reject")) {
 					FolderUtils.rejectLocality(sample.getAsString(Sample.FEATURE_ID), request.getParameter("RejComm"), user, state);
-					//response.sendRedirect("admin_folder_detail.jsp?ID=" + foldID);
 				}
 				sample = new Sample(sample.getSampleID(), user, state, true);
+				response.sendRedirect("admin_folder_detail.jsp?ID=" + sample.getAsString(Sample.MASTERFILE_ID));
 			}
 
 			if (request.getParameter("AuthorChk") != null && request.getParameter("AuthorChk").equals("true")) { authorChk = true; }

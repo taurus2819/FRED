@@ -4,12 +4,6 @@
 	User user = getUser(session);
 	PageState state = new PageState(request, response, getServletContext());
 	DBConnection connection = FREDUtils.getFREDConnection(state);
-	Statement statement = connection.statement;
-	Statement statement2 = connection.getExtraStatement();
-	Statement statement3 = connection.getExtraStatement();
-	ResultSet rs, rs2, rs3;
-	int userID = user.getPersonId(), userRights;
-	boolean sampPropFlag;
 
 	ExtranetTemplate et = getExtranetTemplate();
 	//et.setDisplayLoadingMessage(true);
@@ -50,45 +44,42 @@
 			//To Approve
 			out.println("<tr><th colspan='5'>Localities to Approve</th></tr>");
 			for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
-				Feature feature = new Feature(((Integer) i.next()).intValue(), user, state, true);
-				String featID = String.valueOf(feature.getFeatureID());
+				Feature feature = new Feature(((Integer) i.next()).intValue(), user, state);
+				int featID = feature.getFeatureID();
 				out.print("<tr><td><a href='detail.jsp?FeatID=" + featID + "'><img src='images/loc.gif' height='20' width='20' border='0' alt='View Locality' /></a></td><td class='heading'>" + feature.getAsString(Feature.SAMPLE_NAMES) + "</td><td>" + feature.getAsString(Feature.FEATURE_TYPE) + "</td><td>" + FREDUtils.noNulls(feature.getAsString(Feature.FEATURE_NAME)) + "</td><td>");
 				if (feature.get(Feature.LAST_CHANGE) != null) 
 					out.print(DateFormat.getDateInstance(DateFormat.LONG).format(feature.getAsDate(Feature.LAST_CHANGE)));
 				out.print("</td><td>");
-		//		if (folder.isAllowedEditLocalities()) 
-		//			out.print("<a href='data_entry.jsp?Type=" + feature.getAsString(Feature.FEATURE_TYPE) + "&FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a>");
-		//		out.print("</td><td>");
+				//if (folder.isAllowedEditLocalities()) 
+				//	out.print("<a href='data_entry.jsp?Type=" + feature.getAsString(Feature.FEATURE_TYPE) + "&FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a>");
+				//out.print("</td><td>");
+				out.print("<a href='print_front.jsp?FeatID=" + featID + (feature.getAsString(Feature.FEATURE_TYPE).equals("Outcrop") ? "" : "&FormType=Short") + "' target='print'><img src='images/print.gif' border='0' height='20' width='20' alt='Print Locality' /></a>");
+				out.print("</td><td>");
 				if (folder.isAllowedApproveLocalities())
 					out.print("<a href='detail.jsp?FeatID=" + featID + "'><img src='images/review.gif' width='20' height='20' border='0' alt='Review Localities' /></a>");
 				out.println("</td></tr>");
 			}
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 			
-/*			//Recently Approved
+			//Recently Approved
 			out.println("<tr><th colspan='5'>Localities Recently Approved</th></tr>");
-			rs3 = statement3.executeQuery("SELECT DISTINCT S.Feature_ID, S.Sample_Name FROM Sample_All_View S, Audit_Table A WHERE S.Audit_ID = A.Audit_ID AND S.Status = 'approved' AND S.Masterfile_ID = " + foldID + " AND A.Approved_Date >= (SYSDATE - 7) ORDER BY Sample_Name");
-			String featID = "";
-			while (rs3.next()) {
-				if (rs3.getString(1).equals(featID)) { continue; }
-				featID = rs3.getString(1);
-				rs = statement.executeQuery("SELECT S.Sample_ID, S.Sample_Name, S.Feature_Type, S.Feature_Name, A.Submitted_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = " + featID);
-				rs.next();
-				if (!rs.getString(3).equals("Outcrop")) { //drillhole so loop through individual sample names
-					drillSampName = "";
-					rs2 = statement2.executeQuery("SELECT DISTINCT Sample_Name FROM Sample_All_View WHERE Feature_ID = " + featID + " ORDER BY Sample_Name");
-					while (rs2.next()) { drillSampName = drillSampName + rs2.getString(1) + ", "; }
-					drillSampName = drillSampName.substring(0, drillSampName.length() - 2);
-					out.print("<tr><td><img src='images/loc.gif' height='20' width='20' /><img src='images/blank.gif' width='5' height='20' /></td><td class='heading'><a href='detail.jsp?FeatID=" + featID + "'>" + drillSampName + "</a></td><td class='heading'><a href='drillhole_detail.jsp?ID=" + featID + "'>" + FREDUtils.noNulls(rs.getString(4)) +"</a></td><td>");
-				} else {
-					out.print("<tr><td class='heading'><img src='images/loc.gif' height='20' width='20' /><img src='images/blank.gif' width='5' height='20' /></td><td class='heading'><a href='detail.jsp?ID=" + rs.getString(1) + "'>" + rs.getString(2) + "</a></td><td>" + FREDUtils.noNulls(rs.getString(4)) + "</td><td>");
-				}
-				if (rs.getString(5) != null) { 
-						out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(5)));
-				}
-				out.println("</td></tr>");
+			String query = "SELECT DISTINCT S.Feature_ID FROM Sample_All_View S, Audit_Table A WHERE S.Audit_ID = A.Audit_ID AND S.Status = 'approved' AND S.Masterfile_ID = ? AND A.Approved_Date >= (SYSDATE - 7)";
+			int[] types = { Types.NUMERIC };
+			Object[] data = { new Integer(folder.getFolderID()) };
+			ResultSet rs = connection.executeQuery(query, types, data);
+			connection.preservePreparedStatement();
+			while (rs.next()) {
+				Feature feature = new Feature(rs.getInt(1), user, state);
+				int featID = feature.getFeatureID();
+				out.print("<tr><td><a href='detail.jsp?FeatID=" + featID + "'><img src='images/loc.gif' height='20' width='20' border='0' alt='View Locality' /></a></td><td class='heading'>" + feature.getAsString(Feature.SAMPLE_NAMES) + "</td><td>" + feature.getAsString(Feature.FEATURE_TYPE) + "</td><td>" + FREDUtils.noNulls(feature.getAsString(Feature.FEATURE_NAME)) + "</td><td>");
+				if (feature.get(Feature.LAST_CHANGE) != null) 
+					out.print(DateFormat.getDateInstance(DateFormat.LONG).format(feature.getAsDate(Feature.LAST_CHANGE)));
+				out.print("</td><td>");
+				out.print("<a href='print_front.jsp?FeatID=" + featID + (feature.getAsString(Feature.FEATURE_TYPE).equals("Outcrop") ? "" : "&FormType=Short") + "' target='print'><img src='images/print.gif' border='0' height='20' width='20' alt='Print Locality' /></a>");
+				out.print("</td><td></td></tr>");
 			}
-*/			out.println("</table></p>");
+			connection.releaseStatement();
+			out.println("</table></p>");
 		}
 		else { //no record found
 			out.println("No folder found");
@@ -97,7 +88,4 @@
 
 	out.println("</td></tr></table>");
 	drawBottom(out, et);
-
-	statement2.close();
-	statement3.close();
 %>
