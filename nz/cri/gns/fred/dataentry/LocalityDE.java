@@ -35,7 +35,6 @@ public abstract class LocalityDE implements DataEntryForm {
 	protected Feature feature;
 	protected Sample sample;
 	protected String featureType;
-	private Integer secClassID;
 	protected String[] fields = new String[120];
 	protected String[] tempFields = new String[120];
 	private String origSystemID, countryCode, recoll;
@@ -439,7 +438,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			throw new DataInputException("Coordinate", "Invalid value");
 		}
 		if (!origSystem.coordinateAcceptable(origCoord))
-			throw new DataInputException("Coordinate", "Coordinate not acceptable for given datum");
+			throw new DataInputException("Coordinate", "Coordinate not valid for given datum");
 	}
 
 	public int save() throws SQLException, IOException, InvalidCredentialsException {
@@ -449,12 +448,9 @@ public abstract class LocalityDE implements DataEntryForm {
 			String siteID = null;
 			if (fields[GRID_REF] != null)
 				siteID = String.valueOf(getSite().getId());
-			if (secClassID == null)
-				secClassID = new Integer(4);
 			if (feature == null) {
 				if (!folder.isAllowedCreateLocalities())
 					throw new InvalidCredentialsException();
-				//create new AUDIT and FEATURE records
 				QueryDescriptor qd = new QueryDescriptor("audit_table");
 				qd.addQueryColumn("status", Types.VARCHAR, "working");
 				qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
@@ -462,7 +458,6 @@ public abstract class LocalityDE implements DataEntryForm {
 				qd.addQueryColumn("working_comments", Types.VARCHAR, FREDUtils.noNulls(recoll) + FREDUtils.noNulls(fields[WORKING_COMMENTS]));
 				qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(folder.getFolderID()));
 				String auditID = DBUtils.doInsertUsingSequence(qd, "audit_id", "audit_seq", conn, true);
-
 				qd = new QueryDescriptor("feature");
 				if (siteID != null) 
 					qd.addQueryColumn("site_id", Types.NUMERIC, new Integer(siteID));
@@ -479,7 +474,6 @@ public abstract class LocalityDE implements DataEntryForm {
 					throw new InvalidCredentialsException();
 				if (!folder.isAllowedEditLocalities())
 					throw new InvalidCredentialsException();
-				//Update AUDIT
 				QueryDescriptor qd = new QueryDescriptor("audit_table");
 				qd.addQueryColumn("modified_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
 				qd.addQueryColumn("modified_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
@@ -496,31 +490,8 @@ public abstract class LocalityDE implements DataEntryForm {
 					qd.addQueryColumn("reg_area_id", Types.NUMERIC, new Integer(fields[REGISTRATION_AREA]));
 				qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getFeatureID()));
 				DBUtils.doUpdate(qd, "feature_id=?", conn);
-				
-	/*			rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
-				rs.next();
-				String auditID = rs.getString(1);
-				conn.executeUpdate(
-					"UPDATE Audit_Table SET Modified_By_ID = "
-						+ user.getPersonId()
-						+ ", Modified_Date = SYSDATE, Working_Comments = "
-						+ JspUtils.sqlEscape(FREDUtils.noNulls(recoll) + FREDUtils.noNulls(fields[WORKING_COMMENTS]))
-						+ " WHERE Audit_ID = "
-						+ auditID);
-				conn.executeUpdate(
-					"UPDATE Feature SET Site_ID = "
-						+ JspUtils.sqlEscape(siteID)
-						+ ", Locality = "
-						+ JspUtils.sqlEscape(fields[LOCALITY_DESC])
-						+ ", Feature_Name = "
-						+ JspUtils.sqlEscape(fields[FEATURE_NAME])
-						+ ", Reg_Area_ID = "
-						+ JspUtils.sqlEscape(fields[REGISTRATION_AREA])
-						+ " WHERE Feature_ID = "
-						+ feature.getFeatureID());  */
 				feature = new Feature(feature.getFeatureID(), user, state, true);
 			}
-			//conn.releaseStatement();
 		}
 		savedFlag = true;
 		return feature.getFeatureID();
@@ -534,22 +505,20 @@ public abstract class LocalityDE implements DataEntryForm {
 		save();
 		//change status, check MF & add saved record to folder
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		ResultSet rs = conn.executeQuery("SELECT Code FROM Lookup WHERE FieldName = 'RegArea' AND Lookup_ID = " + fields[REGISTRATION_AREA]);
-		rs.next();
-		String regCode = rs.getString(1);
-		rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
-		rs.next();
-		String auditID = rs.getString(1);
-		SiteRecord sr = getSite();
-		rs = conn.executeQuery("SELECT Which_Masterfile(" + JspUtils.sqlEscape(regCode)	+ ", " + sr.getLatAsDouble() + ", " + sr.getLonAsDouble() + ") FROM DUAL");
-		rs.next();
-		String mfID = rs.getString(1);
-		conn.executeUpdate("UPDATE Feature SET Masterfile_ID = " + mfID + " WHERE Feature_ID = " + feature.getFeatureID());
-		conn.executeUpdate("UPDATE Audit_Table SET Status = 'waiting', Submitted_By_ID = "
-				+ user.getPersonId()
-				+ ", Submitted_Date = SYSDATE WHERE Audit_ID = "
-				+ auditID);
-		conn.releaseStatement();
+
+		QueryDescriptor qd = new QueryDescriptor("audit_table");
+		qd.addQueryColumn("status", Types.VARCHAR, "waiting");
+		qd.addQueryColumn("submitted_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
+		qd.addQueryColumn("submitted_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
+		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getAsInt(Feature.AUDIT_ID)));
+		DBUtils.doUpdate(qd, "audit_id=?", conn);
+
+		int mfID = FREDUtils.getMasterfile(Integer.parseInt(fields[REGISTRATION_AREA]), getSite().getLatLong());
+		qd = new QueryDescriptor("feature");
+		qd.addQueryColumn("masterfile_id", Types.NUMERIC, new Integer(mfID));
+		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getFeatureID()));
+		DBUtils.doUpdate(qd, "feature_id=?", conn);
+
 		feature = new Feature(feature.getFeatureID(), user, state, true);
 		return feature.getFeatureID();
 	}
