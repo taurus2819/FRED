@@ -160,10 +160,6 @@ public class AdoptionRecordDE extends RecordDE {
 		super.makeEndBitHTML(out);
 	}
 
-	public String getAdoDate() {
-		return adoDate.getDateString();
-	}
-
 	public int save()
 		throws InvalidCredentialsException, SQLException, IOException {
 		if (!savedFlag) {

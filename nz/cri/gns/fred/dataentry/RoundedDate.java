@@ -28,9 +28,5 @@ public class RoundedDate {
 	public java.sql.Date getDate() {
 		return date;
 	}
-	
-	public String getDateString() {
-		return date.getDate() + "/" + date.getMonth() + "/" + (date.getYear() + 1900);
-	}
 
 }
