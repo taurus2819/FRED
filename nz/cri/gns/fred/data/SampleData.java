@@ -108,7 +108,7 @@ public class SampleData {
 			values[Sample.DATUM_TYPE] = rs.getString(47);
 			values[Sample.DATUM_ELEVATION] = ((rs.getString(48) != null) ? new Double(rs.getDouble(48))	: null);
 			values[Sample.START_DEPTH] = ((rs.getString(49) != null) ? new Double(rs.getDouble(49))	: null);
-			values[Sample.FINISH_DATE] = ((rs.getString(50) != null) ? new Double(rs.getDouble(50))	: null);
+			values[Sample.FINISH_DEPTH] = ((rs.getString(50) != null) ? new Double(rs.getDouble(50)) : null);
 			rs.close();
 			query =
 				"SELECT Record_ID, Record_Type, Status, Last_Change FROM Record_All_View WHERE Sample_ID = ? ORDER BY Record_Type, Record_Name";
