@@ -33,7 +33,7 @@
 					FolderUtils.revokeLocality(request.getParameter("FeatID"), user, state);
 				}
 			} catch (Exception e) {
-				err = "&ErrMsg=" + URLEncoder.encode("An Error has occured: " + e, "UTF-8");
+				err = "&ErrMsg=" + URLEncoder.encode("An Error has occured: " + e.getMessage(), "UTF-8");
 			}
 			response.sendRedirect("folder_detail.jsp?ID=" + folder.getFolderID() + err);
 			return;

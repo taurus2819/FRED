@@ -108,11 +108,38 @@ public class OutcropLocalityDE extends LocalityDE {
 		return feature.getFeatureID();
 	}
 	
-	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
-		super.submit();
-		sampleDE.setFeatureID(feature.getFeatureID());
-		sampleDE.setAuditID(feature.getAsInt(Feature.AUDIT_ID));
-		sampleDE.submit();
+	public int submit() throws SQLException, IOException, DataInputException, InvalidCredentialsException {
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		conn.getConnection().setAutoCommit(false);
+		try {
+			super.submit();
+			sampleDE.setFeatureID(feature.getFeatureID());
+			sampleDE.setAuditID(feature.getAsInt(Feature.AUDIT_ID));
+			sampleDE.submit();
+			conn.getConnection().commit();
+			conn.getConnection().setAutoCommit(true);
+			conn.releaseStatement();
+		} catch (SQLException e) {
+			conn.getConnection().rollback();
+			conn.getConnection().setAutoCommit(true);
+			conn.releaseStatement();
+			throw new SQLException(e.getMessage());
+		} catch (IOException e) {
+			conn.getConnection().rollback();
+			conn.getConnection().setAutoCommit(true);
+			conn.releaseStatement();
+			throw new IOException(e.getMessage());
+		} catch (InvalidCredentialsException e) {
+			conn.getConnection().rollback();
+			conn.getConnection().setAutoCommit(true);
+			conn.releaseStatement();
+			throw new InvalidCredentialsException();
+		} catch (DataInputException e) {
+			conn.getConnection().rollback();
+			conn.getConnection().setAutoCommit(true);
+			conn.releaseStatement();
+			throw new DataInputException(e.getField(), e.getMessage());
+		}
 		return feature.getFeatureID();	
 	}
 	

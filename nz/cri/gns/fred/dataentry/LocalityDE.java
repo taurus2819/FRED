@@ -524,7 +524,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		if ((feature != null && feature.getAsString(Feature.STATUS).equals("waiting")) || !folder.isAllowedSubmitLocalities())
 			throw new InvalidCredentialsException();
 		if (featureType == null || fields[GRID_REF] == null || fields[REGISTRATION_AREA] == null)
-			throw new DataInputException("Mandatory Fields", "Not all completed");
+			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
 		save();
 		//change status, check MF & add saved record to folder
 		DBConnection conn = FREDUtils.getFREDConnection(state);
