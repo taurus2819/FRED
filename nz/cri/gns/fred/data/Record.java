@@ -142,6 +142,16 @@ public class Record {
 		return getAsInt(RECORD_ID);
 	}
 	
+	public String getRecordName() {
+		String person = ((values[PERSON] != null) ? ((KeyValueObject) getAsVector(PERSON).firstElement()).getValue() : "");
+		String date = ((values[RECORD_DATE] != null) ? FREDUtils.formatDateForOutput(getAsDate(RECORD_DATE), getAsString(DATE_ROUNDING)) : "");
+		return ((person.length() + date.length() > 0) ? person + ((person.length() > 0 && date.length() > 0) ? ", " : "") + date : "unnamed record");
+	}
+	
+	public String getRecordType() {
+		return getAsString(RECORD_TYPE);
+	}
+	
 	/**
 	 * Attempts to return the given field as an int.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an int.
@@ -282,9 +292,7 @@ public class Record {
 	}
 
 	public String toString() {
-		String person = ((values[PERSON] != null) ? ((KeyValueObject) getAsVector(PERSON).firstElement()).getValue() : "");
-		String date = ((values[RECORD_DATE] != null) ? FREDUtils.formatDateForOutput(getAsDate(RECORD_DATE), getAsString(DATE_ROUNDING)) : "");
-		return ((person.length() + date.length() > 0) ? person + ((person.length() > 0 && date.length() > 0) ? ", " : "") + date : "");
+		return getRecordName();
 	}
 	
 }

@@ -51,36 +51,51 @@ public abstract class RecordDE implements DataEntryForm {
 	}
 
 	public RecordDE(int recID, String recordType, User user, PageState state) throws InvalidCredentialsException, DataInputException, SQLException, IOException {
-		try {
-			this.user = user;
-			this.state = state;
-			this.recordType = recordType;
-			if (recordType.equals(Record.ADOPTION_RECORD)) {
-				this.record = (AdoptionRecord) AdoptionRecord.getData(recID, user, state, true);
-			} else if (recordType.equals(Record.PALEONTOLOGY_RECORD)) {
-				this.record = (PaleontologyRecord) PaleontologyRecord.getData(recID, user, state, true);
+		this.user = user;
+		this.state = state;
+		this.recordType = recordType;
+		if (recordType.equals(Record.ADOPTION_RECORD)) {
+			this.record = (AdoptionRecord) AdoptionRecord.getData(recID, user, state, true);
+		} else if (recordType.equals(Record.PALEONTOLOGY_RECORD)) {
+			this.record = (PaleontologyRecord) PaleontologyRecord.getData(recID, user, state, true);
+		} else {
+			throw new DataInputException("Record Type", "Invalid Value");
+		}
+		this.sample = new Sample(record.getAsInt(Record.SAMPLE_ID), user, state);
+		if (record.getAsString(Record.STATUS).equals(Audit.STATUS_APPROVED)) {
+			if (FREDUtils.hasMasterfileRecordRights(user, String.valueOf(recID), state)) {
+				folder = new Folder(sample.getAsInt(Sample.MASTERFILE_ID), user, state);
 			} else {
-				throw new DataInputException("Record Type", "Invalid Value");
+				throw new DataInputException("Record", "Record not editable");
 			}
-			this.sample = new Sample(record.getAsInt(Record.SAMPLE_ID), user, state);
+		} else {
+			folder = new Folder(record.getAsInt(Record.WORKING_FOLDER_ID), user, state);
+		}
+	}
+
+	public void copyFrom(int recordID) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
+		Record copyRecord = Record.getData(recordID, user, state);
+		if (copyRecord.getRecordType().equals(Record.ADOPTION_RECORD)) {
+			copyRecord = (AdoptionRecord) AdoptionRecord.getData(recordID, user, state);
+		} else if (copyRecord.getRecordType().equals(Record.PALEONTOLOGY_RECORD)) {
+			copyRecord = (PaleontologyRecord) PaleontologyRecord.getData(recordID, user, state);
+		} else {
+			throw new DataInputException("Record Type", "Invalid Value");
+		}		
+		if (!recordType.equals(copyRecord.getRecordType()))
+			throw new DataInputException("Record", "Incompatible Record Types");
+		getFromDatabase(copyRecord);		
+	}
+
+	protected void getFromDatabase(Record record) throws IllegalArgumentException, DataInputException {
+		try {
 			setField(WORKING_COMMENTS, record.getAsString(Record.WORKING_COMMENTS));
 			try {
 				setField(SECURITY_TYPE, String.valueOf(FREDUtils.getSecurityType(record.getAsInt(Record.SECURITY_CLASS_ID), user, state)));
 			} catch (Exception e) {
 				setField(SECURITY_TYPE, "21");
 			}
-			if (record.getAsString(Record.STATUS).equals(Audit.STATUS_APPROVED)) {
-				if (FREDUtils.hasMasterfileRecordRights(user, String.valueOf(recID), state)) {
-					folder = new Folder(sample.getAsInt(Sample.MASTERFILE_ID), user, state);
-				} else {
-					throw new DataInputException("Record", "Record not editable");
-				}
-			} else {
-				folder = new Folder(record.getAsInt(Record.WORKING_FOLDER_ID), user, state);
-			}
-		} catch (TaxonomicListException e) {
-			throw new DataInputException("Taxonomic List",  "Data Error");
-		}
+		} catch (TaxonomicListException e) {}	
 	}
 
 	public int getFieldCount() {
@@ -146,7 +161,6 @@ public abstract class RecordDE implements DataEntryForm {
 	}
 
 	public void makeNavPanelHTML(Writer out) throws IOException {
-		out.write("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
 		if (recordType.equals(Record.ADOPTION_RECORD)) {
 			out.write("<tr><td colspan='2' align='center'><img src='images/ado.gif' height='20' width='20' /></td></tr>");
 			out.write("<tr><td colspan='2' align='center' class='heading'>Adoption Record</td></tr>\n");
@@ -155,16 +169,14 @@ public abstract class RecordDE implements DataEntryForm {
 			out.write("<tr><td colspan='2' align='center' class='heading'>Paleontology Record</td></tr>\n");
 		}
 		out.write("<tr><td>&nbsp;</td></tr>");
-		//out.write("<tr><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
-		//if (record != null) out.write("&RecID=" + record.getRecordID());
-		//out.write("&SampID=" + sample.getSampleID() + "&RecType=SMP'><img src='images/load.gif' height='20' width='20' border='0' alt='Copy From' /></a>&nbsp;&nbsp;</td><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
-		//if (record != null) out.write("&RecID=" + record.getRecordID());
-		//out.write("&SampID=" + sample.getSampleID() + "&RecType=SMP' class='heading'>Copy From</a></td></tr>");
+		out.write("<tr><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
+		if (record != null) out.write("&RecID=" + record.getRecordID());
+		out.write("&RecType=" + recordType + "'><img src='images/load.gif' height='20' width='20' border='0' alt='Copy From' /></a>&nbsp;&nbsp;</td><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
+		if (record != null) out.write("&RecID=" + record.getRecordID());
+		out.write("&RecType=" + recordType + "' class='heading'>Copy From</a></td></tr>");
 		out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
 		if (folder.isAllowedSubmitLocalities())
 			out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Submit\";form1.submit();'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database' /></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick='form1.SaveType.value=\"Submit\";form1.submit();' class='boldlink'>Submit</a></td></tr>\n");
-		out.write("<tr><td><a href='javascript:history.back();'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a>&nbsp;&nbsp;</td><td><a href='javascript:history.back();' class='heading'>Quit</a></td></tr>");
-		out.write("</table>");
 	}
 
 	public void makeDataEntryHTML(Writer out) throws SQLException, IOException {

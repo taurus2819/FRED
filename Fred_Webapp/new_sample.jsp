@@ -24,21 +24,21 @@
 			if (!feature.getAsString(Feature.FEATURE_TYPE).equals(Feature.OUTCROP_LOCALITY)) {
 			
 				if (request.getParameter("ActionType") != null) {
-					//try {
+					try {
 						if (sample != null) {
 							sample.editSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"));
 						} else {
 							feature.addNewSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"), foldID);
 						}
-					//} catch (Exception e) {}
+					} catch (Exception e) {}
 					if (recType != null) {
 						if (recID != null) {
-							response.sendRedirect("data_entry.jsp?Type=" + recType + "&FoldID=" + foldID + "&RecID=" + recID + "&Redirect=folder_feature_detail.jsp%3FFoldID%3D" + foldID + "%26FeatID%3D" + featID);
+							response.sendRedirect("data_entry.jsp?Type=" + recType + "&FoldID=" + foldID + "&RecID=" + recID);
 						} else {
-							response.sendRedirect("data_entry.jsp?Type=" + recType + "&FoldID=" + foldID + "&SampID=" + sampID + "&Redirect=folder_feature_detail.jsp%3FFoldID%3D" + foldID + "%26FeatID%3D" + featID);
+							response.sendRedirect("data_entry.jsp?Type=" + recType + "&FoldID=" + foldID + "&SampID=" + sampID);
 						}
 					} else if (sampID != null) {
-						response.sendRedirect("data_entry.jsp?Type=Sample&FoldID=" + foldID + "&SampID=" + sampID + "&Redirect=folder_feature_detail.jsp%3FFoldID%3D" + foldID + "%26FeatID%3D" + featID);
+						response.sendRedirect("data_entry.jsp?Type=Sample&FoldID=" + foldID + "&SampID=" + sampID);
 					} else {
 						response.sendRedirect("folder_feature_detail.jsp?FeatID=" + featID + "&FoldID=" + foldID);
 					}

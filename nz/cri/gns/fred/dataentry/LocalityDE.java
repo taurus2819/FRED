@@ -74,7 +74,18 @@ public abstract class LocalityDE implements DataEntryForm {
 		}
 		int sampleID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
 		sample = new Sample(sampleID, user, state, true);
-		
+	}
+
+	public void copyFrom(int featureID) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
+		Feature copyFeature = new Feature(featureID, user, state);
+		if (!featureType.equals(copyFeature.getFeatureType()))
+			throw new DataInputException("Locality", "Incompatible Locality Types");
+		int copySampleID = ((Integer) copyFeature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
+		Sample copySample = new Sample(copySampleID, user, state);
+		getFromDatabase(copySample);
+	}
+
+	protected void getFromDatabase(Sample sample) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
 		//set fields
 		setField(FEATURE_NAME, sample.getAsString(Sample.FEATURE_NAME));
 		setField(REGISTRATION_AREA, sample.getAsString(Sample.REG_AREA_ID));
@@ -113,12 +124,6 @@ public abstract class LocalityDE implements DataEntryForm {
 		setField(METHOD, sample.getAsString(Sample.METHOD_ID));
 		setField(ACCURACY, sample.getAsString(Sample.ACCURACY));
 		setField(LOCALITY_DESC, sample.getAsString(Sample.LOCALITY));
-/*		try {
-			setField(SECURITY_TYPE, String.valueOf(FREDUtils.getSecurityType(sample.getAsInt(Sample.FEATURE_SECURITY_CLASS_ID), user, state)));
-		} catch (Exception e) {
-			setField(SECURITY_TYPE, "21");
-		}
-*/		savedFlag = true;
 	}
 
 	public Integer getFeatureID() {
@@ -221,33 +226,19 @@ public abstract class LocalityDE implements DataEntryForm {
 	}
 
 	public void makeNavPanelHTML(Writer out) throws IOException {
-		out.write(
-			"<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>\n");
-		out.write(
-			"<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>\n");
+		out.write("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>\n");
 		out.write("<tr><td colspan='2' align='center' class='heading'>" + featureType + " Locality</td></tr>\n");
 		out.write("<tr><td>&nbsp;</td></tr>\n");
-		out.write(
-			"<tr><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
+		out.write("<tr><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
 		if (feature != null)
 			out.write("&FeatID=" + feature.getFeatureID());
-		out.write(
-			"&RecType="
-				+ featureType
-				+ "'><img src='images/load.gif' height='20' width='20' border='0' alt='Copy From' /></a>&nbsp;&nbsp;</td><td><a href='load_record.jsp?FoldID="
-				+ folder.getFolderID());
+		out.write("&RecType=" + featureType	+ "'><img src='images/load.gif' height='20' width='20' border='0' alt='Copy From' /></a>&nbsp;&nbsp;</td><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
 		if (feature != null)
 			out.write("&FeatID=" + feature.getFeatureID());
-		out.write(
-			"&RecType="
-				+ featureType
-				+ "' class='boldlink'>Copy From</a></td></tr>\n");
-		out.write(
-			"<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
+		out.write("&RecType=" + featureType + "' class='boldlink'>Copy From</a></td></tr>\n");
+		out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
 		if (folder.isAllowedSubmitLocalities())
 			out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Submit\";form1.submit();'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database' /></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick='form1.SaveType.value=\"Submit\";form1.submit();' class='boldlink'>Submit</a></td></tr>\n");
-		out.write("<tr><td><a href='javascript:history.back();'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a>&nbsp;&nbsp;</td><td><a href='javascript:history.back();' class='heading'>Quit</a></td></tr>");
-		out.write("</table>\n");
 	}
 
 	public void makeDataEntryHTML(Writer out)

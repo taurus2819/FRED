@@ -9,7 +9,7 @@
 
 	if (request.getParameter("ID") != null) {
 		Folder folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state);
-		String redirect = URLEncoder.encode("folder_detail.jsp?ID=" + folder.getFolderID(), "UTF-8");
+		session.setAttribute("dataEntryRedirect", "folder_detail.jsp?ID=" + folder.getFolderID());
 						
 		if (request.getParameter("ActionType") != null) { //do something
 			String actionType = request.getParameter("ActionType");
@@ -53,9 +53,9 @@
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 			out.println("<tr><td><a href='folder_list.jsp' title='Back to Folders'><img src='images/back_arrow.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_list.jsp' class='heading'>Back to Folders</a></td></tr>");
 			if (folder.isAllowedCreateLocalities()) {
-				out.println("<tr><td><a href='data_entry.jsp?Type=Outcrop&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Outcrop&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "' class='heading'>New Outcrop Locality</a></td></tr>");
-				out.println("<tr><td><a href='data_entry.jsp?Type=Drillhole&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Drillhole&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "' class='heading'>New Drillhole Locality</a></td></tr>");
-				out.println("<tr><td><a href='data_entry.jsp?Type=Vertical Section&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Vertical Section&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "' class='heading'>New Vertical Section Locality</a></td></tr>");
+				out.println("<tr><td><a href='data_entry.jsp?Type=Outcrop&FoldID=" + folder.getFolderID() +"'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Outcrop&FoldID=" + folder.getFolderID() + "' class='heading'>New Outcrop Locality</a></td></tr>");
+				out.println("<tr><td><a href='data_entry.jsp?Type=Drillhole&FoldID=" + folder.getFolderID() + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Drillhole&FoldID=" + folder.getFolderID() + "' class='heading'>New Drillhole Locality</a></td></tr>");
+				out.println("<tr><td><a href='data_entry.jsp?Type=Vertical Section&FoldID=" + folder.getFolderID() + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Vertical Section&FoldID=" + folder.getFolderID() + "' class='heading'>New Vertical Section Locality</a></td></tr>");
 				out.println("<tr><td><a href='simple_query.jsp?FoldID=" + folder.getFolderID() + "'><img src='images/search.gif' width='20' height='20' border='0' alt='Search for a Locality' /></a>&nbsp;&nbsp;</td><td><a href='simple_query.jsp?FoldID=" + folder.getFolderID() + "' class='heading'>Search</a></td></tr>");
 			}
 			out.println("</table>");
@@ -109,7 +109,7 @@
 				}
 				out.print("<td>");
 				if ((locStatus.equals(Audit.STATUS_WORKING) || locStatus.equals(Audit.STATUS_REJECTED)) && folder.isAllowedEditLocalities())
-					out.print("<a href='data_entry.jsp?Type=" + featType + "&FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
+					out.print("<a href='data_entry.jsp?Type=" + featType + "&FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				out.print("</td><td>");
 //				if (folder.isAllowedCreateLocalities())
 //					out.print("<a href='#' onClick='prmpt=prompt(\"Please enter the new name\", \"New " + featType + "\");if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value=\"CopyFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}'><img src='images/copy.gif' border='0' height='20' width='20' alt='Copy Locality' /></a><img src='images/blank.gif' height='20' width='2' />");

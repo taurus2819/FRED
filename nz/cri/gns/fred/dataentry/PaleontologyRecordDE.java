@@ -43,7 +43,13 @@ public class PaleontologyRecordDE extends RecordDE {
 
 	public PaleontologyRecordDE(int recID, User user, PageState state) throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
 		super(recID, Record.PALEONTOLOGY_RECORD, user, state);
+		getFromDatabase(record);
+		savedFlag = true;
+	}
+
+	protected void getFromDatabase(Record record) throws IllegalArgumentException, DataInputException {
 		try {
+			super.getFromDatabase(record);
 			setField(IDENTIFICATION_DATE, DataEntryUtils.reverseParseDate(record.getAsDate(Record.IDENTIFICATION_DATE),	record.getAsString(Record.IDENTIFICATION_DATE_ROUNDING)));
 			if (record.get(Record.IDENTIFIER) != null) {
 				StringBuffer identName = new StringBuffer();
@@ -76,7 +82,7 @@ public class PaleontologyRecordDE extends RecordDE {
 				}
 				setField(TAXA_LIST, taxaList.toString());
 			}
-		} catch (TaxonomicListException e) {}
+		} catch (TaxonomicListException e) {}		
 	}
 
 	protected void parseField(int field, String value)

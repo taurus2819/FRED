@@ -23,9 +23,19 @@ public class OutcropLocalityDE extends LocalityDE {
 	
 	public OutcropLocalityDE(int featureID, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException  {
 		super(featureID, user, state);
-		if (!featureType.equals(Feature.OUTCROP_LOCALITY)) throw new DataInputException("Feature Type", "Invalid");
+		if (!featureType.equals(Feature.OUTCROP_LOCALITY))
+			throw new DataInputException("Feature Type", "Invalid");
+		getFromDatabase(sample);
+		savedFlag = true;
 		sampleDE = new SampleDE(sample.getSampleID(), user, state);
 		sampleDE.setOutcropSamp(true);
+	}
+
+	public void copyFrom(int featureID) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
+		super.copyFrom(featureID);
+		Feature copyFeature = new Feature(featureID, user, state);
+		int copySampleID = ((Integer) copyFeature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
+		sampleDE.copyFrom(copySampleID);
 	}
 
 	public void setField(int field, String value) throws DataInputException {

@@ -26,10 +26,17 @@ public class VertSectLocalityDE extends LocalityDE {
 		super(user, folderID, Feature.VERTICAL_SECTION_LOCALITY, state);
 	}
 
-	public VertSectLocalityDE(int id, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException {
-		super(id, user, state);
+	public VertSectLocalityDE(int featureID, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException {
+		super(featureID, user, state);
 		if (!featureType.equals(Feature.VERTICAL_SECTION_LOCALITY))
 			throw new DataInputException("Feature Type", "Invalid");
+		getFromDatabase(sample);
+		savedFlag = true;
+	}
+
+	protected void getFromDatabase(Sample sample) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
+		super.getFromDatabase(sample);
+		//set fields
 		setField(SECTION_COLLECTOR, sample.getAsString(Sample.PERSON));
 		setField(START_DATE, DataEntryUtils.reverseParseDate(sample.getAsDate(Sample.START_DATE), sample.getAsString(Sample.START_DATE_ROUNDING)));
 		setField(COMPLETION_DATE, DataEntryUtils.reverseParseDate(sample.getAsDate(Sample.FINISH_DATE), sample.getAsString(Sample.FINISH_DATE_ROUNDING)));
@@ -37,9 +44,8 @@ public class VertSectLocalityDE extends LocalityDE {
 		setField(DATUM_ELEVATION, sample.getAsString(Sample.DATUM_ELEVATION));
 		setField(TOP_HORIZON, sample.getAsString(Sample.START_DEPTH));
 		setField(BASE_HORIZON, sample.getAsString(Sample.FINISH_DEPTH));
-		savedFlag = true;
 	}
-
+	
 	protected void parseField(int field, String value)
 		throws DataInputException {
 		super.parseField(field, value);

@@ -25,20 +25,23 @@ public class AdoptionRecordDE extends RecordDE {
 	private RoundedDate adoDate;
 	private Vector adoptors;
 
-	public AdoptionRecordDE(User user, int sampleID, int folderID, PageState state)
-		throws SQLException, IOException, DataInputException {
+	public AdoptionRecordDE(User user, int sampleID, int folderID, PageState state) throws SQLException, IOException, DataInputException {
 		super(user, sampleID, folderID, Record.ADOPTION_RECORD, state);
 	}
 
-	public AdoptionRecordDE(User user, int folderID, PageState state)
-		throws DataInputException, SQLException, IOException {
+	public AdoptionRecordDE(User user, int folderID, PageState state) throws DataInputException, SQLException, IOException {
 		super(user, folderID, Record.ADOPTION_RECORD, state);
 	}
 
-	public AdoptionRecordDE(int recID, User user, PageState state)
-		throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
+	public AdoptionRecordDE(int recID, User user, PageState state) throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
 		super(recID, Record.ADOPTION_RECORD, user, state);
+		getFromDatabase(record);
+		savedFlag = true;
+	}
+
+	protected void getFromDatabase(Record record) throws IllegalArgumentException, DataInputException {
 		try {
+			super.getFromDatabase(record);
 			setField(ADOPTION_DATE,	DataEntryUtils.reverseParseDate(record.getAsDate(Record.ADOPTION_DATE),	record.getAsString(Record.ADOPTION_DATE_ROUNDING)));
 			if (record.get(Record.ADOPTOR) != null) {
 				StringBuffer adoptName = new StringBuffer();
@@ -53,7 +56,7 @@ public class AdoptionRecordDE extends RecordDE {
 			setField(ADO_AGE_STOP, record.getAsString(Record.ADOPTED_STAGE_UPPER_ID));
 			setField(ADO_STOP_MOD, record.getAsString(Record.ADOPTED_STAGE_UPPER_MOD));
 			setField(ADO_COMMENTS, record.getAsString(Record.COMMENTS));
-		} catch (TaxonomicListException e) {}
+		} catch (TaxonomicListException e) {}		
 	}
 
 	protected void parseField(int field, String value)

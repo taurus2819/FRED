@@ -45,17 +45,24 @@ public class LocalityTest extends TestCase {
 	public LocalityTest(String arg0) throws NotBoundException, IOException, SQLException {
 		super(arg0);
 		this.state = new TestingPageState();
+		//this.state.setInstance("gns");
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		try {
-			this.user = new User("test", "test", ipConn);
-			this.user2 = new User("pseudo_ben", "santor32", ipConn);
+			//this.user = new User("test", "test", ipConn);
+			this.user = new User("ben", "St.Bathans", ipConn);
 		} catch (Exception e) {}
 	}
 
+	public void testCopy() throws IOException, SQLException, DataInputException, InvalidCredentialsException {
+		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm(Feature.DRILLHOLE_LOCALITY, user, 12, state);
+		System.out.println(form.getField(DataEntryForm.FEATURE_NAME));
+		System.out.println(form.getField(DataEntryForm.SPUD_DATE));
+		form.copyFrom(661);
+		System.out.println(form.getField(DataEntryForm.FEATURE_NAME));
+		System.out.println(form.getField(DataEntryForm.SPUD_DATE));
+	}
+
 	public void _testNewSave() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
-		TestingPageState state = new TestingPageState();
-		DBConnection ipConn = FREDUtils.getIPConnection(state);
-		User user = new User("pseudo_ben", "santor32", ipConn);
 		DataEntryForm loc2 = DataEntryFormFactory.getLocalityDataEntryForm(Feature.OUTCROP_LOCALITY, user, 221, state);
 		loc2.setTempField(DataEntryForm.COLLECTORS, "Morrison, Ben");
 		System.out.println("Collectors (after data entry): " + loc2.getField(DataEntryForm.COLLECTORS) + ":" + loc2.getTempField(DataEntryForm.COLLECTORS));

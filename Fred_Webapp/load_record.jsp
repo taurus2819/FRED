@@ -1,15 +1,11 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
+		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
 %><%
 	PageState state = new PageState(request, response, getServletContext());
-	DBConnection connection = FREDUtils.getFREDConnection(state);
-	Statement statement = connection.statement;
-	ResultSet rs;
 	User user = (User)getUser(session);
-	String foldID, recID, featID, recType, returnURL = null;
-	int userID = user.getPersonId(), userRights;
 
 	ExtranetTemplate et = getExtranetTemplate();
+	et.setDisplayLoadingMessage(true);
 
 	drawTop(out, et, request, response);
 
@@ -22,61 +18,69 @@
 	out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 	out.println("<tr><td>");
 
-	if (request.getParameter("FoldID") != null && ((request.getParameter("SampID") != null && request.getParameter("RecID") != null) || request.getParameter("FeatID") != null) && request.getParameter("RecType") != null) {
-		foldID = request.getParameter("FoldID");
-		recID = request.getParameter("RecID");
-		featID = request.getParameter("FeatID");
-		recType = request.getParameter("RecType");
-
-		if (recType.equals(Record.ADOPTION_RECORD)) {
-			returnURL = "ado_data_entry.jsp?";
-		}
-		else if (recType.equals(Record.PALEONTOLOGY_RECORD)) {
-			returnURL = "pal_data_entry.jsp?";
-		}
-		else if (recType.equals(Feature.OUTCROP_LOCALITY) || recType.equals(Feature.DRILLHOLE_LOCALITY) || recType.equals(Feature.VERTICAL_SECTION_LOCALITY)) {
-			returnURL = "feat_data_entry.jsp?Type=" + recType + "&";
-		}
-
-		//get user rights
-		rs = statement.executeQuery("SELECT User_Rights FROM Folder_View WHERE Folder_ID = " + foldID + " AND User_ID = " + userID + " AND Folder_Type = 'personal'");
-		if (rs.next()) {
-			userRights = rs.getInt(1);
-		} else { //no record
-			userRights = 0;
-		}
+	if (request.getParameter("FoldID") != null && request.getParameter("RecType") != null) {
+		String foldID = request.getParameter("FoldID");
+		Folder folder = new Folder(Integer.parseInt(foldID), user, state);
+		String recID = request.getParameter("RecID");
+		String sampID = request.getParameter("SampID");
+		String featID = request.getParameter("FeatID");
+		String recType = request.getParameter("RecType");
 
 		if (recType.equals(Feature.OUTCROP_LOCALITY) || recType.equals(Feature.DRILLHOLE_LOCALITY) || recType.equals(Feature.VERTICAL_SECTION_LOCALITY)) {
 			out.println("<p>Choose the locality to copy from the list below by clicking on the <img src='images/load.gif' width='20' height='20' /> icon</p>");
-
-			//List records
-			if ((userRights & 1) != 0 && returnURL != null) {
-				rs = statement.executeQuery("SELECT DISTINCT Feature_ID, Sample_Name FROM Folder_Content_View WHERE Folder_ID = " + foldID + " AND Feature_ID <> " + featID + " AND Feature_Type = '" + recType + "' ORDER BY Sample_Name");
+			//List localities
+			if (folder.isAllowedReadLocalities() && folder.get(Folder.FEATURES) != null) {
 				out.println("<table border='0' cellspacing='0' cellpadding='2'>");
-				out.print("<tr class='heading'><td></td><td>Sample</td></tr>");
-				while (rs.next()) {
-					out.print("<tr><td><a href='" + returnURL + "FoldID=" + foldID + "&FeatID=" + featID + "&LoadFeatID=" + rs.getString(1) + "' title='Copy Locality'><img src='images/load.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' width='10' height='1' /></td><td>" + rs.getString(2) + "</td></tr>");
+				out.print("<tr class='heading'><td></td><td>Locality</td></tr>");		
+				for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
+					Feature feature = new Feature(((Integer) i.next()).intValue(), user, state);
+					if (feature.getFeatureType().equals(recType) && (featID == null || feature.getFeatureID() != Integer.parseInt(featID)))
+						out.println("<tr><td><a href='data_entry.jsp?Type=" + recType + "&FoldID=" + foldID + ((featID != null) ? "&FeatID=" + featID : "") + "&CopyID=" + feature.getFeatureID() + "' title='Copy Locality'><img src='images/load.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' width='10' height='1' /></td><td>" + feature.getAsString(Feature.SAMPLE_NAMES) + "</td></tr>");
 				}
 			}
-		}
-		else {
-			out.println("<p>Choose the record to copy from the list below by clicking on the <img src='images/load.gif' width='20' height='20' /> icon</p>");
-
-			//List records
-			if ((userRights & 1) != 0 && returnURL != null) {
-				rs = statement.executeQuery("SELECT DISTINCT R.Record_ID, R.Sample_Name, R.Drillhole_Depth, R.Record_Name FROM Record_View R, Folder_Content_View F WHERE F.Sample_ID = R.Sample_ID AND F.Folder_ID = " + foldID + " AND R.Record_ID <> " + recID + " AND R.Record_Type = " + JspUtils.sqlEscape(recType) + " ORDER BY R.Sample_Name, R.Drillhole_Depth, R.Record_Name");
+		} else if (recType.equals("Sample")) {
+			out.println("<p>Choose the sample to copy from the list below by clicking on the <img src='images/load.gif' width='20' height='20' /> icon</p>");
+			//List localities
+			if (folder.isAllowedReadLocalities() && folder.get(Folder.FEATURES) != null) {
 				out.println("<table border='0' cellspacing='0' cellpadding='2'>");
-				out.print("<tr class='heading'><td></td><td>Sample<img src='images/blank.gif' width='10' height='1' /></td><td>Depth");
-				if (!recType.equals("SMP")) {
-					out.print("<img src='images/blank.gif' width='10' height='1' /></td><td>Record");
-				}
-				out.println("</td></tr>");
-				while (rs.next()) {
-					out.print("<tr><td><a href='" + returnURL + "?FoldID=" + foldID + "&SampID=" + request.getParameter("SampID") + "&RecID=" + recID + "&LoadRecID=" + rs.getString(1) + "' title='Copy Record'><img src='images/load.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' width='10' height='1' /></td><td>" + rs.getString(2) + "<img src='images/blank.gif' width='10' height='1' /></td><td>" +FREDUtils.noNulls(rs.getString(3)));
-					if (!recType.equals("SMP")) {
-					 out.print("<img src='images/blank.gif' width='10' height='1' /></td><td>" + rs.getString(4));
+				out.print("<tr class='heading'><td></td><td>Locality</td><td>Sample</td></tr>");		
+				for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
+					Feature feature = new Feature(((Integer) i.next()).intValue(), user, state);
+					if (!feature.getFeatureType().equals(Feature.OUTCROP_LOCALITY) && feature.get(Feature.SAMPLES) != null) {
+						for (Iterator j = feature.getAsVector(Feature.SAMPLES).iterator(); j.hasNext(); ) {
+							Sample sample = new Sample(((Integer) j.next()).intValue(), user, state);
+							if (sampID == null || sample.getSampleID() != Integer.parseInt(sampID))
+								out.println("<tr><td><a href='data_entry.jsp?Type=" + recType + "&FoldID=" + foldID + ((sampID != null) ? "&SampID=" + sampID : "") + "&CopyID=" + sample.getSampleID() + "' title='Copy Locality'><img src='images/load.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' width='10' height='1' /></td><td>" + feature.getAsString(Feature.SAMPLE_NAMES) + "&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td></tr>");						
+						}
 					}
-					out.println("</td></tr>");
+				}
+			}
+		} else { //Records
+			out.println("<p>Choose the record to copy from the list below by clicking on the <img src='images/load.gif' width='20' height='20' /> icon</p>");
+			//List localities
+			if (folder.isAllowedReadLocalities() && folder.get(Folder.FEATURES) != null) {
+				out.println("<table border='0' cellspacing='0' cellpadding='2'>");
+				out.print("<tr class='heading'><td></td><td>Locality</td><td>Sample</td><td>Record</td></tr>");		
+				for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
+					Feature feature = new Feature(((Integer) i.next()).intValue(), user, state);
+					if (feature.get(Feature.SAMPLES) != null) {
+						for (Iterator j = feature.getAsVector(Feature.SAMPLES).iterator(); j.hasNext(); ) {
+							Sample sample = new Sample(((Integer) j.next()).intValue(), user, state);
+							if (sample.get(Sample.RECORDS) != null) {
+								for (Iterator k = sample.getAsVector(Sample.RECORDS).iterator(); k.hasNext(); ) {
+									Record record = null;
+									KeyValueObject kvo = (KeyValueObject) k.next();
+									if (kvo.getValue().equals(Record.ADOPTION_RECORD) && recType.equals(Record.ADOPTION_RECORD)) {
+										record = AdoptionRecord.getData(Integer.parseInt(kvo.getKey()), user, state);
+									} else if (kvo.getValue().equals(Record.PALEONTOLOGY_RECORD) && recType.equals(Record.PALEONTOLOGY_RECORD)) {
+										record = PaleontologyRecord.getData(Integer.parseInt(kvo.getKey()), user, state);
+									}
+									if (record != null && (recID == null || record.getRecordID() != Integer.parseInt(recID)))
+										out.println("<tr><td><a href='data_entry.jsp?Type=" + recType + "&FoldID=" + foldID + ((recID != null) ? "&RecID=" + recID : "") + "&CopyID=" + record.getRecordID() + "' title='Copy Locality'><img src='images/load.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' width='10' height='1' /></td><td>" + feature.getAsString(Feature.SAMPLE_NAMES) + "&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "&nbsp;&nbsp;</td><td>" + record.getRecordName() + "</td></tr>");						
+								}
+							}
+						}
+					}
 				}
 			}
 		}

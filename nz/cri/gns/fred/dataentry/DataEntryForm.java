@@ -112,6 +112,8 @@ public interface DataEntryForm {
 	
 	public void setFieldsFromTemp() throws DataInputException, TaxonomicListException;
 
+	public void copyFrom(int id) throws DataInputException, InvalidCredentialsException, SQLException, IOException;
+
 	public void makeNavPanelHTML(Writer out) throws IOException;
 	
 	public void makeDataEntryHTML(Writer out) throws IOException, SQLException;

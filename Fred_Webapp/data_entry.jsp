@@ -15,22 +15,21 @@
 	Folder folder = new Folder(Integer.parseInt(foldID), user, state);
 	DataEntryForm dataEntryForm = null;
 	
-	System.out.println("Getting Data Entry Form");
-	
 	try {
-		if (request.getParameter("Err") == null) {
+		if (request.getParameter("Err") != null) {
+			dataEntryForm = (DataEntryForm) session.getAttribute("dataEntryForm");
+		} else if (request.getParameter("CopyID") != null) {
+			dataEntryForm = (DataEntryForm) session.getAttribute("dataEntryForm");
+			dataEntryForm.copyFrom(Integer.parseInt(request.getParameter("CopyID")));
+		} else {
 			if (formType.equals(Feature.OUTCROP_LOCALITY) || formType.equals(Feature.DRILLHOLE_LOCALITY) || formType.equals(Feature.VERTICAL_SECTION_LOCALITY)) {
-				if (request.getParameter("LoadFeatID") != null) { //copying
-					if (featID == null) {
-						dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), user, Integer.parseInt(foldID), state);
-					} else {
-						dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), Integer.parseInt(featID), user, state);
-					}
-				} else if (featID != null) { //editing
+				if (featID != null) { //editing
 					dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
 				} else {
 					dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(formType, user, Integer.parseInt(foldID), state);
 				}
+				if (request.getParameter("LoadFeatID") != null) //copying
+					dataEntryForm.copyFrom(Integer.parseInt(request.getParameter("LoadFeatID")));
 			} else if (formType.equals("Sample")) {
 				if (sampID != null) { //editing
 					dataEntryForm = DataEntryFormFactory.getSampleDataEntryForm(Integer.parseInt(sampID), user, state);
@@ -44,14 +43,10 @@
 					dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(formType, user, Integer.parseInt(sampID), Integer.parseInt(foldID), state);
 				}
 			}
-		} else {
-			dataEntryForm = (DataEntryForm) session.getAttribute("dataEntryForm");
 		}
 	} catch (Exception e) {
-		out.println(e.getMessage());
+		System.out.println(e.getMessage());
 	}
-
-	System.out.println("Got Data Entry Form");
 
 	if (dataEntryForm != null) {
 		
@@ -63,19 +58,20 @@
 
 			out.println("<form name='form1' method='post' action='data_proc.jsp' />");
 			out.println("<input type='hidden' name='SaveType' value='' />");
-			if (request.getParameter("Redirect") != null) 
-				out.println("<input type='hidden' name='Redirect' value='" + request.getParameter("Redirect") + "' />");
 			if (featID != null) {
-				out.println("<input type='hidden' name='ErrorRedirect' value='data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID + "&FeatID=" + featID + "' />");
+				session.setAttribute("dataEntryErrorRedirect", "data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID + "&FeatID=" + featID);
 			} else if (sampID != null) {
-				out.println("<input type='hidden' name='ErrorRedirect' value='data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID + "&SampID=" + sampID + "' />");
+				session.setAttribute("dataEntryErrorRedirect", "data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID + "&SampID=" + sampID);
 			} else if (recID != null) {
-				out.println("<input type='hidden' name='ErrorRedirect' value='data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID + "&RecID=" + recID + "' />");
+				session.setAttribute("dataEntryErrorRedirect", "data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID + "&RecID=" + recID);
 			} else {
-				out.println("<input type='hidden' name='ErrorRedirect' value='data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID + "' />");
+				session.setAttribute("dataEntryErrorRedirect", "data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID);
 			}
 
+			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
 			dataEntryForm.makeNavPanelHTML(new PrintWriter(out));
+			out.println("<tr><td><a href='" + (String)session.getAttribute("dataEntryRedirect") + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a>&nbsp;&nbsp;</td><td><a href='" + (String)session.getAttribute("dataEntryRedirect") + "' class='heading'>Quit</a></td></tr>");
+			out.println("</table>");
 
 			drawEndNavigation(out);
 

@@ -26,29 +26,25 @@ public class DrillholeLocalityDE extends LocalityDE {
 		super(user, folderID, Feature.DRILLHOLE_LOCALITY, state);
 	}
 
-	public DrillholeLocalityDE(int id, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException {
-		super(id, user, state);
+	public DrillholeLocalityDE(int featureID, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException {
+		super(featureID, user, state);
 		if (!featureType.equals(Feature.DRILLHOLE_LOCALITY))
 			throw new DataInputException("Feature Type", "Invalid");
+		getFromDatabase(sample);
+		savedFlag = true;
+	}
+
+	protected void getFromDatabase(Sample sample) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
+		super.getFromDatabase(sample);
+		//set fields
 		setField(OPERATING_COMPANY, sample.getAsString(Sample.PERSON));
-		setField(
-			SPUD_DATE,
-			DataEntryUtils.reverseParseDate(
-				sample.getAsDate(Sample.START_DATE),
-				sample.getAsString(Sample.START_DATE_ROUNDING)));
-		setField(
-			COMPLETION_DATE,
-			DataEntryUtils.reverseParseDate(
-				sample.getAsDate(Sample.FINISH_DATE),
-				sample.getAsString(Sample.FINISH_DATE_ROUNDING)));
-		setField(
-			LICENCE_AREA,
-			sample.getAsString(Sample.DRILLHOLE_LICENCE_NAME));
+		setField(SPUD_DATE, DataEntryUtils.reverseParseDate(sample.getAsDate(Sample.START_DATE), sample.getAsString(Sample.START_DATE_ROUNDING)));
+		setField(COMPLETION_DATE, DataEntryUtils.reverseParseDate(sample.getAsDate(Sample.FINISH_DATE), sample.getAsString(Sample.FINISH_DATE_ROUNDING)));
+		setField(LICENCE_AREA, sample.getAsString(Sample.DRILLHOLE_LICENCE_NAME));
 		setField(DATUM_TYPE, sample.getAsString(Sample.DATUM_TYPE));
 		setField(DATUM_ELEVATION, sample.getAsString(Sample.DATUM_ELEVATION));
 		setField(KICK_OFF_DEPTH, sample.getAsString(Sample.START_DEPTH));
 		setField(TERMINATION_DEPTH, sample.getAsString(Sample.FINISH_DEPTH));
-		savedFlag = true;
 	}
 
 	protected void parseField(int field, String value)

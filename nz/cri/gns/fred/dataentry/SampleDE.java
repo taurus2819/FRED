@@ -87,9 +87,15 @@ public class SampleDE implements DataEntryForm {
 		}
 		this.featureID = sample.getFeatureID();
 		this.auditID = sample.getAsInt(Sample.SAMPLE_AUDIT_ID);
-		//feature = new Feature(sample.getAsInt(Sample.FEATURE_ID), user, state, true);
-		
-		System.out.println("Setting Fields");
+		getFromDatabase(sample);
+	}
+
+	public void copyFrom(int sampleID) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
+		Sample copySample = new Sample(sampleID, user, state);
+		getFromDatabase(copySample);
+	}
+
+	private void getFromDatabase(Sample sample) throws DataInputException, InvalidCredentialsException {
 		//set fields
 		try {
 			setField(COLLECTION_DATE, DataEntryUtils.reverseParseDate(
@@ -123,7 +129,6 @@ public class SampleDE implements DataEntryForm {
 			setField(KNW_START_MOD, sample.getAsString(Sample.KNOWN_STAGE_LOWER_MOD));
 			setField(KNW_AGE_STOP, sample.getAsString(Sample.KNOWN_STAGE_UPPER_ID));
 			setField(KNW_STOP_MOD, sample.getAsString(Sample.KNOWN_STAGE_UPPER_MOD));
-			System.out.println("Starting Relationships");
 			if (sample.get(Sample.RELATIONSHIP_NEARBY) != null) {
 				StringBuffer prevSamp = new StringBuffer();
 				for (Iterator i = sample.getAsVector(Sample.RELATIONSHIP_NEARBY).iterator(); i.hasNext();) {
@@ -162,7 +167,6 @@ public class SampleDE implements DataEntryForm {
 				}
 				setField(STRAT_RELATIONSHIP, stratRel.toString());
 			}
-			System.out.println("Starting Column Map");
 			setField(COLUMN_MAP, sample.getAsString(Sample.COLUMN_MAP));
 			setField(DIP, sample.getAsString(Sample.DIP));
 			setField(DIP_DIRECTION, sample.getAsString(Sample.DIP_DIRECTION));
@@ -631,20 +635,19 @@ public class SampleDE implements DataEntryForm {
 	}
 
 	public void makeNavPanelHTML(Writer out) throws IOException {
-		out.write("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
 		out.write("<tr><td colspan='2' align='center'><img src='images/drill.gif' height='20' width='20' /></td></tr>");
 		out.write("<tr><td colspan='2' align='center' class='heading'>Sample</td></tr>\n");
 		out.write("<tr><td>&nbsp;</td></tr>");
-		//out.write("<tr><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
-		//if (record != null) out.write("&RecID=" + record.getRecordID());
-		//out.write("&SampID=" + sample.getSampleID() + "&RecType=SMP'><img src='images/load.gif' height='20' width='20' border='0' alt='Copy From' /></a>&nbsp;&nbsp;</td><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
-		//if (record != null) out.write("&RecID=" + record.getRecordID());
-		//out.write("&SampID=" + sample.getSampleID() + "&RecType=SMP' class='heading'>Copy From</a></td></tr>");
+		out.write("<tr><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
+		if (sample != null)
+			out.write("&SampID=" + sample.getSampleID());
+		out.write("&RecType=Sample'><img src='images/load.gif' height='20' width='20' border='0' alt='Copy From' /></a>&nbsp;&nbsp;</td><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
+		if (sample != null)
+			out.write("&SampID=" + sample.getSampleID());
+		out.write("&RecType=Sample' class='boldlink'>Copy From</a></td></tr>\n");
 		out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
 		if (folder.isAllowedSubmitLocalities())
 			out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Submit\";form1.submit();'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database' /></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick='form1.SaveType.value=\"Submit\";form1.submit();' class='boldlink'>Submit</a></td></tr>\n");
-		out.write("<tr><td><a href='javascript:history.back();'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a>&nbsp;&nbsp;</td><td><a href='javascript:history.back();' class='heading'>Quit</a></td></tr>");
-		out.write("</table>");
 	}
 
 	public void makeDataEntryHTML(Writer out)
