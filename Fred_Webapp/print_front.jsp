@@ -29,15 +29,32 @@
 			}
 		}
 	}
+	
+	out.println("<!DOCTYPE html ");
+	out.println("   PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" ");
+	out.println("  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"> ");
+	out.println("<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">");
 
-	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
-
-	drawTop(out, et, request, response);
+	out.println(" <head>");
+	out.println("  <title>Fossil Record Electronic Database</title>");
+	out.println("  <link rel=\"styleSheet\" href=\"/online/style/extranet.css\" type=\"text/css\" />");
+	out.println(" </head>");
+	out.println(" <body>");
 
 	if (request.getParameter("ID") != null) {
-
 		sampID = request.getParameter("ID");
+		
+
+		
+//		out.println("<script><!--");
+//		out.println("if (document.layers) {");
+//		out.println("\tdocument.write('<layer id=\"heracles\" top=\"100\" left=\"300\" bgcolor=\"white\" style=\"position: absolute; top: 100px; left: 300px; background-color; white; border: solid 1pt black; z-index: 1\"><img src=\"/online/images/loading.gif\" alt=\"Loading data...\" /></layer>');");
+//		out.println("} else {");
+//		out.println("\tdocument.write('<div id=\"heracles\" style=\"position: absolute; top: 100px; left: 300px; background-color; white;\"><img src=\"/online/images/loading.gif\" alt=\"Loading data...\" /></div>');");
+//		out.println("}");
+//		out.println("//--></script>");
+
+//		out.flush();
 
 		//check if user can view this record and that record exists
 		rs = statement.executeQuery("SELECT Status, User_Rights FROM Sample_Security_View WHERE Sample_ID = " + sampID + " AND (User_ID IS NULL OR User_ID = " + userID + ")");
@@ -48,11 +65,18 @@
 		if ((userRights & 1) != 0) { //allowed to view this record
 
 			//List data
-			out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
+			out.println("<table border='1' cellspacing='0' cellpadding='10' width='620'>");
+			out.println("<tr><td>");
+
 			rs = statement.executeQuery("SELECT S.Sample_Name, S.Masterfile_Name, S.Status, A.Created_By, A.Created_Date, A.Modified_By, A.Modified_Date, A.Submitted_By, A.Submitted_Date, A.Approved_By, A.Approved_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Sample_ID = " + sampID);
-			rs.next();
-			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
-			out.print("<tr><td colspan='2' align='center' class='bigheading' >" + rs.getString(1) + "</td></tr>");
+			rs.next();			
+			out.println("<table border='0' cellspacing='0' cellpadding='0' width='600'>");
+			out.println("<tr><td rowspan='2'><img src='images/gslogo.gif' width='42' height='50' /></td><td class='smallheading'>GEOLOGICAL SOCIETY OF NEW ZEALAND</td><td rowspan='2' class='hugeheading' align='right'>" + rs.getString(1) + "</td></tr>");
+			out.println("<tr><td class='hugeheading'>FOSSIL RECORD FORM</td></tr>");
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+			out.println("</table>");
+			
+			out.println("<table border='0' cellspacing='0' cellpadding='0' width='600'>");
 			if (rs.getString(2) != null) {
 				out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + rs.getString(2) + "</td></tr>");
 			}
@@ -61,39 +85,37 @@
 			}
 			if (rs.getString(4) != null || rs.getString(5) != null) {
 				out.println("<tr><td class='smallheading'>Created:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(4) != null) { out.print(rs.getString(4) + "<br />"); }
+				if (rs.getString(4) != null) { out.print(rs.getString(4) + "&nbsp;&nbsp;"); }
 				if (rs.getString(5) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(5))); }
 				out.println("</td></tr>");
 			}
 			if (rs.getString(6) != null || rs.getString(7) != null) {
 				out.println("<tr><td class='smallheading'>Edited:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(6) != null) { out.print(rs.getString(6) + "<br />"); }
+				if (rs.getString(6) != null) { out.print(rs.getString(6) + "&nbsp;&nbsp;"); }
 				if (rs.getString(7) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(7))); }
 				out.println("</td></tr>");
 			}
 			if (rs.getString(8) != null || rs.getString(9) != null) {
 				out.println("<tr><td class='smallheading'>Submitted:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(8) != null) { out.print(rs.getString(8) + "<br />"); }
+				if (rs.getString(8) != null) { out.print(rs.getString(8) + "&nbsp;&nbsp;"); }
 				if (rs.getString(9) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(9))); }
 				out.println("</td></tr>");
 			}
 			if (rs.getString(10) != null || rs.getString(11) != null) {
 				out.println("<tr><td class='smallheading'>Approved:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(10) != null) { out.print(rs.getString(10) + "<br />"); }
+				if (rs.getString(10) != null) { out.print(rs.getString(10) + "&nbsp;&nbsp;"); }
 				if (rs.getString(11) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(11))); }
 				out.println("</td></tr>");
 			}
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 			out.println("</table>");
 
-			drawEndNavigation(out);
 
-			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-			out.println("<tr><td>");
-
+			out.println("<table border='0' cellspacing='0' cellpadding='2' width='600'>");
 			rs = statement.executeQuery("SELECT Feature_ID, Field_Number, Drillhole_Name, NZMG_Sheet, NZMG_East, NZMG_North, Latitude, Longitude, Accuracy, Method, Locality, Drillhole_Depth FROM Sample_All_View WHERE Sample_ID = " + sampID);
 			rs.next();
-
-			out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
+			
+			out.println("<tr><td class='bigheading' colspan='2'>Mandatory Data</td></tr>");
 			if (rs.getString(2) != null && userID != 0) { out.println("<tr><td class='heading'>Field Number</td><td>" + (rs.getString(2)) + "</td></tr>"); }
 			if (rs.getString(7) != null) {
 				out.print("<tr><td class='heading'>Grid Ref</td><td>");
@@ -135,17 +157,12 @@
 				out.println("</td></tr>");
 			}
 			if (rs.getString(11) != null && userID != 0) { out.println("<tr><td class='heading'>Locality</td><td>" + rs.getString(11) + "</td></tr>"); }
-			out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
 
 			if (userID != 0) { //logged in user
 
-				//Sample Property Data
 				rs = statement.executeQuery("SELECT Record_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage, Known_Stage, Column_Map, Dip, Dip_Direction, Strike, Facing, Grainsize, Comparator_Used, Bed_Thickness, Bedding, Weathering, Hardness, Carbonate, Colour, Deposition_Env, Rock_Nature, Correspondence, Record_ID FROM Sample_Property_All_View WHERE Sample_ID = " + sampID);
 				if (rs.next()) {
 					recID = rs.getString(1);
-
-					out.println("<tr><td class='bigheading' colspan='2'>Sample Property Data</td></tr>");
-
 					if (rs.getString(2) != null) {
 						out.print("<tr><td class='heading'>Collection Date</td><td>");
 						if (rs.getString(3) == null) {
@@ -186,6 +203,7 @@
 					if (rs.getString(6) != null) { out.println("<tr><td class='heading'>Not Collected</td><td>" + rs.getString(6) + "</td></tr>"); }
 
 					//Stratigraphy
+					out.println("<tr><td class='bigheading' colspan='2'>Stratigraphy</td></tr>");
 					if (rs.getString(7) != null) { out.println("<tr><td class='heading'>Significance</td><td>" + rs.getString(7) + "</td></tr>"); }
 					if (rs.getString(8) != null) { out.println("<tr><td class='heading'>Inferred Stage</td><td>" + rs.getString(8) + "</td></tr>"); }
 					if (rs.getString(9) != null) { out.println("<tr><td class='heading'>Known Stage</td><td>" + rs.getString(9) + "</td></tr>"); }
@@ -196,9 +214,9 @@
 						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Samples Nearby</td>");
 						rs2 = statement2.executeQuery("SELECT Related_Feature_ID, Related_Sample_Name FROM Relationship_View WHERE Relationship_Type = 'Sample' AND Relation_Type_ID = 231 AND Record_ID = " + recID + " ORDER BY Related_Sample_Name");
 						rs2.next();
-						out.print("<td><a href='detail.jsp?FeatID=" + rs2.getString(1) + "'>" + rs2.getString(2) + "</a></td></tr>");
+						out.print("<td>" + rs2.getString(2) + "</td></tr>");
 						while (rs2.next()) {
-							out.println("<tr><td><a href='detail.jsp?FeatID=" + rs2.getString(1) + "'>" + rs2.getString(2) + "</a></td></tr>");
+							out.println("<tr><td>" + rs2.getString(2) + "</td></tr>");
 						}
 					}
 					//Sample relationships (repeating)
@@ -208,9 +226,9 @@
 						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Sample Relationships</td>");
 						rs2 = statement2.executeQuery("SELECT Distance_Relation, Related_Feature_ID, Related_Sample_Name FROM Relationship_View WHERE Relation_Type_ID <> 231 AND Relationship_Type = 'Sample' AND Record_ID = " + recID + " ORDER BY Related_Sample_Name");
 						rs2.next();
-						out.print("<td>" + rs2.getString(1) + " <a href='detail.jsp?FeatID=" + rs2.getString(2) + "'>" + rs2.getString(3) + "</a></td></tr>");
+						out.print("<td>" + rs2.getString(1) + " " + rs2.getString(3) + "</td></tr>");
 						while (rs2.next()) {
-							out.println("<tr><td>" + rs2.getString(1) + " <a href='detail.jsp?FeatID=" + rs2.getString(2) + "'>" + rs2.getString(3) + "</a></td></tr>");
+							out.println("<tr><td>" + rs2.getString(1) + " " + rs2.getString(3) + "</td></tr>");
 						}
 					}
 					//Strat relationships (repeating)
@@ -230,6 +248,8 @@
 					if (rs.getString(12) != null) { out.println("<tr><td class='heading'>Dip Direction</td><td>" + rs.getString(12) + "</td></tr>"); }
 					if (rs.getString(13) != null) { out.println("<tr><td class='heading'>Strike</td><td>" + rs.getString(13) + "</td></tr>"); }
 					if (rs.getString(14) != null) { out.println("<tr><td class='heading'>Facing</td><td>" + rs.getString(14) + "</td></tr>"); }
+					
+					out.println("<tr><td class='bigheading' colspan='2'>Sedimentary Features</td></tr>");
 					if (rs.getString(15) != null) { out.println("<tr><td class='heading'>Grain Size</td><td>" + rs.getString(15) + "</td></tr>"); }
 					if (rs.getString(16) != null) { out.println("<tr><td class='heading'>Comparator Used</td><td>" + rs.getString(16) + "</td></tr>"); }
 					if (rs.getString(17) != null) { out.println("<tr><td class='heading'>Bed Thickness</td><td>" + rs.getString(17) + "</td></tr>"); }
@@ -253,10 +273,13 @@
 					if (rs.getString(23) != null) { out.println("<tr><td class='heading'>Inf Environment</td><td>" + rs.getString(23) + "</td></tr>"); }
 					if (rs.getString(24) != null) { out.println("<tr><td class='heading'>Nature of Rock Unit</td><td>" + rs.getString(24) + "</td></tr>"); }
 					if (rs.getString(25) != null) { out.println("<tr><td class='heading'>Correspondence</td><td>" + rs.getString(25) + "</td></tr>"); }
+					out.println("</table>");
+
 					//Image/Files
 					MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
 					if (mr != null) {
-						out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
+						out.println("<table border='0' cellspacing='0' cellpadding='0' width='600'>");
+						out.println("<tr><td colspan='2' class='bigheading'>Images/Files</td></tr>");
 						out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
 						int y = 1;
 						out.print("<tr>");
@@ -267,123 +290,20 @@
 							}
 							out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
 						}
-						out.println("</td></tr></table></td></tr>");
-					}
-					out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
-				}
-
-				//Adoption
-				rs = statement.executeQuery("SELECT Record_ID, Adoptor, Adoption_Date, Date_Rounding, Adopted_Stage, Comments FROM Adoption_All_View WHERE Sample_ID = " + sampID);
-				while (rs.next()) {
-					out.println("<tr><td colspan='2' class='bigheading'>Adoption Data</td></tr>");
-
-					recID = rs.getString(1);
-					if (rs.getString(2) != null) { out.println("<tr><td class='heading'>Adoptor</td><td>" + rs.getString(2) + "</td></tr>"); }
-					if (rs.getString(3) != null) {
-						out.print("<tr><td class='heading'>Adoption Date</td><td>");
-						if (rs.getString(4) == null) {
-							out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(3)));
-						} else if (rs.getString(4).equals("Year")) {
-							out.print(yearFormatter.format(rs.getDate(3)));
-						} else if (rs.getString(4).equals("Month")) {
-							out.print(monthFormatter.format(rs.getDate(3)));
-						}
-						out.println("</td></tr>");
-					}
-					if (rs.getString(5) != null) { out.println("<tr><td class='heading'>Adopted Stage</td><td>" + rs.getString(5) + "</td></tr>"); }
-					if (rs.getString(6) != null) { out.println("<tr><td class='heading'>Comments</td><td>" + rs.getString(6) + "</td></tr>"); }
-					//Image/Files
-					MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
-					if (mr != null) {
-						out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
-						out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
-						int y = 1;
-						out.print("<tr>");
-						for (int x = 0; x < mr.length; x++) {
-							if (y++ == 5) {
-								out.println("</tr><tr>");
-								y = 2;
-							}
-							out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
-						}
-						out.println("</td></tr></table></td></tr>");
-					}
-					out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
-				}
-
-				//Paleontology
-				rs = statement.executeQuery("SELECT DISTINCT Record_ID, Identifier, Identification_Date, Date_Rounding, Stage, Stage_Comments, Lab, Lab_Number, Collection_Comments FROM Paleontology_All_View WHERE Sample_ID = " + sampID);
-				while (rs.next()) {
-					out.println("<tr><td colspan='2' class='bigheading'>Paleontology Data</td></tr>");
-
-					recID = rs.getString(1);
-					if (rs.getString(2) != null) { out.println("<tr><td class='heading'>Identifier</td><td>" + rs.getString(2) + "</td></tr>"); }
-					if (rs.getString(3) != null) {
-						out.print("<tr><td class='heading'>Identification Date</td><td>");
-						if (rs.getString(4) == null) {
-							out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(3)));
-						} else if (rs.getString(4).equals("Year")) {
-							out.print(yearFormatter.format(rs.getDate(3)));
-						} else if (rs.getString(4).equals("Month")) {
-							out.print(monthFormatter.format(rs.getDate(3)));
-						}
-						out.println("</td></tr>");
-					}
-					if (rs.getString(5) != null) { out.println("<tr><td class='heading'>Stage</td><td>" + rs.getString(5) + "</td></tr>"); }
-					if (rs.getString(6) != null) { out.println("<tr><td class='heading'>Stage Comments</td><td>" + rs.getString(6) + "</td></tr>"); }
-					if (rs.getString(7) != null) { out.println("<tr><td class='heading'>Lab</td><td>" + rs.getString(7) + "</td></tr>"); }
-					if (rs.getString(8) != null) { out.println("<tr><td class='heading'>Lab Number</td><td>" + rs.getString(8) + "</td></tr>"); }
-					if (rs.getString(9) != null) { out.println("<tr><td class='heading'>Collection Comments</td><td>" + rs.getString(9) + "</td></tr>"); }
-					//taxa (double repeating)
-					rs2 = statement2.executeQuery("SELECT * FROM Pal_List WHERE Record_ID = " + recID);
-					if (rs2.next()) {
-						out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
-						rs2 = statement2.executeQuery("SELECT DISTINCT P.Group_ID, L.Name FROM Pal_List P, Lookup L WHERE P.Group_ID = L.Lookup_ID AND P.Record_ID = " + recID + " ORDER BY P.Group_ID");
-						while (rs2.next()) {
-							out.println("<tr><td colspan='4' class='heading'>" + rs2.getString(2) + "</td></tr>");
-							rs3 = statement3.executeQuery("SELECT * FROM Pal_List WHERE Record_ID = " + recID + " AND Group_ID = " + rs2.getString(1) + " AND Taxonomic_Name IS NOT NULL");
-							if (rs3.next()) {
-								out.println("<tr class='heading'><td>Taxonomic Name</td><td>Spec Count</td><td>Spec Coords</td><td>Comments</td></tr>");
-								rs3 = statement3.executeQuery("SELECT Taxonomic_Name, Specimen_Count, Specimen_Coords, Comments FROM Pal_List WHERE Record_ID = " + recID + " AND Group_ID = " + rs2.getString(1) + " ORDER BY Taxonomic_Name");
-								while (rs3.next()) {
-									out.println("<tr><td>" + rs3.getString(1) + "</td><td>" + noNulls(rs3.getString(2)) + "</td><td>" + noNulls(rs3.getString(3)) + "</td><td>" + noNulls(rs3.getString(4)) + "</td></tr>");
-								}
-							} else {
-								out.println("<tr><td colspan='4'>No fossils listed</td></tr>");
-							}
-							out.println("<tr><td><img src='images/blank.gif' height='10' width='1' /></td></tr>");
-						}
-						out.println("</td></tr></table></td></tr>");
-					}
-					//Image/Files
-					MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
-					if (mr != null) {
-						out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
-						out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
-						int y = 1;
-						out.print("<tr>");
-						for (int x = 0; x < mr.length; x++) {
-							if (y++ == 5) {
-								out.println("</tr><tr>");
-								y = 2;
-							}
-							out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
-						}
-						out.println("</td></tr></table></td></tr>");
+						out.println("</td></tr></table></td></tr></table>");
 					}
 				}
 			} else {
 				out.println("<tr><td colspan='2'>More data is available for this locality for logged in users</td></tr>");
 			}
-			out.println("</table></td></tr></table>");
+			out.println("<img src='images/blank.gif' width='600' height='1' />");
+			out.println("</td></tr></table>");
 		}
-
 		else { //no record or no rights
 			out.println("<p><span class='bigheading'>Access denied</span></p>Either there is no record matching the ID you entered or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.");
 		}
 	}
 	
-	drawBottom(out, et); 
 	
 	statement2.close();
 	statement3.close();
