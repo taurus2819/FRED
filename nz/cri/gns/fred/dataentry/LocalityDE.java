@@ -362,7 +362,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			String north = coord.substring(coord.indexOf("*") + 1, coord.length());
 			try {
 				origCoord =	new NorthingEasting(Double.parseDouble(north), Double.parseDouble(east));
-				origSystem = DatumFactory.createNZMG();
+				origSystem = DatumFactory.createDatum("NZMG");
 				countryCode = "NZ";
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");
@@ -375,7 +375,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			String north = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
 			try {
 				origCoord = new TruncNorthingEasting(Double.parseDouble(north), Double.parseDouble(east), sheet, east.length());
-				origSystem = DatumFactory.createNZMS260();
+				origSystem = DatumFactory.createDatum("NZMS260");
 				countryCode = "NZ";
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");
@@ -385,7 +385,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			String north = coord.substring(coord.indexOf("*") + 1, coord.length());
 			try {
 				origCoord =	new NorthingEasting(Double.parseDouble(north), Double.parseDouble(east));
-				origSystem = DatumFactory.createAucklandIslandTM();
+				origSystem = DatumFactory.createDatum("Auckland Island Transverse Mercator");
 				countryCode = "NZ";
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");
@@ -395,7 +395,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			String north = coord.substring(coord.indexOf("*") + 1, coord.length());
 			try {
 				origCoord =	new NorthingEasting(Double.parseDouble(north), Double.parseDouble(east));
-				origSystem = DatumFactory.createCampbellIslandTM();
+				origSystem = DatumFactory.createDatum("Campbell Island Transverse Mercator");
 				countryCode = "NZ";
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");
@@ -407,7 +407,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			String east = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
 			try {
 				origCoord = new Datum.LatLong(Double.parseDouble(north), Double.parseDouble(east));
-				origSystem = DatumFactory.createNZGD49();
+				origSystem = DatumFactory.createDatum("NZGD49");
 				countryCode = coord.substring(7, coord.indexOf("*"));
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");
@@ -420,7 +420,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			System.out.println("North: " + north + ", East: " + east);
 			try {
 				origCoord = new Datum.LatLong(Double.parseDouble(north), Double.parseDouble(east));
-				origSystem = DatumFactory.createWGS84();
+				origSystem = DatumFactory.createDatum("WGS84");
 				countryCode = coord.substring(6, coord.indexOf("*"));
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");
@@ -639,7 +639,7 @@ public abstract class LocalityDE implements DataEntryForm {
 					horzDM.setHorizontalAccuracy(Float.parseFloat(fields[ACCURACY]));
 				}
 			}
-			SiteRecord sr = SiteRecord.insertSite(fields[FIELD_NUMBER], origSystem, origCoord, null, horzDM, null, null, fields[LOCALITY_DESC], countryCode, String.valueOf(user.getPersonId()), JspUtils.getInstance(state.getContext()));
+			SiteRecord sr = SiteRecord.insertSite(fields[FIELD_NUMBER], origSystem, origCoord, null, horzDM, null, null, fields[LOCALITY_DESC], countryCode, String.valueOf(user.getPersonId()), 0, JspUtils.getInstance(state.getContext()));
 			return String.valueOf(sr.getId());
 		} catch (Exception e) {
 			throw new SQLException();
