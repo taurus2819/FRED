@@ -47,6 +47,8 @@
 		tableName = request.getParameter("TableName");
 		queryString = request.getParameter("QueryString");
 		
+		//System.out.println("TableName: " + tableName + " * WhereSQL: " + whereSQL);
+		
 		if (request.getParameter("Page") != null) { pageNum = Integer.parseInt(request.getParameter("Page")); }
 		useStored = (request.getParameter("Page") != null);
 
@@ -55,7 +57,7 @@
 			queryString = (String) session.getAttribute("QueryString");
 		} else {
 			queryRes = new Vector();
-			rs = statement.executeQuery("SELECT DISTINCT Feature_ID, Sample_Name FROM " + tableName + " WHERE " + whereSQL + " ORDER BY Sample_Name");
+			rs = statement.executeQuery("SELECT DISTINCT fv.feature_id, fv.sample_name FROM " + tableName + " WHERE " + whereSQL + " ORDER BY fv.sample_name");
 			while (rs.next()) {
 				queryRes.add(rs.getString(1));
 			}
@@ -115,7 +117,7 @@
 				featIDs.append("," + (String) it.next());
 			}
 
-			rs = statement.executeQuery("SELECT Feature_ID, Sample_Name, Feature_Type, Feature_Name, Yard_FR_Number FROM Sample_View WHERE Feature_ID IN (" + featIDs + ") GROUP BY Feature_ID, Sample_Name, Feature_Type, Feature_Name, Yard_FR_Number ORDER BY Sample_Name");
+			rs = statement.executeQuery("SELECT feature_id, fr_number, feature_type, feature_name, yard_fr_number FROM feature_view WHERE feature_id IN (" + featIDs + ") ORDER BY fr_number");
 			while (rs.next()) {
 				out.println("<tr><td class='heading'><a href='detail.jsp?FeatID=" + rs.getString(1) + "'>" + rs.getString(2) + "</a>&nbsp;&nbsp;</td><td>" + rs.getString(3) + "</td><td>" +FREDUtils.noNulls(rs.getString(5)) + "&nbsp;&nbsp;</td><td>" +FREDUtils.noNulls(rs.getString(4)) + "</td></tr>");
 			}

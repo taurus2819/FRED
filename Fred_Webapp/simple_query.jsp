@@ -32,8 +32,8 @@ function replaceSingleQuote(str1) {
 }
 
 function generateSQL(form) {
-	var queryString = "", whereSQL = "SV.Feature_Status = 'approved' AND ", tableName = "Sample_All_View SV", tableJoin = "", frNum, aStart = "", aStop = "", aQuery;
-	var recFlag = false, sampPropFlag = false, adoFlag = false, palFlag = false;
+	var queryString = "", whereSQL = "fv.feature_status = 'approved' AND ", tableName = "feature_view fv", tableJoin = "", frNum, aStart = "", aStop = "", aQuery;
+	var recFlag = false, sampFlag = false, adoFlag = false, palFlag = false, siteFlag = false;
 	with (form) {
 		if (FRNum.value.length > 0) {
 			frNum = parseFRNum(trim(FRNum.value), "");
@@ -41,23 +41,25 @@ function generateSQL(form) {
 				alert("FR Number field incorrectly formatted");
 				return false;
 			}
-			whereSQL = "((" + frNum + ") OR (" + parseFRNum(trim(FRNum.value), "Yard_") + ")) AND ";
+			whereSQL = "((" + frNum + ") OR (" + parseFRNum(trim(FRNum.value), "yard_") + ")) AND ";
 			queryString = queryString + "FR Number = " + trim(FRNum.value) + " AND ";
 		}
 		if (Map.value.length > 0) {
-			whereSQL = whereSQL + "SV.NZMG_Sheet = '" + Map.value.toUpperCase() + "' AND ";
+			whereSQL = whereSQL + "st.nzmg_sheet = '" + Map.value.toUpperCase() + "' AND ";
 			queryString = queryString + "NZMG Sheet = " + Map.value.toUpperCase() + " AND ";
+			siteFlag = true;
 		}
 		if (QMap.value != "-") {
-			whereSQL = whereSQL + "SV.QMAP_Sheet = '" + QMap.value + "' AND ";
+			whereSQL = whereSQL + "st.qmap_sheet = '" + QMap.value + "' AND ";
 			queryString = queryString + "QMAP Sheet = " + QMap.value + " AND ";
+			siteFlag = true;
 		}
 		if (Coll.value != "-") {
-			whereSQL = whereSQL + "C.Person_ID = " + Coll.value + " AND ";
+			whereSQL = whereSQL + "c.person_id = " + Coll.value + " AND ";
 			queryString = queryString + "Collector = " + Coll.options[Coll.options.selectedIndex].text + " AND ";
-			tableName = tableName + ", Collector C";
-			tableJoin = tableJoin + "C.Record_ID = R.Record_ID AND ";
-			recFlag = true;
+			tableName = tableName + ", collector c";
+			tableJoin = tableJoin + "c.sample_id = s.sample_id AND ";
+			sampFlag = true;
 		}
 		if (YearFrom.value.length > 0) {
 			if (isNaN(YearFrom.value) || YearFrom.value.length != 4) {
@@ -69,37 +71,37 @@ function generateSQL(form) {
 					alert("Year must be numeric and 4 digits");
 					return false;
 				}
-				whereSQL = whereSQL + "SP.Collection_Date BETWEEN '01-JAN-" + YearFrom.value + "' AND '31-DEC-" + YearTo.value + "' AND ";
+				whereSQL = whereSQL + "s.collection_date BETWEEN '01-JAN-" + YearFrom.value + "' AND '31-DEC-" + YearTo.value + "' AND ";
 				queryString = queryString + "Collection Date BETWEEN " + YearFrom.value + " AND " + YearTo.value + " AND ";
 			} else {
-				whereSQL = whereSQL + "SP.Collection_Date BETWEEN '01-JAN-" + YearFrom.value + "' AND '31-DEC-" + YearFrom.value + "' AND ";
+				whereSQL = whereSQL + "s.collection_date BETWEEN '01-JAN-" + YearFrom.value + "' AND '31-DEC-" + YearFrom.value + "' AND ";
 				queryString = queryString + "Collection Date = " + YearFrom.value + " AND ";
 			}
-			sampPropFlag = true;
+			sampFlag = true;
 		}
 		if (FieldNum.value.length > 0) {
-			whereSQL = whereSQL + "UPPER(SV.Field_Number) LIKE '%" + replaceSingleQuote(FieldNum.value.toUpperCase()) + "%' AND ";
+			whereSQL = whereSQL + "UPPER(fv.feature_name) LIKE '%" + replaceSingleQuote(FieldNum.value.toUpperCase()) + "%' AND ";
 			queryString = queryString + "Field Number = " + FieldNum.value + " AND ";
 		}
 		if (StratName.value.length > 0) {
-			whereSQL = whereSQL + "UPPER(SP.Strat_Unit) LIKE '%" + replaceSingleQuote(StratName.value.toUpperCase()) + "%' AND ";
+			whereSQL = whereSQL + "UPPER(s.strat_unit) LIKE '%" + replaceSingleQuote(StratName.value.toUpperCase()) + "%' AND ";
 			queryString = queryString + "Stratigraphic Name = " + StratName.value + " AND ";
-			sampPropFlag = true;
+			sampFlag = true;
 		}
 		if (StratAtt.checked) {
-			whereSQL = whereSQL + "(SP.Dip IS NOT NULL OR SP.Dip_Direction IS NOT NULL OR SP.Strike IS NOT NULL) AND ";
+			whereSQL = whereSQL + "(s.dip IS NOT NULL OR s.dip_direction IS NOT NULL OR s.strike IS NOT NULL) AND ";
 			queryString = queryString + "Stratal Attitude present AND ";
-			sampPropFlag = true;
+			sampFlag = true;
 		}
 		if (RockNat.value.length > 0) {
-			whereSQL = whereSQL + "UPPER(SP.Rock_Nature) LIKE '%" + replaceSingleQuote(RockNat.value.toUpperCase()) + "%' AND ";
+			whereSQL = whereSQL + "UPPER(s.rock_nature) LIKE '%" + replaceSingleQuote(RockNat.value.toUpperCase()) + "%' AND ";
 			queryString = queryString + "Nature of Rock Unit = " + RockNat.value + " AND ";
-			sampPropFlag = true;
+			sampFlag = true;
 		}
 		if (DepEnv.value.length > 0) {
-			whereSQL = whereSQL + "UPPER(SP.Deposition_Env) LIKE '%" + replaceSingleQuote(DepEnv.value.toUpperCase()) + "%' AND ";
+			whereSQL = whereSQL + "UPPER(s.deposition_env) LIKE '%" + replaceSingleQuote(DepEnv.value.toUpperCase()) + "%' AND ";
 			queryString = queryString + "Deposition Environment = " + DepEnv.value + " AND ";
-			sampPropFlag = true;
+			sampFlag = true;
 		}
 		//check only stage name or numeric values entered
 		if (StageFrom.value != "-" && AgeFrom.value.length > 0) {
@@ -149,58 +151,62 @@ function generateSQL(form) {
 			whereSQL = whereSQL + "(";
 			if (StratAge.checked) {
 				if (AgeType[0].checked) { //narrow search
-					whereSQL = whereSQL + "(StV1.Age_Start <= " + aStart + " AND StV1.Age_Stop >= " + aStop + ") OR (StV2.Age_Start <= " + aStart + " AND StV2.Age_Stop >= " + aStop + ") OR ";
+					whereSQL = whereSQL + "(stv1.age_start <= " + aStart + " AND stv1.age_stop >= " + aStop + ") OR (stv2.age_start <= " + aStart + " AND stv2.age_stop >= " + aStop + ") OR ";
 				} else {
-					whereSQL = whereSQL + "(StV1.Age_Start >= " + aStop + " AND StV1.Age_Stop <= " + aStart + ") OR (StV2.Age_Start >= " + aStop + " AND StV2.Age_Stop <= " + aStart + ") OR ";
+					whereSQL = whereSQL + "(stv1.age_start >= " + aStop + " AND stv1.age_stop <= " + aStart + ") OR (stv2.age_start >= " + aStop + " AND stv2.age_stop <= " + aStart + ") OR ";
 				}
 				queryString = queryString + "Collectors/";
-				tableName = tableName + ", Stage_View StV1, Stage_View StV2";
-				tableJoin = tableJoin + "SP.Inferred_Stage_ID = StV1.Stage_ID(+) AND SP.Known_Stage_ID = StV2.Stage_ID(+) AND ";
-				sampPropFlag = true;
+				tableName = tableName + ", Stage_View stv1, Stage_View stv2";
+				tableJoin = tableJoin + "s.inferred_stage_id = stv1.Stage_ID(+) AND s.known_stage_id = stv2.Stage_ID(+) AND ";
+				sampFlag = true;
 			}
 			if (AdoAge.checked) {
 				if (AgeType[0].checked) { //narrow search
-					whereSQL = whereSQL + "(StV3.Age_Start <= " + aStart + " AND StV3.Age_Stop >= " + aStop + ") OR ";
+					whereSQL = whereSQL + "(stv3.age_start <= " + aStart + " AND stv3.age_stop >= " + aStop + ") OR ";
 				} else {
-					whereSQL = whereSQL + "(StV3.Age_Start >= " + aStop + " AND StV3.Age_Stop <= " + aStart + ") OR ";
+					whereSQL = whereSQL + "(stv3.age_start >= " + aStop + " AND stv3.age_stop <= " + aStart + ") OR ";
 				}
 				queryString = queryString + "Adopted/";
-				tableName = tableName + ", Stage_View StV3";
-				tableJoin = tableJoin + "A.Adopted_Stage_ID = StV3.Stage_ID(+) AND ";
+				tableName = tableName + ", Stage_View stv3";
+				tableJoin = tableJoin + "a.adopted_stage_id = stv3.Stage_ID(+) AND ";
 				adoFlag = true;
 			}
 			if (PalAge.checked) {
 				if (AgeType[0].checked) { //narrow search
-					whereSQL = whereSQL + "(StV4.Age_Start <= " + aStart + " AND StV4.Age_Stop >= " + aStop + ") OR ";
+					whereSQL = whereSQL + "(stv4.age_start <= " + aStart + " AND stv4.age_stop >= " + aStop + ") OR ";
 				} else {
-					whereSQL = whereSQL + "(StV4.Age_Start >= " + aStop + " AND StV4.Age_Stop <= " + aStart + ") OR ";
+					whereSQL = whereSQL + "(stv4.age_start >= " + aStop + " AND stv4.age_stop <= " + aStart + ") OR ";
 				}
 				queryString = queryString + "Paleontology/";
-				tableName = tableName + ", Stage_View StV4";
-				tableJoin = tableJoin + "P.Stage_ID = StV4.Stage_ID(+) AND ";
+				tableName = tableName + ", Stage_View stv4";
+				tableJoin = tableJoin + "p.stage_id = stv4.Stage_ID(+) AND ";
 				palFlag = true;
 			}
 			whereSQL = whereSQL.substring(0, whereSQL.length - 4) + ") AND ";
 			queryString = queryString.substring(0, queryString.length - 1) + " Age = " + aQuery + " AND ";
 		}
-		if (sampPropFlag) {
-			tableName = tableName + ", Sample_Property SP";
-			tableJoin = tableJoin + "SP.Record_ID(+) = R.Record_ID AND ";
-			recFlag = true;
-		}
 		if (adoFlag) {
-			tableName = tableName + ", Adoption A";
-			tableJoin = tableJoin + "A.Record_ID(+) = R.Record_ID AND ";
+			tableName = tableName + ", adoption a";
+			tableJoin = tableJoin + "a.Record_ID(+) = r.record_id AND ";
 			recFlag = true;
 		}
 		if (palFlag) {
-			tableName = tableName + ", Paleontology P";
-			tableJoin = tableJoin + "P.Record_ID(+) = R.Record_ID AND ";
+			tableName = tableName + ", paleontology p";
+			tableJoin = tableJoin + "p.record_id(+) = r.Record_id AND ";
 			recFlag = true;
 		}
 		if (recFlag) {
-			tableName = tableName + ", Record R";
-			tableJoin = tableJoin + "R.Sample_ID = SV.Sample_ID AND ";
+			tableName = tableName + ", record r";
+			tableJoin = tableJoin + "r.sample_id = s.sample_id AND ";
+			sampFlag = true;
+		}
+		if (sampFlag) {
+			tableName = tableName + ", sample s";
+			tableJoin = tableJoin + "s.feature_id = fv.feature_id AND ";
+		}
+		if (siteFlag) {
+			tableName = tableName + ", sc.site_view st";
+			tableJoin = tableJoin + "st.site_id = fv.site_id AND ";
 		}
 		if (whereSQL.length > 0)
 		whereSQL = whereSQL.substring(0, whereSQL.length - 5);
@@ -241,7 +247,7 @@ function parseIndivFRNum(frNum, prefix) {
 	sheet = frNum.substring(0, frNum.indexOf("/f")).toUpperCase();
 	serial = parseSerialNum(frNum.substring(frNum.indexOf("/f") + 2, frNum.length), prefix);
 	if (serial == "false") { return "false"; }
-	return "(SV." + prefix + "Map_Sheet = '" + sheet + "' AND " + serial + ")";
+	return "(fv." + prefix + "map_sheet = '" + sheet + "' AND " + serial + ")";
 }
 
 function parseSerialNum(serialNum, prefix) {
@@ -250,23 +256,23 @@ function parseSerialNum(serialNum, prefix) {
 		x = trim(serialNum.substring(0, serialNum.indexOf("-")));
 		y = trim(serialNum.substring(serialNum.indexOf("-") + 1, serialNum.length));
 		if (isNaN(x) || isNaN(y)) { return "false"; }
-		return "SV." + prefix + "Serial_Number BETWEEN " + parseInt(x) + " AND " + parseInt(y);
+		return "fv." + prefix + "serial_number BETWEEN " + parseInt(x) + " AND " + parseInt(y);
 	} else if (isNaN(serialNum.substring(serialNum.length - 1, serialNum.length)) && !isNaN(serialNum.substring(0, serialNum.length - 1))) {
-		return "SV." + prefix + "Serial_Number = " + parseInt(serialNum.substring(0, serialNum.length - 1)) + " AND SV." + prefix + "Recollection_Number = '" + serialNum.substring(serialNum.length - 1, serialNum.length).toUpperCase() + "'";
+		return "fv." + prefix + "serial_number = " + parseInt(serialNum.substring(0, serialNum.length - 1)) + " AND fv." + prefix + "recollection_number = '" + serialNum.substring(serialNum.length - 1, serialNum.length).toUpperCase() + "'";
 	} else if (isNaN(serialNum)) {
 		return "false";
 	}
-	return "SV." + prefix + "Serial_Number = " + parseInt(serialNum);
+	return "fv." + prefix + "serial_number = " + parseInt(serialNum);
 }
 
 </script>
 
 <%	//build array of stage ages
-	rs = statement.executeQuery("SELECT MAX(Ag_ID) FROM Age_View");
+	rs = statement.executeQuery("SELECT MAX(ag_id) FROM age_view");
 	rs.next();
 	out.println("<script language='JavaScript'>");
 	out.println("var ageStart = new Array(" + (rs.getInt(1) + 1) + "); var ageStop = new Array(" + (rs.getInt(1) + 1) + ");");
-	rs =statement.executeQuery("SELECT Ag_ID, TA_Age_Start, TA_Age_Stop FROM Age_View ORDER BY Ag_ID");
+	rs = statement.executeQuery("SELECT ag_id, ta_age_start, ta_age_stop FROM age_view ORDER BY ag_id");
 	while (rs.next()) {
 		out.println("ageStart[" + rs.getString(1) + "] = " + rs.getString(2) + ";");
 		out.println("ageStop[" + rs.getString(1) + "] = " + rs.getString(3) + ";");
@@ -324,10 +330,10 @@ function parseSerialNum(serialNum, prefix) {
 	</select>
 </td></tr>
 <tr><td class='heading'>Collector&nbsp;&nbsp;</td><td></td><td colspan='3'>
-<%	cd = new ComboDescriptor("Person_View", "Person_ID", "Name");
+<%	cd = new ComboDescriptor("person_view", "person_id", "name");
 	cd.name = "Coll";
 	cd.prompt = "-- All --";
-	cd.orderBy = "UPPER(Name)";
+	cd.orderBy = "UPPER(name)";
 	HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 %>
 </td></tr>
@@ -338,17 +344,17 @@ function parseSerialNum(serialNum, prefix) {
 <tr><td class='heading'>Nature of Rock Unit&nbsp;&nbsp;</td><td></td><td colspan='3'><input type='text' name='RockNat' size='20' /></td></tr>
 <tr><td class='heading'>Deposition Environment&nbsp;&nbsp;</td><td></td><td colspan='3'><input type='text' name='DepEnv' size='20' /></td></tr>
 <tr><td class='heading'>Age&nbsp;&nbsp;</td><td class='smallheading'>Stage Range</td><td>
-<%	cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
+<%	cd = new ComboDescriptor("age_view", "ag_id", "ag_name");
 	cd.name = "StageFrom";
 	cd.prompt = "-- All --";
-	cd.orderBy = "UPPER(Ag_Name)";
+	cd.orderBy = "UPPER(ag_name)";
 	HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 %>
 </td><td>&nbsp;to&nbsp;</td><td>
-<%	cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
+<%	cd = new ComboDescriptor("age_view", "ag_id", "ag_name");
 	cd.name = "StageTo";
 	cd.prompt = "-- All --";
-	cd.orderBy = "UPPER(Ag_Name)";
+	cd.orderBy = "UPPER(ag_name)";
 	HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 %>
 </td></tr>
