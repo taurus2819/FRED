@@ -10,7 +10,7 @@
 	out.println("<tr><td colspan='2' class='bigheading' align='center'>FRED Home</td></tr>");
 	out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 	out.println("<tr><td><a href='simple_query.jsp' title='Query'><img src='images/search.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='simple_query.jsp' class='heading'>Query</a></td></tr>");
-	out.println("<tr><td><a href='http://maps.gns.cri.nz/fred/index.html' title='Map'><img src='images/search.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='http://maps.gns.cri.nz/fred/index.html' class='heading'>Map</a></td></tr>");
+	out.println("<tr><td><a href='http://maps.gns.cri.nz/website/fred/index.html' title='Map'><img src='images/search.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='http://maps.gns.cri.nz/website/fred/index.html' class='heading'>Map</a></td></tr>");
 	out.println("<tr><td><a href='folder_list.jsp' title='Data Entry'><img src='images/folder.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_list.jsp' class='heading'>Data Entry</a></td></tr>");
 	out.println("</table>");
 
