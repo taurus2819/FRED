@@ -81,7 +81,7 @@
 			Record record;
 			String recType, imageName;
 			for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
-				feature = new Feature(((Integer) i.next()).intValue(), user, state);
+				feature = new Feature(((Integer) i.next()).intValue(), user, state, true);
 
 				featID  = feature.getAsString(Feature.FEATURE_ID);
 				sampName = feature.getAsString(Feature.SAMPLE_NAMES);
@@ -129,7 +129,7 @@
 				int sampCount = feature.getSampleCount();
 				for (Iterator j = feature.getAsVector(Feature.SAMPLES).iterator(); j.hasNext(); ) {
 					sampID = ((Integer) j.next()).intValue();
-					sample = new Sample(sampID, user, state);
+					sample = new Sample(sampID, user, state, true);
 					wRecordCount = sample.getWorkingRecordCount();
 					if (wRecordCount > 0) {
 						if (sampCount > 1) {

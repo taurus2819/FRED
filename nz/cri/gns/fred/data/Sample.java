@@ -77,13 +77,17 @@ public class Sample {
 	private SampleData sd;
 	private boolean authenticated = false;
 
-	public Sample(int id, User user, PageState state) throws SQLException, IOException {
-		sd = SampleData.getData(id, state);
+	public Sample(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException {
+		sd = SampleData.getData(id, state, forceRefresh);
 		if (!FREDUtils.isAllowedLocality(user, sd.getAsString(SECURITY_CLASS_ID), sd.getAsString(STATUS), sd.getAsString(FEATURE_ID), state)) {
 			authenticated = false;
 		} else {
 			authenticated = true;
 		}		
+	}
+
+	public Sample(int id, User user, PageState state) throws SQLException, IOException {
+		this(id, user, state, false);
 	}
 
 	public boolean isUserAuthenticated() {

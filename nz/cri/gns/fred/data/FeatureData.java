@@ -233,9 +233,13 @@ public class FeatureData {
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
-	protected static FeatureData getData(int id, PageState state)
+	protected static FeatureData getData(int id, PageState state, boolean forceRefresh)
 		throws SQLException, IOException {
 		FeatureData f = (FeatureData) pool.retrieve(new DataFinder(id));
+		if (forceRefresh && f != null) {
+			pool.removeMe(f);
+			f = null;
+		}
 		if (f == null) {
 			f = new FeatureData(id, state);
 		}

@@ -1,5 +1,5 @@
 <%@		page extends="nz.cri.gns.fred.FREDIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.fred.dateentry.*, nx.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*, nz.cri.gns.util.map.*"
+		import="nz.cri.gns.fred.*, nz.cri.gns.fred.dataentry.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.io.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*, nz.cri.gns.util.map.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -34,12 +34,7 @@
 		String featID = request.getParameter("FeatID");
 		String saveType = request.getParameter("SaveType");
 
-		Locality locality
-		If (featID != null) {
-			locality = LocalityFactory.getLocality(Integer.parseInt(featID), user, state);
-		} else {
-			locality = LocalityFactory.getLocality(featType, user, Integer.parseInt(foldID), state);
-		}
+
 
 		if (featType.equals("VertSect")) { featType = "Vertical Section"; }
 
@@ -56,175 +51,41 @@
 		out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 		out.println("<tr><td>");
 
-		try { //Surround with exception testing so can throw an exception if data problem
-
-			locality.setField(Locality.FEATURE_NAME, FREDUtils.makeNulls(request.getParameter("FeatName"));
-			locality.setField(Locality.REGISTRATION_AREA, FREDUtils.makeDropDownNulls(request.getParameter("RegAreaID"));
-			locality.setField(Locality.WORKING_COMMENTS, FREDUtils.makeNulls(request.getParameter("WorkComm"));
-			locality.setField(Locality.GRID_REF, FREDUtils.makeNulls(request.getParameter("GridRef"));
-			locality.setField(Locality.METHOD, FREDUtils.makeDropDownNulls(request.getParameter("LocMethodID"));
-			locality.setField(Locality.ACCURACY, FREDUtils.makeNulls(request.getParameter("Accuracy"));
-			locality.setField(Locality.LOCALITY_DESC, FREDUtils.makeNulls(request.getParameter("Loc"));
-			locality.setField(Locality.RECOLLECTION, FREDUtils.makeNulls(request.getParameter("Recoll"));
-			if (!featType.equals("Outcrop") {
-				locality.setField(Locality.OPERATING_COMPANY, FREDUtils.makeNulls(request.getParameter("Person"));
-				locality.setField(Locality.START_DATE, FREDUtils.makeNulls(request.getParameter("StartDate"));
-				locality.setField(Locality.COMPLETION_DATE, FREDUtils.makeNulls(request.getParameter("FinishDate"));
-				if (featType.equals("Drillhole")) locality.setField(Locality.LICENCE_AREA, FREDUtils.makeNulls(request.getParameter("LicArea"));
-				locality.setField(Locality.DATUM_TYPE, FREDUtils.makeNulls(request.getParameter("DatumType"));
-				locality.setField(Locality.DATUM_ELEVATION, FREDUtils.makeNulls(request.getParameter("DatumEl"));
-				locality.setField(Locality.KICK_OFF_DEPTH, FREDUtils.makeNulls(request.getParameter("StartDepth"));
-				locality.setField(Locality.TERMINATION_DEPTH, FREDUtils.makeNulls(request.getParameter("FinishDepth"));
+		try {
+		
+			Locality locality;
+			if (featID != null) {
+				locality = LocalityFactory.getLocality(Integer.parseInt(featID), user, state);
+			} else {
+				locality = LocalityFactory.getLocality(featType, user, Integer.parseInt(foldID), state);
+			}
+			
+			locality.setField(Locality.FEATURE_NAME, request.getParameter("FeatName"));
+			locality.setField(Locality.REGISTRATION_AREA, request.getParameter("RegAreaID"));
+			locality.setField(Locality.WORKING_COMMENTS, request.getParameter("WorkComm"));
+			locality.setField(Locality.GRID_REF, request.getParameter("GridRef"));
+			locality.setField(Locality.METHOD, request.getParameter("LocMethodID"));
+			locality.setField(Locality.ACCURACY, request.getParameter("Accuracy"));
+			locality.setField(Locality.LOCALITY_DESC, request.getParameter("Loc"));
+			locality.setField(Locality.RECOLLECTION, request.getParameter("Recoll"));
+			if (!featType.equals("Outcrop")) {
+				locality.setField(Locality.OPERATING_COMPANY, request.getParameter("Person"));
+				locality.setField(Locality.START_DATE, request.getParameter("StartDate"));
+				locality.setField(Locality.COMPLETION_DATE, request.getParameter("FinishDate"));
+				if (featType.equals("Drillhole")) locality.setField(Locality.LICENCE_AREA, request.getParameter("LicArea"));
+				locality.setField(Locality.DATUM_TYPE, request.getParameter("DatumType"));
+				locality.setField(Locality.DATUM_ELEVATION, request.getParameter("DatumEl"));
+				locality.setField(Locality.KICK_OFF_DEPTH, request.getParameter("StartDepth"));
+				locality.setField(Locality.TERMINATION_DEPTH, request.getParameter("FinishDepth"));
 			}
 
-			if (saveType.equals("Submit") {
+			if (saveType.equals("Submit")) {
 				locality.submit();
 			} else {
 				locality.save();
 			}
 
-/*			//Parse tricky fields
-			//Status
-			if (request.getParameter("SaveType").equals("Submit")) {
-				if ((userRights & 16) == 0) { throw new BadRightsException(); }
-				featStatus = "waiting";
-			} else {
-				featStatus = "working";
-			}
-
-			//Location Name
-			//if (request.getParameter("FeatName") != null) {
-			//	rs = statement.executeQuery("SELECT * FROM Feature_Security_View WHERE User_ID = " + JspUtils.getUser(session) + " AND Feature_ID <> " + featID + " AND Sample_Name = '" + request.getParameter("FeatName") + "'");
-			//	if (rs.next()) {
-			//		throw new DataInputException("Name", request.getParameter("FeatName") + " already being used by you.  Please select a unique name");
-			//	}
-			//}
-
-			//Coords
-			if (request.getParameter("OrigCoord").equals("29")) { //LatLong
-				latitude = Double.parseDouble(request.getParameter("North"));
-				longitude = Double.parseDouble(request.getParameter("East"));
-				origCoord = latitude + "|" + longitude;
-			} else if (request.getParameter("OrigCoord").equals("38")) { //NZMG Full
-				NorthingEasting nzmgCoord = new NorthingEasting(Double.parseDouble(request.getParameter("North")), Double.parseDouble(request.getParameter("East")));
-				NZMG nzmg = new NZMG();
-				Datum.LatLong latLong = nzmg.convertToNZGD49(nzmgCoord);
-				latitude = latLong.getNorthSouth();
-				longitude = latLong.getEastWest();
-				origCoord = request.getParameter("East") + "|" + request.getParameter("North");
-			} else if (request.getParameter("OrigCoord").equals("16")) { //NZMG trunc
-				TruncNorthingEasting truncNzmgCoord = new TruncNorthingEasting(Double.parseDouble(request.getParameter("North")), Double.parseDouble(request.getParameter("East")), request.getParameter("NZMGSheet"), request.getParameter("East").length());
-				NZMS260 nzms260 = new NZMS260();
-				Datum.LatLong latLong = nzms260.convertToNZGD49(truncNzmgCoord);
-				latitude = latLong.getNorthSouth();
-				longitude = latLong.getEastWest();
-				origCoord = request.getParameter("NZMGSheet") + "|" + request.getParameter("East") + "|" + request.getParameter("North");
-			}
-
-			//Recollection Number
-			if (!request.getParameter("Recoll").equals("")) {
-				recoll = "*Recoll:" + request.getParameter("Recoll") + "*";
-				rs = statement.executeQuery("SELECT * FROM Feature_Security_View WHERE Sample_Name = " + JspUtils.sqlEscape(request.getParameter("Recoll")) + " AND (Status = 'approved' OR (Folder_Type = 'personal' AND User_ID = " + userID + "))");
-				if (!rs.next()) {
-					throw new DataInputException("Recollection", request.getParameter("Recoll") + " is not an existing FR Number or temporary name.  Please use the builder to select.");
-				}
-			}
-
-			//Person
-			if (!request.getParameter("Person").equals("")) {
-				String person = request.getParameter("Person");
-				rs = statement.executeQuery("SELECT Person_ID FROM Person_View WHERE Name = '" + person.trim() + "'");
-				if (rs.next()) {
-					personID = rs.getString(1);
-				} else {  //Person not in database so throw exception
-					throw new DataInputException("Person/Company", person.trim() + " not in database - add through builder");
-				}
-			}
-
-			//Dates
-			if (!request.getParameter("StartDate").equals("")) {
-				startDateRnd = request.getParameter("StartDateRnd");
-				if (startDateRnd.equals("Year")) {
-					startDate = "1/1/" + request.getParameter("StartDate");
-				} else if (startDateRnd.equals("Month")) {
-					startDate = "1/" + request.getParameter("StartDate");
-				} else {
-					startDate = request.getParameter("StartDate");
-				}
-			}
-			if (!request.getParameter("FinishDate").equals("")) {
-				finishDateRnd = request.getParameter("FinishDateRnd");
-				if (finishDateRnd.equals("Year")) {
-					finishDate = "1/1/" + request.getParameter("FinishDate");
-				} else if (finishDateRnd.equals("Month")) {
-					finishDate = "1/" + request.getParameter("FinishDate");
-				} else {
-					finishDate = request.getParameter("FinishDate");
-				}
-			}
-			
-			//create SITE entry (if coords entered)
-			//check for existing site (and create new one of necessary)
-			if (!request.getParameter("Coord").equals("")) {
-				rs = statement.executeQuery("SELECT SC.Site_Check(" + latitude + ", " + longitude + ", " + FREDUtils.makeDropDownNulls(request.getParameter("LocMethodID")) + ", " + FREDUtils.makeNulls(request.getParameter("Accuracy")) + ") FROM DUAL");
-				rs.next();
-				if (rs.getString(1) != null) {
-					siteID = rs.getString(1);
-				} else {
-					rs = statement.executeQuery("SELECT SC.Site_Seq.NEXTVAL FROM DUAL");
-					rs.next();
-					siteID = rs.getString(1);
-					execUp = statement.executeUpdate("INSERT INTO SC.Site (Site_ID, Site_Name, Latitude, Longitude, Method_ID, Accuracy, Directions, Orig_System_ID, Orig_Coord, Country_Code) VALUES (" + siteID + ", " + JspUtils.sqlEscape(request.getParameter("FeatName")) + ", " + latitude + ", " + longitude + ", " + FREDUtils.makeDropDownNulls(request.getParameter("LocMethodID")) + ", " + JspUtils.sqlEscape(request.getParameter("Accuracy")) + ", " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", " + request.getParameter("OrigCoord") + ", '" + origCoord + "', '" + request.getParameter("Country") + "')");
-				}
-			} else {
-				siteID = "NULL";
-			}
-
-			if (featID.equals("0")) {
-				//create new audit, feature and sample data
-				if ((userRights & 4) == 0) { throw new BadRightsException(); }
-				rs = statement.executeQuery("SELECT Audit_Seq.NEXTVAL FROM DUAL");
-				rs.next();
-				auditID = rs.getString(1);
-				execUp = statement.executeUpdate("INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Comments, Working_Folder_ID) VALUES (" + auditID + ", 'working', " + userID + ", SYSDATE, " + JspUtils.sqlEscape(recoll + request.getParameter("WorkComm")) + ", " + foldID + ")");
-				rs = statement.executeQuery("SELECT Feature_Seq.NEXTVAL FROM DUAL");
-				rs.next();
-				featID = rs.getString(1);
-				execUp = statement.executeUpdate("INSERT INTO Feature (Feature_ID, Site_ID, Audit_ID, Locality, Feature_Type, Feature_Name, Reg_Area_ID, Drillhole_Licence_Name, Person_ID, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth) VALUES (" + featID + ", " + siteID + ", " + auditID + ", " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", '" + formType + "', " + JspUtils.sqlEscape(request.getParameter("FeatName")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("RegAreaID")) + ", " + JspUtils.sqlEscape(request.getParameter("LicArea")) + ", " + JspUtils.sqlEscape(personID) + ", TO_DATE('" + startDate + "'), '" + startDateRnd + "', TO_DATE('" + finishDate + "'), '" + finishDateRnd + "', " + FREDUtils.makeDropDownNulls(request.getParameter("DatumType")) + ", " + JspUtils.sqlEscape(request.getParameter("DatumEl")) + ", " + JspUtils.sqlEscape(request.getParameter("StartDepth")) + ", " + JspUtils.sqlEscape(request.getParameter("FinishDepth")) + ")");
-				execUp = statement.executeUpdate("INSERT INTO Sample (Feature_ID) VALUES (" + featID + ")");
-			} else { // edit
-				//Update edited by fields
-				if ((userRights & 2) == 0) { throw new BadRightsException(); }
-				rs = statement.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + featID);
-				rs.next();
-				auditID = rs.getString(1);
-				execUp = statement.executeUpdate("UPDATE Audit_Table SET Modified_By_ID = " + userID + ", Modified_Date = SYSDATE, Working_Comments = " + JspUtils.sqlEscape(recoll + request.getParameter("WorkComm")) + " WHERE Audit_ID = " + auditID);
-				execUp = statement.executeUpdate("UPDATE Feature SET Site_ID = " + siteID + ", Locality = " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", Feature_Name = " + JspUtils.sqlEscape(request.getParameter("FeatName")) + ", Reg_Area_ID = " + FREDUtils.makeDropDownNulls(request.getParameter("RegAreaID")) + ", Drillhole_Licence_Name = " + JspUtils.sqlEscape(request.getParameter("LicArea")) + ", Person_ID = " + JspUtils.sqlEscape(personID) + ", Start_Date = TO_DATE('" + startDate + "'), Start_Date_Rounding = '" + startDateRnd + "', Finish_Date = TO_DATE('" + finishDate + "'), Finish_Date_Rounding = '" + finishDateRnd + "', Datum_Type = " + FREDUtils.makeDropDownNulls(request.getParameter("DatumType")) + ", Datum_Elevation = " + JspUtils.sqlEscape(request.getParameter("DatumEl")) + ", Start_Depth = " + JspUtils.sqlEscape(request.getParameter("StartDepth")) + ", Finish_Depth = " + JspUtils.sqlEscape(request.getParameter("FinishDepth")) + " WHERE Feature_ID = " + featID);
-			}
-
-			if (featStatus.equals("waiting")) { //submitted
-				//change status, check MF & add saved record to folder
-				rs = statement.executeQuery("SELECT Code FROM Lookup WHERE FieldName = 'RegArea' AND Lookup_ID = " + FREDUtils.makeDropDownNulls(request.getParameter("RegAreaID")));
-				if (rs.next()) {
-					rs = statement.executeQuery("SELECT Which_Masterfile('" + rs.getString(1) + "', " + latitude + ", " + longitude + ") FROM DUAL");
-					rs.next();
-					String mfID = rs.getString(1);
-					execUp = statement.executeUpdate("UPDATE Feature SET Masterfile_ID = " + mfID + " WHERE Feature_ID = " + featID);
-					execUp = statement.executeUpdate("UPDATE Audit_Table SET Status = 'waiting', Submitted_By_ID = " + userID + ", Submitted_Date = SYSDATE, Working_Folder_ID = NULL, Working_Comments = NULL WHERE Audit_ID = " + auditID);
-					rs = statement.executeQuery("SELECT * FROM Folder_Content_View WHERE Feature_ID = " + featID + " AND Folder_ID = " + foldID);
-					if (!rs.next()) {
-						execUp = statement.executeUpdate("INSERT INTO Folder_Content (Folder_ID, Feature_ID) VALUES (" + foldID + ", " + featID + ")");
-					}
-				}
-				else { //Reg Area code not valid
-					throw new DataInputException("Registration Area", "You have entered an invalid Registration Area and the record has not been submitted");
-				}
-			}
-
-			statement2.close();
-
-			response.sendRedirect("folder_detail.jsp?ID=" + foldID);
-			*/
+			//response.sendRedirect("folder_detail.jsp?ID=" + foldID);
 
 		} catch (DataInputException e) {
 			out.println("<p><div class='bigheading'>Data Error</div></p>");

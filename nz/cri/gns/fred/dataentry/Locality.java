@@ -74,9 +74,9 @@ public abstract class Locality {
 		this.user = user;
 		this.state = state;
 		featureID = new Integer(id);
-		feature = new Feature(id, user, state);
+		feature = new Feature(id, user, state, true);
 		sampleID = (Integer) feature.getAsVector(Feature.SAMPLES).firstElement();
-		sample = new Sample(sampleID.intValue(), user, state);
+		sample = new Sample(sampleID.intValue(), user, state, true);
 		featureType = sample.getAsString(Sample.FEATURE_TYPE);
 		if (sample.get(Sample.WORKING_FOLDER_ID) != null) this.folder = new Folder(sample.getAsInt(Sample.WORKING_FOLDER_ID), user, state);
 		setField(FEATURE_NAME, sample.getAsString(Sample.FEATURE_NAME));
@@ -121,6 +121,7 @@ public abstract class Locality {
 	}
 
 	public void setField(int field, String value) throws DataInputException {
+		if (value != null && (value.equals("") || value.equals("-"))) value = null;
 		if (value != null)
 			parseField(field, value);
 		fields[field] = value;

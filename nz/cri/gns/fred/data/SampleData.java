@@ -294,13 +294,17 @@ public class SampleData {
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
-	protected static SampleData getData(int id, PageState state)
+	protected static SampleData getData(int id, PageState state, boolean forceRefresh)
 		throws SQLException, IOException {
-		SampleData f = (SampleData) pool.retrieve(new DataFinder(id));
-		if (f == null) {
-			f = new SampleData(id, state);
+		SampleData s = (SampleData) pool.retrieve(new DataFinder(id));
+		if (forceRefresh && s != null) {
+			pool.removeMe(s);
+			s = null;
 		}
-		return f;
+		if (s == null) {
+			s = new SampleData(id, state);
+		}
+		return s;
 	}
 
 	public String toString() {

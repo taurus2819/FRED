@@ -45,13 +45,17 @@ public class Feature {
 	private FeatureData fd;
 	private boolean authenticated;
 
-	public Feature(int id, User user, PageState state) throws SQLException, IOException {
-		fd = FeatureData.getData(id, state);
+	public Feature(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException {
+		fd = FeatureData.getData(id, state, forceRefresh);
 		if (!FREDUtils.isAllowedLocality(user, fd.getAsString(SECURITY_CLASS_ID), fd.getAsString(STATUS), fd.getAsString(FEATURE_ID), state)) {
 			authenticated = false;
 		} else {
 			authenticated = true;
 		}		
+	}
+
+	public Feature(int id, User user, PageState state) throws SQLException, IOException {
+		this(id, user, state, false);
 	}
 
 	public boolean isUserAuthenticated() {
