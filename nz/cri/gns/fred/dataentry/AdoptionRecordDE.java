@@ -116,7 +116,6 @@ public class AdoptionRecordDE extends RecordDE {
 							"Bad Modifier");
 					break;
 			}
-
 		} catch (IOException e) {
 			throw new DataInputException();
 		} catch (SQLException e) {
@@ -238,7 +237,7 @@ public class AdoptionRecordDE extends RecordDE {
 				savedFlag = true;
 				try {
 					record = (AdoptionRecord) AdoptionRecord.getData(record.getRecordID(), user, state, true);
-					sample = new Sample(sample.getSampleID(), user, state);
+					sample = new Sample(sample.getSampleID(), user, state, true);
 				} catch (Exception e) {
 				}
 			} catch (SQLException e) {

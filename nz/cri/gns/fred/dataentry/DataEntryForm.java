@@ -87,6 +87,19 @@ public interface DataEntryForm {
 	public static final int ADO_STOP_MOD = 36;
 	public static final int ADO_COMMENTS = 37;	
 
+	//Paleontology Record files
+	public static final int IDENTIFICATION_DATE = 31;
+	public static final int IDENTIFIERS = 32;
+	public static final int IDT_AGE_START = 33;
+	public static final int IDT_START_MOD = 34;
+	public static final int IDT_AGE_STOP = 35;
+	public static final int IDT_STOP_MOD = 36;	
+	public static final int STAGE_COMMENTS = 37;
+	public static final int LAB_SECTION = 38;
+	public static final int LAB_NUMBER = 39;
+	public static final int COLLECTION_COMMENTS = 40;
+	public static final int TAXA_LIST = 41;
+	
 	public int getFieldCount();
 
 	public void setField(int field, String value) throws DataInputException;

@@ -144,7 +144,7 @@
 					Sample sample = new Sample(sampID, user, state);
 					out.print("<a href='data_entry.jsp?Type=ADO&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "'><img src='images/new_ado.gif' border='0' height='20' width='20' alt='Add Adoption Record' /></a><img src='images/blank.gif' height='20' width='2' />");
 					out.print("</td><td>");
-					//out.print("<a href='data_entry.jsp'><img src='images/new_pal.gif' border='0' height='20' width='20' alt='Add Paleontology Record' /></a><img src='images/blank.gif' height='20' width='2' />");
+					out.print("<a href='data_entry.jsp?Type=PAL&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "'><img src='images/new_pal.gif' border='0' height='20' width='20' alt='Add Paleontology Record' /></a><img src='images/blank.gif' height='20' width='2' />");
 				} else {
 					out.println("<a href='new_sample.jsp?FeatID=" + featID + "&FoldID=" + folder.getFolderID() + "'><img src='images/drill.gif' border='0' height='20' width='20' alt='New Sample' /></a><img src='images/blank.gif' height='20' width='2' />");
 				}
@@ -171,10 +171,10 @@
 						out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this sample\") == true) {document.FoldForm.ActionType.value=\"DeleteSamp\";document.FoldForm.SampID.value=\"" + sample.getSampleID() + "\";document.FoldForm.submit();}' title='Delete Sample'><img src='images/delete.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					out.print("</td><td></td><td>");
 					if (folder.isAllowedCreateLocalities())
-						out.print("<a href='data_entry.jsp?Type=ADO&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "' title='Add Adoption Record'><img src='images/new_ado.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+						out.print("<a href='data_entry.jsp?Type=ADO&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "'><img src='images/new_ado.gif' border='0' height='20' width='20' alt='Add Adoption Record' /></a><img src='images/blank.gif' height='20' width='2' />");
 					out.print("</td><td>");
-					//if (folder.isAllowedCreateLocalities())
-					//	out.print("<a href='pal_data_entry.jsp?FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "' title='Add Paleontology Record'><img src='images/new_pal.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+					if (folder.isAllowedCreateLocalities())
+						out.print("<a href='data_entry.jsp?Type=PAL&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "'><img src='images/new_pal.gif' border='0' height='20' width='20'  /></a><img src='images/blank.gif' height='20' width='2' />");
 					out.print("</td>");
 					out.println("</tr>");
 				}
@@ -185,7 +185,7 @@
 					String recType = kvo.getValue();
 					try {
 						Record record = Record.getData(recID, user, state);
-						if (recType.equals("ADO") && (record.get(Record.WORKING_FOLDER_ID) == null || record.getAsInt(Record.WORKING_FOLDER_ID) == (folder.getFolderID()))) {
+						if (!recType.equals("SMP") && (record.get(Record.WORKING_FOLDER_ID) == null || record.getAsInt(Record.WORKING_FOLDER_ID) == (folder.getFolderID()))) {
 							String imageName;
 							if (recType.equals("ADO")) {
 								imageName = "ado.gif";

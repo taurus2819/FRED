@@ -123,6 +123,18 @@
 			dataEntryForm.setField(DataEntryForm.ADO_STOP_MOD, request.getParameter("StopMod"));
 			dataEntryForm.setField(DataEntryForm.ADO_COMMENTS, request.getParameter("Comm"));
 
+			//Paleontology fields
+			dataEntryForm.setField(DataEntryForm.IDENTIFICATION_DATE, request.getParameter("PalDate"));
+			dataEntryForm.setField(DataEntryForm.IDENTIFIERS, request.getParameter("Identifier"));
+			dataEntryForm.setField(DataEntryForm.IDT_AGE_START, request.getParameter("StageStart"));
+			dataEntryForm.setField(DataEntryForm.IDT_START_MOD, request.getParameter("StartMod"));
+			dataEntryForm.setField(DataEntryForm.IDT_AGE_STOP, request.getParameter("StageStop"));
+			dataEntryForm.setField(DataEntryForm.IDT_STOP_MOD, request.getParameter("StopMod"));
+			dataEntryForm.setField(DataEntryForm.STAGE_COMMENTS, request.getParameter("StComm"));
+			dataEntryForm.setField(DataEntryForm.LAB_SECTION, request.getParameter("SectID"));
+			dataEntryForm.setField(DataEntryForm.LAB_NUMBER, request.getParameter("LabNum"));
+			dataEntryForm.setField(DataEntryForm.COLLECTION_COMMENTS, request.getParameter("CollComm"));
+
 			if (saveType.equals("Submit")) {
 				dataEntryForm.submit();
 			} else {
