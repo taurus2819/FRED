@@ -329,17 +329,30 @@ function parseDropDown(val) {
 
 		if (request.getParameter("Type").equals("Coord")) {
 			out.println("<tr><td class='heading' colspan='2'>Coordinates</td></tr>");
-			out.println("<tr><td colspan='2'>Please select the type and then enter the coordinates in the appropriate text boxes.<br />For <em>NZMG</em> enter 7-digit eastings and northings, for <em>NZMS260</em> enter the map sheet plus either 3 or 4-digit eastings and northings and for <em>Lat/Long</em> enter latitudes and longitudes in decimal degrees (-ve numbers for west and south).</td></tr>");
+			out.println("<tr><td colspan='2'>Please select the type and then enter the coordinates in the appropriate boxes.");
+			out.println("<ul><li><em>New Zealand Map Grid</em> (NZMG) - enter full 7-digit easting and northing</li>");
+			out.println("<li><em>NZMS260</em> (1:50,000 map reference) - enter map sheet plus 3 or 4-digit easting and northing</li>");
+			out.println("<li><em>NZ Yard Grid</em> - enter full 6-digit easting and northing</li>");
+			out.println("<li><em>NZMS1</em> (1:63,000 map reference) - enter map sheet (incl S or N) plus 3 or 4-digit easting and northing</li>");
+			out.println("<li><em>Chatham, Auckland and Campbell Island grids</em> - enter full metric easting and northing</li>");
+			out.println("<li><em>Lat/Long NZGD49</em> (use for NZ lat/long prior to 2000) - enter latitude and longitude in decimal degrees.  South latitudes and West longitudes should be entered as negative numbers</li>");
+			out.println("<li><em>Lat/Long WGS84/NZGD2000</em> (use for international or recent New Zealand lat/longs) - enter as decimal degrees as for NZGD49</li></ul>");
+			out.println("Note: coordinates will be converted to NZGD49 lat/long.  Both the original and converted coordinates will be stored in the database.</td></tr>");
+			
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.println("<tr><td class='heading'>Coord Type</td><td>");
 			out.println("<select name='CoordType'>");
 			out.println("<option value='NZMG' selected>New Zealand Map Grid</option>");
 			out.println("<option value='NZMS260'>NZMS260</option>");
+			out.println("<option value='NZYS'>NZ Yard Grid (Sth Isl)</option>");
+			out.println("<option value='NZYN'>NZ Yard Grid (Nth Isl)</option>");
+			out.println("<option value='NZMS1S'>NZMS1 (Sth Isl)</option>");
+			out.println("<option value='NZMS1N'>NZMS1 (Nth Isl)</option>");
 			out.println("<option value='CHAT'>Chatham Island Grid</option>");
-			out.println("<option value='AUCK'>Auckland Island TM</option>");
-			out.println("<option value='CAMP'>Campbell Island TM</option>");
+			out.println("<option value='AUCK'>Auckland Island Grid</option>");
+			out.println("<option value='CAMP'>Campbell Island Grid</option>");
 			out.println("<option value='NZGD49'>Lat/Long NZGD49</option>");
-			out.println("<option value='WGS84'>Lat/Long WGS84</option>");
+			out.println("<option value='WGS84'>Lat/Long WGS84/NZGD2000</option>");
 			out.println("</select></td></tr>");
 			out.println("<tr><td class='heading'>Map Sheet</td><td><input type='text' name='MapSheet' /></td></tr>");
 			out.println("<tr><td class='heading'>Easting/Longitude</td><td><input type='text' name='East' /></td></tr>");

@@ -109,6 +109,18 @@ public abstract class LocalityDE implements DataEntryForm {
 				case 28 :
 					setField(GRID_REF, "WGS84:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
 					break;
+				case 33 :
+					setField(GRID_REF, "NZYS:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
+					break;
+				case 70 :
+					setField(GRID_REF, "NZYN:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
+					break;
+				case 17 :
+					setField(GRID_REF, "NZMS1S:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
+					break;
+				case 69 :
+					setField(GRID_REF, "NZMS1N:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
+					break;
 				case 7: 
 					setField(GRID_REF, "CHAT:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
 					break;				
@@ -318,7 +330,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		
 		out.write("<tr><td class='heading' style=\"color: #FF0000\">Location</td><td class='smallheading'>Grid Ref.</td><td><input type='text' name='GridRef' size='40' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(LocalityDE.GRID_REF))
-				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Coord\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
+				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Coord\", \"Supp\", \"width=600,height=600\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
 		ResultSet rs = conn.executeQuery("SELECT MAX(Method_ID) FROM SC.Method");
 		rs.next();
 		out.write("<script language='JavaScript'>\nvar datumMethod = new Array("
@@ -380,6 +392,52 @@ public abstract class LocalityDE implements DataEntryForm {
 			try {
 				origCoord = new TruncNorthingEasting(Double.parseDouble(north), Double.parseDouble(east), sheet, east.length());
 				origSystem = DatumFactory.createDatum("NZMS260");
+				countryCode = "NZ";
+			} catch (Exception e) {
+				throw new DataInputException("Coordinate", "Invalid value");
+			}
+		} else if (coord.indexOf("NZYS:") == 0) {
+			String east = coord.substring(5, coord.indexOf("*"));
+			String north = coord.substring(coord.indexOf("*") + 1, coord.length());
+			try {
+				origCoord =	new NorthingEasting(Double.parseDouble(north), Double.parseDouble(east));
+				origSystem = DatumFactory.createDatum("NZ Yard SthIsl");
+				countryCode = "NZ";
+			} catch (Exception e) {
+				throw new DataInputException("Coordinate", "Invalid value");
+			}
+		} else if (coord.indexOf("NZYN:") == 0) {
+			String east = coord.substring(5, coord.indexOf("*"));
+			String north = coord.substring(coord.indexOf("*") + 1, coord.length());
+			try {
+				origCoord =	new NorthingEasting(Double.parseDouble(north), Double.parseDouble(east));
+				origSystem = DatumFactory.createDatum("NZ Yard NthIsl");
+				countryCode = "NZ";
+			} catch (Exception e) {
+				throw new DataInputException("Coordinate", "Invalid value");
+			}
+		} else if (coord.indexOf("NZMS1S:") == 0) {
+			if (coord.indexOf("*") == coord.lastIndexOf("*"))
+				throw new DataInputException("Coordinate", "Invalid value");
+			String sheet = coord.substring(7, coord.indexOf("*"));
+			String east = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
+			String north = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
+			try {
+				origCoord = new TruncNorthingEasting(Double.parseDouble(north), Double.parseDouble(east), sheet, east.length());
+				origSystem = DatumFactory.createDatum("NZMS1 SthIsl");
+				countryCode = "NZ";
+			} catch (Exception e) {
+				throw new DataInputException("Coordinate", "Invalid value");
+			}
+		} else if (coord.indexOf("NZMS1N:") == 0) {
+			if (coord.indexOf("*") == coord.lastIndexOf("*"))
+				throw new DataInputException("Coordinate", "Invalid value");
+			String sheet = coord.substring(7, coord.indexOf("*"));
+			String east = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
+			String north = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
+			try {
+				origCoord = new TruncNorthingEasting(Double.parseDouble(north), Double.parseDouble(east), sheet, east.length());
+				origSystem = DatumFactory.createDatum("NZMS1 NthIsl");
 				countryCode = "NZ";
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");
