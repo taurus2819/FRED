@@ -94,12 +94,10 @@ function saveData(type) {
 			window.opener.form1.Coll.value = window.opener.form1.Coll.value + parseDropDown(Person.value) + "\n";
 		}
 		else if (type == "Adoptor") {
-			window.opener.form1.Adoptor.value = parseDropDown(Person.value);
-			window.close();
+			window.opener.form1.Adoptor.value = window.opener.form1.Adoptor.value + parseDropDown(Person.value) + "\n";
 		}
 		else if (type == "Identifier") {
-			window.opener.form1.Identifier.value = parseDropDown(Person.value);
-			window.close();
+			window.opener.form1.Identifier.value = window.opener.form1.Identifier.value + parseDropDown(Person.value) + "\n";
 		}
 		else if (type == "StratName") {
 			window.opener.form1.StratName.value = StratName.value
@@ -353,7 +351,7 @@ function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
 
 		else if (request.getParameter("Type").equals("Adoptor")) {
 			out.println("<tr><td class='heading' colspan='2'>Adoptor</td></tr>");
-			out.println("<tr><td colspan='2'>Select a person/company from the drop-down list.  New adoptors can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button.</td></tr>");
+			out.println("<tr><td colspan='2'>Select a person/company from the drop-down list.  New adoptors can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button<br />You may add multiple adoptors by clicking the Add To Main Form icon between each collector and then Close to end.</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.print("<tr><td class='heading'>Person</td><td>");
 			cd = new ComboDescriptor("Person_View", "Name", "Name");
@@ -373,7 +371,7 @@ function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
 
 		else if (request.getParameter("Type").equals("Identifier")) {
 			out.println("<tr><td class='heading' colspan='2'>Identifier</td></tr>");
-			out.println("<tr><td colspan='2'>Select a person/company from the drop-down list.  New identifiers can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button.</td></tr>");
+			out.println("<tr><td colspan='2'>Select a person/company from the drop-down list.  New identifiers can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button<br />You may add multiple identifiers by clicking the Add To Main Form icon between each collector and then Close to end.</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.print("<tr><td class='heading'>Person</td><td>");
 			cd = new ComboDescriptor("Person_View", "Name", "Name");

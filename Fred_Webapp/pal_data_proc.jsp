@@ -49,6 +49,7 @@
 	String foldID, sampID, recID, auditID = "", featStatus, identifierID = "", palDate = "", stageID = "";
 	User user = getUser(session);
 	int userID = user.getPersonId();
+	long[] identID = new long[20];
 
 	ExtranetTemplate et = getExtranetTemplate();
 
@@ -87,26 +88,27 @@
 			} else {
 				featStatus = "working";
 			}
-
 			//Identification Date
 			if (request.getParameter("PalDateUnk") == null) {
 				palDate = request.getParameter("PalDateDay") + "-" + request.getParameter("PalDateMonth") + "-" + request.getParameter("PalDateYear");
 			}
-
 			//Identifier_ID
 			if (!request.getParameter("Identifier").equals("")) {
 				String identifier = request.getParameter("Identifier");
-				rs = statement.executeQuery("SELECT Person_ID FROM Person_View WHERE Name = '" + identifier + "'");
-				if (rs.next()) {
-					identifierID = rs.getString(1);
-				} else {  //Collector not in database so throw exception
-					throw new DataInputException("Identifier", identifier + " not in database - add through builder (only one person can be entered as the identifier)");
+				i = 0;
+				while (identifier.length() > 0) {
+					if (identifier.indexOf("\n") == -1) { identifier = identifier + "\n"; }
+					rs = statement.executeQuery("SELECT Person_ID FROM Person_View WHERE Name = '" + identifier.substring(0, identifier.indexOf("\n")).trim() + "'");
+					if (rs.next()) {
+						identID[++i] = rs.getLong(1);
+					} else {  //Identifier not in database so throw exception
+						throw new DataInputException("Identifier", identifier.substring(0, identifier.indexOf("\n")).trim() + " not in database - add through builder");
+					}
+					identifier = identifier.substring(identifier.indexOf("\n") + 1, identifier.length());
 				}
 			}
-
 			//Stage ages
 			if (checkStage(request.getParameter("StageStart"), request.getParameter("StageStop"), statement) == 0) { throw new DataInputException("Stage", "Stop age greater than Start age"); }
-
 			if (recID.equals("0")) {
 				//create new audit, record data
 				if ((userRights & 4) == 0) { throw new BadRightsException(); }
@@ -143,7 +145,12 @@
 			}
 
 			//Create PALEONTOLOGY entry
-			execUp = statement.executeUpdate("INSERT INTO Paleontology (Record_ID, Identifier_ID, Identification_Date, Date_Rounding, Stage_ID, Stage_Comments, Lab_Section_ID, Lab_Number, Collection_Comments) VALUES (" + recID + ", " + JspUtils.sqlEscape(identifierID) + ", TO_DATE('" + palDate + "'), '" + request.getParameter("DateRnd") + "', " + JspUtils.sqlEscape(stageID) + ", " + JspUtils.sqlEscape(request.getParameter("StComm")) + ", " + makeDropDownNulls(request.getParameter("SectID")) + ", " + JspUtils.sqlEscape(request.getParameter("LabNum")) + ", " + JspUtils.sqlEscape(request.getParameter("CollComm")) + ")");
+			execUp = statement.executeUpdate("INSERT INTO Paleontology (Record_ID, Identification_Date, Date_Rounding, Stage_ID, Stage_Comments, Lab_Section_ID, Lab_Number, Collection_Comments) VALUES (" + recID + ", TO_DATE('" + palDate + "'), '" + request.getParameter("DateRnd") + "', " + JspUtils.sqlEscape(stageID) + ", " + JspUtils.sqlEscape(request.getParameter("StComm")) + ", " + makeDropDownNulls(request.getParameter("SectID")) + ", " + JspUtils.sqlEscape(request.getParameter("LabNum")) + ", " + JspUtils.sqlEscape(request.getParameter("CollComm")) + ")");
+
+			//Create IDENTIFIERS entries
+			for (int j = 0; j < identID.length; j++) {
+				if (identID[j] > 0) { execUp = statement.executeUpdate("INSERT INTO Identifier (Record_ID, Person_ID) VALUES (" + recID + ", " + identID[j] + ")"); }
+			}
 
 			statement2.close();
 

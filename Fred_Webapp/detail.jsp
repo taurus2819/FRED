@@ -379,28 +379,39 @@
 				}
 
 				//Paleontology
-				rs = statement.executeQuery("SELECT DISTINCT Record_ID, Identifier, Identification_Date, Date_Rounding, Stage, Stage_Comments, Lab, Lab_Number, Collection_Comments FROM Paleontology_All_View WHERE Sample_ID = " + sampID);
+				rs = statement.executeQuery("SELECT DISTINCT Record_ID, Identification_Date, Date_Rounding, Stage, Stage_Comments, Lab, Lab_Number, Collection_Comments FROM Paleontology_All_View WHERE Sample_ID = " + sampID);
 				while (rs.next()) {
 					out.println("<tr><td colspan='2' class='bigheading'>Paleontology Data</td></tr>");
 
 					recID = rs.getString(1);
-					if (rs.getString(2) != null) { out.println("<tr><td class='heading'>Identifier</td><td>" + rs.getString(2) + "</td></tr>"); }
-					if (rs.getString(3) != null) {
+					//identifiers (repeating)
+					rs2 = statement2.executeQuery("SELECT COUNT(*) FROM Identifier WHERE Record_ID = " + recID);
+					rs2.next();
+					if (rs2.getInt(1) > 0) {
+						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Identifiers</td>");
+						rs2 = statement2.executeQuery("SELECT Name FROM Person_View P, Identifier I WHERE P.Person_ID = I.Person_ID AND I.Record_ID = " + recID + " ORDER BY Name");
+						rs2.next();
+						out.println("<td>" + rs2.getString(1) + "</td></tr>");
+						while (rs2.next()) {
+							out.println("<tr><td>" + rs2.getString(1) + "</td></tr>");
+						}
+					}
+					if (rs.getString(2) != null) {
 						out.print("<tr><td class='heading'>Identification Date</td><td>");
-						if (rs.getString(4) == null) {
-							out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(3)));
-						} else if (rs.getString(4).equals("Year")) {
+						if (rs.getString(3) == null) {
+							out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(2)));
+						} else if (rs.getString(3).equals("Year")) {
 							out.print(yearFormatter.format(rs.getDate(3)));
-						} else if (rs.getString(4).equals("Month")) {
+						} else if (rs.getString(3).equals("Month")) {
 							out.print(monthFormatter.format(rs.getDate(3)));
 						}
 						out.println("</td></tr>");
 					}
-					if (rs.getString(5) != null) { out.println("<tr><td class='heading'>Stage</td><td>" + rs.getString(5) + "</td></tr>"); }
-					if (rs.getString(6) != null) { out.println("<tr><td class='heading'>Stage Comments</td><td>" + rs.getString(6) + "</td></tr>"); }
-					if (rs.getString(7) != null) { out.println("<tr><td class='heading'>Lab</td><td>" + rs.getString(7) + "</td></tr>"); }
-					if (rs.getString(8) != null) { out.println("<tr><td class='heading'>Lab Number</td><td>" + rs.getString(8) + "</td></tr>"); }
-					if (rs.getString(9) != null) { out.println("<tr><td class='heading'>Collection Comments</td><td>" + rs.getString(9) + "</td></tr>"); }
+					if (rs.getString(4) != null) { out.println("<tr><td class='heading'>Stage</td><td>" + rs.getString(4) + "</td></tr>"); }
+					if (rs.getString(5) != null) { out.println("<tr><td class='heading'>Stage Comments</td><td>" + rs.getString(5) + "</td></tr>"); }
+					if (rs.getString(6) != null) { out.println("<tr><td class='heading'>Lab</td><td>" + rs.getString(6) + "</td></tr>"); }
+					if (rs.getString(7) != null) { out.println("<tr><td class='heading'>Lab Number</td><td>" + rs.getString(7) + "</td></tr>"); }
+					if (rs.getString(8) != null) { out.println("<tr><td class='heading'>Collection Comments</td><td>" + rs.getString(8) + "</td></tr>"); }
 					//taxa (double repeating)
 					rs2 = statement2.executeQuery("SELECT * FROM Pal_List WHERE Record_ID = " + recID);
 					if (rs2.next()) {

@@ -134,7 +134,6 @@ function parseTaxa(taxa) {
 				rs.next();
 				if (sampID == null) { sampID = rs.getString(1); }
 				workComm = noNulls(rs.getString(2));
-
 				rs = statement.executeQuery("SELECT Identification_Date, Date_Rounding, Stage_Comments, Lab_Section_ID, Lab_Number, Collection_Comments FROM Paleontology WHERE Record_ID = " + loadRecID);
 				if (rs.next()) {
 					if (rs.getString(1) != null) {
@@ -153,13 +152,16 @@ function parseTaxa(taxa) {
 					labNum = noNulls(rs.getString(5));
 					collComm = noNulls(rs.getString(6));
 				}
-				rs = statement.executeQuery("SELECT Identifier, Stage_Lower_ID, Stage_Lower_Mod, Stage_Upper_ID, Stage_Upper_Mod FROM Paleontology_All_View WHERE Record_ID = " + loadRecID);
+				rs = statement.executeQuery("SELECT DISTINCT Identifier FROM Paleontology_All_View WHERE Record_ID = " + loadRecID);
+				while (rs.next()) {
+					if (rs.getString(1) != null) { identifier = identifier + rs.getString(1) + "\n"; }
+				}
+				rs = statement.executeQuery("SELECT Stage_Lower_ID, Stage_Lower_Mod, Stage_Upper_ID, Stage_Upper_Mod FROM Paleontology_All_View WHERE Record_ID = " + loadRecID);
 				if (rs.next()) {
-					identifier = noNulls(rs.getString(1));
-					if (rs.getString(2) != null) { stageStart = rs.getString(2); }
-					if (rs.getString(3) != null) { startMod = rs.getString(3); }
-					if (rs.getString(4) != null) { stageStop = rs.getString(4); }
-					if (rs.getString(5) != null) { stopMod = rs.getString(5); }
+					if (rs.getString(1) != null) { stageStart = rs.getString(2); }
+					if (rs.getString(2) != null) { startMod = rs.getString(3); }
+					if (rs.getString(3) != null) { stageStop = rs.getString(4); }
+					if (rs.getString(4) != null) { stopMod = rs.getString(5); }
 				}
 				rs = statement.executeQuery("SELECT Group_Name, Taxonomic_Name, Author, Specimen_Count, Specimen_Coords, Comments FROM Taxa_View WHERE Record_ID = " + loadRecID);
 				while (rs.next()) {
@@ -260,7 +262,7 @@ function swapSection(frm){
 			</td></tr>
 			<tr><td></td><td></td><td><input type='checkbox' name='PalDateUnk'<%=palDateUnk%>>Unknown</td></tr>
 			<tr><td></td><td class='smallheading'>Rounding</td><td><input type='radio' name='DateRnd' value='' <%=((dateRnd.equals("")) ? " checked" : "")%>>None<img src='images/blank.gif' width='20' height='1' /><input type='radio' name='DateRnd' value='Month'<%=((dateRnd.equals("Month")) ? " checked" : "")%>>Month<img src='images/blank.gif' width='20' height='1' /><input type='radio' name='DateRnd' value='Year'<%=((dateRnd.equals("Year")) ? " checked" : "")%>>Year</td></tr>
-			<tr><td class='heading'>Identifier</td><td></td><td><input type='text' name='Identifier' size='40' value='<%=identifier%>'></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=Identifier", "Supp", "width=600,height=350");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
+			<tr><td class='heading'>Identifiers</td><td></td><td><textarea name='Identifier' cols='40' rows='2'><%=identifier%></textarea></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=Identifier", "Supp", "width=600,height=350");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
 			<tr><td class='heading'>Stage</td><td></td><td>
 			<table border='0' cellspacing='0'>
 			<tr><td>
@@ -291,8 +293,8 @@ function swapSection(frm){
 			}
 			out.println("</select></td></tr>");
 %>
-			<tr><td></td><td class='smallheading'>Code</td><td class='smallheading'><select name='SectID'><option value='-' selected>-- Choose --</option></select>&nbsp;&nbsp;&nbsp;
-			Number&nbsp;&nbsp;<input type='text' name='LabNum' size='20' value='<%=labNum%>'></td><td></td></tr>
+			<tr><td></td><td class='smallheading'>Code</td><td class='smallheading'><select name='SectID'><option value='-' selected>-- Choose --</option></select>&nbsp;&nbsp;
+			Number&nbsp;<input type='text' name='LabNum' size='20' value='<%=labNum%>'></td><td></td></tr>
 <%			if (sectID != null) {
 				out.println("<script language='JavaScript'>");
 				out.println("swapSection(form1);");
