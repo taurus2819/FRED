@@ -3,6 +3,8 @@ package nz.cri.gns.fred.dataentry;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
@@ -34,13 +36,17 @@ public abstract class Locality {
 	public static final int RECOLLECTION = 7;
 	public static final int SIDETRACK = 7;
 	public static final int OPERATING_COMPANY = 8;
+	public static final int SECTION_COLLECTOR = 8;
 	public static final int SPUD_DATE = 9;
+	public static final int START_DATE = 9;
 	public static final int COMPLETION_DATE = 10;
 	public static final int LICENCE_AREA = 11;
 	public static final int DATUM_TYPE = 12;
 	public static final int DATUM_ELEVATION = 13;
 	public static final int KICK_OFF_DEPTH = 14;
+	public static final int TOP_HORIZON = 14;
 	public static final int TERMINATION_DEPTH = 15;
+	public static final int BASE_HORIZON = 15;
 
 	protected User user;
 	protected PageState state;
@@ -50,7 +56,7 @@ public abstract class Locality {
 	protected String featureType;
 	protected Feature feature;
 	protected Sample sample;
-	protected String[] fields = new String[20];
+	protected String[] fields = new String[16];
 	private Double latitude, longitude;
 	private String origSystemID, origCoord, countryCode, recoll;
 	protected boolean savedFlag = false;
@@ -104,6 +110,14 @@ public abstract class Locality {
 
 	public Integer getSampleID() {
 		return sampleID;
+	}
+	
+	public String getFeatureType() {
+		return featureType;
+	}
+
+	public int getFieldCount() {
+		return fields.length;
 	}
 
 	public void setField(int field, String value) throws DataInputException {
@@ -257,8 +271,8 @@ public abstract class Locality {
 		}
 		return true;
 	}
-
-	public void save() throws SQLException, IOException, InvalidCredentialsException {
+	
+	public int save() throws SQLException, IOException, InvalidCredentialsException {
 		if (!savedFlag) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			ResultSet rs;
@@ -288,9 +302,10 @@ public abstract class Locality {
 			conn.releaseStatement();
 		}
 		savedFlag = true;
+		return featureID.intValue();
 	}
 
-	public void submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
+	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
 		if (!folder.isAllowedSubmitLocalities()) throw new InvalidCredentialsException();
 		if (featureType == null || fields[GRID_REF] == null || fields[REGISTRATION_AREA] == null) throw new DataInputException("Mandatory Fields", "Not all completed");
 		save();
@@ -312,6 +327,7 @@ public abstract class Locality {
 			conn.executeUpdate("INSERT INTO Folder_Content (Folder_ID, Feature_ID) VALUES (" + folder.getFolderID() + ", " + featureID + ")");
 		}
 		conn.releaseStatement();
+		return featureID.intValue();
 	}
 
 	public void revoke() throws SQLException, IOException, InvalidCredentialsException {
@@ -343,40 +359,24 @@ public abstract class Locality {
 		conn.releaseStatement();
 	}
 
-	protected String parseDate(String dateStr, String dateRnd) throws DataInputException {
-		String date, day, month, year;
-		if (dateStr.lastIndexOf("/") == dateStr.length() - 1) throw new DataInputException("Date", "Invalid Data"); //ends with slash
-		if (dateRnd.equals("Year") && dateStr.indexOf("/") == -1 && dateStr.length() == 4) { //year only
-			try {
-				date = "1/1/" + Integer.parseInt(dateStr);
-			} catch (Exception e) {
-				throw new DataInputException("Date", "Invalid Data");
+
+	protected String reverseParseDate(Date date, String dateRnd) {
+		SimpleDateFormat dateFormatter = new SimpleDateFormat ("d/M/yyyy");
+		SimpleDateFormat monthDateFormatter = new SimpleDateFormat ("M/yyyy");
+		SimpleDateFormat yearDateFormatter = new SimpleDateFormat ("yyyy");
+		if (date != null) {
+			if (dateRnd == null) {
+				return dateFormatter.format(date);
+			} else if (dateRnd.equals("Month")) {
+				return monthDateFormatter.format(date);
+			} else if (dateRnd.equals("Year")){
+				return yearDateFormatter.format(date);
+			} else {
+				return null;
 			}
 		} else {
-			if (dateStr.indexOf("/") == dateStr.lastIndexOf("/")) {
-				day = "1";
-				month = dateStr.substring(0, dateStr.indexOf("/"));
-				year = dateStr.substring(dateStr.indexOf("/") + 1, dateStr.length());
-			} else {
-				day = dateStr.substring(0, dateStr.indexOf("/"));
-				month = dateStr.substring(dateStr.indexOf("/") + 1, dateStr.lastIndexOf("/"));
-				year = dateStr.substring(dateStr.lastIndexOf("/") + 1, dateStr.length());
-			}
-			try {
-				int iDay = Integer.parseInt(day);
-				int iMonth = Integer.parseInt(month);
-				int iYear = Integer.parseInt(year);
-				if (iDay < 0 || iDay > 31) throw new DataInputException("Date", "Invalid Date"); //bad day
-				if (iMonth < 0 || iMonth > 12) throw new DataInputException("Date", "Invalid Date"); //bad month
-				if (year.length() != 4) throw new DataInputException("Date", "Invalid Date"); //bad year
-				if (iMonth == 2 && iDay > 28) throw new DataInputException("Date", "Invalid Date"); //bad Feb
-				if ((iMonth == 4 || iMonth == 6 || iMonth == 9 || iMonth == 11) && iDay > 30) throw new DataInputException("Date", "Invalid Date"); //bad 30 day months
-			} catch (Exception e) {
-				throw new DataInputException("Date", "Invalid Date");
-			}
-			date = day + "/" + month + "/" + year;
+			return null;
 		}
-		return date;
 	}
 
 	private String getSiteID() throws IOException, SQLException {

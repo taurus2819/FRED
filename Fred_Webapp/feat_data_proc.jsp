@@ -1,5 +1,5 @@
 <%@		page extends="nz.cri.gns.fred.FREDIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*, nz.cri.gns.util.map.*"
+		import="nz.cri.gns.fred.*, nz.cri.gns.fred.dateentry.*, nx.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*, nz.cri.gns.util.map.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -19,24 +19,9 @@
 					Right.BLOCKED_RIGHT)};
 		}
 	}
-%><%!	class BadRightsException extends Exception {}
-%><%!	class DataInputException extends Exception {
-			private String field;
-			DataInputException() { }
-			DataInputException(String field, String msg) { super(msg); this.field = field; }
-			public String getField() { return field; }
-		}
 %><%
 	PageState state = new PageState(request, response, getServletContext());
-	DBConnection connection = FREDUtils.getFREDConnection(state);
-	Statement statement = connection.statement;
-	Statement statement2 = connection.getExtraStatement();
-	ResultSet rs;
-	int userRights = 0, execUp;
-	double latitude = 0, longitude = 0;
-	String formType, foldID, featID, auditID, siteID, featStatus, recoll = "", origCoord = "", personID = "", startDate = "", startDateRnd = "", finishDate = "", finishDateRnd = "";
 	User user = getUser(session);
-	int userID = user.getPersonId();
 
 	ExtranetTemplate et = getExtranetTemplate();
 
@@ -44,14 +29,19 @@
 
 	if (request.getParameter("Type") != null && request.getParameter("FoldID") != null && request.getParameter("SaveType") != null && request.getParameter("FeatID") != null) {
 
-		formType = request.getParameter("Type");
-		if (formType.equals("VertSect")) { formType = "Vertical Section"; }
-		foldID = request.getParameter("FoldID");
-		featID = request.getParameter("FeatID");
+		String featType = request.getParameter("Type");
+		String foldID = request.getParameter("FoldID");
+		String featID = request.getParameter("FeatID");
+		String saveType = request.getParameter("SaveType");
 
-		//set user rights
-		rs = statement.executeQuery("SELECT User_Rights FROM Folder_View WHERE Folder_ID = " + foldID + " AND User_ID = " + userID);
-		if (rs.next()) { userRights = rs.getInt(1); }
+		Locality locality
+		If (featID != null) {
+			locality = LocalityFactory.getLocality(Integer.parseInt(featID), user, state);
+		} else {
+			locality = LocalityFactory.getLocality(featType, user, Integer.parseInt(foldID), state);
+		}
+
+		if (featType.equals("VertSect")) { featType = "Vertical Section"; }
 
 		out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
 		out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
@@ -68,7 +58,32 @@
 
 		try { //Surround with exception testing so can throw an exception if data problem
 
-			//Parse tricky fields
+			locality.setField(Locality.FEATURE_NAME, FREDUtils.makeNulls(request.getParameter("FeatName"));
+			locality.setField(Locality.REGISTRATION_AREA, FREDUtils.makeDropDownNulls(request.getParameter("RegAreaID"));
+			locality.setField(Locality.WORKING_COMMENTS, FREDUtils.makeNulls(request.getParameter("WorkComm"));
+			locality.setField(Locality.GRID_REF, FREDUtils.makeNulls(request.getParameter("GridRef"));
+			locality.setField(Locality.METHOD, FREDUtils.makeDropDownNulls(request.getParameter("LocMethodID"));
+			locality.setField(Locality.ACCURACY, FREDUtils.makeNulls(request.getParameter("Accuracy"));
+			locality.setField(Locality.LOCALITY_DESC, FREDUtils.makeNulls(request.getParameter("Loc"));
+			locality.setField(Locality.RECOLLECTION, FREDUtils.makeNulls(request.getParameter("Recoll"));
+			if (!featType.equals("Outcrop") {
+				locality.setField(Locality.OPERATING_COMPANY, FREDUtils.makeNulls(request.getParameter("Person"));
+				locality.setField(Locality.START_DATE, FREDUtils.makeNulls(request.getParameter("StartDate"));
+				locality.setField(Locality.COMPLETION_DATE, FREDUtils.makeNulls(request.getParameter("FinishDate"));
+				if (featType.equals("Drillhole")) locality.setField(Locality.LICENCE_AREA, FREDUtils.makeNulls(request.getParameter("LicArea"));
+				locality.setField(Locality.DATUM_TYPE, FREDUtils.makeNulls(request.getParameter("DatumType"));
+				locality.setField(Locality.DATUM_ELEVATION, FREDUtils.makeNulls(request.getParameter("DatumEl"));
+				locality.setField(Locality.KICK_OFF_DEPTH, FREDUtils.makeNulls(request.getParameter("StartDepth"));
+				locality.setField(Locality.TERMINATION_DEPTH, FREDUtils.makeNulls(request.getParameter("FinishDepth"));
+			}
+
+			if (saveType.equals("Submit") {
+				locality.submit();
+			} else {
+				locality.save();
+			}
+
+/*			//Parse tricky fields
 			//Status
 			if (request.getParameter("SaveType").equals("Submit")) {
 				if ((userRights & 16) == 0) { throw new BadRightsException(); }
@@ -77,14 +92,14 @@
 				featStatus = "working";
 			}
 
-/*			//Location Name
-			if (request.getParameter("FeatName") != null) {
-				rs = statement.executeQuery("SELECT * FROM Feature_Security_View WHERE User_ID = " + JspUtils.getUser(session) + " AND Feature_ID <> " + featID + " AND Sample_Name = '" + request.getParameter("FeatName") + "'");
-				if (rs.next()) {
-					throw new DataInputException("Name", request.getParameter("FeatName") + " already being used by you.  Please select a unique name");
-				}
-			}
-*/
+			//Location Name
+			//if (request.getParameter("FeatName") != null) {
+			//	rs = statement.executeQuery("SELECT * FROM Feature_Security_View WHERE User_ID = " + JspUtils.getUser(session) + " AND Feature_ID <> " + featID + " AND Sample_Name = '" + request.getParameter("FeatName") + "'");
+			//	if (rs.next()) {
+			//		throw new DataInputException("Name", request.getParameter("FeatName") + " already being used by you.  Please select a unique name");
+			//	}
+			//}
+
 			//Coords
 			if (request.getParameter("OrigCoord").equals("29")) { //LatLong
 				latitude = Double.parseDouble(request.getParameter("North"));
@@ -209,6 +224,7 @@
 			statement2.close();
 
 			response.sendRedirect("folder_detail.jsp?ID=" + foldID);
+			*/
 
 		} catch (DataInputException e) {
 			out.println("<p><div class='bigheading'>Data Error</div></p>");
@@ -216,12 +232,15 @@
 			out.println("<tr><td class='heading'>Problem Field<img src='images/blank.gif' width='20' height='1' /></td><td>" + e.getField() + "</td></tr>");
 			out.println("<tr><td class='heading'>Error</td><td>"+ e.getMessage() + "</td></tr>");
 			out.println("</table>");
-		} catch (BadRightsException e) {
+		} catch (InvalidCredentialsException e) {
 			out.println("<p><div class='bigheading'>Access Denied</div></p>");
 			out.println("<p>You do not have sufficient rights to save this record</p>");
-		} catch (NullPointerException e) {
+		} catch (IOException e) {
 			out.println("<p><div class='bigheading'>Error</div></p>");
-			out.println("<p>Not all fields recieved</p>");
+			out.println("<p>Database Error</p>");
+		} catch (SQLException e) {
+			out.println("<p><div class='bigheading'>Error</div></p>");
+			out.println("<p>Database Error</p>");
 		}
 	}
 

@@ -3,10 +3,10 @@ package nz.cri.gns.fred.dataentry;
 public class DataInputException extends Exception {
 	private String field;
 	
-	DataInputException() {
+	public DataInputException() {
 	}
 	
-	DataInputException(String field, String msg) {
+	public DataInputException(String field, String msg) {
 		super(msg);
 		this.field = field;
 	}

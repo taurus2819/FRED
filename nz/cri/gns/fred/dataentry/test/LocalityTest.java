@@ -28,7 +28,7 @@ import nz.cri.gns.test.TestingPageState;
  */
 public class LocalityTest extends TestCase {
 
-	public static void testCreate() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public static void _testSave() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn =
 			JspUtils.createDatabaseConnection(
@@ -37,14 +37,36 @@ public class LocalityTest extends TestCase {
 				"ip",
 				state.getContext());
 		User user = new User("pseudo_ben", "santor32", ipConn);
-
-		//Locality loc = new Locality(user, 221, "Outcrop", state);
-		//loc.setField(0, "Test3");
-		//loc.save();
-		Locality loc2 = LocalityFactory.getLocality("Drillhole", 661, user, state);
-		loc2.setField(Locality.WORKING_COMMENTS, "Changed Again and again");
-		loc2.setField(Locality.OPERATING_COMPANY, "Morrison, Bender");
+		Locality loc2 = LocalityFactory.getLocality(661, user, state);
+		loc2.setField(Locality.SPUD_DATE, "4/2003");
+		loc2.setField(Locality.COMPLETION_DATE, "1/5/2003");
+		loc2.setField(Locality.DATUM_TYPE, "KB");
+		loc2.setField(Locality.DATUM_ELEVATION, "50.4");
+		loc2.setField(Locality.KICK_OFF_DEPTH, "223.56");
+		loc2.setField(Locality.TERMINATION_DEPTH, "500");
 		loc2.save();
+	}
+	
+	public static void testCopy() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+		TestingPageState state = new TestingPageState();
+		DBConnection ipConn =
+			JspUtils.createDatabaseConnection(
+				state.getSession(),
+				"nz.cri.gns.db.fred.test.ipConn",
+				"ip",
+				state.getContext());
+		User user = new User("pseudo_ben", "santor32", ipConn);
+		Locality loc = LocalityFactory.getLocality(1282, user, state);
+		loc.setField(Locality.LOCALITY_DESC, "here");
+		for (int i = 0; i < loc.getFieldCount(); i++) {
+			System.out.println(i + ": " + loc.getField(i));
+		}
+		System.out.println(loc.save());
+		Locality loc2 = LocalityFactory.copyLocality(661, 1282, user, state);
+		for (int i = 0; i < loc2.getFieldCount(); i++) {
+			System.out.println(i + ": " + loc2.getField(i));
+		}
+		System.out.println(loc2.save());
 	}
 
 }

@@ -13,27 +13,26 @@ import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
-public class DrillholeLocality extends Locality {
+public class VertSectLocality extends Locality {
 
 	private String personID;
-	private RoundedDate spudDate;
+	private RoundedDate startDate;
 	private RoundedDate compDate;
 	
-	public DrillholeLocality(User user, int folderID, PageState state) throws SQLException, IOException, DataInputException {
-		super(user, folderID, "Drillhole", state);
+	public VertSectLocality(User user, int folderID, PageState state) throws SQLException, IOException, DataInputException {
+		super(user, folderID, "VertSect", state);
 	}
 	
-	public DrillholeLocality(int id, User user, PageState state) throws IOException,	SQLException, DataInputException, InvalidCredentialsException {
+	public VertSectLocality(int id, User user, PageState state) throws IOException,	SQLException, DataInputException, InvalidCredentialsException {
 		super(id, user, state);
-		if (!featureType.equals("Drillhole")) throw new DataInputException("Feature Type", "Invalid");
-		setField(OPERATING_COMPANY, sample.getAsString(Sample.PERSON));
-		setField(SPUD_DATE, reverseParseDate(sample.getAsDate(Sample.START_DATE), sample.getAsString(Sample.START_DATE_ROUNDING)));
+		if (!featureType.equals("VertSect")) throw new DataInputException("Feature Type", "Invalid");
+		setField(SECTION_COLLECTOR, sample.getAsString(Sample.PERSON));
+		setField(START_DATE, reverseParseDate(sample.getAsDate(Sample.START_DATE), sample.getAsString(Sample.START_DATE_ROUNDING)));
 		setField(COMPLETION_DATE, reverseParseDate(sample.getAsDate(Sample.FINISH_DATE), sample.getAsString(Sample.FINISH_DATE_ROUNDING)));
-		setField(LICENCE_AREA, sample.getAsString(Sample.DRILLHOLE_LICENCE_NAME));
 		setField(DATUM_TYPE, sample.getAsString(Sample.DATUM_TYPE));
 		setField(DATUM_ELEVATION, sample.getAsString(Sample.DATUM_ELEVATION));
-		setField(KICK_OFF_DEPTH, sample.getAsString(Sample.START_DEPTH));
-		setField(TERMINATION_DEPTH, sample.getAsString(Sample.FINISH_DEPTH));
+		setField(TOP_HORIZON, sample.getAsString(Sample.START_DEPTH));
+		setField(BASE_HORIZON, sample.getAsString(Sample.FINISH_DEPTH));
 		savedFlag = true;
 	}
 
@@ -43,28 +42,28 @@ public class DrillholeLocality extends Locality {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			ResultSet rs;
 			switch (field) {
-				case OPERATING_COMPANY :
+				case SECTION_COLLECTOR :
 					rs = conn.executeQuery("SELECT Person_ID FROM Person_View WHERE Name = " + JspUtils.sqlEscape(value.trim()));
-					if (!rs.next())	throw new DataInputException("Operating Company", "Invalid value");
+					if (!rs.next())	throw new DataInputException("Section Collector", "Invalid value");
 					personID = rs.getString(1);
 					break;
-				case SPUD_DATE :
-					spudDate = FREDUtils.parseRoundedDate(value);
+				case START_DATE :
+					startDate = FREDUtils.parseRoundedDate(value);
 					break;
 				case COMPLETION_DATE :
 					compDate = FREDUtils.parseRoundedDate(value);
 					break;
 				case DATUM_TYPE :
-					if (!(value.equals("RT") || value.equals("KB"))) throw new DataInputException("Datum Type", "Invalid Data");
+					if (!(value.equals("Top") || value.equals("Bottom"))) throw new DataInputException("Datum Type", "Invalid Data");
 					break;
 				case DATUM_ELEVATION :
 					if (!FREDUtils.isNumeric(value)) throw new DataInputException("Datum Elevation", "Invalid Data");
 					break;
-				case KICK_OFF_DEPTH :
-					if (!FREDUtils.isNumeric(value)) throw new DataInputException("Kick-off Depth", "Invalid Data");
+				case TOP_HORIZON :
+					if (!FREDUtils.isNumeric(value)) throw new DataInputException("Top Horizon", "Invalid Data");
 					break;
-				case TERMINATION_DEPTH :
-					if (!FREDUtils.isNumeric(value)) throw new DataInputException("Termination Depth", "Invalid Data");
+				case BASE_HORIZON :
+					if (!FREDUtils.isNumeric(value)) throw new DataInputException("Base Horizon", "Invalid Data");
 					break;
 			}
 		} catch (IOException e) {
@@ -80,7 +79,7 @@ public class DrillholeLocality extends Locality {
 			conn.getConnection().setAutoCommit(false);
 			try {
 				super.save();
-				conn.executeUpdate("UPDATE Feature SET Person_ID = " + JspUtils.sqlEscape(personID) + ", Start_Date = TO_DATE('" + spudDate.getDateString() + "'), Start_Date_Rounding = " + JspUtils.sqlEscape(spudDate.getDateRounding()) + ", Finish_Date = TO_DATE('" + compDate.getDateString() + "'), Finish_Date_Rounding = " + JspUtils.sqlEscape(compDate.getDateRounding()) + ", Drillhole_Licence_Name = " + JspUtils.sqlEscape(fields[LICENCE_AREA]) + ", Datum_Type = " + JspUtils.sqlEscape(fields[DATUM_TYPE]) + ", Datum_Elevation = " + JspUtils.sqlEscape(fields[DATUM_ELEVATION]) + ", Start_Depth = " + JspUtils.sqlEscape(fields[KICK_OFF_DEPTH]) + ", Finish_Depth = " + JspUtils.sqlEscape(fields[TERMINATION_DEPTH]) + " WHERE Feature_ID = " + featureID);
+				conn.executeUpdate("UPDATE Feature SET Person_ID = " + JspUtils.sqlEscape(personID) + ", Start_Date = TO_DATE('" + startDate.getDateString() + "'), Start_Date_Rounding = " + JspUtils.sqlEscape(startDate.getDateRounding()) + ", Finish_Date = TO_DATE('" + compDate.getDateString() + "'), Finish_Date_Rounding = " + JspUtils.sqlEscape(compDate.getDateRounding()) + ", Datum_Type = " + JspUtils.sqlEscape(fields[DATUM_TYPE]) + ", Datum_Elevation = " + JspUtils.sqlEscape(fields[DATUM_ELEVATION]) + ", Start_Depth = " + JspUtils.sqlEscape(fields[TOP_HORIZON]) + ", Finish_Depth = " + JspUtils.sqlEscape(fields[BASE_HORIZON]) + " WHERE Feature_ID = " + featureID);
 				conn.getConnection().commit();
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();

@@ -50,7 +50,7 @@ public class FolderUtils {
 		conn.releaseStatement();
 	}
 
-	public static void deleteFeature(String featID, String featType, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public static void deleteFeature(String featID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
 /*		DBConnection conn = FREDUtils.getFREDConnection(state);
 		StringBuffer auditID = new StringBuffer();
 		ResultSet rs = conn.executeQuery("SELECT Audit_ID FROM Record WHERE Sample_ID IN (SELECT Sample_ID FROM Sample WHERE Feature_ID = " + featID + ")");
@@ -64,11 +64,11 @@ public class FolderUtils {
 		conn.executeUpdate("DELETE FROM Feature WHERE Feature_ID = " + featID);
 		conn.executeUpdate("DELETE FROM Audit_Table WHERE Audit_ID IN (" + auditID + ")");
 		conn.releaseStatement();
-	*/	Locality locality = LocalityFactory.getLocality(featType, Integer.parseInt(featID), user, state);
+	*/	Locality locality = LocalityFactory.getLocality(Integer.parseInt(featID), user, state);
 		locality.delete();
 	}
 
-	public static void submitLocality(String featID, String featType, String foldID, User user, PageState state) throws FolderUtilException, NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public static void submitLocality(String featID, String foldID, User user, PageState state) throws FolderUtilException, NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
 /*		int userID = user.getPersonId();
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		ResultSet rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Site_ID IS NOT NULL AND Locality IS NOT NULL AND Feature_Type IS NOT NULL AND Feature_ID = " + featID);
@@ -102,7 +102,7 @@ public class FolderUtils {
 			throw new FolderUtilException("Cannot submit locality as not all mandatory fields have been completed");
 		}
 		conn.releaseStatement();
-	*/	Locality locality = LocalityFactory.getLocality(featType, Integer.parseInt(featID), user, state);
+	*/	Locality locality = LocalityFactory.getLocality(Integer.parseInt(featID), user, state);
 		locality.submit();
 	}
 	
@@ -135,7 +135,7 @@ public class FolderUtils {
 		conn.releaseStatement();
 	}
 	
-	public static void revokeLocality(String featID, String featType, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public static void revokeLocality(String featID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
 /*		DBConnection conn = FREDUtils.getFREDConnection(state);
 		conn.executeUpdate("UPDATE Audit_Table SET Status = 'working', Working_Folder_ID = " + foldID + " WHERE Audit_ID IN (SELECT Audit_ID FROM Feature WHERE Feature_ID = " + featID + ")");
 		//decide whether drillhole or outcrop
@@ -145,7 +145,7 @@ public class FolderUtils {
 			conn.executeUpdate("UPDATE Audit_Table SET Status = 'working', Working_Folder_ID = " + foldID + " WHERE Audit_ID IN (SELECT DISTINCT Audit_ID FROM Sample_Property_All_View WHERE Feature_ID = " + featID + ")");
 		}
 		conn.releaseStatement();
-	*/	Locality locality = LocalityFactory.getLocality(featType, Integer.parseInt(featID), user, state);
+	*/	Locality locality = LocalityFactory.getLocality(Integer.parseInt(featID), user, state);
 		locality.revoke();	
 	}
 	

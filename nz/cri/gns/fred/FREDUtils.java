@@ -15,6 +15,7 @@ import nz.cri.gns.auth.SecurityClassAccess;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.data.AccessDeniedException;
 import nz.cri.gns.fred.data.Sample;
+import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
@@ -159,15 +160,63 @@ public class FREDUtils {
 		return new Sample(rs.getInt(1), user, state);
 	}
 
+	public static RoundedDate parseRoundedDate(String dateStr) throws DataInputException {
+		String date, dateRnd, day, month, year;
+		if (dateStr.lastIndexOf("/") == dateStr.length() - 1) throw new DataInputException("Date", "Invalid Data"); //ends with slash
+		if (dateStr.indexOf("/") == -1 && dateStr.length() == 4) { //year only
+			try {
+				date = "1/1/" + Integer.parseInt(dateStr);
+				return new RoundedDate(date, "Year");
+			} catch (Exception e) {
+				throw new DataInputException("Date", "Invalid Data");
+			}
+		} else {
+			if (dateStr.indexOf("/") == dateStr.lastIndexOf("/")) {
+				dateRnd = "Month";
+				day = "1";
+				month = dateStr.substring(0, dateStr.indexOf("/"));
+				year = dateStr.substring(dateStr.indexOf("/") + 1, dateStr.length());
+			} else {
+				dateRnd = null;
+				day = dateStr.substring(0, dateStr.indexOf("/"));
+				month = dateStr.substring(dateStr.indexOf("/") + 1, dateStr.lastIndexOf("/"));
+				year = dateStr.substring(dateStr.lastIndexOf("/") + 1, dateStr.length());
+			}
+			try {
+				int iDay = Integer.parseInt(day);
+				int iMonth = Integer.parseInt(month);
+				int iYear = Integer.parseInt(year);
+				if (iDay < 0 || iDay > 31) throw new DataInputException("Date", "Invalid Data"); //bad day
+				if (iMonth < 0 || iMonth > 12) throw new DataInputException("Date", "Invalid Data"); //bad month
+				if (year.length() != 4) throw new DataInputException("Date", "Invalid Data"); //bad year
+				if (iMonth == 2 && iDay > 28) throw new DataInputException("Date", "Invalid Data"); //bad Feb
+				if ((iMonth == 4 || iMonth == 6 || iMonth == 9 || iMonth == 11) && iDay > 30) throw new DataInputException("Date", "Invalid Data"); //bad 30 day months
+			} catch (Exception e) {
+				throw new DataInputException("Date", "Invalid Data");
+			}
+			date = day + "/" + month + "/" + year;
+			return new RoundedDate(date, dateRnd);
+		}
+	}
+
+	public static boolean isNumeric(String str) {
+		try {
+			double d = Double.parseDouble(str);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 	public static String noNulls(String in) {
 		return (in == null || in.equals("null")) ? "" : in;
 	}
 
 	public static String makeNulls(String in) {
-		return (in.length() == 0) ? "null" : "'" + in + "'";
+		return (in == null || in.length() == 0) ? null : "'" + in + "'";
 	}
 
 	public static String makeDropDownNulls(String in) {
-		return (in == null || in.equals("-")) ? "null" : "'" + in + "'";
+		return (in == null || in.equals("-")) ? null : "'" + in + "'";
 	}
 }
