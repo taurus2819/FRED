@@ -23,7 +23,7 @@ public class SampleData {
 
 	private static Pool pool = new Pool();
 	private int id;
-	private Object[] values = new Object[60];
+	private Object[] values = new Object[61];
 	private int[] types = { Types.NUMERIC };
 	private Object[] data = new Object[1];
 
@@ -44,7 +44,7 @@ public class SampleData {
 				+ "SITE_ID, LATITUDE, LONGITUDE, QMAP_SHEET, NZMG_SHEET, NZMG_EAST, NZMG_NORTH, METHOD, "
 				+ "ACCURACY, LOCALITY, DRILLHOLE_LICENCE_NAME, PERSON_ID, PERSON, START_DATE, START_DATE_ROUNDING, "
 				+ "FINISH_DATE, FINISH_DATE_ROUNDING, DATUM_TYPE, DATUM_ELEVATION, START_DEPTH, FINISH_DEPTH, "
-				+ "METHOD_ID, ORIG_SYSTEM_ID, COORD_SYSTEM, ORIG_COORD, COUNTRY_CODE, COUNTRY_NAME "
+				+ "METHOD_ID, ORIG_SYSTEM_ID, COORD_SYSTEM, ORIG_COORD, COUNTRY_CODE, COUNTRY_NAME, REG_AREA_CODE "
 				+ "FROM Sample_All_View WHERE Sample_ID = ?";
 		data[0] = new Integer(this.id);
 		try {
@@ -156,6 +156,7 @@ public class SampleData {
 			values[55] = rs.getString(54);
 			values[56] = rs.getString(55);
 			values[57] = rs.getString(56);
+			values[Sample.REG_AREA_CODE] = rs.getString(57);
 			rs.close();
 			query =
 				"SELECT Record_ID, Record_Type, Status FROM Record_All_View WHERE Sample_ID = ? ORDER BY Record_Type, Record_Name";

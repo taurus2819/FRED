@@ -38,6 +38,7 @@ public class Sample {
 	public static final int MASTERFILE_NAME = 20;
 	public static final int REG_AREA_ID = 21;
 	public static final int REG_AREA_NAME = 22;
+	public static final int REG_AREA_CODE = 60;
 	public static final int AUDIT_ID = 23;
 	public static final int STATUS = 24;
 	public static final int LAST_CHANGE = 25;
@@ -141,6 +142,7 @@ public class Sample {
 			case DRILLHOLE_DEPTH:
 			case MASTERFILE_ID:
 			case MASTERFILE_NAME:
+			case REG_AREA_CODE:
 			case AUDIT_ID:
 			case SECURITY_CLASS_ID :
 			case SITE_ID:

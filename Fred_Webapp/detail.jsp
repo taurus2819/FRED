@@ -88,70 +88,29 @@
 				if (audit.get(Audit.APPROVED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.APPROVED_DATE))); }
 				out.println("</td></tr>");
 			}
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 			if (user != null) {
-				if (FREDUtils.isAllowedApproveLocality(user, sample.getAsString(Sample.FEATURE_ID), state)) {
-					//Generate new FRNumber
-	DecimalFormat latdeg = new DecimalFormat("00");
-	DecimalFormat longdeg = new DecimalFormat("000");
-					DBConnection statement = FREDUtils.getFREDConnection(state);
-					ResultSet rs = statement.executeQuery("SELECT L.Code, S.NZMG_Sheet, S.Latitude, S.Longitude FROM Sample_All_View S, Lookup L WHERE S.Reg_Area_ID = L.Lookup_ID(+) AND S.Sample_ID = " + sampID);
-					String mapSheet = null;
-					if (rs.next()) {
-						if (rs.getString(2) != null) {
-							//rs = statement.executeQuery("SELECT COUNT(*) FROM SC.Map_Sheet WHERE MS_Series = 'NZMS260' AND MS_Map_Code = '" + rs.getString(2) + "'");
-							//if (rs.next()) {
-								mapSheet = rs.getString(2);
-							//} else {
-							//	if (rs.getInt(3) >= 0) {
-							//		mapSheet = "N";
-							//	} else {
-							//		mapSheet = "S";
-							//	}
-							//	if (rs.getInt(4) >= 0) {
-							//		mapSheet = mapSheet + "E";
-							//	} else {
-							//		mapSheet = mapSheet + "W";
-							//	}
-							//	mapSheet = mapSheet + latdeg.format(Math.abs(rs.getDouble(3))) + longdeg.format(Math.abs(rs.getDouble(4)));
-							//}
-						}
-						else if (rs.getString(1) != null && !rs.getString(1).equals("NZ") && !rs.getString(1).equals("OT")) {
-							mapSheet = rs.getString(1);
-						}
-						else {
-							if (rs.getInt(3) >= 0) {
-								mapSheet = "N";
-							} else {
-								mapSheet = "S";
-							}
-							if (rs.getInt(4) >= 0) {
-								mapSheet = mapSheet + "E";
-							} else {
-								mapSheet = mapSheet + "W";
-							}
-							mapSheet = mapSheet + latdeg.format(Math.abs(rs.getDouble(3))) + longdeg.format(Math.abs(rs.getDouble(4)));
-						}
-						rs = statement.executeQuery("SELECT MAX(Serial_Number) FROM FR_Number WHERE Map_Sheet = '" + mapSheet + "' AND Serial_Number < 6000");
-						rs.next();
-						int serialNum = rs.getInt(1) + 1;
-						//out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
-						out.println("<form name='RevForm' method='get' action='detail.jsp'>");
-						out.println("<input type='hidden' name='ID' value='" + sampID + "'>");
-						out.println("<input type='hidden' name='ActionType' value=''>");
-						out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Accept\";document.RevForm.submit();' title='Approve'><img src='images/ok.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' /></td><td class='heading'>FR Number</td></tr>");
-						//if (recoll != null) {
-						//	out.println("<tr><td colspan='2'>The submitter has indicated that this record is a recollection of " + recoll + ".  If you agree then amend the FRNumber below as appropriate</td></tr>");
-						//}
-						out.println("<tr><td colspan='2'><input type='text' name='MapSheet' size='9' value='" + mapSheet + "'>&nbsp;/f&nbsp;<input type='text' name='SerialNum' size='4' value='" + serialNum + "'>&nbsp;<input type='text' name='RecollNum' size='1' value=''></td></tr>");
-						out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
-						out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Reject\";document.RevForm.submit();' title='reject'><img src='images/cancel.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' /></td><td class='heading'>Comments to Submitter</td></tr>");
-						out.println("<tr><td colspan='2'><textarea name='RejComm' rows='5' cols='25'></textarea></td></tr>");
-						out.println("</form>");
-						//out.println("</table>");
-					}
+				if (FREDUtils.isAllowedApproveLocality(user, sample.getAsString(Sample.FEATURE_ID), sample.getAsString(Sample.STATUS), state)) {
+					FRNumber frNumber = FolderUtils.getNextFRNumber(sample.getAsString(Sample.REG_AREA_CODE), sample.getAsString(Sample.NZMG_SHEET), sample.getAsDouble(Sample.LATITUDE), sample.getAsDouble(Sample.LONGITUDE), state);
+					out.println("<tr><td colspan='2'>");
+					out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
+					out.println("<form name='RevForm' method='get' action='detail.jsp'>");
+					out.println("<input type='hidden' name='ID' value='" + sampID + "'>");
+					out.println("<input type='hidden' name='ActionType' value=''>");
+					out.println("<tr><td colspan='2' class='heading' align='center'>Locality Approval</td></tr>");
+					out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Accept\";document.RevForm.submit();'><img src='images/ok.gif' width='20' height='20' border='0' alt='Approve' /></a>&nbsp;</td><td class='heading'>FR Number</td></tr>");
+					//if (recoll != null) {
+					//	out.println("<tr><td colspan='2'>The submitter has indicated that this record is a recollection of " + recoll + ".  If you agree then amend the FRNumber below as appropriate</td></tr>");
+					//}
+					out.println("<tr><td colspan='2'><input type='text' name='MapSheet' size='9' value='" + frNumber.getMapSheet() + "'>&nbsp;/f&nbsp;<input type='text' name='SerialNum' size='4' value='" + frNumber.getSerialNumber() + "'>&nbsp;<input type='text' name='RecollNum' size='1' value=''></td></tr>");
+					out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
+					out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Reject\";document.RevForm.submit();'><img src='images/cancel.gif' width='20' height='20' border='0' alt='reject' /></a>&nbsp;</td><td class='heading'>Comments</td></tr>");
+					out.println("<tr><td colspan='2'><textarea name='RejComm' rows='5' cols='25'></textarea></td></tr>");
+					out.println("</form>");
+					out.println("</table>");
+					out.println("</td></tr>");
 				}
 				else {
-					out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 					out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;<a href='print_front.jsp?ID=" + sampID + "&FormType=Full' class='heading' target='print'>Print Front</a></td></tr>");
 					out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 					out.println("<tr><td class='heading' colspan='2' align='center'>Taxonomic List Options</td></tr>");

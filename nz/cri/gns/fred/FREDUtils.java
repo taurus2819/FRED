@@ -64,12 +64,7 @@ public class FREDUtils {
 		}
 	}
 
-	public static boolean isAllowedRecord(
-		User user,
-		String securityClassID,
-		String status,
-		String recID,
-		PageState state)
+	public static boolean isAllowedRecord(User user, String securityClassID, String status, String recID, PageState state)
 		throws IOException, SQLException {
 		if (user == null)
 			return false;
@@ -82,8 +77,12 @@ public class FREDUtils {
 		}
 	}
 
-	public static boolean isAllowedApproveLocality(User user, String featID, PageState state) throws IOException, SQLException {
-		return (getUserWorkingLocalityRights(user, featID, state) & 64) > 0;
+	public static boolean isAllowedApproveLocality(User user, String featID, String status, PageState state) throws IOException, SQLException {
+		if (status.equals("waiting")) {
+			return (getUserWorkingLocalityRights(user, featID, state) & 64) > 0;
+		} else {
+			return false;
+		}
 	}
 
 	private static boolean checkSecurityClass(int secClassID, User user, PageState state) throws IOException, SQLException {

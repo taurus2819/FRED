@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DecimalFormat;
 import java.util.Iterator;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.KeyValueObject;
+import nz.cri.gns.fred.data.FRNumber;
 import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.fred.dataentry.DataInputException;
@@ -139,4 +141,43 @@ public class FolderUtils {
 		statement3.close();
 	}
 	
+	public static FRNumber getNextFRNumber(String regAreaCode, String nzmsSheet, double latitude, double longitude, PageState state) throws SQLException, IOException {
+		DecimalFormat latdeg = new DecimalFormat("00");
+		DecimalFormat longdeg = new DecimalFormat("000");
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		ResultSet rs;
+		
+		String mapSheet = null;
+		if (nzmsSheet != null) {
+			rs = conn.executeQuery("SELECT COUNT(*) FROM SC.Map_Sheet WHERE MS_Series = 'NZMS260' AND MS_Map_Code = " + JspUtils.sqlEscape(nzmsSheet));
+			if (rs.next()) {
+				mapSheet = nzmsSheet;
+			} else {
+				mapSheet = (latitude >= 0 ? "N" : "S") + (longitude >= 0 ? "E" : "W") + latdeg.format(Math.abs(latitude)) + longdeg.format(Math.abs(longitude));
+			}
+		}
+		else if (regAreaCode != null && !regAreaCode.equals("NZ") && !regAreaCode.equals("OT")) {
+			mapSheet = regAreaCode;
+		}
+		else {
+			mapSheet = (latitude >= 0 ? "N" : "S") + (longitude >= 0 ? "E" : "W") + latdeg.format(Math.abs(latitude)) + longdeg.format(Math.abs(longitude));
+		}
+				
+		rs = conn.executeQuery("SELECT MAX(Serial_Number) FROM FR_Number WHERE Map_Sheet = " + JspUtils.sqlEscape(mapSheet) + " AND Serial_Number < 6000");
+		rs.next();
+		int serialNum = rs.getInt(1) + 1;
+		
+		return new FRNumber(mapSheet, new Integer(serialNum), null);
+	}
+	
+	public static FRNumber getNextFRNumber(String mapSheet, int serialNumber, PageState state) throws IOException, SQLException {
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		ResultSet rs = conn.executeQuery("SELECT MAX(Recollection_Number) FROM FR_Number WHERE Map_Sheet = " + JspUtils.sqlEscape(mapSheet) + " AND Serial_Number = "  + serialNumber);
+		if (rs.getString(1) == null) {
+			return new FRNumber(mapSheet, new Integer(serialNumber), "A");	
+		} else {
+			char recollNum = rs.getString(1).charAt(0);
+			return new FRNumber(mapSheet, new Integer(serialNumber), String.valueOf((char) (recollNum + 1)));
+		}
+	}
 }
