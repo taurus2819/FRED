@@ -9,6 +9,7 @@ import java.util.Vector;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.db.pool.Finder;
 import nz.cri.gns.db.pool.Pool;
 import nz.cri.gns.fred.FREDUtils;
@@ -29,6 +30,9 @@ public class Record {
 	public static final int SECURITY_CLASS_ID = 7;
 	public static final int SAMPLE_NAME = 8;
 	public static final int DRILLHOLE_DEPTH = 9;
+	public static final int PERSON = 10;
+	public static final int RECORD_DATE = 11;
+	public static final int DATE_ROUNDING = 12;
 	public static final int LAST_CHANGE = 81;
 	public static final int WORKING_FOLDER_ID = 82;
 	public static final int WORKING_COMMENTS = 83;
@@ -273,7 +277,9 @@ public class Record {
 	}
 
 	public String toString() {
-		return (values[0]).toString();
+		String person = ((values[PERSON] != null) ? ((KeyValueObject) getAsVector(PERSON).firstElement()).getValue() : "");
+		String date = ((values[RECORD_DATE] != null) ? FREDUtils.formatDateForOutput(getAsDate(RECORD_DATE), getAsString(DATE_ROUNDING)) : "");
+		return ((person.length() + date.length() > 0) ? "(" + person + ((person.length() > 0 && date.length() > 0) ? ", " : "") + date + ")" : "");
 	}
 	
 }

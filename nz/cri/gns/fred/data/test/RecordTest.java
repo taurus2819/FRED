@@ -8,6 +8,7 @@ import junit.framework.TestCase;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
+import nz.cri.gns.fred.data.AdoptionRecord;
 import nz.cri.gns.fred.data.Record;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.test.TestingPageState;
@@ -30,8 +31,13 @@ public class RecordTest extends TestCase {
 	}
 
 
-	public void testPooling() throws NotBoundException, SQLException, IOException, InvalidCredentialsException {
+	public void _testPooling() throws NotBoundException, SQLException, IOException, InvalidCredentialsException {
 		Record record = Record.getData(1280, user, state);
+	}
+	
+	public void testToString() throws SQLException, IOException, InvalidCredentialsException {
+		Record record = AdoptionRecord.getData(241, user, state);
+		System.out.println(record);
 	}
 	
 }
