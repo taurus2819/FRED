@@ -24,7 +24,7 @@ public class FeatureData {
 	private int id;
 	private int[] types = { Types.NUMERIC };
 	private Object[] data = new Object[1];
-	private Object[] values = new Object[26];
+	private Object[] values = new Object[27];
 
 	/**
 	 * Cannot be called directly. use static getDate method instead.
@@ -100,16 +100,18 @@ public class FeatureData {
 			}
 			values[Feature.SAMPLES] = samp;
 			rs.close();
-			query = "SELECT DISTINCT Sample_Name, Last_Change FROM Sample_All_View WHERE Feature_ID = ? ORDER BY Sample_Name";
+			query = "SELECT DISTINCT Sample_Name, Last_Change, Working_Folder_ID FROM Sample_All_View WHERE Feature_ID = ? ORDER BY Sample_Name";
 			data[0] = values[0];
 			rs = conn.executeQuery(query, types, data);
 			rs.next();
 			String sampName = rs.getString(1);
-			values[25] = rs.getDate(2);
+			values[Feature.LAST_CHANGE] = rs.getDate(2);
+			values[Feature.WORKING_FOLDER_ID] = ((rs.getString(3) != null) ? new Integer(rs.getInt(3)) : null);
 			while (rs.next()) {
 				sampName += ", " + rs.getString(1);
 			}
-			values[24] = sampName;
+			values[Feature.SAMPLE_NAMES] = sampName;
+			
 			rs.close();
 			if (values[Feature.FEATURE_NAME] != null) {
 				query = "SELECT Well_Name FROM Petroleum.Petroleum_Well WHERE UPPER(Well_Name) = ?";

@@ -51,7 +51,7 @@
 
 		//List data
 		out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
-		try {
+		//try {
 			Sample sample = new Sample(Integer.parseInt(sampID), user, state);
 			Audit audit = Audit.getAudit(sample.getAsInt(Sample.AUDIT_ID), state);
 			featType = sample.getAsString(Sample.FEATURE_TYPE);
@@ -89,47 +89,111 @@
 				out.println("</td></tr>");
 			}
 			if (user != null) {
-				out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
-				out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;<a href='print_front.jsp?ID=" + sampID + "&FormType=Full' class='heading' target='print'>Print Front</a></td></tr>");
-				out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
-				out.println("<tr><td class='heading' colspan='2' align='center'>Taxonomic List Options</td></tr>");
-				out.println("<form name='TaxaForm' method='post' action='detail.jsp'>");
-				out.println("<input type='hidden' name='ID' value='" + sampID + "'>");
-				out.println("<input type='hidden' name='AuthorChk' value='" + authorChk + "'>");
-				out.println("<input type='hidden' name='SCountChk' value='" + sCountChk + "'>");
-				out.println("<input type='hidden' name='SCoordChk' value='" + sCoordChk + "'>");
-				out.println("<input type='hidden' name='CommChk' value='" + commChk + "'>");
-				out.print("<tr><td colspan='2' class='heading'>");
-				if (authorChk) {
-					out.print("<a href='#' onClick='document.TaxaForm.AuthorChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
-				} else {
-					out.print("<a href='#' onClick='document.TaxaForm.AuthorChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
+				if (FREDUtils.isAllowedApproveLocality(user, sample.getAsString(Sample.FEATURE_ID), state)) {
+					//Generate new FRNumber
+	DecimalFormat latdeg = new DecimalFormat("00");
+	DecimalFormat longdeg = new DecimalFormat("000");
+					DBConnection statement = FREDUtils.getFREDConnection(state);
+					ResultSet rs = statement.executeQuery("SELECT L.Code, S.NZMG_Sheet, S.Latitude, S.Longitude FROM Sample_All_View S, Lookup L WHERE S.Reg_Area_ID = L.Lookup_ID(+) AND S.Sample_ID = " + sampID);
+					String mapSheet = null;
+					if (rs.next()) {
+						if (rs.getString(2) != null) {
+							//rs = statement.executeQuery("SELECT COUNT(*) FROM SC.Map_Sheet WHERE MS_Series = 'NZMS260' AND MS_Map_Code = '" + rs.getString(2) + "'");
+							//if (rs.next()) {
+								mapSheet = rs.getString(2);
+							//} else {
+							//	if (rs.getInt(3) >= 0) {
+							//		mapSheet = "N";
+							//	} else {
+							//		mapSheet = "S";
+							//	}
+							//	if (rs.getInt(4) >= 0) {
+							//		mapSheet = mapSheet + "E";
+							//	} else {
+							//		mapSheet = mapSheet + "W";
+							//	}
+							//	mapSheet = mapSheet + latdeg.format(Math.abs(rs.getDouble(3))) + longdeg.format(Math.abs(rs.getDouble(4)));
+							//}
+						}
+						else if (rs.getString(1) != null && !rs.getString(1).equals("NZ") && !rs.getString(1).equals("OT")) {
+							mapSheet = rs.getString(1);
+						}
+						else {
+							if (rs.getInt(3) >= 0) {
+								mapSheet = "N";
+							} else {
+								mapSheet = "S";
+							}
+							if (rs.getInt(4) >= 0) {
+								mapSheet = mapSheet + "E";
+							} else {
+								mapSheet = mapSheet + "W";
+							}
+							mapSheet = mapSheet + latdeg.format(Math.abs(rs.getDouble(3))) + longdeg.format(Math.abs(rs.getDouble(4)));
+						}
+						rs = statement.executeQuery("SELECT MAX(Serial_Number) FROM FR_Number WHERE Map_Sheet = '" + mapSheet + "' AND Serial_Number < 6000");
+						rs.next();
+						int serialNum = rs.getInt(1) + 1;
+						//out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
+						out.println("<form name='RevForm' method='get' action='detail.jsp'>");
+						out.println("<input type='hidden' name='ID' value='" + sampID + "'>");
+						out.println("<input type='hidden' name='ActionType' value=''>");
+						out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Accept\";document.RevForm.submit();' title='Approve'><img src='images/ok.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' /></td><td class='heading'>FR Number</td></tr>");
+						//if (recoll != null) {
+						//	out.println("<tr><td colspan='2'>The submitter has indicated that this record is a recollection of " + recoll + ".  If you agree then amend the FRNumber below as appropriate</td></tr>");
+						//}
+						out.println("<tr><td colspan='2'><input type='text' name='MapSheet' size='9' value='" + mapSheet + "'>&nbsp;/f&nbsp;<input type='text' name='SerialNum' size='4' value='" + serialNum + "'>&nbsp;<input type='text' name='RecollNum' size='1' value=''></td></tr>");
+						out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
+						out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Reject\";document.RevForm.submit();' title='reject'><img src='images/cancel.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' /></td><td class='heading'>Comments to Submitter</td></tr>");
+						out.println("<tr><td colspan='2'><textarea name='RejComm' rows='5' cols='25'></textarea></td></tr>");
+						out.println("</form>");
+						//out.println("</table>");
+					}
 				}
-				out.println("</a><img src='images/blank.gif' width='10' height='1' />Author</td></tr>");
-				out.print("<tr><td colspan='2' class='heading'>");
-				if (sCountChk) {
-					out.print("<a href='#' onClick='document.TaxaForm.SCountChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
-				} else {
-					out.print("<a href='#' onClick='document.TaxaForm.SCountChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
+				else {
+					out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
+					out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;<a href='print_front.jsp?ID=" + sampID + "&FormType=Full' class='heading' target='print'>Print Front</a></td></tr>");
+					out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
+					out.println("<tr><td class='heading' colspan='2' align='center'>Taxonomic List Options</td></tr>");
+					out.println("<form name='TaxaForm' method='post' action='detail.jsp'>");
+					out.println("<input type='hidden' name='ID' value='" + sampID + "'>");
+					out.println("<input type='hidden' name='AuthorChk' value='" + authorChk + "'>");
+					out.println("<input type='hidden' name='SCountChk' value='" + sCountChk + "'>");
+					out.println("<input type='hidden' name='SCoordChk' value='" + sCoordChk + "'>");
+					out.println("<input type='hidden' name='CommChk' value='" + commChk + "'>");
+					out.print("<tr><td colspan='2' class='heading'>");
+					if (authorChk) {
+						out.print("<a href='#' onClick='document.TaxaForm.AuthorChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
+					} else {
+						out.print("<a href='#' onClick='document.TaxaForm.AuthorChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
+					}
+					out.println("</a><img src='images/blank.gif' width='10' height='1' />Author</td></tr>");
+					out.print("<tr><td colspan='2' class='heading'>");
+					if (sCountChk) {
+						out.print("<a href='#' onClick='document.TaxaForm.SCountChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
+					} else {
+						out.print("<a href='#' onClick='document.TaxaForm.SCountChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
+					}
+					out.println("</a><img src='images/blank.gif' width='10' height='1' />Specimen Count</td></tr>");
+					out.print("<tr><td colspan='2' class='heading'>");
+					if (sCoordChk) {
+						out.print("<a href='#' onClick='document.TaxaForm.SCoordChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
+					} else {
+						out.print("<a href='#' onClick='document.TaxaForm.SCoordChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
+					}
+					out.println("</a><img src='images/blank.gif' width='10' height='1' />Specimen Coord</td></tr>");
+					out.print("<tr><td colspan='2' class='heading'>");
+					if (commChk) {
+						out.print("<a href='#' onClick='document.TaxaForm.CommChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
+					} else {
+						out.print("<a href='#' onClick='document.TaxaForm.CommChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
+					}
+					out.println("</a><img src='images/blank.gif' width='10' height='1' />Comments</td></tr>");
+					out.println("</form>");
 				}
-				out.println("</a><img src='images/blank.gif' width='10' height='1' />Specimen Count</td></tr>");
-				out.print("<tr><td colspan='2' class='heading'>");
-				if (sCoordChk) {
-					out.print("<a href='#' onClick='document.TaxaForm.SCoordChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
-				} else {
-					out.print("<a href='#' onClick='document.TaxaForm.SCoordChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
-				}
-				out.println("</a><img src='images/blank.gif' width='10' height='1' />Specimen Coord</td></tr>");
-				out.print("<tr><td colspan='2' class='heading'>");
-				if (commChk) {
-					out.print("<a href='#' onClick='document.TaxaForm.CommChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
-				} else {
-					out.print("<a href='#' onClick='document.TaxaForm.CommChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
-				}
-				out.println("</a><img src='images/blank.gif' width='10' height='1' />Comments</td></tr>");
-				out.println("</form>");
 			}
 			out.println("</table>");
+
 			drawEndNavigation(out);
 			
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
@@ -454,13 +518,13 @@
 	
 			if (user ==  null) { out.println("<tr><td colspan='2'>More data may be available for this locality for <a href='login.jsp?loginpage=" + URLEncoder.encode("/fred/detail.jsp") + "' class='boldlink'>logged</a> in users</td></tr>"); }
 			out.println("</table></td></tr></table>");
-		}
-		catch (Exception e) { // no record or not approved
-			drawEndNavigation(out);
-			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-			out.println("<tr><td>Either the sample doesn't exist or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</td></tr>");
-			out.println("</table>");
-		}
+		//}
+		//catch (Exception e) { // no record or not approved
+		//	drawEndNavigation(out);
+		//	out.println("<table style='margin-left:20px; width:550px;' border='0'>");
+		//	out.println("<tr><td>Either the sample doesn't exist or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</td></tr>");
+		//	out.println("</table>");
+		//}
 
 	}
 	else { //no sampleID

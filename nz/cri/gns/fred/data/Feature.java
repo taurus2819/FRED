@@ -46,6 +46,7 @@ public class Feature {
 	public static final int FINISH_DEPTH = 19;
 	public static final int SAMPLES = 21;
 	public static final int PETWELL_LINK = 22;
+	public static final int WORKING_FOLDER_ID = 26;
 
 	private FeatureData fd;
 	private PageState state;

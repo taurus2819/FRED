@@ -56,7 +56,7 @@ public class FREDUtils {
 		if (user == null)
 			return false;
 		if (!status.equals("approved"))
-			return ((getUserWorkingLocalityRights(user, featID, state) & 1) > 0);
+			return (getUserWorkingLocalityRights(user, featID, state) & 1) > 0;
 		if (securityClassID != null) {
 			return checkSecurityClass(Integer.parseInt(securityClassID), user, state);
 		} else {
@@ -74,12 +74,16 @@ public class FREDUtils {
 		if (user == null)
 			return false;
 		if (!status.equals("approved"))
-			return ((getUserWorkingRecordRights(user, recID, state) & 1) > 0);
+			return (getUserWorkingRecordRights(user, recID, state) & 1) > 0;
 		if (securityClassID != null) {
 			return checkSecurityClass(Integer.parseInt(securityClassID), user, state);
 		} else {
 			return false;
 		}
+	}
+
+	public static boolean isAllowedApproveLocality(User user, String featID, PageState state) throws IOException, SQLException {
+		return (getUserWorkingLocalityRights(user, featID, state) & 64) > 0;
 	}
 
 	private static boolean checkSecurityClass(int secClassID, User user, PageState state) throws IOException, SQLException {
