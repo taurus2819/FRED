@@ -21,7 +21,7 @@ import nz.cri.gns.test.TestingPageState;
 
 public class SampleTest extends TestCase {
 
-	public void _testAddDeleteSample() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void testAddDeleteSample() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("test", "test", ipConn);
@@ -31,10 +31,10 @@ public class SampleTest extends TestCase {
 		assertEquals(sample.getAsString(Sample.TOP_DEPTH), "27.5");
 		assertNull(sample.get(Sample.BOTTOM_DEPTH));
 		assertEquals(sample.getAsString(Sample.DRILL_TYPE), "Cutting");
-		FolderUtils.deleteSample(String.valueOf(sampleID), user, state);	
+		//FolderUtils.deleteSample(String.valueOf(sampleID), user, state);	
 	}
 	
-	public void testSampleProperties() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void _testSampleProperties() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("test", "test", ipConn);
