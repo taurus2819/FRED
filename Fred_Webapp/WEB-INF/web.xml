@@ -11,7 +11,7 @@
     </context-param>
     <context-param>
 	<param-name>dbConnect</param-name>
-	<param-value>raptor:1521:gns</param-value>
+	<param-value>raptor:1521:tst</param-value>
     </context-param>
     <context-param>
 	<param-name>rmiBinding</param-name>

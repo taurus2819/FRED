@@ -1,11 +1,13 @@
 <%@		page extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, nz.cri.gns.db.metadata.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
+		import="nz.cri.gns.db.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, nz.cri.gns.db.metadata.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
 %><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 	nz.cri.gns.intranet.DBConnection frConn = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
 	nz.cri.gns.intranet.DBConnection connection;
 	User user = getUser(session);
 
+	PageState state = new PageState(request, response, getServletContext());
+	
 	Statement preserveStatement;
 	Statement preserveStatement2;
 	//DocumentAttacher attacher = DocumentAttacher.createFREDDocumentAttacher(session, application);
@@ -25,7 +27,7 @@
 	doubleData = new Object[2];
 
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	//if FeatureID given then get SampleID or transer to drillhole
 	if (request.getParameter("FeatID") != null) {
@@ -52,6 +54,24 @@
 	drawTop(out, et, request, response);
 
 	if (sampID != null) {
+
+		FullSample sv = FullSample.getFullSample(Integer.parseInt(sampID), state);
+		out.println("FR Num" + sv.getAsString(FullSample.FR_NUMBER, user) + "<br />");
+		
+		query = "SELECT Record_ID FROM Record NATURAL JOIN Sample_Property WHERE Sample_ID = ?";
+		data[0] = new Integer(Integer.parseInt(sampID));
+		rs = frConn.executeQuery(query, types, data);
+		if (rs.next()) {
+			FullSampPropRecord sp = FullSampPropRecord.getFullSampPropRecord(rs.getInt(1), state);
+			out.println("Coll Date: " + DateFormat.getDateInstance(DateFormat.LONG).format(sp.getAsDate(FullSampPropRecord.COLLECTION_DATE, user)) + "<br />");
+		
+			Vector collVect = sp.getAsVector(FullSampPropRecord.COLLECTOR, user);
+			for (Iterator i = collVect.iterator(); i.hasNext(); ) {
+				out.println("Collector: " + (String) i.next() + "<br />");
+			}
+		}
+		out.println("Sample Pool: " + FullSample.getPoolSize() + "<br />");
+		out.println("SampProp Pool: " + FullSampPropRecord.getPoolSize() + "<br />");
 
 		//create connection:  userConnection if logged in, otherwise FR
 		if (user !=  null) {
