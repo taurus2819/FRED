@@ -46,9 +46,10 @@
 	Statement statement2 = connection.getExtraStatement();
 	ResultSet rs;
 	int userRights = 0, execUp, i;
-	String foldID, sampID, recID, auditID = "", featStatus, adoptorID = "", adoDate = "", stageID = "";
+	String foldID, sampID, recID, auditID = "", featStatus, adoDate = "", stageID = "";
 	User user = getUser(session);
 	int userID = user.getPersonId();
+	long[] adoptID = new long[20];
 
 	ExtranetTemplate et = getExtranetTemplate();
 
@@ -95,11 +96,16 @@
 			//Adoptor_ID
 			if (!request.getParameter("Adoptor").equals("")) {
 				String adoptor = request.getParameter("Adoptor");
-				rs = statement.executeQuery("SELECT Person_ID FROM Person_View WHERE Name = '" + adoptor + "'");
-				if (rs.next()) {
-					adoptorID = rs.getString(1);
-				} else {  //Collector not in database so throw exception
-					throw new DataInputException("Adoptor", adoptor + " not in database - add through builder (only one person can be entered as the adoptor)");
+				i = 0;
+				while (adoptor.length() > 0) {
+					if (adoptor.indexOf("\n") == -1) { adoptor = adoptor + "\n"; }
+					rs = statement.executeQuery("SELECT Person_ID FROM Person_View WHERE Name = '" + adoptor.substring(0, adoptor.indexOf("\n")).trim() + "'");
+					if (rs.next()) {
+						adoptID[++i] = rs.getLong(1);
+					} else {  //Adoptor not in database so throw exception
+						throw new DataInputException("Adoptor", adoptor.substring(0, adoptor.indexOf("\n")).trim() + " not in database - add through builder");
+					}
+					adoptor = adoptor.substring(adoptor.indexOf("\n") + 1, adoptor.length());
 				}
 			}
 			//Stage ages
@@ -141,8 +147,12 @@
 			}
 
 			//Create ADOPTION entry
-			execUp = statement.executeUpdate("INSERT INTO Adoption (Record_ID, Adoptor_ID, Adoption_Date, Date_Rounding, Adopted_Stage_ID, Comments) VALUES (" + recID + ", " + JspUtils.sqlEscape(adoptorID) + ", TO_DATE('" + adoDate + "'), '" + request.getParameter("DateRnd") + "', " + JspUtils.sqlEscape(stageID) + ", " + JspUtils.sqlEscape(request.getParameter("Comm")) + ")");
+			execUp = statement.executeUpdate("INSERT INTO Adoption (Record_ID, Adoption_Date, Date_Rounding, Adopted_Stage_ID, Comments) VALUES (" + recID + ", TO_DATE('" + adoDate + "'), '" + request.getParameter("DateRnd") + "', " + JspUtils.sqlEscape(stageID) + ", " + JspUtils.sqlEscape(request.getParameter("Comm")) + ")");
 
+			//Create ADOPTOR entries
+			for (int j = 0; j < adoptID.length; j++) {
+				if (adoptID[j] > 0) { execUp = statement.executeUpdate("INSERT INTO Adoptor (Record_ID, Person_ID) VALUES (" + recID + ", " + adoptID[j] + ")"); }
+			}
 
 			if (featStatus.equals("approved")) { //submitted
 				//change status & add saved record to folder

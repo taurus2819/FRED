@@ -104,7 +104,6 @@ function parseDoubleDropDown(first, second) {
 				rs.next();
 				if (sampID == null) { sampID = rs.getString(1); }
 				workComm = noNulls(rs.getString(2));
-
 				rs = statement.executeQuery("SELECT Adoption_Date, Date_Rounding, Comments FROM Adoption WHERE Record_ID = " + loadRecID);
 				if (rs.next()) {
 					if (rs.getString(1) != null) {
@@ -114,15 +113,17 @@ function parseDoubleDropDown(first, second) {
 						adoDateUnk = " checked";
 					}
 					comm = noNulls(rs.getString(3));
-
 				}
-				rs = statement.executeQuery("SELECT Adoptor, Adopted_Stage_Lower_ID, Adopted_Stage_Lower_Mod, Adopted_Stage_Upper_ID, Adopted_Stage_Upper_Mod FROM Adoption_All_View WHERE Record_ID = " + loadRecID);
+				rs = statement.executeQuery("SELECT DISTINCT Adoptor FROM Adoption_All_View WHERE Record_ID = " + loadRecID);
+				while (rs.next()) {
+					if (rs.getString(1) != null) { adoptor = adoptor + rs.getString(1) + "\n"; }
+				}
+				rs = statement.executeQuery("SELECT Adopted_Stage_Lower_ID, Adopted_Stage_Lower_Mod, Adopted_Stage_Upper_ID, Adopted_Stage_Upper_Mod FROM Adoption_All_View WHERE Record_ID = " + loadRecID);
 				if (rs.next()) {
-					adoptor = noNulls(rs.getString(1));
-					if (rs.getString(2) != null) { stageStart = rs.getString(2); }
-					if (rs.getString(3) != null) { startMod = rs.getString(3); }
-					if (rs.getString(4) != null) { stageStop = rs.getString(4); }
-					if (rs.getString(5) != null) { stopMod = rs.getString(5); }
+					if (rs.getString(1) != null) { stageStart = rs.getString(1); }
+					if (rs.getString(2) != null) { startMod = rs.getString(2); }
+					if (rs.getString(3) != null) { stageStop = rs.getString(3); }
+					if (rs.getString(4) != null) { stopMod = rs.getString(4); }
 				}
 			}
 			else { //no rights to edit or not editable
@@ -186,7 +187,7 @@ function parseDoubleDropDown(first, second) {
 			</td></tr>
 			<tr><td></td><td></td><td><input type='checkbox' name='AdoDateUnk'<%=adoDateUnk%>>Unknown</td></tr>
 			<tr><td></td><td class='smallheading'>Rounding</td><td><input type='radio' name='DateRnd' value='' <%=((dateRnd.equals("")) ? " checked" : "")%>>None<img src='images/blank.gif' width='20' height='1' /><input type='radio' name='DateRnd' value='Month'<%=((dateRnd.equals("Month")) ? " checked" : "")%>>Month<img src='images/blank.gif' width='20' height='1' /><input type='radio' name='DateRnd' value='Year'<%=((dateRnd.equals("Year")) ? " checked" : "")%>>Year</td></tr>
-			<tr><td class='heading'>Adoptor</td><td></td><td><input type='text' name='Adoptor' size='40' value='<%=adoptor%>'></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=Adoptor", "Supp", "width=600,height=350");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
+			<tr><td class='heading'>Adoptors</td><td></td><td><textarea name='Adoptor' cols='40' rows='2'><%=adoptor%></textarea></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=Adoptor", "Supp", "width=600,height=350");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
 			<tr><td class='heading'>Adopted Stage</td><td></td><td>
 			<table border='0' cellspacing='0'>
 			<tr><td>
