@@ -22,7 +22,6 @@ import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.fred.data.SedFeature;
 import nz.cri.gns.fred.data.SentTo;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 public class SampleDE implements DataEntryForm {
@@ -49,6 +48,7 @@ public class SampleDE implements DataEntryForm {
 	private Vector sentTo;
 	private Vector stratRel;
 
+	private static final int RELATIONSHIP_NEARBY = 231;
 	private static final int RELATIONSHIP_ABOVE = 232;
 	private static final int RELATIONSHIP_BELOW = 233;
 	private static final int RELATIONSHIP_ABOVE_TOP = 236;
@@ -1011,103 +1011,62 @@ public class SampleDE implements DataEntryForm {
 				}
 				
 				//TODO rework DB stuff from here down
+				//Delete and then add new repeating records
+				int[] numericType = new int[] {Types.NUMERIC};
+				Object[] sampIDObj = new Object[] {new Integer(sampleID)};
 				//Create COLLECTORS entries
-				conn.executeUpdate("DELETE FROM Collector WHERE Sample_ID = " + sampleID);
+				conn.executeUpdate("DELETE FROM collector WHERE sample_id = ?", numericType, sampIDObj);
 				if (collectors != null) {
-					for (Iterator i = collectors.iterator(); i.hasNext();) {
-						conn.executeUpdate("INSERT INTO Collector (Sample_ID, Person_ID) VALUES (" + sampleID + ", " + (Integer) i.next() + ")");
-					}
+					String query = "INSERT INTO collector (sample_id, person_id) VALUES (?, ?)";
+					for (Iterator i = collectors.iterator(); i.hasNext();)
+						conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(sampleID), (Integer) i.next()});
 				}
 				//Create SENT TO entries
-				conn.executeUpdate("DELETE FROM Sent_To WHERE Sample_ID = " + sampleID);
+				conn.executeUpdate("DELETE FROM sent_to WHERE sample_id = ?", numericType, sampIDObj);
 				if (sentTo != null) {
+					String query = "INSERT INTO sent_to (sample_id, fossil_group_id, person_id, lab_id, comments) VALUES (?, ?, ?, ?, ?)";
 					for (Iterator i = sentTo.iterator(); i.hasNext();) {
 						SentTo sT = (SentTo) i.next();
 						if (sT.getFossilGroupID() != null)
-							conn.executeUpdate(
-								"INSERT INTO Sent_To (Sample_ID, Fossil_Group_ID, Person_ID, Lab_ID, Comments) VALUES ("
-									+ sampleID
-									+ ", "
-									+ sT.getFossilGroupID()
-									+ ", "
-									+ JspUtils.sqlEscape(sT.getPersonID())
-									+ ", "
-									+ JspUtils.sqlEscape(sT.getLabID())
-									+ ", "
-									+ JspUtils.sqlEscape(sT.getComments())
-									+ ")");
+							conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC, Types.NUMERIC, Types.NUMERIC, Types.VARCHAR},
+								new Object[] {new Integer(sampleID), sT.getFossilGroupID(), sT.getPersonID(),sT.getLabID(), sT.getComments()});
 					}
 				}
 				//Create RELATIONSHIP entries
-				conn.executeUpdate("DELETE FROM Relationship WHERE Sample_ID = " + sampleID);
+				conn.executeUpdate("DELETE FROM relationship WHERE sample_id = ?", numericType, sampIDObj);
+				String query = "INSERT INTO relationship (sample_id, relationship_type, relation_type_id, distance, distance_range, distance_mod, related_feature_id, strat_unit) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+				int[] relType = new int[] {Types.NUMERIC, Types.VARCHAR, Types.NUMERIC, Types.NUMERIC, Types.NUMERIC, Types.VARCHAR, Types.NUMERIC, Types.VARCHAR};
 				if (prevSamp != null) {
 					for (Iterator i = prevSamp.iterator(); i.hasNext();) {
 						Relationship rel = (Relationship) i.next();
 						if (rel.getRelatedFeatureID() != null)
-							conn.executeUpdate(
-								"INSERT INTO Relationship (Sample_ID, Relationship_Type, Relation_Type_ID, Related_Feature_ID) VALUES ("
-									+ sampleID
-									+ ", 'Sample', 231, "
-									+ rel.getRelatedFeatureID()
-									+ ")");
+							conn.executeUpdate(query, relType, new Object[] {new Integer(sampleID), "Sample", new Integer(RELATIONSHIP_NEARBY), null, null, null, rel.getRelatedFeatureID(), null});
 					}
 				}
-
 				if (sampRel != null) {
 					for (Iterator i = sampRel.iterator(); i.hasNext();) {
 						Relationship rel = (Relationship) i.next();
-						conn.executeUpdate(
-							"INSERT INTO Relationship (Sample_ID, Relationship_Type, Relation_Type_ID, Distance, Distance_Range, Distance_Mod, Related_Feature_ID) VALUES ("
-								+ sampleID
-								+ ", 'Sample', "
-								+ JspUtils.sqlEscape(rel.getRelationTypeID())
-								+ ", "
-								+ JspUtils.sqlEscape(rel.getDistance())
-								+ ", "
-								+ JspUtils.sqlEscape(rel.getDistanceRange())
-								+ ", "
-								+ JspUtils.sqlEscape(rel.getDistanceMod())
-								+ ", "
-								+ JspUtils.sqlEscape(rel.getRelatedFeatureID())
-								+ ")");
+						if (rel.getRelatedFeatureID() != null)
+							conn.executeUpdate(query, relType, new Object[] {new Integer(sampleID), "Sample", rel.getRelationTypeID(), rel.getDistance(), rel.getDistanceRange(), rel.getDistanceMod(), rel.getRelatedFeatureID(), null});
 					}
 				}
-
 				if (stratRel != null) {
 					for (Iterator i = stratRel.iterator(); i.hasNext();) {
 						Relationship rel = (Relationship) i.next();
-						conn.executeUpdate(
-							"INSERT INTO Relationship (Sample_ID, Relationship_Type, Relation_Type_ID, Distance, Distance_Range, Distance_Mod, Strat_Unit) VALUES ("
-								+ sampleID
-								+ ", 'Strat', "
-								+ JspUtils.sqlEscape(rel.getRelationTypeID())
-								+ ", "
-								+ JspUtils.sqlEscape(rel.getDistance())
-								+ ", "
-								+ JspUtils.sqlEscape(rel.getDistanceRange())
-								+ ", "
-								+ JspUtils.sqlEscape(rel.getDistanceMod())
-								+ ", "
-								+ JspUtils.sqlEscape(rel.getRelatedStratUnit())
-								+ ")");
+						if (rel.getRelatedStratUnit() != null)
+							conn.executeUpdate(query, relType, new Object[] {new Integer(sampleID), "Strat", rel.getRelationTypeID(), rel.getDistance(), rel.getDistanceRange(), rel.getDistanceMod(), null, rel.getRelatedStratUnit()});
 					}
 				}
 				//Create SEDIMENTARY FEATURE entries
-				conn.executeUpdate("DELETE FROM Sedimentary_Feature WHERE Sample_ID = " + sampleID);
+				conn.executeUpdate("DELETE FROM sedimentary_feature WHERE sample_id = ?", numericType, sampIDObj);
 				if (sedFeat != null) {
+					query = "INSERT INTO sedimentary_feature (sample_id, sed_feature_id, abundant) VALUES (?, ?, ?)";
 					for (Iterator i = sedFeat.iterator(); i.hasNext();) {
 						SedFeature sF = (SedFeature) i.next();
-						conn.executeUpdate(
-							"INSERT INTO Sedimentary_Feature (Sample_ID, Sed_Feature_ID, Abundant) VALUES ("
-								+ sampleID
-								+ ", "
-								+ sF.getSedFeatureId()
-								+ ", "
-								+ JspUtils.sqlEscape(sF.getAbundant())
-								+ ")");
+						conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC, Types.VARCHAR},
+							 new Object[] {new Integer(sampleID), sF.getSedFeatureId(), sF.getAbundant()});
 					}
 				}
-
 				conn.getConnection().commit();
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();

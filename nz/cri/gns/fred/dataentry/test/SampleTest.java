@@ -21,7 +21,7 @@ import nz.cri.gns.test.TestingPageState;
 
 public class SampleTest extends TestCase {
 
-	public void _testAddDeleteSample() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void testAddDeleteSample() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("test", "test", ipConn);
