@@ -4,13 +4,17 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.text.DecimalFormat;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.db.QueryDescriptor;
 import nz.cri.gns.fred.data.FRNumber;
 import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.data.Folder;
+import nz.cri.gns.fred.data.Record;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
 import nz.cri.gns.fred.dataentry.DataInputException;
@@ -18,34 +22,35 @@ import nz.cri.gns.fred.dataentry.LocalityDE;
 import nz.cri.gns.fred.dataentry.RecordDE;
 import nz.cri.gns.fred.dataentry.SampleDE;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 
 public class FolderUtils {
 	
 	public static void addFolder(String name, User user, PageState state) throws SQLException, IOException {
-		DBConnection conn = FREDUtils.getFREDConnection(state);
-		if (name.length() > 32) {
+		if (name.length() > 32)
 			name = name.substring(0, 31);
-		}
-		conn.executeUpdate("INSERT INTO Folder (Name, Owner_ID, Folder_Type) VALUES (" + JspUtils.sqlEscape(name) + ", " + user.getPersonId() + ", 'personal')");
-		conn.releaseStatement();	
+		QueryDescriptor qd = new QueryDescriptor("folder");
+		qd.addQueryColumn("name", Types.VARCHAR, name);
+		qd.addQueryColumn("owner_id", Types.NUMERIC, new Integer(user.getPersonId()));
+		qd.addQueryColumn("folder_type", Types.VARCHAR, "personal");
+		DBUtils.doInsert(qd, "folder_id", FREDUtils.getFREDConnection(state));
 	}
 	
-	public static void deleteFolder(String foldID, User user, PageState state) throws IOException, InvalidCredentialsException, SQLException, FolderUtilException {
+	public static void deleteFolder(String folderID, User user, PageState state) throws IOException, InvalidCredentialsException, SQLException, FolderUtilException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		Folder folder = new Folder(Integer.parseInt(foldID), user, state);
+		Folder folder = new Folder(Integer.parseInt(folderID), user, state);
 		if (folder.isAllowedAdmin() && folder.getLocalityCount() == 0) {
-			conn.executeUpdate("DELETE FROM Folder WHERE Folder_ID = " + foldID);
+			String query = "DELETE FROM folder WHERE folder_id = ?";
+			conn.executeUpdate(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(folderID)});
 		} else {
 			throw new FolderUtilException("Cannot delete folder as either insufficient privileges or folder not empty");
 		}
 		conn.releaseStatement();
 	}
 	
-	public static void deleteLocality(String featID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
-		LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
+	public static void deleteLocality(String featureID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+		LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featureID), user, state);
 		form.delete();
 	}
 	
@@ -56,24 +61,29 @@ public class FolderUtils {
 		SampleDE form = DataEntryFormFactory.getSampleDataEntryForm(Integer.parseInt(sampleID), user, state);
 		form.delete();
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		ResultSet rs = conn.executeQuery("SELECT COUNT(*) FROM Sample WHERE Feature_ID = " + featureID);
+		String query = "SELECT COUNT(*) FROM sample WHERE feature_id = ?";
+		ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(featureID)});
 		rs.next();
 		if (rs.getInt(1) == 0) {
-			conn.executeUpdate("INSERT INTO Sample (Feature_ID, Audit_ID) VALUES (" + featureID + ", " + featAuditID + ")");
+			QueryDescriptor qd = new QueryDescriptor("sample");
+			qd.addQueryColumn("feature_id", Types.NUMERIC, new Integer(featureID));
+			qd.addQueryColumn("audit_id", Types.NUMERIC, new Integer(featAuditID));
+			DBUtils.doInsert(qd, "sample_id", conn);			
 		}	
 	}
 	
-	public static void deleteRecord(String recID, User user, PageState state) throws NumberFormatException, DataInputException, InvalidCredentialsException, SQLException, IOException {
-		RecordDE form = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(recID), user, state);
+	public static void deleteRecord(String recordID, User user, PageState state) throws NumberFormatException, DataInputException, InvalidCredentialsException, SQLException, IOException {
+		RecordDE form = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(recordID), user, state);
 		form.delete();
 	}
 
-	public static void removeLocality(String featureID, String folderID, User user, PageState state) throws IOException, SQLException, InvalidCredentialsException, DataInputException {
+	public static void removeLocality(String featureID, String folderID, User user, PageState state) throws IOException, SQLException, InvalidCredentialsException, FolderUtilException {
 		Feature feature = new Feature(Integer.parseInt(featureID), user, state);
 		if (!feature.getAsString(Feature.STATUS).equals("approved"))
-			throw new DataInputException("Locality Status", "Cannot remove a working locality");
+			throw new FolderUtilException("Cannot remove a working locality");
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		conn.executeUpdate("DELETE FROM folder_content WHERE folder_id = " + folderID + " AND feature_id = " + featureID);
+		String query = "DELETE FROM folder_content WHERE folder_id = ? AND feature_id = ?";
+		conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(folderID), new Integer(featureID)});
 	}
 
 	public static void submitLocality(String featID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
@@ -106,59 +116,92 @@ public class FolderUtils {
 		form.reject(comments);			
 	}
 	
-	public static void copyLocality(String oldFeatID, String newFeatName, String foldID, User user, PageState state) throws IOException, SQLException {
-		//TODO fix statements - statement2 and 3 are not seperate
+	public static void copyLocality(String oldFeatureID, String newFeatureName, String folderID, User user, PageState state) throws IOException, SQLException {
 		int userID = user.getPersonId();
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		Statement statement2 = conn.getExtraStatement();
-		Statement statement3 = conn.getExtraStatement();
-		ResultSet rs2, rs3;
-		String sampID, oldSampID, recID, oldRecID;
-		ResultSet rs = conn.executeQuery("SELECT Audit_Seq.NEXTVAL FROM DUAL");
-		rs.next();
-		String auditID = rs.getString(1);
-		conn.executeUpdate("INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Folder_ID, Security_Class_ID) VALUES (" + auditID + ", 'working', " + userID + ", SYSDATE, " + foldID + ", 4)");
-		rs = conn.executeQuery("SELECT Feature_Seq.NEXTVAL FROM DUAL");
-		rs.next();
-		String featID = rs.getString(1);
-		conn.executeUpdate("INSERT INTO Feature (Feature_ID, Site_ID, Audit_ID, Masterfile_ID, Feature_Type, Feature_Name, Locality, Reg_Area_ID, Person_ID, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Drillhole_Licence_Name, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth, Comments) SELECT " + featID + " AS FeatID, Site_ID, " + auditID + " AS AuditID, Masterfile_ID, Feature_Type, " + JspUtils.sqlEscape(newFeatName) + " AS FeatName, Locality, Reg_Area_ID, Person_ID, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Drillhole_Licence_Name, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth, Comments FROM Feature WHERE Feature_ID = " + oldFeatID);
-		rs = conn.executeQuery("SELECT Sample_ID FROM Sample WHERE Feature_ID = " + oldFeatID);
-		while (rs.next()) {
-			oldSampID = rs.getString(1);
-			rs2 = statement2.executeQuery("SELECT Sample_Seq.NEXTVAL FROM DUAL");
-			rs2.next();
-			sampID = rs2.getString(1);
-			statement2.executeUpdate("INSERT INTO Sample (Sample_ID, Feature_ID, Top_Depth, Bottom_Depth, Drill_Type_ID, Comments) SELECT " + sampID + " AS SampID, " + featID + " AS FeatID, Top_Depth, Bottom_Depth, Drill_Type_ID, Comments FROM Sample WHERE Sample_ID = " + oldSampID);
-			rs2 = statement2.executeQuery("SELECT Record_ID, Record_Type FROM Record_All_View WHERE Sample_ID = " + oldSampID);
+		QueryDescriptor qd = new QueryDescriptor("audit_table");
+		qd.addQueryColumn("status", Types.VARCHAR, "working");
+		qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(userID));
+		qd.addQueryColumn("created_date", Types.DATE, FREDUtils.getNowForSQL());
+		qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(folderID));
+		String featureAuditID = DBUtils.doInsertUsingSequence(qd, "audit_id", "audit_seq", conn, true);
+		ResultSet seqRst = conn.executeQuery("SELECT feature_seq.NEXTVAL FROM DUAL");
+		seqRst.next();
+		int featureID = seqRst.getInt(1);
+		String query = "SELECT feature_type FROM feature WHERE feature_id = ?";
+		ResultSet rs1 = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(oldFeatureID)});
+		rs1.next();
+		String featureType = rs1.getString(1);
+		query = "INSERT INTO feature (feature_id, site_id, audit_id, masterfile_id, feature_type, feature_name, locality, reg_area_id, person_id, start_date, start_date_rounding, finish_date, finish_date_rounding, drillhole_licence_name, datum_type, datum_elevation, start_depth, finish_depth, comments) SELECT ? AS featid, site_id ? AS auditid, masterfile_id, feature_type, ? AS featname, locality, reg_area_id, person_id, start_date, start_date_rounding, finish_date, finish_date_rounding, drillhole_licence_name, datum_type, datum_elevation, start_depth, finish_depth, comments FROM feature WHERE feature_id = ?";
+		conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC, Types.VARCHAR, Types.NUMERIC}, new Object[] {new Integer(featureID), new Integer(featureAuditID), newFeatureName, new Integer(oldFeatureID)});
+		query = "SELECT sample_id FROM sample WHERE feature_id = ?";
+		rs1 = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(oldFeatureID)});
+		Statement ps1 = conn.preservePreparedStatement();
+		while (rs1.next()) {
+			String sampleAuditID;
+			if (featureType.equals(Feature.OUTCROP_LOCALITY)) {
+				//if Outcrop re-use Feature AuditID in Sample
+				sampleAuditID = featureAuditID; 
+			} else {
+				qd = new QueryDescriptor("audit_table");
+				qd.addQueryColumn("status", Types.VARCHAR, "working");
+				qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(userID));
+				qd.addQueryColumn("created_date", Types.DATE, FREDUtils.getNowForSQL());
+				qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(folderID));
+				qd.addQueryColumn("security_class_id", Types.NUMERIC, new Integer(4));
+				sampleAuditID = DBUtils.doInsertUsingSequence(qd, "audit_id", "audit_seq", conn, true);
+			}
+			int oldSampleID = rs1.getInt(1);
+			seqRst = conn.executeQuery("SELECT Sample_Seq.NEXTVAL FROM DUAL");
+			seqRst.next();
+			int sampleID = seqRst.getInt(1);
+			query = "INSERT INTO sample (sample_id, feature_id, audit_id, top_depth, bottom_depth, drill_type_id, collection_date, date_rounding, strat_unit, in_place, not_collected, significance, inferred_stage_id, known_stage_id, column_map, dip, dip_direction, strike, facing, primary_grainsize_id, secondary_grainsize_id, comparator_used, bed_thick_id, primary_bedding_id, secondary_bedding_id, weathering_id, hardness_id, carbonate_id, colour_modifier_id, primary_colour_id, secondary_colour_id, wet, rock_nature, deposition_env, correspondence, comments) SELECT ? AS sampid, ? AS featid, ? AS auditID, top_depth, bottom_depth, drill_type_id, collection_date, date_rounding, strat_unit, in_place, not_collected, significance, inferred_stage_id, known_stage_id, column_map, dip, dip_direction, strike, facing, primary_grainsize_id, secondary_grainsize_id, comparator_used, bed_thick_id, primary_bedding_id, secondary_bedding_id, weathering_id, hardness_id, carbonate_id, colour_modifier_id, primary_colour_id, secondary_colour_id, wet, rock_nature, deposition_env, comments FROM sample WHERE sample_id = ?";
+			conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC, Types.NUMERIC, Types.NUMERIC, }, new Object[] {new Integer(sampleID), new Integer(featureID), new Integer(sampleAuditID), new Integer(oldSampleID)});
+			query = "INSERT INTO collector (sample_id, person_id) SELECT ? AS sampid, person_id FROM collector WHERE sample_id = ?";
+			conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(sampleID), new Integer(oldSampleID)});
+			query = "INSERT INTO relationship (relationship_id, sample_id, relationship_type, related_feature_id, strat_unit, distance, distance_range, distance_mod, relation_type_id) SELECT relationship_seq.NEXTVAL AS relID, ? AS sampID, relationship_type, related_feature_id, strat_unit, distance, distance_range, distance_mod, relation_type_id FROM Relationship WHERE Record_ID = ?";
+			conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(sampleID), new Integer(oldSampleID)});
+			query = "INSERT INTO sedimentary_feature (sample_id, sed_feature_id, abundant) SELECT ? AS sampID, sed_feature_id, abundant FROM sedimentary_feature WHERE sample_id = ?";
+			conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(sampleID), new Integer(oldSampleID)});
+			query = "INSERT INTO sent_to (sample_id, fossil_group_id, person_id, lab_id, comments) SELECT ? AS sampID, fossil_group_id, person_id, lab_id, comments FROM sent_to WHERE sample_id = ?";
+			conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(sampleID), new Integer(oldSampleID)});
+			query = "SELECT record_ID, record_type FROM record_all_view WHERE sample_id = ?";
+			ResultSet rs2 = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(oldSampleID)});
+			Statement ps2 = conn.preservePreparedStatement();
 			while (rs2.next()) {
-				oldRecID = rs2.getString(1);
-				rs3 = statement3.executeQuery("SELECT Audit_Seq.NEXTVAL FROM DUAL");
-				rs3.next();
-				auditID = rs3.getString(1);
-				statement3.executeUpdate("INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Folder_ID, Security_Class_ID) VALUES (" + auditID + ", 'working', " + userID + ", SYSDATE, " + foldID + ", 4)");
-				rs3 = statement3.executeQuery("SELECT Record_Seq.NEXTVAL FROM DUAL");
-				rs3.next();
-				recID = rs3.getString(1);
-				statement3.executeUpdate("INSERT INTO Record (Record_ID, Sample_ID, Audit_ID) VALUES (" + recID + ", " + sampID + ", " + auditID + ")");
-				if (rs2.getString(2).equals("SMP")) {
-					statement3.executeUpdate("INSERT INTO Sample_Property (Record_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage_ID, Known_Stage_ID, Column_Map, Dip, Dip_Direction, Strike, Facing, Primary_Grainsize_ID, Secondary_Grainsize_ID, Comparator_Used, Bed_Thick_ID, Primary_Bedding_ID, Secondary_Bedding_ID, Weathering_ID, Hardness_ID, Carbonate_ID, Colour_Modifier_ID, Primary_Colour_ID, Secondary_Colour_ID, Wet, Rock_Nature, Deposition_Env, Correspondence) SELECT " + recID + " AS RecID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage_ID, Known_Stage_ID, Column_Map, Dip, Dip_Direction, Strike, Facing, Primary_Grainsize_ID, Secondary_Grainsize_ID, Comparator_Used, Bed_Thick_ID, Primary_Bedding_ID, Secondary_Bedding_ID, Weathering_ID, Hardness_ID, Carbonate_ID, Colour_Modifier_ID, Primary_Colour_ID, Secondary_Colour_ID, Wet, Rock_Nature, Deposition_Env, Correspondence FROM Sample_Property WHERE Record_ID = " + oldRecID);
-					statement3.executeUpdate("INSERT INTO Collector (Record_ID, Person_ID) SELECT " + recID + " AS RecID, Person_ID FROM Collector WHERE Record_ID = " + oldRecID);
-					statement3.executeUpdate("INSERT INTO Relationship (Relationship_ID, Record_ID, Relationship_Type, Related_Feature_ID, Strat_Unit, Distance, Distance_Range, Distance_Mod, Relation_Type_ID) SELECT Relationship_Seq.NEXTVAL, " + recID + " AS RecID, Relationship_Type, Related_Feature_ID, Strat_Unit, Distance, Distance_Range, Distance_Mod, Relation_Type_ID FROM Relationship WHERE Record_ID = " + oldRecID);
-					statement3.executeUpdate("INSERT INTO Sedimentary_Feature (Record_ID, Sed_Feature_ID, Abundant) SELECT " + recID + " AS RecID, Sed_Feature_ID, Abundant FROM Sedimentary_Feature WHERE Record_ID = " + oldRecID);
-					statement3.executeUpdate("INSERT INTO Sent_To (Record_ID, Fossil_Group_ID, Person_ID, Lab_ID, Comments) SELECT " + recID + " AS RecID, Fossil_Group_ID, Person_ID, Lab_ID, Comments FROM Sent_To WHERE Record_ID = " + oldRecID);
-				} else if (rs2.getString(2).equals("ADO")) {
-					statement3.executeUpdate("INSERT INTO Adoption (Record_ID, Adoption_Date, Date_Rounding, Adopted_Stage_ID, Comments) SELECT " + recID + " AS RecID, Adoption_Date, Date_Rounding, Adopted_Stage_ID, Comments FROM Adoption WHERE Record_ID = " + oldRecID);
-					statement3.executeUpdate("INSERT INTO Adoptor (Record_ID, Person_ID) SELECT " + recID + " AS RecID, Person_ID FROM Adoptor WHERE Record_ID = " + oldRecID);
-				} else if (rs2.getString(2).equals("PAL")) {
-					statement3.executeUpdate("INSERT INTO Paleontology (Record_ID, Identification_Date, Date_Rounding, Stage_ID, Stage_Comments, Lab_Section_ID, Lab_Number, Collection_Comments) SELECT " + recID + " AS RecID, Identification_Date, Date_Rounding, Stage_ID, Stage_Comments, Lab_Section_ID, Lab_Number, Collection_Comments FROM Paleontology WHERE Record_ID = " + oldRecID);
-					statement3.executeUpdate("INSERT INTO Identifier (Record_ID, Person_ID) SELECT " + recID + " AS RecID, Person_ID FROM Identifier WHERE Record_ID = " + oldRecID);
-					statement3.executeUpdate("INSERT INTO Pal_List (Pal_List_ID, Record_ID, Group_ID, Taxa_ID, Taxonomic_Name, Specimen_Count, Specimen_Coords, Comments) SELECT Pal_List_Seq.NEXTVAL, " + recID + " AS RecID, Group_ID, Taxa_ID, Taxonomic_Name, Specimen_Count, Specimen_Coords, Comments FROM Pal_List WHERE Record_ID = " + oldRecID);
+				int oldRecordID = rs2.getInt(1);
+				String recordType = rs2.getString(2);
+				qd = new QueryDescriptor("audit_table");
+				qd.addQueryColumn("status", Types.VARCHAR, "working");
+				qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(userID));
+				qd.addQueryColumn("created_date", Types.DATE, FREDUtils.getNowForSQL());
+				qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(folderID));
+				qd.addQueryColumn("security_class_id", Types.NUMERIC, new Integer(4));
+				String recordAuditID = DBUtils.doInsertUsingSequence(qd, "audit_id", "audit_seq", conn, true);
+				seqRst = conn.executeQuery("SELECT Record_Seq.NEXTVAL FROM DUAL");
+				seqRst.next();
+				int recordID = seqRst.getInt(1);
+				query = "INSERT INTO record (record_id, sample_id, audit_id) VALUES (?, ?, ?)";
+				conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(recordID), new Integer(sampleID), new Integer(recordAuditID)});
+				if (recordType.equals(Record.ADOPTION_RECORD)) {
+					query = "INSERT INTO adoption (record_id, adoption_date, date_rounding, adopted_stage_id, comments) SELECT ? AS recid, adoption_date, date_rounding, adopted_stage_id, comments FROM adoption WHERE record_id = ?";
+					conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(recordID), new Integer(oldRecordID)});
+					query = "INSERT INTO adoptor (record_id, person_id) SELECT ? AS recid, person_id FROM adoptor WHERE record_id = ?";
+					conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(recordID), new Integer(oldRecordID)});
+				} else if (recordType.equals(Record.PALEONTOLOGY_RECORD)) {
+					query = "INSERT INTO paleontology (record_id, identification_date, date_rounding, stage_id, stage_comments, lab_section_id, lab_number, collection_comments) SELECT ? AS recid, identification_date, date_rounding, stage_id, stage_comments, lab_section_id, lab_number, collection_comments FROM paleontology WHERE record_id = ?";
+					conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(recordID), new Integer(oldRecordID)});
+					query = "INSERT INTO identifier (record_id, person_id) SELECT ? AS recid, person_id FROM identifier WHERE record_id = ?";
+					conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(recordID), new Integer(oldRecordID)});
+					query = "INSERT INTO pal_list (pal_list_id, record_id, group_id, taxa_id, taxonomic_name, specimen_count, specimen_coords, comments) SELECT pal_list_seq.NEXTVAL AS palID, ? AS recid, group_id, taxa_id, taxonomic_name, specimen_count, specimen_coords, comments FROM pal_list WHERE record_id = ";
+					conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(recordID), new Integer(oldRecordID)});
 				}
 			}
+			ps2.close();
 		}
 		conn.releaseStatement();
-		statement2.close();
-		statement3.close();
+		ps1.close();
+		
 	}
 	
 	public static FRNumber getNextFRNumber(String regAreaCode, String nzmsSheet, double latitude, double longitude, PageState state) throws SQLException, IOException {
@@ -167,34 +210,35 @@ public class FolderUtils {
 		String latStr = latDeg.format((Math.floor(Math.abs(latitude))));
 		String longStr = longDeg.format((Math.floor(Math.abs(longitude))));
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		ResultSet rs;
-		
-		String mapSheet = null;
+		String mapSheet;
 		if (nzmsSheet != null) {
-			rs = conn.executeQuery("SELECT * FROM SC.Map_Sheet WHERE MS_Series = 'NZMS260' AND MS_Map_Code = " + JspUtils.sqlEscape(nzmsSheet));
-			if (rs.next()) {
+			if (FREDUtils.isValidMapSheet(nzmsSheet)) {
 				mapSheet = nzmsSheet;
 			} else {
 				mapSheet = (latitude >= 0 ? "N" : "S") + (longitude >= 0 ? "E" : "W") + latStr + longStr;
 			}
-		}
-		else if (regAreaCode != null && !regAreaCode.equals("NZ") && !regAreaCode.equals("OT")) {
+		} else if (regAreaCode != null && !regAreaCode.equals("NZ") && !regAreaCode.equals("OT")) {
 			mapSheet = regAreaCode;
-		}
-		else {
+		} else {
 			mapSheet = (latitude >= 0 ? "N" : "S") + (longitude >= 0 ? "E" : "W") + latStr + longStr;
 		}
-				
-		rs = conn.executeQuery("SELECT MAX(Serial_Number) FROM FR_Number WHERE Map_Sheet = " + JspUtils.sqlEscape(mapSheet) + " AND Serial_Number < 6000");
+		String query = "SELECT MAX(Serial_Number) FROM FR_Number WHERE Map_Sheet = ? AND Serial_Number < 6000";
+		ResultSet rs = conn.executeQuery(query, new int[] {Types.VARCHAR}, new Object[] {mapSheet});
+		int serialNum;
 		rs.next();
-		int serialNum = rs.getInt(1) + 1;
-		
+		if (rs.getString(1) != null) {
+			serialNum = rs.getInt(1) + 1;
+		} else {
+			serialNum = 1;
+		}
 		return new FRNumber(mapSheet, new Integer(serialNum), null);
 	}
 	
 	public static FRNumber getNextFRNumber(String mapSheet, int serialNumber, PageState state) throws IOException, SQLException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		ResultSet rs = conn.executeQuery("SELECT MAX(Recollection_Number) FROM FR_Number WHERE Map_Sheet = " + JspUtils.sqlEscape(mapSheet) + " AND Serial_Number = "  + serialNumber);
+		String query = "SELECT MAX(Recollection_Number) FROM FR_Number WHERE Map_Sheet = ? AND Serial_Number = ?";
+		ResultSet rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.NUMERIC}, new Object[] {mapSheet, new Integer(serialNumber)});
+		rs.next();
 		if (rs.getString(1) == null) {
 			return new FRNumber(mapSheet, new Integer(serialNumber), "A");	
 		} else {
