@@ -38,7 +38,7 @@ public class FeatureTest extends TestCase {
 		}
 	}
 
-	public void _testPooling() throws NotBoundException, SQLException, IOException {
+	public void testPooling() throws NotBoundException, SQLException, IOException {
 		Feature.purge();
 		Feature sv1 = new Feature(509, this.user, this.state);
 		Feature sv2 = new Feature(509, this.user2, this.state);
