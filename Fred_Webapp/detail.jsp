@@ -83,6 +83,8 @@
 				if (rs.getString(11) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(11))); }
 				out.println("</td></tr>");
 			}
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
+			out.println("<tr><td><a href='print_front.jsp?ID=" + sampID + "' title='Print' target='print'><img src='images/print.gif' width='20' height='20' border='0' /><img src='images/blank.gif' width='10' height='1' border='0' /></a></td><td><a href='print_front.jsp?ID=" + sampID + "' class='heading' target='print'>Print Front</a></td></tr>");
 			out.println("</table>");
 
 			drawEndNavigation(out);

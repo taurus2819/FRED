@@ -37,6 +37,13 @@
 	if (request.getParameter("ID") != null) {
 		foldID = request.getParameter("ID");
 
+		//print FRF after accepting
+		if (request.getParameter("PrintID") != null) {
+			out.println("<script language='JavaScript'><!--");
+			out.println("window.open(\"print_front.jsp?FeatID=" + request.getParameter("PrintID") + "\");");
+			out.println("//--></script>");
+		}
+
 		//get user rights
 		rs = statement.executeQuery("SELECT User_Rights FROM Folder_View WHERE Folder_ID = " + foldID + " AND User_ID = " + userID + " AND Folder_Type = 'admin'");
 		if (rs.next()) {
@@ -66,7 +73,8 @@
 			out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
 			out.println("<tr><th colspan='2'>Name<img src='blank.gif' width='10' height='1' /></th><th>Field No/<br>Drillhole<img src='blank.gif' width='10' height='1' /></th><th>Submitted Date<img src='blank.gif' width='10' height='1' /></th><th>Options</th></tr>");
 
-			//Feature
+			//To Approve
+			out.println("<tr><th colspan='5'>Localities to Approve</th></tr>");
 			rs3 = statement3.executeQuery("SELECT DISTINCT Feature_ID, Sample_Name FROM Masterfile_Content_View WHERE Folder_ID = " + foldID + " AND User_ID = " + userID + " ORDER BY Sample_Name");
 			featID = "";
 			while (rs3.next()) {
@@ -92,6 +100,31 @@
 					out.print("<img src='images/blank.gif' height='20' width='20' /><a href='feat_data_entry.jsp?Type=Outcrop&FeatID=" + featID + "&FoldID=" + foldID + " 'title='Edit Locality'><img src='images/edit.gif' border='0' height='20' width='20'></a>");
 				}
 				out.println("&nbsp;</td></tr>");
+			}
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
+			
+			//Recently Approved
+			out.println("<tr><th colspan='5'>Localities Recently Approved</th></tr>");
+			rs3 = statement3.executeQuery("SELECT DISTINCT S.Feature_ID, S.Sample_Name FROM Sample_All_View S, Audit_Table A WHERE S.Audit_ID = A.Audit_ID AND S.Status = 'approved' AND S.Masterfile_ID = " + foldID + " AND A.Approved_Date >= (SYSDATE - 7) ORDER BY Sample_Name");
+			featID = "";
+			while (rs3.next()) {
+				if (rs3.getString(1).equals(featID)) { continue; }
+				featID = rs3.getString(1);
+				rs = statement.executeQuery("SELECT S.Sample_ID, S.Sample_Name, S.Drillhole_Name, S.Field_Number, A.Submitted_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = " + featID);
+				rs.next();
+				if (rs.getString(3) != null) { //drillhole so loop through individual sample names
+					drillSampName = "";
+					rs2 = statement2.executeQuery("SELECT DISTINCT Sample_Name FROM Sample_All_View WHERE Feature_ID = " + featID + " ORDER BY Sample_Name");
+					while (rs2.next()) { drillSampName = drillSampName + rs2.getString(1) + ", "; }
+					drillSampName = drillSampName.substring(0, drillSampName.length() - 2);
+					out.print("<tr><td><img src='images/loc.gif' height='20' width='20' /><img src='images/blank.gif' width='5' height='20' /></td><td class='heading'><a href='drillhole_detail.jsp?ID=" + featID + "'>" + drillSampName + "</a></td><td class='heading'><a href='drillhole_detail.jsp?ID=" + featID + "'>" + rs.getString(3) +"</a></td><td>");
+				} else {
+					out.print("<tr><td class='heading'><img src='images/loc.gif' height='20' width='20' /><img src='images/blank.gif' width='5' height='20' /></td><td class='heading'><a href='detail.jsp?ID=" + rs.getString(1) + "'>" + rs.getString(2) + "</a></td><td>" + noNulls(rs.getString(4)) + "</td><td>");
+				}
+				if (rs.getString(5) != null) { 
+						out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(5)));
+				}
+				out.println("</td></tr>");
 			}
 			out.println("</table></p>");
 		}

@@ -20,13 +20,9 @@
 
 	//if FeatureID given then get SampleID or transer to drillhole
 	if (request.getParameter("FeatID") != null) {
-		rs = statement.executeQuery("SELECT Sample_ID, Drillhole_Name FROM Sample_All_View WHERE Feature_ID = " + request.getParameter("FeatID"));
+		rs = statement.executeQuery("SELECT MIN(Sample_ID) FROM Sample_All_View WHERE Feature_ID = " + request.getParameter("FeatID"));
 		if (rs.next()) {
-			if (rs.getString(2) != null) {
-				response.sendRedirect("drillhole_detail.jsp?ID=" + request.getParameter("FeatID"));
-			} else {
-				response.sendRedirect("detail.jsp?ID=" + rs.getString(1));
-			}
+			response.sendRedirect("print_front.jsp?ID=" + rs.getString(1));
 		}
 	}
 	
@@ -68,43 +64,30 @@
 			out.println("<table border='1' cellspacing='0' cellpadding='10' width='620'>");
 			out.println("<tr><td>");
 
-			rs = statement.executeQuery("SELECT S.Sample_Name, S.Masterfile_Name, S.Status, A.Created_By, A.Created_Date, A.Modified_By, A.Modified_Date, A.Submitted_By, A.Submitted_Date, A.Approved_By, A.Approved_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Sample_ID = " + sampID);
+			rs = statement.executeQuery("SELECT S.Sample_Name, S.Masterfile_Name, S.Drillhole_Name, S.Drill_Type, A.Approved_By, A.Approved_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Sample_ID = " + sampID);
 			rs.next();			
 			out.println("<table border='0' cellspacing='0' cellpadding='0' width='600'>");
-			out.println("<tr><td rowspan='2'><img src='images/gslogo.gif' width='42' height='50' /></td><td class='smallheading'>GEOLOGICAL SOCIETY OF NEW ZEALAND</td><td rowspan='2' class='hugeheading' align='right'>" + rs.getString(1) + "</td></tr>");
-			out.println("<tr><td class='hugeheading'>FOSSIL RECORD FORM</td></tr>");
+			out.println("<tr><td rowspan='2'><img src='images/gslogo.gif' width='42' height='50' /></td><td class='smallheading'>GEOLOGICAL SOCIETY OF NEW ZEALAND</td><td class='hugeheading' align='right'>" + rs.getString(1) + "</td></tr>");
+			out.print("<tr><td class='hugeheading'>FOSSIL RECORD FORM</td><td align='right' class='heading'>");
+			if (rs.getString(3) == null) {
+				out.print("Outcrop");
+			} else {
+				if (rs.getString(4) != null && rs.getString(4).equals("Exposure")) {
+					out.print("Vertical Section");
+				} else {
+					out.print("Drillhole");
+				}
+			}
+			out.println("</td></tr>");		
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
 			out.println("</table>");
 			
 			out.println("<table border='0' cellspacing='0' cellpadding='0' width='600'>");
-			if (rs.getString(2) != null) {
-				out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + rs.getString(2) + "</td></tr>");
-			}
-			if (!rs.getString(3).equals("approved")) {
-				out.println("<tr><td class='smallheading'>Status:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + rs.getString(3) + "</td></tr>");
-			}
-			if (rs.getString(4) != null || rs.getString(5) != null) {
-				out.println("<tr><td class='smallheading'>Created:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(4) != null) { out.print(rs.getString(4) + "&nbsp;&nbsp;"); }
-				if (rs.getString(5) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(5))); }
-				out.println("</td></tr>");
-			}
-			if (rs.getString(6) != null || rs.getString(7) != null) {
-				out.println("<tr><td class='smallheading'>Edited:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(6) != null) { out.print(rs.getString(6) + "&nbsp;&nbsp;"); }
-				if (rs.getString(7) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(7))); }
-				out.println("</td></tr>");
-			}
-			if (rs.getString(8) != null || rs.getString(9) != null) {
-				out.println("<tr><td class='smallheading'>Submitted:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(8) != null) { out.print(rs.getString(8) + "&nbsp;&nbsp;"); }
-				if (rs.getString(9) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(9))); }
-				out.println("</td></tr>");
-			}
-			if (rs.getString(10) != null || rs.getString(11) != null) {
-				out.println("<tr><td class='smallheading'>Approved:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(10) != null) { out.print(rs.getString(10) + "&nbsp;&nbsp;"); }
-				if (rs.getString(11) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(11))); }
+			if (rs.getString(2) != null) { out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + rs.getString(2) + "</td></tr>"); }
+			if (rs.getString(5) != null || rs.getString(6) != null) {
+				out.println("<tr><td class='smallheading'>MF Curator Approved:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
+				if (rs.getString(5) != null) { out.print(rs.getString(5) + "&nbsp;&nbsp;"); }
+				if (rs.getString(6) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(6))); }
 				out.println("</td></tr>");
 			}
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
@@ -117,11 +100,12 @@
 			
 			out.println("<tr><td class='bigheading' colspan='2'>Mandatory Data</td></tr>");
 			if (rs.getString(2) != null && userID != 0) { out.println("<tr><td class='heading'>Field Number</td><td>" + (rs.getString(2)) + "</td></tr>"); }
+			if (rs.getString(3) != null) { out.println("<tr><td class='heading'>Drillhole Name</td><td>" + rs.getString(3) + "</td></tr>"); }
 			if (rs.getString(7) != null) {
 				out.print("<tr><td class='heading'>Grid Ref</td><td>");
 				if (rs.getString(4) != null) {
 					out.print(rs.getString(4) + ": " + nzmg.format(rs.getDouble(5)) + ", " + nzmg.format(rs.getDouble(6)));
-					out.print("<img src='images/blank.gif' width='20' height='1' />|<img src='images/blank.gif' width='20' height='1' />");
+					out.print("<img src='images/blank.gif' width='15' height='1' />|<img src='images/blank.gif' width='15' height='1' />");
 				}
 				if (rs.getDouble(7) > 0) {
 					out.print(latlong.format(rs.getDouble(7)) + "&#176N");
@@ -134,32 +118,12 @@
 				} else {
 					out.print(latlong.format(Math.abs(rs.getDouble(8))) + "&#176W");
 				}
-				if (rs.getString(9) != null) { out.print(" (&#177 " + rs.getString(9) + "m)"); }
+				if (rs.getString(9) != null) { out.print("&nbsp;&nbsp;(&#177 " + rs.getString(9) + "m)"); }
 				out.println("</td></tr>");
 			}
-			if (rs.getString(10) != null && userID != 0) { out.println("<tr><td class='heading'>Method</td><td>" + rs.getString(10) + "</td></tr>"); }
-			if (rs.getString(3) != null && userID != 0) { //drillhole
-				out.println("<tr><td class='heading'>Drillhole Name</td><td><a href='drillhole_detail.jsp?ID=" + rs.getString(1) + "'>" + rs.getString(3) + "</a></td></tr>");
-				if (rs.getString(12) != null) { out.println("<tr><td class='heading'>Drillhole Depth</td><td>" + rs.getString(12) + "</td></tr>"); }
-				out.println("<tr><td class='heading'>Other Drillhole Samples</td><td>");
-				//check for samples above and below current one
-				rs2 = statement2.executeQuery("SELECT Sample_ID, Sample_Name, Drillhole_Depth FROM Sample_All_View WHERE Feature_ID = " + rs.getString(1) + " AND Top_Depth IS NOT NULL ORDER BY Top_Depth");
-				String dholeID = "", dholeSampName = "", dhole = "";
-				while (rs2.next()) {
-					if (rs2.getString(1).equals(sampID)) {
-						if (!dholeID.equals("")) {out.println("Sample Above: <a href='detail.jsp?ID=" + dholeID + "'>" + dhole + "</a><br>"); }
-						if (rs2.next()) { out.println("Sample Below: <a href='detail.jsp?ID=" + rs2.getString(1) + "'>" + rs2.getString(2)  + " - " + rs2.getString(3)+ "</a><br>"); }
-						break;
-					}
-					dholeID = rs2.getString(1);
-					dhole = rs2.getString(2) + " - " + rs2.getString(3);
-				}
-				out.println("</td></tr>");
-			}
-			if (rs.getString(11) != null && userID != 0) { out.println("<tr><td class='heading'>Locality</td><td>" + rs.getString(11) + "</td></tr>"); }
-
 			if (userID != 0) { //logged in user
-
+			if (rs.getString(10) != null) { out.println("<tr><td class='heading'>Method</td><td>" + rs.getString(10) + "</td></tr>"); }
+			if (rs.getString(11) != null) { out.println("<tr><td class='heading'>Locality</td><td>" + rs.getString(11) + "</td></tr>"); }
 				rs = statement.executeQuery("SELECT Record_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage, Known_Stage, Column_Map, Dip, Dip_Direction, Strike, Facing, Grainsize, Comparator_Used, Bed_Thickness, Bedding, Weathering, Hardness, Carbonate, Colour, Deposition_Env, Rock_Nature, Correspondence, Record_ID FROM Sample_Property_All_View WHERE Sample_ID = " + sampID);
 				if (rs.next()) {
 					recID = rs.getString(1);
@@ -273,13 +237,14 @@
 					if (rs.getString(23) != null) { out.println("<tr><td class='heading'>Inf Environment</td><td>" + rs.getString(23) + "</td></tr>"); }
 					if (rs.getString(24) != null) { out.println("<tr><td class='heading'>Nature of Rock Unit</td><td>" + rs.getString(24) + "</td></tr>"); }
 					if (rs.getString(25) != null) { out.println("<tr><td class='heading'>Correspondence</td><td>" + rs.getString(25) + "</td></tr>"); }
+					out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 					out.println("</table>");
 
 					//Image/Files
 					MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
 					if (mr != null) {
 						out.println("<table border='0' cellspacing='0' cellpadding='0' width='600'>");
-						out.println("<tr><td colspan='2' class='bigheading'>Images/Files</td></tr>");
+						out.println("<tr><td colspan='2' class='bigheading'>Attached Images/Files</td></tr>");
 						out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
 						int y = 1;
 						out.print("<tr>");

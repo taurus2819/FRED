@@ -19,7 +19,6 @@
 					Right.BLOCKED_RIGHT)};
 		}
 	}
-%><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
 	Statement statement = connection.statement;
@@ -54,7 +53,6 @@
 
 			if (request.getParameter("ActionType") != null) { //do something
 				String actionType = request.getParameter("ActionType");
-
 				if (actionType.equals("Accept")) {
 					//generate FR number record
 					rs = statement.executeQuery("SELECT FR_Seq.NEXTVAL FROM DUAL");
@@ -69,16 +67,16 @@
 					rs.next();
 					auditID = rs.getString(1);
 					execUp = statement.executeUpdate("UPDATE Audit_Table SET Status = 'approved', Approved_By_ID = " + userID + ", Approved_Date = SYSDATE, Working_Folder_ID = NULL, Working_Comments = NULL, Curator_Comments = NULL WHERE Audit_ID = " + auditID);
+					response.sendRedirect("admin_folder_detail.jsp?ID=" + foldID + "&PrintID=" + featID);
 				}
-
 				else if (actionType.equals("Reject")) {
 					//update audit table
 					rs = statement.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + featID);
 					rs.next();
 					auditID = rs.getString(1);
 					execUp = statement.executeUpdate("UPDATE Audit_Table SET Status = 'rejected', Curator_Comments = " + JspUtils.sqlEscape(request.getParameter("RejComm")) + " WHERE Audit_ID = " + auditID);
+					response.sendRedirect("admin_folder_detail.jsp?ID=" + foldID);
 				}
-				response.sendRedirect("admin_folder_detail.jsp?ID=" + foldID);
 			}
 
 			out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
@@ -159,7 +157,7 @@
 					}
 					mapSheet = mapSheet + latdeg.format(Math.abs(rs.getDouble(3))) + longdeg.format(Math.abs(rs.getDouble(4)));
 				}
-				rs = statement.executeQuery("SELECT MAX(Serial_Number) FROM FR_Number WHERE Map_Sheet = '" + mapSheet + "'");
+				rs = statement.executeQuery("SELECT MAX(Serial_Number) FROM FR_Number WHERE Map_Sheet = '" + mapSheet + "' AND Serial_Number < 6000");
 				rs.next();
 				serialNum = rs.getInt(1) + 1;
 				out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
@@ -170,7 +168,7 @@
 				if (recoll != null) {
 					out.println("<tr><td colspan='2'>The submitter has indicated that this record is a recollection of " + recoll + ".  If you agree then amend the FRNumber below as appropriate</td></tr>");
 				}
-				out.println("<tr><td></td><td><input type='text' name='MapSheet' size='9' value='" + mapSheet + "'>&nbsp/f&nbsp<input type='text' name='SerialNum' size='2' value='" + serialNum + "'>&nbsp<input type='text' name='RecollNum' size='1' value='" + noNulls(recollNum) + "'></td></tr>");
+				out.println("<tr><td colspan='2'><input type='text' name='MapSheet' size='9' value='" + mapSheet + "'>&nbsp;/f&nbsp;<input type='text' name='SerialNum' size='4' value='" + serialNum + "'>&nbsp;<input type='text' name='RecollNum' size='1' value='" + noNulls(recollNum) + "'></td></tr>");
 				out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
 				out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Reject\";document.RevForm.submit();' title='reject'><img src='images/cancel.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' /></td><td class='heading'>Comments to Submitter</td></tr>");
 				out.println("<tr><td colspan='2'><textarea name='RejComm' rows='5' cols='25'></textarea></td></tr>");
