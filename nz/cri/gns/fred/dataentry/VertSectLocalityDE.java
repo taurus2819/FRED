@@ -151,9 +151,9 @@ public class VertSectLocalityDE extends LocalityDE {
 				QueryDescriptor qd = new QueryDescriptor("feature");
 				qd.addQueryColumn("person_id", Types.NUMERIC, ((personID != null) ? new Integer(personID) : null));
 				qd.addQueryColumn("start_date", Types.DATE ,((startDate != null) ? startDate.getDate() : null));
-				qd.addQueryColumn("start_date_rounding", Types.VARCHAR, startDate.getDateRounding());
+				qd.addQueryColumn("start_date_rounding", Types.VARCHAR, ((startDate != null) ? startDate.getDateRounding() : null));
 				qd.addQueryColumn("finish_date", Types.DATE ,((compDate != null) ? compDate.getDate() : null));
-				qd.addQueryColumn("finish_date_rounding", Types.VARCHAR, compDate.getDateRounding());
+				qd.addQueryColumn("finish_date_rounding", Types.VARCHAR, ((compDate != null) ? compDate.getDateRounding() : null));
 				qd.addQueryColumn("datum_type", Types.VARCHAR, fields[DATUM_TYPE]);
 				qd.addQueryColumn("datum_elevation", Types.NUMERIC, ((fields[DATUM_ELEVATION] != null) ? new Integer(fields[DATUM_ELEVATION]) : null));
 				qd.addQueryColumn("start_depth", Types.NUMERIC, ((fields[TOP_HORIZON] != null) ? new Integer(fields[KICK_OFF_DEPTH]) : null));

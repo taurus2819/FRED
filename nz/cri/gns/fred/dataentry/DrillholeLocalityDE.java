@@ -170,9 +170,9 @@ public class DrillholeLocalityDE extends LocalityDE {
 				QueryDescriptor qd = new QueryDescriptor("feature");
 				qd.addQueryColumn("person_id", Types.NUMERIC, ((personID != null) ? new Integer(personID) : null));
 				qd.addQueryColumn("start_date", Types.DATE ,((spudDate != null) ? spudDate.getDate() : null));
-				qd.addQueryColumn("start_date_rounding", Types.VARCHAR, spudDate.getDateRounding());
+				qd.addQueryColumn("start_date_rounding", Types.VARCHAR, ((spudDate != null) ? spudDate.getDateRounding() : null));
 				qd.addQueryColumn("finish_date", Types.DATE ,((compDate != null) ? compDate.getDate() : null));
-				qd.addQueryColumn("finish_date_rounding", Types.VARCHAR, compDate.getDateRounding());
+				qd.addQueryColumn("finish_date_rounding", Types.VARCHAR, ((compDate != null) ? compDate.getDateRounding() : null));
 				qd.addQueryColumn("drillhole_licence_name", Types.VARCHAR, fields[LICENCE_AREA]);
 				qd.addQueryColumn("datum_type", Types.VARCHAR, fields[DATUM_TYPE]);
 				qd.addQueryColumn("datum_elevation", Types.NUMERIC, ((fields[DATUM_ELEVATION] != null) ? new Integer(fields[DATUM_ELEVATION]) : null));

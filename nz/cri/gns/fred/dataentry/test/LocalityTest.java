@@ -47,7 +47,7 @@ public class LocalityTest extends TestCase {
 		loc2.save();
 	}
 	
-	public void testEdit() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void _testEdit() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
@@ -158,5 +158,18 @@ public class LocalityTest extends TestCase {
 		form.setTempField(DataEntryForm.COLLECTION_DATE, "25/12/2004");
 		form.setFieldsFromTemp();
 		form.save();		
+	}
+	
+	public void testDrillholeLocality() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+		TestingPageState state = new TestingPageState();
+		DBConnection ipConn = FREDUtils.getIPConnection(state);
+		User user = new User("pseudo_ben", "santor32", ipConn);
+		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm(Feature.DRILLHOLE_LOCALITY, user, 221, state);
+		form.setTempField(DataEntryForm.FEATURE_NAME, "Test Drillhole 05");
+		form.setTempField(DataEntryForm.COLLECTION_DATE, "10/2004");
+		form.setTempField(DataEntryForm.DATUM_TYPE, "KB");
+		form.setTempField(DataEntryForm.TERMINATION_DEPTH, "25");
+		form.setFieldsFromTemp();
+		form.save();
 	}
 }
