@@ -68,7 +68,7 @@
 			}
 	
 			if (folder.isAllowedReadLocalities() && ok) {
-				Feature feature = new Feature(featID, user, state, true);
+				Feature feature = new Feature(featID, user, state);
 				String featType = feature.getAsString(Feature.FEATURE_TYPE);
 				String sampName = feature.getAsString(Feature.SAMPLE_NAMES);
 				String featName = feature.getAsString(Feature.FEATURE_NAME);
