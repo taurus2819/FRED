@@ -1,8 +1,5 @@
 package nz.cri.gns.fred;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import javax.servlet.http.HttpServletRequest;
 
 import nz.cri.gns.auth.Authenticable;
@@ -53,11 +50,7 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 		links[2] = new KeyValueObject("http://maps.gns.cri.nz/website/fred", "Map");
 		links[3] = new KeyValueObject("/fred/folder_list.jsp", "Data Entry");
 		et.setLinks(links);
-		try {
-			et.setImageURL(new URL("http://data/fred/images/fred.jpg"));
-		} catch (MalformedURLException e) {
-			return et;
-		}
+		et.setImageBase("/fred/images/fred.gif");
 		return et;
 	}
 
