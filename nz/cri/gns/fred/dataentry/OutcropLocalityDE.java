@@ -104,5 +104,11 @@ public class OutcropLocalityDE extends LocalityDE {
 		}
 		return feature.getFeatureID();
 	}
+	
+	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
+		int featID = super.submit();
+		sampPropRecordDE.submit();
+		return featID;	
+	}
 
 }
