@@ -169,7 +169,7 @@ public class Sample {
 		this.sd = SampleData.getData(id, state, forceRefresh);
 		this.state = state;
 		this.user = user;
-		if (!FREDUtils.isAllowedLocality(user, sd.getAsString(FEATURE_SECURITY_CLASS_ID), sd.getAsString(FEATURE_STATUS), sd.getAsString(FEATURE_ID), state) 
+		if (!FREDUtils.isAllowedLocality(user, sd.getAsString(FEATURE_STATUS), sd.getAsString(FEATURE_ID), state) 
 				|| !FREDUtils.isAllowedSample(user, sd.getAsString(SAMPLE_SECURITY_CLASS_ID), sd.getAsString(SAMPLE_STATUS), sd.getAsString(SAMPLE_ID), state)) {
 			authenticated = false;
 		} else {

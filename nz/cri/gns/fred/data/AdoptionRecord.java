@@ -43,46 +43,30 @@ public class AdoptionRecord extends Record {
 				throw new SQLException(
 					"Cannot find record in database with this id: " + this.id);
 			}
-			values[11] = rs.getDate(1);
-			values[12] = rs.getString(2);
-			values[13] =
-				((rs.getString(3) != null)
-					? new Integer(rs.getInt(3))
-					: null);
-			values[14] = rs.getString(4);
-			values[15] = rs.getString(5);
-			values[16] =
-				((rs.getString(6) != null)
-					? new Integer(rs.getInt(6))
-					: null);
-			values[17] = rs.getString(7);
-			values[18] = rs.getString(8);
-			values[19] =
-				((rs.getString(9) != null)
-					? new Integer(rs.getInt(9))
-					: null);
-			values[20] = rs.getString(10);
-			values[21] = rs.getString(11);
-			values[22] =
-				((rs.getString(12) != null)
-					? new Double(rs.getDouble(12))
-					: null);
-			values[23] =
-				((rs.getString(13) != null)
-					? new Double(rs.getDouble(13))
-					: null);
-			values[24] = rs.getString(14);
+			values[ADOPTION_DATE] = rs.getDate(1);
+			values[ADOPTION_DATE_ROUNDING] = rs.getString(2);
+			values[ADOPTED_STAGE_ID] = ((rs.getString(3) != null) ? new Integer(rs.getInt(3)) : null);
+			values[ADOPTED_STAGE] = rs.getString(4);
+			values[ADOPTED_STAGE_ABBREV] = rs.getString(5);
+			values[ADOPTED_STAGE_LOWER_ID] = ((rs.getString(6) != null) ? new Integer(rs.getInt(6))	: null);
+			values[ADOPTED_STAGE_LOWER] = rs.getString(7);
+			values[ADOPTED_STAGE_LOWER_MOD] = rs.getString(8);
+			values[ADOPTED_STAGE_UPPER_ID] = ((rs.getString(9) != null) ? new Integer(rs.getInt(9)) : null);
+			values[ADOPTED_STAGE_UPPER] = rs.getString(10);
+			values[ADOPTED_STAGE_UPPER_MOD] = rs.getString(11);
+			values[ADOPTED_AGE_START] = ((rs.getString(12) != null) ? new Double(rs.getDouble(12)) : null);
+			values[ADOPTED_AGE_STOP] = ((rs.getString(13) != null) ? new Double(rs.getDouble(13)) : null);
+			values[COMMENTS] = rs.getString(14);
 			rs.close();
 
-			query =
-				"SELECT Person_ID, Name FROM Person_View NATURAL JOIN Adoptor WHERE Record_ID = ? ORDER BY Family_Name, Given_Name";
+			query = "SELECT Person_ID, Name FROM Person_View NATURAL JOIN Adoptor WHERE Record_ID = ? ORDER BY Family_Name, Given_Name";
 			rs = conn.executeQuery(query, types, data);
 			Vector adoVec = new Vector();
 			while (rs.next()) {
 				adoVec.add(new KeyValueObject(rs.getString(1), rs.getString(2)));
 			}
 			rs.close();
-			values[10] = ((adoVec.size() > 0) ? adoVec : null);
+			values[ADOPTOR] = ((adoVec.size() > 0) ? adoVec : null);
 			rs.close();
 
 			conn.releaseStatement();
@@ -122,10 +106,10 @@ public class AdoptionRecord extends Record {
 			rec = new AdoptionRecord(id, state);
 		} else {
 		}
-		if (!FREDUtils.isAllowedLocality(user, rec.getAsString(FEATURE_SECURITY_CLASS_ID), rec.getAsString(FEATURE_STATUS), rec.getAsString(FEATURE_ID), state)
-				|| !FREDUtils.isAllowedRecord(user, rec.getAsString(SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(RECORD_ID), state)) {
+		if (!FREDUtils.isAllowedLocality(user, rec.getAsString(FEATURE_STATUS), rec.getAsString(FEATURE_ID), state)
+				|| !FREDUtils.isAllowedSample(user, rec.getAsString(SAMPLE_SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(SAMPLE_ID), state)
+				|| !FREDUtils.isAllowedRecord(user, rec.getAsString(SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(RECORD_ID), state))
 			throw new InvalidCredentialsException();
-		}
 		return rec;
 	}
 

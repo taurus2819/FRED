@@ -63,7 +63,7 @@ public class Feature {
 		this.state = state;
 		this.user = user;
 		this.fd = FeatureData.getData(id, state, forceRefresh);
-		if (!FREDUtils.isAllowedLocality(user, fd.getAsString(SECURITY_CLASS_ID), fd.getAsString(STATUS), fd.getAsString(FEATURE_ID), state)) {
+		if (!FREDUtils.isAllowedLocality(user, fd.getAsString(STATUS), fd.getAsString(FEATURE_ID), state)) {
 			authenticated = false;
 		} else {
 			authenticated = true;

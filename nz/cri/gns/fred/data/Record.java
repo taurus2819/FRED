@@ -20,70 +20,72 @@ public class Record {
 	
 	//common fields
 	public static final int RECORD_ID = 0;
-	public static final int RECORD_TYPE = 80;
 	public static final int FEATURE_ID = 1;
 	public static final int SAMPLE_ID = 2;
 	public static final int FEATURE_STATUS = 3;
-	public static final int FEATURE_SECURITY_CLASS_ID = 4;
-	public static final int AUDIT_ID = 5;
-	public static final int STATUS = 6;
-	public static final int SECURITY_CLASS_ID = 7;
-	public static final int SAMPLE_NAME = 8;
-	public static final int DRILLHOLE_DEPTH = 9;
-	public static final int PERSON = 10;
-	public static final int RECORD_DATE = 11;
-	public static final int DATE_ROUNDING = 12;
-	public static final int LAST_CHANGE = 81;
-	public static final int WORKING_FOLDER_ID = 82;
-	public static final int WORKING_COMMENTS = 83;
-	public static final int RECORD_NAME = 84;
+	public static final int SAMPLE_STATUS = 4;
+	public static final int SAMPLE_SECURITY_CLASS_ID = 5;
+	public static final int FEATURE_NAME = 6;
+	public static final int SAMPLE_NAME = 7;
+	public static final int AUDIT_ID = 8;
+	public static final int STATUS = 9;
+	public static final int LAST_CHANGE = 10;
+	public static final int WORKING_FOLDER_ID = 11;
+	public static final int WORKING_COMMENTS = 12;
+	public static final int SECURITY_CLASS_ID = 13;
+	public static final int RECORD_TYPE = 14;
+	public static final int RECORD_NAME = 15;
 
+	public static final int PERSON = 16;
+	public static final int RECORD_DATE = 17;
+	public static final int DATE_ROUNDING = 18;
+	
 	//Adoption record
-	public static final int ADOPTOR = 10;
-	public static final int ADOPTION_DATE = 11;
-	public static final int ADOPTION_DATE_ROUNDING = 12;
-	public static final int ADOPTED_STAGE_ID = 13;
-	public static final int ADOPTED_STAGE = 14;
-	public static final int ADOPTED_STAGE_ABBREV = 15;
-	public static final int ADOPTED_STAGE_LOWER_ID = 16;
-	public static final int ADOPTED_STAGE_LOWER = 17;
-	public static final int ADOPTED_STAGE_LOWER_MOD = 18;
-	public static final int ADOPTED_STAGE_UPPER_ID = 19;
-	public static final int ADOPTED_STAGE_UPPER = 20;
-	public static final int ADOPTED_STAGE_UPPER_MOD = 21;
-	public static final int ADOPTED_AGE_START = 22;
-	public static final int ADOPTED_AGE_STOP = 23;
-	public static final int COMMENTS = 24;
+	public static final int ADOPTOR = 16;
+	public static final int ADOPTION_DATE = 17;
+	public static final int ADOPTION_DATE_ROUNDING = 18;
+	public static final int ADOPTED_STAGE_ID = 19;
+	public static final int ADOPTED_STAGE = 20;
+	public static final int ADOPTED_STAGE_ABBREV = 21;
+	public static final int ADOPTED_STAGE_LOWER_ID = 22;
+	public static final int ADOPTED_STAGE_LOWER = 23;
+	public static final int ADOPTED_STAGE_LOWER_MOD = 24;
+	public static final int ADOPTED_STAGE_UPPER_ID = 25;
+	public static final int ADOPTED_STAGE_UPPER = 26;
+	public static final int ADOPTED_STAGE_UPPER_MOD = 27;
+	public static final int ADOPTED_AGE_START = 28;
+	public static final int ADOPTED_AGE_STOP = 29;
+	public static final int COMMENTS = 30;
 
 	//Paleontology Record
-	public static final int IDENTIFIER = 10;
-	public static final int IDENTIFICATION_DATE = 11;
-	public static final int IDENTIFICATION_DATE_ROUNDING = 12;
-	public static final int STAGE_ID = 13;
-	public static final int STAGE = 14;
-	public static final int STAGE_ABBREV = 15;
-	public static final int STAGE_LOWER_ID = 16;
-	public static final int STAGE_LOWER = 17;
-	public static final int STAGE_LOWER_MOD = 18;
-	public static final int STAGE_UPPER_ID = 19;
-	public static final int STAGE_UPPER = 20;
-	public static final int STAGE_UPPER_MOD = 21;
-	public static final int AGE_START = 22;
-	public static final int AGE_STOP = 23;
-	public static final int STAGE_COMMENTS = 24;
-	public static final int LAB_SECTION_ID = 25;
-	public static final int LAB = 26;
-	public static final int LAB_CODE = 27;
-	public static final int LAB_NUMBER = 28;
-	public static final int COLLECTION_COMMENTS = 29;
-	public static final int TAXONOMIC_LIST = 30;
+	public static final int IDENTIFIER = 16;
+	public static final int IDENTIFICATION_DATE = 17;
+	public static final int IDENTIFICATION_DATE_ROUNDING = 18;
+	public static final int STAGE_ID = 19;
+	public static final int STAGE = 20;
+	public static final int STAGE_ABBREV = 21;
+	public static final int STAGE_LOWER_ID = 22;
+	public static final int STAGE_LOWER = 23;
+	public static final int STAGE_LOWER_MOD = 24;
+	public static final int STAGE_UPPER_ID = 25;
+	public static final int STAGE_UPPER = 26;
+	public static final int STAGE_UPPER_MOD = 27;
+	public static final int AGE_START = 28;
+	public static final int AGE_STOP = 29;
+	public static final int STAGE_COMMENTS = 30;
+	public static final int LAB_SECTION_ID = 31;
+	public static final int LAB = 32;
+	public static final int LAB_CODE = 33;
+	public static final int LAB_NUMBER = 34;
+	public static final int COLLECTION_COMMENTS = 35;
+	public static final int TAXONOMIC_LIST = 36;
 	
 	public static final String ADOPTION_RECORD = "ADO";
 	public static final String PALEONTOLOGY_RECORD = "PAL";	
 	
 	protected static Pool pool = new Pool();
 	protected int id;
-	protected Object[] values = new Object[85];
+	protected Object[] values = new Object[37];
 	protected int[] types = { Types.NUMERIC };
 	protected Object[] data = new Object[1];
 	
@@ -99,9 +101,10 @@ public class Record {
 		this.id = id;
 		pool.add(this);
 		String query =
-			"SELECT RECORD_ID, FEATURE_ID, SAMPLE_ID, FEATURE_STATUS, FEATURE_SECURITY_CLASS_ID, AUDIT_ID, "
-				+ "STATUS, SECURITY_CLASS_ID, SAMPLE_NAME, DRILLHOLE_DEPTH, RECORD_TYPE, LAST_CHANGE, "
-				+ "WORKING_FOLDER_ID, WORKING_COMMENTS, RECORD_NAME "
+			"SELECT RECORD_ID, FEATURE_ID, SAMPLE_ID, FEATURE_STATUS, SAMPLE_STATUS, "
+				+ "SAMPLE_SECURITY_CLASS_ID, FEATURE_NAME, SAMPLE_NAME, AUDIT_ID, "
+				+ "STATUS, LAST_CHANGE, WORKING_FOLDER_ID, WORKING_COMMENTS, "
+				+ "SECURITY_CLASS_ID, RECORD_TYPE, RECORD_NAME "
 				+ "FROM Record_All_View WHERE Record_ID = ?";
 		data[0] = new Integer(this.id);
 		try {
@@ -114,20 +117,18 @@ public class Record {
 			values[FEATURE_ID] = new Integer(rs.getInt(2));
 			values[SAMPLE_ID] = new Integer(rs.getInt(3));
 			values[FEATURE_STATUS] = rs.getString(4);
-			values[FEATURE_SECURITY_CLASS_ID] =
-				((rs.getString(5) != null) ? new Integer(rs.getInt(5)) : null);
-			values[AUDIT_ID] =
-				((rs.getString(6) != null) ? new Integer(rs.getInt(6)) : null);
-			values[STATUS] = rs.getString(7);
-			values[SECURITY_CLASS_ID] =
-				((rs.getString(8) != null) ? new Integer(rs.getInt(8)) : null);
-			values[SAMPLE_NAME] = rs.getString(9);
-			values[DRILLHOLE_DEPTH] = rs.getString(10);
-			values[RECORD_TYPE] = rs.getString(11);
-			values[LAST_CHANGE] = rs.getDate(12);
-			values[WORKING_FOLDER_ID] = ((rs.getString(13) != null) ? new Integer(rs.getInt(13)) : null);
-			values[WORKING_COMMENTS] = rs.getString(14);
-			values[RECORD_NAME] = rs.getString(15);
+			values[SAMPLE_STATUS] = rs.getString(5);
+			values[SAMPLE_SECURITY_CLASS_ID] = ((rs.getString(6) != null) ? new Integer(rs.getInt(6)) : null);
+			values[FEATURE_NAME] = rs.getString(7);
+			values[SAMPLE_NAME] = rs.getString(8);
+			values[AUDIT_ID] = ((rs.getString(9) != null) ? new Integer(rs.getInt(9)) : null);
+			values[STATUS] = rs.getString(10);
+			values[LAST_CHANGE] = rs.getDate(11);
+			values[WORKING_FOLDER_ID] = ((rs.getString(12) != null) ? new Integer(rs.getInt(12)) : null);
+			values[WORKING_COMMENTS] = rs.getString(13);
+			values[SECURITY_CLASS_ID] = ((rs.getString(14) != null) ? new Integer(rs.getInt(14)) : null);
+			values[RECORD_TYPE] = rs.getString(15);
+			values[RECORD_NAME] = rs.getString(16);
 			rs.close();
 			conn.releaseStatement();
 		} catch (SQLException _e) {
@@ -259,16 +260,15 @@ public class Record {
 	public static Record getData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, InvalidCredentialsException {
 		Record rec = (Record) pool.retrieve(new DataFinder(id));
 		if (forceRefresh && rec != null) {
-			System.out.println("Removing RECORD " + id + " from pool");
 			pool.removeMe(rec);
 			rec = null;
 		}
 		if (rec == null)
 			rec = new Record(id, state);
-		if (!FREDUtils.isAllowedLocality(user, rec.getAsString(FEATURE_SECURITY_CLASS_ID), rec.getAsString(FEATURE_STATUS), rec.getAsString(FEATURE_ID), state)
-				|| !FREDUtils.isAllowedRecord(user, rec.getAsString(SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(RECORD_ID), state)) {
+		if (!FREDUtils.isAllowedLocality(user, rec.getAsString(FEATURE_STATUS), rec.getAsString(FEATURE_ID), state)
+				|| !FREDUtils.isAllowedSample(user, rec.getAsString(SAMPLE_SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(SAMPLE_ID), state)
+				|| !FREDUtils.isAllowedRecord(user, rec.getAsString(SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(RECORD_ID), state))
 			throw new InvalidCredentialsException();
-		}
 		return rec;
 	}
 

@@ -76,14 +76,12 @@ public class FREDUtils {
 	/**
 	 * Returns true if this locality can be viewed by the user
 	 */
-	public static boolean isAllowedLocality(User user, String securityClassID, String status, String featureID, PageState state)
+	public static boolean isAllowedLocality(User user, String status, String featureID, PageState state)
 		throws IOException, SQLException {
 		if (user == null)
 			return false;
 		if (!status.equals(Audit.STATUS_APPROVED))
 			return (getUserWorkingLocalityRights(user, featureID, state) & 1) > 0;
-	//	if (securityClassID != null)
-	//		return hasMasterfileRights(user, featID, state) || checkSecurityClass(Integer.parseInt(securityClassID), user, state);
 		return true;
 	}
 
