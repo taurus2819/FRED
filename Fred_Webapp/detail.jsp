@@ -43,16 +43,32 @@
 	drawTop(out, et, request, response);
 
 	if (sampID != null) {
-
-		if (request.getParameter("AuthorChk") != null && request.getParameter("AuthorChk").equals("true")) { authorChk = true; }
-		if (request.getParameter("SCountChk") != null && request.getParameter("SCountChk").equals("true")) { sCountChk = true; }
-		if (request.getParameter("SCoordChk") != null && request.getParameter("SCoordChk").equals("true")) { sCoordChk = true; }
-		if (request.getParameter("CommChk") != null && request.getParameter("CommChk").equals("false")) { commChk = false; }
-
-		//List data
-		out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
 		try {
 			Sample sample = new Sample(Integer.parseInt(sampID), user, state);
+			
+			if (request.getParameter("ActionType") != null) { //do something
+				String actionType = request.getParameter("ActionType");
+				if (actionType.equals("Accept")) {
+					FRNumber frNum = new FRNumber(request.getParameter("MapSheet"), new Integer(request.getParameter("SerialNum")), request.getParameter("RecollNum"));
+					FolderUtils.approveLocality(sample.getAsString(Sample.FEATURE_ID), frNum, user, state);
+					//response.sendRedirect("admin_folder_detail.jsp?ID=" + foldID + "&PrintID=" + featID);
+				}
+				else if (actionType.equals("Reject")) {
+					FolderUtils.rejectLocality(sample.getAsString(Sample.FEATURE_ID), request.getParameter("RejComm"), user, state);
+					//response.sendRedirect("admin_folder_detail.jsp?ID=" + foldID);
+				}
+				sample = new Sample(sample.getSampleID(), user, state, true);
+			}
+
+			if (request.getParameter("AuthorChk") != null && request.getParameter("AuthorChk").equals("true")) { authorChk = true; }
+			if (request.getParameter("SCountChk") != null && request.getParameter("SCountChk").equals("true")) { sCountChk = true; }
+			if (request.getParameter("SCoordChk") != null && request.getParameter("SCoordChk").equals("true")) { sCoordChk = true; }
+			if (request.getParameter("CommChk") != null && request.getParameter("CommChk").equals("false")) { commChk = false; }
+	
+			//List data
+			out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
+			if (!sample.isApprovedLocality() && !sample.isUserAuthenticated())
+				throw new InvalidCredentialsException();
 			Audit audit = Audit.getAudit(sample.getAsInt(Sample.AUDIT_ID), state);
 			featType = sample.getAsString(Sample.FEATURE_TYPE);
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");

@@ -12,6 +12,7 @@ import nz.cri.gns.db.HTMLUtils;
 import nz.cri.gns.db.site.DatumMethod;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.FREDUtils;
+import nz.cri.gns.fred.data.FRNumber;
 import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.Sample;
@@ -528,6 +529,38 @@ public abstract class LocalityDE implements DataEntryForm {
 				+ auditID);
 		conn.releaseStatement();
 		feature = new Feature(feature.getFeatureID(), user, state, true);
+	}
+
+	public void approve(FRNumber frNum) throws SQLException, IOException {
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		//generate FR number record
+		ResultSet rs = conn.executeQuery("SELECT FR_Seq.NEXTVAL FROM DUAL");
+		rs.next();
+		String frID = rs.getString(1);
+		conn.executeUpdate("INSERT INTO FR_Number (FR_ID, Map_Sheet, Serial_Number, Recollection_Number) VALUES (" + frID + ", " + JspUtils.sqlEscape(frNum.getMapSheet()) + ", " + JspUtils.sqlEscape(frNum.getSerialNumber()) + ", " + JspUtils.sqlEscape(frNum.getRecollectionNumber()) + ")");
+		conn.executeUpdate("UPDATE Sample SET FR_ID = " + frID + " WHERE Feature_ID = " + feature.getFeatureID());
+		try {
+			//explicitly add to folders
+			conn.executeUpdate("INSERT INTO Folder_Content (Folder_ID, Feature_ID) VALUES (" + feature.getAsString(Feature.WORKING_FOLDER_ID) + ", " + feature.getFeatureID() + ")");
+		} catch (Exception e) {}
+		//update audit table
+		rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
+		rs.next();
+		String auditID = rs.getString(1);
+		conn.executeUpdate("UPDATE Audit_Table SET Status = 'approved', Approved_By_ID = " + user.getPersonId() + ", Approved_Date = SYSDATE, Working_Folder_ID = NULL, Working_Comments = NULL, Curator_Comments = NULL WHERE Audit_ID = " + auditID);
+		conn.releaseStatement();
+		feature = new Feature(feature.getFeatureID(), user, state, true);
+	}
+	
+	public void reject(String comments) throws SQLException, IOException {
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		//update audit table
+		ResultSet rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
+		rs.next();
+		String auditID = rs.getString(1);
+		conn.executeUpdate("UPDATE Audit_Table SET Status = 'rejected', Curator_Comments = " + JspUtils.sqlEscape(comments) + " WHERE Audit_ID = " + auditID);
+		conn.releaseStatement();
+		feature = new Feature(feature.getFeatureID(), user, state, true);	
 	}
 
 	public void delete()

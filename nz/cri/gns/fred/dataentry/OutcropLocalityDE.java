@@ -2,6 +2,7 @@ package nz.cri.gns.fred.dataentry;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 
@@ -9,6 +10,7 @@ import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.fred.FREDUtils;
+import nz.cri.gns.fred.data.SampPropRecord;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.PageState;
@@ -111,4 +113,17 @@ public class OutcropLocalityDE extends LocalityDE {
 		return featID;	
 	}
 
+	public void reject(String comments) throws SQLException, IOException {
+		super.reject(comments);
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		//update audit table
+		ResultSet rs = conn.executeQuery("SELECT Audit_ID FROM Record WHERE Record_ID = " + sampPropRecordDE.record.getRecordID());
+		rs.next();
+		String auditID = rs.getString(1);
+		conn.executeUpdate("UPDATE Audit_Table SET Status = 'waiting' WHERE Audit_ID = " + auditID);
+		conn.releaseStatement();
+		try {
+			SampPropRecord spRec = (SampPropRecord) SampPropRecord.getData(sampPropRecordDE.record.getRecordID(), user, state, true);
+		} catch (Exception e) {}
+	}
 }

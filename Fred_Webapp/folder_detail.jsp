@@ -15,7 +15,8 @@
 						
 		if (request.getParameter("ActionType") != null) { //do something
 			String actionType = request.getParameter("ActionType");
-			//try {
+			String err = "";
+			try {
 				//Copy locality
 				if (actionType.equals("CopyFeat") && folder.isAllowedCreateLocalities()) {
 					FolderUtils.copyLocality(request.getParameter("FeatID"), request.getParameter("NewFeatName"), String.valueOf(folder.getFolderID()), user, state);
@@ -32,14 +33,11 @@
 				else if (actionType.equals("Revoke") && folder.isAllowedSubmitLocalities()) {
 					FolderUtils.revokeLocality(request.getParameter("FeatID"), user, state);
 				}
-			//} catch (Exception e) {}
-			//response.sendRedirect("folder_detail.jsp?ID=" + folder.getFolderID());
+			} catch (Exception e) {
+				err = "&ErrMsg=" + URLEncoder.encode("An Error has occured", "UTF-8");
+			}
+			response.sendRedirect("folder_detail.jsp?ID=" + folder.getFolderID() + err);
 		}
-
-//		//print error message (if any) from folder_actions
-//		if (request.getParameter("ErrMsg") != null) {
-//			out.println(request.getParameter("ErrMsg"));
-//		}
 
 		if (folder.isAllowedReadLocalities()) {
 			
@@ -64,6 +62,11 @@
 			//List records
 			out.println("<p>Listed below are the localities you have added to this folder (working localities are named with their field number or drillhole name until they are allocated a Fossil Record Number).<br />");
 			out.println("Click on the locality to add/edit locality records</p>");
+
+			//print error message (if any) from folder_actions
+			if (request.getParameter("ErrMsg") != null) {
+				out.println("<p><span class='heading' style='color: #FF0000'>" + request.getParameter("ErrMsg") + "</span></p>");
+			}
 
 			//Table header
 			out.println("<p><table border='0' cellspacing='0' cellpadding='1' width='550'>");

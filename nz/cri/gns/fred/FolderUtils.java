@@ -86,6 +86,16 @@ public class FolderUtils {
 		form.revoke();	
 	}
 	
+	public static void approveLocality(String featID, FRNumber frNum, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+		LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
+		form.approve(frNum);			
+	}
+	
+	public static void rejectLocality(String featID, String comments, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+		LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
+		form.reject(comments);			
+	}
+	
 	public static void copyLocality(String oldFeatID, String newFeatName, String foldID, User user, PageState state) throws IOException, SQLException {
 		//TODO fix statements - statement2 and 3 are not seperate
 		int userID = user.getPersonId();
