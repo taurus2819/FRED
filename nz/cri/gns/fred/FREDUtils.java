@@ -160,6 +160,25 @@ public class FREDUtils {
 		return new Sample(rs.getInt(1), user, state);
 	}
 
+	public static String reverseParseDate(Date date, String dateRnd) {
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("d/M/yyyy");
+		SimpleDateFormat monthDateFormatter = new SimpleDateFormat("M/yyyy");
+		SimpleDateFormat yearDateFormatter = new SimpleDateFormat("yyyy");
+		if (date != null) {
+			if (dateRnd == null) {
+				return dateFormatter.format(date);
+			} else if (dateRnd.equals("Month")) {
+				return monthDateFormatter.format(date);
+			} else if (dateRnd.equals("Year")) {
+				return yearDateFormatter.format(date);
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
 	public static RoundedDate parseRoundedDate(String dateStr) throws DataInputException {
 		String date, dateRnd, day, month, year;
 		if (dateStr.lastIndexOf("/") == dateStr.length() - 1) throw new DataInputException("Date", "Invalid Data"); //ends with slash

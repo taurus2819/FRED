@@ -90,6 +90,10 @@ public class Sample {
 		this(id, user, state, false);
 	}
 
+	public int getSampleID() {
+		return sd.getAsInt(SAMPLE_ID);
+	}
+
 	public boolean isUserAuthenticated() {
 		return authenticated;
 	}

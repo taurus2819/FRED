@@ -10,7 +10,7 @@ import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.dataentry.DataInputException;
-import nz.cri.gns.fred.dataentry.Locality;
+import nz.cri.gns.fred.dataentry.LocalityDE;
 import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
@@ -64,7 +64,7 @@ public class FolderUtils {
 		conn.executeUpdate("DELETE FROM Feature WHERE Feature_ID = " + featID);
 		conn.executeUpdate("DELETE FROM Audit_Table WHERE Audit_ID IN (" + auditID + ")");
 		conn.releaseStatement();
-	*/	Locality form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
+	*/	LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
 		form.delete();
 	}
 
@@ -102,7 +102,7 @@ public class FolderUtils {
 			throw new FolderUtilException("Cannot submit locality as not all mandatory fields have been completed");
 		}
 		conn.releaseStatement();
-	*/	Locality form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
+	*/	LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
 		form.submit();
 	}
 	
@@ -145,7 +145,7 @@ public class FolderUtils {
 			conn.executeUpdate("UPDATE Audit_Table SET Status = 'working', Working_Folder_ID = " + foldID + " WHERE Audit_ID IN (SELECT DISTINCT Audit_ID FROM Sample_Property_All_View WHERE Feature_ID = " + featID + ")");
 		}
 		conn.releaseStatement();
-	*/	Locality form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
+	*/	LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
 		form.revoke();	
 	}
 	

@@ -58,6 +58,14 @@ public class Feature {
 		this(id, user, state, false);
 	}
 
+	public int getFeatureID() {
+		return fd.getAsInt(FEATURE_ID);
+	}
+
+	public String getFeatureType() {
+		return fd.getAsString(FEATURE_TYPE);
+	}
+
 	public boolean isUserAuthenticated() {
 		return authenticated;
 	}

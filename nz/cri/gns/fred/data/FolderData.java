@@ -49,7 +49,7 @@ public class FolderData {
 			values[3] = new Integer(rs.getInt(4));
 			values[4] = rs.getString(5);
 			rs.close();
-			query = "SELECT DISTINCT Feature_ID, Sample_Name FROM Folder_Content_View WHERE Folder_ID = ? ORDER BY Sample_Name";
+			query = "SELECT DISTINCT Feature_ID, Sample_Name FROM Folder_Content_View WHERE Folder_ID = ? ORDER BY UPPER(Sample_Name)";
 			rs = conn.executeQuery(query, types, data);
 			Vector feats = new Vector();
 			String featIDs = "*";

@@ -41,19 +41,19 @@ public class PalRecordTest extends TestCase {
 
 	public void testPooling() throws NotBoundException, SQLException, IOException, AccessDeniedException {
 		PaleontologyRecord.purge();
-		PaleontologyRecord sv1 = PaleontologyRecord.getData(781, this.user, this.state);
-		PaleontologyRecord sv2 = PaleontologyRecord.getData(781, this.user, this.state);
+		PaleontologyRecord sv1 = PaleontologyRecord.getPaleontologyData(781, this.user, this.state);
+		PaleontologyRecord sv2 = PaleontologyRecord.getPaleontologyData(781, this.user, this.state);
 		assertEquals(sv1.toString(), sv2.toString());
 		assertEquals(1, PaleontologyRecord.getPoolSize());
-		PaleontologyRecord sv3 = PaleontologyRecord.getData(223, this.user, this.state);
+		PaleontologyRecord sv3 = PaleontologyRecord.getPaleontologyData(223, this.user, this.state);
 		assertNotSame(sv1.toString(), sv3.toString());
 		assertEquals(2, PaleontologyRecord.getPoolSize());
-		PaleontologyRecord sv4 = PaleontologyRecord.getData(781, this.user, this.state);
+		PaleontologyRecord sv4 = PaleontologyRecord.getPaleontologyData(781, this.user, this.state);
 		assertEquals(2, PaleontologyRecord.getPoolSize());
 	}
 	
 	public void testPalList() throws NotBoundException, SQLException, IOException, AccessDeniedException {
-		PaleontologyRecord sv1 = PaleontologyRecord.getData(781, this.user, this.state);
+		PaleontologyRecord sv1 = PaleontologyRecord.getPaleontologyData(781, this.user, this.state);
 		assertNotNull(sv1.get(PaleontologyRecord.TAXONOMIC_LIST));
 		System.out.println(sv1.getAsVector(PaleontologyRecord.TAXONOMIC_LIST).size());
 		for (Iterator i = sv1.getAsVector(PaleontologyRecord.TAXONOMIC_LIST).iterator(); i.hasNext(); ) {

@@ -14,10 +14,13 @@ import java.sql.SQLException;
 import junit.framework.TestCase;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.fred.data.AccessDeniedException;
 import nz.cri.gns.fred.dataentry.DataEntryForm;
 import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.fred.dataentry.LocalityDE;
 import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
+import nz.cri.gns.fred.dataentry.RecordDE;
+import nz.cri.gns.fred.dataentry.SampPropRecordDE;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.test.TestingPageState;
@@ -28,7 +31,7 @@ import nz.cri.gns.test.TestingPageState;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class LocalityTest extends TestCase {
+public class RecordTest extends TestCase {
 
 	public static void _testSave() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
@@ -49,7 +52,7 @@ public class LocalityTest extends TestCase {
 		loc2.save();
 	}
 	
-	public static void testCopy() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public static void testCopy() throws NotBoundException, InvalidCredentialsException, IllegalArgumentException, SQLException, IOException, AccessDeniedException, DataInputException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn =
 			JspUtils.createDatabaseConnection(
@@ -58,13 +61,12 @@ public class LocalityTest extends TestCase {
 				"ip",
 				state.getContext());
 		User user = new User("pseudo_ben", "santor32", ipConn);
-		LocalityDE loc = DataEntryFormFactory.getLocalityDataEntryForm(1282, user, state);
+		RecordDE record = new SampPropRecordDE(2, user, state);
 		//loc.setField(Locality.GRID_REF, "TruncNZMG:D39*1300*2100");
-		for (int i = 0; i < loc.getFieldCount(); i++) {
-			System.out.println(i + ": " + loc.getField(i));
+		for (int i = 0; i < record.getFieldCount(); i++) {
+			System.out.println(i + ": " + record.getField(i));
 		}
-		System.out.println(loc.save());
-		loc.makeDataEntryHTML(new PrintWriter(System.out));
+		record.makeNavPanelHTML(new PrintWriter(System.out));
 		//Locality loc2 = LocalityFactory.copyLocality(661, 1282, user, state);
 		//for (int i = 0; i < loc2.getFieldCount(); i++) {
 		//	System.out.println(i + ": " + loc2.getField(i));

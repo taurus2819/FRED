@@ -32,36 +32,44 @@
 		String featID = request.getParameter("FeatID");
 		Folder folder = new Folder(Integer.parseInt(foldID), user, state);
 		
-		Locality locality;
-		if (request.getParameter("LoadFeatID") != null) { //copying
-			if (featID == null) {
-				locality = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), user, Integer.parseInt(foldID), state);
+		DataEntryForm dataEntryForm;
+		if (featType.equals("Outcrop") || featType.equals("Drillhole") || featType.equals("VertSect")) {
+			if (request.getParameter("LoadFeatID") != null) { //copying
+				if (featID == null) {
+					dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), user, Integer.parseInt(foldID), state);
+				} else {
+					dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), Integer.parseInt(featID), user, state);
+				}
+			} else if (featID != null) { //editing
+				dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
 			} else {
-				locality = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), Integer.parseInt(featID), user, state);
+				dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(featType, user, Integer.parseInt(foldID), state);
 			}
-		} else if (featID != null) { //editing
-			locality = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
 		} else {
-			locality = DataEntryFormFactory.getLocalityDataEntryForm(featType, user, Integer.parseInt(foldID), state);
+			if (featID != null) { //editing
+				dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(featID), user, state);
+			} else {
+				dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(featType, user, Integer.parseInt(request.getParameter("SampID")), Integer.parseInt(foldID), state);
+			}
 		}
-
+		
 		//form creation if proper rights
 		if ((folder.isAllowedCreateLocalities() && featID ==  null) || (folder.isAllowedEditLocalities() && featID != null)) {
 
-			out.println("<form name='form1' method='post' action='feat_data_proc.jsp'>");
+			out.println("<form name='form1' method='post' action='data_proc.jsp'>");
 			out.println("<input type='hidden' name='Type' value='" + featType + "'>");
 			out.println("<input type='hidden' name='FoldID' value='" + foldID + "'>");
 			if (featID != null) out.println("<input type='hidden' name='FeatID' value='" + featID + "'>");
 			out.println("<input type='hidden' name='SaveType' value=''>");
 
-			locality.makeNavPanelHTML(new PrintWriter(out));
+			dataEntryForm.makeNavPanelHTML(new PrintWriter(out));
 
 			drawEndNavigation(out);
 
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");
 
-			locality.makeDataEntryHTML(new PrintWriter(out));
+			dataEntryForm.makeDataEntryHTML(new PrintWriter(out));
 	
 			out.println("</td></tr></table>");
 			out.println("</form>");

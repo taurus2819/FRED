@@ -3,30 +3,53 @@ package nz.cri.gns.fred.dataentry;
 import java.io.IOException;
 import java.io.Writer;
 import java.sql.SQLException;
+import java.util.Iterator;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.fred.FREDUtils;
+import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.PageState;
 
-public class OutcropLocality extends Locality {
+public class OutcropLocalityDE extends LocalityDE {
 
-	public OutcropLocality(User user, int folderID, PageState state) throws SQLException, IOException, DataInputException {
+	private SampPropRecordDE sampPropRecordDE;
+
+	public OutcropLocalityDE(User user, int folderID, PageState state) throws SQLException, IOException, DataInputException {
 		super(user, folderID, "Outcrop", state);
+		sampPropRecordDE = new SampPropRecordDE(user, folderID, state);
+		sampPropRecordDE.setOutcropSamp(true);
 	}
 	
-	public OutcropLocality(int id, User user, PageState state) throws IOException,	SQLException, DataInputException, InvalidCredentialsException {
+	public OutcropLocalityDE(int id, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException  {
 		super(id, user, state);
 		if (!featureType.equals("Outcrop")) throw new DataInputException("Feature Type", "Invalid");
+		if (sample.get(Sample.WORKING_RECORDS) != null) {
+			for (Iterator i = sample.getAsVector(Sample.WORKING_RECORDS).iterator(); i.hasNext(); ) {
+				KeyValueObject key = (KeyValueObject) i.next();
+				if (key.getValue().equals("SMP")) {
+					try {
+						sampPropRecordDE = new SampPropRecordDE(Integer.parseInt(key.getKey()), user, state);
+					} catch (Exception e) {}
+				}
+			}
+		}
+		if (sampPropRecordDE == null) {
+			sampPropRecordDE = new SampPropRecordDE(user, sample.getSampleID(), sample.getAsInt(Sample.WORKING_FOLDER_ID), state);
+		}
+		sampPropRecordDE.setOutcropSamp(true);
 	}
 
 	public void makeDataEntryHTML(Writer out) throws IOException, SQLException {
 		out.write("<table border='0' cellspacing='0' cellpadding='2'>\n");
-		out.write("<tr><td class='heading' colspan='2'>Field Number</td><td><input type='text' name='FeatName' value='" + FREDUtils.noNulls(getField(Locality.FIELD_NUMBER)) + "'></td></tr>\n");
+		out.write("<tr><td class='heading' colspan='2'>Field Number</td><td><input type='text' name='FeatName' value='" + FREDUtils.noNulls(getField(LocalityDE.FIELD_NUMBER)) + "'></td></tr>\n");
 		super.makeDataEntryHTML(out);
+		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
 		out.write("</table>\n");
-		super.makeEndBitHTML(out);
+		sampPropRecordDE.makeDataEntryHTML(out);
+		//super.makeEndBitHTML(out);
 	}
 
 	public int save() throws SQLException, IOException, InvalidCredentialsException {
@@ -35,6 +58,8 @@ public class OutcropLocality extends Locality {
 			conn.getConnection().setAutoCommit(false);
 			try {
 				super.save();
+				sampPropRecordDE.setSample(sample);
+				sampPropRecordDE.save();
 				conn.getConnection().commit();
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
@@ -59,7 +84,7 @@ public class OutcropLocality extends Locality {
 				throw new InvalidCredentialsException();
 			}
 		}
-		return featureID.intValue();
+		return feature.getFeatureID();
 	}
 
 }

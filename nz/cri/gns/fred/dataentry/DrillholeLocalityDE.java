@@ -9,27 +9,28 @@ import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.RoundedDate;
+import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
-public class DrillholeLocality extends Locality {
+public class DrillholeLocalityDE extends LocalityDE {
 
 	private String personID;
 	private RoundedDate spudDate;
 	private RoundedDate compDate;
 	
-	public DrillholeLocality(User user, int folderID, PageState state) throws SQLException, IOException, DataInputException {
+	public DrillholeLocalityDE(User user, int folderID, PageState state) throws SQLException, IOException, DataInputException {
 		super(user, folderID, "Drillhole", state);
 	}
 	
-	public DrillholeLocality(int id, User user, PageState state) throws IOException,	SQLException, DataInputException, InvalidCredentialsException {
+	public DrillholeLocalityDE(int id, User user, PageState state) throws IOException,	SQLException, DataInputException, InvalidCredentialsException {
 		super(id, user, state);
 		if (!featureType.equals("Drillhole")) throw new DataInputException("Feature Type", "Invalid");
 		setField(OPERATING_COMPANY, sample.getAsString(Sample.PERSON));
-		setField(SPUD_DATE, reverseParseDate(sample.getAsDate(Sample.START_DATE), sample.getAsString(Sample.START_DATE_ROUNDING)));
-		setField(COMPLETION_DATE, reverseParseDate(sample.getAsDate(Sample.FINISH_DATE), sample.getAsString(Sample.FINISH_DATE_ROUNDING)));
+		setField(SPUD_DATE, FREDUtils.reverseParseDate(sample.getAsDate(Sample.START_DATE), sample.getAsString(Sample.START_DATE_ROUNDING)));
+		setField(COMPLETION_DATE, FREDUtils.reverseParseDate(sample.getAsDate(Sample.FINISH_DATE), sample.getAsString(Sample.FINISH_DATE_ROUNDING)));
 		setField(LICENCE_AREA, sample.getAsString(Sample.DRILLHOLE_LICENCE_NAME));
 		setField(DATUM_TYPE, sample.getAsString(Sample.DATUM_TYPE));
 		setField(DATUM_ELEVATION, sample.getAsString(Sample.DATUM_ELEVATION));
@@ -98,7 +99,7 @@ public class DrillholeLocality extends Locality {
 			conn.getConnection().setAutoCommit(false);
 			try {
 				super.save();
-				conn.executeUpdate("UPDATE Feature SET Person_ID = " + JspUtils.sqlEscape(personID) + ", Start_Date = TO_DATE('" + spudDate.getDateString() + "'), Start_Date_Rounding = " + JspUtils.sqlEscape(spudDate.getDateRounding()) + ", Finish_Date = TO_DATE('" + compDate.getDateString() + "'), Finish_Date_Rounding = " + JspUtils.sqlEscape(compDate.getDateRounding()) + ", Drillhole_Licence_Name = " + JspUtils.sqlEscape(fields[LICENCE_AREA]) + ", Datum_Type = " + JspUtils.sqlEscape(fields[DATUM_TYPE]) + ", Datum_Elevation = " + JspUtils.sqlEscape(fields[DATUM_ELEVATION]) + ", Start_Depth = " + JspUtils.sqlEscape(fields[KICK_OFF_DEPTH]) + ", Finish_Depth = " + JspUtils.sqlEscape(fields[TERMINATION_DEPTH]) + " WHERE Feature_ID = " + featureID);
+				conn.executeUpdate("UPDATE Feature SET Person_ID = " + JspUtils.sqlEscape(personID) + ", Start_Date = TO_DATE('" + spudDate.getDateString() + "'), Start_Date_Rounding = " + JspUtils.sqlEscape(spudDate.getDateRounding()) + ", Finish_Date = TO_DATE('" + compDate.getDateString() + "'), Finish_Date_Rounding = " + JspUtils.sqlEscape(compDate.getDateRounding()) + ", Drillhole_Licence_Name = " + JspUtils.sqlEscape(fields[LICENCE_AREA]) + ", Datum_Type = " + JspUtils.sqlEscape(fields[DATUM_TYPE]) + ", Datum_Elevation = " + JspUtils.sqlEscape(fields[DATUM_ELEVATION]) + ", Start_Depth = " + JspUtils.sqlEscape(fields[KICK_OFF_DEPTH]) + ", Finish_Depth = " + JspUtils.sqlEscape(fields[TERMINATION_DEPTH]) + " WHERE Feature_ID = " + feature.getFeatureID());
 				conn.getConnection().commit();
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
@@ -122,8 +123,11 @@ public class DrillholeLocality extends Locality {
 				savedFlag = false;
 				throw new InvalidCredentialsException();
 			}
+			feature = new Feature(feature.getFeatureID(), user, state, true);
+			int sampleID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
+			sample = new Sample(sampleID, user, state, true);
 		}
-		return featureID.intValue();
+		return feature.getFeatureID();
 	}
 
 }

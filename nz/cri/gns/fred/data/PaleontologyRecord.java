@@ -4,15 +4,13 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.Vector;
 
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.KeyValueObject;
-import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.db.pool.Finder;
-import nz.cri.gns.db.pool.Pool;
+import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.PageState;
 
@@ -21,18 +19,8 @@ import nz.cri.gns.jsp.PageState;
  * Fields map to columns in database - use as arguments for the get methods.
  * Pooling is used so cannot instantiate directly - use static getData method instead.
  */
-public class PaleontologyRecord {
+public class PaleontologyRecord extends Record {
 
-	public static final int RECORD_ID = 0;
-	public static final int FEATURE_ID = 1;
-	public static final int SAMPLE_ID = 2;
-	public static final int FEATURE_STATUS = 3;
-	public static final int FEATURE_SECURITY_CLASS_ID = 4;
-	public static final int AUDIT_ID = 5;
-	public static final int STATUS = 6;
-	public static final int SECURITY_CLASS_ID = 7;
-	public static final int SAMPLE_NAME = 8;
-	public static final int DRILLHOLE_DEPTH = 9;
 	public static final int IDENTIFIER = 10;
 	public static final int IDENTIFICATION_DATE = 11;
 	public static final int DATE_ROUNDING = 12;
@@ -55,23 +43,17 @@ public class PaleontologyRecord {
 	public static final int COLLECTION_COMMENTS = 29;
 	public static final int TAXONOMIC_LIST = 30;
 
-	protected static Pool pool = new Pool();
-	protected int id;
-	private Object[] values = new Object[31];
-	private int[] types = { Types.NUMERIC };
-	private Object[] data = new Object[1];
-
 	/**
 	 * Cannot be called directly. use static getAdoptionRecord method instead.
 	 */
-	protected PaleontologyRecord(int id, PageState state)
+	private PaleontologyRecord(int id, PageState state)
 		throws SQLException, IOException {
+		super(id, state);
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		this.id = id;
 		pool.add(this);
 		String query =
-			"SELECT RECORD_ID, FEATURE_ID, SAMPLE_ID, FEATURE_STATUS, FEATURE_SECURITY_CLASS_ID, AUDIT_ID, "
-				+ "STATUS, SECURITY_CLASS_ID, SAMPLE_NAME, DRILLHOLE_DEPTH, IDENTIFICATION_DATE, DATE_ROUNDING, "
+			"SELECT IDENTIFICATION_DATE, DATE_ROUNDING, "
 				+ "STAGE_ID, STAGE, STAGE_ABBREV, STAGE_LOWER_ID, STAGE_LOWER, STAGE_LOWER_MOD, STAGE_UPPER_ID, "
 				+ "STAGE_UPPER, STAGE_UPPER_MOD, AGE_START, AGE_STOP, STAGE_COMMENTS, LAB_SECTION_ID, LAB, "
 				+ "LAB_CODE, LAB_NUMBER, COLLECTION_COMMENTS "
@@ -83,58 +65,44 @@ public class PaleontologyRecord {
 				throw new SQLException(
 					"Cannot find record in database with this id: " + this.id);
 			}
-			values[0] = new Integer(rs.getInt(1));
-			values[1] = new Integer(rs.getInt(2));
-			values[2] = new Integer(rs.getInt(3));
-			values[3] = rs.getString(4);
-			values[4] =
-				((rs.getString(5) != null) ? new Integer(rs.getInt(5)) : null);
-			values[5] =
-				((rs.getString(6) != null) ? new Integer(rs.getInt(6)) : null);
-			values[6] = rs.getString(7);
-			values[7] =
-				((rs.getString(8) != null) ? new Integer(rs.getInt(8)) : null);
-			values[8] = rs.getString(9);
-			values[9] = rs.getString(10);
-			values[11] = rs.getDate(11);
-			values[12] = rs.getString(12);
+			values[11] = rs.getDate(1);
+			values[12] = rs.getString(2);
 			values[13] =
-				((rs.getString(13) != null)
-					? new Integer(rs.getInt(13))
+				((rs.getString(3) != null)
+					? new Integer(rs.getInt(3))
 					: null);
-			values[14] = rs.getString(14);
-			values[15] = rs.getString(15);
+			values[14] = rs.getString(4);
+			values[15] = rs.getString(5);
 			values[16] =
-				((rs.getString(16) != null)
-					? new Integer(rs.getInt(16))
+				((rs.getString(6) != null)
+					? new Integer(rs.getInt(6))
 					: null);
-			values[17] = rs.getString(17);
-			values[18] = rs.getString(18);
+			values[17] = rs.getString(7);
+			values[18] = rs.getString(8);
 			values[19] =
-				((rs.getString(19) != null)
-					? new Integer(rs.getInt(19))
+				((rs.getString(9) != null)
+					? new Integer(rs.getInt(9))
 					: null);
-			values[20] = rs.getString(20);
-			values[21] = rs.getString(21);
+			values[20] = rs.getString(10);
+			values[21] = rs.getString(11);
 			values[22] =
-				((rs.getString(22) != null)
-					? new Double(rs.getDouble(22))
+				((rs.getString(12) != null)
+					? new Double(rs.getDouble(12))
 					: null);
 			values[23] =
-				((rs.getString(23) != null)
-					? new Double(rs.getDouble(23))
+				((rs.getString(13) != null)
+					? new Double(rs.getDouble(13))
 					: null);
-			values[24] = rs.getString(24);
+			values[24] = rs.getString(14);
 			values[25] =
-				((rs.getString(25) != null)
-					? new Integer(rs.getInt(25))
+				((rs.getString(15) != null)
+					? new Integer(rs.getInt(15))
 					: null);
-			values[26] = rs.getString(26);
-			values[27] = rs.getString(27);
-			values[28] = rs.getString(28);
-			values[29] = rs.getString(29);
+			values[26] = rs.getString(16);
+			values[27] = rs.getString(17);
+			values[28] = rs.getString(18);
+			values[29] = rs.getString(19);
 			rs.close();
-
 			query =
 				"SELECT Person_ID, Name FROM Person_View NATURAL JOIN Identifier WHERE Record_ID = ? ORDER BY Family_Name, Given_Name";
 			rs = conn.executeQuery(query, types, data);
@@ -196,88 +164,6 @@ public class PaleontologyRecord {
 	}
 
 	/**
-	 * Attempts to return the given field as an int.
-	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an int.
-	 */
-	public int getAsInt(int field) throws IllegalArgumentException {
-		try {
-			Object thing = values[field];
-			return ((Integer) thing).intValue();
-		} catch (Exception e) {
-			throw new IllegalArgumentException();
-		}
-	}
-
-	/**
-	 * Attempts to return the given field as an double.
-	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an double.
-	 */
-	public double getAsDouble(int field) throws IllegalArgumentException {
-		try {
-			Object thing = values[field];
-			return ((Double) thing).doubleValue();
-		} catch (Exception e) {
-			throw new IllegalArgumentException();
-		}
-	}
-
-	/**
-	 * Attempts to return the given field as a Date.
-	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an Date.
-	 */
-	public java.util.Date getAsDate(int field) throws IllegalArgumentException {
-		try {
-			Object thing = values[field];
-			return (java.util.Date) thing;
-		} catch (Exception e) {
-			throw new IllegalArgumentException();
-		}
-	}
-
-	/**
-	 * Attempts to return the given field as a String.
-	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a String.
-	 */
-	public String getAsString(int field) throws IllegalArgumentException {
-		try {
-			Object thing = values[field];
-			if (thing == null) {
-				return null;
-			}
-			return thing.toString();
-		} catch (Exception e) {
-			throw new IllegalArgumentException();
-		}
-	}
-
-	/**
-	 * Attempts to return the given field as a Vector.
-	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a Vector.
-	 */
-	public Vector getAsVector(int field) throws IllegalArgumentException {
-		try {
-			Object thing = values[field];
-			return (Vector) thing;
-		} catch (Exception e) {
-			throw new IllegalArgumentException();
-		}
-	}
-	
-	/**
-	 * Returns the given field as an object. Use if all else fails.
-	 * @throws IllegalArgumentException if the field doesn't exist.
-	 */
-	public Object get(int field) throws IllegalArgumentException {
-		try {
-			Object thing = values[field];
-			return thing;
-		}
-		catch (Exception e) {
-			throw new IllegalArgumentException();
-		}
-	}
-
-	/**
 	 * Inner class used for object pooling.
 	 */
 	public static class DataFinder implements Finder {
@@ -294,24 +180,10 @@ public class PaleontologyRecord {
 	}
 
 	/**
-	 * created for testing purposes (grrrr) - use to test object pooling.
-	 */
-	public static int getPoolSize() {
-		return pool.size();
-	}
-
-	/**
-	 * Use to empty the pool of all objects.
-	 */
-	public static void purge() {
-		pool.removeAllElements();
-	}
-
-	/**
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
-	public static PaleontologyRecord getData(int id, User user, PageState state) throws SQLException, IOException, AccessDeniedException {
+	public static PaleontologyRecord getPaleontologyData(int id, User user, PageState state) throws SQLException, IOException, AccessDeniedException {
 		PaleontologyRecord p = (PaleontologyRecord) pool.retrieve(new DataFinder(id));
 		if (p == null) {
 			p = new PaleontologyRecord(id, state);
@@ -322,13 +194,5 @@ public class PaleontologyRecord {
 		}
 		return p;
 	}
-
-	public String toString() {
-		return (values[0]).toString();
-	}
-	
-	//public void finalize() throws Throwable {
-	//	pool.removeMe(this);
-	//}
 
 }

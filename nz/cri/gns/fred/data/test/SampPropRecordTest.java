@@ -39,20 +39,20 @@ public class SampPropRecordTest extends TestCase {
 
 	public void _testPooling() throws NotBoundException, SQLException, IOException, AccessDeniedException {
 		SampPropRecord.purge();
-		SampPropRecord sv1 = SampPropRecord.getData(390, this.user, this.state);
-		SampPropRecord sv2 = SampPropRecord.getData(390, this.user, this.state);
+		SampPropRecord sv1 = SampPropRecord.getSampPropData(390, this.user, this.state);
+		SampPropRecord sv2 = SampPropRecord.getSampPropData(390, this.user, this.state);
 		assertEquals(sv1.toString(), sv2.toString());
 		assertEquals(1, SampPropRecord.getPoolSize());
-		SampPropRecord sv3 = SampPropRecord.getData(391, this.user, this.state);
+		SampPropRecord sv3 = SampPropRecord.getSampPropData(391, this.user, this.state);
 		assertNotSame(sv1.toString(), sv3.toString());
 		assertEquals(2, SampPropRecord.getPoolSize());
-		SampPropRecord sv4 = SampPropRecord.getData(390, this.user, this.state);
+		SampPropRecord sv4 = SampPropRecord.getSampPropData(390, this.user, this.state);
 		assertEquals(2, SampPropRecord.getPoolSize());
 	}
 	
 	public void _testFRNum() throws SQLException, IOException, AccessDeniedException {
 		SampPropRecord.purge();
-		SampPropRecord sv = SampPropRecord.getData(390, this.user, this.state);
+		SampPropRecord sv = SampPropRecord.getSampPropData(390, this.user, this.state);
 		String sampName = sv.getAsString(SampPropRecord.SAMPLE_NAME);
 		assertNotNull(sampName);
 		assertEquals("Q22/f7733", sampName);
@@ -61,8 +61,8 @@ public class SampPropRecordTest extends TestCase {
 	
 	public void testAuthentication() throws SQLException, IOException, AccessDeniedException {
 		SampPropRecord.purge();
-		SampPropRecord sp = SampPropRecord.getData(1140, user, state);
-		SampPropRecord sp1 = SampPropRecord.getData(1140, null, state);
+		SampPropRecord sp = SampPropRecord.getSampPropData(1140, user, state);
+		SampPropRecord sp1 = SampPropRecord.getSampPropData(1140, null, state);
 		assertNotNull(sp);
 		assertNull(sp1);
 	}

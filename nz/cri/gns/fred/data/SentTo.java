@@ -15,6 +15,9 @@ public class SentTo {
 	private String lab;
 	private String comments;
 
+	public SentTo() {
+	}
+
 	public SentTo(String sentTo) {
 		this.sentTo = sentTo;
 	}

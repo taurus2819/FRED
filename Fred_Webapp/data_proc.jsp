@@ -34,12 +34,10 @@
 		String featID = request.getParameter("FeatID");
 		String saveType = request.getParameter("SaveType");
 
-		if (featType.equals("VertSect")) { featType = "Vertical Section"; }
-
 		out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
 		out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
 		out.println("<tr><td colspan='2' align='center' class='heading'>Locality</td></tr>");
-		out.println("<tr><td>*nbsp;</td></tr>");
+		out.println("<tr><td>&nbsp;</td></tr>");
 		out.println("<tr><td><a href='javascript:history.back();' title='Back to Data Entry'><img src='images/back_arrow.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='javascript:history.back();' class='heading'>Back to Data Entry</a></td></tr>");
 		out.println("<tr><td><a href='folder_detail.jsp?ID=" + foldID + "' title='Quit Without Saving'><img src='images/cancel.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_detail.jsp?ID=" + foldID + "' class='heading'>Quit</a></td></tr>");
 		out.println("</table>");
@@ -50,38 +48,41 @@
 		out.println("<tr><td>");
 
 		try {
-		
-			Locality locality;
-			if (featID != null) {
-				locality = LocalityFactory.getLocality(Integer.parseInt(featID), user, state);
-			} else {
-				locality = LocalityFactory.getLocality(featType, user, Integer.parseInt(foldID), state);
-			}
-			
-			locality.setField(Locality.FEATURE_NAME, request.getParameter("FeatName"));
-			locality.setField(Locality.REGISTRATION_AREA, request.getParameter("RegAreaID"));
-			locality.setField(Locality.WORKING_COMMENTS, request.getParameter("WorkComm"));
-			locality.setField(Locality.GRID_REF, request.getParameter("GridRef"));
-			locality.setField(Locality.METHOD, request.getParameter("LocMethodID"));
-			locality.setField(Locality.ACCURACY, request.getParameter("Accuracy"));
-			locality.setField(Locality.LOCALITY_DESC, request.getParameter("Loc"));
-			locality.setField(Locality.RECOLLECTION, request.getParameter("Recoll"));
-			if (!featType.equals("Outcrop")) {
-				locality.setField(Locality.OPERATING_COMPANY, request.getParameter("Person"));
-				locality.setField(Locality.START_DATE, request.getParameter("StartDate"));
-				locality.setField(Locality.COMPLETION_DATE, request.getParameter("FinishDate"));
-				if (featType.equals("Drillhole")) locality.setField(Locality.LICENCE_AREA, request.getParameter("LicArea"));
-				locality.setField(Locality.DATUM_TYPE, request.getParameter("DatumType"));
-				locality.setField(Locality.DATUM_ELEVATION, request.getParameter("DatumEl"));
-				locality.setField(Locality.KICK_OFF_DEPTH, request.getParameter("StartDepth"));
-				locality.setField(Locality.TERMINATION_DEPTH, request.getParameter("FinishDepth"));
+			DataEntryForm dataEntryForm;
+
+			if (featType.equals("Outcrop") || featType.equals("Drillhole") || featType.equals("VertSect")) {
+				if (featID != null) {
+					dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
+				} else {
+					dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(featType, user, Integer.parseInt(foldID), state);
+				}
+				dataEntryForm.setField(Locality.FEATURE_NAME, request.getParameter("FeatName"));
+				dataEntryForm.setField(Locality.REGISTRATION_AREA, request.getParameter("RegAreaID"));
+				dataEntryForm.setField(Locality.WORKING_COMMENTS, request.getParameter("WorkComm"));
+				dataEntryForm.setField(Locality.GRID_REF, request.getParameter("GridRef"));
+				dataEntryForm.setField(Locality.METHOD, request.getParameter("LocMethodID"));
+				dataEntryForm.setField(Locality.ACCURACY, request.getParameter("Accuracy"));
+				dataEntryForm.setField(Locality.LOCALITY_DESC, request.getParameter("Loc"));
+				dataEntryForm.setField(Locality.RECOLLECTION, request.getParameter("Recoll"));
+				if (!featType.equals("Outcrop")) {
+					dataEntryForm.setField(Locality.OPERATING_COMPANY, request.getParameter("Person"));
+					dataEntryForm.setField(Locality.START_DATE, request.getParameter("StartDate"));
+					dataEntryForm.setField(Locality.COMPLETION_DATE, request.getParameter("FinishDate"));
+					if (featType.equals("Drillhole")) dataEntryForm.setField(Locality.LICENCE_AREA, request.getParameter("LicArea"));
+					dataEntryForm.setField(Locality.DATUM_TYPE, request.getParameter("DatumType"));
+					dataEntryForm.setField(Locality.DATUM_ELEVATION, request.getParameter("DatumEl"));
+					dataEntryForm.setField(Locality.KICK_OFF_DEPTH, request.getParameter("StartDepth"));
+					dataEntryForm.setField(Locality.TERMINATION_DEPTH, request.getParameter("FinishDepth"));
+				}
+				
+				if (saveType.equals("Submit")) {
+					dataEntryForm.submit();
+				} else {
+					dataEntryForm.save();
+				}
 			}
 
-			if (saveType.equals("Submit")) {
-				locality.submit();
-			} else {
-				locality.save();
-			}
+
 
 			response.sendRedirect("folder_detail.jsp?ID=" + foldID);
 
