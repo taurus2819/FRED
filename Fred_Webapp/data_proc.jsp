@@ -186,7 +186,7 @@
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");
 			out.println("<p><span class='bigheading'>IO Data Error</span></p>");
-			out.println("<p>Database Error</p>");
+			out.println("<p>A Database error has occured: " + e.getMessage() + "</p>");
 		} catch (SQLException e) {
 			drawTop(out, et, request, response);
 			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
@@ -200,7 +200,7 @@
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");
 			out.println("<p><span class='bigheading'>SQL Data Error</span></p>");
-			out.println("<p>Database Error</p>");
+			out.println("<p>A Database error has occured: " + e.getMessage() + "</p>");
 		}
 	}
 	else {
