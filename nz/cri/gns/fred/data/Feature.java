@@ -198,8 +198,8 @@ public class Feature {
 
 	public int addNewSample(String topDepth, String bottomDepth, String drillTypeID, String workingFolderID) throws SQLException, IOException, DataInputException {
 		int sampleID;
-		if (!FREDUtils.isNumeric(topDepth) || (bottomDepth != null && !FREDUtils.isNumeric(bottomDepth)) || (drillTypeID != null && !FREDUtils.isNumeric(drillTypeID))) {
-			throw new DataInputException();
+		if (!FREDUtils.isNumeric(topDepth) || (bottomDepth != null && !bottomDepth.equals("") && !FREDUtils.isNumeric(bottomDepth)) || (drillTypeID != null && !drillTypeID.equals("") && !FREDUtils.isNumeric(drillTypeID))) {
+			throw new DataInputException("Sample Depths", "Data Missing or Invalid");
 		}
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		//check existing samples.  If there is only one - the default one - then delete it

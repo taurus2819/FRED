@@ -371,7 +371,7 @@ public class Sample {
 
 	public void editSample(String topDepth, String bottomDepth, String drillTypeID) throws IOException, SQLException, DataInputException {
 		if (!FREDUtils.isNumeric(topDepth) || (bottomDepth != null && !bottomDepth.equals("") && !FREDUtils.isNumeric(bottomDepth)) || (drillTypeID != null && !drillTypeID.equals("") && !FREDUtils.isNumeric(drillTypeID))) {
-			throw new DataInputException("Sample Depths", "Invalid Data");
+			throw new DataInputException("Sample Depths", "Data Missing or Invalid");
 		}
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		conn.executeUpdate("UPDATE Sample SET Top_Depth = " + JspUtils.sqlEscape(topDepth) + ", Bottom_Depth = " + JspUtils.sqlEscape(bottomDepth) + ", Drill_Type_ID = " + JspUtils.sqlEscape(drillTypeID) + " WHERE Sample_ID = " + getSampleID());
