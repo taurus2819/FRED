@@ -193,7 +193,7 @@ public class Record {
 			}
 			return thing.toString();
 		} catch (Exception e) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("FieldID = " + String.valueOf(field));
 		}
 	}
 
