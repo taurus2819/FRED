@@ -186,23 +186,7 @@ public class PaleontologyRecordDE extends RecordDE {
 						taxa.setComments(taxaComm);
 						if (!taxaName.trim().equals("")) {
 							//clean TaxaName
-							String cleanName = taxaName;
-							cleanName = cleanTaxaNameOpen(cleanName, "subsp.");
-							cleanName = cleanTaxaNameOpen(cleanName, "subspp.");
-							cleanName = cleanTaxaNameOpen(cleanName, "sp.");
-							cleanName = cleanTaxaNameOpen(cleanName, "spp.");
-							cleanName = cleanTaxaNameOpen(cleanName, "subgen.");
-							cleanName = cleanTaxaNameOpen(cleanName, "gen.");
-							cleanName = cleanTaxaNameOpen(cleanName, "subfam.");
-							cleanName = cleanTaxaNameOpen(cleanName, "fam.");
-							cleanName = cleanTaxaName(cleanName, "indet.");
-							cleanName = cleanTaxaName(cleanName, "?");
-							cleanName = cleanTaxaName(cleanName, "cf.");
-							cleanName = cleanTaxaName(cleanName, "aff.");
-							cleanName = cleanTaxaName(cleanName, "MS.");
-							cleanName = cleanTaxaName(cleanName, "s.s");
-							cleanName = cleanTaxaName(cleanName, "s.l.");
-							cleanName = cleanTaxaName(cleanName, "gr.");
+							String cleanName = getCleanedName(taxaName);
 							//check TaxaName against thesaurus
 							rs = conn.executeQuery("SELECT Taxa_ID FROM Taxonomic_Lookup WHERE Group_ID = " + taxa.getGroupID() + " AND Taxonomic_Name = " + JspUtils.sqlEscape(cleanName) + " AND Status IN ('approved', 'provisional')");
 							try {
@@ -444,7 +428,7 @@ public class PaleontologyRecordDE extends RecordDE {
 	protected void checkMandatoryFields() throws DataInputException {
 	}
 
-	private String cleanAlphaChar (String taxaName, String checkString) {
+	private static String cleanAlphaChar (String taxaName, String checkString) {
 		int len = taxaName.length();
 		int pos = 0;
 		boolean ok = true;
@@ -464,7 +448,26 @@ public class PaleontologyRecordDE extends RecordDE {
 		return taxaName;
 	}
 	
-	private String cleanTaxaName (String taxaName, String checkString) {
+	public static String getCleanedName(String cleanName) {
+		cleanName = cleanTaxaNameOpen(cleanName, "subsp.");
+		cleanName = cleanTaxaNameOpen(cleanName, "subspp.");
+		cleanName = cleanTaxaNameOpen(cleanName, "sp.");
+		cleanName = cleanTaxaNameOpen(cleanName, "spp.");
+		cleanName = cleanTaxaNameOpen(cleanName, "subgen.");
+		cleanName = cleanTaxaNameOpen(cleanName, "gen.");
+		cleanName = cleanTaxaNameOpen(cleanName, "subfam.");
+		cleanName = cleanTaxaNameOpen(cleanName, "fam.");
+		cleanName = cleanTaxaName(cleanName, "indet.");
+		cleanName = cleanTaxaName(cleanName, "?");
+		cleanName = cleanTaxaName(cleanName, "cf.");
+		cleanName = cleanTaxaName(cleanName, "aff.");
+		cleanName = cleanTaxaName(cleanName, "MS.");
+		cleanName = cleanTaxaName(cleanName, "s.s");
+		cleanName = cleanTaxaName(cleanName, "s.l.");
+		cleanName = cleanTaxaName(cleanName, "gr.");
+		return cleanName;
+	}
+	private static String cleanTaxaName (String taxaName, String checkString) {
 		while (taxaName.indexOf(checkString) >= 0) {
 			taxaName = taxaName.substring(0, taxaName.indexOf(checkString)).trim() + " " + taxaName.substring(taxaName.indexOf(checkString) + checkString.length(), taxaName.length()).trim();
 			taxaName = taxaName.trim();
@@ -472,7 +475,7 @@ public class PaleontologyRecordDE extends RecordDE {
 		return taxaName;
 	}
 	
-	private String cleanTaxaNameOpen (String taxaName, String checkString) {
+	private static String cleanTaxaNameOpen (String taxaName, String checkString) {
 		taxaName = cleanAlphaChar(taxaName, checkString);
 		taxaName = cleanTaxaName(taxaName, "n." + checkString + "indet.");
 		taxaName = cleanTaxaName(taxaName, "n. " + checkString + "indet.");
