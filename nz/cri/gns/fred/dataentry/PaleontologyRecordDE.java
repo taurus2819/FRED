@@ -435,6 +435,8 @@ public class PaleontologyRecordDE extends RecordDE {
 		cleanName = cleanName.replaceAll("<", "'");
 		cleanName = cleanName.replaceAll(">", "'");
 		cleanName = cleanName.replaceAll("  ", " ");
+		cleanName = cleanName.replaceAll("group", "gr.");
+		cleanName = cleanTaxaName(cleanName, "?");
 		cleanName = cleanTaxaNameOpen(cleanName, "subsp.");
 		cleanName = cleanTaxaNameOpen(cleanName, "subspp.");
 		cleanName = cleanTaxaNameOpen(cleanName, "sp.");
@@ -444,16 +446,18 @@ public class PaleontologyRecordDE extends RecordDE {
 		cleanName = cleanTaxaNameOpen(cleanName, "subfam.");
 		cleanName = cleanTaxaNameOpen(cleanName, "fam.");
 		cleanName = cleanTaxaName(cleanName, "indet.");
-		cleanName = cleanTaxaName(cleanName, "?");
 		cleanName = cleanTaxaName(cleanName, "cf.");
 		cleanName = cleanTaxaName(cleanName, "aff.");
 		cleanName = cleanTaxaName(cleanName, "MS.");
 		cleanName = cleanTaxaName(cleanName, "s.s.");
 		cleanName = cleanTaxaName(cleanName, "s.s");
 		cleanName = cleanTaxaName(cleanName, "s.l.");
+		cleanName = cleanTaxaName(cleanName, "ex gr.");
 		cleanName = cleanTaxaName(cleanName, "gr.");
+		cleanName = cleanTaxaName(cleanName, "var.");
 		return cleanName;
 	}
+	
 	private static String cleanTaxaName (String taxaName, String checkString) {
 		while (taxaName.indexOf(checkString) >= 0) {
 			taxaName = taxaName.substring(0, taxaName.indexOf(checkString)).trim() + " " + taxaName.substring(taxaName.indexOf(checkString) + checkString.length(), taxaName.length()).trim();
