@@ -381,7 +381,6 @@ public class PaleontologyRecordDE extends RecordDE {
 					}
 				}
 				
-				
 				//Create PAL_LIST entry
 				if (taxaList != null) {
 					for (Iterator i = taxaList.iterator(); i.hasNext();) {
@@ -398,8 +397,7 @@ public class PaleontologyRecordDE extends RecordDE {
 				try {
 					record = (PaleontologyRecord) PaleontologyRecord.getData(record.getRecordID(), user, state, true);
 					sample = new Sample(sample.getSampleID(), user, state, true);
-				} catch (Exception e) {
-				}
+				} catch (Exception e) {	}
 			} catch (SQLException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);

@@ -224,8 +224,7 @@ public class AdoptionRecordDE extends RecordDE {
 				try {
 					record = (AdoptionRecord) AdoptionRecord.getData(record.getRecordID(), user, state, true);
 					sample = new Sample(sample.getSampleID(), user, state, true);
-				} catch (Exception e) {
-				}
+				} catch (Exception e) {}
 			} catch (SQLException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);

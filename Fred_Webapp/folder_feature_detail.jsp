@@ -27,7 +27,8 @@
 	
 			if (request.getParameter("ActionType") != null && ok) { //do something
 				String actionType = request.getParameter("ActionType");
-				//try {
+				String err = "";
+				try {
 					//Copy locality
 					if (actionType.equals("CopyFeat") && folder.isAllowedCreateLocalities()) {
 						FolderUtils.copyLocality(request.getParameter("FeatID"), request.getParameter("NewFeatName"), String.valueOf(folder.getFolderID()), user, state);
@@ -59,9 +60,10 @@
 					else if (actionType.equals("Revoke") && folder.isAllowedSubmitLocalities()) {
 						FolderUtils.revokeLocality(request.getParameter("FeatID"), user, state);
 					}
-				//} catch (Exception e) {
-				//}
-				response.sendRedirect("folder_feature_detail.jsp?FoldID=" + folder.getFolderID() + "&FeatID=" + featID);
+				} catch (Exception e) {
+					err = "&ErrMsg=" + URLEncoder.encode("An Error has occured: " + e.getMessage(), "UTF-8");
+				}
+				response.sendRedirect("folder_feature_detail.jsp?FoldID=" + folder.getFolderID() + "&FeatID=" + featID + err);
 				return;
 			}
 	
@@ -88,7 +90,12 @@
 				//List records
 				out.println("<p><span class='heading'>Locality Details</span><br />");
 				out.println("Listed below are the working records for this locality - adoption (blue) and paleontology (green).  Drillhole and Vertical Section localities will also have individual samples listed.</p>");
-	
+
+				//print error message (if any) from folder_actions
+				if (request.getParameter("ErrMsg") != null) {
+					out.println("<p><span class='heading' style='color: #FF0000'>" + request.getParameter("ErrMsg") + "</span></p>");
+				}
+
 				//Table header
 				out.println("<p><table border='0' cellspacing='0' cellpadding='0' width='550'>");
 				out.print("<tr>");
@@ -163,7 +170,7 @@
 								out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this sample\") == true) {document.FoldForm.ActionType.value=\"DeleteSamp\";document.FoldForm.SampID.value=\"" + sample.getSampleID() + "\";document.FoldForm.submit();}' title='Delete Sample'><img src='images/delete.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 							out.print("</td><td>");
 							if (sample.getAsString(Sample.SAMPLE_STATUS).equals("working") && folder.isAllowedSubmitLocalities())
-								out.println("<a href='#' onClick='document.FoldForm.ActionType.value=\"SubmitSamp\";document.FoldForm.SampID.value=\"" + sample.getSampleID() + "\";document.FoldForm.submit();'><img src='images/submit.gif' border='0' height='20' width='20' alt='Submit Submit' /></a><img src='images/blank.gif' height='20' width='2' />");
+								out.println("<a href='#' onClick='document.FoldForm.ActionType.value=\"SubmitSamp\";document.FoldForm.SampID.value=\"" + sample.getSampleID() + "\";document.FoldForm.submit();'><img src='images/submit.gif' border='0' height='20' width='20' alt='Submit Sample' /></a><img src='images/blank.gif' height='20' width='2' />");
 							out.println("</td><td>");
 							if (folder.isAllowedCreateLocalities())
 								out.print("<a href='data_entry.jsp?Type=ADO&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "&Redirect=" + redirect + "'><img src='images/new_ado.gif' border='0' height='20' width='20' alt='Add Adoption Record' /></a><img src='images/blank.gif' height='20' width='2' />");

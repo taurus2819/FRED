@@ -9,6 +9,7 @@ import java.text.DecimalFormat;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.data.FRNumber;
+import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
@@ -65,6 +66,14 @@ public class FolderUtils {
 	public static void deleteRecord(String recID, User user, PageState state) throws NumberFormatException, DataInputException, InvalidCredentialsException, SQLException, IOException {
 		RecordDE form = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(recID), user, state);
 		form.delete();
+	}
+
+	public static void removeLocality(String featureID, String folderID, User user, PageState state) throws IOException, SQLException, InvalidCredentialsException, DataInputException {
+		Feature feature = new Feature(Integer.parseInt(featureID), user, state);
+		if (!feature.getAsString(Feature.STATUS).equals("approved"))
+			throw new DataInputException("Locality Status", "Cannot remove a working locality");
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		conn.executeUpdate("DELETE FROM folder_content WHERE folder_id = " + folderID + " AND feature_id = " + featureID);
 	}
 
 	public static void submitLocality(String featID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
