@@ -62,7 +62,7 @@ function saveData(type) {
 					if (CoordType[i].checked) { window.opener.form1.GridRef.value = CoordType[i].value + ":"; }
 				}
 				if (CoordType[1].checked) { window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + NZMGSheet.value.toUpperCase() + "*"; }
-				if (CoordType[2].checked) {
+				if (CoordType[2].checked || CoordType[3].checked) {
 					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + Country.value.toUpperCase() + "*";
 					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + North.value + "*" + East.value;
 				} else {
@@ -302,10 +302,10 @@ function parseDropDown(val) {
 			out.println("<tr><td class='heading' colspan='2'>Coordinates</td></tr>");
 			out.println("<tr><td colspan='2'>Please select the type and then enter the coordinates in the appropriate text boxes.<br />For <em>Full NZMG</em> enter 7-digit eastings and northings, for <em>Trunc NZMG</em> enter the map sheet plus either 3 or 4-digit eastings and northings and for <em>Lat/Long</em> enter NZGD49 latitudes and longitudes in decimal degrees (-ve numbers for west and south).</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
-			out.println("<tr><td class='heading'>Coord Type</td><td><input type='radio' name='CoordType' value='NZMG' checked>Full NZMG&nbsp&nbsp<input type='radio' name='CoordType' value='TruncNZMG'>Trunc NZMG&nbsp&nbsp<input type='radio' name='CoordType' value='LatLong'>Lat/Long</td></tr>");
-			out.println("<tr><td class='heading'>NZMG Sheet</td><td><input type='text' name='NZMGSheet'></td></tr>");
-			out.println("<tr><td class='heading'>Easting/Longitude</td><td><input type='text' name='East'></td></tr>");
-			out.println("<tr><td class='heading'>Northing/Latitude</td><td><input type='text' name='North'></td></tr>");
+			out.println("<tr><td class='heading'>Coord Type</td><td><input type='radio' name='CoordType' value='NZMG' checked />Full NZMG&nbsp&nbsp<input type='radio' name='CoordType' value='TruncNZMG' />Trunc NZMG&nbsp&nbsp<input type='radio' name='CoordType' value='LL49' />Lat/Long NZGD49&nbsp&nbsp<input type='radio' name='CoordType' value='LL2000' />Lat/Long NZGD2000/WGS84</td></tr>");
+			out.println("<tr><td class='heading'>NZMG Sheet</td><td><input type='text' name='NZMGSheet' /></td></tr>");
+			out.println("<tr><td class='heading'>Easting/Longitude</td><td><input type='text' name='East' /></td></tr>");
+			out.println("<tr><td class='heading'>Northing/Latitude</td><td><input type='text' name='North' /></td></tr>");
 			out.print("<tr><td class='heading'>Country</td><td>");
 			cd = new ComboDescriptor("MIS.Country", "Country_Code", "Country_Name");
 			cd.name = "Country";

@@ -111,12 +111,21 @@ public abstract class LocalityDE implements DataEntryForm {
 			} else if (origSystemID == 29) {
 				setField(
 					GRID_REF,
-					"LatLong:"
+					"LL49:"
 						+ sample.getAsString(Sample.COUNTRY_CODE)
 						+ "*"
 						+ sample.getAsString(Sample.ORIG_COORD).replace(
 							'|',
 							'*'));
+			} else if (origSystemID == 28) {
+				setField(
+					GRID_REF,
+					"LL2000:"
+						+ sample.getAsString(Sample.COUNTRY_CODE)
+						+ "*"
+						+ sample.getAsString(Sample.ORIG_COORD).replace(
+							'|',
+							'*'));				
 			}
 		}
 		setField(METHOD, sample.getAsString(Sample.METHOD_ID));
@@ -418,7 +427,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");
 			}
-		} else if (coord.indexOf("LatLong:") == 0) {
+		} else if (coord.indexOf("LL49:") == 0) {
 			if (coord.indexOf("*") == coord.lastIndexOf("*"))
 			throw new DataInputException("Coordinate", "Invalid value");
 			String north = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
@@ -426,7 +435,19 @@ public abstract class LocalityDE implements DataEntryForm {
 			try {
 				origCoord = new Datum.LatLong(Double.parseDouble(north), Double.parseDouble(east));
 				origSystem = DatumFactory.createNZGD49();
-				countryCode = coord.substring(8, coord.indexOf("*"));
+				countryCode = coord.substring(5, coord.indexOf("*"));
+			} catch (Exception e) {
+				throw new DataInputException("Coordinate", "Invalid value");
+			}
+		} else if (coord.indexOf("LL2000:") == 0) {
+			if (coord.indexOf("*") == coord.lastIndexOf("*"))
+			throw new DataInputException("Coordinate", "Invalid value");
+			String north = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
+			String east = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
+			try {
+				origCoord = new Datum.LatLong(Double.parseDouble(north), Double.parseDouble(east));
+				origSystem = DatumFactory.createWGS84();
+				countryCode = coord.substring(7, coord.indexOf("*"));
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");
 			}
@@ -636,7 +657,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		conn.releaseStatement();
 	}
 
-	private String getSiteID() throws SQLException, IOException  {
+	private String getSiteID() throws SQLException  {
 		DatumMethod horzDM = null;
 		try {
 			if (fields[METHOD] != null) {
@@ -649,7 +670,6 @@ public abstract class LocalityDE implements DataEntryForm {
 			System.out.println("SiteID: " + sr.getId());
 			return String.valueOf(sr.getId());
 		} catch (Exception e) {
-			System.out.println(e);
 			throw new SQLException();
 		}
 	}

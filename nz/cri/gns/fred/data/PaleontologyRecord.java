@@ -105,9 +105,9 @@ public class PaleontologyRecord extends Record {
 						? new Integer(rs.getInt(2))
 						: null));
 				query =
-					"SELECT P.Taxonomic_Name, P.Taxa_ID, T.Author, P.Specimen_Count, P.Specimen_Coords, P.Comments FROM Pal_List P, Taxonomic_Lookup T WHERE P.Taxa_ID = T.Taxa_ID AND Record_ID = ? AND T.Group_ID = "
-						+ taxaGroup.getGroupID()
+					"SELECT P.Taxonomic_Name, P.Taxa_ID, T.Author, P.Specimen_Count, P.Specimen_Coords, P.Comments FROM Pal_List P, Taxonomic_Lookup T WHERE P.Taxa_ID = T.Taxa_ID AND Record_ID = " + values[0] + " AND T.Group_ID = ?"
 						+ " ORDER BY UPPER(P.Taxonomic_Name)";
+				data[0] = taxaGroup.getGroupID();
 				ResultSet rs2 = conn.executeQuery(query, types, data);
 				Vector taxaVec = new Vector();
 				while (rs2.next()) {
@@ -165,10 +165,14 @@ public class PaleontologyRecord extends Record {
 		Record rec = (PaleontologyRecord) pool.retrieve(new DataFinder(id));
 		if (forceRefresh && rec != null) {
 			pool.removeMe(rec);
+			System.out.println("Purging pal record");
 			rec = null;
 		}
 		if (rec == null) {
 			rec = new PaleontologyRecord(id, state);
+			System.out.println("Creating new pal record");
+		} else {
+			System.out.println("Re-using existing pal record");
 		}
 		if (!FREDUtils.isAllowedLocality(user, rec.getAsString(FEATURE_SECURITY_CLASS_ID), rec.getAsString(FEATURE_STATUS), rec.getAsString(FEATURE_ID), state)
 				|| !FREDUtils.isAllowedRecord(user, rec.getAsString(SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(RECORD_ID), state)) {

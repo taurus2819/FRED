@@ -90,7 +90,7 @@
 			}
 			if (user != null) {
 				out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
-				out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + sampID + "' title='Print' target='print'><img src='images/print.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' width='10' height='1' border='0' /><a href='print_front.jsp?ID=" + sampID + "' class='heading' target='print'>Print Front</a></td></tr>");
+				out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;<a href='print_front.jsp?ID=" + sampID + "&FormType=Full' class='heading' target='print'>Print Front</a></td></tr>");
 				out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 				out.println("<tr><td class='heading' colspan='2' align='center'>Taxonomic List Options</td></tr>");
 				out.println("<form name='TaxaForm' method='post' action='detail.jsp'>");
@@ -142,7 +142,7 @@
 				out.print("<tr><td class='heading'>Grid Ref</td><td>");
 				if (sample.get(Sample.NZMG_SHEET) != null) {
 					out.print(sample.getAsString(Sample.NZMG_SHEET) + ": " + nzmg.format(sample.getAsDouble(Sample.NZMG_EAST)) + ", " + nzmg.format(sample.getAsDouble(Sample.NZMG_NORTH)));
-					out.print("<img src='images/blank.gif' width='20' height='1' />|<img src='images/blank.gif' width='20' height='1' />");
+					out.print("&nbsp;&nbsp;|&nbsp;&nbsp;");
 				}
 				if (sample.getAsDouble(Sample.LATITUDE) > 0) {
 					out.print(latlong.format(sample.getAsDouble(Sample.LATITUDE)) + "&#176N");
@@ -237,7 +237,6 @@
 					if (rec.getValue().equals("SMP")) {
 						try {
 							SampPropRecord sampProp = (SampPropRecord) SampPropRecord.getData(Integer.parseInt(rec.getKey()), user, state);
-							out.println("<tr><td class='bigheading' colspan='2'>Sample Property Data</td></tr>");
 							//collectors (repeating)
 							if (sampProp.get(SampPropRecord.COLLECTOR) != null) {
 								out.print("<tr><td class='heading'>Collectors</td><td>");

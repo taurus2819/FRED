@@ -9,7 +9,7 @@
 	String featType, featID;
 
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 
 	if (request.getParameter("ID") != null) {
 		featID = request.getParameter("ID");
@@ -28,50 +28,53 @@
 			featType = feature.getAsString(Feature.FEATURE_TYPE);
 	
 			if (!featType.equals("Outcrop")) {
-				out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
-				out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
-				out.println("<tr><td colspan='2' align='center' class='bigheading' >" + feature.getAsString(Feature.FEATURE_NAME) + "</td></tr>");
-				out.println("<tr><td colspan='2' align='center'>" + featType + "</td></tr>");
-				if (feature.get(Feature.MASTERFILE_NAME) != null) {
-					out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + feature.getAsString(Feature.MASTERFILE_NAME) + "</td></tr>");
-				}
-				if (!audit.getAsString(Audit.STATUS).equals("approved")) {
-					out.println("<tr><td class='smallheading'>Status:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + audit.getAsString(Audit.STATUS) + "</td></tr>");
-				}
-				if (audit.get(Audit.CREATED_BY) != null || audit.get(Audit.CREATED_DATE) != null) {
-					out.println("<tr><td class='smallheading'>Created:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-					if (audit.get(Audit.CREATED_BY) != null) { out.print(audit.getAsString(Audit.CREATED_BY) + "<br />"); }
-					if (audit.get(Audit.CREATED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.CREATED_DATE))); }
-					out.println("</td></tr>");
-				}
-				if (audit.get(Audit.MODIFIED_BY) != null || audit.get(Audit.MODIFIED_DATE) != null) {
-					out.println("<tr><td class='smallheading'>Edited:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-					if (audit.get(Audit.MODIFIED_BY) != null) { out.print(audit.getAsString(Audit.MODIFIED_BY) + "<br />"); }
-					if (audit.get(Audit.MODIFIED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.MODIFIED_DATE))); }
-					out.println("</td></tr>");
-				}
-				if (audit.get(Audit.SUBMITTED_BY) != null || audit.get(Audit.SUBMITTED_DATE) != null) {
-					out.println("<tr><td class='smallheading'>Submitted:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-					if (audit.get(Audit.SUBMITTED_BY) != null) { out.print(audit.getAsString(Audit.SUBMITTED_BY) + "<br />"); }
-					if (audit.get(Audit.SUBMITTED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.SUBMITTED_DATE))); }
-					out.println("</td></tr>");
-				}
-				if (audit.get(Audit.APPROVED_BY) != null || audit.get(Audit.APPROVED_DATE) != null) {
-					out.println("<tr><td class='smallheading'>Approved:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-					if (audit.get(Audit.APPROVED_BY) != null) { out.print(audit.getAsString(Audit.APPROVED_BY) + "<br />"); }
-					if (audit.get(Audit.APPROVED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.APPROVED_DATE))); }
-					out.println("</td></tr>");
-				}
-				out.println("</table>");
-
-				drawEndNavigation(out);
-
-				out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-				out.println("<tr><td>");
-
 				if (feature.get(Feature.SAMPLES) != null) {
 					int minSampID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
-					Sample sample = new Sample(minSampID, user, state);
+					Sample sample = new Sample(minSampID, user, state);			
+
+					out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
+					out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
+					out.println("<tr><td colspan='2' align='center' class='bigheading' >" + feature.getAsString(Feature.FEATURE_NAME) + "</td></tr>");
+					out.println("<tr><td colspan='2' align='center'>" + featType + "</td></tr>");
+					if (feature.get(Feature.MASTERFILE_NAME) != null) {
+						out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + feature.getAsString(Feature.MASTERFILE_NAME) + "</td></tr>");
+					}
+					if (!audit.getAsString(Audit.STATUS).equals("approved")) {
+						out.println("<tr><td class='smallheading'>Status:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + audit.getAsString(Audit.STATUS) + "</td></tr>");
+					}
+					if (audit.get(Audit.CREATED_BY) != null || audit.get(Audit.CREATED_DATE) != null) {
+						out.println("<tr><td class='smallheading'>Created:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
+						if (audit.get(Audit.CREATED_BY) != null) { out.print(audit.getAsString(Audit.CREATED_BY) + "<br />"); }
+						if (audit.get(Audit.CREATED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.CREATED_DATE))); }
+						out.println("</td></tr>");
+					}
+					if (audit.get(Audit.MODIFIED_BY) != null || audit.get(Audit.MODIFIED_DATE) != null) {
+						out.println("<tr><td class='smallheading'>Edited:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
+						if (audit.get(Audit.MODIFIED_BY) != null) { out.print(audit.getAsString(Audit.MODIFIED_BY) + "<br />"); }
+						if (audit.get(Audit.MODIFIED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.MODIFIED_DATE))); }
+						out.println("</td></tr>");
+					}
+					if (audit.get(Audit.SUBMITTED_BY) != null || audit.get(Audit.SUBMITTED_DATE) != null) {
+						out.println("<tr><td class='smallheading'>Submitted:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
+						if (audit.get(Audit.SUBMITTED_BY) != null) { out.print(audit.getAsString(Audit.SUBMITTED_BY) + "<br />"); }
+						if (audit.get(Audit.SUBMITTED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.SUBMITTED_DATE))); }
+						out.println("</td></tr>");
+					}
+					if (audit.get(Audit.APPROVED_BY) != null || audit.get(Audit.APPROVED_DATE) != null) {
+						out.println("<tr><td class='smallheading'>Approved:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
+						if (audit.get(Audit.APPROVED_BY) != null) { out.print(audit.getAsString(Audit.APPROVED_BY) + "<br />"); }
+						if (audit.get(Audit.APPROVED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.APPROVED_DATE))); }
+						out.println("</td></tr>");
+					}
+					out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
+					out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + minSampID + "&FormType=Short' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;<a href='print_front.jsp?ID=" + minSampID + "&FormType=Short' class='heading' target='print'>Print Front</a></td></tr>");
+					out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
+					out.println("</table>");
+	
+					drawEndNavigation(out);
+	
+					out.println("<table style='margin-left:20px; width:550px;' border='0'>");
+					out.println("<tr><td>");
 
 					out.println("<p><table border='0' cellspacing='0' cellpadding='2'>");
 					if (sample.get(Sample.YARD_FR_ID) != null) { out.println("<tr><td class='heading' width='135'>Yard FR Number&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.YARD_FR_NUMBER) + "</td></tr>"); }
