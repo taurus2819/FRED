@@ -30,7 +30,8 @@
 
 	if (request.getParameter("ID") != null) {
 		Folder folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state, true);
-		
+		String redirect = URLEncoder.encode("folder_detail.jsp?ID=" + folder.getFolderID(), "UTF-8");
+						
 		if (request.getParameter("ActionType") != null) { //do something
 			String actionType = request.getParameter("ActionType");
 			//try {
@@ -67,9 +68,9 @@
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 			out.println("<tr><td><a href='folder_list.jsp' title='Back to Folders'><img src='images/back_arrow.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_list.jsp' class='heading'>Back to Folders</a></td></tr>");
 			if (folder.isAllowedCreateLocalities()) {
-				out.println("<tr><td><a href='data_entry.jsp?Type=Outcrop&FoldID=" + folder.getFolderID() + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Outcrop&FoldID=" + folder.getFolderID() + "' class='heading'>New Outcrop Locality</a></td></tr>");
-				out.println("<tr><td><a href='data_entry.jsp?Type=Drillhole&FoldID=" + folder.getFolderID() + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Drillhole&FoldID=" + folder.getFolderID() + "' class='heading'>New Drillhole Locality</a></td></tr>");
-				out.println("<tr><td><a href='data_entry.jsp?Type=VertSect&FoldID=" + folder.getFolderID() + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=VertSect&FoldID=" + folder.getFolderID() + "' class='heading'>New Vertical Section Locality</a></td></tr>");
+				out.println("<tr><td><a href='data_entry.jsp?Type=Outcrop&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Outcrop&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "' class='heading'>New Outcrop Locality</a></td></tr>");
+				out.println("<tr><td><a href='data_entry.jsp?Type=Drillhole&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Drillhole&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "' class='heading'>New Drillhole Locality</a></td></tr>");
+				out.println("<tr><td><a href='data_entry.jsp?Type=VertSect&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=VertSect&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "' class='heading'>New Vertical Section Locality</a></td></tr>");
 				out.println("<tr><td><a href='simple_query.jsp?FoldID=" + folder.getFolderID() + "'><img src='images/search.gif' width='20' height='20' border='0' alt='Search for a Locality' /></a>&nbsp;&nbsp;</td><td><a href='simple_query.jsp?FoldID=" + folder.getFolderID() + "' class='heading'>Search</a></td></tr>");
 			}
 			out.println("</table>");
@@ -101,8 +102,6 @@
 				String featType = feature.getAsString(Feature.FEATURE_TYPE);
 				String featName = feature.getAsString(Feature.FEATURE_NAME);
 				String locStatus = feature.getAsString(Feature.STATUS);
-				
-				String redirect = URLEncoder.encode("folder_detail.jsp?FoldID=" + folder.getFolderID(), "UTF-8");
 				
 				out.print("<tr><td><a href='detail.jsp?FeatID=" + featID + "'><img src='images/loc.gif' border='0' height='20' width='20' alt='View Locality' /></a></td>");
 				out.println("<td class='heading'><a href='folder_feature_detail.jsp?FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "'>" + sampName + "</a>&nbsp;&nbsp;");

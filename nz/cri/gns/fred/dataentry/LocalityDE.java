@@ -528,14 +528,10 @@ public abstract class LocalityDE implements DataEntryForm {
 						+ ")");
 				conn.executeUpdate(
 					"INSERT INTO Sample (Feature_ID) VALUES ("
-						+ feature.getFeatureID()
+						+ featureID
 						+ ")");
 				feature = new Feature(featureID, user, state, true);
-				int sampleID =
-					((Integer) feature
-						.getAsVector(Feature.SAMPLES)
-						.firstElement())
-						.intValue();
+				int sampleID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
 				sample = new Sample(sampleID, user, state, true);
 			} else { // edit
 				if (!folder.isAllowedApproveLocalities() && feature.getAsString(Feature.STATUS).equals("waiting"))
