@@ -1,5 +1,5 @@
 <%@page	extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
+		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -93,15 +93,19 @@
 	Statement statement = connection.statement;
 	Statement statement2 = connection.getExtraStatement();
 	Statement statement3 = connection.getExtraStatement();
-	Statement statement4 = connection.getExtraStatement();
-	ResultSet rs, rs2, rs3, rs4;
+	Statement statement4;
+	ResultSet rs, rs2, rs3;
 	User user = getUser(session);
-	String foldID, featID, recID, featType, sampID, auditID, drillSampName, locStatus;
+	String foldID, featID, recID, featType, featName, sampID, sampName, auditID, drillSampName, locStatus, query;
 	int userID = user.getPersonId(), i = 0, j = 0, k = 0, tableWidth, recCount, execUp, userRights;
 	boolean sampPropFlag;
+	java.util.Date changeDate = new java.util.Date();
+	int[] types = {Types.NUMERIC};
+	Object data[];
+	data = new Object[1];
 
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	drawTop(out, et, request, response);
 
@@ -167,33 +171,45 @@
 				sampPropFlag = false;
 				if (rs3.getString(1).equals(featID)) { continue; }
 				featID = rs3.getString(1);
-				rs = statement.executeQuery("SELECT Sample_ID, Sample_Name, Feature_Type, Feature_Name, Status, Last_Change FROM Sample_All_View WHERE Feature_ID = " + featID);
+				
+				//rs = statement.executeQuery("SELECT Sample_ID, Sample_Name, Feature_Type, Feature_Name, Status, Last_Change FROM Sample_All_View WHERE Feature_ID = " + featID);
+				query = "SELECT Sample_ID, Sample_Name, Feature_Type, Feature_Name, Status, Last_Change FROM Sample_All_View WHERE Feature_ID = ?";
+				data[0] = new Integer(Integer.parseInt(featID));
+				rs = connection.executeQuery(query, types, data);
 				rs.next();
+				sampID = rs.getString(1);
+				sampName = rs.getString(2);
 				featType = rs.getString(3);
 				if (featType.equals("Vertical Section")) { featType = "VertSect"; }
+				featName = rs.getString(4);
 				locStatus = rs.getString(5);
+				changeDate = rs.getDate(6);
 				if (!featType.equals("Outcrop")) { //drillhole/vertsect so loop through individual samples
 					drillSampName = "";
-					rs2 = statement2.executeQuery("SELECT DISTINCT Sample_Name FROM Sample_All_View WHERE Feature_ID = " + featID + " ORDER BY Sample_Name");
+					//rs2 = statement2.executeQuery("SELECT DISTINCT Sample_Name FROM Sample_All_View WHERE Feature_ID = " + featID + " ORDER BY Sample_Name");
+					query = "SELECT DISTINCT Sample_Name FROM Sample_All_View WHERE Feature_ID = ? ORDER BY Sample_Name";
+					data[0] = new Integer(Integer.parseInt(featID));
+					rs2 = connection.executeQuery(query, types, data);
 					rs2.next();
 					drillSampName = rs2.getString(1);
 					while (rs2.next()) { drillSampName = drillSampName + ", " + rs2.getString(1); }
+					connection.releaseStatement();
 					out.print("<tr>");
 					//out.print("<td><input type='checkbox' name='Check" + k++ + "' value='" + featID + "'></td>");
 					out.print("<td width='20'><img src='images/loc.gif' height='20' width='20' /></td><td colspan='3' class='heading'><a href='detail.jsp?FeatID=" + featID + "'>" + drillSampName + "</a>&nbsp;&nbsp;");
-					if (rs.getString(4) != null && !drillSampName.equals(rs.getString(4))) { out.print("<br /><a href='detail.jsp?FeatID=" + featID + "'>(" + rs.getString(4) +")</a>&nbsp;&nbsp;"); }
+					if (featName != null && !drillSampName.equals(featName)) { out.print("<br /><a href='detail.jsp?FeatID=" + featID + "'>(" + featName +")</a>&nbsp;&nbsp;"); }
 					out.print("</td><td>" + featType + "</td><td class='smallstar'>");
-					if (!rs.getString(5).equals("approved")) {
-						out.print(rs.getString(5) + "</td><td>");
-						if (rs.getString(6) != null) { 
-							out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(6)));
+					if (!locStatus.equals("approved")) {
+						out.print(locStatus + "</td><td>");
+						if (changeDate != null) { 
+							out.print(DateFormat.getDateInstance(DateFormat.LONG).format(changeDate));
 						}
 						out.print("</td>");
 					} else {
 						out.print("</td><td></td>");
 					}
 					out.print("<td>");
-					if ((rs.getString(5).equals("working") || rs.getString(5).equals("rejected")) && (userRights & 2) != 0) {
+					if ((locStatus.equals("working") || locStatus.equals("rejected")) && (userRights & 2) != 0) {
 						out.print("<a href='feat_data_entry.jsp?Type=" + featType + "&FeatID=" + featID + "&FoldID=" + foldID + "' title='Edit Locality'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					}
 					out.print("</td><td>");
@@ -201,14 +217,14 @@
 						out.print("<a href='#' onClick='prmpt=prompt(\"Please enter the new name\", \"New " + featType + "\");if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value=\"CopyFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Copy Locality'><img src='images/copy.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					}
 					out.print("</td><td>");
-					if ((rs.getString(5).equals("working") || rs.getString(5).equals("rejected")) && (userRights & 8) != 0) {
+					if ((locStatus.equals("working") || locStatus.equals("rejected")) && (userRights & 8) != 0) {
 						out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this locality\") == true) {document.FoldForm.ActionType.value=\"DeleteFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Delete Locality'><img src='images/delete.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					}
 					out.print("</td><td>");
-					if ((rs.getString(5).equals("working") || rs.getString(5).equals("rejected")) && (userRights & 16) != 0) {
+					if ((locStatus.equals("working") || locStatus.equals("rejected")) && (userRights & 16) != 0) {
 						out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to submit this locality\") == true) {document.FoldForm.ActionType.value=\"Submit\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Submit Locality'><img src='images/submit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					}
-					else if (rs.getString(5).equals("waiting") && (userRights & 16) != 0) {
+					else if (locStatus.equals("waiting") && (userRights & 16) != 0) {
 						out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to revoke this locality\") == true) {document.FoldForm.ActionType.value=\"Revoke\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Revoke Locality'><img src='images/revoke.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					}
 					out.print("</td><td>");
@@ -221,11 +237,19 @@
 
 					//Drillhole Samples
 					//only list if contain working records
-					rs = statement.executeQuery("SELECT DISTINCT S.Sample_ID, S.Drillhole_Depth, S.Top_Depth FROM Sample_All_View S, Record_All_View R WHERE R.Sample_ID = S.Sample_ID AND R.Status = 'working' AND S.Feature_ID = " + featID + " ORDER BY S.Top_Depth");
+
+					//rs = statement.executeQuery("SELECT DISTINCT S.Sample_ID, S.Drillhole_Depth, S.Top_Depth FROM Sample_All_View S, Record_All_View R WHERE R.Sample_ID = S.Sample_ID AND R.Status = 'working' AND S.Feature_ID = " + featID + " ORDER BY S.Top_Depth");
+					query = "SELECT DISTINCT S.Sample_ID, S.Drillhole_Depth, S.Top_Depth FROM Sample_All_View S, Record_All_View R WHERE R.Sample_ID = S.Sample_ID AND R.Status = 'working' AND S.Feature_ID = ? ORDER BY S.Top_Depth";
+					data[0] = new Integer(Integer.parseInt(featID));
+					rs = connection.executeQuery(query, types, data);
+					statement4 = connection.preservePreparedStatement();
 					while (rs.next()) {
 						sampID = rs.getString(1);
 						//check if sample property
-						rs2 = statement2.executeQuery("SELECT * FROM Record_All_View WHERE Record_Type = 'SMP' AND Sample_ID = " + sampID); //check if sample property record already created
+						//rs2 = statement2.executeQuery("SELECT * FROM Record_All_View WHERE Record_Type = 'SMP' AND Sample_ID = " + sampID); //check if sample property record already created
+						query = "SELECT * FROM Record_All_View WHERE Record_Type = 'SMP' AND Sample_ID = ?";
+						data[0] = new Integer(Integer.parseInt(sampID));
+						rs2 = connection.executeQuery(query, types, data);
 						if (rs2.next()) { sampPropFlag = true; }
 						out.print("<tr>");
 						//out.print("<td></td>");
@@ -241,32 +265,33 @@
 						out.println("</td></tr>");
 						out.println(generateWorkRecords(sampID, foldID, userRights, "Drill", locStatus, connection, 1));
 					}
+					statement4.close();
 				}
 
 				else { //not drillhole so go straight to records
 					sampID = rs.getString(1);
 					//check if sample property
-					rs2 = statement2.executeQuery("SELECT * FROM Record_All_View WHERE Record_Type = 'SMP' AND Sample_ID = " + sampID); //check if sample property record already created
+					//rs2 = statement2.executeQuery("SELECT * FROM Record_All_View WHERE Record_Type = 'SMP' AND Sample_ID = " + sampID); //check if sample property record already created
+					query = "SELECT * FROM Record_All_View WHERE Record_Type = 'SMP' AND Sample_ID = ?";
+					data[0] = new Integer(Integer.parseInt(sampID));
+					rs2 = connection.executeQuery(query, types, data);
 					if (rs2.next()) { sampPropFlag = true; }
-					//check if working records
-					rs2 = statement2.executeQuery("SELECT COUNT(*) FROM Record_All_View WHERE Sample_ID = " + sampID + " AND Working_Folder_ID = " + foldID);
-					rs2.next();
 					out.print("<tr>");
 					//out.print("<td><input type='checkbox' name='Check" + k++ + "' value='" + featID + "'></td>");
-					out.print("<td width='20'><img src='images/loc.gif' height='20' width='20' /></td><td colspan='3' class='heading'><a href='detail.jsp?ID=" + sampID + "'>" + rs.getString(2) + "</a>&nbsp;&nbsp;");
-					if (rs.getString(4) != null && !rs.getString(2).equals(rs.getString(4))) { out.print("<br /><a href='detail.jsp?ID=" + sampID + "'>(" + rs.getString(4) + ")</a>&nbsp;&nbsp;"); }
+					out.print("<td width='20'><img src='images/loc.gif' height='20' width='20' /></td><td colspan='3' class='heading'><a href='detail.jsp?ID=" + sampID + "'>" + sampName + "</a>&nbsp;&nbsp;");
+					if (featName != null && !sampName.equals(featName)) { out.print("<br /><a href='detail.jsp?ID=" + sampID + "'>(" + featName + ")</a>&nbsp;&nbsp;"); }
 					out.print("</td><td>Outcrop</td><td class='smallstar'>");
-					if (!rs.getString(5).equals("approved")) {
-						out.print(rs.getString(5) + "</td><td>");
-						if (rs.getString(6) != null) { 
-							out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(6)));
+					if (!locStatus.equals("approved")) {
+						out.print(locStatus + "</td><td>");
+						if (changeDate != null) { 
+							out.print(DateFormat.getDateInstance(DateFormat.LONG).format(changeDate));
 						}
 						out.print("</td>");
 					} else {
 						out.print("</td><td></td>");
 					}
 					out.print("<td>");
-					if ((rs.getString(5).equals("working") || rs.getString(5).equals("rejected")) && (userRights & 2) != 0) {
+					if ((locStatus.equals("working") || locStatus.equals("rejected")) && (userRights & 2) != 0) {
 						out.print("<a href='feat_data_entry.jsp?Type=Outcrop&FeatID=" + featID + "&FoldID=" + foldID + " 'title='Edit Locality'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					}
 					out.print("</td><td>");
@@ -274,14 +299,14 @@
 						out.print("<a href='#' onClick='prmpt=prompt(\"Please enter the new fieldnumber\", \"New Outcrop\");if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value=\"CopyFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Copy Locality'><img src='images/copy.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					}
 					out.print("</td><td>");
-					if ((rs.getString(5).equals("working") || rs.getString(5).equals("rejected")) && (userRights & 8) != 0) {
+					if ((locStatus.equals("working") || locStatus.equals("rejected")) && (userRights & 8) != 0) {
 						out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this locality\") == true) {document.FoldForm.ActionType.value=\"DeleteFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Delete Locality'><img src='images/delete.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					}
 					out.print("</td><td>");
-					if ((rs.getString(5).equals("working") || rs.getString(5).equals("rejected")) && (userRights & 16) != 0 && sampPropFlag) {
+					if ((locStatus.equals("working") || locStatus.equals("rejected")) && (userRights & 16) != 0 && sampPropFlag) {
 						out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to submit this locality\") == true) {document.FoldForm.ActionType.value=\"Submit\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Submit Locality'><img src='images/submit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					}
-					else if (rs.getString(5).equals("waiting") && (userRights & 16) != 0) {
+					else if (locStatus.equals("waiting") && (userRights & 16) != 0) {
 						out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to revoke this record\") == true) {document.FoldForm.ActionType.value=\"Revoke\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Revoke Locality'><img src='images/revoke.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					}
 					out.print("</td><td>");
@@ -293,6 +318,12 @@
 					out.print("</td><td>");
 					out.print("<a href='pal_data_entry.jsp?FoldID=" + foldID + "&SampID=" + sampID + "' title='Add Paleontology Record'><img src='images/new_pal.gif' border='0' height='20' width='20'></a>");
 					out.println("</td></tr>");
+					//check if working records
+					//rs2 = statement2.executeQuery("SELECT COUNT(*) FROM Record_All_View WHERE Sample_ID = " + sampID + " AND Working_Folder_ID = " + foldID);
+					query = "SELECT COUNT(*) FROM Record_All_View WHERE Sample_ID = ? AND Working_Folder_ID = " + foldID;
+					data[0] = new Integer(Integer.parseInt(sampID));
+					rs2 = connection.executeQuery(query, types, data);
+					rs2.next();
 					if (rs2.getInt(1) > 0) { //working records
 						out.println(generateWorkRecords(sampID, foldID, userRights, "Outcrop", locStatus, connection, 0));
 					}
@@ -346,5 +377,4 @@
 
 	statement2.close();
 	statement3.close();
-	statement4.close();
 %>

@@ -25,8 +25,11 @@
 	Statement statement2 = connection.getExtraStatement();
 	ResultSet rs, rs2;
 	User user = getUser(session);
-	String numRecords, foldID;
+	String numRecords, foldID, query;
 	int userID = user.getPersonId(), i, execUp, recCount;
+	int[] types = {Types.NUMERIC};
+	Object data[];
+	data = new Object[1];
 
 	ExtranetTemplate et = getExtranetTemplate();
 
@@ -74,21 +77,23 @@
 		out.println("<table border='0' cellspacing='0' cellpadding='2' width='550'>");
 
 		//List Working folders
-		rs = statement.executeQuery("SELECT * FROM Folder_View WHERE User_ID = " + userID + " AND Folder_Type = 'personal'");
+		//rs = statement.executeQuery("SELECT * FROM Folder_View WHERE User_ID = " + userID + " AND Folder_Type = 'personal'");
+		query = "SELECT * FROM Folder_View WHERE User_ID = ? AND Folder_Type = 'personal'";
+		data[0] = new Integer(userID);
+		rs = connection.executeQuery(query, types, data);
 		if (rs.next()) {
 			i = 0;
-			rs = statement.executeQuery("SELECT DISTINCT Folder_ID, Folder_Name, Owner_ID, Folder_Owner, User_Rights FROM Folder_View WHERE User_ID = " + userID + " AND Folder_Type = 'personal' ORDER BY Folder_Name");
+			//rs = statement.executeQuery("SELECT DISTINCT Folder_ID, Folder_Name, Owner_ID, Folder_Owner, User_Rights FROM Folder_View WHERE User_ID = " + userID + " AND Folder_Type = 'personal' ORDER BY Folder_Name");
+			query = "SELECT DISTINCT Folder_ID, Folder_Name, Owner_ID, Folder_Owner, User_Rights FROM Folder_View WHERE User_ID = ? AND Folder_Type = 'personal' ORDER BY Folder_Name";
+			data[0] = new Integer(userID);
+			rs = connection.executeQuery(query, types, data);
 			out.println("<tr><th>Working Folder<img src='images/blank.gif' width='20' height='1' /></th><td></td><th>Owner<img src='images/blank.gif' width='20' height='1' /></th><th>Options</th></tr>");
 			out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
 			out.println("<form name='PersForm' method='post' action='folder_list.jsp'>");
 			while (rs.next()) {
 				out.print("<tr><td><a href='folder_detail.jsp?ID=" + rs.getString(1) + "' class='heading'>" + rs.getString(2) + "</a><img src='images/blank.gif' width='20' height='1' /></td><td></td><td>" + rs.getString(4) + "<img src='images/blank.gif' width='20' height='1' /></td><td>");
 				if (rs.getInt(3) == userID || (rs.getInt(5) & 32) != 0) { //if owner or admin rights
-					out.print("<a href='folder_user.jsp?FoldID=" + rs.getString(1) + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a>");
-					//rs2 = statement2.executeQuery("SELECT Folder_Name FROM Folder_Content_View WHERE Feature_ID IS NOT NULL AND Folder_ID = " + rs.getString(1));
-					//if (!rs2.next()) { //folder is empty and can be deleted
-						out.print("<img src='images/blank.gif' width='20' height='1' /><a href='#' onClick='if (confirm(\"Are you sure you want to delete this folder\") == true) {document.PersForm.FoldID.value=\"" + rs.getString(1) + "\";document.PersForm.submit();}' title='Delete Folder'><img src='images/delete.gif' border='0' height='20' width='20' /></a>");
-					//}
+					out.print("<a href='folder_user.jsp?FoldID=" + rs.getString(1) + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a><img src='images/blank.gif' width='20' height='1' /><a href='#' onClick='if (confirm(\"Are you sure you want to delete this folder\") == true) {document.PersForm.FoldID.value=\"" + rs.getString(1) + "\";document.PersForm.submit();}' title='Delete Folder'><img src='images/delete.gif' border='0' height='20' width='20' /></a>");
 				} else {
 					out.print("<img src='images/blank.gif' width='20' height='20' />");
 				}
@@ -100,15 +105,25 @@
 		}
 
 		//List Masterfile folders (if any)
-		rs = statement.executeQuery("SELECT * FROM Folder_View WHERE User_ID = " + userID + " AND Folder_Type = 'admin'");
+		//rs = statement.executeQuery("SELECT * FROM Folder_View WHERE User_ID = " + userID + " AND Folder_Type = 'admin'");
+		query = "SELECT * FROM Folder_View WHERE User_ID = ? AND Folder_Type = 'admin'";
+		data[0] = new Integer(userID);
+		rs = connection.executeQuery(query, types, data);
 		if (rs.next()) {
 			i = 0;
-			rs = statement.executeQuery("SELECT DISTINCT Folder_ID, Folder_Name, Owner_ID, Folder_Owner, User_Rights FROM Folder_View WHERE User_ID = " + userID + " AND Folder_Type = 'admin' ORDER BY Folder_Name");
+			//rs = statement.executeQuery("SELECT DISTINCT Folder_ID, Folder_Name, Owner_ID, Folder_Owner, User_Rights FROM Folder_View WHERE User_ID = " + userID + " AND Folder_Type = 'admin' ORDER BY Folder_Name");
+			query = "SELECT DISTINCT Folder_ID, Folder_Name, Owner_ID, Folder_Owner, User_Rights FROM Folder_View WHERE User_ID = ? AND Folder_Type = 'admin' ORDER BY Folder_Name";
+			data[0] = new Integer(userID);
+			rs = connection.executeQuery(query, types, data);
+			statement2 = connection.preservePreparedStatement();
 			out.println("<tr><th>Masterfile Folder<img src='images/blank.gif' width='20' height='1' /></th><td></td><th>Curator<img src='images/blank.gif' width='20' height='1' /></th><th>Options</th></tr>");
 			out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
 			while (rs.next()) {
 				out.print("<tr><td><a href='admin_folder_detail.jsp?ID=" + rs.getString(1) + "' class='heading'>" + rs.getString(2) + "</a><img src='images/blank.gif' width='20' height='1' /></td><td style='font-size: 14pt; font-weight: bold; color: #FF0000'>");
-				rs2 = statement2.executeQuery("SELECT COUNT(*) FROM Masterfile_Content_View WHERE Folder_ID = " + rs.getString(1));
+				//rs2 = statement2.executeQuery("SELECT COUNT(*) FROM Masterfile_Content_View WHERE Folder_ID = " + rs.getString(1));
+				query = "SELECT COUNT(*) FROM Masterfile_Content_View WHERE Folder_ID = ?";
+				data[0] = new Integer(rs.getInt(1));
+				rs2 = connection.executeQuery(query, types, data);
 				rs2.next();
 				if (rs2.getInt(1) > 0) { out.print("*"); }
 				out.print("<img src='images/blank.gif' width='10' height='1' /></td><td>" + rs.getString(4) + "<img src='images/blank.gif' width='20' height='1' /></td><td>");
@@ -119,21 +134,33 @@
 				}
 			}
 			out.println("<tr><td><img src='images/blank.gif' width='10' height='30' /></td></tr>");
+			statement2.close();
 		}
 
 		//List Taxonomic groups (if any)
-		rs = statement.executeQuery("SELECT * FROM Taxa_Panel_View WHERE Panelist_ID = " + userID);
+		//rs = statement.executeQuery("SELECT * FROM Taxa_Panel_View WHERE Panelist_ID = " + userID);
+		query = "SELECT * FROM Taxa_Panel_View WHERE Panelist_ID = ?";
+		data[0] = new Integer(userID);
+		rs = connection.executeQuery(query, types, data);
 		if (rs.next()) {
 			i = 0;
-			rs = statement.executeQuery("SELECT DISTINCT Group_ID, Group_Name FROM Taxa_Panel_View WHERE Panelist_ID = " + userID + " ORDER BY Group_Name");
+			//rs = statement.executeQuery("SELECT DISTINCT Group_ID, Group_Name FROM Taxa_Panel_View WHERE Panelist_ID = " + userID + " ORDER BY Group_Name");
+			query = "SELECT DISTINCT Group_ID, Group_Name FROM Taxa_Panel_View WHERE Panelist_ID = ? ORDER BY Group_Name";
+			data[0] = new Integer(userID);
+			rs = connection.executeQuery(query, types, data);
+			statement2 = connection.preservePreparedStatement();
 			out.println("<tr><th>Taxonomic Groups<img src='images/blank.gif' width='20' height='1' /></th><td></td><td></td></th><th>Options</th></tr>");
 			out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
 			while (rs.next()) {
 				out.print("<tr><td><a href='taxa_group_detail.jsp?ID=" + rs.getString(1) + "' class='heading'>" + rs.getString(2) + "</a><img src='images/blank.gif' width='20' height='1' /></td><td style='font-size: 14pt; font-weight: bold; color: #FF0000'>");
-				rs2 = statement2.executeQuery("SELECT * FROM Taxonomic_Lookup WHERE Status = 'provisional' AND Group_ID = " + rs.getString(1));
+				//rs2 = statement2.executeQuery("SELECT * FROM Taxonomic_Lookup WHERE Status = 'provisional' AND Group_ID = " + rs.getString(1));
+				query = "SELECT * FROM Taxonomic_Lookup WHERE Status = 'provisional' AND Group_ID = ?";
+				data[0] = new Integer(rs.getInt(1));
+				rs2 = connection.executeQuery(query, types, data);
 				if (rs2.next()) { out.print("*"); }
 				out.print("<img src='images/blank.gif' width='10' height='1' /></td><td></td><td><a href='taxa_panelist.jsp?GroupID=" + rs.getString(1) + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a></td></tr>");
 			}
+			statement2.close();
 		}
 
 		out.println("</table>");
