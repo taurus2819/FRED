@@ -124,8 +124,8 @@
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
 			out.println("<tr><td colspan='2' align='center' class='heading'>Data Entry Error</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
-			out.println("<tr><td><a href='" + request.getParameter("ErrorRedirect") + "&Redirect=" + request.getParameter("Redirect") + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + request.getParameter("ErrorRedirect") + "&Redirect=" + request.getParameter("Redirect") + "' class='heading'>Back to Data Entry</a></td></tr>");
-			out.println("<tr><td><a href='" + request.getParameter("Redirect") + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + request.getParameter("Redirect") + "' class='heading'>Quit</a></td></tr>");
+			out.println("<tr><td><a href='" + request.getParameter("ErrorRedirect") + "&Redirect=" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + request.getParameter("ErrorRedirect") + "&Redirect=" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "' class='heading'>Back to Data Entry</a></td></tr>");
+			out.println("<tr><td><a href='" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "' class='heading'>Quit</a></td></tr>");
 			out.println("</table>");
 			drawEndNavigation(out);
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
@@ -141,8 +141,8 @@
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
 			out.println("<tr><td colspan='2' align='center' class='heading'>Data Entry Error</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
-			out.println("<tr><td><a href='" + request.getParameter("ErrorRedirect") + "&Redirect=" + request.getParameter("Redirect") + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + request.getParameter("ErrorRedirect") + "&Redirect=" + request.getParameter("Redirect") + "' class='heading'>Back to Data Entry</a></td></tr>");
-			out.println("<tr><td><a href='" + request.getParameter("Redirect") + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + request.getParameter("Redirect") + "' class='heading'>Quit</a></td></tr>");
+			out.println("<tr><td><a href='" + URLEncoder.encode(request.getParameter("ErrorRedirect"), "UTF-8") + "&Redirect=" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + URLEncoder.encode(request.getParameter("ErrorRedirect"), "UTF-8") + "&Redirect=" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "' class='heading'>Back to Data Entry</a></td></tr>");
+			out.println("<tr><td><a href='" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "' class='heading'>Quit</a></td></tr>");
 			out.println("</table>");
 			drawEndNavigation(out);
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
@@ -159,7 +159,7 @@
 				out.println("<tr><td>" + t.getGroupName() + "&nbsp;&nbsp;</td><td>" + t.getTaxonomicName() + "&nbsp;&nbsp;</td><td>" + t.getCleanTaxonomicName() + "&nbsp;&nbsp;</td><td>" + t.getAuthor() + "</td></tr>");
 			}
 			out.println("</table>");
-			out.println("<p><a href='data_proc.jsp?Action=SubmitTaxa&SaveType=" + request.getParameter("SaveType") + "&Redirect=" + request.getParameter("Redirect") + "'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit Taxa' /></a>&nbsp;<a href='data_proc.jsp?Action=SubmitTaxa&SaveType=" + request.getParameter("SaveType") + "&Redirect=" + request.getParameter("Redirect") + "' class='boldlink'>Submit Taxa and " + request.getParameter("SaveType") + " record.</a></p>");
+			out.println("<p><a href='data_proc.jsp?Action=SubmitTaxa&SaveType=" + request.getParameter("SaveType") + "&Redirect=" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit Taxa' /></a>&nbsp;<a href='data_proc.jsp?Action=SubmitTaxa&SaveType=" + request.getParameter("SaveType") + "&Redirect=" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "' class='boldlink'>Submit Taxa and " + request.getParameter("SaveType") + " record.</a></p>");
 			out.println("<p>Note: No data has been saved yet.  You must either choose to submit the above taxa or return to the data entry form, edit and re-save</p>");
 		} catch (InvalidCredentialsException e) {
 			drawTop(out, et, request, response);
@@ -167,8 +167,8 @@
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
 			out.println("<tr><td colspan='2' align='center' class='heading'>Data Entry Error</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
-			out.println("<tr><td><a href='" + request.getParameter("ErrorRedirect") + "&Redirect=" + request.getParameter("Redirect") + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + request.getParameter("ErrorRedirect") + "&Redirect=" + request.getParameter("Redirect") + "' class='heading'>Back to Data Entry</a></td></tr>");
-			out.println("<tr><td><a href='" + request.getParameter("Redirect") + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + request.getParameter("Redirect") + "' class='heading'>Quit</a></td></tr>");
+			out.println("<tr><td><a href='" + URLEncoder.encode(request.getParameter("ErrorRedirect"), "UTF-8") + "&Redirect=" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + URLEncoder.encode(request.getParameter("ErrorRedirect"), "UTF-8") + "&Redirect=" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "' class='heading'>Back to Data Entry</a></td></tr>");
+			out.println("<tr><td><a href='" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "' class='heading'>Quit</a></td></tr>");
 			out.println("</table>");
 			drawEndNavigation(out);
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
@@ -181,8 +181,8 @@
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
 			out.println("<tr><td colspan='2' align='center' class='heading'>Data Entry Error</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
-			out.println("<tr><td><a href='" + request.getParameter("ErrorRedirect") + "&Redirect=" + request.getParameter("Redirect") + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + request.getParameter("ErrorRedirect") + "&Redirect=" + request.getParameter("Redirect") + "' class='heading'>Back to Data Entry</a></td></tr>");
-			out.println("<tr><td><a href='" + request.getParameter("Redirect") + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + request.getParameter("Redirect") + "' class='heading'>Quit</a></td></tr>");
+			out.println("<tr><td><a href='" + URLEncoder.encode(request.getParameter("ErrorRedirect"), "UTF-8") + "&Redirect=" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + URLEncoder.encode(request.getParameter("ErrorRedirect"), "UTF-8") + "&Redirect=" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "' class='heading'>Back to Data Entry</a></td></tr>");
+			out.println("<tr><td><a href='" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "' class='heading'>Quit</a></td></tr>");
 			out.println("</table>");
 			drawEndNavigation(out);
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
@@ -195,8 +195,8 @@
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
 			out.println("<tr><td colspan='2' align='center' class='heading'>Data Entry Error</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
-			out.println("<tr><td><a href='" + request.getParameter("ErrorRedirect") + "&Redirect=" + request.getParameter("Redirect") + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + request.getParameter("ErrorRedirect") + "&Redirect=" + request.getParameter("Redirect") + "' class='heading'>Back to Data Entry</a></td></tr>");
-			out.println("<tr><td><a href='" + request.getParameter("Redirect") + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + request.getParameter("Redirect") + "' class='heading'>Quit</a></td></tr>");
+			out.println("<tr><td><a href='" + URLEncoder.encode(request.getParameter("ErrorRedirect"), "UTF-8") + "&Redirect=" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + URLEncoder.encode(request.getParameter("ErrorRedirect"), "UTF-8") + "&Redirect=" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "' class='heading'>Back to Data Entry</a></td></tr>");
+			out.println("<tr><td><a href='" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "' class='heading'>Quit</a></td></tr>");
 			out.println("</table>");
 			drawEndNavigation(out);
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
@@ -211,8 +211,8 @@
 		out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
 		out.println("<tr><td colspan='2' align='center' class='heading'>Data Entry Error</td></tr>");
 		out.println("<tr><td>&nbsp;</td></tr>");
-		out.println("<tr><td><a href='" + request.getParameter("ErrorRedirect") + "&Redirect=" + request.getParameter("Redirect") + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + request.getParameter("ErrorRedirect") + "&Redirect=" + request.getParameter("Redirect") + "' class='heading'>Back to Data Entry</a></td></tr>");
-		out.println("<tr><td><a href='" + request.getParameter("Redirect") + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + request.getParameter("Redirect") + "' class='heading'>Quit</a></td></tr>");
+		out.println("<tr><td><a href='" + URLEncoder.encode(request.getParameter("ErrorRedirect"), "UTF-8") + "&Redirect=" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + URLEncoder.encode(request.getParameter("ErrorRedirect"), "UTF-8") + "&Redirect=" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "' class='heading'>Back to Data Entry</a></td></tr>");
+		out.println("<tr><td><a href='" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "' class='heading'>Quit</a></td></tr>");
 		out.println("</table>");
 		drawEndNavigation(out);
 		out.println("<table style='margin-left:20px; width:550px;' border='0'>");

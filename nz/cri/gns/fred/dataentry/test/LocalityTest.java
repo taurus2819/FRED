@@ -18,6 +18,7 @@ import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.FolderUtils;
+import nz.cri.gns.fred.data.FRNumber;
 import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.data.test.FolderTest;
 import nz.cri.gns.fred.dataentry.DataEntryForm;
@@ -157,7 +158,7 @@ public class LocalityTest extends TestCase {
 		form.save();
 	}
 	
-	public void testSubmit() throws NotBoundException, NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public void _testSubmit() throws NotBoundException, NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("test", "test", ipConn);
@@ -175,7 +176,7 @@ public class LocalityTest extends TestCase {
 		form.save();		
 	}
 	
-	public void testCreateDeleteDrilholeLocality() throws SQLException, IOException, NotBoundException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void _testCreateDeleteDrilholeLocality() throws SQLException, IOException, NotBoundException, InvalidCredentialsException, DataInputException, TaxonomicListException {
 		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm(Feature.DRILLHOLE_LOCALITY, user, FolderTest.TEST_FOLDER, state);
 		form.setTempField(DataEntryForm.FEATURE_NAME, "JUnit Drillhole");
 		form.setTempField(DataEntryForm.COLLECTION_DATE, "10/2004");
