@@ -696,37 +696,25 @@ public class SampleDE implements DataEntryForm {
 		}
 		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
 
-		out.write("<tr><td class='heading'>Collection Date</td><td></td><td><input type='text' name='CollDate' value='"
+		out.write("<tr><td class='heading' style=\"color: #FF0000\">Collection Date</td><td></td><td><input type='text' name='CollDate' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(COLLECTION_DATE))
 				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Date&Field=CollDate\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write("<tr><td class='heading'>Collectors</td><td></td><td><textarea name='Coll' cols='40' rows='2'>"
+		out.write("<tr><td class='heading' style=\"color: #FF0000\">Collectors</td><td></td><td><textarea name='Coll' cols='40' rows='2'>"
 				+ FREDUtils.noNulls(getFieldForHTML(COLLECTORS))
 				+ "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Coll\", \"Supp\", \"width=600,height=400\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
 		out.write("<tr><td class='heading'>Strat Name</td><td></td><td><input type='text' name='StratName' size='40' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(STRAT_NAME))
 				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=StratName\", \"Supp\", \"width=600,height=300\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write("<tr><td class='heading'>Fossils In Place</td><td></td><td><select name='InPlace'><option value='' "
+		out.write("<tr><td class='heading' style=\"color: #FF0000\">Fossils In Place</td><td></td><td><select name='InPlace'><option value='' "
 				+ ((getFieldForHTML(FOSSILS_IN_PLACE) == null) ? " selected" : "")
 				+ ">-- Choose --</option><option value='Yes' "
-				+ ((getFieldForHTML(FOSSILS_IN_PLACE) != null
-					&& getFieldForHTML(FOSSILS_IN_PLACE).equals("Yes"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(FOSSILS_IN_PLACE) != null && getFieldForHTML(FOSSILS_IN_PLACE).equals("Yes")) ? " selected" : "")
 				+ ">Yes</option><option value='Almost' "
-				+ ((getFieldForHTML(FOSSILS_IN_PLACE) != null
-					&& getFieldForHTML(FOSSILS_IN_PLACE).equals("Almost"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(FOSSILS_IN_PLACE) != null && getFieldForHTML(FOSSILS_IN_PLACE).equals("Almost")) ? " selected" : "")
 				+ ">Almost</option><option value='No' "
-				+ ((getFieldForHTML(FOSSILS_IN_PLACE) != null
-					&& getFieldForHTML(FOSSILS_IN_PLACE).equals("No"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(FOSSILS_IN_PLACE) != null && getFieldForHTML(FOSSILS_IN_PLACE).equals("No")) ? " selected" : "")
 				+ ">No</option><option value='Unknown' "
-				+ ((getFieldForHTML(FOSSILS_IN_PLACE) != null
-					&& getFieldForHTML(FOSSILS_IN_PLACE).equals("Unknown"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(FOSSILS_IN_PLACE) != null && getFieldForHTML(FOSSILS_IN_PLACE).equals("Unknown")) ? " selected" : "")
 				+ ">Unknown</option></select></td></tr>\n");
 		out.write("<tr><td class='heading'>Sent To</td><td></td><td><textarea name='SentTo' cols='40' rows='2'>"
 				+ FREDUtils.noNulls(getFieldForHTML(SENT_TO))
@@ -750,10 +738,7 @@ public class SampleDE implements DataEntryForm {
 		out.write("</td><td><select name='InfStartMod'><option value='-' "
 				+ ((getFieldForHTML(INF_START_MOD) == null) ? " selected" : "")
 				+ "></option><option value='?' "
-				+ ((getFieldForHTML(INF_START_MOD) != null
-					&& getFieldForHTML(INF_START_MOD).equals("?"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(INF_START_MOD) != null && getFieldForHTML(INF_START_MOD).equals("?")) ? " selected" : "")
 				+ ">?</option></select></td><td class='heading'> to </td></tr>\n");
 		out.write("<tr><td>");
 		cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
@@ -765,10 +750,7 @@ public class SampleDE implements DataEntryForm {
 		out.write("</td><td class='heading'><select name='InfStopMod'><option value='-' "
 				+ ((getFieldForHTML(INF_STOP_MOD) == null) ? " selected" : "")
 				+ "></option><option value='?' "
-				+ ((getFieldForHTML(INF_STOP_MOD) != null
-					&& getFieldForHTML(INF_STOP_MOD).equals("?"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(INF_STOP_MOD) != null && getFieldForHTML(INF_STOP_MOD).equals("?")) ? " selected" : "")
 				+ ">?</option></select></td></tr>\n");
 		out.write("</table></td></tr>\n");
 		out.write("<tr><td></td><td class='smallheading'>Known</td><td>\n");
@@ -782,10 +764,7 @@ public class SampleDE implements DataEntryForm {
 		out.write("</td><td><select name='KnwStartMod'><option value='-' "
 				+ ((getFieldForHTML(KNW_START_MOD) == null) ? " selected" : "")
 				+ "></option><option value='?' "
-				+ ((getFieldForHTML(KNW_START_MOD) != null
-					&& getFieldForHTML(KNW_START_MOD).equals("?"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(KNW_START_MOD) != null && getFieldForHTML(KNW_START_MOD).equals("?")) ? " selected" : "")
 				+ ">?</option></select></td><td class='heading'> to </td></tr>\n");
 		out.write("<tr><td>");
 		cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
@@ -797,10 +776,7 @@ public class SampleDE implements DataEntryForm {
 		out.write("</td><td class='heading'><select name='KnwStopMod'><option value='-' "
 				+ ((getFieldForHTML(KNW_STOP_MOD) == null) ? " selected" : "")
 				+ "></option><option value='?' "
-				+ ((getFieldForHTML(KNW_STOP_MOD) != null
-					&& getFieldForHTML(KNW_STOP_MOD).equals("?"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(KNW_STOP_MOD) != null && getFieldForHTML(KNW_STOP_MOD).equals("?")) ? " selected" : "")
 				+ ">?</option></select></td></tr>\n");
 		out.write("</table></td></tr>\n");
 		out.write("<tr><td class='heading'>Samples Nearby</td><td></td><td><input type='text' name='PrevSamp' size='40' value='"

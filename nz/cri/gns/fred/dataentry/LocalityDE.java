@@ -206,13 +206,6 @@ public abstract class LocalityDE implements DataEntryForm {
 						throw new DataInputException("Recollection/Sidetrack", value + " is not an existing FR Number or temporary name.  Please use the builder to select.");
 					}
 					break;
-/*				case SECURITY_TYPE :
-					try {
-						secClassID = new Integer(FREDUtils.getSecurityClass(Integer.parseInt(value), user, state));
-					} catch (Exception e) {
-						throw new DataInputException("Security Class", "Invalid");
-					}
-					break;  */
 			}
 		} catch (IOException e) {
 			throw new DataInputException();
@@ -286,7 +279,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			out.write("<tr><td class='heading' colspan='2'>Section Name</td><td><input type='text' name='FeatName' value='"
 					+ FREDUtils.noNulls(getFieldForHTML(DRILLHOLE_NAME)) + "'></td></tr>\n");
 		}
-		out.write("<tr><td class='heading'>Registration Area</td><td></td><td>");
+		out.write("<tr><td class='heading' style=\"color: #FF0000\">Registration Area</td><td></td><td>");
 		ComboDescriptor cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
 		cd.name = "RegAreaID";
 		cd.selected = getFieldForHTML(DataEntryForm.REGISTRATION_AREA);
@@ -323,7 +316,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			out.write("</td></tr>");
 		}
 		
-		out.write("<tr><td class='heading'>Location</td><td class='smallheading'>Grid Ref.</td><td><input type='text' name='GridRef' size='40' value='"
+		out.write("<tr><td class='heading' style=\"color: #FF0000\">Location</td><td class='smallheading'>Grid Ref.</td><td><input type='text' name='GridRef' size='40' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(LocalityDE.GRID_REF))
 				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Coord\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
 		ResultSet rs = conn.executeQuery("SELECT MAX(Method_ID) FROM SC.Method");

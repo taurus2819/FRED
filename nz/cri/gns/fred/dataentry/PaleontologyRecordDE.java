@@ -314,7 +314,7 @@ public class PaleontologyRecordDE extends RecordDE {
 			out.write("<tr><td class='heading' colspan='2'>Collection Comments</td><td><textarea name='CollComm' cols='40' rows='2'>"
 					+ FREDUtils.noNulls(getFieldForHTML(COLLECTION_COMMENTS))
 					+ "</textarea></td></tr>\n");
-			out.write("<tr><td class='heading' colspan='3'>Taxonomic List");
+			out.write("<tr><td class='heading' colspan='3' style=\"color: #FF0000\">Taxonomic List");
 			try {
 				if (!FolderUtils.isTaxaApproved(record.getRecordID(), user, state))
 					out.write("<br /><span class=\"smallheading\" style=\"color: #FF0000\">Some taxonomic entries listed below have not been approved and this record can not be submitted.  Click <a href=\"record_taxa_list.jsp?RecID=" + record.getRecordID() + "\" target=\"taxaList\">here</a> for more details</span>");
