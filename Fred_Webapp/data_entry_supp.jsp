@@ -1,0 +1,588 @@
+<%@page	extends="nz.cri.gns.jsp.FREDIPSysJspPage"
+		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*"
+%><%
+	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
+	Statement statement = connection.statement;
+	ResultSet rs;
+	ComboDescriptor cd;
+	User user = getUser(session);
+	int userID = user.getPersonId(), execUp;
+	String mfID = "0";
+
+
+	ExtranetTemplate et = new ExtranetTemplate();
+	et.setImageURL(new URL("http://data:8000/fred/images/fred.jpg"));
+	et.setDisplayLogin(false);
+	et.setShowGnsLogo(false);
+	et.setUseNavigationColumn(false);
+
+	drawTop(out, et, request, response);
+
+	out.println("<table style='margin-left:20px; width:550px;' border='0'>");
+	out.println("<tr><td>");
+%>
+
+<script language='JavaScript'>
+
+function replaceSingleQuote(str1) {
+	while(str1.indexOf("'") != -1) {
+		str1 = str1.replace("'", "&quot");
+	}
+	while(str1.indexOf("&quot") != -1) {
+		str1 = str1.replace("&quot", "''");
+	}
+	return str1;
+}
+
+function addData(type) {
+	with (document.form1) {
+		if (type == "Person") {
+			if (FamilyName.value == "") {
+				alert ("Please enter a value for Surname/Company");
+				FamilyName.select();
+				return false;
+			}
+			Add.value="Person";
+			return true;
+		}
+	}
+	return false;
+}
+
+function saveData(type) {
+	with (document.form1) {
+		if (type == "Coord") {
+			if (checkCoord() == 1) {
+				for (i = 0; i < CoordType.length; i++) {
+					if (CoordType[i].checked) { window.opener.form1.Coord.value = CoordType[i].value + ":"; }
+				}
+				if (CoordType[1].checked) { window.opener.form1.Coord.value = window.opener.form1.Coord.value + NZMGSheet.value.toUpperCase() + "*"; }
+				if (CoordType[2].checked) {
+					window.opener.form1.Coord.value = window.opener.form1.Coord.value + Country.value.toUpperCase() + "*";
+					window.opener.form1.Coord.value = window.opener.form1.Coord.value + North.value + "*" + East.value;
+				} else {
+					window.opener.form1.Coord.value = window.opener.form1.Coord.value + East.value + "*" + North.value;
+				}
+				window.close();
+			}
+		}
+		else if (type == "Recoll") {
+			window.opener.form1.Recoll.value = parseDropDown(SampName.value);
+			window.close();
+		}
+		else if (type == "Coll") {
+			window.opener.form1.Coll.value = window.opener.form1.Coll.value + parseDropDown(Person.value) + "\n";
+			alert(parseDropDown(Person.value) + " added to form");
+		}
+		else if (type == "Adoptor") {
+			window.opener.form1.Adoptor.value = parseDropDown(Person.value);
+			window.close();
+		}
+		else if (type == "Identifier") {
+			window.opener.form1.Identifier.value = parseDropDown(Person.value);
+			window.close();
+		}
+		else if (type == "StratName") {
+			window.opener.form1.StratName.value = StratName.value
+			window.close();
+		}
+		else if (type == "SentTo") {
+			window.opener.form1.SentTo.value = window.opener.form1.SentTo.value + parseDropDown(Group.value) + "*" + parseDropDown(Person.value) + "*" + parseDropDown(Lab.value) + "*" + Comm.value + "\n";
+			alert("Row added to form");
+		}
+		else if (type == "PrevSamp") {
+			window.opener.form1.PrevSamp.value = window.opener.form1.PrevSamp.value + parseDropDown(SampName.value) + ";";
+			alert("Sample added to form");
+		}
+		else if (type == "SampRel") {
+			if (checkRel("Samp") == 1) {
+				window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + parseDropDown(DistMod.value) + Distance.value;
+				if (DistRange.value != "") {
+					window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + " - " + DistRange.value;
+				}
+				window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + " " + parseDropDown(Rel.value) + " " + parseDropDown(SampName.value) + "\n";
+				alert("Sample added to form");
+			}
+		}
+		else if (type == "StratRel") {
+			if (checkRel("Strat") == 1) {
+				window.opener.form1.StratRel.value = window.opener.form1.StratRel.value + parseDropDown(DistMod.value) + Distance.value;
+				if (DistRange.value != "") {
+					window.opener.form1.StratRel.value = window.opener.form1.StratRel.value + " - " + DistRange.value;
+				}
+				window.opener.form1.StratRel.value = window.opener.form1.StratRel.value + " " + parseDropDown(Rel.value) + " " + StratName.value + "\n";
+				alert("Unit added to form");
+			}
+		}
+		else if (type == "SedFeat") {
+			if (Feat.value != "-") {
+				window.opener.form1.SedFeat.value = window.opener.form1.SedFeat.value + parseDropDown(Feat.value);
+				if (Abund.checked) { window.opener.form1.SedFeat.value = window.opener.form1.SedFeat.value + "*"; }
+				window.opener.form1.SedFeat.value = window.opener.form1.SedFeat.value + ";";
+				alert("Feature added to form");
+			}
+		}
+		else if (type == "Taxa") {
+			if (checkTaxa() == 1) {
+				window.opener.form1.Taxa.value = window.opener.form1.Taxa.value + parseDropDown(Group.value) + "*" + TaxaName.value + "*" + Author.value + "*" + SpecCount.value + "*" + SpecCoord.value + "*" + Comm.value + "\n";
+				alert("Taxa added to form");
+			}
+		}
+	}
+}
+
+function checkCoord() {
+	with (document.form1) {
+		if (CoordType[0].checked) {// Full NZMG
+			if (East.value.length != 7 || isNaN(East.value)) {
+				alert ("Please enter a valid easting (7 digits for Full NZMG)");
+				East.select();
+				return 0;
+			}
+			if (North.value.length != 7 || isNaN(North.value)) {
+				alert ("Please enter a valid northing (7 digits for Full NZMG)");
+				North.select();
+				return 0;
+			}
+		} else if (CoordType[1].checked) { // Trunc NZMG
+			if (NZMGSheet.value.length != 3 || NZMGSheet.value.charAt(0) <= "9" || isNaN(NZMGSheet.value.substring(1, 2))) {
+				alert ("Please enter a valid NZMG Sheet (required for Trunc NZMG)");
+				NZMGSheet.select();
+				return 0;
+			}
+			if (East.value.length < 3 || East.value.length > 4 || isNaN(East.value)) {
+				alert ("Please enter a valid easting (3 or 4 digits for Trunc NZMG)");
+				East.select();
+				return 0;
+			}
+			if (North.value.length < 3 || North.value.length > 4 || isNaN(North.value)) {
+				alert ("Please enter a valid northing (3 or 4 digits for Trunc NZMG)");
+				North.select();
+				return 0;
+			}
+			if (East.value.length != North.value.length) {
+				alert ("Please enter a valid coordinate - Easting and Northing must be the same number of digits");
+				East.select();
+				return 0;
+			}
+		} else { // Lat/Long
+			if (East.value.length == 0 || isNaN(East.value) || East.value < -180 || East.value > 180) {
+				alert ("Please enter a valid longitude (between -180 and 180 for Lat/Long)");
+				East.select();
+				return 0;
+			}
+			if (North.value.length == 0 || isNaN(North.value) || North.value < -90 || North.value > 90) {
+				alert ("Please enter a valid latitude (between -90 and 90 for Lat/Long)");
+				North.select();
+				return 0;
+			}
+		}
+	}
+	return 1;
+}
+
+function checkRel(type) {
+	with (document.form1) {
+		if (Distance.value != "" && isNaN(Distance.value)) {
+			alert ("Please enter a numeric value");
+			Distance.select();
+			return 0;
+		}
+		if (DistRange.value != "" && isNaN(DistRange.value)) {
+			alert ("Please enter a numeric value");
+			DistRange.select();
+			return 0;
+		}
+		if (DistRange.value != "" && Distance.value == "") {
+			alert ("Please enter a value for the start of the distance range or enter a single value in the first box");
+			Distance.select();
+			return 0;
+		}
+		if (Rel.value == "-") {
+			alert ("Please select a relationship");
+			Rel.select();
+			return 0;
+		}
+		if (type == "Samp" && SampName.value == "-") {
+			alert ("Please select a sample");
+			FRNum.select();
+			return 0;
+		}
+		if (type == "Strat" && StratName.value == "") {
+			alert ("Please select a rock type");
+			StratName.select();
+			return 0;
+		}
+		return 1;
+	}
+}
+
+function checkTaxa() {
+	with (document.form1) {
+		if (Group.value == "-") {
+			alert ("Please select a taxonomic group");
+			Group.focus;
+			return 0;
+		}
+		if (TaxaName.value == "") {
+			alert ("Please enter a taxonomic name");
+			TaxaName.select;
+			return 0;
+		}
+
+	}
+	return 1;
+}
+
+function parseDropDown(val) {
+	if (val == "-") {
+		return "";
+	} else {
+		return val;
+	}
+}
+
+function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
+	if (dateUnk == true) { return ""; }
+	if (dateRnd == "null") {
+		return dateDay + "-" + dateMonth + "-" + dateYear;
+	} else if (dateRnd == "Month") {
+		return dateMonth + "-" + dateYear;
+	} else {
+		return dateYear;
+	}
+}
+
+</script>
+
+<form name='form1' method='post' action='data_entry_supp.jsp'>
+<table border='0' cellspacing='3' cellpadding='0'>
+
+<%	if (request.getParameter("Type") != null) {
+		out.println("<input type='hidden' name='Type' value='" + request.getParameter("Type") + "'>");
+		out.println("<input type='hidden' name='Add' value=''>");
+
+		if (request.getParameter("Add") != null) {  //add data to lookup tables
+			if (request.getParameter("Add").equals("Person")) {
+				execUp = statement.executeUpdate("INSERT INTO SC.Person (Given_Name, Family_Name) VALUES (" + JspUtils.sqlEscape(request.getParameter("GivenName")) + ", " + JspUtils.sqlEscape(request.getParameter("FamilyName")) + ")");
+				out.println("<script language='JavaScript'>alert(\"Name added to list.  Please now select to add to form\");</script>");
+			}
+		}
+
+		if (request.getParameter("Type").equals("Coord")) {
+			out.println("<tr><td class='heading' colspan='2'>Coordinates</td></tr>");
+			out.println("<tr><td colspan='2'>Please select the type and then enter the coordinates in the appropriate text boxes.<br />For <em>Full NZMG</em> enter 7-digit eastings and northings, for <em>Trunc NZMG</em> enter the map sheet plus either 3 or 4-digit eastings and northings and for <em>Lat/Long</em> enter NZGD49 latitudes and longitudes in decimal degrees (-ve numbers for west and south).</td></tr>");
+			out.println("<tr><td>&nbsp;</td></tr>");
+			out.println("<tr><td class='heading'>Coord Type</td><td><input type='radio' name='CoordType' value='NZMG' checked>Full NZMG&nbsp&nbsp<input type='radio' name='CoordType' value='TruncNZMG'>Trunc NZMG&nbsp&nbsp<input type='radio' name='CoordType' value='LatLong'>Lat/Long</td></tr>");
+			out.println("<tr><td class='heading'>NZMG Sheet</td><td><input type='text' name='NZMGSheet'></td></tr>");
+			out.println("<tr><td class='heading'>Easting/Longitude</td><td><input type='text' name='East'></td></tr>");
+			out.println("<tr><td class='heading'>Northing/Latitude</td><td><input type='text' name='North'></td></tr>");
+			out.print("<tr><td class='heading'>Country</td><td>");
+			cd = new ComboDescriptor("MIS.Country", "Country_Code", "Country_Name");
+			cd.name = "Country";
+			cd.prompt = "-- Choose --";
+			cd.orderBy = "Country_Name";
+			cd.selected = "NZ";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.print("</td></tr></table>");
+			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+			out.println("<tr><td><a href='#' onClick='saveData(\"Coord\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"Coord\");return false;' class='heading'>Add to Main Form</a></td></tr>");
+		}
+
+		else if (request.getParameter("Type").equals("Recoll")) {
+			out.println("<tr><td class='heading' colspan='2'>Recollection</td></tr>");
+			out.println("<tr><td colspan='2'>Please select a masterfile area from the drop-down list.  The Sample list will then be populated with all submitted samples plus working samples which you have access to in that masterfile area.</td></tr>");
+			out.println("<tr><td>&nbsp;</td></tr>");
+			out.print("<tr><td class='heading'>Masterfile Area</td><td>");
+			cd = new ComboDescriptor("Masterfile", "Masterfile_ID", "Name");
+			cd.name = "MF";
+			cd.prompt = "-- Choose --";
+			cd.orderBy = "Masterfile_ID";
+			cd.tagParams = "onChange='form1.submit();'";
+			if (request.getParameter("MF") != null) {
+				cd.selected = request.getParameter("MF");
+				mfID = request.getParameter("MF");
+			}
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.println("</td></tr>");
+			out.print("<tr><td class='heading'>Sample</td><td>");
+			cd = new ComboDescriptor("Feature_Security_View", "Sample_Name", "Sample_Name");
+			cd.name = "SampName";
+			cd.prompt = "-- Choose --";
+			cd.join = "Masterfile_ID = " + mfID + " AND (Status = 'approved' OR (Folder_Type = 'personal' AND User_ID = " + userID + "))";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.print("</td></tr></table>");
+			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+			out.println("<tr><td><a href='#' onClick='saveData(\"Recoll\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"Recoll\");return false;' class='heading'>Add to Main Form</a></td></tr>");
+		}
+
+		else if (request.getParameter("Type").equals("Coll")) {
+			out.println("<tr><td class='heading' colspan='2'>Collectors</td></tr>");
+			out.println("<tr><td colspan='2'>Select a person/company from the drop-down list.  New collectors can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button<br />You may add multiple collectors by clicking the Add To Main Form icon between each collector and then Close to end.</td></tr>");
+			out.println("<tr><td>&nbsp;</td></tr>");
+			out.print("<tr><td class='heading'>Person/Company</td><td>");
+			cd = new ComboDescriptor("SC.Person_View", "Name", "Name");
+			cd.name = "Person";
+			cd.prompt = "-- Choose --";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.print("</td></tr>");
+			out.println("<tr><td><em>OR</em></td></tr>");
+			out.println("<tr><td class='heading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
+			out.println("<tr><td class='heading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
+			out.println("<input type='submit' value='Add' onClick='return addData(\"Person\");'>");
+			out.println("</td></tr></table>");
+			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+			out.println("<tr><td><a href='#' onClick='saveData(\"Coll\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"Coll\");return false;' class='heading'>Add to Main Form</a></td></tr>");
+		}
+
+		else if (request.getParameter("Type").equals("Adoptor")) {
+			out.println("<tr><td class='heading' colspan='2'>Adoptor</td></tr>");
+			out.println("<tr><td colspan='2'>Select a person/company from the drop-down list.  New adoptors can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button.</td></tr>");
+			out.println("<tr><td>&nbsp;</td></tr>");
+			out.print("<tr><td class='heading'>Person</td><td>");
+			cd = new ComboDescriptor("SC.Person_View", "Name", "Name");
+			cd.name = "Person";
+			cd.prompt = "-- Choose --";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.print("</td></tr>");
+			out.println("<tr><td><em>OR</em></td></tr>");
+			out.println("<tr><td class='heading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
+			out.println("<tr><td class='heading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
+			out.println("<input type='submit' value='Add Person' onClick='return addData(\"Person\");'>");
+			out.println("</td></tr></table>");
+			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+			out.println("<tr><td><a href='#' onClick='saveData(\"Adoptor\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"Adoptor\");return false;' class='heading'>Add to Main Form</a></td></tr>");
+		}
+
+		else if (request.getParameter("Type").equals("Identifier")) {
+			out.println("<tr><td class='heading' colspan='2'>Identifier</td></tr>");
+			out.println("<tr><td colspan='2'>Select a person/company from the drop-down list.  New identifiers can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button.</td></tr>");
+			out.println("<tr><td>&nbsp;</td></tr>");
+			out.print("<tr><td class='heading'>Person</td><td>");
+			cd = new ComboDescriptor("SC.Person_View", "Name", "Name");
+			cd.name = "Person";
+			cd.prompt = "-- Choose --";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.print("</td></tr>");
+			out.println("<tr><td><em>OR</em></td></tr>");
+			out.println("<tr><td class='heading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
+			out.println("<tr><td class='heading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
+			out.println("<input type='submit' value='Add Person' onClick='return addData(\"Person\");'>");
+			out.println("</td></tr></table>");
+			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+			out.println("<tr><td><a href='#' onClick='saveData(\"Identifier\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"Identifier\");return false;' class='heading'>Add to Main Form</a></td></tr>");
+		}
+
+		else if (request.getParameter("Type").equals("StratName")) {
+			out.println("<tr><td class='heading' colspan='2'>Stratigraphic Name</td></tr>");
+			out.println("<tr><td colspan='2'>Please enter a stratigraphic unit name in the text box.  You can select a unit from the NZ StratLex drop-down box if appropriate.</td></tr>");
+			out.println("<tr><td>&nbsp;</td></tr>");
+			out.print("<tr><td class='heading'>NZ StratLex</td><td>");
+			cd = new ComboDescriptor("SL.Strat_Unit", "SU_Name", "SU_Name");
+			cd.name = "StratLex";
+			cd.prompt = "-- Choose --";
+			cd.tagParams = "onChange='form1.StratName.value = parseDropDown(StratLex.value);'";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.print("</td></tr>");
+			out.println("<tr><td class='heading'>Stratigraphic Name</td><td><input type='text' name='StratName' size='40'></td></tr>");
+			out.println("</table>");
+			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+			out.println("<tr><td><a href='#' onClick='saveData(\"StratName\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"StratName\");return false;' class='heading'>Add to Main Form</a></td></tr>");
+		}
+
+		else if (request.getParameter("Type").equals("SentTo")) {
+			out.println("<tr><td class='heading' colspan='2'>Sent To</td></tr>");
+			out.println("<tr><td colspan='2'>Please select a fossil group and then one or both of a person and lab.<br />You may add enter multiple rows by clicking the Add To Main Form icon between each row and then Close to end.</td></tr>");
+			out.println("<tr><td>&nbsp;</td></tr>");
+			out.print("<tr><td class='heading'>Fossil Group</td><td>");
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, "Group", null, null, null, "Lookup", "Name", "Name", null, "FieldName = 'FossilGroup'");
+			out.print("</td></tr>");
+			out.print("<tr><td class='heading'>Person</td><td>");
+			cd = new ComboDescriptor("SC.Person_View", "Name", "Name");
+			cd.name = "Person";
+			cd.prompt = "-- Choose --";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.print("</td></tr>");
+			out.println("<tr><td><em>OR</em></td></tr>");
+			out.println("<tr><td class='heading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
+			out.println("<tr><td class='heading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
+			out.println("<input type='submit' value='Add Person' onClick='return addData(\"Person\");'>");
+			out.print("<tr><td class='heading'>Lab</td><td>");
+			cd = new ComboDescriptor("SC.Lab", "Lab_Name", "Lab_Name");
+			cd.name = "Lab";
+			cd.prompt = "-- Choose --";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.println("<tr><td class='heading'>Comments</td><td><textarea name='Comm' rows='3' cols='40'></textarea></td></tr>");
+			out.println("</table>");
+			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+			out.println("<tr><td><a href='#' onClick='saveData(\"SentTo\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"SentTo\");return false;' class='heading'>Add to Main Form</a></td></tr>");
+		}
+
+		else if (request.getParameter("Type").equals("PrevSamp")) {
+			out.println("<tr><td class='heading' colspan='2'>Previous Samples Nearby</td></tr>");
+			out.println("<tr><td colspan='2'>Please select a masterfile area from the drop-down list.  The Sample list will then be populated with all submitted samples plus working samples which you have access to in that masterfile area.<br />You may add multiple samples by clicking the Add To Main Form icon between each sample and then Close to end.</td></tr>");
+			out.println("<tr><td>&nbsp;</td></tr>");
+			out.print("<tr><td class='heading'>Masterfile Area</td><td>");
+			cd = new ComboDescriptor("Masterfile", "Masterfile_ID", "Name");
+			cd.name = "MF";
+			cd.prompt = "-- Choose --";
+			cd.orderBy = "Masterfile_ID";
+			cd.tagParams = "onChange='form1.submit();'";
+			if (request.getParameter("MF") != null) {
+				cd.selected = request.getParameter("MF");
+				mfID = request.getParameter("MF");
+			}
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.println("</td></tr>");
+			out.print("<tr><td class='heading'>Sample</td><td>");
+			cd = new ComboDescriptor("Feature_Security_View", "Sample_Name", "Sample_Name");
+			cd.name = "SampName";
+			cd.prompt = "-- Choose --";
+			cd.join = "Masterfile_ID = " + mfID + " AND (Status = 'approved' OR (Folder_Type = 'personal' AND User_ID = " + userID + "))";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.print("</td></tr></table>");
+			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+			out.println("<tr><td><a href='#' onClick='saveData(\"PrevSamp\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"PrevSamp\");return false;' class='heading'>Add to Main Form</a></td></tr>");
+		}
+
+		else if (request.getParameter("Type").equals("SampRel")) {
+			out.println("<tr><td class='heading' colspan='2'>Sample Relationships</td></tr>");
+			out.println("<tr><td colspan='2'>Please select a masterfile area from the drop-down list.  The Sample list will then be populated with all submitted samples plus working samples which you have access to in that masterfile area.  Then select a relationship type enter an optional distance (in metres).<br />You may add multiple samples by clicking the Add To Main Form icon between each sample and then Close to end.</td></tr>");
+			out.println("<tr><td>&nbsp;</td></tr>");
+			out.print("<tr><td class='heading'>Masterfile Area</td><td>");
+			cd = new ComboDescriptor("Masterfile", "Masterfile_ID", "Name");
+			cd.name = "MF";
+			cd.prompt = "-- Choose --";
+			cd.orderBy = "Masterfile_ID";
+			cd.tagParams = "onChange='form1.submit();'";
+			if (request.getParameter("MF") != null) {
+				cd.selected = request.getParameter("MF");
+				mfID = request.getParameter("MF");
+			}
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.println("<tr><td class='heading'>Distance&nbsp;(m)</td>");
+			out.println("<td class='heading'><select name='DistMod'><option value='-' selected></option><option value='c. '>c.</option></select>&nbsp;&nbsp;");
+			out.println("<input type='text' name='Distance' />&nbsp;-&nbsp;");
+			out.println("<input type='text' name='DistRange' /></td></tr>");
+			out.print("<tr><td class='heading'>Relationship</td><td>");
+			cd = new ComboDescriptor("Lookup", "Name", "Name");
+			cd.name = "Rel";
+			cd.prompt = "-- Choose --";
+			cd.orderBy = "Lookup_ID";
+			cd.join = "FieldName = 'SampRel' AND Name <> 'nearby'";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.println("</td></tr>");
+			out.print("<tr><td class='heading'>Sample</td><td>");
+			cd = new ComboDescriptor("Feature_Security_View", "Sample_Name", "Sample_Name");
+			cd.name = "SampName";
+			cd.prompt = "-- Choose --";
+			cd.join = "Masterfile_ID = " + mfID + " AND (Status = 'approved' OR (Folder_Type = 'personal' AND User_ID = " + userID + "))";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.print("</td></tr></table>");
+			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+			out.println("<tr><td><a href='#' onClick='saveData(\"SampRel\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"SampRel\");return false;' class='heading'>Add to Main Form</a></td></tr>");
+		}
+
+		else if (request.getParameter("Type").equals("StratRel")) {
+			out.println("<tr><td class='heading' colspan='2'>Stratigraphic Relationships</td></tr>");
+			out.println("<tr><td colspan='2'>Please select a relationship type and enter an optional distance or range of distances (in metres).  Enter a stratigraphic unit name in the text box.  You can select a unit from the NZ StratLex drop-down box if appropriate.<br />You may add multiple units by clicking the Add To Main Form icon between each unit and then Close to end.</td></tr>");
+			out.println("<tr><td>&nbsp;</td></tr>");
+			out.println("<tr><td class='heading'>Distance&nbsp;(m)</td>");
+			out.println("<td class='heading'><select name='DistMod'><option value='-' selected></option><option value='c. '>c.</option></select>&nbsp;&nbsp;");
+			out.println("<input type='text' name='Distance' />&nbsp;-&nbsp;");
+			out.println("<input type='text' name='DistRange' /></td></tr>");
+			out.print("<tr><td class='heading'>Relationship</td><td>");
+			cd = new ComboDescriptor("Lookup", "Name", "Name");
+			cd.name = "Rel";
+			cd.prompt = "-- Choose --";
+			cd.orderBy = "Lookup_ID";
+			cd.join = "FieldName = 'StratRel'";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.print("<tr><td class='heading'>NZ StratLex</td><td>");
+			cd = new ComboDescriptor("SL.Strat_Unit", "SU_Name", "SU_Name");
+			cd.name = "StratLex";
+			cd.prompt = "-- Choose --";
+			cd.tagParams = "onChange='form1.StratName.value = parseDropDown(StratLex.value);'";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.println("</td></tr>");
+			out.println("<tr><td class='heading'>Stratigraphic Name</td><td><input type='text' name='StratName' size='40'></td></tr>");
+			out.print("</table>");
+			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+			out.println("<tr><td><a href='#' onClick='saveData(\"StratRel\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"StratRel\");return false;' class='heading'>Add to Main Form</a></td></tr>");
+		}
+
+		else if (request.getParameter("Type").equals("SedFeat")) {
+			out.println("<tr><td class='heading' colspan='2'>Additional Features</td></tr>");
+			out.println("<tr><td colspan='2'>Please select a feature from the list.  Check the Abundant box to indicate the feature is abundant.<br />You may add multiple features by clicking the Add To Main Form icon between each feature and then Close to end.</td></tr>");
+			out.println("<tr><td>&nbsp;</td></tr>");
+			out.print("<tr><td class='heading'>Feature</td><td>");
+			cd = new ComboDescriptor("Lookup", "Name", "Code || ': ' || Name");
+			cd.name = "Feat";
+			cd.prompt = "-- Choose --";
+			cd.orderBy = "Code";
+			cd.join = "FieldName = 'SedFeature'";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.println("</td></tr>");
+			out.println("<tr><td class='heading'>Abundant</td><td><input type='checkbox' name='Abund'></td></tr>");
+			out.print("</table>");
+			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+			out.println("<tr><td><a href='#' onClick='saveData(\"SedFeat\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"SedFeat\");return false;' class='heading'>Add to Main Form</a></td></tr>");
+		}
+
+		else if (request.getParameter("Type").equals("Taxa")) {
+			String groupID = "0";
+			out.println("<tr><td class='heading' colspan='2'>Taxonomic Details</td></tr>");
+			out.println("<tr><td colspan='2'>Please select a Taxonomic Group from the drop-down list.  The Taxonomic Name List will then be filled with appropriate taxa.  Either choose from this list or enter a new name in the Taxonomic Name and Author (optional) boxes.<br />Note: new taxonomic names will be entered into the database as provisional and will be assesed by members of the taxonomic panel.  You will not be able to submit your data until the name has been approved.<br />You may add multiple taxa by clicking the Add To Main Form icon between each taxa and then Close to end.</td></tr>");
+			out.println("<tr><td>&nbsp;</td></tr>");
+			out.print("<tr><td class='heading'>Group</td><td>");
+			cd = new ComboDescriptor("Lookup", "Name", "Name");
+			cd.name = "Group";
+			cd.prompt = "-- Choose --";
+			cd.orderBy = "Lookup_ID";
+			cd.join = "FieldName = 'TaxaGroup'";
+			cd.tagParams = "onChange='form1.submit();'";
+			if (request.getParameter("Group") != null) {
+				cd.selected = request.getParameter("Group");
+				rs = statement.executeQuery("SELECT Lookup_ID FROM Lookup WHERE Name = " + JspUtils.sqlEscape(request.getParameter("Group")) + " AND FieldName = 'TaxaGroup'");
+				if (rs.next()) { groupID = rs.getString(1); }
+			}
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.println("</td></tr>");
+			out.print("<tr><td class='heading'>Taxonomic Name List</td><td>");
+			cd = new ComboDescriptor("Taxonomic_Lookup", "Taxonomic_Name", "Taxonomic_Name");
+			cd.name = "TaxaList";
+			cd.prompt = "-- Choose --";
+			cd.tagParams = "onChange='form1.TaxaName.value = parseDropDown(TaxaList.value);'";
+			cd.join = "Group_ID = " + groupID + " AND Status IN ('approved', 'provisional')";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.println("</td></tr>");
+			out.println("<tr><td class='heading'>Taxonomic Name</td><td><input type='text' name='TaxaName' size='40'></td></tr>");
+			out.println("<tr><td class='heading'>Author</td><td><input type='text' name='Author' size='40'></td></tr>");
+			out.println("<tr><td class='heading'>Specimen Count</td><td><input type='text' name='SpecCount' size='40'></td></tr>");
+			out.println("<tr><td class='heading'>Specimen Coordinates</td><td><input type='text' name='SpecCoord' size='40'></td></tr>");
+			out.println("<tr><td class='heading'>Comments</td><td><textarea name='Comm' cols='40' rows='3'></textarea></td></tr>");
+			out.println("</table>");
+			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+			out.println("<tr><td><a href='#' onClick='saveData(\"Taxa\");return false;' title='Add'><img src='images/put.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='#' onClick='saveData(\"Taxa\");return false;' class='heading'>Add to Main Form</a></td></tr>");
+		}
+	}
+
+	out.println("<tr><td><a href='javascript: window.close();' title='close'><img src='images/close.gif' height='20' width='20' border='0' /></a>&nbsp;&nbsp;</td><td><a href='javascript: window.close();' class='heading'>Close</a></td></tr>");
+	out.println("</table></form>");
+
+	out.println("</td></tr></table>");
+	drawBottom(out, et);
+
+%>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+    <context-param>
+	<param-name>rmiServer</param-name>
+	<param-value>falcon</param-value>
+    </context-param>
+    <context-param>
+	<param-name>dbConnect</param-name>
+	<param-value>raptor:1521:gns</param-value>
+    </context-param>
+    <context-param>
+	<param-name>rmiBinding</param-name>
+	<param-value>OnlineUtils</param-value>
+    </context-param>
+    <context-param>
+	<param-name>dbUser</param-name>
+	<param-value>mis</param-value>
+    </context-param>
+
+    <session-config>
+	<session-timeout>10</session-timeout>
+    </session-config>
+</web-app>
