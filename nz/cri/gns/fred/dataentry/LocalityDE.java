@@ -270,16 +270,18 @@ public abstract class LocalityDE implements DataEntryForm {
 				+ "</textarea></td></tr>\n");
 		out.write(
 			"<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
-
-		out.write("<tr><td class='heading' colspan='2'>Attached Files/Images<br /><span class='smalltext'>Click <a href='binary_data_entry.jsp?ID=" + feature.getFeatureID() + "&RecType=" + feature.getFeatureType() + "&FoldID=" + folder.getFolderID() + " 'target='fredBinary'>here</a> to add/edit</span></td><td>");
-		try {
-			if (feature != null && feature.getMetadataRecordsCount() > 0) {	
-				MetadataRecord[] mr = feature.getMetadataRecords();
-				for (int i = 0; i < mr.length; i++)
-					out.write(mr[i].getTitle() + "<br />");
-			}
-		} catch (Exception e) {}
-		out.write("</td></tr>");
+			
+		if (feature != null) {
+			out.write("<tr><td class='heading' colspan='2'>Attached Files/Images<br /><span class='smalltext'>Click <a href='binary_data_entry.jsp?ID=" + feature.getFeatureID() + "&RecType=" + feature.getFeatureType() + "&FoldID=" + folder.getFolderID() + " 'target='fredBinary'>here</a> to add/edit</span></td><td>");
+			try {
+				if (feature != null && feature.getMetadataRecordsCount() > 0) {	
+					MetadataRecord[] mr = feature.getMetadataRecords();
+					for (int i = 0; i < mr.length; i++)
+						out.write(mr[i].getTitle() + "<br />");
+				}
+			} catch (Exception e) {}
+			out.write("</td></tr>");
+		}
 		
 		out.write(
 			"<tr><td class='heading'>Location</td><td class='smallheading'>Grid Ref.</td><td><input type='text' name='GridRef' size='40' value='"
