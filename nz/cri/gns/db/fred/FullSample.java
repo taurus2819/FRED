@@ -220,7 +220,6 @@ public class FullSample {
 			while (rs.next()) {
 				rec.add(new KeyValueObject(rs.getString(1), rs.getString(2)));
 			}
-			rs.close();
 			values[50] = rec;
 			rs.close();
 			conn.releaseStatement();
@@ -230,7 +229,7 @@ public class FullSample {
 		}
 	}
 
-	private boolean isAllowedToView(int field) {
+	private boolean isAllowedField(int field) {
 		if (authenticated) {
 			return true;
 		}
@@ -250,6 +249,7 @@ public class FullSample {
 			case YARD_MAP_SHEET:
 			case YARD_SERIAL_NUMBER:
 			case YARD_RECOLLECTION_NUMBER:
+			case DRILLHOLE_DEPTH:
 			case MASTERFILE_ID:
 			case MASTERFILE_NAME:
 			case AUDIT_ID:
@@ -263,7 +263,7 @@ public class FullSample {
 			case NZMG_NORTH:
 			case METHOD:
 			case ACCURACY:
-				return true;
+			return true;
 		}
 		return false;
 	}
@@ -273,7 +273,7 @@ public class FullSample {
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an int.
 	 */
 	public int getAsInt(int field) {
-		if (values.length < field || !isAllowedToView(field))
+		if (values.length < field || !isAllowedField(field))
 			throw new IllegalArgumentException("Invalid field");
 		try {
 			return ((Integer) values[field]).intValue();
@@ -289,7 +289,7 @@ public class FullSample {
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an double.
 	 */
 	public double getAsDouble(int field) {
-		if (values.length < field || !isAllowedToView(field))
+		if (values.length < field || !isAllowedField(field))
 			throw new IllegalArgumentException("Invalid field");
 		try {
 			return ((Double) values[field]).doubleValue();
@@ -305,7 +305,7 @@ public class FullSample {
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an Date.
 	 */
 	public java.util.Date getAsDate(int field) {
-		if (values.length < field || !isAllowedToView(field))
+		if (values.length < field || !isAllowedField(field))
 			throw new IllegalArgumentException("Invalid field");
 		try {
 			return (java.util.Date) values[field];
@@ -321,7 +321,7 @@ public class FullSample {
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a Vector.
 	 */
 	public Vector getAsVector(int field) {
-		if (values.length < field)
+		if (values.length < field || !isAllowedField(field))
 			throw new IllegalArgumentException("Invalid field");
 		Object thing = values[field];
 		try {
@@ -338,7 +338,7 @@ public class FullSample {
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a String.
 	 */
 	public String getAsString(int field) throws IOException, SQLException {
-		if (values.length < field || !isAllowedToView(field))
+		if (values.length < field || !isAllowedField(field))
 			throw new IllegalArgumentException("Invalid field");
 		if (values[field] == null)
 			return null;
@@ -350,7 +350,7 @@ public class FullSample {
 	 * @throws IllegalArgumentException if the field doesn't exist.
 	 */
 	public Object get(int field) {
-		if (values.length < field || !isAllowedToView(field))
+		if (values.length < field || !isAllowedField(field))
 			throw new IllegalArgumentException("Invalid field");
 		return values[field];
 	}
@@ -385,7 +385,6 @@ public class FullSample {
 	/**
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
-	 * @throws AccessDeniedException where user not allowed access to this row
 	 */
 	public static FullSample getFullSample(int id, User user, PageState state)
 		throws SQLException, IOException {
@@ -395,7 +394,7 @@ public class FullSample {
 			f = new FullSample(id, state);
 		}
 		if (f.get(SECURITY_CLASS_ID) != null
-			&& !FREDUtils.isAllowedToView(
+			&& !FREDUtils.isAllowedRecord(
 				user,
 				f.getAsInt(SECURITY_CLASS_ID),
 				state)) {

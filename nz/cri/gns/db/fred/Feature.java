@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Vector;
 
+import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.pool.Finder;
 import nz.cri.gns.db.pool.Pool;
@@ -23,7 +25,9 @@ public class Feature implements FREDConstants {
 	public static final int FEATURE_ID = 0;
 	public static final int SITE_ID = 1;
 	public static final int AUDIT_ID = 2;
+	public static final int SECURITY_CLASS_ID = 20;
 	public static final int MASTERFILE_ID = 3;
+	public static final int MASTERFILE_NAME = 21;
 	public static final int FIELD_NUMBER = 4;
 	public static final int LOCALITY = 5;
 	public static final int REG_AREA_ID = 6;
@@ -40,13 +44,15 @@ public class Feature implements FREDConstants {
 	public static final int DATUM_ELEVATION = 17;
 	public static final int START_DEPTH = 18;
 	public static final int FINISH_DEPTH = 19;
+	public static final int SAMPLE = 22;
 
 	private PageState state;
 	private static Pool featurePool = new Pool();
 	private int id;
-	private Object[] values = new Object[20];
+	private Object[] values = new Object[23];
 	private int[] types = { Types.NUMERIC };
 	private Object[] data = new Object[1];
+	private boolean authenticated = false;
 
 	/**
 	 * Cannot be called directly. use static getContactPerson method instead.
@@ -75,26 +81,70 @@ public class Feature implements FREDConstants {
 					"Cannot find record in database with this id: " + this.id);
 			}
 			values[0] = new Integer(rs.getInt(1));
-			values[1] = ((rs.getString(2) != null) ? new Integer(rs.getInt(2)) : null);
+			values[1] =
+				((rs.getString(2) != null) ? new Integer(rs.getInt(2)) : null);
 			values[2] =
 				((rs.getString(3) != null) ? new Integer(rs.getInt(3)) : null);
-			values[3] = ((rs.getString(4) != null) ? new Integer(rs.getInt(4)) : null);
+			values[3] =
+				((rs.getString(4) != null) ? new Integer(rs.getInt(4)) : null);
 			values[4] = rs.getString(5);
 			values[5] = rs.getString(6);
-			values[6] = ((rs.getString(7) != null) ? new Integer(rs.getInt(7)) : null);
+			values[6] =
+				((rs.getString(7) != null) ? new Integer(rs.getInt(7)) : null);
 			values[7] = rs.getString(8);
 			values[8] = rs.getString(9);
-			values[9] = rs.getDate(10);
+			values[9] = rs.getString(10);
 			values[10] = rs.getString(11);
 			values[11] = rs.getDate(12);
 			values[12] = rs.getString(13);
 			values[13] = rs.getDate(14);
 			values[14] = rs.getString(15);
-			values[15] = ((rs.getString(16) != null) ? new Integer(rs.getInt(16)) : null);
+			values[15] =
+				((rs.getString(16) != null)
+					? new Integer(rs.getInt(16))
+					: null);
 			values[16] = rs.getString(17);
-			values[17] = ((rs.getString(18) != null) ? new Double(rs.getDouble(18)) : null);
-			values[18] = ((rs.getString(19) != null) ? new Double(rs.getDouble(19)) : null);
-			values[19] = ((rs.getString(20) != null) ? new Double(rs.getDouble(20)) : null);
+			values[17] =
+				((rs.getString(18) != null)
+					? new Double(rs.getDouble(18))
+					: null);
+			values[18] =
+				((rs.getString(19) != null)
+					? new Double(rs.getDouble(19))
+					: null);
+			values[19] =
+				((rs.getString(20) != null)
+					? new Double(rs.getDouble(20))
+					: null);
+			rs.close();
+			query =
+				"SELECT Security_Class_ID FROM Audit_Table WHERE Audit_ID = ?";
+			data[0] = (Integer) values[2];
+			rs = conn.executeQuery(query, types, data);
+			if (rs.next()) {
+				values[20] =
+					((rs.getString(1) != null)
+						? new Integer(rs.getInt(1))
+						: null);
+			}
+			rs.close();
+			if (values[3] != null) {
+				query = "SELECT Name FROM Folder WHERE Folder_ID = ?";
+				data[0] = (Integer) values[3];
+				rs = conn.executeQuery(query, types, data);
+				if (rs.next()) {
+					values[21] = rs.getString(1);
+				}
+				rs.close();
+			}
+			query = "SELECT Sample_ID FROM Sample_All_View WHERE Status = 'approved' AND Feature_ID = ?";
+			data[0] = values[0];
+			rs = conn.executeQuery(query, types, data);
+			Vector rec = new Vector();
+			while (rs.next()) {
+				rec.add(new Integer(rs.getInt(1)));
+			}
+			values[22] = rec;
 			rs.close();
 			conn.releaseStatement();
 		} catch (SQLException _e) {
@@ -103,17 +153,38 @@ public class Feature implements FREDConstants {
 		}
 	}
 
+	private boolean isAllowedField(int field) {
+		if (authenticated) {
+			return true;
+		}
+		switch (field) {
+			case FEATURE_ID :
+			case FEATURE_TYPE :
+			case FEATURE_NAME :
+			case MASTERFILE_ID :
+			case MASTERFILE_NAME :
+			case AUDIT_ID :
+			case SECURITY_CLASS_ID :
+			case SITE_ID :
+			case SAMPLE :
+				return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Attempts to return the given field as an int.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an int.
 	 */
 	public int getAsInt(int field) {
-		if (values.length < field)
+		if (values.length < field || !isAllowedField(field))
 			throw new IllegalArgumentException("Invalid field");
 		try {
 			return ((Integer) values[field]).intValue();
 		} catch (Exception _e) {
-			throw new IllegalArgumentException("Field cannot be returned as an int");
+			throw new IllegalArgumentException(
+				"Field cannot be returned as an int, class is "
+					+ values[field].getClass().getName());
 		}
 	}
 
@@ -122,12 +193,14 @@ public class Feature implements FREDConstants {
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an double.
 	 */
 	public double getAsDouble(int field) {
-		if (values.length < field)
+		if (values.length < field || !isAllowedField(field))
 			throw new IllegalArgumentException("Invalid field");
 		try {
 			return ((Double) values[field]).doubleValue();
 		} catch (Exception _e) {
-			throw new IllegalArgumentException("Field cannot be returned as an double");
+			throw new IllegalArgumentException(
+				"Field cannot be returned as an double, class is "
+					+ values[field].getClass().getName());
 		}
 	}
 
@@ -136,15 +209,14 @@ public class Feature implements FREDConstants {
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an Date.
 	 */
 	public java.util.Date getAsDate(int field) {
-		if (values.length < field)
+		if (values.length < field || !isAllowedField(field))
 			throw new IllegalArgumentException("Invalid field");
-		Object thing = values[field];
 		try {
-			return (java.util.Date) thing;
+			return (java.util.Date) values[field];
 		} catch (Exception _e) {
 			throw new IllegalArgumentException(
 				"Field cannot be returned as a Date, class is "
-					+ thing.getClass().getName());
+					+ values[field].getClass().getName());
 		}
 	}
 
@@ -152,8 +224,8 @@ public class Feature implements FREDConstants {
 	 * Attempts to return the given field as a String.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a String.
 	 */
-	public String getAsString(int field) {
-		if (values.length < field)
+	public String getAsString(int field) throws IOException, SQLException {
+		if (values.length < field || !isAllowedField(field))
 			throw new IllegalArgumentException("Invalid field");
 		if (values[field] == null)
 			return null;
@@ -161,11 +233,28 @@ public class Feature implements FREDConstants {
 	}
 
 	/**
+	 * Attempts to return the given field as a Vector.
+	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a Vector.
+	 */
+	public Vector getAsVector(int field) {
+		if (values.length < field || !isAllowedField(field))
+			throw new IllegalArgumentException("Invalid field");
+		Object thing = values[field];
+		try {
+			return (Vector) thing;
+		} catch (Exception _e) {
+			throw new IllegalArgumentException(
+				"Field cannot be returned as a Vector, class is "
+					+ thing.getClass().getName());
+		}
+	}
+	
+	/**
 	 * Returns the given field as an object. Use if all else fails.
 	 * @throws IllegalArgumentException if the field doesn't exist.
 	 */
 	public Object get(int field) {
-		if (values.length < field)
+		if (values.length < field || !isAllowedField(field))
 			throw new IllegalArgumentException("Invalid field");
 		return values[field];
 	}
@@ -179,9 +268,7 @@ public class Feature implements FREDConstants {
 			this.id = id;
 		}
 		public boolean isObject(Object o) {
-			return (
-				o instanceof Feature
-					&& ((Feature) o).id == this.id);
+			return (o instanceof Feature && ((Feature) o).id == this.id);
 		}
 
 	}
@@ -204,16 +291,26 @@ public class Feature implements FREDConstants {
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
-	public static Feature getFeature(int id, PageState state)
+	public static Feature getFeature(int id, User user, PageState state)
 		throws SQLException, IOException {
-
-		Feature f =
-			(Feature) featurePool.retrieve(new FeatureFinder(id));
-		if (f != null) {
-			return f;
-		} else {
-			return new Feature(id, state);
+		Feature f = (Feature) featurePool.retrieve(new FeatureFinder(id));
+		if (f == null) {
+			f = new Feature(id, state);
 		}
+		if (f.get(SECURITY_CLASS_ID) != null
+			&& !FREDUtils.isAllowedRecord(
+				user,
+				f.getAsInt(SECURITY_CLASS_ID),
+				state)) {
+			f.authenticated = false;
+		} else {
+			f.authenticated = true;
+		}
+		return f;
+	}
+
+	public boolean isAuthenticated() {
+		return authenticated;
 	}
 
 	public String toString() {

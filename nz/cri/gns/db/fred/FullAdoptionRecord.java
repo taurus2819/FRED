@@ -270,11 +270,11 @@ public class FullAdoptionRecord {
 		if (a.get(FEATURE_SECURITY_CLASS_ID) != null
 			&& a.get(SECURITY_CLASS_ID) != null
 			&& (!FREDUtils
-				.isAllowedToView(
+				.isAllowedRecord(
 					user,
 					a.getAsInt(FEATURE_SECURITY_CLASS_ID),
 					state)
-				|| !FREDUtils.isAllowedToView(
+				|| !FREDUtils.isAllowedRecord(
 					user,
 					a.getAsInt(SECURITY_CLASS_ID),
 					state))) {

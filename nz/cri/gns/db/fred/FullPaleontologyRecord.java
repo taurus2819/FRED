@@ -327,11 +327,11 @@ public class FullPaleontologyRecord {
 		if (p.get(FEATURE_SECURITY_CLASS_ID) != null
 			&& p.get(SECURITY_CLASS_ID) != null
 			&& (!FREDUtils
-				.isAllowedToView(
+				.isAllowedRecord(
 					user,
 					p.getAsInt(FEATURE_SECURITY_CLASS_ID),
 					state)
-				|| !FREDUtils.isAllowedToView(
+				|| !FREDUtils.isAllowedRecord(
 					user,
 					p.getAsInt(SECURITY_CLASS_ID),
 					state))) {

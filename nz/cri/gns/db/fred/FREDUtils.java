@@ -39,7 +39,7 @@ public class FREDUtils implements FREDConstants {
 			state.getContext());
 	}
 
-	public static boolean isAllowedToView(
+	public static boolean isAllowedRecord(
 		User user,
 		int securityClassID,
 		PageState state)
