@@ -30,66 +30,74 @@
 		
 		drawEndNavigation(out);
 			
-		out.println("<table style='margin-left:20px; width:350px;' border='0'>");		
+		out.println("<table style=\"'margin-left:20px; width:500px;\" border=\"0\" cellspacing=\"2\">");		
 		
 		out.println("<tr><td class=\"bigheading\" colspan=\"3\">Locality</td></tr>");
 		if (!audit.getAsString(Audit.STATUS).equals(Audit.STATUS_APPROVED))
-			out.println("<tr><td class=\"heading\">Status:&nbsp;&nbsp;</td><td style=\"color: #FF0000\">" + audit.getAsString(Audit.STATUS) + "</td></tr>");
+			out.println("<tr><td class=\"smallheading\">Status:&nbsp;&nbsp;</td><td style=\"color: #FF0000\">" + audit.getAsString(Audit.STATUS) + "</td></tr>");
 		if (audit.get(Audit.CREATED_BY) != null || audit.get(Audit.CREATED_DATE) != null)
 			out.println("<tr><td class=\"heading\">Created:&nbsp;&nbsp;</td><td>"
-				+ ((audit.get(Audit.CREATED_BY) != null) ? audit.getAsString(Audit.CREATED_BY) + "&nbsp;&nbsp;" : "")
+				+ FREDUtils.noNulls(audit.getAsString(Audit.CREATED_BY)) + "&nbsp;&nbsp;"
 				+ "</td><td>"
-				+ ((audit.get(Audit.CREATED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.CREATED_DATE)) : "")
-				+ "</td></tr>");
-		if (audit.get(Audit.MODIFIED_BY) != null || audit.get(Audit.MODIFIED_DATE) != null)
-			out.println("<tr><td class=\"heading\">Edited:&nbsp;&nbsp;</td><td>"
-				+ ((audit.get(Audit.MODIFIED_BY) != null) ? audit.getAsString(Audit.MODIFIED_BY) + "&nbsp;&nbsp;" : "")
-				+ "</td><td>"
-				+ ((audit.get(Audit.MODIFIED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.MODIFIED_DATE)) : "")
+				+ ((audit.get(Audit.CREATED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.CREATED_DATE)) + "&nbsp;&nbsp;" : "")
 				+ "</td></tr>");
 		if (audit.get(Audit.SUBMITTED_BY) != null || audit.get(Audit.SUBMITTED_DATE) != null)
 			out.println("<tr><td class=\"heading\">Submitted:&nbsp;&nbsp;</td><td>"
-				+ ((audit.get(Audit.SUBMITTED_BY) != null) ? audit.getAsString(Audit.SUBMITTED_BY) + "&nbsp;&nbsp;" : "")
+				+ FREDUtils.noNulls(audit.getAsString(Audit.SUBMITTED_BY)) + "&nbsp;&nbsp;"
 				+ "</td><td>"
-				+ ((audit.get(Audit.SUBMITTED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.SUBMITTED_DATE)) : "")
+				+ ((audit.get(Audit.SUBMITTED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.SUBMITTED_DATE)) + "&nbsp;&nbsp;" : "")
 				+ "</td></tr>");
-		if (audit.get(Audit.APPROVED_BY) != null || audit.get(Audit.APPROVED_DATE) != null)
+		if (audit.get(Audit.APPROVED_BY) != null || audit.get(Audit.APPROVED_DATE) != null || audit.get(Audit.CURATOR_COMMENTS) != null)
 			out.println("<tr><td class=\"heading\">Approved:&nbsp;&nbsp;</td><td>"
-				+ ((audit.get(Audit.APPROVED_BY) != null) ? audit.getAsString(Audit.APPROVED_BY) + "&nbsp;&nbsp;" : "")
+				+ FREDUtils.noNulls(audit.getAsString(Audit.APPROVED_BY)) + "&nbsp;&nbsp;"
 				+ "</td><td>"
-				+ ((audit.get(Audit.APPROVED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.APPROVED_DATE)) : "")
+				+ ((audit.get(Audit.APPROVED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.APPROVED_DATE)) + "&nbsp;&nbsp;" : "")
+				+ "</td><td class=\"smalltext\">"
+				+ FREDUtils.noNulls(audit.getAsString(Audit.CURATOR_COMMENTS))
 				+ "</td></tr>");
+		if (audit.get(Audit.EDIT_HISTORY) != null) {
+			for (Iterator i = audit.getAsVector(Audit.EDIT_HISTORY).iterator(); i.hasNext(); ) {
+				AuditEdit ae = (AuditEdit) i.next();
+				out.println("<tr><td class=\"heading\">Edited:&nbsp;&nbsp;</td><td>"
+					+ ((ae.getEditedBy() != null) ? ae.getEditedBy() + "&nbsp;&nbsp;" : "")
+					+ "</td><td>"
+					+ ((ae.getEditedDate() != null) ? FREDUtils.formatDateForOutput(ae.getEditedDate()) + "&nbsp;&nbsp;" : "")
+					+ "</td><td class=\"smalltext\">"
+					+ FREDUtils.noNulls(ae.getComments())
+					+ "</td></tr>");
+			}
+		}
 		out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 
 		if (!featType.equals(Feature.OUTCROP_LOCALITY)) {
 			audit = Audit.getAudit(sample.getAsInt(Sample.SAMPLE_AUDIT_ID), state);
-			out.println("<tr><td class=\"bigheading\" colspan=\"3\">Sample</td></tr>");
+			out.println("<tr><td class=\"bigheading\" colspan=\"4\">Sample</td></tr>");
 			if (!audit.getAsString(Audit.STATUS).equals(Audit.STATUS_APPROVED))
 				out.println("<tr><td class=\"heading\">Status:&nbsp;&nbsp;</td><td style=\"color: #FF0000\">" + audit.getAsString(Audit.STATUS) + "</td></tr>");
 			if (audit.get(Audit.CREATED_BY) != null || audit.get(Audit.CREATED_DATE) != null)
 				out.println("<tr><td class=\"heading\">Created:&nbsp;&nbsp;</td><td>"
 					+ ((audit.get(Audit.CREATED_BY) != null) ? audit.getAsString(Audit.CREATED_BY) + "&nbsp;&nbsp;" : "")
 					+ "</td><td>"
-					+ ((audit.get(Audit.CREATED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.CREATED_DATE)) : "")
-					+ "</td></tr>");
-			if (audit.get(Audit.MODIFIED_BY) != null || audit.get(Audit.MODIFIED_DATE) != null)
-				out.println("<tr><td class=\"heading\">Edited:&nbsp;&nbsp;</td><td>"
-					+ ((audit.get(Audit.MODIFIED_BY) != null) ? audit.getAsString(Audit.MODIFIED_BY) + "&nbsp;&nbsp;" : "")
-					+ "</td><td>"
-					+ ((audit.get(Audit.MODIFIED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.MODIFIED_DATE)) : "")
+					+ ((audit.get(Audit.CREATED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.CREATED_DATE)) + "&nbsp;&nbsp;" : "")
 					+ "</td></tr>");
 			if (audit.get(Audit.SUBMITTED_BY) != null || audit.get(Audit.SUBMITTED_DATE) != null)
 				out.println("<tr><td class=\"heading\">Submitted:&nbsp;&nbsp;</td><td>"
 					+ ((audit.get(Audit.SUBMITTED_BY) != null) ? audit.getAsString(Audit.SUBMITTED_BY) + "&nbsp;&nbsp;" : "")
 					+ "</td><td>"
-					+ ((audit.get(Audit.SUBMITTED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.SUBMITTED_DATE)) : "")
+					+ ((audit.get(Audit.SUBMITTED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.SUBMITTED_DATE)) + "&nbsp;&nbsp;" : "")
 					+ "</td></tr>");
-			if (audit.get(Audit.APPROVED_BY) != null || audit.get(Audit.APPROVED_DATE) != null)
-				out.println("<tr><td class=\"heading\">Approved:&nbsp;&nbsp;</td><td>"
-					+ ((audit.get(Audit.APPROVED_BY) != null) ? audit.getAsString(Audit.APPROVED_BY) + "&nbsp;&nbsp;" : "")
-					+ "</td><td>"
-					+ ((audit.get(Audit.APPROVED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.APPROVED_DATE)) : "")
-					+ "</td></tr>");
+			if (audit.get(Audit.EDIT_HISTORY) != null) {
+				for (Iterator i = audit.getAsVector(Audit.EDIT_HISTORY).iterator(); i.hasNext(); ) {
+					AuditEdit ae = (AuditEdit) i.next();
+					out.println("<tr><td class=\"heading\">Edited:&nbsp;&nbsp;</td><td>"
+						+ ((ae.getEditedBy() != null) ? ae.getEditedBy() + "&nbsp;&nbsp;" : "")
+						+ "</td><td>"
+						+ ((ae.getEditedDate() != null) ? FREDUtils.formatDateForOutput(ae.getEditedDate()) + "&nbsp;&nbsp;" : "")
+						+ "</td><td class=\"smalltext\">"
+						+ FREDUtils.noNulls(ae.getComments())
+						+ "</td></tr>");
+				}
+			}
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 		}
 		
@@ -105,36 +113,35 @@
 						record = PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state);
 					}
 					audit = Audit.getAudit(record.getAsInt(Record.AUDIT_ID), state);
-	
-					out.println("<tr><td class=\"bigheading\" colspan=\"3\">"
+					out.println("<tr><td class=\"bigheading\" colspan=\"4\">"
 						+ ((rec.getValue().equals(Record.ADOPTION_RECORD)) ? "Adoption" : "Paleontology")
-						+ " <span class=\"heading\">" + record + "</span></td></tr>");
+						+ " <span class=\"smallheading\">" + record + "</span></td></tr>");
 					if (!audit.getAsString(Audit.STATUS).equals(Audit.STATUS_APPROVED))
 						out.println("<tr><td class=\"heading\">Status:&nbsp;&nbsp;</td><td style=\"color: #FF0000\">" + audit.getAsString(Audit.STATUS) + "</td></tr>");
 					if (audit.get(Audit.CREATED_BY) != null || audit.get(Audit.CREATED_DATE) != null)
 						out.println("<tr><td class=\"heading\">Created:&nbsp;&nbsp;</td><td>"
 							+ ((audit.get(Audit.CREATED_BY) != null) ? audit.getAsString(Audit.CREATED_BY) + "&nbsp;&nbsp;" : "")
 							+ "</td><td>"
-							+ ((audit.get(Audit.CREATED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.CREATED_DATE)) : "")
-							+ "</td></tr>");
-					if (audit.get(Audit.MODIFIED_BY) != null || audit.get(Audit.MODIFIED_DATE) != null)
-						out.println("<tr><td class=\"heading\">Edited:&nbsp;&nbsp;</td><td>"
-							+ ((audit.get(Audit.MODIFIED_BY) != null) ? audit.getAsString(Audit.MODIFIED_BY) + "&nbsp;&nbsp;" : "")
-							+ "</td><td>"
-							+ ((audit.get(Audit.MODIFIED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.MODIFIED_DATE)) : "")
+							+ ((audit.get(Audit.CREATED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.CREATED_DATE)) + "&nbsp;&nbsp;" : "")
 							+ "</td></tr>");
 					if (audit.get(Audit.SUBMITTED_BY) != null || audit.get(Audit.SUBMITTED_DATE) != null)
 						out.println("<tr><td class=\"heading\">Submitted:&nbsp;&nbsp;</td><td>"
 							+ ((audit.get(Audit.SUBMITTED_BY) != null) ? audit.getAsString(Audit.SUBMITTED_BY) + "&nbsp;&nbsp;" : "")
 							+ "</td><td>"
-							+ ((audit.get(Audit.SUBMITTED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.SUBMITTED_DATE)) : "")
+							+ ((audit.get(Audit.SUBMITTED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.SUBMITTED_DATE)) + "&nbsp;&nbsp;" : "")
 							+ "</td></tr>");
-					if (audit.get(Audit.APPROVED_BY) != null || audit.get(Audit.APPROVED_DATE) != null)
-						out.println("<tr><td class=\"heading\">Approved:&nbsp;&nbsp;</td><td>"
-							+ ((audit.get(Audit.APPROVED_BY) != null) ? audit.getAsString(Audit.APPROVED_BY) + "&nbsp;&nbsp;" : "")
-							+ "</td><td>"
-							+ ((audit.get(Audit.APPROVED_DATE) != null) ? FREDUtils.formatDateForOutput(audit.getAsDate(Audit.APPROVED_DATE)) : "")
-							+ "</td></tr>");
+					if (audit.get(Audit.EDIT_HISTORY) != null) {
+						for (Iterator j = audit.getAsVector(Audit.EDIT_HISTORY).iterator(); j.hasNext(); ) {
+							AuditEdit ae = (AuditEdit) j.next();
+							out.println("<tr><td class=\"heading\">Edited:&nbsp;&nbsp;</td><td>"
+								+ ((ae.getEditedBy() != null) ? ae.getEditedBy() + "&nbsp;&nbsp;" : "")
+								+ "</td><td>"
+								+ ((ae.getEditedDate() != null) ? FREDUtils.formatDateForOutput(ae.getEditedDate()) + "&nbsp;&nbsp;" : "")
+								+ "</td><td class=\"smalltext\">"
+								+ FREDUtils.noNulls(ae.getComments())
+								+ "</td></tr>");
+						}
+					}
 					out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 				} catch (Exception e) {}
 			}

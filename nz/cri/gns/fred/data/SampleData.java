@@ -42,8 +42,8 @@ public class SampleData {
 		String query =
 			"SELECT Feature_ID, Sample_ID, Feature_Type,Sample_Name, FR_ID, FR_Number, Yard_FR_ID, Yard_FR_Number, Feature_Name, Map_Sheet, Serial_Number, "
 			+ "Recollection_Number, Yard_Map_Sheet, Yard_Serial_Number, Yard_Recollection_Number, Drillhole_Depth, Top_Depth, Bottom_Depth, Drill_Type_ID, "
-			+ "Drill_Type, Masterfile_ID, Masterfile_Name, Reg_Area_ID, Reg_Area_Name, Reg_Area_Code, Feature_Audit_ID, Feature_Status, Feature_Last_Change, "
-			+ "Feature_Working_Folder_ID, Feature_Working_Comments, Feature_Security_Class_ID, Sample_Audit_ID, Sample_Status, Sample_Last_Change, "
+			+ "Drill_Type, Masterfile_ID, Masterfile_Name, Reg_Area_ID, Reg_Area_Name, Reg_Area_Code, Feature_Audit_ID, Feature_Status, Feature_Created_Date, "
+			+ "Feature_Working_Folder_ID, Feature_Working_Comments, Feature_Security_Class_ID, Sample_Audit_ID, Sample_Status, Sample_Created_Date, "
 			+ "Sample_Working_Folder_ID, Sample_Working_Comments, Sample_Security_Class_ID, Site_ID, Country_Code, Country_Name, Latitude, Longitude, QMap_Sheet, NZMG_Sheet, NZMG_East, NZMG_North, "
 			+ "Method_ID, Method, Accuracy, Orig_System_ID, Coord_System, Orig_Coord, Locality, Drillhole_Licence_Name, Person_ID, Person, Start_Date, "
 			+ "Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth, Collection_Date, "
@@ -88,13 +88,13 @@ public class SampleData {
 			values[Sample.REG_AREA_CODE] = rs.getString(25);
 			values[Sample.FEATURE_AUDIT_ID] = new Integer(rs.getInt(26));
 			values[Sample.FEATURE_STATUS] = rs.getString(27);
-			values[Sample.FEATURE_LAST_CHANGE] = rs.getDate(28);
+			values[Sample.FEATURE_CREATED_DATE] = rs.getDate(28);
 			values[Sample.FEATURE_WORKING_FOLDER_ID] = ((rs.getString(29) != null) ? new Integer(rs.getInt(29)) : null);
 			values[Sample.FEATURE_WORKING_COMMENTS] = rs.getString(30);
 			values[Sample.FEATURE_SECURITY_CLASS_ID] = ((rs.getString(31) != null) ? new Integer(rs.getInt(31)) : null);
 			values[Sample.SAMPLE_AUDIT_ID] = new Integer(rs.getInt(32));
 			values[Sample.SAMPLE_STATUS] = rs.getString(33);
-			values[Sample.SAMPLE_LAST_CHANGE] = rs.getDate(34);
+			values[Sample.SAMPLE_CREATED_DATE] = rs.getDate(34);
 			values[Sample.SAMPLE_WORKING_FOLDER_ID] = ((rs.getString(35) != null) ? new Integer(rs.getInt(35)) : null);
 			values[Sample.SAMPLE_WORKING_COMMENTS] = rs.getString(36);
 			values[Sample.SAMPLE_SECURITY_CLASS_ID] = ((rs.getString(37) != null) ? new Integer(rs.getInt(37)) : null);

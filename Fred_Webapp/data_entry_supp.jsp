@@ -63,8 +63,8 @@ function saveData(type) {
 					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + Country.value.toUpperCase() + "*";
 					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + North.value + "*" + East.value;
 				} else {
-					if (CoordType.value == "TruncNZMG")
-						window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + NZMGSheet.value.toUpperCase() + "*";
+					if (CoordType.value == "NZMS260")
+						window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + MapSheet.value.toUpperCase() + "*";
 					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + East.value + "*" + North.value;
 				}
 				window.close();
@@ -207,19 +207,19 @@ function checkCoord() {
 				North.select();
 				return 0;
 			}
-		} else if (CoordType.value == "TruncNZMG") { // Trunc NZMG
-			if (NZMGSheet.value.length != 3 || NZMGSheet.value.charAt(0) <= "9" || isNaN(NZMGSheet.value.substring(1, 2))) {
-				alert ("Please enter a valid NZMG Sheet (required for Trunc NZMG)");
-				NZMGSheet.select();
+		} else if (CoordType.value == "NZMS260") { // Trunc NZMG
+			if (MapSheet.value.length != 3 || MapSheet.value.charAt(0) <= "9" || isNaN(MapSheet.value.substring(1, 2))) {
+				alert ("Please enter a valid NZMS260 map sheet");
+				MapSheet.select();
 				return 0;
 			}
 			if (East.value.length < 3 || East.value.length > 4 || isNaN(East.value)) {
-				alert ("Please enter a valid easting (3 or 4 digits for Trunc NZMG)");
+				alert ("Please enter a valid easting (3 or 4 digits for NZMS260)");
 				East.select();
 				return 0;
 			}
 			if (North.value.length < 3 || North.value.length > 4 || isNaN(North.value)) {
-				alert ("Please enter a valid northing (3 or 4 digits for Trunc NZMG)");
+				alert ("Please enter a valid northing (3 or 4 digits for NZMS260)");
 				North.select();
 				return 0;
 			}
@@ -329,19 +329,19 @@ function parseDropDown(val) {
 
 		if (request.getParameter("Type").equals("Coord")) {
 			out.println("<tr><td class='heading' colspan='2'>Coordinates</td></tr>");
-			out.println("<tr><td colspan='2'>Please select the type and then enter the coordinates in the appropriate text boxes.<br />For <em>Full NZMG</em> enter 7-digit eastings and northings, for <em>Trunc NZMG</em> enter the map sheet plus either 3 or 4-digit eastings and northings and for <em>Lat/Long</em> enter latitudes and longitudes in decimal degrees (-ve numbers for west and south).</td></tr>");
+			out.println("<tr><td colspan='2'>Please select the type and then enter the coordinates in the appropriate text boxes.<br />For <em>NZMG</em> enter 7-digit eastings and northings, for <em>NZMS260</em> enter the map sheet plus either 3 or 4-digit eastings and northings and for <em>Lat/Long</em> enter latitudes and longitudes in decimal degrees (-ve numbers for west and south).</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.println("<tr><td class='heading'>Coord Type</td><td>");
 			out.println("<select name='CoordType'>");
-			out.println("<option value='NZMG' selected>Full NZMG</option>");
-			out.println("<option value='TruncNZMG'>Trunc NZMG</option>");
+			out.println("<option value='NZMG' selected>New Zealand Map Grid</option>");
+			out.println("<option value='NZMS260'>NZMS260</option>");
 			out.println("<option value='CHAT'>Chatham Island Grid</option>");
 			out.println("<option value='AUCK'>Auckland Island TM</option>");
 			out.println("<option value='CAMP'>Campbell Island TM</option>");
 			out.println("<option value='NZGD49'>Lat/Long NZGD49</option>");
 			out.println("<option value='WGS84'>Lat/Long WGS84</option>");
 			out.println("</select></td></tr>");
-			out.println("<tr><td class='heading'>NZMS260 Sheet</td><td><input type='text' name='NZMGSheet' /></td></tr>");
+			out.println("<tr><td class='heading'>Map Sheet</td><td><input type='text' name='MapSheet' /></td></tr>");
 			out.println("<tr><td class='heading'>Easting/Longitude</td><td><input type='text' name='East' /></td></tr>");
 			out.println("<tr><td class='heading'>Northing/Latitude</td><td><input type='text' name='North' /></td></tr>");
 			out.print("<tr><td class='heading'>Country</td><td>");

@@ -259,9 +259,6 @@ public abstract class RecordDE implements DataEntryForm {
 					throw new InvalidCredentialsException();
 				//Update AUDIT
 				QueryDescriptor qd = new QueryDescriptor("audit_table");
-				qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
-				qd.addQueryColumn("modified_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
-				qd.addQueryColumn("modified_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
 				qd.addQueryColumn("working_comments", Types.VARCHAR, fields[WORKING_COMMENTS]);
 				qd.addQueryColumn("security_class_id", Types.NUMERIC, ((secClassID != null) ? secClassID : new Integer(4)));
 				qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(record.getAsInt(Record.AUDIT_ID)));

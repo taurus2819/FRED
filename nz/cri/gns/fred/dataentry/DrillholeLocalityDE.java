@@ -105,12 +105,7 @@ public class DrillholeLocalityDE extends LocalityDE {
 		}
 	}
 
-	public void makeDataEntryHTML(Writer out)
-		throws IOException, SQLException {
-		out.write("<table border='0' cellspacing='0' cellpadding='2'>\n");
-		out.write("<tr><td class='heading' colspan='2'>Drillhole Name</td><td><input type='text' name='FeatName' value='"
-				+ FREDUtils.noNulls(getFieldForHTML(DRILLHOLE_NAME))
-				+ "'></td></tr>\n");
+	public void makeDataEntryHTML(Writer out) throws IOException, SQLException {
 		super.makeDataEntryHTML(out);
 		out.write("<tr><td class='heading'>Operating Company</td><td></td><td><input type='text' name='Person' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(OPERATING_COMPANY))

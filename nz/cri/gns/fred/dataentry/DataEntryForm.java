@@ -15,6 +15,7 @@ public interface DataEntryForm {
 	public static final int SECTION_NAME = 0;
 	public static final int REGISTRATION_AREA = 1;
 	public static final int WORKING_COMMENTS = 2;
+	public static final int EDIT_COMMENTS = 17;
 	public static final int GRID_REF = 3;
 	public static final int METHOD = 4;
 	public static final int ACCURACY = 5;

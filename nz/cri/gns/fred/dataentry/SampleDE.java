@@ -30,7 +30,7 @@ public class SampleDE implements DataEntryForm {
 
 	private User user;
 	private PageState state;
-	private Folder folder;
+	private Folder workingFolder;
 	private int featureID = -1;
 	private int auditID = -1;
 	private Sample sample;
@@ -38,6 +38,7 @@ public class SampleDE implements DataEntryForm {
 	private String[] fields = new String[120];
 	private String[] tempFields = new String[120];
 	private boolean savedFlag = false;
+	private boolean isAllowedSubmit = false;
 
 	private RoundedDate collDate;
 	private Vector collectors;
@@ -58,15 +59,19 @@ public class SampleDE implements DataEntryForm {
 	private static final int RELATIONSHIP_BELOW_TOP = 238;
 	private static final int RELATIONSHIP_BELOW_BASE = 239;
 
-	public SampleDE(User user, int featureID, int folderID, PageState state) throws SQLException, IOException {
+	public SampleDE(User user, int featureID, int folderID, PageState state) throws SQLException, IOException, DataInputException {
 		this(user, folderID, state);
 		this.featureID = featureID;
 	}		
 
-	public SampleDE(User user, int folderID, PageState state) throws SQLException, IOException {
+	public SampleDE(User user, int folderID, PageState state) throws SQLException, IOException, DataInputException {
 		this.user = user;
 		this.state = state;
-		this.folder = new Folder(folderID, user, state);
+		this.workingFolder = new Folder(folderID, user, state);
+		workingFolder = new Folder(folderID, user, state);
+		if (!workingFolder.isAllowedCreateLocalities())
+			throw new DataInputException("Locality", "Insufficient rights to create locality");
+		isAllowedSubmit = workingFolder.isAllowedSubmitLocalities();
 	}
 
 	public SampleDE(int sampleID, User user, PageState state) throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
@@ -74,20 +79,14 @@ public class SampleDE implements DataEntryForm {
 		this.state = state;
 		sample = new Sample(sampleID, user, state, true);
 		
-		//check Status for editing
-		if (sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_APPROVED)) {
-			throw new DataInputException("Sample", "Sample not editable");
-		} else if (sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_WAITING)) {
-			if (FREDUtils.hasMasterfileRights(user, String.valueOf(sample.getFeatureID()), state)) {
-				folder = new Folder(sample.getAsInt(Sample.MASTERFILE_ID), user, state);
-			} else {
-				throw new DataInputException("Sample", "Sample not editable");
-			}
-		} else if (sample.get(Sample.FEATURE_WORKING_FOLDER_ID) != null) {
-			folder = new Folder(sample.getAsInt(Sample.FEATURE_WORKING_FOLDER_ID), user, state);
-		}
+		//check status for editing
+		if (!FREDUtils.isAllowedEditSample(user, sample.getAsString(Sample.SAMPLE_STATUS), String.valueOf(sampleID), state))
+			throw new DataInputException("Sample", "Insufficient rights to edit this sample");
+		if (sample.get(Sample.FEATURE_WORKING_FOLDER_ID) != null)
+			workingFolder = new Folder(sample.getAsInt(Sample.FEATURE_WORKING_FOLDER_ID), user, state);
 		this.featureID = sample.getFeatureID();
 		this.auditID = sample.getAsInt(Sample.SAMPLE_AUDIT_ID);
+		isAllowedSubmit = FREDUtils.isAllowedSubmitSample(user, sample.getAsString(Sample.SAMPLE_STATUS), String.valueOf(sample.getSampleID()), state);
 		getFromDatabase(sample);
 	}
 
@@ -639,15 +638,15 @@ public class SampleDE implements DataEntryForm {
 		out.write("<tr><td colspan='2' align='center'><img src='images/drill.gif' height='20' width='20' /></td></tr>");
 		out.write("<tr><td colspan='2' align='center' class='heading'>Sample</td></tr>\n");
 		out.write("<tr><td>&nbsp;</td></tr>");
-		out.write("<tr><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
-		if (sample != null)
-			out.write("&SampID=" + sample.getSampleID());
-		out.write("&RecType=Sample'><img src='images/load.gif' height='20' width='20' border='0' alt='Copy From' /></a>&nbsp;&nbsp;</td><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
-		if (sample != null)
-			out.write("&SampID=" + sample.getSampleID());
-		out.write("&RecType=Sample' class='boldlink'>Copy From</a></td></tr>\n");
+		if (workingFolder != null) {
+			out.write("<tr><td><a href='load_record.jsp?FoldID=" + workingFolder.getFolderID()
+				+ ((sample != null) ? "&SampID=" + sample.getSampleID() : "")
+				+ "&RecType=Sample'><img src='images/load.gif' height='20' width='20' border='0' alt='Copy From' /></a>&nbsp;&nbsp;</td><td><a href='load_record.jsp?FoldID=" + workingFolder.getFolderID()
+				+ ((sample != null) ? "&SampID=" + sample.getSampleID() : "")
+				+ "&RecType=Sample' class='boldlink'>Copy From</a></td></tr>\n");
+		}
 		out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
-		if (folder.isAllowedSubmitLocalities())
+		if (isAllowedSubmit)
 			out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Submit\";form1.submit();'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database' /></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick='form1.SaveType.value=\"Submit\";form1.submit();' class='boldlink'>Submit</a></td></tr>\n");
 	}
 
@@ -667,7 +666,10 @@ public class SampleDE implements DataEntryForm {
 			} catch (Exception e) {}
 			out.write("</tr>\n");
 			if (sample != null) {
-				out.write("<tr><td class='heading' colspan='2'>Attached Files/Images<br /><span class='smalltext'>Click <a href='binary_data_entry.jsp?ID=" + sample.getSampleID() + "&RecType=SMP&FoldID=" + folder.getFolderID() + "' target='fredBinary'>here</a> to add/edit</span></td><td>");
+				out.write("<tr><td class='heading' colspan='2'>Attached Files/Images<br /><span class='smalltext'>Click <a href='binary_data_entry.jsp?ID="
+					+ sample.getSampleID() + "&RecType=SMP"
+					+ ((workingFolder != null) ? "&FoldID=" + workingFolder.getFolderID() : "")
+					+ "' target='fredBinary'>here</a> to add/edit</span></td><td>");
 				try {
 					if (sample != null && sample.getSampleMetadataRecordsCount() > 0) {	
 						MetadataRecord[] mr = sample.getSampleMetadataRecords();
@@ -678,19 +680,20 @@ public class SampleDE implements DataEntryForm {
 				out.write("</td></tr>");
 			}
 		}
-
-		out.write("<tr><td class='heading' colspan='2'>Security Setting</td><td>");
-		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
-		cd.name = "SecType";
-		if (getField(SECURITY_TYPE) != null) {
-			cd.selected = getFieldForHTML(SECURITY_TYPE);
-		} else {
-			cd.selected = "21";
+		if (!outcropSample) {
+			out.write("<tr><td class='heading' colspan='2'>Security Setting</td><td>");
+			cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
+			cd.name = "SecType";
+			if (getField(SECURITY_TYPE) != null) {
+				cd.selected = getFieldForHTML(SECURITY_TYPE);
+			} else {
+				cd.selected = "21";
+			}
+			cd.orderBy = "Lookup_ID";
+			cd.join = "FieldName = 'SecurityClass'";
+			HTMLUtils.makeDropBox(out, conn, cd);
+			out.write("</td></tr>\n");
 		}
-		cd.orderBy = "Lookup_ID";
-		cd.join = "FieldName = 'SecurityClass'";
-		HTMLUtils.makeDropBox(out, conn, cd);
-		out.write("</td></tr>\n");
 		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
 
 		out.write("<tr><td class='heading'>Collection Date</td><td></td><td><input type='text' name='CollDate' value='"
@@ -976,7 +979,7 @@ public class SampleDE implements DataEntryForm {
 			out.write("<table border='0' cellpadding='0' cellspacing='2'>\n");
 			out.write("<tr><td>&nbsp;</td></tr>\n");
 			out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
-			if (folder.isAllowedSubmitLocalities())
+			if (isAllowedSubmit)
 				out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Submit\";form1.submit();'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database'/></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick='form1.SaveType.value=\"Submit\";form1.submit();' class='boldlink'>Submit</a></td></tr>\n");
 			out.write("</table>\n");
 		}
@@ -992,8 +995,6 @@ public class SampleDE implements DataEntryForm {
 			conn.getConnection().setAutoCommit(false);
 			try {
 				if (sample == null) {
-					if (!folder.isAllowedCreateLocalities())
-						throw new InvalidCredentialsException();
 					if (auditID == -1) {	//ie not an outcrop sample
 						//create new AUDIT record
 						QueryDescriptor qd = new QueryDescriptor("audit_table");
@@ -1001,7 +1002,8 @@ public class SampleDE implements DataEntryForm {
 						qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
 						qd.addQueryColumn("created_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
 						qd.addQueryColumn("working_comments", Types.VARCHAR, fields[WORKING_COMMENTS]);
-						qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(folder.getFolderID()));
+						if (workingFolder != null)
+							qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(workingFolder.getFolderID()));
 						qd.addQueryColumn("security_class_id", Types.NUMERIC, ((secClassID != null) ? secClassID : new Integer(4)));
 						String auditID = DBUtils.doInsertUsingSequence(qd, "audit_id", "audit_seq", conn, true);
 					}
@@ -1012,14 +1014,9 @@ public class SampleDE implements DataEntryForm {
 					sampleID = DBUtils.doInsertUsingSequence(qd, "sample_id", "sample_seq", conn, true);
 				} else { // edit
 					sampleID = String.valueOf(sample.getSampleID());
-					if ((!FREDUtils.hasMasterfileSampleRights(user, sampleID, state) && sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_APPROVED)) || !folder.isAllowedEditLocalities())
-						throw new InvalidCredentialsException();
 					if (!outcropSample) {
 						//Update AUDIT
 						QueryDescriptor qd = new QueryDescriptor("audit_table");
-						qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
-						qd.addQueryColumn("modified_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
-						qd.addQueryColumn("modified_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
 						qd.addQueryColumn("working_comments", Types.VARCHAR, fields[WORKING_COMMENTS]);
 						qd.addQueryColumn("security_class_id", Types.NUMERIC, ((secClassID != null) ? secClassID : new Integer(4)));
 						qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(auditID));
@@ -1106,12 +1103,6 @@ public class SampleDE implements DataEntryForm {
 				conn.releaseStatement();
 				savedFlag = false;
 				throw e;
-			} catch (InvalidCredentialsException e) {
-				conn.getConnection().rollback();
-				conn.getConnection().setAutoCommit(true);
-				conn.releaseStatement();
-				savedFlag = false;
-				throw e;
 			}
 		}
 		return sample.getSampleID();
@@ -1154,7 +1145,9 @@ public class SampleDE implements DataEntryForm {
 	}
 
 	public int getWorkingFolderID() {
-		return folder.getFolderID();
+		if (workingFolder != null)
+			return workingFolder.getFolderID();
+		return -1;
 	}
 
 	public int getFieldCount() {
@@ -1193,7 +1186,7 @@ public class SampleDE implements DataEntryForm {
 	}
 
 	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
-		if ((sample != null && sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_WAITING)) || !folder.isAllowedSubmitLocalities())
+		if ((sample != null && sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_WAITING)) || !isAllowedSubmit)
 			throw new InvalidCredentialsException();
 		if (getField(COLLECTORS) == null || getField(COLLECTION_DATE) == null || getField(FOSSILS_IN_PLACE) == null)
 			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
@@ -1214,11 +1207,11 @@ public class SampleDE implements DataEntryForm {
 	}
 
 	public void delete() throws IOException, SQLException, InvalidCredentialsException {
-		if (sample != null) {
-			DBConnection conn = FREDUtils.getFREDConnection(state);
-			conn.executeUpdate("DELETE FROM Sample WHERE Sample_ID = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(sample.getSampleID())});
-			conn.releaseStatement();
-		}	
+		if (!FREDUtils.isAllowedDeleteSample(user, sample.getAsString(Sample.SAMPLE_STATUS), String.valueOf(sample.getSampleID()), state) && sample != null)
+			throw new InvalidCredentialsException();
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		conn.executeUpdate("DELETE FROM Sample WHERE Sample_ID = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(sample.getSampleID())});
+		conn.releaseStatement();	
 	}
 
 }

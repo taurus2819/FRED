@@ -50,13 +50,13 @@ public class Sample {
 	public static final int REG_AREA_CODE = 24;
 	public static final int FEATURE_AUDIT_ID = 25;
 	public static final int FEATURE_STATUS = 26;
-	public static final int FEATURE_LAST_CHANGE = 27;
+	public static final int FEATURE_CREATED_DATE = 27;
 	public static final int FEATURE_WORKING_FOLDER_ID = 28;
 	public static final int FEATURE_WORKING_COMMENTS = 29;
 	public static final int FEATURE_SECURITY_CLASS_ID = 30;
 	public static final int SAMPLE_AUDIT_ID = 129;
 	public static final int SAMPLE_STATUS = 130;
-	public static final int SAMPLE_LAST_CHANGE = 131;
+	public static final int SAMPLE_CREATED_DATE = 132;
 	public static final int SAMPLE_WORKING_FOLDER_ID = 132;
 	public static final int SAMPLE_WORKING_COMMENTS = 133;
 	public static final int SAMPLE_SECURITY_CLASS_ID = 134;
@@ -409,11 +409,15 @@ public class Sample {
 			throw new DataInputException("Sample Depths", "Data Missing or Invalid");
 		}
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		QueryDescriptor qd = new QueryDescriptor("audit_table");
-		qd.addQueryColumn("modified_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
-		qd.addQueryColumn("modified_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
-		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(sd.getAsInt(Sample.SAMPLE_AUDIT_ID)));
-		DBUtils.doUpdate(qd, "audit_id = ?", conn);
+		QueryDescriptor qd;
+		if (sd.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_APPROVED)) {
+			qd = new QueryDescriptor("audit_edit");
+			qd.addQueryColumn("audit_id", Types.NUMERIC, new Integer(sd.getAsInt(Sample.SAMPLE_AUDIT_ID)));
+			qd.addQueryColumn("edited_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
+			qd.addQueryColumn("edited_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
+			qd.addQueryColumn("comments", Types.VARCHAR, "Depth change - from " + sd.getAsString(Sample.DRILLHOLE_DEPTH));
+			DBUtils.doInsertUsingSequence(qd, "audit_edit_id", "audit_edit_seq", conn, false);
+		}
 		qd = new QueryDescriptor("sample");
 		qd.addQueryColumn("top_depth", Types.NUMERIC, new Double(topDepth));
 		if (bottomDepth != null)

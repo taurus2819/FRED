@@ -12,10 +12,9 @@
 	String featID = request.getParameter("FeatID");
 	String sampID = request.getParameter("SampID");
 	String recID = request.getParameter("RecID");
-	Folder folder = new Folder(Integer.parseInt(foldID), user, state);
 	DataEntryForm dataEntryForm = null;
 	
-	try {
+	//try {
 		if (request.getParameter("Err") != null) {
 			dataEntryForm = (DataEntryForm) session.getAttribute("dataEntryForm");
 		} else if (request.getParameter("CopyID") != null) {
@@ -28,8 +27,8 @@
 				} else {
 					dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(formType, user, Integer.parseInt(foldID), state);
 				}
-				if (request.getParameter("LoadFeatID") != null) //copying
-					dataEntryForm.copyFrom(Integer.parseInt(request.getParameter("LoadFeatID")));
+				//if (request.getParameter("LoadFeatID") != null) //copying
+				//	dataEntryForm.copyFrom(Integer.parseInt(request.getParameter("LoadFeatID")));
 			} else if (formType.equals("Sample")) {
 				if (sampID != null) { //editing
 					dataEntryForm = DataEntryFormFactory.getSampleDataEntryForm(Integer.parseInt(sampID), user, state);
@@ -44,51 +43,34 @@
 				}
 			}
 		}
-	} catch (Exception e) {
-		System.out.println(e.getMessage());
-	}
+	//} catch (Exception e) {
+	//	System.out.println(e.getMessage());
+	//}
 
 	if (dataEntryForm != null) {
-		
 		//save DataEntryForm in session
 		session.setAttribute("dataEntryForm", dataEntryForm);
-		
-		//form creation if proper rights
-		if ((folder.isAllowedCreateLocalities() && featID ==  null) || (folder.isAllowedEditLocalities() && featID != null)) {
-
-			out.println("<form name='form1' method='post' action='data_proc.jsp' />");
-			out.println("<input type='hidden' name='SaveType' value='' />");
-			if (featID != null) {
-				session.setAttribute("dataEntryErrorRedirect", "data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID + "&FeatID=" + featID);
-			} else if (sampID != null) {
-				session.setAttribute("dataEntryErrorRedirect", "data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID + "&SampID=" + sampID);
-			} else if (recID != null) {
-				session.setAttribute("dataEntryErrorRedirect", "data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID + "&RecID=" + recID);
-			} else {
-				session.setAttribute("dataEntryErrorRedirect", "data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID);
-			}
-
-			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
-			dataEntryForm.makeNavPanelHTML(new PrintWriter(out));
-			out.println("<tr><td><a href='" + (String)session.getAttribute("dataEntryRedirect") + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a>&nbsp;&nbsp;</td><td><a href='" + (String)session.getAttribute("dataEntryRedirect") + "' class='heading'>Quit</a></td></tr>");
-			out.println("</table>");
-
-			drawEndNavigation(out);
-
-			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-			out.println("<tr><td>");
-
-			dataEntryForm.makeDataEntryHTML(new PrintWriter(out));
-
-			out.println("</td></tr></table>");
-			out.println("</form>");
+		if (featID != null) {
+			session.setAttribute("dataEntryErrorRedirect", "data_entry.jsp?Err=Yes&Type=" + formType + "&FeatID=" + featID);
+		} else if (sampID != null) {
+			session.setAttribute("dataEntryErrorRedirect", "data_entry.jsp?Err=Yes&Type=" + formType + "&SampID=" + sampID);
+		} else if (recID != null) {
+			session.setAttribute("dataEntryErrorRedirect", "data_entry.jsp?Err=Yes&Type=" + formType + "&RecID=" + recID);
+		} else {
+			session.setAttribute("dataEntryErrorRedirect", "data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID);
 		}
-		else {
-			drawEndNavigation(out);
-			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-			out.println("<tr><td>");
-			out.println("<p><span class='bigheading'>Access denied</span><br />You don't have sufficient rights in this folder</p>");
-		}
+		out.println("<form name='form1' method='post' action='data_proc.jsp' />");
+		out.println("<input type='hidden' name='SaveType' value='' />");
+		out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
+		dataEntryForm.makeNavPanelHTML(new PrintWriter(out));
+		out.println("<tr><td><a href='" + (String)session.getAttribute("dataEntryRedirect") + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a>&nbsp;&nbsp;</td><td><a href='" + (String)session.getAttribute("dataEntryRedirect") + "' class='heading'>Quit</a></td></tr>");
+		out.println("</table>");
+		drawEndNavigation(out);
+		out.println("<table style='margin-left:20px; width:550px;' border='0'>");
+		out.println("<tr><td>");
+		dataEntryForm.makeDataEntryHTML(new PrintWriter(out));
+		out.println("</td></tr></table>");
+		out.println("</form>");
 	}
 	else {
 		drawEndNavigation(out);

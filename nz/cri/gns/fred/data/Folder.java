@@ -19,7 +19,15 @@ public class Folder {
 	public static final int OWNER = 4;
 	public static final int FEATURES = 5;
 	
-
+	public static final int FOLDER_READ_RIGHT = 1;
+	public static final int FOLDER_EDIT_RIGHT = 2;
+	public static final int FOLDER_CREATE_RIGHT = 4;
+	public static final int FOLDER_DELETE_RIGHT = 8;
+	public static final int FOLDER_SUBMIT_RIGHT = 16;
+	public static final int FOLDER_ADMIN_RIGHT = 32;
+	public static final int FOLDER_APPROVE_RIGHT = 64;
+	
+	
 	private FolderData fd;
 	private int userRights = 0;
 
@@ -41,31 +49,31 @@ public class Folder {
 	}
 
 	public boolean isAllowedReadLocalities() {
-		return ((userRights & 1) != 0);
+		return ((userRights & FOLDER_READ_RIGHT) != 0);
 	}
 	
 	public boolean isAllowedEditLocalities() {
-		return ((userRights & 2) != 0);
+		return ((userRights & FOLDER_EDIT_RIGHT) != 0);
 	}
 
 	public boolean isAllowedCreateLocalities() {
-		return ((userRights & 4) != 0);
+		return ((userRights & FOLDER_CREATE_RIGHT) != 0);
 	}
 
 	public boolean isAllowedDeleteLocalities() {
-		return ((userRights & 8) != 0);
+		return ((userRights & FOLDER_DELETE_RIGHT) != 0);
 	}
 
 	public boolean isAllowedSubmitLocalities() {
-		return ((userRights & 16) != 0);
+		return ((userRights & FOLDER_SUBMIT_RIGHT) != 0);
 	}
 
 	public boolean isAllowedAdmin() {
-		return ((userRights & 32) != 0);
+		return ((userRights & FOLDER_ADMIN_RIGHT) != 0);
 	}
 
 	public boolean isAllowedApproveLocalities() {
-		return ((userRights & 64) != 0);
+		return ((userRights & FOLDER_APPROVE_RIGHT) != 0);
 	}
 
 	public int getLocalityCount() throws InvalidCredentialsException {

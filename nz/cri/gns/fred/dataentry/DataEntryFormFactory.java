@@ -59,7 +59,7 @@ public class DataEntryFormFactory {
 		return new SampleDE(sampleID, user, state);
 	}
 	
-	public static SampleDE getSampleDataEntryForm(User user, int featureID, int folderID, PageState state) throws SQLException, IOException {
+	public static SampleDE getSampleDataEntryForm(User user, int featureID, int folderID, PageState state) throws SQLException, IOException, DataInputException {
 		return new SampleDE(user, featureID, folderID, state);
 	}
 	

@@ -101,7 +101,7 @@
 				//Table header
 				out.println("<p><table border='0' cellspacing='0' cellpadding='0' width='550'>");
 				out.print("<tr>");
-				out.print("<th colspan='2'>Name&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Last Change&nbsp;&nbsp;</th><th colspan='5'>Options</th></tr>");
+				out.print("<th colspan='2'>Name&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan='5'>Options</th></tr>");
 				out.println("<tr><td colspan='9'><img src='images/line.gif' height='3' width='550' /></td></tr>");
 				
 				//Record list
@@ -115,8 +115,8 @@
 				out.print("</td><td style='color: #FF0000'>");
 				if (!locStatus.equals(Audit.STATUS_APPROVED)) {
 					out.print(locStatus + "&nbsp;&nbsp;</td><td>");
-					if (feature.get(Feature.LAST_CHANGE) != null)
-						out.print(DateFormat.getDateInstance(DateFormat.LONG).format(feature.getAsDate(Feature.LAST_CHANGE)) + "&nbsp;&nbsp;");
+					if (feature.get(Feature.CREATED_DATE) != null)
+						out.print(DateFormat.getDateInstance(DateFormat.LONG).format(feature.getAsDate(Feature.CREATED_DATE)) + "&nbsp;&nbsp;");
 					out.print("</td>");
 				} else {
 					out.print("</td><td></td>");
@@ -160,8 +160,8 @@
 							if (!sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_APPROVED)) {
 								out.print(sample.getAsString(Sample.SAMPLE_STATUS) + "&nbsp;&nbsp;");
 								out.println("</td><td>");
-								if (sample.get(Sample.SAMPLE_LAST_CHANGE) != null)
-									out.print(DateFormat.getDateInstance(DateFormat.LONG).format(sample.getAsDate(Sample.SAMPLE_LAST_CHANGE)) + "&nbsp;&nbsp;");
+								if (sample.get(Sample.SAMPLE_CREATED_DATE) != null)
+									out.print(DateFormat.getDateInstance(DateFormat.LONG).format(sample.getAsDate(Sample.SAMPLE_CREATED_DATE)) + "&nbsp;&nbsp;");
 							} else {
 								out.println("</td><td>");
 							}
@@ -209,8 +209,8 @@
 									out.print(FREDUtils.noNulls(record.toString()) + "&nbsp;&nbsp;</td><td class='smalltext' style='color: #FF0000'>");
 									if (record.getAsString(Record.STATUS).equals(Audit.STATUS_WORKING)) {
 										out.print("working&nbsp;&nbsp;</td><td class='smalltext'>");
-										if (record.get(Record.LAST_CHANGE) != null)
-											out.print(DateFormat.getDateInstance(DateFormat.LONG).format(record.getAsDate(Record.LAST_CHANGE)) + "&nbsp;&nbsp;");
+										if (record.get(Record.CREATED_DATE) != null)
+											out.print(DateFormat.getDateInstance(DateFormat.LONG).format(record.getAsDate(Record.CREATED_DATE)) + "&nbsp;&nbsp;");
 										out.print("</td>");
 									} else {
 										out.print("</td><td></td>");

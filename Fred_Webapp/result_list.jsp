@@ -1,5 +1,5 @@
 <%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*, java.util.*"
+		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*, java.util.*"
 %><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 	PageState state = new PageState(request, response, getServletContext());
@@ -49,8 +49,11 @@
 		
 		//System.out.println("TableName: " + tableName + " * WhereSQL: " + whereSQL);
 		
-		if (request.getParameter("Page") != null) { pageNum = Integer.parseInt(request.getParameter("Page")); }
+		if (request.getParameter("Page") != null)
+			pageNum = Integer.parseInt(request.getParameter("Page"));
 		useStored = (request.getParameter("Page") != null);
+
+		session.setAttribute("dataEntryRedirect", "result_list.jsp?Page=" + pageNum);
 
 		if (useStored) {
 			queryRes = (Vector) session.getAttribute("QueryRes");
@@ -119,7 +122,10 @@
 
 			rs = statement.executeQuery("SELECT DISTINCT feature_id, fr_number, feature_type, feature_name, yard_fr_number FROM feature_view WHERE feature_id IN (" + featIDs + ") ORDER BY fr_number");
 			while (rs.next()) {
-				out.println("<tr><td class='heading'><a href='detail.jsp?FeatID=" + rs.getString(1) + "'>" + rs.getString(2) + "</a>&nbsp;&nbsp;</td><td>" + rs.getString(3) + "</td><td>" +FREDUtils.noNulls(rs.getString(5)) + "&nbsp;&nbsp;</td><td>" +FREDUtils.noNulls(rs.getString(4)) + "</td></tr>");
+				out.print("<tr><td class='heading'><a href='detail.jsp?FeatID=" + rs.getString(1) + "'>" + rs.getString(2) + "</a>&nbsp;&nbsp;</td><td>" + rs.getString(3) + "</td><td>" +FREDUtils.noNulls(rs.getString(5)) + "&nbsp;&nbsp;</td><td>" +FREDUtils.noNulls(rs.getString(4)) + "&nbsp;&nbsp;</td>");
+				if (user != null && FREDUtils.isAllowedEditLocality(user, Audit.STATUS_APPROVED, rs.getString(1), state))
+					out.print("<td><a href=\"data_entry.jsp?Type=" + rs.getString(3) + "&FeatID=" + rs.getString(1) + "\"><img src=\"images/edit.gif\" height=\"20\" width=\"20\" border=\"0\" alt=\"Edit\" /></a></td>");
+				out.println("</tr>");
 			}
 			out.println("</table>");
 

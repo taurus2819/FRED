@@ -79,7 +79,7 @@
 			out.println("<p><table border='0' cellspacing='0' cellpadding='1' width='550'>");
 			out.print("<tr>");
 			//out.print("<td></td>");
-			out.print("<th colspan='2'>Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Last Change&nbsp;&nbsp;</th><th colspan='5'>Options</th></tr>");
+			out.print("<th colspan='2'>Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan='5'>Options</th></tr>");
 			out.println("<tr><td colspan='9'><img src='images/line.gif' height='3' width='550' /></td></tr>");
 
 			out.println("<form name='FoldForm' method='put' action='folder_detail.jsp'>");
@@ -100,8 +100,8 @@
 				out.print("</td><td>" + featType + "&nbsp;&nbsp;</td><td style='color: #FF0000'>");
 				if (!locStatus.equals(Audit.STATUS_APPROVED)) {
 					out.print(locStatus + "&nbsp;&nbsp;</td><td>");
-					if (feature.get(Feature.LAST_CHANGE) != null) { 
-						out.print(DateFormat.getDateInstance(DateFormat.LONG).format(feature.getAsDate(Feature.LAST_CHANGE)) + "&nbsp;&nbsp;");
+					if (feature.get(Feature.CREATED_DATE) != null) { 
+						out.print(DateFormat.getDateInstance(DateFormat.LONG).format(feature.getAsDate(Feature.CREATED_DATE)) + "&nbsp;&nbsp;");
 					}
 					out.print("</td>");
 				} else {

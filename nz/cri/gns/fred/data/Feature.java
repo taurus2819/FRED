@@ -28,7 +28,7 @@ public class Feature {
 	public static final int AUDIT_ID = 2;
 	public static final int SECURITY_CLASS_ID = 20;
 	public static final int STATUS = 23;
-	public static final int LAST_CHANGE = 25;
+	public static final int CREATED_DATE = 25;
 	public static final int MASTERFILE_ID = 3;
 	public static final int MASTERFILE_NAME = 4;
 	public static final int LOCALITY = 5;
@@ -110,13 +110,13 @@ public class Feature {
 	}		
 	
 	private boolean isAllowedField(int field) {
-		if (authenticated) {
+		if (authenticated)
 			return true;
-		}
+		if (field == FEATURE_TYPE || field == STATUS)
+			return true;
 		if (isApprovedLocality()) {
 			switch (field) {
 				case FEATURE_ID :
-				case FEATURE_TYPE :
 				case FEATURE_NAME :
 				case SAMPLE_NAMES :
 				case MASTERFILE_ID :

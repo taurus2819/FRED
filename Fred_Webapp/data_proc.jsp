@@ -20,6 +20,7 @@
 				dataEntryForm.setField(DataEntryForm.TAXA_LIST, (String) session.getAttribute("taxa"));
 			}
 			else {
+				dataEntryForm.setTempField(DataEntryForm.EDIT_COMMENTS, request.getParameter("EditComm"));
 				dataEntryForm.setTempField(DataEntryForm.FEATURE_NAME, request.getParameter("FeatName"));
 				dataEntryForm.setTempField(DataEntryForm.REGISTRATION_AREA, request.getParameter("RegAreaID"));
 				dataEntryForm.setTempField(DataEntryForm.WORKING_COMMENTS, request.getParameter("WorkComm"));
@@ -114,8 +115,6 @@
 			} else {
 				dataEntryForm.save();
 			}
-
-			Folder folder = new Folder(dataEntryForm.getWorkingFolderID(), user, state, true);
 
 			response.sendRedirect((String)session.getAttribute("dataEntryRedirect"));
 			return;

@@ -41,7 +41,7 @@ public class FeatureData {
 			"SELECT f.feature_id, f.site_id, f.audit_id, f.masterfile_id, fd.name, f.locality, f.reg_area_id, f.comments, "
 				+ "f.feature_type, f.feature_name, f.drillhole_licence_name, f.start_date, f.start_date_rounding, f.finish_date, "
 				+ "f.finish_date_rounding, f.person_id, f.datum_type, f.datum_elevation, f.start_depth, f.finish_depth, "
-				+ "a.security_class_id, a.status, a.working_folder_id, DECODE(a.modified_date, NULL, a.created_date, a.modified_date) AS last_change "
+				+ "a.security_class_id, a.status, a.working_folder_id, a.created_date "
 				+ "FROM feature f, audit_table a, folder fd "
 				+ "WHERE f.audit_id = a.audit_id AND f.masterfile_id = fd.folder_id(+) AND feature_id = ?";	
 		data[0] = new Integer(this.id);
@@ -74,7 +74,7 @@ public class FeatureData {
 			values[Feature.SECURITY_CLASS_ID] = ((rs.getString(21) != null) ? new Integer(rs.getInt(21)) : null);
 			values[Feature.STATUS] = rs.getString(22);
 			values[Feature.WORKING_FOLDER_ID] = ((rs.getString(23) != null) ? new Integer(rs.getInt(23)) : null);
-			values[Feature.LAST_CHANGE] = rs.getDate(24);
+			values[Feature.CREATED_DATE] = rs.getDate(24);
 			rs.close();
 			query = "SELECT sample_id FROM sample WHERE feature_id = ? ORDER BY top_depth";
 			data[0] = values[Feature.FEATURE_ID];

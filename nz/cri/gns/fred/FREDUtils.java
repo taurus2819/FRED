@@ -17,6 +17,7 @@ import nz.cri.gns.auth.SecurityClass;
 import nz.cri.gns.auth.SecurityClassAccess;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.data.Audit;
+import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
@@ -65,6 +66,8 @@ public class FREDUtils {
 	public static final int MASTERFILE_NEW_CALEDONIA = 10;
 	public static final int MASTERFILE_OFFSHORE = 11;
 
+	private static final int FRED_EDIT_SC = 15;
+	
 	public static DBConnection getFREDConnection(PageState state) throws IOException {
 		return JspUtils.createDatabaseConnection(state.getSession(), CONNECTION, DB_NAME, state.getContext());
 	}
@@ -76,29 +79,105 @@ public class FREDUtils {
 	/**
 	 * Returns true if this locality can be viewed by the user
 	 */
-	public static boolean isAllowedLocality(User user, String status, String featureID, PageState state)
-		throws IOException, SQLException {
-		if (user == null)
+	public static boolean isAllowedLocality(User user, String status, String featureID, PageState state) throws IOException, SQLException {
+		if (user == null || status == null || featureID == null)
 			return false;
 		if (!status.equals(Audit.STATUS_APPROVED))
-			return (getUserWorkingLocalityRights(user, featureID, state) & 1) > 0;
+			return (getUserWorkingLocalityRights(user, featureID, state) & Folder.FOLDER_READ_RIGHT) > 0;
 		return true;
 	}
 
 	/**
+	 * Returns true if the locality can be edited (and saved) by the user
+	 */
+	public static boolean isAllowedEditLocality(User user, String status, String featureID, PageState state) throws IOException, SQLException {
+		if (user == null || status == null || featureID == null)
+			return false;
+		if (status.equals(Audit.STATUS_APPROVED))
+			return (hasMasterfileRights(user, featureID, state) || checkSecurityClass(FRED_EDIT_SC, user, state));
+		if (status.equals(Audit.STATUS_WAITING))
+			return hasMasterfileRights(user, featureID, state);
+		return (getUserWorkingLocalityRights(user, featureID, state) & Folder.FOLDER_EDIT_RIGHT) > 0;
+	}
+
+	/**
+	 * Return true if the user has rights to delete the locality
+	 */
+	public static boolean isAllowedDeleteLocality(User user, String status, String featureID, PageState state) throws IOException, SQLException {
+		if (user == null || status == null || featureID == null)
+			return false;
+		if (status.equals(Audit.STATUS_APPROVED))
+			return false;		
+		if (status.equals(Audit.STATUS_WAITING))
+			return hasMasterfileRights(user, featureID, state);
+		return (getUserWorkingLocalityRights(user, featureID, state) & Folder.FOLDER_DELETE_RIGHT) > 0;
+	}
+	
+	/**
+	 * Returns true if the locality can be submitted by the user
+	 */
+	public static boolean isAllowedSubmitLocality(User user, String status, String featureID, PageState state) throws IOException, SQLException {
+		if (user == null || status == null || featureID == null)
+			return false;
+		if (status.equals(Audit.STATUS_APPROVED))
+			return false;	
+		if (status.equals(Audit.STATUS_WAITING))
+			return hasMasterfileRights(user, featureID, state);
+		return (getUserWorkingLocalityRights(user, featureID, state) & Folder.FOLDER_SUBMIT_RIGHT) > 0;		
+	}
+	
+	/**
 	 * Returns true if this sample can be viewed by the user
 	 */
-	public static boolean isAllowedSample(User user, String securityClassID, String status, String sampleID, PageState state)
-		throws IOException, SQLException {
+	public static boolean isAllowedSample(User user, String securityClassID, String status, String sampleID, PageState state) throws IOException, SQLException {
 		if (user == null)
 			return false;
 		if (!status.equals(Audit.STATUS_APPROVED))
-			return (getUserWorkingSampleRights(user, sampleID, state) & 1) > 0;
+			return (getUserWorkingSampleRights(user, sampleID, state) & Folder.FOLDER_READ_RIGHT) > 0;
 		if (securityClassID != null)
 			return hasMasterfileSampleRights(user, sampleID, state) || checkSecurityClass(Integer.parseInt(securityClassID), user, state);
 		return true;
 	}
 
+	/**
+	 * Returns true if the sample can be edited (and saved) by the user
+	 */
+	public static boolean isAllowedEditSample(User user, String status, String sampleID, PageState state) throws IOException, SQLException {
+		if (user == null || status == null || sampleID == null)
+			return false;
+		if (status.equals(Audit.STATUS_APPROVED))
+			return (hasMasterfileSampleRights(user, sampleID, state) || checkSecurityClass(FRED_EDIT_SC, user, state));
+		if (status.equals(Audit.STATUS_WAITING))
+			return hasMasterfileSampleRights(user, sampleID, state);
+		return (getUserWorkingSampleRights(user, sampleID, state) & Folder.FOLDER_EDIT_RIGHT) > 0;
+	}
+
+	/**
+	 * Return true if the user has rights to delete the sample
+	 */
+	public static boolean isAllowedDeleteSample(User user, String status, String sampleID, PageState state) throws IOException, SQLException {
+		if (user == null || status == null || sampleID == null)
+			return false;
+		if (status.equals(Audit.STATUS_APPROVED))
+			return false;		
+		if (status.equals(Audit.STATUS_WAITING))
+			return hasMasterfileSampleRights(user, sampleID, state);
+		return (getUserWorkingSampleRights(user, sampleID, state) & Folder.FOLDER_DELETE_RIGHT) > 0;
+	}
+	
+	/**
+	 * Returns true if the sample can be submitted by the user
+	 */
+	public static boolean isAllowedSubmitSample(User user, String status, String sampleID, PageState state) throws IOException, SQLException {
+		if (user == null || status == null || sampleID == null)
+			return false;
+		if (status.equals(Audit.STATUS_APPROVED))
+			return false;	
+		if (status.equals(Audit.STATUS_WAITING))
+			return hasMasterfileSampleRights(user, sampleID, state);
+		return (getUserWorkingSampleRights(user, sampleID, state) & Folder.FOLDER_SUBMIT_RIGHT) > 0;		
+	}
+	
 	/**
 	 * Returns true if this record can be viewed by the user
 	 */
@@ -121,15 +200,11 @@ public class FREDUtils {
 			return false;
 		int userRights = 0;
 		DBConnection conn = getFREDConnection(state);
-		String query = "SELECT masterfile_id FROM feature WHERE feature_id = ?";
-		ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(featureID)});
-		if (rs.next()) {
-			query = "SELECT user_rights FROM folder_view WHERE user_id = ? AND folder_id = ?";
-			rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(user.getPersonId()), new Integer(rs.getInt(1))});
-			if (rs.next())
-				userRights = rs.getInt(1);
-		}
-		return (userRights & 1) > 0;
+		String query = "SELECT fv.user_rights FROM folder_view fv, feature f WHERE fv.user_id = ? AND fv.folder_id = f.masterfile_id AND f.feature_id = ?";
+		ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(user.getPersonId()), new Integer(featureID)});
+		if (rs.next())
+			userRights = rs.getInt(1);
+		return (userRights & Folder.FOLDER_READ_RIGHT) > 0;
 	}
 
 	/**

@@ -19,7 +19,6 @@ import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.FolderUtils;
 import nz.cri.gns.fred.data.Feature;
-import nz.cri.gns.fred.data.test.FolderTest;
 import nz.cri.gns.fred.dataentry.DataEntryForm;
 import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
 import nz.cri.gns.fred.dataentry.DataInputException;
@@ -38,7 +37,7 @@ public class LocalityTest extends TestCase {
 
 	TestingPageState state;
 	DBConnection conn;
-	User user, user2;
+	User user, testUser;
 
 	public static final int TEST_DRILLHOLE = 1658;
 
@@ -48,11 +47,16 @@ public class LocalityTest extends TestCase {
 		//this.state.setInstance("gns");
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		try {
-			this.user = new User("test", "test", ipConn);
+			this.user = new User("pseudo_ben", "santor32", ipConn);
+			this.testUser = new User("test", "test", ipConn);
 		} catch (Exception e) {}
 	}
 
-	public void testCopy() throws IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public void testAllowedEdit() throws IOException, SQLException, DataInputException, InvalidCredentialsException {
+		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm(1704, user, state);
+	}
+	
+	public void __testCopy() throws IOException, SQLException, DataInputException, InvalidCredentialsException {
 		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm(Feature.DRILLHOLE_LOCALITY, user, 12, state);
 		System.out.println(form.getField(DataEntryForm.FEATURE_NAME));
 		System.out.println(form.getField(DataEntryForm.SPUD_DATE));
@@ -61,15 +65,6 @@ public class LocalityTest extends TestCase {
 		System.out.println(form.getField(DataEntryForm.SPUD_DATE));
 	}
 
-	public void _testNewSave() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
-		DataEntryForm loc2 = DataEntryFormFactory.getLocalityDataEntryForm(Feature.OUTCROP_LOCALITY, user, 221, state);
-		loc2.setTempField(DataEntryForm.COLLECTORS, "Morrison, Ben");
-		System.out.println("Collectors (after data entry): " + loc2.getField(DataEntryForm.COLLECTORS) + ":" + loc2.getTempField(DataEntryForm.COLLECTORS));
-		loc2.setFieldsFromTemp();
-		System.out.println("Collectors (after setting field): " + loc2.getField(DataEntryForm.COLLECTORS) + ":" + loc2.getTempField(DataEntryForm.COLLECTORS));
-		loc2.save();
-	}
-	
 	public void _testEdit() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
@@ -181,8 +176,8 @@ public class LocalityTest extends TestCase {
 		form.save();		
 	}
 	
-	public void _testCreateDeleteDrilholeLocality() throws SQLException, IOException, NotBoundException, InvalidCredentialsException, DataInputException, TaxonomicListException {
-		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm(Feature.DRILLHOLE_LOCALITY, user, FolderTest.TEST_FOLDER, state);
+	public void _testCreateDeleteDrillholeLocality() throws SQLException, IOException, NotBoundException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm(Feature.DRILLHOLE_LOCALITY, user, 18, state);
 		form.setTempField(DataEntryForm.FEATURE_NAME, "JUnit Drillhole");
 		form.setTempField(DataEntryForm.COLLECTION_DATE, "10/2004");
 		form.setTempField(DataEntryForm.DATUM_TYPE, "KB");

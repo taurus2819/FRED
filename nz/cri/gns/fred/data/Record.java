@@ -32,7 +32,7 @@ public class Record {
 	public static final int SAMPLE_NAME = 7;
 	public static final int AUDIT_ID = 8;
 	public static final int STATUS = 9;
-	public static final int LAST_CHANGE = 10;
+	public static final int CREATED_DATE = 10;
 	public static final int WORKING_FOLDER_ID = 11;
 	public static final int WORKING_COMMENTS = 12;
 	public static final int SECURITY_CLASS_ID = 13;
@@ -110,7 +110,7 @@ public class Record {
 		String query =
 			"SELECT RECORD_ID, FEATURE_ID, SAMPLE_ID, FEATURE_STATUS, SAMPLE_STATUS, "
 				+ "SAMPLE_SECURITY_CLASS_ID, FEATURE_NAME, SAMPLE_NAME, AUDIT_ID, "
-				+ "STATUS, LAST_CHANGE, WORKING_FOLDER_ID, WORKING_COMMENTS, "
+				+ "STATUS, created_date, WORKING_FOLDER_ID, WORKING_COMMENTS, "
 				+ "SECURITY_CLASS_ID, RECORD_TYPE, RECORD_NAME "
 				+ "FROM Record_All_View WHERE Record_ID = ?";
 		data[0] = new Integer(this.id);
@@ -130,7 +130,7 @@ public class Record {
 			values[SAMPLE_NAME] = rs.getString(8);
 			values[AUDIT_ID] = ((rs.getString(9) != null) ? new Integer(rs.getInt(9)) : null);
 			values[STATUS] = rs.getString(10);
-			values[LAST_CHANGE] = rs.getDate(11);
+			values[CREATED_DATE] = rs.getDate(11);
 			values[WORKING_FOLDER_ID] = ((rs.getString(12) != null) ? new Integer(rs.getInt(12)) : null);
 			values[WORKING_COMMENTS] = rs.getString(13);
 			values[SECURITY_CLASS_ID] = ((rs.getString(14) != null) ? new Integer(rs.getInt(14)) : null);

@@ -5,6 +5,7 @@ import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Iterator;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
@@ -17,6 +18,7 @@ import nz.cri.gns.db.site.DatumMethod;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.Audit;
+import nz.cri.gns.fred.data.AuditEdit;
 import nz.cri.gns.fred.data.FRNumber;
 import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.data.Folder;
@@ -33,7 +35,7 @@ public abstract class LocalityDE implements DataEntryForm {
 
 	protected User user;
 	protected PageState state;
-	protected Folder folder;
+	private Folder workingFolder = null;
 	protected Feature feature;
 	protected Sample sample;
 	protected String featureType;
@@ -43,38 +45,34 @@ public abstract class LocalityDE implements DataEntryForm {
 	private Datum origSystem;
 	private Datum.Coordinate origCoord;
 	protected boolean savedFlag = false;
+	private boolean isAllowedSubmit = false;
 
-	public LocalityDE(User user, int folderID, String featureType, PageState state)
-		throws SQLException, IOException, DataInputException {
+	public LocalityDE(User user, int folderID, String featureType, PageState state)	throws SQLException, IOException, DataInputException {
 		this.user = user;
 		this.state = state;
 		if (!(featureType.equals(Feature.OUTCROP_LOCALITY) || featureType.equals(Feature.DRILLHOLE_LOCALITY) || featureType.equals(Feature.VERTICAL_SECTION_LOCALITY)))
 			throw new DataInputException("Feature Type", "Invalid value");
 		this.featureType = featureType;
-		this.folder = new Folder(folderID, user, state);
+		workingFolder = new Folder(folderID, user, state);
+		if (!workingFolder.isAllowedCreateLocalities())
+			throw new DataInputException("Locality", "Insufficient rights to create locality");
+		isAllowedSubmit = workingFolder.isAllowedSubmitLocalities();
 	}
 
-	public LocalityDE(int featureID, User user, PageState state)
-		throws IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public LocalityDE(int featureID, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException {
 		this.user = user;
 		this.state = state;
 		feature = new Feature(featureID, user, state, true);
 		featureType = feature.getFeatureType();
 		
 		//check status for editing
-		if (feature.getAsString(Feature.STATUS).equals(Audit.STATUS_APPROVED)) {
-			throw new DataInputException("Locality", "Locality not editable");		
-		} else if (feature.getAsString(Feature.STATUS).equals(Audit.STATUS_WAITING)) {
-			if (FREDUtils.hasMasterfileRights(user, String.valueOf(featureID), state)) {
-				folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state);
-			} else {
-				throw new DataInputException("Locality", "Locality not editable");
-			}
-		} else if (feature.get(Feature.WORKING_FOLDER_ID) != null) {
-			folder = new Folder(feature.getAsInt(Feature.WORKING_FOLDER_ID), user, state);
-		}
+		if (!FREDUtils.isAllowedEditLocality(user, feature.getAsString(Feature.STATUS), String.valueOf(featureID), state))
+			throw new DataInputException("Locality", "Insufficient rights to edit this locality");
+		if (feature.get(Feature.WORKING_FOLDER_ID) != null)
+			workingFolder = new Folder(feature.getAsInt(Feature.WORKING_FOLDER_ID), user, state);
 		int sampleID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
 		sample = new Sample(sampleID, user, state, true);
+		isAllowedSubmit = FREDUtils.isAllowedSubmitLocality(user, feature.getAsString(Feature.STATUS), String.valueOf(feature.getFeatureID()), state);
 	}
 
 	public void copyFrom(int featureID) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
@@ -103,7 +101,7 @@ public abstract class LocalityDE implements DataEntryForm {
 					setField(GRID_REF, "NZMG:" + sample.getAsString(Sample.ORIG_COORD).replace('|',	'*'));
 					break;
 				case 16 :
-					setField(GRID_REF, "TruncNZMG:"	+ sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
+					setField(GRID_REF, "NZMS260:"	+ sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
 					break;
 				case 29 :
 					setField(GRID_REF, "NZGD49:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|',	'*'));
@@ -228,25 +226,63 @@ public abstract class LocalityDE implements DataEntryForm {
 
 	public void makeNavPanelHTML(Writer out) throws IOException {
 		out.write("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>\n");
-		out.write("<tr><td colspan='2' align='center' class='heading'>" + featureType + " Locality</td></tr>\n");
+		try {
+			if (feature.getAsString(Feature.STATUS).equals(Audit.STATUS_APPROVED)) {
+				out.write("<tr><td colspan='2' align='center' class='heading'>" + feature.getAsString(Feature.SAMPLE_NAMES) + "</td></tr>\n");
+			} else {
+				out.write("<tr><td colspan='2' align='center' class='heading'>" + featureType + " Locality</td></tr>\n");
+			}
+		} catch (Exception e) {}
 		out.write("<tr><td>&nbsp;</td></tr>\n");
-		out.write("<tr><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
-		if (feature != null)
-			out.write("&FeatID=" + feature.getFeatureID());
-		out.write("&RecType=" + featureType	+ "'><img src='images/load.gif' height='20' width='20' border='0' alt='Copy From' /></a>&nbsp;&nbsp;</td><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
-		if (feature != null)
-			out.write("&FeatID=" + feature.getFeatureID());
-		out.write("&RecType=" + featureType + "' class='boldlink'>Copy From</a></td></tr>\n");
+		if (workingFolder != null) {
+			out.write("<tr><td><a href='load_record.jsp?FoldID=" + workingFolder.getFolderID()
+				+ ((feature != null) ? "&FeatID=" + feature.getFeatureID() : "")
+				+ "&RecType=" + featureType	+ "'><img src='images/load.gif' height='20' width='20' border='0' alt='Copy From' /></a>&nbsp;&nbsp;</td><td><a href='load_record.jsp?FoldID=" + workingFolder.getFolderID()
+				+ ((feature != null) ? "&FeatID=" + feature.getFeatureID() : "")
+				+ "&RecType=" + featureType + "' class='boldlink'>Copy From</a></td></tr>\n");
+		}
 		out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
-		if (folder.isAllowedSubmitLocalities())
+		if (isAllowedSubmit)
 			out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Submit\";form1.submit();'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database' /></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick='form1.SaveType.value=\"Submit\";form1.submit();' class='boldlink'>Submit</a></td></tr>\n");
 	}
 
-	public void makeDataEntryHTML(Writer out)
-		throws IOException, SQLException {
+	public void makeDataEntryHTML(Writer out) throws IOException, SQLException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		out.write(
-			"<tr><td class='heading'>Registration Area</td><td></td><td>");
+		out.write("<table border='0' cellspacing='0' cellpadding='2'>\n");
+		
+		//Edit details
+		try {
+			if (feature.getAsString(Feature.STATUS).equals(Audit.STATUS_APPROVED)) {
+				out.write("<tr><td class=\"heading\" colspan=\"4\" style=\"color: #FF0000\">You are editing an approved locality.  Previous edits are shown below.  Please enter comments on the edits you are making in the <em>Edit Comments</em> box below</td></tr>");
+				Audit audit = Audit.getAudit(feature.getAsInt(Feature.AUDIT_ID), state);
+				if (audit.get(Audit.EDIT_HISTORY) != null) {
+					for (Iterator i = audit.getAsVector(Audit.EDIT_HISTORY).iterator(); i.hasNext(); ) {
+						AuditEdit ae = (AuditEdit) i.next();
+						out.write("<tr><td>" + FREDUtils.noNulls(ae.getEditedBy()) + "</td><td class=\"smalltext\">"
+							+ ((ae.getEditedDate() != null) ? FREDUtils.formatDateForOutput(ae.getEditedDate()) : "")
+							+ "</td><td>" + FREDUtils.noNulls(ae.getComments()) + "</td></tr>");
+					}
+				}
+				out.write("<tr><td class=\"heading\" colspan=\"2\">Edit Comments</td><td><textarea name=\"EditComm\" rows=\"3\" cols=\"40\">"
+						+ FREDUtils.noNulls(getFieldForHTML(EDIT_COMMENTS))
+						+ "</textarea></td></tr>\n");
+				out.write("<tr><td>&nbsp;</td></tr>");
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		
+		if (featureType.equals(Feature.OUTCROP_LOCALITY)) {
+			out.write("<tr><td class='heading' colspan='2'>Field Number</td><td><input type='text' name='FeatName' value='"
+					+ FREDUtils.noNulls(getFieldForHTML(FIELD_NUMBER)) + "'></td></tr>\n");
+		} else if (featureType.equals(Feature.DRILLHOLE_LOCALITY)) {
+			out.write("<tr><td class='heading' colspan='2'>Drillhole Name</td><td><input type='text' name='FeatName' value='"
+					+ FREDUtils.noNulls(getFieldForHTML(DRILLHOLE_NAME)) + "'></td></tr>\n");			
+		} else {
+			out.write("<tr><td class='heading' colspan='2'>Section Name</td><td><input type='text' name='FeatName' value='"
+					+ FREDUtils.noNulls(getFieldForHTML(DRILLHOLE_NAME)) + "'></td></tr>\n");
+		}
+		out.write("<tr><td class='heading'>Registration Area</td><td></td><td>");
 		ComboDescriptor cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
 		cd.name = "RegAreaID";
 		cd.selected = getFieldForHTML(DataEntryForm.REGISTRATION_AREA);
@@ -260,19 +296,19 @@ public abstract class LocalityDE implements DataEntryForm {
 		} else {
 			out.write("Recollection of");
 		}
-		out.write(
-			"</td><td></td><td><input type='text' name='Recoll' value='"
+		out.write("</td><td></td><td><input type='text' name='Recoll' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(LocalityDE.RECOLLECTION))
 				+ "' /></td></tr>\n");
-		out.write(
-			"<tr><td class='heading' colspan='2'>Working Comments<br><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'>"
+		out.write("<tr><td class='heading' colspan='2'>Working Comments<br><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'>"
 				+ FREDUtils.noNulls(getFieldForHTML(LocalityDE.WORKING_COMMENTS))
 				+ "</textarea></td></tr>\n");
-		out.write(
-			"<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
+		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
 			
 		if (feature != null) {
-			out.write("<tr><td class='heading' colspan='2'>Attached Files/Images<br /><span class='smalltext'>Click <a href='binary_data_entry.jsp?ID=" + feature.getFeatureID() + "&RecType=" + feature.getFeatureType() + "&FoldID=" + folder.getFolderID() + " 'target='fredBinary'>here</a> to add/edit</span></td><td>");
+			out.write("<tr><td class='heading' colspan='2'>Attached Files/Images<br /><span class='smalltext'>Click <a href='binary_data_entry.jsp?ID="
+				+ feature.getFeatureID() + "&RecType=" + feature.getFeatureType()
+				+ ((workingFolder != null) ? "&FoldID=" + workingFolder.getFolderID() : "")
+				+ " 'target='fredBinary'>here</a> to add/edit</span></td><td>");
 			try {
 				if (feature != null && feature.getMetadataRecordsCount() > 0) {	
 					MetadataRecord[] mr = feature.getMetadataRecords();
@@ -283,26 +319,18 @@ public abstract class LocalityDE implements DataEntryForm {
 			out.write("</td></tr>");
 		}
 		
-		out.write(
-			"<tr><td class='heading'>Location</td><td class='smallheading'>Grid Ref.</td><td><input type='text' name='GridRef' size='40' value='"
+		out.write("<tr><td class='heading'>Location</td><td class='smallheading'>Grid Ref.</td><td><input type='text' name='GridRef' size='40' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(LocalityDE.GRID_REF))
 				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Coord\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-
-		ResultSet rs =
-			conn.executeQuery("SELECT MAX(Method_ID) FROM SC.Method");
+		ResultSet rs = conn.executeQuery("SELECT MAX(Method_ID) FROM SC.Method");
 		rs.next();
-		out.write(
-			"<script language='JavaScript'>\nvar datumMethod = new Array("
+		out.write("<script language='JavaScript'>\nvar datumMethod = new Array("
 				+ (rs.getInt(1) + 1)
 				+ ");\n");
-		rs =
-			conn.executeQuery(
-				"SELECT Method_ID, Nom_Accuracy_XY FROM SC.Method WHERE Nom_Accuracy_XY IS NOT NULL ORDER BY Method_ID");
-		while (rs.next()) {
+		rs = conn.executeQuery("SELECT Method_ID, Nom_Accuracy_XY FROM SC.Method WHERE Nom_Accuracy_XY IS NOT NULL ORDER BY Method_ID");
+		while (rs.next())
 			out.write("datumMethod[" + rs.getString(1) + "] = '" + FREDUtils.noNulls(rs.getString(2)) + "';\n");
-		}
-		out.write(
-			"function setAccuracy(datID, form) {\nif (datID != \"-\") { form.Accuracy.value = datumMethod[datID]; }\n}\n");
+		out.write("function setAccuracy(datID, form) {\nif (datID != \"-\") { form.Accuracy.value = datumMethod[datID]; }\n}\n");
 		out.write("</script>\n");
 		conn.releaseStatement();
 
@@ -316,12 +344,10 @@ public abstract class LocalityDE implements DataEntryForm {
 		cd.tagParams = "onChange='setAccuracy(this.value, this.form)'";
 		HTMLUtils.makeDropBox(out, conn, cd);
 		out.write("</td></tr>\n");
-		out.write(
-			"<tr><td></td><td class='smallheading'>Accuracy</td><td><input type='text' name='Accuracy' value='"
+		out.write("<tr><td></td><td class='smallheading'>Accuracy</td><td><input type='text' name='Accuracy' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(LocalityDE.ACCURACY))
 				+ "'>&nbsp;m</td></tr>\n");
-		out.write(
-			"<tr><td></td><td class='smallheading'>Locality<br />Description</td><td><textarea name='Loc' cols='40' rows='5'>"
+		out.write("<tr><td></td><td class='smallheading'>Locality<br />Description</td><td><textarea name='Loc' cols='40' rows='5'>"
 				+ FREDUtils.noNulls(getFieldForHTML(LocalityDE.LOCALITY_DESC))
 				+ "</textarea></td></tr>\n");
 	}
@@ -329,11 +355,9 @@ public abstract class LocalityDE implements DataEntryForm {
 	protected void makeEndBitHTML(Writer out) throws IOException {
 		out.write("<table border='0' cellpadding='0' cellspacing='2'>\n");
 		out.write("<tr><td>&nbsp;</td></tr>\n");
-		out.write(
-			"<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
-		if (folder.isAllowedSubmitLocalities()) {
+		out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
+		if (isAllowedSubmit)
 			out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Submit\";form1.submit();'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database'/></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick='form1.SaveType.value=\"Submit\";form1.submit();' class='boldlink'>Submit</a></td></tr>\n");
-		}
 		out.write("</table>\n");
 	}
 
@@ -350,10 +374,10 @@ public abstract class LocalityDE implements DataEntryForm {
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");
 			}
-		} else if (coord.indexOf("TruncNZMG:") == 0) {
+		} else if (coord.indexOf("NZMS260:") == 0) {
 			if (coord.indexOf("*") == coord.lastIndexOf("*"))
 				throw new DataInputException("Coordinate", "Invalid value");
-			String sheet = coord.substring(10, coord.indexOf("*"));
+			String sheet = coord.substring(8, coord.indexOf("*"));
 			String east = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
 			String north = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
 			try {
@@ -432,14 +456,13 @@ public abstract class LocalityDE implements DataEntryForm {
 			if (fields[GRID_REF] != null)
 				siteID = String.valueOf(getSite().getId());
 			if (feature == null) {
-				if (!folder.isAllowedCreateLocalities())
-					throw new InvalidCredentialsException();
 				QueryDescriptor qd = new QueryDescriptor("audit_table");
 				qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
 				qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
 				qd.addQueryColumn("created_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
 				qd.addQueryColumn("working_comments", Types.VARCHAR, FREDUtils.noNulls(recoll) + FREDUtils.noNulls(fields[WORKING_COMMENTS]));
-				qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(folder.getFolderID()));
+				if (workingFolder != null)
+					qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(workingFolder.getFolderID()));
 				String auditID = DBUtils.doInsertUsingSequence(qd, "audit_id", "audit_seq", conn, true);
 				qd = new QueryDescriptor("feature");
 				if (siteID != null) 
@@ -453,16 +476,20 @@ public abstract class LocalityDE implements DataEntryForm {
 				String featureID = DBUtils.doInsertUsingSequence(qd, "feature_id", "feature_seq", conn, true);
 				feature = new Feature(Integer.parseInt(featureID), user, state, true);
 			} else { // edit
-				if (!folder.isAllowedApproveLocalities() && feature.getAsString(Feature.STATUS).equals(Audit.STATUS_WAITING))
-					throw new InvalidCredentialsException();
-				if (!folder.isAllowedEditLocalities())
-					throw new InvalidCredentialsException();
-				QueryDescriptor qd = new QueryDescriptor("audit_table");
-				qd.addQueryColumn("modified_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
-				qd.addQueryColumn("modified_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
-				qd.addQueryColumn("working_comments", Types.VARCHAR, FREDUtils.noNulls(recoll) + FREDUtils.noNulls(fields[WORKING_COMMENTS]));
-				qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getAsInt(Feature.AUDIT_ID)));
-				DBUtils.doUpdate(qd, "audit_id=?", conn);
+				QueryDescriptor qd;
+				if (feature.getAsString(Feature.STATUS).equals(Audit.STATUS_APPROVED)) {
+					qd = new QueryDescriptor("audit_edit");
+					qd.addQueryColumn("audit_id", Types.NUMERIC, new Integer(feature.getAsInt(Feature.AUDIT_ID)));
+					qd.addQueryColumn("edited_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
+					qd.addQueryColumn("edited_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
+					qd.addQueryColumn("comments", Types.VARCHAR, fields[EDIT_COMMENTS]);
+					DBUtils.doInsertUsingSequence(qd, "audit_edit_id", "audit_edit_seq", conn, false);
+				} else {
+					qd = new QueryDescriptor("audit_table");
+					qd.addQueryColumn("working_comments", Types.VARCHAR, FREDUtils.noNulls(recoll) + FREDUtils.noNulls(fields[WORKING_COMMENTS]));
+					qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getAsInt(Feature.AUDIT_ID)));
+					DBUtils.doUpdate(qd, "audit_id=?", conn);
+				}
 				qd = new QueryDescriptor("feature");
 				if (siteID != null) 
 					qd.addQueryColumn("site_id", Types.NUMERIC, new Integer(siteID));
@@ -474,13 +501,16 @@ public abstract class LocalityDE implements DataEntryForm {
 				DBUtils.doUpdate(qd, "feature_id=?", conn);
 				feature = new Feature(feature.getFeatureID(), user, state, true);
 			}
+			if (workingFolder != null) {
+				Folder folder = new Folder(workingFolder.getFolderID(), user, state, true);
+			}
+			savedFlag = true;
 		}
-		savedFlag = true;
 		return feature.getFeatureID();
 	}
 
 	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
-		if ((feature != null && feature.getAsString(Feature.STATUS).equals(Audit.STATUS_WAITING)) || !folder.isAllowedSubmitLocalities())
+		if ((feature != null && feature.getAsString(Feature.STATUS).equals(Audit.STATUS_WAITING)) || !isAllowedSubmit)
 			throw new InvalidCredentialsException();
 		if (featureType == null || fields[GRID_REF] == null || fields[REGISTRATION_AREA] == null)
 			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
@@ -505,7 +535,7 @@ public abstract class LocalityDE implements DataEntryForm {
 
 	public void revoke()
 		throws SQLException, IOException, InvalidCredentialsException {
-		if (feature == null || !feature.getAsString(Feature.STATUS).equals(Audit.STATUS_WAITING) || !folder.isAllowedSubmitLocalities())
+		if (feature == null || !feature.getAsString(Feature.STATUS).equals(Audit.STATUS_WAITING) || !isAllowedSubmit)
 			throw new InvalidCredentialsException();
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		QueryDescriptor qd = new QueryDescriptor("audit_table");
@@ -565,7 +595,7 @@ public abstract class LocalityDE implements DataEntryForm {
 	}
 
 	public void delete() throws IOException, SQLException, InvalidCredentialsException {
-		if (!folder.isAllowedDeleteLocalities() && feature != null)
+		if (!FREDUtils.isAllowedDeleteLocality(user, feature.getAsString(Feature.STATUS), String.valueOf(feature.getFeatureID()), state) && feature != null)
 			throw new InvalidCredentialsException();
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		String query = "DELETE FROM feature WHERE feature_id = ?";
@@ -574,7 +604,9 @@ public abstract class LocalityDE implements DataEntryForm {
 	}
 
 	public int getWorkingFolderID() {
-		return folder.getFolderID();
+		if (workingFolder != null)
+			return workingFolder.getFolderID();
+		return -1;
 	}
 
 	private SiteRecord getSite() throws SQLException  {
@@ -582,9 +614,8 @@ public abstract class LocalityDE implements DataEntryForm {
 		try {
 			if (fields[METHOD] != null) {
 				horzDM = DatumMethod.getDatumMethod(Integer.parseInt(fields[METHOD]), FREDUtils.getFREDConnection(state));
-				if (fields[ACCURACY] != null) {
+				if (fields[ACCURACY] != null)
 					horzDM.setHorizontalAccuracy(Float.parseFloat(fields[ACCURACY]));
-				}
 			}
 			return SiteRecord.insertSite(fields[FIELD_NUMBER], origSystem, origCoord, null, horzDM, null, null, fields[LOCALITY_DESC], countryCode, String.valueOf(user.getPersonId()), 0, JspUtils.getInstance(state.getContext()));
 		} catch (Exception e) {

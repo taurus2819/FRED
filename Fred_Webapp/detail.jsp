@@ -95,10 +95,10 @@
 				if (audit.get(Audit.CREATED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.CREATED_DATE))); }
 				out.println("</td></tr>");
 			}
-			if (audit.get(Audit.MODIFIED_BY) != null || audit.get(Audit.MODIFIED_DATE) != null) {
+			if (audit.get(Audit.EDITED_BY) != null || audit.get(Audit.EDITED_DATE) != null) {
 				out.println("<tr><td class='smallheading'>Edited:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (audit.get(Audit.MODIFIED_BY) != null) { out.print(audit.getAsString(Audit.MODIFIED_BY) + "<br />"); }
-				if (audit.get(Audit.MODIFIED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.MODIFIED_DATE))); }
+				if (audit.get(Audit.EDITED_BY) != null) { out.print(audit.getAsString(Audit.EDITED_BY) + "<br />"); }
+				if (audit.get(Audit.EDITED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.EDITED_DATE))); }
 				out.println("</td></tr>");
 			}
 			if (audit.get(Audit.SUBMITTED_BY) != null || audit.get(Audit.SUBMITTED_DATE) != null) {
@@ -554,7 +554,7 @@
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>Either the sample doesn't exist or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</td></tr>");
 			out.println("</table>");
-		}
+		} 
 	} 
 	else { //no sampleID
 		drawTop(out, et, request, response);

@@ -74,8 +74,6 @@ public class OutcropLocalityDE extends LocalityDE {
 	}
 
 	public void makeDataEntryHTML(Writer out) throws IOException, SQLException {
-		out.write("<table border='0' cellspacing='0' cellpadding='2'>\n");
-		out.write("<tr><td class='heading' colspan='2'>Field Number</td><td><input type='text' name='FeatName' value='" + FREDUtils.noNulls(getFieldForHTML(LocalityDE.FIELD_NUMBER)) + "'></td></tr>\n");
 		super.makeDataEntryHTML(out);
 		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
 		sampleDE.makeDataEntryHTML(out);
