@@ -11,7 +11,7 @@
 	boolean authorChk = false, sCountChk = false, sCoordChk = false, commChk = true;
 
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	//if FeatureID given then get SampleID or transer to drillhole
 	if (request.getParameter("FeatID") != null) {
@@ -43,7 +43,7 @@
 	}
 
 	if (sampID != null) {
-		try {
+		//try {
 			Sample sample = new Sample(Integer.parseInt(sampID), user, state);
 			
 			if (request.getParameter("ActionType") != null) { //do something
@@ -110,16 +110,21 @@
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 			if (user != null) {
 			
-				out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;<a href='print_front.jsp?ID=" + sampID + "&FormType=Full' class='heading' target='print'>Print Front</a></td></tr>");
-			/*	if (sample.getPaleontologyRecordCount() > 0) {
+				out.println("<tr><td colspan='2'><table border='0'>");
+				out.println("<tr><td><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;</td><td><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' class='heading' target='print'>Print Front</a></td></tr>");
+				if (sample.getPaleontologyRecordCount() > 0) {
 					for (Iterator i = sample.getAsVector(Sample.RECORDS).iterator(); i.hasNext(); ) {
 						KeyValueObject rec = (KeyValueObject)i.next();
 						if (rec.getValue().equals("PAL")) {
-							Record record = Record.getData(Integer.parseInt(rec.getKey()), user, state);
-							out.println("<tr><td colspan='2'><a href='print_pal.jsp?ID=" + record.getRecordID() + "' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;<a href='print_pal.jsp?ID=" + record.getRecordID() + "' class='heading' target='print'>Print " + record.getAsString(Record.RECORD_NAME) + "</a></td></tr>");
+							PaleontologyRecord pal = (PaleontologyRecord) PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state);
+							String ident = ((pal.get(Record.IDENTIFIER) != null) ? ((KeyValueObject) pal.getAsVector(Record.IDENTIFIER).firstElement()).getValue() : "");
+							String identDate = ((pal.get(Record.IDENTIFICATION_DATE) != null) ? FREDUtils.formatDateForOutput(pal.getAsDate(PaleontologyRecord.IDENTIFICATION_DATE), pal.getAsString(PaleontologyRecord.IDENTIFICATION_DATE_ROUNDING)) : "");
+							String identifier = ((ident.length() + identDate.length() > 0) ? "(" + ident + ((ident.length() > 0 && identDate.length() > 0) ? ", " : "") + identDate + ")" : "");
+							out.println("<tr><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;</td><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' class='heading' target='print'>Print Pal Record</br >" + identifier + "</a></td></tr>");
 						}
 					}
-				} */
+				}
+				out.println("</table></td></tr>");
 				
 				if (FREDUtils.isAllowedApproveLocality(user, sample.getAsString(Sample.FEATURE_ID), sample.getAsString(Sample.STATUS), state)) {
 					FRNumber frNumber = FolderUtils.getNextFRNumber(sample.getAsString(Sample.REG_AREA_CODE), sample.getAsString(Sample.NZMG_SHEET), sample.getAsDouble(Sample.LATITUDE), sample.getAsDouble(Sample.LONGITUDE), state);
@@ -507,14 +512,14 @@
 	
 			if (user ==  null) { out.println("<tr><td colspan='2'>More data may be available for this locality for <a href='login.jsp?loginpage=" + URLEncoder.encode("/fred/detail.jsp") + "' class='boldlink'>logged</a> in users</td></tr>"); }
 			out.println("</table></td></tr></table>");
-		}
+	/*	}
 		catch (Exception e) { // no record or not approved
 			drawEndNavigation(out);
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>Either the sample doesn't exist or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</td></tr>");
 			out.println("</table>");
-		}
-	}
+		}  */
+	} 
 	else { //no sampleID
 		drawTop(out, et, request, response);
 		drawEndNavigation(out);
