@@ -69,6 +69,8 @@
 			response.sendRedirect("folder_list.jsp");
 		}
 
+		out.println("<p>All data entry is done within a folder.  Your current folders are listed below and you can create more folders by clicking on the link to the left.</p>");
+
 		out.println("<table border='0' cellspacing='0' cellpadding='2' width='550'>");
 
 		//List Working folders
