@@ -92,8 +92,15 @@ function saveData(type) {
 			window.opener.form1.Identifier.value = window.opener.form1.Identifier.value + parseDropDown(Person.value) + "\n";
 		}
 		else if (type == "StratName") {
-			window.opener.form1.StratName.value = StratName.value
-			window.close();
+			if (Unk.checked == true && StratName.value != "") {
+				alert("Please don't enter a value for Stratigraphic Name and check the Unknown box");
+			} else if (Unk.checked == false) {
+				window.opener.form1.StratName.value = StratName.value;
+				window.close();
+			} else {
+				window.opener.form1.StratName.value = "unknown";
+				window.close();
+			}
 		}
 		else if (type == "SentTo") {
 			window.opener.form1.SentTo.value = window.opener.form1.SentTo.value + parseDropDown(Group.value) + "*" + parseDropDown(Person.value) + "*" + parseDropDown(Lab.value) + "*" + Comm.value + "\n";
@@ -299,8 +306,8 @@ function parseDropDown(val) {
 <table border='0' cellspacing='3' cellpadding='0'>
 
 <%	if (request.getParameter("Type") != null) {
-		out.println("<input type='hidden' name='Type' value='" + request.getParameter("Type") + "'>");
-		out.println("<input type='hidden' name='Add' value=''>");
+		out.println("<input type='hidden' name='Type' value='" + request.getParameter("Type") + "' />");
+		out.println("<input type='hidden' name='Add' value='' />");
 
 		if (request.getParameter("Add") != null) {  //add data to lookup tables
 			if (request.getParameter("Add").equals("Person")) {
@@ -392,9 +399,9 @@ function parseDropDown(val) {
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.print("</td></tr>");
 			out.println("<tr><td class='heading' colspan='2'>Add to Person List</td></tr>");
-			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
-			out.println("<tr><td class='smallheading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
-			out.println("<input type='submit' value='Add' onClick='return addData(\"Person\");'>");
+			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName' /></td></tr>");
+			out.println("<tr><td class='smallheading'>Surname/Company</td><td><input type='text' name='FamilyName' />&nbsp&nbsp");
+			out.println("<input type='submit' value='Add' onClick='return addData(\"Person\");' />");
 			out.println("</td></tr></table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
@@ -412,9 +419,9 @@ function parseDropDown(val) {
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.print("</td></tr>");
 			out.println("<tr><td class='heading' colspan='2'>Add to Person List</td></tr>");
-			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
-			out.println("<tr><td class='smallheading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
-			out.println("<input type='submit' value='Add' onClick='return addData(\"Person\");'>");
+			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName' /></td></tr>");
+			out.println("<tr><td class='smallheading'>Surname/Company</td><td><input type='text' name='FamilyName' />&nbsp&nbsp");
+			out.println("<input type='submit' value='Add' onClick='return addData(\"Person\");' />");
 			out.println("</td></tr></table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
@@ -432,9 +439,9 @@ function parseDropDown(val) {
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.print("</td></tr>");
 			out.println("<tr><td class='heading' colspan='2'>Add to Person List</td></tr>");
-			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
-			out.println("<tr><td class='smallheading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
-			out.println("<input type='submit' value='Add' onClick='return addData(\"Person\");'>");
+			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName' /></td></tr>");
+			out.println("<tr><td class='smallheading'>Surname/Company</td><td><input type='text' name='FamilyName' />&nbsp&nbsp");
+			out.println("<input type='submit' value='Add' onClick='return addData(\"Person\");' />");
 			out.println("</td></tr></table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
@@ -452,9 +459,9 @@ function parseDropDown(val) {
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.print("</td></tr>");
 			out.println("<tr><td class='heading' colspan='2'>Add to Person List</td></tr>");
-			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
-			out.println("<tr><td class='smallheading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
-			out.println("<input type='submit' value='Add' onClick='return addData(\"Person\");'>");
+			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName' /></td></tr>");
+			out.println("<tr><td class='smallheading'>Surname/Company</td><td><input type='text' name='FamilyName' />&nbsp&nbsp");
+			out.println("<input type='submit' value='Add' onClick='return addData(\"Person\");' />");
 			out.println("</td></tr></table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
@@ -472,9 +479,9 @@ function parseDropDown(val) {
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.print("</td></tr>");
 			out.println("<tr><td class='heading' colspan='2'>Add to Person List</td></tr>");
-			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
-			out.println("<tr><td class='smallheading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
-			out.println("<input type='submit' value='Add' onClick='return addData(\"Person\");'>");
+			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName' /></td></tr>");
+			out.println("<tr><td class='smallheading'>Surname/Company</td><td><input type='text' name='FamilyName' />&nbsp&nbsp");
+			out.println("<input type='submit' value='Add' onClick='return addData(\"Person\");' />");
 			out.println("</td></tr></table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
@@ -483,7 +490,7 @@ function parseDropDown(val) {
 
 		else if (request.getParameter("Type").equals("StratName")) {
 			out.println("<tr><td class='heading' colspan='2'>Stratigraphic Name</td></tr>");
-			out.println("<tr><td colspan='2'>Please enter a stratigraphic unit name in the text box.  You can select a unit from the NZ StratLex drop-down box if appropriate.</td></tr>");
+			out.println("<tr><td colspan='2'>Please enter a stratigraphic unit name in the text box.  You can select a unit from the NZ StratLex drop-down box if appropriate.<br />If you don't know the name of the unit tick the \"unknown\" box (please use sparingly)</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.print("<tr><td class='heading'>NZ StratLex</td><td>");
 			cd = new ComboDescriptor("SL.Strat_Unit", "SU_Name", "SU_Name");
@@ -492,7 +499,9 @@ function parseDropDown(val) {
 			cd.tagParams = "onChange='form1.StratName.value = parseDropDown(StratLex.value);'";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.print("</td></tr>");
-			out.println("<tr><td class='heading'>Stratigraphic Name</td><td><input type='text' name='StratName' size='40'></td></tr>");
+			out.print("<tr><td class='heading'>Stratigraphic Name</td><td><input type='text' name='StratName' size='40' />");
+			out.print("&nbsp;&nbsp;<input type='checkbox' name='Unk' />&nbsp;unknown");
+			out.println("</td></tr>");
 			out.println("</table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
@@ -519,9 +528,9 @@ function parseDropDown(val) {
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("<tr><td class='heading'>Comments</td><td><textarea name='Comm' rows='3' cols='40'></textarea></td></tr>");
 			out.println("<tr><td class='heading' colspan='2'>Add to Person List</td></tr>");
-			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
-			out.println("<tr><td class='smallheading'>Surname</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
-			out.println("<input type='submit' value='Add Person' onClick='return addData(\"Person\");'>");
+			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName' /></td></tr>");
+			out.println("<tr><td class='smallheading'>Surname</td><td><input type='text' name='FamilyName' />&nbsp&nbsp");
+			out.println("<input type='submit' value='Add Person' onClick='return addData(\"Person\");' />");
 			out.println("</table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
@@ -640,7 +649,7 @@ function parseDropDown(val) {
 			cd.tagParams = "onChange='form1.StratName.value = parseDropDown(StratLex.value);'";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("</td></tr>");
-			out.println("<tr><td class='heading'>Stratigraphic Name</td><td><input type='text' name='StratName' size='40'></td></tr>");
+			out.println("<tr><td class='heading'>Stratigraphic Name</td><td><input type='text' name='StratName' size='40' /></td></tr>");
 			out.print("</table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
@@ -659,7 +668,7 @@ function parseDropDown(val) {
 			cd.join = "FieldName = 'SedFeature'";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("</td></tr>");
-			out.println("<tr><td class='heading'>Abundant</td><td><input type='checkbox' name='Abund'></td></tr>");
+			out.println("<tr><td class='heading'>Abundant</td><td><input type='checkbox' name='Abund' /></td></tr>");
 			out.print("</table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
@@ -693,10 +702,10 @@ function parseDropDown(val) {
 			cd.join = "Group_ID = " + groupID + " AND Status IN ('approved', 'provisional')";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("</td></tr>");
-			out.println("<tr><td class='heading'>Taxonomic Name</td><td><input type='text' name='TaxaName' size='40'></td></tr>");
-			out.println("<tr><td class='heading'>Author</td><td><input type='text' name='Author' size='40'></td></tr>");
-			out.println("<tr><td class='heading'>Specimen Count</td><td><input type='text' name='SpecCount' size='40'></td></tr>");
-			out.println("<tr><td class='heading'>Specimen Coordinates</td><td><input type='text' name='SpecCoord' size='40'></td></tr>");
+			out.println("<tr><td class='heading'>Taxonomic Name</td><td><input type='text' name='TaxaName' size='40' /></td></tr>");
+			out.println("<tr><td class='heading'>Author</td><td><input type='text' name='Author' size='40' /></td></tr>");
+			out.println("<tr><td class='heading'>Specimen Count</td><td><input type='text' name='SpecCount' size='40' /></td></tr>");
+			out.println("<tr><td class='heading'>Specimen Coordinates</td><td><input type='text' name='SpecCoord' size='40' /></td></tr>");
 			out.println("<tr><td class='heading'>Comments</td><td><textarea name='Comm' cols='40' rows='3'></textarea></td></tr>");
 			out.println("</table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");

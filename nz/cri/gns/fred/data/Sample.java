@@ -81,6 +81,7 @@ public class Sample {
 	public static final int WORKING_RECORDS = 51;
 	public static final int SAMPLE_PROPERTY_RECORD_ID = 58;
 	public static final int SAMPLE_PROPERTY_RECORD_STATUS = 59;
+	public static final int SAMPLE_PROPERTY_RECORD_LAST_CHANGE = 62;
 
 	private SampleData sd;
 	private PageState state;

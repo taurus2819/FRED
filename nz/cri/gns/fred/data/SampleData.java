@@ -23,7 +23,7 @@ public class SampleData {
 
 	private static Pool pool = new Pool();
 	private int id;
-	private Object[] values = new Object[62];
+	private Object[] values = new Object[63];
 	private int[] types = { Types.NUMERIC };
 	private Object[] data = new Object[1];
 
@@ -160,7 +160,7 @@ public class SampleData {
 			values[Sample.REG_AREA_CODE] = rs.getString(57);
 			rs.close();
 			query =
-				"SELECT Record_ID, Record_Type, Status FROM Record_All_View WHERE Sample_ID = ? ORDER BY Record_Type, Record_Name";
+				"SELECT Record_ID, Record_Type, Status, Last_Change FROM Record_All_View WHERE Sample_ID = ? ORDER BY Record_Type, Record_Name";
 			rs = conn.executeQuery(query, types, data);
 			Vector rec = new Vector();
 			Vector wRec = new Vector();
@@ -171,6 +171,7 @@ public class SampleData {
 				if (rs.getString(2).equals("SMP")) {
 					values[Sample.SAMPLE_PROPERTY_RECORD_ID] = new Integer(rs.getInt(1));
 					values[Sample.SAMPLE_PROPERTY_RECORD_STATUS] = rs.getString(3);
+					values[Sample.SAMPLE_PROPERTY_RECORD_LAST_CHANGE] = rs.getDate(4);
 				} 
 			}
 			values[Sample.RECORDS] = rec;
