@@ -37,13 +37,23 @@ public class LocalityTest extends TestCase {
 	public void _testNewSave() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
-		User user = new User("ben", "St.Bathans", ipConn);
-		DataEntryForm loc2 = DataEntryFormFactory.getLocalityDataEntryForm("Outcrop", user, 12, state);
-		loc2.setTempField(DataEntryForm.COLLECTORS, "bad");
+		User user = new User("pseudo_ben", "santor32", ipConn);
+		DataEntryForm loc2 = DataEntryFormFactory.getLocalityDataEntryForm("Outcrop", user, 221, state);
+		loc2.setTempField(DataEntryForm.COLLECTORS, "Morrison, Ben");
 		System.out.println("Collectors (after data entry): " + loc2.getField(DataEntryForm.COLLECTORS) + ":" + loc2.getTempField(DataEntryForm.COLLECTORS));
 		loc2.setFieldsFromTemp();
 		System.out.println("Collectors (after setting field): " + loc2.getField(DataEntryForm.COLLECTORS) + ":" + loc2.getTempField(DataEntryForm.COLLECTORS));
-		//loc2.save();
+		loc2.save();
+	}
+	
+	public void testEdit() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+		TestingPageState state = new TestingPageState();
+		DBConnection ipConn = FREDUtils.getIPConnection(state);
+		User user = new User("pseudo_ben", "santor32", ipConn);
+		DataEntryForm loc2 = DataEntryFormFactory.getLocalityDataEntryForm(1630, user, state);
+		loc2.setTempField(DataEntryForm.COLLECTORS, "Morrison, Ben");
+		loc2.setFieldsFromTemp();
+		loc2.save();		
 	}
 	
 	public void _testCopy() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
@@ -137,7 +147,7 @@ public class LocalityTest extends TestCase {
 		} catch (Exception e) {}
 	}
 	
-	public void testOutcropSave() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void _testOutcropSave() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);

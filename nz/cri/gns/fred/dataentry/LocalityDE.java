@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.ComboDescriptor;
+import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.HTMLUtils;
+import nz.cri.gns.db.QueryDescriptor;
 import nz.cri.gns.db.site.DatumMethod;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.FREDUtils;
@@ -200,13 +203,13 @@ public abstract class LocalityDE implements DataEntryForm {
 						throw new DataInputException("Recollection/Sidetrack", value + " is not an existing FR Number or temporary name.  Please use the builder to select.");
 					}
 					break;
-				case SECURITY_TYPE :
+/*				case SECURITY_TYPE :
 					try {
 						secClassID = new Integer(FREDUtils.getSecurityClass(Integer.parseInt(value), user, state));
 					} catch (Exception e) {
 						throw new DataInputException("Security Class", "Invalid");
 					}
-					break;
+					break;  */
 			}
 		} catch (IOException e) {
 			throw new DataInputException();
@@ -449,47 +452,50 @@ public abstract class LocalityDE implements DataEntryForm {
 			if (feature == null) {
 				if (!folder.isAllowedCreateLocalities())
 					throw new InvalidCredentialsException();
-				//create new AUDIT, FEATURE and SAMPLE records
-				rs = conn.executeQuery("SELECT Audit_Seq.NEXTVAL FROM DUAL");
-				rs.next();
-				String auditID = rs.getString(1);
-				conn.executeUpdate(
-					"INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Comments, Working_Folder_ID) VALUES ("
-						+ auditID
-						+ ", 'working', "
-						+ user.getPersonId()
-						+ ", SYSDATE, "
-						+ JspUtils.sqlEscape(FREDUtils.noNulls(recoll) + FREDUtils.noNulls(fields[WORKING_COMMENTS]))
-						+ ", "
-						+ folder.getFolderID()
-						+ ")");
-				rs = conn.executeQuery("SELECT Feature_Seq.NEXTVAL FROM DUAL");
-				rs.next();
-				int featureID = rs.getInt(1);
-				conn.executeUpdate(
-					"INSERT INTO Feature (Feature_ID, Site_ID, Audit_ID, Feature_Type, Locality, Feature_Name, Reg_Area_ID) VALUES ("
-						+ featureID
-						+ ", "
-						+ JspUtils.sqlEscape(siteID)
-						+ ", "
-						+ auditID
-						+ ", "
-						+ JspUtils.sqlEscape(featureType)
-						+ ", "
-						+ JspUtils.sqlEscape(fields[LOCALITY_DESC])
-						+ ", "
-						+ JspUtils.sqlEscape(fields[FEATURE_NAME])
-						+ ", "
-						+ JspUtils.sqlEscape(fields[REGISTRATION_AREA])
-						+ ")");
-				feature = new Feature(featureID, user, state, true);
+				//create new AUDIT and FEATURE records
+				QueryDescriptor qd = new QueryDescriptor("audit_table");
+				qd.addQueryColumn("status", Types.VARCHAR, "working");
+				qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
+				qd.addQueryColumn("created_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
+				qd.addQueryColumn("working_comments", Types.VARCHAR, FREDUtils.noNulls(recoll) + FREDUtils.noNulls(fields[WORKING_COMMENTS]));
+				qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(folder.getFolderID()));
+				String auditID = DBUtils.doInsertUsingSequence(qd, "audit_id", "audit_seq", conn, true);
+
+				qd = new QueryDescriptor("feature");
+				if (siteID != null) 
+					qd.addQueryColumn("site_id", Types.NUMERIC, new Integer(siteID));
+				qd.addQueryColumn("audit_id", Types.NUMERIC, new Integer(auditID));
+				qd.addQueryColumn("feature_type", Types.VARCHAR, featureType);
+				qd.addQueryColumn("locality", Types.VARCHAR, fields[LOCALITY_DESC]);
+				qd.addQueryColumn("feature_name", Types.VARCHAR, fields[FEATURE_NAME]);
+				if (fields[REGISTRATION_AREA] != null)
+					qd.addQueryColumn("reg_area_id", Types.VARCHAR, new Integer(fields[REGISTRATION_AREA]));
+				String featureID = DBUtils.doInsertUsingSequence(qd, "feature_id", "feature_seq", conn, true);
+				feature = new Feature(Integer.parseInt(featureID), user, state, true);
 			} else { // edit
 				if (!folder.isAllowedApproveLocalities() && feature.getAsString(Feature.STATUS).equals("waiting"))
 					throw new InvalidCredentialsException();
 				if (!folder.isAllowedEditLocalities())
 					throw new InvalidCredentialsException();
 				//Update AUDIT
-				rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
+				QueryDescriptor qd = new QueryDescriptor("audit_table");
+				qd.addQueryColumn("modified_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
+				qd.addQueryColumn("modified_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
+				qd.addQueryColumn("working_comments", Types.VARCHAR, FREDUtils.noNulls(recoll) + FREDUtils.noNulls(fields[WORKING_COMMENTS]));
+				qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getAsInt(Feature.AUDIT_ID)));
+				DBUtils.doUpdate(qd, "audit_id=?", conn);
+				
+				qd = new QueryDescriptor("feature");
+				if (siteID != null) 
+					qd.addQueryColumn("site_id", Types.NUMERIC, new Integer(siteID));
+				qd.addQueryColumn("locality", Types.VARCHAR, fields[LOCALITY_DESC]);
+				qd.addQueryColumn("feature_name", Types.VARCHAR, fields[FEATURE_NAME]);
+				if (fields[REGISTRATION_AREA] != null)
+					qd.addQueryColumn("reg_area_id", Types.VARCHAR, new Integer(fields[REGISTRATION_AREA]));
+				qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getFeatureID()));
+				DBUtils.doUpdate(qd, "feature_id=?", conn);
+				
+	/*			rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
 				rs.next();
 				String auditID = rs.getString(1);
 				conn.executeUpdate(
@@ -509,10 +515,10 @@ public abstract class LocalityDE implements DataEntryForm {
 						+ ", Reg_Area_ID = "
 						+ JspUtils.sqlEscape(fields[REGISTRATION_AREA])
 						+ " WHERE Feature_ID = "
-						+ feature.getFeatureID());
+						+ feature.getFeatureID());  */
 				feature = new Feature(feature.getFeatureID(), user, state, true);
 			}
-			conn.releaseStatement();
+			//conn.releaseStatement();
 		}
 		savedFlag = true;
 		return feature.getFeatureID();

@@ -468,6 +468,10 @@ public class FREDUtils {
 		return new Sample(rs.getInt(1), user, state);
 	}
 
+	public static String getNowForSQL() {
+		return new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
+	}
+
 	public static boolean isNumeric(String str) {
 		try {
 			Double.parseDouble(str);
