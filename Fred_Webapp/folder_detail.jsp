@@ -196,8 +196,14 @@
 					connection.releaseStatement();
 					out.print("<tr>");
 					//out.print("<td><input type='checkbox' name='Check" + k++ + "' value='" + featID + "'></td>");
-					out.print("<td width='20'><img src='images/loc.gif' height='20' width='20' /></td><td colspan='3' class='heading'><a href='detail.jsp?FeatID=" + featID + "'>" + drillSampName + "</a>&nbsp;&nbsp;");
-					if (featName != null && !drillSampName.equals(featName)) { out.print("<br /><a href='detail.jsp?FeatID=" + featID + "'>(" + featName +")</a>&nbsp;&nbsp;"); }
+					out.print("<td width='20'><img src='images/loc.gif' height='20' width='20' /></td><td colspan='3' class='heading'>");
+					if (locStatus.equals("approved")) {
+						out.print("<a href='detail.jsp?FeatID=" + featID + "'>" + drillSampName + "</a>");
+					} else {
+						out.print(drillSampName);
+					}
+					out.print("&nbsp;&nbsp;");
+					if (featName != null && !drillSampName.equals(featName)) { out.print("<br />(" + featName +")&nbsp;&nbsp;"); }
 					out.print("</td><td>" + featType + "</td><td class='smallstar'>");
 					if (!locStatus.equals("approved")) {
 						out.print(locStatus + "</td><td>");
@@ -278,8 +284,14 @@
 					if (rs2.next()) { sampPropFlag = true; }
 					out.print("<tr>");
 					//out.print("<td><input type='checkbox' name='Check" + k++ + "' value='" + featID + "'></td>");
-					out.print("<td width='20'><img src='images/loc.gif' height='20' width='20' /></td><td colspan='3' class='heading'><a href='detail.jsp?ID=" + sampID + "'>" + sampName + "</a>&nbsp;&nbsp;");
-					if (featName != null && !sampName.equals(featName)) { out.print("<br /><a href='detail.jsp?ID=" + sampID + "'>(" + featName + ")</a>&nbsp;&nbsp;"); }
+					out.print("<td width='20'><img src='images/loc.gif' height='20' width='20' /></td><td colspan='3' class='heading'>");
+					if (locStatus.equals("approved")) {
+						out.print("<a href='detail.jsp?ID=" + sampID + "'>" + sampName + "</a>");
+					} else {
+						out.print(sampName);
+					}
+					out.print("&nbsp;&nbsp;");
+					if (featName != null && !sampName.equals(featName)) { out.print("<br />(" + featName + ")&nbsp;&nbsp;"); }
 					out.print("</td><td>Outcrop</td><td class='smallstar'>");
 					if (!locStatus.equals("approved")) {
 						out.print(locStatus + "</td><td>");

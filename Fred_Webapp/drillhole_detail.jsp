@@ -2,24 +2,21 @@
 		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
 %><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
-	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
-	Statement statement = connection.statement;
+	nz.cri.gns.intranet.DBConnection frConn = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
+	nz.cri.gns.intranet.DBConnection connection;
+	User user = getUser(session);
 	ResultSet rs;
 	DecimalFormat nzmg = new DecimalFormat("######0");
 	DecimalFormat latlong = new DecimalFormat("#00.0000");
 	SimpleDateFormat yearFormatter = new SimpleDateFormat ("yyyy");
 	SimpleDateFormat monthFormatter = new SimpleDateFormat ("MMM yyyy");
-	User user = getUser(session);
 	String featType = "", featID, palID, status = "", query;
-	int i = 1, userRights = 0, execUp, userID = 0;
 	int[] types = {Types.NUMERIC};
 	Object data[];
 	data = new Object[1];
 	int[] doubleTypes = {Types.NUMERIC, Types.NUMERIC};
 	Object doubleData[];
 	doubleData = new Object[2];
-
-	if (user != null) { userID = user.getPersonId(); }
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
@@ -35,29 +32,23 @@
 	
 	if (featID != null) {
 
-		//check if user can view this record and that record exists
-		//rs = statement.executeQuery("SELECT Status, User_Rights FROM Feature_Security_View WHERE Feature_ID = " + featID + " AND (User_ID IS NULL OR User_ID = " + userID + ")");
-		query = "SELECT Status, User_Rights FROM Feature_Security_View WHERE Feature_ID = ? AND (User_ID IS NULL OR User_ID = ?)";
-		doubleData[0] = new Integer(Integer.parseInt(featID));
-		doubleData[1] = new Integer(userID);
-		rs = connection.executeQuery(query, doubleTypes, doubleData);
-		while (rs.next()) { //accumulate rights over multiple folders
-			status = rs.getString(1);
-			userRights = (userRights | rs.getInt(2));
+		//create connection:  userConnection if logged in, otherwise FR
+		if (user !=  null) {
+			connection = user.getUsersConnection(new PageState(request, response, application), frConn);
+		} else {
+			connection = frConn;
 		}
 
-		//rs = statement.executeQuery("SELECT Feature_Name FROM Sample_All_View WHERE Feature_Type <> 'Outcrop' AND Feature_ID = " + featID);
-		query = "SELECT Feature_Name FROM Sample_All_View WHERE Feature_Type <> 'Outcrop' AND Feature_ID = ?";
+		query = "SELECT Feature_Name FROM FR.Sample_View WHERE Feature_Type <> 'Outcrop' AND Feature_ID = ?";
 		data[0] = new Integer(Integer.parseInt(featID));
 		rs = connection.executeQuery(query, types, data);
 		
-		if ((userRights & 1) != 0 && rs.next()) { //allowed to view this record and the record is not an outcrop
+		if (rs.next()) {
 
 			out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
-			//rs = statement.executeQuery("SELECT S.Feature_Name, S.Feature_Type, S.Masterfile_Name, S.Status, A.Created_By, A.Created_Date, A.Modified_By, A.Modified_Date, A.Submitted_By, A.Submitted_Date, A.Approved_By, A.Approved_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = " + featID);
-			query = "SELECT S.Feature_Name, S.Feature_Type, S.Masterfile_Name, S.Status, A.Created_By, A.Created_Date, A.Modified_By, A.Modified_Date, A.Submitted_By, A.Submitted_Date, A.Approved_By, A.Approved_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = ?";
+			query = "SELECT S.Feature_Name, S.Feature_Type, S.Masterfile_Name, S.Status, A.Created_By, A.Created_Date, A.Modified_By, A.Modified_Date, A.Submitted_By, A.Submitted_Date, A.Approved_By, A.Approved_Date FROM FR.Sample_View S, FR.Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = ?";
 			data[0] = new Integer(Integer.parseInt(featID));
-			rs = connection.executeQuery(query, types, data);
+			rs = frConn.executeQuery(query, types, data);
 			rs.next();
 			featType = rs.getString(2);
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
@@ -100,8 +91,7 @@
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");
 
-			//rs = statement.executeQuery("SELECT NZMG_Sheet, NZMG_East, NZMG_North, Latitude, Longitude, Accuracy, Method, Locality, Person, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Drillhole_Licence_Name, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth FROM Sample_All_View WHERE Feature_ID = " + featID);
-			query = "SELECT NZMG_Sheet, NZMG_East, NZMG_North, Latitude, Longitude, Accuracy, Method, Locality, Person, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Drillhole_Licence_Name, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth FROM Sample_All_View WHERE Feature_ID = ?";
+			query = "SELECT NZMG_Sheet, NZMG_East, NZMG_North, Latitude, Longitude, Accuracy, Method, Locality, Person, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Drillhole_Licence_Name, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth FROM FR.Sample_View WHERE Feature_ID = ?";
 			data[0] = new Integer(Integer.parseInt(featID));
 			rs = connection.executeQuery(query, types, data);
 			rs.next();
@@ -127,73 +117,70 @@
 				if (rs.getString(6) != null) { out.print(" (&#177 " + rs.getString(6) + "m)"); }
 				out.println("</td></tr>");
 			}
-			if (userID != 0) {
-				if (rs.getString(7) != null) { out.println("<tr><td class='heading' width='135'>Method</td><td>" + rs.getString(7) + "</td></tr>"); }
-				if (rs.getString(8) != null) { out.println("<tr><td class='heading' width='135'>Locality</td><td>" + rs.getString(8) + "</td></tr>"); }
-				if (rs.getString(9) != null) {
-					out.print("<tr><td class='heading' width='135'>");
-					if (featType.equals("Drillhole")) {
-						out.print("Operating Company");
-					} else {
-						out.print("Section Collector");
-					}
-					out.println("</td><td>" + rs.getString(9) + "</td></tr>");
+			if (rs.getString(7) != null) { out.println("<tr><td class='heading' width='135'>Method</td><td>" + rs.getString(7) + "</td></tr>"); }
+			if (rs.getString(8) != null) { out.println("<tr><td class='heading' width='135'>Locality</td><td>" + rs.getString(8) + "</td></tr>"); }
+			if (rs.getString(9) != null) {
+				out.print("<tr><td class='heading' width='135'>");
+				if (featType.equals("Drillhole")) {
+					out.print("Operating Company");
+				} else {
+					out.print("Section Collector");
 				}
-				if (rs.getString(10) != null) {
-					out.print("<tr><td class='heading'>");
-					if (featType.equals("Drillhole")) {
-						out.print("Spud Date");
-					} else {
-						out.print("Sampling Start Date");
-					}
-					out.print("</td><td>");
-					if (rs.getString(11) == null) {
-						out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(10)));
-					} else if (rs.getString(11).equals("Year")) {
-						out.print(yearFormatter.format(rs.getDate(10)));
-					} else if (rs.getString(11).equals("Month")) {
-						out.print(monthFormatter.format(rs.getDate(10)));
-					}
-					out.println("</td></tr>");
+				out.println("</td><td>" + rs.getString(9) + "</td></tr>");
+			}
+			if (rs.getString(10) != null) {
+				out.print("<tr><td class='heading'>");
+				if (featType.equals("Drillhole")) {
+					out.print("Spud Date");
+				} else {
+					out.print("Sampling Start Date");
 				}
-				if (rs.getString(12) != null) {
-					out.print("<tr><td class='heading'>	Completion Date</td><td>");
-					if (rs.getString(13) == null) {
-						out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(12)));
-					} else if (rs.getString(13).equals("Year")) {
-						out.print(yearFormatter.format(rs.getDate(12)));
-					} else if (rs.getString(13).equals("Month")) {
-						out.print(monthFormatter.format(rs.getDate(12)));
-					}
-					out.println("</td></tr>");
+				out.print("</td><td>");
+				if (rs.getString(11) == null) {
+					out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(10)));
+				} else if (rs.getString(11).equals("Year")) {
+					out.print(yearFormatter.format(rs.getDate(10)));
+				} else if (rs.getString(11).equals("Month")) {
+					out.print(monthFormatter.format(rs.getDate(10)));
 				}
-				if (featType.equals("Drillhole") && rs.getString(14) != null) { out.println("<tr><td class='heading' width='135'>Licence Area</td><td>" + rs.getString(14) + "</td></tr>"); }
-				if (rs.getString(15) != null) { out.println("<tr><td class='heading' width='135'>Datum Type</td><td>" + rs.getString(15) + "</td></tr>"); }
-				if (rs.getString(16) != null) { out.println("<tr><td class='heading' width='135'>Datum Elevation</td><td>" + rs.getString(16) + " m asl</td></tr>"); }
-				if (rs.getString(17) != null) {
-					out.print("<tr><td class='heading' width='135'>");
-					if (featType.equals("Drillhole")) {
-						out.print("Kick-off Depth");
-					} else {
-						out.print("Top Horizon");
-					}
-					out.println("</td><td>" + rs.getString(17) + " m</td></tr>");
+				out.println("</td></tr>");
+			}
+			if (rs.getString(12) != null) {
+				out.print("<tr><td class='heading'>	Completion Date</td><td>");
+				if (rs.getString(13) == null) {
+					out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(12)));
+				} else if (rs.getString(13).equals("Year")) {
+					out.print(yearFormatter.format(rs.getDate(12)));
+				} else if (rs.getString(13).equals("Month")) {
+					out.print(monthFormatter.format(rs.getDate(12)));
 				}
-				if (rs.getString(18) != null) {
-					out.print("<tr><td class='heading' width='135'>");
-					if (featType.equals("Drillhole")) {
-						out.print("Termination Depth");
-					} else {
-						out.print("Base Horizon");
-					}
-					out.println("</td><td>" + rs.getString(18) + " m</td></tr>");
+				out.println("</td></tr>");
+			}
+			if (featType.equals("Drillhole") && rs.getString(14) != null) { out.println("<tr><td class='heading' width='135'>Licence Area</td><td>" + rs.getString(14) + "</td></tr>"); }
+			if (rs.getString(15) != null) { out.println("<tr><td class='heading' width='135'>Datum Type</td><td>" + rs.getString(15) + "</td></tr>"); }
+			if (rs.getString(16) != null) { out.println("<tr><td class='heading' width='135'>Datum Elevation</td><td>" + rs.getString(16) + " m asl</td></tr>"); }
+			if (rs.getString(17) != null) {
+				out.print("<tr><td class='heading' width='135'>");
+				if (featType.equals("Drillhole")) {
+					out.print("Kick-off Depth");
+				} else {
+					out.print("Top Horizon");
 				}
+				out.println("</td><td>" + rs.getString(17) + " m</td></tr>");
+			}
+			if (rs.getString(18) != null) {
+				out.print("<tr><td class='heading' width='135'>");
+				if (featType.equals("Drillhole")) {
+					out.print("Termination Depth");
+				} else {
+					out.print("Base Horizon");
+				}
+				out.println("</td><td>" + rs.getString(18) + " m</td></tr>");
 			}
 			out.println("</table></p>");
 
-			if (userID != 0) {
-				rs = statement.executeQuery("SELECT Sample_ID, Sample_Name, Drillhole_Depth FROM Sample_All_View WHERE Feature_ID = " + featID + " ORDER BY Top_Depth");
-				query = "SELECT Sample_ID, Sample_Name, Drillhole_Depth FROM Sample_All_View WHERE Feature_ID = ? ORDER BY Top_Depth";
+			if (user != null) {
+				query = "SELECT Sample_ID, Sample_Name, Drillhole_Depth FROM FR.Sample_View WHERE Feature_ID = ? ORDER BY Top_Depth";
 				data[0] = new Integer(Integer.parseInt(featID));
 				rs = connection.executeQuery(query, types, data);
 				out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
