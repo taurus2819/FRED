@@ -227,18 +227,23 @@
 				if (origID != -1) {
 					Datum datum = sr.getOrigCoordDatum();
 					Datum.Coordinate coord = sr.getOrigCoordAsCoord();	
-					if (origID != 29) {
+					if (!(datum instanceof NZGD49) && !(datum instanceof NZMG)) {
 						if (coord instanceof Datum.LatLong) {
 							out.print("<tr><td class='heading'>Lat/Long</td>");
 						} else {
 							out.print("<tr><td class='heading'>Grid Ref</td>");
 						}
 						out.println("<td>" + datum.getHumanStringFor(coord).replaceAll("Geographic ", "") + "</td></tr>");
-						if (datum instanceof NZMS260) {
-							NZMG nzmg2 = (NZMG) DatumFactory.createDatum("NZMG");
-							out.println("<tr><td class='heading'>Grid Ref</td><td>" + nzmg2.getHumanStringFor(((NZMS260) datum).convertToDatum(nzmg2, coord)) + "</td></tr>");
-						}
+						//if (datum instanceof NZMS260) {
+						//	NZMG nzmg2 = (NZMG) DatumFactory.createDatum("NZMG");
+						//	out.println("<tr><td class='heading'>Grid Ref</td><td>" + nzmg2.getHumanStringFor(((NZMS260) datum).convertToDatum(nzmg2, coord)) + "</td></tr>");
+						//}
 					}
+					try {
+						Datum nzmgDatum = DatumFactory.createDatum("NZMG");
+						Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
+						out.println("<tr><td class='heading'>Grid Ref</td><td>" + nzmgDatum.getHumanStringFor(nzmgCoord) + "</td></tr>");
+					} catch (Exception e) { System.out.println(e.getMessage()); }
 				}
 				Datum.LatLong ll = sr.getLatLong();
 				if (ll.getNorthSouth() != 999)
@@ -511,10 +516,10 @@
 											for (Iterator i3 = taxaGroup.getTaxaList().iterator(); i3.hasNext(); ) {
 												Taxa taxa = (Taxa)i3.next();
 												out.print("<tr><td><i>" + taxa.getTaxonomicName() + "</i>&nbsp;&nbsp;</td>");
-												if (authorChk) { out.print("<td>" + FREDUtils.noNulls(taxa.getAuthor()) + "&nbsp;&nbsp;</td>"); }
-												if (sCountChk) { out.print("<td>" + FREDUtils.noNulls(String.valueOf(taxa.getSpecimenCount())) + "&nbsp;&nbsp;</td>"); }
-												if (sCoordChk) { out.print("<td>" + FREDUtils.noNulls(taxa.getSpecimenCoords()) + "&nbsp;&nbsp;</td>"); }
-												if (commChk) { out.print("<td>" + FREDUtils.noNulls(taxa.getComments()) + "&nbsp;&nbsp;</td>"); }
+												if (authorChk) { out.print("<td>" +FREDUtils.noNulls(taxa.getAuthor()) + "&nbsp;&nbsp;</td>"); }
+												if (sCountChk) { out.print("<td>" +FREDUtils.noNulls(String.valueOf(taxa.getSpecimenCount())) + "&nbsp;&nbsp;</td>"); }
+												if (sCoordChk) { out.print("<td>" +FREDUtils.noNulls(taxa.getSpecimenCoords()) + "&nbsp;&nbsp;</td>"); }
+												if (commChk) { out.print("<td>" +FREDUtils.noNulls(taxa.getComments()) + "&nbsp;&nbsp;</td>"); }
 												out.println("</tr>");
 											}
 										} else {
