@@ -232,13 +232,13 @@ public class AdoptionRecordDE extends RecordDE {
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = false;
-				throw new SQLException();
+				throw new SQLException(e.getMessage());
 			} catch (IOException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = false;
-				throw new IOException();
+				throw new IOException(e.getMessage());
 			} catch (InvalidCredentialsException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);

@@ -1,7 +1,6 @@
 package nz.cri.gns.fred.dataentry;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -1433,14 +1432,13 @@ public class SampPropRecordDE extends RecordDE {
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = false;
-				e.printStackTrace(new PrintWriter(System.out));
-				throw new SQLException();
+				throw new SQLException(e.getMessage());
 			} catch (IOException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = false;
-				throw new IOException();
+				throw new IOException(e.getMessage());
 			} catch (InvalidCredentialsException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);

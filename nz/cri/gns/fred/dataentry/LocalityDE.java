@@ -399,6 +399,7 @@ public abstract class LocalityDE implements DataEntryForm {
 				origCoord =	new NorthingEasting(Double.parseDouble(north), Double.parseDouble(east));
 				origSystem = DatumFactory.createDatum("Auckland Island Transverse Mercator");
 				countryCode = "NZ";
+				System.out.println(origCoord.getEastWest());
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");
 			}
