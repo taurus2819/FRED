@@ -47,9 +47,9 @@ function saveForm (form) {
 function submitForm (form) {
 	form.SaveType.value = "Submit";
 	with (form) {
-		if (PalDateUnk.checked == true) {
-			alert ("Please enter an identification date (uncheck Unknown)");
-			AdoDateUnk.focus();
+		if (PalDate.value == "") {
+			alert ("Please enter an identification date");
+			PalDate.select();
 			return false;
 		}
 		if (Identifier.value == "") {

@@ -47,9 +47,9 @@ function saveForm (form) {
 function submitForm (form) {
 	form.SaveType.value = "Submit";
 	with (form) {
-		if (CollDateUnk.checked == true) {
-			alert ("Please enter a collection date (uncheck Unknown)");
-			CollDateUnk.focus();
+		if (CollDate.value == "") {
+			alert ("Please enter a collection date");
+			CollDate.select();
 			return false;
 		}
 		if (Coll.value == "") {

@@ -4,8 +4,8 @@
 %><%
 	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
 	Statement statement = connection.statement;
-	Statement statement2 = connection.getExtraStatement();
-	Statement statement3 = connection.getExtraStatement();
+	Statement preserveStatement;
+	Statement preserveStatement2;
 	DocumentAttacher attacher = DocumentAttacher.createFREDDocumentAttacher(session, application);
 	DecimalFormat nzmg = new DecimalFormat("######0");
 	DecimalFormat latlong = new DecimalFormat("#00.0000");
@@ -13,15 +13,23 @@
 	SimpleDateFormat monthFormatter = new SimpleDateFormat ("MMM yyyy");
 	ResultSet rs, rs2, rs3;
 	User user = getUser(session);
-	String sampID, recID, featType, status = "";
+	String sampID, recID, featType, status = "", query;
 	int userID = 0, i = 1, userRights = 0, execUp;
 	boolean authorChk = false, sCountChk = false, sCoordChk = false, commChk = true;
+	int[] types = {Types.NUMERIC};
+	Object data[];
+	data = new Object[1];
+	int[] doubleTypes = {Types.NUMERIC, Types.NUMERIC};
+	Object doubleData[];
+	doubleData = new Object[2];
 
 	if (user != null) { userID = user.getPersonId(); }
 
 	//if FeatureID given then get SampleID or transer to drillhole
 	if (request.getParameter("FeatID") != null) {
-		rs = statement.executeQuery("SELECT MIN(Sample_ID), COUNT(*) FROM Sample WHERE Feature_ID = " + request.getParameter("FeatID"));
+		query = "SELECT MIN(Sample_ID), COUNT(*) FROM Sample WHERE Feature_ID = ?";
+		data[0] = new Integer(Integer.parseInt(request.getParameter("FeatID")));
+		rs = connection.executeQuery(query, types, data);
 		if (rs.next()) {
 			if (rs.getInt(2) > 1) {
 				response.sendRedirect("drillhole_detail.jsp?ID=" + request.getParameter("FeatID"));
@@ -46,7 +54,9 @@
 		if (request.getParameter("CommChk") != null && request.getParameter("CommChk").equals("false")) { commChk = false; }
 		
 		//check if user can view this record and that record exists
-		rs = statement.executeQuery("SELECT Status, User_Rights FROM Sample_Security_View WHERE Sample_ID = " + sampID + " AND (User_ID IS NULL OR User_ID = " + userID + ")");
+		query = "SELECT Status, User_Rights FROM Sample_Security_View WHERE Sample_ID = ? AND (User_ID IS NULL OR User_ID = " + userID + ")";
+		data[0] = new Integer(Integer.parseInt(sampID));
+		rs = connection.executeQuery(query, types, data);
 		while (rs.next()) { //accumulate rights over multiple folders
 			status = rs.getString(1);
 			userRights = (userRights | rs.getInt(2));
@@ -55,7 +65,9 @@
 
 			//List data
 			out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
-			rs = statement.executeQuery("SELECT S.Feature_Type, S.Sample_Name, S.Masterfile_Name, S.Status, A.Created_By, A.Created_Date, A.Modified_By, A.Modified_Date, A.Submitted_By, A.Submitted_Date, A.Approved_By, A.Approved_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Sample_ID = " + sampID);
+			query = "SELECT S.Feature_Type, S.Sample_Name, S.Masterfile_Name, S.Status, A.Created_By, A.Created_Date, A.Modified_By, A.Modified_Date, A.Submitted_By, A.Submitted_Date, A.Approved_By, A.Approved_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Sample_ID = ?";
+			data[0] = new Integer(Integer.parseInt(sampID));
+			rs = connection.executeQuery(query, types, data);
 			rs.next();
 			featType = rs.getString(1);
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
@@ -137,7 +149,11 @@
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");
 
-			rs = statement.executeQuery("SELECT Feature_ID, Yard_FR_Number, Feature_Name, NZMG_Sheet, NZMG_East, NZMG_North, Latitude, Longitude, Accuracy, Method, Locality, Drillhole_Depth, Person, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Drillhole_Licence_Name, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth FROM Sample_All_View WHERE Sample_ID = " + sampID);
+			//Locality Data
+			query = "SELECT Feature_ID, Yard_FR_Number, Feature_Name, NZMG_Sheet, NZMG_East, NZMG_North, Latitude, Longitude, Accuracy, Method, Locality, Drillhole_Depth, Person, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Drillhole_Licence_Name, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth FROM Sample_All_View WHERE Sample_ID = ?";
+			data[0] = new Integer(Integer.parseInt(sampID));
+			rs = connection.executeQuery(query, types, data);
+			preserveStatement = connection.preservePreparedStatement();
 			rs.next();
 
 			out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
@@ -177,7 +193,9 @@
 						out.println("<tr><td class='heading'>Other Section Samples</td><td>");					
 					}
 					//check for samples above and below current one
-					rs2 = statement2.executeQuery("SELECT Sample_ID, Sample_Name, Drillhole_Depth FROM Sample_All_View WHERE Feature_ID = " + rs.getString(1) + " AND Top_Depth IS NOT NULL ORDER BY Top_Depth");
+					query = "SELECT Sample_ID, Sample_Name, Drillhole_Depth FROM Sample_All_View WHERE Feature_ID = ? AND Top_Depth IS NOT NULL ORDER BY Top_Depth";
+					data[0] = new Integer(rs.getInt(1));
+					rs2 = connection.executeQuery(query, types, data);
 					String dholeID = "", dholeSampName = "", dhole = "";
 					while (rs2.next()) {
 						if (rs2.getString(1).equals(sampID)) {
@@ -252,13 +270,16 @@
 					}
 				}
 			}
-			
+			preserveStatement.close();
 			out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
 
 			if (userID != 0) { //logged in user
 
 				//Sample Property Data
-				rs = statement.executeQuery("SELECT Record_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage, Known_Stage, Column_Map, Dip, Dip_Direction, Strike, Facing, Grainsize, Comparator_Used, Bed_Thickness, Bedding, Weathering, Hardness, Carbonate, Colour, Deposition_Env, Rock_Nature, Correspondence, Record_ID FROM Sample_Property_All_View WHERE Sample_ID = " + sampID);
+				query = "SELECT Record_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage, Known_Stage, Column_Map, Dip, Dip_Direction, Strike, Facing, Grainsize, Comparator_Used, Bed_Thickness, Bedding, Weathering, Hardness, Carbonate, Colour, Deposition_Env, Rock_Nature, Correspondence, Record_ID FROM Sample_Property_All_View WHERE Sample_ID = ?";
+				data[0] = new Integer(Integer.parseInt(sampID));
+				rs = connection.executeQuery(query, types, data);
+				preserveStatement = connection.preservePreparedStatement();
 				if (rs.next()) {
 					recID = rs.getString(1);
 
@@ -276,11 +297,15 @@
 						out.println("</td></tr>");
 					}
 					//collectors (repeating)
-					rs2 = statement2.executeQuery("SELECT COUNT(*) FROM Collector WHERE Record_ID = " + recID);
+					query = "SELECT COUNT(*) FROM Collector WHERE Record_ID = ?";
+					data[0] = new Integer(Integer.parseInt(recID));
+					rs2 = connection.executeQuery(query, types, data);
 					rs2.next();
 					if (rs2.getInt(1) > 0) {
 						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Collectors</td>");
-						rs2 = statement2.executeQuery("SELECT Name FROM Person_View P, Collector C WHERE P.Person_ID = C.Person_ID AND C.Record_ID = " + recID + " ORDER BY Name");
+						query = "SELECT Name FROM Person_View P, Collector C WHERE P.Person_ID = C.Person_ID AND C.Record_ID = ? ORDER BY Name";
+						data[0] = new Integer(Integer.parseInt(recID));
+						rs2 = connection.executeQuery(query, types, data);
 						rs2.next();
 						out.println("<td>" + rs2.getString(1) + "</td></tr>");
 						while (rs2.next()) {
@@ -290,11 +315,15 @@
 					if (rs.getString(4) != null) { out.println("<tr><td class='heading'>Strat Name</td><td>" + rs.getString(4) + "</td></tr>"); }
 					if (rs.getString(5) != null) { out.println("<tr><td class='heading'>In Place</td><td>" + rs.getString(5) + "</td></tr>"); }
 					//sent to (repeating)
-					rs2 = statement2.executeQuery("SELECT COUNT(*) FROM Sent_To WHERE Record_ID = " + recID);
+					query = "SELECT COUNT(*) FROM Sent_To WHERE Record_ID = ?";
+					data[0] = new Integer(Integer.parseInt(recID));
+					rs2 = connection.executeQuery(query, types, data);
 					rs2.next();
 					if (rs2.getInt(1) > 0) {
 						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Sent To</td>");
-						rs2 = statement2.executeQuery("SELECT Sent_To FROM Sent_To_View WHERE Record_ID = " + recID + " ORDER BY Sent_To");
+						query = "SELECT Sent_To FROM Sent_To_View WHERE Record_ID = ? ORDER BY Sent_To";
+						data[0] = new Integer(Integer.parseInt(recID));
+						rs2 = connection.executeQuery(query, types, data);
 						rs2.next();
 						out.print("<td>" + rs2.getString(1) + "</td></tr>");
 						while (rs2.next()) {
@@ -308,11 +337,15 @@
 					if (rs.getString(8) != null) { out.println("<tr><td class='heading'>Inferred Stage</td><td>" + rs.getString(8) + "</td></tr>"); }
 					if (rs.getString(9) != null) { out.println("<tr><td class='heading'>Known Stage</td><td>" + rs.getString(9) + "</td></tr>"); }
 					//Nearby samples (repeating)
-					rs2 = statement2.executeQuery("SELECT COUNT(*) FROM Relationship WHERE Relationship_Type = 'Sample' AND Relation_Type_ID = 231 AND Record_ID = " + recID);
+					query = "SELECT COUNT(*) FROM Relationship WHERE Relationship_Type = 'Sample' AND Relation_Type_ID = 231 AND Record_ID = ?";
+					data[0] = new Integer(Integer.parseInt(recID));
+					rs2 = connection.executeQuery(query, types, data);
 					rs2.next();
 					if (rs2.getInt(1) > 0) {
 						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Samples Nearby</td>");
-						rs2 = statement2.executeQuery("SELECT Related_Feature_ID, Related_Sample_Name FROM Relationship_View WHERE Relationship_Type = 'Sample' AND Relation_Type_ID = 231 AND Record_ID = " + recID + " ORDER BY Related_Sample_Name");
+						query = "SELECT Related_Feature_ID, Related_Sample_Name FROM Relationship_View WHERE Relationship_Type = 'Sample' AND Relation_Type_ID = 231 AND Record_ID = ? ORDER BY Related_Sample_Name";
+						data[0] = new Integer(Integer.parseInt(recID));
+						rs2 = connection.executeQuery(query, types, data);
 						rs2.next();
 						out.print("<td><a href='detail.jsp?FeatID=" + rs2.getString(1) + "'>" + rs2.getString(2) + "</a></td></tr>");
 						while (rs2.next()) {
@@ -320,11 +353,15 @@
 						}
 					}
 					//Sample relationships (repeating)
-					rs2 = statement2.executeQuery("SELECT COUNT(*) FROM Relationship WHERE Relation_Type_ID <> 231 AND Relationship_Type = 'Sample' AND Record_ID = " + recID);
+					query = "SELECT COUNT(*) FROM Relationship WHERE Relation_Type_ID <> 231 AND Relationship_Type = 'Sample' AND Record_ID = ?";
+					data[0] = new Integer(Integer.parseInt(recID));
+					rs2 = connection.executeQuery(query, types, data);
 					rs2.next();
 					if (rs2.getInt(1) > 0) {
 						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Sample Relationships</td>");
-						rs2 = statement2.executeQuery("SELECT Distance_Relation, Related_Feature_ID, Related_Sample_Name FROM Relationship_View WHERE Relation_Type_ID <> 231 AND Relationship_Type = 'Sample' AND Record_ID = " + recID + " ORDER BY Related_Sample_Name");
+						query = "SELECT Distance_Relation, Related_Feature_ID, Related_Sample_Name FROM Relationship_View WHERE Relation_Type_ID <> 231 AND Relationship_Type = 'Sample' AND Record_ID = ? ORDER BY Related_Sample_Name";
+						data[0] = new Integer(Integer.parseInt(recID));
+						rs2 = connection.executeQuery(query, types, data);
 						rs2.next();
 						out.print("<td>" + rs2.getString(1) + " <a href='detail.jsp?FeatID=" + rs2.getString(2) + "'>" + rs2.getString(3) + "</a></td></tr>");
 						while (rs2.next()) {
@@ -332,11 +369,15 @@
 						}
 					}
 					//Strat relationships (repeating)
-					rs2 = statement2.executeQuery("SELECT COUNT(*) FROM Relationship WHERE Relationship_Type = 'Strat' AND Record_ID = " + recID);
+					query = "SELECT COUNT(*) FROM Relationship WHERE Relationship_Type = 'Strat' AND Record_ID = ?";
+					data[0] = new Integer(Integer.parseInt(recID));
+					rs2 = connection.executeQuery(query, types, data);
 					rs2.next();
 					if (rs2.getInt(1) > 0) {
 						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Stratigraphic Relationships</td>");
-						rs2 = statement2.executeQuery("SELECT Relationship FROM Relationship_View WHERE Relationship_Type = 'Strat' AND Record_ID = " + recID + " ORDER BY Strat_Unit");
+						query = "SELECT Relationship FROM Relationship_View WHERE Relationship_Type = 'Strat' AND Record_ID = ? ORDER BY Strat_Unit";
+						data[0] = new Integer(Integer.parseInt(recID));
+						rs2 = connection.executeQuery(query, types, data);
 						rs2.next();
 						out.print("<td>" + rs2.getString(1) + "</td></tr>");
 						while (rs2.next()) {
@@ -357,11 +398,15 @@
 					if (rs.getString(21) != null) { out.println("<tr><td class='heading'>Carbonate</td><td>" + rs.getString(21) + "</td></tr>"); }
 					if (rs.getString(22) != null) { out.println("<tr><td class='heading'>Colour</td><td>" + rs.getString(22) + "</td></tr>"); }
 					//sed features (repeating)
-					rs2 = statement2.executeQuery("SELECT COUNT(*) FROM Sedimentary_Feature WHERE Record_ID = " + recID);
+					query = "SELECT COUNT(*) FROM Sedimentary_Feature WHERE Record_ID = ?";
+					data[0] = new Integer(Integer.parseInt(recID));
+					rs2 = connection.executeQuery(query, types, data);
 					rs2.next();
 					if (rs2.getInt(1) > 0) {
 						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Additional Features</td>");
-						rs2 = statement2.executeQuery("SELECT Sedimentary_Feature FROM Sedimentary_Feature_View WHERE Record_ID = " + recID + " ORDER BY Sed_Feature");
+						query = "SELECT Sedimentary_Feature FROM Sedimentary_Feature_View WHERE Record_ID = ? ORDER BY Sed_Feature";
+						data[0] = new Integer(Integer.parseInt(recID));
+						rs2 = connection.executeQuery(query, types, data);
 						rs2.next();
 						out.print("<td>" + rs2.getString(1) + "</td></tr>");
 						while (rs2.next()) {
@@ -389,19 +434,26 @@
 					}
 					out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
 				}
+				preserveStatement.close();
 
 				//Adoption
-				rs = statement.executeQuery("SELECT Record_ID, Adoption_Date, Date_Rounding, Adopted_Stage, Comments FROM Adoption_All_View WHERE Sample_ID = " + sampID);
+				query = "SELECT Record_ID, Adoption_Date, Date_Rounding, Adopted_Stage, Comments FROM Adoption_All_View WHERE Sample_ID = ?";
+				data[0] = new Integer(Integer.parseInt(sampID));
+				rs = connection.executeQuery(query, types, data);
+				preserveStatement = connection.preservePreparedStatement();
 				while (rs.next()) {
 					out.println("<tr><td colspan='2' class='bigheading'>Adoption Data</td></tr>");
-
 					recID = rs.getString(1);
 					//adoptors (repeating)
-					rs2 = statement2.executeQuery("SELECT COUNT(*) FROM Adoptor WHERE Record_ID = " + recID);
+					query = "SELECT COUNT(*) FROM Adoptor WHERE Record_ID = ?";
+					data[0] = new Integer(Integer.parseInt(recID));
+					rs2 = connection.executeQuery(query, types, data);
 					rs2.next();
 					if (rs2.getInt(1) > 0) {
 						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Adoptors</td>");
-						rs2 = statement2.executeQuery("SELECT Name FROM Person_View P, Adoptor A WHERE P.Person_ID = A.Person_ID AND A.Record_ID = " + recID + " ORDER BY Name");
+						query = "SELECT Name FROM Person_View P, Adoptor A WHERE P.Person_ID = A.Person_ID AND A.Record_ID = ? ORDER BY Name";
+						data[0] = new Integer(Integer.parseInt(recID));
+						rs2 = connection.executeQuery(query, types, data);
 						rs2.next();
 						out.println("<td>" + rs2.getString(1) + "</td></tr>");
 						while (rs2.next()) {
@@ -439,19 +491,26 @@
 					}
 					out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
 				}
+				preserveStatement.close();
 
 				//Paleontology
-				rs = statement.executeQuery("SELECT DISTINCT Record_ID, Identification_Date, Date_Rounding, Stage, Stage_Comments, Lab, Lab_Number, Collection_Comments FROM Paleontology_All_View WHERE Sample_ID = " + sampID);
+				query = "SELECT DISTINCT Record_ID, Identification_Date, Date_Rounding, Stage, Stage_Comments, Lab, Lab_Number, Collection_Comments FROM Paleontology_All_View WHERE Sample_ID = ?";
+				data[0] = new Integer(Integer.parseInt(sampID));
+				rs = connection.executeQuery(query, types, data);
+				preserveStatement = connection.preservePreparedStatement();
 				while (rs.next()) {
 					out.println("<tr><td colspan='2' class='bigheading'>Paleontology Data</td></tr>");
-
 					recID = rs.getString(1);
 					//identifiers (repeating)
-					rs2 = statement2.executeQuery("SELECT COUNT(*) FROM Identifier WHERE Record_ID = " + recID);
+					query = "SELECT COUNT(*) FROM Identifier WHERE Record_ID = ?";
+					data[0] = new Integer(Integer.parseInt(recID));
+					rs2 = connection.executeQuery(query, types, data);
 					rs2.next();
 					if (rs2.getInt(1) > 0) {
 						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Identifiers</td>");
-						rs2 = statement2.executeQuery("SELECT Name FROM Person_View P, Identifier I WHERE P.Person_ID = I.Person_ID AND I.Record_ID = " + recID + " ORDER BY Name");
+						query = "SELECT Name FROM Person_View P, Identifier I WHERE P.Person_ID = I.Person_ID AND I.Record_ID = ? ORDER BY Name";
+						data[0] = new Integer(Integer.parseInt(recID));
+						rs2 = connection.executeQuery(query, types, data);
 						rs2.next();
 						out.println("<td>" + rs2.getString(1) + "</td></tr>");
 						while (rs2.next()) {
@@ -463,9 +522,9 @@
 						if (rs.getString(3) == null) {
 							out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(2)));
 						} else if (rs.getString(3).equals("Year")) {
-							out.print(yearFormatter.format(rs.getDate(3)));
+							out.print(yearFormatter.format(rs.getDate(2)));
 						} else if (rs.getString(3).equals("Month")) {
-							out.print(monthFormatter.format(rs.getDate(3)));
+							out.print(monthFormatter.format(rs.getDate(2)));
 						}
 						out.println("</td></tr>");
 					}
@@ -475,13 +534,21 @@
 					if (rs.getString(7) != null) { out.println("<tr><td class='heading'>Lab Number</td><td>" + rs.getString(7) + "</td></tr>"); }
 					if (rs.getString(8) != null) { out.println("<tr><td class='heading'>Collection Comments</td><td>" + rs.getString(8) + "</td></tr>"); }
 					//taxa (double repeating)
-					rs2 = statement2.executeQuery("SELECT * FROM Pal_List WHERE Record_ID = " + recID);
+					query = "SELECT * FROM Pal_List WHERE Record_ID = ?";
+					data[0] = new Integer(Integer.parseInt(recID));
+					rs2 = connection.executeQuery(query, types, data);
 					if (rs2.next()) {
 						out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
-						rs2 = statement2.executeQuery("SELECT DISTINCT P.Group_ID, L.Name FROM Pal_List P, Lookup L WHERE P.Group_ID = L.Lookup_ID AND P.Record_ID = " + recID + " ORDER BY P.Group_ID");
+						query = "SELECT DISTINCT P.Group_ID, L.Name FROM Pal_List P, Lookup L WHERE P.Group_ID = L.Lookup_ID AND P.Record_ID = ? ORDER BY P.Group_ID";
+						data[0] = new Integer(Integer.parseInt(recID));
+						rs2 = connection.executeQuery(query, types, data);
+						preserveStatement2 = connection.preservePreparedStatement();
 						while (rs2.next()) {
 							out.println("<tr><td colspan='4' class='heading'>" + rs2.getString(2) + "</td></tr>");
-							rs3 = statement3.executeQuery("SELECT * FROM Pal_List WHERE Record_ID = " + recID + " AND Group_ID = " + rs2.getString(1) + " AND Taxonomic_Name IS NOT NULL");
+							query = "SELECT * FROM Pal_List WHERE Record_ID = ? AND Group_ID = ? AND Taxonomic_Name IS NOT NULL";
+							doubleData[0] = new Integer(Integer.parseInt(recID));
+							doubleData[1] = new Integer(rs2.getInt(1));
+							rs3 = connection.executeQuery(query, doubleTypes, doubleData);
 							if (rs3.next()) {
 								out.print("<tr class='heading'><td>Taxonomic Name&nbsp;&nbsp;</td>");
 								if (authorChk) { out.print("<td>Author&nbsp;&nbsp;</td>"); }
@@ -489,7 +556,10 @@
 								if (sCoordChk) { out.print("<td>Spec Coord&nbsp;&nbsp;</td>"); }
 								if (commChk) { out.print("<td>Comments&nbsp;&nbsp;</td>"); }
 								out.println("</tr>");
-								rs3 = statement3.executeQuery("SELECT P.Taxonomic_Name, T.Author, P.Specimen_Count, P.Specimen_Coords, P.Comments FROM Pal_List P, Taxonomic_Lookup T WHERE P.Taxa_ID = T.Taxa_ID AND Record_ID = " + recID + " AND T.Group_ID = " + rs2.getString(1) + " ORDER BY P.Taxonomic_Name");
+								query = "SELECT P.Taxonomic_Name, T.Author, P.Specimen_Count, P.Specimen_Coords, P.Comments FROM Pal_List P, Taxonomic_Lookup T WHERE P.Taxa_ID = T.Taxa_ID AND Record_ID = ? AND T.Group_ID = ? ORDER BY P.Taxonomic_Name";
+								doubleData[0] = new Integer(Integer.parseInt(recID));
+								doubleData[1] = new Integer(rs2.getInt(1));
+								rs3 = connection.executeQuery(query, doubleTypes, doubleData);
 								while (rs3.next()) {
 									out.print("<tr><td>" + rs3.getString(1) + "&nbsp;&nbsp;</td>");
 									if (authorChk) { out.print("<td><i>" + noNulls(rs3.getString(2)) + "</i>&nbsp;&nbsp;</td>"); }
@@ -503,6 +573,7 @@
 							}
 							out.println("<tr><td><img src='images/blank.gif' height='10' width='1' /></td></tr>");
 						}
+						preserveStatement2.close();
 						out.println("</td></tr></table></td></tr>");
 					}
 					//Image/Files
@@ -522,6 +593,7 @@
 						out.println("</td></tr></table></td></tr>");
 					}
 				}
+				preserveStatement.close();
 			} else {
 				out.println("<tr><td colspan='2'>More data is available for this locality for logged in users</td></tr>");
 			}
@@ -534,7 +606,4 @@
 	}
 	
 	drawBottom(out, et); 
-	
-	statement2.close();
-	statement3.close();
 %>
