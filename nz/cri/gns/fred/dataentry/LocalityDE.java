@@ -529,12 +529,12 @@ public abstract class LocalityDE implements DataEntryForm {
 		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getFeatureID()));
 		DBUtils.doUpdate(qd, "feature_id = ?", conn);
 		feature = new Feature(feature.getFeatureID(), user, state, true);
+		refreshSamples(feature);
 		Folder folder = new Folder(mfID, user, state, true);
 		return feature.getFeatureID();
 	}
 
-	public void revoke()
-		throws SQLException, IOException, InvalidCredentialsException {
+	public void revoke() throws SQLException, IOException, InvalidCredentialsException {
 		if (feature == null || !feature.getAsString(Feature.STATUS).equals(Audit.STATUS_WAITING) || !isAllowedSubmit)
 			throw new InvalidCredentialsException();
 		DBConnection conn = FREDUtils.getFREDConnection(state);
@@ -546,6 +546,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		DBUtils.doUpdate(qd, "audit_id = ?", conn);
 		conn.releaseStatement();
 		feature = new Feature(feature.getFeatureID(), user, state, true);
+		refreshSamples(feature);
 		try {
 			Folder folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
 		} catch (Exception e) {}
@@ -580,6 +581,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		DBUtils.doUpdate(qd, "audit_id = ?", conn);
 		conn.releaseStatement();
 		feature = new Feature(feature.getFeatureID(), user, state, true);
+		refreshSamples(feature);
 		Folder folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
 	}
 	
@@ -591,6 +593,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getAsInt(Feature.AUDIT_ID)));
 		DBUtils.doUpdate(qd, "audit_id = ?", conn);
 		feature = new Feature(feature.getFeatureID(), user, state, true);
+		refreshSamples(feature);
 		Folder folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
 	}
 
@@ -601,6 +604,14 @@ public abstract class LocalityDE implements DataEntryForm {
 		String query = "DELETE FROM feature WHERE feature_id = ?";
 		conn.executeUpdate(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(feature.getFeatureID())});
 		conn.releaseStatement();
+	}
+	
+	private void refreshSamples(Feature feature) throws InvalidCredentialsException, SQLException, IOException {
+		if (feature.getSampleCount() > 0) {
+			for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
+				Sample sample = new Sample(((Integer) i.next()).intValue(), user, state, true);
+			}
+		}
 	}
 
 	public int getWorkingFolderID() {
