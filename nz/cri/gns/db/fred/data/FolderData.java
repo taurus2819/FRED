@@ -52,8 +52,12 @@ public class FolderData {
 			query = "SELECT DISTINCT Feature_ID, Sample_Name FROM Folder_Content_View WHERE Folder_ID = ? ORDER BY Sample_Name";
 			rs = conn.executeQuery(query, types, data);
 			Vector feats = new Vector();
+			String featIDs = "*";
 			while (rs.next()) {
-				feats.add(new Integer(rs.getInt(1)));
+				if (featIDs.indexOf("*" + rs.getString(1) + "*") < 0) { 
+					feats.add(new Integer(rs.getInt(1)));
+					featIDs += rs.getString(1) + "*";
+				}
 			}
 			values[5] = feats;
 			rs.close();

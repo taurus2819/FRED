@@ -70,7 +70,7 @@
 				out.println("<tr><td>");
 
 				if (feature.get(Feature.SAMPLES) != null) {
-					int minSampID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
+					int minSampID = ((SampleHeader) feature.getAsVector(Feature.SAMPLES).firstElement()).getSampleID();
 					Sample sample = new Sample(minSampID, user, state);
 
 					out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
@@ -143,10 +143,10 @@
 
 					out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
 					out.println("<tr><th>Locality Name<img src='images/blank.gif' height='1' width='20' /></th><th colspan='2'>Sample Depth</th></tr>");
-					Sample drillSample;
+					SampleHeader sampleHeader;
 					for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
-						drillSample = new Sample(((Integer) i.next()).intValue(), user, state);
-						out.println("<tr><td class='heading'>" + drillSample.getAsString(Sample.SAMPLE_NAME) + "&nbsp;&nbsp;</td><td width='25'><img src='images/drill.gif' height='20' width='20' /></td><td><a href='detail.jsp?ID=" + drillSample.getAsInt(Sample.SAMPLE_ID) + "' class='heading'>" + drillSample.getAsString(Sample.DRILLHOLE_DEPTH) + "</a></td></tr>");
+						sampleHeader = (SampleHeader) i.next();
+						out.println("<tr><td class='heading'>" + sampleHeader.getSampleName() + "&nbsp;&nbsp;</td><td width='25'><img src='images/drill.gif' height='20' width='20' /></td><td><a href='detail.jsp?ID=" + sampleHeader.getSampleID() + "' class='heading'>" + sampleHeader.getDrillholeDepth() + "</a></td></tr>");
 					}
 				}
 				out.println("</table></p>");

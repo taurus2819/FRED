@@ -35,10 +35,12 @@ public class FeatureData {
 		this.id = id;
 		pool.add(this);
 		String query =
-			"SELECT FEATURE_ID, SITE_ID, AUDIT_ID, MASTERFILE_ID, LOCALITY, REG_AREA_ID, COMMENTS, "
+			"SELECT FEATURE_ID, SITE_ID, F.AUDIT_ID, MASTERFILE_ID, LOCALITY, REG_AREA_ID, COMMENTS, "
 				+ "FEATURE_TYPE, FEATURE_NAME, DRILLHOLE_LICENCE_NAME, START_DATE, START_DATE_ROUNDING, FINISH_DATE, "
-				+ "FINISH_DATE_ROUNDING, PERSON_ID, DATUM_TYPE, DATUM_ELEVATION, START_DEPTH, FINISH_DEPTH "
-				+ "FROM Feature WHERE Feature_ID = ?";
+				+ "FINISH_DATE_ROUNDING, PERSON_ID, DATUM_TYPE, DATUM_ELEVATION, START_DEPTH, FINISH_DEPTH, "
+				+ "Security_Class_ID, Status, Fd.Name "
+				+ "FROM Feature F, Audit_Table A, Folder Fd "
+				+ "WHERE F.Audit_ID = A.Audit_ID(+) AND F.Masterfile_ID = Fd.Folder_ID(+) AND Feature_ID = ?";
 		data[0] = new Integer(this.id);
 		try {
 			ResultSet rs = conn.executeQuery(query, types, data);
@@ -53,6 +55,7 @@ public class FeatureData {
 				((rs.getString(3) != null) ? new Integer(rs.getInt(3)) : null);
 			values[3] =
 				((rs.getString(4) != null) ? new Integer(rs.getInt(4)) : null);
+			values[4] = rs.getString(22);
 			values[5] = rs.getString(5);
 			values[6] =
 				((rs.getString(6) != null) ? new Integer(rs.getInt(6)) : null);
@@ -81,38 +84,24 @@ public class FeatureData {
 				((rs.getString(19) != null)
 					? new Double(rs.getDouble(19))
 					: null);
+			values[20] =
+				((rs.getString(20) != null)
+					? new Integer(rs.getInt(20))
+					: null);
+			values[23] = rs.getString(21);
 			rs.close();
-			query =
-				"SELECT Security_Class_ID, Status FROM Audit_Table WHERE Audit_ID = ?";
-			data[0] = (Integer) values[2];
-			rs = conn.executeQuery(query, types, data);
-			if (rs.next()) {
-				values[20] =
-					((rs.getString(1) != null)
-						? new Integer(rs.getInt(1))
-						: null);
-				values[23] = rs.getString(2);
-			}
-			rs.close();
-			if (values[3] != null) {
-				query = "SELECT Name FROM Folder WHERE Folder_ID = ?";
-				data[0] = (Integer) values[3];
-				rs = conn.executeQuery(query, types, data);
-				if (rs.next()) {
-					values[4] = rs.getString(1);
-				}
-				rs.close();
-			}
-			query = "SELECT Sample_ID FROM Sample_All_View WHERE Feature_ID = ? ORDER BY Sample_Name";
+			query = "SELECT Sample_ID, Sample_Name, Drillhole_Depth FROM Sample_All_View WHERE Feature_ID = ? ORDER BY Top_Depth";
 			data[0] = values[0];
 			rs = conn.executeQuery(query, types, data);
+			ResultSet rs2;
 			Vector samp = new Vector();
 			while (rs.next()) {
-				samp.add(new Integer(rs.getInt(1)));
+				samp.add(new SampleHeader(rs.getInt(1), rs.getString(2), rs.getString(3)));
 			}
 			values[21] = samp;
 			rs.close();
 			query = "SELECT DISTINCT Sample_Name, Last_Change FROM Sample_All_View WHERE Feature_ID = ? ORDER BY Sample_Name";
+			data[0] = values[0];
 			rs = conn.executeQuery(query, types, data);
 			rs.next();
 			String sampName = rs.getString(1);

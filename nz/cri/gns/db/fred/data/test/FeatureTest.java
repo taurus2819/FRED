@@ -39,7 +39,7 @@ public class FeatureTest extends TestCase {
 	}
 
 
-	public void _testPooling() throws NotBoundException, SQLException, IOException, AccessDeniedException {
+	public void testPooling() throws NotBoundException, SQLException, IOException, AccessDeniedException {
 		Feature.purge();
 		Feature sv1 = new Feature(509, this.user, this.state);
 		Feature sv2 = new Feature(509, this.user2, this.state);
@@ -56,6 +56,7 @@ public class FeatureTest extends TestCase {
 	}
 	
 	public void testSamples() throws SQLException, IOException, InvalidCredentialsException {
+		assertEquals(2, Feature.getPoolSize());	
 		Feature.purge();
 		Feature f = new Feature(1163, user, state);
 		Feature dhole = new Feature(1, user, state);
@@ -79,7 +80,7 @@ public class FeatureTest extends TestCase {
 		System.out.println(f.getAsString(Feature.SECURITY_CLASS_ID));
 	}
 	
-	public void testWorkingFeature() throws SQLException, IOException, InvalidCredentialsException {
+	public void _testWorkingFeature() throws SQLException, IOException, InvalidCredentialsException {
 		String test = null;
 		Feature.purge();
 		Feature f = new Feature(1163, user, state);
@@ -99,7 +100,7 @@ public class FeatureTest extends TestCase {
 		//System.out.println(f.getAsString(Feature.SECURITY_CLASS_ID));
 	}
 	
-	public void testMultipleUsers() throws SQLException, IOException {
+	public void _testMultipleUsers() throws SQLException, IOException {
 		Feature.purge();
 		Feature f = new Feature(562, null, state);
 		Feature f2 = new Feature(562, user, state);

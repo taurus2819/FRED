@@ -22,7 +22,7 @@
 				if (feature.getAsVector(Feature.SAMPLES).size() > 1) {
 					response.sendRedirect("drillhole_detail.jsp?ID=" + featID);
 				} else {
-					response.sendRedirect("detail.jsp?ID=" + ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).toString());
+					response.sendRedirect("detail.jsp?ID=" + ((SampleHeader) feature.getAsVector(Feature.SAMPLES).firstElement()).getSampleID());
 				}
 			} else {
 				response.sendRedirect("drillhole_detail.jsp?ID=" + featID);

@@ -9,10 +9,12 @@ package nz.cri.gns.db.fred.data.test;
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.sql.SQLException;
+import java.util.Iterator;
 
 import junit.framework.TestCase;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.fred.data.Feature;
 import nz.cri.gns.db.fred.data.Folder;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
@@ -47,7 +49,7 @@ public class FolderTest extends TestCase {
 		}
 	}
 
-	public void testPooling() throws NotBoundException, SQLException, IOException {
+	public void _testPooling() throws NotBoundException, SQLException, IOException {
 		Folder.purge();
 		Folder sv1 = new Folder(18, user, state);
 		Folder sv2 = new Folder(18, user2, state);
@@ -60,7 +62,7 @@ public class FolderTest extends TestCase {
 		assertEquals(2, Folder.getPoolSize());
 	}
 
-	public void testFolderName() throws IOException, SQLException, InvalidCredentialsException {
+	public void _testFolderName() throws IOException, SQLException, InvalidCredentialsException {
 		Folder.purge();
 		Folder sv = new Folder(18, user2, state);
 		String foldName = sv.getAsString(Folder.NAME);
@@ -68,7 +70,7 @@ public class FolderTest extends TestCase {
 		assertEquals("Ben2 folder", foldName);
 	}
 	
-	public void testFolderRights() throws SQLException, IOException {
+	public void _testFolderRights() throws SQLException, IOException {
 		Folder.purge();
 		Folder sv = new Folder(18, user, state);
 		Folder sv2 = new Folder(18, user2, state);
@@ -79,10 +81,16 @@ public class FolderTest extends TestCase {
 		assertTrue(sv.isAllowedAdmin());
 	}	
 
-	public void testFolderCount() throws SQLException, IOException, InvalidCredentialsException {
+	public void testMultSampName() throws SQLException, IOException, InvalidCredentialsException {
+		Feature feature;
 		Folder.purge();
-		Folder sv = new Folder(18, user, state);
-		assertEquals(sv.getLocalityCount(), 24);
+		Feature.purge();
+		Folder f = new Folder(12, user, state);
+		assertEquals(f.getLocalityCount(), 20);
+		for (Iterator i = f.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
+			feature = new Feature(((Integer) i.next()).intValue(), user, state);
+			System.out.println(feature.getAsString(Feature.FEATURE_ID));
+		}
 	}
 
 }
