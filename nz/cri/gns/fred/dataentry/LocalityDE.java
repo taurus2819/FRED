@@ -395,7 +395,6 @@ public abstract class LocalityDE implements DataEntryForm {
 				origCoord =	new NorthingEasting(Double.parseDouble(north), Double.parseDouble(east));
 				origSystem = DatumFactory.createDatum("Auckland Island Transverse Mercator");
 				countryCode = "NZ";
-				System.out.println(origCoord.getEastWest());
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");
 			}
@@ -426,7 +425,6 @@ public abstract class LocalityDE implements DataEntryForm {
 			throw new DataInputException("Coordinate", "Invalid value");
 			String north = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
 			String east = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
-			System.out.println("North: " + north + ", East: " + east);
 			try {
 				origCoord = new Datum.LatLong(Double.parseDouble(north), Double.parseDouble(east));
 				origSystem = DatumFactory.createDatum("WGS84");
