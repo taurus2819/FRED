@@ -146,101 +146,92 @@
 				out.println("</td><td>" + sample.getAsString(Sample.FINISH_DEPTH) + " m</td></tr>");
 			}
 		}
-		if (formType.equals("Full") && sample.isUserAuthenticated() && sample.get(Sample.RECORDS) != null) {
+		if (formType.equals("Full") && sample.isUserAuthenticated()) {
 
 			//Sample Property Data
-			for (Iterator i = sample.getAsVector(Sample.RECORDS).iterator(); i.hasNext(); ) {
-				KeyValueObject rec = (KeyValueObject)i.next();
-				if (rec.getValue().equals("SMP")) {
-					try {
-						SampPropRecord sampProp = (SampPropRecord) SampPropRecord.getData(Integer.parseInt(rec.getKey()), user, state);
-						//collectors (repeating)
-						if (sampProp.get(SampPropRecord.COLLECTOR) != null) {
-							out.print("<tr><td class='heading'>Collectors</td><td>");
-							for (Iterator i2 = sampProp.getAsVector(SampPropRecord.COLLECTOR).iterator(); i2.hasNext(); ) {
-								KeyValueObject coll = (KeyValueObject)i2.next();
-								out.print(coll.getValue() + "<br />");
-							}
-							out.print("</td></tr>");
-						}
-						if (sampProp.get(SampPropRecord.COLLECTION_DATE) != null) { out.print("<tr><td class='heading'>Collection Date</td><td>" + FREDUtils.formatDateForOutput(sampProp.getAsDate(SampPropRecord.COLLECTION_DATE), sampProp.getAsString(SampPropRecord.COLLECTION_DATE_ROUNDING)) + "</td></tr>"); }
-						if (sampProp.get(SampPropRecord.STRAT_UNIT) != null) { out.println("<tr><td class='heading'>Strat Name</td><td>" + sampProp.getAsString(SampPropRecord.STRAT_UNIT) + "</td></tr>"); }
-						if (sampProp.get(SampPropRecord.IN_PLACE) != null) { out.println("<tr><td class='heading'>In Place</td><td>" + sampProp.getAsString(SampPropRecord.IN_PLACE) + "</td></tr>"); }
-						//sent to (repeating)
-						if (sampProp.get(SampPropRecord.SENT_TO) != null) {
-							out.print("<tr><td class='heading'>Sent To</td><td>");
-							for (Iterator i2 = sampProp.getAsVector(SampPropRecord.SENT_TO).iterator(); i2.hasNext(); ) {
-								SentTo sentTo = (SentTo)i2.next();
-								out.print(sentTo.getSentTo() + "<br />");
-							}
-						out.print("</td></tr>");
-						}
-						if (sampProp.get(SampPropRecord.NOT_COLLECTED) != null) { out.println("<tr><td class='heading'>Not Collected</td><td>" + sampProp.getAsString(SampPropRecord.NOT_COLLECTED) + "</td></tr>"); }
-						
-						out.println("<tr><td class='bigheading' colspan='2'>Stratigraphy</td></tr>");
-						
-						if (sampProp.get(SampPropRecord.SIGNIFICANCE) != null) { out.println("<tr><td class='heading'>Significance</td><td>" + sampProp.getAsString(SampPropRecord.SIGNIFICANCE) + "</td></tr>"); }
-						if (sampProp.get(SampPropRecord.INFERRED_STAGE) != null) { out.println("<tr><td class='heading'>Inferred Stage</td><td>" + sampProp.getAsString(SampPropRecord.INFERRED_STAGE) + "</td></tr>"); }
-						if (sampProp.get(SampPropRecord.KNOWN_STAGE) != null) { out.println("<tr><td class='heading'>Known Stage</td><td>" + sampProp.getAsString(SampPropRecord.KNOWN_STAGE) + "</td></tr>"); }
-						//Nearby samples (repeating)
-						if (sampProp.get(SampPropRecord.RELATIONSHIP_NEARBY) != null) {
-							out.print("<tr><td class='heading'>Samples Nearby</td><td>");
-							for (Iterator i2 = sampProp.getAsVector(SampPropRecord.RELATIONSHIP_NEARBY).iterator(); i2.hasNext(); ) {
-								Relationship nearRel = (Relationship)i2.next();
-								out.print(nearRel.getDistanceRelation() + " " + nearRel.getRelatedSampleName() +"<br />");
-							}
-						out.print("</td></tr>");
-						}
-						//Sample relationships (repeating)
-						if (sampProp.get(SampPropRecord.RELATIONSHIP_SAMPLE) != null) {
-							out.print("<tr><td class='heading'>Sample Relationships</td><td>");
-							for (Iterator i2 = sampProp.getAsVector(SampPropRecord.RELATIONSHIP_SAMPLE).iterator(); i2.hasNext(); ) {
-								Relationship sampRel = (Relationship)i2.next();
-								out.print(sampRel.getDistanceRelation() + " " + sampRel.getRelatedSampleName() + "<br />");
-							}
-						out.print("</td></tr>");
-						}
-						//Strat relationships (repeating)
-						if (sampProp.get(SampPropRecord.RELATIONSHIP_STRAT) != null) {
-							out.print("<tr><td class='heading'>Stratigraphic Relationships</td><td>");
-							for (Iterator i2 = sampProp.getAsVector(SampPropRecord.RELATIONSHIP_STRAT).iterator(); i2.hasNext(); ) {
-								Relationship stratRel = (Relationship)i2.next();
-								out.print(stratRel.getRelationship() + "<br />");
-							}
-						out.print("</td></tr>");
-						}
-						if (sampProp.get(SampPropRecord.COLUMN_MAP) != null) { out.println("<tr><td class='heading'>Column/Map</td><td>" + sampProp.getAsString(SampPropRecord.COLUMN_MAP) + "</td></tr>"); }
-						if (sampProp.get(SampPropRecord.DIP) != null) { out.println("<tr><td class='heading'>Dip</td><td>" + sampProp.getAsString(SampPropRecord.DIP) + "</td></tr>"); }
-						if (sampProp.get(SampPropRecord.DIP_DIRECTION) != null) { out.println("<tr><td class='heading'>Dip Direction</td><td>" + sampProp.getAsString(SampPropRecord.DIP_DIRECTION) + "</td></tr>"); }
-						if (sampProp.get(SampPropRecord.STRIKE) != null) { out.println("<tr><td class='heading'>Strike</td><td>" + sampProp.getAsString(SampPropRecord.STRIKE) + "</td></tr>"); }
-						if (sampProp.get(SampPropRecord.FACING) != null) { out.println("<tr><td class='heading'>Facing</td><td>" + sampProp.getAsString(SampPropRecord.FACING) + "</td></tr>"); }
-						
-						out.println("<tr><td class='bigheading' colspan='2'>Sedimentary Features</td></tr>");
-						if (sampProp.get(SampPropRecord.GRAINSIZE) != null) { out.println("<tr><td class='heading'>Grain Size</td><td>" + sampProp.getAsString(SampPropRecord.GRAINSIZE) + "</td></tr>"); }
-						if (sampProp.get(SampPropRecord.COMPARATOR_USED) != null) { out.println("<tr><td class='heading'>Comparator Used</td><td>" + sampProp.getAsString(SampPropRecord.COMPARATOR_USED) + "</td></tr>"); }
-						if (sampProp.get(SampPropRecord.BED_THICKNESS) != null) { out.println("<tr><td class='heading'>Bed Thickness</td><td>" + sampProp.getAsString(SampPropRecord.BED_THICKNESS) + "</td></tr>"); }
-						if (sampProp.get(SampPropRecord.BEDDING) != null) { out.println("<tr><td class='heading'>Bedding</td><td>" + sampProp.getAsString(SampPropRecord.BEDDING) + "</td></tr>"); }
-						if (sampProp.get(SampPropRecord.WEATHERING) != null) { out.println("<tr><td class='heading'>Weathering</td><td>" + sampProp.getAsString(SampPropRecord.WEATHERING) + "</td></tr>"); }
-						if (sampProp.get(SampPropRecord.HARDNESS) != null) { out.println("<tr><td class='heading'>Hardness</td><td>" + sampProp.getAsString(SampPropRecord.HARDNESS) + "</td></tr>"); }
-						if (sampProp.get(SampPropRecord.CARBONATE) != null) { out.println("<tr><td class='heading'>Carbonate</td><td>" + sampProp.getAsString(SampPropRecord.CARBONATE) + "</td></tr>"); }
-						if (sampProp.get(SampPropRecord.COLOUR) != null) { out.println("<tr><td class='heading'>Colour</td><td>" + sampProp.getAsString(SampPropRecord.COLOUR) + "</td></tr>"); }
-						//sed features (repeating)
-						if (sampProp.get(SampPropRecord.SED_FEATURE) != null) {
-							out.print("<tr><td class='heading'>Additional Features</td><td>");
-							for (Iterator i2 = sampProp.getAsVector(SampPropRecord.SED_FEATURE).iterator(); i2.hasNext(); ) {
-								SedFeature sf = (SedFeature)i2.next();
-								out.print(sf.getSedFeature() + "<br />");
-							}
-						out.print("</td></tr>");
-						}
-						if (sampProp.get(SampPropRecord.DEPOSITION_ENV) != null) { out.println("<tr><td class='heading'>Inferred Environment</td><td>" + sampProp.getAsString(SampPropRecord.DEPOSITION_ENV) + "</td></tr>"); }
-						if (sampProp.get(SampPropRecord.ROCK_NATURE) != null) { out.println("<tr><td class='heading'>Nature of Rock Unit</td><td>" + sampProp.getAsString(SampPropRecord.ROCK_NATURE) + "</td></tr>"); }
-						if (sampProp.get(SampPropRecord.CORRESPONDENCE) != null) { out.println("<tr><td class='heading'>Correspondence</td><td>" + sampProp.getAsString(SampPropRecord.CORRESPONDENCE) + "</td></tr>"); }
-						out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
-					} catch (Exception e) {}
-					break;
+			//collectors (repeating)
+			if (sample.get(Sample.COLLECTOR) != null) {
+				out.print("<tr><td class='heading'>Collectors</td><td>");
+				for (Iterator i2 = sample.getAsVector(Sample.COLLECTOR).iterator(); i2.hasNext(); ) {
+					KeyValueObject coll = (KeyValueObject)i2.next();
+					out.print(coll.getValue() + "<br />");
 				}
+				out.print("</td></tr>");
 			}
+			if (sample.get(Sample.COLLECTION_DATE) != null) { out.print("<tr><td class='heading'>Collection Date</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.COLLECTION_DATE), sample.getAsString(Sample.COLLECTION_DATE_ROUNDING)) + "</td></tr>"); }
+			if (sample.get(Sample.STRAT_UNIT) != null) { out.println("<tr><td class='heading'>Strat Name</td><td>" + sample.getAsString(Sample.STRAT_UNIT) + "</td></tr>"); }
+			if (sample.get(Sample.IN_PLACE) != null) { out.println("<tr><td class='heading'>In Place</td><td>" + sample.getAsString(Sample.IN_PLACE) + "</td></tr>"); }
+			//sent to (repeating)
+			if (sample.get(Sample.SENT_TO) != null) {
+				out.print("<tr><td class='heading'>Sent To</td><td>");
+				for (Iterator i2 = sample.getAsVector(Sample.SENT_TO).iterator(); i2.hasNext(); ) {
+					SentTo sentTo = (SentTo)i2.next();
+					out.print(sentTo.getSentTo() + "<br />");
+				}
+			out.print("</td></tr>");
+			}
+			if (sample.get(Sample.NOT_COLLECTED) != null) { out.println("<tr><td class='heading'>Not Collected</td><td>" + sample.getAsString(Sample.NOT_COLLECTED) + "</td></tr>"); }
+			
+			out.println("<tr><td class='bigheading' colspan='2'>Stratigraphy</td></tr>");
+			
+			if (sample.get(Sample.SIGNIFICANCE) != null) { out.println("<tr><td class='heading'>Significance</td><td>" + sample.getAsString(Sample.SIGNIFICANCE) + "</td></tr>"); }
+			if (sample.get(Sample.INFERRED_STAGE) != null) { out.println("<tr><td class='heading'>Inferred Stage</td><td>" + sample.getAsString(Sample.INFERRED_STAGE) + "</td></tr>"); }
+			if (sample.get(Sample.KNOWN_STAGE) != null) { out.println("<tr><td class='heading'>Known Stage</td><td>" + sample.getAsString(Sample.KNOWN_STAGE) + "</td></tr>"); }
+			//Nearby samples (repeating)
+			if (sample.get(Sample.RELATIONSHIP_NEARBY) != null) {
+				out.print("<tr><td class='heading'>Samples Nearby</td><td>");
+				for (Iterator i2 = sample.getAsVector(Sample.RELATIONSHIP_NEARBY).iterator(); i2.hasNext(); ) {
+					Relationship nearRel = (Relationship)i2.next();
+					out.print(nearRel.getDistanceRelation() + " " + nearRel.getRelatedSampleName() +"<br />");
+				}
+			out.print("</td></tr>");
+			}
+			//Sample relationships (repeating)
+			if (sample.get(Sample.RELATIONSHIP_SAMPLE) != null) {
+				out.print("<tr><td class='heading'>Sample Relationships</td><td>");
+				for (Iterator i2 = sample.getAsVector(Sample.RELATIONSHIP_SAMPLE).iterator(); i2.hasNext(); ) {
+					Relationship sampRel = (Relationship)i2.next();
+					out.print(sampRel.getDistanceRelation() + " " + sampRel.getRelatedSampleName() + "<br />");
+				}
+			out.print("</td></tr>");
+			}
+			//Strat relationships (repeating)
+			if (sample.get(Sample.RELATIONSHIP_STRAT) != null) {
+				out.print("<tr><td class='heading'>Stratigraphic Relationships</td><td>");
+				for (Iterator i2 = sample.getAsVector(Sample.RELATIONSHIP_STRAT).iterator(); i2.hasNext(); ) {
+					Relationship stratRel = (Relationship)i2.next();
+					out.print(stratRel.getRelationship() + "<br />");
+				}
+			out.print("</td></tr>");
+			}
+			if (sample.get(Sample.COLUMN_MAP) != null) { out.println("<tr><td class='heading'>Column/Map</td><td>" + sample.getAsString(Sample.COLUMN_MAP) + "</td></tr>"); }
+			if (sample.get(Sample.DIP) != null) { out.println("<tr><td class='heading'>Dip</td><td>" + sample.getAsString(Sample.DIP) + "</td></tr>"); }
+			if (sample.get(Sample.DIP_DIRECTION) != null) { out.println("<tr><td class='heading'>Dip Direction</td><td>" + sample.getAsString(Sample.DIP_DIRECTION) + "</td></tr>"); }
+			if (sample.get(Sample.STRIKE) != null) { out.println("<tr><td class='heading'>Strike</td><td>" + sample.getAsString(Sample.STRIKE) + "</td></tr>"); }
+			if (sample.get(Sample.FACING) != null) { out.println("<tr><td class='heading'>Facing</td><td>" + sample.getAsString(Sample.FACING) + "</td></tr>"); }
+			
+			out.println("<tr><td class='bigheading' colspan='2'>Sedimentary Features</td></tr>");
+			if (sample.get(Sample.GRAINSIZE) != null) { out.println("<tr><td class='heading'>Grain Size</td><td>" + sample.getAsString(Sample.GRAINSIZE) + "</td></tr>"); }
+			if (sample.get(Sample.COMPARATOR_USED) != null) { out.println("<tr><td class='heading'>Comparator Used</td><td>" + sample.getAsString(Sample.COMPARATOR_USED) + "</td></tr>"); }
+			if (sample.get(Sample.BED_THICKNESS) != null) { out.println("<tr><td class='heading'>Bed Thickness</td><td>" + sample.getAsString(Sample.BED_THICKNESS) + "</td></tr>"); }
+			if (sample.get(Sample.BEDDING) != null) { out.println("<tr><td class='heading'>Bedding</td><td>" + sample.getAsString(Sample.BEDDING) + "</td></tr>"); }
+			if (sample.get(Sample.WEATHERING) != null) { out.println("<tr><td class='heading'>Weathering</td><td>" + sample.getAsString(Sample.WEATHERING) + "</td></tr>"); }
+			if (sample.get(Sample.HARDNESS) != null) { out.println("<tr><td class='heading'>Hardness</td><td>" + sample.getAsString(Sample.HARDNESS) + "</td></tr>"); }
+			if (sample.get(Sample.CARBONATE) != null) { out.println("<tr><td class='heading'>Carbonate</td><td>" + sample.getAsString(Sample.CARBONATE) + "</td></tr>"); }
+			if (sample.get(Sample.COLOUR) != null) { out.println("<tr><td class='heading'>Colour</td><td>" + sample.getAsString(Sample.COLOUR) + "</td></tr>"); }
+			//sed features (repeating)
+			if (sample.get(Sample.SED_FEATURE) != null) {
+				out.print("<tr><td class='heading'>Additional Features</td><td>");
+				for (Iterator i2 = sample.getAsVector(Sample.SED_FEATURE).iterator(); i2.hasNext(); ) {
+					SedFeature sf = (SedFeature)i2.next();
+					out.print(sf.getSedFeature() + "<br />");
+				}
+				out.print("</td></tr>");
+			}
+			if (sample.get(Sample.DEPOSITION_ENV) != null) { out.println("<tr><td class='heading'>Inferred Environment</td><td>" + sample.getAsString(Sample.DEPOSITION_ENV) + "</td></tr>"); }
+			if (sample.get(Sample.ROCK_NATURE) != null) { out.println("<tr><td class='heading'>Nature of Rock Unit</td><td>" + sample.getAsString(Sample.ROCK_NATURE) + "</td></tr>"); }
+			if (sample.get(Sample.CORRESPONDENCE) != null) { out.println("<tr><td class='heading'>Correspondence</td><td>" + sample.getAsString(Sample.CORRESPONDENCE) + "</td></tr>"); }
+			out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
 		}
 		out.println("<img src='images/blank.gif' width='600' height='1' />");
 		out.println("</td></tr></table>");
