@@ -11,7 +11,7 @@
 	boolean authorChk = false, sCountChk = false, sCoordChk = false, commChk = true;
 
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	//if FeatureID given then get SampleID or transer to drillhole
 	if (request.getParameter("FeatID") != null) {
@@ -43,7 +43,7 @@
 	}
 
 	if (sampID != null) {
-		try {
+		//try {
 			Sample sample = new Sample(Integer.parseInt(sampID), user, state);
 			
 			if (request.getParameter("ActionType") != null) { //do something
@@ -258,6 +258,7 @@
 					}
 					out.print("</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.START_DATE), sample.getAsString(Sample.START_DATE_ROUNDING)) + "</td></tr>");
 				}
+				System.out.println(sample.getAsString(Sample.FINISH_DATE));
 				if (sample.isUserAuthenticated() && sample.get(Sample.FINISH_DATE) != null) {
 					out.print("<tr><td class='heading'>Completion Date</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.FINISH_DATE), sample.getAsString(Sample.FINISH_DATE_ROUNDING)) + "</td></tr>");
 				}
@@ -510,13 +511,13 @@
 	
 			if (user ==  null) { out.println("<tr><td colspan='2'>More data may be available for this locality for <a href='login.jsp?loginpage=" + URLEncoder.encode("/fred/detail.jsp") + "' class='boldlink'>logged</a> in users</td></tr>"); }
 			out.println("</table></td></tr></table>");
-		}
-		catch (Exception e) { // no record or not approved
-			drawEndNavigation(out);
-			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-			out.println("<tr><td>Either the sample doesn't exist or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</td></tr>");
-			out.println("</table>");
-		}
+		//}
+		//catch (Exception e) { // no record or not approved
+		//	drawEndNavigation(out);
+		//	out.println("<table style='margin-left:20px; width:550px;' border='0'>");
+		//	out.println("<tr><td>Either the sample doesn't exist or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</td></tr>");
+		//	out.println("</table>");
+		//}
 	} 
 	else { //no sampleID
 		drawTop(out, et, request, response);
