@@ -3,6 +3,7 @@
 	<name>FRED</name>
 	<comment></comment>
 	<projects>
+		<project>GOL</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
