@@ -87,12 +87,7 @@ public class PaleontologyRecordDE extends RecordDE {
 				}
 				setField(TAXA_LIST, taxaList.toString());
 			}
-		} catch (TaxonomicListException e) {
-			for (Iterator i = e.getTaxaList().iterator(); i.hasNext();) {
-				Taxa t = (Taxa) i.next();
-				System.out.println(t.getGroupID() + " - " + t.getCleanTaxonomicName() + " : " + t.getTaxonomicName());
-			}
-		}
+		} catch (TaxonomicListException e) {}
 	}
 
 	protected void parseField(int field, String value)
