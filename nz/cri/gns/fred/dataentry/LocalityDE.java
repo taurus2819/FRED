@@ -160,7 +160,7 @@ public abstract class LocalityDE implements DataEntryForm {
 
 	public void setFieldsFromTemp() throws DataInputException {
 		for (int i = 0; i < getFieldCount(); i++) {
-			setField(i, tempFields[i]);
+			setField(i, getTempField(i));
 			setTempField(i, null);
 		}
 	}
@@ -422,6 +422,7 @@ public abstract class LocalityDE implements DataEntryForm {
 				rs = conn.executeQuery("SELECT Audit_Seq.NEXTVAL FROM DUAL");
 				rs.next();
 				String auditID = rs.getString(1);
+				System.out.println("Locality SecClassID: " + secClassID);
 				conn.executeUpdate(
 					"INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Comments, Working_Folder_ID, Security_Class_ID) VALUES ("
 						+ auditID

@@ -250,6 +250,7 @@ public abstract class RecordDE implements DataEntryForm {
 				rs = conn.executeQuery("SELECT Audit_Seq.NEXTVAL FROM DUAL");
 				rs.next();
 				String auditID = rs.getString(1);
+				System.out.println("Record SecClassID: " + (secClassID != null ? secClassID.toString() : "4"));
 				conn.executeUpdate(
 					"INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Comments, Working_Folder_ID, Security_Class_ID) VALUES ("
 						+ auditID
@@ -260,7 +261,7 @@ public abstract class RecordDE implements DataEntryForm {
 						+ ", "
 						+ folder.getFolderID()
 						+ ", " 
-						+ ((secClassID != null) ? secClassID.toString() : "21") 
+						+ ((secClassID != null) ? secClassID.toString() : "4") 
 						+ ")");
 				rs = conn.executeQuery("SELECT Record_Seq.NEXTVAL FROM DUAL");
 				rs.next();

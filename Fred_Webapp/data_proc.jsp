@@ -123,8 +123,6 @@
 
 			session.setAttribute("dataEntryForm", dataEntryForm);
 
-			System.out.println("Temp Collector Field now: " + dataEntryForm.getTempField(DataEntryForm.COLLECTORS));
-
 			dataEntryForm.setFieldsFromTemp();
 
 			if (request.getParameter("SaveType").equals("Submit")) {
@@ -132,6 +130,7 @@
 			} else {
 				dataEntryForm.save();
 			}
+
 			response.sendRedirect(request.getParameter("Redirect"));
 			
 		} catch (DataInputException e) {

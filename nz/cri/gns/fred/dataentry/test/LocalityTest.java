@@ -36,13 +36,13 @@ public class LocalityTest extends TestCase {
 	public void testNewSave() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
-		User user = new User("pseudo_ben", "santor32", ipConn);
-		DataEntryForm loc2 = DataEntryFormFactory.getLocalityDataEntryForm("VertSect", user, 221, state);
-		loc2.setField(LocalityDE.FEATURE_NAME, "Test");
-		for (int i = 0; i < loc2.getFieldCount(); i++) {
-			System.out.println(i + ": " + loc2.getField(i));
-		}
-		loc2.save();
+		User user = new User("ben", "St.Bathans", ipConn);
+		DataEntryForm loc2 = DataEntryFormFactory.getLocalityDataEntryForm("Outcrop", user, 12, state);
+		loc2.setTempField(DataEntryForm.COLLECTORS, "bad");
+		System.out.println("Collectors (after data entry): " + loc2.getField(DataEntryForm.COLLECTORS) + ":" + loc2.getTempField(DataEntryForm.COLLECTORS));
+		loc2.setFieldsFromTemp();
+		System.out.println("Collectors (after setting field): " + loc2.getField(DataEntryForm.COLLECTORS) + ":" + loc2.getTempField(DataEntryForm.COLLECTORS));
+		//loc2.save();
 	}
 	
 	public void _testCopy() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {

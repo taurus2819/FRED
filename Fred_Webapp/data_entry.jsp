@@ -53,12 +53,15 @@
 			out.println("<input type='hidden' name='SaveType' value='' />");
 			if (request.getParameter("Redirect") != null) 
 				out.println("<input type='hidden' name='Redirect' value='" + request.getParameter("Redirect") + "' />");
-			if (featID != null)
+			if (featID != null) {
 				out.println("<input type='hidden' name='ErrorRedirect' value='data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID + "&FeatID=" + featID + "' />");
-			if (sampID != null)
+			} else if (sampID != null) {
 				out.println("<input type='hidden' name='ErrorRedirect' value='data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID + "&SampID=" + sampID + "' />");
-			if (recID != null)
+			} else if (recID != null) {
 				out.println("<input type='hidden' name='ErrorRedirect' value='data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID + "&RecID=" + recID + "' />");
+			} else {
+				out.println("<input type='hidden' name='ErrorRedirect' value='data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID + "' />");
+			}
 
 			dataEntryForm.makeNavPanelHTML(new PrintWriter(out));
 
@@ -67,7 +70,6 @@
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");
 
-			System.out.println("Temp Coll Field: " + dataEntryForm.getTempField(DataEntryForm.COLLECTORS));
 			dataEntryForm.makeDataEntryHTML(new PrintWriter(out));
 
 			out.println("</td></tr></table>");
