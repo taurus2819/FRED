@@ -540,8 +540,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		rs.next();
 		String mfID = rs.getString(1);
 		conn.executeUpdate("UPDATE Feature SET Masterfile_ID = " + mfID + " WHERE Feature_ID = " + feature.getFeatureID());
-		conn.executeUpdate(
-			"UPDATE Audit_Table SET Status = 'waiting', Submitted_By_ID = "
+		conn.executeUpdate("UPDATE Audit_Table SET Status = 'waiting', Submitted_By_ID = "
 				+ user.getPersonId()
 				+ ", Submitted_Date = SYSDATE WHERE Audit_ID = "
 				+ auditID);
@@ -554,7 +553,6 @@ public abstract class LocalityDE implements DataEntryForm {
 		throws SQLException, IOException, InvalidCredentialsException {
 		if (feature == null || !feature.getAsString(Feature.STATUS).equals("waiting") || !folder.isAllowedSubmitLocalities())
 			throw new InvalidCredentialsException();
-		//change status, check MF & add saved record to folder
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		ResultSet rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
 		rs.next();

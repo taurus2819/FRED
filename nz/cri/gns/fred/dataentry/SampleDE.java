@@ -1340,13 +1340,15 @@ public class SampleDE implements DataEntryForm {
 		if (getField(COLLECTORS) == null || getField(COLLECTION_DATE) == null || getField(FOSSILS_IN_PLACE) == null)
 			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
 		save();
-		//change status & add saved record to folder
-		DBConnection conn = FREDUtils.getFREDConnection(state);
-		conn.executeUpdate("UPDATE Audit_Table SET Status = 'approved', Submitted_By_ID = "
-			+ user.getPersonId()
-			+ ", Submitted_Date = SYSDATE, Working_Folder_ID = NULL, Working_Comments = NULL WHERE Audit_ID = "
-			+ auditID);
-		conn.releaseStatement();
+		if (!outcropSamp) {
+			//change status & add saved record to folder
+			DBConnection conn = FREDUtils.getFREDConnection(state);
+			conn.executeUpdate("UPDATE Audit_Table SET Status = 'approved', Submitted_By_ID = "
+				+ user.getPersonId()
+				+ ", Submitted_Date = SYSDATE, Working_Folder_ID = NULL, Working_Comments = NULL WHERE Audit_ID = "
+				+ auditID);
+			conn.releaseStatement();
+		}
 		sample = new Sample(sample.getSampleID(), user, state, true);
 		return sample.getSampleID();
 	}
