@@ -14,7 +14,7 @@
 		if (request.getParameter("ActionType") != null) { //do something
 			String actionType = request.getParameter("ActionType");
 			String err = "";
-			//try {
+			try {
 				//Copy locality
 				if (actionType.equals("CopyFeat") && folder.isAllowedCreateLocalities()) {
 					FolderUtils.copyLocality(request.getParameter("FeatID"), request.getParameter("NewFeatName"), String.valueOf(folder.getFolderID()), user, state);
@@ -35,12 +35,12 @@
 				else if (actionType.equals("Revoke") && folder.isAllowedSubmitLocalities()) {
 					FolderUtils.revokeLocality(request.getParameter("FeatID"), user, state);
 				}
-			//} catch (Exception e) {
-			//	err = "&ErrMsg=" + URLEncoder.encode("An Error has occured: " + e.getMessage(), "UTF-8");
-			//}
+			} catch (Exception e) {
+				err = "&ErrMsg=" + URLEncoder.encode("An Error has occured: " + e.getMessage(), "UTF-8");
+			}
 			folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state, true);
-			//response.sendRedirect("folder_detail.jsp?ID=" + folder.getFolderID() + err);
-			//return;
+			response.sendRedirect("folder_detail.jsp?ID=" + folder.getFolderID() + err);
+			return;
 		}
 
 		drawTop(out, et, request, response);
