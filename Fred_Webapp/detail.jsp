@@ -51,7 +51,7 @@
 
 		//List data
 		out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
-		//try {
+		try {
 			Sample sample = new Sample(Integer.parseInt(sampID), user, state);
 			Audit audit = Audit.getAudit(sample.getAsInt(Sample.AUDIT_ID), state);
 			featType = sample.getAsString(Sample.FEATURE_TYPE);
@@ -477,13 +477,13 @@
 	
 			if (user ==  null) { out.println("<tr><td colspan='2'>More data may be available for this locality for <a href='login.jsp?loginpage=" + URLEncoder.encode("/fred/detail.jsp") + "' class='boldlink'>logged</a> in users</td></tr>"); }
 			out.println("</table></td></tr></table>");
-		//}
-		//catch (Exception e) { // no record or not approved
-		//	drawEndNavigation(out);
-		//	out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-		//	out.println("<tr><td>Either the sample doesn't exist or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</td></tr>");
-		//	out.println("</table>");
-		//}
+		}
+		catch (Exception e) { // no record or not approved
+			drawEndNavigation(out);
+			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
+			out.println("<tr><td>Either the sample doesn't exist or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</td></tr>");
+			out.println("</table>");
+		}
 
 	}
 	else { //no sampleID
