@@ -1,5 +1,5 @@
 <%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
+		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.metadata.*, nz.cri.gns.jsp.*, java.net.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
 %><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 	User user = (User)getUser(session);
@@ -177,6 +177,22 @@
 								out.print("Base Horizon");
 							}
 							out.println("&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.FINISH_DEPTH) + " m</td></tr>");
+						}
+						//Image/Files
+						if (sample.isUserAuthenticated() && sample.getFeatureMetadataRecordsCount() > 0) {
+							out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
+							MetadataRecord[] mr = sample.getFeatureMetadataRecords();
+							out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
+							int y = 1;
+							out.print("<tr>");
+							for (int x = 0; x < mr.length; x++) {
+								if (y++ == 5) {
+									out.println("</tr><tr>");
+									y = 2;
+								}
+								out.print("<td width='150' align='center' class='smalltext'><a href='/online/DigitalDocument?src=" + mr[x].getCode() + "'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "' alt='FRED Digital Document' /><br />" + mr[x].getTitle() + "</a></td>");
+							}
+							out.println("</td></tr></table></td></tr>");
 						}
 						out.println("</table></p>");
 	

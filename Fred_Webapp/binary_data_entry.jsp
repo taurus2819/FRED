@@ -37,7 +37,7 @@
 				mr = sample.getSampleMetadataRecords();
 			} else if (recType.equals(Feature.OUTCROP_LOCALITY) || recType.equals(Feature.DRILLHOLE_LOCALITY) || recType.equals(Feature.VERTICAL_SECTION_LOCALITY)) {
 				Feature feature = new Feature(Integer.parseInt(id), user, state, true);
-				Sample sample = new Sample(((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue(), user, state);
+				Sample sample = new Sample(((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue(), user, state, true);
 				attacher = DocumentAttacher.createFREDFeatureDocumentAttacher(state.session, state.context);
 				mr = feature.getMetadataRecords();
 			}
