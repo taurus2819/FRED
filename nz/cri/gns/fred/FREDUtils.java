@@ -234,12 +234,13 @@ public class FREDUtils {
 			return hasMasterfileRights(user, rs.getString(1), state);
 		return false;
 	}
+	
 	/**
 	 * Returns true is the user is allowed to approve the locality
 	 */
 	public static boolean isAllowedApproveLocality(User user, String featureID, String status, PageState state) throws IOException, SQLException {
 		if (status != null && status.equals(Audit.STATUS_WAITING))
-			return (getUserWorkingLocalityRights(user, featureID, state) & 64) > 0;
+			return (getUserWorkingLocalityRights(user, featureID, state) & Folder.FOLDER_APPROVE_RIGHT) > 0;
 		return false;
 	}
 
@@ -263,6 +264,7 @@ public class FREDUtils {
 			while (rs.next())
 				userRights = userRights | rs.getInt(1);
 		}
+		System.out.println("User: " + user.getFullName() + " has rights: " + userRights + " for feature " + featureID);
 		return userRights;
 	}
 
