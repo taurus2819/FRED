@@ -137,6 +137,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		}
 		fields[field] = value;
 		savedFlag = false;
+		System.out.println("Field " + field + " set OK");
 	}
 
 	public String getField(int field) {
@@ -358,7 +359,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			String north = coord.substring(coord.indexOf("*") + 1, coord.length());
 			try {
 				origCoord =	new NorthingEasting(Double.parseDouble(north), Double.parseDouble(east));
-				origSystem = DatumFactory.createNZMG();
+				origSystem = DatumFactory.createNZMS260();
 				countryCode = "NZ";
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");
@@ -371,7 +372,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			String north = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
 			try {
 				origCoord = new TruncNorthingEasting(Double.parseDouble(north), Double.parseDouble(east), sheet, east.length());
-				origSystem = DatumFactory.createNZMS260();
+				origSystem = DatumFactory.createTruncNZMS260();
 				countryCode = "NZ";
 			} catch (Exception e) {
 				throw new DataInputException("Coordinate", "Invalid value");
