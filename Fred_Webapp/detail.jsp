@@ -510,11 +510,11 @@
 											out.println("</tr>");
 											for (Iterator i3 = taxaGroup.getTaxaList().iterator(); i3.hasNext(); ) {
 												Taxa taxa = (Taxa)i3.next();
-												out.print("<tr><td>" + taxa.getTaxonomicName() + "&nbsp;&nbsp;</td>");
-												if (authorChk) { out.print("<td><i>" +FREDUtils.noNulls(taxa.getAuthor()) + "</i>&nbsp;&nbsp;</td>"); }
-												if (sCountChk) { out.print("<td>" +FREDUtils.noNulls(String.valueOf(taxa.getSpecimenCount())) + "&nbsp;&nbsp;</td>"); }
-												if (sCoordChk) { out.print("<td>" +FREDUtils.noNulls(taxa.getSpecimenCoords()) + "&nbsp;&nbsp;</td>"); }
-												if (commChk) { out.print("<td>" +FREDUtils.noNulls(taxa.getComments()) + "&nbsp;&nbsp;</td>"); }
+												out.print("<tr><td><i>" + taxa.getTaxonomicName() + "</i>&nbsp;&nbsp;</td>");
+												if (authorChk) { out.print("<td>" + FREDUtils.noNulls(taxa.getAuthor()) + "&nbsp;&nbsp;</td>"); }
+												if (sCountChk) { out.print("<td>" + FREDUtils.noNulls(String.valueOf(taxa.getSpecimenCount())) + "&nbsp;&nbsp;</td>"); }
+												if (sCoordChk) { out.print("<td>" + FREDUtils.noNulls(taxa.getSpecimenCoords()) + "&nbsp;&nbsp;</td>"); }
+												if (commChk) { out.print("<td>" + FREDUtils.noNulls(taxa.getComments()) + "&nbsp;&nbsp;</td>"); }
 												out.println("</tr>");
 											}
 										} else {

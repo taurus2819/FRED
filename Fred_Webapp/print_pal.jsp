@@ -89,7 +89,7 @@
 					out.println("<tr class='heading'><td>Taxonomic Name&nbsp;&nbsp;</td><td>Spec&nbsp;Count&nbsp;&nbsp;</td><td>Spec&nbsp;Coord&nbsp;&nbsp;</td><td>Comments&nbsp;&nbsp;</td></tr>");
 					for (Iterator i3 = taxaGroup.getTaxaList().iterator(); i3.hasNext(); ) {
 						Taxa taxa = (Taxa)i3.next();
-						out.print("<tr><td>" + taxa.getTaxonomicName() + "&nbsp;&nbsp;</td>");
+						out.print("<tr><td><i>" + taxa.getTaxonomicName() + "</i>&nbsp;&nbsp;</td>");
 						out.print("<td class='smalltext'>" +FREDUtils.noNulls(String.valueOf(taxa.getSpecimenCount())) + "&nbsp;&nbsp;</td>");
 						out.print("<td class='smalltext'>" +FREDUtils.noNulls(taxa.getSpecimenCoords()) + "&nbsp;&nbsp;</td>");
 						out.print("<td class='smalltext'>" +FREDUtils.noNulls(taxa.getComments()) + "&nbsp;&nbsp;</td>");
