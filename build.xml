@@ -1,0 +1,8 @@
+<project name="fred" default="package">
+	<target name="package">
+		<ant dir=".." target="db-check">
+			<property name="build.webxml" value="FRED/Fred_Webapp/WEB-INF/web.xml" />
+		</ant>
+		<war warfile="../fred.war" basedir="Fred_Webapp" webxml="Fred_Webapp/WEB-INF/web.xml" excludes="WEB-INF,WEB-INF/**/*" />
+	</target>
+</project>
