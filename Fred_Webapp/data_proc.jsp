@@ -153,7 +153,7 @@
 			session.setAttribute("badTaxaList", e.getTaxaList());
 			session.setAttribute("dataEntryForm", dataEntryForm);
 			out.println("<p><span class='bigheading'>Data Error</span></p>");
-			out.println("<p>The following list contains taxonomic entries which do not match a value in the theasurus.  This could be either because you have entered incorrect syntax or because the entry is not in the theasurus.<br />Note submitted entries will be provisional until checked by database curators and you will not be able to submit this record until the entry has been approved.</p>");
+			out.println("<p>The following list contains taxonomic entries which do not match a value in the thesaurus.  This could be either because you have entered incorrect syntax or because the entry is not in the thesaurus.<br />Note submitted entries will be provisional until checked by database curators and you will not be able to submit this record until the entry has been approved.</p>");
 			out.println("<table border='0' cellspacing='2'>");
 			out.println("<tr><th>Group&nbsp;&nbsp;</th><th>Entered Name&nbsp;&nbsp;</th><th>Parsed Name&nbsp;&nbsp;</th><th>Author</th></tr>");
 			for (Iterator i = e.getTaxaList().iterator(); i.hasNext();) {

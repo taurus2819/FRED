@@ -61,7 +61,7 @@
 				}
 			}
 
-			out.println("<p>The users listed below are on the panel for this taxanomic group and may accept or reject new entries to the theasurus.<br>Users can be added or deleted from this list by clicking on the <img src='images/ok.gif' width='20' height='20' border='0' /> or <img src='images/cancel.gif' width='20' height='20' border='0' /> icons.</p>");
+			out.println("<p>The users listed below are on the panel for this taxonomic group and may accept or reject new entries to the thesaurus.<br />Users can be added or deleted from this list by clicking on the <img src='images/ok.gif' width='20' height='20' border='0' /> or <img src='images/cancel.gif' width='20' height='20' border='0' /> icons.</p>");
 
 			out.println("<p><table border='0' cellspacing='0' cellpadding='2'>");
 			out.println("<tr class='heading'><td>User&nbsp&nbsp</td><td width='60' align='center'>Member</td></tr>");
