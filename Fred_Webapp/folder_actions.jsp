@@ -1,5 +1,5 @@
 <%@page	extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
+		import="nz.cri.gns.db.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -20,130 +20,46 @@
 		}
 	}
 %><%
+	PageState state = new PageState(request, response, getServletContext());
 	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
 	Statement statement = connection.statement;
 	Statement statement2 = connection.getExtraStatement();
 	Statement statement3 = connection.getExtraStatement();
 	ResultSet rs, rs2, rs3;
 	User user = getUser(session);
-	String foldID, featID, recID, mfID, recType, sampID, auditID, drillSampName, actionType, errMessage = "";
-	int userID = user.getPersonId(), execUp, userRights, recCount, i;
+	String featID, recID, mfID, recType, sampID, auditID, drillSampName, errMessage = "";
+	int execUp, recCount, i;
 
 	if (request.getParameter("ID") != null && request.getParameter("ActionType") != null) {
-		foldID = request.getParameter("ID");
-		actionType = request.getParameter("ActionType");
+		String foldID = request.getParameter("ID");
+		String actionType = request.getParameter("ActionType");
+		int userRights = FREDUtils.getUserFolderRights(user, foldID, state);
 
-		//get user rights
-		rs = statement.executeQuery("SELECT User_Rights FROM Folder_View WHERE Folder_ID = " + foldID + " AND User_ID = " + userID + " AND Folder_Type = 'personal'");
-		if (rs.next()) {
-			userRights = rs.getInt(1);
-		} else { //no record
-			userRights = 0;
-		}
+		try {
 
 		 //Delete working records
 		if (actionType.equals("DeleteRec") && (userRights & 8) != 0) {
-			recID = request.getParameter("RecID");
-			rs = statement.executeQuery("SELECT Audit_ID FROM Record WHERE Record_ID = " + recID);
-			if (rs.next()) {
-				auditID = rs.getString(1);
-				execUp = statement.executeUpdate("DELETE FROM Record WHERE Record_ID = " + recID);
-				execUp = statement.executeUpdate("DELETE FROM Audit_Table WHERE Audit_ID = " + auditID);
-			}
+			FolderUtils.deleteRecord(request.getParameter("RecID"), state);
 		}
 
 		//Delete working feature
 		else if (actionType.equals("DeleteFeat") && (userRights & 8) != 0) {
-			featID = request.getParameter("FeatID");
-			auditID = "";
-			rs = statement.executeQuery("SELECT Audit_ID FROM Record WHERE Sample_ID IN (SELECT Sample_ID FROM Sample WHERE Feature_ID = " + featID + ")");
-			while (rs.next()) {
-				auditID = auditID + rs.getString(1) + ", ";
-			}
-			rs = statement.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + featID);
-			rs.next();
-			auditID = rs.getString(1);
-			execUp = statement.executeUpdate("DELETE FROM Record WHERE Sample_ID IN (SELECT Sample_ID FROM Sample WHERE Feature_ID = " + featID + ")");
-			execUp = statement.executeUpdate("DELETE FROM Feature WHERE Feature_ID = " + featID);
-			execUp = statement.executeUpdate("DELETE FROM Audit_Table WHERE Audit_ID IN (" + auditID + ")");
+			FolderUtils.deleteFeature(request.getParameter("FeatID"), state);
 		}
 
 		// submit working locality
 		else if (actionType.equals("Submit") && (userRights & 16) != 0) {
-			featID = request.getParameter("FeatID");
-			rs = statement.executeQuery("SELECT Audit_ID FROM Feature WHERE Site_ID IS NOT NULL AND Locality IS NOT NULL AND Feature_Type IS NOT NULL AND Feature_ID = " + featID);
-			if (rs.next()) {
-				auditID = rs.getString(1);
-				rs = statement.executeQuery("SELECT Feature_Type FROM Feature WHERE Feature_ID = " + featID);
-				rs.next();
-				if (rs.getString(1).equals("Outcrop")) { //outcrop so also check sample property record
-					rs = statement.executeQuery("SELECT Audit_ID FROM Sample_Property_All_View WHERE Collection_Date IS NOT NULL AND Collector IS NOT NULL AND Strat_Unit IS NOT NULL AND In_Place IS NOT NULL AND Feature_ID = " + featID);
-					if (rs.next()) {
-						//OK so update sample property audit table
-						execUp = statement.executeUpdate("UPDATE Audit_Table SET Status = 'approved', Submitted_By_ID = " + userID + ", Submitted_Date = SYSDATE, Working_Folder_ID = NULL, Working_Comments = NULL WHERE Audit_ID = " + rs.getString(1));
-					} else {
-						//not OK, so flag by setting AuditID = -1
-						auditID = "-1";
-						errMessage =  "&ErrMsg=" + URLEncoder.encode("<script language='JavaScript'>alert(\"Cannot submit locality as not all mandatory fields in sample property record have been completed\");</script>");
-					}
-				}
-				if (!auditID.equals("-1")) { //check that auditId hasn't changed it -1 to indicate bad SampProp record
-					//Update Masterfile region
-					rs = statement.executeQuery("SELECT Which_Masterfile('NZ', S.Latitude, S.Longitude) FROM Feature F, SC.Site S WHERE F.Site_ID = S.Site_ID AND F.Feature_ID = " + featID);
-					rs.next();
-					mfID = rs.getString(1);
-					execUp = statement.executeUpdate("UPDATE Feature SET Masterfile_ID = " + mfID + " WHERE Feature_ID = " + featID);
-					//Update AUDIT_TABLE
-					execUp = statement.executeUpdate("UPDATE Audit_Table SET Status = 'waiting', Submitted_By_ID = " + userID + ", Submitted_Date = SYSDATE, Working_Folder_ID = NULL WHERE Audit_ID = " + auditID);
-					//Check if need to add to FOLDER_CONTENT
-					rs = statement.executeQuery("SELECT * FROM Folder_Content_View WHERE Feature_ID = " + featID + " AND Folder_ID = " + foldID);
-					if (!rs.next()) {
-						execUp = statement.executeUpdate("INSERT INTO Folder_Content (Folder_ID, Feature_ID) VALUES (" + foldID + ", " + featID + ")");
-					}
-				}
-			} else {
-				errMessage =  "&ErrMsg=" + URLEncoder.encode("<script language='JavaScript'>alert(\"Cannot submit locality as not all mandatory fields have been completed\");</script>");
-			}
+			FolderUtils.submitLocality(request.getParameter("FeatID"), foldID, user, state);
 		}
 
 		// submit working record
 		else if (actionType.equals("SubmitRec") && (userRights & 16) != 0) {
-			recID = request.getParameter("RecID");
-			recType = request.getParameter("RecType");
-			//check mandatory fields
-			if (recType.equals("SMP")) {
-				rs = statement.executeQuery("SELECT Audit_ID FROM Sample_Property_All_View WHERE Collection_Date IS NOT NULL AND Collector IS NOT NULL AND Strat_Unit IS NOT NULL AND In_Place IS NOT NULL AND Record_ID = " + recID);
-			} else if (recType.equals("ADO")) {
-				rs = statement.executeQuery("SELECT Audit_ID FROM Adoption WHERE Adoptor_ID IS NOT NULL AND Adoption_Date IS NOT NULL");
-			} else if (recType.equals("PAL")) {
-				rs = statement.executeQuery("SELECT Audit_ID FROM Paleontology WHERE Identifier_ID IS NOT NULL AND Identification_Date IS NOT NULL");
-			}
-			if (rs.next()) {
-				//update audit table
-				execUp = statement.executeUpdate("UPDATE Audit_Table SET Status = 'approved', Submitted_By_ID = " + userID + ", Submitted_Date = SYSDATE, Working_Folder_ID = NULL, Working_Comments = NULL WHERE Audit_ID = " + rs.getString(1));
-				//add feature to FOLDER_CONTENT if not already there (as no longer listed as a working record
-				rs = statement.executeQuery("SELECT S.Feature_ID FROM Sample S, Record R WHERE S.Sample_ID = R.Sample_ID AND R.Record_ID = " + recID);
-				rs.next();
-				featID = rs.getString(1);
-				rs = statement.executeQuery("SELECT * FROM Folder_Content WHERE Folder_ID = " + foldID + " AND Feature_ID = " + featID);
-				if (!rs.next()) {
-					execUp = statement.executeUpdate("INSERT INTO Folder_Content (Folder_ID, Feature_ID) VALUES (" + foldID + ", " + featID + ")");
-				}
-			} else {
-				errMessage = "&ErrMsg=" + URLEncoder.encode("<script language='JavaScript'>alert(\"Cannot submit record as not all mandatory fields have been completed\");</script>");
-			}
+			FolderUtils.submitRecord(request.getParameter("RecID"), request.getParameter("RecType"), foldID, user, state);
 		}
 
 		//Revoke waiting records
 		else if (actionType.equals("Revoke") && (userRights & 16) != 0) {
-			featID = request.getParameter("FeatID");
-			execUp = statement.executeUpdate("UPDATE Audit_Table SET Status = 'working', Working_Folder_ID = " + foldID + " WHERE Audit_ID IN (SELECT Audit_ID FROM Feature WHERE Feature_ID = " + featID + ")");
-			//decide whether drillhole or outcrop
-			rs = statement.executeQuery("SELECT Feature_Type FROM Feature WHERE Feature_ID = " + featID);
-			rs.next();
-			if (rs.getString(1).equals("Outcrop")) { //outcrop so also revoke sample property record
-				execUp = statement.executeUpdate("UPDATE Audit_Table SET Status = 'working', Working_Folder_ID = " + foldID + " WHERE Audit_ID IN (SELECT DISTINCT Audit_ID FROM Sample_Property_All_View WHERE Feature_ID = " + featID + ")");
-			}
+			FolderUtils.revokeRecord(request.getParameter("FeatID"), foldID, state);
 		}
 
 		//Copy locality
@@ -262,7 +178,13 @@
 
 	statement2.close();
 	statement3.close();
+*/
 
+		} catch (FolderUtilException e) {
+			errMessage = "&ErrMsg=" + URLEncoder.encode("<script language='JavaScript'>alert(\"" + e.getMessage() + "\");</script>", "UTF-8");
+		} catch (Exception e) {
+			errMessage = "&ErrMsg=" + URLEncoder.encode("<script language='JavaScript'>alert(\"Unspecified Error - action not processed\");</script>", "UTF-8");
+		}
 		response.sendRedirect("folder_detail.jsp?ID=" + foldID + errMessage);
 	}
 %>

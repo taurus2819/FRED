@@ -57,6 +57,21 @@ public class FREDUtils implements FREDConstants {
 		return sca.isAccessibleTo(user, conn);
 	}
 
+	public static int getUserFolderRights(User user, String folderID, PageState state) throws IOException, SQLException {
+		if (user != null) {
+			DBConnection conn = FREDUtils.getFREDConnection(state);
+			int userID = user.getPersonId();
+			ResultSet rs = conn.executeQuery("SELECT User_Rights FROM Folder_View WHERE Folder_ID = " + folderID + " AND User_ID = " + userID);
+			if (rs.next()) {
+				return rs.getInt(1);
+			} else { //no record
+				return 0;
+			}
+		} else {
+			return 0;
+		}
+	}
+
 	public static String formatDateForOutput(Date date, String rounding) {
 		SimpleDateFormat yearFormatter = new SimpleDateFormat("yyyy");
 		SimpleDateFormat monthFormatter = new SimpleDateFormat("MMM yyyy");
