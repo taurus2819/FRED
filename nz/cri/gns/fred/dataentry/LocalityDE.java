@@ -667,7 +667,6 @@ public abstract class LocalityDE implements DataEntryForm {
 				}
 			}
 			SiteRecord sr = SiteRecord.insertSite(fields[FIELD_NUMBER], origSystem, origCoord, null, horzDM, null, null, fields[LOCALITY_DESC], countryCode, String.valueOf(user.getPersonId()), JspUtils.getInstance(state.getContext()));
-			System.out.println("SiteID: " + sr.getId());
 			return String.valueOf(sr.getId());
 		} catch (Exception e) {
 			throw new SQLException();
