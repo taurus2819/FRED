@@ -134,11 +134,11 @@ public class AdoptionRecordDE extends RecordDE {
 		super.makeDataEntryHTML(out);
 		out.write(
 			"<tr><td class='heading'>Adoption Date</td><td></td><td><input type='text' name='AdoDate' value='"
-				+ FREDUtils.noNulls(getField(ADOPTION_DATE))
+				+ FREDUtils.noNulls(getFieldForHTML(ADOPTION_DATE))
 				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Date&Field=AdoDate\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
 		out.write(
 			"<tr><td class='heading'>Adoptors</td><td></td><td><textarea name='Adoptor' cols='40' rows='2'>"
-				+ FREDUtils.noNulls(getField(ADOPTORS))
+				+ FREDUtils.noNulls(getFieldForHTML(ADOPTORS))
 				+ "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Adoptor\", \"Supp\", \"width=600,height=400\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
 		out.write(
 			"<tr><td class='heading'>Stage Limits</td><td class='smallheading'>Adopted</td><td>\n");
@@ -146,15 +146,15 @@ public class AdoptionRecordDE extends RecordDE {
 		ComboDescriptor cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
 		cd.name = "StageStart";
 		cd.prompt = "-- Choose --";
-		cd.selected = getField(ADO_AGE_START);
+		cd.selected = getFieldForHTML(ADO_AGE_START);
 		cd.orderBy = "Ag_Name";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 		out.write(
 			"</td><td><select name='StartMod'><option value='-' "
-				+ ((getField(ADO_START_MOD) == null) ? " selected" : "")
+				+ ((getFieldForHTML(ADO_START_MOD) == null) ? " selected" : "")
 				+ "></option><option value='?' "
-				+ ((getField(ADO_START_MOD) != null
-					&& getField(ADO_START_MOD).equals("?"))
+				+ ((getFieldForHTML(ADO_START_MOD) != null
+					&& getFieldForHTML(ADO_START_MOD).equals("?"))
 					? " selected"
 					: "")
 				+ ">?</option></select></td><td class='heading'> to </td></tr>\n");
@@ -162,22 +162,22 @@ public class AdoptionRecordDE extends RecordDE {
 		cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
 		cd.name = "StageStop";
 		cd.prompt = "-- Choose --";
-		cd.selected = getField(ADO_AGE_STOP);
+		cd.selected = getFieldForHTML(ADO_AGE_STOP);
 		cd.orderBy = "Ag_Name";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 		out.write(
 			"</td><td class='heading'><select name='StopMod'><option value='-' "
-				+ ((getField(ADO_STOP_MOD) == null) ? " selected" : "")
+				+ ((getFieldForHTML(ADO_STOP_MOD) == null) ? " selected" : "")
 				+ "></option><option value='?' "
-				+ ((getField(ADO_STOP_MOD) != null
-					&& getField(ADO_STOP_MOD).equals("?"))
+				+ ((getFieldForHTML(ADO_STOP_MOD) != null
+					&& getFieldForHTML(ADO_STOP_MOD).equals("?"))
 					? " selected"
 					: "")
 				+ ">?</option></select></td></tr>\n");
 		out.write("</table></td></tr>\n");
 		out.write(
 			"<tr><td class='heading' colspan='2'>Comments</td><td><textarea name='Comm' cols='40' rows='3'>"
-				+ FREDUtils.noNulls(getField(ADO_COMMENTS))
+				+ FREDUtils.noNulls(getFieldForHTML(ADO_COMMENTS))
 				+ "</textarea></td></tr>\n");				
 		super.makeEndBitHTML(out);
 	}

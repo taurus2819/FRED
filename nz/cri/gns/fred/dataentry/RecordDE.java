@@ -30,6 +30,7 @@ public abstract class RecordDE implements DataEntryForm {
 	protected String recordType;
 	private Integer secClassID;
 	protected String[] fields = new String[120];
+	protected String[] tempFields = new String[120];
 	protected boolean savedFlag = false;
 
 	protected RecordDE(User user, int folderID, String recordType, PageState state) throws DataInputException, SQLException, IOException {
@@ -105,6 +106,28 @@ public abstract class RecordDE implements DataEntryForm {
 		return fields[field];
 	}
 
+	public void setTempField(int field, String value) {
+		tempFields[field] = value;
+	}
+
+	public String getTempField(int field) {
+		return tempFields[field];
+	}
+
+	protected String getFieldForHTML(int field) {
+		if (getTempField(field) != null) {
+			return getTempField(field);
+		}
+		return getField(field);
+	}
+
+	public void setFieldsFromTemp() throws DataInputException, TaxonomicListException {
+		for (int i = 0; i < getFieldCount(); i++) {
+			setField(i, tempFields[i]);
+			setTempField(i, null);
+		}
+	}
+
 	public void setSample(Sample sample) {
 		this.sample = sample;
 		savedFlag = false;
@@ -177,7 +200,7 @@ public abstract class RecordDE implements DataEntryForm {
 			out.write("<br>" + FREDUtils.noNulls(sample.getAsString(Sample.FEATURE_NAME)) + ": " + FREDUtils.noNulls(sample.getAsString(Sample.DRILLHOLE_DEPTH)));
 		} catch (Exception e) {	}
 		out.write("</td></tr>\n");
-		out.write("<tr><td class='heading' colspan='2'>Working Comments<br><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'>" + FREDUtils.noNulls(getField(WORKING_COMMENTS)) + "</textarea></td></tr>\n");
+		out.write("<tr><td class='heading' colspan='2'>Working Comments<br><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'>" + FREDUtils.noNulls(getFieldForHTML(WORKING_COMMENTS)) + "</textarea></td></tr>\n");
 /*			if (!recID.equals("0")) {
 				out.println("<tr><td class='heading' colspan='2'>Attached Files/Images<br><span class='smalltext'>Click <a href='binary_data_entry.jsp?RecID=" + recID + "&RecType=SMP&FoldID=" + foldID + "'>here</a> to add/edit</span></td><td>");
 				MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
@@ -195,7 +218,7 @@ public abstract class RecordDE implements DataEntryForm {
 		ComboDescriptor cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
 		cd.name = "SecType";
 		if (getField(SECURITY_TYPE) != null) {
-			cd.selected = getField(SECURITY_TYPE);
+			cd.selected = getFieldForHTML(SECURITY_TYPE);
 		} else {
 			cd.selected = "21";
 		}

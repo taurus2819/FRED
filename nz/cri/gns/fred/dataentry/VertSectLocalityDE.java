@@ -127,47 +127,47 @@ public class VertSectLocalityDE extends LocalityDE {
 		out.write("<table border='0' cellspacing='0' cellpadding='2'>\n");
 		out.write(
 			"<tr><td class='heading' colspan='2'>Section Name</td><td><input type='text' name='FeatName' value='"
-				+ FREDUtils.noNulls(getField(DRILLHOLE_NAME))
+				+ FREDUtils.noNulls(getFieldForHTML(DRILLHOLE_NAME))
 				+ "'></td></tr>\n");
 		super.makeDataEntryHTML(out);
 		out.write(
 			"<tr><td class='heading'>Section Collector</td><td></td><td><input type='text' name='Person' value='"
-				+ FREDUtils.noNulls(getField(OPERATING_COMPANY))
+				+ FREDUtils.noNulls(getFieldForHTML(OPERATING_COMPANY))
 				+ "' size='40'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=OpComp\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
 		out.write(
 			"<tr><td class='heading'>Sampling Dates</td><td class='smallheading'>Start Date</td><td><input type='text' name='StartDate' value='"
-				+ FREDUtils.noNulls(getField(SPUD_DATE))
+				+ FREDUtils.noNulls(getFieldForHTML(SPUD_DATE))
 				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Date&Field=StartDate\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
 		out.write(
 			"<tr><td class='heading'></td><td class='smallheading'>Completion Date</td><td><input type='text' name='FinishDate' value='"
-				+ FREDUtils.noNulls(getField(COMPLETION_DATE))
+				+ FREDUtils.noNulls(getFieldForHTML(COMPLETION_DATE))
 				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Date&Field=FinishDate\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
 		out.write("<tr><td class='heading'>Datum Elevation</td><td></td>");
 		out.write(
 			"<td class='smallheading'><select name='DatumType'><option value='-'"
-				+ ((getField(DATUM_TYPE) == null) ? " selected" : "")
+				+ ((getFieldForHTML(DATUM_TYPE) == null) ? " selected" : "")
 				+ ">-- Choose --</option><option value='Top'"
-				+ ((getField(DATUM_TYPE) != null
-					&& getField(DATUM_TYPE).equals("Top"))
+				+ ((getFieldForHTML(DATUM_TYPE) != null
+					&& getFieldForHTML(DATUM_TYPE).equals("Top"))
 					? " selected"
 					: "")
 				+ ">Top</option><option value='Bottom'"
-				+ ((getField(DATUM_TYPE) != null
-					&& getField(DATUM_TYPE).equals("Bottom"))
+				+ ((getFieldForHTML(DATUM_TYPE) != null
+					&& getFieldForHTML(DATUM_TYPE).equals("Bottom"))
 					? " selected"
 					: "")
 				+ ">Bottom</option></select>&nbsp;&nbsp;");
 		out.write(
 			"<input type='text' name='DatumEl' value='"
-				+ FREDUtils.noNulls(getField(DATUM_ELEVATION))
+				+ FREDUtils.noNulls(getFieldForHTML(DATUM_ELEVATION))
 				+ "' size='10'>&nbsp;m&nbsp;asl</td></tr>\n");
 		out.write(
 			"<tr><td class='heading'>Section Heights</td><td class='smallheading'>Top Horizon</td><td class='smallheading'><input type='text' name='StartDepth' value='"
-				+ FREDUtils.noNulls(getField(KICK_OFF_DEPTH))
+				+ FREDUtils.noNulls(getFieldForHTML(KICK_OFF_DEPTH))
 				+ "'>&nbsp;m</td></tr>\n");
 		out.write(
 			"<tr><td class='heading'></td><td class='smallheading'>Base Horizon</td><td class='smallheading'><input type='text' name='FinishDepth' value='"
-				+ FREDUtils.noNulls(getField(TERMINATION_DEPTH))
+				+ FREDUtils.noNulls(getFieldForHTML(TERMINATION_DEPTH))
 				+ "'>&nbsp;m</td></tr>\n");
 		out.write("</table>\n");
 		super.makeEndBitHTML(out);

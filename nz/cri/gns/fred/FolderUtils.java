@@ -51,7 +51,7 @@ public class FolderUtils {
 	}
 	
 	public static void deleteSample(String sampID, User user, PageState state) throws NumberFormatException, InvalidCredentialsException, DataInputException, SQLException, IOException {
-		Sample sample = new Sample(Integer.parseInt(sampID), user, state);
+		Sample sample = new Sample(Integer.parseInt(sampID), user, state, true);
 		if (sample.isUserAuthenticated() && !sample.isApprovedLocality()) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			if (sample.get(Sample.RECORDS) != null) {
@@ -62,7 +62,13 @@ public class FolderUtils {
 					recDE.delete();
 				}
 			}
-			conn.executeUpdate("DELETE FROM Sample WHERE Sample_ID = " + sampID);
+			ResultSet rs = conn.executeQuery("SELECT COUNT(*) FROM Sample WHERE Feature_ID = " + sample.getAsString(Sample.FEATURE_ID));
+			rs.next();
+			if (rs.getInt(1) == 1) {
+				conn.executeUpdate("UPDATE Sample SET Top_Depth = NULL, Bottom_Depth = NULL, Drill_Type_ID = NULL, Comments = NULL WHERE Sample_ID = " + sampID);	
+			} else {
+				conn.executeUpdate("DELETE FROM Sample WHERE Sample_ID = " + sampID);
+			}
 		}
 	}
 	

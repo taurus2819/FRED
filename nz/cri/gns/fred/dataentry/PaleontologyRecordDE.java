@@ -252,11 +252,11 @@ public class PaleontologyRecordDE extends RecordDE {
 			super.makeDataEntryHTML(out);
 			out.write(
 				"<tr><td class='heading'>Identification Date</td><td></td><td><input type='text' name='PalDate' value='"
-					+ FREDUtils.noNulls(getField(IDENTIFICATION_DATE))
+					+ FREDUtils.noNulls(getFieldForHTML(IDENTIFICATION_DATE))
 					+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Date&Field=PalDate\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
 			out.write(
 				"<tr><td class='heading'>Identifiers</td><td></td><td><textarea name='Identifier' cols='40' rows='2'>"
-					+ FREDUtils.noNulls(getField(IDENTIFIERS))
+					+ FREDUtils.noNulls(getFieldForHTML(IDENTIFIERS))
 					+ "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Identifier\", \"Supp\", \"width=600,height=400\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
 			out.write(
 				"<tr><td class='heading' colspan='2'>Stage Limits</td><td>\n");
@@ -264,15 +264,15 @@ public class PaleontologyRecordDE extends RecordDE {
 			ComboDescriptor cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
 			cd.name = "StageStart";
 			cd.prompt = "-- Choose --";
-			cd.selected = getField(IDT_AGE_START);
+			cd.selected = getFieldForHTML(IDT_AGE_START);
 			cd.orderBy = "Ag_Name";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 			out.write(
 				"</td><td><select name='StartMod'><option value='-' "
-					+ ((getField(IDT_START_MOD) == null) ? " selected" : "")
+					+ ((getFieldForHTML(IDT_START_MOD) == null) ? " selected" : "")
 					+ "></option><option value='?' "
-					+ ((getField(IDT_START_MOD) != null
-						&& getField(IDT_START_MOD).equals("?"))
+					+ ((getFieldForHTML(IDT_START_MOD) != null
+						&& getFieldForHTML(IDT_START_MOD).equals("?"))
 						? " selected"
 						: "")
 					+ ">?</option></select></td><td class='heading'> to </td></tr>\n");
@@ -280,22 +280,22 @@ public class PaleontologyRecordDE extends RecordDE {
 			cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
 			cd.name = "StageStop";
 			cd.prompt = "-- Choose --";
-			cd.selected = getField(IDT_AGE_STOP);
+			cd.selected = getFieldForHTML(IDT_AGE_STOP);
 			cd.orderBy = "Ag_Name";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 			out.write(
 				"</td><td class='heading'><select name='StopMod'><option value='-' "
-					+ ((getField(IDT_STOP_MOD) == null) ? " selected" : "")
+					+ ((getFieldForHTML(IDT_STOP_MOD) == null) ? " selected" : "")
 					+ "></option><option value='?' "
-					+ ((getField(IDT_STOP_MOD) != null
-						&& getField(IDT_STOP_MOD).equals("?"))
+					+ ((getFieldForHTML(IDT_STOP_MOD) != null
+						&& getFieldForHTML(IDT_STOP_MOD).equals("?"))
 						? " selected"
 						: "")
 					+ ">?</option></select></td></tr>\n");
 			out.write("</table></td></tr>\n");
 			out.write(
 				"<tr><td class='heading' colspan='2'>Stage Comments</td><td><textarea name='StComm' cols='40' rows='2'>"
-					+ FREDUtils.noNulls(getField(STAGE_COMMENTS))
+					+ FREDUtils.noNulls(getFieldForHTML(STAGE_COMMENTS))
 					+ "</textarea></td></tr>\n");
 					
 			//build array of labs sections
@@ -332,19 +332,19 @@ public class PaleontologyRecordDE extends RecordDE {
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 			out.write("</td></tr>\n");
 			out.write("<tr><td></td><td class='smallheading'>Code</td><td><select name='SectID'><option value='-' selected>-- Choose --</option></select></td></tr>\n");
-			out.write("<tr><td></td><td class='smallheading'>Number</td><td><input type='text' name='LabNum' size='20' value='" + FREDUtils.noNulls(getField(LAB_NUMBER)) + "'></td><td></td></tr>\n");
-			if (getField(LAB_SECTION) != null) {
+			out.write("<tr><td></td><td class='smallheading'>Number</td><td><input type='text' name='LabNum' size='20' value='" + FREDUtils.noNulls(getFieldForHTML(LAB_NUMBER)) + "'></td><td></td></tr>\n");
+			if (getFieldForHTML(LAB_SECTION) != null) {
 				out.write("<script language='JavaScript'>\n");
 				out.write("swapSection(form1);");
-				out.write("for(i=0;i<form1.SectID.options.length;i++){ if (form1.SectID.options[i].value=='" + getField(LAB_SECTION) + "') { form1.SectID.options.selectedIndex = i; }}\n");
+				out.write("for(i=0;i<form1.SectID.options.length;i++){ if (form1.SectID.options[i].value=='" + getFieldForHTML(LAB_SECTION) + "') { form1.SectID.options.selectedIndex = i; }}\n");
 				out.write("</script>\n");
 			}
 			out.write(
 				"<tr><td class='heading' colspan='2'>Collection Comments</td><td><textarea name='CollComm' cols='40' rows='2'>"
-					+ FREDUtils.noNulls(getField(COLLECTION_COMMENTS))
+					+ FREDUtils.noNulls(getFieldForHTML(COLLECTION_COMMENTS))
 					+ "</textarea></td></tr>\n");
 			out.write("<tr><td class='heading'>Taxonomic List</td></tr>\n");
-			out.write("<tr><td colspan='3'><textarea name='Taxa' cols='80' rows='20'>" + FREDUtils.noNulls(getField(TAXA_LIST)) + "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Taxa\", \"Supp\", \"width=600,height=500\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
+			out.write("<tr><td colspan='3'><textarea name='Taxa' cols='80' rows='20'>" + FREDUtils.noNulls(getFieldForHTML(TAXA_LIST)) + "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Taxa\", \"Supp\", \"width=600,height=500\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
 			super.makeEndBitHTML(out);
 	}
 

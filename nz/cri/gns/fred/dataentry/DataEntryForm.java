@@ -104,7 +104,13 @@ public interface DataEntryForm {
 
 	public void setField(int field, String value) throws DataInputException, TaxonomicListException;
 
+	public void setTempField(int field, String values);
+
 	public String getField(int field);
+	
+	public String getTempField(int field);
+	
+	public void setFieldsFromTemp() throws DataInputException, TaxonomicListException;
 
 	public void makeNavPanelHTML(Writer out) throws IOException;
 	

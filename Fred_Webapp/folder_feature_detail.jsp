@@ -64,7 +64,6 @@
 			Feature feature = new Feature(featID, user, state, true);
 			String featType = feature.getAsString(Feature.FEATURE_TYPE);
 			String sampName = feature.getAsString(Feature.SAMPLE_NAMES);
-			if (featType.equals("Vertical Section")) { featType = "VertSect"; }
 			String featName = feature.getAsString(Feature.FEATURE_NAME);
 			String locStatus = feature.getAsString(Feature.STATUS);
 

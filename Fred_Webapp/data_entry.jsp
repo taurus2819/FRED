@@ -16,24 +16,28 @@
 	DataEntryForm dataEntryForm = null;
 	
 	try {
-		if (formType.equals("Outcrop") || formType.equals("Drillhole") || formType.equals("Vertical Section")) {
-			if (request.getParameter("LoadFeatID") != null) { //copying
-				if (featID == null) {
-					dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), user, Integer.parseInt(foldID), state);
+		if (request.getParameter("Err") == null) {
+			if (formType.equals("Outcrop") || formType.equals("Drillhole") || formType.equals("Vertical Section")) {
+				if (request.getParameter("LoadFeatID") != null) { //copying
+					if (featID == null) {
+						dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), user, Integer.parseInt(foldID), state);
+					} else {
+						dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), Integer.parseInt(featID), user, state);
+					}
+				} else if (featID != null) { //editing
+					dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
 				} else {
-					dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), Integer.parseInt(featID), user, state);
+					dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(formType, user, Integer.parseInt(foldID), state);
 				}
-			} else if (featID != null) { //editing
-				dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
 			} else {
-				dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(formType, user, Integer.parseInt(foldID), state);
+				if (recID != null) { //editing
+					dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(recID), user, state);
+				} else {
+					dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(formType, user, Integer.parseInt(sampID), Integer.parseInt(foldID), state);
+				}
 			}
 		} else {
-			if (recID != null) { //editing
-				dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(recID), user, state);
-			} else {
-				dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(formType, user, Integer.parseInt(sampID), Integer.parseInt(foldID), state);
-			}
+			dataEntryForm = (DataEntryForm) session.getAttribute("dataEntryForm");
 		}
 	} catch (Exception e) {}
 
@@ -49,6 +53,12 @@
 			out.println("<input type='hidden' name='SaveType' value='' />");
 			if (request.getParameter("Redirect") != null) 
 				out.println("<input type='hidden' name='Redirect' value='" + request.getParameter("Redirect") + "' />");
+			if (featID != null)
+				out.println("<input type='hidden' name='ErrorRedirect' value='data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID + "&FeatID=" + featID + "' />");
+			if (sampID != null)
+				out.println("<input type='hidden' name='ErrorRedirect' value='data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID + "&SampID=" + sampID + "' />");
+			if (recID != null)
+				out.println("<input type='hidden' name='ErrorRedirect' value='data_entry.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID + "&RecID=" + recID + "' />");
 
 			dataEntryForm.makeNavPanelHTML(new PrintWriter(out));
 
@@ -57,8 +67,9 @@
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");
 
+			System.out.println("Temp Coll Field: " + dataEntryForm.getTempField(DataEntryForm.COLLECTORS));
 			dataEntryForm.makeDataEntryHTML(new PrintWriter(out));
-	
+
 			out.println("</td></tr></table>");
 			out.println("</form>");
 		}

@@ -34,6 +34,7 @@ public abstract class LocalityDE implements DataEntryForm {
 	protected String featureType;
 	private Integer secClassID;
 	protected String[] fields = new String[120];
+	protected String[] tempFields = new String[120];
 	private String origSystemID, countryCode, recoll;
 	private Datum origSystem;
 	private Datum.Coordinate origCoord;
@@ -142,6 +143,28 @@ public abstract class LocalityDE implements DataEntryForm {
 		return fields[field];
 	}
 
+	public void setTempField(int field, String value) {
+		tempFields[field] = value;
+	}
+
+	public String getTempField(int field) {
+		return tempFields[field];
+	}
+
+	protected String getFieldForHTML(int field) {
+		if (getTempField(field) != null) {
+			return getTempField(field);
+		}
+		return getField(field);
+	}
+
+	public void setFieldsFromTemp() throws DataInputException {
+		for (int i = 0; i < getFieldCount(); i++) {
+			setField(i, tempFields[i]);
+			setTempField(i, null);
+		}
+	}
+
 	protected void parseField(int field, String value)
 		throws DataInputException {
 		try {
@@ -230,7 +253,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			"<tr><td class='heading'>Registration Area</td><td></td><td>");
 		ComboDescriptor cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
 		cd.name = "RegAreaID";
-		cd.selected = getField(LocalityDE.REGISTRATION_AREA);
+		cd.selected = getFieldForHTML(DataEntryForm.REGISTRATION_AREA);
 		cd.join = "FieldName = 'RegArea'";
 		cd.orderBy = "Lookup_ID";
 		HTMLUtils.makeDropBox(out, conn, cd);
@@ -243,11 +266,11 @@ public abstract class LocalityDE implements DataEntryForm {
 		}
 		out.write(
 			"</td><td></td><td><input type='text' name='Recoll' value='"
-				+ FREDUtils.noNulls(getField(LocalityDE.RECOLLECTION))
-				+ "' /></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Recoll\", \"Supp\", \"width=600,height=500\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
+				+ FREDUtils.noNulls(getFieldForHTML(LocalityDE.RECOLLECTION))
+				+ "' /></td></tr>\n");
 		out.write(
 			"<tr><td class='heading' colspan='2'>Working Comments<br><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'>"
-				+ FREDUtils.noNulls(getField(LocalityDE.WORKING_COMMENTS))
+				+ FREDUtils.noNulls(getFieldForHTML(LocalityDE.WORKING_COMMENTS))
 				+ "</textarea></td></tr>\n");
 		out.write(
 			"<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
@@ -256,8 +279,8 @@ public abstract class LocalityDE implements DataEntryForm {
 			"<tr><td class='heading' colspan='2'>Security Setting</td><td>");
 		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
 		cd.name = "SecType";
-		if (getField(SECURITY_TYPE) != null) {
-			cd.selected = getField(SECURITY_TYPE);
+		if (getFieldForHTML(SECURITY_TYPE) != null) {
+			cd.selected = getFieldForHTML(SECURITY_TYPE);
 		} else {
 			cd.selected = "21";
 		}
@@ -270,7 +293,7 @@ public abstract class LocalityDE implements DataEntryForm {
 
 		out.write(
 			"<tr><td class='heading'>Location</td><td class='smallheading'>Grid Ref.</td><td><input type='text' name='GridRef' size='40' value='"
-				+ FREDUtils.noNulls(getField(LocalityDE.GRID_REF))
+				+ FREDUtils.noNulls(getFieldForHTML(LocalityDE.GRID_REF))
 				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Coord\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
 
 		ResultSet rs =
@@ -300,7 +323,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		cd = new ComboDescriptor("SC.Method", "Method_ID", "Method");
 		cd.name = "LocMethodID";
 		cd.prompt = "-- Choose --";
-		cd.selected = getField(LocalityDE.METHOD);
+		cd.selected = getFieldForHTML(LocalityDE.METHOD);
 		cd.orderBy = "Method_ID";
 		cd.join = "Nom_Accuracy_XY IS NOT NULL";
 		cd.tagParams = "onChange='setAccuracy(this.value, this.form)'";
@@ -308,11 +331,11 @@ public abstract class LocalityDE implements DataEntryForm {
 		out.write("</td></tr>\n");
 		out.write(
 			"<tr><td></td><td class='smallheading'>Accuracy</td><td><input type='text' name='Accuracy' value='"
-				+ FREDUtils.noNulls(getField(LocalityDE.ACCURACY))
+				+ FREDUtils.noNulls(getFieldForHTML(LocalityDE.ACCURACY))
 				+ "'></td></tr>\n");
 		out.write(
 			"<tr><td></td><td class='smallheading'>Locality<br />Description</td><td><textarea name='Loc' cols='40' rows='5'>"
-				+ FREDUtils.noNulls(getField(LocalityDE.LOCALITY_DESC))
+				+ FREDUtils.noNulls(getFieldForHTML(LocalityDE.LOCALITY_DESC))
 				+ "</textarea></td></tr>\n");
 	}
 
