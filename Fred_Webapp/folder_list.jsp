@@ -42,7 +42,6 @@
 	out.println("<table border='0' cellspacing='0' cellpadding='2' width='550'>");
 
 	FolderList folderList = new FolderList(user, state);
-	session.setAttribute("folderList", folderList);
 
 	Vector folders = new Vector();
 
@@ -52,7 +51,8 @@
 		out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
 		out.println("<form name='PersForm' method='post' action='folder_list.jsp'>");
 		for (Iterator i = folderList.getPersonalFolders().iterator(); i.hasNext(); ) {
-			Folder folder = new Folder(((Integer) i.next()).intValue(), user, state);
+			KeyValueObject kv = (KeyValueObject) i.next();
+			Folder folder = new Folder(Integer.parseInt(kv.getKey()), user, state);
 			folders.add(folder);
 			out.print("<tr><td><a href='folder_detail.jsp?ID=" + folder.getAsString(Folder.FOLDER_ID) + "' class='heading'>" + folder.getAsString(Folder.NAME) + "</a>&nbsp;&nbsp;</td><td></td><td>" + folder.getAsString(Folder.OWNER) + "&nbsp;&nbsp;</td><td>");
 			if (folder.isAllowedAdmin()) {
@@ -72,7 +72,8 @@
 		out.println("<tr><th>Masterfile Folder&nbsp;&nbsp;</th><td></td><th>Curator&nbsp;&nbsp;</th><th>Options</th></tr>");
 		out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
 		for (Iterator i = folderList.getAdminFolders().iterator(); i.hasNext(); ) {
-			Folder folder = new Folder(((Integer) i.next()).intValue(), user, state);
+			KeyValueObject kv = (KeyValueObject) i.next();
+			Folder folder = new Folder(Integer.parseInt(kv.getKey()), user, state);
 			folders.add(folder);
 			out.print("<tr><td><a href='admin_folder_detail.jsp?ID=" + folder.getAsString(Folder.FOLDER_ID) + "' class='heading'>" + folder.getAsString(Folder.NAME) + "</a>&nbsp;&nbsp;</td><td style='font-size: 14pt; font-weight: bold; color: #FF0000'>");
 			if (folder.getLocalityCount() > 0) { out.print("*"); }
