@@ -128,10 +128,10 @@ public class PaleontologyRecordDE extends RecordDE {
 					}
 					break;
 				case IDT_AGE_START :
-					parseAge(value, getField(IDT_AGE_STOP), "Age");
+					DataEntryUtils.parseAge(value, getField(IDT_AGE_STOP), "Age", state);
 					break;
 				case IDT_AGE_STOP :
-					parseAge(getField(IDT_AGE_START), value, "Age");
+					DataEntryUtils.parseAge(getField(IDT_AGE_START), value, "Age", state);
 					break;
 				case IDT_START_MOD :
 				case IDT_STOP_MOD :

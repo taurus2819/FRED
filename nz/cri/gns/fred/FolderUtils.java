@@ -5,18 +5,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
-import java.util.Iterator;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
-import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.fred.data.FRNumber;
 import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.Sample;
+import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
 import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.fred.dataentry.LocalityDE;
-import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
 import nz.cri.gns.fred.dataentry.RecordDE;
+import nz.cri.gns.fred.dataentry.SampleDE;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
@@ -49,26 +48,18 @@ public class FolderUtils {
 		form.delete();
 	}
 	
-	public static void deleteSample(String sampID, User user, PageState state) throws NumberFormatException, InvalidCredentialsException, DataInputException, SQLException, IOException {
-		Sample sample = new Sample(Integer.parseInt(sampID), user, state, true);
-		if (sample.isUserAuthenticated() && !sample.isApprovedLocality()) {
-			DBConnection conn = FREDUtils.getFREDConnection(state);
-			if (sample.get(Sample.RECORDS) != null) {
-				for (Iterator i = sample.getAsVector(Sample.RECORDS).iterator();	i.hasNext();) {
-					KeyValueObject rec = (KeyValueObject) i.next();
-					int recID = Integer.parseInt(rec.getKey());
-					RecordDE recDE = DataEntryFormFactory.getRecordDataEntryForm(recID, user, state);
-					recDE.delete();
-				}
-			}
-			ResultSet rs = conn.executeQuery("SELECT COUNT(*) FROM Sample WHERE Feature_ID = " + sample.getAsString(Sample.FEATURE_ID));
-			rs.next();
-			if (rs.getInt(1) == 1) {
-				conn.executeUpdate("UPDATE Sample SET Top_Depth = NULL, Bottom_Depth = NULL, Drill_Type_ID = NULL, Comments = NULL WHERE Sample_ID = " + sampID);	
-			} else {
-				conn.executeUpdate("DELETE FROM Sample WHERE Sample_ID = " + sampID);
-			}
-		}
+	public static void deleteSample(String sampleID, User user, PageState state) throws NumberFormatException, InvalidCredentialsException, DataInputException, SQLException, IOException {
+		Sample sample = new Sample(Integer.parseInt(sampleID), user, state);
+		String featureID = sample.getAsString(Sample.FEATURE_ID);
+		String featAuditID = sample.getAsString(Sample.FEATURE_AUDIT_ID);
+		SampleDE form = DataEntryFormFactory.getSampleDataEntryForm(Integer.parseInt(sampleID), user, state);
+		form.delete();
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		ResultSet rs = conn.executeQuery("SELECT COUNT(*) FROM Sample WHERE Feature_ID = " + featureID);
+		rs.next();
+		if (rs.getInt(1) == 0) {
+			conn.executeUpdate("INSERT INTO Sample (Feature_ID, Audit_ID) VALUES (" + featureID + ", " + featAuditID + ")");
+		}	
 	}
 	
 	public static void deleteRecord(String recID, User user, PageState state) throws NumberFormatException, DataInputException, InvalidCredentialsException, SQLException, IOException {
@@ -76,12 +67,17 @@ public class FolderUtils {
 		form.delete();
 	}
 
-	public static void submitLocality(String featID, User user, PageState state) throws FolderUtilException, NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public static void submitLocality(String featID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
 		LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
 		form.submit();
 	}
 	
-	public static void submitRecord(String recID, User user, PageState state) throws FolderUtilException, NumberFormatException, DataInputException, InvalidCredentialsException, SQLException, IOException {
+	public static void submitSample(String sampleID, User user, PageState state) throws NumberFormatException, IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
+		SampleDE form = DataEntryFormFactory.getSampleDataEntryForm(Integer.parseInt(sampleID), user, state);
+		form.submit();
+	}
+	
+	public static void submitRecord(String recID, User user, PageState state) throws NumberFormatException, DataInputException, InvalidCredentialsException, SQLException, IOException {
 		RecordDE form = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(recID), user, state);
 		form.submit();
 	}

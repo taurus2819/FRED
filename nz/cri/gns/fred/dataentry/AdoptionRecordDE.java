@@ -97,10 +97,10 @@ public class AdoptionRecordDE extends RecordDE {
 					}
 					break;
 				case ADO_AGE_START :
-					parseAge(value, getField(ADO_AGE_STOP), "Adopted Age");
+					DataEntryUtils.parseAge(value, getField(ADO_AGE_STOP), "Adopted Age", state);
 					break;
 				case ADO_AGE_STOP :
-					parseAge(getField(ADO_AGE_START), value, "Adopted Age");
+					DataEntryUtils.parseAge(getField(ADO_AGE_START), value, "Adopted Age", state);
 					break;
 				case ADO_START_MOD :
 				case ADO_STOP_MOD :

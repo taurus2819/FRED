@@ -71,7 +71,7 @@
 			out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
 			if (!sample.isApprovedLocality() && !sample.isUserAuthenticated())
 				throw new InvalidCredentialsException();
-			Audit audit = Audit.getAudit(sample.getAsInt(Sample.AUDIT_ID), state);
+			Audit audit = Audit.getAudit(sample.getAsInt(Sample.FEATURE_AUDIT_ID), state);
 			featType = sample.getAsString(Sample.FEATURE_TYPE);
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
 			out.println("<tr><td colspan='2' align='center' class='bigheading' >" + sample.getAsString(Sample.SAMPLE_NAME) + "</td></tr>");
@@ -125,7 +125,7 @@
 				}
 				out.println("</table></td></tr>");
 				
-				if (FREDUtils.isAllowedApproveLocality(user, sample.getAsString(Sample.FEATURE_ID), sample.getAsString(Sample.STATUS), state)) {
+				if (FREDUtils.isAllowedApproveLocality(user, sample.getAsString(Sample.FEATURE_ID), sample.getAsString(Sample.FEATURE_STATUS), state)) {
 					FRNumber frNumber = FolderUtils.getNextFRNumber(sample.getAsString(Sample.REG_AREA_CODE), sample.getAsString(Sample.NZMG_SHEET), sample.getAsDouble(Sample.LATITUDE), sample.getAsDouble(Sample.LONGITUDE), state);
 					out.println("<tr><td colspan='2'>");
 					out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");

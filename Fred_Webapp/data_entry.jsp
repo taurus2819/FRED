@@ -29,6 +29,12 @@
 				} else {
 					dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(formType, user, Integer.parseInt(foldID), state);
 				}
+			} else if (formType.equals("Sample")) {
+				if (sampID != null) { //editing
+					dataEntryForm = DataEntryFormFactory.getSampleDataEntryForm(Integer.parseInt(sampID), user, state);
+				} else {
+					dataEntryForm = DataEntryFormFactory.getSampleDataEntryForm(user, Integer.parseInt(featID), Integer.parseInt(foldID), state);
+				}
 			} else {
 				if (recID != null) { //editing
 					dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(recID), user, state);

@@ -15,12 +15,9 @@ import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.PaleontologyRecord;
-import nz.cri.gns.fred.data.SampPropRecord;
 import nz.cri.gns.fred.dataentry.DataEntryForm;
 import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
 import nz.cri.gns.fred.dataentry.DataInputException;
-import nz.cri.gns.fred.dataentry.RecordDE;
-import nz.cri.gns.fred.dataentry.SampPropRecordDE;
 import nz.cri.gns.fred.dataentry.TaxonomicListException;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.test.TestingPageState;
@@ -32,20 +29,6 @@ import nz.cri.gns.test.TestingPageState;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class RecordTest extends TestCase {
-
-	public void _testLoad() throws NotBoundException, InvalidCredentialsException, IllegalArgumentException, SQLException, IOException, DataInputException {
-		SampPropRecord.purge();
-		TestingPageState state = new TestingPageState();
-		DBConnection ipConn = FREDUtils.getIPConnection(state);
-		User user = new User("pseudo_ben", "santor32", ipConn);
-		RecordDE record = new SampPropRecordDE(1280, user, state);
-		//loc.setField(Locality.GRID_REF, "TruncNZMG:D39*1300*2100");
-		for (int i = 0; i < record.getFieldCount(); i++) {
-			System.out.println(i + ": " + record.getField(i));
-		}
-		//record.setField(DataEntryForm.HARDNESS, "152");
-		//System.out.println(record.save());
-	}
 
 	public void _testDataEntryForm() throws NotBoundException, InvalidCredentialsException, SQLException, IOException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();

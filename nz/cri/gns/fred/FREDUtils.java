@@ -53,11 +53,20 @@ public class FREDUtils {
 			return false;
 		if (!status.equals("approved"))
 			return (getUserWorkingLocalityRights(user, featID, state) & 1) > 0;
-		if (securityClassID != null) {
-			return hasMasterfileRights(user, featID, state) || checkSecurityClass(Integer.parseInt(securityClassID), user, state);
-		} else {
-			return true;
-		}
+	//	if (securityClassID != null)
+	//		return hasMasterfileRights(user, featID, state) || checkSecurityClass(Integer.parseInt(securityClassID), user, state);
+		return true;
+	}
+
+	public static boolean isAllowedSample(User user, String securityClassID, String status, String sampleID, PageState state)
+		throws IOException, SQLException {
+		if (user == null)
+			return false;
+		if (!status.equals("approved"))
+			return (getUserWorkingSampleRights(user, sampleID, state) & 1) > 0;
+		if (securityClassID != null)
+			return hasMasterfileSampleRights(user, sampleID, state) || checkSecurityClass(Integer.parseInt(securityClassID), user, state);
+		return true;
 	}
 
 	public static boolean isAllowedRecord(User user, String securityClassID, String status, String recID, PageState state)
@@ -66,11 +75,9 @@ public class FREDUtils {
 			return false;
 		if (!status.equals("approved"))
 			return (getUserWorkingRecordRights(user, recID, state) & 1) > 0;
-		if (securityClassID != null) {
+		if (securityClassID != null)
 			return hasMasterfileRecordRights(user, recID, state) || checkSecurityClass(Integer.parseInt(securityClassID), user, state);
-		} else {
-			return true;
-		}
+		return true;
 	}
 
 	public static boolean hasMasterfileRights(User user, String featID, PageState state) throws IOException, SQLException {
@@ -85,6 +92,18 @@ public class FREDUtils {
 				userRights = rs.getInt(1);
 		}
 		return (userRights & 1) > 0;
+	}
+
+	public static boolean hasMasterfileSampleRights(User user, String sampleID, PageState state) throws IOException, SQLException {
+		if (user == null || sampleID == null || state == null)
+			return false;
+		DBConnection conn = getFREDConnection(state);
+		ResultSet rs = conn.executeQuery("SELECT Feature_ID FROM Sample WHERE Sample_ID = " + sampleID);
+		if (rs.next()) {
+			return hasMasterfileRights(user, rs.getString(1), state);
+		} else {
+			return false;
+		}		
 	}
 
 	public static boolean hasMasterfileRecordRights(User user, String recID, PageState state) throws IOException, SQLException {
@@ -135,11 +154,26 @@ public class FREDUtils {
 		return userRights;
 	}
 
-	public static int getUserWorkingRecordRights(
-		User user,
-		String recID,
-		PageState state)
-		throws IOException, SQLException {
+	public static int getUserWorkingSampleRights(User user, String sampleID, PageState state) throws IOException, SQLException {
+		int userRights = 0;
+		if (user != null) {
+			DBConnection conn = FREDUtils.getFREDConnection(state);
+			int userID = user.getPersonId();
+			ResultSet rs =
+				conn.executeQuery(
+					"SELECT User_Rights FROM Folder_Content_Short_View FC, Sample S "
+						+ "WHERE FC.Feature_ID = S.Feature_ID AND S.Sample_ID = "
+						+ sampleID
+						+ " AND User_ID = "
+						+ userID);
+			while (rs.next()) {
+				userRights = userRights | rs.getInt(1);
+			}
+		}
+		return userRights;
+	}
+
+	public static int getUserWorkingRecordRights(User user, String recID, PageState state) throws IOException, SQLException {
 		int userRights = 0;
 		if (user != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
@@ -436,7 +470,7 @@ public class FREDUtils {
 
 	public static boolean isNumeric(String str) {
 		try {
-			double d = Double.parseDouble(str);
+			Double.parseDouble(str);
 			return true;
 		} catch (Exception e) {
 			return false;

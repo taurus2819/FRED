@@ -48,50 +48,31 @@ public class FeatureData {
 				throw new SQLException(
 					"Cannot find record in database with this id: " + this.id);
 			}
-			values[0] = new Integer(rs.getInt(1));
-			values[1] =
-				((rs.getString(2) != null) ? new Integer(rs.getInt(2)) : null);
-			values[2] =
-				((rs.getString(3) != null) ? new Integer(rs.getInt(3)) : null);
-			values[3] =
-				((rs.getString(4) != null) ? new Integer(rs.getInt(4)) : null);
-			values[4] = rs.getString(22);
-			values[5] = rs.getString(5);
-			values[6] =
-				((rs.getString(6) != null) ? new Integer(rs.getInt(6)) : null);
-			values[7] = rs.getString(7);
-			values[8] = rs.getString(8);
-			values[9] = rs.getString(9);
-			values[10] = rs.getString(10);
-			values[11] = rs.getDate(11);
-			values[12] = rs.getString(12);
-			values[13] = rs.getDate(13);
-			values[14] = rs.getString(14);
-			values[15] =
-				((rs.getString(15) != null)
-					? new Integer(rs.getInt(15))
-					: null);
-			values[16] = rs.getString(16);
-			values[17] =
-				((rs.getString(17) != null)
-					? new Double(rs.getDouble(17))
-					: null);
-			values[18] =
-				((rs.getString(18) != null)
-					? new Double(rs.getDouble(18))
-					: null);
-			values[19] =
-				((rs.getString(19) != null)
-					? new Double(rs.getDouble(19))
-					: null);
-			values[20] =
-				((rs.getString(20) != null)
-					? new Integer(rs.getInt(20))
-					: null);
-			values[23] = rs.getString(21);
+			values[Feature.FEATURE_ID] = new Integer(rs.getInt(1));
+			values[Feature.SITE_ID] = ((rs.getString(2) != null) ? new Integer(rs.getInt(2)) : null);
+			values[Feature.AUDIT_ID] = ((rs.getString(3) != null) ? new Integer(rs.getInt(3)) : null);
+			values[Feature.MASTERFILE_ID] = ((rs.getString(4) != null) ? new Integer(rs.getInt(4)) : null);
+			values[Feature.MASTERFILE_NAME] = rs.getString(22);
+			values[Feature.LOCALITY] = rs.getString(5);
+			values[Feature.REG_AREA_ID] = ((rs.getString(6) != null) ? new Integer(rs.getInt(6)) : null);
+			values[Feature.COMMENTS] = rs.getString(7);
+			values[Feature.FEATURE_TYPE] = rs.getString(8);
+			values[Feature.FEATURE_NAME] = rs.getString(9);
+			values[Feature.DRILLHOLE_LICENCE_NAME] = rs.getString(10);
+			values[Feature.START_DATE] = rs.getDate(11);
+			values[Feature.START_DATE_ROUNDING] = rs.getString(12);
+			values[Feature.FINISH_DATE] = rs.getDate(13);
+			values[Feature.FINISH_DATE_ROUNDING] = rs.getString(14);
+			values[Feature.PERSON_ID] = ((rs.getString(15) != null) ? new Integer(rs.getInt(15)) : null);
+			values[Feature.DATUM_TYPE] = rs.getString(16);
+			values[Feature.DATUM_ELEVATION] = ((rs.getString(17) != null) ? new Double(rs.getDouble(17)) : null);
+			values[Feature.START_DEPTH] = ((rs.getString(18) != null) ? new Double(rs.getDouble(18)) : null);
+			values[Feature.FINISH_DEPTH] = ((rs.getString(19) != null) ? new Double(rs.getDouble(19)) : null);
+			values[Feature.SECURITY_CLASS_ID] = ((rs.getString(20) != null) ? new Integer(rs.getInt(20)) : null);
+			values[Feature.STATUS] = rs.getString(21);
 			rs.close();
 			query = "SELECT Sample_ID FROM Sample WHERE Feature_ID = ? ORDER BY Top_Depth";
-			data[0] = values[0];
+			data[0] = values[Feature.FEATURE_ID];
 			rs = conn.executeQuery(query, types, data);
 			//ResultSet rs2;
 			Vector samp = new Vector();
@@ -100,8 +81,8 @@ public class FeatureData {
 			}
 			values[Feature.SAMPLES] = samp;
 			rs.close();
-			query = "SELECT DISTINCT Sample_Name, Last_Change, Working_Folder_ID FROM Sample_All_View WHERE Feature_ID = ? ORDER BY Sample_Name";
-			data[0] = values[0];
+			query = "SELECT DISTINCT Sample_Name, Feature_Last_Change, Feature_Working_Folder_ID FROM Sample_All_View WHERE Feature_ID = ? ORDER BY Sample_Name";
+			data[0] = values[Feature.FEATURE_ID];
 			rs = conn.executeQuery(query, types, data);
 			rs.next();
 			String sampName = rs.getString(1);

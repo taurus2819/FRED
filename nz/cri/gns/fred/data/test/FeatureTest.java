@@ -117,7 +117,7 @@ public class FeatureTest extends TestCase {
 
 	public void _testCreateNewSample() throws SQLException, IOException, DataInputException {
 		Feature f = new Feature(1282, user, state);
-		f.addNewSample("20", null, "11");
+		f.addNewSample("20", null, "11", "221");
 	}
 
 }

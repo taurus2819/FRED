@@ -12,7 +12,8 @@
 		String featID = request.getParameter("FeatID");
 		String foldID = request.getParameter("FoldID");
 		String sampID = request.getParameter("SampID");
-		String sampType = request.getParameter("Type");
+		String recID = request.getParameter("RecID");
+		String recType = request.getParameter("RecType");
 
 		Feature feature = new Feature(Integer.parseInt(featID), user, state);
 		Sample sample = null;
@@ -24,15 +25,20 @@
 			
 				if (request.getParameter("ActionType") != null) {
 					try {
-						if (sampID != null) {
+						if (sample != null) {
 							sample.editSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"));
-							sample = new Sample(Integer.parseInt(sampID), user, state, true);
 						} else {
-							feature.addNewSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"));
+							feature.addNewSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"), foldID);
 						}
 					} catch (Exception e) {}
-					if (sampID != null && sampType != null) {
-						response.sendRedirect("data_entry.jsp?Type=" + sampType + "&FoldID=" + foldID + "&SampID=" + sampID + "&Redirect=folder_feature_detail.jsp%3FFoldID%3D" + foldID + "%26FeatID%3D" + featID);
+					if (recType != null) {
+						if (recID != null) {
+							response.sendRedirect("data_entry.jsp?Type=" + recType + "&FoldID=" + foldID + "&RecID=" + recID + "&Redirect=folder_feature_detail.jsp%3FFoldID%3D" + foldID + "%26FeatID%3D" + featID);
+						} else {
+							response.sendRedirect("data_entry.jsp?Type=" + recType + "&FoldID=" + foldID + "&SampID=" + sampID + "&Redirect=folder_feature_detail.jsp%3FFoldID%3D" + foldID + "%26FeatID%3D" + featID);
+						}
+					} else if (sampID != null) {
+						response.sendRedirect("data_entry.jsp?Type=Sample&FoldID=" + foldID + "&SampID=" + sampID + "&Redirect=folder_feature_detail.jsp%3FFoldID%3D" + foldID + "%26FeatID%3D" + featID);
 					} else {
 						response.sendRedirect("folder_feature_detail.jsp?FeatID=" + featID + "&FoldID=" + foldID);
 					}
@@ -90,11 +96,11 @@ function checkDrill() {
 				out.println("<table border='0' cellspacing='3'>");
 				out.print("<tr><td class='heading'>Top Depth&nbsp;&nbsp;</td><td><input type='text' name='TopDepth' ");
 				if (sample != null)
-					out.print(" value='" + sample.getAsString(Sample.TOP_DEPTH) + "'");
+					out.print(" value='" + FREDUtils.noNulls(sample.getAsString(Sample.TOP_DEPTH)) + "'");
 				out.println("/></td></tr>");
 				out.print("<tr><td class='heading'>Bottom Depth&nbsp;&nbsp;</td><td><input type='text' name='BottomDepth'");
 				if (sample != null)
-					out.print(" value='" + sample.getAsString(Sample.BOTTOM_DEPTH) + "'");
+					out.print(" value='" + FREDUtils.noNulls(sample.getAsString(Sample.BOTTOM_DEPTH)) + "'");
 				out.println("/></td></tr>");
 				if (feature.getAsString(Feature.FEATURE_TYPE).equals("Drillhole")) {
 					out.println("<tr><td class='heading'>Type&nbsp;&nbsp;</td><td>");
@@ -110,10 +116,12 @@ function checkDrill() {
 				out.println("</table>");
 				out.println("<input type='hidden' name='FeatID' value='" + featID + "' />");
 				out.println("<input type='hidden' name='FoldID' value='" + foldID + "' />");
-				if (sampID != null) {
+				if (sampID != null)
 					out.println("<input type='hidden' name='SampID' value='" + sampID + "' />");
-					out.println("<input type='hidden' name='Type' value='" + sampType + "' />");
-				}
+				if (recID != null)
+					out.println("<input type='hidden' name='RecID' value='" + recID + "' />");
+				if (recType != null)
+					out.println("<input type='hidden' name='RecType' value='" + recType + "' />");
 				out.println("<input type='hidden' name='ActionType' value='Go' />");
 				out.println("<p><a href='#' onClick='if(checkDrill()) {sampForm.submit();}'><img src='images/ok.gif' height='20' width='20' border='0' alt='Add' /></a>&nbsp;&nbsp;<a href='#' onClick='if(checkDrill()) {sampForm.submit();}' class='heading'>Add</a></p>");
 				out.println("</form>");

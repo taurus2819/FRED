@@ -205,11 +205,16 @@ public class VertSectLocalityDE extends LocalityDE {
 						+ JspUtils.sqlEscape(fields[BASE_HORIZON])
 						+ " WHERE Feature_ID = "
 						+ feature.getFeatureID());
+					
 				conn.getConnection().commit();
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = true;
 				feature = new Feature(feature.getFeatureID(), user, state, true);
+				if (feature.getSampleCount() == 0) {
+					conn.executeUpdate("INSERT INTO Sample (Feature_ID, Audit_ID) VALUES (" + feature.getFeatureID() + ", " + feature.getAsString(Feature.AUDIT_ID) + ")");
+					feature = new Feature(feature.getFeatureID(), user, state, true);
+				}
 				int sampleID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
 				sample = new Sample(sampleID, user, state, true);
 			} catch (SQLException e) {

@@ -223,6 +223,13 @@ public class DrillholeLocalityDE extends LocalityDE {
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = true;
+				feature = new Feature(feature.getFeatureID(), user, state, true);
+				if (feature.getSampleCount() == 0) {
+					conn.executeUpdate("INSERT INTO Sample (Feature_ID, Audit_ID) VALUES (" + feature.getFeatureID() + ", " + feature.getAsString(Feature.AUDIT_ID) + ")");
+					feature = new Feature(feature.getFeatureID(), user, state, true);
+				}
+				int sampleID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
+				sample = new Sample(sampleID, user, state, true);
 			} catch (SQLException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);
@@ -242,11 +249,6 @@ public class DrillholeLocalityDE extends LocalityDE {
 				savedFlag = false;
 				throw e;
 			}
-			feature = new Feature(feature.getFeatureID(), user, state, true);
-			int sampleID =
-				((Integer) feature.getAsVector(Feature.SAMPLES).firstElement())
-					.intValue();
-			sample = new Sample(sampleID, user, state, true);
 		}
 		return feature.getFeatureID();
 	}

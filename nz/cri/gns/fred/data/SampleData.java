@@ -187,7 +187,7 @@ public class SampleData {
 			rs.close();
 			
 			query =
-				"SELECT Record_ID, Record_Type, Status FROM Record_All_View WHERE Sample_ID = ? ORDER BY Record_Type, Record_Name";
+				"SELECT DISTINCT Record_ID, Record_Type, Status, Record_Name FROM Record_All_View WHERE Sample_ID = ? ORDER BY Record_Type, Record_Name";
 			rs = conn.executeQuery(query, types, data);
 			Vector rec = new Vector();
 			Vector wRec = new Vector();

@@ -39,7 +39,7 @@
 
 		//List data
 		Sample sample = new Sample(Integer.parseInt(sampID), user, state);
-		Audit audit = Audit.getAudit(sample.getAsInt(Sample.AUDIT_ID), state);
+		Audit audit = Audit.getAudit(sample.getAsInt(Sample.FEATURE_AUDIT_ID), state);
 		out.println("<table border='1' cellspacing='0' cellpadding='10' width='620'>");
 		out.println("<tr><td>");
 

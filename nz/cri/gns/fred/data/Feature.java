@@ -50,11 +50,13 @@ public class Feature {
 
 	private FeatureData fd;
 	private PageState state;
+	private User user;
 	private boolean authenticated;
 
 	public Feature(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException {
 		this.state = state;
-		fd = FeatureData.getData(id, state, forceRefresh);
+		this.user = user;
+		this.fd = FeatureData.getData(id, state, forceRefresh);
 		if (!FREDUtils.isAllowedLocality(user, fd.getAsString(SECURITY_CLASS_ID), fd.getAsString(STATUS), fd.getAsString(FEATURE_ID), state)) {
 			authenticated = false;
 		} else {
@@ -194,28 +196,29 @@ public class Feature {
 		return fd.toString();
 	}
 
-	public int addNewSample(String topDepth, String bottomDepth, String drillTypeID) throws SQLException, IOException, DataInputException {
-		int sampID;
+	public int addNewSample(String topDepth, String bottomDepth, String drillTypeID, String workingFolderID) throws SQLException, IOException, DataInputException {
+		int sampleID;
 		if (!FREDUtils.isNumeric(topDepth) || (bottomDepth != null && !FREDUtils.isNumeric(bottomDepth)) || (drillTypeID != null && !FREDUtils.isNumeric(drillTypeID))) {
 			throw new DataInputException();
 		}
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		//check existing samples.  If there is only one - the default one - then replace it with the new one, otherwise add
-		ResultSet rs = conn.executeQuery("SELECT S.Sample_ID FROM Sample_All_View S, Record R WHERE S.Sample_ID = R.Sample_ID(+) AND S.Feature_ID = " + getFeatureID() + " AND S.Drillhole_Depth = 'Depth Not Specified' AND R.Sample_ID IS NULL");
-		if (rs.next()) { //just update existing sample
-			sampID = rs.getInt(1);
-			conn.executeUpdate("UPDATE Sample SET Top_Depth = " + JspUtils.sqlEscape(topDepth) + ", Bottom_Depth = " + JspUtils.sqlEscape(bottomDepth) + ", Drill_Type_ID = " + JspUtils.sqlEscape(drillTypeID) + " WHERE Sample_ID = " + sampID);
-		}
-		else { //can add as no un-used default samples
-			rs = conn.executeQuery("SELECT Sample_Seq.NEXTVAL FROM DUAL");
-			rs.next();
-			sampID = rs.getInt(1);
-			rs = conn.executeQuery("SELECT MIN(FR_ID) FROM Sample WHERE Feature_ID = " + getFeatureID());
-			rs.next();
-			conn.executeUpdate("INSERT INTO Sample (Sample_ID, Feature_ID, FR_ID, Top_Depth, Bottom_Depth, Drill_Type_ID) VALUES (" + sampID + ", " + getFeatureID() + ", " + rs.getString(1) + ", " + JspUtils.sqlEscape(topDepth) + ", " + JspUtils.sqlEscape(bottomDepth) + ", " + JspUtils.sqlEscape(drillTypeID) + ")");
-		}
+		//check existing samples.  If there is only one - the default one - then delete it
+		ResultSet rs = conn.executeQuery("SELECT S.Sample_ID FROM Sample_All_View S, Record R WHERE S.Sample_ID = R.Sample_ID(+) AND S.Feature_ID = " + getFeatureID() + " AND S.Drillhole_Depth = 'Depth Not Specified' AND S.Collector IS NULL AND R.Sample_ID IS NULL");
+		if (rs.next())
+			conn.executeUpdate("DELETE FROM Sample WHERE Sample_ID = " + rs.getString(1));
+		
+		rs = conn.executeQuery("SELECT Audit_Seq.NEXTVAL FROM DUAL");
+		rs.next();
+		String auditID = rs.getString(1);
+		conn.executeUpdate("INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Folder_ID) VALUES (" + auditID + ", 'working', " + user.getPersonId() + ", SYSDATE, " + workingFolderID + ")");
+		rs = conn.executeQuery("SELECT Sample_Seq.NEXTVAL FROM DUAL");
+		rs.next();
+		sampleID = rs.getInt(1);
+		rs = conn.executeQuery("SELECT MIN(FR_ID) FROM Sample WHERE Feature_ID = " + getFeatureID());
+		rs.next();
+		conn.executeUpdate("INSERT INTO Sample (Sample_ID, Feature_ID, Audit_ID, FR_ID, Top_Depth, Bottom_Depth, Drill_Type_ID) VALUES (" + sampleID + ", " + getFeatureID() + ", " + auditID + ", " + rs.getString(1) + ", " + JspUtils.sqlEscape(topDepth) + ", " + JspUtils.sqlEscape(bottomDepth) + ", " + JspUtils.sqlEscape(drillTypeID) + ")");
 		fd = FeatureData.getData(getFeatureID(), state, true);
-		return sampID;
+		return sampleID;
 	}
 
 }

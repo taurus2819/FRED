@@ -122,4 +122,24 @@ public class DataEntryUtils {
 		}
 		return stageID;
 	}
+	
+	public static void parseAge(String stageStart, String stageStop, String fieldName, PageState state) throws DataInputException {
+		try {
+			DBConnection conn = FREDUtils.getFREDConnection(state);
+			ResultSet rs = conn.executeQuery("SELECT Ta_Age_Start, Ta_Age_Stop FROM Age_View WHERE Ag_ID = " + stageStart);
+			rs.next();
+			double startStart = rs.getDouble(1);
+			double startStop = rs.getDouble(2);
+			if (stageStop != null) {
+				rs = conn.executeQuery("SELECT Ta_Age_Start, Ta_Age_Stop FROM Age_View WHERE Ag_ID = " + stageStop);
+				rs.next();
+				double stopStart = rs.getDouble(1);
+				double stopStop = rs.getDouble(2);
+				if (startStart < stopStart || startStop < stopStop) throw new DataInputException(fieldName, "Stop age younger than start age");
+			}
+		} catch (Exception e) {
+			throw new DataInputException(fieldName, "Invalid");
+		}
+	}
+	
 }

@@ -13,9 +13,8 @@ import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.HTMLUtils;
 import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.fred.FREDUtils;
-import nz.cri.gns.fred.data.Record;
+import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.Relationship;
-import nz.cri.gns.fred.data.SampPropRecord;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.fred.data.SedFeature;
 import nz.cri.gns.fred.data.SentTo;
@@ -23,7 +22,18 @@ import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
-public class SampPropRecordDE extends RecordDE {
+public class SampleDE implements DataEntryForm {
+
+	private User user;
+	private PageState state;
+	private Folder folder;
+	private int featureID = -1;
+	private int auditID = -1;
+	private Sample sample;
+	private Integer secClassID;
+	private String[] fields = new String[120];
+	private String[] tempFields = new String[120];
+	private boolean savedFlag = false;
 
 	private RoundedDate collDate;
 	private Vector collectors;
@@ -36,108 +46,90 @@ public class SampPropRecordDE extends RecordDE {
 	private Vector sentTo;
 	private Vector stratRel;
 
-	public SampPropRecordDE(User user, int sampleID, int folderID, PageState state)
-		throws SQLException, IOException, DataInputException {
-		super(user, sampleID, folderID, "SMP", state);
+	private static final int RELATIONSHIP_ABOVE = 232;
+	private static final int RELATIONSHIP_BELOW = 233;
+	private static final int RELATIONSHIP_ABOVE_TOP = 236;
+	private static final int RELATIONSHIP_ABOVE_BASE = 237;
+	private static final int RELATIONSHIP_BELOW_TOP = 238;
+	private static final int RELATIONSHIP_BELOW_BASE = 239;
+
+	public SampleDE(User user, int featureID, int folderID, PageState state) throws SQLException, IOException {
+		this(user, folderID, state);
+		this.featureID = featureID;
+	}		
+
+	public SampleDE(User user, int folderID, PageState state) throws SQLException, IOException {
+		this.user = user;
+		this.state = state;
+		this.folder = new Folder(folderID, user, state);
 	}
 
-	public SampPropRecordDE(User user, int folderID, PageState state)
-		throws DataInputException, SQLException, IOException {
-		super(user, folderID, "SMP", state);
-	}
-
-	public SampPropRecordDE(int recID, User user, PageState state)
+	public SampleDE(int sampleID, User user, PageState state)
 		throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
-		super(recID, "SMP", user, state);
+		this.user = user;
+		this.state = state;
+		sample = new Sample(sampleID, user, state, true);
+		
+		//check Status for editing
+		if (sample.getAsString(Sample.SAMPLE_STATUS).equals("approved")) {
+			throw new DataInputException("Sample", "Sample not editable");
+		} else if (sample.getAsString(Sample.SAMPLE_STATUS).equals("waiting")) {
+			if (FREDUtils.hasMasterfileRights(user, String.valueOf(sample.getFeatureID()), state)) {
+				folder = new Folder(sample.getAsInt(Sample.MASTERFILE_ID), user, state);
+			} else {
+				throw new DataInputException("Sample", "Sample not editable");
+			}
+		} else if (sample.get(Sample.FEATURE_WORKING_FOLDER_ID) != null) {
+			folder = new Folder(sample.getAsInt(Sample.FEATURE_WORKING_FOLDER_ID), user, state);
+		}
+		this.featureID = sample.getFeatureID();
+		this.auditID = sample.getAsInt(Sample.SAMPLE_AUDIT_ID);
+		//feature = new Feature(sample.getAsInt(Sample.FEATURE_ID), user, state, true);
+		
+		//set fields
 		try {
-			setField(
-				COLLECTION_DATE,
-				DataEntryUtils.reverseParseDate(
-					record.getAsDate(Record.COLLECTION_DATE),
-					record.getAsString(Record.COLLECTION_DATE_ROUNDING)));
-			if (record.get(Record.COLLECTOR) != null) {
+			setField(COLLECTION_DATE, DataEntryUtils.reverseParseDate(
+					sample.getAsDate(Sample.COLLECTION_DATE),
+					sample.getAsString(Sample.COLLECTION_DATE_ROUNDING)));
+			if (sample.get(Sample.COLLECTOR) != null) {
 				StringBuffer collName = new StringBuffer();
-				for (Iterator i =
-					record.getAsVector(Record.COLLECTOR).iterator();
-					i.hasNext();
-					) {
+				for (Iterator i = sample.getAsVector(Sample.COLLECTOR).iterator(); i.hasNext();) {
 					KeyValueObject coll = (KeyValueObject) i.next();
 					collName.append(coll.getValue() + "\n");
 				}
 				setField(COLLECTORS, collName.toString());
 			}
-			setField(STRAT_NAME, record.getAsString(Record.STRAT_UNIT));
-			setField(FOSSILS_IN_PLACE, record.getAsString(Record.IN_PLACE));
-			if (record.get(Record.SENT_TO) != null) {
+			setField(STRAT_NAME, sample.getAsString(Sample.STRAT_UNIT));
+			setField(FOSSILS_IN_PLACE, sample.getAsString(Sample.IN_PLACE));
+			if (sample.get(Sample.SENT_TO) != null) {
 				StringBuffer sTStr = new StringBuffer();
-				for (Iterator i =
-					record.getAsVector(Record.SENT_TO).iterator();
-					i.hasNext();
-					) {
+				for (Iterator i = sample.getAsVector(Sample.SENT_TO).iterator(); i.hasNext();) {
 					SentTo sT = (SentTo) i.next();
-					sTStr.append(
-						sT.getFossilGroup()
-							+ "*"
-							+ FREDUtils.noNulls(sT.getPerson())
-							+ "*"
-							+ FREDUtils.noNulls(sT.getLab())
-							+ "*"
-							+ FREDUtils.noNulls(sT.getComments())
-							+ "\n");
+					sTStr.append(sT.getFossilGroup() + "*" + FREDUtils.noNulls(sT.getPerson()) + "*" + FREDUtils.noNulls(sT.getLab()) + "*" + FREDUtils.noNulls(sT.getComments()) + "\n");
 				}
 				setField(SENT_TO, sTStr.toString());
 			}
-			setField(
-				NOT_COLLECTED,
-				record.getAsString(Record.NOT_COLLECTED));
-			setField(
-				SIGNIFICANCE_COMMENTS,
-				record.getAsString(Record.SIGNIFICANCE));
-			setField(
-				INF_AGE_START,
-				record.getAsString(Record.INFERRED_STAGE_LOWER_ID));
-			setField(
-				INF_START_MOD,
-				record.getAsString(Record.INFERRED_STAGE_LOWER_MOD));
-			setField(
-				INF_AGE_STOP,
-				record.getAsString(Record.INFERRED_STAGE_UPPER_ID));
-			setField(
-				INF_STOP_MOD,
-				record.getAsString(Record.INFERRED_STAGE_UPPER_MOD));
-			setField(
-				KNW_AGE_START,
-				record.getAsString(Record.KNOWN_STAGE_LOWER_ID));
-			setField(
-				KNW_START_MOD,
-				record.getAsString(Record.KNOWN_STAGE_LOWER_MOD));
-			setField(
-				KNW_AGE_STOP,
-				record.getAsString(Record.KNOWN_STAGE_UPPER_ID));
-			setField(
-				KNW_STOP_MOD,
-				record.getAsString(Record.KNOWN_STAGE_UPPER_MOD));
-			if (record.get(Record.RELATIONSHIP_NEARBY) != null) {
+			setField(NOT_COLLECTED, sample.getAsString(Sample.NOT_COLLECTED));
+			setField(SIGNIFICANCE_COMMENTS, sample.getAsString(Sample.SIGNIFICANCE));
+			setField(INF_AGE_START, sample.getAsString(Sample.INFERRED_STAGE_LOWER_ID));
+			setField(INF_START_MOD, sample.getAsString(Sample.INFERRED_STAGE_LOWER_MOD));
+			setField(INF_AGE_STOP, sample.getAsString(Sample.INFERRED_STAGE_UPPER_ID));
+			setField(INF_STOP_MOD, sample.getAsString(Sample.INFERRED_STAGE_UPPER_MOD));
+			setField(KNW_AGE_START, sample.getAsString(Sample.KNOWN_STAGE_LOWER_ID));
+			setField(KNW_START_MOD, sample.getAsString(Sample.KNOWN_STAGE_LOWER_MOD));
+			setField(KNW_AGE_STOP, sample.getAsString(Sample.KNOWN_STAGE_UPPER_ID));
+			setField(KNW_STOP_MOD, sample.getAsString(Sample.KNOWN_STAGE_UPPER_MOD));
+			if (sample.get(Sample.RELATIONSHIP_NEARBY) != null) {
 				StringBuffer prevSamp = new StringBuffer();
-				for (Iterator i =
-					record
-						.getAsVector(Record.RELATIONSHIP_NEARBY)
-						.iterator();
-					i.hasNext();
-					) {
+				for (Iterator i = sample.getAsVector(Sample.RELATIONSHIP_NEARBY).iterator(); i.hasNext();) {
 					Relationship rel = (Relationship) i.next();
 					prevSamp.append(rel.getRelatedSampleName() + ";");
 				}
 				setField(PREVIOUS_SAMPLE, prevSamp.toString());
 			}
-			if (record.get(Record.RELATIONSHIP_SAMPLE) != null) {
+			if (sample.get(Sample.RELATIONSHIP_SAMPLE) != null) {
 				StringBuffer sampRel = new StringBuffer();
-				for (Iterator i =
-					record
-						.getAsVector(Record.RELATIONSHIP_SAMPLE)
-						.iterator();
-					i.hasNext();
-					) {
+				for (Iterator i = sample.getAsVector(Sample.RELATIONSHIP_SAMPLE).iterator(); i.hasNext();) {
 					Relationship rel = (Relationship) i.next();
 					if (rel.getDistanceMod() != null)
 						sampRel.append(rel.getDistanceMod() + " ");
@@ -146,23 +138,13 @@ public class SampPropRecordDE extends RecordDE {
 						if (rel.getDistanceRange() != null)
 							sampRel.append(" - " + rel.getDistanceRange());
 					}
-					sampRel.append(
-						" "
-							+ rel.getRelationType()
-							+ " "
-							+ rel.getRelatedSampleName()
-							+ "\n");
+					sampRel.append(" " + rel.getRelationType() + " " + rel.getRelatedSampleName() + "\n");
 				}
 				setField(SAMPLE_RELATIONSHIP, sampRel.toString());
 			}
-			if (record.get(Record.RELATIONSHIP_STRAT) != null) {
+			if (sample.get(Sample.RELATIONSHIP_STRAT) != null) {
 				StringBuffer stratRel = new StringBuffer();
-				for (Iterator i =
-					record
-						.getAsVector(Record.RELATIONSHIP_STRAT)
-						.iterator();
-					i.hasNext();
-					) {
+				for (Iterator i = sample.getAsVector(Sample.RELATIONSHIP_STRAT).iterator(); i.hasNext();) {
 					Relationship rel = (Relationship) i.next();
 					if (rel.getDistanceMod() != null)
 						stratRel.append(rel.getDistanceMod() + " ");
@@ -171,57 +153,31 @@ public class SampPropRecordDE extends RecordDE {
 						if (rel.getDistanceRange() != null)
 							stratRel.append(" - " + rel.getDistanceRange());
 					}
-					stratRel.append(
-						" "
-							+ rel.getRelationType()
-							+ " "
-							+ rel.getRelatedStratUnit()
-							+ "\n");
+					stratRel.append(" " + rel.getRelationType() + " " + rel.getRelatedStratUnit() + "\n");
 				}
 				setField(STRAT_RELATIONSHIP, stratRel.toString());
 			}
-			setField(COLUMN_MAP, record.getAsString(Record.COLUMN_MAP));
-			setField(DIP, record.getAsString(Record.DIP));
-			setField(
-				DIP_DIRECTION,
-				record.getAsString(Record.DIP_DIRECTION));
-			setField(STRIKE, record.getAsString(Record.STRIKE));
-			setField(FACING, record.getAsString(Record.FACING));
-			setField(
-				GRAIN_SIZE_P,
-				record.getAsString(Record.PRIMARY_GRAINSIZE_ID));
-			setField(
-				GRAIN_SIZE_S,
-				record.getAsString(Record.SECONDARY_GRAINSIZE_ID));
-			setField(GS_COMP, record.getAsString(Record.COMPARATOR_USED));
-			setField(
-				BEDDING_THICKNESS,
-				record.getAsString(Record.BED_THICK_ID));
-			setField(
-				BEDDING_P,
-				record.getAsString(Record.PRIMARY_BEDDING_ID));
-			setField(
-				BEDDING_S,
-				record.getAsString(Record.SECONDARY_BEDDING_ID));
-			setField(WEATHERING, record.getAsString(Record.WEATHERING_ID));
-			setField(HARDNESS, record.getAsString(Record.HARDNESS_ID));
-			setField(CARBONATE, record.getAsString(Record.CARBONATE_ID));
-			setField(
-				COLOUR_MOD,
-				record.getAsString(Record.COLOUR_MODIFIER_ID));
-			setField(
-				COLOUR_P,
-				record.getAsString(Record.PRIMARY_COLOUR_ID));
-			setField(
-				COLOUR_S,
-				record.getAsString(Record.SECONDARY_COLOUR_ID));
-			setField(WET, record.getAsString(Record.WET));
-			if (record.get(Record.SED_FEATURE) != null) {
+			setField(COLUMN_MAP, sample.getAsString(Sample.COLUMN_MAP));
+			setField(DIP, sample.getAsString(Sample.DIP));
+			setField(DIP_DIRECTION, sample.getAsString(Sample.DIP_DIRECTION));
+			setField(STRIKE, sample.getAsString(Sample.STRIKE));
+			setField(FACING, sample.getAsString(Sample.FACING));
+			setField(GRAIN_SIZE_P, sample.getAsString(Sample.PRIMARY_GRAINSIZE_ID));
+			setField(GRAIN_SIZE_S, sample.getAsString(Sample.SECONDARY_GRAINSIZE_ID));
+			setField(GS_COMP, sample.getAsString(Sample.COMPARATOR_USED));
+			setField(BEDDING_THICKNESS, sample.getAsString(Sample.BED_THICK_ID));
+			setField(BEDDING_P, sample.getAsString(Sample.PRIMARY_BEDDING_ID));
+			setField(BEDDING_S, sample.getAsString(Sample.SECONDARY_BEDDING_ID));
+			setField(WEATHERING, sample.getAsString(Sample.WEATHERING_ID));
+			setField(HARDNESS, sample.getAsString(Sample.HARDNESS_ID));
+			setField(CARBONATE, sample.getAsString(Sample.CARBONATE_ID));
+			setField(COLOUR_MOD, sample.getAsString(Sample.COLOUR_MODIFIER_ID));
+			setField(COLOUR_P, sample.getAsString(Sample.PRIMARY_COLOUR_ID));
+			setField(COLOUR_S, sample.getAsString(Sample.SECONDARY_COLOUR_ID));
+			setField(WET, sample.getAsString(Sample.WET));
+			if (sample.get(Sample.SED_FEATURE) != null) {
 				StringBuffer sF = new StringBuffer();
-				for (Iterator i =
-					record.getAsVector(Record.SED_FEATURE).iterator();
-					i.hasNext();
-					) {
+				for (Iterator i = sample.getAsVector(Sample.SED_FEATURE).iterator(); i.hasNext();) {
 					SedFeature sFeat = (SedFeature) i.next();
 					sF.append(sFeat.getFeat());
 					if (sFeat.getAbundant() != null)
@@ -230,24 +186,25 @@ public class SampPropRecordDE extends RecordDE {
 				}
 				setField(SED_FEATURES, sF.toString());
 			}
-			String depEnv = record.getAsString(Record.DEPOSITION_ENV);
+			String depEnv = sample.getAsString(Sample.DEPOSITION_ENV);
 			if (depEnv != null) {
 				if (depEnv.indexOf("Marine:") != -1) {
 					setField(DEP_ENVIRONMENT_1, "Marine");
-					setField(
-						DEP_ENVIRONMENT_2,
-						depEnv.substring(7, depEnv.length()).trim());
+					setField(DEP_ENVIRONMENT_2, depEnv.substring(7, depEnv.length()).trim());
 				} else if (depEnv.indexOf("Non-marine:") != -1) {
 					setField(DEP_ENVIRONMENT_1, "Non-marine");
-					setField(
-						DEP_ENVIRONMENT_2,
-						depEnv.substring(11, depEnv.length()).trim());
+					setField(DEP_ENVIRONMENT_2, depEnv.substring(11, depEnv.length()).trim());
 				} else {
 					setField(DEP_ENVIRONMENT_2, depEnv);
 				}
 			}
-			setField(ROCK_NATURE, record.getAsString(Record.ROCK_NATURE));
-			setField(CORRESPONDENCE, record.getAsString(Record.CORRESPONDENCE));
+			setField(ROCK_NATURE, sample.getAsString(Sample.ROCK_NATURE));
+			setField(CORRESPONDENCE, sample.getAsString(Sample.CORRESPONDENCE));
+			try {
+				setField(SECURITY_TYPE, String.valueOf(FREDUtils.getSecurityType(sample.getAsInt(Sample.SAMPLE_SECURITY_CLASS_ID), user, state)));
+			} catch (Exception e) {
+				setField(SECURITY_TYPE, "21");
+			}
 		} catch (TaxonomicListException e) {}
 	}
 
@@ -255,13 +212,27 @@ public class SampPropRecordDE extends RecordDE {
 		this.outcropSamp = outcropSamp;
 	}
 
+	public void setFeatureID(int featureID) {
+		this.featureID = featureID;
+	}
+	
+	public void setAuditID(int auditID) {
+		this.auditID = auditID;
+	}
+
 	protected void parseField(int field, String value)
 		throws DataInputException, TaxonomicListException {
-		super.parseField(field, value);
 		try {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			ResultSet rs;
 			switch (field) {
+				case SECURITY_TYPE :
+					try {
+						secClassID = new Integer(FREDUtils.getSecurityClass(Integer.parseInt(value), user, state));
+					} catch (Exception e) {
+						throw new DataInputException("Security Class", "Invalid");
+					}
+					break;
 				case COLLECTION_DATE :
 					collDate = DataEntryUtils.parseRoundedDate(value);
 					break;
@@ -270,17 +241,12 @@ public class SampPropRecordDE extends RecordDE {
 					while (value.length() > 0) {
 						if (value.indexOf("\n") == -1)
 							value = value + "\n";
-						rs = conn.executeQuery(
-								"SELECT Person_ID FROM Person_View WHERE Name = "
-									+ JspUtils.sqlEscape(value.substring(0, value.indexOf("\n")).trim()));
+						rs = conn.executeQuery("SELECT Person_ID FROM Person_View WHERE Name = " + JspUtils.sqlEscape(value.substring(0, value.indexOf("\n")).trim()));
 						try {
 							rs.next();
 							collectors.add(new Integer(rs.getInt(1)));
 						} catch (Exception e) {
-							throw new DataInputException(
-								"Collector",
-								value.substring(0, value.indexOf("\n")).trim()
-									+ " not in database - add through builder");
+							throw new DataInputException("Collector", value.substring(0, value.indexOf("\n")).trim() + " not in database - add through builder");
 						}
 						value =	value.substring(value.indexOf("\n") + 1, value.length());
 					}
@@ -334,30 +300,26 @@ public class SampPropRecordDE extends RecordDE {
 					}
 					break;
 				case INF_AGE_START :
-					parseAge(value, getField(INF_AGE_STOP), "Inferred Age");
+					DataEntryUtils.parseAge(value, getField(INF_AGE_STOP), "Inferred Age", state);
 					break;
 				case INF_AGE_STOP :
-					parseAge(getField(INF_AGE_START), value, "Inferred Age");
+					DataEntryUtils.parseAge(getField(INF_AGE_START), value, "Inferred Age", state);
 					break;
 				case INF_START_MOD :
 				case INF_STOP_MOD :
 					if (value != null && !value.equals("?"))
-						throw new DataInputException(
-							"Inferred Age",
-							"Bad Modifier");
+						throw new DataInputException("Inferred Age", "Bad Modifier");
 					break;
 				case KNW_AGE_START :
-					parseAge(value, getField(KNW_AGE_STOP), "Known Age");
+					DataEntryUtils.parseAge(value, getField(KNW_AGE_STOP), "Known Age", state);
 					break;
 				case KNW_AGE_STOP :
-					parseAge(getField(KNW_AGE_START), value, "Known Age");
+					DataEntryUtils.parseAge(getField(KNW_AGE_START), value, "Known Age", state);
 					break;
 				case KNW_START_MOD :
 				case KNW_STOP_MOD :
 					if (value != null && !value.equals("?"))
-						throw new DataInputException(
-							"Known Age",
-							"Bad Modifier");
+						throw new DataInputException("Known Age", "Bad Modifier");
 					break;
 				case PREVIOUS_SAMPLE :
 					prevSamp = new Vector();
@@ -365,42 +327,25 @@ public class SampPropRecordDE extends RecordDE {
 					while (value.length() > 0) {
 						if (value.indexOf(";") == -1)
 							value += ";";
-						String sampName =
-							value.substring(0, value.indexOf(";")).trim();
-						rs =
-							conn.executeQuery(
-								"SELECT Feature_ID FROM Sample_All_View WHERE Sample_Name = "
-									+ JspUtils.sqlEscape(sampName));
+						String sampName = value.substring(0, value.indexOf(";")).trim();
+						rs = conn.executeQuery("SELECT Feature_ID FROM Sample_All_View WHERE Sample_Name = " + JspUtils.sqlEscape(sampName));
 						if (rs.next()) {
 							ps = new Relationship();
 							ps.setRelatedFeatureID(new Integer(rs.getInt(1)));
 							prevSamp.add(ps);
 						} else {
-							rs =
-								conn.executeQuery(
-									"SELECT Feature_ID FROM Folder_Content_View WHERE Sample_Name = "
-										+ JspUtils.sqlEscape(sampName)
+							rs = conn.executeQuery("SELECT Feature_ID FROM Folder_Content_View WHERE Sample_Name = "										+ JspUtils.sqlEscape(sampName)
 										+ " AND (Status = 'approved' OR (Folder_Type = 'personal' AND User_ID = "
-										+ user.getPersonId()
-										+ "))");
+										+ user.getPersonId() + "))");
 							if (rs.next()) {
 								ps = new Relationship();
-								ps.setRelatedFeatureID(
-									new Integer(rs.getInt(1)));
+								ps.setRelatedFeatureID(new Integer(rs.getInt(1)));
 								prevSamp.add(ps);
 							} else {
-								throw new DataInputException(
-									"Samples Nearby",
-									value
-										.substring(0, value.indexOf(";"))
-										.trim()
-										+ " not in database - pick another");
+								throw new DataInputException("Samples Nearby", value.substring(0, value.indexOf(";")).trim() + " not in database - pick another");
 							}
 						}
-						value =
-							value.substring(
-								value.indexOf(";") + 1,
-								value.length());
+						value =	value.substring(value.indexOf(";") + 1,	value.length());
 					}
 					break;
 				case SAMPLE_RELATIONSHIP :
@@ -413,29 +358,13 @@ public class SampPropRecordDE extends RecordDE {
 							value += "\n";
 						srLine = value.substring(0, value.indexOf("\n")).trim();
 						if (srLine.indexOf("above") >= 0) {
-							srRelID = new Integer(232);
-							srDistance =
-								srLine
-									.substring(0, srLine.indexOf("above"))
-									.trim();
-							srFeat =
-								srLine
-									.substring(
-										srLine.indexOf("above") + 5,
-										srLine.length())
-									.trim();
+							srRelID = new Integer(RELATIONSHIP_ABOVE);
+							srDistance = srLine.substring(0, srLine.indexOf("above")).trim();
+							srFeat = srLine.substring(srLine.indexOf("above") + 5, srLine.length()).trim();
 						} else if (srLine.indexOf("below") >= 0) {
-							srRelID = new Integer(233);
-							srDistance =
-								srLine
-									.substring(0, srLine.indexOf("below"))
-									.trim();
-							srFeat =
-								srLine
-									.substring(
-										srLine.indexOf("below") + 5,
-										srLine.length())
-									.trim();
+							srRelID = new Integer(RELATIONSHIP_BELOW);
+							srDistance = srLine.substring(0, srLine.indexOf("below")).trim();
+							srFeat = srLine.substring(srLine.indexOf("below") + 5, srLine.length()).trim();
 						} else {
 							throw new DataInputException(
 								"Sample Relationships",
@@ -445,39 +374,21 @@ public class SampPropRecordDE extends RecordDE {
 						srDistRange = null;
 						if (srDistance.indexOf("c.") == 0) {
 							srDistMod = "c.";
-							srDistance =
-								srDistance
-									.substring(2, srDistance.length())
-									.trim();
+							srDistance = srDistance.substring(2, srDistance.length()).trim();
 						} else if (srDistance.indexOf("?") == 0) {
 							srDistMod = "?";
-							srDistance =
-								srDistance
-									.substring(1, srDistance.length())
-									.trim();							
+							srDistance = srDistance.substring(1, srDistance.length()).trim();							
 						}
 						if (srDistance.indexOf("-") >= 0) {
-							srDistance =
-								srDistance
-									.substring(0, srDistance.indexOf("-"))
-									.trim();
-							srDistRange =
-								srDistance
-									.substring(
-										srDistance.indexOf("-") + 1,
-										srDistance.length())
-									.trim();
+							srDistance = srDistance.substring(0, srDistance.indexOf("-")).trim();
+							srDistRange = srDistance.substring(srDistance.indexOf("-") + 1, srDistance.length()).trim();
 						}
 						srDistance = srDistance.trim();
-						rs =
-							conn.executeQuery(
-								"SELECT Feature_ID FROM Sample_All_View WHERE Sample_Name = "
-									+ JspUtils.sqlEscape(srFeat));
+						rs = conn.executeQuery("SELECT Feature_ID FROM Sample_All_View WHERE Sample_Name = " + JspUtils.sqlEscape(srFeat));
 						if (rs.next()) {
 							srFeatID = new Integer(rs.getInt(1));
 						} else {
-							rs =
-								conn.executeQuery(
+							rs = conn.executeQuery(
 									"SELECT Feature_ID FROM Folder_Content_View WHERE Sample_Name = "
 										+ JspUtils.sqlEscape(srFeat)
 										+ " AND (Status = 'approved' OR (Folder_Type = 'personal' AND User_ID = "
@@ -486,9 +397,7 @@ public class SampPropRecordDE extends RecordDE {
 							if (rs.next()) {
 								srFeatID = new Integer(rs.getInt(1));
 							} else {
-								throw new DataInputException(
-									"Sample Relationships",
-									srFeat + " not a valid sample");
+								throw new DataInputException("Sample Relationships", srFeat + " not a valid sample");
 							}
 						}
 						try {
@@ -502,17 +411,9 @@ public class SampPropRecordDE extends RecordDE {
 								smpR.setDistanceRange(new Double(srDistRange));
 							sampRel.add(smpR);
 						} catch (Exception e) {
-							throw new DataInputException(
-								"Sample Relationships",
-								srLine
-									+ " is invalid.  Please use the builder");
+							throw new DataInputException("Sample Relationships", srLine + " is invalid.  Please use the builder");
 						}
-						value =
-							value
-								.substring(
-									value.indexOf("\n") + 1,
-									value.length())
-								.trim();
+						value = value.substring(value.indexOf("\n") + 1, value.length()).trim();
 					}
 					break;
 				case STRAT_RELATIONSHIP :
@@ -525,91 +426,40 @@ public class SampPropRecordDE extends RecordDE {
 					Integer strRelID;
 					Relationship strR;
 					while (value.length() > 0) {
-						if (value.indexOf("\n") == -1) {
+						if (value.indexOf("\n") == -1)
 							value = value + "\n";
-						}
-						strLine =
-							value.substring(0, value.indexOf("\n")).trim();
+						strLine = value.substring(0, value.indexOf("\n")).trim();
 						if (strLine.indexOf("above base") >= 0) {
-							strRelID = new Integer(237);
-							strDistance =
-								strLine
-									.substring(0, strLine.indexOf("above base"))
-									.trim();
-							strStrat =
-								strLine
-									.substring(
-										strLine.indexOf("above base") + 10,
-										strLine.length())
-									.trim();
+							strRelID = new Integer(RELATIONSHIP_ABOVE_BASE);
+							strDistance = strLine.substring(0, strLine.indexOf("above base")).trim();
+							strStrat = strLine.substring(strLine.indexOf("above base") + 10, strLine.length()).trim();
 						} else if (strLine.indexOf("above top") >= 0) {
-							strRelID = new Integer(236);
-							strDistance =
-								strLine
-									.substring(0, strLine.indexOf("above top"))
-									.trim();
-							strStrat =
-								strLine
-									.substring(
-										strLine.indexOf("above top") + 9,
-										strLine.length())
-									.trim();
+							strRelID = new Integer(RELATIONSHIP_ABOVE_TOP);
+							strDistance = strLine.substring(0, strLine.indexOf("above top")).trim();
+							strStrat = strLine.substring(strLine.indexOf("above top") + 9, strLine.length()).trim();
 						} else if (strLine.indexOf("below base") >= 0) {
-							strRelID = new Integer(239);
-							strDistance =
-								strLine
-									.substring(0, strLine.indexOf("below base"))
-									.trim();
-							strStrat =
-								strLine
-									.substring(
-										strLine.indexOf("below base") + 10,
-										strLine.length())
-									.trim();
+							strRelID = new Integer(RELATIONSHIP_BELOW_BASE);
+							strDistance = strLine.substring(0, strLine.indexOf("below base")).trim();
+							strStrat = strLine.substring(strLine.indexOf("below base") + 10, strLine.length()).trim();
 						} else if (strLine.indexOf("below top") >= 0) {
-							strRelID = new Integer(238);
-							strDistance =
-								strLine
-									.substring(0, strLine.indexOf("below top"))
-									.trim();
-							strStrat =
-								strLine
-									.substring(
-										strLine.indexOf("below top") + 9,
-										strLine.length())
-									.trim();
+							strRelID = new Integer(RELATIONSHIP_BELOW_TOP);
+							strDistance = strLine.substring(0, strLine.indexOf("below top")).trim();
+							strStrat = strLine.substring(strLine.indexOf("below top") + 9, strLine.length()).trim();
 						} else {
-							throw new DataInputException(
-								"Stratigraphic Relationships",
-								strLine
-									+ " not a valid entry.  Please use the builder");
+							throw new DataInputException("Stratigraphic Relationships", strLine	+ " not a valid entry.  Please use the builder");
 						}
 						strDistMod = null;
 						strDistRange = null;
 						if (strDistance.indexOf("c.") == 0) {
 							strDistMod = "c.";
-							strDistance =
-								strDistance
-									.substring(2, strDistance.length())
-									.trim();
+							strDistance = strDistance.substring(2, strDistance.length()).trim();
 						} else if (strDistance.indexOf("?") == 0) {
 							strDistMod = "?";
-							strDistance =
-								strDistance
-									.substring(1, strDistance.length())
-									.trim();
+							strDistance = strDistance.substring(1, strDistance.length()).trim();
 						}
 						if (strDistance.indexOf("-") >= 0) {
-							strDistance =
-								strDistance
-									.substring(0, strDistance.indexOf("-"))
-									.trim();
-							strDistRange =
-								strDistance
-									.substring(
-										strDistance.indexOf("-") + 1,
-										strDistance.length())
-									.trim();
+							strDistance = strDistance.substring(0, strDistance.indexOf("-")).trim();
+							strDistRange = strDistance.substring(strDistance.indexOf("-") + 1, strDistance.length()).trim();
 						}
 						strDistance = strDistance.trim();
 						try {
@@ -623,27 +473,14 @@ public class SampPropRecordDE extends RecordDE {
 								strR.setDistanceRange(new Double(strDistRange));
 							stratRel.add(strR);
 						} catch (Exception e) {
-							throw new DataInputException(
-								"Stratigraphic Relationships",
-								strLine
-									+ " is invalid.  Please use the builder");
+							throw new DataInputException("Stratigraphic Relationships",	strLine + " is invalid.  Please use the builder");
 						}
-						value =
-							value
-								.substring(
-									value.indexOf("\n") + 1,
-									value.length())
-								.trim();
+						value =	value.substring(value.indexOf("\n") + 1, value.length()).trim();
 					}
 					break;
 				case DIP :
-					if (!FREDUtils.isNumeric(value)
-						|| Integer.parseInt(value) < 0
-						|| Integer.parseInt(value) > 90)
-						throw new DataInputException(
-							"Dip",
-							value
-								+ " is not valid.  Dip must be numeric and between 0 and 90");
+					if (!FREDUtils.isNumeric(value) || Integer.parseInt(value) < 0 || Integer.parseInt(value) > 90)
+						throw new DataInputException("Dip",	value + " is not valid.  Dip must be numeric and between 0 and 90");
 					break;
 				case DIP_DIRECTION :
 					if (!(value.equals("N")
@@ -654,104 +491,52 @@ public class SampPropRecordDE extends RecordDE {
 						|| value.equals("SW")
 						|| value.equals("W")
 						|| value.equals("NW")))
-						throw new DataInputException(
-							"Dip Direction",
-							value + " is not a valid option");
+						throw new DataInputException("Dip Direction", value + " is not a valid option");
 					break;
 				case STRIKE :
 					if (!FREDUtils.isNumeric(value)
 						|| Integer.parseInt(value) < 0
 						|| Integer.parseInt(value) > 360)
-						throw new DataInputException(
-							"Strike",
-							value
-								+ " is not valid.  Strike must be numeric and between 0 and 360");
+						throw new DataInputException("Strike", value + " is not valid.  Strike must be numeric and between 0 and 360");
 					break;
 				case FACING :
-					if (!(value.equals("Normal")
-						|| value.equals("Overturned")))
-						throw new DataInputException(
-							"Facing",
-							value + " is not a valid option");
+					if (!(value.equals("Normal") || value.equals("Overturned")))
+						throw new DataInputException("Facing", value + " is not a valid option");
 					break;
 				case GRAIN_SIZE_P :
 				case GRAIN_SIZE_S :
-					DataEntryUtils.parseDropDownID(
-						"Grainsize",
-						"SELECT * FROM Lookup WHERE Lookup_ID = "
-							+ value
-							+ " AND FieldName = 'GrainSize'",
-						state);
+					DataEntryUtils.parseDropDownID("Grainsize", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'GrainSize'",	state);
 					break;
 				case GS_COMP :
 					if (!(value.equals("Y") || value.equals("N")))
-						throw new DataInputException(
-							"GS Comparator",
-							value + " is not a valid option");
+						throw new DataInputException("GS Comparator", value + " is not a valid option");
 					break;
 				case BEDDING_THICKNESS :
-					DataEntryUtils.parseDropDownID(
-						"Bedding Thickness",
-						"SELECT * FROM Lookup WHERE Lookup_ID = "
-							+ value
-							+ " AND FieldName = 'BedThick'",
-						state);
+					DataEntryUtils.parseDropDownID("Bedding Thickness", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'BedThick'", state);
 					break;
 				case BEDDING_P :
 				case BEDDING_S :
-					DataEntryUtils.parseDropDownID(
-						"Bedding",
-						"SELECT * FROM Lookup WHERE Lookup_ID = "
-							+ value
-							+ " AND FieldName = 'Bedding'",
-						state);
+					DataEntryUtils.parseDropDownID("Bedding", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'Bedding'", state);
 					break;
 				case WEATHERING :
-					DataEntryUtils.parseDropDownID(
-						"Weathering",
-						"SELECT * FROM Lookup WHERE Lookup_ID = "
-							+ value
-							+ " AND FieldName = 'Weathering'",
-						state);
+					DataEntryUtils.parseDropDownID("Weathering", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'Weathering'", state);
 					break;
 				case HARDNESS :
-					DataEntryUtils.parseDropDownID(
-						"Hardness",
-						"SELECT * FROM Lookup WHERE Lookup_ID = "
-							+ value
-							+ " AND FieldName = 'Hardness'",
-						state);
+					DataEntryUtils.parseDropDownID("Hardness", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'Hardness'", state);
 					break;
 				case CARBONATE :
-					DataEntryUtils.parseDropDownID(
-						"Carbonate",
-						"SELECT * FROM Lookup WHERE Lookup_ID = "
-							+ value
-							+ " AND FieldName = 'Carbonate'",
-						state);
+					DataEntryUtils.parseDropDownID("Carbonate", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'Carbonate'", state);
 					break;
 				case COLOUR_MOD :
-					DataEntryUtils.parseDropDownID(
-						"Shade",
-						"SELECT * FROM Lookup WHERE Lookup_ID = "
-							+ value
-							+ " AND FieldName = 'ColourMod'",
-						state);
+					DataEntryUtils.parseDropDownID("Shade", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'ColourMod'", state);
 					break;
 				case COLOUR_P :
 				case COLOUR_S :
-					DataEntryUtils.parseDropDownID(
-						"Colour",
-						"SELECT * FROM Lookup WHERE Lookup_ID = "
-							+ value
-							+ " AND FieldName = 'RockColour'",
-						state);
+					DataEntryUtils.parseDropDownID("Colour", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'RockColour'", state);
 					break;
 				case WET :
 					if (!(value.equals("Wet") || value.equals("Dry")))
-						throw new DataInputException(
-							"Wet",
-							value + " is not a valid option");
+						throw new DataInputException("Wet", value + " is not a valid option");
 					break;
 				case SED_FEATURES :
 					sedFeat = new Vector();
@@ -760,23 +545,12 @@ public class SampPropRecordDE extends RecordDE {
 						sFeat = new SedFeature();
 						if (value.indexOf(";") == -1)
 							value += ";";
-						if (value.indexOf("*") != -1
-							&& value.indexOf("*") < value.indexOf(";")) {
-							rs =
-								conn.executeQuery(
-									"SELECT Lookup_ID FROM Lookup WHERE Name = '"
-										+ value
-											.substring(0, value.indexOf("*"))
-											.trim()
+						if (value.indexOf("*") != -1 && value.indexOf("*") < value.indexOf(";")) {
+							rs = conn.executeQuery("SELECT Lookup_ID FROM Lookup WHERE Name = '" + value.substring(0, value.indexOf("*")).trim()
 										+ "' AND FieldName = 'SedFeature'");
 							sFeat.setAbundant("Y");
 						} else {
-							rs =
-								conn.executeQuery(
-									"SELECT Lookup_ID FROM Lookup WHERE Name = '"
-										+ value
-											.substring(0, value.indexOf(";"))
-											.trim()
+							rs = conn.executeQuery("SELECT Lookup_ID FROM Lookup WHERE Name = '" + value.substring(0, value.indexOf(";")).trim()
 										+ "' AND FieldName = 'SedFeature'");
 						}
 						try {
@@ -784,24 +558,14 @@ public class SampPropRecordDE extends RecordDE {
 							sFeat.setSedFeatureId(new Integer(rs.getInt(1)));
 							sedFeat.add(sFeat);
 						} catch (Exception e) {
-							throw new DataInputException(
-								"Additional Features",
-								"Invalid");
+							throw new DataInputException("Additional Features", "Invalid");
 						}
-						value =
-							value
-								.substring(
-									value.indexOf(";") + 1,
-									value.length())
-								.trim();
+						value = value.substring(value.indexOf(";") + 1,	value.length()).trim();
 					}
 					break;
 				case DEP_ENVIRONMENT_1 :
-					if (!(value.equals("Marine")
-						|| value.equals("Non-marine")))
-						throw new DataInputException(
-							"Deposition Environment",
-							value + " is not a valid option");
+					if (!(value.equals("Marine") || value.equals("Non-marine")))
+						throw new DataInputException("Deposition Environment", value + " is not a valid option");
 					if (getField(DEP_ENVIRONMENT_2) != null) {
 						depEnv = value + ": " + getField(DEP_ENVIRONMENT_2);
 					} else {
@@ -823,7 +587,7 @@ public class SampPropRecordDE extends RecordDE {
 		}
 	}
 
-	protected void resetHiddenField(int field) {
+	private void resetHiddenField(int field) {
 		switch (field) {
 			case COLLECTION_DATE :
 				collDate = null;
@@ -863,12 +627,61 @@ public class SampPropRecordDE extends RecordDE {
 		}
 	}
 
+	protected String getFieldForHTML(int field) {
+		if (getTempField(field) != null) {
+			return getTempField(field);
+		}
+		return getField(field);
+	}
+
+	public void makeNavPanelHTML(Writer out) throws IOException {
+		out.write("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
+		out.write("<tr><td colspan='2' align='center'><img src='images/drill.gif' height='20' width='20' /></td></tr>");
+		out.write("<tr><td colspan='2' align='center' class='heading'>Sample</td></tr>\n");
+		out.write("<tr><td>&nbsp;</td></tr>");
+		//out.write("<tr><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
+		//if (record != null) out.write("&RecID=" + record.getRecordID());
+		//out.write("&SampID=" + sample.getSampleID() + "&RecType=SMP'><img src='images/load.gif' height='20' width='20' border='0' alt='Copy From' /></a>&nbsp;&nbsp;</td><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
+		//if (record != null) out.write("&RecID=" + record.getRecordID());
+		//out.write("&SampID=" + sample.getSampleID() + "&RecType=SMP' class='heading'>Copy From</a></td></tr>");
+		out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
+		if (folder.isAllowedSubmitLocalities())
+			out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Submit\";form1.submit();'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database' /></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick='form1.SaveType.value=\"Submit\";form1.submit();' class='boldlink'>Submit</a></td></tr>\n");
+		out.write("<tr><td><a href='javascript:history.back();'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a>&nbsp;&nbsp;</td><td><a href='javascript:history.back();' class='heading'>Quit</a></td></tr>");
+		out.write("</table>");
+	}
+
 	public void makeDataEntryHTML(Writer out)
 		throws IOException, SQLException {
 		ComboDescriptor cd;
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		if (!outcropSamp)
-			super.makeDataEntryHTML(out);
+
+		if (!outcropSamp) {
+			try {
+				out.write("<tr><td class='heading'>Sample Name</td><td></td><td class='heading'>" + sample.getAsString(Sample.SAMPLE_NAME));
+				out.write("<br>" + FREDUtils.noNulls(sample.getAsString(Sample.FEATURE_NAME)) + ": " + FREDUtils.noNulls(sample.getAsString(Sample.DRILLHOLE_DEPTH)));
+			} catch (Exception e) {	}
+			out.write("</td>");
+			try {
+				out.write("<td><a href='new_sample.jsp?FeatID=" + sample.getAsString(Sample.FEATURE_ID) + "&SampID=" + sample.getSampleID() + "&FoldID=" + sample.getAsString(Sample.FEATURE_WORKING_FOLDER_ID) + "'><img src='images/edit.gif' width='20' height='20' border='0' alt='Edit' /></a></td>");
+			} catch (Exception e) {}
+			out.write("</tr>\n");
+		}
+
+		out.write("<tr><td class='heading' colspan='2'>Security Setting</td><td>");
+		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
+		cd.name = "SecType";
+		if (getField(SECURITY_TYPE) != null) {
+			cd.selected = getFieldForHTML(SECURITY_TYPE);
+		} else {
+			cd.selected = "21";
+		}
+		cd.orderBy = "Lookup_ID";
+		cd.join = "FieldName = 'SecurityClass'";
+		HTMLUtils.makeDropBox(out, conn, cd);
+		out.write("</td></tr>\n");
+		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
+
 		out.write(
 			"<tr><td class='heading'>Collection Date</td><td></td><td><input type='text' name='CollDate' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(COLLECTION_DATE))
@@ -1013,45 +826,21 @@ public class SampPropRecordDE extends RecordDE {
 			"<tr><td></td><td class='smallheading'>Dip Dirn.</td><td><select name='DipDir'>\n<option value='' "
 				+ ((getFieldForHTML(DIP_DIRECTION) == null) ? " selected" : "")
 				+ ">-- Choose --</option>\n<option value='N' "
-				+ ((getFieldForHTML(DIP_DIRECTION) != null
-					&& getFieldForHTML(DIP_DIRECTION).equals("N"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("N")) ? " selected" : "")
 				+ ">North</option>\n<option value='NE' "
-				+ ((getFieldForHTML(DIP_DIRECTION) != null
-					&& getFieldForHTML(DIP_DIRECTION).equals("NE"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("NE")) ? " selected" : "")
 				+ ">North-East</option>\n<option value='E' "
-				+ ((getFieldForHTML(DIP_DIRECTION) != null
-					&& getFieldForHTML(DIP_DIRECTION).equals("E"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("E")) ? " selected" : "")
 				+ ">East</option>\n<option value='SE' "
-				+ ((getFieldForHTML(DIP_DIRECTION) != null
-					&& getFieldForHTML(DIP_DIRECTION).equals("SE"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("SE")) ? " selected" : "")
 				+ ">South-East</option><option value='S' "
-				+ ((getFieldForHTML(DIP_DIRECTION) != null
-					&& getFieldForHTML(DIP_DIRECTION).equals("S"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("S")) ? " selected"	: "")
 				+ ">South</option>\n<option value='SW' "
-				+ ((getFieldForHTML(DIP_DIRECTION) != null
-					&& getFieldForHTML(DIP_DIRECTION).equals("SW"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("SW")) ? " selected" : "")
 				+ ">South-West</option>\n<option value='W' "
-				+ ((getFieldForHTML(DIP_DIRECTION) != null
-					&& getFieldForHTML(DIP_DIRECTION).equals("W"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("W")) ? " selected" : "")
 				+ ">West</option>\n<option value='NW' "
-				+ ((getFieldForHTML(DIP_DIRECTION) != null
-					&& getFieldForHTML(DIP_DIRECTION).equals("NW"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("NW")) ? " selected" : "")
 				+ ">North-West</option>\n</select></td></tr>\n");
 		out.write(
 			"<tr><td></td><td class='smallheading'>Strike</td><td><input type='text' name='Strike' size='4' value='"
@@ -1061,21 +850,13 @@ public class SampPropRecordDE extends RecordDE {
 			"<tr><td></td><td class='smallheading'>Facing</td><td><select name='Facing'><option value='' "
 				+ ((getFieldForHTML(FACING) == null) ? " selected" : "")
 				+ ">-- Choose --</option><option value='Normal' "
-				+ ((getFieldForHTML(FACING) != null
-					&& getFieldForHTML(FACING).equals("Normal"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(FACING) != null && getFieldForHTML(FACING).equals("Normal")) ? " selected" : "")
 				+ ">Normal</option><option value='Overturned' "
-				+ ((getFieldForHTML(FACING) != null
-					&& getFieldForHTML(FACING).equals("Overturned"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(FACING) != null && getFieldForHTML(FACING).equals("Overturned")) ? " selected" : "")
 				+ ">Overturned</option></select></td></tr>\n");
-		out.write(
-			"<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
+		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
 
-		out.write(
-			"<tr><td class='heading'>Grain Size</td><td class='smallheading'>Pri.</td><td>");
+		out.write("<tr><td class='heading'>Grain Size</td><td class='smallheading'>Pri.</td><td>");
 		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Code || ': ' || Name");
 		cd.name = "GrainSizeP";
 		cd.prompt = "-- Choose --";
@@ -1095,15 +876,9 @@ public class SampPropRecordDE extends RecordDE {
 		out.write("</td></tr>\n");
 		out.write(
 			"<tr><td></td><td class='smallheading'>Comp. Used</td><td><select name='GSComp'><option value='' "
-				+ ((getFieldForHTML(GS_COMP) == null) ? " selected" : "")
-				+ ">-- Choose --</option><option value='Y' "
-				+ ((getFieldForHTML(GS_COMP) != null && getFieldForHTML(GS_COMP).equals("Y"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(GS_COMP) == null) ? " selected" : "") + ">-- Choose --</option><option value='Y' " + ((getFieldForHTML(GS_COMP) != null && getFieldForHTML(GS_COMP).equals("Y")) ? " selected" : "")
 				+ ">Yes</option><option value='N' "
-				+ ((getFieldForHTML(GS_COMP) != null && getFieldForHTML(GS_COMP).equals("N"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(GS_COMP) != null && getFieldForHTML(GS_COMP).equals("N")) ? " selected" : "")
 				+ ">No</option></select></td></tr>\n");
 		out.write(
 			"<tr><td class='heading'>Stratification</td><td class='smallheading'>Thickness</td><td>");
@@ -1159,8 +934,7 @@ public class SampPropRecordDE extends RecordDE {
 		cd.join = "FieldName = 'Carbonate'";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 		out.write("</td></tr>\n");
-		out.write(
-			"<tr><td class='heading'>Colour</td><td class='smallheading'>Shade</td><td>");
+		out.write("<tr><td class='heading'>Colour</td><td class='smallheading'>Shade</td><td>");
 		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Code || ': ' || Name");
 		cd.name = "ColMod";
 		cd.prompt = "-- Choose --";
@@ -1188,15 +962,9 @@ public class SampPropRecordDE extends RecordDE {
 		out.write("</td></tr>\n");
 		out.write(
 			"<tr><td></td><td class='smallheading'>Wet/Dry</td><td><select name='Wet'><option value='' "
-				+ ((getFieldForHTML(WET) == null) ? " selected" : "")
-				+ ">-- Choose --</option><option value='Wet' "
-				+ ((getFieldForHTML(WET) != null && getFieldForHTML(WET).equals("Wet"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(WET) == null) ? " selected" : "") + ">-- Choose --</option><option value='Wet' " + ((getFieldForHTML(WET) != null && getFieldForHTML(WET).equals("Wet")) ? " selected" : "")
 				+ ">Wet</option><option value='Dry' "
-				+ ((getFieldForHTML(WET) != null && getFieldForHTML(WET).equals("Dry"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(WET) != null && getFieldForHTML(WET).equals("Dry")) ? " selected" : "")
 				+ ">Dry</option></select></td></tr>\n");
 		out.write(
 			"<tr><td class='heading' colspan='2'>Additional Features</td><td><input type='text' name='SedFeat' size='40' value='"
@@ -1206,15 +974,9 @@ public class SampPropRecordDE extends RecordDE {
 			"<tr><td class='heading' colspan='2'>Inferred Environment</td><td><select name='DepEnv1'><option value='' "
 				+ ((getFieldForHTML(DEP_ENVIRONMENT_1) == null) ? " selected" : "")
 				+ ">-- Choose --</option><option value='Marine' "
-				+ ((getFieldForHTML(DEP_ENVIRONMENT_1) != null
-					&& getFieldForHTML(DEP_ENVIRONMENT_1).equals("Marine"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(DEP_ENVIRONMENT_1) != null && getFieldForHTML(DEP_ENVIRONMENT_1).equals("Marine")) ? " selected" : "")
 				+ ">Marine</option><option value='Non-marine' "
-				+ ((getFieldForHTML(DEP_ENVIRONMENT_1) != null
-					&& getFieldForHTML(DEP_ENVIRONMENT_1).equals("Non-marine"))
-					? " selected"
-					: "")
+				+ ((getFieldForHTML(DEP_ENVIRONMENT_1) != null && getFieldForHTML(DEP_ENVIRONMENT_1).equals("Non-marine")) ? " selected" : "")
 				+ ">Non-marine</option></select></td></tr>\n");
 		out.write(
 			"<tr><td></td><td></td><td><textarea name='DepEnv2' cols='40' rows='3'>"
@@ -1228,116 +990,204 @@ public class SampPropRecordDE extends RecordDE {
 			"<tr><td class='heading' colspan='2'>Correspondence</td><td><textarea name='Corr' cols='40' rows='3'>"
 				+ FREDUtils.noNulls(getFieldForHTML(CORRESPONDENCE))
 				+ "</textarea></td></tr>\n");
-		if (!outcropSamp)
-			super.makeEndBitHTML(out);
+		if (!outcropSamp) {
+			out.write("<table border='0' cellpadding='0' cellspacing='2'>\n");
+			out.write("<tr><td>&nbsp;</td></tr>\n");
+			out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
+			if (folder.isAllowedSubmitLocalities())
+				out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Submit\";form1.submit();'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database'/></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick='form1.SaveType.value=\"Submit\";form1.submit();' class='boldlink'>Submit</a></td></tr>\n");
+			out.write("</table>\n");
+		}
 	}
 
-	public int save()
-		throws InvalidCredentialsException, SQLException, IOException {
+	public int save() throws InvalidCredentialsException, SQLException, IOException {
+		if (featureID == -1)
+			throw new InvalidCredentialsException();
 		if (!savedFlag) {
+			int sampleID;
 			DBConnection conn = FREDUtils.getFREDConnection(state);
+			ResultSet rs;
 			conn.getConnection().setAutoCommit(false);
 			try {
-				super.save();
-				conn.executeUpdate(
-					"DELETE FROM Sample_Property WHERE Record_ID = "
-						+ record.getRecordID());
-				//Create SAMPLE_PROPERTY entry
-				conn.executeUpdate(
-					"INSERT INTO Sample_Property (Record_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage_ID, Known_Stage_ID, Column_Map, Dip, Dip_Direction, Strike, Facing, Primary_Grainsize_ID, Secondary_Grainsize_ID, Comparator_Used, Bed_Thick_ID, Primary_Bedding_ID, Secondary_Bedding_ID, Weathering_ID, Hardness_ID, Carbonate_ID, Colour_Modifier_ID, Primary_Colour_ID, Secondary_Colour_ID, Wet, Deposition_Env, Rock_Nature, Correspondence) VALUES ("
-						+ record.getRecordID()
-						+ ((collDate != null)
-							? ", TO_DATE('"
-								+ collDate.getDateString()
-								+ "'), "
-								+ JspUtils.sqlEscape(collDate.getDateRounding())
-							: ", NULL, NULL")
-						+ ", "
-						+ JspUtils.sqlEscape(getField(STRAT_NAME))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(FOSSILS_IN_PLACE))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(NOT_COLLECTED))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(SIGNIFICANCE_COMMENTS))
-						+ ", "
-						+ JspUtils.sqlEscape(
-							DataEntryUtils.getStageID(
-								getField(INF_AGE_START),
-								getField(INF_START_MOD),
-								getField(INF_AGE_STOP),
-								getField(INF_STOP_MOD),
-								state))
-						+ ", "
-						+ JspUtils.sqlEscape(
-							DataEntryUtils.getStageID(
-								getField(KNW_AGE_START),
-								getField(KNW_START_MOD),
-								getField(KNW_AGE_STOP),
-								getField(KNW_STOP_MOD),
-								state))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(COLUMN_MAP))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(DIP))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(DIP_DIRECTION))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(STRIKE))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(FACING))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(GRAIN_SIZE_P))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(GRAIN_SIZE_S))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(GS_COMP))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(BEDDING_THICKNESS))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(BEDDING_P))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(BEDDING_S))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(WEATHERING))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(HARDNESS))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(CARBONATE))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(COLOUR_MOD))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(COLOUR_P))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(COLOUR_S))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(WET))
-						+ ", "
-						+ JspUtils.sqlEscape(depEnv)
-						+ ", "
-						+ JspUtils.sqlEscape(getField(ROCK_NATURE))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(CORRESPONDENCE))
-						+ ")");
+				if (sample == null) {
+					if (!folder.isAllowedCreateLocalities())
+						throw new InvalidCredentialsException();
+					if (auditID == -1) {	
+					//create new AUDIT record
+						rs = conn.executeQuery("SELECT Audit_Seq.NEXTVAL FROM DUAL");
+						rs.next();
+						auditID = rs.getInt(1);
+						conn.executeUpdate(
+							"INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Comments, Working_Folder_ID, Security_Class_ID) VALUES ("
+								+ auditID
+								+ ", 'working', "
+								+ user.getPersonId()
+								+ ", SYSDATE, "
+								+ JspUtils.sqlEscape(fields[WORKING_COMMENTS])
+								+ ", "
+								+ folder.getFolderID()
+								+ ", " 
+								+ ((secClassID != null) ? secClassID.toString() : "4") 
+								+ ")");
+					}
+					//create new SAMPLE record
+					rs = conn.executeQuery("SELECT Sample_Seq.NEXTVAL FROM DUAL");
+					rs.next();
+					sampleID = rs.getInt(1);
+					conn.executeUpdate(
+						"INSERT INTO Sample (Sample_ID, Feature_ID, Audit_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage_ID, Known_Stage_ID, Column_Map, Dip, Dip_Direction, Strike, Facing, Primary_Grainsize_ID, Secondary_Grainsize_ID, Comparator_Used, Bed_Thick_ID, Primary_Bedding_ID, Secondary_Bedding_ID, Weathering_ID, Hardness_ID, Carbonate_ID, Colour_Modifier_ID, Primary_Colour_ID, Secondary_Colour_ID, Wet, Deposition_Env, Rock_Nature, Correspondence) VALUES ("
+							+ sampleID
+							+ ", "
+							+ auditID
+							+ ((collDate != null) ? ", TO_DATE('" + collDate.getDateString() + "'), " + JspUtils.sqlEscape(collDate.getDateRounding()) : ", NULL, NULL")
+							+ ", "
+							+ JspUtils.sqlEscape(getField(STRAT_NAME))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(FOSSILS_IN_PLACE))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(NOT_COLLECTED))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(SIGNIFICANCE_COMMENTS))
+							+ ", "
+							+ JspUtils.sqlEscape(DataEntryUtils.getStageID(getField(INF_AGE_START), getField(INF_START_MOD), getField(INF_AGE_STOP), getField(INF_STOP_MOD), state))
+							+ ", "
+							+ JspUtils.sqlEscape(DataEntryUtils.getStageID(getField(KNW_AGE_START), getField(KNW_START_MOD), getField(KNW_AGE_STOP), getField(KNW_STOP_MOD), state))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(COLUMN_MAP))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(DIP))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(DIP_DIRECTION))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(STRIKE))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(FACING))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(GRAIN_SIZE_P))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(GRAIN_SIZE_S))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(GS_COMP))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(BEDDING_THICKNESS))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(BEDDING_P))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(BEDDING_S))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(WEATHERING))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(HARDNESS))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(CARBONATE))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(COLOUR_MOD))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(COLOUR_P))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(COLOUR_S))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(WET))
+							+ ", "
+							+ JspUtils.sqlEscape(depEnv)
+							+ ", "
+							+ JspUtils.sqlEscape(getField(ROCK_NATURE))
+							+ ", "
+							+ JspUtils.sqlEscape(getField(CORRESPONDENCE))
+							+ ")");
+				} else { // edit
+					sampleID = sample.getSampleID();
+					if ((!FREDUtils.hasMasterfileSampleRights(user, String.valueOf(sampleID), state) && sample.getAsString(Sample.SAMPLE_STATUS).equals("approved")) || !folder.isAllowedEditLocalities())
+						throw new InvalidCredentialsException();
+					//Update AUDIT
+					conn.executeUpdate(
+						"UPDATE Audit_Table SET Modified_By_ID = "
+							+ user.getPersonId()
+							+ ", Modified_Date = SYSDATE, Working_Comments = "
+							+ JspUtils.sqlEscape(fields[WORKING_COMMENTS])
+							+ ", Security_Class_ID = "
+							+ secClassID.toString()
+							+ " WHERE Audit_ID = "
+							+ auditID);
+					//Update SAMPLE
+					conn.executeUpdate(
+						"UPDATE Sample SET Collection_Date = " 
+							+ ((collDate != null) ? "TO_DATE('" + collDate.getDateString() + "')" : "NULL")
+							+ ", Date_Rounding = "
+							+ ((collDate != null) ? JspUtils.sqlEscape(collDate.getDateRounding()) : "NULL")
+							+ ", Strat_Unit = "
+							+ JspUtils.sqlEscape(getField(STRAT_NAME))
+							+ ", In_Place = "
+							+ JspUtils.sqlEscape(getField(FOSSILS_IN_PLACE))
+							+ ", Not_Collected = "
+							+ JspUtils.sqlEscape(getField(NOT_COLLECTED))
+							+ ", Significance = "
+							+ JspUtils.sqlEscape(getField(SIGNIFICANCE_COMMENTS))
+							+ ", Inferred_Stage_ID = "
+							+ JspUtils.sqlEscape(DataEntryUtils.getStageID(getField(INF_AGE_START), getField(INF_START_MOD), getField(INF_AGE_STOP), getField(INF_STOP_MOD), state))
+							+ ", Known_Stage_ID = "
+							+ JspUtils.sqlEscape(DataEntryUtils.getStageID(getField(KNW_AGE_START), getField(KNW_START_MOD), getField(KNW_AGE_STOP), getField(KNW_STOP_MOD), state))
+							+ ", Column_Map = "
+							+ JspUtils.sqlEscape(getField(COLUMN_MAP))
+							+ ", Dip = "
+							+ JspUtils.sqlEscape(getField(DIP))
+							+ ", Dip_Direction = "
+							+ JspUtils.sqlEscape(getField(DIP_DIRECTION))
+							+ ", Strike = "
+							+ JspUtils.sqlEscape(getField(STRIKE))
+							+ ", Facing = "
+							+ JspUtils.sqlEscape(getField(FACING))
+							+ ", Primary_Grainsize_ID = "
+							+ JspUtils.sqlEscape(getField(GRAIN_SIZE_P))
+							+ ", Secondary_Grainsize_ID = "
+							+ JspUtils.sqlEscape(getField(GRAIN_SIZE_S))
+							+ ", Comparator_Used = "
+							+ JspUtils.sqlEscape(getField(GS_COMP))
+							+ ", Bed_Thick_ID = "
+							+ JspUtils.sqlEscape(getField(BEDDING_THICKNESS))
+							+ ", Primary_Bedding_ID = "
+							+ JspUtils.sqlEscape(getField(BEDDING_P))
+							+ ", Secondary_Bedding_ID = "
+							+ JspUtils.sqlEscape(getField(BEDDING_S))
+							+ ", Weathering_ID = "
+							+ JspUtils.sqlEscape(getField(WEATHERING))
+							+ ", Hardness_ID = "
+							+ JspUtils.sqlEscape(getField(HARDNESS))
+							+ ", Carbonate_ID = "
+							+ JspUtils.sqlEscape(getField(CARBONATE))
+							+ ", Colour_Modifier_ID = "
+							+ JspUtils.sqlEscape(getField(COLOUR_MOD))
+							+ ", Primary_Colour_ID = "
+							+ JspUtils.sqlEscape(getField(COLOUR_P))
+							+ ", Secondary_Colour_ID = "
+							+ JspUtils.sqlEscape(getField(COLOUR_S))
+							+ ", Wet = "
+							+ JspUtils.sqlEscape(getField(WET))
+							+ ", Deposition_Env = "
+							+ JspUtils.sqlEscape(depEnv)
+							+ ", Rock_Nature = "
+							+ JspUtils.sqlEscape(getField(ROCK_NATURE))
+							+ ", Correspondence = "
+							+ JspUtils.sqlEscape(getField(CORRESPONDENCE))
+							+ " WHERE Sample_ID = " + sampleID);
+				}
+
 				//Create COLLECTORS entries
+				conn.executeUpdate("DELETE FROM Collector WHERE Sample_ID = " + sampleID);
 				if (collectors != null) {
 					for (Iterator i = collectors.iterator(); i.hasNext();) {
-						conn.executeUpdate(
-							"INSERT INTO Collector (Record_ID, Person_ID) VALUES ("
-								+ record.getRecordID()
-								+ ", "
-								+ (Integer) i.next()
-								+ ")");
+						conn.executeUpdate("INSERT INTO Collector (Sample_ID, Person_ID) VALUES (" + sampleID + ", " + (Integer) i.next() + ")");
 					}
 				}
 				//Create SENT TO entries
+				conn.executeUpdate("DELETE FROM Sent_To WHERE Sample_ID = " + sampleID);
 				if (sentTo != null) {
 					for (Iterator i = sentTo.iterator(); i.hasNext();) {
 						SentTo sT = (SentTo) i.next();
 						if (sT.getFossilGroupID() != null)
 							conn.executeUpdate(
-								"INSERT INTO Sent_To (Record_ID, Fossil_Group_ID, Person_ID, Lab_ID, Comments) VALUES ("
-									+ record.getRecordID()
+								"INSERT INTO Sent_To (Sample_ID, Fossil_Group_ID, Person_ID, Lab_ID, Comments) VALUES ("
+									+ sampleID
 									+ ", "
 									+ sT.getFossilGroupID()
 									+ ", "
@@ -1350,13 +1200,14 @@ public class SampPropRecordDE extends RecordDE {
 					}
 				}
 				//Create RELATIONSHIP entries
+				conn.executeUpdate("DELETE FROM Relationship WHERE Sample_ID = " + sampleID);
 				if (prevSamp != null) {
 					for (Iterator i = prevSamp.iterator(); i.hasNext();) {
 						Relationship rel = (Relationship) i.next();
 						if (rel.getRelatedFeatureID() != null)
 							conn.executeUpdate(
-								"INSERT INTO Relationship (Record_ID, Relationship_Type, Relation_Type_ID, Related_Feature_ID) VALUES ("
-									+ record.getRecordID()
+								"INSERT INTO Relationship (Sample_ID, Relationship_Type, Relation_Type_ID, Related_Feature_ID) VALUES ("
+									+ sampleID
 									+ ", 'Sample', 231, "
 									+ rel.getRelatedFeatureID()
 									+ ")");
@@ -1367,8 +1218,8 @@ public class SampPropRecordDE extends RecordDE {
 					for (Iterator i = sampRel.iterator(); i.hasNext();) {
 						Relationship rel = (Relationship) i.next();
 						conn.executeUpdate(
-							"INSERT INTO Relationship (Record_ID, Relationship_Type, Relation_Type_ID, Distance, Distance_Range, Distance_Mod, Related_Feature_ID) VALUES ("
-								+ record.getRecordID()
+							"INSERT INTO Relationship (Sample_ID, Relationship_Type, Relation_Type_ID, Distance, Distance_Range, Distance_Mod, Related_Feature_ID) VALUES ("
+								+ sampleID
 								+ ", 'Sample', "
 								+ JspUtils.sqlEscape(rel.getRelationTypeID())
 								+ ", "
@@ -1387,8 +1238,8 @@ public class SampPropRecordDE extends RecordDE {
 					for (Iterator i = stratRel.iterator(); i.hasNext();) {
 						Relationship rel = (Relationship) i.next();
 						conn.executeUpdate(
-							"INSERT INTO Relationship (Record_ID, Relationship_Type, Relation_Type_ID, Distance, Distance_Range, Distance_Mod, Strat_Unit) VALUES ("
-								+ record.getRecordID()
+							"INSERT INTO Relationship (Sample_ID, Relationship_Type, Relation_Type_ID, Distance, Distance_Range, Distance_Mod, Strat_Unit) VALUES ("
+								+ sampleID
 								+ ", 'Strat', "
 								+ JspUtils.sqlEscape(rel.getRelationTypeID())
 								+ ", "
@@ -1403,12 +1254,13 @@ public class SampPropRecordDE extends RecordDE {
 					}
 				}
 				//Create SEDIMENTARY FEATURE entries
+				conn.executeUpdate("DELETE FROM Sedimentary_Feature WHERE Sample_ID = " + sampleID);
 				if (sedFeat != null) {
 					for (Iterator i = sedFeat.iterator(); i.hasNext();) {
 						SedFeature sF = (SedFeature) i.next();
 						conn.executeUpdate(
-							"INSERT INTO Sedimentary_Feature (Record_ID, Sed_Feature_ID, Abundant) VALUES ("
-								+ record.getRecordID()
+							"INSERT INTO Sedimentary_Feature (Sample_ID, Sed_Feature_ID, Abundant) VALUES ("
+								+ sampleID
 								+ ", "
 								+ sF.getSedFeatureId()
 								+ ", "
@@ -1422,10 +1274,8 @@ public class SampPropRecordDE extends RecordDE {
 				conn.releaseStatement();
 				savedFlag = true;
 				try {
-					record = (SampPropRecord) SampPropRecord.getData(record.getRecordID(), user, state, true);
 					sample = new Sample(sample.getSampleID(), user, state, true);
-				} catch (Exception e) {
-				}
+				} catch (Exception e) {}
 			} catch (SQLException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);
@@ -1446,12 +1296,68 @@ public class SampPropRecordDE extends RecordDE {
 				throw e;
 			}
 		}
-		return record.getRecordID();
+		return sample.getSampleID();
 	}
 
-	protected void checkMandatoryFields() throws DataInputException {
+	public int getFieldCount() {
+		return fields.length;
+	}
+
+	public void setField(int field, String value) throws DataInputException, TaxonomicListException {
+		if (value != null && (value.equals("") || value.equals("-") || value.equals("null")))
+			value = null;
+		if (value != null) {
+			parseField(field, value);
+		} else {
+			resetHiddenField(field);
+		}
+		fields[field] = value;
+		savedFlag = false;
+	}
+
+	public void setTempField(int field, String value) {
+		tempFields[field] = value;	
+	}
+
+	public String getField(int field) {
+		return fields[field];
+	}
+
+	public String getTempField(int field) {
+		return tempFields[field];
+	}
+
+	public void setFieldsFromTemp() throws DataInputException, TaxonomicListException {
+		for (int i = 0; i < getFieldCount(); i++) {
+			setField(i, tempFields[i]);
+			setTempField(i, null);
+		}
+	}
+
+	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
+		if ((sample != null && sample.getAsString(Sample.SAMPLE_STATUS).equals("waiting")) || !folder.isAllowedSubmitLocalities())
+			throw new InvalidCredentialsException();
 		if (getField(COLLECTORS) == null || getField(COLLECTION_DATE) == null || getField(FOSSILS_IN_PLACE) == null)
 			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
+		save();
+		//change status & add saved record to folder
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		conn.executeUpdate("UPDATE Audit_Table SET Status = 'approved', Submitted_By_ID = "
+			+ user.getPersonId()
+			+ ", Submitted_Date = SYSDATE, Working_Folder_ID = NULL, Working_Comments = NULL WHERE Audit_ID = "
+			+ auditID);
+		conn.releaseStatement();
+		sample = new Sample(sample.getSampleID(), user, state, true);
+		return sample.getSampleID();
+	}
+
+	public void delete() throws IOException, SQLException, InvalidCredentialsException {
+		if (sample != null) {
+			DBConnection conn = FREDUtils.getFREDConnection(state);
+			conn.executeUpdate("DELETE FROM Sample WHERE Sample_ID = " + sample.getSampleID());
+			conn.executeUpdate("DELETE FROM Audit_Table WHERE Audit_ID = " + auditID);
+			conn.releaseStatement();
+		}	
 	}
 
 }

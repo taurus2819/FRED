@@ -14,7 +14,6 @@ import nz.cri.gns.fred.data.AdoptionRecord;
 import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.PaleontologyRecord;
 import nz.cri.gns.fred.data.Record;
-import nz.cri.gns.fred.data.SampPropRecord;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
@@ -36,7 +35,7 @@ public abstract class RecordDE implements DataEntryForm {
 	protected RecordDE(User user, int folderID, String recordType, PageState state) throws DataInputException, SQLException, IOException {
 		this.user = user;
 		this.state = state;
-		if (!(recordType.equals("SMP") || recordType.equals("ADO") || recordType.equals("PAL")))
+		if (!(recordType.equals("ADO") || recordType.equals("PAL")))
 			throw new DataInputException("Record Type", "Invalid value");
 		this.recordType = recordType;
 		this.folder = new Folder(folderID, user, state);		
@@ -53,9 +52,7 @@ public abstract class RecordDE implements DataEntryForm {
 			this.user = user;
 			this.state = state;
 			this.recordType = recordType;
-			if (recordType.equals("SMP")) {
-				this.record = (SampPropRecord) SampPropRecord.getData(recID, user, state, true);
-			} else if (recordType.equals("ADO")) {
+			if (recordType.equals("ADO")) {
 				this.record = (AdoptionRecord) AdoptionRecord.getData(recID, user, state, true);
 			} else if (recordType.equals("PAL")) {
 				this.record = (PaleontologyRecord) PaleontologyRecord.getData(recID, user, state, true);
@@ -148,31 +145,9 @@ public abstract class RecordDE implements DataEntryForm {
 	protected void resetHiddenField(int field) {
 	}
 
-	protected void parseAge(String stageStart, String stageStop, String fieldName) throws DataInputException {
-		try {
-			DBConnection conn = FREDUtils.getFREDConnection(state);
-			ResultSet rs = conn.executeQuery("SELECT Ta_Age_Start, Ta_Age_Stop FROM Age_View WHERE Ag_ID = " + stageStart);
-			rs.next();
-			double startStart = rs.getDouble(1);
-			double startStop = rs.getDouble(2);
-			if (stageStop != null) {
-				rs = conn.executeQuery("SELECT Ta_Age_Start, Ta_Age_Stop FROM Age_View WHERE Ag_ID = " + stageStop);
-				rs.next();
-				double stopStart = rs.getDouble(1);
-				double stopStop = rs.getDouble(2);
-				if (startStart < stopStart || startStop < stopStop) throw new DataInputException(fieldName, "Stop age younger than start age");
-			}
-		} catch (Exception e) {
-			throw new DataInputException(fieldName, "Invalid");
-		}
-	}
-
 	public void makeNavPanelHTML(Writer out) throws IOException {
 		out.write("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
-		if (recordType.equals("SMP")) {
-			out.write("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
-			out.write("<tr><td colspan='2' align='center' class='heading'>Sample Details</td></tr>\n");
-		} else if (recordType.equals("ADO")) {
+		if (recordType.equals("ADO")) {
 			out.write("<tr><td colspan='2' align='center'><img src='images/ado.gif' height='20' width='20' /></td></tr>");
 			out.write("<tr><td colspan='2' align='center' class='heading'>Adoption Record</td></tr>\n");
 		} else if (recordType.equals("PAL")) {
@@ -201,7 +176,9 @@ public abstract class RecordDE implements DataEntryForm {
 		} catch (Exception e) {	}
 		out.write("</td>");
 		try {
-			out.write("<td><a href='new_sample.jsp?FeatID=" + sample.getAsString(Sample.FEATURE_ID) + "&SampID=" + sample.getSampleID() + "&FoldID=" + sample.getAsString(Sample.FEATURE_WORKING_FOLDER_ID) + "&Type=" + recordType + "'><img src='images/edit.gif' width='20' height='20' border='0' alt='Edit' /></a></td>");
+			out.write("<td><a href='new_sample.jsp?FeatID=" + sample.getAsString(Sample.FEATURE_ID) + "&SampID=" + sample.getSampleID() + "&FoldID=" + sample.getAsString(Sample.FEATURE_WORKING_FOLDER_ID)
+					 + ((record != null) ? "&RecID=" + record.getRecordID() : "")
+					 + "&RecType=" + recordType + "'><img src='images/edit.gif' width='20' height='20' border='0' alt='Edit' /></a></td>");
 		} catch (Exception e) {}
 		out.write("</tr>\n");
 		out.write("<tr><td class='heading' colspan='2'>Working Comments<br><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'>" + FREDUtils.noNulls(getFieldForHTML(WORKING_COMMENTS)) + "</textarea></td></tr>\n");

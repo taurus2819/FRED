@@ -9,6 +9,7 @@ import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.fred.FREDUtils;
+import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
@@ -159,12 +160,15 @@ public class Sample {
 
 	private SampleData sd;
 	private PageState state;
+	private User user;
 	private boolean authenticated = false;
 
 	public Sample(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException {
 		this.sd = SampleData.getData(id, state, forceRefresh);
 		this.state = state;
-		if (!FREDUtils.isAllowedLocality(user, sd.getAsString(FEATURE_SECURITY_CLASS_ID), sd.getAsString(FEATURE_STATUS), sd.getAsString(FEATURE_ID), state)) {
+		this.user = user;
+		if (!FREDUtils.isAllowedLocality(user, sd.getAsString(FEATURE_SECURITY_CLASS_ID), sd.getAsString(FEATURE_STATUS), sd.getAsString(FEATURE_ID), state) 
+				|| !FREDUtils.isAllowedSample(user, sd.getAsString(SAMPLE_SECURITY_CLASS_ID), sd.getAsString(SAMPLE_STATUS), sd.getAsString(SAMPLE_ID), state)) {
 			authenticated = false;
 		} else {
 			authenticated = true;
@@ -179,12 +183,20 @@ public class Sample {
 		return sd.getAsInt(SAMPLE_ID);
 	}
 
+	public int getFeatureID() {
+		return sd.getAsInt(FEATURE_ID);
+	}
+
 	public boolean isUserAuthenticated() {
 		return authenticated;
 	}
 
 	public boolean isApprovedLocality() {
 		return (sd.getAsString(FEATURE_STATUS).equals("approved"));
+	}
+
+	public boolean isApprovedSample() {
+		return (sd.getAsString(SAMPLE_STATUS).equals("approved"));
 	}
 
 	public int getRecordCount() throws InvalidCredentialsException {
@@ -357,9 +369,14 @@ public class Sample {
 		return sd.toString();
 	}
 
-	public void editSample(String topDepth, String bottomDepth, String drillTypeID) throws IOException, SQLException {
+	public void editSample(String topDepth, String bottomDepth, String drillTypeID) throws IOException, SQLException, DataInputException {
+		if (!FREDUtils.isNumeric(topDepth) || (bottomDepth != null && !bottomDepth.equals("") && !FREDUtils.isNumeric(bottomDepth)) || (drillTypeID != null && !drillTypeID.equals("") && !FREDUtils.isNumeric(drillTypeID))) {
+			throw new DataInputException("Sample Depths", "Invalid Data");
+		}
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		conn.executeUpdate("UPDATE Sample SET Top_Depth = " + JspUtils.sqlEscape(topDepth) + ", Bottom_Depth = " + JspUtils.sqlEscape(bottomDepth) + ", Drill_Type_ID = " + JspUtils.sqlEscape(drillTypeID) + " WHERE Sample_ID = " + getSampleID());
+		conn.executeUpdate("UPDATE Audit_Table SET Modified_By_ID = " + user.getPersonId() + ", Modified_Date = SYSDATE WHERE Audit_ID = " + sd.getAsString(SAMPLE_AUDIT_ID));
+		this.sd = SampleData.getData(getSampleID(), state, true);
 	}
 
 }

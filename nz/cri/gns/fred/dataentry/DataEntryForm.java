@@ -35,7 +35,7 @@ public interface DataEntryForm {
 	public static final int BASE_HORIZON = 15;
 	public static final int SECURITY_TYPE = 16;
 	
-	//SampProp Record fields
+	//Sample fields
 	public static final int COLLECTION_DATE = 31;
 	public static final int COLLECTORS = 32;
 	public static final int STRAT_NAME= 33;

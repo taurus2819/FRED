@@ -12,14 +12,14 @@ import nz.cri.gns.jsp.PageState;
 
 public class DataEntryFormFactory {
 
-	public static LocalityDE getLocalityDataEntryForm(int id, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException {
-		Feature feature = new Feature(id, user, state);
+	public static LocalityDE getLocalityDataEntryForm(int featureID, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException {
+		Feature feature = new Feature(featureID, user, state);
 	  	if (feature.getAsString(Feature.FEATURE_TYPE).equals("Outcrop")) {
-	  		return new OutcropLocalityDE(id, user, state);
+	  		return new OutcropLocalityDE(featureID, user, state);
 	  	} else if (feature.getAsString(Feature.FEATURE_TYPE).equals("Drillhole")) {
-	  		return new DrillholeLocalityDE(id, user, state);
+	  		return new DrillholeLocalityDE(featureID, user, state);
 		} else if (feature.getAsString(Feature.FEATURE_TYPE).equals("Vertical Section")) {
-			return new VertSectLocalityDE(id, user, state);
+			return new VertSectLocalityDE(featureID, user, state);
 	  	} else {
 	  		throw new DataInputException("Feature Type", "Invalid");
 	  	}
@@ -55,23 +55,27 @@ public class DataEntryFormFactory {
 		return toLoc;
 	}
 	
-	public static RecordDE getRecordDataEntryForm(int id, User user, PageState state) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
-		Record record = Record.getData(id, user, state);
-		if (record.getAsString(Record.RECORD_TYPE).equals("SMP")) {
-			return new SampPropRecordDE(id, user, state);
-		} else if (record.getAsString(Record.RECORD_TYPE).equals("ADO")) {
-			return new AdoptionRecordDE(id, user, state);
+	public static SampleDE getSampleDataEntryForm(int sampleID, User user, PageState state) throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException  {
+		return new SampleDE(sampleID, user, state);
+	}
+	
+	public static SampleDE getSampleDataEntryForm(User user, int featureID, int folderID, PageState state) throws SQLException, IOException {
+		return new SampleDE(user, featureID, folderID, state);
+	}
+	
+	public static RecordDE getRecordDataEntryForm(int recordID, User user, PageState state) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
+		Record record = Record.getData(recordID, user, state);
+		if (record.getAsString(Record.RECORD_TYPE).equals("ADO")) {
+			return new AdoptionRecordDE(recordID, user, state);
 		} else if (record.getAsString(Record.RECORD_TYPE).equals("PAL")) {
-			return new PaleontologyRecordDE(id, user, state);
+			return new PaleontologyRecordDE(recordID, user, state);
 		} else {
 			throw new DataInputException("Feature Type", "Invalid");
 		}
 	}
 	
 	public static RecordDE getRecordDataEntryForm(String type, User user, int sampleID, int folderID, PageState state) throws SQLException, IOException, DataInputException {
-		if (type.equals("SMP")) {
-			return new SampPropRecordDE(user, sampleID, folderID, state);
-		} else if (type.equals("ADO")) {
+		if (type.equals("ADO")) {
 			return new AdoptionRecordDE(user, sampleID, folderID, state);
 		} else if (type.equals("PAL")) {
 			return new PaleontologyRecordDE(user, sampleID, folderID, state);
