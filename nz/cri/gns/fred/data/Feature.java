@@ -217,7 +217,8 @@ public class Feature {
 			String query = "SELECT s.sample_id FROM sample s, record r WHERE s.sample_id = r.sample_id(+) AND s.feature_id = ? AND s.top_depth IS NULL AND s.bottom_depth IS NULL AND s.drill_type_id IS NULL AND r.sample_id IS NULL";
 			ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(getFeatureID())});
 			if (rs.next())
-				conn.executeUpdate("DELETE FROM sample WHERE sample_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(rs.getInt(1))});	
+				conn.executeUpdate("DELETE FROM sample WHERE sample_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(rs.getInt(1))});
+			//Add new AUDIT and SAMPLE records	
 			QueryDescriptor qd = new QueryDescriptor("audit_table");
 			qd.addQueryColumn("status", Types.VARCHAR, "working");
 			qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(user.getPersonId()));

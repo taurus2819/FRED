@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.ComboDescriptor;
+import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.HTMLUtils;
+import nz.cri.gns.db.QueryDescriptor;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.AdoptionRecord;
 import nz.cri.gns.fred.data.Folder;
@@ -16,7 +19,6 @@ import nz.cri.gns.fred.data.PaleontologyRecord;
 import nz.cri.gns.fred.data.Record;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 public abstract class RecordDE implements DataEntryForm {
@@ -59,10 +61,7 @@ public abstract class RecordDE implements DataEntryForm {
 			} else {
 				throw new DataInputException("Record Type", "Invalid Value");
 			}
-			DBConnection conn = FREDUtils.getFREDConnection(state);
-			ResultSet rs = conn.executeQuery("SELECT Sample_ID FROM Record WHERE Record_ID = " + recID);
-			rs.next();
-			this.sample = new Sample(rs.getInt(1), user, state);
+			this.sample = new Sample(record.getAsInt(Record.SAMPLE_ID), user, state);
 			setField(WORKING_COMMENTS, record.getAsString(Record.WORKING_COMMENTS));
 			try {
 				setField(SECURITY_TYPE, String.valueOf(FREDUtils.getSecurityType(record.getAsInt(Record.SECURITY_CLASS_ID), user, state)));
@@ -227,49 +226,35 @@ public abstract class RecordDE implements DataEntryForm {
 			ResultSet rs;
 			if (record == null) {
 				if (!folder.isAllowedCreateLocalities()) throw new InvalidCredentialsException();
-				//create new AUDIT and RECORD records
-				rs = conn.executeQuery("SELECT Audit_Seq.NEXTVAL FROM DUAL");
-				rs.next();
-				String auditID = rs.getString(1);
-				conn.executeUpdate(
-					"INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Comments, Working_Folder_ID, Security_Class_ID) VALUES ("
-						+ auditID
-						+ ", 'working', "
-						+ user.getPersonId()
-						+ ", SYSDATE, "
-						+ JspUtils.sqlEscape(fields[WORKING_COMMENTS])
-						+ ", "
-						+ folder.getFolderID()
-						+ ", " 
-						+ ((secClassID != null) ? secClassID.toString() : "4") 
-						+ ")");
-				rs = conn.executeQuery("SELECT Record_Seq.NEXTVAL FROM DUAL");
-				rs.next();
-				int recordID = rs.getInt(1);
-				conn.executeUpdate(
-					"INSERT INTO Record (Record_ID, Sample_ID, Audit_ID) VALUES ("
-						+ recordID
-						+ ", "
-						+ sample.getSampleID()
-						+ ", "
-						+ auditID
-						+ ")");
+				//create new AUDIT record
+				QueryDescriptor qd = new QueryDescriptor("audit_table");
+				qd.addQueryColumn("status", Types.VARCHAR, "working");
+				qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
+				qd.addQueryColumn("created_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
+				qd.addQueryColumn("working_comments", Types.VARCHAR, fields[WORKING_COMMENTS]);
+				qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(folder.getFolderID()));
+				qd.addQueryColumn("security_class_id", Types.NUMERIC, ((secClassID != null) ? secClassID : new Integer(4)));
+				String auditID = DBUtils.doInsertUsingSequence(qd, "audit_id", "audit_seq", conn, true);
+				//create new RECORD record
+				qd = new QueryDescriptor("record");
+				qd.addQueryColumn("sample_id", Types.NUMERIC, new Integer(sample.getSampleID()));
+				qd.addQueryColumn("audit_id", Types.NUMERIC, new Integer(auditID));
+				String recordID = DBUtils.doInsertUsingSequence(qd, "record_id", "record_seq", conn, true);
 				try {
-					record = Record.getData(recordID, user, state, true);
+					record = Record.getData(Integer.parseInt(recordID), user, state, true);
 				} catch (Exception e) {}
 			} else { // edit
 				if ((!FREDUtils.hasMasterfileRecordRights(user, String.valueOf(record.getRecordID()), state) && record.getAsString(Record.STATUS).equals("approved")) || !folder.isAllowedEditLocalities())
 					throw new InvalidCredentialsException();
 				//Update AUDIT
-				conn.executeUpdate(
-					"UPDATE Audit_Table SET Modified_By_ID = "
-						+ user.getPersonId()
-						+ ", Modified_Date = SYSDATE, Working_Comments = "
-						+ JspUtils.sqlEscape(fields[WORKING_COMMENTS])
-						+ ", Security_Class_ID = "
-						+ secClassID.toString()
-						+ " WHERE Audit_ID = "
-						+ record.getAsString(Record.AUDIT_ID));
+				QueryDescriptor qd = new QueryDescriptor("audit_table");
+				qd.addQueryColumn("status", Types.VARCHAR, "working");
+				qd.addQueryColumn("modified_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
+				qd.addQueryColumn("modified_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
+				qd.addQueryColumn("working_comments", Types.VARCHAR, fields[WORKING_COMMENTS]);
+				qd.addQueryColumn("security_class_id", Types.NUMERIC, ((secClassID != null) ? secClassID : new Integer(4)));
+				qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(record.getAsInt(Record.AUDIT_ID)));
+				DBUtils.doUpdate(qd, "audit_id = ?", conn);
 				try {
 					record = Record.getData(record.getRecordID(), user, state, true);
 				} catch (Exception e) {}
@@ -287,19 +272,18 @@ public abstract class RecordDE implements DataEntryForm {
 			throw new InvalidCredentialsException();
 		checkMandatoryFields();
 		int recordID = save();
-		//change status, check MF & add saved record to folder
+		//change status
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		ResultSet rs =
-			conn.executeQuery(
-				"SELECT Audit_ID FROM Record WHERE Record_ID = " + recordID);
-		rs.next();
-		String auditID = rs.getString(1);
-		conn.executeUpdate(
-			"UPDATE Audit_Table SET Status = 'approved', Submitted_By_ID = "
-				+ user.getPersonId()
-				+ ", Submitted_Date = SYSDATE, Working_Folder_ID = NULL, Working_Comments = NULL WHERE Audit_ID = "
-				+ auditID);
+		QueryDescriptor qd = new QueryDescriptor("audit_table");
+		qd.addQueryColumn("status", Types.VARCHAR, "approved");
+		qd.addQueryColumn("submitted_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
+		qd.addQueryColumn("submitted_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
+		qd.addQueryColumn("working_comments", Types.VARCHAR, null);
+		qd.addQueryColumn("working_folder_id", Types.NUMERIC, null);
+		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(record.getAsInt(Record.AUDIT_ID)));
+		DBUtils.doUpdate(qd, "audit_id = ?", conn);
 		conn.releaseStatement();
+		record = Record.getData(record.getRecordID(), user, state, true);
 		return recordID;
 	}
 	
@@ -309,12 +293,7 @@ public abstract class RecordDE implements DataEntryForm {
 	public void delete() throws IOException, SQLException, InvalidCredentialsException {
 		if (record != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
-			ResultSet rs = conn.executeQuery("SELECT Audit_ID FROM Record WHERE Record_ID = " + record.getRecordID());
-			if (rs.next()) {
-				String auditID = rs.getString(1);
-				conn.executeUpdate("DELETE FROM Record WHERE Record_ID = " + record.getRecordID());
-				conn.executeUpdate("DELETE FROM Audit_Table WHERE Audit_ID = " + auditID);
-			}
+			conn.executeUpdate("DELETE FROM record WHERE record_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(record.getRecordID())});
 			conn.releaseStatement();
 		}
 	}

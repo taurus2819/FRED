@@ -2,16 +2,18 @@ package nz.cri.gns.fred.data;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Iterator;
 import java.util.Vector;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.KeyValueObject;
+import nz.cri.gns.db.QueryDescriptor;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 /**
@@ -370,12 +372,27 @@ public class Sample {
 	}
 
 	public void editSample(String topDepth, String bottomDepth, String drillTypeID) throws IOException, SQLException, DataInputException {
-		if (!FREDUtils.isNumeric(topDepth) || (bottomDepth != null && !bottomDepth.equals("") && !FREDUtils.isNumeric(bottomDepth)) || (drillTypeID != null && !drillTypeID.equals("") && !FREDUtils.isNumeric(drillTypeID))) {
+		if (bottomDepth.equals(""))
+			bottomDepth = null;
+		if (drillTypeID.equals(""))
+			drillTypeID = null;
+		if (!FREDUtils.isNumeric(topDepth) || (bottomDepth != null && !FREDUtils.isNumeric(bottomDepth)) || (drillTypeID != null && !FREDUtils.isNumeric(drillTypeID))) {
 			throw new DataInputException("Sample Depths", "Data Missing or Invalid");
 		}
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		conn.executeUpdate("UPDATE Sample SET Top_Depth = " + JspUtils.sqlEscape(topDepth) + ", Bottom_Depth = " + JspUtils.sqlEscape(bottomDepth) + ", Drill_Type_ID = " + JspUtils.sqlEscape(drillTypeID) + " WHERE Sample_ID = " + getSampleID());
-		conn.executeUpdate("UPDATE Audit_Table SET Modified_By_ID = " + user.getPersonId() + ", Modified_Date = SYSDATE WHERE Audit_ID = " + sd.getAsString(SAMPLE_AUDIT_ID));
+		QueryDescriptor qd = new QueryDescriptor("audit_table");
+		qd.addQueryColumn("modified_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
+		qd.addQueryColumn("modified_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
+		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(sd.getAsInt(Sample.SAMPLE_AUDIT_ID)));
+		DBUtils.doUpdate(qd, "audit_id = ?", conn);
+		qd = new QueryDescriptor("sample");
+		qd.addQueryColumn("top_depth", Types.NUMERIC, new Double(topDepth));
+		if (bottomDepth != null)
+			qd.addQueryColumn("bottom_depth", Types.NUMERIC, new Double(bottomDepth));
+		if (drillTypeID != null)
+			qd.addQueryColumn("drill_type_id", Types.NUMERIC, new Integer(drillTypeID));
+		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(getSampleID()));
+		DBUtils.doUpdate(qd, "sample_id = ?", conn);
 		this.sd = SampleData.getData(getSampleID(), state, true);
 	}
 

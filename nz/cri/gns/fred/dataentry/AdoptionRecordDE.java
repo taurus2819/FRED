@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -17,7 +18,6 @@ import nz.cri.gns.fred.data.AdoptionRecord;
 import nz.cri.gns.fred.data.Record;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 public class AdoptionRecordDE extends RecordDE {
@@ -39,10 +39,7 @@ public class AdoptionRecordDE extends RecordDE {
 		throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
 		super(recID, Record.ADOPTION_RECORD, user, state);
 		try {
-			setField(ADOPTION_DATE,
-				DataEntryUtils.reverseParseDate(
-					record.getAsDate(Record.ADOPTION_DATE),
-					record.getAsString(Record.ADOPTION_DATE_ROUNDING)));
+			setField(ADOPTION_DATE,	DataEntryUtils.reverseParseDate(record.getAsDate(Record.ADOPTION_DATE),	record.getAsString(Record.ADOPTION_DATE_ROUNDING)));
 			if (record.get(Record.ADOPTOR) != null) {
 				StringBuffer adoptName = new StringBuffer();
 				for (Iterator i = record.getAsVector(Record.ADOPTOR).iterator(); i.hasNext();) {
@@ -74,26 +71,15 @@ public class AdoptionRecordDE extends RecordDE {
 					while (value.length() > 0) {
 						if (value.indexOf("\n") == -1)
 							value = value + "\n";
-						rs =
-							conn.executeQuery(
-								"SELECT Person_ID FROM Person_View WHERE Name = "
-									+ JspUtils.sqlEscape(
-										value
-											.substring(0, value.indexOf("\n"))
-											.trim()));
+						String query = "SELECT person_id FROM person_view WHERE name = ?";
 						try {
+							rs = conn.executeQuery(query, new int[] {Types.VARCHAR}, new Object[] {value.substring(0, value.indexOf("\n")).trim()});
 							rs.next();
 							adoptors.add(new Integer(rs.getInt(1)));
 						} catch (Exception e) {
-							throw new DataInputException(
-								"Adoptor",
-								value.substring(0, value.indexOf("\n")).trim()
-									+ " not in database - add through builder");
+							throw new DataInputException("Adoptor",	value.substring(0, value.indexOf("\n")).trim() + " not in database - add through builder");
 						}
-						value =
-							value.substring(
-								value.indexOf("\n") + 1,
-								value.length());
+						value = value.substring(value.indexOf("\n") + 1, value.length());
 					}
 					break;
 				case ADO_AGE_START :
@@ -105,9 +91,7 @@ public class AdoptionRecordDE extends RecordDE {
 				case ADO_START_MOD :
 				case ADO_STOP_MOD :
 					if (value != null && !value.equals("?"))
-						throw new DataInputException(
-							"Adopted Age",
-							"Bad Modifier");
+						throw new DataInputException("Adopted Age",	"Bad Modifier");
 					break;
 			}
 		} catch (IOException e) {
@@ -132,16 +116,13 @@ public class AdoptionRecordDE extends RecordDE {
 		throws IOException, SQLException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		super.makeDataEntryHTML(out);
-		out.write(
-			"<tr><td class='heading'>Adoption Date</td><td></td><td><input type='text' name='AdoDate' value='"
+		out.write("<tr><td class='heading'>Adoption Date</td><td></td><td><input type='text' name='AdoDate' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(ADOPTION_DATE))
 				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Date&Field=AdoDate\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write(
-			"<tr><td class='heading'>Adoptors</td><td></td><td><textarea name='Adoptor' cols='40' rows='2'>"
+		out.write("<tr><td class='heading'>Adoptors</td><td></td><td><textarea name='Adoptor' cols='40' rows='2'>"
 				+ FREDUtils.noNulls(getFieldForHTML(ADOPTORS))
 				+ "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Adoptor\", \"Supp\", \"width=600,height=400\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write(
-			"<tr><td class='heading'>Stage Limits</td><td class='smallheading'>Adopted</td><td>\n");
+		out.write("<tr><td class='heading'>Stage Limits</td><td class='smallheading'>Adopted</td><td>\n");
 		out.write("<table border='0' cellspacing='0'><tr><td>");
 		ComboDescriptor cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
 		cd.name = "StageStart";
@@ -149,8 +130,7 @@ public class AdoptionRecordDE extends RecordDE {
 		cd.selected = getFieldForHTML(ADO_AGE_START);
 		cd.orderBy = "Ag_Name";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
-		out.write(
-			"</td><td><select name='StartMod'><option value='-' "
+		out.write("</td><td><select name='StartMod'><option value='-' "
 				+ ((getFieldForHTML(ADO_START_MOD) == null) ? " selected" : "")
 				+ "></option><option value='?' "
 				+ ((getFieldForHTML(ADO_START_MOD) != null
@@ -165,8 +145,7 @@ public class AdoptionRecordDE extends RecordDE {
 		cd.selected = getFieldForHTML(ADO_AGE_STOP);
 		cd.orderBy = "Ag_Name";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
-		out.write(
-			"</td><td class='heading'><select name='StopMod'><option value='-' "
+		out.write("</td><td class='heading'><select name='StopMod'><option value='-' "
 				+ ((getFieldForHTML(ADO_STOP_MOD) == null) ? " selected" : "")
 				+ "></option><option value='?' "
 				+ ((getFieldForHTML(ADO_STOP_MOD) != null
@@ -175,8 +154,7 @@ public class AdoptionRecordDE extends RecordDE {
 					: "")
 				+ ">?</option></select></td></tr>\n");
 		out.write("</table></td></tr>\n");
-		out.write(
-			"<tr><td class='heading' colspan='2'>Comments</td><td><textarea name='Comm' cols='40' rows='3'>"
+		out.write("<tr><td class='heading' colspan='2'>Comments</td><td><textarea name='Comm' cols='40' rows='3'>"
 				+ FREDUtils.noNulls(getFieldForHTML(ADO_COMMENTS))
 				+ "</textarea></td></tr>\n");				
 		super.makeEndBitHTML(out);
@@ -193,29 +171,23 @@ public class AdoptionRecordDE extends RecordDE {
 			conn.getConnection().setAutoCommit(false);
 			try {
 				super.save();
-				conn.executeUpdate("DELETE FROM Adoption WHERE Record_ID = " + record.getRecordID());
+				//Delete existing ADOPTION record
+				conn.executeUpdate("DELETE FROM adoption WHERE record_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(record.getRecordID())});
+				//Create new ADOPTION entry
 				String stageID = DataEntryUtils.getStageID(getField(ADO_AGE_START), getField(ADO_START_MOD), getField(ADO_AGE_STOP), getField(ADO_STOP_MOD), state);
-				//Create ADOPTION entry
-				conn.executeUpdate(
-					"INSERT INTO Adoption (Record_ID, Adoption_Date, Date_Rounding, Adopted_Stage_ID, Comments) VALUES ("
-						+ record.getRecordID()
-						+ ((adoDate != null) ? ", TO_DATE('" + adoDate.getDateString() + "'), " + JspUtils.sqlEscape(adoDate.getDateRounding())
-							: ", NULL, NULL")
-						+ ", "
-						+ JspUtils.sqlEscape(stageID)
-						+ ", "
-						+ JspUtils.sqlEscape(getField(ADO_COMMENTS))
-						+ ")");
+				String query = "INSERT INTO adoption (record_id, adoption_date, date_rounding, adopted_stage_id, comments) VALUES (?, ?, ?, ?, ?)";
+				conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.DATE, Types.VARCHAR, Types.NUMERIC, Types.VARCHAR},
+					 new Object[] {new Integer(record.getRecordID()), ((adoDate != null) ? adoDate.getDate() : null), ((adoDate != null) ? adoDate.getDateRounding() : null), ((stageID != null) ? new Integer(stageID) : null), getField(ADO_COMMENTS)});
 				//Create ADOPTORS entries
 				if (adoptors != null) {
+					query = "INSERT INTO adoptor (record_id, person_id) VALUES (?, ?)";
+					int[] types = new int[] {Types.NUMERIC, Types.NUMERIC};
+					Object[] values = new Object[2];
+					values[0] = new Integer(record.getRecordID());
 					for (Iterator i = adoptors.iterator(); i.hasNext();) {
-						conn.executeUpdate(
-							"INSERT INTO Adoptor (Record_ID, Person_ID) VALUES ("
-								+ record.getRecordID()
-								+ ", "
-								+ (Integer) i.next()
-								+ ")");
-					}
+						values[1] = (Integer) i.next();
+						conn.executeUpdate(query, types, values);
+					} 
 				}								
 				conn.getConnection().commit();
 				conn.getConnection().setAutoCommit(true);

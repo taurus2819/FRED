@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -19,7 +20,7 @@ import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.fred.data.Taxa;
 import nz.cri.gns.fred.data.TaxaGroup;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.JspUtils;
+//import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 public class PaleontologyRecordDE extends RecordDE {
@@ -30,24 +31,18 @@ public class PaleontologyRecordDE extends RecordDE {
 	private Vector taxaList;
 	private Vector badTaxaList;
 
-	public PaleontologyRecordDE(User user, int sampleID, int folderID, PageState state)
-		throws SQLException, IOException, DataInputException {
+	public PaleontologyRecordDE(User user, int sampleID, int folderID, PageState state) throws SQLException, IOException, DataInputException {
 		super(user, sampleID, folderID, Record.PALEONTOLOGY_RECORD, state);
 	}
 
-	public PaleontologyRecordDE(User user, int folderID, PageState state)
-		throws DataInputException, SQLException, IOException {
+	public PaleontologyRecordDE(User user, int folderID, PageState state) throws DataInputException, SQLException, IOException {
 		super(user, folderID, Record.PALEONTOLOGY_RECORD, state);
 	}
 
-	public PaleontologyRecordDE(int recID, User user, PageState state)
-		throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
+	public PaleontologyRecordDE(int recID, User user, PageState state) throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
 		super(recID, Record.PALEONTOLOGY_RECORD, user, state);
 		try {
-			setField(IDENTIFICATION_DATE,
-				DataEntryUtils.reverseParseDate(
-					record.getAsDate(Record.IDENTIFICATION_DATE),
-					record.getAsString(Record.IDENTIFICATION_DATE_ROUNDING)));
+			setField(IDENTIFICATION_DATE, DataEntryUtils.reverseParseDate(record.getAsDate(Record.IDENTIFICATION_DATE),	record.getAsString(Record.IDENTIFICATION_DATE_ROUNDING)));
 			if (record.get(Record.IDENTIFIER) != null) {
 				StringBuffer identName = new StringBuffer();
 				for (Iterator i = record.getAsVector(Record.IDENTIFIER).iterator(); i.hasNext();) {
@@ -56,18 +51,10 @@ public class PaleontologyRecordDE extends RecordDE {
 				}
 				setField(IDENTIFIERS, identName.toString());
 			}
-			setField(
-				IDT_AGE_START,
-				record.getAsString(Record.STAGE_LOWER_ID));
-			setField(
-				IDT_START_MOD,
-				record.getAsString(Record.STAGE_LOWER_MOD));
-			setField(
-				IDT_AGE_STOP,
-				record.getAsString(Record.STAGE_UPPER_ID));
-			setField(
-				IDT_STOP_MOD,
-				record.getAsString(Record.STAGE_UPPER_MOD));
+			setField(IDT_AGE_START,	record.getAsString(Record.STAGE_LOWER_ID));
+			setField(IDT_START_MOD,	record.getAsString(Record.STAGE_LOWER_MOD));
+			setField(IDT_AGE_STOP, record.getAsString(Record.STAGE_UPPER_ID));
+			setField(IDT_STOP_MOD, record.getAsString(Record.STAGE_UPPER_MOD));
 			setField(STAGE_COMMENTS, record.getAsString(Record.STAGE_COMMENTS));
 			setField(LAB_SECTION, record.getAsString(Record.LAB_SECTION_ID));
 			setField(LAB_NUMBER, record.getAsString(Record.LAB_NUMBER));
@@ -105,26 +92,15 @@ public class PaleontologyRecordDE extends RecordDE {
 					while (value.length() > 0) {
 						if (value.indexOf("\n") == -1)
 							value = value + "\n";
-						rs =
-							conn.executeQuery(
-								"SELECT Person_ID FROM Person_View WHERE Name = "
-									+ JspUtils.sqlEscape(
-										value
-											.substring(0, value.indexOf("\n"))
-											.trim()));
+						String query = "SELECT person_id FROM person_view WHERE name = ?";
 						try {
+							rs = conn.executeQuery(query, new int[] {Types.VARCHAR}, new Object[] {value.substring(0, value.indexOf("\n")).trim()});
 							rs.next();
 							identifiers.add(new Integer(rs.getInt(1)));
 						} catch (Exception e) {
-							throw new DataInputException(
-								"Identifier",
-								value.substring(0, value.indexOf("\n")).trim()
-									+ " not in database - add through builder");
+							throw new DataInputException("Identifier", value.substring(0, value.indexOf("\n")).trim() + " not in database - add through builder");
 						}
-						value =
-							value.substring(
-								value.indexOf("\n") + 1,
-								value.length());
+						value = value.substring(value.indexOf("\n") + 1, value.length());
 					}
 					break;
 				case IDT_AGE_START :
@@ -136,13 +112,11 @@ public class PaleontologyRecordDE extends RecordDE {
 				case IDT_START_MOD :
 				case IDT_STOP_MOD :
 					if (value != null && !value.equals("?"))
-						throw new DataInputException(
-							"Age",
-							"Bad Modifier");
+						throw new DataInputException("Age", "Bad Modifier");
 					break;
 				case LAB_SECTION :
-					rs = conn.executeQuery("SELECT Lab_ID FROM Lab_Section WHERE Lab_Section_ID = " + value);
 					try {
+						rs = conn.executeQuery("SELECT lab_id FROM lab_section WHERE lab_section_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(value)});
 						rs.next();
 						lab = rs.getString(1);
 					} catch (Exception e) {
@@ -171,10 +145,12 @@ public class PaleontologyRecordDE extends RecordDE {
 						}
 
 						//check TaxaGroup against lookup values
-						rs = conn.executeQuery("SELECT Lookup_ID FROM Lookup WHERE Name = " + JspUtils.sqlEscape(taxaGroup) + " AND FieldName = 'TaxaGroup'");
-						Taxa taxa = new Taxa();
+						Taxa taxa;
 						try {
+							String query = "SELECT Lookup_ID FROM Lookup WHERE Name = ? AND FieldName = ?";
+							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {taxaGroup, "TaxaGroup"});
 							rs.next();
+							taxa = new Taxa();
 							taxa.setGroupID(new Integer(rs.getInt(1)));
 							taxa.setGroupName(taxaGroup);
 						} catch (Exception e) {  // not valid group
@@ -188,8 +164,9 @@ public class PaleontologyRecordDE extends RecordDE {
 							//clean TaxaName
 							String cleanName = getCleanedName(taxaName);
 							//check TaxaName against thesaurus
-							rs = conn.executeQuery("SELECT Taxa_ID FROM Taxonomic_Lookup WHERE Group_ID = " + taxa.getGroupID() + " AND Taxonomic_Name = " + JspUtils.sqlEscape(cleanName) + " AND Status IN ('approved', 'provisional')");
 							try {
+								String query = "SELECT taxa_id FROM taxonomic_lookup WHERE group_id = ? AND taxonomic_name = ? AND status IN ('approved', 'provisional')";
+								rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {taxa.getGroupID(), cleanName});
 								rs.next();
 								taxa.setTaxaID(new Integer(rs.getInt(1)));
 								taxa.setTaxonomicName(taxaName);
@@ -234,16 +211,13 @@ public class PaleontologyRecordDE extends RecordDE {
 		throws IOException, SQLException {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			super.makeDataEntryHTML(out);
-			out.write(
-				"<tr><td class='heading'>Identification Date</td><td></td><td><input type='text' name='PalDate' value='"
+			out.write("<tr><td class='heading'>Identification Date</td><td></td><td><input type='text' name='PalDate' value='"
 					+ FREDUtils.noNulls(getFieldForHTML(IDENTIFICATION_DATE))
 					+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Date&Field=PalDate\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-			out.write(
-				"<tr><td class='heading'>Identifiers</td><td></td><td><textarea name='Identifier' cols='40' rows='2'>"
+			out.write("<tr><td class='heading'>Identifiers</td><td></td><td><textarea name='Identifier' cols='40' rows='2'>"
 					+ FREDUtils.noNulls(getFieldForHTML(IDENTIFIERS))
 					+ "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Identifier\", \"Supp\", \"width=600,height=400\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-			out.write(
-				"<tr><td class='heading' colspan='2'>Stage Limits</td><td>\n");
+			out.write("<tr><td class='heading' colspan='2'>Stage Limits</td><td>\n");
 			out.write("<table border='0' cellspacing='0'><tr><td>");
 			ComboDescriptor cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
 			cd.name = "StageStart";
@@ -251,8 +225,7 @@ public class PaleontologyRecordDE extends RecordDE {
 			cd.selected = getFieldForHTML(IDT_AGE_START);
 			cd.orderBy = "Ag_Name";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
-			out.write(
-				"</td><td><select name='StartMod'><option value='-' "
+			out.write("</td><td><select name='StartMod'><option value='-' "
 					+ ((getFieldForHTML(IDT_START_MOD) == null) ? " selected" : "")
 					+ "></option><option value='?' "
 					+ ((getFieldForHTML(IDT_START_MOD) != null
@@ -267,8 +240,7 @@ public class PaleontologyRecordDE extends RecordDE {
 			cd.selected = getFieldForHTML(IDT_AGE_STOP);
 			cd.orderBy = "Ag_Name";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
-			out.write(
-				"</td><td class='heading'><select name='StopMod'><option value='-' "
+			out.write("</td><td class='heading'><select name='StopMod'><option value='-' "
 					+ ((getFieldForHTML(IDT_STOP_MOD) == null) ? " selected" : "")
 					+ "></option><option value='?' "
 					+ ((getFieldForHTML(IDT_STOP_MOD) != null
@@ -277,8 +249,7 @@ public class PaleontologyRecordDE extends RecordDE {
 						: "")
 					+ ">?</option></select></td></tr>\n");
 			out.write("</table></td></tr>\n");
-			out.write(
-				"<tr><td class='heading' colspan='2'>Stage Comments</td><td><textarea name='StComm' cols='40' rows='2'>"
+			out.write("<tr><td class='heading' colspan='2'>Stage Comments</td><td><textarea name='StComm' cols='40' rows='2'>"
 					+ FREDUtils.noNulls(getFieldForHTML(STAGE_COMMENTS))
 					+ "</textarea></td></tr>\n");
 					
@@ -323,8 +294,7 @@ public class PaleontologyRecordDE extends RecordDE {
 				out.write("for(i=0;i<form1.SectID.options.length;i++){ if (form1.SectID.options[i].value=='" + getFieldForHTML(LAB_SECTION) + "') { form1.SectID.options.selectedIndex = i; }}\n");
 				out.write("</script>\n");
 			}
-			out.write(
-				"<tr><td class='heading' colspan='2'>Collection Comments</td><td><textarea name='CollComm' cols='40' rows='2'>"
+			out.write("<tr><td class='heading' colspan='2'>Collection Comments</td><td><textarea name='CollComm' cols='40' rows='2'>"
 					+ FREDUtils.noNulls(getFieldForHTML(COLLECTION_COMMENTS))
 					+ "</textarea></td></tr>\n");
 			out.write("<tr><td class='heading'>Taxonomic List</td></tr>\n");
@@ -339,54 +309,40 @@ public class PaleontologyRecordDE extends RecordDE {
 			conn.getConnection().setAutoCommit(false);
 			try {
 				super.save();
-				conn.executeUpdate(
-					"DELETE FROM Paleontology WHERE Record_ID = "
-						+ record.getRecordID());
-				//Create PALEONTOLOGY entry
-				conn.executeUpdate(
-					"INSERT INTO Paleontology (Record_ID, Identification_Date, Date_Rounding, Stage_ID, Stage_Comments, Lab_Section_ID, Lab_Number, Collection_Comments) VALUES ("
-						+ record.getRecordID()
-						+ ((identDate != null)
-							? ", TO_DATE('"
-								+ identDate.getDateString()
-								+ "'), "
-								+ JspUtils.sqlEscape(identDate.getDateRounding())
-							: ", NULL, NULL")
-						+ ", "
-						+ JspUtils.sqlEscape(
-							DataEntryUtils.getStageID(
-								getField(IDT_AGE_START),
-								getField(IDT_START_MOD),
-								getField(IDT_AGE_STOP),
-								getField(IDT_STOP_MOD),
-								state))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(STAGE_COMMENTS))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(LAB_SECTION))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(LAB_NUMBER))
-						+ ", "
-						+ JspUtils.sqlEscape(getField(COLLECTION_COMMENTS))
-						+ ")");
+				//Delete existing PALEONTOLOGY record
+				conn.executeUpdate("DELETE FROM paleontology WHERE record_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(record.getRecordID())});
+				//Create new PALEONTOLOGY record
+				String stageID = DataEntryUtils.getStageID(getField(IDT_AGE_START), getField(IDT_START_MOD), getField(IDT_AGE_STOP), getField(IDT_STOP_MOD), state);
+				String query = "INSERT INTO paleontology (record_id, identification_date, date_rounding, stage_id, stage_comments, lab_section_id, lab_number, collection_comments) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+				conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.DATE, Types.VARCHAR, Types.NUMERIC, Types.VARCHAR, Types.NUMERIC, Types.VARCHAR, Types.VARCHAR},
+					 new Object[] {new Integer(record.getRecordID()), ((identDate != null) ? identDate.getDate() : null), ((identDate != null) ? identDate.getDateRounding() : null),
+					 ((stageID != null) ? new Integer(stageID) : null), getField(STAGE_COMMENTS), ((getField(LAB_SECTION) != null) ? new Integer(getField(LAB_SECTION)) : null), getField(LAB_NUMBER), getField(COLLECTION_COMMENTS)});
 				//Create IDENTIFIERS entries
 				if (identifiers != null) {
+					query = "INSERT INTO identifier (record_id, person_id) VALUES (?, ?)";
+					int[] types = new int[] {Types.NUMERIC, Types.NUMERIC};
+					Object[] values = new Object[2];
+					values[0] = new Integer(record.getRecordID());
 					for (Iterator i = identifiers.iterator(); i.hasNext();) {
-						conn.executeUpdate(
-							"INSERT INTO Identifier (Record_ID, Person_ID) VALUES ("
-								+ record.getRecordID()
-								+ ", "
-								+ (Integer) i.next()
-								+ ")");
+						values[1] = (Integer) i.next();
+						conn.executeUpdate(query, types, values);
 					}
 				}
-				
 				//Create PAL_LIST entry
 				if (taxaList != null) {
+					query = "INSERT INTO pal_list (record_id, group_id, taxa_id, taxonomic_name, specimen_count, specimen_coords, comments) VALUES (?, ?, ?, ?, ?, ?, ?)";
+					int[] types = new int[] {Types.NUMERIC, Types.NUMERIC, Types.NUMERIC, Types.VARCHAR, Types.NUMERIC, Types.VARCHAR, Types.VARCHAR};
+					Object[] values = new Object[7];
+					values[0] = new Integer(record.getRecordID());
 					for (Iterator i = taxaList.iterator(); i.hasNext();) {
 						Taxa taxa = (Taxa) i.next();
-						conn.executeUpdate("INSERT INTO Pal_List (Record_ID, Group_ID, Taxa_ID, Taxonomic_Name, Specimen_Count, Specimen_Coords, Comments) VALUES ("
-							+ record.getRecordID() + ", " + taxa.getGroupID() + ", " + taxa.getTaxaID() + ", " + JspUtils.sqlEscape(taxa.getTaxonomicName()) + ", " + JspUtils.sqlEscape(taxa.getSpecimenCount()) + ", " + JspUtils.sqlEscape(taxa.getSpecimenCoords()) + ", " + JspUtils.sqlEscape(taxa.getComments()) + ")");
+						values[1] = taxa.getGroupID();
+						values[2] = taxa.getTaxaID();
+						values[3] = taxa.getTaxonomicName();
+						values[4] = taxa.getSpecimenCount();
+						values[5] = taxa.getSpecimenCoords();
+						values[6] = taxa.getComments();	
+						conn.executeUpdate(query, types, values);
 					}
 				}
 				
