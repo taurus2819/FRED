@@ -78,12 +78,18 @@ public class FeatureTest extends TestCase {
 		System.out.println(f.getAsString(Feature.SECURITY_CLASS_ID));
 	}
 	
-	public void _testMultipleUsers() throws SQLException, IOException {
+	public void testMultipleUsers() throws SQLException, IOException {
 		Feature.purge();
-		Feature f = new Feature(509, null, state);
-		Feature f2 = new Feature(509, user, state);
+		Feature f = new Feature(562, null, state);
+		Feature f2 = new Feature(562, user, state);
+		Feature f3 = new Feature(509, null, state);
+		Feature f4 = new Feature(509, user, state);
+		Feature f5 = new Feature(509, user2, state);
 		assertFalse(f.isAuthenticated());
-		assertTrue(f2.isAuthenticated());		
+		assertTrue(f2.isAuthenticated());
+		assertFalse(f3.isAuthenticated());
+		assertTrue(f4.isAuthenticated());
+		assertFalse(f5.isAuthenticated());		
 	}
 
 }

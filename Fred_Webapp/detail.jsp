@@ -17,7 +17,7 @@
 	if (request.getParameter("FeatID") != null) {
 		String featID = request.getParameter("FeatID");
 		try {
-			Feature feature = Feature.getFeature(Integer.parseInt(request.getParameter("FeatID")), user, state);
+			Feature feature = new Feature(Integer.parseInt(request.getParameter("FeatID")), user, state);
 			if (feature.get(Feature.SAMPLE) != null) {
 				if (feature.getAsVector(Feature.SAMPLE).size() > 1) {
 					response.sendRedirect("drillhole_detail.jsp?ID=" + featID);

@@ -44,8 +44,7 @@ public class Feature {
 
 	public Feature(int id, User user, PageState state) throws SQLException, IOException {
 		fd = FeatureData.getData(id, state);
-		if (fd.get(SECURITY_CLASS_ID) != null
-			&& !FREDUtils.isAllowedRecord(user, fd.getAsInt(SECURITY_CLASS_ID),	state)) {
+		if (fd.get(SECURITY_CLASS_ID) != null && !FREDUtils.isAllowedRecord(user, fd.getAsInt(SECURITY_CLASS_ID), state)) {
 			authenticated = false;
 		} else {
 			authenticated = true;

@@ -22,7 +22,7 @@
 
 	if (featID != null) {
 
-		Feature feature = Feature.getFeature(Integer.parseInt(featID), user, state);
+		Feature feature = new Feature(Integer.parseInt(featID), user, state);
 		Audit audit = Audit.getAudit(feature.getAsInt(Feature.AUDIT_ID), state);
 		featType = feature.getAsString(Feature.FEATURE_TYPE);
 
