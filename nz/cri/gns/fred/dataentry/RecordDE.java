@@ -32,7 +32,7 @@ public abstract class RecordDE implements DataEntryForm {
 	protected String[] fields = new String[120];
 	protected boolean savedFlag = false;
 
-	public RecordDE(User user, int folderID, String recordType, PageState state) throws DataInputException, SQLException, IOException {
+	protected RecordDE(User user, int folderID, String recordType, PageState state) throws DataInputException, SQLException, IOException {
 		this.user = user;
 		this.state = state;
 		if (!(recordType.equals("SMP") || recordType.equals("ADO") || recordType.equals("PAL")))
@@ -61,8 +61,6 @@ public abstract class RecordDE implements DataEntryForm {
 			} else {
 				throw new DataInputException("Record Type", "Invalid Value");
 			}
-			if (record.getAsString(Record.STATUS).equals("approved"))
-				throw new DataInputException("Record", "Record not editable");
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			ResultSet rs = conn.executeQuery("SELECT Sample_ID FROM Record WHERE Record_ID = " + recID);
 			rs.next();
@@ -73,7 +71,15 @@ public abstract class RecordDE implements DataEntryForm {
 			} catch (Exception e) {
 				setField(SECURITY_TYPE, "21");
 			}
-			folder = new Folder(record.getAsInt(Record.WORKING_FOLDER_ID), user, state);
+			if (record.getAsString(Record.STATUS).equals("approved")) {
+				if (FREDUtils.hasMasterfileRecordRights(user, String.valueOf(recID), state)) {
+					folder = new Folder(sample.getAsInt(Sample.MASTERFILE_ID), user, state);
+				} else {
+					throw new DataInputException("Record", "Record not editable");
+				}
+			} else {
+				folder = new Folder(record.getAsInt(Record.WORKING_FOLDER_ID), user, state);
+			}
 		} catch (TaxonomicListException e) {
 			throw new DataInputException("Taxonomic List",  "Data Error");
 		}
@@ -248,7 +254,7 @@ public abstract class RecordDE implements DataEntryForm {
 					record = Record.getData(recordID, user, state, true);
 				} catch (Exception e) {}
 			} else { // edit
-				if (record.getAsString(Record.STATUS).equals("approved") || !folder.isAllowedEditLocalities())
+				if ((!FREDUtils.hasMasterfileRecordRights(user, String.valueOf(record.getRecordID()), state) && record.getAsString(Record.STATUS).equals("approved")) || !folder.isAllowedEditLocalities())
 					throw new InvalidCredentialsException();
 				//Update AUDIT
 				conn.executeUpdate(

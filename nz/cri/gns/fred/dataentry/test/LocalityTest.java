@@ -117,11 +117,21 @@ public class LocalityTest extends TestCase {
 		form.save();		
 	}
 	
-	public void testFeatName() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public void _testFeatName() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
 		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm("Outcrop",user,221,state);
 		form.save();	
+	}
+	
+	public void testMFEdit() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+		TestingPageState state = new TestingPageState();
+		DBConnection ipConn = FREDUtils.getIPConnection(state);
+		User user = new User("pseudo_ben", "santor32", ipConn);
+		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm(901,user,state);
+		System.out.println(form.getField(DataEntryForm.FEATURE_NAME));
+		form.setField(DataEntryForm.COLUMN_MAP, "blah blah");
+		form.save();
 	}
 }

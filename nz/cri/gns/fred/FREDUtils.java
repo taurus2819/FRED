@@ -72,7 +72,7 @@ public class FREDUtils {
 		}
 	}
 
-	private static boolean hasMasterfileRights(User user, String featID, PageState state) throws IOException, SQLException {
+	public static boolean hasMasterfileRights(User user, String featID, PageState state) throws IOException, SQLException {
 		if (user == null || featID == null || state == null)
 			return false;
 		int userRights = 0;
@@ -86,7 +86,7 @@ public class FREDUtils {
 		return (userRights & 1) > 0;
 	}
 
-	private static boolean hasMasterfileRecordRights(User user, String recID, PageState state) throws IOException, SQLException {
+	public static boolean hasMasterfileRecordRights(User user, String recID, PageState state) throws IOException, SQLException {
 		if (user == null || recID == null || state == null)
 			return false;
 		DBConnection conn = getFREDConnection(state);

@@ -32,21 +32,22 @@
 
 			//Table header
 			out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
-			out.println("<tr><th colspan='2'>Locality&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Field No/<br>Drillhole Name&nbsp;&nbsp;</th><th>Submitted Date&nbsp;&nbsp;</th><th colspan='2'>Options</th></tr>");
 			
 			//To Approve
 			out.println("<tr><th colspan='5'>Localities to Approve</th></tr>");
+			out.println("<tr><th colspan='2'>Locality&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Submitted Date&nbsp;&nbsp;</th><th>Submitted By&nbsp;&nbsp;</th><th colspan='3'>Options</th></tr>");
 			for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
 				Feature feature = new Feature(((Integer) i.next()).intValue(), user, state);
+				Audit audit = Audit.getAudit(feature.getAsInt(Feature.AUDIT_ID), state);
 				int featID = feature.getFeatureID();
-				out.print("<tr><td><a href='detail.jsp?FeatID=" + featID + "'><img src='images/loc.gif' height='20' width='20' border='0' alt='View Locality' /></a></td><td class='heading'>" + feature.getAsString(Feature.SAMPLE_NAMES) + "</td><td>" + feature.getAsString(Feature.FEATURE_TYPE) + "</td><td>" + FREDUtils.noNulls(feature.getAsString(Feature.FEATURE_NAME)) + "</td><td>");
-				if (feature.get(Feature.LAST_CHANGE) != null) 
-					out.print(DateFormat.getDateInstance(DateFormat.LONG).format(feature.getAsDate(Feature.LAST_CHANGE)));
+				out.print("<tr><td><a href='detail.jsp?FeatID=" + featID + "'><img src='images/loc.gif' height='20' width='20' border='0' alt='View Locality' /></a></td><td class='heading'>" + feature.getAsString(Feature.SAMPLE_NAMES) + "&nbsp;&nbsp;</td><td>" + feature.getAsString(Feature.FEATURE_TYPE) + "&nbsp;&nbsp;</td><td>");
+				if (audit.get(Audit.SUBMITTED_DATE) != null) 
+					out.print(DateFormat.getDateInstance(DateFormat.LONG).format(audit.getAsDate(Audit.SUBMITTED_DATE)));
+				out.print("&nbsp;&nbsp;</td><td>" + audit.getAsString(Audit.SUBMITTED_BY) + "&nbsp;&nbsp;</td><td>");
+				out.print("<a href='print_front.jsp?FeatID=" + featID + (feature.getAsString(Feature.FEATURE_TYPE).equals("Outcrop") ? "" : "&FormType=Short") + "' target='print'><img src='images/print.gif' border='0' height='20' width='20' alt='Print Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				out.print("</td><td>");
-				//if (folder.isAllowedEditLocalities()) 
-				//	out.print("<a href='data_entry.jsp?Type=" + feature.getAsString(Feature.FEATURE_TYPE) + "&FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a>");
-				//out.print("</td><td>");
-				out.print("<a href='print_front.jsp?FeatID=" + featID + (feature.getAsString(Feature.FEATURE_TYPE).equals("Outcrop") ? "" : "&FormType=Short") + "' target='print'><img src='images/print.gif' border='0' height='20' width='20' alt='Print Locality' /></a>");
+				if (folder.isAllowedEditLocalities()) 
+					out.print("<a href='data_entry.jsp?Type=" + feature.getAsString(Feature.FEATURE_TYPE) + "&FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				out.print("</td><td>");
 				if (folder.isAllowedApproveLocalities())
 					out.print("<a href='detail.jsp?FeatID=" + featID + "'><img src='images/review.gif' width='20' height='20' border='0' alt='Review Localities' /></a>");
@@ -56,18 +57,20 @@
 			
 			//Recently Approved
 			out.println("<tr><th colspan='5'>Localities Recently Approved</th></tr>");
-			String query = "SELECT DISTINCT S.Feature_ID FROM Sample_All_View S, Audit_Table A WHERE S.Audit_ID = A.Audit_ID AND S.Status = 'approved' AND S.Masterfile_ID = ? AND A.Approved_Date >= (SYSDATE - 7)";
+			out.println("<tr><th colspan='2'>Locality&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Approved Date&nbsp;&nbsp;</th><th>Approved By&nbsp;&nbsp;</th><th colspan='3'>Options</th></tr>");
+			String query = "SELECT DISTINCT S.Feature_ID, S.FR_Number FROM Sample_All_View S, Audit_Table A WHERE S.Audit_ID = A.Audit_ID AND S.Status = 'approved' AND S.Masterfile_ID = ? AND A.Approved_Date >= (SYSDATE - 7) ORDER BY S.FR_Number";
 			int[] types = { Types.NUMERIC };
 			Object[] data = { new Integer(folder.getFolderID()) };
 			ResultSet rs = connection.executeQuery(query, types, data);
 			connection.preservePreparedStatement();
 			while (rs.next()) {
 				Feature feature = new Feature(rs.getInt(1), user, state);
+				Audit audit = Audit.getAudit(feature.getAsInt(Feature.AUDIT_ID), state);
 				int featID = feature.getFeatureID();
-				out.print("<tr><td><a href='detail.jsp?FeatID=" + featID + "'><img src='images/loc.gif' height='20' width='20' border='0' alt='View Locality' /></a></td><td class='heading'>" + feature.getAsString(Feature.SAMPLE_NAMES) + "</td><td>" + feature.getAsString(Feature.FEATURE_TYPE) + "</td><td>" + FREDUtils.noNulls(feature.getAsString(Feature.FEATURE_NAME)) + "</td><td>");
-				if (feature.get(Feature.LAST_CHANGE) != null) 
-					out.print(DateFormat.getDateInstance(DateFormat.LONG).format(feature.getAsDate(Feature.LAST_CHANGE)));
-				out.print("</td><td>");
+				out.print("<tr><td><a href='detail.jsp?FeatID=" + featID + "'><img src='images/loc.gif' height='20' width='20' border='0' alt='View Locality' /></a></td><td><span class='heading'>" + feature.getAsString(Feature.SAMPLE_NAMES) + "</span>&nbsp;&nbsp;<br />(" + FREDUtils.noNulls(feature.getAsString(Feature.FEATURE_NAME)) + ")&nbsp;&nbsp;</td><td>" + feature.getAsString(Feature.FEATURE_TYPE) + "&nbsp;&nbsp;</td><td>");
+				if (audit.get(Audit.APPROVED_DATE) != null) 
+					out.print(DateFormat.getDateInstance(DateFormat.LONG).format(audit.getAsDate(Audit.APPROVED_DATE)));
+				out.print("&nbsp;&nbsp;</td><td>" + audit.getAsString(Audit.APPROVED_BY) + "&nbsp;&nbsp;</td><td>");
 				out.print("<a href='print_front.jsp?FeatID=" + featID + (feature.getAsString(Feature.FEATURE_TYPE).equals("Outcrop") ? "" : "&FormType=Short") + "' target='print'><img src='images/print.gif' border='0' height='20' width='20' alt='Print Locality' /></a>");
 				out.print("</td><td></td></tr>");
 			}

@@ -56,13 +56,20 @@ public abstract class LocalityDE implements DataEntryForm {
 		this.user = user;
 		this.state = state;
 		feature = new Feature(id, user, state, true);
-		if (feature.getAsString(Feature.STATUS).equals("approved"))
-			throw new DataInputException("Locality", "Locality not editable");
 		int sampleID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
 		sample = new Sample(sampleID, user, state, true);
 		featureType = feature.getFeatureType();
-		if (sample.get(Sample.WORKING_FOLDER_ID) != null)
-			this.folder = new Folder(sample.getAsInt(Sample.WORKING_FOLDER_ID), user, state);
+		if (feature.getAsString(Feature.STATUS).equals("approved")) {
+			throw new DataInputException("Locality", "Locality not editable");		
+		} else if (feature.getAsString(Feature.STATUS).equals("waiting")) {
+			if (FREDUtils.hasMasterfileRights(user, String.valueOf(id), state)) {
+				folder = new Folder(sample.getAsInt(Sample.MASTERFILE_ID), user, state);
+			} else {
+				throw new DataInputException("Locality", "Locality not editable");
+			}
+		} else if (sample.get(Sample.WORKING_FOLDER_ID) != null) {
+			folder = new Folder(sample.getAsInt(Sample.WORKING_FOLDER_ID), user, state);
+		}
 		setField(FEATURE_NAME, sample.getAsString(Sample.FEATURE_NAME));
 		setField(REGISTRATION_AREA, sample.getAsString(Sample.REG_AREA_ID));
 		String workComm = sample.getAsString(Sample.WORKING_COMMENTS);

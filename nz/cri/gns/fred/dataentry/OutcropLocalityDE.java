@@ -28,8 +28,8 @@ public class OutcropLocalityDE extends LocalityDE {
 	public OutcropLocalityDE(int id, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException  {
 		super(id, user, state);
 		if (!featureType.equals("Outcrop")) throw new DataInputException("Feature Type", "Invalid");
-		if (sample.get(Sample.WORKING_RECORDS) != null) {
-			for (Iterator i = sample.getAsVector(Sample.WORKING_RECORDS).iterator(); i.hasNext(); ) {
+		if (sample.get(Sample.RECORDS) != null) {
+			for (Iterator i = sample.getAsVector(Sample.RECORDS).iterator(); i.hasNext(); ) {
 				KeyValueObject key = (KeyValueObject) i.next();
 				if (key.getValue().equals("SMP")) {
 					try {

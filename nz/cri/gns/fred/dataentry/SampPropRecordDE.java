@@ -1323,7 +1323,6 @@ public class SampPropRecordDE extends RecordDE {
 				}
 
 				//Create SENT TO entries
-
 				if (sentTo != null) {
 					for (Iterator i = sentTo.iterator(); i.hasNext();) {
 						SentTo sT = (SentTo) i.next();
@@ -1440,7 +1439,6 @@ public class SampPropRecordDE extends RecordDE {
 				savedFlag = false;
 				throw new InvalidCredentialsException();
 			}
-
 		}
 		return record.getRecordID();
 	}
