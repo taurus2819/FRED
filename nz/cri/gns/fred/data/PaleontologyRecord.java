@@ -173,7 +173,6 @@ public class PaleontologyRecord extends Record {
 				|| !FREDUtils.isAllowedRecord(user, rec.getAsString(SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(RECORD_ID), state)) {
 			throw new InvalidCredentialsException();
 		}
-		System.out.println("Finished getting pal record");
 		return rec;
 	}
 
