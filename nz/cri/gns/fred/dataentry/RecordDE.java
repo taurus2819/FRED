@@ -201,7 +201,7 @@ public abstract class RecordDE implements DataEntryForm {
 		} catch (Exception e) {	}
 		out.write("</td>");
 		try {
-			out.write("<td><a href='new_sample.jsp?FeatID=" + sample.getAsString(Sample.FEATURE_ID) + "&SampID=" + sample.getSampleID() + "&FoldID=" + sample.getAsString(Sample.WORKING_FOLDER_ID) + "&Type=" + recordType + "'><img src='images/edit.gif' width='20' height='20' border='0' alt='Edit' /></a></td>");
+			out.write("<td><a href='new_sample.jsp?FeatID=" + sample.getAsString(Sample.FEATURE_ID) + "&SampID=" + sample.getSampleID() + "&FoldID=" + sample.getAsString(Sample.FEATURE_WORKING_FOLDER_ID) + "&Type=" + recordType + "'><img src='images/edit.gif' width='20' height='20' border='0' alt='Edit' /></a></td>");
 		} catch (Exception e) {}
 		out.write("</tr>\n");
 		out.write("<tr><td class='heading' colspan='2'>Working Comments<br><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'>" + FREDUtils.noNulls(getFieldForHTML(WORKING_COMMENTS)) + "</textarea></td></tr>\n");

@@ -68,12 +68,12 @@ public abstract class LocalityDE implements DataEntryForm {
 			} else {
 				throw new DataInputException("Locality", "Locality not editable");
 			}
-		} else if (sample.get(Sample.WORKING_FOLDER_ID) != null) {
-			folder = new Folder(sample.getAsInt(Sample.WORKING_FOLDER_ID), user, state);
+		} else if (sample.get(Sample.FEATURE_WORKING_FOLDER_ID) != null) {
+			folder = new Folder(sample.getAsInt(Sample.FEATURE_WORKING_FOLDER_ID), user, state);
 		}
 		setField(FEATURE_NAME, sample.getAsString(Sample.FEATURE_NAME));
 		setField(REGISTRATION_AREA, sample.getAsString(Sample.REG_AREA_ID));
-		String workComm = sample.getAsString(Sample.WORKING_COMMENTS);
+		String workComm = sample.getAsString(Sample.FEATURE_WORKING_COMMENTS);
 		if (workComm != null && workComm.indexOf("*Recoll:") >= 0) {
 			setField(RECOLLECTION, workComm.substring(8, workComm.indexOf("*", 2)).trim());
 			setField(WORKING_COMMENTS, workComm.substring(workComm.indexOf("*", 2) + 1, workComm.length()).trim());
@@ -102,7 +102,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		setField(ACCURACY, sample.getAsString(Sample.ACCURACY));
 		setField(LOCALITY_DESC, sample.getAsString(Sample.LOCALITY));
 		try {
-			setField(SECURITY_TYPE, String.valueOf(FREDUtils.getSecurityType(sample.getAsInt(Sample.SECURITY_CLASS_ID), user, state)));
+			setField(SECURITY_TYPE, String.valueOf(FREDUtils.getSecurityType(sample.getAsInt(Sample.FEATURE_SECURITY_CLASS_ID), user, state)));
 		} catch (Exception e) {
 			setField(SECURITY_TYPE, "21");
 		}

@@ -39,7 +39,7 @@ public class OutcropLocalityDE extends LocalityDE {
 			}
 		}
 		if (sampPropRecordDE == null) {
-			sampPropRecordDE = new SampPropRecordDE(user, sample.getSampleID(), sample.getAsInt(Sample.WORKING_FOLDER_ID), state);
+			sampPropRecordDE = new SampPropRecordDE(user, sample.getSampleID(), sample.getAsInt(Sample.FEATURE_WORKING_FOLDER_ID), state);
 		}
 		sampPropRecordDE.setOutcropSamp(true);
 	}

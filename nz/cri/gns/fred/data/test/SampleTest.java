@@ -70,7 +70,7 @@ public class SampleTest extends TestCase {
 			test = f.getAsString(Sample.LOCALITY);
 		} catch (Exception e) {}
 		assertNull(test);
-		System.out.println(f.getAsString(Sample.SECURITY_CLASS_ID));
+		System.out.println(f.getAsString(Sample.FEATURE_SECURITY_CLASS_ID));
 	}
 	
 	public void _testMultipleUsers() throws SQLException, IOException {

@@ -44,12 +44,18 @@ public class Sample {
 	public static final int REG_AREA_ID = 22;
 	public static final int REG_AREA_NAME = 23;
 	public static final int REG_AREA_CODE = 24;
-	public static final int AUDIT_ID = 25;
-	public static final int STATUS = 26;
-	public static final int LAST_CHANGE = 27;
-	public static final int WORKING_FOLDER_ID = 28;
-	public static final int WORKING_COMMENTS = 29;
-	public static final int SECURITY_CLASS_ID = 30;
+	public static final int FEATURE_AUDIT_ID = 25;
+	public static final int FEATURE_STATUS = 26;
+	public static final int FEATURE_LAST_CHANGE = 27;
+	public static final int FEATURE_WORKING_FOLDER_ID = 28;
+	public static final int FEATURE_WORKING_COMMENTS = 29;
+	public static final int FEATURE_SECURITY_CLASS_ID = 30;
+	public static final int SAMPLE_AUDIT_ID = 129;
+	public static final int SAMPLE_STATUS = 130;
+	public static final int SAMPLE_LAST_CHANGE = 131;
+	public static final int SAMPLE_WORKING_FOLDER_ID = 132;
+	public static final int SAMPLE_WORKING_COMMENTS = 133;
+	public static final int SAMPLE_SECURITY_CLASS_ID = 134;
 	public static final int SITE_ID = 31;
 	public static final int COUNTRY_CODE = 32;
 	public static final int COUNTRY_NAME = 33;
@@ -158,7 +164,7 @@ public class Sample {
 	public Sample(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException {
 		this.sd = SampleData.getData(id, state, forceRefresh);
 		this.state = state;
-		if (!FREDUtils.isAllowedLocality(user, sd.getAsString(SECURITY_CLASS_ID), sd.getAsString(STATUS), sd.getAsString(FEATURE_ID), state)) {
+		if (!FREDUtils.isAllowedLocality(user, sd.getAsString(FEATURE_SECURITY_CLASS_ID), sd.getAsString(FEATURE_STATUS), sd.getAsString(FEATURE_ID), state)) {
 			authenticated = false;
 		} else {
 			authenticated = true;
@@ -178,7 +184,7 @@ public class Sample {
 	}
 
 	public boolean isApprovedLocality() {
-		return (sd.getAsString(STATUS).equals("approved"));
+		return (sd.getAsString(FEATURE_STATUS).equals("approved"));
 	}
 
 	public int getRecordCount() throws InvalidCredentialsException {
@@ -241,9 +247,12 @@ public class Sample {
 			case MASTERFILE_ID:
 			case MASTERFILE_NAME:
 			case REG_AREA_CODE:
-			case AUDIT_ID:
-			case SECURITY_CLASS_ID:
-			case STATUS:
+			case FEATURE_AUDIT_ID:
+			case FEATURE_SECURITY_CLASS_ID:
+			case FEATURE_STATUS:
+			case SAMPLE_AUDIT_ID:
+			case SAMPLE_SECURITY_CLASS_ID:
+			case SAMPLE_STATUS:
 			case SITE_ID:
 			case COUNTRY_CODE:
 			case COUNTRY_NAME:

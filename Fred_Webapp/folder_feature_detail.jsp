@@ -144,13 +144,8 @@
 				if (!featType.equals("Outcrop") && !sample.getAsString(Sample.DRILLHOLE_DEPTH).equals("Depth Not Specified")) {
 					out.print("<tr><td><a href='detail.jsp?ID=" + sample.getSampleID() + "'><img src='images/drill.gif' height='20' width='20' border='0' alt='View Sample Details' /></a>&nbsp;</td><td colspan='3'>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td>");
 					out.print("<td>");
-					if (sample.get(Sample.SAMPLE_PROPERTY_RECORD_ID) != null) {
-						if ((sample.getAsString(Sample.SAMPLE_PROPERTY_RECORD_STATUS).equals("working") || sample.getAsString(Sample.SAMPLE_PROPERTY_RECORD_STATUS).equals("rejected")) && folder.isAllowedEditLocalities())
+					if ((sample.getAsString(Sample.STATUS).equals("working") || sample.getAsString(Sample.SAMPLE_PROPERTY_RECORD_STATUS).equals("rejected")) && folder.isAllowedEditLocalities())
 							out.print("<a href='data_entry.jsp?Type=SMP&FoldID=" + folder.getFolderID() + "&RecID=" + sample.getAsString(Sample.SAMPLE_PROPERTY_RECORD_ID) + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Sample Details' /></a><img src='images/blank.gif' height='20' width='2' />");
-					} else {
-						if (folder.isAllowedCreateLocalities())
-							out.print("<a href='data_entry.jsp?Type=SMP&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Sample Details' /></a><img src='images/blank.gif' height='20' width='2' />");
-					}
 					out.print("</td><td></td><td>");
 					if ((sample.get(Sample.SAMPLE_PROPERTY_RECORD_ID) == null || sample.getAsString(Sample.SAMPLE_PROPERTY_RECORD_STATUS).equals("working") || sample.getAsString(Sample.SAMPLE_PROPERTY_RECORD_STATUS).equals("rejected")) && folder.isAllowedDeleteLocalities())
 						out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this sample\") == true) {document.FoldForm.ActionType.value=\"DeleteSamp\";document.FoldForm.SampID.value=\"" + sample.getSampleID() + "\";document.FoldForm.submit();}' title='Delete Sample'><img src='images/delete.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
