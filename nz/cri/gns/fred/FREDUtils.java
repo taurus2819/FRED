@@ -263,8 +263,7 @@ public class FREDUtils {
 	/**
 	 * Returns the rights the user_rights for the given locality
 	 */
-	public static int getUserWorkingLocalityRights(User user, String featureID, PageState state)
-		throws IOException, SQLException {
+	public static int getUserWorkingLocalityRights(User user, String featureID, PageState state) throws IOException, SQLException {
 		int userRights = 0;
 		if (user != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);

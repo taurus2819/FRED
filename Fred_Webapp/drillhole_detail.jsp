@@ -1,5 +1,5 @@
 <%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.metadata.*, nz.cri.gns.jsp.*, java.net.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
+		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.db.metadata.*, nz.cri.gns.jsp.*, java.net.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
 %><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 	User user = (User)getUser(session);
@@ -26,16 +26,24 @@
 			
 			if (request.getParameter("ActionType") != null) { //do something
 				String actionType = request.getParameter("ActionType");
-				if (actionType.equals("Accept")) {
+				if (actionType.equals("Approve")) {
 					FRNumber frNum = new FRNumber(request.getParameter("MapSheet"), new Integer(request.getParameter("SerialNum")), request.getParameter("RecollNum"));
-					FolderUtils.approveLocality(String.valueOf(feature.getFeatureID()), frNum, user, state);
-					//response.sendRedirect("admin_folder_detail.jsp?ID=" + foldID + "&PrintID=" + featID);
+					FolderUtils.approveLocality(String.valueOf(feature.getFeatureID()), frNum, request.getParameter("CurComm"), user, state);
+					feature = new Feature(feature.getFeatureID(), user, state, true);
+					response.sendRedirect("admin_folder_detail.jsp?ID=" + feature.getAsString(Feature.MASTERFILE_ID));
+					return;
 				}
 				else if (actionType.equals("Reject")) {
-					FolderUtils.rejectLocality(String.valueOf(feature.getFeatureID()), request.getParameter("RejComm"), user, state);
-					//response.sendRedirect("admin_folder_detail.jsp?ID=" + foldID);
+					FolderUtils.rejectLocality(String.valueOf(feature.getFeatureID()), request.getParameter("CurComm"), user, state);
+					feature = new Feature(feature.getFeatureID(), user, state, true);
+					response.sendRedirect("admin_folder_detail.jsp?ID=" + feature.getAsString(Feature.MASTERFILE_ID));
+					return;
 				}
-				feature = new Feature(feature.getFeatureID(), user, state, true);
+				else if (actionType.equals("AddtoFold") && !request.getParameter("FoldID").equals("-")) {
+					FolderUtils.addLocality(featID, request.getParameter("FoldID"), user, state);
+					Folder folder = new Folder(Integer.parseInt(request.getParameter("FoldID")), user, state, true);
+					out.println("<script language=\"JavaScript\">alert(\"Locality Added to " + folder.getAsString(Folder.NAME) + " folder\");</script>");
+				}
 			}
 			
 			if (feature.isUserAuthenticated() || feature.isApprovedLocality()) {
@@ -81,29 +89,54 @@
 							if (audit.get(Audit.APPROVED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.APPROVED_DATE))); }
 							out.println("</td></tr>");
 						}
-						out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
-						out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + minSampID + "&FormType=Short' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;<a href='print_front.jsp?ID=" + minSampID + "&FormType=Short' class='heading' target='print'>Print Front</a></td></tr>");
-						out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 						
-						if (FREDUtils.isAllowedApproveLocality(user, String.valueOf(feature.getFeatureID()), feature.getAsString(Feature.STATUS), state)) {
-							FRNumber frNumber = FolderUtils.getNextFRNumber(sample.getAsString(Sample.REG_AREA_CODE), sample.getAsString(Sample.NZMG_SHEET), sample.getAsDouble(Sample.LATITUDE), sample.getAsDouble(Sample.LONGITUDE), state);
-							out.println("<tr><td colspan='2'>");
-							out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
-							out.println("<form name='RevForm' method='get' action='drillhole_detail.jsp'>");
-							out.println("<input type='hidden' name='ID' value='" + featID + "'>");
-							out.println("<input type='hidden' name='ActionType' value=''>");
-							out.println("<tr><td colspan='2' class='heading' align='center'>Locality Approval</td></tr>");
-							out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Accept\";document.RevForm.submit();'><img src='images/ok.gif' width='20' height='20' border='0' alt='Approve' /></a>&nbsp;</td><td class='heading'>FR Number</td></tr>");
-							//if (recoll != null) {
-							//	out.println("<tr><td colspan='2'>The submitter has indicated that this record is a recollection of " + recoll + ".  If you agree then amend the FRNumber below as appropriate</td></tr>");
-							//}
-							out.println("<tr><td colspan='2'><input type='text' name='MapSheet' size='9' value='" + frNumber.getMapSheet() + "'>&nbsp;/f&nbsp;<input type='text' name='SerialNum' size='4' value='" + frNumber.getSerialNumber() + "'>&nbsp;<input type='text' name='RecollNum' size='1' value=''></td></tr>");
-							out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
-							out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Reject\";document.RevForm.submit();'><img src='images/cancel.gif' width='20' height='20' border='0' alt='reject' /></a>&nbsp;</td><td class='heading'>Comments</td></tr>");
-							out.println("<tr><td colspan='2'><textarea name='RejComm' rows='5' cols='25'></textarea></td></tr>");
-							out.println("</form>");
-							out.println("</table>");
-							out.println("</td></tr>");
+						if (user != null) {
+							out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
+
+							out.println("<tr><td colspan='2'><table border='0'>");
+
+							//Generate list of users folders
+							FolderList folderList = new FolderList(user, state);
+							if (folderList.getPersonalFolderCount() > 0) {
+								out.println("<form name=\"FolderForm\" method=\"post\" action=\"drillhole_detail.jsp\">");
+								out.println("<tr><td colspan=\"2\"><select name=\"FoldID\"><option value=\"-\">-- Choose --</option>");
+								for (Iterator i = folderList.getPersonalFolders().iterator(); i.hasNext(); ) {
+									KeyValueObject kv = (KeyValueObject) i.next();
+									out.println("<option value=\"" + kv.getKey() + "\">" + ((kv.getValue().length() <= 17) ? kv.getValue() : kv.getValue().substring(0, 17)) + "</option>");
+								}
+								out.println("</select></td></tr>");
+								out.println("<tr><td><a href=\"#\" onClick=\"FolderForm.submit();\"><img src=\"images/folder.gif\" height=\"20\" width=\"20\" border=\"0\" alt=\"Add to Folder\" /></a></td><td><a href=\"#\" onClick=\"FolderForm.submit();\" class=\"heading\">Add to Folder</a></td></tr>");
+								out.println("<input type=\"hidden\" name=\"ID\" value=\"" + featID + "\" />");
+								out.println("<input type=\"hidden\" name=\"ActionType\" value=\"AddtoFold\" />");
+								out.println("</form>");
+								out.println("<tr><td>&nbsp;</td></tr>");
+							}
+
+							out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
+							out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + minSampID + "&FormType=Short' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;<a href='print_front.jsp?ID=" + minSampID + "&FormType=Short' class='heading' target='print'>Print Front</a></td></tr>");
+							out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
+							out.println("</table></td></tr>");
+							
+							if (FREDUtils.isAllowedApproveLocality(user, featID, feature.getAsString(Feature.STATUS), state)) {
+								FRNumber frNumber = FolderUtils.getNextFRNumber(sample.getAsString(Sample.REG_AREA_CODE), sample.getAsString(Sample.NZMG_SHEET), sample.getAsDouble(Sample.LATITUDE), sample.getAsDouble(Sample.LONGITUDE), state);
+								out.println("<tr><td colspan='2'>");
+								out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
+								out.println("<form name='RevForm' method='post' action='drillhole_detail.jsp'>");
+								out.println("<input type='hidden' name='ID' value='" + featID + "'>");
+								out.println("<input type='hidden' name='ActionType' value=''>");
+								out.println("<tr><td colspan='2' class='heading' align='center'>Locality Approval</td></tr>");
+								out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Accept\";document.RevForm.submit();'><img src='images/ok.gif' width='20' height='20' border='0' alt='Approve' /></a>&nbsp;</td><td class='heading'>FR Number</td></tr>");
+								//if (recoll != null) {
+								//	out.println("<tr><td colspan='2'>The submitter has indicated that this record is a recollection of " + recoll + ".  If you agree then amend the FRNumber below as appropriate</td></tr>");
+								//}
+								out.println("<tr><td colspan='2'><input type='text' name='MapSheet' size='9' value='" + frNumber.getMapSheet() + "'>&nbsp;/f&nbsp;<input type='text' name='SerialNum' size='4' value='" + frNumber.getSerialNumber() + "'>&nbsp;<input type='text' name='RecollNum' size='1' value=''></td></tr>");
+								out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
+								out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Reject\";document.RevForm.submit();'><img src='images/cancel.gif' width='20' height='20' border='0' alt='reject' /></a>&nbsp;</td><td class='heading'>Comments</td></tr>");
+								out.println("<tr><td colspan='2'><textarea name='RejComm' rows='5' cols='25'></textarea></td></tr>");
+								out.println("</form>");
+								out.println("</table>");
+								out.println("</td></tr>");
+							}
 						}
 
 						out.println("</table>");

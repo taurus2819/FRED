@@ -69,9 +69,10 @@
 		}
 		out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 
-		if (!featType.equals(Feature.OUTCROP_LOCALITY)) {
+		if (sample.getAsInt(Sample.SAMPLE_AUDIT_ID) != sample.getAsInt(Sample.FEATURE_AUDIT_ID)) {
 			audit = Audit.getAudit(sample.getAsInt(Sample.SAMPLE_AUDIT_ID), state);
-			out.println("<tr><td class=\"bigheading\" colspan=\"4\">Sample</td></tr>");
+			out.println("<tr><td class=\"bigheading\" colspan=\"4\">Sample&nbsp;<span class=\"smallheading\">"
+					+ sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</span></td></tr>");
 			if (!audit.getAsString(Audit.STATUS).equals(Audit.STATUS_APPROVED))
 				out.println("<tr><td class=\"heading\">Status:&nbsp;&nbsp;</td><td style=\"color: #FF0000\">" + audit.getAsString(Audit.STATUS) + "</td></tr>");
 			if (audit.get(Audit.CREATED_BY) != null || audit.get(Audit.CREATED_DATE) != null)
@@ -115,7 +116,7 @@
 					audit = Audit.getAudit(record.getAsInt(Record.AUDIT_ID), state);
 					out.println("<tr><td class=\"bigheading\" colspan=\"4\">"
 						+ ((rec.getValue().equals(Record.ADOPTION_RECORD)) ? "Adoption" : "Paleontology")
-						+ " <span class=\"smallheading\">" + record + "</span></td></tr>");
+						+ "&nbsp;<span class=\"smallheading\">" + record + "</span></td></tr>");
 					if (!audit.getAsString(Audit.STATUS).equals(Audit.STATUS_APPROVED))
 						out.println("<tr><td class=\"heading\">Status:&nbsp;&nbsp;</td><td style=\"color: #FF0000\">" + audit.getAsString(Audit.STATUS) + "</td></tr>");
 					if (audit.get(Audit.CREATED_BY) != null || audit.get(Audit.CREATED_DATE) != null)

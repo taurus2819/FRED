@@ -108,8 +108,8 @@
 					out.print("</td><td></td>");
 				}
 				out.print("<td>");
-				if ((locStatus.equals(Audit.STATUS_WORKING) || locStatus.equals(Audit.STATUS_REJECTED)) && folder.isAllowedEditLocalities())
-					out.print("<a href='data_entry.jsp?Type=" + featType + "&FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
+				if (FREDUtils.isAllowedEditLocality(user, locStatus, featID, state))
+					out.print("<a href='data_entry.jsp?Type=" + featType + "&FeatID=" + featID + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				out.print("</td><td>");
 //				if (folder.isAllowedCreateLocalities())
 //					out.print("<a href='#' onClick='prmpt=prompt(\"Please enter the new name\", \"New " + featType + "\");if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value=\"CopyFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}'><img src='images/copy.gif' border='0' height='20' width='20' alt='Copy Locality' /></a><img src='images/blank.gif' height='20' width='2' />");

@@ -117,8 +117,8 @@
 			if (user != null) {
 
 				out.println("<tr><td class=\"smallheading\"><a href=\"audit_detail.jsp?ID=" + sample.getSampleID() + "\" target=\"audit\">More...</a></td></tr>");
-
 				out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
+				
 				out.println("<tr><td colspan='2'><table border='0'>");
 				
 				//Generate list of users folders
@@ -154,7 +154,7 @@
 					FRNumber frNumber = FolderUtils.getNextFRNumber(sample.getAsString(Sample.REG_AREA_CODE), sample.getAsString(Sample.NZMG_SHEET), sample.getAsDouble(Sample.LATITUDE), sample.getAsDouble(Sample.LONGITUDE), state);
 					out.println("<tr><td colspan='2'>");
 					out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
-					out.println("<form name='RevForm' method='get' action='detail.jsp'>");
+					out.println("<form name='RevForm' method='post' action='detail.jsp'>");
 					out.println("<input type='hidden' name='ID' value='" + sampID + "'>");
 					out.println("<input type='hidden' name='ActionType' value=''>");
 					out.println("<tr><td colspan='2' class='heading' align='center'>Locality Approval</td></tr>");
