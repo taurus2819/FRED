@@ -1,5 +1,5 @@
 <%@		page extends="nz.cri.gns.fred.FREDIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, nz.cri.gns.db.metadata.*, java.net.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
+		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, nz.cri.gns.db.metadata.*, nz.cri.gns.db.site.*, nz.cri.gns.util.map.*, java.net.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
 %><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 	User user = (User)getUser(session);
@@ -221,23 +221,29 @@
 			out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
 			if (sample.get(Sample.YARD_FR_ID) != null) { out.println("<tr><td class='heading'>Yard FR Number</td><td>" + sample.getAsString(Sample.YARD_FR_NUMBER) + "</td></tr>"); }
 			if (sample.get(Sample.LATITUDE) != null) {
-				if (sample.get(Sample.NZMG_SHEET) != null) {
-					out.print("<tr><td class='heading'>Grid Ref</td><td>" + sample.getAsString(Sample.NZMG_SHEET) + ":" + nzmg.format(sample.getAsDouble(Sample.NZMG_EAST)) + "|" + nzmg.format(sample.getAsDouble(Sample.NZMG_NORTH)) + " (NZMG)");
-				} else if (sample.getAsInt(Sample.ORIG_SYSTEM_ID) == 29) {
-				} else if (sample.getAsInt(Sample.ORIG_SYSTEM_ID) == 28 || sample.getAsInt(Sample.ORIG_SYSTEM_ID) == 30) {
-					String str = sample.getAsString(Sample.ORIG_COORD);
-					int index = str.indexOf("|");
-					double lat = Double.parseDouble(str.substring(0, index));
-					double lon = Double.parseDouble(str.substring(index+1));
-					out.print("<tr><td class='heading'>Lat/Long</td><td>" + FREDUtils.formatLatLongForOutput(lat, lon) + " (" + sample.getAsString(Sample.COORD_SYSTEM).replaceAll("Lat/long ", "") + ")");
-				} else {
-					out.print("<tr><td class='heading'>Grid Ref</td><td>" + sample.getAsString(Sample.ORIG_COORD) + " (" + sample.getAsString(Sample.COORD_SYSTEM) + ")");
+				SiteRecord sr = SiteRecord.querySite(FREDUtils.getFREDConnection(state), sample.getAsInt(Sample.SITE_ID));			
+				int origID = sr.getOriginalId();
+				if (origID != -1) {
+					Datum datum = sr.getOrigCoordDatum();
+					Datum.Coordinate coord = sr.getOrigCoordAsCoord();	
+					if (origID != 29) {
+						if (coord instanceof Datum.LatLong) {
+							out.print("<tr><td class='heading'>Lat/Long</td>");
+						} else {
+							out.print("<tr><td class='heading'>Grid Ref</td>");
+						}
+						out.println("<td>" + datum.getHumanStringFor(coord).replaceAll("Geographic ", "") + "</td></tr>");
+						if (datum instanceof NZMS260) {
+							NZMG nzmg2 = (NZMG) DatumFactory.createDatum("NZMG");
+							out.println("<tr><td class='heading'>Grid Ref</td><td>" + nzmg2.getHumanStringFor(((NZMS260) datum).convertToDatum(nzmg2, coord)) + "</td></tr>");
+						}
+					}
 				}
-				out.println("</td></tr>");
-				out.print("<tr><td class='heading'>Lat/Long</td><td>");
-				out.print(FREDUtils.formatLatLongForOutput(sample.getAsDouble(Sample.LATITUDE), sample.getAsDouble(Sample.LONGITUDE)));
-				out.println(" (NZGD49 Datum)</td></tr>");
+				Datum.LatLong ll = sr.getLatLong();
+				if (ll.getNorthSouth() != 999)
+					out.println("<tr><td class='heading'>Lat/Long</td><td>" + ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)</td></tr>");
 			}
+			
 			if (sample.get(Sample.METHOD) != null) { out.println("<tr><td class='heading'>Method</td><td>" + sample.getAsString(Sample.METHOD) + "</td></tr>"); }
 			if (sample.get(Sample.ACCURACY) != null) { out.println("<tr><td class='heading'>Accuracy</td><td>&#177 " + sample.getAsDouble(Sample.ACCURACY) + "m</td></tr>"); }
 			if (featType.equals(Feature.OUTCROP_LOCALITY)) {
