@@ -11,8 +11,10 @@ import java.util.Vector;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.ComboDescriptor;
+import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.HTMLUtils;
 import nz.cri.gns.db.KeyValueObject;
+import nz.cri.gns.db.QueryDescriptor;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.Relationship;
@@ -242,8 +244,9 @@ public class SampleDE implements DataEntryForm {
 					while (value.length() > 0) {
 						if (value.indexOf("\n") == -1)
 							value = value + "\n";
-						rs = conn.executeQuery("SELECT Person_ID FROM Person_View WHERE Name = " + JspUtils.sqlEscape(value.substring(0, value.indexOf("\n")).trim()));
 						try {
+							String query = "SELECT person_id FROM person_view WHERE name = ?";
+							rs = conn.executeQuery(query, new int[] {Types.VARCHAR}, new Object[] {value.substring(0, value.indexOf("\n")).trim()});
 							rs.next();
 							collectors.add(new Integer(rs.getInt(1)));
 						} catch (Exception e) {
@@ -266,16 +269,18 @@ public class SampleDE implements DataEntryForm {
 						stLab =	stLine.substring(stGroup.length() + stPerson.length() + 2, stLine.indexOf("*", stGroup.length() + stPerson.length() + 2));
 						stComments = stLine.substring(stLine.lastIndexOf("*") + 1, stLine.length());
 						//check againt lookup values
-						rs = conn.executeQuery("SELECT Lookup_ID FROM Lookup WHERE Name = "	+ JspUtils.sqlEscape(stGroup) + " AND FieldName = 'FossilGroup'");
 						try {
+							String query = "SELECT lookup_id FROM lookup WHERE name = ? AND fieldname = ?";
+							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {stGroup, "FossilGroup"});
 							rs.next();
 							stGroupID = new Integer(rs.getInt(1));
 						} catch (Exception e) {
 							throw new DataInputException("Sent To - Group",	stGroup + " not a valid sent to group");
 						}
 						if (!stPerson.equals("")) {
-							rs = conn.executeQuery("SELECT Person_ID FROM Person_View WHERE Name = " + JspUtils.sqlEscape(stPerson));
 							try {
+								String query = "SELECT person_id FROM person_view WHERE name = ?";
+								rs = conn.executeQuery(query, new int[] {Types.VARCHAR}, new Object[] {stPerson});
 								rs.next();
 								stPersonID = new Integer(rs.getInt(1));
 							} catch (Exception e) {
@@ -283,8 +288,9 @@ public class SampleDE implements DataEntryForm {
 							}
 						}
 						if (!stLab.equals("")) {
-							rs = conn.executeQuery("SELECT Lab_ID FROM SC.Lab WHERE Lab_Name = " + JspUtils.sqlEscape(stLab));
 							try {
+								String query = "SELECT lab_id FROM sc.lab WHERE lab_name = ?";
+								rs = conn.executeQuery(query, new int[] {Types.VARCHAR}, new Object[] {stLab});
 								rs.next();
 								stLabID = new Integer(rs.getInt(1));
 							} catch (Exception e) {
@@ -329,15 +335,15 @@ public class SampleDE implements DataEntryForm {
 						if (value.indexOf(";") == -1)
 							value += ";";
 						String sampName = value.substring(0, value.indexOf(";")).trim();
-						rs = conn.executeQuery("SELECT Feature_ID FROM Sample_All_View WHERE Sample_Name = " + JspUtils.sqlEscape(sampName));
+						String query = "SELECT feature_id FROM feature_view WHERE sample_name = ? AND feature_status = ?";
+						rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {sampName, "approved"});
 						if (rs.next()) {
 							ps = new Relationship();
 							ps.setRelatedFeatureID(new Integer(rs.getInt(1)));
 							prevSamp.add(ps);
 						} else {
-							rs = conn.executeQuery("SELECT Feature_ID FROM Folder_Content_View WHERE Sample_Name = "										+ JspUtils.sqlEscape(sampName)
-										+ " AND (Status = 'approved' OR (Folder_Type = 'personal' AND User_ID = "
-										+ user.getPersonId() + "))");
+							query = "SELECT feature_id FROM feature_view fv, folder_view fd WHERE fv.working_folder_id = fd.folder_id AND fv.feature_status <> ? AND fd.user_id = ? AND fd.folder_type = ? AND fv.sample_name = ?";
+							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.NUMERIC, Types.VARCHAR, Types.VARCHAR}, new Object[] {"approved", new Integer(user.getPersonId()), "personal", sampName});
 							if (rs.next()) {
 								ps = new Relationship();
 								ps.setRelatedFeatureID(new Integer(rs.getInt(1)));
@@ -385,16 +391,13 @@ public class SampleDE implements DataEntryForm {
 							srDistRange = srDistance.substring(srDistance.indexOf("-") + 1, srDistance.length()).trim();
 						}
 						srDistance = srDistance.trim();
-						rs = conn.executeQuery("SELECT Feature_ID FROM Sample_All_View WHERE Sample_Name = " + JspUtils.sqlEscape(srFeat));
+						String query = "SELECT feature_id FROM feature_view WHERE sample_name = ? AND feature_status = ?";
+						rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {srFeat, "approved"});
 						if (rs.next()) {
 							srFeatID = new Integer(rs.getInt(1));
 						} else {
-							rs = conn.executeQuery(
-									"SELECT Feature_ID FROM Folder_Content_View WHERE Sample_Name = "
-										+ JspUtils.sqlEscape(srFeat)
-										+ " AND (Status = 'approved' OR (Folder_Type = 'personal' AND User_ID = "
-										+ user.getPersonId()
-										+ "))");
+							query = "SELECT feature_id FROM feature_view fv, folder_view fd WHERE fv.working_folder_id = fd.folder_id AND fv.feature_status <> ? AND fd.user_id = ? AND fd.folder_type = ? AND fv.sample_name = ?";
+							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.NUMERIC, Types.VARCHAR, Types.VARCHAR}, new Object[] {"approved", new Integer(user.getPersonId()), "personal", srFeat});
 							if (rs.next()) {
 								srFeatID = new Integer(rs.getInt(1));
 							} else {
@@ -419,11 +422,7 @@ public class SampleDE implements DataEntryForm {
 					break;
 				case STRAT_RELATIONSHIP :
 					stratRel = new Vector();
-					String strLine,
-						strDistance = "",
-						strDistMod,
-						strDistRange,
-						strStrat;
+					String strLine,	strDistance = "", strDistMod, strDistRange, strStrat;
 					Integer strRelID;
 					Relationship strR;
 					while (value.length() > 0) {
@@ -484,20 +483,11 @@ public class SampleDE implements DataEntryForm {
 						throw new DataInputException("Dip",	value + " is not valid.  Dip must be numeric and between 0 and 90");
 					break;
 				case DIP_DIRECTION :
-					if (!(value.equals("N")
-						|| value.equals("NE")
-						|| value.equals("E")
-						|| value.equals("SE")
-						|| value.equals("S")
-						|| value.equals("SW")
-						|| value.equals("W")
-						|| value.equals("NW")))
+					if (!(value.equals("N") || value.equals("NE") || value.equals("E") || value.equals("SE") || value.equals("S") || value.equals("SW") || value.equals("W") || value.equals("NW")))
 						throw new DataInputException("Dip Direction", value + " is not a valid option");
 					break;
 				case STRIKE :
-					if (!FREDUtils.isNumeric(value)
-						|| Integer.parseInt(value) < 0
-						|| Integer.parseInt(value) > 360)
+					if (!FREDUtils.isNumeric(value) || Integer.parseInt(value) < 0 || Integer.parseInt(value) > 360)
 						throw new DataInputException("Strike", value + " is not valid.  Strike must be numeric and between 0 and 360");
 					break;
 				case FACING :
@@ -542,19 +532,20 @@ public class SampleDE implements DataEntryForm {
 				case SED_FEATURES :
 					sedFeat = new Vector();
 					SedFeature sFeat;
+					String sedFeatStr;
 					while (value.length() > 0) {
 						sFeat = new SedFeature();
 						if (value.indexOf(";") == -1)
 							value += ";";
+						String query = "SELECT lookup_id FROM lookup WHERE name = ? AND fieldname = ?";
 						if (value.indexOf("*") != -1 && value.indexOf("*") < value.indexOf(";")) {
-							rs = conn.executeQuery("SELECT Lookup_ID FROM Lookup WHERE Name = '" + value.substring(0, value.indexOf("*")).trim()
-										+ "' AND FieldName = 'SedFeature'");
+							sedFeatStr = value.substring(0, value.indexOf("*")).trim();
 							sFeat.setAbundant("Y");
 						} else {
-							rs = conn.executeQuery("SELECT Lookup_ID FROM Lookup WHERE Name = '" + value.substring(0, value.indexOf(";")).trim()
-										+ "' AND FieldName = 'SedFeature'");
+							sedFeatStr = value.substring(0, value.indexOf(";")).trim();
 						}
 						try {
+							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {sedFeatStr, "SedFeature"});
 							rs.next();
 							sFeat.setSedFeatureId(new Integer(rs.getInt(1)));
 							sedFeat.add(sFeat);
@@ -683,20 +674,16 @@ public class SampleDE implements DataEntryForm {
 		out.write("</td></tr>\n");
 		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
 
-		out.write(
-			"<tr><td class='heading'>Collection Date</td><td></td><td><input type='text' name='CollDate' value='"
+		out.write("<tr><td class='heading'>Collection Date</td><td></td><td><input type='text' name='CollDate' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(COLLECTION_DATE))
 				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Date&Field=CollDate\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write(
-			"<tr><td class='heading'>Collectors</td><td></td><td><textarea name='Coll' cols='40' rows='2'>"
+		out.write("<tr><td class='heading'>Collectors</td><td></td><td><textarea name='Coll' cols='40' rows='2'>"
 				+ FREDUtils.noNulls(getFieldForHTML(COLLECTORS))
 				+ "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Coll\", \"Supp\", \"width=600,height=400\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write(
-			"<tr><td class='heading'>Strat Name</td><td></td><td><input type='text' name='StratName' size='40' value='"
+		out.write("<tr><td class='heading'>Strat Name</td><td></td><td><input type='text' name='StratName' size='40' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(STRAT_NAME))
 				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=StratName\", \"Supp\", \"width=600,height=300\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write(
-			"<tr><td class='heading'>Fossils In Place</td><td></td><td><select name='InPlace'><option value='' "
+		out.write("<tr><td class='heading'>Fossils In Place</td><td></td><td><select name='InPlace'><option value='' "
 				+ ((getFieldForHTML(FOSSILS_IN_PLACE) == null) ? " selected" : "")
 				+ ">-- Choose --</option><option value='Yes' "
 				+ ((getFieldForHTML(FOSSILS_IN_PLACE) != null
@@ -719,23 +706,18 @@ public class SampleDE implements DataEntryForm {
 					? " selected"
 					: "")
 				+ ">Unknown</option></select></td></tr>\n");
-		out.write(
-			"<tr><td class='heading'>Sent To</td><td></td><td><textarea name='SentTo' cols='40' rows='2'>"
+		out.write("<tr><td class='heading'>Sent To</td><td></td><td><textarea name='SentTo' cols='40' rows='2'>"
 				+ FREDUtils.noNulls(getFieldForHTML(SENT_TO))
 				+ "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=SentTo\", \"Supp\",\"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write(
-			"<tr><td class='heading'>Not Collected<br><span class='smalltext'>specify fossils seen but not collected</span></td><td></td><td><textarea name='NotColl' cols='40' rows='3'>"
+		out.write("<tr><td class='heading'>Not Collected<br><span class='smalltext'>specify fossils seen but not collected</span></td><td></td><td><textarea name='NotColl' cols='40' rows='3'>"
 				+ FREDUtils.noNulls(getFieldForHTML(NOT_COLLECTED))
 				+ "</textarea></td></tr>\n");
-		out.write(
-			"<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
 
-		out.write(
-			"<tr><td class='heading' colspan='2'>Significance/Comments</td><td><textarea name='Sig' cols='40' rows='3'>"
+		out.write("<tr><td class='heading' colspan='2'>Significance/Comments</td><td><textarea name='Sig' cols='40' rows='3'>"
 				+ FREDUtils.noNulls(getFieldForHTML(SIGNIFICANCE_COMMENTS))
 				+ "</textarea></td></tr>\n");
-		out.write(
-			"<tr><td class='heading'>Stage Limits</td><td class='smallheading'>Inferred</td><td>\n");
+		out.write("<tr><td class='heading'>Stage Limits</td><td class='smallheading'>Inferred</td><td>\n");
 		out.write("<table border='0' cellspacing='0'><tr><td>");
 		cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
 		cd.name = "InfStageStart";
@@ -743,8 +725,7 @@ public class SampleDE implements DataEntryForm {
 		cd.selected = getFieldForHTML(INF_AGE_START);
 		cd.orderBy = "Ag_Name";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
-		out.write(
-			"</td><td><select name='InfStartMod'><option value='-' "
+		out.write("</td><td><select name='InfStartMod'><option value='-' "
 				+ ((getFieldForHTML(INF_START_MOD) == null) ? " selected" : "")
 				+ "></option><option value='?' "
 				+ ((getFieldForHTML(INF_START_MOD) != null
@@ -759,8 +740,7 @@ public class SampleDE implements DataEntryForm {
 		cd.selected = getFieldForHTML(INF_AGE_STOP);
 		cd.orderBy = "Ag_Name";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
-		out.write(
-			"</td><td class='heading'><select name='InfStopMod'><option value='-' "
+		out.write("</td><td class='heading'><select name='InfStopMod'><option value='-' "
 				+ ((getFieldForHTML(INF_STOP_MOD) == null) ? " selected" : "")
 				+ "></option><option value='?' "
 				+ ((getFieldForHTML(INF_STOP_MOD) != null
@@ -777,8 +757,7 @@ public class SampleDE implements DataEntryForm {
 		cd.selected = getFieldForHTML(KNW_AGE_START);
 		cd.orderBy = "Ag_Name";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
-		out.write(
-			"</td><td><select name='KnwStartMod'><option value='-' "
+		out.write("</td><td><select name='KnwStartMod'><option value='-' "
 				+ ((getFieldForHTML(KNW_START_MOD) == null) ? " selected" : "")
 				+ "></option><option value='?' "
 				+ ((getFieldForHTML(KNW_START_MOD) != null
@@ -793,8 +772,7 @@ public class SampleDE implements DataEntryForm {
 		cd.selected = getFieldForHTML(KNW_AGE_STOP);
 		cd.orderBy = "Ag_Name";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
-		out.write(
-			"</td><td class='heading'><select name='KnwStopMod'><option value='-' "
+		out.write("</td><td class='heading'><select name='KnwStopMod'><option value='-' "
 				+ ((getFieldForHTML(KNW_STOP_MOD) == null) ? " selected" : "")
 				+ "></option><option value='?' "
 				+ ((getFieldForHTML(KNW_STOP_MOD) != null
@@ -803,28 +781,22 @@ public class SampleDE implements DataEntryForm {
 					: "")
 				+ ">?</option></select></td></tr>\n");
 		out.write("</table></td></tr>\n");
-		out.write(
-			"<tr><td class='heading'>Samples Nearby</td><td></td><td><input type='text' name='PrevSamp' size='40' value='"
+		out.write("<tr><td class='heading'>Samples Nearby</td><td></td><td><input type='text' name='PrevSamp' size='40' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(PREVIOUS_SAMPLE))
 				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=PrevSamp\", \"Supp\", \"width=600,height=350\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write(
-			"<tr><td class='heading' colspan='2'>Sample Relationships</td><td><textarea name='SampRel' cols='40' rows='3'>"
+		out.write("<tr><td class='heading' colspan='2'>Sample Relationships</td><td><textarea name='SampRel' cols='40' rows='3'>"
 				+ FREDUtils.noNulls(getFieldForHTML(SAMPLE_RELATIONSHIP))
 				+ "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=SampRel\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write(
-			"<tr><td class='heading' colspan='2'>Stratigraphic Relationships</td><td><textarea name='StratRel' cols='40' rows='3'>"
+		out.write("<tr><td class='heading' colspan='2'>Stratigraphic Relationships</td><td><textarea name='StratRel' cols='40' rows='3'>"
 				+ FREDUtils.noNulls(getFieldForHTML(STRAT_RELATIONSHIP))
 				+ "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=StratRel\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write(
-			"<tr><td class='heading'>Column/Map</td><td></td><td><input type='text' name='ColMap' size='40' value='"
+		out.write("<tr><td class='heading'>Column/Map</td><td></td><td><input type='text' name='ColMap' size='40' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(COLUMN_MAP))
 				+ "'></td></tr>\n");
-		out.write(
-			"<tr><td class='heading'>Attitude</td><td class='smallheading'>Dip</td><td><input type='text' name='Dip' size='3' value='"
+		out.write("<tr><td class='heading'>Attitude</td><td class='smallheading'>Dip</td><td><input type='text' name='Dip' size='3' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(DIP))
 				+ "'></td></tr>\n");
-		out.write(
-			"<tr><td></td><td class='smallheading'>Dip Dirn.</td><td><select name='DipDir'>\n<option value='' "
+		out.write("<tr><td></td><td class='smallheading'>Dip Dirn.</td><td><select name='DipDir'>\n<option value='' "
 				+ ((getFieldForHTML(DIP_DIRECTION) == null) ? " selected" : "")
 				+ ">-- Choose --</option>\n<option value='N' "
 				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("N")) ? " selected" : "")
@@ -843,12 +815,10 @@ public class SampleDE implements DataEntryForm {
 				+ ">West</option>\n<option value='NW' "
 				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("NW")) ? " selected" : "")
 				+ ">North-West</option>\n</select></td></tr>\n");
-		out.write(
-			"<tr><td></td><td class='smallheading'>Strike</td><td><input type='text' name='Strike' size='4' value='"
+		out.write("<tr><td></td><td class='smallheading'>Strike</td><td><input type='text' name='Strike' size='4' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(STRIKE))
 				+ "'></td></tr>\n");
-		out.write(
-			"<tr><td></td><td class='smallheading'>Facing</td><td><select name='Facing'><option value='' "
+		out.write("<tr><td></td><td class='smallheading'>Facing</td><td><select name='Facing'><option value='' "
 				+ ((getFieldForHTML(FACING) == null) ? " selected" : "")
 				+ ">-- Choose --</option><option value='Normal' "
 				+ ((getFieldForHTML(FACING) != null && getFieldForHTML(FACING).equals("Normal")) ? " selected" : "")
@@ -875,14 +845,12 @@ public class SampleDE implements DataEntryForm {
 		cd.join = "FieldName = 'GrainSize'";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 		out.write("</td></tr>\n");
-		out.write(
-			"<tr><td></td><td class='smallheading'>Comp. Used</td><td><select name='GSComp'><option value='' "
+		out.write("<tr><td></td><td class='smallheading'>Comp. Used</td><td><select name='GSComp'><option value='' "
 				+ ((getFieldForHTML(GS_COMP) == null) ? " selected" : "") + ">-- Choose --</option><option value='Y' " + ((getFieldForHTML(GS_COMP) != null && getFieldForHTML(GS_COMP).equals("Y")) ? " selected" : "")
 				+ ">Yes</option><option value='N' "
 				+ ((getFieldForHTML(GS_COMP) != null && getFieldForHTML(GS_COMP).equals("N")) ? " selected" : "")
 				+ ">No</option></select></td></tr>\n");
-		out.write(
-			"<tr><td class='heading'>Stratification</td><td class='smallheading'>Thickness</td><td>");
+		out.write("<tr><td class='heading'>Stratification</td><td class='smallheading'>Thickness</td><td>");
 		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Code || ': ' || Name");
 		cd.name = "BedThick";
 		cd.prompt = "-- Choose --";
@@ -961,34 +929,28 @@ public class SampleDE implements DataEntryForm {
 		cd.join = "FieldName = 'RockColour'";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 		out.write("</td></tr>\n");
-		out.write(
-			"<tr><td></td><td class='smallheading'>Wet/Dry</td><td><select name='Wet'><option value='' "
+		out.write("<tr><td></td><td class='smallheading'>Wet/Dry</td><td><select name='Wet'><option value='' "
 				+ ((getFieldForHTML(WET) == null) ? " selected" : "") + ">-- Choose --</option><option value='Wet' " + ((getFieldForHTML(WET) != null && getFieldForHTML(WET).equals("Wet")) ? " selected" : "")
 				+ ">Wet</option><option value='Dry' "
 				+ ((getFieldForHTML(WET) != null && getFieldForHTML(WET).equals("Dry")) ? " selected" : "")
 				+ ">Dry</option></select></td></tr>\n");
-		out.write(
-			"<tr><td class='heading' colspan='2'>Additional Features</td><td><input type='text' name='SedFeat' size='40' value='"
+		out.write("<tr><td class='heading' colspan='2'>Additional Features</td><td><input type='text' name='SedFeat' size='40' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(SED_FEATURES))
 				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=SedFeat\", \"Supp\", \"width=600,height=350\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write(
-			"<tr><td class='heading' colspan='2'>Inferred Environment</td><td><select name='DepEnv1'><option value='' "
+		out.write("<tr><td class='heading' colspan='2'>Inferred Environment</td><td><select name='DepEnv1'><option value='' "
 				+ ((getFieldForHTML(DEP_ENVIRONMENT_1) == null) ? " selected" : "")
 				+ ">-- Choose --</option><option value='Marine' "
 				+ ((getFieldForHTML(DEP_ENVIRONMENT_1) != null && getFieldForHTML(DEP_ENVIRONMENT_1).equals("Marine")) ? " selected" : "")
 				+ ">Marine</option><option value='Non-marine' "
 				+ ((getFieldForHTML(DEP_ENVIRONMENT_1) != null && getFieldForHTML(DEP_ENVIRONMENT_1).equals("Non-marine")) ? " selected" : "")
 				+ ">Non-marine</option></select></td></tr>\n");
-		out.write(
-			"<tr><td></td><td></td><td><textarea name='DepEnv2' cols='40' rows='3'>"
+		out.write("<tr><td></td><td></td><td><textarea name='DepEnv2' cols='40' rows='3'>"
 				+ FREDUtils.noNulls(getFieldForHTML(DEP_ENVIRONMENT_2))
 				+ "</textarea></td></tr>\n");
-		out.write(
-			"<tr><td class='heading' colspan='2'>Nature of Rock Unit</td><td><textarea name='RockNat' cols='40' rows='3'>"
+		out.write("<tr><td class='heading' colspan='2'>Nature of Rock Unit</td><td><textarea name='RockNat' cols='40' rows='3'>"
 				+ FREDUtils.noNulls(getFieldForHTML(ROCK_NATURE))
 				+ "</textarea></td></tr>\n");
-		out.write(
-			"<tr><td class='heading' colspan='2'>Correspondence</td><td><textarea name='Corr' cols='40' rows='3'>"
+		out.write("<tr><td class='heading' colspan='2'>Correspondence</td><td><textarea name='Corr' cols='40' rows='3'>"
 				+ FREDUtils.noNulls(getFieldForHTML(CORRESPONDENCE))
 				+ "</textarea></td></tr>\n");
 		if (!outcropSamp) {
@@ -1002,10 +964,11 @@ public class SampleDE implements DataEntryForm {
 	}
 
 	public int save() throws InvalidCredentialsException, SQLException, IOException {
+		//TODO rework DB stuff from here down
 		if (featureID == -1)
 			throw new InvalidCredentialsException();
 		if (!savedFlag) {
-			int sampleID;
+			String sampleID;
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			ResultSet rs;
 			conn.getConnection().setAutoCommit(false);
@@ -1014,166 +977,38 @@ public class SampleDE implements DataEntryForm {
 					if (!folder.isAllowedCreateLocalities())
 						throw new InvalidCredentialsException();
 					if (auditID == -1) {	//ie not an outcrop sample
-					//create new AUDIT record
-						rs = conn.executeQuery("SELECT Audit_Seq.NEXTVAL FROM DUAL");
-						rs.next();
-						auditID = rs.getInt(1);
-						conn.executeUpdate(
-							"INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Comments, Working_Folder_ID, Security_Class_ID) VALUES ("
-								+ auditID
-								+ ", 'working', "
-								+ user.getPersonId()
-								+ ", SYSDATE, "
-								+ JspUtils.sqlEscape(fields[WORKING_COMMENTS])
-								+ ", "
-								+ folder.getFolderID()
-								+ ", " 
-								+ ((secClassID != null) ? secClassID.toString() : "4") 
-								+ ")");
+						//create new AUDIT record
+						QueryDescriptor qd = new QueryDescriptor("audit_table");
+						qd.addQueryColumn("status", Types.VARCHAR, "working");
+						qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
+						qd.addQueryColumn("created_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
+						qd.addQueryColumn("working_comments", Types.VARCHAR, fields[WORKING_COMMENTS]);
+						qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(folder.getFolderID()));
+						qd.addQueryColumn("security_class_id", Types.NUMERIC, ((secClassID != null) ? secClassID : new Integer(4)));
+						String auditID = DBUtils.doInsertUsingSequence(qd, "audit_id", "audit_seq", conn, true);
 					}
 					//create new SAMPLE record
-					rs = conn.executeQuery("SELECT Sample_Seq.NEXTVAL FROM DUAL");
-					rs.next();
-					sampleID = rs.getInt(1);
-					conn.executeUpdate(
-						"INSERT INTO Sample (Sample_ID, Feature_ID, Audit_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage_ID, Known_Stage_ID, Column_Map, Dip, Dip_Direction, Strike, Facing, Primary_Grainsize_ID, Secondary_Grainsize_ID, Comparator_Used, Bed_Thick_ID, Primary_Bedding_ID, Secondary_Bedding_ID, Weathering_ID, Hardness_ID, Carbonate_ID, Colour_Modifier_ID, Primary_Colour_ID, Secondary_Colour_ID, Wet, Deposition_Env, Rock_Nature, Correspondence) VALUES ("
-							+ sampleID
-							+ ", "
-							+ featureID
-							+ ", "
-							+ auditID
-							+ ", "
-							+ ((collDate != null) ? "TO_DATE('" + collDate.getDateString() + "'), " + JspUtils.sqlEscape(collDate.getDateRounding()) : "NULL, NULL")
-							+ ", "
-							+ JspUtils.sqlEscape(getField(STRAT_NAME))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(FOSSILS_IN_PLACE))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(NOT_COLLECTED))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(SIGNIFICANCE_COMMENTS))
-							+ ", "
-							+ JspUtils.sqlEscape(DataEntryUtils.getStageID(getField(INF_AGE_START), getField(INF_START_MOD), getField(INF_AGE_STOP), getField(INF_STOP_MOD), state))
-							+ ", "
-							+ JspUtils.sqlEscape(DataEntryUtils.getStageID(getField(KNW_AGE_START), getField(KNW_START_MOD), getField(KNW_AGE_STOP), getField(KNW_STOP_MOD), state))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(COLUMN_MAP))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(DIP))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(DIP_DIRECTION))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(STRIKE))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(FACING))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(GRAIN_SIZE_P))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(GRAIN_SIZE_S))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(GS_COMP))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(BEDDING_THICKNESS))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(BEDDING_P))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(BEDDING_S))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(WEATHERING))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(HARDNESS))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(CARBONATE))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(COLOUR_MOD))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(COLOUR_P))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(COLOUR_S))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(WET))
-							+ ", "
-							+ JspUtils.sqlEscape(depEnv)
-							+ ", "
-							+ JspUtils.sqlEscape(getField(ROCK_NATURE))
-							+ ", "
-							+ JspUtils.sqlEscape(getField(CORRESPONDENCE))
-							+ ")");
+					QueryDescriptor qd = getSampleQD();
+					qd.addQueryColumn("feature_id", Types.NUMERIC, new Integer(featureID));
+					qd.addQueryColumn("audit_id", Types.NUMERIC, new Integer(auditID));
+					sampleID = DBUtils.doInsertUsingSequence(qd, "sample_id", "sample_seq", conn, true);
 				} else { // edit
-					sampleID = sample.getSampleID();
-					if ((!FREDUtils.hasMasterfileSampleRights(user, String.valueOf(sampleID), state) && sample.getAsString(Sample.SAMPLE_STATUS).equals("approved")) || !folder.isAllowedEditLocalities())
+					sampleID = String.valueOf(sample.getSampleID());
+					if ((!FREDUtils.hasMasterfileSampleRights(user, sampleID, state) && sample.getAsString(Sample.SAMPLE_STATUS).equals("approved")) || !folder.isAllowedEditLocalities())
 						throw new InvalidCredentialsException();
 					//Update AUDIT
-					conn.executeUpdate(
-						"UPDATE Audit_Table SET Modified_By_ID = "
-							+ user.getPersonId()
-							+ ", Modified_Date = SYSDATE, Working_Comments = "
-							+ JspUtils.sqlEscape(fields[WORKING_COMMENTS])
-							+ ", Security_Class_ID = "
-							+ secClassID.toString()
-							+ " WHERE Audit_ID = "
-							+ auditID);
+					QueryDescriptor qd = new QueryDescriptor("audit_table");
+					qd.addQueryColumn("status", Types.VARCHAR, "working");
+					qd.addQueryColumn("modified_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
+					qd.addQueryColumn("modified_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
+					qd.addQueryColumn("working_comments", Types.VARCHAR, fields[WORKING_COMMENTS]);
+					qd.addQueryColumn("security_class_id", Types.NUMERIC, ((secClassID != null) ? secClassID : new Integer(4)));
+					qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(auditID));
+					DBUtils.doUpdate(qd, "audit_id = ?", conn);
 					//Update SAMPLE
-					conn.executeUpdate(
-						"UPDATE Sample SET Collection_Date = " 
-							+ ((collDate != null) ? "TO_DATE('" + collDate.getDateString() + "')" : "NULL")
-							+ ", Date_Rounding = "
-							+ ((collDate != null) ? JspUtils.sqlEscape(collDate.getDateRounding()) : "NULL")
-							+ ", Strat_Unit = "
-							+ JspUtils.sqlEscape(getField(STRAT_NAME))
-							+ ", In_Place = "
-							+ JspUtils.sqlEscape(getField(FOSSILS_IN_PLACE))
-							+ ", Not_Collected = "
-							+ JspUtils.sqlEscape(getField(NOT_COLLECTED))
-							+ ", Significance = "
-							+ JspUtils.sqlEscape(getField(SIGNIFICANCE_COMMENTS))
-							+ ", Inferred_Stage_ID = "
-							+ JspUtils.sqlEscape(DataEntryUtils.getStageID(getField(INF_AGE_START), getField(INF_START_MOD), getField(INF_AGE_STOP), getField(INF_STOP_MOD), state))
-							+ ", Known_Stage_ID = "
-							+ JspUtils.sqlEscape(DataEntryUtils.getStageID(getField(KNW_AGE_START), getField(KNW_START_MOD), getField(KNW_AGE_STOP), getField(KNW_STOP_MOD), state))
-							+ ", Column_Map = "
-							+ JspUtils.sqlEscape(getField(COLUMN_MAP))
-							+ ", Dip = "
-							+ JspUtils.sqlEscape(getField(DIP))
-							+ ", Dip_Direction = "
-							+ JspUtils.sqlEscape(getField(DIP_DIRECTION))
-							+ ", Strike = "
-							+ JspUtils.sqlEscape(getField(STRIKE))
-							+ ", Facing = "
-							+ JspUtils.sqlEscape(getField(FACING))
-							+ ", Primary_Grainsize_ID = "
-							+ JspUtils.sqlEscape(getField(GRAIN_SIZE_P))
-							+ ", Secondary_Grainsize_ID = "
-							+ JspUtils.sqlEscape(getField(GRAIN_SIZE_S))
-							+ ", Comparator_Used = "
-							+ JspUtils.sqlEscape(getField(GS_COMP))
-							+ ", Bed_Thick_ID = "
-							+ JspUtils.sqlEscape(getField(BEDDING_THICKNESS))
-							+ ", Primary_Bedding_ID = "
-							+ JspUtils.sqlEscape(getField(BEDDING_P))
-							+ ", Secondary_Bedding_ID = "
-							+ JspUtils.sqlEscape(getField(BEDDING_S))
-							+ ", Weathering_ID = "
-							+ JspUtils.sqlEscape(getField(WEATHERING))
-							+ ", Hardness_ID = "
-							+ JspUtils.sqlEscape(getField(HARDNESS))
-							+ ", Carbonate_ID = "
-							+ JspUtils.sqlEscape(getField(CARBONATE))
-							+ ", Colour_Modifier_ID = "
-							+ JspUtils.sqlEscape(getField(COLOUR_MOD))
-							+ ", Primary_Colour_ID = "
-							+ JspUtils.sqlEscape(getField(COLOUR_P))
-							+ ", Secondary_Colour_ID = "
-							+ JspUtils.sqlEscape(getField(COLOUR_S))
-							+ ", Wet = "
-							+ JspUtils.sqlEscape(getField(WET))
-							+ ", Deposition_Env = "
-							+ JspUtils.sqlEscape(depEnv)
-							+ ", Rock_Nature = "
-							+ JspUtils.sqlEscape(getField(ROCK_NATURE))
-							+ ", Correspondence = "
-							+ JspUtils.sqlEscape(getField(CORRESPONDENCE))
-							+ " WHERE Sample_ID = " + sampleID);
+					qd = getSampleQD();
+					qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(sampleID));
+					DBUtils.doUpdate(qd, "sample_id = ?", conn);
 				}
 
 				//Create COLLECTORS entries
@@ -1277,9 +1112,9 @@ public class SampleDE implements DataEntryForm {
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = true;
-				//try {
-					sample = new Sample(sampleID, user, state, true);
-				//} catch (Exception e) {}
+				try {
+					sample = new Sample(Integer.parseInt(sampleID), user, state, true);
+				} catch (Exception e) {}
 			} catch (SQLException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);
@@ -1301,6 +1136,40 @@ public class SampleDE implements DataEntryForm {
 			}
 		}
 		return sample.getSampleID();
+	}
+
+	private QueryDescriptor getSampleQD() throws NumberFormatException, IOException, SQLException {
+		QueryDescriptor qd = new QueryDescriptor("sample");
+		qd.addQueryColumn("collection_date", Types.DATE ,((collDate != null) ? collDate.getDate() : null));
+		qd.addQueryColumn("date_rounding", Types.VARCHAR, ((collDate != null) ? collDate.getDateRounding() : null));
+		qd.addQueryColumn("strat_unit", Types.VARCHAR, getField(STRAT_NAME));
+		qd.addQueryColumn("in_place", Types.VARCHAR, getField(FOSSILS_IN_PLACE));
+		qd.addQueryColumn("not_collected", Types.VARCHAR, getField(NOT_COLLECTED));
+		qd.addQueryColumn("significance", Types.VARCHAR, getField(SIGNIFICANCE_COMMENTS));
+		qd.addQueryColumn("inferred_stage_id", Types.NUMERIC, new Integer(DataEntryUtils.getStageID(getField(INF_AGE_START), getField(INF_START_MOD), getField(INF_AGE_STOP), getField(INF_STOP_MOD), state)));
+		qd.addQueryColumn("known_stage_id", Types.NUMERIC, new Integer(DataEntryUtils.getStageID(getField(KNW_AGE_START), getField(KNW_START_MOD), getField(KNW_AGE_STOP), getField(KNW_STOP_MOD), state)));
+		qd.addQueryColumn("column_map", Types.VARCHAR, getField(COLUMN_MAP));
+		qd.addQueryColumn("dip", Types.NUMERIC, ((getField(DIP) != null) ? new Double(getField(DIP)) : null));
+		qd.addQueryColumn("dip_direction", Types.VARCHAR, getField(DIP_DIRECTION));
+		qd.addQueryColumn("strike", Types.NUMERIC, ((getField(STRIKE) != null) ? new Double(getField(STRIKE)) : null));
+		qd.addQueryColumn("facing", Types.VARCHAR, getField(FACING));
+		qd.addQueryColumn("primary_grainsize_id", Types.NUMERIC, ((getField(GRAIN_SIZE_P) != null) ? new Integer(getField(GRAIN_SIZE_P)) : null));
+		qd.addQueryColumn("secondary_grainsize_id", Types.NUMERIC, ((getField(GRAIN_SIZE_S) != null) ? new Integer(getField(GRAIN_SIZE_S)) : null));
+		qd.addQueryColumn("comparator_used", Types.VARCHAR, getField(GS_COMP));
+		qd.addQueryColumn("bed_thick_id", Types.NUMERIC, ((getField(BEDDING_THICKNESS) != null) ? new Integer(getField(BEDDING_THICKNESS)) : null));
+		qd.addQueryColumn("primary_bedding_id", Types.NUMERIC, ((getField(BEDDING_P) != null) ? new Integer(getField(BEDDING_P)) : null));
+		qd.addQueryColumn("secondary_bedding_id", Types.NUMERIC, ((getField(BEDDING_S) != null) ? new Integer(getField(BEDDING_S)) : null));
+		qd.addQueryColumn("weathering_id", Types.NUMERIC, ((getField(WEATHERING) != null) ? new Integer(getField(WEATHERING)) : null));
+		qd.addQueryColumn("hardness_id", Types.NUMERIC, ((getField(HARDNESS) != null) ? new Integer(getField(HARDNESS)) : null));
+		qd.addQueryColumn("carbonate_id", Types.NUMERIC, ((getField(CARBONATE) != null) ? new Integer(getField(CARBONATE)) : null));
+		qd.addQueryColumn("colour_modifier_id", Types.NUMERIC, ((getField(COLOUR_MOD) != null) ? new Integer(getField(COLOUR_MOD)) : null));
+		qd.addQueryColumn("primary_colour_id", Types.NUMERIC, ((getField(COLOUR_P) != null) ? new Integer(getField(COLOUR_P)) : null));
+		qd.addQueryColumn("secondary_colour_id", Types.NUMERIC, ((getField(COLOUR_S) != null) ? new Integer(getField(COLOUR_S)) : null));
+		qd.addQueryColumn("wet", Types.VARCHAR, getField(WET));
+		qd.addQueryColumn("deposition_env", Types.VARCHAR, depEnv);
+		qd.addQueryColumn("rock_nature", Types.VARCHAR, getField(ROCK_NATURE));
+		qd.addQueryColumn("correspondence", Types.VARCHAR, getField(CORRESPONDENCE));
+		return qd;
 	}
 
 	public int getWorkingFolderID() {
