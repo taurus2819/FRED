@@ -469,7 +469,7 @@ public abstract class LocalityDE implements DataEntryForm {
 				qd.addQueryColumn("locality", Types.VARCHAR, fields[LOCALITY_DESC]);
 				qd.addQueryColumn("feature_name", Types.VARCHAR, fields[FEATURE_NAME]);
 				if (fields[REGISTRATION_AREA] != null)
-					qd.addQueryColumn("reg_area_id", Types.VARCHAR, new Integer(fields[REGISTRATION_AREA]));
+					qd.addQueryColumn("reg_area_id", Types.NUMERIC, new Integer(fields[REGISTRATION_AREA]));
 				String featureID = DBUtils.doInsertUsingSequence(qd, "feature_id", "feature_seq", conn, true);
 				feature = new Feature(Integer.parseInt(featureID), user, state, true);
 			} else { // edit
@@ -491,7 +491,7 @@ public abstract class LocalityDE implements DataEntryForm {
 				qd.addQueryColumn("locality", Types.VARCHAR, fields[LOCALITY_DESC]);
 				qd.addQueryColumn("feature_name", Types.VARCHAR, fields[FEATURE_NAME]);
 				if (fields[REGISTRATION_AREA] != null)
-					qd.addQueryColumn("reg_area_id", Types.VARCHAR, new Integer(fields[REGISTRATION_AREA]));
+					qd.addQueryColumn("reg_area_id", Types.NUMERIC, new Integer(fields[REGISTRATION_AREA]));
 				qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getFeatureID()));
 				DBUtils.doUpdate(qd, "feature_id=?", conn);
 				

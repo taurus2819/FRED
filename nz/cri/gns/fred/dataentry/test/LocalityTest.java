@@ -52,6 +52,7 @@ public class LocalityTest extends TestCase {
 		User user = new User("pseudo_ben", "santor32", ipConn);
 		DataEntryForm loc2 = DataEntryFormFactory.getLocalityDataEntryForm(1630, user, state);
 		loc2.setTempField(DataEntryForm.COLLECTORS, "Morrison, Ben");
+		loc2.setTempField(DataEntryForm.GRID_REF, "NZMG:2222222*5555555");
 		loc2.setFieldsFromTemp();
 		loc2.save();		
 	}
