@@ -159,31 +159,27 @@ public class PaleontologyRecord extends Record {
 
 	/**
 	 *  Use this to get a new instance of this class. 
-	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
+	 * @throws SQLException if there is not a record for given ID, as well as normal SQLExceptions.
 	 */
 	public static Record getData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, InvalidCredentialsException {
 		Record rec = (PaleontologyRecord) pool.retrieve(new DataFinder(id));
 		if (forceRefresh && rec != null) {
 			pool.removeMe(rec);
-			System.out.println("Purging pal record");
 			rec = null;
 		}
-		if (rec == null) {
+		if (rec == null)
 			rec = new PaleontologyRecord(id, state);
-			System.out.println("Creating new pal record");
-		} else {
-			System.out.println("Re-using existing pal record");
-		}
 		if (!FREDUtils.isAllowedLocality(user, rec.getAsString(FEATURE_SECURITY_CLASS_ID), rec.getAsString(FEATURE_STATUS), rec.getAsString(FEATURE_ID), state)
 				|| !FREDUtils.isAllowedRecord(user, rec.getAsString(SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(RECORD_ID), state)) {
 			throw new InvalidCredentialsException();
 		}
+		System.out.println("Finished getting pal record");
 		return rec;
 	}
 
 	/**
 	 *  Use this to get a new instance of this class. 
-	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
+	 * @throws SQLException if there is not a record for given ID, as well as normal SQLExceptions.
 	 */
 	public static Record getData(int id, User user, PageState state) throws SQLException, IOException, InvalidCredentialsException {
 		return getData(id, user, state, false);
