@@ -256,13 +256,13 @@ function parseSerialNum(serialNum, prefix) {
 		x = trim(serialNum.substring(0, serialNum.indexOf("-")));
 		y = trim(serialNum.substring(serialNum.indexOf("-") + 1, serialNum.length));
 		if (isNaN(x) || isNaN(y)) { return "false"; }
-		return "fv." + prefix + "serial_number BETWEEN " + parseInt(x) + " AND " + parseInt(y);
+		return "fv." + prefix + "serial_number BETWEEN " + parseInt(x, 10) + " AND " + parseInt(y, 10);
 	} else if (isNaN(serialNum.substring(serialNum.length - 1, serialNum.length)) && !isNaN(serialNum.substring(0, serialNum.length - 1))) {
-		return "fv." + prefix + "serial_number = " + parseInt(serialNum.substring(0, serialNum.length - 1)) + " AND fv." + prefix + "recollection_number = '" + serialNum.substring(serialNum.length - 1, serialNum.length).toUpperCase() + "'";
+		return "fv." + prefix + "serial_number = " + parseInt(serialNum.substring(0, serialNum.length - 1), 10) + " AND fv." + prefix + "recollection_number = '" + serialNum.substring(serialNum.length - 1, serialNum.length).toUpperCase() + "'";
 	} else if (isNaN(serialNum)) {
 		return "false";
 	}
-	return "fv." + prefix + "serial_number = " + parseInt(serialNum);
+	return "fv." + prefix + "serial_number = " + parseInt(serialNum, 10);
 }
 
 </script>
