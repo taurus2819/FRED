@@ -6,20 +6,13 @@
 	DBConnection connection = FREDUtils.getFREDConnection(state);
 
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 
 	drawTop(out, et, request, response);
 
 	if (request.getParameter("ID") != null) {
 		Folder folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state, true);
 		String redirect = URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderID(), "UTF-8");
-
-		//print FRF after accepting
-		if (request.getParameter("PrintID") != null) {
-			out.println("<script language='JavaScript'><!--");
-			out.println("window.open(\"print_front.jsp?FeatID=" + request.getParameter("PrintID") + "\");");
-			out.println("//--></script>");
-		}
 
 		if (folder.isAllowedReadLocalities()) {
 			
@@ -38,7 +31,7 @@
 			//List records
 
 			//Table header
-			out.println("<p><table border='1' cellspacing='0' cellpadding='2' width='550'>");
+			out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
 			out.println("<tr><th colspan='2'>Locality&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Field No/<br>Drillhole Name&nbsp;&nbsp;</th><th>Submitted Date&nbsp;&nbsp;</th><th colspan='2'>Options</th></tr>");
 			
 			//To Approve
