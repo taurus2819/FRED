@@ -1,7 +1,6 @@
 package nz.cri.gns.fred.dataentry;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -653,10 +652,10 @@ public abstract class LocalityDE implements DataEntryForm {
 				}
 			}
 			SiteRecord sr = SiteRecord.insertSite(fields[FIELD_NUMBER], origSystem, origCoord, null, horzDM, null, null, fields[LOCALITY_DESC], countryCode, String.valueOf(user.getPersonId()), 0, JspUtils.getInstance(state.getContext()));
+			System.out.println(sr.getId());
 			return String.valueOf(sr.getId());
 		} catch (Exception e) {
-			e.printStackTrace(new PrintWriter(System.out));
-			throw new SQLException();
+			throw new SQLException("Problem creating SITE: " + e.getMessage());
 		}
 	}
 
