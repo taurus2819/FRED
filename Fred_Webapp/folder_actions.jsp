@@ -71,13 +71,12 @@
 		// submit working locality
 		else if (actionType.equals("Submit") && (userRights & 16) != 0) {
 			featID = request.getParameter("FeatID");
-			rs = statement.executeQuery("SELECT Audit_ID FROM Feature WHERE Site_ID IS NOT NULL AND Locality IS NOT NULL AND (Field_Number IS NOT NULL OR Drillhole_Name IS NOT NULL) AND Feature_ID = " + featID);
+			rs = statement.executeQuery("SELECT Audit_ID FROM Feature WHERE Site_ID IS NOT NULL AND Locality IS NOT NULL AND Feature_Type IS NOT NULL AND Feature_ID = " + featID);
 			if (rs.next()) {
 				auditID = rs.getString(1);
-				//decide whether drillhole or outcrop
-				rs = statement.executeQuery("SELECT Drillhole_Name FROM Feature WHERE Feature_ID = " + featID);
+				rs = statement.executeQuery("SELECT Feature_Type FROM Feature WHERE Feature_ID = " + featID);
 				rs.next();
-				if (rs.getString(1) == null) { //outcrop so also check sample property record
+				if (rs.getString(1).equals("Outcrop")) { //outcrop so also check sample property record
 					rs = statement.executeQuery("SELECT Audit_ID FROM Sample_Property_All_View WHERE Collection_Date IS NOT NULL AND Collector IS NOT NULL AND Strat_Unit IS NOT NULL AND In_Place IS NOT NULL AND Feature_ID = " + featID);
 					if (rs.next()) {
 						//OK so update sample property audit table
@@ -140,9 +139,9 @@
 			featID = request.getParameter("FeatID");
 			execUp = statement.executeUpdate("UPDATE Audit_Table SET Status = 'working', Working_Folder_ID = " + foldID + " WHERE Audit_ID IN (SELECT Audit_ID FROM Feature WHERE Feature_ID = " + featID + ")");
 			//decide whether drillhole or outcrop
-			rs = statement.executeQuery("SELECT Drillhole_Name FROM Feature WHERE Feature_ID = " + featID);
+			rs = statement.executeQuery("SELECT Feature_Type FROM Feature WHERE Feature_ID = " + featID);
 			rs.next();
-			if (rs.getString(1) == null) { //outcrop so also revoke sample property record
+			if (rs.getString(1).equals("Outcrop")) { //outcrop so also revoke sample property record
 				execUp = statement.executeUpdate("UPDATE Audit_Table SET Status = 'working', Working_Folder_ID = " + foldID + " WHERE Audit_ID IN (SELECT DISTINCT Audit_ID FROM Sample_Property_All_View WHERE Feature_ID = " + featID + ")");
 			}
 		}

@@ -145,8 +145,8 @@ function parseCoord(form, coord) {
 		origCoord = "29";
 		country = coord.substring(8, coord.indexOf("*"));
 		sheet = "";
-		north = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
-		east = coord.substring(coord.lastIndexOf("*") + 1, coord.length);
+		east = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
+		north = coord.substring(coord.lastIndexOf("*") + 1, coord.length);
 		if (isNaN(east) || isNaN(north) || east <= -180 || east > 180 || north <= -90 || north > 90) { return 0; }
 	} else {
 		return 0;
@@ -299,7 +299,7 @@ function parseDate(date, dateRnd) {
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 			out.println("<tr><td><a href='load_record.jsp?FoldID=" + foldID + "&FeatID=" + featID + "&RecType=" + formType + "' title='Copy From'><img src='images/load.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='load_record.jsp?FoldID=" + foldID + "&FeatID=" + featID + "&RecType=" + formType + "' class='heading'>Copy From</a></td></tr>");
 			out.println("<tr><td><a href='#' onClick='if (saveForm(form1)) {form1.submit();}' title='Save'><img src='images/save.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='#' onClick='if (saveForm(form1)) {form1.submit();}' class='heading'>Save</a></td></tr>");
-			if ((userRights & 16) != 0) {
+			if ((userRights & 16) != 0 && !formType.equals("Outcrop")) {
 				out.println("<tr><td><a href='#' onClick='if (submitForm(form1)) {form1.submit();}' title='Submit to Database'><img src='images/submit.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='#' class='heading' onClick='if (submitForm(form1)) {form1.submit();}' class='heading'>Submit</a></td></tr>");
 			}
 			out.println("<tr><td><a href='folder_detail.jsp?ID=" + foldID + "' title='Quit Without Saving'><img src='images/cancel.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_detail.jsp?ID=" + foldID + "' class='heading'>Quit</a></td></tr>");
@@ -397,7 +397,7 @@ function parseDate(date, dateRnd) {
 <%			out.println("<table border='0' cellpadding='0' cellspacing='2'>");
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.println("<tr><td><a href='#' onClick='if (saveForm(form1)) {form1.submit();}' title='Save'><img src='images/save.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='#' onClick='if (saveForm(form1)) {form1.submit();}' class='heading'>Save</a></td></tr>");
-			if ((userRights & 16) != 0) {
+			if ((userRights & 16) != 0 && !formType.equals("Outcrop")) {
 				out.println("<tr><td><a href='#' onClick='if (submitForm(form1)) {form1.submit();}' title='Submit to Database'><img src='images/submit.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='#' class='heading' onClick='if (submitForm(form1)) {form1.submit();}' class='heading'>Submit</a></td></tr>");
 			}
 			out.println("</table>");
