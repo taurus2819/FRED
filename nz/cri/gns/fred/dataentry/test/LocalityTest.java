@@ -19,6 +19,7 @@ import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.FolderUtils;
 import nz.cri.gns.fred.data.Feature;
+import nz.cri.gns.fred.data.test.FolderTest;
 import nz.cri.gns.fred.dataentry.DataEntryForm;
 import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
 import nz.cri.gns.fred.dataentry.DataInputException;
@@ -34,6 +35,22 @@ import nz.cri.gns.test.TestingPageState;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class LocalityTest extends TestCase {
+
+	TestingPageState state;
+	DBConnection conn;
+	User user, user2;
+
+	public static final int TEST_DRILLHOLE = 1658;
+
+	public LocalityTest(String arg0) throws NotBoundException, IOException, SQLException {
+		super(arg0);
+		this.state = new TestingPageState();
+		DBConnection ipConn = FREDUtils.getIPConnection(state);
+		try {
+			this.user = new User("test", "test", ipConn);
+			this.user2 = new User("pseudo_ben", "santor32", ipConn);
+		} catch (Exception e) {}
+	}
 
 	public void _testNewSave() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();
@@ -160,16 +177,26 @@ public class LocalityTest extends TestCase {
 		form.save();		
 	}
 	
-	public void testDrillholeLocality() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
-		TestingPageState state = new TestingPageState();
-		DBConnection ipConn = FREDUtils.getIPConnection(state);
-		User user = new User("pseudo_ben", "santor32", ipConn);
-		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm(Feature.DRILLHOLE_LOCALITY, user, 221, state);
-		form.setTempField(DataEntryForm.FEATURE_NAME, "Test Drillhole 05");
+	public void testCreateDeleteDrilholeLocality() throws SQLException, IOException, NotBoundException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm(Feature.DRILLHOLE_LOCALITY, user, FolderTest.TEST_FOLDER, state);
+		form.setTempField(DataEntryForm.FEATURE_NAME, "JUnit Drillhole");
 		form.setTempField(DataEntryForm.COLLECTION_DATE, "10/2004");
 		form.setTempField(DataEntryForm.DATUM_TYPE, "KB");
 		form.setTempField(DataEntryForm.TERMINATION_DEPTH, "25");
 		form.setFieldsFromTemp();
-		form.save();
+		int drillholeID = form.save();
+		Feature feature = new Feature(drillholeID, user, state, true);
+		assertEquals(feature.getAsString(Feature.FEATURE_NAME), "JUnit Drillhole");
+		assertNull(feature.get(Feature.DRILLHOLE_LICENCE_NAME));
+		assertEquals(feature.getAsString(Feature.DATUM_TYPE), "KB");
+		form = DataEntryFormFactory.getLocalityDataEntryForm(drillholeID, user, state);
+		form.delete();
+		try {
+			feature = new Feature(drillholeID, user, state, true);
+		} catch (Exception e) {
+			feature = null;
+		}
+		assertNull(feature);
 	}
+
 }

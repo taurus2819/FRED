@@ -3,14 +3,16 @@ package nz.cri.gns.fred.data;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Vector;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.db.QueryDescriptor;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 /**
@@ -201,28 +203,35 @@ public class Feature {
 	}
 
 	public int addNewSample(String topDepth, String bottomDepth, String drillTypeID, String workingFolderID) throws SQLException, IOException, DataInputException {
-		int sampleID;
-		if (!FREDUtils.isNumeric(topDepth) || (bottomDepth != null && !bottomDepth.equals("") && !FREDUtils.isNumeric(bottomDepth)) || (drillTypeID != null && !drillTypeID.equals("") && !FREDUtils.isNumeric(drillTypeID))) {
+		if (!FREDUtils.isNumeric(topDepth) || (bottomDepth != null && !bottomDepth.equals("") && !FREDUtils.isNumeric(bottomDepth)) || (drillTypeID != null && !drillTypeID.equals("") && !FREDUtils.isNumeric(drillTypeID)))
 			throw new DataInputException("Sample Depths", "Data Missing or Invalid");
-		}
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		//check existing samples.  If there is only one - the default one - then delete it
-		ResultSet rs = conn.executeQuery("SELECT S.Sample_ID FROM Sample_All_View S, Record R WHERE S.Sample_ID = R.Sample_ID(+) AND S.Feature_ID = " + getFeatureID() + " AND S.Drillhole_Depth = 'Depth Not Specified' AND S.Collector IS NULL AND R.Sample_ID IS NULL");
+		String query = "SELECT s.sample_id FROM sample s, record r WHERE s.sample_id = r.sample_id(+) AND s.feature_id = ? AND s.top_depth IS NULL AND s.bottom_depth IS NULL AND s.drill_type_id IS NULL AND r.sample_id IS NULL";
+		ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(getFeatureID())});
 		if (rs.next())
-			conn.executeUpdate("DELETE FROM Sample WHERE Sample_ID = " + rs.getString(1));
-		
-		rs = conn.executeQuery("SELECT Audit_Seq.NEXTVAL FROM DUAL");
+			conn.executeUpdate("DELETE FROM Sample WHERE Sample_ID = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(rs.getInt(1))});	
+		QueryDescriptor qd = new QueryDescriptor("audit_table");
+		qd.addQueryColumn("status", Types.VARCHAR, "working");
+		qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
+		qd.addQueryColumn("created_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
+		qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(workingFolderID));
+		String auditID = DBUtils.doInsertUsingSequence(qd, "audit_id", "audit_seq", conn, true);
+		rs = conn.executeQuery("SELECT MIN(fr_id) FROM sample WHERE feature_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(getFeatureID())});
 		rs.next();
-		String auditID = rs.getString(1);
-		conn.executeUpdate("INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Folder_ID) VALUES (" + auditID + ", 'working', " + user.getPersonId() + ", SYSDATE, " + workingFolderID + ")");
-		rs = conn.executeQuery("SELECT Sample_Seq.NEXTVAL FROM DUAL");
-		rs.next();
-		sampleID = rs.getInt(1);
-		rs = conn.executeQuery("SELECT MIN(FR_ID) FROM Sample WHERE Feature_ID = " + getFeatureID());
-		rs.next();
-		conn.executeUpdate("INSERT INTO Sample (Sample_ID, Feature_ID, Audit_ID, FR_ID, Top_Depth, Bottom_Depth, Drill_Type_ID) VALUES (" + sampleID + ", " + getFeatureID() + ", " + auditID + ", " + rs.getString(1) + ", " + JspUtils.sqlEscape(topDepth) + ", " + JspUtils.sqlEscape(bottomDepth) + ", " + JspUtils.sqlEscape(drillTypeID) + ")");
+		qd = new QueryDescriptor("sample");
+		qd.addQueryColumn("feature_id", Types.NUMERIC, new Integer(getFeatureID()));
+		qd.addQueryColumn("audit_id", Types.NUMERIC, new Integer(auditID));
+		if (rs.getString(1) != null)
+			qd.addQueryColumn("fr_id", Types.NUMERIC, new Integer(rs.getInt(1)));
+		qd.addQueryColumn("top_depth", Types.NUMERIC, new Double(topDepth));
+		if (bottomDepth != null)
+			qd.addQueryColumn("bottom_depth", Types.NUMERIC, new Double(bottomDepth));
+		if (drillTypeID != null)
+			qd.addQueryColumn("drill_type_id", Types.NUMERIC, new Integer(drillTypeID));
+		String sampleID = DBUtils.doInsertUsingSequence(qd, "sample_id", "sample_seq", conn, true);	
 		fd = FeatureData.getData(getFeatureID(), state, true);
-		return sampleID;
+		return Integer.parseInt(sampleID);
 	}
 
 }

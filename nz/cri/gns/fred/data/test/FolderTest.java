@@ -14,6 +14,7 @@ import java.util.Iterator;
 import junit.framework.TestCase;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.fred.FolderUtils;
 import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.intranet.DBConnection;
@@ -27,6 +28,8 @@ import nz.cri.gns.test.TestingPageState;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class FolderTest extends TestCase {
+
+	public static final int TEST_FOLDER = 323;
 
 	TestingPageState state;
 	DBConnection conn;
@@ -47,6 +50,10 @@ public class FolderTest extends TestCase {
 			this.user2 = new User("test", "test", ipConn);
 		} catch (Exception e) {
 		}
+	}
+
+	public void testCreateFolder() throws SQLException, IOException {
+		FolderUtils.addFolder("JUnit Test Folder", user2, state);
 	}
 
 	public void _testPooling() throws NotBoundException, SQLException, IOException {

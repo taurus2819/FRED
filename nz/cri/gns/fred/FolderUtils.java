@@ -34,7 +34,7 @@ public class FolderUtils {
 		qd.addQueryColumn("name", Types.VARCHAR, name);
 		qd.addQueryColumn("owner_id", Types.NUMERIC, new Integer(user.getPersonId()));
 		qd.addQueryColumn("folder_type", Types.VARCHAR, "personal");
-		DBUtils.doInsert(qd, "folder_id", FREDUtils.getFREDConnection(state));
+		DBUtils.doInsertUsingSequence(qd, "folder_id", "folder_seq", FREDUtils.getFREDConnection(state), false);
 	}
 	
 	public static void deleteFolder(String folderID, User user, PageState state) throws IOException, InvalidCredentialsException, SQLException, FolderUtilException {
@@ -68,7 +68,7 @@ public class FolderUtils {
 			QueryDescriptor qd = new QueryDescriptor("sample");
 			qd.addQueryColumn("feature_id", Types.NUMERIC, new Integer(featureID));
 			qd.addQueryColumn("audit_id", Types.NUMERIC, new Integer(featAuditID));
-			DBUtils.doInsert(qd, "sample_id", conn);			
+			DBUtils.doInsertUsingSequence(qd, "sample_id", "sample_seq", conn, false);			
 		}	
 	}
 	

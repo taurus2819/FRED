@@ -964,7 +964,6 @@ public class SampleDE implements DataEntryForm {
 	}
 
 	public int save() throws InvalidCredentialsException, SQLException, IOException {
-		//TODO rework DB stuff from here down
 		if (featureID == -1)
 			throw new InvalidCredentialsException();
 		if (!savedFlag) {
@@ -1010,7 +1009,8 @@ public class SampleDE implements DataEntryForm {
 					qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(sampleID));
 					DBUtils.doUpdate(qd, "sample_id = ?", conn);
 				}
-
+				
+				//TODO rework DB stuff from here down
 				//Create COLLECTORS entries
 				conn.executeUpdate("DELETE FROM Collector WHERE Sample_ID = " + sampleID);
 				if (collectors != null) {
@@ -1146,8 +1146,10 @@ public class SampleDE implements DataEntryForm {
 		qd.addQueryColumn("in_place", Types.VARCHAR, getField(FOSSILS_IN_PLACE));
 		qd.addQueryColumn("not_collected", Types.VARCHAR, getField(NOT_COLLECTED));
 		qd.addQueryColumn("significance", Types.VARCHAR, getField(SIGNIFICANCE_COMMENTS));
-		qd.addQueryColumn("inferred_stage_id", Types.NUMERIC, new Integer(DataEntryUtils.getStageID(getField(INF_AGE_START), getField(INF_START_MOD), getField(INF_AGE_STOP), getField(INF_STOP_MOD), state)));
-		qd.addQueryColumn("known_stage_id", Types.NUMERIC, new Integer(DataEntryUtils.getStageID(getField(KNW_AGE_START), getField(KNW_START_MOD), getField(KNW_AGE_STOP), getField(KNW_STOP_MOD), state)));
+		String infStageID = DataEntryUtils.getStageID(getField(INF_AGE_START), getField(INF_START_MOD), getField(INF_AGE_STOP), getField(INF_STOP_MOD), state);
+		qd.addQueryColumn("inferred_stage_id", Types.NUMERIC, ((infStageID != null) ? new Integer(infStageID) : null));
+		String knwStageID = DataEntryUtils.getStageID(getField(KNW_AGE_START), getField(KNW_START_MOD), getField(KNW_AGE_STOP), getField(KNW_STOP_MOD), state);
+		qd.addQueryColumn("known_stage_id", Types.NUMERIC, ((knwStageID != null) ? new Integer(knwStageID) : null));
 		qd.addQueryColumn("column_map", Types.VARCHAR, getField(COLUMN_MAP));
 		qd.addQueryColumn("dip", Types.NUMERIC, ((getField(DIP) != null) ? new Double(getField(DIP)) : null));
 		qd.addQueryColumn("dip_direction", Types.VARCHAR, getField(DIP_DIRECTION));
