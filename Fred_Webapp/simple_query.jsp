@@ -34,12 +34,12 @@ function generateSQL(form) {
 	var recFlag = false, sampPropFlag = false, adoFlag = false, palFlag = false;
 	with (form) {
 		if (FRNum.value.length > 0) {
-			frNum = parseFRNum(trim(FRNum.value));
+			frNum = parseFRNum(trim(FRNum.value), "");
 			if (frNum == "false") {
 				alert("FR Number field incorrectly formatted");
 				return false;
 			}
-			whereSQL = frNum
+			whereSQL = "((" + frNum + ") OR (" + parseFRNum(trim(FRNum.value), "Yard_") + ")) AND ";
 			queryString = queryString + "FR Number = " + trim(FRNum.value) + " AND ";
 		}
 		if (Map.value.length > 0) {
@@ -221,43 +221,42 @@ function generateSQL(form) {
 	return true;
 }
 
-function parseFRNum(frNum) {
+function parseFRNum(frNum, prefix) {
 	var x, y = "", z;
-
 	x = trim(frNum);
 	if (x.substring(x.length - 1, x.length) != ",") { x = x + ","; }
 	while (x.indexOf(",") > 0) {
-		z = parseIndivFRNum(trim(x.substring(0, x.indexOf(","))));
+		z = parseIndivFRNum(trim(x.substring(0, x.indexOf(","))), prefix);
 		if (z == "false") { return "false"; }
 		y = y + z + " OR ";
 		x = trim(x.substring(x.indexOf(",") + 1, x.length));
 	}
 	y = y.substring(0, y.length - 4);
-	return "(" + y + ") AND ";
+	return y
 }
 
-function parseIndivFRNum(frNum) {
+function parseIndivFRNum(frNum, prefix) {
 	var sheet, serial
 	if (frNum.indexOf("/f") == -1) { return "false"; }
 	sheet = frNum.substring(0, frNum.indexOf("/f")).toUpperCase();
-	serial = parseSerialNum(frNum.substring(frNum.indexOf("/f") + 2, frNum.length));
+	serial = parseSerialNum(frNum.substring(frNum.indexOf("/f") + 2, frNum.length), prefix);
 	if (serial == "false") { return "false"; }
-	return "(SV.Map_Sheet = '" + sheet + "' AND " + serial + ")";
+	return "(SV." + prefix + "Map_Sheet = '" + sheet + "' AND " + serial + ")";
 }
 
-function parseSerialNum(serialNum) {
+function parseSerialNum(serialNum, prefix) {
 	var x, y;
 	if (serialNum.indexOf("-") > 0) {
 		x = trim(serialNum.substring(0, serialNum.indexOf("-")));
 		y = trim(serialNum.substring(serialNum.indexOf("-") + 1, serialNum.length));
 		if (isNaN(x) || isNaN(y)) { return "false"; }
-		return "SV.Serial_Number BETWEEN " + parseInt(x) + " AND " + parseInt(y);
+		return "SV." + prefix + "Serial_Number BETWEEN " + parseInt(x) + " AND " + parseInt(y);
 	} else if (isNaN(serialNum.substring(serialNum.length - 1, serialNum.length)) && !isNaN(serialNum.substring(0, serialNum.length - 1))) {
-		return "SV.Serial_Number = " + parseInt(serialNum.substring(0, serialNum.length - 1)) + " AND SV.Recollection_Number = '" + serialNum.substring(serialNum.length - 1, serialNum.length).toUpperCase() + "'";
+		return "SV." + prefix + "Serial_Number = " + parseInt(serialNum.substring(0, serialNum.length - 1)) + " AND SV." + prefix + "Recollection_Number = '" + serialNum.substring(serialNum.length - 1, serialNum.length).toUpperCase() + "'";
 	} else if (isNaN(serialNum)) {
 		return "false";
 	}
-	return "SV.Serial_Number = " + parseInt(serialNum);
+	return "SV." + prefix + "Serial_Number = " + parseInt(serialNum);
 }
 
 </script>

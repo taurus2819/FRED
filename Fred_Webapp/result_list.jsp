@@ -100,7 +100,7 @@
 			out.println("</table></p>");
 
 			out.println("<p><table border='0' cellspacing='0' cellpadding='3' width='400'>");
-			out.print("<tr><th>FR Number&nbsp;&nbsp;</th><th>Drillhole Name&nbsp;&nbsp;</th></tr>");
+			out.print("<tr><th>FR Number&nbsp;&nbsp;</th><th>Yard FR Number&nbsp;&nbsp</th><th>Drillhole Name&nbsp;&nbsp;</th></tr>");
 			Iterator it = queryRes.iterator();
 			try {
 				for (int i = 0; i < startIndex - 1; i++) { it.next(); }
@@ -111,15 +111,15 @@
 				featIDs.append("," + (String) it.next());
 			}
 
-			rs = statement.executeQuery("SELECT DISTINCT Feature_ID, Sample_Name, Drillhole_Name FROM Sample_View WHERE Feature_ID IN (" + featIDs + ") ORDER BY Sample_Name");
+			rs = statement.executeQuery("SELECT DISTINCT Feature_ID, Sample_Name, Drillhole_Name, Yard_FR_Number FROM Sample_View WHERE Feature_ID IN (" + featIDs + ") ORDER BY Sample_Name");
 			while (rs.next()) {
 				out.print("<tr>");
 				if (rs.getString(3) != null) { //drillhole
-					out.print("<td><a href='drillhole_detail.jsp?ID=" + rs.getString(1) + "' class='heading'>" + rs.getString(2) + "</a>&nbsp;&nbsp;</td><td><a href='drillhole_detail.jsp?ID=" + rs.getString(1) + "' class='heading'>" + rs.getString(3) + "</a></td>");
+					out.print("<td><a href='detail.jsp?FeatID=" + rs.getString(1) + "' class='heading'>" + rs.getString(2) + "</a>&nbsp;&nbsp;</td><td>" + noNulls(rs.getString(4)) + "&nbsp;&nbsp;</td><td><a href='detail.jsp?FeatID=" + rs.getString(1) + "' class='heading'>" + rs.getString(3) + "</a></td>");
 				} else {
 					rs2 = statement2.executeQuery("SELECT Sample_ID FROM Sample_View WHERE Feature_ID = " + rs.getString(1));
 					rs2.next();
-					out.print("<td><a href='detail.jsp?ID=" + rs2.getString(1) + "' class='heading'>" + rs.getString(2) + "</a>&nbsp;&nbsp;</td><td></td>");
+					out.print("<td><a href='detail.jsp?ID=" + rs2.getString(1) + "' class='heading'>" + rs.getString(2) + "</a>&nbsp;&nbsp;</td><td>" + noNulls(rs.getString(4)) + "&nbsp;&nbsp;</td>");
 				}
 				out.print("</tr>");
 			}

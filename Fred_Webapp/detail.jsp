@@ -23,10 +23,13 @@
 	if (request.getParameter("FeatID") != null) {
 		rs = statement.executeQuery("SELECT Sample_ID, Drillhole_Name FROM Sample_All_View WHERE Feature_ID = " + request.getParameter("FeatID"));
 		if (rs.next()) {
-			if (rs.getString(2) != null) {
+			sampID = rs.getString(1);
+			rs = statement.executeQuery("SELECT COUNT(*) FROM Sample WHERE Feature_ID = " + request.getParameter("FeatID"));
+			rs.next();
+			if (rs.getInt(1) > 1) {
 				response.sendRedirect("drillhole_detail.jsp?ID=" + request.getParameter("FeatID"));
 			} else {
-				response.sendRedirect("detail.jsp?ID=" + rs.getString(1));
+				response.sendRedirect("detail.jsp?ID=" + sampID);
 			}
 		}
 	}
@@ -135,35 +138,36 @@
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");
 
-			rs = statement.executeQuery("SELECT Feature_ID, Field_Number, Drillhole_Name, NZMG_Sheet, NZMG_East, NZMG_North, Latitude, Longitude, Accuracy, Method, Locality, Drillhole_Depth FROM Sample_All_View WHERE Sample_ID = " + sampID);
+			rs = statement.executeQuery("SELECT Feature_ID, Yard_FR_Number, Field_Number, Drillhole_Name, NZMG_Sheet, NZMG_East, NZMG_North, Latitude, Longitude, Accuracy, Method, Locality, Drillhole_Depth FROM Sample_All_View WHERE Sample_ID = " + sampID);
 			rs.next();
 
 			out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
-			if (rs.getString(2) != null && userID != 0) { out.println("<tr><td class='heading'>Field Number</td><td>" + (rs.getString(2)) + "</td></tr>"); }
-			if (rs.getString(7) != null) {
+			if (rs.getString(2) != null && userID != 0) { out.println("<tr><td class='heading'>Yard FR Number</td><td>" + (rs.getString(2)) + "</td></tr>"); }
+			if (rs.getString(3) != null && userID != 0) { out.println("<tr><td class='heading'>Field Number</td><td>" + (rs.getString(3)) + "</td></tr>"); }
+			if (rs.getString(8) != null) {
 				out.print("<tr><td class='heading'>Grid Ref</td><td>");
-				if (rs.getString(4) != null) {
-					out.print(rs.getString(4) + ": " + nzmg.format(rs.getDouble(5)) + ", " + nzmg.format(rs.getDouble(6)));
+				if (rs.getString(5) != null) {
+					out.print(rs.getString(5) + ": " + nzmg.format(rs.getDouble(6)) + ", " + nzmg.format(rs.getDouble(7)));
 					out.print("<img src='images/blank.gif' width='20' height='1' />|<img src='images/blank.gif' width='20' height='1' />");
 				}
-				if (rs.getDouble(7) > 0) {
-					out.print(latlong.format(rs.getDouble(7)) + "&#176N");
+				if (rs.getDouble(8) > 0) {
+					out.print(latlong.format(rs.getDouble(8)) + "&#176N");
 				} else {
-					out.print(latlong.format(Math.abs(rs.getDouble(7))) + "&#176S");
+					out.print(latlong.format(Math.abs(rs.getDouble(8))) + "&#176S");
 				}
 				out.println("/");
-				if (rs.getDouble(8) > 0) {
-					out.print(latlong.format(rs.getDouble(8)) + "&#176E");
+				if (rs.getDouble(9) > 0) {
+					out.print(latlong.format(rs.getDouble(9)) + "&#176E");
 				} else {
-					out.print(latlong.format(Math.abs(rs.getDouble(8))) + "&#176W");
+					out.print(latlong.format(Math.abs(rs.getDouble(9))) + "&#176W");
 				}
-				if (rs.getString(9) != null) { out.print(" (&#177 " + rs.getString(9) + "m)"); }
+				if (rs.getString(10) != null) { out.print(" (&#177 " + rs.getString(10) + "m)"); }
 				out.println("</td></tr>");
 			}
-			if (rs.getString(10) != null && userID != 0) { out.println("<tr><td class='heading'>Method</td><td>" + rs.getString(10) + "</td></tr>"); }
-			if (rs.getString(3) != null && userID != 0) { //drillhole
-				out.println("<tr><td class='heading'>Drillhole Name</td><td><a href='drillhole_detail.jsp?ID=" + rs.getString(1) + "'>" + rs.getString(3) + "</a></td></tr>");
-				if (rs.getString(12) != null) { out.println("<tr><td class='heading'>Drillhole Depth</td><td>" + rs.getString(12) + "</td></tr>"); }
+			if (rs.getString(11) != null && userID != 0) { out.println("<tr><td class='heading'>Method</td><td>" + rs.getString(11) + "</td></tr>"); }
+			if (rs.getString(4) != null && userID != 0) { //drillhole
+				out.println("<tr><td class='heading'>Drillhole Name</td><td><a href='drillhole_detail.jsp?ID=" + rs.getString(1) + "'>" + rs.getString(4) + "</a></td></tr>");
+				if (rs.getString(13) != null) { out.println("<tr><td class='heading'>Drillhole Depth</td><td>" + rs.getString(13) + "</td></tr>"); }
 				out.println("<tr><td class='heading'>Other Drillhole Samples</td><td>");
 				//check for samples above and below current one
 				rs2 = statement2.executeQuery("SELECT Sample_ID, Sample_Name, Drillhole_Depth FROM Sample_All_View WHERE Feature_ID = " + rs.getString(1) + " AND Top_Depth IS NOT NULL ORDER BY Top_Depth");
@@ -179,7 +183,7 @@
 				}
 				out.println("</td></tr>");
 			}
-			if (rs.getString(11) != null && userID != 0) { out.println("<tr><td class='heading'>Locality</td><td>" + rs.getString(11) + "</td></tr>"); }
+			if (rs.getString(12) != null && userID != 0) { out.println("<tr><td class='heading'>Locality</td><td>" + rs.getString(12) + "</td></tr>"); }
 			out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
 
 			if (userID != 0) { //logged in user
