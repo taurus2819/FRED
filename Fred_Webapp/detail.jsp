@@ -3,7 +3,6 @@
 %><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 	nz.cri.gns.intranet.DBConnection frConn = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
-	nz.cri.gns.intranet.DBConnection connection;
 	User user = getUser(session);
 
 	PageState state = new PageState(request, response, getServletContext());
@@ -13,19 +12,16 @@
 	//DocumentAttacher attacher = DocumentAttacher.createFREDDocumentAttacher(session, application);
 	DecimalFormat nzmg = new DecimalFormat("######0");
 	DecimalFormat latlong = new DecimalFormat("#00.0000");
-	ResultSet rs, rs2, rs3;
+	ResultSet rs;
 
 	String sampID, recID, featType, status = "", query;
 	boolean authorChk = false, sCountChk = false, sCoordChk = false, commChk = true;
 	int[] types = {Types.NUMERIC};
 	Object data[];
 	data = new Object[1];
-	int[] doubleTypes = {Types.NUMERIC, Types.NUMERIC};
-	Object doubleData[];
-	doubleData = new Object[2];
 
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 
 	//if FeatureID given then get SampleID or transer to drillhole
 	if (request.getParameter("FeatID") != null) {
@@ -53,13 +49,6 @@
 
 	if (sampID != null) {
 
-		//create connection:  userConnection if logged in, otherwise FR
-		if (user !=  null) {
-			connection = user.getUsersConnection(new PageState(request, response, application), frConn);
-		} else {
-			connection = frConn;
-		}
-
 		if (request.getParameter("AuthorChk") != null && request.getParameter("AuthorChk").equals("true")) { authorChk = true; }
 		if (request.getParameter("SCountChk") != null && request.getParameter("SCountChk").equals("true")) { sCountChk = true; }
 		if (request.getParameter("SCoordChk") != null && request.getParameter("SCoordChk").equals("true")) { sCoordChk = true; }
@@ -67,14 +56,14 @@
 
 		//List data
 		out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
-		//try {
+		try {
 			FullSample fullSample = FullSample.getFullSample(Integer.parseInt(sampID), user, state);
 			Audit audit = Audit.getAudit(fullSample.getAsInt(FullSample.AUDIT_ID), state);
 
-			out.println("SecID: " + fullSample.getAsString(FullSample.SECURITY_CLASS_ID) + "<br/>");
+/*			out.println("SecurityID: " + fullSample.getAsString(FullSample.SECURITY_CLASS_ID) + "<br/>");
 			out.println("Authenticated: " + fullSample.isAuthenticated() + "<br/>");
 			out.println("Pool Size: " + FullSample.getPoolSize() + "<br />");
-
+*/
 			featType = fullSample.getAsString(FullSample.FEATURE_TYPE);
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
 			out.println("<tr><td colspan='2' align='center' class='bigheading' >" + fullSample.getAsString(FullSample.SAMPLE_NAME) + "</td></tr>");
@@ -253,7 +242,6 @@
 			//Sample Property Data
 			for (Iterator i = fullSample.getAsVector(FullSample.RECORD).iterator(); i.hasNext(); ) {
 				KeyValueObject rec = (KeyValueObject)i.next();
-				out.println("<tr><td>" + rec.getKey() + ":" + rec.getValue() + "</td></tr>");
 				if (rec.getValue().equals("SMP")) {
 					try {
 						FullSampPropRecord sampProp = FullSampPropRecord.getFullSampPropRecord(Integer.parseInt(rec.getKey()), user, state);
@@ -361,7 +349,6 @@
 			//Adoption
 			for (Iterator i = fullSample.getAsVector(FullSample.RECORD).iterator(); i.hasNext(); ) {
 				KeyValueObject rec = (KeyValueObject)i.next();
-				out.println("<tr><td>" + rec.getKey() + ":" + rec.getValue() + "</td></tr>");
 				if (rec.getValue().equals("ADO")) {
 					try {
 						FullAdoptionRecord ado = FullAdoptionRecord.getFullAdoptionRecord(Integer.parseInt(rec.getKey()), user, state);
@@ -403,7 +390,6 @@
 			//Paleontology
 			for (Iterator i = fullSample.getAsVector(FullSample.RECORD).iterator(); i.hasNext(); ) {
 				KeyValueObject rec = (KeyValueObject)i.next();
-				out.println("<tr><td>" + rec.getKey() + ":" + rec.getValue() + "</td></tr>");
 				if (rec.getValue().equals("PAL")) {
 					try {
 						FullPaleontologyRecord pal = FullPaleontologyRecord.getFullPaleontologyRecord(Integer.parseInt(rec.getKey()), user, state);
@@ -476,13 +462,13 @@
 	
 			if (user ==  null) { out.println("<tr><td colspan='2'>More data may be available for this locality for <a href='login.jsp?loginpage=" + URLEncoder.encode("/fred/detail.jsp") + "' class='boldlink'>logged</a> in users</td></tr>"); }
 			out.println("</table></td></tr></table>");
-		//}
-		//catch (Exception e) { // no record
-		//	drawEndNavigation(out);
-		//	out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-		//	out.println("<tr><td>");
-		//	out.println("<p>Either the sample doesn't exist or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</p>");
-		//}
+		}
+		catch (Exception e) { // no record
+			drawEndNavigation(out);
+			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
+			out.println("<tr><td>");
+			out.println("<p>Either the sample doesn't exist or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</p>");
+		}
 
 	}
 	else { //no sampleID
