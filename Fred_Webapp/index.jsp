@@ -13,7 +13,8 @@
 	out.println("<tr><td><a href='http://maps.gns.cri.nz/website/fred/index.html' title='Map'><img src='images/search.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='http://maps.gns.cri.nz/website/fred/index.html' class='heading'>Map</a></td></tr>");
 	out.println("<tr><td><a href='folder_list.jsp' title='Data Entry'><img src='images/folder.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_list.jsp' class='heading'>Data Entry</a></td></tr>");
 	out.println("</table>");
-
+	%><div style="position: absolute; left: 0; bottom: 0;">&nbsp;&nbsp;&nbsp;
+<img src="/online/images/cwea.gif" border="0" /></div><%
 	drawEndNavigation(out);
 
 	out.println("<table style='margin-left:20px; width:550px;' border='0'>");
