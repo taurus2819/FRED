@@ -58,12 +58,14 @@
 		out.println("<table border='0' cellspacing='0' cellpadding='0' width='600'>");
 		if (sample.get(Sample.MASTERFILE_NAME) != null)
 			out.println("<tr><td class='smallheading'>Masterfile:&nbsp;</td><td class='smalltext'>" + sample.getAsString(Sample.MASTERFILE_NAME) + "</td></tr>");
+		out.println("<tr><td class='smallheading'>MF Curator Approved:&nbsp;</td><td class='smalltext'>");
 		if (audit.get(Audit.APPROVED_BY) != null || audit.get(Audit.APPROVED_DATE) != null) {
-			out.println("<tr><td class='smallheading'>MF Curator Approved:&nbsp;</td><td class='smalltext'>");
-				if (audit.get(Audit.APPROVED_BY) != null) out.print(audit.getAsString(Audit.APPROVED_BY) + "&nbsp;&nbsp;");
-				if (audit.get(Audit.APPROVED_DATE) != null) out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.APPROVED_DATE)));
-				out.println("</td></tr>");
-			}
+			if (audit.get(Audit.APPROVED_BY) != null)
+				out.print(audit.getAsString(Audit.APPROVED_BY) + "&nbsp;&nbsp;");
+			if (audit.get(Audit.APPROVED_DATE) != null)
+				out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.APPROVED_DATE)));
+			out.println("</td></tr>");
+		}
 
 		out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 		out.println("</table>");

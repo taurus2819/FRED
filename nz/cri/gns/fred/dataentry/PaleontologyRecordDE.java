@@ -91,17 +91,21 @@ public class PaleontologyRecordDE extends RecordDE {
 					break;
 				case IDENTIFIERS :
 					identifiers = new Vector();
+					String query = "SELECT person_id FROM person_view WHERE name = ?";
+					int personID = 0;
 					while (value.length() > 0) {
 						if (value.indexOf("\n") == -1)
-							value = value + "\n";
-						String query = "SELECT person_id FROM person_view WHERE name = ?";
+							value = value + "\n";	
 						try {
 							rs = conn.executeQuery(query, new int[] {Types.VARCHAR}, new Object[] {value.substring(0, value.indexOf("\n")).trim()});
 							rs.next();
-							identifiers.add(new Integer(rs.getInt(1)));
+							personID = rs.getInt(1);
 						} catch (Exception e) {
 							throw new DataInputException("Identifier", value.substring(0, value.indexOf("\n")).trim() + " not in database - add through builder");
 						}
+						if (identifiers.indexOf(new Integer(personID)) != -1)
+							throw new DataInputException("Identifier", value.substring(0, value.indexOf("\n")).trim() + " duplicated");
+						identifiers.add(new Integer(personID));
 						value = value.substring(value.indexOf("\n") + 1, value.length());
 					}
 					break;
@@ -150,7 +154,7 @@ public class PaleontologyRecordDE extends RecordDE {
 						//check TaxaGroup against lookup values
 						Taxa taxa;
 						try {
-							String query = "SELECT Lookup_ID FROM Lookup WHERE Name = ? AND FieldName = ?";
+							query = "SELECT Lookup_ID FROM Lookup WHERE Name = ? AND FieldName = ?";
 							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {taxaGroup, "TaxaGroup"});
 							rs.next();
 							taxa = new Taxa();
@@ -168,7 +172,7 @@ public class PaleontologyRecordDE extends RecordDE {
 							String cleanName = getCleanedName(taxaName);
 							//check TaxaName against thesaurus
 							try {
-								String query = "SELECT taxa_id, status FROM taxonomic_lookup WHERE group_id = ? AND taxonomic_name = ?";
+								query = "SELECT taxa_id, status FROM taxonomic_lookup WHERE group_id = ? AND taxonomic_name = ?";
 								rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {taxa.getGroupID(), cleanName});
 								rs.next();
 								taxa.setTaxaID(new Integer(rs.getInt(1)));

@@ -15,6 +15,8 @@
 	Folder folder = new Folder(Integer.parseInt(foldID), user, state);
 	DataEntryForm dataEntryForm = null;
 	
+	System.out.println("Getting Data Entry Form");
+	
 	try {
 		if (request.getParameter("Err") == null) {
 			if (formType.equals(Feature.OUTCROP_LOCALITY) || formType.equals(Feature.DRILLHOLE_LOCALITY) || formType.equals(Feature.VERTICAL_SECTION_LOCALITY)) {
@@ -48,6 +50,8 @@
 	} catch (Exception e) {
 		out.println(e.getMessage());
 	}
+
+	System.out.println("Got Data Entry Form");
 
 	if (dataEntryForm != null) {
 		

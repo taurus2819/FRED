@@ -68,8 +68,7 @@ public class SampleDE implements DataEntryForm {
 		this.folder = new Folder(folderID, user, state);
 	}
 
-	public SampleDE(int sampleID, User user, PageState state)
-		throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
+	public SampleDE(int sampleID, User user, PageState state) throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
 		this.user = user;
 		this.state = state;
 		sample = new Sample(sampleID, user, state, true);
@@ -90,6 +89,7 @@ public class SampleDE implements DataEntryForm {
 		this.auditID = sample.getAsInt(Sample.SAMPLE_AUDIT_ID);
 		//feature = new Feature(sample.getAsInt(Sample.FEATURE_ID), user, state, true);
 		
+		System.out.println("Setting Fields");
 		//set fields
 		try {
 			setField(COLLECTION_DATE, DataEntryUtils.reverseParseDate(
@@ -123,6 +123,7 @@ public class SampleDE implements DataEntryForm {
 			setField(KNW_START_MOD, sample.getAsString(Sample.KNOWN_STAGE_LOWER_MOD));
 			setField(KNW_AGE_STOP, sample.getAsString(Sample.KNOWN_STAGE_UPPER_ID));
 			setField(KNW_STOP_MOD, sample.getAsString(Sample.KNOWN_STAGE_UPPER_MOD));
+			System.out.println("Starting Relationships");
 			if (sample.get(Sample.RELATIONSHIP_NEARBY) != null) {
 				StringBuffer prevSamp = new StringBuffer();
 				for (Iterator i = sample.getAsVector(Sample.RELATIONSHIP_NEARBY).iterator(); i.hasNext();) {
@@ -161,6 +162,7 @@ public class SampleDE implements DataEntryForm {
 				}
 				setField(STRAT_RELATIONSHIP, stratRel.toString());
 			}
+			System.out.println("Starting Column Map");
 			setField(COLUMN_MAP, sample.getAsString(Sample.COLUMN_MAP));
 			setField(DIP, sample.getAsString(Sample.DIP));
 			setField(DIP_DIRECTION, sample.getAsString(Sample.DIP_DIRECTION));
@@ -241,17 +243,21 @@ public class SampleDE implements DataEntryForm {
 					break;
 				case COLLECTORS :
 					collectors = new Vector();
+					String query = "SELECT person_id FROM person_view WHERE name = ?";
+					int personID = 0;
 					while (value.length() > 0) {
 						if (value.indexOf("\n") == -1)
-							value = value + "\n";
+							value = value + "\n";	
 						try {
-							String query = "SELECT person_id FROM person_view WHERE name = ?";
 							rs = conn.executeQuery(query, new int[] {Types.VARCHAR}, new Object[] {value.substring(0, value.indexOf("\n")).trim()});
 							rs.next();
-							collectors.add(new Integer(rs.getInt(1)));
+							personID = rs.getInt(1);
 						} catch (Exception e) {
 							throw new DataInputException("Collector", value.substring(0, value.indexOf("\n")).trim() + " not in database - add through builder");
 						}
+						if (collectors.indexOf(new Integer(personID)) != -1)
+							throw new DataInputException("Collector", value.substring(0, value.indexOf("\n")).trim() + " duplicated");
+						collectors.add(new Integer(rs.getInt(1)));
 						value =	value.substring(value.indexOf("\n") + 1, value.length());
 					}
 					break;
@@ -270,7 +276,7 @@ public class SampleDE implements DataEntryForm {
 						stComments = stLine.substring(stLine.lastIndexOf("*") + 1, stLine.length());
 						//check againt lookup values
 						try {
-							String query = "SELECT lookup_id FROM lookup WHERE name = ? AND fieldname = ?";
+							query = "SELECT lookup_id FROM lookup WHERE name = ? AND fieldname = ?";
 							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {stGroup, "FossilGroup"});
 							rs.next();
 							stGroupID = new Integer(rs.getInt(1));
@@ -279,7 +285,7 @@ public class SampleDE implements DataEntryForm {
 						}
 						if (!stPerson.equals("")) {
 							try {
-								String query = "SELECT person_id FROM person_view WHERE name = ?";
+								query = "SELECT person_id FROM person_view WHERE name = ?";
 								rs = conn.executeQuery(query, new int[] {Types.VARCHAR}, new Object[] {stPerson});
 								rs.next();
 								stPersonID = new Integer(rs.getInt(1));
@@ -289,7 +295,7 @@ public class SampleDE implements DataEntryForm {
 						}
 						if (!stLab.equals("")) {
 							try {
-								String query = "SELECT lab_id FROM sc.lab WHERE lab_name = ?";
+								query = "SELECT lab_id FROM sc.lab WHERE lab_name = ?";
 								rs = conn.executeQuery(query, new int[] {Types.VARCHAR}, new Object[] {stLab});
 								rs.next();
 								stLabID = new Integer(rs.getInt(1));
@@ -335,7 +341,7 @@ public class SampleDE implements DataEntryForm {
 						if (value.indexOf(";") == -1)
 							value += ";";
 						String sampName = value.substring(0, value.indexOf(";")).trim();
-						String query = "SELECT feature_id FROM feature_view WHERE UPPER(sample_name) = ? AND feature_status = ?";
+						query = "SELECT feature_id FROM feature_view WHERE UPPER(sample_name) = ? AND feature_status = ?";
 						rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {sampName.toUpperCase(), Audit.STATUS_APPROVED});
 						if (rs.next()) {
 							ps = new Relationship();
@@ -389,7 +395,7 @@ public class SampleDE implements DataEntryForm {
 							srDistRange = srDistance.substring(srDistance.indexOf("-") + 1, srDistance.length()).trim();
 						}
 						srDistance = srDistance.trim();
-						String query = "SELECT feature_id FROM feature_view WHERE UPPER(sample_name) = ? AND feature_status = ?";
+						query = "SELECT feature_id FROM feature_view WHERE UPPER(sample_name) = ? AND feature_status = ?";
 						rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {srFeat.toUpperCase(), Audit.STATUS_APPROVED});
 						if (rs.next()) {
 							srFeatID = new Integer(rs.getInt(1));
@@ -535,7 +541,7 @@ public class SampleDE implements DataEntryForm {
 						sFeat = new SedFeature();
 						if (value.indexOf(";") == -1)
 							value += ";";
-						String query = "SELECT lookup_id FROM lookup WHERE name = ? AND fieldname = ?";
+						query = "SELECT lookup_id FROM lookup WHERE name = ? AND fieldname = ?";
 						if (value.indexOf("*") != -1 && value.indexOf("*") < value.indexOf(";")) {
 							sedFeatStr = value.substring(0, value.indexOf("*")).trim();
 							sFeat.setAbundant("Y");

@@ -21,13 +21,13 @@
 		if (rs.next() && (rs.getInt(3) & 32) == 32) { //to get past this if statement user must either be the owner of the folder or have admin rights
 			String folderName = rs.getString(1);
 			String folderOwner = rs.getString(2);
-			String foldType = rs.getString(4);
+			String folderType = rs.getString(4);
 			
 			//build array of rights
-			if (foldType.equals("personal")) {
+			if (folderType.equals("personal")) {
 				rs = statement.executeQuery("SELECT Name, Code FROM Lookup WHERE FieldName = 'FolderRight' AND Code NOT IN ('1', '64') ORDER BY Lookup_ID");
 			} else {
-				rs = statement.executeQuery("SELECT Name, Code FROM Lookup WHERE FieldName = 'FolderRight' AND Code IN ('32', '64') ORDER BY Lookup_ID");
+				rs = statement.executeQuery("SELECT Name, Code FROM Lookup WHERE FieldName = 'FolderRight' AND Code IN ('32', '64') ORDER BY Lookup_ID DESC");
 			}
 			i = -1;
 			while (rs.next()) {
@@ -63,8 +63,12 @@
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");
 
-			out.println("<p><span class='bigheading'>Folder: " + folderName + "</span><br>");
-			out.println("<span class='heading'>Owner: " + folderOwner + "</span></p>");
+			if (folderType.equals("personal")) {
+				out.println("<p><span class='bigheading'>Folder: " + folderName + "</span><br>");
+				out.println("<span class='heading'>Owner: " + folderOwner + "</span></p>");
+			} else {
+				out.println("<p><span class='bigheading'>Masterfile: " + folderName + "</span></p>");
+			}
 
 			out.println("<p>The users listed below have rights to this folder.<br>Users can be added or deleted from this list and their rights altered by clicking on the <img src='images/ok.gif' width='20' height='20' border='0' /> or <img src='images/cancel.gif' width='20' height='20' border='0' /> icons.</p>");
 
@@ -73,19 +77,7 @@
 			for (int x = 0; x < maxRights; x++) { out.print("<td width='60'>" + userRight[x] + "</td>"); }
 			out.println("<tr><td><img src='images/blank.gif width='1' height='5' /></td></tr>");
 
-			out.println("<form name='UserForm' method='post' action='folder_user.jsp'>");
-			out.println("<input type='hidden' name='FoldID' value='" + foldID + "'>");
-			out.println("<input type='hidden' name='ActionType' value='AddUser'>");
-			out.print("<tr><td>");
-			cd = new ComboDescriptor("FR_User_View", "PE_ID", "Full_Name");
-			cd.name = "UserID";
-			cd.orderBy = "Family_Name";
-			cd.join = "NOT PE_ID IN (SELECT User_ID FROM Folder_View WHERE Folder_ID = " + foldID + ")";
-			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
-			out.println("&nbsp&nbsp</td><td align='center'><a href='#' onClick='UserForm.submit();' title='Add User'><img src='images/cancel.gif' width='20' height='20' border='0' /></a></td></tr>");
-			out.println("</form>");
-
-			rs = statement.executeQuery("SELECT User_ID, Folder_User, User_Rights FROM Folder_View WHERE User_ID <> Owner_ID AND Folder_ID = " + foldID);
+			rs = statement.executeQuery("SELECT User_ID, Folder_User, User_Rights FROM Folder_View WHERE (Owner_ID IS NULL OR User_ID <> Owner_ID) AND Folder_ID = " + foldID);
 			i = 0;
 			while (rs.next()) {
 				out.print("<tr><td>" + rs.getString(2) + "&nbsp&nbsp</td><td align='center'><a href='folder_user.jsp?FoldID=" + foldID + "&ActionType=DeleteUser&UserID=" + rs.getString(1) + "' title='Delete User'><img src='images/ok.gif' width='20' height='20' border='0' /></a></td>");
@@ -100,6 +92,19 @@
 				}
 				out.println("</tr>");
 			}
+			
+			out.println("<form name='UserForm' method='post' action='folder_user.jsp'>");
+			out.println("<input type='hidden' name='FoldID' value='" + foldID + "'>");
+			out.println("<input type='hidden' name='ActionType' value='AddUser'>");
+			out.print("<tr><td>");
+			cd = new ComboDescriptor("FR_User_View", "PE_ID", "Full_Name");
+			cd.name = "UserID";
+			cd.orderBy = "Family_Name";
+			cd.join = "NOT PE_ID IN (SELECT User_ID FROM Folder_View WHERE Folder_ID = " + foldID + ")";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			out.println("&nbsp&nbsp</td><td align='center'><a href='#' onClick='UserForm.submit();' title='Add User'><img src='images/cancel.gif' width='20' height='20' border='0' /></a></td></tr>");
+			out.println("</form>");
+			
 			out.println("</table></p>");
 			out.println("</table>");
 			out.println("</td></tr></table>");

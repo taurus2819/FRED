@@ -1,5 +1,5 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
+		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
 %><%
 	PageState state = new PageState(request, response, getServletContext());
 	DBConnection connection = FREDUtils.getFREDConnection(state);
@@ -28,10 +28,7 @@
 		featID = request.getParameter("FeatID");
 		recType = request.getParameter("RecType");
 
-		if (recType.equals("SMP")) {
-			returnURL = "samp_prop_data_entry.jsp?";
-		}
-		else if (recType.equals(Record.ADOPTION_RECORD)) {
+		if (recType.equals(Record.ADOPTION_RECORD)) {
 			returnURL = "ado_data_entry.jsp?";
 		}
 		else if (recType.equals(Record.PALEONTOLOGY_RECORD)) {
@@ -49,7 +46,7 @@
 			userRights = 0;
 		}
 
-		if (recType.equals(Feature.OUTCROP_LOCALITY) || recType.equals(Feature.DRILLHOLE_LOCALITY) || recType.equals(Feature.VERTICAL_LOCALITY)) {
+		if (recType.equals(Feature.OUTCROP_LOCALITY) || recType.equals(Feature.DRILLHOLE_LOCALITY) || recType.equals(Feature.VERTICAL_SECTION_LOCALITY)) {
 			out.println("<p>Choose the locality to copy from the list below by clicking on the <img src='images/load.gif' width='20' height='20' /> icon</p>");
 
 			//List records

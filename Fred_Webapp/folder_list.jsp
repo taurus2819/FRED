@@ -46,17 +46,16 @@
 
 	//List Working folders
 	if (folderList.getPersonalFolderCount() > 0) {
-		out.println("<tr><th>Working Folder&nbsp;&nbsp;</th><td></td><th>Owner&nbsp;&nbsp;</th><th>Options</th></tr>");
+		out.println("<tr><th>Working Folder&nbsp;&nbsp;</th><th>Owner&nbsp;&nbsp;</th><th>Options</th></tr>");
 		out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
 		out.println("<form name='PersForm' method='post' action='folder_list.jsp'>");
 		for (Iterator i = folderList.getPersonalFolders().iterator(); i.hasNext(); ) {
 			KeyValueObject kv = (KeyValueObject) i.next();
 			Folder folder = new Folder(Integer.parseInt(kv.getKey()), user, state);
 			folders.add(folder);
-			out.print("<tr><td><a href='folder_detail.jsp?ID=" + folder.getAsString(Folder.FOLDER_ID) + "' class='heading'>" + folder.getAsString(Folder.NAME) + "</a>&nbsp;&nbsp;</td><td></td><td>" + folder.getAsString(Folder.OWNER) + "&nbsp;&nbsp;</td><td>");
-			if (folder.isAllowedAdmin()) {
+			out.print("<tr><td><a href='folder_detail.jsp?ID=" + folder.getAsString(Folder.FOLDER_ID) + "' class='heading'>" + folder.getAsString(Folder.NAME) + "</a>&nbsp;&nbsp;</td><td>" + folder.getAsString(Folder.OWNER) + "&nbsp;&nbsp;</td><td>");
+			if (folder.isAllowedAdmin())
 				out.print("<a href='folder_user.jsp?FoldID=" + folder.getAsString(Folder.FOLDER_ID) + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a>&nbsp;&nbsp;&nbsp;<a href='#' onClick='if (confirm(\"Are you sure you want to delete this folder\") == true) {document.PersForm.FoldID.value=\"" + folder.getAsString(Folder.FOLDER_ID) + "\";document.PersForm.submit();}' title='Delete Folder'><img src='images/delete.gif' border='0' height='20' width='20' /></a>");
-			}
 			out.println("<img src='images/blank.gif' width='1' height='20' /></td></tr>");
 		}
 		out.println("<input type='hidden' name='ActionType' value='Delete'>");
@@ -68,19 +67,18 @@
 
 	//List Masterfile folders (if any)
 	if (folderList.getAdminFolderCount() > 0) {
-		out.println("<tr><th>Masterfile Folder&nbsp;&nbsp;</th><td></td><th>Curator&nbsp;&nbsp;</th><th>Options</th></tr>");
+		out.println("<tr><th>Masterfile Folder&nbsp;&nbsp;</th><th></th><th>Options</th></tr>");
 		out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
 		for (Iterator i = folderList.getAdminFolders().iterator(); i.hasNext(); ) {
 			KeyValueObject kv = (KeyValueObject) i.next();
 			Folder folder = new Folder(Integer.parseInt(kv.getKey()), user, state);
 			folders.add(folder);
-			out.print("<tr><td><a href='admin_folder_detail.jsp?ID=" + folder.getAsString(Folder.FOLDER_ID) + "' class='heading'>" + folder.getAsString(Folder.NAME) + "</a>&nbsp;&nbsp;</td><td style='font-size: 14pt; font-weight: bold; color: #FF0000'>");
+			out.print("<tr><td><a href='admin_folder_detail.jsp?ID=" + folder.getAsString(Folder.FOLDER_ID) + "' class='heading'>" + folder.getAsString(Folder.NAME) + "</a>&nbsp;&nbsp;</td><td style='font-size: 10pt; font-weight: bold; color: #FF0000'>");
 			if (folder.getLocalityCount() > 0)
-				out.print("*");
-			out.print("&nbsp;</td><td>" + folder.getAsString(Folder.OWNER) + "&nbsp;&nbsp;</td><td>");
-			if (folder.isAllowedAdmin()) { 
+				out.print("new data");
+			out.print("&nbsp;</td><td>");
+			if (folder.isAllowedAdmin())
 				out.print("<a href='folder_user.jsp?FoldID=" + folder.getAsString(Folder.FOLDER_ID) + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a>");
-			}
 			out.println("<img src='images/blank.gif' width='1' height='20' /></td></tr>");
 		}
 		out.println("<tr><td>&nbsp;</td></tr>");
@@ -93,16 +91,16 @@
 
 	//List Taxonomic groups (if any)
 	if (panelList.getPanelCount() > 0) {
-		out.println("<tr><th>Taxonomic Groups<img src='images/blank.gif' width='20' height='1' /></th><td></td><td></td></th><th>Options</th></tr>");
+		out.println("<tr><th>Taxonomic Groups<img src='images/blank.gif' width='20' height='1' /></th><td></td></th><th>Options</th></tr>");
 		out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
 		for (Iterator i = panelList.getPanels().iterator(); i.hasNext(); ) {
 			KeyValueObject kv = (KeyValueObject) i.next();
 			TaxaPanel panel = new TaxaPanel(Integer.parseInt(kv.getKey()), user, state);
 			panels.add(panel);
-			out.print("<tr><td><a href='taxa_group_detail.jsp?ID=" + panel.getPanelID() + "' class='heading'>" + panel.getAsString(TaxaPanel.NAME) + "</a><img src='images/blank.gif' width='20' height='1' /></td><td style='font-size: 14pt; font-weight: bold; color: #FF0000'>");
+			out.print("<tr><td><a href='taxa_group_detail.jsp?ID=" + panel.getPanelID() + "' class='heading'>" + panel.getAsString(TaxaPanel.NAME) + "</a><img src='images/blank.gif' width='20' height='1' /></td><td style='font-size: 10pt; font-weight: bold; color: #FF0000'>");
 			if (panel.getProvisionalCount() > 0)
-				out.print("*");
-			out.print("<img src='images/blank.gif' width='10' height='1' /></td><td></td><td><a href='taxa_panelist.jsp?GroupID=" + panel.getPanelID() + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a></td></tr>");
+				out.print("new data");
+			out.print("<img src='images/blank.gif' width='10' height='1' /></td><td><a href='taxa_panelist.jsp?GroupID=" + panel.getPanelID() + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a></td></tr>");
 		}
 	}
 	session.setAttribute("panels", panels);

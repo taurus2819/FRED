@@ -68,17 +68,21 @@ public class AdoptionRecordDE extends RecordDE {
 					break;
 				case ADOPTORS :
 					adoptors = new Vector();
+					String query = "SELECT person_id FROM person_view WHERE name = ?";
+					int personID = 0;
 					while (value.length() > 0) {
 						if (value.indexOf("\n") == -1)
 							value = value + "\n";
-						String query = "SELECT person_id FROM person_view WHERE name = ?";
 						try {
 							rs = conn.executeQuery(query, new int[] {Types.VARCHAR}, new Object[] {value.substring(0, value.indexOf("\n")).trim()});
 							rs.next();
-							adoptors.add(new Integer(rs.getInt(1)));
+							personID = rs.getInt(1);
 						} catch (Exception e) {
 							throw new DataInputException("Adoptor",	value.substring(0, value.indexOf("\n")).trim() + " not in database - add through builder");
 						}
+						if (adoptors.indexOf(new Integer(personID)) != -1)
+							throw new DataInputException("Adoptor", value.substring(0, value.indexOf("\n")).trim() + " duplicated");
+						adoptors.add(new Integer(personID));
 						value = value.substring(value.indexOf("\n") + 1, value.length());
 					}
 					break;

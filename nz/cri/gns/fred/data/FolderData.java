@@ -34,8 +34,8 @@ public class FolderData {
 		this.id = id;
 		pool.add(this);
 		String query =
-			"SELECT Folder_ID, Name, Folder_Type, Owner_ID, Full_Name "
-				+ "FROM Folder JOIN IP.Person_View ON Owner_ID = PE_ID WHERE Folder_ID = ?";
+			"SELECT f.folder_id, f.name, f.folder_type, f.owner_id, pv.full_name "
+				+ "FROM folder f, ip.person_view pv WHERE f.owner_id = pe_id(+) AND folder_id = ?";
 		data[0] = new Integer(this.id);
 		try {
 			ResultSet rs = conn.executeQuery(query, types, data);
@@ -46,10 +46,10 @@ public class FolderData {
 			values[Folder.FOLDER_ID] = new Integer(rs.getInt(1));
 			values[Folder.NAME] = rs.getString(2);
 			values[Folder.FOLDER_TYPE] = rs.getString(3);
-			values[Folder.OWNER_ID] = new Integer(rs.getInt(4));
+			values[Folder.OWNER_ID] = ((rs.getString(4) != null) ? new Integer(rs.getInt(4)) : null);
 			values[Folder.OWNER] = rs.getString(5);
 			rs.close();
-			query = "SELECT DISTINCT Feature_ID, Sample_Name FROM Folder_Content_View WHERE Folder_ID = ? ORDER BY UPPER(Sample_Name)";
+			query = "SELECT DISTINCT feature_id, sample_name FROM folder_content_view WHERE folder_id = ? ORDER BY UPPER(sample_name)";
 			rs = conn.executeQuery(query, types, data);
 			Vector feats = new Vector();
 			String featIDs = "*";
