@@ -1303,6 +1303,10 @@ public class SampleDE implements DataEntryForm {
 		return sample.getSampleID();
 	}
 
+	public int getWorkingFolderID() {
+		return folder.getFolderID();
+	}
+
 	public int getFieldCount() {
 		return fields.length;
 	}

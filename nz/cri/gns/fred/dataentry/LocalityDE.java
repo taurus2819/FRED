@@ -578,6 +578,10 @@ public abstract class LocalityDE implements DataEntryForm {
 		conn.releaseStatement();
 	}
 
+	public int getWorkingFolderID() {
+		return folder.getFolderID();
+	}
+
 	private SiteRecord getSite() throws SQLException  {
 		DatumMethod horzDM = null;
 		try {

@@ -155,9 +155,9 @@ public class VertSectLocalityDE extends LocalityDE {
 				qd.addQueryColumn("finish_date", Types.DATE ,((compDate != null) ? compDate.getDate() : null));
 				qd.addQueryColumn("finish_date_rounding", Types.VARCHAR, ((compDate != null) ? compDate.getDateRounding() : null));
 				qd.addQueryColumn("datum_type", Types.VARCHAR, fields[DATUM_TYPE]);
-				qd.addQueryColumn("datum_elevation", Types.NUMERIC, ((fields[DATUM_ELEVATION] != null) ? new Integer(fields[DATUM_ELEVATION]) : null));
-				qd.addQueryColumn("start_depth", Types.NUMERIC, ((fields[TOP_HORIZON] != null) ? new Integer(fields[KICK_OFF_DEPTH]) : null));
-				qd.addQueryColumn("finish_depth", Types.NUMERIC, ((fields[BASE_HORIZON] != null) ? new Integer(fields[TERMINATION_DEPTH]) : null));
+				qd.addQueryColumn("datum_elevation", Types.NUMERIC, ((fields[DATUM_ELEVATION] != null) ? new Double(fields[DATUM_ELEVATION]) : null));
+				qd.addQueryColumn("start_depth", Types.NUMERIC, ((fields[TOP_HORIZON] != null) ? new Double(fields[KICK_OFF_DEPTH]) : null));
+				qd.addQueryColumn("finish_depth", Types.NUMERIC, ((fields[BASE_HORIZON] != null) ? new Double(fields[TERMINATION_DEPTH]) : null));
 				qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getFeatureID()));
 				DBUtils.doUpdate(qd, "feature_id = ?", conn);				
 				conn.getConnection().commit();

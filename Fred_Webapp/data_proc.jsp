@@ -113,6 +113,8 @@
 				dataEntryForm.save();
 			}
 
+			Folder folder = new Folder(dataEntryForm.getWorkingFolderID(), user, state, true);
+
 			response.sendRedirect(request.getParameter("Redirect"));
 			return;
 

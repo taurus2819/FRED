@@ -318,4 +318,9 @@ public abstract class RecordDE implements DataEntryForm {
 			conn.releaseStatement();
 		}
 	}
+	
+	public int getWorkingFolderID() {
+		return folder.getFolderID();
+	}
+
 }
