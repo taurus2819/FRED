@@ -43,7 +43,7 @@
 
 	FolderList folderList = new FolderList(user, state);
 	Folder folder;
-/*
+
 	//List Working folders
 	if (folderList.getPersonalFolderCount() > 0) {
 		out.println("<tr><th>Working Folder&nbsp;&nbsp;</th><td></td><th>Owner&nbsp;&nbsp;</th><th>Options</th></tr>");
@@ -62,8 +62,8 @@
 		out.println("</form>");
 		out.println("<tr><td>&nbsp;</td></tr>");
 	}
-*/
-/*
+
+
 	//List Masterfile folders (if any)
 	if (folderList.getAdminFolderCount() > 0) {
 		out.println("<tr><th>Masterfile Folder&nbsp;&nbsp;</th><td></td><th>Curator&nbsp;&nbsp;</th><th>Options</th></tr>");
@@ -80,8 +80,8 @@
 		}
 		out.println("<tr><td>&nbsp;</td></tr>");
 	}
-*/
-/*
+
+
 	//List Taxonomic groups (if any)
 	nz.cri.gns.intranet.DBConnection connection = FREDUtils.getFREDConnection(state);
 	Statement statement = connection.statement;
@@ -110,7 +110,7 @@
 		}
 		statement2.close();
 	}
-*/
+
 	out.println("</table>");
 
 	out.println("</td></tr></table>");
