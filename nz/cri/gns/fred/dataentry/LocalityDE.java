@@ -570,31 +570,31 @@ public abstract class LocalityDE implements DataEntryForm {
 		feature = new Feature(feature.getFeatureID(), user, state, true);	
 	}
 
-	public void delete()
-		throws IOException, SQLException, InvalidCredentialsException {
-		if (!folder.isAllowedDeleteLocalities() && feature != null)
-			throw new InvalidCredentialsException();
-		DBConnection conn = FREDUtils.getFREDConnection(state);
-		StringBuffer auditID = new StringBuffer();
-		ResultSet rs =
-			conn.executeQuery(
-				"SELECT Audit_ID FROM Record WHERE Sample_ID IN (SELECT Sample_ID FROM Sample WHERE Feature_ID = " + feature.getFeatureID() + ")");
-		while (rs.next()) {
-			auditID.append(rs.getString(1) + ",");
-		}
-		rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
-		rs.next();
-		auditID.append(rs.getString(1));
-		conn.executeUpdate(
-			"DELETE FROM Record WHERE Sample_ID IN (SELECT Sample_ID FROM Sample WHERE Feature_ID = "
-				+ feature.getFeatureID()
-				+ ")");
-		conn.executeUpdate(
-			"DELETE FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
-		conn.executeUpdate(
-			"DELETE FROM Audit_Table WHERE Audit_ID IN (" + auditID + ")");
-		conn.releaseStatement();
+public void delete()
+	throws IOException, SQLException, InvalidCredentialsException {
+	if (!folder.isAllowedDeleteLocalities() && feature != null)
+		throw new InvalidCredentialsException();
+	DBConnection conn = FREDUtils.getFREDConnection(state);
+	StringBuffer auditID = new StringBuffer();
+	ResultSet rs =
+		conn.executeQuery(
+			"SELECT Audit_ID FROM Record WHERE Sample_ID IN (SELECT Sample_ID FROM Sample WHERE Feature_ID = " + feature.getFeatureID() + ")");
+	while (rs.next()) {
+		auditID.append(rs.getString(1) + ",");
 	}
+	rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
+	rs.next();
+	auditID.append(rs.getString(1));
+	conn.executeUpdate(
+		"DELETE FROM Record WHERE Sample_ID IN (SELECT Sample_ID FROM Sample WHERE Feature_ID = "
+			+ feature.getFeatureID()
+			+ ")");
+	conn.executeUpdate(
+		"DELETE FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
+	conn.executeUpdate(
+		"DELETE FROM Audit_Table WHERE Audit_ID IN (" + auditID + ")");
+	conn.releaseStatement();
+}
 
 	private SiteRecord getSite() throws SQLException  {
 		DatumMethod horzDM = null;

@@ -119,7 +119,7 @@ public interface DataEntryForm {
 	public int save() throws SQLException, IOException, InvalidCredentialsException;
 	
 	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException;
-	
+
 	public void delete() throws IOException, SQLException, InvalidCredentialsException;
 
 }

@@ -306,17 +306,16 @@ public abstract class RecordDE implements DataEntryForm {
 	protected void checkMandatoryFields() throws DataInputException {
 	}
 	
-	public void delete() throws IOException, SQLException, InvalidCredentialsException {
-		if (record != null) {
-			DBConnection conn = FREDUtils.getFREDConnection(state);
-			ResultSet rs = conn.executeQuery("SELECT Audit_ID FROM Record WHERE Record_ID = " + record.getRecordID());
-			if (rs.next()) {
-				String auditID = rs.getString(1);
-				conn.executeUpdate("DELETE FROM Record WHERE Record_ID = " + record.getRecordID());
-				conn.executeUpdate("DELETE FROM Audit_Table WHERE Audit_ID = " + auditID);
-			}
-			conn.releaseStatement();
+public void delete() throws IOException, SQLException, InvalidCredentialsException {
+	if (record != null) {
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		ResultSet rs = conn.executeQuery("SELECT Audit_ID FROM Record WHERE Record_ID = " + record.getRecordID());
+		if (rs.next()) {
+			String auditID = rs.getString(1);
+			conn.executeUpdate("DELETE FROM Record WHERE Record_ID = " + record.getRecordID());
+			conn.executeUpdate("DELETE FROM Audit_Table WHERE Audit_ID = " + auditID);
 		}
+		conn.releaseStatement();
 	}
-	
+}
 }
