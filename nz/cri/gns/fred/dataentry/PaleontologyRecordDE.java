@@ -204,7 +204,7 @@ public class PaleontologyRecordDE extends RecordDE {
 							cleanName = cleanTaxaName(cleanName, "s.l.");
 							cleanName = cleanTaxaName(cleanName, "gr.");
 							//check TaxaName against thesaurus
-							rs = conn.executeQuery("SELECT Taxa_ID FROM Taxonomic_Lookup WHERE Taxonomic_Name = " + JspUtils.sqlEscape(cleanName) + " AND Status IN ('approved', 'provisional')");
+							rs = conn.executeQuery("SELECT Taxa_ID FROM Taxonomic_Lookup WHERE Group_ID = " + taxa.getGroupID() + " AND Taxonomic_Name = " + JspUtils.sqlEscape(cleanName) + " AND Status IN ('approved', 'provisional')");
 							try {
 								rs.next();
 								taxa.setTaxaID(new Integer(rs.getInt(1)));
