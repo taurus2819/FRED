@@ -1,5 +1,24 @@
 <%@page	extends="nz.cri.gns.jsp.FREDIPSysJspPage"
 		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
+%><%!
+	public Authenticable[] getRequiredRights(HttpServletRequest request) {
+		try {
+			return new Authenticable[] {
+				 new IPRightAccess(
+					new IPRight(
+						"FRED data entry",
+						getIPApp(
+							request.getSession(),
+							getServletConfig().getServletContext())),
+					Right.ANY_RIGHT)};
+		} catch (Exception e) {
+			//Database error, so just block them
+			return new Authenticable[] {
+				 new IPRightAccess(
+					IPRight.BLOCKED_IP_RIGHT,
+					Right.BLOCKED_RIGHT)};
+		}
+	}
 %><%!	private String generateWorkRecords(String sampID, String foldID, int userRights, String locType, String locStatus, nz.cri.gns.intranet.DBConnection connection, int offset) throws java.sql.SQLException {
 			String recType, imageName = "";
 			StringBuffer returnVal;

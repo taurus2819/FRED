@@ -1,5 +1,24 @@
 <%@page	extends="nz.cri.gns.jsp.FREDIPSysJspPage"
 		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
+%><%!
+	public Authenticable[] getRequiredRights(HttpServletRequest request) {
+		try {
+			return new Authenticable[] {
+				 new IPRightAccess(
+					new IPRight(
+						"FRED data entry",
+						getIPApp(
+							request.getSession(),
+							getServletConfig().getServletContext())),
+					Right.ANY_RIGHT)};
+		} catch (Exception e) {
+			//Database error, so just block them
+			return new Authenticable[] {
+				 new IPRightAccess(
+					IPRight.BLOCKED_IP_RIGHT,
+					Right.BLOCKED_RIGHT)};
+		}
+	}
 %><%
 	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
 	Statement statement = connection.statement;

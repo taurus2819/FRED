@@ -3,7 +3,7 @@
 %><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
-	Statement statement = connection.statement;
+	java.sql.Statement statement = connection.statement;
 	ResultSet rs;
 	ComboDescriptor cd;
 
