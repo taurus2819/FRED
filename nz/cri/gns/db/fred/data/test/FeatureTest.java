@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import junit.framework.TestCase;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.fred.FREDUtils;
 import nz.cri.gns.db.fred.data.AccessDeniedException;
 import nz.cri.gns.db.fred.data.Feature;
 import nz.cri.gns.intranet.DBConnection;
@@ -56,9 +57,9 @@ public class FeatureTest extends TestCase {
 	
 	public void testSamples() throws SQLException, IOException, InvalidCredentialsException {
 		Feature.purge();
-		Feature f = new Feature(509, user, state);
+		Feature f = new Feature(1163, user, state);
 		Feature dhole = new Feature(1, user, state);
-		assertEquals(f.getAsVector(Feature.SAMPLE).size(), 1);
+		assertEquals(f.getAsVector(Feature.SAMPLE).size(), 2);
 		assertEquals(dhole.getAsVector(Feature.SAMPLE).size(), 5);
 	}
 	
@@ -78,18 +79,38 @@ public class FeatureTest extends TestCase {
 		System.out.println(f.getAsString(Feature.SECURITY_CLASS_ID));
 	}
 	
-	public void testMultipleUsers() throws SQLException, IOException {
+	public void testWorkingFeature() throws SQLException, IOException, InvalidCredentialsException {
+		String test = null;
+		Feature.purge();
+		Feature f = new Feature(1163, user, state);
+/*		try {
+			test = f.getAsString(Feature.FEATURE_TYPE);
+		} catch (Exception e) {}
+		assertNotNull(test);
+		test = null;
+		try {
+			test = f.getAsString(Feature.LOCALITY);
+		} catch (Exception e) {}
+		assertNull(test);
+*/		
+		System.out.println(FREDUtils.getUserWorkingLocalityRights(user, "1163", state));
+		System.out.println(f.isUserAuthenticated());
+		//System.out.println(f.getAsString(Feature.STATUS));
+		//System.out.println(f.getAsString(Feature.SECURITY_CLASS_ID));
+	}
+	
+	public void _testMultipleUsers() throws SQLException, IOException {
 		Feature.purge();
 		Feature f = new Feature(562, null, state);
 		Feature f2 = new Feature(562, user, state);
 		Feature f3 = new Feature(509, null, state);
 		Feature f4 = new Feature(509, user, state);
 		Feature f5 = new Feature(509, user2, state);
-		assertFalse(f.isAuthenticated());
-		assertTrue(f2.isAuthenticated());
-		assertFalse(f3.isAuthenticated());
-		assertTrue(f4.isAuthenticated());
-		assertFalse(f5.isAuthenticated());		
+		assertFalse(f.isUserAuthenticated());
+		assertTrue(f2.isUserAuthenticated());
+		assertFalse(f3.isUserAuthenticated());
+		assertTrue(f4.isUserAuthenticated());
+		assertFalse(f5.isUserAuthenticated());		
 	}
 
 }

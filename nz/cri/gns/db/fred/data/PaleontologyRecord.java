@@ -17,11 +17,11 @@ import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.PageState;
 
 /**
- * Class that represents a Sample_Property_View record.
+ * Class that represents a Paleontology_View record.
  * Fields map to columns in database - use as arguments for the get methods.
- * Pooling is used so cannot instantiate directly - use static getSampPropRecord method instead.
+ * Pooling is used so cannot instantiate directly - use static getData method instead.
  */
-public class FullPaleontologyRecord {
+public class PaleontologyRecord {
 
 	public static final int RECORD_ID = 0;
 	public static final int FEATURE_ID = 1;
@@ -55,7 +55,7 @@ public class FullPaleontologyRecord {
 	public static final int COLLECTION_COMMENTS = 29;
 	public static final int TAXONOMIC_LIST = 30;
 
-	protected static Pool fullPaleontologyPool = new Pool();
+	protected static Pool pool = new Pool();
 	protected int id;
 	private Object[] values = new Object[31];
 	private int[] types = { Types.NUMERIC };
@@ -64,18 +64,18 @@ public class FullPaleontologyRecord {
 	/**
 	 * Cannot be called directly. use static getAdoptionRecord method instead.
 	 */
-	protected FullPaleontologyRecord(int id, PageState state)
+	protected PaleontologyRecord(int id, PageState state)
 		throws SQLException, IOException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		this.id = id;
-		fullPaleontologyPool.add(this);
+		pool.add(this);
 		String query =
 			"SELECT RECORD_ID, FEATURE_ID, SAMPLE_ID, FEATURE_STATUS, FEATURE_SECURITY_CLASS_ID, AUDIT_ID, "
 				+ "STATUS, SECURITY_CLASS_ID, SAMPLE_NAME, DRILLHOLE_DEPTH, IDENTIFICATION_DATE, DATE_ROUNDING, "
 				+ "STAGE_ID, STAGE, STAGE_ABBREV, STAGE_LOWER_ID, STAGE_LOWER, STAGE_LOWER_MOD, STAGE_UPPER_ID, "
 				+ "STAGE_UPPER, STAGE_UPPER_MOD, AGE_START, AGE_STOP, STAGE_COMMENTS, LAB_SECTION_ID, LAB, "
 				+ "LAB_CODE, LAB_NUMBER, COLLECTION_COMMENTS "
-				+ "FROM Paleontology_All_View WHERE Status = 'approved' AND Feature_Status = 'approved' AND Record_ID = ?";
+				+ "FROM Paleontology_All_View WHERE AND Record_ID = ?";
 		data[0] = new Integer(this.id);
 		try {
 			ResultSet rs = conn.executeQuery(query, types, data);
@@ -190,7 +190,7 @@ public class FullPaleontologyRecord {
 
 			conn.releaseStatement();
 		} catch (SQLException _e) {
-			fullPaleontologyPool.removeMe(this);
+			pool.removeMe(this);
 			throw DBUtils.fixSQLException(_e, query, conn);
 		}
 	}
@@ -199,13 +199,12 @@ public class FullPaleontologyRecord {
 	 * Attempts to return the given field as an int.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an int.
 	 */
-	public int getAsInt(int field) {
-		if (values.length < field)
-			throw new IllegalArgumentException("Invalid field");
+	public int getAsInt(int field) throws IllegalArgumentException {
 		try {
-			return ((Integer) values[field]).intValue();
-		} catch (Exception _e) {
-			throw new IllegalArgumentException("Field cannot be returned as an int");
+			Object thing = values[field];
+			return ((Integer) thing).intValue();
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
 		}
 	}
 
@@ -213,13 +212,12 @@ public class FullPaleontologyRecord {
 	 * Attempts to return the given field as an double.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an double.
 	 */
-	public double getAsDouble(int field) {
-		if (values.length < field)
-			throw new IllegalArgumentException("Invalid field");
+	public double getAsDouble(int field) throws IllegalArgumentException {
 		try {
-			return ((Double) values[field]).doubleValue();
-		} catch (Exception _e) {
-			throw new IllegalArgumentException("Field cannot be returned as an double");
+			Object thing = values[field];
+			return ((Double) thing).doubleValue();
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
 		}
 	}
 
@@ -227,33 +225,12 @@ public class FullPaleontologyRecord {
 	 * Attempts to return the given field as a Date.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an Date.
 	 */
-	public java.util.Date getAsDate(int field) {
-		if (values.length < field)
-			throw new IllegalArgumentException("Invalid field");
-		Object thing = values[field];
+	public java.util.Date getAsDate(int field) throws IllegalArgumentException {
 		try {
+			Object thing = values[field];
 			return (java.util.Date) thing;
-		} catch (Exception _e) {
-			throw new IllegalArgumentException(
-				"Field cannot be returned as a Date, class is "
-					+ thing.getClass().getName());
-		}
-	}
-
-	/**
-	 * Attempts to return the given field as a Vector.
-	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a Vector.
-	 */
-	public Vector getAsVector(int field) {
-		if (values.length < field)
-			throw new IllegalArgumentException("Invalid field");
-		Object thing = values[field];
-		try {
-			return (Vector) thing;
-		} catch (Exception _e) {
-			throw new IllegalArgumentException(
-				"Field cannot be returned as a Vector, class is "
-					+ thing.getClass().getName());
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
 		}
 	}
 
@@ -261,36 +238,57 @@ public class FullPaleontologyRecord {
 	 * Attempts to return the given field as a String.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a String.
 	 */
-	public String getAsString(int field) {
-		if (values.length < field)
-			throw new IllegalArgumentException("Invalid field");
-		if (values[field] == null)
-			return null;
-		return values[field].toString();
+	public String getAsString(int field) throws IllegalArgumentException {
+		try {
+			Object thing = values[field];
+			if (thing == null) {
+				return null;
+			}
+			return thing.toString();
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
+		}
 	}
 
+	/**
+	 * Attempts to return the given field as a Vector.
+	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a Vector.
+	 */
+	public Vector getAsVector(int field) throws IllegalArgumentException {
+		try {
+			Object thing = values[field];
+			return (Vector) thing;
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
+		}
+	}
+	
 	/**
 	 * Returns the given field as an object. Use if all else fails.
 	 * @throws IllegalArgumentException if the field doesn't exist.
 	 */
-	public Object get(int field) {
-		if (values.length < field)
-			throw new IllegalArgumentException("Invalid field");
-		return values[field];
+	public Object get(int field) throws IllegalArgumentException {
+		try {
+			Object thing = values[field];
+			return thing;
+		}
+		catch (Exception e) {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	/**
 	 * Inner class used for object pooling.
 	 */
-	public static class FulPaleontologyFinder implements Finder {
+	public static class DataFinder implements Finder {
 		int id;
-		public FulPaleontologyFinder(int id) {
+		public DataFinder(int id) {
 			this.id = id;
 		}
 		public boolean isObject(Object o) {
 			return (
-				o instanceof FullPaleontologyRecord
-					&& ((FullPaleontologyRecord) o).id == this.id);
+				o instanceof PaleontologyRecord
+					&& ((PaleontologyRecord) o).id == this.id);
 		}
 
 	}
@@ -299,50 +297,38 @@ public class FullPaleontologyRecord {
 	 * created for testing purposes (grrrr) - use to test object pooling.
 	 */
 	public static int getPoolSize() {
-		return fullPaleontologyPool.size();
+		return pool.size();
 	}
 
 	/**
 	 * Use to empty the pool of all objects.
 	 */
 	public static void purge() {
-		fullPaleontologyPool.removeAllElements();
+		pool.removeAllElements();
 	}
 
 	/**
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
-	 * @throws AccessDeniedException where user not allowed access to this row
 	 */
-	public static FullPaleontologyRecord getFullPaleontologyRecord(
-		int id,
-		User user,
-		PageState state)
-		throws SQLException, IOException, AccessDeniedException {
-		FullPaleontologyRecord p =
-			(FullPaleontologyRecord) fullPaleontologyPool.retrieve(
-				new FulPaleontologyFinder(id));
+	public static PaleontologyRecord getData(int id, User user, PageState state) throws SQLException, IOException, AccessDeniedException {
+		PaleontologyRecord p = (PaleontologyRecord) pool.retrieve(new DataFinder(id));
 		if (p == null) {
-			p = new FullPaleontologyRecord(id, state);
+			p = new PaleontologyRecord(id, state);
 		}
-		if (p.get(FEATURE_SECURITY_CLASS_ID) != null
-			&& p.get(SECURITY_CLASS_ID) != null
-			&& (!FREDUtils
-				.isAllowedRecord(
-					user,
-					p.getAsInt(FEATURE_SECURITY_CLASS_ID),
-					state)
-				|| !FREDUtils.isAllowedRecord(
-					user,
-					p.getAsInt(SECURITY_CLASS_ID),
-					state))) {
+		if (!FREDUtils.isAllowedLocality(user, p.getAsString(FEATURE_SECURITY_CLASS_ID), p.getAsString(FEATURE_STATUS), p.getAsString(FEATURE_ID), state)
+				|| !FREDUtils.isAllowedRecord(user, p.getAsString(SECURITY_CLASS_ID), p.getAsString(STATUS), p.getAsString(RECORD_ID), state)) {
 			throw new AccessDeniedException();
 		}
 		return p;
 	}
 
 	public String toString() {
-		return (values[RECORD_ID]).toString();
+		return (values[0]).toString();
+	}
+	
+	public void finalize() throws Throwable {
+		pool.removeMe(this);
 	}
 
 }

@@ -14,7 +14,7 @@ import nz.cri.gns.auth.SecurityClass;
 import nz.cri.gns.auth.SecurityClassAccess;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.fred.data.AccessDeniedException;
-import nz.cri.gns.db.fred.data.FullSample;
+import nz.cri.gns.db.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.FREDConstants;
 import nz.cri.gns.jsp.JspUtils;
@@ -36,22 +36,72 @@ public class FREDUtils implements FREDConstants {
 			state.getContext());
 	}
 
-	public static boolean isAllowedRecord(
-		User user,
-		int securityClassID,
-		PageState state)
-		throws IOException, SQLException {
+	public static boolean isAllowedLocality(User user, String securityClassID, String status, String featID, PageState state) throws IOException, SQLException {
 		if (user == null)
 			return false;
-		DBConnection conn =
-			JspUtils.createDatabaseConnection(
-				state.getSession(),
-				"nz.cri.gns.ip.connection",
-				"ip",
-				state.getContext());
-		SecurityClass sc = new SecurityClass(securityClassID, conn);
-		SecurityClassAccess sca = new SecurityClassAccess(sc, Right.ANY_RIGHT);
-		return sca.isAccessibleTo(user, conn);
+		if (!status.equals("approved")) {
+			return ((getUserWorkingLocalityRights(user, featID, state) & 1) > 0);
+		}
+		if (securityClassID != null) {
+			DBConnection conn =
+				JspUtils.createDatabaseConnection(
+					state.getSession(),
+					"nz.cri.gns.ip.connection",
+					"ip",
+					state.getContext());
+			SecurityClass sc = new SecurityClass(Integer.parseInt(securityClassID), conn);
+			SecurityClassAccess sca = new SecurityClassAccess(sc, Right.ANY_RIGHT);
+			return sca.isAccessibleTo(user, conn);
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean isAllowedRecord(User user, String securityClassID, String status, String recID, PageState state) throws IOException, SQLException {
+		if (user == null)
+			return false;
+		if (!status.equals("approved")) {
+			return ((getUserWorkingRecordRights(user, recID, state) & 1) > 0);
+		}
+		if (securityClassID != null) {
+			DBConnection conn =
+				JspUtils.createDatabaseConnection(
+					state.getSession(),
+					"nz.cri.gns.ip.connection",
+					"ip",
+					state.getContext());
+			SecurityClass sc = new SecurityClass(Integer.parseInt(securityClassID), conn);
+			SecurityClassAccess sca = new SecurityClassAccess(sc, Right.ANY_RIGHT);
+			return sca.isAccessibleTo(user, conn);
+		} else {
+			return false;
+		}
+	}
+
+	public static int getUserWorkingLocalityRights(User user, String featID, PageState state) throws IOException, SQLException {
+		int userRights = 0;
+		if (user != null) {
+			DBConnection conn = FREDUtils.getFREDConnection(state);
+			int userID = user.getPersonId();
+			ResultSet rs = conn.executeQuery("SELECT User_Rights FROM Folder_Content_View WHERE Feature_ID = " + featID + " AND User_ID = " + userID);
+			while (rs.next()) {
+				userRights = userRights | rs.getInt(1);
+			}
+		}
+		return userRights;	
+	}
+
+	public static int getUserWorkingRecordRights(User user, String recID, PageState state) throws IOException, SQLException {
+		int userRights = 0;
+		if (user != null) {
+			DBConnection conn = FREDUtils.getFREDConnection(state);
+			int userID = user.getPersonId();
+			ResultSet rs = conn.executeQuery("SELECT User_Rights FROM Folder_Content_View NATURAL JOIN Record WHERE Record_ID = " + recID + " AND User_ID = " + userID);
+			while (rs.next()) {
+				userRights = userRights | rs.getInt(1);
+			}
+		}
+		return userRights;		
 	}
 
 	public static int getUserFolderRights(User user, String folderID, PageState state) throws IOException, SQLException {
@@ -88,30 +138,30 @@ public class FREDUtils implements FREDConstants {
 		return formatDateForOutput(date, null);
 	}
 
-	public static FullSample getSampleAbove(FullSample sample, User user, PageState state)
+	public static Sample getSampleAbove(Sample sample, User user, PageState state)
 		throws SQLException, IOException, AccessDeniedException, InvalidCredentialsException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		int[] types = {Types.NUMERIC, Types.NUMERIC};
 		Object data[] = new Object[2];
 		String query = "SELECT Sample_ID FROM FR.Sample_All_View WHERE Feature_ID = ? AND Top_Depth < ? ORDER BY Top_Depth DESC";
-		data[0] = new Integer(sample.getAsInt(FullSample.FEATURE_ID));
-		data[1] = new Double(sample.getAsDouble(FullSample.TOP_DEPTH));
+		data[0] = new Integer(sample.getAsInt(Sample.FEATURE_ID));
+		data[1] = new Double(sample.getAsDouble(Sample.TOP_DEPTH));
 		ResultSet rs = conn.executeQuery(query, types, data);
 		rs.next();
-		return new FullSample(rs.getInt(1), user, state);
+		return new Sample(rs.getInt(1), user, state);
 	}
 
-	public static FullSample getSampleBelow(FullSample sample, User user, PageState state)
+	public static Sample getSampleBelow(Sample sample, User user, PageState state)
 		throws SQLException, IOException, AccessDeniedException, InvalidCredentialsException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		int[] types = {Types.NUMERIC, Types.NUMERIC};
 		Object data[] = new Object[2];
 		String query = "SELECT Sample_ID FROM FR.Sample_All_View WHERE Feature_ID = ? AND Top_Depth > ? ORDER BY Top_Depth";
-		data[0] = new Integer(sample.getAsInt(FullSample.FEATURE_ID));
-		data[1] = new Double(sample.getAsDouble(FullSample.TOP_DEPTH));
+		data[0] = new Integer(sample.getAsInt(Sample.FEATURE_ID));
+		data[1] = new Double(sample.getAsDouble(Sample.TOP_DEPTH));
 		ResultSet rs = conn.executeQuery(query, types, data);
 		rs.next();
-		return new FullSample(rs.getInt(1), user, state);
+		return new Sample(rs.getInt(1), user, state);
 	}
 
 }

@@ -17,6 +17,7 @@ public class Folder {
 	public static final int FOLDER_TYPE = 2;
 	public static final int OWNER_ID = 3;
 	public static final int OWNER = 4;
+	public static final int LOCALITY_COUNT = 5;
 
 	private FolderData fd;
 	private int userRights = 0;

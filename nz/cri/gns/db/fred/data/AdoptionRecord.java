@@ -16,11 +16,11 @@ import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.PageState;
 
 /**
- * Class that represents a Sample_Property_View record.
+ * Class that represents a Adoption_View record.
  * Fields map to columns in database - use as arguments for the get methods.
- * Pooling is used so cannot instantiate directly - use static getSampPropRecord method instead.
+ * Pooling is used so cannot instantiate directly - use static getData method instead.
  */
-public class FullAdoptionRecord {
+public class AdoptionRecord {
 
 	public static final int RECORD_ID = 0;
 	public static final int FEATURE_ID = 1;
@@ -48,7 +48,7 @@ public class FullAdoptionRecord {
 	public static final int ADOPTED_AGE_STOP = 23;
 	public static final int COMMENTS = 24;
 
-	protected static Pool fullAdoptionPool = new Pool();
+	protected static Pool pool = new Pool();
 	protected int id;
 	private Object[] values = new Object[25];
 	private int[] types = { Types.NUMERIC };
@@ -57,18 +57,18 @@ public class FullAdoptionRecord {
 	/**
 	 * Cannot be called directly. use static getAdoptionRecord method instead.
 	 */
-	protected FullAdoptionRecord(int id, PageState state)
+	protected AdoptionRecord(int id, PageState state)
 		throws SQLException, IOException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		this.id = id;
-		fullAdoptionPool.add(this);
+		pool.add(this);
 		String query =
 			"SELECT RECORD_ID, FEATURE_ID, SAMPLE_ID, FEATURE_STATUS, FEATURE_SECURITY_CLASS_ID, AUDIT_ID, "
 				+ "STATUS, SECURITY_CLASS_ID, SAMPLE_NAME, DRILLHOLE_DEPTH, ADOPTION_DATE, DATE_ROUNDING, "
 				+ "ADOPTED_STAGE_ID, ADOPTED_STAGE, ADOPTED_STAGE_ABBREV, ADOPTED_STAGE_LOWER_ID, "
 				+ "ADOPTED_STAGE_LOWER, ADOPTED_STAGE_LOWER_MOD, ADOPTED_STAGE_UPPER_ID, ADOPTED_STAGE_UPPER, "
 				+ "ADOPTED_STAGE_UPPER_MOD, ADOPTED_AGE_START, ADOPTED_AGE_STOP, COMMENTS "
-				+ "FROM Adoption_All_View WHERE Status = 'approved' AND Feature_Status = 'approved' AND Record_ID = ?";
+				+ "FROM Adoption_All_View WHERE Record_ID = ?";
 		data[0] = new Integer(this.id);
 		try {
 			ResultSet rs = conn.executeQuery(query, types, data);
@@ -133,7 +133,7 @@ public class FullAdoptionRecord {
 
 			conn.releaseStatement();
 		} catch (SQLException _e) {
-			fullAdoptionPool.removeMe(this);
+			pool.removeMe(this);
 			throw DBUtils.fixSQLException(_e, query, conn);
 		}
 	}
@@ -142,13 +142,12 @@ public class FullAdoptionRecord {
 	 * Attempts to return the given field as an int.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an int.
 	 */
-	public int getAsInt(int field) {
-		if (values.length < field)
-			throw new IllegalArgumentException("Invalid field");
+	public int getAsInt(int field) throws IllegalArgumentException {
 		try {
-			return ((Integer) values[field]).intValue();
-		} catch (Exception _e) {
-			throw new IllegalArgumentException("Field cannot be returned as an int");
+			Object thing = values[field];
+			return ((Integer) thing).intValue();
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
 		}
 	}
 
@@ -156,13 +155,12 @@ public class FullAdoptionRecord {
 	 * Attempts to return the given field as an double.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an double.
 	 */
-	public double getAsDouble(int field) {
-		if (values.length < field)
-			throw new IllegalArgumentException("Invalid field");
+	public double getAsDouble(int field) throws IllegalArgumentException {
 		try {
-			return ((Double) values[field]).doubleValue();
-		} catch (Exception _e) {
-			throw new IllegalArgumentException("Field cannot be returned as an double");
+			Object thing = values[field];
+			return ((Double) thing).doubleValue();
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
 		}
 	}
 
@@ -170,33 +168,12 @@ public class FullAdoptionRecord {
 	 * Attempts to return the given field as a Date.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an Date.
 	 */
-	public java.util.Date getAsDate(int field) {
-		if (values.length < field)
-			throw new IllegalArgumentException("Invalid field");
-		Object thing = values[field];
+	public java.util.Date getAsDate(int field) throws IllegalArgumentException {
 		try {
+			Object thing = values[field];
 			return (java.util.Date) thing;
-		} catch (Exception _e) {
-			throw new IllegalArgumentException(
-				"Field cannot be returned as a Date, class is "
-					+ thing.getClass().getName());
-		}
-	}
-
-	/**
-	 * Attempts to return the given field as a Vector.
-	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a Vector.
-	 */
-	public Vector getAsVector(int field) {
-		if (values.length < field)
-			throw new IllegalArgumentException("Invalid field");
-		Object thing = values[field];
-		try {
-			return (Vector) thing;
-		} catch (Exception _e) {
-			throw new IllegalArgumentException(
-				"Field cannot be returned as a Vector, class is "
-					+ thing.getClass().getName());
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
 		}
 	}
 
@@ -204,36 +181,57 @@ public class FullAdoptionRecord {
 	 * Attempts to return the given field as a String.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a String.
 	 */
-	public String getAsString(int field) {
-		if (values.length < field)
-			throw new IllegalArgumentException("Invalid field");
-		if (values[field] == null)
-			return null;
-		return values[field].toString();
+	public String getAsString(int field) throws IllegalArgumentException {
+		try {
+			Object thing = values[field];
+			if (thing == null) {
+				return null;
+			}
+			return thing.toString();
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
+		}
 	}
 
+	/**
+	 * Attempts to return the given field as a Vector.
+	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a Vector.
+	 */
+	public Vector getAsVector(int field) throws IllegalArgumentException {
+		try {
+			Object thing = values[field];
+			return (Vector) thing;
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
+		}
+	}
+	
 	/**
 	 * Returns the given field as an object. Use if all else fails.
 	 * @throws IllegalArgumentException if the field doesn't exist.
 	 */
-	public Object get(int field) {
-		if (values.length < field)
-			throw new IllegalArgumentException("Invalid field");
-		return values[field];
+	public Object get(int field) throws IllegalArgumentException {
+		try {
+			Object thing = values[field];
+			return thing;
+		}
+		catch (Exception e) {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	/**
 	 * Inner class used for object pooling.
 	 */
-	public static class FullAdoptionFinder implements Finder {
+	public static class DataFinder implements Finder {
 		int id;
-		public FullAdoptionFinder(int id) {
+		public DataFinder(int id) {
 			this.id = id;
 		}
 		public boolean isObject(Object o) {
 			return (
-				o instanceof FullAdoptionRecord
-					&& ((FullAdoptionRecord) o).id == this.id);
+				o instanceof AdoptionRecord
+					&& ((AdoptionRecord) o).id == this.id);
 		}
 
 	}
@@ -242,50 +240,38 @@ public class FullAdoptionRecord {
 	 * created for testing purposes (grrrr) - use to test object pooling.
 	 */
 	public static int getPoolSize() {
-		return fullAdoptionPool.size();
+		return pool.size();
 	}
 
 	/**
 	 * Use to empty the pool of all objects.
 	 */
 	public static void purge() {
-		fullAdoptionPool.removeAllElements();
+		pool.removeAllElements();
 	}
 
 	/**
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
-	 * @throws AccessDeniedException where user not allowed access to this row
 	 */
-	public static FullAdoptionRecord getFullAdoptionRecord(
-		int id,
-		User user,
-		PageState state)
-		throws SQLException, IOException, AccessDeniedException {
-		FullAdoptionRecord a =
-			(FullAdoptionRecord) fullAdoptionPool.retrieve(
-				new FullAdoptionFinder(id));
+	public static AdoptionRecord getData(int id, User user, PageState state) throws SQLException, IOException, AccessDeniedException {
+		AdoptionRecord a = (AdoptionRecord) pool.retrieve(new DataFinder(id));
 		if (a == null) {
-			a = new FullAdoptionRecord(id, state);
+			a = new AdoptionRecord(id, state);
 		}
-		if (a.get(FEATURE_SECURITY_CLASS_ID) != null
-			&& a.get(SECURITY_CLASS_ID) != null
-			&& (!FREDUtils
-				.isAllowedRecord(
-					user,
-					a.getAsInt(FEATURE_SECURITY_CLASS_ID),
-					state)
-				|| !FREDUtils.isAllowedRecord(
-					user,
-					a.getAsInt(SECURITY_CLASS_ID),
-					state))) {
+		if (!FREDUtils.isAllowedLocality(user, a.getAsString(FEATURE_SECURITY_CLASS_ID), a.getAsString(FEATURE_STATUS), a.getAsString(FEATURE_ID), state)
+				|| !FREDUtils.isAllowedRecord(user, a.getAsString(SECURITY_CLASS_ID), a.getAsString(STATUS), a.getAsString(RECORD_ID), state)) {
 			throw new AccessDeniedException();
 		}
 		return a;
 	}
 
 	public String toString() {
-		return (values[RECORD_ID]).toString();
+		return (values[0]).toString();
+	}
+	
+	public void finalize() throws Throwable {
+		pool.removeMe(this);
 	}
 
 }

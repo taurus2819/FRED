@@ -20,6 +20,7 @@ public class Feature {
 	public static final int SITE_ID = 1;
 	public static final int AUDIT_ID = 2;
 	public static final int SECURITY_CLASS_ID = 20;
+	public static final int STATUS = 23;
 	public static final int MASTERFILE_ID = 3;
 	public static final int MASTERFILE_NAME = 4;
 	public static final int LOCALITY = 5;
@@ -38,34 +39,46 @@ public class Feature {
 	public static final int START_DEPTH = 18;
 	public static final int FINISH_DEPTH = 19;
 	public static final int SAMPLE = 21;
+	public static final int SAMPLE_WORKING = 22;
 
 	private FeatureData fd;
 	private boolean authenticated;
 
 	public Feature(int id, User user, PageState state) throws SQLException, IOException {
 		fd = FeatureData.getData(id, state);
-		if (fd.get(SECURITY_CLASS_ID) != null && !FREDUtils.isAllowedRecord(user, fd.getAsInt(SECURITY_CLASS_ID), state)) {
+		if (!FREDUtils.isAllowedLocality(user, fd.getAsString(SECURITY_CLASS_ID), fd.getAsString(STATUS), fd.getAsString(FEATURE_ID), state)) {
 			authenticated = false;
 		} else {
 			authenticated = true;
 		}		
 	}
 
+	public boolean isUserAuthenticated() {
+		return authenticated;
+	}
+	
+	public boolean isApprovedLocality() {
+		return (fd.getAsString(STATUS).equals("approved"));
+	}
+
 	private boolean isAllowedField(int field) {
 		if (authenticated) {
 			return true;
 		}
-		switch (field) {
-			case FEATURE_ID :
-			case FEATURE_TYPE :
-			case FEATURE_NAME :
-			case MASTERFILE_ID :
-			case MASTERFILE_NAME :
-			case AUDIT_ID :
-			case SECURITY_CLASS_ID :
-			case SITE_ID :
-			case SAMPLE :
+		if (isApprovedLocality()) {
+			switch (field) {
+				case FEATURE_ID :
+				case FEATURE_TYPE :
+				case FEATURE_NAME :
+				case MASTERFILE_ID :
+				case MASTERFILE_NAME :
+				case AUDIT_ID :
+				case SECURITY_CLASS_ID :
+				case STATUS :
+				case SITE_ID :
+				case SAMPLE :
 				return true;
+			}		
 		}
 		return false;
 	}
@@ -148,10 +161,6 @@ public class Feature {
 	 */
 	public static void purge() {
 		FeatureData.purge();
-	}
-
-	public boolean isAuthenticated() {
-		return authenticated;
 	}
 
 	public String toString() {

@@ -11,7 +11,7 @@
 	boolean authorChk = false, sCountChk = false, sCoordChk = false, commChk = true;
 
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 
 	//if FeatureID given then get SampleID or transer to drillhole
 	if (request.getParameter("FeatID") != null) {
@@ -52,14 +52,14 @@
 		//List data
 		out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
 		try {
-			FullSample fullSample = new FullSample(Integer.parseInt(sampID), user, state);
-			Audit audit = Audit.getAudit(fullSample.getAsInt(FullSample.AUDIT_ID), state);
-			featType = fullSample.getAsString(FullSample.FEATURE_TYPE);
+			Sample sample = new Sample(Integer.parseInt(sampID), user, state);
+			Audit audit = Audit.getAudit(sample.getAsInt(Sample.AUDIT_ID), state);
+			featType = sample.getAsString(Sample.FEATURE_TYPE);
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
-			out.println("<tr><td colspan='2' align='center' class='bigheading' >" + fullSample.getAsString(FullSample.SAMPLE_NAME) + "</td></tr>");
+			out.println("<tr><td colspan='2' align='center' class='bigheading' >" + sample.getAsString(Sample.SAMPLE_NAME) + "</td></tr>");
 			out.println("<tr><td colspan='2' align='center'>" + featType + "</td></tr>");
-			if (fullSample.get(FullSample.MASTERFILE_NAME) != null) {
-				out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + fullSample.getAsString(FullSample.MASTERFILE_NAME) + "</td></tr>");
+			if (sample.get(Sample.MASTERFILE_NAME) != null) {
+				out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + sample.getAsString(Sample.MASTERFILE_NAME) + "</td></tr>");
 			}
 			if (!audit.getAsString(Audit.STATUS).equals("approved")) {
 				out.println("<tr><td class='smallheading'>Status:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + audit.getAsString(Audit.STATUS) + "</td></tr>");
@@ -137,184 +137,184 @@
 			
 			//Locality Data
 			out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
-			if (fullSample.get(FullSample.YARD_FR_ID) != null) { out.println("<tr><td class='heading'>Yard FR Number</td><td>" + fullSample.getAsString(FullSample.YARD_FR_NUMBER) + "</td></tr>"); }
-			if (fullSample.get(FullSample.LATITUDE) != null) {
+			if (sample.get(Sample.YARD_FR_ID) != null) { out.println("<tr><td class='heading'>Yard FR Number</td><td>" + sample.getAsString(Sample.YARD_FR_NUMBER) + "</td></tr>"); }
+			if (sample.get(Sample.LATITUDE) != null) {
 				out.print("<tr><td class='heading'>Grid Ref</td><td>");
-				if (fullSample.get(FullSample.NZMG_SHEET) != null) {
-					out.print(fullSample.getAsString(FullSample.NZMG_SHEET) + ": " + nzmg.format(fullSample.getAsDouble(FullSample.NZMG_EAST)) + ", " + nzmg.format(fullSample.getAsDouble(FullSample.NZMG_NORTH)));
+				if (sample.get(Sample.NZMG_SHEET) != null) {
+					out.print(sample.getAsString(Sample.NZMG_SHEET) + ": " + nzmg.format(sample.getAsDouble(Sample.NZMG_EAST)) + ", " + nzmg.format(sample.getAsDouble(Sample.NZMG_NORTH)));
 					out.print("<img src='images/blank.gif' width='20' height='1' />|<img src='images/blank.gif' width='20' height='1' />");
 				}
-				if (fullSample.getAsDouble(FullSample.LATITUDE) > 0) {
-					out.print(latlong.format(fullSample.getAsDouble(FullSample.LATITUDE)) + "&#176N");
+				if (sample.getAsDouble(Sample.LATITUDE) > 0) {
+					out.print(latlong.format(sample.getAsDouble(Sample.LATITUDE)) + "&#176N");
 				} else {
-					out.print(latlong.format(Math.abs(fullSample.getAsDouble(FullSample.LATITUDE))) + "&#176S");
+					out.print(latlong.format(Math.abs(sample.getAsDouble(Sample.LATITUDE))) + "&#176S");
 				}
 				out.print("/");
-				if (fullSample.getAsDouble(FullSample.LONGITUDE) > 0) {
-					out.print(latlong.format(fullSample.getAsDouble(FullSample.LONGITUDE)) + "&#176E");
+				if (sample.getAsDouble(Sample.LONGITUDE) > 0) {
+					out.print(latlong.format(sample.getAsDouble(Sample.LONGITUDE)) + "&#176E");
 				} else {
-					out.print(latlong.format(Math.abs(fullSample.getAsDouble(FullSample.LONGITUDE))) + "&#176W");
+					out.print(latlong.format(Math.abs(sample.getAsDouble(Sample.LONGITUDE))) + "&#176W");
 				}
-				if (fullSample.get(FullSample.ACCURACY) != null) { out.print(" (&#177 " + fullSample.getAsDouble(FullSample.ACCURACY) + "m)"); }
+				if (sample.get(Sample.ACCURACY) != null) { out.print(" (&#177 " + sample.getAsDouble(Sample.ACCURACY) + "m)"); }
 				out.println("</td></tr>");
 			}
-			if (fullSample.get(FullSample.METHOD) != null) { out.println("<tr><td class='heading'>Method</td><td>" + fullSample.getAsString(FullSample.METHOD) + "</td></tr>"); }
+			if (sample.get(Sample.METHOD) != null) { out.println("<tr><td class='heading'>Method</td><td>" + sample.getAsString(Sample.METHOD) + "</td></tr>"); }
 			if (featType.equals("Outcrop")) {
-				if (fullSample.get(FullSample.FEATURE_NAME) != null) { out.println("<tr><td class='heading'>Field Number</td><td>" + fullSample.getAsString(FullSample.FEATURE_NAME) + "</td></tr>"); }
+				if (sample.get(Sample.FEATURE_NAME) != null) { out.println("<tr><td class='heading'>Field Number</td><td>" + sample.getAsString(Sample.FEATURE_NAME) + "</td></tr>"); }
 			} else {
 				if (featType.equals("Drillhole")) {
-					if (fullSample.get(FullSample.FEATURE_NAME) != null) { out.println("<tr><td class='heading'>Drillhole Name</td><td><a href='drillhole_detail.jsp?ID=" + fullSample.getAsString(FullSample.FEATURE_ID) + "'>" + fullSample.getAsString(FullSample.FEATURE_NAME) + "</a></td></tr>"); }
-					if (fullSample.get(FullSample.DRILLHOLE_DEPTH) != null) { out.println("<tr><td class='heading'>Sample Depth</td><td>" + fullSample.getAsString(FullSample.DRILLHOLE_DEPTH) + "</td></tr>"); }
+					if (sample.get(Sample.FEATURE_NAME) != null) { out.println("<tr><td class='heading'>Drillhole Name</td><td><a href='drillhole_detail.jsp?ID=" + sample.getAsString(Sample.FEATURE_ID) + "'>" + sample.getAsString(Sample.FEATURE_NAME) + "</a></td></tr>"); }
+					if (sample.get(Sample.DRILLHOLE_DEPTH) != null) { out.println("<tr><td class='heading'>Sample Depth</td><td>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td></tr>"); }
 					out.println("<tr><td class='heading'>Other Drillhole Samples</td><td>");
 				} else { //VertSect
-					if (fullSample.get(FullSample.FEATURE_NAME) != null) { out.println("<tr><td class='heading'>Section Name</td><td><a href='drillhole_detail.jsp?ID=" + fullSample.getAsString(FullSample.FEATURE_ID) + "'>" + fullSample.getAsString(FullSample.FEATURE_NAME) + "</a></td></tr>"); }
-					if (fullSample.get(FullSample.DRILLHOLE_DEPTH) != null) { out.println("<tr><td class='heading'>Sample Height</td><td>" + fullSample.getAsString(FullSample.DRILLHOLE_DEPTH) + "</td></tr>"); }
+					if (sample.get(Sample.FEATURE_NAME) != null) { out.println("<tr><td class='heading'>Section Name</td><td><a href='drillhole_detail.jsp?ID=" + sample.getAsString(Sample.FEATURE_ID) + "'>" + sample.getAsString(Sample.FEATURE_NAME) + "</a></td></tr>"); }
+					if (sample.get(Sample.DRILLHOLE_DEPTH) != null) { out.println("<tr><td class='heading'>Sample Height</td><td>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td></tr>"); }
 					out.println("<tr><td class='heading'>Other Section Samples</td><td>");
 				}
 				//check for samples above and below current one
 				try {
-					FullSample sampleAbove = FREDUtils.getSampleAbove(fullSample, user, state);
-					out.println("Sample Above: <a href='detail.jsp?ID=" + sampleAbove.getAsString(FullSample.SAMPLE_ID) + "'>" + sampleAbove.getAsString(FullSample.DRILLHOLE_DEPTH) + "</a><br>");
+					Sample sampleAbove = FREDUtils.getSampleAbove(sample, user, state);
+					out.println("Sample Above: <a href='detail.jsp?ID=" + sampleAbove.getAsString(Sample.SAMPLE_ID) + "'>" + sampleAbove.getAsString(Sample.DRILLHOLE_DEPTH) + "</a><br>");
 				} catch (Exception e) {}
 				try {
-					FullSample sampleBelow = FREDUtils.getSampleBelow(fullSample, user, state);
-					out.println("Sample Below: <a href='detail.jsp?ID=" + sampleBelow.getAsString(FullSample.SAMPLE_ID) + "'>" + sampleBelow.getAsString(FullSample.DRILLHOLE_DEPTH) + "</a><br>");
+					Sample sampleBelow = FREDUtils.getSampleBelow(sample, user, state);
+					out.println("Sample Below: <a href='detail.jsp?ID=" + sampleBelow.getAsString(Sample.SAMPLE_ID) + "'>" + sampleBelow.getAsString(Sample.DRILLHOLE_DEPTH) + "</a><br>");
 				} catch (Exception e) {}
 				out.println("</td></tr>");
 			}
-			if (fullSample.isAuthenticated() && fullSample.get(FullSample.LOCALITY) != null) { out.println("<tr><td class='heading'>Locality</td><td>" + fullSample.getAsString(FullSample.LOCALITY) + "</td></tr>"); }
+			if (sample.isUserAuthenticated() && sample.get(Sample.LOCALITY) != null) { out.println("<tr><td class='heading'>Locality</td><td>" + sample.getAsString(Sample.LOCALITY) + "</td></tr>"); }
 			if (!featType.equals("Outcrop")) {
-				if (fullSample.isAuthenticated() && fullSample.get(FullSample.PERSON) != null) {
+				if (sample.isUserAuthenticated() && sample.get(Sample.PERSON) != null) {
 					out.print("<tr><td class='heading' width='135'>");
 					if (featType.equals("Drillhole")) {
 						out.print("Operating Company");
 					} else {
 						out.print("Section Collector");
 					}
-					out.println("</td><td>" + fullSample.getAsString(FullSample.PERSON) + "</td></tr>");
+					out.println("</td><td>" + sample.getAsString(Sample.PERSON) + "</td></tr>");
 				}
-				if (fullSample.isAuthenticated() && fullSample.get(FullSample.START_DATE) != null) {
+				if (sample.isUserAuthenticated() && sample.get(Sample.START_DATE) != null) {
 					out.print("<tr><td class='heading'>");
 					if (featType.equals("Drillhole")) {
 						out.print("Spud Date");
 					} else {
 						out.print("Sampling Start Date");
 					}
-					out.print("</td><td>" + FREDUtils.formatDateForOutput(fullSample.getAsDate(FullSample.START_DATE), fullSample.getAsString(FullSample.START_DATE_ROUNDING)) + "</td></tr>");
+					out.print("</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.START_DATE), sample.getAsString(Sample.START_DATE_ROUNDING)) + "</td></tr>");
 				}
-				if (fullSample.isAuthenticated() && fullSample.get(FullSample.FINISH_DATE) != null) {
-					out.print("<tr><td class='heading'>Completion Date</td><td>" + FREDUtils.formatDateForOutput(fullSample.getAsDate(FullSample.FINISH_DATE), fullSample.getAsString(FullSample.FINISH_DATE_ROUNDING)) + "</td></tr>");
+				if (sample.isUserAuthenticated() && sample.get(Sample.FINISH_DATE) != null) {
+					out.print("<tr><td class='heading'>Completion Date</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.FINISH_DATE), sample.getAsString(Sample.FINISH_DATE_ROUNDING)) + "</td></tr>");
 				}
-				if (featType.equals("Drillhole") && fullSample.isAuthenticated() && fullSample.get(FullSample.DRILLHOLE_LICENCE_NAME) != null) { out.println("<tr><td class='heading' width='135'>Licence Area</td><td>" + fullSample.getAsString(FullSample.DRILLHOLE_LICENCE_NAME) + "</td></tr>"); }
-				if (fullSample.isAuthenticated() && fullSample.get(FullSample.DATUM_TYPE) != null) { out.println("<tr><td class='heading' width='135'>Datum Type</td><td>" + fullSample.getAsString(FullSample.DATUM_TYPE) + "</td></tr>"); }
-				if (fullSample.isAuthenticated() && fullSample.get(FullSample.DATUM_ELEVATION) != null) { out.println("<tr><td class='heading' width='135'>Datum Elevation</td><td>" + fullSample.getAsString(FullSample.DATUM_ELEVATION) + " m asl</td></tr>"); }
-				if (fullSample.isAuthenticated() && fullSample.get(FullSample.START_DEPTH) != null) {
+				if (featType.equals("Drillhole") && sample.isUserAuthenticated() && sample.get(Sample.DRILLHOLE_LICENCE_NAME) != null) { out.println("<tr><td class='heading' width='135'>Licence Area</td><td>" + sample.getAsString(Sample.DRILLHOLE_LICENCE_NAME) + "</td></tr>"); }
+				if (sample.isUserAuthenticated() && sample.get(Sample.DATUM_TYPE) != null) { out.println("<tr><td class='heading' width='135'>Datum Type</td><td>" + sample.getAsString(Sample.DATUM_TYPE) + "</td></tr>"); }
+				if (sample.isUserAuthenticated() && sample.get(Sample.DATUM_ELEVATION) != null) { out.println("<tr><td class='heading' width='135'>Datum Elevation</td><td>" + sample.getAsString(Sample.DATUM_ELEVATION) + " m asl</td></tr>"); }
+				if (sample.isUserAuthenticated() && sample.get(Sample.START_DEPTH) != null) {
 					out.print("<tr><td class='heading' width='135'>");
 					if (featType.equals("Drillhole")) {
 						out.print("Kick-off Depth");
 					} else {
 						out.print("Top Horizon");
 					}
-					out.println("</td><td>" + fullSample.getAsString(FullSample.START_DEPTH) + " m</td></tr>");
+					out.println("</td><td>" + sample.getAsString(Sample.START_DEPTH) + " m</td></tr>");
 				}
-				if (fullSample.isAuthenticated() && fullSample.get(FullSample.FINISH_DEPTH) != null) {
+				if (sample.isUserAuthenticated() && sample.get(Sample.FINISH_DEPTH) != null) {
 					out.print("<tr><td class='heading' width='135'>");
 					if (featType.equals("Drillhole")) {
 						out.print("Termination Depth");
 					} else {
 						out.print("Base Horizon");
 					}
-					out.println("</td><td>" + fullSample.getAsString(FullSample.FINISH_DEPTH) + " m</td></tr>");
+					out.println("</td><td>" + sample.getAsString(Sample.FINISH_DEPTH) + " m</td></tr>");
 				}
 			}
 			out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");	
 
-			if (fullSample.isAuthenticated() && fullSample.get(FullSample.RECORD) != null) {
+			if (sample.isUserAuthenticated() && sample.get(Sample.RECORD) != null) {
 
 				//Sample Property Data
-				for (Iterator i = fullSample.getAsVector(FullSample.RECORD).iterator(); i.hasNext(); ) {
+				for (Iterator i = sample.getAsVector(Sample.RECORD).iterator(); i.hasNext(); ) {
 					KeyValueObject rec = (KeyValueObject)i.next();
 					if (rec.getValue().equals("SMP")) {
 						try {
-							FullSampPropRecord sampProp = FullSampPropRecord.getFullSampPropRecord(Integer.parseInt(rec.getKey()), user, state);
+							SampPropRecord sampProp = SampPropRecord.getData(Integer.parseInt(rec.getKey()), user, state);
 							out.println("<tr><td class='bigheading' colspan='2'>Sample Property Data</td></tr>");
 							//collectors (repeating)
-							if (sampProp.get(FullSampPropRecord.COLLECTOR) != null) {
+							if (sampProp.get(SampPropRecord.COLLECTOR) != null) {
 								out.print("<tr><td class='heading'>Collectors</td><td>");
-								for (Iterator i2 = sampProp.getAsVector(FullSampPropRecord.COLLECTOR).iterator(); i2.hasNext(); ) {
+								for (Iterator i2 = sampProp.getAsVector(SampPropRecord.COLLECTOR).iterator(); i2.hasNext(); ) {
 									KeyValueObject coll = (KeyValueObject)i2.next();
 									out.print(coll.getValue() + "<br />");
 								}
 								out.print("</td></tr>");
 							}
-							if (sampProp.get(FullSampPropRecord.COLLECTION_DATE) != null) { out.print("<tr><td class='heading'>Collection Date</td><td>" + FREDUtils.formatDateForOutput(sampProp.getAsDate(FullSampPropRecord.COLLECTION_DATE), sampProp.getAsString(FullSampPropRecord.DATE_ROUNDING)) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.STRAT_UNIT) != null) { out.println("<tr><td class='heading'>Strat Name</td><td>" + sampProp.getAsString(FullSampPropRecord.STRAT_UNIT) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.IN_PLACE) != null) { out.println("<tr><td class='heading'>In Place</td><td>" + sampProp.getAsString(FullSampPropRecord.IN_PLACE) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.COLLECTION_DATE) != null) { out.print("<tr><td class='heading'>Collection Date</td><td>" + FREDUtils.formatDateForOutput(sampProp.getAsDate(SampPropRecord.COLLECTION_DATE), sampProp.getAsString(SampPropRecord.DATE_ROUNDING)) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.STRAT_UNIT) != null) { out.println("<tr><td class='heading'>Strat Name</td><td>" + sampProp.getAsString(SampPropRecord.STRAT_UNIT) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.IN_PLACE) != null) { out.println("<tr><td class='heading'>In Place</td><td>" + sampProp.getAsString(SampPropRecord.IN_PLACE) + "</td></tr>"); }
 							//sent to (repeating)
-							if (sampProp.get(FullSampPropRecord.SENT_TO) != null) {
+							if (sampProp.get(SampPropRecord.SENT_TO) != null) {
 								out.print("<tr><td class='heading'>Sent To</td><td>");
-								for (Iterator i2 = sampProp.getAsVector(FullSampPropRecord.SENT_TO).iterator(); i2.hasNext(); ) {
+								for (Iterator i2 = sampProp.getAsVector(SampPropRecord.SENT_TO).iterator(); i2.hasNext(); ) {
 									SentTo sentTo = (SentTo)i2.next();
 									out.print(sentTo.getSentTo() + "<br />");
 								}
 							out.print("</td></tr>");
 							}
-							if (sampProp.get(FullSampPropRecord.NOT_COLLECTED) != null) { out.println("<tr><td class='heading'>Not Collected</td><td>" + sampProp.getAsString(FullSampPropRecord.NOT_COLLECTED) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.SIGNIFICANCE) != null) { out.println("<tr><td class='heading'>Significance</td><td>" + sampProp.getAsString(FullSampPropRecord.SIGNIFICANCE) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.INFERRED_STAGE) != null) { out.println("<tr><td class='heading'>Inferred Stage</td><td>" + sampProp.getAsString(FullSampPropRecord.INFERRED_STAGE) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.KNOWN_STAGE) != null) { out.println("<tr><td class='heading'>Known Stage</td><td>" + sampProp.getAsString(FullSampPropRecord.KNOWN_STAGE) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.NOT_COLLECTED) != null) { out.println("<tr><td class='heading'>Not Collected</td><td>" + sampProp.getAsString(SampPropRecord.NOT_COLLECTED) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.SIGNIFICANCE) != null) { out.println("<tr><td class='heading'>Significance</td><td>" + sampProp.getAsString(SampPropRecord.SIGNIFICANCE) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.INFERRED_STAGE) != null) { out.println("<tr><td class='heading'>Inferred Stage</td><td>" + sampProp.getAsString(SampPropRecord.INFERRED_STAGE) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.KNOWN_STAGE) != null) { out.println("<tr><td class='heading'>Known Stage</td><td>" + sampProp.getAsString(SampPropRecord.KNOWN_STAGE) + "</td></tr>"); }
 							//Nearby samples (repeating)
-							if (sampProp.get(FullSampPropRecord.RELATIONSHIP_NEARBY) != null) {
+							if (sampProp.get(SampPropRecord.RELATIONSHIP_NEARBY) != null) {
 								out.print("<tr><td class='heading'>Samples Nearby</td><td>");
-								for (Iterator i2 = sampProp.getAsVector(FullSampPropRecord.RELATIONSHIP_NEARBY).iterator(); i2.hasNext(); ) {
+								for (Iterator i2 = sampProp.getAsVector(SampPropRecord.RELATIONSHIP_NEARBY).iterator(); i2.hasNext(); ) {
 									Relationship nearRel = (Relationship)i2.next();
 									out.print(nearRel.getDistanceRelation() + " <a href='detail.jsp?FeatID=" + nearRel.getRelatedFeatureId() + "'>" + nearRel.getRelatedSampleName() +"</a><br />");
 								}
 							out.print("</td></tr>");
 							}
 							//Sample relationships (repeating)
-							if (sampProp.get(FullSampPropRecord.RELATIONSHIP_SAMPLE) != null) {
+							if (sampProp.get(SampPropRecord.RELATIONSHIP_SAMPLE) != null) {
 								out.print("<tr><td class='heading'>Sample Relationships</td><td>");
-								for (Iterator i2 = sampProp.getAsVector(FullSampPropRecord.RELATIONSHIP_SAMPLE).iterator(); i2.hasNext(); ) {
+								for (Iterator i2 = sampProp.getAsVector(SampPropRecord.RELATIONSHIP_SAMPLE).iterator(); i2.hasNext(); ) {
 									Relationship sampRel = (Relationship)i2.next();
 									out.print(sampRel.getDistanceRelation() + " <a href='detail.jsp?FeatID=" + sampRel.getRelatedFeatureId() + "'>" + sampRel.getRelatedSampleName() + "</a><br />");
 								}
 							out.print("</td></tr>");
 							}
 							//Strat relationships (repeating)
-							if (sampProp.get(FullSampPropRecord.RELATIONSHIP_STRAT) != null) {
+							if (sampProp.get(SampPropRecord.RELATIONSHIP_STRAT) != null) {
 								out.print("<tr><td class='heading'>Stratigraphic Relationships</td><td>");
-								for (Iterator i2 = sampProp.getAsVector(FullSampPropRecord.RELATIONSHIP_STRAT).iterator(); i2.hasNext(); ) {
+								for (Iterator i2 = sampProp.getAsVector(SampPropRecord.RELATIONSHIP_STRAT).iterator(); i2.hasNext(); ) {
 									Relationship stratRel = (Relationship)i2.next();
 									out.print(stratRel.getRelationship() + "<br />");
 								}
 							out.print("</td></tr>");
 							}
-							if (sampProp.get(FullSampPropRecord.COLUMN_MAP) != null) { out.println("<tr><td class='heading'>Column/Map</td><td>" + sampProp.getAsString(FullSampPropRecord.COLUMN_MAP) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.DIP) != null) { out.println("<tr><td class='heading'>Dip</td><td>" + sampProp.getAsString(FullSampPropRecord.DIP) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.DIP_DIRECTION) != null) { out.println("<tr><td class='heading'>Dip Direction</td><td>" + sampProp.getAsString(FullSampPropRecord.DIP_DIRECTION) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.STRIKE) != null) { out.println("<tr><td class='heading'>Strike</td><td>" + sampProp.getAsString(FullSampPropRecord.STRIKE) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.FACING) != null) { out.println("<tr><td class='heading'>Facing</td><td>" + sampProp.getAsString(FullSampPropRecord.FACING) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.GRAINSIZE) != null) { out.println("<tr><td class='heading'>Grain Size</td><td>" + sampProp.getAsString(FullSampPropRecord.GRAINSIZE) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.COMPARATOR_USED) != null) { out.println("<tr><td class='heading'>Comparator Used</td><td>" + sampProp.getAsString(FullSampPropRecord.COMPARATOR_USED) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.BED_THICKNESS) != null) { out.println("<tr><td class='heading'>Bed Thickness</td><td>" + sampProp.getAsString(FullSampPropRecord.BED_THICKNESS) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.BEDDING) != null) { out.println("<tr><td class='heading'>Bedding</td><td>" + sampProp.getAsString(FullSampPropRecord.BEDDING) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.WEATHERING) != null) { out.println("<tr><td class='heading'>Weathering</td><td>" + sampProp.getAsString(FullSampPropRecord.WEATHERING) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.HARDNESS) != null) { out.println("<tr><td class='heading'>Hardness</td><td>" + sampProp.getAsString(FullSampPropRecord.HARDNESS) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.CARBONATE) != null) { out.println("<tr><td class='heading'>Carbonate</td><td>" + sampProp.getAsString(FullSampPropRecord.CARBONATE) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.COLOUR) != null) { out.println("<tr><td class='heading'>Colour</td><td>" + sampProp.getAsString(FullSampPropRecord.COLOUR) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.COLUMN_MAP) != null) { out.println("<tr><td class='heading'>Column/Map</td><td>" + sampProp.getAsString(SampPropRecord.COLUMN_MAP) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.DIP) != null) { out.println("<tr><td class='heading'>Dip</td><td>" + sampProp.getAsString(SampPropRecord.DIP) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.DIP_DIRECTION) != null) { out.println("<tr><td class='heading'>Dip Direction</td><td>" + sampProp.getAsString(SampPropRecord.DIP_DIRECTION) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.STRIKE) != null) { out.println("<tr><td class='heading'>Strike</td><td>" + sampProp.getAsString(SampPropRecord.STRIKE) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.FACING) != null) { out.println("<tr><td class='heading'>Facing</td><td>" + sampProp.getAsString(SampPropRecord.FACING) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.GRAINSIZE) != null) { out.println("<tr><td class='heading'>Grain Size</td><td>" + sampProp.getAsString(SampPropRecord.GRAINSIZE) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.COMPARATOR_USED) != null) { out.println("<tr><td class='heading'>Comparator Used</td><td>" + sampProp.getAsString(SampPropRecord.COMPARATOR_USED) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.BED_THICKNESS) != null) { out.println("<tr><td class='heading'>Bed Thickness</td><td>" + sampProp.getAsString(SampPropRecord.BED_THICKNESS) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.BEDDING) != null) { out.println("<tr><td class='heading'>Bedding</td><td>" + sampProp.getAsString(SampPropRecord.BEDDING) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.WEATHERING) != null) { out.println("<tr><td class='heading'>Weathering</td><td>" + sampProp.getAsString(SampPropRecord.WEATHERING) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.HARDNESS) != null) { out.println("<tr><td class='heading'>Hardness</td><td>" + sampProp.getAsString(SampPropRecord.HARDNESS) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.CARBONATE) != null) { out.println("<tr><td class='heading'>Carbonate</td><td>" + sampProp.getAsString(SampPropRecord.CARBONATE) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.COLOUR) != null) { out.println("<tr><td class='heading'>Colour</td><td>" + sampProp.getAsString(SampPropRecord.COLOUR) + "</td></tr>"); }
 							//sed features (repeating)
-							if (sampProp.get(FullSampPropRecord.SED_FEATURE) != null) {
+							if (sampProp.get(SampPropRecord.SED_FEATURE) != null) {
 								out.print("<tr><td class='heading'>Additional Features</td><td>");
-								for (Iterator i2 = sampProp.getAsVector(FullSampPropRecord.SED_FEATURE).iterator(); i2.hasNext(); ) {
+								for (Iterator i2 = sampProp.getAsVector(SampPropRecord.SED_FEATURE).iterator(); i2.hasNext(); ) {
 									SedFeature sf = (SedFeature)i2.next();
 									out.print(sf.getSedFeature() + "<br />");
 								}
 							out.print("</td></tr>");
 							}
-							if (sampProp.get(FullSampPropRecord.DEPOSITION_ENV) != null) { out.println("<tr><td class='heading'>Inferred Environment</td><td>" + sampProp.getAsString(FullSampPropRecord.DEPOSITION_ENV) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.ROCK_NATURE) != null) { out.println("<tr><td class='heading'>Nature of Rock Unit</td><td>" + sampProp.getAsString(FullSampPropRecord.ROCK_NATURE) + "</td></tr>"); }
-							if (sampProp.get(FullSampPropRecord.CORRESPONDENCE) != null) { out.println("<tr><td class='heading'>Correspondence</td><td>" + sampProp.getAsString(FullSampPropRecord.CORRESPONDENCE) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.DEPOSITION_ENV) != null) { out.println("<tr><td class='heading'>Inferred Environment</td><td>" + sampProp.getAsString(SampPropRecord.DEPOSITION_ENV) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.ROCK_NATURE) != null) { out.println("<tr><td class='heading'>Nature of Rock Unit</td><td>" + sampProp.getAsString(SampPropRecord.ROCK_NATURE) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.CORRESPONDENCE) != null) { out.println("<tr><td class='heading'>Correspondence</td><td>" + sampProp.getAsString(SampPropRecord.CORRESPONDENCE) + "</td></tr>"); }
 				/*			//Image/Files
 							MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
 							if (mr != null) {
@@ -339,24 +339,24 @@
 				}
 	
 				//Adoption
-				for (Iterator i = fullSample.getAsVector(FullSample.RECORD).iterator(); i.hasNext(); ) {
+				for (Iterator i = sample.getAsVector(Sample.RECORD).iterator(); i.hasNext(); ) {
 					KeyValueObject rec = (KeyValueObject)i.next();
 					if (rec.getValue().equals("ADO")) {
 						try {
-							FullAdoptionRecord ado = FullAdoptionRecord.getFullAdoptionRecord(Integer.parseInt(rec.getKey()), user, state);
+							AdoptionRecord ado = AdoptionRecord.getData(Integer.parseInt(rec.getKey()), user, state);
 							out.println("<tr><td colspan='2' class='bigheading'>Adoption Data</td></tr>");
 							//adoptors (repeating)
-							if (ado.get(FullAdoptionRecord.ADOPTOR) != null) {
+							if (ado.get(AdoptionRecord.ADOPTOR) != null) {
 								out.print("<tr><td class='heading'>Adoptors</td><td>");
-								for (Iterator i2 = ado.getAsVector(FullAdoptionRecord.ADOPTOR).iterator(); i2.hasNext(); ) {
+								for (Iterator i2 = ado.getAsVector(AdoptionRecord.ADOPTOR).iterator(); i2.hasNext(); ) {
 									KeyValueObject coll = (KeyValueObject)i2.next();
 									out.print(coll.getValue() + "<br />");
 								}
 								out.print("</td></tr>");
 							}
-							if (ado.get(FullAdoptionRecord.ADOPTION_DATE) != null) { out.print("<tr><td class='heading'>Adoption Date</td><td>" + FREDUtils.formatDateForOutput(ado.getAsDate(FullAdoptionRecord.ADOPTION_DATE), ado.getAsString(FullAdoptionRecord.DATE_ROUNDING)) + "</td></tr>"); }
-							if (ado.get(FullAdoptionRecord.ADOPTED_STAGE) != null) { out.println("<tr><td class='heading'>Adopted Stage</td><td>" + ado.getAsString(FullAdoptionRecord.ADOPTED_STAGE) + "</td></tr>"); }
-							if (ado.get(FullAdoptionRecord.COMMENTS) != null) { out.println("<tr><td class='heading'>Comments</td><td>" + ado.getAsString(FullAdoptionRecord.COMMENTS) + "</td></tr>"); }
+							if (ado.get(AdoptionRecord.ADOPTION_DATE) != null) { out.print("<tr><td class='heading'>Adoption Date</td><td>" + FREDUtils.formatDateForOutput(ado.getAsDate(AdoptionRecord.ADOPTION_DATE), ado.getAsString(AdoptionRecord.DATE_ROUNDING)) + "</td></tr>"); }
+							if (ado.get(AdoptionRecord.ADOPTED_STAGE) != null) { out.println("<tr><td class='heading'>Adopted Stage</td><td>" + ado.getAsString(AdoptionRecord.ADOPTED_STAGE) + "</td></tr>"); }
+							if (ado.get(AdoptionRecord.COMMENTS) != null) { out.println("<tr><td class='heading'>Comments</td><td>" + ado.getAsString(AdoptionRecord.COMMENTS) + "</td></tr>"); }
 				/*			//Image/Files
 							MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
 							if (mr != null) {
@@ -380,32 +380,32 @@
 				}
 	
 				//Paleontology
-				for (Iterator i = fullSample.getAsVector(FullSample.RECORD).iterator(); i.hasNext(); ) {
+				for (Iterator i = sample.getAsVector(Sample.RECORD).iterator(); i.hasNext(); ) {
 					KeyValueObject rec = (KeyValueObject)i.next();
 					if (rec.getValue().equals("PAL")) {
 						try {
-							FullPaleontologyRecord pal = FullPaleontologyRecord.getFullPaleontologyRecord(Integer.parseInt(rec.getKey()), user, state);
+							PaleontologyRecord pal = PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state);
 							out.println("<tr><td colspan='2' class='bigheading'>Paleontology Data</td></tr>");
 							//identifiers (repeating)
-							if (pal.get(FullPaleontologyRecord.IDENTIFIER) != null) {
+							if (pal.get(PaleontologyRecord.IDENTIFIER) != null) {
 								out.print("<tr><td class='heading'>Identifiers</td><td>");
-								for (Iterator i2 = pal.getAsVector(FullPaleontologyRecord.IDENTIFIER).iterator(); i2.hasNext(); ) {
+								for (Iterator i2 = pal.getAsVector(PaleontologyRecord.IDENTIFIER).iterator(); i2.hasNext(); ) {
 									KeyValueObject coll = (KeyValueObject)i2.next();
 									out.print(coll.getValue() + "<br />");
 								}
 								out.print("</td></tr>");
 							}
-							if (pal.get(FullPaleontologyRecord.IDENTIFICATION_DATE) != null) { out.print("<tr><td class='heading'>Identification Date</td><td>" + FREDUtils.formatDateForOutput(pal.getAsDate(FullPaleontologyRecord.IDENTIFICATION_DATE), pal.getAsString(FullPaleontologyRecord.DATE_ROUNDING)) + "</td></tr>"); }
-							if (pal.get(FullPaleontologyRecord.STAGE) != null) { out.println("<tr><td class='heading'>Stage</td><td>" + pal.getAsString(FullPaleontologyRecord.STAGE) + "</td></tr>"); }
-							if (pal.get(FullPaleontologyRecord.STAGE_COMMENTS) != null) { out.println("<tr><td class='heading'>Stage Comments</td><td>" + pal.getAsString(FullPaleontologyRecord.STAGE_COMMENTS) + "</td></tr>"); }
-							if (pal.get(FullPaleontologyRecord.LAB) != null) { out.println("<tr><td class='heading'>Lab</td><td>" + pal.getAsString(FullPaleontologyRecord.LAB) + "</td></tr>"); }
-							if (pal.get(FullPaleontologyRecord.LAB_NUMBER) != null) { out.println("<tr><td class='heading'>Lab Number</td><td>" + pal.getAsString(FullPaleontologyRecord.LAB_NUMBER) + "</td></tr>"); }
-							if (pal.get(FullPaleontologyRecord.COLLECTION_COMMENTS) != null) { out.println("<tr><td class='heading'>Collection Comments</td><td>" + pal.getAsString(FullPaleontologyRecord.COLLECTION_COMMENTS) + "</td></tr>"); }
+							if (pal.get(PaleontologyRecord.IDENTIFICATION_DATE) != null) { out.print("<tr><td class='heading'>Identification Date</td><td>" + FREDUtils.formatDateForOutput(pal.getAsDate(PaleontologyRecord.IDENTIFICATION_DATE), pal.getAsString(PaleontologyRecord.DATE_ROUNDING)) + "</td></tr>"); }
+							if (pal.get(PaleontologyRecord.STAGE) != null) { out.println("<tr><td class='heading'>Stage</td><td>" + pal.getAsString(PaleontologyRecord.STAGE) + "</td></tr>"); }
+							if (pal.get(PaleontologyRecord.STAGE_COMMENTS) != null) { out.println("<tr><td class='heading'>Stage Comments</td><td>" + pal.getAsString(PaleontologyRecord.STAGE_COMMENTS) + "</td></tr>"); }
+							if (pal.get(PaleontologyRecord.LAB) != null) { out.println("<tr><td class='heading'>Lab</td><td>" + pal.getAsString(PaleontologyRecord.LAB) + "</td></tr>"); }
+							if (pal.get(PaleontologyRecord.LAB_NUMBER) != null) { out.println("<tr><td class='heading'>Lab Number</td><td>" + pal.getAsString(PaleontologyRecord.LAB_NUMBER) + "</td></tr>"); }
+							if (pal.get(PaleontologyRecord.COLLECTION_COMMENTS) != null) { out.println("<tr><td class='heading'>Collection Comments</td><td>" + pal.getAsString(PaleontologyRecord.COLLECTION_COMMENTS) + "</td></tr>"); }
 	
 							//taxa (double repeating)
-							if (pal.get(FullPaleontologyRecord.TAXONOMIC_LIST) != null) {
+							if (pal.get(PaleontologyRecord.TAXONOMIC_LIST) != null) {
 								out.println("<tr><td colspan='2'><table border='0' cellspacing='0' cellpadding='2'>");
-								for (Iterator i2 = pal.getAsVector(FullPaleontologyRecord.TAXONOMIC_LIST).iterator(); i2.hasNext(); ) {
+								for (Iterator i2 = pal.getAsVector(PaleontologyRecord.TAXONOMIC_LIST).iterator(); i2.hasNext(); ) {
 									TaxaGroup taxaGroup = (TaxaGroup)i2.next();
 									out.println("<tr><td colspan='4' class='heading'>" + taxaGroup.getGroupName() + "</td></tr>");
 									if (taxaGroup.getTaxaList() != null) {
@@ -456,19 +456,19 @@
 			if (user ==  null) { out.println("<tr><td colspan='2'>More data may be available for this locality for <a href='login.jsp?loginpage=" + URLEncoder.encode("/fred/detail.jsp") + "' class='boldlink'>logged</a> in users</td></tr>"); }
 			out.println("</table></td></tr></table>");
 		}
-		catch (Exception e) { // no record
+		catch (Exception e) { // no record or not approved
 			drawEndNavigation(out);
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-			out.println("<tr><td>");
-			out.println("<p>Either the sample doesn't exist or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</p>");
+			out.println("<tr><td>Either the sample doesn't exist or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</td></tr>");
+			out.println("</table>");
 		}
 
 	}
 	else { //no sampleID
 		drawEndNavigation(out);
 		out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-		out.println("<tr><td>");
-		out.println("<p>Either the sample doesn't exist or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</p>");
+		out.println("<tr><td>No SampleID received.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</td></tr>");
+		out.println("</table>");
 	}
 	
 	drawBottom(out, et); 

@@ -59,15 +59,15 @@
 
 		//Revoke waiting records
 		else if (actionType.equals("Revoke") && (userRights & 16) != 0) {
-			FolderUtils.revokeRecord(request.getParameter("FeatID"), foldID, state);
+			FolderUtils.revokeLocality(request.getParameter("FeatID"), foldID, state);
 		}
 
 		//Copy locality
 		else if (actionType.equals("CopyFeat") && (userRights & 4) != 0) {
-			FolderUtils.copyLocality(request.getParameter("FeatID"), request.getParameter("NewFeatName"), foldID, user, state)
+			FolderUtils.copyLocality(request.getParameter("FeatID"), request.getParameter("NewFeatName"), foldID, user, state);
 		}
 
-		//Move working records
+/*		//Move working records
 		else if (actionType.equals("MoveFold") && (userRights & 8) != 0) {
 			//check that user has rights to destination folder
 			rs = statement.executeQuery("SELECT User_Rights FROM Folder_View WHERE Folder_ID = " + request.getParameter("NewFoldID") + " AND User_ID = " + userID);

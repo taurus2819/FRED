@@ -19,7 +19,7 @@ import nz.cri.gns.jsp.PageState;
  * Fields map to columns in database - use as arguments for the get methods.
  * Pooling is used so cannot instantiate directly - use static getSampleView method instead.
  */
-public class FullSampleData {
+public class SampleData {
 
 	private static Pool pool = new Pool();
 	private int id;
@@ -30,7 +30,7 @@ public class FullSampleData {
 	/**
 	 * Cannot be called directly. use static getContactPerson method instead.
 	 */
-	private FullSampleData(int id, PageState state) throws SQLException, IOException {
+	private SampleData(int id, PageState state) throws SQLException, IOException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		this.id = id;
 		pool.add(this);
@@ -43,7 +43,7 @@ public class FullSampleData {
 				+ "SITE_ID, LATITUDE, LONGITUDE, QMAP_SHEET, NZMG_SHEET, NZMG_EAST, NZMG_NORTH, METHOD, "
 				+ "ACCURACY, LOCALITY, DRILLHOLE_LICENCE_NAME, PERSON_ID, PERSON, START_DATE, START_DATE_ROUNDING, "
 				+ "FINISH_DATE, FINISH_DATE_ROUNDING, DATUM_TYPE, DATUM_ELEVATION, START_DEPTH, FINISH_DEPTH "
-				+ "FROM Sample_All_View WHERE Status = 'approved' AND Sample_ID = ?";
+				+ "FROM Sample_All_View WHERE Sample_ID = ?";
 		data[0] = new Integer(this.id);
 		try {
 			ResultSet rs = conn.executeQuery(query, types, data);
@@ -232,6 +232,9 @@ public class FullSampleData {
 	protected String getAsString(int field) throws IllegalArgumentException {
 		try {
 			Object thing = values[field];
+			if (thing == null) {
+				return null;
+			}
 			return thing.toString();
 		} catch (Exception e) {
 			throw new IllegalArgumentException();
@@ -260,7 +263,7 @@ public class FullSampleData {
 			this.id = id;
 		}
 		public boolean isObject(Object o) {
-			return (o instanceof FullSampleData && ((FullSampleData) o).id == this.id);
+			return (o instanceof SampleData && ((SampleData) o).id == this.id);
 		}
 	}
 
@@ -282,12 +285,12 @@ public class FullSampleData {
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
-	protected static FullSampleData getData(int id, PageState state)
+	protected static SampleData getData(int id, PageState state)
 		throws SQLException, IOException {
-		FullSampleData f =
-			(FullSampleData) pool.retrieve(new DataFinder(id));
+		SampleData f =
+			(SampleData) pool.retrieve(new DataFinder(id));
 		if (f == null) {
-			f = new FullSampleData(id, state);
+			f = new SampleData(id, state);
 		}
 		return f;
 	}

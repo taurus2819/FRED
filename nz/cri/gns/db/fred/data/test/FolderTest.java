@@ -79,4 +79,10 @@ public class FolderTest extends TestCase {
 		assertTrue(sv.isAllowedEdit());
 	}	
 
+	public void testFolderCount() throws SQLException, IOException, InvalidCredentialsException {
+		Folder.purge();
+		Folder sv = new Folder(18, user, state);
+		assertEquals(sv.getAsInt(Folder.LOCALITY_COUNT), 24);
+	}
+
 }

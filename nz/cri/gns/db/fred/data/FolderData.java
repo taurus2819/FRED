@@ -22,7 +22,7 @@ public class FolderData {
 
 	private static Pool pool = new Pool();
 	private int id;
-	private Object[] values = new Object[5];
+	private Object[] values = new Object[6];
 	private int[] types = { Types.NUMERIC };
 	private Object[] data = new Object[1];
 
@@ -48,6 +48,11 @@ public class FolderData {
 			values[2] = rs.getString(3);
 			values[3] = new Integer(rs.getInt(4));
 			values[4] = rs.getString(5);
+			rs.close();
+			query = "SELECT COUNT(*) FROM Folder_Content_View WHERE Folder_ID = ?";
+			rs = conn.executeQuery(query, types, data);
+			rs.next();
+			values[5] = new Integer(rs.getInt(1));
 			rs.close();
 			conn.releaseStatement();
 		} catch (SQLException _e) {
@@ -96,19 +101,6 @@ public class FolderData {
 	}
 
 	/**
-	 * Attempts to return the given field as a String.
-	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a String.
-	 */
-	protected String getAsString(int field) throws IllegalArgumentException {
-		try {
-			Object thing = values[field];
-			return thing.toString();
-		} catch (Exception e) {
-			throw new IllegalArgumentException();
-		}
-	}
-
-	/**
 	 * Attempts to return the given field as a Vector.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a Vector.
 	 */
@@ -116,6 +108,22 @@ public class FolderData {
 		try {
 			Object thing = values[field];
 			return (Vector) thing;
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
+		}
+	}
+	
+	/**
+	 * Attempts to return the given field as a String.
+	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a String.
+	 */
+	protected String getAsString(int field) throws IllegalArgumentException {
+		try {
+			Object thing = values[field];
+			if (thing == null) {
+				return null;
+			}
+			return thing.toString();
 		} catch (Exception e) {
 			throw new IllegalArgumentException();
 		}

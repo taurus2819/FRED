@@ -6,13 +6,35 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.fred.data.Folder;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 
 public class FolderUtils {
+	
+	public static void addFolder(String name, User user, PageState state) throws SQLException, IOException {
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		if (name.length() > 32) {
+			name = name.substring(0, 31);
+		}
+		conn.executeUpdate("INSERT INTO Folder (Name, Owner_ID, Folder_Type) VALUES (" + JspUtils.sqlEscape(name) + ", " + user.getPersonId() + ", 'personal')");
+		conn.releaseStatement();	
+	}
+	
+	public static void deleteFolder(String foldID, User user, PageState state) throws IOException, InvalidCredentialsException, SQLException, FolderUtilException {
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		Folder folder = new Folder(Integer.parseInt(foldID), user, state);
+		if (folder.isAllowedDelete() && folder.getAsInt(Folder.LOCALITY_COUNT) == 0) {
+			conn.executeUpdate("DELETE FROM Folder WHERE Folder_ID = " + foldID);
+		} else {
+			throw new FolderUtilException("Cannot delete folder as either insufficient privileges or folder not empty");
+		}
+		conn.releaseStatement();
+	}
 	
 	public static void deleteRecord(String recID, PageState state) throws IOException, SQLException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
@@ -22,6 +44,7 @@ public class FolderUtils {
 			conn.executeUpdate("DELETE FROM Record WHERE Record_ID = " + recID);
 			conn.executeUpdate("DELETE FROM Audit_Table WHERE Audit_ID = " + auditID);
 		}
+		conn.releaseStatement();
 	}
 
 	public static void deleteFeature(String featID, PageState state) throws IOException, SQLException {
@@ -37,6 +60,7 @@ public class FolderUtils {
 		conn.executeUpdate("DELETE FROM Record WHERE Sample_ID IN (SELECT Sample_ID FROM Sample WHERE Feature_ID = " + featID + ")");
 		conn.executeUpdate("DELETE FROM Feature WHERE Feature_ID = " + featID);
 		conn.executeUpdate("DELETE FROM Audit_Table WHERE Audit_ID IN (" + auditID + ")");
+		conn.releaseStatement();
 	}
 
 	public static void submitLocality(String featID, String foldID, User user, PageState state) throws SQLException, IOException, FolderUtilException {
@@ -72,6 +96,7 @@ public class FolderUtils {
 		} else {
 			throw new FolderUtilException("Cannot submit locality as not all mandatory fields have been completed");
 		}
+		conn.releaseStatement();
 	}
 	
 	public static void submitRecord(String recID, String recType, String foldID, User user, PageState state) throws IOException, SQLException, FolderUtilException {
@@ -100,6 +125,7 @@ public class FolderUtils {
 		} else {
 			throw new FolderUtilException("Cannot submit record as not all mandatory fields have been completed");
 		}
+		conn.releaseStatement();
 	}
 	
 	public static void revokeLocality(String featID, String foldID, PageState state) throws IOException, SQLException {
@@ -110,7 +136,8 @@ public class FolderUtils {
 		rs.next();
 		if (rs.getString(1).equals("Outcrop")) { //outcrop so also revoke sample property record
 			conn.executeUpdate("UPDATE Audit_Table SET Status = 'working', Working_Folder_ID = " + foldID + " WHERE Audit_ID IN (SELECT DISTINCT Audit_ID FROM Sample_Property_All_View WHERE Feature_ID = " + featID + ")");
-		}		
+		}
+		conn.releaseStatement();	
 	}
 	
 	public static void copyLocality(String oldFeatID, String newFeatName, String foldID, User user, PageState state) throws IOException, SQLException {
@@ -162,6 +189,9 @@ public class FolderUtils {
 				}
 			}
 		}
+		conn.releaseStatement();
+		statement2.close();
+		statement3.close();
 	}
 	
 }

@@ -24,7 +24,7 @@ public class FeatureData {
 	private int id;
 	private int[] types = { Types.NUMERIC };
 	private Object[] data = new Object[1];
-	private Object[] values = new Object[22];
+	private Object[] values = new Object[24];
 
 	/**
 	 * Cannot be called directly. use static getDate method instead.
@@ -83,7 +83,7 @@ public class FeatureData {
 					: null);
 			rs.close();
 			query =
-				"SELECT Security_Class_ID FROM Audit_Table WHERE Audit_ID = ?";
+				"SELECT Security_Class_ID, Status FROM Audit_Table WHERE Audit_ID = ?";
 			data[0] = (Integer) values[2];
 			rs = conn.executeQuery(query, types, data);
 			if (rs.next()) {
@@ -91,6 +91,7 @@ public class FeatureData {
 					((rs.getString(1) != null)
 						? new Integer(rs.getInt(1))
 						: null);
+				values[23] = rs.getString(2);
 			}
 			rs.close();
 			if (values[3] != null) {
@@ -102,7 +103,7 @@ public class FeatureData {
 				}
 				rs.close();
 			}
-			query = "SELECT Sample_ID FROM Sample_All_View WHERE Status = 'approved' AND Feature_ID = ?";
+			query = "SELECT Sample_ID FROM Sample_All_View WHERE Feature_ID = ?";
 			data[0] = values[0];
 			rs = conn.executeQuery(query, types, data);
 			Vector rec = new Vector();
@@ -164,6 +165,9 @@ public class FeatureData {
 	protected String getAsString(int field) throws IllegalArgumentException {
 		try {
 			Object thing = values[field];
+			if (thing == null) {
+				return null;
+			}
 			return thing.toString();
 		} catch (Exception e) {
 			throw new IllegalArgumentException();

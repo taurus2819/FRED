@@ -12,9 +12,8 @@ import nz.cri.gns.jsp.PageState;
 /**
  * Class that represents a Sample_View record.
  * Fields map to columns in database - use as arguments for the get methods.
- * Pooling is used so cannot instantiate directly - use static getSampleView method instead.
  */
-public class FullSample {
+public class Sample {
 
 	public static final int FEATURE_ID = 0;
 	public static final int SAMPLE_ID = 1;
@@ -68,54 +67,63 @@ public class FullSample {
 	public static final int FINISH_DEPTH = 49;
 	public static final int RECORD = 50;
 
-	private FullSampleData fsd;
+	private SampleData fsd;
 	private boolean authenticated = false;
 
-	public FullSample(int id, User user, PageState state) throws SQLException, IOException {
-		fsd = FullSampleData.getData(id, state);
-		if (fsd.get(SECURITY_CLASS_ID) != null
-			&& !FREDUtils.isAllowedRecord(user, fsd.getAsInt(SECURITY_CLASS_ID), state)) {
+	public Sample(int id, User user, PageState state) throws SQLException, IOException {
+		fsd = SampleData.getData(id, state);
+		if (!FREDUtils.isAllowedLocality(user, fsd.getAsString(SECURITY_CLASS_ID), fsd.getAsString(STATUS), fsd.getAsString(FEATURE_ID), state)) {
 			authenticated = false;
 		} else {
 			authenticated = true;
 		}		
 	}
 
+	public boolean isUserAuthenticated() {
+		return authenticated;
+	}
+
+	public boolean isApprovedLocality() {
+		return (fsd.getAsString(STATUS).equals("approved"));
+	}
+
 	private boolean isAllowedField(int field) {
 		if (authenticated) {
 			return true;
 		}
-		switch (field) {
-			case FEATURE_ID :
-			case SAMPLE_ID :
-			case FEATURE_TYPE :
-			case SAMPLE_NAME :
-			case FR_ID:
-			case FR_NUMBER:
-			case YARD_FR_ID:
-			case YARD_FR_NUMBER:
-			case FEATURE_NAME:
-			case MAP_SHEET:
-			case SERIAL_NUMBER:
-			case RECOLLECTION_NUMBER:
-			case YARD_MAP_SHEET:
-			case YARD_SERIAL_NUMBER:
-			case YARD_RECOLLECTION_NUMBER:
-			case DRILLHOLE_DEPTH:
-			case MASTERFILE_ID:
-			case MASTERFILE_NAME:
-			case AUDIT_ID:
-			case SECURITY_CLASS_ID :
-			case SITE_ID:
-			case LATITUDE:
-			case LONGITUDE:
-			case QMAP_SHEET:
-			case NZMG_SHEET:
-			case NZMG_EAST:
-			case NZMG_NORTH:
-			case METHOD:
-			case ACCURACY:
-			return true;
+		if (isApprovedLocality()) {
+			switch (field) {
+				case FEATURE_ID :
+				case SAMPLE_ID :
+				case FEATURE_TYPE :
+				case SAMPLE_NAME :
+				case FR_ID:
+				case FR_NUMBER:
+				case YARD_FR_ID:
+				case YARD_FR_NUMBER:
+				case FEATURE_NAME:
+				case MAP_SHEET:
+				case SERIAL_NUMBER:
+				case RECOLLECTION_NUMBER:
+				case YARD_MAP_SHEET:
+				case YARD_SERIAL_NUMBER:
+				case YARD_RECOLLECTION_NUMBER:
+				case DRILLHOLE_DEPTH:
+				case MASTERFILE_ID:
+				case MASTERFILE_NAME:
+				case AUDIT_ID:
+				case SECURITY_CLASS_ID :
+				case SITE_ID:
+				case LATITUDE:
+				case LONGITUDE:
+				case QMAP_SHEET:
+				case NZMG_SHEET:
+				case NZMG_EAST:
+				case NZMG_NORTH:
+				case METHOD:
+				case ACCURACY:
+				return true;
+			}
 		}
 		return false;
 	}
@@ -190,18 +198,14 @@ public class FullSample {
 	 * created for testing purposes (grrrr) - use to test object pooling.
 	 */
 	public static int getPoolSize() {
-		return FullSampleData.getPoolSize();
+		return SampleData.getPoolSize();
 	}
 
 	/**
 	 * Use to empty the pool of all objects.
 	 */
 	public static void purge() {
-		FullSampleData.purge();
-	}
-
-	public boolean isAuthenticated() {
-		return authenticated;
+		SampleData.purge();
 	}
 
 	public String toString() {
