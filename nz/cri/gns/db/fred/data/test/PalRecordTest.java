@@ -9,6 +9,7 @@ import junit.framework.TestCase;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.fred.data.AccessDeniedException;
 import nz.cri.gns.db.fred.data.PaleontologyRecord;
+import nz.cri.gns.db.fred.data.Record;
 import nz.cri.gns.db.fred.data.Taxa;
 import nz.cri.gns.db.fred.data.TaxaGroup;
 import nz.cri.gns.intranet.DBConnection;
@@ -41,8 +42,8 @@ public class PalRecordTest extends TestCase {
 
 	public void testPooling() throws NotBoundException, SQLException, IOException, AccessDeniedException {
 		PaleontologyRecord.purge();
-		PaleontologyRecord sv1 = PaleontologyRecord.getData(781, this.user, this.state);
-		PaleontologyRecord sv2 = PaleontologyRecord.getData(781, this.user, this.state);
+		Record sv1 = PaleontologyRecord.getData(781, this.user, this.state);
+		Record sv2 = PaleontologyRecord.getData(781, this.user, this.state);
 		assertEquals(sv1.toString(), sv2.toString());
 		assertEquals(1, PaleontologyRecord.getPoolSize());
 		PaleontologyRecord sv3 = PaleontologyRecord.getData(223, this.user, this.state);

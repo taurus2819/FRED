@@ -20,7 +20,7 @@ import nz.cri.gns.jsp.PageState;
  * Fields map to columns in database - use as arguments for the get methods.
  * Pooling is used so cannot instantiate directly - use static getDataRecord method instead.
  */
-public class SampPropRecord {
+public class SampPropRecord extends Record {
 
 	public static final int RECORD_ID = 0;
 	public static final int FEATURE_ID = 1;

@@ -21,7 +21,7 @@ import nz.cri.gns.jsp.PageState;
  * Fields map to columns in database - use as arguments for the get methods.
  * Pooling is used so cannot instantiate directly - use static getData method instead.
  */
-public class PaleontologyRecord {
+public class PaleontologyRecord extends Record {
 
 	public static final int RECORD_ID = 0;
 	public static final int FEATURE_ID = 1;
@@ -75,7 +75,7 @@ public class PaleontologyRecord {
 				+ "STAGE_ID, STAGE, STAGE_ABBREV, STAGE_LOWER_ID, STAGE_LOWER, STAGE_LOWER_MOD, STAGE_UPPER_ID, "
 				+ "STAGE_UPPER, STAGE_UPPER_MOD, AGE_START, AGE_STOP, STAGE_COMMENTS, LAB_SECTION_ID, LAB, "
 				+ "LAB_CODE, LAB_NUMBER, COLLECTION_COMMENTS "
-				+ "FROM Paleontology_All_View WHERE AND Record_ID = ?";
+				+ "FROM Paleontology_All_View WHERE Record_ID = ?";
 		data[0] = new Integer(this.id);
 		try {
 			ResultSet rs = conn.executeQuery(query, types, data);
