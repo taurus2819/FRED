@@ -8,7 +8,7 @@
 
 	if (request.getParameter("SaveType") != null) {
 		DataEntryForm dataEntryForm = (DataEntryForm) session.getAttribute("dataEntryForm");
-		try {
+	//	try {
 			if (request.getParameter("Action") != null) {
 				Vector tL = (Vector) session.getAttribute("badTaxaList");
 				if (tL != null) {
@@ -116,7 +116,7 @@
 			response.sendRedirect(request.getParameter("Redirect"));
 			return;
 
-		} catch (DataInputException e) {
+	/*	} catch (DataInputException e) {
 			drawTop(out, et, request, response);
 			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
@@ -199,9 +199,9 @@
 			drawEndNavigation(out);
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");
-			out.println("<p><span class='bigheading'>SQL Data Error</span></p>");
+			out.println("<p><span class='bigheading'>Database Error</span></p>");
 			out.println("<p>A Database error has occured: " + e.getMessage() + "</p>");
-		}
+		} */
 	}
 	else {
 		drawTop(out, et, request, response);
