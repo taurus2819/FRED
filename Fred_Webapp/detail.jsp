@@ -11,7 +11,7 @@
 	boolean authorChk = false, sCountChk = false, sCoordChk = false, commChk = true;
 
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 
 	//if FeatureID given then get SampleID or transer to drillhole
 	if (request.getParameter("FeatID") != null) {
@@ -90,6 +90,7 @@
 			}
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 			if (user != null) {
+				out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;<a href='print_front.jsp?ID=" + sampID + "&FormType=Full' class='heading' target='print'>Print Front</a></td></tr>");
 				if (FREDUtils.isAllowedApproveLocality(user, sample.getAsString(Sample.FEATURE_ID), sample.getAsString(Sample.STATUS), state)) {
 					FRNumber frNumber = FolderUtils.getNextFRNumber(sample.getAsString(Sample.REG_AREA_CODE), sample.getAsString(Sample.NZMG_SHEET), sample.getAsDouble(Sample.LATITUDE), sample.getAsDouble(Sample.LONGITUDE), state);
 					out.println("<tr><td colspan='2'>");
@@ -111,7 +112,6 @@
 					out.println("</td></tr>");
 				}
 				else {
-					out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;<a href='print_front.jsp?ID=" + sampID + "&FormType=Full' class='heading' target='print'>Print Front</a></td></tr>");
 					out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 					out.println("<tr><td class='heading' colspan='2' align='center'>Taxonomic List Options</td></tr>");
 					out.println("<form name='TaxaForm' method='post' action='detail.jsp'>");

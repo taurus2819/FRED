@@ -144,7 +144,8 @@ public class Sample {
 			case MASTERFILE_NAME:
 			case REG_AREA_CODE:
 			case AUDIT_ID:
-			case SECURITY_CLASS_ID :
+			case SECURITY_CLASS_ID:
+			case STATUS:
 			case SITE_ID:
 			case COUNTRY_CODE:
 			case COUNTRY_NAME:

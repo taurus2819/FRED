@@ -78,7 +78,7 @@ public class FREDUtils {
 	}
 
 	public static boolean isAllowedApproveLocality(User user, String featID, String status, PageState state) throws IOException, SQLException {
-		if (status.equals("waiting")) {
+		if (status != null && status.equals("waiting")) {
 			return (getUserWorkingLocalityRights(user, featID, state) & 64) > 0;
 		} else {
 			return false;
