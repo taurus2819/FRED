@@ -163,7 +163,12 @@ public class DrillholeLocalityDE extends LocalityDE {
 					&& getFieldForHTML(DATUM_TYPE).equals("KB"))
 					? " selected"
 					: "")
-				+ ">KB</option></select>&nbsp;&nbsp;");
+				+ ">KB</option><option value='seafloor'"
+				+ ((getFieldForHTML(DATUM_TYPE) != null
+					&& getFieldForHTML(DATUM_TYPE).equals("seafloor"))
+					? " selected"
+					: "")
+				+ ">seafloor</option></select>&nbsp;&nbsp;");
 		out.write(
 			"<input type='text' name='DatumEl' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(DATUM_ELEVATION))
