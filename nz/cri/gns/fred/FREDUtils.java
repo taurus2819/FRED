@@ -412,7 +412,7 @@ public class FREDUtils {
 
 	public static String formatDateForOutput(Date date, String rounding) {
 		SimpleDateFormat yearFormatter = new SimpleDateFormat("yyyy");
-		SimpleDateFormat monthFormatter = new SimpleDateFormat("MMM yyyy");
+		SimpleDateFormat monthFormatter = new SimpleDateFormat("MMMM yyyy");
 
 		if (rounding == null) {
 			return DateFormat.getDateInstance(DateFormat.LONG).format(date);
