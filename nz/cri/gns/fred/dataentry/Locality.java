@@ -24,7 +24,7 @@ import nz.cri.gns.util.map.NZMS260;
 import nz.cri.gns.util.map.NorthingEasting;
 import nz.cri.gns.util.map.TruncNorthingEasting;
 
-public abstract class Locality {
+public abstract class Locality implements DataEntryForm {
 
 	public static final int FEATURE_NAME = 0;
 	public static final int FIELD_NUMBER = 0;
@@ -243,6 +243,28 @@ public abstract class Locality {
 		}
 	}
 
+	public void makeNavPanelHTML(Writer out) throws IOException {
+		out.write("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>\n");
+		out.write("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>\n");
+		out.write("<tr><td colspan='2' align='center' class='heading'>\n");
+		if (featureType.equals("Outcrop")) {
+			out.write("Outcrop");
+		} else if (featureType.equals("Drillhole")) {
+			out.write("Drillhole");
+		} else if (featureType.equals("VertSect")) {
+			out.write("Vertical Section");
+		}
+		out.write(" Locality</td></tr>\n");
+		out.write("<tr><td>&nbsp;</td></tr>\n");
+		out.write("<tr><td><a href='load_record.jsp?FoldID=" + folder.getFolderID() + "&FeatID=" + featureID + "&RecType=" + featureType + "'><img src='images/load.gif' height='20' width='20' border='0' alt='Copy From' /></a>&nbsp;&nbsp;</td><td><a href='load_record.jsp?FoldID=" + folder.getFolderID() + "&FeatID=" + featureID + "&RecType=" + featureType + "' class='boldlink'>Copy From</a></td></tr>\n");
+		out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
+		if (folder.isAllowedSubmitLocalities() && !featureType.equals("Outcrop")) {
+			out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Submit\";form1.submit();'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database' /></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick='form1.SaveType.value=\"Submit\";form1.submit();' class='boldlink'>Submit</a></td></tr>\n");
+		}
+		out.write("<tr><td><a href='folder_detail.jsp?ID=" + folder.getFolderID() + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a>&nbsp;&nbsp;</td><td><a href='folder_detail.jsp?ID=" + folder.getFolderID() + "' class='boldlink'>Quit</a></td></tr>\n");
+		out.write("</table>\n");
+	}
+
 	public void makeDataEntryHTML(Writer out)
 		throws IOException, SQLException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
@@ -294,7 +316,8 @@ public abstract class Locality {
 					+ FREDUtils.noNulls(rs.getString(2))
 					+ "';\n");
 		}
-		out.write("</script>");
+		out.write("function setAccuracy(datID, form) {\nif (datID != \"-\") { form.Accuracy.value = datumMethod[datID]; }\n}\n");
+		out.write("</script>\n");
 		conn.releaseStatement();
 
 		out.write("<tr><td></td><td class='smallheading'>Method</td><td>");
@@ -315,6 +338,16 @@ public abstract class Locality {
 			"<tr><td></td><td class='smallheading'>Locality<br />Description</td><td><textarea name='Loc' cols='40' rows='5'>"
 				+ FREDUtils.noNulls(getField(Locality.LOCALITY_DESC))
 				+ "</textarea></td></tr>\n");
+	}
+
+	protected void makeEndBitHTML(Writer out) throws IOException {
+		out.write("<table border='0' cellpadding='0' cellspacing='2'>\n");
+		out.write("<tr><td>&nbsp;</td></tr>\n");
+		out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
+		if (folder.isAllowedSubmitLocalities() && !featureType.equals("Outcrop")) {
+			out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Submit\";form1.submit();'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database'/></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick='form1.SaveType.value=\"Submit\";form1.submit();' class='boldlink'>Submit</a></td></tr>\n");
+		}
+		out.write("</table>\n");
 	}
 
 	private boolean parseCoord(String coord) {

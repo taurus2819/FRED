@@ -87,6 +87,7 @@ public class VertSectLocality extends Locality {
 		out.write("<tr><td class='heading'>Drillhole Depths</td><td class='smallheading'>Top Horizon</td><td class='smallheading'><input type='text' name='StartDepth' value='" + FREDUtils.noNulls(getField(KICK_OFF_DEPTH)) + "'>&nbsp;m</td></tr>\n");
 		out.write("<tr><td class='heading'></td><td class='smallheading'>Base Horizon</td><td class='smallheading'><input type='text' name='FinishDepth' value='" + FREDUtils.noNulls(getField(TERMINATION_DEPTH)) + "'>&nbsp;m</td></tr>\n");		
 		out.write("</table>\n");
+		super.makeEndBitHTML(out);
 	}
 
 	public int save() throws SQLException, IOException, InvalidCredentialsException {

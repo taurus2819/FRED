@@ -26,6 +26,7 @@ public class OutcropLocality extends Locality {
 		out.write("<tr><td class='heading' colspan='2'>Field Number</td><td><input type='text' name='FeatName' value='" + FREDUtils.noNulls(getField(Locality.FIELD_NUMBER)) + "'></td></tr>\n");
 		super.makeDataEntryHTML(out);
 		out.write("</table>\n");
+		super.makeEndBitHTML(out);
 	}
 
 	public int save() throws SQLException, IOException, InvalidCredentialsException {

@@ -23,9 +23,13 @@ public class Folder {
 	private FolderData fd;
 	private int userRights = 0;
 
-	public Folder(int id, User user, PageState state) throws SQLException, IOException {
-		this.fd = FolderData.getData(id, state);
+	public Folder(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException {
+		this.fd = FolderData.getData(id, state, forceRefresh);
 		this.userRights = FREDUtils.getUserFolderRights(user, fd.getAsString(FOLDER_ID), state);
+	}
+
+	public Folder(int id, User user, PageState state) throws SQLException, IOException {
+		this(id, user, state, false);
 	}
 
 	public int getFolderID() {

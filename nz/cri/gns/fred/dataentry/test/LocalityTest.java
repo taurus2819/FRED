@@ -14,9 +14,10 @@ import java.sql.SQLException;
 import junit.framework.TestCase;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.fred.dataentry.DataEntryForm;
 import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.fred.dataentry.Locality;
-import nz.cri.gns.fred.dataentry.LocalityFactory;
+import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.test.TestingPageState;
@@ -38,7 +39,7 @@ public class LocalityTest extends TestCase {
 				"ip",
 				state.getContext());
 		User user = new User("pseudo_ben", "santor32", ipConn);
-		Locality loc2 = LocalityFactory.getLocality(661, user, state);
+		DataEntryForm loc2 = DataEntryFormFactory.getLocalityDataEntryForm(661, user, state);
 		loc2.setField(Locality.SPUD_DATE, "4/2003");
 		loc2.setField(Locality.COMPLETION_DATE, "1/5/2003");
 		loc2.setField(Locality.DATUM_TYPE, "KB");
@@ -57,7 +58,7 @@ public class LocalityTest extends TestCase {
 				"ip",
 				state.getContext());
 		User user = new User("pseudo_ben", "santor32", ipConn);
-		Locality loc = LocalityFactory.getLocality(1282, user, state);
+		Locality loc = DataEntryFormFactory.getLocalityDataEntryForm(1282, user, state);
 		//loc.setField(Locality.GRID_REF, "TruncNZMG:D39*1300*2100");
 		for (int i = 0; i < loc.getFieldCount(); i++) {
 			System.out.println(i + ": " + loc.getField(i));

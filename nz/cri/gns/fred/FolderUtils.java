@@ -11,7 +11,7 @@ import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.fred.dataentry.Locality;
-import nz.cri.gns.fred.dataentry.LocalityFactory;
+import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
@@ -64,8 +64,8 @@ public class FolderUtils {
 		conn.executeUpdate("DELETE FROM Feature WHERE Feature_ID = " + featID);
 		conn.executeUpdate("DELETE FROM Audit_Table WHERE Audit_ID IN (" + auditID + ")");
 		conn.releaseStatement();
-	*/	Locality locality = LocalityFactory.getLocality(Integer.parseInt(featID), user, state);
-		locality.delete();
+	*/	Locality form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
+		form.delete();
 	}
 
 	public static void submitLocality(String featID, String foldID, User user, PageState state) throws FolderUtilException, NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
@@ -102,8 +102,8 @@ public class FolderUtils {
 			throw new FolderUtilException("Cannot submit locality as not all mandatory fields have been completed");
 		}
 		conn.releaseStatement();
-	*/	Locality locality = LocalityFactory.getLocality(Integer.parseInt(featID), user, state);
-		locality.submit();
+	*/	Locality form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
+		form.submit();
 	}
 	
 	public static void submitRecord(String recID, String recType, String foldID, User user, PageState state) throws IOException, SQLException, FolderUtilException {
@@ -145,8 +145,8 @@ public class FolderUtils {
 			conn.executeUpdate("UPDATE Audit_Table SET Status = 'working', Working_Folder_ID = " + foldID + " WHERE Audit_ID IN (SELECT DISTINCT Audit_ID FROM Sample_Property_All_View WHERE Feature_ID = " + featID + ")");
 		}
 		conn.releaseStatement();
-	*/	Locality locality = LocalityFactory.getLocality(Integer.parseInt(featID), user, state);
-		locality.revoke();	
+	*/	Locality form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
+		form.revoke();	
 	}
 	
 	public static void copyLocality(String oldFeatID, String newFeatName, String foldID, User user, PageState state) throws IOException, SQLException {

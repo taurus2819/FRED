@@ -181,9 +181,13 @@ public class FolderData {
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
-	protected static FolderData getData(int id, PageState state)
+	protected static FolderData getData(int id, PageState state, boolean forceRefresh)
 		throws SQLException, IOException {
 		FolderData f = (FolderData) pool.retrieve(new DataFinder(id));
+		if (forceRefresh && f != null) {
+			pool.removeMe(f);
+			f = null;
+		}
 		if (f == null) {
 			f = new FolderData(id, state);
 		}

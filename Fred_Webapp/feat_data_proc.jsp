@@ -27,14 +27,12 @@
 
 	drawTop(out, et, request, response);
 
-	if (request.getParameter("Type") != null && request.getParameter("FoldID") != null && request.getParameter("SaveType") != null && request.getParameter("FeatID") != null) {
+	if (request.getParameter("Type") != null && request.getParameter("FoldID") != null && request.getParameter("SaveType") != null) {
 
 		String featType = request.getParameter("Type");
 		String foldID = request.getParameter("FoldID");
 		String featID = request.getParameter("FeatID");
 		String saveType = request.getParameter("SaveType");
-
-
 
 		if (featType.equals("VertSect")) { featType = "Vertical Section"; }
 
@@ -85,7 +83,7 @@
 				locality.save();
 			}
 
-			//response.sendRedirect("folder_detail.jsp?ID=" + foldID);
+			response.sendRedirect("folder_detail.jsp?ID=" + foldID);
 
 		} catch (DataInputException e) {
 			out.println("<p><div class='bigheading'>Data Error</div></p>");

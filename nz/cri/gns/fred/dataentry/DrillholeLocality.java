@@ -89,6 +89,7 @@ public class DrillholeLocality extends Locality {
 		out.write("<tr><td class='heading'>Drillhole Depths</td><td class='smallheading'>Kick-off</td><td class='smallheading'><input type='text' name='StartDepth' value='" + FREDUtils.noNulls(getField(KICK_OFF_DEPTH)) + "'>&nbsp;m</td></tr>\n");
 		out.write("<tr><td class='heading'></td><td class='smallheading'>Termination (TD)</td><td class='smallheading'><input type='text' name='FinishDepth' value='" + FREDUtils.noNulls(getField(TERMINATION_DEPTH)) + "'>&nbsp;m</td></tr>\n");		
 		out.write("</table>\n");
+		super.makeEndBitHTML(out);
 	}
 
 	public int save() throws SQLException, IOException, InvalidCredentialsException {
