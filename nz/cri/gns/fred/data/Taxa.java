@@ -1,13 +1,15 @@
 package nz.cri.gns.fred.data;
 
 import java.io.IOException;
-import java.sql.ResultSet;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Types;
 
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.db.QueryDescriptor;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 public class Taxa {
@@ -21,6 +23,7 @@ public class Taxa {
 	private String comments;
 	private Integer groupID;
 	private String groupName;
+	private String status;
 
 	public Taxa() {
 	}
@@ -104,13 +107,26 @@ public class Taxa {
 	public String getGroupName() {
 		return groupName;
 	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getStatus() {
+		return status;
+	}
 	
 	public void submitProvisional(User user, PageState state) throws SQLException, IOException {
 		if (user != null && state != null && groupID != null && cleanTaxonomicName != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
-			ResultSet rs = conn.executeQuery("SELECT Taxa_Seq.NEXTVAL FROM Dual");
-			rs.next();
-			conn.executeUpdate("INSERT INTO Taxonomic_Lookup (Taxa_ID, Group_ID, Taxonomic_Name, Author, Status, Submitted_By_ID, Submitted_Date) VALUES (" + rs.getString(1) + ", " + groupID + ", " + JspUtils.sqlEscape(cleanTaxonomicName) + ", " + JspUtils.sqlEscape(author) + ", 'provisional', " + user.getPersonId() + ", SYSDATE)");
+			QueryDescriptor qd = new QueryDescriptor("taxonomic_lookup");
+			qd.addQueryColumn("group_id", Types.NUMERIC, groupID);
+			qd.addQueryColumn("taxonomic_name", Types.VARCHAR, cleanTaxonomicName);
+			qd.addQueryColumn("author", Types.VARCHAR, author);
+			qd.addQueryColumn("status", Types.VARCHAR, "provisional");
+			qd.addQueryColumn("submitted_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
+			qd.addQueryColumn("submitted_date", Types.DATE, Date.valueOf(FREDUtils.getNowForSQL()));
+			DBUtils.doInsertUsingSequence(qd, "taxa_id", "taxa_seq", conn, false);
 		}
 	}
 

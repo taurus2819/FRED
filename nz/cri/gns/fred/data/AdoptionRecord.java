@@ -10,6 +10,7 @@ import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.db.pool.Finder;
+import nz.cri.gns.db.pool.Pool;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.PageState;
@@ -20,6 +21,8 @@ import nz.cri.gns.jsp.PageState;
  * Pooling is used so cannot instantiate directly - use static getData method instead.
  */
 public class AdoptionRecord extends Record {
+
+	private static Pool pool = new Pool();
 
 	/**
 	 * Cannot be called directly. use static getAdoptionRecord method instead.

@@ -24,7 +24,7 @@
 		String recID = request.getParameter("ID");
 		PaleontologyRecord pal = (PaleontologyRecord) PaleontologyRecord.getData(Integer.parseInt(recID), user, state);
 		Sample sample = new Sample(pal.getAsInt(Record.SAMPLE_ID), user, state);
-		Audit audit = Audit.getAudit(sample.getAsInt(Sample.AUDIT_ID), state);
+		Audit audit = Audit.getAudit(sample.getAsInt(Sample.FEATURE_AUDIT_ID), state);
 		out.println("<table border='1' cellspacing='0' cellpadding='10' width='620'>");
 		out.println("<tr><td>");
 

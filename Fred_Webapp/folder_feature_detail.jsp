@@ -56,7 +56,7 @@
 					else if (actionType.equals("SubmitRec") && folder.isAllowedSubmitLocalities()) {
 						FolderUtils.submitRecord(request.getParameter("RecID"), user, state);
 					}
-					//Revoke waiting records
+					//Revoke waiting locality
 					else if (actionType.equals("Revoke") && folder.isAllowedSubmitLocalities()) {
 						FolderUtils.revokeLocality(request.getParameter("FeatID"), user, state);
 					}
@@ -89,7 +89,8 @@
 	
 				//List records
 				out.println("<p><span class='heading'>Locality Details</span><br />");
-				out.println("Listed below are the working records for this locality - adoption (blue) and paleontology (green).  Drillhole and Vertical Section localities will also have individual samples listed.</p>");
+				out.println("Listed below are the working records for this locality - adoption (blue) and paleontology (green).  Drillhole and Vertical Section localities will also have individual samples listed.<br />");
+				out.println("Paleontology records marked with a red asterix contain provisional taxonomic entries.  These records can not be submitted until the entry is approved</p>");
 
 				//print error message (if any) from folder_actions
 				if (request.getParameter("ErrMsg") != null) {
@@ -184,28 +185,24 @@
 						}
 	
 						//Records
+						Vector records = new Vector();
 						for (Iterator k = sample.getAsVector(Sample.RECORDS).iterator(); k.hasNext(); ) {
 							KeyValueObject kvo = (KeyValueObject) k.next();
 							int recID = Integer.parseInt(kvo.getKey());
 							String recType = kvo.getValue();
 							try {
-								System.out.println("about to get record " + recID);
-								Record record = Record.getData(recID, user, state, true);
+								Record record;
+								if (recType.equals(Record.ADOPTION_RECORD)) {
+									record = AdoptionRecord.getData(recID, user, state);
+								} else {
+									record = PaleontologyRecord.getData(recID, user, state);
+								}
+								records.add(record);
 								if (record.get(Record.WORKING_FOLDER_ID) == null || record.getAsInt(Record.WORKING_FOLDER_ID) == folder.getFolderID()) {
-									String imageName;
-									if (recType.equals(Record.ADOPTION_RECORD)) {
-										imageName = "ado.gif";
-									} else {
-										imageName = "pal.gif";
-										//check for provisional taxa
-										//rs2 = statement2.executeQuery("SELECT * FROM Taxa_View WHERE Record_ID = " + rs.getString(1) + " AND Status = 'Provisional'");
-										//if (rs2.next()) {
-										//	provFlag = true;
-										//}
-									}
-									out.print("<tr><td><img src='images/child.gif' width='20' height='20' /><img src='images/" + imageName + "' width='20' height='20' /></td><td class='smalltext'");
-									//if (provFlag) { returnVal.append(" style='color: #FF0000'"); }
-									out.print(">" + FREDUtils.noNulls(record.getAsString(Record.RECORD_NAME)) + "&nbsp;&nbsp;</td><td class='smalltext' style='color: #FF0000'>");
+									out.print("<tr><td><img src='images/child.gif' width='20' height='20' /><img src='images/" + recType.toLowerCase() + ".gif" + "' width='20' height='20' /></td><td class='smalltext'>");
+									if (record.get(Record.PROVISIONAL_TAXA_COUNT) != null && record.getAsInt(Record.PROVISIONAL_TAXA_COUNT) > 0)
+										out.print("<span class=\"heading\" style=\"color: #FF0000\">*</span>&nbsp;&nbsp;");
+									out.print(FREDUtils.noNulls(record.toString()) + "&nbsp;&nbsp;</td><td class='smalltext' style='color: #FF0000'>");
 									if (record.getAsString(Record.STATUS).equals(Audit.STATUS_WORKING)) {
 										out.print("working&nbsp;&nbsp;</td><td class='smalltext'>");
 										if (record.get(Record.LAST_CHANGE) != null)
@@ -222,13 +219,14 @@
 									if (record.getAsString(Record.STATUS).equals(Audit.STATUS_WORKING) && folder.isAllowedDeleteLocalities())
 										out.println("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this record\") == true) {document.FoldForm.ActionType.value=\"DeleteRec\";document.FoldForm.RecID.value=\"" + recID + "\";document.FoldForm.submit();}'><img src='images/delete.gif' border='0' height='20' width='20' alt='Delete Record' /></a><img src='images/blank.gif' height='20' width='2' />");
 									out.println("</td><td>");
-									if (record.getAsString(Record.STATUS).equals(Audit.STATUS_WORKING) && folder.isAllowedSubmitLocalities())
+									if (record.getAsString(Record.STATUS).equals(Audit.STATUS_WORKING) && folder.isAllowedSubmitLocalities() && !(record.get(Record.PROVISIONAL_TAXA_COUNT) != null && record.getAsInt(Record.PROVISIONAL_TAXA_COUNT) > 0))
 										out.println("<a href='#' onClick='document.FoldForm.ActionType.value=\"SubmitRec\";document.FoldForm.RecID.value=\"" + recID + "\";document.FoldForm.submit();'><img src='images/submit.gif' border='0' height='20' width='20' alt='Submit Record' /></a><img src='images/blank.gif' height='20' width='2' />");
 									out.println("</td></tr>");
 								}
 							} catch (Exception e) {}
 						}
 						out.println("<tr><td colspan='9'><img src='images/line.gif' height='3' width='550' /></td></tr>");
+						session.setAttribute("Records", records);
 					}
 				}
 				session.setAttribute("samples", samples);

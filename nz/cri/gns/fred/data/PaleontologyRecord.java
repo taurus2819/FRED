@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Vector;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
@@ -11,6 +12,7 @@ import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.db.pool.Finder;
+import nz.cri.gns.db.pool.Pool;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.PageState;
@@ -21,6 +23,8 @@ import nz.cri.gns.jsp.PageState;
  * Pooling is used so cannot instantiate directly - use static getData method instead.
  */
 public class PaleontologyRecord extends Record {
+
+	private static Pool pool = new Pool();
 
 	/**
 	 * Cannot be called directly. use static getPaleontologyRecord method instead.
@@ -69,6 +73,7 @@ public class PaleontologyRecord extends Record {
 			}
 			values[IDENTIFIER] = ((identVec.size() > 0) ? identVec : null);
 			rs.close();
+			int provTaxaCount = 0;
 			query = "SELECT DISTINCT L.Name,P.Group_ID FROM Pal_List P, Lookup L WHERE P.Group_ID = L.Lookup_ID AND P.Record_ID = ? ORDER BY UPPER(L.Name)";
 			rs = conn.executeQuery(query, types, data);
 			Statement preserveStatement = conn.preservePreparedStatement();
@@ -76,10 +81,10 @@ public class PaleontologyRecord extends Record {
 			while (rs.next()) {
 				TaxaGroup taxaGroup = new TaxaGroup(rs.getString(1));
 				taxaGroup.setGroupID(((rs.getString(2) != null)	? new Integer(rs.getInt(2))	: null));
-				query =	"SELECT P.Taxonomic_Name, P.Taxa_ID, T.Author, P.Specimen_Count, P.Specimen_Coords, P.Comments FROM Pal_List P, Taxonomic_Lookup T WHERE P.Taxa_ID = T.Taxa_ID AND Record_ID = " + values[0] + " AND P.Group_ID = ?"
-						+ " ORDER BY UPPER(P.Taxonomic_Name)";
-				data[0] = taxaGroup.getGroupID();
-				ResultSet rs2 = conn.executeQuery(query, types, data);
+				query =	"SELECT p.taxonomic_name, p.taxa_id, t.author, p.specimen_count, p.specimen_coords, p.comments, t.status "
+						+ "FROM pal_list p, taxonomic_lookup t WHERE p.taxa_id = t.taxa_id AND p.record_id = ? AND p.group_id = ?"
+						+ " ORDER BY UPPER(p.taxonomic_name)";
+				ResultSet rs2 = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(this.id), taxaGroup.getGroupID()});
 				Vector taxaVec = new Vector();
 				while (rs2.next()) {
 					Taxa taxa = new Taxa(rs2.getString(1));
@@ -88,6 +93,9 @@ public class PaleontologyRecord extends Record {
 					taxa.setSpecimenCount(((rs2.getString(4) != null) ? new Integer(rs2.getInt(4)) : null));
 					taxa.setSpecimenCoords(rs2.getString(5));
 					taxa.setComments(rs2.getString(6));
+					taxa.setStatus(rs2.getString(7));
+					if (rs2.getString(7).equals("provisional"))
+						provTaxaCount++;
 					taxaVec.add(taxa);
 				}
 				if (taxaVec.size() > 0) {
@@ -97,6 +105,7 @@ public class PaleontologyRecord extends Record {
 				taxaGroupVec.add(taxaGroup);
 			}
 			values[TAXONOMIC_LIST] = ((taxaGroupVec.size() > 0) ? taxaGroupVec : null);
+			values[PROVISIONAL_TAXA_COUNT] = new Integer(provTaxaCount);
 			rs.close();
 			preserveStatement.close();
 			conn.releaseStatement();
@@ -117,7 +126,6 @@ public class PaleontologyRecord extends Record {
 		public boolean isObject(Object o) {
 			return (o instanceof PaleontologyRecord	&& ((PaleontologyRecord) o).id == this.id);
 		}
-
 	}
 
 	/**

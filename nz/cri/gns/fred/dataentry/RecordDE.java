@@ -263,8 +263,7 @@ public abstract class RecordDE implements DataEntryForm {
 	}
 
 
-	public int submit()
-		throws SQLException, IOException, InvalidCredentialsException, DataInputException {
+	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
 		if (!folder.isAllowedSubmitLocalities())
 			throw new InvalidCredentialsException();
 		checkMandatoryFields();

@@ -79,13 +79,14 @@ public class Record {
 	public static final int LAB_NUMBER = 34;
 	public static final int COLLECTION_COMMENTS = 35;
 	public static final int TAXONOMIC_LIST = 36;
+	public static final int PROVISIONAL_TAXA_COUNT = 37;
 	
 	public static final String ADOPTION_RECORD = "ADO";
 	public static final String PALEONTOLOGY_RECORD = "PAL";	
 	
-	protected static Pool pool = new Pool();
+	private static Pool pool = new Pool();
 	protected int id;
-	protected Object[] values = new Object[37];
+	protected Object[] values = new Object[38];
 	protected int[] types = { Types.NUMERIC };
 	protected Object[] data = new Object[1];
 	

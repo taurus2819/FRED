@@ -189,7 +189,6 @@ public class AdoptionRecordDE extends RecordDE {
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = true;
-				record = Record.getData(record.getRecordID(), user, state, true);
 				record = (AdoptionRecord) AdoptionRecord.getData(record.getRecordID(), user, state, true);
 				sample = new Sample(sample.getSampleID(), user, state, true);
 			} catch (SQLException e) {
@@ -214,6 +213,12 @@ public class AdoptionRecordDE extends RecordDE {
 
 		}
 		return record.getRecordID();
+	}
+
+	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
+		int recordID = super.submit();
+		record = AdoptionRecord.getData(record.getRecordID(), user, state, true);
+		return recordID;
 	}
 
 }

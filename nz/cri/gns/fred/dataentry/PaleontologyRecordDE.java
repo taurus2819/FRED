@@ -350,7 +350,6 @@ public class PaleontologyRecordDE extends RecordDE {
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = true;
-				record = Record.getData(record.getRecordID(), user, state, true);
 				record = (PaleontologyRecord) PaleontologyRecord.getData(record.getRecordID(), user, state, true);
 				sample = new Sample(sample.getSampleID(), user, state, true);
 			} catch (SQLException e) {
@@ -376,8 +375,16 @@ public class PaleontologyRecordDE extends RecordDE {
 		}
 		return record.getRecordID();
 	}
-
+	
+	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
+		int recordID = super.submit();
+		record = PaleontologyRecord.getData(record.getRecordID(), user, state, true);
+		return recordID;
+	}
+	
 	protected void checkMandatoryFields() throws DataInputException {
+		if (record.getAsInt(Record.PROVISIONAL_TAXA_COUNT) > 0)
+			throw new DataInputException("Mandatory Fields", "Some taxonomic entries provisional");
 	}
 	
 	public static String getCleanedName(String cleanName) throws DataInputException {
