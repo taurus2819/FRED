@@ -33,17 +33,12 @@ public abstract class LocalityDE implements DataEntryForm {
 	protected String featureType;
 	private Integer secClassID;
 	protected String[] fields = new String[120];
-	private Double latitude, longitude;
 	private String origSystemID, countryCode, recoll;
 	private Datum origSystem;
 	private Datum.Coordinate origCoord;
 	protected boolean savedFlag = false;
 
-	public LocalityDE(
-		User user,
-		int folderID,
-		String featureType,
-		PageState state)
+	public LocalityDE(User user, int folderID, String featureType, PageState state)
 		throws SQLException, IOException, DataInputException {
 		this.user = user;
 		this.state = state;
@@ -56,89 +51,43 @@ public abstract class LocalityDE implements DataEntryForm {
 	}
 
 	public LocalityDE(int id, User user, PageState state)
-		throws
-			IOException,
-			SQLException,
-			DataInputException,
-			InvalidCredentialsException {
+		throws IOException, SQLException, DataInputException, InvalidCredentialsException {
 		this.user = user;
 		this.state = state;
 		feature = new Feature(id, user, state, true);
 		if (feature.getAsString(Feature.STATUS).equals("approved"))
 			throw new DataInputException("Locality", "Locality not editable");
-		int sampleID =
-			((Integer) feature.getAsVector(Feature.SAMPLES).firstElement())
-				.intValue();
+		int sampleID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
 		sample = new Sample(sampleID, user, state, true);
 		featureType = feature.getFeatureType();
 		if (sample.get(Sample.WORKING_FOLDER_ID) != null)
-			this.folder =
-				new Folder(
-					sample.getAsInt(Sample.WORKING_FOLDER_ID),
-					user,
-					state);
+			this.folder = new Folder(sample.getAsInt(Sample.WORKING_FOLDER_ID), user, state);
 		setField(FEATURE_NAME, sample.getAsString(Sample.FEATURE_NAME));
 		setField(REGISTRATION_AREA, sample.getAsString(Sample.REG_AREA_ID));
 		String workComm = sample.getAsString(Sample.WORKING_COMMENTS);
 		if (workComm != null && workComm.indexOf("*Recoll:") >= 0) {
-			setField(
-				RECOLLECTION,
-				workComm.substring(8, workComm.indexOf("*", 2)).trim());
-			setField(
-				WORKING_COMMENTS,
-				workComm
-					.substring(workComm.indexOf("*", 2) + 1, workComm.length())
-					.trim());
+			setField(RECOLLECTION, workComm.substring(8, workComm.indexOf("*", 2)).trim());
+			setField(WORKING_COMMENTS, workComm.substring(workComm.indexOf("*", 2) + 1, workComm.length()).trim());
 		} else {
 			setField(WORKING_COMMENTS, workComm);
 		}
 		if (sample.get(Sample.ORIG_SYSTEM_ID) != null) {
 			int origSystemID = sample.getAsInt(Sample.ORIG_SYSTEM_ID);
 			if (origSystemID == 38) {
-				setField(
-					GRID_REF,
-					"NZMG:"
-						+ sample.getAsString(Sample.ORIG_COORD).replace(
-							'|',
-							'*'));
+				setField(GRID_REF, "NZMG:" + sample.getAsString(Sample.ORIG_COORD).replace('|',	'*'));
 			} else if (origSystemID == 16) {
-				setField(
-					GRID_REF,
-					"TruncNZMG:"
-						+ sample.getAsString(Sample.ORIG_COORD).replace(
-							'|',
-							'*'));
+				setField(GRID_REF, "TruncNZMG:"	+ sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
 			} else if (origSystemID == 29) {
-				setField(
-					GRID_REF,
-					"LL49:"
-						+ sample.getAsString(Sample.COUNTRY_CODE)
-						+ "*"
-						+ sample.getAsString(Sample.ORIG_COORD).replace(
-							'|',
-							'*'));
+				setField(GRID_REF, "LL49:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|',	'*'));
 			} else if (origSystemID == 28) {
-				setField(
-					GRID_REF,
-					"LL2000:"
-						+ sample.getAsString(Sample.COUNTRY_CODE)
-						+ "*"
-						+ sample.getAsString(Sample.ORIG_COORD).replace(
-							'|',
-							'*'));				
+				setField(GRID_REF, "LL2000:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));				
 			}
 		}
 		setField(METHOD, sample.getAsString(Sample.METHOD_ID));
 		setField(ACCURACY, sample.getAsString(Sample.ACCURACY));
 		setField(LOCALITY_DESC, sample.getAsString(Sample.LOCALITY));
 		try {
-			setField(
-				SECURITY_TYPE,
-				String.valueOf(
-					FREDUtils.getSecurityType(
-						sample.getAsInt(Sample.SECURITY_CLASS_ID),
-						user,
-						state)));
+			setField(SECURITY_TYPE, String.valueOf(FREDUtils.getSecurityType(sample.getAsInt(Sample.SECURITY_CLASS_ID), user, state)));
 		} catch (Exception e) {
 			setField(SECURITY_TYPE, "21");
 		}
@@ -170,8 +119,7 @@ public abstract class LocalityDE implements DataEntryForm {
 	}
 
 	public void setField(int field, String value) throws DataInputException {
-		if (value != null
-			&& (value.equals("") || value.equals("-") || value.equals("null")))
+		if (value != null && (value.equals("") || value.equals("-") || value.equals("null")))
 			value = null;
 		if (value != null) {
 			parseField(field, value);
@@ -193,59 +141,37 @@ public abstract class LocalityDE implements DataEntryForm {
 			ResultSet rs;
 			switch (field) {
 				case REGISTRATION_AREA :
-					DataEntryUtils.parseDropDownID(
-						"Registration Area",
-						"SELECT * FROM Lookup WHERE Lookup_ID = "
-							+ value
-							+ " AND FieldName = 'RegArea'",
-						state);
+					DataEntryUtils.parseDropDownID("Registration Area", "SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'RegArea'", state);
 					break;
 				case GRID_REF :
 					parseCoord(value);
 					break;
 				case METHOD :
-					DataEntryUtils.parseDropDownID(
-						"Method",
-						"SELECT * FROM SC.Method WHERE Method_ID = " + value,
-						state);
+					DataEntryUtils.parseDropDownID("Method", "SELECT * FROM SC.Method WHERE Method_ID = " + value, state);
 					break;
 				case ACCURACY :
 					try {
 						Double acc = new Double(value);
 					} catch (Exception e) {
-						throw new DataInputException(
-							"Accuracy",
-							"Invalid value");
+						throw new DataInputException("Accuracy", "Invalid value");
 					}
 					break;
 				case RECOLLECTION :
 					recoll = "*Recoll:" + value + "*";
-					rs =
-						conn.executeQuery(
-							"SELECT * FROM Feature_Security_View WHERE Sample_Name = "
+					rs = conn.executeQuery("SELECT * FROM Feature_Security_View WHERE Sample_Name = "
 								+ JspUtils.sqlEscape(value)
 								+ " AND (Status = 'approved' OR (Folder_Type = 'personal' AND User_ID = "
 								+ user.getPersonId()
 								+ "))");
 					if (!rs.next()) {
-						throw new DataInputException(
-							"Recollection/Sidetrack",
-							value
-								+ " is not an existing FR Number or temporary name.  Please use the builder to select.");
+						throw new DataInputException("Recollection/Sidetrack", value + " is not an existing FR Number or temporary name.  Please use the builder to select.");
 					}
 					break;
 				case SECURITY_TYPE :
 					try {
-						secClassID =
-							new Integer(
-								FREDUtils.getSecurityClass(
-									Integer.parseInt(value),
-									user,
-									state));
+						secClassID = new Integer(FREDUtils.getSecurityClass(Integer.parseInt(value), user, state));
 					} catch (Exception e) {
-						throw new DataInputException(
-							"Security Class",
-							"Invalid");
+						throw new DataInputException("Security Class", "Invalid");
 					}
 					break;
 			}
@@ -479,9 +405,7 @@ public abstract class LocalityDE implements DataEntryForm {
 						+ ", 'working', "
 						+ user.getPersonId()
 						+ ", SYSDATE, "
-						+ JspUtils.sqlEscape(
-							FREDUtils.noNulls(recoll)
-								+ FREDUtils.noNulls(fields[WORKING_COMMENTS]))
+						+ JspUtils.sqlEscape(FREDUtils.noNulls(recoll) + FREDUtils.noNulls(fields[WORKING_COMMENTS]))
 						+ ", "
 						+ folder.getFolderID()
 						+ ", "
@@ -576,11 +500,9 @@ public abstract class LocalityDE implements DataEntryForm {
 		rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
 		rs.next();
 		String auditID = rs.getString(1);
-		System.out.println("SELECT Which_Masterfile(" + JspUtils.sqlEscape(regCode)	+ ", " + latitude + ", " + longitude + ") FROM DUAL");
-		rs = conn.executeQuery("SELECT Which_Masterfile(" + JspUtils.sqlEscape(regCode)	+ ", " + latitude + ", " + longitude + ") FROM DUAL");
+		rs = conn.executeQuery("SELECT Which_Masterfile(" + JspUtils.sqlEscape(regCode)	+ ", " + sample.getAsString(Sample.LATITUDE) + ", " + sample.getAsString(Sample.LONGITUDE) + ") FROM DUAL");
 		rs.next();
 		String mfID = rs.getString(1);
-		System.out.println(mfID);
 		conn.executeUpdate("UPDATE Feature SET Masterfile_ID = " + mfID + " WHERE Feature_ID = " + feature.getFeatureID());
 		conn.executeUpdate(
 			"UPDATE Audit_Table SET Status = 'waiting', Submitted_By_ID = "
@@ -598,10 +520,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			throw new InvalidCredentialsException();
 		//change status, check MF & add saved record to folder
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		ResultSet rs =
-			conn.executeQuery(
-				"SELECT Audit_ID FROM Feature WHERE Feature_ID = "
-					+ feature.getFeatureID());
+		ResultSet rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
 		rs.next();
 		String auditID = rs.getString(1);
 		conn.executeUpdate(
@@ -619,16 +538,11 @@ public abstract class LocalityDE implements DataEntryForm {
 		StringBuffer auditID = new StringBuffer();
 		ResultSet rs =
 			conn.executeQuery(
-				"SELECT Audit_ID FROM Record WHERE Sample_ID IN (SELECT Sample_ID FROM Sample WHERE Feature_ID = "
-					+ feature.getFeatureID()
-					+ ")");
+				"SELECT Audit_ID FROM Record WHERE Sample_ID IN (SELECT Sample_ID FROM Sample WHERE Feature_ID = " + feature.getFeatureID() + ")");
 		while (rs.next()) {
 			auditID.append(rs.getString(1) + ",");
 		}
-		rs =
-			conn.executeQuery(
-				"SELECT Audit_ID FROM Feature WHERE Feature_ID = "
-					+ feature.getFeatureID());
+		rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
 		rs.next();
 		auditID.append(rs.getString(1));
 		conn.executeUpdate(
