@@ -228,11 +228,6 @@ public class Feature {
 		conn.getConnection().setAutoCommit(false);
 		int sampleID;
 		try {
-			//check existing samples.  If there is only one - the default one - then delete it
-			String query = "SELECT s.sample_id FROM sample s, record r WHERE s.sample_id = r.sample_id(+) AND s.feature_id = ? AND s.top_depth IS NULL AND s.bottom_depth IS NULL AND s.drill_type_id IS NULL AND r.sample_id IS NULL";
-			ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(getFeatureID())});
-			if (rs.next())
-				conn.executeUpdate("DELETE FROM sample WHERE sample_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(rs.getInt(1))});
 			//Add new AUDIT and SAMPLE records	
 			QueryDescriptor qd = new QueryDescriptor("audit_table");
 			qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
@@ -240,7 +235,7 @@ public class Feature {
 			qd.addQueryColumn("created_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
 			qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(workingFolderID));
 			String auditID = DBUtils.doInsertUsingSequence(qd, "audit_id", "audit_seq", conn, true);
-			rs = conn.executeQuery("SELECT MIN(fr_id) FROM sample WHERE feature_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(getFeatureID())});
+			ResultSet rs = conn.executeQuery("SELECT MIN(fr_id) FROM sample WHERE feature_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(getFeatureID())});
 			rs.next();
 			qd = new QueryDescriptor("sample");
 			qd.addQueryColumn("feature_id", Types.NUMERIC, new Integer(getFeatureID()));
@@ -253,6 +248,12 @@ public class Feature {
 			if (drillTypeID != null)
 				qd.addQueryColumn("drill_type_id", Types.NUMERIC, new Integer(drillTypeID));
 			sampleID = Integer.parseInt(DBUtils.doInsertUsingSequence(qd, "sample_id", "sample_seq", conn, true));
+			//Delete the default sample - if there is one.
+			String query = "SELECT s.sample_id FROM sample s, record r WHERE s.sample_id = r.sample_id(+) AND s.feature_id = ? AND s.top_depth IS NULL AND s.bottom_depth IS NULL AND s.drill_type_id IS NULL AND r.sample_id IS NULL";
+			rs = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(getFeatureID())});
+			if (rs.next())
+				conn.executeUpdate("DELETE FROM sample WHERE sample_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(rs.getInt(1))});
+
 			conn.getConnection().commit();
 			conn.getConnection().setAutoCommit(true);
 			conn.releaseStatement();
