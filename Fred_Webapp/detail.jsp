@@ -109,7 +109,18 @@
 			}
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 			if (user != null) {
-				out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;<a href='print_front.jsp?ID=" + sampID + "&FormType=Full' class='heading' target='print'>Print Front</a></td></tr>");
+			
+				out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;<a href='print_front.jsp?ID=" + sampID + "&FormType=Full' class='heading' target='print'>Print Front</a></td></tr>");
+			/*	if (sample.getPaleontologyRecordCount() > 0) {
+					for (Iterator i = sample.getAsVector(Sample.RECORDS).iterator(); i.hasNext(); ) {
+						KeyValueObject rec = (KeyValueObject)i.next();
+						if (rec.getValue().equals("PAL")) {
+							Record record = Record.getData(Integer.parseInt(rec.getKey()), user, state);
+							out.println("<tr><td colspan='2'><a href='print_pal.jsp?ID=" + record.getRecordID() + "' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;<a href='print_pal.jsp?ID=" + record.getRecordID() + "' class='heading' target='print'>Print " + record.getAsString(Record.RECORD_NAME) + "</a></td></tr>");
+						}
+					}
+				} */
+				
 				if (FREDUtils.isAllowedApproveLocality(user, sample.getAsString(Sample.FEATURE_ID), sample.getAsString(Sample.STATUS), state)) {
 					FRNumber frNumber = FolderUtils.getNextFRNumber(sample.getAsString(Sample.REG_AREA_CODE), sample.getAsString(Sample.NZMG_SHEET), sample.getAsDouble(Sample.LATITUDE), sample.getAsDouble(Sample.LONGITUDE), state);
 					out.println("<tr><td colspan='2'>");
@@ -145,28 +156,28 @@
 					} else {
 						out.print("<a href='#' onClick='document.TaxaForm.AuthorChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
 					}
-					out.println("</a><img src='images/blank.gif' width='10' height='1' />Author</td></tr>");
+					out.println("</a>&nbsp;&nbsp;Author</td></tr>");
 					out.print("<tr><td colspan='2' class='heading'>");
 					if (sCountChk) {
 						out.print("<a href='#' onClick='document.TaxaForm.SCountChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
 					} else {
 						out.print("<a href='#' onClick='document.TaxaForm.SCountChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
 					}
-					out.println("</a><img src='images/blank.gif' width='10' height='1' />Specimen Count</td></tr>");
+					out.println("</a>&nbsp;&nbsp;Specimen Count</td></tr>");
 					out.print("<tr><td colspan='2' class='heading'>");
 					if (sCoordChk) {
 						out.print("<a href='#' onClick='document.TaxaForm.SCoordChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
 					} else {
 						out.print("<a href='#' onClick='document.TaxaForm.SCoordChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
 					}
-					out.println("</a><img src='images/blank.gif' width='10' height='1' />Specimen Coord</td></tr>");
+					out.println("</a>&nbsp;&nbsp;Specimen Coord</td></tr>");
 					out.print("<tr><td colspan='2' class='heading'>");
 					if (commChk) {
 						out.print("<a href='#' onClick='document.TaxaForm.CommChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
 					} else {
 						out.print("<a href='#' onClick='document.TaxaForm.CommChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
 					}
-					out.println("</a><img src='images/blank.gif' width='10' height='1' />Comments</td></tr>");
+					out.println("</a>&nbsp;&nbsp;Comments</td></tr>");
 					out.println("</form>");
 				}
 			}

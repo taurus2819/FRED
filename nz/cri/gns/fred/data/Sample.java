@@ -2,10 +2,12 @@ package nz.cri.gns.fred.data;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.Vector;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.jsp.PageState;
 
@@ -106,19 +108,41 @@ public class Sample {
 	}
 
 	public int getRecordCount() throws InvalidCredentialsException {
-		if (!authenticated) {
+		if (!authenticated)
 			throw new InvalidCredentialsException();
-		}
 		return sd.getAsVector(RECORDS).size();
 	}
 
 	public int getWorkingRecordCount() throws InvalidCredentialsException {
-		if (!authenticated) {
+		if (!authenticated)
 			throw new InvalidCredentialsException();
-		}
 		return sd.getAsVector(WORKING_RECORDS).size();
 	}
 
+	public int getAdoptionRecordCount() throws InvalidCredentialsException {
+		if (!authenticated)
+			throw new InvalidCredentialsException();
+		int adoCount = 0;
+		for (Iterator i = sd.getAsVector(RECORDS).iterator(); i.hasNext(); ) {
+			KeyValueObject rec = (KeyValueObject)i.next();
+			if (rec.getValue().equals("ADO"))
+				adoCount++;
+		}
+		return adoCount;		
+	}
+
+	public int getPaleontologyRecordCount() throws InvalidCredentialsException {
+		if (!authenticated)
+			throw new InvalidCredentialsException();
+		int palCount = 0;
+		for (Iterator i = sd.getAsVector(RECORDS).iterator(); i.hasNext(); ) {
+			KeyValueObject rec = (KeyValueObject)i.next();
+			if (rec.getValue().equals("PAL"))
+				palCount++;
+		}
+		return palCount;		
+	}
+	
 	private boolean isAllowedField(int field) {
 		if (authenticated) {
 			return true;
