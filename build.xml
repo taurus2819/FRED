@@ -1,8 +1,25 @@
 <project name="fred" default="package">
-	<target name="package">
+	<target name="package" depends="compile">
+		<jar destfile="fred.jar" basedir="." includes="nz/**/*" excludes="**/*.java" />
 		<ant dir=".." target="db-check">
 			<property name="build.webxml" value="FRED/Fred_Webapp/WEB-INF/web.xml" />
 		</ant>
-		<war warfile="../fred.war" basedir="Fred_Webapp" webxml="Fred_Webapp/WEB-INF/web.xml" excludes="WEB-INF,WEB-INF/**/*" />
+		<war warfile="../fred.war" basedir="Fred_Webapp" webxml="Fred_Webapp/WEB-INF/web.xml" excludes="WEB-INF,WEB-INF/**/*">
+			<lib dir=".">
+				<include name="fred.jar" />
+			</lib>
+		</war>
+	</target>
+	<target name="compile">
+		<javac debug="true" srcdir="." destdir=".">
+			<classpath>
+				<fileset dir="/opt/jdk1.4/jre/lib/ext">
+					<include name="*.jar" />
+				</fileset>
+				<fileset dir="..">
+					<include name="gol.jar" />
+				</fileset>
+			</classpath>
+		</javac>
 	</target>
 </project>
