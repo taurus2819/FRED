@@ -8,7 +8,7 @@
 	//et.setDisplayLoadingMessage(true);
 
 	if (request.getParameter("ID") != null) {
-		Folder folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state, true);
+		Folder folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state);
 		String redirect = URLEncoder.encode("folder_detail.jsp?ID=" + folder.getFolderID(), "UTF-8");
 						
 		if (request.getParameter("ActionType") != null) { //do something
@@ -38,9 +38,9 @@
 			} catch (Exception e) {
 				err = "&ErrMsg=" + URLEncoder.encode("An Error has occured: " + e.getMessage(), "UTF-8");
 			}
+			folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state, true);
 			response.sendRedirect("folder_detail.jsp?ID=" + folder.getFolderID() + err);
 			return;
-			//folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state, true);
 		}
 
 		drawTop(out, et, request, response);
