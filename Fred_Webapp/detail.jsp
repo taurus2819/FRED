@@ -276,150 +276,157 @@
 			out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");	
 	
 			//Sample Property Data
-			query = "SELECT Record_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage, Known_Stage, Column_Map, Dip, Dip_Direction, Strike, Facing, Grainsize, Comparator_Used, Bed_Thickness, Bedding, Weathering, Hardness, Carbonate, Colour, Deposition_Env, Rock_Nature, Correspondence, Collector_ID, Sent_To_Fossil_Group_ID, Sed_Feature_ID FROM FR.Sample_Property_View WHERE Sample_ID = ?";
+			query = "SELECT Record_ID FROM Record NATURAL JOIN Sample_Property WHERE Sample_ID = ?";
 			data[0] = new Integer(Integer.parseInt(sampID));
-			rs = connection.executeQuery(query, types, data);
-			preserveStatement = connection.preservePreparedStatement();
+			rs = frConn.executeQuery(query, types, data);
 			if (rs.next()) {
 				recID = rs.getString(1);
+				query = "SELECT Record_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage, Known_Stage, Column_Map, Dip, Dip_Direction, Strike, Facing, Grainsize, Comparator_Used, Bed_Thickness, Bedding, Weathering, Hardness, Carbonate, Colour, Deposition_Env, Rock_Nature, Correspondence, Collector_ID, Sent_To_Fossil_Group_ID, Sed_Feature_ID FROM FR.Sample_Property_View WHERE Record_ID = ?";
+				data[0] = new Integer(Integer.parseInt(recID));
+				rs = connection.executeQuery(query, types, data);
+				preserveStatement = connection.preservePreparedStatement();
+				if (rs.next()) {
+					//recID = rs.getString(1);
 					out.println("<tr><td class='bigheading' colspan='2'>Sample Property Data</td></tr>");
 					if (rs.getString(2) != null) {
-					out.print("<tr><td class='heading'>Collection Date</td><td>");
-					if (rs.getString(3) == null) {
-						out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(2)));
-					} else if (rs.getString(3).equals("Year")) {
-						out.print(yearFormatter.format(rs.getDate(2)));
-					} else if (rs.getString(3).equals("Month")) {
-						out.print(monthFormatter.format(rs.getDate(2)));
-					}
-					out.println("</td></tr>");
-				}
-				//collectors (repeating)
-				if (rs.getString(26) != null) {
-					out.print("<tr><td class='heading'>Collectors</td>");
-					query = "SELECT Name FROM Person_View P, Collector C WHERE P.Person_ID = C.Person_ID AND C.Record_ID = ? ORDER BY Name";
-					data[0] = new Integer(Integer.parseInt(recID));
-					rs2 = frConn.executeQuery(query, types, data);
-					rs2.next();
-					out.println("<td>" + rs2.getString(1) + "</td></tr>");
-					while (rs2.next()) {
-						out.println("<tr><td></td><td>" + rs2.getString(1) + "</td></tr>");
-					}
-				}
-				if (rs.getString(4) != null) { out.println("<tr><td class='heading'>Strat Name</td><td>" + rs.getString(4) + "</td></tr>"); }
-				if (rs.getString(5) != null) { out.println("<tr><td class='heading'>In Place</td><td>" + rs.getString(5) + "</td></tr>"); }
-				//sent to (repeating)
-				if (rs.getString(27) != null) {
-					out.print("<tr><td class='heading'>Sent To</td>");
-					query = "SELECT Sent_To FROM Sent_To_View WHERE Record_ID = ? ORDER BY Sent_To";
-					data[0] = new Integer(Integer.parseInt(recID));
-					rs2 = frConn.executeQuery(query, types, data);
-					rs2.next();
-					out.print("<td>" + rs2.getString(1) + "</td></tr>");
-					while (rs2.next()) {
-						out.println("<tr><td></td><td>" + rs2.getString(1) + "</td></tr>");
-					}
-				}
-				if (rs.getString(6) != null) { out.println("<tr><td class='heading'>Not Collected</td><td>" + rs.getString(6) + "</td></tr>"); }
-				//Stratigraphy
-				if (rs.getString(7) != null) { out.println("<tr><td class='heading'>Significance</td><td>" + rs.getString(7) + "</td></tr>"); }
-				if (rs.getString(8) != null) { out.println("<tr><td class='heading'>Inferred Stage</td><td>" + rs.getString(8) + "</td></tr>"); }
-				if (rs.getString(9) != null) { out.println("<tr><td class='heading'>Known Stage</td><td>" + rs.getString(9) + "</td></tr>"); }
-				//Nearby samples (repeating)
-				query = "SELECT COUNT(*) FROM Relationship WHERE Relationship_Type = 'Sample' AND Relation_Type_ID = 231 AND Record_ID = ?";
-				data[0] = new Integer(Integer.parseInt(recID));
-				rs2 = frConn.executeQuery(query, types, data);
-				rs2.next();
-				if (rs2.getInt(1) > 0) {
-					out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Samples Nearby</td>");
-					query = "SELECT Related_Feature_ID, Related_Sample_Name FROM Relationship_View WHERE Relationship_Type = 'Sample' AND Relation_Type_ID = 231 AND Record_ID = ? ORDER BY Related_Sample_Name";
-					data[0] = new Integer(Integer.parseInt(recID));
-					rs2 = frConn.executeQuery(query, types, data);
-					rs2.next();
-					out.print("<td><a href='detail.jsp?FeatID=" + rs2.getString(1) + "'>" + rs2.getString(2) + "</a></td></tr>");
-					while (rs2.next()) {
-						out.println("<tr><td><a href='detail.jsp?FeatID=" + rs2.getString(1) + "'>" + rs2.getString(2) + "</a></td></tr>");
-					}
-				}
-				//Sample relationships (repeating)
-				query = "SELECT COUNT(*) FROM Relationship WHERE Relation_Type_ID <> 231 AND Relationship_Type = 'Sample' AND Record_ID = ?";
-				data[0] = new Integer(Integer.parseInt(recID));
-				rs2 = frConn.executeQuery(query, types, data);
-				rs2.next();
-				if (rs2.getInt(1) > 0) {
-					out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Sample Relationships</td>");
-					query = "SELECT Distance_Relation, Related_Feature_ID, Related_Sample_Name FROM Relationship_View WHERE Relation_Type_ID <> 231 AND Relationship_Type = 'Sample' AND Record_ID = ? ORDER BY Related_Sample_Name";
-					data[0] = new Integer(Integer.parseInt(recID));
-					rs2 = frConn.executeQuery(query, types, data);
-					rs2.next();
-					out.print("<td>" + rs2.getString(1) + " <a href='detail.jsp?FeatID=" + rs2.getString(2) + "'>" + rs2.getString(3) + "</a></td></tr>");
-					while (rs2.next()) {
-						out.println("<tr><td>" + rs2.getString(1) + " <a href='detail.jsp?FeatID=" + rs2.getString(2) + "'>" + rs2.getString(3) + "</a></td></tr>");
-					}
-				}
-				//Strat relationships (repeating)
-				query = "SELECT COUNT(*) FROM Relationship WHERE Relationship_Type = 'Strat' AND Record_ID = ?";
-				data[0] = new Integer(Integer.parseInt(recID));
-				rs2 = frConn.executeQuery(query, types, data);
-				rs2.next();
-				if (rs2.getInt(1) > 0) {
-					out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Stratigraphic Relationships</td>");
-					query = "SELECT Relationship FROM Relationship_View WHERE Relationship_Type = 'Strat' AND Record_ID = ? ORDER BY Strat_Unit";
-					data[0] = new Integer(Integer.parseInt(recID));
-					rs2 = frConn.executeQuery(query, types, data);
-					rs2.next();
-					out.print("<td>" + rs2.getString(1) + "</td></tr>");
-					while (rs2.next()) {
-						out.println("<tr><td>" + rs2.getString(1) + "</td></tr>");
-					}
-				}
-				if (rs.getString(10) != null) { out.println("<tr><td class='heading'>Column/Map</td><td>" + rs.getString(10) + "</td></tr>"); }
-				if (rs.getString(11) != null) { out.println("<tr><td class='heading'>Dip</td><td>" + rs.getString(11) + "</td></tr>"); }
-				if (rs.getString(12) != null) { out.println("<tr><td class='heading'>Dip Direction</td><td>" + rs.getString(12) + "</td></tr>"); }
-				if (rs.getString(13) != null) { out.println("<tr><td class='heading'>Strike</td><td>" + rs.getString(13) + "</td></tr>"); }
-				if (rs.getString(14) != null) { out.println("<tr><td class='heading'>Facing</td><td>" + rs.getString(14) + "</td></tr>"); }
-				if (rs.getString(15) != null) { out.println("<tr><td class='heading'>Grain Size</td><td>" + rs.getString(15) + "</td></tr>"); }
-				if (rs.getString(16) != null) { out.println("<tr><td class='heading'>Comparator Used</td><td>" + rs.getString(16) + "</td></tr>"); }
-				if (rs.getString(17) != null) { out.println("<tr><td class='heading'>Bed Thickness</td><td>" + rs.getString(17) + "</td></tr>"); }
-				if (rs.getString(18) != null) { out.println("<tr><td class='heading'>Bedding</td><td>" + rs.getString(18) + "</td></tr>"); }
-				if (rs.getString(19) != null) { out.println("<tr><td class='heading'>Weathering</td><td>" + rs.getString(19) + "</td></tr>"); }
-				if (rs.getString(20) != null) { out.println("<tr><td class='heading'>Hardness</td><td>" + rs.getString(20) + "</td></tr>"); }
-				if (rs.getString(21) != null) { out.println("<tr><td class='heading'>Carbonate</td><td>" + rs.getString(21) + "</td></tr>"); }
-				if (rs.getString(22) != null) { out.println("<tr><td class='heading'>Colour</td><td>" + rs.getString(22) + "</td></tr>"); }
-				//sed features (repeating)
-				if (rs.getString(28) != null) {
-					out.print("<tr><td class='heading'>Additional Features</td>");
-					query = "SELECT Sedimentary_Feature FROM Sedimentary_Feature_View WHERE Record_ID = ? ORDER BY Sed_Feature";
-					data[0] = new Integer(Integer.parseInt(recID));
-					rs2 = frConn.executeQuery(query, types, data);
-					rs2.next();
-					out.print("<td>" + rs2.getString(1) + "</td></tr>");
-					while (rs2.next()) {
-						out.println("<tr><td></td><td>" + rs2.getString(1) + "</td></tr>");
-					}
-				}
-				if (rs.getString(23) != null) { out.println("<tr><td class='heading'>Inferred Environment</td><td>" + rs.getString(23) + "</td></tr>"); }
-				if (rs.getString(24) != null) { out.println("<tr><td class='heading'>Nature of Rock Unit</td><td>" + rs.getString(24) + "</td></tr>"); }
-				if (rs.getString(25) != null) { out.println("<tr><td class='heading'>Correspondence</td><td>" + rs.getString(25) + "</td></tr>"); }
-	/*			//Image/Files
-				MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
-				if (mr != null) {
-					out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
-					out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
-					int y = 1;
-					out.print("<tr>");
-					for (int x = 0; x < mr.length; x++) {
-						if (y++ == 5) {
-							out.println("</tr><tr>");
-							y = 2;
+						out.print("<tr><td class='heading'>Collection Date</td><td>");
+						if (rs.getString(3) == null) {
+							out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(2)));
+						} else if (rs.getString(3).equals("Year")) {
+							out.print(yearFormatter.format(rs.getDate(2)));
+						} else if (rs.getString(3).equals("Month")) {
+							out.print(monthFormatter.format(rs.getDate(2)));
 						}
-						out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
+						out.println("</td></tr>");
 					}
-					out.println("</td></tr></table></td></tr>");
+					//collectors (repeating)
+					if (rs.getString(26) != null) {
+						out.print("<tr><td class='heading'>Collectors</td>");
+						query = "SELECT Name FROM Person_View P, Collector C WHERE P.Person_ID = C.Person_ID AND C.Record_ID = ? ORDER BY Name";
+						data[0] = new Integer(Integer.parseInt(recID));
+						rs2 = frConn.executeQuery(query, types, data);
+						rs2.next();
+						out.println("<td>" + rs2.getString(1) + "</td></tr>");
+						while (rs2.next()) {
+							out.println("<tr><td></td><td>" + rs2.getString(1) + "</td></tr>");
+						}
+					}
+					if (rs.getString(4) != null) { out.println("<tr><td class='heading'>Strat Name</td><td>" + rs.getString(4) + "</td></tr>"); }
+					if (rs.getString(5) != null) { out.println("<tr><td class='heading'>In Place</td><td>" + rs.getString(5) + "</td></tr>"); }
+					//sent to (repeating)
+					if (rs.getString(27) != null) {
+						out.print("<tr><td class='heading'>Sent To</td>");
+						query = "SELECT Sent_To FROM Sent_To_View WHERE Record_ID = ? ORDER BY Sent_To";
+						data[0] = new Integer(Integer.parseInt(recID));
+						rs2 = frConn.executeQuery(query, types, data);
+						rs2.next();
+						out.print("<td>" + rs2.getString(1) + "</td></tr>");
+						while (rs2.next()) {
+							out.println("<tr><td></td><td>" + rs2.getString(1) + "</td></tr>");
+						}
+					}
+					if (rs.getString(6) != null) { out.println("<tr><td class='heading'>Not Collected</td><td>" + rs.getString(6) + "</td></tr>"); }
+					//Stratigraphy
+					if (rs.getString(7) != null) { out.println("<tr><td class='heading'>Significance</td><td>" + rs.getString(7) + "</td></tr>"); }
+					if (rs.getString(8) != null) { out.println("<tr><td class='heading'>Inferred Stage</td><td>" + rs.getString(8) + "</td></tr>"); }
+					if (rs.getString(9) != null) { out.println("<tr><td class='heading'>Known Stage</td><td>" + rs.getString(9) + "</td></tr>"); }
+					//Nearby samples (repeating)
+					query = "SELECT COUNT(*) FROM Relationship WHERE Relationship_Type = 'Sample' AND Relation_Type_ID = 231 AND Record_ID = ?";
+					data[0] = new Integer(Integer.parseInt(recID));
+					rs2 = frConn.executeQuery(query, types, data);
+					rs2.next();
+					if (rs2.getInt(1) > 0) {
+						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Samples Nearby</td>");
+						query = "SELECT Related_Feature_ID, Related_Sample_Name FROM Relationship_View WHERE Relationship_Type = 'Sample' AND Relation_Type_ID = 231 AND Record_ID = ? ORDER BY Related_Sample_Name";
+						data[0] = new Integer(Integer.parseInt(recID));
+						rs2 = frConn.executeQuery(query, types, data);
+						rs2.next();
+						out.print("<td><a href='detail.jsp?FeatID=" + rs2.getString(1) + "'>" + rs2.getString(2) + "</a></td></tr>");
+						while (rs2.next()) {
+							out.println("<tr><td><a href='detail.jsp?FeatID=" + rs2.getString(1) + "'>" + rs2.getString(2) + "</a></td></tr>");
+						}
+					}
+					//Sample relationships (repeating)
+					query = "SELECT COUNT(*) FROM Relationship WHERE Relation_Type_ID <> 231 AND Relationship_Type = 'Sample' AND Record_ID = ?";
+					data[0] = new Integer(Integer.parseInt(recID));
+					rs2 = frConn.executeQuery(query, types, data);
+					rs2.next();
+					if (rs2.getInt(1) > 0) {
+						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Sample Relationships</td>");
+						query = "SELECT Distance_Relation, Related_Feature_ID, Related_Sample_Name FROM Relationship_View WHERE Relation_Type_ID <> 231 AND Relationship_Type = 'Sample' AND Record_ID = ? ORDER BY Related_Sample_Name";
+						data[0] = new Integer(Integer.parseInt(recID));
+						rs2 = frConn.executeQuery(query, types, data);
+						rs2.next();
+						out.print("<td>" + rs2.getString(1) + " <a href='detail.jsp?FeatID=" + rs2.getString(2) + "'>" + rs2.getString(3) + "</a></td></tr>");
+						while (rs2.next()) {
+							out.println("<tr><td>" + rs2.getString(1) + " <a href='detail.jsp?FeatID=" + rs2.getString(2) + "'>" + rs2.getString(3) + "</a></td></tr>");
+						}
+					}
+					//Strat relationships (repeating)
+					query = "SELECT COUNT(*) FROM Relationship WHERE Relationship_Type = 'Strat' AND Record_ID = ?";
+					data[0] = new Integer(Integer.parseInt(recID));
+					rs2 = frConn.executeQuery(query, types, data);
+					rs2.next();
+					if (rs2.getInt(1) > 0) {
+						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Stratigraphic Relationships</td>");
+						query = "SELECT Relationship FROM Relationship_View WHERE Relationship_Type = 'Strat' AND Record_ID = ? ORDER BY Strat_Unit";
+						data[0] = new Integer(Integer.parseInt(recID));
+						rs2 = frConn.executeQuery(query, types, data);
+						rs2.next();
+						out.print("<td>" + rs2.getString(1) + "</td></tr>");
+						while (rs2.next()) {
+							out.println("<tr><td>" + rs2.getString(1) + "</td></tr>");
+						}
+					}
+					if (rs.getString(10) != null) { out.println("<tr><td class='heading'>Column/Map</td><td>" + rs.getString(10) + "</td></tr>"); }
+					if (rs.getString(11) != null) { out.println("<tr><td class='heading'>Dip</td><td>" + rs.getString(11) + "</td></tr>"); }
+					if (rs.getString(12) != null) { out.println("<tr><td class='heading'>Dip Direction</td><td>" + rs.getString(12) + "</td></tr>"); }
+					if (rs.getString(13) != null) { out.println("<tr><td class='heading'>Strike</td><td>" + rs.getString(13) + "</td></tr>"); }
+					if (rs.getString(14) != null) { out.println("<tr><td class='heading'>Facing</td><td>" + rs.getString(14) + "</td></tr>"); }
+					if (rs.getString(15) != null) { out.println("<tr><td class='heading'>Grain Size</td><td>" + rs.getString(15) + "</td></tr>"); }
+					if (rs.getString(16) != null) { out.println("<tr><td class='heading'>Comparator Used</td><td>" + rs.getString(16) + "</td></tr>"); }
+					if (rs.getString(17) != null) { out.println("<tr><td class='heading'>Bed Thickness</td><td>" + rs.getString(17) + "</td></tr>"); }
+					if (rs.getString(18) != null) { out.println("<tr><td class='heading'>Bedding</td><td>" + rs.getString(18) + "</td></tr>"); }
+					if (rs.getString(19) != null) { out.println("<tr><td class='heading'>Weathering</td><td>" + rs.getString(19) + "</td></tr>"); }
+					if (rs.getString(20) != null) { out.println("<tr><td class='heading'>Hardness</td><td>" + rs.getString(20) + "</td></tr>"); }
+					if (rs.getString(21) != null) { out.println("<tr><td class='heading'>Carbonate</td><td>" + rs.getString(21) + "</td></tr>"); }
+					if (rs.getString(22) != null) { out.println("<tr><td class='heading'>Colour</td><td>" + rs.getString(22) + "</td></tr>"); }
+					//sed features (repeating)
+					if (rs.getString(28) != null) {
+						out.print("<tr><td class='heading'>Additional Features</td>");
+						query = "SELECT Sedimentary_Feature FROM Sedimentary_Feature_View WHERE Record_ID = ? ORDER BY Sed_Feature";
+						data[0] = new Integer(Integer.parseInt(recID));
+						rs2 = frConn.executeQuery(query, types, data);
+						rs2.next();
+						out.print("<td>" + rs2.getString(1) + "</td></tr>");
+						while (rs2.next()) {
+							out.println("<tr><td></td><td>" + rs2.getString(1) + "</td></tr>");
+						}
+					}
+					if (rs.getString(23) != null) { out.println("<tr><td class='heading'>Inferred Environment</td><td>" + rs.getString(23) + "</td></tr>"); }
+					if (rs.getString(24) != null) { out.println("<tr><td class='heading'>Nature of Rock Unit</td><td>" + rs.getString(24) + "</td></tr>"); }
+					if (rs.getString(25) != null) { out.println("<tr><td class='heading'>Correspondence</td><td>" + rs.getString(25) + "</td></tr>"); }
+		/*			//Image/Files
+					MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
+					if (mr != null) {
+						out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
+						out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
+						int y = 1;
+						out.print("<tr>");
+						for (int x = 0; x < mr.length; x++) {
+							if (y++ == 5) {
+								out.println("</tr><tr>");
+								y = 2;
+							}
+							out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
+						}
+						out.println("</td></tr></table></td></tr>");
+					}
+*/
+				out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
 				}
-	*/			out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
+				preserveStatement.close();
 			}
-			preserveStatement.close();
 	
 			//Adoption
 			query = "SELECT Record_ID, Adoption_Date, Date_Rounding, Adopted_Stage, Comments FROM FR.Adoption_View WHERE Sample_ID = ?";
