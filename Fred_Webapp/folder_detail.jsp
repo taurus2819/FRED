@@ -1,5 +1,5 @@
 <%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
+		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -87,7 +87,7 @@
 			out.println("<p><table border='0' cellspacing='0' cellpadding='1' width='550'>");
 			out.print("<tr>");
 			//out.print("<td></td>");
-			out.print("<th>Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Last Change&nbsp;&nbsp;</th><th colspan='5'>Options</th></tr>");
+			out.print("<th colspan='2'>Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Last Change&nbsp;&nbsp;</th><th colspan='5'>Options</th></tr>");
 			out.println("<tr><td colspan='9'><img src='images/line.gif' height='3' width='550' /></td></tr>");
 
 			out.println("<form name='FoldForm' method='put' action='folder_detail.jsp'>");
@@ -102,7 +102,10 @@
 				String featName = feature.getAsString(Feature.FEATURE_NAME);
 				String locStatus = feature.getAsString(Feature.STATUS);
 				
-				out.print("<tr><td class='heading'><a href='folder_feature_detail.jsp?FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "'>" + sampName + "</a>&nbsp;&nbsp;");
+				String redirect = URLEncoder.encode("folder_detail.jsp?FoldID=" + folder.getFolderID(), "UTF-8");
+				
+				out.print("<tr><td><a href='detail.jsp?FeatID=" + featID + "'><img src='images/loc.gif' border='0' height='20' width='20' alt='View Locality' /></a></td>");
+				out.println("<td class='heading'><a href='folder_feature_detail.jsp?FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "'>" + sampName + "</a>&nbsp;&nbsp;");
 				if (featName != null && !sampName.equals(featName)) { out.print("<br />(" + featName +")&nbsp;&nbsp;"); }
 				out.print("</td><td>" + featType + "&nbsp;&nbsp;</td><td style='color: #FF0000'>");
 				if (!locStatus.equals("approved")) {
@@ -114,10 +117,9 @@
 				} else {
 					out.print("</td><td></td>");
 				}
-				out.print("<td><a href='detail.jsp?FeatID=" + featID + "'><img src='images/loc.gif' border='0' height='20' width='20' alt='View Locality' /></a><img src='images/blank.gif' height='20' width='2' /></td>");
 				out.print("<td>");
 				if ((locStatus.equals("working") || locStatus.equals("rejected")) && folder.isAllowedEditLocalities()) {
-					out.print("<a href='data_entry.jsp?Type=" + featType + "&FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
+					out.print("<a href='data_entry.jsp?Type=" + featType + "&FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				}
 				out.print("</td><td>");
 				if (folder.isAllowedCreateLocalities()) {

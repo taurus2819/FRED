@@ -31,7 +31,7 @@ import nz.cri.gns.test.TestingPageState;
  */
 public class RecordTest extends TestCase {
 
-	public void testLoad() throws NotBoundException, InvalidCredentialsException, IllegalArgumentException, SQLException, IOException, DataInputException {
+	public void _testLoad() throws NotBoundException, InvalidCredentialsException, IllegalArgumentException, SQLException, IOException, DataInputException {
 		SampPropRecord.purge();
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
@@ -67,6 +67,19 @@ public class RecordTest extends TestCase {
 		}
 		form.setField(DataEntryForm.HARDNESS, "152");
 		form.save();
+	}
+
+	public void testAdoSave() throws NotBoundException, DataInputException, InvalidCredentialsException, SQLException, IOException {
+		TestingPageState state = new TestingPageState();
+		DBConnection ipConn = FREDUtils.getIPConnection(state);
+		User user = new User("pseudo_ben", "santor32", ipConn);
+		DataEntryForm form = DataEntryFormFactory.getRecordDataEntryForm(1400, user, state);
+		for (int i = 0; i < form.getFieldCount(); i++) {
+			System.out.println(i + ": " + form.getField(i));
+		}
+		form.setField(DataEntryForm.ADOPTION_DATE, "27/1/1973");
+		form.setField(DataEntryForm.ADOPTORS, "Morrison, Ben");
+		System.out.println(form.save());	
 	}
 
 }

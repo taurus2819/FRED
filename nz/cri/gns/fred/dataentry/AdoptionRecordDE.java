@@ -50,18 +50,10 @@ public class AdoptionRecordDE extends RecordDE {
 			}
 			setField(ADOPTORS, adoptName.toString());
 		}
-		setField(
-			ADO_AGE_START,
-			record.getAsString(Record.ADOPTED_STAGE_LOWER_ID));
-		setField(
-			ADO_START_MOD,
-			record.getAsString(Record.ADOPTED_STAGE_LOWER_MOD));
-		setField(
-			ADO_AGE_STOP,
-			record.getAsString(Record.ADOPTED_STAGE_UPPER_ID));
-		setField(
-			ADO_STOP_MOD,
-			record.getAsString(Record.ADOPTED_STAGE_UPPER_MOD));
+		setField(ADO_AGE_START, record.getAsString(Record.ADOPTED_STAGE_LOWER_ID));
+		setField(ADO_START_MOD, record.getAsString(Record.ADOPTED_STAGE_LOWER_MOD));
+		setField(ADO_AGE_STOP, record.getAsString(Record.ADOPTED_STAGE_UPPER_ID));
+		setField(ADO_STOP_MOD, record.getAsString(Record.ADOPTED_STAGE_UPPER_MOD));
 		setField(ADO_COMMENTS, record.getAsString(Record.COMMENTS));
 	}
 
@@ -188,6 +180,10 @@ public class AdoptionRecordDE extends RecordDE {
 		super.makeEndBitHTML(out);
 	}
 
+	public String getAdoDate() {
+		return adoDate.getDateString();
+	}
+
 	public int save()
 		throws InvalidCredentialsException, SQLException, IOException {
 		if (!savedFlag) {
@@ -196,27 +192,16 @@ public class AdoptionRecordDE extends RecordDE {
 			conn.getConnection().setAutoCommit(false);
 			try {
 				super.save();
-				conn.executeUpdate(
-					"DELETE FROM Adoption WHERE Record_ID = "
-						+ record.getRecordID());
+				conn.executeUpdate("DELETE FROM Adoption WHERE Record_ID = " + record.getRecordID());
+				String stageID = DataEntryUtils.getStageID(getField(ADO_AGE_START), getField(ADO_START_MOD), getField(ADO_AGE_STOP), getField(ADO_STOP_MOD), state);
 				//Create ADOPTION entry
 				conn.executeUpdate(
 					"INSERT INTO Adoption (Record_ID, Adoption_Date, Date_Rounding, Adopted_Stage_ID, Comments) VALUES ("
 						+ record.getRecordID()
-						+ ((adoDate != null)
-							? ", TO_DATE('"
-								+ adoDate.getDateString()
-								+ "'), "
-								+ JspUtils.sqlEscape(adoDate.getDateRounding())
+						+ ((adoDate != null) ? ", TO_DATE('" + adoDate.getDateString() + "'), " + JspUtils.sqlEscape(adoDate.getDateRounding())
 							: ", NULL, NULL")
 						+ ", "
-						+ JspUtils.sqlEscape(
-							DataEntryUtils.getStageID(
-								getField(ADO_AGE_START),
-								getField(ADO_START_MOD),
-								getField(ADO_AGE_STOP),
-								getField(ADO_STOP_MOD),
-								state))
+						+ JspUtils.sqlEscape(stageID)
 						+ ", "
 						+ JspUtils.sqlEscape(getField(ADO_COMMENTS))
 						+ ")");

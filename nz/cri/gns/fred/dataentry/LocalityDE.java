@@ -31,7 +31,7 @@ public abstract class LocalityDE implements DataEntryForm {
 	protected Sample sample;
 	protected String featureType;
 	private Integer secClassID;
-	protected String[] fields = new String[100];
+	protected String[] fields = new String[120];
 	private Double latitude, longitude;
 	private String origSystemID, origCoord, countryCode, recoll;
 	protected boolean savedFlag = false;

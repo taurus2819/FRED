@@ -64,13 +64,10 @@
 		//form creation if proper rights
 		if ((folder.isAllowedCreateLocalities() && featID ==  null) || (folder.isAllowedEditLocalities() && featID != null)) {
 
-			out.println("<form name='form1' method='post' action='data_proc.jsp'>");
-			out.println("<input type='hidden' name='Type' value='" + formType + "'>");
-			out.println("<input type='hidden' name='FoldID' value='" + foldID + "'>");
-			if (featID != null) out.println("<input type='hidden' name='FeatID' value='" + featID + "'>");
-			if (sampID != null) out.println("<input type='hidden' name='SampID' value='" + sampID + "'>");
-			if (recID != null) out.println("<input type='hidden' name='RecID' value='" + recID + "'>");
-			out.println("<input type='hidden' name='SaveType' value=''>");
+			out.println("<form name='form1' method='post' action='data_proc.jsp' />");
+			out.println("<input type='hidden' name='SaveType' value='' />");
+			if (request.getParameter("Redirect") != null) 
+				out.println("<input type='hidden' name='Redirect' value='" + request.getParameter("Redirect") + "' />");
 
 			dataEntryForm.makeNavPanelHTML(new PrintWriter(out));
 
@@ -95,7 +92,7 @@
 		drawEndNavigation(out);
 		out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 		out.println("<tr><td>");
-		out.println("<p><span class='bigheading'>Access denied</span><br />You don't have sufficient rights in this folder</p>");
+		out.println("<p><span class='bigheading'>Access denied</span><br />You don't have rights to edit this locality/record</p>");
 	}
 
 	out.println("</td></tr></table>");

@@ -27,21 +27,14 @@
 
 	drawTop(out, et, request, response);
 
-	if (request.getParameter("Type") != null && request.getParameter("FoldID") != null && request.getParameter("SaveType") != null) {
-
-		String featType = request.getParameter("Type");
-		String foldID = request.getParameter("FoldID");
-		String saveType = request.getParameter("SaveType");
-		String featID = request.getParameter("FeatID");
-		String sampID = request.getParameter("SampID");
-		String recID = request.getParameter("RecID");
+	if (request.getParameter("SaveType") != null) {
 
 		out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
 		out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
 		out.println("<tr><td colspan='2' align='center' class='heading'>Locality</td></tr>");
 		out.println("<tr><td>&nbsp;</td></tr>");
 		out.println("<tr><td><a href='javascript:history.back();' title='Back to Data Entry'><img src='images/back_arrow.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='javascript:history.back();' class='heading'>Back to Data Entry</a></td></tr>");
-		out.println("<tr><td><a href='folder_detail.jsp?ID=" + foldID + "' title='Quit Without Saving'><img src='images/cancel.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_detail.jsp?ID=" + foldID + "' class='heading'>Quit</a></td></tr>");
+		out.println("<tr><td><a href='" + request.getParameter("Redirect") + "' title='Quit Without Saving'><img src='images/cancel.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + request.getParameter("Redirect") + "' class='heading'>Quit</a></td></tr>");
 		out.println("</table>");
 
 		drawEndNavigation(out);
@@ -51,7 +44,6 @@
 
 		try {
 			DataEntryForm dataEntryForm = (DataEntryForm) session.getAttribute("dataEntryForm");;
-
 
 			dataEntryForm.setField(DataEntryForm.FEATURE_NAME, request.getParameter("FeatName"));
 			dataEntryForm.setField(DataEntryForm.REGISTRATION_AREA, request.getParameter("RegAreaID"));
@@ -135,13 +127,13 @@
 			dataEntryForm.setField(DataEntryForm.LAB_NUMBER, request.getParameter("LabNum"));
 			dataEntryForm.setField(DataEntryForm.COLLECTION_COMMENTS, request.getParameter("CollComm"));
 
-			if (saveType.equals("Submit")) {
+			if (request.getParameter("SaveType").equals("Submit")) {
 				dataEntryForm.submit();
 			} else {
 				dataEntryForm.save();
 			}
 
-			response.sendRedirect("folder_detail.jsp?ID=" + foldID);
+			response.sendRedirect(request.getParameter("Redirect"));
 
 		} catch (DataInputException e) {
 			out.println("<p><div class='bigheading'>Data Error</div></p>");
@@ -155,9 +147,9 @@
 		} catch (IOException e) {
 			out.println("<p><div class='bigheading'>IO Error</div></p>");
 			out.println("<p>Database Error</p>");
-		//} catch (SQLException e) {
-		//	out.println("<p><div class='bigheading'>SQL Error</div></p>");
-		//	out.println("<p>Database Error</p>");
+		} catch (SQLException e) {
+			out.println("<p><div class='bigheading'>SQL Error</div></p>");
+			out.println("<p>Database Error</p>");
 		}
 	}
 

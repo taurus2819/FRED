@@ -79,26 +79,26 @@ public interface DataEntryForm {
 	public static final int CORRESPONDENCE = 71;
 
 	//Adoption Record fields
-	public static final int ADOPTION_DATE = 31;
-	public static final int ADOPTORS = 32;
-	public static final int ADO_AGE_START = 33;
-	public static final int ADO_START_MOD = 34;
-	public static final int ADO_AGE_STOP = 35;
-	public static final int ADO_STOP_MOD = 36;
-	public static final int ADO_COMMENTS = 37;	
+	public static final int ADOPTION_DATE = 81;
+	public static final int ADOPTORS = 82;
+	public static final int ADO_AGE_START = 83;
+	public static final int ADO_START_MOD = 84;
+	public static final int ADO_AGE_STOP = 85;
+	public static final int ADO_STOP_MOD = 86;
+	public static final int ADO_COMMENTS = 87;	
 
-	//Paleontology Record files
-	public static final int IDENTIFICATION_DATE = 31;
-	public static final int IDENTIFIERS = 32;
-	public static final int IDT_AGE_START = 33;
-	public static final int IDT_START_MOD = 34;
-	public static final int IDT_AGE_STOP = 35;
-	public static final int IDT_STOP_MOD = 36;	
-	public static final int STAGE_COMMENTS = 37;
-	public static final int LAB_SECTION = 38;
-	public static final int LAB_NUMBER = 39;
-	public static final int COLLECTION_COMMENTS = 40;
-	public static final int TAXA_LIST = 41;
+	//Paleontology Record fields
+	public static final int IDENTIFICATION_DATE = 101;
+	public static final int IDENTIFIERS = 102;
+	public static final int IDT_AGE_START = 103;
+	public static final int IDT_START_MOD = 104;
+	public static final int IDT_AGE_STOP = 105;
+	public static final int IDT_STOP_MOD = 106;	
+	public static final int STAGE_COMMENTS = 107;
+	public static final int LAB_SECTION = 108;
+	public static final int LAB_NUMBER = 109;
+	public static final int COLLECTION_COMMENTS = 110;
+	public static final int TAXA_LIST = 111;
 	
 	public int getFieldCount();
 

@@ -13,11 +13,11 @@ import nz.cri.gns.jsp.IPSysJspPage;
 public abstract class FREDIPSysJspPage extends IPSysJspPage {
 
 	public String getName(HttpServletRequest request) {
-		return "Fossil Record Electronic Database";
+		return "FRED - Fossil Record Electronic Database";
 	}
 
 	public String getTitle(HttpServletRequest request) {
-		return "Fossil Record Electronic Database";
+		return "FRED - Fossil Record Electronic Database";
 	}
 
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {

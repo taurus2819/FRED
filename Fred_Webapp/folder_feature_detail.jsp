@@ -1,5 +1,5 @@
 <%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
+		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -31,6 +31,8 @@
 		int featID = Integer.parseInt(request.getParameter("FeatID"));
 
 		Folder folder = new Folder(Integer.parseInt(request.getParameter("FoldID")), user, state);
+
+		String redirect = URLEncoder.encode("folder_feature_detail.jsp?FoldID=" + folder.getFolderID() + "&FeatID=" + featID, "UTF-8");
 
 		//check feature is in this folder
 		boolean ok = false;
@@ -108,8 +110,7 @@
 			out.println("<form name='FoldForm' method='put' action='folder_feature_detail.jsp'>");
 
 			//Feature
-			
-			out.println("<tr><td><img src='images/loc.gif' height='20' width='20' alt='' />&nbsp;</td>");
+			out.println("<tr><td><a href='detail.jsp?FeatID=" + featID + "'><img src='images/loc.gif' border='0' height='20' width='20' alt='View Locality' /></a>&nbsp;</td>");
 			out.print("<td class='heading'>" + sampName + "&nbsp;&nbsp;");
 			if (featName != null && !sampName.equals(featName)) 
 				out.print("<br />(" + featName +")&nbsp;&nbsp;");
@@ -122,10 +123,9 @@
 			} else {
 				out.print("</td><td></td>");
 			}
-			out.print("<td><a href='detail.jsp?FeatID=" + featID + "'><img src='images/loc.gif' border='0' height='20' width='20' alt='View Locality' /></a><img src='images/blank.gif' height='20' width='2' /></td>");
 			out.print("<td>");
 			if ((locStatus.equals("working") || locStatus.equals("rejected")) && folder.isAllowedEditLocalities())
-				out.print("<a href='data_entry.jsp?Type=" + featType + "&FeatID=" + featID + "&FoldID=" + folder.getFolderID() + "' title='Edit Locality'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+				out.print("<a href='data_entry.jsp?Type=" + featType + "&FeatID=" + featID + "&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "' title='Edit Locality'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 			out.print("</td><td>");
 //			if (folder.isAllowedCreateLocalities())
 //				out.print("<a href='#' onClick='prmpt=prompt(\"Please enter the new name\", \"New " + featType + "\");if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value=\"CopyFeat\";document.FoldForm.submit();}' title='Copy Locality'><img src='images/copy.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
@@ -142,9 +142,9 @@
 				if (featType.equals("Outcrop")) {
 					int sampID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
 					Sample sample = new Sample(sampID, user, state);
-					out.print("<a href='data_entry.jsp?Type=ADO&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "'><img src='images/new_ado.gif' border='0' height='20' width='20' alt='Add Adoption Record' /></a><img src='images/blank.gif' height='20' width='2' />");
+					out.print("<a href='data_entry.jsp?Type=ADO&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "&Redirect=" + redirect + "'><img src='images/new_ado.gif' border='0' height='20' width='20' alt='Add Adoption Record' /></a><img src='images/blank.gif' height='20' width='2' />");
 					out.print("</td><td>");
-					out.print("<a href='data_entry.jsp?Type=PAL&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "'><img src='images/new_pal.gif' border='0' height='20' width='20' alt='Add Paleontology Record' /></a><img src='images/blank.gif' height='20' width='2' />");
+					out.print("<a href='data_entry.jsp?Type=PAL&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "&Redirect=" + redirect + "'><img src='images/new_pal.gif' border='0' height='20' width='20' alt='Add Paleontology Record' /></a><img src='images/blank.gif' height='20' width='2' />");
 				} else {
 					out.println("<a href='new_sample.jsp?FeatID=" + featID + "&FoldID=" + folder.getFolderID() + "'><img src='images/drill.gif' border='0' height='20' width='20' alt='New Sample' /></a><img src='images/blank.gif' height='20' width='2' />");
 				}
@@ -157,24 +157,24 @@
 			for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
 				Sample sample = new Sample(((Integer) i.next()).intValue(), user, state, true);
 				if (!featType.equals("Outcrop") && !sample.getAsString(Sample.DRILLHOLE_DEPTH).equals("Depth Not Specified")) {
-					out.print("<tr><td><img src='images/drill.gif' height='20' width='20' />&nbsp;</td><td colspan='3'>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td>");
-					out.print("<td></td><td>");
+					out.print("<tr><td><a href='detail.jsp?ID=" + sample.getSampleID() + "'><img src='images/drill.gif' height='20' width='20' border='0' alt='View Sample Details' /></a>&nbsp;</td><td colspan='3'>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td>");
+					out.print("<td>");
 					if (sample.get(Sample.SAMPLE_PROPERTY_RECORD_ID) != null) {
 						if ((sample.getAsString(Sample.SAMPLE_PROPERTY_RECORD_STATUS).equals("working") || sample.getAsString(Sample.SAMPLE_PROPERTY_RECORD_STATUS).equals("rejected")) && folder.isAllowedEditLocalities())
-							out.print("<a href='data_entry.jsp?Type=SMP&FoldID=" + folder.getFolderID() + "&RecID=" + sample.getAsString(Sample.SAMPLE_PROPERTY_RECORD_ID) + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Sample Details' /></a><img src='images/blank.gif' height='20' width='2' />");
+							out.print("<a href='data_entry.jsp?Type=SMP&FoldID=" + folder.getFolderID() + "&RecID=" + sample.getAsString(Sample.SAMPLE_PROPERTY_RECORD_ID) + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Sample Details' /></a><img src='images/blank.gif' height='20' width='2' />");
 					} else {
 						if (folder.isAllowedCreateLocalities())
-							out.print("<a href='data_entry.jsp?Type=SMP&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Sample Details' /></a><img src='images/blank.gif' height='20' width='2' />");
+							out.print("<a href='data_entry.jsp?Type=SMP&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Sample Details' /></a><img src='images/blank.gif' height='20' width='2' />");
 					}
 					out.print("</td><td></td><td>");
 					if ((sample.get(Sample.SAMPLE_PROPERTY_RECORD_ID) == null || sample.getAsString(Sample.SAMPLE_PROPERTY_RECORD_STATUS).equals("working") || sample.getAsString(Sample.SAMPLE_PROPERTY_RECORD_STATUS).equals("rejected")) && folder.isAllowedDeleteLocalities())
 						out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this sample\") == true) {document.FoldForm.ActionType.value=\"DeleteSamp\";document.FoldForm.SampID.value=\"" + sample.getSampleID() + "\";document.FoldForm.submit();}' title='Delete Sample'><img src='images/delete.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					out.print("</td><td></td><td>");
 					if (folder.isAllowedCreateLocalities())
-						out.print("<a href='data_entry.jsp?Type=ADO&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "'><img src='images/new_ado.gif' border='0' height='20' width='20' alt='Add Adoption Record' /></a><img src='images/blank.gif' height='20' width='2' />");
+						out.print("<a href='data_entry.jsp?Type=ADO&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "&Redirect=" + redirect + "'><img src='images/new_ado.gif' border='0' height='20' width='20' alt='Add Adoption Record' /></a><img src='images/blank.gif' height='20' width='2' />");
 					out.print("</td><td>");
 					if (folder.isAllowedCreateLocalities())
-						out.print("<a href='data_entry.jsp?Type=PAL&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "'><img src='images/new_pal.gif' border='0' height='20' width='20'  /></a><img src='images/blank.gif' height='20' width='2' />");
+						out.print("<a href='data_entry.jsp?Type=PAL&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "&Redirect=" + redirect + "'><img src='images/new_pal.gif' border='0' height='20' width='20'  /></a><img src='images/blank.gif' height='20' width='2' />");
 					out.print("</td>");
 					out.println("</tr>");
 				}
@@ -208,10 +208,10 @@
 							} else {
 								out.print("</td><td></td>");
 							}
-							out.print("<td></td><td>");
+							out.print("<td>");
 							//Record Options
 							if (record.getAsString(Record.STATUS).equals("working") && folder.isAllowedEditLocalities())
-								out.println("<a href='data_entry.jsp?Type=" + recType + "&FoldID=" + folder.getFolderID() + "&RecID=" + recID + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Record' /></a><img src='images/blank.gif' height='20' width='2' />");
+								out.println("<a href='data_entry.jsp?Type=" + recType + "&FoldID=" + folder.getFolderID() + "&RecID=" + recID + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Record' /></a><img src='images/blank.gif' height='20' width='2' />");
 							out.println("</td><td></td><td>");
 							if (record.getAsString(Record.STATUS).equals("working") && folder.isAllowedDeleteLocalities())
 								out.println("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this record\") == true) {document.FoldForm.ActionType.value=\"DeleteRec\";document.FoldForm.RecID.value=\"" + recID + "\";document.FoldForm.submit();}'><img src='images/delete.gif' border='0' height='20' width='20' alt='Delete Record' /></a><img src='images/blank.gif' height='20' width='2' />");

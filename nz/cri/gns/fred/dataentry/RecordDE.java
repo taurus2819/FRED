@@ -29,7 +29,7 @@ public abstract class RecordDE implements DataEntryForm {
 	protected Record record;
 	protected String recordType;
 	private Integer secClassID;
-	protected String[] fields = new String[80];
+	protected String[] fields = new String[120];
 	protected boolean savedFlag = false;
 
 	public RecordDE(User user, int folderID, String recordType, PageState state) throws DataInputException, SQLException, IOException {
@@ -256,11 +256,6 @@ public abstract class RecordDE implements DataEntryForm {
 						+ secClassID.toString()
 						+ " WHERE Audit_ID = "
 						+ record.getAsString(Record.AUDIT_ID));
-				conn.executeUpdate(
-					"UPDATE Record SET Sample_ID = "
-						+ sample.getSampleID()
-						+ " WHERE Record_ID = "
-						+ record.getRecordID());
 				try {
 					record = Record.getData(record.getRecordID(), user, state, true);
 				} catch (Exception e) {}
