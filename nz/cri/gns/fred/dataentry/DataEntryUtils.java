@@ -94,7 +94,8 @@ public class DataEntryUtils {
 		if (stageStartID != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			String query = "SELECT Get_Stage_ID(?, ?, ?, ?) FROM DUAL";
-			ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.VARCHAR, Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(stageStartID), startMod, new Integer(stageStopID), stopMod});
+			ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.VARCHAR, Types.NUMERIC, Types.VARCHAR},
+				new Object[] {new Integer(stageStartID), startMod, ((stageStopID != null) ? new Integer(stageStopID) : null), stopMod});
 			rs.next();
 			if (rs.getString(1) != null)
 				return rs.getString(1);

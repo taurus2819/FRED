@@ -24,6 +24,7 @@ import nz.cri.gns.fred.dataentry.RecordDE;
 import nz.cri.gns.fred.dataentry.SampleDE;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.PageState;
+import nz.cri.gns.util.map.NZMS260;
 
 
 public class FolderUtils {
@@ -213,7 +214,7 @@ public class FolderUtils {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		String mapSheet;
 		if (nzmsSheet != null) {
-			if (FREDUtils.isValidMapSheet(nzmsSheet)) {
+			if (NZMS260.isValidMapSheet(nzmsSheet)) {
 				mapSheet = nzmsSheet;
 			} else {
 				mapSheet = (latitude >= 0 ? "N" : "S") + (longitude >= 0 ? "E" : "W") + latStr + longStr;
@@ -223,7 +224,7 @@ public class FolderUtils {
 		} else {
 			mapSheet = (latitude >= 0 ? "N" : "S") + (longitude >= 0 ? "E" : "W") + latStr + longStr;
 		}
-		String query = "SELECT MAX(Serial_Number) FROM FR_Number WHERE Map_Sheet = ? AND Serial_Number < 6000";
+		String query = "SELECT MAX(serial_number) FROM fr_number WHERE map_sheet = ? AND serial_number < 6000";
 		ResultSet rs = conn.executeQuery(query, new int[] {Types.VARCHAR}, new Object[] {mapSheet});
 		int serialNum;
 		rs.next();
@@ -237,7 +238,7 @@ public class FolderUtils {
 	
 	public static FRNumber getNextFRNumber(String mapSheet, int serialNumber, PageState state) throws IOException, SQLException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		String query = "SELECT MAX(Recollection_Number) FROM FR_Number WHERE Map_Sheet = ? AND Serial_Number = ?";
+		String query = "SELECT UPPER(MAX(recollection_number)) FROM fr_number WHERE map_sheet = ? AND serial_number = ?";
 		ResultSet rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.NUMERIC}, new Object[] {mapSheet, new Integer(serialNumber)});
 		rs.next();
 		if (rs.getString(1) == null) {
