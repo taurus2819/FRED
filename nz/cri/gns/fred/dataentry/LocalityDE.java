@@ -438,6 +438,8 @@ public abstract class LocalityDE implements DataEntryForm {
 		} else {
 			throw new DataInputException("Coordinate", "Invalid value");
 		}
+		if (!origSystem.coordinateAcceptable(origCoord))
+			throw new DataInputException("Coordinate", "Coordinate not acceptable for given datum");
 	}
 
 	public int save() throws SQLException, IOException, InvalidCredentialsException {
