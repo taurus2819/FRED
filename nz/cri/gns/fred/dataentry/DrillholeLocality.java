@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.dataentry;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -72,6 +73,22 @@ public class DrillholeLocality extends Locality {
 		} catch (SQLException _e) {
 			throw new DataInputException();	
 		}
+	}
+
+	public void makeDataEntryHTML(Writer out) throws IOException, SQLException {
+		out.write("<table border='0' cellspacing='0' cellpadding='2'>\n");
+		out.write("<tr><td class='heading' colspan='2'>Drillhole Name</td><td><input type='text' name='FeatName' value='" + FREDUtils.noNulls(getField(DRILLHOLE_NAME)) + "'></td></tr>\n");
+		super.makeDataEntryHTML(out);
+		out.write("<tr><td class='heading'>Operating Company</td><td></td><td><input type='text' name='Person' value='" + FREDUtils.noNulls(getField(OPERATING_COMPANY)) + "' size='40'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=OpComp\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
+		out.write("<tr><td class='heading'>Drilling Dates</td><td class='smallheading'>Spud Date</td><td><input type='text' name='StartDate' value='" + FREDUtils.noNulls(getField(SPUD_DATE)) + "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Date&Field=StartDate\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
+		out.write("<tr><td class='heading'></td><td class='smallheading'>Completion Date</td><td><input type='text' name='FinishDate' value='" + FREDUtils.noNulls(getField(COMPLETION_DATE)) + "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Date&Field=FinishDate\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
+		out.write("<tr><td class='heading'>Licence Area</td><td></td><td><input type='text' name='LicArea' value='" + FREDUtils.noNulls(getField(LICENCE_AREA)) + "' size='40'></td></tr>");
+		out.write("<tr><td class='heading'>Datum Elevation</td><td></td>");
+		out.write("<td class='smallheading'><select name='DatumType'><option value='-'" + ((getField(DATUM_TYPE) == null) ? " selected" : "") + ">-- Choose --</option><option value='RT'" + ((getField(DATUM_TYPE) != null && getField(DATUM_TYPE).equals("RT")) ? " selected" : "") + ">RT</option><option value='KB'" + ((getField(DATUM_TYPE) != null && getField(DATUM_TYPE).equals("KB")) ? " selected" : "") + ">KB</option></select>&nbsp;&nbsp;");
+		out.write("<input type='text' name='DatumEl' value='" + FREDUtils.noNulls(getField(DATUM_ELEVATION)) + "' size='10'>&nbsp;m&nbsp;asl</td></tr>\n");
+		out.write("<tr><td class='heading'>Drillhole Depths</td><td class='smallheading'>Kick-off</td><td class='smallheading'><input type='text' name='StartDepth' value='" + FREDUtils.noNulls(getField(KICK_OFF_DEPTH)) + "'>&nbsp;m</td></tr>\n");
+		out.write("<tr><td class='heading'></td><td class='smallheading'>Termination (TD)</td><td class='smallheading'><input type='text' name='FinishDepth' value='" + FREDUtils.noNulls(getField(TERMINATION_DEPTH)) + "'>&nbsp;m</td></tr>\n");		
+		out.write("</table>\n");
 	}
 
 	public int save() throws SQLException, IOException, InvalidCredentialsException {

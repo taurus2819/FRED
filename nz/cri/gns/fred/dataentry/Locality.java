@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.dataentry;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -8,6 +9,8 @@ import java.util.Date;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.ComboDescriptor;
+import nz.cri.gns.db.HTMLUtils;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.data.Folder;
@@ -61,41 +64,82 @@ public abstract class Locality {
 	private String origSystemID, origCoord, countryCode, recoll;
 	protected boolean savedFlag = false;
 
-
-	public Locality(User user, int folderID, String featureType, PageState state) throws SQLException, IOException, DataInputException {
+	public Locality(
+		User user,
+		int folderID,
+		String featureType,
+		PageState state)
+		throws SQLException, IOException, DataInputException {
 		this.user = user;
 		this.state = state;
-		if (!(featureType.equals("Outcrop") || featureType.equals("Drillhole") || featureType.equals("VertSect"))) throw new DataInputException("Feature Type", "Invalid value");
+		if (!(featureType.equals("Outcrop")
+			|| featureType.equals("Drillhole")
+			|| featureType.equals("VertSect")))
+			throw new DataInputException("Feature Type", "Invalid value");
 		this.featureType = featureType;
 		this.folder = new Folder(folderID, user, state);
 	}
 
-	public Locality(int id, User user, PageState state) throws IOException,	SQLException, DataInputException, InvalidCredentialsException {
+	public Locality(int id, User user, PageState state)
+		throws
+			IOException,
+			SQLException,
+			DataInputException,
+			InvalidCredentialsException {
 		this.user = user;
 		this.state = state;
 		featureID = new Integer(id);
 		feature = new Feature(id, user, state, true);
-		sampleID = (Integer) feature.getAsVector(Feature.SAMPLES).firstElement();
+		sampleID =
+			(Integer) feature.getAsVector(Feature.SAMPLES).firstElement();
 		sample = new Sample(sampleID.intValue(), user, state, true);
 		featureType = sample.getAsString(Sample.FEATURE_TYPE);
-		if (sample.get(Sample.WORKING_FOLDER_ID) != null) this.folder = new Folder(sample.getAsInt(Sample.WORKING_FOLDER_ID), user, state);
+		if (sample.get(Sample.WORKING_FOLDER_ID) != null)
+			this.folder =
+				new Folder(
+					sample.getAsInt(Sample.WORKING_FOLDER_ID),
+					user,
+					state);
 		setField(FEATURE_NAME, sample.getAsString(Sample.FEATURE_NAME));
 		setField(REGISTRATION_AREA, sample.getAsString(Sample.REG_AREA_ID));
 		String workComm = sample.getAsString(Sample.WORKING_COMMENTS);
 		if (workComm != null && workComm.indexOf("*Recoll:") >= 0) {
-			setField(RECOLLECTION, workComm.substring(8, workComm.indexOf("*", 2)).trim());
-			setField(WORKING_COMMENTS, workComm.substring(workComm.indexOf("*", 2) + 1, workComm.length()).trim());
+			setField(
+				RECOLLECTION,
+				workComm.substring(8, workComm.indexOf("*", 2)).trim());
+			setField(
+				WORKING_COMMENTS,
+				workComm
+					.substring(workComm.indexOf("*", 2) + 1, workComm.length())
+					.trim());
 		} else {
 			setField(WORKING_COMMENTS, workComm);
-		}	
+		}
 		if (sample.get(Sample.ORIG_SYSTEM_ID) != null) {
 			int origSystemID = sample.getAsInt(Sample.ORIG_SYSTEM_ID);
 			if (origSystemID == 38) {
-				setField(GRID_REF,	"NZMG:"	+ sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
+				setField(
+					GRID_REF,
+					"NZMG:"
+						+ sample.getAsString(Sample.ORIG_COORD).replace(
+							'|',
+							'*'));
 			} else if (origSystemID == 16) {
-				setField(GRID_REF,	"TruncNZMG:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
+				setField(
+					GRID_REF,
+					"TruncNZMG:"
+						+ sample.getAsString(Sample.ORIG_COORD).replace(
+							'|',
+							'*'));
 			} else if (origSystemID == 29) {
-				setField(GRID_REF,	"LatLong:"	+ sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
+				setField(
+					GRID_REF,
+					"LatLong:"
+						+ sample.getAsString(Sample.COUNTRY_CODE)
+						+ "*"
+						+ sample.getAsString(Sample.ORIG_COORD).replace(
+							'|',
+							'*'));
 			}
 		}
 		setField(METHOD, sample.getAsString(Sample.METHOD_ID));
@@ -111,7 +155,7 @@ public abstract class Locality {
 	public Integer getSampleID() {
 		return sampleID;
 	}
-	
+
 	public String getFeatureType() {
 		return featureType;
 	}
@@ -121,7 +165,8 @@ public abstract class Locality {
 	}
 
 	public void setField(int field, String value) throws DataInputException {
-		if (value != null && (value.equals("") || value.equals("-"))) value = null;
+		if (value != null && (value.equals("") || value.equals("-") || value.equals("null")))
+			value = null;
 		if (value != null)
 			parseField(field, value);
 		fields[field] = value;
@@ -139,7 +184,7 @@ public abstract class Locality {
 			ResultSet rs;
 			switch (field) {
 				case REGISTRATION_AREA :
-					rs = 
+					rs =
 						conn.executeQuery(
 							"SELECT * FROM Lookup WHERE Lookup_ID = "
 								+ value
@@ -176,17 +221,100 @@ public abstract class Locality {
 					break;
 				case RECOLLECTION :
 					recoll = "*Recoll:" + value + "*";
-					rs = conn.executeQuery("SELECT * FROM Feature_Security_View WHERE Sample_Name = " + JspUtils.sqlEscape(value) + " AND (Status = 'approved' OR (Folder_Type = 'personal' AND User_ID = " + user.getPersonId() + "))");
+					rs =
+						conn.executeQuery(
+							"SELECT * FROM Feature_Security_View WHERE Sample_Name = "
+								+ JspUtils.sqlEscape(value)
+								+ " AND (Status = 'approved' OR (Folder_Type = 'personal' AND User_ID = "
+								+ user.getPersonId()
+								+ "))");
 					if (!rs.next()) {
-						throw new DataInputException("Recollection/Sidetrack", value + " is not an existing FR Number or temporary name.  Please use the builder to select.");
+						throw new DataInputException(
+							"Recollection/Sidetrack",
+							value
+								+ " is not an existing FR Number or temporary name.  Please use the builder to select.");
 					}
 					break;
 			}
 		} catch (IOException e) {
 			throw new DataInputException();
 		} catch (SQLException _e) {
-			throw new DataInputException();	
+			throw new DataInputException();
 		}
+	}
+
+	public void makeDataEntryHTML(Writer out)
+		throws IOException, SQLException {
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		out.write(
+			"<tr><td class='heading'>Registration Area</td><td></td><td>");
+		ComboDescriptor cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
+		cd.name = "RegAreaID";
+		cd.selected = getField(Locality.REGISTRATION_AREA);
+		cd.join = "FieldName = 'RegArea'";
+		cd.orderBy = "Lookup_ID";
+		HTMLUtils.makeDropBox(out, conn, cd);
+		out.write("</td></tr>\n");
+		out.write("<tr><td class='heading'>");
+		if (featureType.equals("Drillhole")) {
+			out.write("Sidetrack of");
+		} else {
+			out.write("Recollection of");
+		}
+		out.write(
+			"</td><td></td><td><input type='text' name='Recoll' value='"
+				+ FREDUtils.noNulls(getField(Locality.RECOLLECTION))
+				+ "' /></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Recoll\", \"Supp\", \"width=600,height=500\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
+		out.write(
+			"<tr><td class='heading' colspan='2'>Working Comments<br><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'>"
+				+ FREDUtils.noNulls(getField(Locality.WORKING_COMMENTS))
+				+ "</textarea></td></tr>\n");
+		out.write(
+			"<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
+		out.write(
+			"<tr><td class='heading'>Location</td><td class='smallheading'>Grid Ref.</td><td><input type='text' name='GridRef' size='40' value='"
+				+ FREDUtils.noNulls(getField(Locality.GRID_REF))
+				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Coord\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
+
+		ResultSet rs =
+			conn.executeQuery("SELECT MAX(Method_ID) FROM SC.Method");
+		rs.next();
+		out.write(
+			"<script language='JavaScript'>\nvar datumMethod = new Array("
+				+ (rs.getInt(1) + 1)
+				+ ");\n");
+		rs =
+			conn.executeQuery(
+				"SELECT Method_ID, Nom_Accuracy_XY FROM SC.Method WHERE Nom_Accuracy_XY IS NOT NULL ORDER BY Method_ID");
+		while (rs.next()) {
+			out.write(
+				"datumMethod["
+					+ rs.getString(1)
+					+ "] = '"
+					+ FREDUtils.noNulls(rs.getString(2))
+					+ "';\n");
+		}
+		out.write("</script>");
+		conn.releaseStatement();
+
+		out.write("<tr><td></td><td class='smallheading'>Method</td><td>");
+		cd = new ComboDescriptor("SC.Method", "Method_ID", "Method");
+		cd.name = "LocMethodID";
+		cd.prompt = "-- Choose --";
+		cd.selected = getField(Locality.METHOD);
+		cd.orderBy = "Method_ID";
+		cd.join = "Nom_Accuracy_XY IS NOT NULL";
+		cd.tagParams = "onChange='setAccuracy(this.value, this.form)'";
+		HTMLUtils.makeDropBox(out, conn, cd);
+		out.write("</td></tr>\n");
+		out.write(
+			"<tr><td></td><td class='smallheading'>Accuracy</td><td><input type='text' name='Accuracy' value='"
+				+ FREDUtils.noNulls(getField(Locality.ACCURACY))
+				+ "'></td></tr>\n");
+		out.write(
+			"<tr><td></td><td class='smallheading'>Locality<br />Description</td><td><textarea name='Loc' cols='40' rows='5'>"
+				+ FREDUtils.noNulls(getField(Locality.LOCALITY_DESC))
+				+ "</textarea></td></tr>\n");
 	}
 
 	private boolean parseCoord(String coord) {
@@ -241,7 +369,7 @@ public abstract class Locality {
 				latitude = new Double(latLong.getNorthSouth());
 				longitude = new Double(latLong.getEastWest());
 				origCoord = sheet + "|" + east + "|" + north;
-				origSystemID ="16";
+				origSystemID = "16";
 				countryCode = "NZ";
 			} catch (Exception e) {
 				return false;
@@ -272,33 +400,87 @@ public abstract class Locality {
 		}
 		return true;
 	}
-	
-	public int save() throws SQLException, IOException, InvalidCredentialsException {
+
+	public int save()
+		throws SQLException, IOException, InvalidCredentialsException {
 		if (!savedFlag) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			ResultSet rs;
 			String siteID = null;
-			if (fields[GRID_REF] != null) siteID = getSiteID();
+			if (fields[GRID_REF] != null)
+				siteID = getSiteID();
 			if (featureID == null) {
-				if (!folder.isAllowedCreateLocalities()) throw new InvalidCredentialsException();
+				if (!folder.isAllowedCreateLocalities())
+					throw new InvalidCredentialsException();
 				//create new AUDIT, FEATURE and SAMPLE records
 				rs = conn.executeQuery("SELECT Audit_Seq.NEXTVAL FROM DUAL");
 				rs.next();
 				String auditID = rs.getString(1);
-				conn.executeUpdate("INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Comments, Working_Folder_ID) VALUES (" + auditID + ", 'working', " + user.getPersonId() + ", SYSDATE, " + JspUtils.sqlEscape(FREDUtils.noNulls(recoll) + FREDUtils.noNulls(fields[WORKING_COMMENTS])) + ", " + folder.getFolderID() + ")");
+				conn.executeUpdate(
+					"INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Comments, Working_Folder_ID) VALUES ("
+						+ auditID
+						+ ", 'working', "
+						+ user.getPersonId()
+						+ ", SYSDATE, "
+						+ JspUtils.sqlEscape(
+							FREDUtils.noNulls(recoll)
+								+ FREDUtils.noNulls(fields[WORKING_COMMENTS]))
+						+ ", "
+						+ folder.getFolderID()
+						+ ")");
 				rs = conn.executeQuery("SELECT Feature_Seq.NEXTVAL FROM DUAL");
 				rs.next();
 				featureID = new Integer(rs.getInt(1));
-				conn.executeUpdate("INSERT INTO Feature (Feature_ID, Site_ID, Audit_ID, Feature_Type, Locality, Feature_Name, Reg_Area_ID) VALUES (" + featureID + ", " + JspUtils.sqlEscape(siteID) + ", " + auditID + ", " + JspUtils.sqlEscape(featureType) + ", " + JspUtils.sqlEscape(fields[LOCALITY_DESC]) + ", " + JspUtils.sqlEscape(fields[FEATURE_NAME]) + ", " + JspUtils.sqlEscape(fields[REGISTRATION_AREA]) + ")");
-				conn.executeUpdate("INSERT INTO Sample (Feature_ID) VALUES (" + featureID + ")");
+				conn.executeUpdate(
+					"INSERT INTO Feature (Feature_ID, Site_ID, Audit_ID, Feature_Type, Locality, Feature_Name, Reg_Area_ID) VALUES ("
+						+ featureID
+						+ ", "
+						+ JspUtils.sqlEscape(siteID)
+						+ ", "
+						+ auditID
+						+ ", "
+						+ JspUtils.sqlEscape(featureType)
+						+ ", "
+						+ JspUtils.sqlEscape(fields[LOCALITY_DESC])
+						+ ", "
+						+ JspUtils.sqlEscape(fields[FEATURE_NAME])
+						+ ", "
+						+ JspUtils.sqlEscape(fields[REGISTRATION_AREA])
+						+ ")");
+				conn.executeUpdate(
+					"INSERT INTO Sample (Feature_ID) VALUES ("
+						+ featureID
+						+ ")");
 			} else { // edit
-				if (!folder.isAllowedEditLocalities()) throw new InvalidCredentialsException();
+				if (!folder.isAllowedEditLocalities())
+					throw new InvalidCredentialsException();
 				//Update AUDIT
-				rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + featureID);
+				rs =
+					conn.executeQuery(
+						"SELECT Audit_ID FROM Feature WHERE Feature_ID = "
+							+ featureID);
 				rs.next();
 				String auditID = rs.getString(1);
-				conn.executeUpdate("UPDATE Audit_Table SET Modified_By_ID = " + user.getPersonId() + ", Modified_Date = SYSDATE, Working_Comments = " + JspUtils.sqlEscape(FREDUtils.noNulls(recoll) + FREDUtils.noNulls(fields[WORKING_COMMENTS])) + " WHERE Audit_ID = " + auditID);
-				conn.executeUpdate("UPDATE Feature SET Site_ID = " + JspUtils.sqlEscape(siteID) + ", Locality = " + JspUtils.sqlEscape(fields[LOCALITY_DESC]) + ", Feature_Name = " + JspUtils.sqlEscape(fields[FEATURE_NAME]) + ", Reg_Area_ID = " + JspUtils.sqlEscape(fields[REGISTRATION_AREA]) + " WHERE Feature_ID = " + featureID);
+				conn.executeUpdate(
+					"UPDATE Audit_Table SET Modified_By_ID = "
+						+ user.getPersonId()
+						+ ", Modified_Date = SYSDATE, Working_Comments = "
+						+ JspUtils.sqlEscape(
+							FREDUtils.noNulls(recoll)
+								+ FREDUtils.noNulls(fields[WORKING_COMMENTS]))
+						+ " WHERE Audit_ID = "
+						+ auditID);
+				conn.executeUpdate(
+					"UPDATE Feature SET Site_ID = "
+						+ JspUtils.sqlEscape(siteID)
+						+ ", Locality = "
+						+ JspUtils.sqlEscape(fields[LOCALITY_DESC])
+						+ ", Feature_Name = "
+						+ JspUtils.sqlEscape(fields[FEATURE_NAME])
+						+ ", Reg_Area_ID = "
+						+ JspUtils.sqlEscape(fields[REGISTRATION_AREA])
+						+ " WHERE Feature_ID = "
+						+ featureID);
 			}
 			conn.releaseStatement();
 		}
@@ -306,71 +488,133 @@ public abstract class Locality {
 		return featureID.intValue();
 	}
 
-	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
-		if (!folder.isAllowedSubmitLocalities()) throw new InvalidCredentialsException();
-		if (featureType == null || fields[GRID_REF] == null || fields[REGISTRATION_AREA] == null) throw new DataInputException("Mandatory Fields", "Not all completed");
+	public int submit()
+		throws
+			SQLException,
+			IOException,
+			InvalidCredentialsException,
+			DataInputException {
+		if (!folder.isAllowedSubmitLocalities())
+			throw new InvalidCredentialsException();
+		if (featureType == null
+			|| fields[GRID_REF] == null
+			|| fields[REGISTRATION_AREA] == null)
+			throw new DataInputException(
+				"Mandatory Fields",
+				"Not all completed");
 		save();
 		//change status, check MF & add saved record to folder
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		ResultSet rs = conn.executeQuery("SELECT Code FROM Lookup WHERE FieldName = 'RegArea' AND Lookup_ID = " + fields[REGISTRATION_AREA]);
+		ResultSet rs =
+			conn.executeQuery(
+				"SELECT Code FROM Lookup WHERE FieldName = 'RegArea' AND Lookup_ID = "
+					+ fields[REGISTRATION_AREA]);
 		rs.next();
 		String regCode = rs.getString(1);
-		rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + featureID);
+		rs =
+			conn.executeQuery(
+				"SELECT Audit_ID FROM Feature WHERE Feature_ID = " + featureID);
 		rs.next();
 		String auditID = rs.getString(1);
-		rs = conn.executeQuery("SELECT Which_Masterfile(" + JspUtils.sqlEscape(regCode) + ", " + latitude + ", " + longitude + ") FROM DUAL");
+		rs =
+			conn.executeQuery(
+				"SELECT Which_Masterfile("
+					+ JspUtils.sqlEscape(regCode)
+					+ ", "
+					+ latitude
+					+ ", "
+					+ longitude
+					+ ") FROM DUAL");
 		rs.next();
 		String mfID = rs.getString(1);
-		conn.executeUpdate("UPDATE Feature SET Masterfile_ID = " + mfID + " WHERE Feature_ID = " + featureID);
-		conn.executeUpdate("UPDATE Audit_Table SET Status = 'waiting', Submitted_By_ID = " + user.getPersonId() + ", Submitted_Date = SYSDATE, Working_Folder_ID = NULL, Working_Comments = NULL WHERE Audit_ID = " + auditID);
-		rs = conn.executeQuery("SELECT * FROM Folder_Content_View WHERE Feature_ID = " + featureID + " AND Folder_ID = " + folder.getFolderID());
+		conn.executeUpdate(
+			"UPDATE Feature SET Masterfile_ID = "
+				+ mfID
+				+ " WHERE Feature_ID = "
+				+ featureID);
+		conn.executeUpdate(
+			"UPDATE Audit_Table SET Status = 'waiting', Submitted_By_ID = "
+				+ user.getPersonId()
+				+ ", Submitted_Date = SYSDATE, Working_Folder_ID = NULL, Working_Comments = NULL WHERE Audit_ID = "
+				+ auditID);
+		rs =
+			conn.executeQuery(
+				"SELECT * FROM Folder_Content_View WHERE Feature_ID = "
+					+ featureID
+					+ " AND Folder_ID = "
+					+ folder.getFolderID());
 		if (!rs.next()) {
-			conn.executeUpdate("INSERT INTO Folder_Content (Folder_ID, Feature_ID) VALUES (" + folder.getFolderID() + ", " + featureID + ")");
+			conn.executeUpdate(
+				"INSERT INTO Folder_Content (Folder_ID, Feature_ID) VALUES ("
+					+ folder.getFolderID()
+					+ ", "
+					+ featureID
+					+ ")");
 		}
 		conn.releaseStatement();
 		return featureID.intValue();
 	}
 
-	public void revoke() throws SQLException, IOException, InvalidCredentialsException {
-		if (!folder.isAllowedSubmitLocalities()) throw new InvalidCredentialsException();
+	public void revoke()
+		throws SQLException, IOException, InvalidCredentialsException {
+		if (!folder.isAllowedSubmitLocalities())
+			throw new InvalidCredentialsException();
 		save();
 		//change status, check MF & add saved record to folder
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		ResultSet rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + featureID);
+		ResultSet rs =
+			conn.executeQuery(
+				"SELECT Audit_ID FROM Feature WHERE Feature_ID = " + featureID);
 		rs.next();
 		String auditID = rs.getString(1);
-		conn.executeUpdate("UPDATE Audit_Table SET Status = 'revoked', Working_Folder_ID = " + folder.getFolderID() + ", Working_Comments = NULL WHERE Audit_ID = " + auditID);
+		conn.executeUpdate(
+			"UPDATE Audit_Table SET Status = 'revoked', Working_Folder_ID = "
+				+ folder.getFolderID()
+				+ ", Working_Comments = NULL WHERE Audit_ID = "
+				+ auditID);
 		conn.releaseStatement();
 	}
 
-	public void delete() throws IOException, SQLException, InvalidCredentialsException {
-		if (!folder.isAllowedDeleteLocalities()) throw new InvalidCredentialsException();
+	public void delete()
+		throws IOException, SQLException, InvalidCredentialsException {
+		if (!folder.isAllowedDeleteLocalities())
+			throw new InvalidCredentialsException();
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		StringBuffer auditID = new StringBuffer();
-		ResultSet rs = conn.executeQuery("SELECT Audit_ID FROM Record WHERE Sample_ID IN (SELECT Sample_ID FROM Sample WHERE Feature_ID = " + featureID + ")");
+		ResultSet rs =
+			conn.executeQuery(
+				"SELECT Audit_ID FROM Record WHERE Sample_ID IN (SELECT Sample_ID FROM Sample WHERE Feature_ID = "
+					+ featureID
+					+ ")");
 		while (rs.next()) {
 			auditID.append(rs.getString(1) + ",");
 		}
-		rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + featureID);
+		rs =
+			conn.executeQuery(
+				"SELECT Audit_ID FROM Feature WHERE Feature_ID = " + featureID);
 		rs.next();
 		auditID.append(rs.getString(1));
-		conn.executeUpdate("DELETE FROM Record WHERE Sample_ID IN (SELECT Sample_ID FROM Sample WHERE Feature_ID = " + featureID + ")");
-		conn.executeUpdate("DELETE FROM Feature WHERE Feature_ID = " + featureID);
-		conn.executeUpdate("DELETE FROM Audit_Table WHERE Audit_ID IN (" + auditID + ")");
+		conn.executeUpdate(
+			"DELETE FROM Record WHERE Sample_ID IN (SELECT Sample_ID FROM Sample WHERE Feature_ID = "
+				+ featureID
+				+ ")");
+		conn.executeUpdate(
+			"DELETE FROM Feature WHERE Feature_ID = " + featureID);
+		conn.executeUpdate(
+			"DELETE FROM Audit_Table WHERE Audit_ID IN (" + auditID + ")");
 		conn.releaseStatement();
 	}
 
-
 	protected String reverseParseDate(Date date, String dateRnd) {
-		SimpleDateFormat dateFormatter = new SimpleDateFormat ("d/M/yyyy");
-		SimpleDateFormat monthDateFormatter = new SimpleDateFormat ("M/yyyy");
-		SimpleDateFormat yearDateFormatter = new SimpleDateFormat ("yyyy");
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("d/M/yyyy");
+		SimpleDateFormat monthDateFormatter = new SimpleDateFormat("M/yyyy");
+		SimpleDateFormat yearDateFormatter = new SimpleDateFormat("yyyy");
 		if (date != null) {
 			if (dateRnd == null) {
 				return dateFormatter.format(date);
 			} else if (dateRnd.equals("Month")) {
 				return monthDateFormatter.format(date);
-			} else if (dateRnd.equals("Year")){
+			} else if (dateRnd.equals("Year")) {
 				return yearDateFormatter.format(date);
 			} else {
 				return null;
@@ -383,7 +627,14 @@ public abstract class Locality {
 	private String getSiteID() throws IOException, SQLException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		String siteID;
-		ResultSet rs = conn.executeQuery("SELECT SC.Site_Check(" + latitude	+ ", " + longitude + ", " + JspUtils.sqlEscape(fields[METHOD])
+		ResultSet rs =
+			conn.executeQuery(
+				"SELECT SC.Site_Check("
+					+ latitude
+					+ ", "
+					+ longitude
+					+ ", "
+					+ JspUtils.sqlEscape(fields[METHOD])
 					+ ", "
 					+ JspUtils.sqlEscape(fields[ACCURACY])
 					+ ") FROM DUAL");

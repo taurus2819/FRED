@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.dataentry;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.sql.SQLException;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
@@ -18,6 +19,13 @@ public class OutcropLocality extends Locality {
 	public OutcropLocality(int id, User user, PageState state) throws IOException,	SQLException, DataInputException, InvalidCredentialsException {
 		super(id, user, state);
 		if (!featureType.equals("Outcrop")) throw new DataInputException("Feature Type", "Invalid");
+	}
+
+	public void makeDataEntryHTML(Writer out) throws IOException, SQLException {
+		out.write("<table border='0' cellspacing='0' cellpadding='2'>\n");
+		out.write("<tr><td class='heading' colspan='2'>Field Number</td><td><input type='text' name='FeatName' value='" + FREDUtils.noNulls(getField(Locality.FIELD_NUMBER)) + "'></td></tr>\n");
+		super.makeDataEntryHTML(out);
+		out.write("</table>\n");
 	}
 
 	public int save() throws SQLException, IOException, InvalidCredentialsException {

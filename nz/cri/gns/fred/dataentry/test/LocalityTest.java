@@ -7,6 +7,7 @@
 package nz.cri.gns.fred.dataentry.test;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.rmi.NotBoundException;
 import java.sql.SQLException;
 
@@ -57,11 +58,12 @@ public class LocalityTest extends TestCase {
 				state.getContext());
 		User user = new User("pseudo_ben", "santor32", ipConn);
 		Locality loc = LocalityFactory.getLocality(1282, user, state);
-		loc.setField(Locality.GRID_REF, "TruncNZMG:D39*1300*2100");
+		//loc.setField(Locality.GRID_REF, "TruncNZMG:D39*1300*2100");
 		for (int i = 0; i < loc.getFieldCount(); i++) {
 			System.out.println(i + ": " + loc.getField(i));
 		}
 		System.out.println(loc.save());
+		loc.makeDataEntryHTML(new PrintWriter(System.out));
 		//Locality loc2 = LocalityFactory.copyLocality(661, 1282, user, state);
 		//for (int i = 0; i < loc2.getFieldCount(); i++) {
 		//	System.out.println(i + ": " + loc2.getField(i));
