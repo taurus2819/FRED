@@ -24,7 +24,7 @@
 	Statement statement = connection.statement;
 	ResultSet rs;
 	User user = getUser(session);
-	String featID = "0", loadFeatID, foldID, fieldNum = "", drillName = "", recoll = "", workComm = "", coord = "TruncNZMG:", locMethod = null, accuracy = "", loc = "", regAreaID = "400";
+	String formType, featID = "0", loadFeatID, foldID, fieldNum = "", drillName = "", recoll = "", workComm = "", coord = "TruncNZMG:", locMethod = null, accuracy = "", loc = "", regAreaID = "400";
 	int userID = user.getPersonId(), userRights = 0, execUp;
 	java.util.Date adoDate = new java.util.Date();
 	ComboDescriptor cd;
@@ -130,7 +130,8 @@ function parseCoord(form, coord) {
 </script>
 
 <%
-	if (request.getParameter("FoldID") != null) {
+	if (request.getParameter("Type") != null && request.getParameter("FoldID") != null) {
+		formType = request.getParameter("Type");
 		foldID = request.getParameter("FoldID");
 		if (request.getParameter("FeatID") != null) { featID = request.getParameter("FeatID"); }
 
@@ -188,6 +189,7 @@ function parseCoord(form, coord) {
 		if (((userRights & 4) != 0 && featID.equals("0")) || ((userRights & 2) !=0 && featID != null)) {
 
 			out.println("<form name='form1' method='post' action='feat_data_proc.jsp'>");
+			out.println("<input type='hidden' name='Type' valye='" + formType + "'>");
 			out.println("<input type='hidden' name='FoldID' value='" + foldID + "'>");
 			out.println("<input type='hidden' name='FeatID' value='" + featID + "'>");
 			out.println("<input type='hidden' name='SaveType' value=''>");
@@ -220,12 +222,15 @@ function parseCoord(form, coord) {
 			out.println("<tr><td>");
 
 			out.println("<table border='0' cellspacing='0' cellpadding='2'>");
-%>
-			<tr><td class='heading'>Name</td><td class='smallheading'>Field Number</td><td><input type='text' name='FieldNum' value='<%=fieldNum%>'></td></tr>
-			<tr><td></td><td></td><td class='smallheading' colspan='2'>OR</td></tr>
-			<tr><td></td><td class='smallheading'>Drillhole Name</td><td><input type='text' name='DrillName' value='<%=drillName%>'></td></tr>
-			<tr><td class='heading'>Registration Area</td><td></td><td>
-<%			cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
+			if (formType.equals("Outcrop")) {
+				out.println("<tr><td class='heading'>Field Number</td><td></td><td><input type='text' name='FieldNum' value='" + fieldNum + "'></td></tr>");
+			} else if (formType.equals("Drillhole")) {
+				out.println("<tr><td class='heading'>Drillhole Name</td><td></td><td><input type='text' name='DrillName' value='" + drillName + "'></td></tr>");
+			} else if (formType.equals("VertSect")) {
+				out.println("<tr><td class='heading'>Vertical Section Name</td><td></td><td><input type='text' name='DrillName' value='" + drillName + "'></td></tr>");			
+			}
+			out.println("<tr><td class='heading'>Registration Area</td><td></td><td>");
+			cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
 			cd.name = "RegAreaID";
 			cd.selected = regAreaID;
 			cd.join = "FieldName = 'RegArea'";
