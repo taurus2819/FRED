@@ -21,159 +21,165 @@
 	drawTop(out, et, request, response);
 
 	if (featID != null) {
-
-		Feature feature = new Feature(Integer.parseInt(featID), user, state);
-		if (feature.isUserAuthenticated() || feature.isApprovedLocality()) {
-			Audit audit = Audit.getAudit(feature.getAsInt(Feature.AUDIT_ID), state);
-			featType = feature.getAsString(Feature.FEATURE_TYPE);
+		try {
+			Feature feature = new Feature(Integer.parseInt(featID), user, state);
+			if (feature.isUserAuthenticated() || feature.isApprovedLocality()) {
+				Audit audit = Audit.getAudit(feature.getAsInt(Feature.AUDIT_ID), state);
+				featType = feature.getAsString(Feature.FEATURE_TYPE);
+		
+				if (!featType.equals("Outcrop")) {
+					if (feature.get(Feature.SAMPLES) != null) {
+						int minSampID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
+						Sample sample = new Sample(minSampID, user, state);			
 	
-			if (!featType.equals("Outcrop")) {
-				if (feature.get(Feature.SAMPLES) != null) {
-					int minSampID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
-					Sample sample = new Sample(minSampID, user, state);			
-
-					out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
-					out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
-					out.println("<tr><td colspan='2' align='center' class='bigheading' >" + feature.getAsString(Feature.FEATURE_NAME) + "</td></tr>");
-					out.println("<tr><td colspan='2' align='center'>" + featType + "</td></tr>");
-					if (feature.get(Feature.MASTERFILE_NAME) != null) {
-						out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + feature.getAsString(Feature.MASTERFILE_NAME) + "</td></tr>");
-					}
-					if (!audit.getAsString(Audit.STATUS).equals("approved")) {
-						out.println("<tr><td class='smallheading'>Status:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + audit.getAsString(Audit.STATUS) + "</td></tr>");
-					}
-					if (audit.get(Audit.CREATED_BY) != null || audit.get(Audit.CREATED_DATE) != null) {
-						out.println("<tr><td class='smallheading'>Created:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-						if (audit.get(Audit.CREATED_BY) != null) { out.print(audit.getAsString(Audit.CREATED_BY) + "<br />"); }
-						if (audit.get(Audit.CREATED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.CREATED_DATE))); }
-						out.println("</td></tr>");
-					}
-					if (audit.get(Audit.MODIFIED_BY) != null || audit.get(Audit.MODIFIED_DATE) != null) {
-						out.println("<tr><td class='smallheading'>Edited:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-						if (audit.get(Audit.MODIFIED_BY) != null) { out.print(audit.getAsString(Audit.MODIFIED_BY) + "<br />"); }
-						if (audit.get(Audit.MODIFIED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.MODIFIED_DATE))); }
-						out.println("</td></tr>");
-					}
-					if (audit.get(Audit.SUBMITTED_BY) != null || audit.get(Audit.SUBMITTED_DATE) != null) {
-						out.println("<tr><td class='smallheading'>Submitted:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-						if (audit.get(Audit.SUBMITTED_BY) != null) { out.print(audit.getAsString(Audit.SUBMITTED_BY) + "<br />"); }
-						if (audit.get(Audit.SUBMITTED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.SUBMITTED_DATE))); }
-						out.println("</td></tr>");
-					}
-					if (audit.get(Audit.APPROVED_BY) != null || audit.get(Audit.APPROVED_DATE) != null) {
-						out.println("<tr><td class='smallheading'>Approved:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-						if (audit.get(Audit.APPROVED_BY) != null) { out.print(audit.getAsString(Audit.APPROVED_BY) + "<br />"); }
-						if (audit.get(Audit.APPROVED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.APPROVED_DATE))); }
-						out.println("</td></tr>");
-					}
-					out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
-					out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + minSampID + "&FormType=Short' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;<a href='print_front.jsp?ID=" + minSampID + "&FormType=Short' class='heading' target='print'>Print Front</a></td></tr>");
-					out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
-					out.println("</table>");
+						out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
+						out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
+						out.println("<tr><td colspan='2' align='center' class='bigheading' >" + feature.getAsString(Feature.FEATURE_NAME) + "</td></tr>");
+						out.println("<tr><td colspan='2' align='center'>" + featType + "</td></tr>");
+						if (feature.get(Feature.MASTERFILE_NAME) != null) {
+							out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + feature.getAsString(Feature.MASTERFILE_NAME) + "</td></tr>");
+						}
+						if (!audit.getAsString(Audit.STATUS).equals("approved")) {
+							out.println("<tr><td class='smallheading'>Status:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + audit.getAsString(Audit.STATUS) + "</td></tr>");
+						}
+						if (audit.get(Audit.CREATED_BY) != null || audit.get(Audit.CREATED_DATE) != null) {
+							out.println("<tr><td class='smallheading'>Created:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
+							if (audit.get(Audit.CREATED_BY) != null) { out.print(audit.getAsString(Audit.CREATED_BY) + "<br />"); }
+							if (audit.get(Audit.CREATED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.CREATED_DATE))); }
+							out.println("</td></tr>");
+						}
+						if (audit.get(Audit.MODIFIED_BY) != null || audit.get(Audit.MODIFIED_DATE) != null) {
+							out.println("<tr><td class='smallheading'>Edited:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
+							if (audit.get(Audit.MODIFIED_BY) != null) { out.print(audit.getAsString(Audit.MODIFIED_BY) + "<br />"); }
+							if (audit.get(Audit.MODIFIED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.MODIFIED_DATE))); }
+							out.println("</td></tr>");
+						}
+						if (audit.get(Audit.SUBMITTED_BY) != null || audit.get(Audit.SUBMITTED_DATE) != null) {
+							out.println("<tr><td class='smallheading'>Submitted:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
+							if (audit.get(Audit.SUBMITTED_BY) != null) { out.print(audit.getAsString(Audit.SUBMITTED_BY) + "<br />"); }
+							if (audit.get(Audit.SUBMITTED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.SUBMITTED_DATE))); }
+							out.println("</td></tr>");
+						}
+						if (audit.get(Audit.APPROVED_BY) != null || audit.get(Audit.APPROVED_DATE) != null) {
+							out.println("<tr><td class='smallheading'>Approved:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
+							if (audit.get(Audit.APPROVED_BY) != null) { out.print(audit.getAsString(Audit.APPROVED_BY) + "<br />"); }
+							if (audit.get(Audit.APPROVED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.APPROVED_DATE))); }
+							out.println("</td></tr>");
+						}
+						out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
+						out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + minSampID + "&FormType=Short' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;<a href='print_front.jsp?ID=" + minSampID + "&FormType=Short' class='heading' target='print'>Print Front</a></td></tr>");
+						out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
+						out.println("</table>");
+		
+						drawEndNavigation(out);
+		
+						out.println("<table style='margin-left:20px; width:550px;' border='0'>");
+						out.println("<tr><td>");
 	
+						out.println("<p><table border='0' cellspacing='0' cellpadding='2'>");
+						if (sample.get(Sample.YARD_FR_ID) != null) { out.println("<tr><td class='heading' width='135'>Yard FR Number&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.YARD_FR_NUMBER) + "</td></tr>"); }
+						if (sample.get(Sample.LATITUDE) != null) {
+							out.print("<tr><td class='heading'>Grid Ref&nbsp;&nbsp;</td><td>");
+							if (sample.get(Sample.NZMG_SHEET) != null) {
+								out.print(sample.getAsString(Sample.NZMG_SHEET) + ": " + nzmg.format(sample.getAsDouble(Sample.NZMG_EAST)) + ", " + nzmg.format(sample.getAsDouble(Sample.NZMG_NORTH)));
+								out.print("&nbsp;&nbsp;|&nbsp;&nbsp;");
+							}
+							if (sample.getAsDouble(Sample.LATITUDE) > 0) {
+								out.print(latlong.format(sample.getAsDouble(Sample.LATITUDE)) + "&#176N");
+							} else {
+								out.print(latlong.format(Math.abs(sample.getAsDouble(Sample.LATITUDE))) + "&#176S");
+							}
+							out.print("/");
+							if (sample.getAsDouble(Sample.LONGITUDE) > 0) {
+								out.print(latlong.format(sample.getAsDouble(Sample.LONGITUDE)) + "&#176E");
+							} else {
+								out.print(latlong.format(Math.abs(sample.getAsDouble(Sample.LONGITUDE))) + "&#176W");
+							}
+							if (sample.get(Sample.ACCURACY) != null) { out.print(" (&#177 " + sample.getAsInt(Sample.ACCURACY) + "m)"); }
+							out.println("</td></tr>");
+						}
+						if (sample.get(Sample.METHOD) != null) { out.println("<tr><td class='heading'>Method&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.METHOD) + "</td></tr>"); }
+						if (sample.isUserAuthenticated() && sample.get(Sample.LOCALITY) != null) { out.println("<tr><td class='heading'>Locality&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.LOCALITY) + "</td></tr>"); }
+						if (sample.isUserAuthenticated() && sample.get(Sample.PERSON) != null) {
+							out.print("<tr><td class='heading'>");
+							if (featType.equals("Drillhole")) {
+								out.print("Operating Company");
+							} else {
+								out.print("Section Collector");
+							}
+							out.println("&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.PERSON) + "</td></tr>");
+						}
+						if (sample.isUserAuthenticated() && sample.get(Sample.START_DATE) != null) {
+							out.print("<tr><td class='heading'>");
+							if (featType.equals("Drillhole")) {
+								out.print("Spud Date");
+							} else {
+								out.print("Sampling Start Date");
+							}
+							out.println("&nbsp;&nbsp;</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.START_DATE), sample.getAsString(Sample.START_DATE_ROUNDING)) + "</td></tr>");
+						}
+						if (sample.isUserAuthenticated() && sample.get(Sample.FINISH_DATE) != null) {
+							out.print("<tr><td class='heading'>Completion Date&nbsp;&nbsp;</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.FINISH_DATE), sample.getAsString(Sample.FINISH_DATE_ROUNDING)) + "</td></tr>");
+						}
+						if (featType.equals("Drillhole") && sample.isUserAuthenticated() && sample.get(Sample.DRILLHOLE_LICENCE_NAME) != null) { out.println("<tr><td class='heading'>Licence Area&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.DRILLHOLE_LICENCE_NAME) + "</td></tr>"); }
+						if (sample.isUserAuthenticated() && sample.get(Sample.DATUM_TYPE) != null) { out.println("<tr><td class='heading'>Datum Type&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.DATUM_TYPE) + "</td></tr>"); }
+						if (sample.isUserAuthenticated() && sample.get(Sample.DATUM_ELEVATION) != null) { out.println("<tr><td class='heading'>Datum Elevation&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.DATUM_ELEVATION) + " m asl</td></tr>"); }
+						if (sample.isUserAuthenticated() && sample.get(Sample.START_DEPTH) != null) {
+							out.print("<tr><td class='heading'>");
+							if (featType.equals("Drillhole")) {
+								out.print("Kick-off Depth");
+							} else {
+								out.print("Top Horizon");
+							}
+							out.println("&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.START_DEPTH) + " m</td></tr>");
+						}
+						if (sample.isUserAuthenticated() && sample.get(Sample.FINISH_DEPTH) != null) {
+							out.print("<tr><td class='heading'>");
+							if (featType.equals("Drillhole")) {
+								out.print("Termination Depth");
+							} else {
+								out.print("Base Horizon");
+							}
+							out.println("&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.FINISH_DEPTH) + " m</td></tr>");
+						}
+						out.println("</table></p>");
+	
+						if (feature.get(Feature.PETWELL_LINK) != null)
+							out.println("<p>Click <a href='" + feature.getAsString(Feature.PETWELL_LINK) + "' class='boldlink' target='petwell'>here</a> to link to the GNS Petroleum Wells database</p>");
+	
+						out.println("<p><table border='0' cellspacing='0' cellpadding='2'>");
+						if (featType.equals("Drillhole")) {
+							out.println("<tr class='heading'><td>Locality Name&nbsp;&nbsp;</td><td>Sample Depth</td></tr>");
+						} else {
+							out.println("<tr class='heading'><td>Locality Name&nbsp;&nbsp;</td><td>Section Height</td></tr>");
+						}
+						for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
+							Sample sampleList = new Sample(((Integer) i.next()).intValue(), user, state);
+							out.println("<tr><td><a href='detail.jsp?ID=" + sampleList.getSampleID() + "'>" + sampleList.getAsString(Sample.SAMPLE_NAME) + "</a>&nbsp;&nbsp;</td><td><a href='detail.jsp?ID=" + sampleList.getSampleID() + "'>" + sampleList.getAsString(Sample.DRILLHOLE_DEPTH) + "</a></td></tr>");
+						}
+						out.println("</table></p>");
+					}
+					if (user ==  null)
+						out.println("<p>More data may be available for this locality for <a href='login.jsp?loginpage=" + URLEncoder.encode("/fred/drillhole_detail.jsp") + "' class='boldlink'>logged</a> in users</p>");
+				}
+	
+				else { // outcrop
 					drawEndNavigation(out);
-	
 					out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 					out.println("<tr><td>");
-
-					out.println("<p><table border='0' cellspacing='0' cellpadding='2'>");
-					if (sample.get(Sample.YARD_FR_ID) != null) { out.println("<tr><td class='heading' width='135'>Yard FR Number&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.YARD_FR_NUMBER) + "</td></tr>"); }
-					if (sample.get(Sample.LATITUDE) != null) {
-						out.print("<tr><td class='heading'>Grid Ref&nbsp;&nbsp;</td><td>");
-						if (sample.get(Sample.NZMG_SHEET) != null) {
-							out.print(sample.getAsString(Sample.NZMG_SHEET) + ": " + nzmg.format(sample.getAsDouble(Sample.NZMG_EAST)) + ", " + nzmg.format(sample.getAsDouble(Sample.NZMG_NORTH)));
-							out.print("&nbsp;&nbsp;|&nbsp;&nbsp;");
-						}
-						if (sample.getAsDouble(Sample.LATITUDE) > 0) {
-							out.print(latlong.format(sample.getAsDouble(Sample.LATITUDE)) + "&#176N");
-						} else {
-							out.print(latlong.format(Math.abs(sample.getAsDouble(Sample.LATITUDE))) + "&#176S");
-						}
-						out.print("/");
-						if (sample.getAsDouble(Sample.LONGITUDE) > 0) {
-							out.print(latlong.format(sample.getAsDouble(Sample.LONGITUDE)) + "&#176E");
-						} else {
-							out.print(latlong.format(Math.abs(sample.getAsDouble(Sample.LONGITUDE))) + "&#176W");
-						}
-						if (sample.get(Sample.ACCURACY) != null) { out.print(" (&#177 " + sample.getAsInt(Sample.ACCURACY) + "m)"); }
-						out.println("</td></tr>");
-					}
-					if (sample.get(Sample.METHOD) != null) { out.println("<tr><td class='heading'>Method&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.METHOD) + "</td></tr>"); }
-					if (sample.isUserAuthenticated() && sample.get(Sample.LOCALITY) != null) { out.println("<tr><td class='heading'>Locality&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.LOCALITY) + "</td></tr>"); }
-					if (sample.isUserAuthenticated() && sample.get(Sample.PERSON) != null) {
-						out.print("<tr><td class='heading'>");
-						if (featType.equals("Drillhole")) {
-							out.print("Operating Company");
-						} else {
-							out.print("Section Collector");
-						}
-						out.println("&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.PERSON) + "</td></tr>");
-					}
-					if (sample.isUserAuthenticated() && sample.get(Sample.START_DATE) != null) {
-						out.print("<tr><td class='heading'>");
-						if (featType.equals("Drillhole")) {
-							out.print("Spud Date");
-						} else {
-							out.print("Sampling Start Date");
-						}
-						out.println("&nbsp;&nbsp;</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.START_DATE), sample.getAsString(Sample.START_DATE_ROUNDING)) + "</td></tr>");
-					}
-					if (sample.isUserAuthenticated() && sample.get(Sample.FINISH_DATE) != null) {
-						out.print("<tr><td class='heading'>Completion Date&nbsp;&nbsp;</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.FINISH_DATE), sample.getAsString(Sample.FINISH_DATE_ROUNDING)) + "</td></tr>");
-					}
-					if (featType.equals("Drillhole") && sample.isUserAuthenticated() && sample.get(Sample.DRILLHOLE_LICENCE_NAME) != null) { out.println("<tr><td class='heading'>Licence Area&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.DRILLHOLE_LICENCE_NAME) + "</td></tr>"); }
-					if (sample.isUserAuthenticated() && sample.get(Sample.DATUM_TYPE) != null) { out.println("<tr><td class='heading'>Datum Type&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.DATUM_TYPE) + "</td></tr>"); }
-					if (sample.isUserAuthenticated() && sample.get(Sample.DATUM_ELEVATION) != null) { out.println("<tr><td class='heading'>Datum Elevation&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.DATUM_ELEVATION) + " m asl</td></tr>"); }
-					if (sample.isUserAuthenticated() && sample.get(Sample.START_DEPTH) != null) {
-						out.print("<tr><td class='heading'>");
-						if (featType.equals("Drillhole")) {
-							out.print("Kick-off Depth");
-						} else {
-							out.print("Top Horizon");
-						}
-						out.println("&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.START_DEPTH) + " m</td></tr>");
-					}
-					if (sample.isUserAuthenticated() && sample.get(Sample.FINISH_DEPTH) != null) {
-						out.print("<tr><td class='heading'>");
-						if (featType.equals("Drillhole")) {
-							out.print("Termination Depth");
-						} else {
-							out.print("Base Horizon");
-						}
-						out.println("&nbsp;&nbsp;</td><td>" + sample.getAsString(Sample.FINISH_DEPTH) + " m</td></tr>");
-					}
-					out.println("</table></p>");
-
-					if (feature.get(Feature.PETWELL_LINK) != null)
-						out.println("<p>Click <a href='" + feature.getAsString(Feature.PETWELL_LINK) + "' class='boldlink' target='petwell'>here</a> to link to the GNS Petroleum Wells database</p>");
-
-					out.println("<p><table border='0' cellspacing='0' cellpadding='2'>");
-					if (featType.equals("Drillhole")) {
-						out.println("<tr class='heading'><td>Locality Name&nbsp;&nbsp;</td><td>Sample Depth</td></tr>");
-					} else {
-						out.println("<tr class='heading'><td>Locality Name&nbsp;&nbsp;</td><td>Section Height</td></tr>");
-					}
-					for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
-						Sample sampleList = new Sample(((Integer) i.next()).intValue(), user, state);
-						out.println("<tr><td><a href='detail.jsp?ID=" + sampleList.getSampleID() + "'>" + sampleList.getAsString(Sample.SAMPLE_NAME) + "</a>&nbsp;&nbsp;</td><td><a href='detail.jsp?ID=" + sampleList.getSampleID() + "'>" + sampleList.getAsString(Sample.DRILLHOLE_DEPTH) + "</a></td></tr>");
-					}
-					out.println("</table></p>");
+					out.println("<p>The Feature ID entered is not a drillhole or vertical section locality  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</p>");
 				}
-				if (user ==  null)
-					out.println("<p>More data may be available for this locality for <a href='login.jsp?loginpage=" + URLEncoder.encode("/fred/drillhole_detail.jsp") + "' class='boldlink'>logged</a> in users</p>");
-			}
-
-			else { // outcrop
+			}	else { // not allowed to view
 				drawEndNavigation(out);
 				out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 				out.println("<tr><td>");
-				out.println("<p>The Feature ID entered is not a drillhole or vertical section locality  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</p>");
+				out.println("<p>You have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</p>");
 			}
-		}	else { // not allowed to view
+		} catch (Exception e) {
 			drawEndNavigation(out);
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");
-			out.println("<p>You have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</p>");
+			out.println("<p>No matching locality found.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</p>");
 		}
 	} else { //ID not specified
 		drawEndNavigation(out);

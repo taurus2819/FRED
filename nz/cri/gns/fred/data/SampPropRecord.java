@@ -202,23 +202,24 @@ public class SampPropRecord extends Record {
 			Vector sentToVec = new Vector();
 			while (rs.next()) {
 				SentTo sentTo = new SentTo(rs.getString(1));
-				sentTo.setFossilGroupId(
+				sentTo.setFossilGroupID(
 					((rs.getString(2) != null)
 						? new Integer(rs.getInt(2))
 						: null));
 				sentTo.setFossilGroup(rs.getString(3));
 				sentTo.setDate(rs.getDate(4));
 				sentTo.setDateRounding(rs.getString(5));
-				sentTo.setPersonId(
+				sentTo.setPersonID(
 					((rs.getString(6) != null)
 						? new Integer(rs.getInt(6))
 						: null));
 				sentTo.setPerson(rs.getString(7));
-				sentTo.setLabId(
+				sentTo.setLabID(
 					((rs.getString(8) != null)
 						? new Integer(rs.getInt(8))
 						: null));
-				sentTo.setComments(rs.getString(9));
+				sentTo.setLab(rs.getString(9));
+				sentTo.setComments(rs.getString(10));
 				sentToVec.add(sentTo);
 			}
 			rs.close();

@@ -5,13 +5,13 @@ import java.util.Date;
 public class SentTo {
 
 	private String sentTo;
-	private Integer fossilGroupId;
+	private Integer fossilGroupID;
 	private String fossilGroup;
 	private Date date;
 	private String dateRounding;
-	private Integer personId;
+	private Integer personID;
 	private String person;
-	private Integer labId;
+	private Integer labID;
 	private String lab;
 	private String comments;
 
@@ -34,12 +34,12 @@ public class SentTo {
 		return sentTo;
 	}
 
-	public void setFossilGroupId(Integer fossilGroupId) {
-		this.fossilGroupId = fossilGroupId;
+	public void setFossilGroupID(Integer fossilGroupID) {
+		this.fossilGroupID = fossilGroupID;
 	}
 
-	public Integer getFossilGroupId() {
-		return fossilGroupId;
+	public Integer getFossilGroupID() {
+		return fossilGroupID;
 	}
 
 	public void setFossilGroup(String fossilGroup) {
@@ -66,12 +66,12 @@ public class SentTo {
 		return dateRounding;
 	}
 
-	public void setPersonId(Integer personId) {
-		this.personId = personId;
+	public void setPersonID(Integer personID) {
+		this.personID = personID;
 	}
 
-	public Integer getPersonId() {
-		return personId;
+	public Integer getPersonID() {
+		return personID;
 	}
 
 	public void setPerson(String person) {
@@ -82,12 +82,12 @@ public class SentTo {
 		return person;
 	}
 
-	public void setLabId(Integer labId) {
-		this.labId = labId;
+	public void setLabID(Integer labID) {
+		this.labID = labID;
 	}
 
-	public Integer getLabId() {
-		return labId;
+	public Integer getLabID() {
+		return labID;
 	}
 
 	public void setLab(String lab) {

@@ -25,41 +25,18 @@
 
 		DataEntryForm dataEntryForm = (DataEntryForm) session.getAttribute("dataEntryForm");
 
-		if (request.getParameter("Action") != null) {
-			Vector tL = (Vector) session.getAttribute("badTaxaList");
-			if (tL != null) {
-				for (Iterator i = tL.iterator(); i.hasNext();) {
-					Taxa t = (Taxa) i.next();
-					t.submitProvisional(user, state);
+		try {
+
+			if (request.getParameter("Action") != null) {
+				Vector tL = (Vector) session.getAttribute("badTaxaList");
+				if (tL != null) {
+					for (Iterator i = tL.iterator(); i.hasNext();) {
+						Taxa t = (Taxa) i.next();
+						t.submitProvisional(user, state);
+					}
 				}
 			}
-			try {
-				dataEntryForm.setField(DataEntryForm.TAXA_LIST, (String) session.getAttribute("taxa"));
-			} catch (DataInputException e) {
-				out.println("<p><span class='bigheading'>Data Error</span></p>");
-				out.println("<table border='0' cellspacing='0'>");
-				out.println("<tr><td class='heading'>Problem Field<img src='images/blank.gif' width='20' height='1' /></td><td>" + e.getField() + "</td></tr>");
-				out.println("<tr><td class='heading'>Error</td><td>"+ e.getMessage() + "</td></tr>");
-				out.println("</table>");
-			} catch (TaxonomicListException e) {
-				session.setAttribute("taxa", request.getParameter("Taxa"));
-				session.setAttribute("badTaxaList", e.getTaxaList());
-				session.setAttribute("dataEntryForm", dataEntryForm);
-				out.println("<p><span class='bigheading'>Data Error</span></p>");
-				out.println("<p>The following list contains taxonomic entries which do not match a value in the theasurus.  This could be either because you have entered incorrect syntax or because the entry is not in the theasurus.<br />Note submitted entries will be provisional until checked by database curators and you will not be able to submit this record until the entry has been approved.</p>");
-				out.println("<table border='0' cellspacing='2'>");
-				out.println("<tr><th>Group</th><th>Entered Name</th><th>Parsed Name</th><th>Author</th></tr>");
-				for (Iterator i = e.getTaxaList().iterator(); i.hasNext();) {
-					Taxa t = (Taxa) i.next();
-					out.println("<tr><td>" + t.getGroupName() + "&nbsp;&nbsp;</td><td>" + t.getTaxonomicName() + "&nbsp;&nbsp;</td><td>" + t.getCleanTaxonomicName() + "&nbsp;&nbsp;</td><td>" + t.getAuthor() + "</td></tr>");
-				}
-				out.println("</table>");
-				out.println("<p><a href='data_proc.jsp?Action=SubmitTaxa&SaveType=" + request.getParameter("SaveType") + "&Redirect=" + request.getParameter("Redirect") + "'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit Taxa' /></a>&nbsp;<a href='data_proc.jsp?Action=SubmitTaxa&SaveType=" + request.getParameter("SaveType") + "&Redirect=" + request.getParameter("Redirect") + "' class='boldlink'>Submit Taxa and " + request.getParameter("SaveType") + " record.</a></p>");
-				out.println("<p>Note: No data has been saved yet.  You must either choose to submit the above taxa or return to the data entry form, edit and re-save</p>");
-			}
-		}
-		else {
-			try {
+			else {
 				dataEntryForm.setField(DataEntryForm.FEATURE_NAME, request.getParameter("FeatName"));
 				dataEntryForm.setField(DataEntryForm.REGISTRATION_AREA, request.getParameter("RegAreaID"));
 				dataEntryForm.setField(DataEntryForm.WORKING_COMMENTS, request.getParameter("WorkComm"));
@@ -142,39 +119,36 @@
 				dataEntryForm.setField(DataEntryForm.LAB_NUMBER, request.getParameter("LabNum"));
 				dataEntryForm.setField(DataEntryForm.COLLECTION_COMMENTS, request.getParameter("CollComm"));
 				dataEntryForm.setField(DataEntryForm.TAXA_LIST, request.getParameter("Taxa"));
-
-				
-			} catch (DataInputException e) {
-				out.println("<p><span class='bigheading'>Data Error</span></p>");
-				out.println("<table border='0' cellspacing='0'>");
-				out.println("<tr><td class='heading'>Problem Field<img src='images/blank.gif' width='20' height='1' /></td><td>" + e.getField() + "</td></tr>");
-				out.println("<tr><td class='heading'>Error</td><td>"+ e.getMessage() + "</td></tr>");
-				out.println("</table>");
-			} catch (TaxonomicListException e) {
-				session.setAttribute("taxa", request.getParameter("Taxa"));
-				session.setAttribute("badTaxaList", e.getTaxaList());
-				session.setAttribute("dataEntryForm", dataEntryForm);
-				out.println("<p><span class='bigheading'>Data Error</span></p>");
-				out.println("<p>The following list contains taxonomic entries which do not match a value in the theasurus.  This could be either because you have entered incorrect syntax or because the entry is not in the theasurus.<br />Note submitted entries will be provisional until checked by database curators and you will not be able to submit this record until the entry has been approved.</p>");
-				out.println("<table border='0' cellspacing='2'>");
-				out.println("<tr><th>Group&nbsp;&nbsp;</th><th>Entered Name&nbsp;&nbsp;</th><th>Parsed Name&nbsp;&nbsp;</th><th>Author</th></tr>");
-				for (Iterator i = e.getTaxaList().iterator(); i.hasNext();) {
-					Taxa t = (Taxa) i.next();
-					out.println("<tr><td>" + t.getGroupName() + "&nbsp;&nbsp;</td><td>" + t.getTaxonomicName() + "&nbsp;&nbsp;</td><td>" + t.getCleanTaxonomicName() + "&nbsp;&nbsp;</td><td>" + t.getAuthor() + "</td></tr>");
-				}
-				out.println("</table>");
-				out.println("<p><a href='data_proc.jsp?Action=SubmitTaxa&SaveType=" + request.getParameter("SaveType") + "&Redirect=" + request.getParameter("Redirect") + "'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit Taxa' /></a>&nbsp;<a href='data_proc.jsp?Action=SubmitTaxa&SaveType=" + request.getParameter("SaveType") + "&Redirect=" + request.getParameter("Redirect") + "' class='boldlink'>Submit Taxa and " + request.getParameter("SaveType") + " record.</a></p>");
-				out.println("<p>Note: No data has been saved yet.  You must either choose to submit the above taxa or return to the data entry form, edit and re-save</p>");
 			}
-		}
 
-		try {
 			if (request.getParameter("SaveType").equals("Submit")) {
 				dataEntryForm.submit();
 			} else {
 				dataEntryForm.save();
 			}
 			response.sendRedirect(request.getParameter("Redirect"));
+			
+		} catch (DataInputException e) {
+			out.println("<p><span class='bigheading'>Data Error</span></p>");
+			out.println("<table border='0' cellspacing='0'>");
+			out.println("<tr><td class='heading'>Problem Field<img src='images/blank.gif' width='20' height='1' /></td><td>" + e.getField() + "</td></tr>");
+			out.println("<tr><td class='heading'>Error</td><td>"+ e.getMessage() + "</td></tr>");
+			out.println("</table>");
+		} catch (TaxonomicListException e) {
+			session.setAttribute("taxa", request.getParameter("Taxa"));
+			session.setAttribute("badTaxaList", e.getTaxaList());
+			session.setAttribute("dataEntryForm", dataEntryForm);
+			out.println("<p><span class='bigheading'>Data Error</span></p>");
+			out.println("<p>The following list contains taxonomic entries which do not match a value in the theasurus.  This could be either because you have entered incorrect syntax or because the entry is not in the theasurus.<br />Note submitted entries will be provisional until checked by database curators and you will not be able to submit this record until the entry has been approved.</p>");
+			out.println("<table border='0' cellspacing='2'>");
+			out.println("<tr><th>Group&nbsp;&nbsp;</th><th>Entered Name&nbsp;&nbsp;</th><th>Parsed Name&nbsp;&nbsp;</th><th>Author</th></tr>");
+			for (Iterator i = e.getTaxaList().iterator(); i.hasNext();) {
+				Taxa t = (Taxa) i.next();
+				out.println("<tr><td>" + t.getGroupName() + "&nbsp;&nbsp;</td><td>" + t.getTaxonomicName() + "&nbsp;&nbsp;</td><td>" + t.getCleanTaxonomicName() + "&nbsp;&nbsp;</td><td>" + t.getAuthor() + "</td></tr>");
+			}
+			out.println("</table>");
+			out.println("<p><a href='data_proc.jsp?Action=SubmitTaxa&SaveType=" + request.getParameter("SaveType") + "&Redirect=" + request.getParameter("Redirect") + "'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit Taxa' /></a>&nbsp;<a href='data_proc.jsp?Action=SubmitTaxa&SaveType=" + request.getParameter("SaveType") + "&Redirect=" + request.getParameter("Redirect") + "' class='boldlink'>Submit Taxa and " + request.getParameter("SaveType") + " record.</a></p>");
+			out.println("<p>Note: No data has been saved yet.  You must either choose to submit the above taxa or return to the data entry form, edit and re-save</p>");
 		} catch (InvalidCredentialsException e) {
 			out.println("<p><span class='bigheading'>Data Error</span></p>");
 			out.println("<p>You do not have sufficient rights to save this record</p>");

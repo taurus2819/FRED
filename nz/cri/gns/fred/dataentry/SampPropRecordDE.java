@@ -270,13 +270,9 @@ public class SampPropRecordDE extends RecordDE {
 					while (value.length() > 0) {
 						if (value.indexOf("\n") == -1)
 							value = value + "\n";
-						rs =
-							conn.executeQuery(
+						rs = conn.executeQuery(
 								"SELECT Person_ID FROM Person_View WHERE Name = "
-									+ JspUtils.sqlEscape(
-										value
-											.substring(0, value.indexOf("\n"))
-											.trim()));
+									+ JspUtils.sqlEscape(value.substring(0, value.indexOf("\n")).trim()));
 						try {
 							rs.next();
 							collectors.add(new Integer(rs.getInt(1)));
@@ -286,88 +282,55 @@ public class SampPropRecordDE extends RecordDE {
 								value.substring(0, value.indexOf("\n")).trim()
 									+ " not in database - add through builder");
 						}
-						value =
-							value.substring(
-								value.indexOf("\n") + 1,
-								value.length());
+						value =	value.substring(value.indexOf("\n") + 1, value.length());
 					}
 					break;
 				case SENT_TO :
 					sentTo = new Vector();
 					String stLine, stGroup, stPerson, stLab, stComments;
-					int stGroupID = 0, stPersonID = 0, stLabID = 0;
+					Integer stGroupID, stPersonID = null, stLabID = null;
 					SentTo sT;
 					while (value.length() > 0) {
 						if (value.indexOf("\n") == -1)
 							value = value + "\n";
 						stLine = value.substring(0, value.indexOf("\n")).trim();
 						stGroup = stLine.substring(0, stLine.indexOf("*"));
-						stPerson =
-							stLine.substring(
-								stGroup.length() + 1,
-								stLine.indexOf("*", stGroup.length() + 1));
-						stLab =
-							stLine.substring(
-								stGroup.length() + stPerson.length() + 2,
-								stLine.indexOf(
-									"*",
-									stGroup.length() + stPerson.length() + 2));
-						stComments =
-							stLine.substring(
-								stLine.lastIndexOf("*") + 1,
-								stLine.length());
-						value =
-							value
-								.substring(
-									value.indexOf("\n") + 1,
-									value.length())
-								.trim();
+						stPerson = stLine.substring(stGroup.length() + 1, stLine.indexOf("*", stGroup.length() + 1));
+						stLab =	stLine.substring(stGroup.length() + stPerson.length() + 2, stLine.indexOf("*", stGroup.length() + stPerson.length() + 2));
+						stComments = stLine.substring(stLine.lastIndexOf("*") + 1, stLine.length());
 						//check againt lookup values
-						rs =
-							conn.executeQuery(
-								"SELECT Lookup_ID FROM Lookup WHERE Name = "
-									+ JspUtils.sqlEscape(stGroup)
-									+ " AND FieldName = 'FossilGroup'");
-						if (rs.next()) {
-							stGroupID = rs.getInt(1);
-						} else { // not valid group
-							throw new DataInputException(
-								"Sent To - Group",
-								stGroup + " not a valid sent to group");
+						rs = conn.executeQuery("SELECT Lookup_ID FROM Lookup WHERE Name = "	+ JspUtils.sqlEscape(stGroup) + " AND FieldName = 'FossilGroup'");
+						try {
+							rs.next();
+							stGroupID = new Integer(rs.getInt(1));
+						} catch (Exception e) {
+							throw new DataInputException("Sent To - Group",	stGroup + " not a valid sent to group");
 						}
 						if (!stPerson.equals("")) {
-							rs =
-								conn.executeQuery(
-									"SELECT Person_ID FROM Person_View WHERE Name = "
-										+ JspUtils.sqlEscape(stPerson));
-							if (rs.next()) {
-								stPersonID = rs.getInt(1);
-							} else { // not valid person
-								throw new DataInputException(
-									"Sent To - Person",
-									stPerson
-										+ " not in database - add through builder");
+							rs = conn.executeQuery("SELECT Person_ID FROM Person_View WHERE Name = " + JspUtils.sqlEscape(stPerson));
+							try {
+								rs.next();
+								stPersonID = new Integer(rs.getInt(1));
+							} catch (Exception e) {
+								throw new DataInputException("Sent To - Person", stPerson + " not in database - add through builder");
 							}
 						}
 						if (!stLab.equals("")) {
-							rs =
-								conn.executeQuery(
-									"SELECT Lab_ID FROM SC.Lab WHERE Lab_Name = "
-										+ JspUtils.sqlEscape(stLab));
-							if (rs.next()) {
-								stLabID = rs.getInt(1);
-							} else { // not valid lab
-								throw new DataInputException(
-									"Sent To - Lab",
-									stLab + " not in database");
+							rs = conn.executeQuery("SELECT Lab_ID FROM SC.Lab WHERE Lab_Name = " + JspUtils.sqlEscape(stLab));
+							try {
+								rs.next();
+								stLabID = new Integer(rs.getInt(1));
+							} catch (Exception e) {
+								throw new DataInputException("Sent To - Lab", stLab + " not in database");
 							}
 						}
 						sT = new SentTo();
 						sT.setComments(stComments);
-						sT.setFossilGroupId(new Integer(stGroupID));
-						sT.setPersonId(new Integer(stPersonID));
-						sT.setLabId(new Integer(stLabID));
+						sT.setFossilGroupID(stGroupID);
+						sT.setPersonID(stPersonID);
+						sT.setLabID(stLabID);
 						sentTo.add(sT);
+						value = value.substring(value.indexOf("\n") + 1, value.length()).trim();
 					}
 					break;
 				case INF_AGE_START :
@@ -830,7 +793,7 @@ public class SampPropRecordDE extends RecordDE {
 					if (getField(DEP_ENVIRONMENT_2) != null) {
 						depEnv = value + ": " + getField(DEP_ENVIRONMENT_2);
 					} else {
-						depEnv = value;
+						depEnv = value + ":";
 					}
 					break;
 				case DEP_ENVIRONMENT_2 :
@@ -839,8 +802,8 @@ public class SampPropRecordDE extends RecordDE {
 					} else {
 						depEnv = value;
 					}
+					break;
 			}
-
 		} catch (IOException e) {
 			throw new DataInputException();
 		} catch (SQLException e) {
@@ -880,7 +843,7 @@ public class SampPropRecordDE extends RecordDE {
 				break;
 			case DEP_ENVIRONMENT_2 :
 				if (getField(DEP_ENVIRONMENT_1) != null) {
-					depEnv = getField(DEP_ENVIRONMENT_1);
+					depEnv = getField(DEP_ENVIRONMENT_1) + ":";
 				} else {
 					depEnv = null;
 				}
@@ -1364,16 +1327,16 @@ public class SampPropRecordDE extends RecordDE {
 				if (sentTo != null) {
 					for (Iterator i = sentTo.iterator(); i.hasNext();) {
 						SentTo sT = (SentTo) i.next();
-						if (sT.getFossilGroupId() != null)
+						if (sT.getFossilGroupID() != null)
 							conn.executeUpdate(
 								"INSERT INTO Sent_To (Record_ID, Fossil_Group_ID, Person_ID, Lab_ID, Comments) VALUES ("
 									+ record.getRecordID()
 									+ ", "
-									+ sT.getFossilGroupId()
+									+ sT.getFossilGroupID()
 									+ ", "
-									+ JspUtils.sqlEscape(sT.getPersonId())
+									+ JspUtils.sqlEscape(sT.getPersonID())
 									+ ", "
-									+ JspUtils.sqlEscape(sT.getLabId())
+									+ JspUtils.sqlEscape(sT.getLabID())
 									+ ", "
 									+ JspUtils.sqlEscape(sT.getComments())
 									+ ")");
