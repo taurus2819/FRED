@@ -236,7 +236,7 @@ function parseTaxa(taxa) {
 <%			cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
 			cd.name = "StageStop";
 			cd.prompt = "-- Choose --";
-			cd.selected = stageStart;
+			cd.selected = stageStop;
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 %>
 			</td><td class='heading'><select name='StopMod'><option value='-' <%=((stopMod.equals("")) ? " selected" : "")%>></option><option value='?' <%=((stopMod.equals("?")) ? " selected" : "")%>>?</option></select></td></tr>
@@ -253,7 +253,7 @@ function parseTaxa(taxa) {
 			</td></tr>
 			<tr><td></td><td class='smallheading'>Number</td><td><input type='text' name='LabNum' size='40' value='<%=labNum%>'></td><td></td></tr>
 			<tr><td class='heading'>Collection Comments</td><td></td><td><textarea name='CollComm' cols='40' rows='2'><%=collComm%></textarea></td></tr>
-			<tr><td class='heading'>Taxonomic List</td><td></td><td><textarea name='Taxa' cols='40' rows='20'><%=taxa%></textarea></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=Taxa", "Supp", "width=600,height=600");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
+			<tr><td class='heading'>Taxonomic List</td><td></td><td><textarea name='Taxa' cols='40' rows='20'><%=taxa%></textarea></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=Taxa", "Supp", "width=600,height=500");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
 			</table>
 <%		out.println("<table border='0' cellpadding='0' cellspacing='2'>");
 			out.println("<tr><td>&nbsp;</td></tr>");

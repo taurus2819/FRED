@@ -34,6 +34,7 @@
 	et.setDisplayLogin(false);
 	et.setShowGnsLogo(false);
 	et.setUseNavigationColumn(false);
+	et.setDisplayLoadingMessage(true);
 
 	drawTop(out, et, request, response);
 
@@ -91,7 +92,6 @@ function saveData(type) {
 		}
 		else if (type == "Coll") {
 			window.opener.form1.Coll.value = window.opener.form1.Coll.value + parseDropDown(Person.value) + "\n";
-			alert(parseDropDown(Person.value) + " added to form");
 		}
 		else if (type == "Adoptor") {
 			window.opener.form1.Adoptor.value = parseDropDown(Person.value);
@@ -107,11 +107,9 @@ function saveData(type) {
 		}
 		else if (type == "SentTo") {
 			window.opener.form1.SentTo.value = window.opener.form1.SentTo.value + parseDropDown(Group.value) + "*" + parseDropDown(Person.value) + "*" + parseDropDown(Lab.value) + "*" + Comm.value + "\n";
-			alert("Row added to form");
 		}
 		else if (type == "PrevSamp") {
 			window.opener.form1.PrevSamp.value = window.opener.form1.PrevSamp.value + parseDropDown(SampName.value) + ";";
-			alert("Sample added to form");
 		}
 		else if (type == "SampRel") {
 			if (checkRel("Samp") == 1) {
@@ -120,7 +118,6 @@ function saveData(type) {
 					window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + " - " + DistRange.value;
 				}
 				window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + " " + parseDropDown(Rel.value) + " " + parseDropDown(SampName.value) + "\n";
-				alert("Sample added to form");
 			}
 		}
 		else if (type == "StratRel") {
@@ -130,7 +127,6 @@ function saveData(type) {
 					window.opener.form1.StratRel.value = window.opener.form1.StratRel.value + " - " + DistRange.value;
 				}
 				window.opener.form1.StratRel.value = window.opener.form1.StratRel.value + " " + parseDropDown(Rel.value) + " " + StratName.value + "\n";
-				alert("Unit added to form");
 			}
 		}
 		else if (type == "SedFeat") {
@@ -138,13 +134,11 @@ function saveData(type) {
 				window.opener.form1.SedFeat.value = window.opener.form1.SedFeat.value + parseDropDown(Feat.value);
 				if (Abund.checked) { window.opener.form1.SedFeat.value = window.opener.form1.SedFeat.value + "*"; }
 				window.opener.form1.SedFeat.value = window.opener.form1.SedFeat.value + ";";
-				alert("Feature added to form");
 			}
 		}
 		else if (type == "Taxa") {
 			if (checkTaxa() == 1) {
 				window.opener.form1.Taxa.value = window.opener.form1.Taxa.value + parseDropDown(Group.value) + "*" + TaxaName.value + "*" + Author.value + "*" + SpecCount.value + "*" + SpecCoord.value + "*" + Comm.value + "\n";
-				alert("Taxa added to form");
 			}
 		}
 	}
@@ -347,10 +341,10 @@ function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
 			cd.prompt = "-- Choose --";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.print("</td></tr>");
-			out.println("<tr><td><em>OR</em></td></tr>");
-			out.println("<tr><td class='heading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
-			out.println("<tr><td class='heading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
-			out.println("<input type='submit' value='Add' onClick='return addData(\"Person\");'>");
+			out.println("<tr><td class='heading' colspan='2'>Add to Person List</td></tr>");
+			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
+			out.println("<tr><td class='smallheading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
+			out.println("<input type='submit' value='Add Person' onClick='return addData(\"Person\");'>");
 			out.println("</td></tr></table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
@@ -367,9 +361,9 @@ function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
 			cd.prompt = "-- Choose --";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.print("</td></tr>");
-			out.println("<tr><td><em>OR</em></td></tr>");
-			out.println("<tr><td class='heading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
-			out.println("<tr><td class='heading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
+			out.println("<tr><td class='heading' colspan='2'>Add to Person List</td></tr>");
+			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
+			out.println("<tr><td class='smallheading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
 			out.println("<input type='submit' value='Add Person' onClick='return addData(\"Person\");'>");
 			out.println("</td></tr></table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
@@ -387,9 +381,9 @@ function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
 			cd.prompt = "-- Choose --";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.print("</td></tr>");
-			out.println("<tr><td><em>OR</em></td></tr>");
-			out.println("<tr><td class='heading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
-			out.println("<tr><td class='heading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
+			out.println("<tr><td class='heading' colspan='2'>Add to Person List</td></tr>");
+			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
+			out.println("<tr><td class='smallheading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
 			out.println("<input type='submit' value='Add Person' onClick='return addData(\"Person\");'>");
 			out.println("</td></tr></table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
@@ -428,16 +422,16 @@ function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
 			cd.prompt = "-- Choose --";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.print("</td></tr>");
-			out.println("<tr><td><em>OR</em></td></tr>");
-			out.println("<tr><td class='heading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
-			out.println("<tr><td class='heading'>Surname/Company</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
-			out.println("<input type='submit' value='Add Person' onClick='return addData(\"Person\");'>");
 			out.print("<tr><td class='heading'>Lab</td><td>");
 			cd = new ComboDescriptor("SC.Lab", "Lab_Name", "Lab_Name");
 			cd.name = "Lab";
 			cd.prompt = "-- Choose --";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("<tr><td class='heading'>Comments</td><td><textarea name='Comm' rows='3' cols='40'></textarea></td></tr>");
+	out.println("<tr><td class='heading' colspan='2'>Add to Person List</td></tr>");
+			out.println("<tr><td class='smallheading'>First Name</td><td><input type='text' name='GivenName'></td></tr>");
+			out.println("<tr><td class='smallheading'>Surname</td><td><input type='text' name='FamilyName'>&nbsp&nbsp");
+			out.println("<input type='submit' value='Add Person' onClick='return addData(\"Person\");'>");
 			out.println("</table>");
 			out.println("<table border='0' cellspacing='2' cellpadding='0'>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");

@@ -317,7 +317,7 @@
 							out.println("<tr><td>" + rs2.getString(1) + "</td></tr>");
 						}
 					}
-					if (rs.getString(23) != null) { out.println("<tr><td class='heading'>Inf Environment</td><td>" + rs.getString(23) + "</td></tr>"); }
+					if (rs.getString(23) != null) { out.println("<tr><td class='heading'>Inferred Environment</td><td>" + rs.getString(23) + "</td></tr>"); }
 					if (rs.getString(24) != null) { out.println("<tr><td class='heading'>Nature of Rock Unit</td><td>" + rs.getString(24) + "</td></tr>"); }
 					if (rs.getString(25) != null) { out.println("<tr><td class='heading'>Correspondence</td><td>" + rs.getString(25) + "</td></tr>"); }
 					//Image/Files

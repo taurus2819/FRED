@@ -238,7 +238,7 @@ function parseSedFeat(sedFeat) {
 				}
 				rs = statement.executeQuery("SELECT DISTINCT Collector FROM Sample_Property_All_View WHERE Record_ID = " + loadRecID);
 				while (rs.next()) {
-					if (rs.getString(1) != null) { coll = rs.getString(1) + "\n"; }
+					if (rs.getString(1) != null) { coll = coll + rs.getString(1) + "\n"; }
 				}
 				rs = statement.executeQuery("SELECT Inferred_Stage_Lower_ID, Inferred_Stage_Lower_Mod, Inferred_Stage_Upper_ID, Inferred_Stage_Upper_Mod, Known_Stage_Lower_ID, Known_Stage_Lower_Mod, Known_Stage_Upper_ID, Known_Stage_Upper_Mod FROM Sample_Property_All_View WHERE Record_ID = " + loadRecID);
 				if (rs.next()) {
@@ -510,11 +510,12 @@ function parseSedFeat(sedFeat) {
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 %>
 			</td></tr>
-			<tr><td></td><td class='smallheading'>Wet</td><td><select name='Wet'><option value='' <%=((wet.equals("")) ? " selected" : "")%>>-- Choose --</option><option value='Wet' <%=((wet.equals("Wet")) ? " selected" : "")%>>Wet</option><option value='Dry' <%=((wet.equals("Dry")) ? " selected" : "")%>>Dry</option></select></td></tr>
+			<tr><td></td><td class='smallheading'>Wet/Dry</td><td><select name='Wet'><option value='' <%=((wet.equals("")) ? " selected" : "")%>>-- Choose --</option><option value='Wet' <%=((wet.equals("Wet")) ? " selected" : "")%>>Wet</option><option value='Dry' <%=((wet.equals("Dry")) ? " selected" : "")%>>Dry</option></select></td></tr>
 			<tr><td class='heading'>Additional Features</td><td></td><td><input type='text' name='SedFeat' size='40' value='<%=sedFeat%>'></td><td><a href='#' onClick='newWin=open("data_entry_supp.jsp?Type=SedFeat", "Supp", "width=600,height=350");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>
-			<tr><td class='heading'>Inf Environment</td><td></td><td><select name='DepEnv1'><option value='' <%=((depEnv1.equals("")) ? " selected" : "")%>>-- Choose --</option><option value='Marine' <%=((depEnv1.equals("Marine")) ? " selected" : "")%>>Marine</option><option value='Non-marine' <%=((depEnv1.equals("Non-marine")) ? " selected" : "")%>>Non-marine</option></select><img src='images/blank.gif' height='1' width='10' /><input type='text' name='DepEnv2' size='26' value='<%=depEnv2%>'></td></tr>
-			<tr><td class='heading'>Rock Nature</td><td></td><td><textarea name='RockNat' cols='40' rows='2'><%=rockNat%></textarea></td></tr>
-			<tr><td class='heading'>Correspondence</td><td></td><td><textarea name='Corr' cols='40' rows='2'><%=corr%></textarea></td></tr>
+			<tr><td class='heading'>Inferred Environment</td><td></td><td><select name='DepEnv1'><option value='' <%=((depEnv1.equals("")) ? " selected" : "")%>>-- Choose --</option><option value='Marine' <%=((depEnv1.equals("Marine")) ? " selected" : "")%>>Marine</option><option value='Non-marine' <%=((depEnv1.equals("Non-marine")) ? " selected" : "")%>>Non-marine</option></select></td></tr>
+			<tr><td></td><td></td><td><textarea name='DepEnv2' cols='40' rows='3'><%=depEnv2%></textarea></td></tr>
+			<tr><td class='heading'>Nature of Rock Unit</td><td></td><td><textarea name='RockNat' cols='40' rows='3'><%=rockNat%></textarea></td></tr>
+			<tr><td class='heading'>Correspondence</td><td></td><td><textarea name='Corr' cols='40' rows='3'><%=corr%></textarea></td></tr>
 			</table>
 <%		out.println("<table border='0' cellpadding='0' cellspacing='2'>");
 			out.println("<tr><td>&nbsp;</td></tr>");

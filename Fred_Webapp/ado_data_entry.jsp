@@ -201,7 +201,7 @@ function parseDoubleDropDown(first, second) {
 <%			cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
 			cd.name = "StageStop";
 			cd.prompt = "-- Choose --";
-			cd.selected = stageStart;
+			cd.selected = stageStop;
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 %>
 			</td><td class='heading'><select name='StopMod'><option value='-' <%=((stopMod.equals("")) ? " selected" : "")%>></option><option value='?' <%=((stopMod.equals("?")) ? " selected" : "")%>>?</option></select></td></tr>
