@@ -7,9 +7,14 @@ import java.sql.SQLException;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.ComboDescriptor;
+import nz.cri.gns.db.HTMLUtils;
 import nz.cri.gns.fred.FREDUtils;
+import nz.cri.gns.fred.data.AdoptionRecord;
 import nz.cri.gns.fred.data.Folder;
+import nz.cri.gns.fred.data.PaleontologyRecord;
 import nz.cri.gns.fred.data.Record;
+import nz.cri.gns.fred.data.SampPropRecord;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
@@ -42,13 +47,21 @@ public abstract class RecordDE implements DataEntryForm {
 			this.sample = new Sample(sampleID, user, state);
 	}
 
-	public RecordDE(int recID, User user, PageState state) throws InvalidCredentialsException, DataInputException, SQLException, IOException {
+	public RecordDE(int recID, String recordType, User user, PageState state) throws InvalidCredentialsException, DataInputException, SQLException, IOException {
 		this.user = user;
 		this.state = state;
-		this.record = Record.getData(recID, user, state);
+		this.recordType = recordType;
+		if (recordType.equals("SMP")) {
+			this.record = (SampPropRecord) SampPropRecord.getData(recID, user, state);
+		} else if (recordType.equals("ADO")) {
+			this.record = (AdoptionRecord) AdoptionRecord.getData(recID, user, state);
+		} else if (recordType.equals("PAL")) {
+			this.record = (PaleontologyRecord) PaleontologyRecord.getData(recID, user, state);
+		} else {
+			throw new DataInputException("Record Type", "Invalid Value");
+		}
 		if (record.getAsString(Record.STATUS).equals("approved"))
 			throw new DataInputException("Record", "Record not editable");
-
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		ResultSet rs = conn.executeQuery("SELECT Sample_ID FROM Record WHERE Record_ID = " + recID);
 		rs.next();
@@ -59,6 +72,7 @@ public abstract class RecordDE implements DataEntryForm {
 		} catch (Exception e) {
 			setField(SECURITY_TYPE, "21");
 		}
+		folder = new Folder(record.getAsInt(Record.WORKING_FOLDER_ID), user, state);
 	}
 
 	public int getFieldCount() {
@@ -122,16 +136,16 @@ public abstract class RecordDE implements DataEntryForm {
 
 	public void makeNavPanelHTML(Writer out) throws IOException {
 		out.write("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
-		out.write("<tr><td colspan='2' align='center'><img src='images/sprop.gif' height='20' width='20' /></td></tr>");
-		out.write("<tr><td colspan='2' align='center' class='heading'>\n");
 		if (recordType.equals("SMP")) {
-			out.write("Sample Property");
+			out.write("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
+			out.write("<tr><td colspan='2' align='center' class='heading'>Sample Details</td></tr>\n");
 		} else if (recordType.equals("ADO")) {
-			out.write("Adoption");
+			out.write("<tr><td colspan='2' align='center'><img src='images/ado.gif' height='20' width='20' /></td></tr>");
+			out.write("<tr><td colspan='2' align='center' class='heading'>Adoption Record</td></tr>\n");
 		} else if (recordType.equals("PAL")) {
-			out.write("Paleontology");
+			out.write("<tr><td colspan='2' align='center'><img src='images/pal.gif' height='20' width='20' /></td></tr>");
+			out.write("<tr><td colspan='2' align='center' class='heading'>Paleontology Record</td></tr>\n");
 		}
-		out.write(" Record</td></tr>\n");
 		out.write("<tr><td>&nbsp;</td></tr>");
 		//out.write("<tr><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
 		//if (record != null) out.write("&RecID=" + record.getRecordID());
@@ -146,6 +160,7 @@ public abstract class RecordDE implements DataEntryForm {
 	}
 
 	public void makeDataEntryHTML(Writer out) throws SQLException, IOException {
+		DBConnection conn = FREDUtils.getFREDConnection(state);
 		out.write("<table border='0' cellspacing='0' cellpadding='2'>\n");
 		try {
 			out.write("<tr><td class='heading'>Sample Name</td><td></td><td class='heading'>" + sample.getAsString(Sample.SAMPLE_NAME));
@@ -164,6 +179,20 @@ public abstract class RecordDE implements DataEntryForm {
 				out.println("</td></tr>");
 			}
 */
+		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
+		
+		out.write("<tr><td class='heading' colspan='2'>Security Setting</td><td>");
+		ComboDescriptor cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
+		cd.name = "SecType";
+		if (getField(SECURITY_TYPE) != null) {
+			cd.selected = getField(SECURITY_TYPE);
+		} else {
+			cd.selected = "21";
+		}
+		cd.orderBy = "Lookup_ID";
+		cd.join = "FieldName = 'SecurityClass'";
+		HTMLUtils.makeDropBox(out, conn, cd);
+		out.write("</td></tr>\n");
 		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
 	}
 

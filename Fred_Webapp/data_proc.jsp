@@ -113,6 +113,15 @@
 			dataEntryForm.setField(DataEntryForm.DEP_ENVIRONMENT_2, request.getParameter("DepEnv2"));
 			dataEntryForm.setField(DataEntryForm.ROCK_NATURE, request.getParameter("RockNat"));
 			dataEntryForm.setField(DataEntryForm.CORRESPONDENCE, request.getParameter("Corr"));
+			
+			//Adoption fields
+			dataEntryForm.setField(DataEntryForm.ADOPTION_DATE, request.getParameter("AdoDate"));
+			dataEntryForm.setField(DataEntryForm.ADOPTORS, request.getParameter("Adoptor"));
+			dataEntryForm.setField(DataEntryForm.ADO_AGE_START, request.getParameter("StageStart"));
+			dataEntryForm.setField(DataEntryForm.ADO_START_MOD, request.getParameter("StartMod"));
+			dataEntryForm.setField(DataEntryForm.ADO_AGE_STOP, request.getParameter("StageStop"));
+			dataEntryForm.setField(DataEntryForm.ADO_STOP_MOD, request.getParameter("StopMod"));
+			dataEntryForm.setField(DataEntryForm.ADO_COMMENTS, request.getParameter("Comm"));
 
 			if (saveType.equals("Submit")) {
 				dataEntryForm.submit();

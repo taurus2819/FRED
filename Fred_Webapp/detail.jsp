@@ -247,7 +247,7 @@
 								}
 								out.print("</td></tr>");
 							}
-							if (sampProp.get(SampPropRecord.COLLECTION_DATE) != null) { out.print("<tr><td class='heading'>Collection Date</td><td>" + FREDUtils.formatDateForOutput(sampProp.getAsDate(SampPropRecord.COLLECTION_DATE), sampProp.getAsString(SampPropRecord.DATE_ROUNDING)) + "</td></tr>"); }
+							if (sampProp.get(SampPropRecord.COLLECTION_DATE) != null) { out.print("<tr><td class='heading'>Collection Date</td><td>" + FREDUtils.formatDateForOutput(sampProp.getAsDate(SampPropRecord.COLLECTION_DATE), sampProp.getAsString(SampPropRecord.COLLECTION_DATE_ROUNDING)) + "</td></tr>"); }
 							if (sampProp.get(SampPropRecord.STRAT_UNIT) != null) { out.println("<tr><td class='heading'>Strat Name</td><td>" + sampProp.getAsString(SampPropRecord.STRAT_UNIT) + "</td></tr>"); }
 							if (sampProp.get(SampPropRecord.IN_PLACE) != null) { out.println("<tr><td class='heading'>In Place</td><td>" + sampProp.getAsString(SampPropRecord.IN_PLACE) + "</td></tr>"); }
 							//sent to (repeating)
@@ -354,7 +354,7 @@
 								}
 								out.print("</td></tr>");
 							}
-							if (ado.get(AdoptionRecord.ADOPTION_DATE) != null) { out.print("<tr><td class='heading'>Adoption Date</td><td>" + FREDUtils.formatDateForOutput(ado.getAsDate(AdoptionRecord.ADOPTION_DATE), ado.getAsString(AdoptionRecord.DATE_ROUNDING)) + "</td></tr>"); }
+							if (ado.get(AdoptionRecord.ADOPTION_DATE) != null) { out.print("<tr><td class='heading'>Adoption Date</td><td>" + FREDUtils.formatDateForOutput(ado.getAsDate(AdoptionRecord.ADOPTION_DATE), ado.getAsString(AdoptionRecord.ADOPTION_DATE_ROUNDING)) + "</td></tr>"); }
 							if (ado.get(AdoptionRecord.ADOPTED_STAGE) != null) { out.println("<tr><td class='heading'>Adopted Stage</td><td>" + ado.getAsString(AdoptionRecord.ADOPTED_STAGE) + "</td></tr>"); }
 							if (ado.get(AdoptionRecord.COMMENTS) != null) { out.println("<tr><td class='heading'>Comments</td><td>" + ado.getAsString(AdoptionRecord.COMMENTS) + "</td></tr>"); }
 				/*			//Image/Files
@@ -395,7 +395,7 @@
 								}
 								out.print("</td></tr>");
 							}
-							if (pal.get(PaleontologyRecord.IDENTIFICATION_DATE) != null) { out.print("<tr><td class='heading'>Identification Date</td><td>" + FREDUtils.formatDateForOutput(pal.getAsDate(PaleontologyRecord.IDENTIFICATION_DATE), pal.getAsString(PaleontologyRecord.DATE_ROUNDING)) + "</td></tr>"); }
+							if (pal.get(PaleontologyRecord.IDENTIFICATION_DATE) != null) { out.print("<tr><td class='heading'>Identification Date</td><td>" + FREDUtils.formatDateForOutput(pal.getAsDate(PaleontologyRecord.IDENTIFICATION_DATE), pal.getAsString(PaleontologyRecord.IDENTIFICATION_DATE_ROUNDING)) + "</td></tr>"); }
 							if (pal.get(PaleontologyRecord.STAGE) != null) { out.println("<tr><td class='heading'>Stage</td><td>" + pal.getAsString(PaleontologyRecord.STAGE) + "</td></tr>"); }
 							if (pal.get(PaleontologyRecord.STAGE_COMMENTS) != null) { out.println("<tr><td class='heading'>Stage Comments</td><td>" + pal.getAsString(PaleontologyRecord.STAGE_COMMENTS) + "</td></tr>"); }
 							if (pal.get(PaleontologyRecord.LAB) != null) { out.println("<tr><td class='heading'>Lab</td><td>" + pal.getAsString(PaleontologyRecord.LAB) + "</td></tr>"); }

@@ -4,17 +4,26 @@ import java.io.IOException;
 import java.io.Writer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.Vector;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.ComboDescriptor;
+import nz.cri.gns.db.HTMLUtils;
+import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.AdoptionRecord;
-import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.Record;
+import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
+import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 public class AdoptionRecordDE extends RecordDE {
+
+	private RoundedDate adoDate;
+	private Vector adoptors;
 
 	public AdoptionRecordDE(User user, int sampleID, int folderID, PageState state)
 		throws SQLException, IOException, DataInputException {
@@ -28,19 +37,155 @@ public class AdoptionRecordDE extends RecordDE {
 
 	public AdoptionRecordDE(int recID, User user, PageState state)
 		throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
-		super(recID, user, state);
-		record = (AdoptionRecord) AdoptionRecord.getData(recID, user, state);
-		recordType = "ADO";
-		folder =
-			new Folder(
-				record.getAsInt(Record.WORKING_FOLDER_ID),
-				user,
-				state);
+		super(recID, "ADO", user, state);
+		setField(ADOPTION_DATE,
+			DataEntryUtils.reverseParseDate(
+				record.getAsDate(Record.ADOPTION_DATE),
+				record.getAsString(Record.ADOPTION_DATE_ROUNDING)));
+		if (record.get(Record.COLLECTOR) != null) {
+			StringBuffer adoptName = new StringBuffer();
+			for (Iterator i = record.getAsVector(Record.ADOPTOR).iterator(); i.hasNext();) {
+				KeyValueObject adopt = (KeyValueObject) i.next();
+				adoptName.append(adopt.getValue() + "\n");
+			}
+			setField(ADOPTORS, adoptName.toString());
+		}
+		setField(
+			ADO_AGE_START,
+			record.getAsString(Record.ADOPTED_STAGE_LOWER_ID));
+		setField(
+			ADO_START_MOD,
+			record.getAsString(Record.ADOPTED_STAGE_LOWER_MOD));
+		setField(
+			ADO_AGE_STOP,
+			record.getAsString(Record.ADOPTED_STAGE_UPPER_ID));
+		setField(
+			ADO_STOP_MOD,
+			record.getAsString(Record.ADOPTED_STAGE_UPPER_MOD));
+		setField(ADO_COMMENTS, record.getAsString(Record.COMMENTS));
+	}
+
+	protected void parseField(int field, String value)
+		throws DataInputException {
+		super.parseField(field, value);
+		try {
+			DBConnection conn = FREDUtils.getFREDConnection(state);
+			ResultSet rs;
+			switch (field) {
+				case ADOPTION_DATE :
+					adoDate = DataEntryUtils.parseRoundedDate(value);
+					break;
+				case ADOPTORS :
+					adoptors = new Vector();
+					while (value.length() > 0) {
+						if (value.indexOf("\n") == -1)
+							value = value + "\n";
+						rs =
+							conn.executeQuery(
+								"SELECT Person_ID FROM Person_View WHERE Name = "
+									+ JspUtils.sqlEscape(
+										value
+											.substring(0, value.indexOf("\n"))
+											.trim()));
+						try {
+							rs.next();
+							adoptors.add(new Integer(rs.getInt(1)));
+						} catch (Exception e) {
+							throw new DataInputException(
+								"Adoptor",
+								value.substring(0, value.indexOf("\n")).trim()
+									+ " not in database - add through builder");
+						}
+						value =
+							value.substring(
+								value.indexOf("\n") + 1,
+								value.length());
+					}
+					break;
+				case ADO_AGE_START :
+					parseAge(value, getField(ADO_AGE_STOP), "Adopted Age");
+					break;
+				case ADO_AGE_STOP :
+					parseAge(getField(ADO_AGE_START), value, "Adopted Age");
+					break;
+				case ADO_START_MOD :
+				case ADO_STOP_MOD :
+					if (value != null && !value.equals("?"))
+						throw new DataInputException(
+							"Adopted Age",
+							"Bad Modifier");
+					break;
+			}
+
+		} catch (IOException e) {
+			throw new DataInputException();
+		} catch (SQLException e) {
+			throw new DataInputException();
+		}
+	}
+
+	protected void resetHiddenField(int field) {
+		switch (field) {
+			case ADOPTION_DATE :
+				adoDate = null;
+				break;
+			case ADOPTORS :
+				adoptors = null;
+				break;
+		}
 	}
 
 	public void makeDataEntryHTML(Writer out)
 		throws IOException, SQLException {
+		DBConnection conn = FREDUtils.getFREDConnection(state);
 		super.makeDataEntryHTML(out);
+		out.write(
+			"<tr><td class='heading'>Adoption Date</td><td></td><td><input type='text' name='AdoDate' value='"
+				+ FREDUtils.noNulls(getField(ADOPTION_DATE))
+				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Date&Field=AdoDate\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
+		out.write(
+			"<tr><td class='heading'>Adoptors</td><td></td><td><textarea name='Adoptor' cols='40' rows='2'>"
+				+ FREDUtils.noNulls(getField(ADOPTORS))
+				+ "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Adoptor\", \"Supp\", \"width=600,height=400\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
+		out.write(
+			"<tr><td class='heading'>Stage Limits</td><td class='smallheading'>Adopted</td><td>\n");
+		out.write("<table border='0' cellspacing='0'><tr><td>");
+		ComboDescriptor cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
+		cd.name = "StageStart";
+		cd.prompt = "-- Choose --";
+		cd.selected = getField(ADO_AGE_START);
+		cd.orderBy = "Ag_Name";
+		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
+		out.write(
+			"</td><td><select name='StartMod'><option value='-' "
+				+ ((getField(ADO_START_MOD) == null) ? " selected" : "")
+				+ "></option><option value='?' "
+				+ ((getField(ADO_START_MOD) != null
+					&& getField(ADO_START_MOD).equals("?"))
+					? " selected"
+					: "")
+				+ ">?</option></select></td><td class='heading'> to </td></tr>\n");
+		out.write("<tr><td>");
+		cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
+		cd.name = "StageStop";
+		cd.prompt = "-- Choose --";
+		cd.selected = getField(ADO_AGE_STOP);
+		cd.orderBy = "Ag_Name";
+		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
+		out.write(
+			"</td><td class='heading'><select name='StopMod'><option value='-' "
+				+ ((getField(ADO_STOP_MOD) == null) ? " selected" : "")
+				+ "></option><option value='?' "
+				+ ((getField(ADO_STOP_MOD) != null
+					&& getField(ADO_STOP_MOD).equals("?"))
+					? " selected"
+					: "")
+				+ ">?</option></select></td></tr>\n");
+		out.write("</table></td></tr>\n");
+		out.write(
+			"<tr><td class='heading' colspan='2'>Comments</td><td><textarea name='Comm' cols='40' rows='3'>"
+				+ FREDUtils.noNulls(getField(ADO_COMMENTS))
+				+ "</textarea></td></tr>\n");				
 		super.makeEndBitHTML(out);
 	}
 
@@ -52,17 +197,48 @@ public class AdoptionRecordDE extends RecordDE {
 			conn.getConnection().setAutoCommit(false);
 			try {
 				super.save();
+				conn.executeUpdate(
+					"DELETE FROM Adoption WHERE Record_ID = "
+						+ record.getRecordID());
+				//Create ADOPTION entry
+				conn.executeUpdate(
+					"INSERT INTO Adoption (Record_ID, Adoption_Date, Date_Rounding, Adopted_Stage_ID, Comments) VALUES ("
+						+ record.getRecordID()
+						+ ((adoDate != null)
+							? ", TO_DATE('"
+								+ adoDate.getDateString()
+								+ "'), "
+								+ JspUtils.sqlEscape(adoDate.getDateRounding())
+							: ", NULL, NULL")
+						+ ", "
+						+ JspUtils.sqlEscape(
+							DataEntryUtils.getStageID(
+								getField(ADO_AGE_START),
+								getField(ADO_START_MOD),
+								getField(ADO_AGE_STOP),
+								getField(ADO_STOP_MOD),
+								state))
+						+ ", "
+						+ JspUtils.sqlEscape(getField(ADO_COMMENTS))
+						+ ")");
+				//Create ADOPTORS entries
+				if (adoptors != null) {
+					for (Iterator i = adoptors.iterator(); i.hasNext();) {
+						conn.executeUpdate(
+							"INSERT INTO Adoptor (Record_ID, Person_ID) VALUES ("
+								+ record.getRecordID()
+								+ ", "
+								+ (Integer) i.next()
+								+ ")");
+					}
+				}								
 				conn.getConnection().commit();
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = true;
 				try {
-					record =
-						(AdoptionRecord) AdoptionRecord.getData(
-							record.getRecordID(),
-							user,
-							state,
-							true);
+					record = (AdoptionRecord) AdoptionRecord.getData(record.getRecordID(), user, state, true);
+					sample = new Sample(sample.getSampleID(), user, state);
 				} catch (Exception e) {
 				}
 			} catch (SQLException e) {
@@ -87,9 +263,6 @@ public class AdoptionRecordDE extends RecordDE {
 
 		}
 		return record.getRecordID();
-	}
-
-	protected void checkMandatoryFields() throws DataInputException {
 	}
 
 }

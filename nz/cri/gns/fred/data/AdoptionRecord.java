@@ -21,22 +21,6 @@ import nz.cri.gns.jsp.PageState;
  */
 public class AdoptionRecord extends Record {
 
-	public static final int ADOPTOR = 10;
-	public static final int ADOPTION_DATE = 11;
-	public static final int DATE_ROUNDING = 12;
-	public static final int ADOPTED_STAGE_ID = 13;
-	public static final int ADOPTED_STAGE = 14;
-	public static final int ADOPTED_STAGE_ABBREV = 15;
-	public static final int ADOPTED_STAGE_LOWER_ID = 16;
-	public static final int ADOPTED_STAGE_LOWER = 17;
-	public static final int ADOPTED_STAGE_LOWER_MOD = 18;
-	public static final int ADOPTED_STAGE_UPPER_ID = 19;
-	public static final int ADOPTED_STAGE_UPPER = 20;
-	public static final int ADOPTED_STAGE_UPPER_MOD = 21;
-	public static final int ADOPTED_AGE_START = 22;
-	public static final int ADOPTED_AGE_STOP = 23;
-	public static final int COMMENTS = 24;
-
 	/**
 	 * Cannot be called directly. use static getAdoptionRecord method instead.
 	 */

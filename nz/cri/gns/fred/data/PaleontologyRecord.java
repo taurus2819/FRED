@@ -22,28 +22,6 @@ import nz.cri.gns.jsp.PageState;
  */
 public class PaleontologyRecord extends Record {
 
-	public static final int IDENTIFIER = 10;
-	public static final int IDENTIFICATION_DATE = 11;
-	public static final int DATE_ROUNDING = 12;
-	public static final int STAGE_ID = 13;
-	public static final int STAGE = 14;
-	public static final int STAGE_ABBREV = 15;
-	public static final int STAGE_LOWER_ID = 16;
-	public static final int STAGE_LOWER = 17;
-	public static final int STAGE_LOWER_MOD = 18;
-	public static final int STAGE_UPPER_ID = 19;
-	public static final int STAGE_UPPER = 20;
-	public static final int STAGE_UPPER_MOD = 21;
-	public static final int AGE_START = 22;
-	public static final int AGE_STOP = 23;
-	public static final int STAGE_COMMENTS = 24;
-	public static final int LAB_SECTION_ID = 25;
-	public static final int LAB = 26;
-	public static final int LAB_CODE = 27;
-	public static final int LAB_NUMBER = 28;
-	public static final int COLLECTION_COMMENTS = 29;
-	public static final int TAXONOMIC_LIST = 30;
-
 	/**
 	 * Cannot be called directly. use static getAdoptionRecord method instead.
 	 */

@@ -37,7 +37,7 @@ public class Record {
 	//SampPropRecord
 	public static final int COLLECTOR = 10;
 	public static final int COLLECTION_DATE = 11;
-	public static final int DATE_ROUNDING = 12;
+	public static final int COLLECTION_DATE_ROUNDING = 12;
 	public static final int STRAT_UNIT = 13;
 	public static final int IN_PLACE = 14;
 	public static final int SENT_TO = 15;
@@ -105,6 +105,46 @@ public class Record {
 	public static final int DEPOSITION_ENV = 75;
 	public static final int CORRESPONDENCE = 76;
 
+	//Adoption record
+	public static final int ADOPTOR = 10;
+	public static final int ADOPTION_DATE = 11;
+	public static final int ADOPTION_DATE_ROUNDING = 12;
+	public static final int ADOPTED_STAGE_ID = 13;
+	public static final int ADOPTED_STAGE = 14;
+	public static final int ADOPTED_STAGE_ABBREV = 15;
+	public static final int ADOPTED_STAGE_LOWER_ID = 16;
+	public static final int ADOPTED_STAGE_LOWER = 17;
+	public static final int ADOPTED_STAGE_LOWER_MOD = 18;
+	public static final int ADOPTED_STAGE_UPPER_ID = 19;
+	public static final int ADOPTED_STAGE_UPPER = 20;
+	public static final int ADOPTED_STAGE_UPPER_MOD = 21;
+	public static final int ADOPTED_AGE_START = 22;
+	public static final int ADOPTED_AGE_STOP = 23;
+	public static final int COMMENTS = 24;
+
+	//Paleontology Record
+	public static final int IDENTIFIER = 10;
+	public static final int IDENTIFICATION_DATE = 11;
+	public static final int IDENTIFICATION_DATE_ROUNDING = 12;
+	public static final int STAGE_ID = 13;
+	public static final int STAGE = 14;
+	public static final int STAGE_ABBREV = 15;
+	public static final int STAGE_LOWER_ID = 16;
+	public static final int STAGE_LOWER = 17;
+	public static final int STAGE_LOWER_MOD = 18;
+	public static final int STAGE_UPPER_ID = 19;
+	public static final int STAGE_UPPER = 20;
+	public static final int STAGE_UPPER_MOD = 21;
+	public static final int AGE_START = 22;
+	public static final int AGE_STOP = 23;
+	public static final int STAGE_COMMENTS = 24;
+	public static final int LAB_SECTION_ID = 25;
+	public static final int LAB = 26;
+	public static final int LAB_CODE = 27;
+	public static final int LAB_NUMBER = 28;
+	public static final int COLLECTION_COMMENTS = 29;
+	public static final int TAXONOMIC_LIST = 30;
+	
 	protected static Pool pool = new Pool();
 	protected int id;
 	protected Object[] values = new Object[85];

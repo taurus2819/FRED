@@ -13,10 +13,10 @@ import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.HTMLUtils;
 import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.fred.FREDUtils;
-import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.Record;
 import nz.cri.gns.fred.data.Relationship;
 import nz.cri.gns.fred.data.SampPropRecord;
+import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.fred.data.SedFeature;
 import nz.cri.gns.fred.data.SentTo;
 import nz.cri.gns.intranet.DBConnection;
@@ -48,19 +48,12 @@ public class SampPropRecordDE extends RecordDE {
 
 	public SampPropRecordDE(int recID, User user, PageState state)
 		throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
-		super(recID, user, state);
-		record = (SampPropRecord) SampPropRecord.getData(recID, user, state);
-		recordType = "SMP";
-		folder =
-			new Folder(
-				record.getAsInt(Record.WORKING_FOLDER_ID),
-				user,
-				state);
+		super(recID, "SMP", user, state);
 		setField(
 			COLLECTION_DATE,
 			DataEntryUtils.reverseParseDate(
 				record.getAsDate(Record.COLLECTION_DATE),
-				record.getAsString(Record.DATE_ROUNDING)));
+				record.getAsString(Record.COLLECTION_DATE_ROUNDING)));
 		if (record.get(Record.COLLECTOR) != null) {
 			StringBuffer collName = new StringBuffer();
 			for (Iterator i =
@@ -1462,12 +1455,8 @@ public class SampPropRecordDE extends RecordDE {
 				conn.releaseStatement();
 				savedFlag = true;
 				try {
-					record =
-						(SampPropRecord) SampPropRecord.getData(
-							record.getRecordID(),
-							user,
-							state,
-							true);
+					record = (SampPropRecord) SampPropRecord.getData(record.getRecordID(), user, state, true);
+					sample = new Sample(sample.getSampleID(), user, state, true);
 				} catch (Exception e) {
 				}
 			} catch (SQLException e) {

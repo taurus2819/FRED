@@ -98,7 +98,7 @@ public class FeatureData {
 			while (rs.next()) {
 				samp.add(new Integer(rs.getInt(1)));
 			}
-			values[21] = samp;
+			values[Feature.SAMPLES] = samp;
 			rs.close();
 			query = "SELECT DISTINCT Sample_Name, Last_Change FROM Sample_All_View WHERE Feature_ID = ? ORDER BY Sample_Name";
 			data[0] = values[0];

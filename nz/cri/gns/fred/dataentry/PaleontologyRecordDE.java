@@ -8,9 +8,7 @@ import java.sql.SQLException;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
-import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.PaleontologyRecord;
-import nz.cri.gns.fred.data.Record;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.PageState;
 
@@ -28,14 +26,7 @@ public class PaleontologyRecordDE extends RecordDE {
 
 	public PaleontologyRecordDE(int recID, User user, PageState state)
 		throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
-		super(recID, user, state);
-		record = (PaleontologyRecord) PaleontologyRecord.getData(recID, user, state);
-		recordType = "PAL";
-		folder =
-			new Folder(
-				record.getAsInt(Record.WORKING_FOLDER_ID),
-				user,
-				state);
+		super(recID, "PAL", user, state);
 	}
 
 	public void makeDataEntryHTML(Writer out)

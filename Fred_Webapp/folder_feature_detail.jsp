@@ -132,7 +132,9 @@
 			out.println("</td><td>");
 			if (folder.isAllowedCreateLocalities()) {
 				if (featType.equals("Outcrop")) {
-					//out.print("<a href='data_entry.jsp'><img src='images/new_ado.gif' border='0' height='20' width='20' alt='Add Adoption Record' /></a><img src='images/blank.gif' height='20' width='2' />");
+					int sampID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
+					Sample sample = new Sample(sampID, user, state);
+					out.print("<a href='data_entry.jsp?Type=ADO&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "'><img src='images/new_ado.gif' border='0' height='20' width='20' alt='Add Adoption Record' /></a><img src='images/blank.gif' height='20' width='2' />");
 					out.print("</td><td>");
 					//out.print("<a href='data_entry.jsp'><img src='images/new_pal.gif' border='0' height='20' width='20' alt='Add Paleontology Record' /></a><img src='images/blank.gif' height='20' width='2' />");
 				} else {
@@ -160,65 +162,61 @@
 					if ((sample.get(Sample.SAMPLE_PROPERTY_RECORD_ID) == null || sample.getAsString(Sample.SAMPLE_PROPERTY_RECORD_STATUS).equals("working") || sample.getAsString(Sample.SAMPLE_PROPERTY_RECORD_STATUS).equals("rejected")) && folder.isAllowedDeleteLocalities())
 						out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this sample\") == true) {document.FoldForm.ActionType.value=\"DeleteSamp\";document.FoldForm.SampID.value=\"" + sample.getSampleID() + "\";document.FoldForm.submit();}' title='Delete Sample'><img src='images/delete.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					out.print("</td><td></td><td>");
-					//if (folder.isAllowedCreateLocalities())
-					//	out.print("<a href='ado_data_entry.jsp?FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "' title='Add Adoption Record'><img src='images/new_ado.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+					if (folder.isAllowedCreateLocalities())
+						out.print("<a href='data_entry.jsp?FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "' title='Add Adoption Record'><img src='images/new_ado.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					out.print("</td><td>");
 					//if (folder.isAllowedCreateLocalities())
 					//	out.print("<a href='pal_data_entry.jsp?FoldID=" + folder.getFolderID() + "&SampID=" + sample.getSampleID() + "' title='Add Paleontology Record'><img src='images/new_pal.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					out.print("</td>");
 					out.println("</tr>");
-					out.println("<tr><td colspan='11'><img src='images/line.gif' height='3' width='550' /></td></tr>");
 				}
-			}
-/*						for (Iterator k = sample.getAsVector(Sample.WORKING_RECORDS).iterator(); k.hasNext(); ) {
-							recordHeader = (KeyValueObject) k.next(); 
-							record = Record.getData(Integer.parseInt(recordHeader.getKey()), user, state);
-							if (record.getAsString(Record.WORKING_FOLDER_ID).equals(foldID)) {
-								recType = recordHeader.getValue();
-								if (recType.equals("SMP")) {
-									imageName = "sprop";
-								}
-								else if (recType.equals("ADO")) {
-									imageName = "ado";
-								}
-								else { //PAL
-									imageName = "pal";
-									//check for provisional taxa
-									//rs2 = statement2.executeQuery("SELECT * FROM Taxa_View WHERE Record_ID = " + rs.getString(1) + " AND Status = 'Provisional'");
-									//if (rs2.next()) {
-									//	provFlag = true;
-									//}
-								}
-								
-								out.print("<tr><td><img src='images/child.gif' width='20' height='20' /><img src='images/" + imageName + ".gif' width='20' height='20' /></td><td colspan='3' class='smallheading'");
-								//if (provFlag) { returnVal.append(" style='color: #FF0000'"); }
-								out.print(">" + record.getAsString(Record.RECORD_NAME) + "</td><td class='smalltext'>");
-								if (record.get(Record.LAST_CHANGE) != null) {
-									out.print(DateFormat.getDateInstance(DateFormat.LONG).format(record.getAsDate(Record.LAST_CHANGE)));
-								}
-								out.print("&nbsp;</td><td>");
-*/	 /*							//Record Options
-								if (recType.equals("SMP") && (userRights & 2) != 0) {
-									returnVal.append("<a href='samp_prop_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-								}
-								else if (recType.equals("ADO") && (userRights & 2) != 0) {
-									returnVal.append("<a href='ado_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-								}
-								else if (recType.equals("PAL") && (userRights & 2) != 0) {
-									returnVal.append("<a href='pal_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-								}
-								returnVal.append("</td><td></td><td>");
-								if ((userRights & 8) != 0) {
-									returnVal.append("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this record\") == true) {document.FoldForm.ActionType.value=\"DeleteRec\";document.FoldForm.RecID.value=\"" + rs.getString(1) + "\";document.FoldForm.submit();}' title='Delete Record'><img src='images/delete.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-								}
-								returnVal.append("</td><td>");
-								if ((locType.equals("Drill") || recType.equals("ADO") || (recType.equals("PAL")) && !provFlag) && (userRights & 16) != 0 && locStatus.equals("approved")) {
-									returnVal.append("<a href='#' onClick='document.FoldForm.ActionType.value=\"SubmitRec\";document.FoldForm.RecID.value=\"" + rs.getString(1) + "\";document.FoldForm.RecType.value=\"" + rs.getString(4) + "\";document.FoldForm.submit();' title='Submit Record'><img src='images/submit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
-								}
-	*/			/*				out.println("</td></tr>");
-							}
+
+				for (Iterator k = sample.getAsVector(Sample.WORKING_RECORDS).iterator(); k.hasNext(); ) {
+					KeyValueObject kvo = (KeyValueObject) k.next();
+					int recID = Integer.parseInt(kvo.getKey());
+					String recType = kvo.getValue();
+					Record record = Record.getData(recID, user, state);
+					if (!recType.equals("SMP") && (record.get(Record.WORKING_FOLDER_ID) == null || record.getAsInt(Record.WORKING_FOLDER_ID) == (folder.getFolderID()))) {
+						String imageName;
+						if (recType.equals("ADO")) {
+							imageName = "ado.gif";
+						} else {
+							imageName = "pal.gif";
+							//check for provisional taxa
+							//rs2 = statement2.executeQuery("SELECT * FROM Taxa_View WHERE Record_ID = " + rs.getString(1) + " AND Status = 'Provisional'");
+							//if (rs2.next()) {
+							//	provFlag = true;
+							//}
 						}
-*/
+						out.print("<tr><td><img src='images/child.gif' width='20' height='20' /><img src='images/" + imageName + "' width='20' height='20' /></td><td colspan='3' class='smallheading'");
+						//if (provFlag) { returnVal.append(" style='color: #FF0000'"); }
+						out.print(">" + record.getAsString(Record.RECORD_NAME) + "</td><td class='smalltext'>");
+						if (record.get(Record.LAST_CHANGE) != null)
+							out.print(DateFormat.getDateInstance(DateFormat.LONG).format(record.getAsDate(Record.LAST_CHANGE)));
+						out.print("&nbsp;</td><td>");
+/*						//Record Options
+						if (recType.equals("SMP") && (userRights & 2) != 0) {
+							returnVal.append("<a href='samp_prop_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+						}
+						else if (recType.equals("ADO") && (userRights & 2) != 0) {
+							returnVal.append("<a href='ado_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+						}
+						else if (recType.equals("PAL") && (userRights & 2) != 0) {
+							returnVal.append("<a href='pal_data_entry.jsp?RecID=" + rs.getString(1) + "&FoldID=" + foldID + "' title='Edit Record'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+						}
+						returnVal.append("</td><td></td><td>");
+						if ((userRights & 8) != 0) {
+							returnVal.append("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this record\") == true) {document.FoldForm.ActionType.value=\"DeleteRec\";document.FoldForm.RecID.value=\"" + rs.getString(1) + "\";document.FoldForm.submit();}' title='Delete Record'><img src='images/delete.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+						}
+						returnVal.append("</td><td>");
+						if ((locType.equals("Drill") || recType.equals("ADO") || (recType.equals("PAL")) && !provFlag) && (userRights & 16) != 0 && locStatus.equals("approved")) {
+							returnVal.append("<a href='#' onClick='document.FoldForm.ActionType.value=\"SubmitRec\";document.FoldForm.RecID.value=\"" + rs.getString(1) + "\";document.FoldForm.RecType.value=\"" + rs.getString(4) + "\";document.FoldForm.submit();' title='Submit Record'><img src='images/submit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+						}
+*/						out.println("</td></tr>");
+					}
+				}
+				out.println("<tr><td colspan='11'><img src='images/line.gif' height='3' width='550' /></td></tr>");
+			}
 
 			out.println("<input type='hidden' name='ActionType' value=''>");
 			out.println("<input type='hidden' name='FoldID' value='" + folder.getFolderID() + "'>");

@@ -644,7 +644,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		rs.next();
 		String auditID = rs.getString(1);
 		conn.executeUpdate(
-			"UPDATE Audit_Table SET Status = 'working' WHERE Audit_ID = "
+			"UPDATE Audit_Table SET Status = 'working', Submitted_By_ID = NULL, Submitted_Date = NULL WHERE Audit_ID = "
 				+ auditID);
 		conn.releaseStatement();
 		feature = new Feature(feature.getFeatureID(), user, state, true);

@@ -78,6 +78,15 @@ public interface DataEntryForm {
 	public static final int ROCK_NATURE = 70;
 	public static final int CORRESPONDENCE = 71;
 
+	//Adoption Record fields
+	public static final int ADOPTION_DATE = 31;
+	public static final int ADOPTORS = 32;
+	public static final int ADO_AGE_START = 33;
+	public static final int ADO_START_MOD = 34;
+	public static final int ADO_AGE_STOP = 35;
+	public static final int ADO_STOP_MOD = 36;
+	public static final int ADO_COMMENTS = 37;	
+
 	public int getFieldCount();
 
 	public void setField(int field, String value) throws DataInputException;
