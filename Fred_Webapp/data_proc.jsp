@@ -17,6 +17,7 @@
 						t.submitProvisional(user, state);
 					}
 				}
+				dataEntryForm.setField(DataEntryForm.TAXA_LIST, (String) session.getAttribute("taxa"));
 			}
 			else {
 				dataEntryForm.setTempField(DataEntryForm.FEATURE_NAME, request.getParameter("FeatName"));
@@ -100,19 +101,15 @@
 				dataEntryForm.setTempField(DataEntryForm.LAB_SECTION, request.getParameter("SectID"));
 				dataEntryForm.setTempField(DataEntryForm.LAB_NUMBER, request.getParameter("LabNum"));
 				dataEntryForm.setTempField(DataEntryForm.COLLECTION_COMMENTS, request.getParameter("CollComm"));
-				System.out.println(request.getParameter("Taxa"));
 				dataEntryForm.setTempField(DataEntryForm.TAXA_LIST, request.getParameter("Taxa"));
 
 				session.setAttribute("dataEntryForm", dataEntryForm);
-	
+
 				dataEntryForm.setFieldsFromTemp();
 
 			}
 
-			System.out.println("OK");
-
 			if (request.getParameter("SaveType").equals("Submit")) {
-				System.out.println("Submitting");
 				dataEntryForm.submit();
 			} else {
 				dataEntryForm.save();

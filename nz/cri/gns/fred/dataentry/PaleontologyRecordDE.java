@@ -175,7 +175,6 @@ public class PaleontologyRecordDE extends RecordDE {
 								taxa.setTaxonomicName(taxaName);
 								taxaList.add(taxa);
 								if (!rs.getString(2).equals(TaxonomicLookup.APPROVED_STATUS)) {
-									System.out.println("Status of " + taxaName + " is " + rs.getString(2));
 									nonApprovedTaxaFlag = true;
 								}
 							} catch (Exception e) {  // not valid name
@@ -209,6 +208,7 @@ public class PaleontologyRecordDE extends RecordDE {
 				lab = null;
 				break;
 			case TAXA_LIST :
+				nonApprovedTaxaFlag = false;
 				taxaList = null;
 				break;
 		}
@@ -395,15 +395,8 @@ public class PaleontologyRecordDE extends RecordDE {
 	}
 	
 	protected void checkMandatoryFields() throws DataInputException {
-		//try {
-		//	if (!FolderUtils.isTaxaApproved(record.getRecordID(), user, state))
-		//		throw new DataInputException("Mandatory Fields", "Not all taxonomic entries are approved");
-		//} catch (Exception e) {
-		System.out.println("BadTaxaSize: " + badTaxaList.size());
-		System.out.println("nonAppFlag: " + nonApprovedTaxaFlag);
 		if (badTaxaList.size() > 0 || nonApprovedTaxaFlag)
 			throw new DataInputException("Mandatory Fields", "Not all taxonomic entries are approved");
-		//}
 	}
 	
 	public static String getCleanedName(String cleanName) throws DataInputException {
