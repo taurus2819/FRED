@@ -180,7 +180,7 @@
 							}
 							out.print("<tr><td><img src='images/child.gif' width='20' height='20' /><img src='images/" + imageName + "' width='20' height='20' /></td><td class='smalltext'");
 							//if (provFlag) { returnVal.append(" style='color: #FF0000'"); }
-							out.print(">" + record.getAsString(Record.RECORD_NAME) + "&nbsp;&nbsp;</td><td class='smalltext' style='color: #FF0000'>");
+							out.print(">" + FREDUtils.noNulls(record.getAsString(Record.RECORD_NAME)) + "&nbsp;&nbsp;</td><td class='smalltext' style='color: #FF0000'>");
 							if (record.getAsString(Record.STATUS).equals("working")) {
 								out.print("working&nbsp;&nbsp;</td><td class='smalltext'>");
 								if (record.get(Record.LAST_CHANGE) != null)

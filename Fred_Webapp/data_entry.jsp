@@ -15,7 +15,7 @@
 	Folder folder = new Folder(Integer.parseInt(foldID), user, state);
 	DataEntryForm dataEntryForm = null;
 	
-	//try {
+	try {
 		if (formType.equals("Outcrop") || formType.equals("Drillhole") || formType.equals("VertSect")) {
 			if (request.getParameter("LoadFeatID") != null) { //copying
 				if (featID == null) {
@@ -35,7 +35,7 @@
 				dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(formType, user, Integer.parseInt(sampID), Integer.parseInt(foldID), state);
 			}
 		}
-	//} catch (Exception e) {}
+	} catch (Exception e) {}
 
 	if (dataEntryForm != null) {
 		

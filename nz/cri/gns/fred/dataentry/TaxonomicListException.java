@@ -4,17 +4,17 @@ import java.util.Vector;
 
 public class TaxonomicListException extends Exception {
 	
-	private Vector taxaGroups;
+	private Vector taxaList;
 	
 	public TaxonomicListException() {
 	}
 	
-	public TaxonomicListException(Vector taxaGroups) {
-		super("New taxonomic entries");
-		this.taxaGroups = taxaGroups;
+	public TaxonomicListException(Vector taxaList) {
+		super("Bad taxonomic entries");
+		this.taxaList = taxaList;
 	}
 	
-	public Vector getTaxaGroups() {
-		return taxaGroups;
+	public Vector getTaxaList() {
+		return taxaList;
 	}
 }

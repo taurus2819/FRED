@@ -141,6 +141,9 @@
 					}
 					out.println("</table></p>");
 
+					if (feature.get(Feature.PETWELL_LINK) != null)
+						out.println("<p>Click <a href='" + feature.getAsString(Feature.PETWELL_LINK) + "' class='boldlink' target='petwell'>here</a> to link to the GNS Petroleum Wells database</p>");
+
 					out.println("<p><table border='0' cellspacing='0' cellpadding='2'>");
 					if (featType.equals("Drillhole")) {
 						out.println("<tr class='heading'><td>Locality Name&nbsp;&nbsp;</td><td>Sample Depth</td></tr>");
@@ -149,11 +152,12 @@
 					}
 					for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
 						Sample sampleList = new Sample(((Integer) i.next()).intValue(), user, state);
-						out.println("<tr><td><a href='detail.jsp?ID=" + sampleList.getSampleID() + "' class='boldlink'>" + sampleList.getAsString(Sample.SAMPLE_NAME) + "</a>&nbsp;&nbsp;</td><td><a href='detail.jsp?ID=" + sampleList.getSampleID() + "' class='boldlink'>" + sampleList.getAsString(Sample.DRILLHOLE_DEPTH) + "</a></td></tr>");
+						out.println("<tr><td><a href='detail.jsp?ID=" + sampleList.getSampleID() + "'>" + sampleList.getAsString(Sample.SAMPLE_NAME) + "</a>&nbsp;&nbsp;</td><td><a href='detail.jsp?ID=" + sampleList.getSampleID() + "'>" + sampleList.getAsString(Sample.DRILLHOLE_DEPTH) + "</a></td></tr>");
 					}
+					out.println("</table></p>");
 				}
-				out.println("</table></p>");
-				if (user ==  null) { out.println("<tr><td></td></tr><tr><td colspan='2'>More data may be available for this locality for <a href='login.jsp?loginpage=" + URLEncoder.encode("/fred/drillhole_detail.jsp") + "' class='boldlink'>logged</a> in users</td></tr>"); }
+				if (user ==  null)
+					out.println("<p>More data may be available for this locality for <a href='login.jsp?loginpage=" + URLEncoder.encode("/fred/drillhole_detail.jsp") + "' class='boldlink'>logged</a> in users</p>");
 			}
 
 			else { // outcrop

@@ -28,7 +28,7 @@ public class PaleontologyRecordDE extends RecordDE {
 	private Vector identifiers;
 	private String lab;
 	private Vector taxaList;
-	private Vector newTaxaList;
+	private Vector badTaxaList;
 
 	public PaleontologyRecordDE(User user, int sampleID, int folderID, PageState state)
 		throws SQLException, IOException, DataInputException {
@@ -88,11 +88,10 @@ public class PaleontologyRecordDE extends RecordDE {
 				setField(TAXA_LIST, taxaList.toString());
 			}
 		} catch (TaxonomicListException e) {
-			for (Iterator i = newTaxaList.iterator(); i.hasNext();) {
+			for (Iterator i = e.getTaxaList().iterator(); i.hasNext();) {
 				Taxa t = (Taxa) i.next();
-				System.out.println(t.getGroupID());
+				System.out.println(t.getGroupID() + " - " + t.getCleanTaxonomicName() + " : " + t.getTaxonomicName());
 			}
-			throw new DataInputException("Taxonomic List",  "Data Error");
 		}
 	}
 
@@ -157,14 +156,14 @@ public class PaleontologyRecordDE extends RecordDE {
 					break;
 				case TAXA_LIST :
 					taxaList = new Vector();
-					newTaxaList = new Vector();
+					badTaxaList = new Vector();
 					while (value.length() > 0) {
 						if (value.indexOf("\n") == -1)
 							value =  value + "\n";
 						String taxaLine = value.substring(0, value.indexOf("\n")).trim();
 						String taxaGroup, taxaName, taxaAuthor, taxaSpecCoord, taxaComm;
 						Integer taxaSpecCount;
-						//try {
+						try {
 							taxaGroup = taxaLine.substring(0, taxaLine.indexOf("*"));
 							taxaName = taxaLine.substring(taxaGroup.length() + 1, taxaLine.indexOf("*", taxaGroup.length() + 1));
 							taxaAuthor = taxaLine.substring(taxaGroup.length() + taxaName.length() + 2, taxaLine.indexOf("*", taxaGroup.length() + taxaName.length() + 2));
@@ -172,9 +171,9 @@ public class PaleontologyRecordDE extends RecordDE {
 							taxaSpecCount = ((taxaSpecCountStr.equals("")) ? null : new Integer(taxaSpecCountStr));
 							taxaSpecCoord = taxaLine.substring(taxaGroup.length() + taxaName.length() + taxaAuthor.length() + taxaSpecCountStr.length() + 4, taxaLine.indexOf("*", taxaGroup.length() + taxaName.length() + taxaAuthor.length() + taxaSpecCountStr.length() + 4));
 							taxaComm = taxaLine.substring(taxaLine.lastIndexOf("*") + 1, taxaLine.length());
-						//} catch (Exception e) {
-						//	throw new DataInputException("Taxanomic", taxaLine + " not valid");
-						//}
+						} catch (Exception e) {
+							throw new DataInputException("Taxanomic", taxaLine + " not valid");
+						}
 
 						//check TaxaGroup against lookup values
 						rs = conn.executeQuery("SELECT Lookup_ID FROM Lookup WHERE Name = " + JspUtils.sqlEscape(taxaGroup) + " AND FieldName = 'TaxaGroup'");
@@ -190,39 +189,42 @@ public class PaleontologyRecordDE extends RecordDE {
 						taxa.setSpecimenCount(taxaSpecCount);
 						taxa.setSpecimenCoords(taxaSpecCoord);
 						taxa.setComments(taxaComm);
-						//clean TaxaName
-						String cleanName = taxaName;
-						cleanName = cleanTaxaNameOpen(cleanName, "subsp.");
-						cleanName = cleanTaxaNameOpen(cleanName, "subspp.");
-						cleanName = cleanTaxaNameOpen(cleanName, "sp.");
-						cleanName = cleanTaxaNameOpen(cleanName, "spp.");
-						cleanName = cleanTaxaNameOpen(cleanName, "subgen.");
-						cleanName = cleanTaxaNameOpen(cleanName, "gen.");
-						cleanName = cleanTaxaNameOpen(cleanName, "subfam.");
-						cleanName = cleanTaxaNameOpen(cleanName, "fam.");
-						cleanName = cleanTaxaName(cleanName, "indet.");
-						cleanName = cleanTaxaName(cleanName, "?");
-						cleanName = cleanTaxaName(cleanName, "cf.");
-						cleanName = cleanTaxaName(cleanName, "aff.");
-						cleanName = cleanTaxaName(cleanName, "MS.");
-						cleanName = cleanTaxaName(cleanName, "s.s");
-						cleanName = cleanTaxaName(cleanName, "s.l.");
-						cleanName = cleanTaxaName(cleanName, "gr.");
-						//check TaxaName against thesaurus
-						rs = conn.executeQuery("SELECT Taxa_ID FROM Taxonomic_Lookup WHERE Taxonomic_Name = " + JspUtils.sqlEscape(cleanName) + " AND Status IN ('approved', 'provisional')");
-						try {
-							rs.next();
-							taxa.setTaxaID(new Integer(rs.getInt(1)));
-							taxa.setTaxonomicName(taxaName);
-							taxaList.add(taxa);
-						} catch (Exception e) {  // not valid name
-							taxa.setTaxonomicName(taxaName);
-							newTaxaList.add(taxa);
+						if (!taxaName.trim().equals("")) {
+							//clean TaxaName
+							String cleanName = taxaName;
+							cleanName = cleanTaxaNameOpen(cleanName, "subsp.");
+							cleanName = cleanTaxaNameOpen(cleanName, "subspp.");
+							cleanName = cleanTaxaNameOpen(cleanName, "sp.");
+							cleanName = cleanTaxaNameOpen(cleanName, "spp.");
+							cleanName = cleanTaxaNameOpen(cleanName, "subgen.");
+							cleanName = cleanTaxaNameOpen(cleanName, "gen.");
+							cleanName = cleanTaxaNameOpen(cleanName, "subfam.");
+							cleanName = cleanTaxaNameOpen(cleanName, "fam.");
+							cleanName = cleanTaxaName(cleanName, "indet.");
+							cleanName = cleanTaxaName(cleanName, "?");
+							cleanName = cleanTaxaName(cleanName, "cf.");
+							cleanName = cleanTaxaName(cleanName, "aff.");
+							cleanName = cleanTaxaName(cleanName, "MS.");
+							cleanName = cleanTaxaName(cleanName, "s.s");
+							cleanName = cleanTaxaName(cleanName, "s.l.");
+							cleanName = cleanTaxaName(cleanName, "gr.");
+							//check TaxaName against thesaurus
+							rs = conn.executeQuery("SELECT Taxa_ID FROM Taxonomic_Lookup WHERE Taxonomic_Name = " + JspUtils.sqlEscape(cleanName) + " AND Status IN ('approved', 'provisional')");
+							try {
+								rs.next();
+								taxa.setTaxaID(new Integer(rs.getInt(1)));
+								taxa.setTaxonomicName(taxaName);
+								taxaList.add(taxa);
+							} catch (Exception e) {  // not valid name
+								taxa.setTaxonomicName(taxaName);
+								taxa.setCleanTaxonomicName(cleanName);
+								badTaxaList.add(taxa);
+							}
 						}
 						value = value.substring(value.indexOf("\n") + 1, value.length()).trim();
 					}
-					if (newTaxaList.size() > 0)
-						throw new TaxonomicListException(newTaxaList);
+					if (badTaxaList.size() > 0)
+						throw new TaxonomicListException(badTaxaList);
 					break;
 			}
 		} catch (IOException e) {
@@ -346,7 +348,8 @@ public class PaleontologyRecordDE extends RecordDE {
 				"<tr><td class='heading' colspan='2'>Collection Comments</td><td><textarea name='CollComm' cols='40' rows='2'>"
 					+ FREDUtils.noNulls(getField(COLLECTION_COMMENTS))
 					+ "</textarea></td></tr>\n");
-			out.write("<tr><td class='heading'>Taxonomic List</td><td></td><td><textarea name='Taxa' cols='40' rows='20'>" + getField(TAXA_LIST) + "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Taxa\", \"Supp\", \"width=600,height=500\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
+			out.write("<tr><td class='heading'>Taxonomic List</td></tr>\n");
+			out.write("<tr><td colspan='3'><textarea name='Taxa' cols='80' rows='20'>" + FREDUtils.noNulls(getField(TAXA_LIST)) + "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Taxa\", \"Supp\", \"width=600,height=500\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
 			super.makeEndBitHTML(out);
 	}
 

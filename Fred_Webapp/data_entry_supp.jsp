@@ -59,14 +59,14 @@ function saveData(type) {
 		if (type == "Coord") {
 			if (checkCoord() == 1) {
 				for (i = 0; i < CoordType.length; i++) {
-					if (CoordType[i].checked) { window.opener.form1.Coord.value = CoordType[i].value + ":"; }
+					if (CoordType[i].checked) { window.opener.form1.GridRef.value = CoordType[i].value + ":"; }
 				}
-				if (CoordType[1].checked) { window.opener.form1.Coord.value = window.opener.form1.Coord.value + NZMGSheet.value.toUpperCase() + "*"; }
+				if (CoordType[1].checked) { window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + NZMGSheet.value.toUpperCase() + "*"; }
 				if (CoordType[2].checked) {
-					window.opener.form1.Coord.value = window.opener.form1.Coord.value + Country.value.toUpperCase() + "*";
-					window.opener.form1.Coord.value = window.opener.form1.Coord.value + North.value + "*" + East.value;
+					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + Country.value.toUpperCase() + "*";
+					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + North.value + "*" + East.value;
 				} else {
-					window.opener.form1.Coord.value = window.opener.form1.Coord.value + North.value + "*" + East.value;
+					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + East.value + "*" + North.value;
 				}
 				window.close();
 			}

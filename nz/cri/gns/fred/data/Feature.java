@@ -45,6 +45,7 @@ public class Feature {
 	public static final int START_DEPTH = 18;
 	public static final int FINISH_DEPTH = 19;
 	public static final int SAMPLES = 21;
+	public static final int PETWELL_LINK = 22;
 
 	private FeatureData fd;
 	private PageState state;
@@ -101,6 +102,7 @@ public class Feature {
 				case STATUS :
 				case SITE_ID :
 				case SAMPLES :
+				case PETWELL_LINK :
 				return true;
 			}		
 		}

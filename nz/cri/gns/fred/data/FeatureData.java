@@ -111,6 +111,17 @@ public class FeatureData {
 			}
 			values[24] = sampName;
 			rs.close();
+			query = "SELECT Well_Name FROM Petroleum.Petroleum_Well WHERE UPPER(Well_Name) = ?";
+			types[0] = Types.VARCHAR;
+			data[0] = values[Feature.FEATURE_NAME].toString().toUpperCase();
+			try {
+				rs = conn.executeQuery(query, types, data);
+				rs.next();
+				values[Feature.PETWELL_LINK] = "/seismic/petwell.jsp?wellname=" + rs.getString(1);
+				rs.close();
+			} catch (Exception e) {
+				values[Feature.PETWELL_LINK] = null;
+			}
 			conn.releaseStatement();
 		} catch (SQLException _e) {
 			pool.removeMe(this);

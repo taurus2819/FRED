@@ -1,8 +1,19 @@
 package nz.cri.gns.fred.data;
 
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import nz.cri.gns.auth.User;
+import nz.cri.gns.fred.FREDUtils;
+import nz.cri.gns.intranet.DBConnection;
+import nz.cri.gns.jsp.JspUtils;
+import nz.cri.gns.jsp.PageState;
+
 public class Taxa {
 
 	private String taxonomicName;
+	private String cleanTaxonomicName;
 	private Integer taxaID;
 	private String author;
 	private Integer specimenCount;
@@ -28,6 +39,14 @@ public class Taxa {
 
 	public String getTaxonomicName() {
 		return taxonomicName;
+	}
+
+	public void setCleanTaxonomicName(String cleanTaxonomicName) {
+		this.cleanTaxonomicName = cleanTaxonomicName;
+	}
+
+	public String getCleanTaxonomicName() {
+		return cleanTaxonomicName;
 	}
 
 	public void setTaxaID(Integer taxaID) {
@@ -85,4 +104,14 @@ public class Taxa {
 	public String getGroupName() {
 		return groupName;
 	}
+	
+	public void submitProvisional(User user, PageState state) throws SQLException, IOException {
+		if (user != null && state != null && groupID != null && cleanTaxonomicName != null) {
+			DBConnection conn = FREDUtils.getFREDConnection(state);
+			ResultSet rs = conn.executeQuery("SELECT Taxa_Seq.NEXTVAL FROM Dual");
+			rs.next();
+			conn.executeUpdate("INSERT INTO Taxonomic_Lookup (Taxa_ID, Group_ID, Taxonomic_Name, Author, Status, Submitted_By_ID, Submitted_Date) VALUES (" + rs.getString(1) + ", " + groupID + ", " + JspUtils.sqlEscape(cleanTaxonomicName) + ", " + JspUtils.sqlEscape(author) + ", 'provisional', " + user.getPersonId() + ", SYSDATE)");
+		}
+	}
+
 }

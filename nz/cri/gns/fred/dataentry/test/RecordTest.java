@@ -14,6 +14,7 @@ import junit.framework.TestCase;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
+import nz.cri.gns.fred.data.PaleontologyRecord;
 import nz.cri.gns.fred.data.SampPropRecord;
 import nz.cri.gns.fred.dataentry.DataEntryForm;
 import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
@@ -70,14 +71,17 @@ public class RecordTest extends TestCase {
 		form.save();
 	}
 
-	public void testPalLists() throws NotBoundException, DataInputException, InvalidCredentialsException, SQLException, IOException {
+	public void testPalLists() throws NotBoundException, InvalidCredentialsException, SQLException, IOException, DataInputException, TaxonomicListException {
+		PaleontologyRecord.purge();
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
 		DataEntryForm form = DataEntryFormFactory.getRecordDataEntryForm(1340, user, state);
 		for (int i = 0; i < form.getFieldCount(); i++) {
 			System.out.println(i + ": " + form.getField(i));
-		}	
+		}
+		//form.setField(DataEntryForm.TAXA_LIST, "POLLENITES*blue whale****");	
+		//form.save();
 	}
 
 }

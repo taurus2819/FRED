@@ -53,11 +53,11 @@ public abstract class RecordDE implements DataEntryForm {
 			this.state = state;
 			this.recordType = recordType;
 			if (recordType.equals("SMP")) {
-				this.record = (SampPropRecord) SampPropRecord.getData(recID, user, state);
+				this.record = (SampPropRecord) SampPropRecord.getData(recID, user, state, true);
 			} else if (recordType.equals("ADO")) {
-				this.record = (AdoptionRecord) AdoptionRecord.getData(recID, user, state);
+				this.record = (AdoptionRecord) AdoptionRecord.getData(recID, user, state, true);
 			} else if (recordType.equals("PAL")) {
-				this.record = (PaleontologyRecord) PaleontologyRecord.getData(recID, user, state);
+				this.record = (PaleontologyRecord) PaleontologyRecord.getData(recID, user, state, true);
 			} else {
 				throw new DataInputException("Record Type", "Invalid Value");
 			}

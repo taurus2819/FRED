@@ -94,7 +94,7 @@ public class PaleontologyRecord extends Record {
 			rs.close();
 
 			query =
-				"SELECT DISTINCT L.Name,P.Group_ID FROM Pal_List P, Lookup L WHERE P.Group_ID = L.Lookup_ID AND P.Record_ID = ? ORDER BY P.Group_ID";
+				"SELECT DISTINCT L.Name,P.Group_ID FROM Pal_List P, Lookup L WHERE P.Group_ID = L.Lookup_ID AND P.Record_ID = ? ORDER BY UPPER(L.Name)";
 			rs = conn.executeQuery(query, types, data);
 			Statement preserveStatement = conn.preservePreparedStatement();
 			Vector taxaGroupVec = new Vector();
@@ -107,7 +107,7 @@ public class PaleontologyRecord extends Record {
 				query =
 					"SELECT P.Taxonomic_Name, P.Taxa_ID, T.Author, P.Specimen_Count, P.Specimen_Coords, P.Comments FROM Pal_List P, Taxonomic_Lookup T WHERE P.Taxa_ID = T.Taxa_ID AND Record_ID = ? AND T.Group_ID = "
 						+ taxaGroup.getGroupID()
-						+ " ORDER BY P.Taxonomic_Name";
+						+ " ORDER BY UPPER(P.Taxonomic_Name)";
 				ResultSet rs2 = conn.executeQuery(query, types, data);
 				Vector taxaVec = new Vector();
 				while (rs2.next()) {
@@ -134,7 +134,6 @@ public class PaleontologyRecord extends Record {
 			values[30] = ((taxaGroupVec.size() > 0) ? taxaGroupVec : null);
 			rs.close();
 			preserveStatement.close();
-
 			conn.releaseStatement();
 		} catch (SQLException _e) {
 			pool.removeMe(this);
