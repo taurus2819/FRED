@@ -253,12 +253,13 @@ public class Record {
 	}
 
 	/**
-	 *  Use this to get a new instance of this class. 
-	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
+	 *  Use this to get a new instance of this class. If forceRefresh = true 
+	 * @throws SQLException if there is not a record for given ID, as well as normal SQLExceptions.
 	 */
 	public static Record getData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, InvalidCredentialsException {
 		Record rec = (Record) pool.retrieve(new DataFinder(id));
 		if (forceRefresh && rec != null) {
+			System.out.println("Removing RECORD " + id + " from pool");
 			pool.removeMe(rec);
 			rec = null;
 		}
@@ -272,8 +273,8 @@ public class Record {
 	}
 
 	/**
-	 *  Use this to get a new instance of this class. 
-	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
+	 *  Use this to get a new instance of this class. If record already exists in the pool then it is retrieved
+	 * @throws SQLException if there is not a record for given ID, as well as normal SQLExceptions.
 	 */
 	public static Record getData(int id, User user, PageState state) throws SQLException, IOException, InvalidCredentialsException {
 		return getData(id, user, state, false);

@@ -350,10 +350,9 @@ public class PaleontologyRecordDE extends RecordDE {
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = true;
-				try {
-					record = (PaleontologyRecord) PaleontologyRecord.getData(record.getRecordID(), user, state, true);
-					sample = new Sample(sample.getSampleID(), user, state, true);
-				} catch (Exception e) {	}
+				record = Record.getData(record.getRecordID(), user, state, true);
+				record = (PaleontologyRecord) PaleontologyRecord.getData(record.getRecordID(), user, state, true);
+				sample = new Sample(sample.getSampleID(), user, state, true);
 			} catch (SQLException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);

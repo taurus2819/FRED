@@ -241,9 +241,7 @@ public abstract class RecordDE implements DataEntryForm {
 				qd.addQueryColumn("sample_id", Types.NUMERIC, new Integer(sample.getSampleID()));
 				qd.addQueryColumn("audit_id", Types.NUMERIC, new Integer(auditID));
 				String recordID = DBUtils.doInsertUsingSequence(qd, "record_id", "record_seq", conn, true);
-				try {
-					record = Record.getData(Integer.parseInt(recordID), user, state, true);
-				} catch (Exception e) {}
+				record = Record.getData(Integer.parseInt(recordID), user, state, true);
 			} else { // edit
 				if ((!FREDUtils.hasMasterfileRecordRights(user, String.valueOf(record.getRecordID()), state) && record.getAsString(Record.STATUS).equals(Audit.STATUS_APPROVED)) || !folder.isAllowedEditLocalities())
 					throw new InvalidCredentialsException();
@@ -256,9 +254,7 @@ public abstract class RecordDE implements DataEntryForm {
 				qd.addQueryColumn("security_class_id", Types.NUMERIC, ((secClassID != null) ? secClassID : new Integer(4)));
 				qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(record.getAsInt(Record.AUDIT_ID)));
 				DBUtils.doUpdate(qd, "audit_id = ?", conn);
-				try {
-					record = Record.getData(record.getRecordID(), user, state, true);
-				} catch (Exception e) {}
+				record = Record.getData(record.getRecordID(), user, state, true);
 			}
 			conn.releaseStatement();
 		}
