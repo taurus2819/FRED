@@ -109,10 +109,10 @@ public class DataEntryUtils {
 		return null;
 	}
 	
-	public static void parseAge(String stageStart, String stageStop, String fieldName, PageState state) throws DataInputException {
+	public static void parseAge(String stageStart, String stageStop, String fieldName, PageState state) throws DataInputException, IOException, NumberFormatException, SQLException {
 		try {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
-			String query = "SELECT ta_age_state, ta_age_stop FROM age_view WHERE ag_id = ?";
+			String query = "SELECT ta_age_start, ta_age_stop FROM age_view WHERE ag_id = ?";
 			ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(stageStart)});
 			rs.next();
 			double startStart = rs.getDouble(1);

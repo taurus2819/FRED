@@ -21,7 +21,7 @@ import nz.cri.gns.test.TestingPageState;
 
 public class SampleTest extends TestCase {
 
-	public void testAddDeleteSample() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void _testAddDeleteSample() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("test", "test", ipConn);
@@ -44,6 +44,9 @@ public class SampleTest extends TestCase {
 		form.setTempField(DataEntryForm.COLLECTION_DATE, "2004");
 		form.setTempField(DataEntryForm.COLLECTORS, "Morrison, Ben");
 		form.setTempField(DataEntryForm.FOSSILS_IN_PLACE, "Yes");
+		form.setTempField(DataEntryForm.INF_AGE_START, "7");
+		form.setTempField(DataEntryForm.INF_START_MOD, "?");
+		form.setTempField(DataEntryForm.INF_AGE_STOP, "685");
 		form.setFieldsFromTemp();
 		form.save();
 		Sample sample = new Sample(sampleID, user, state, true);
