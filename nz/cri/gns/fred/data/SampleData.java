@@ -43,7 +43,7 @@ public class SampleData {
 				+ "AUDIT_ID, STATUS, LAST_CHANGE, WORKING_FOLDER_ID, WORKING_COMMENTS, SECURITY_CLASS_ID, "
 				+ "SITE_ID, LATITUDE, LONGITUDE, QMAP_SHEET, NZMG_SHEET, NZMG_EAST, NZMG_NORTH, METHOD, "
 				+ "ACCURACY, LOCALITY, DRILLHOLE_LICENCE_NAME, PERSON_ID, PERSON, START_DATE, START_DATE_ROUNDING, "
-				+ "FINISH_DATE, FINISH_DATE_ROUNDING, DATUM_TYPE, DATUM_ELEVATION, START_DEPTH, FINISH_DEPTH "
+				+ "FINISH_DATE, FINISH_DATE_ROUNDING, DATUM_TYPE, DATUM_ELEVATION, START_DEPTH, FINISH_DEPTH, "
 				+ "METHOD_ID, ORIG_SYSTEM_ID, COORD_SYSTEM, ORIG_COORD, COUNTRY_CODE, COUNTRY_NAME "
 				+ "FROM Sample_All_View WHERE Sample_ID = ?";
 		data[0] = new Integer(this.id);
@@ -147,25 +147,11 @@ public class SampleData {
 			values[44] = rs.getDate(45);
 			values[45] = rs.getString(46);
 			values[46] = rs.getString(47);
-			values[47] =
-				((rs.getString(48) != null)
-					? new Double(rs.getDouble(48))
-					: null);
-			values[48] =
-				((rs.getString(49) != null)
-					? new Double(rs.getDouble(49))
-					: null);
-			values[49] =
-				((rs.getString(50) != null)
-					? new Double(rs.getDouble(50))
-					: null);
-			values[52] =
-				((rs.getString(51) != null)
-					? new Integer(rs.getInt(51))
-					: null);
-			values[53] = ((rs.getString(52) != null)
-			? new Integer(rs.getInt(52))
-			: null);
+			values[47] = ((rs.getString(48) != null) ? new Double(rs.getDouble(48))	: null);
+			values[48] = ((rs.getString(49) != null) ? new Double(rs.getDouble(49))	: null);
+			values[49] = ((rs.getString(50) != null) ? new Double(rs.getDouble(50))	: null);
+			values[52] = ((rs.getString(51) != null) ? new Integer(rs.getInt(51)) : null);
+			values[53] = ((rs.getString(52) != null) ? new Integer(rs.getInt(52)) : null);
 			values[54] = rs.getString(53);
 			values[55] = rs.getString(54);
 			values[56] = rs.getString(55);

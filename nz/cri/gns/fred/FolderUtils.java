@@ -9,6 +9,9 @@ import java.sql.Statement;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.data.Folder;
+import nz.cri.gns.fred.dataentry.DataInputException;
+import nz.cri.gns.fred.dataentry.Locality;
+import nz.cri.gns.fred.dataentry.LocalityFactory;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
@@ -47,8 +50,8 @@ public class FolderUtils {
 		conn.releaseStatement();
 	}
 
-	public static void deleteFeature(String featID, PageState state) throws IOException, SQLException {
-		DBConnection conn = FREDUtils.getFREDConnection(state);
+	public static void deleteFeature(String featID, String featType, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+/*		DBConnection conn = FREDUtils.getFREDConnection(state);
 		StringBuffer auditID = new StringBuffer();
 		ResultSet rs = conn.executeQuery("SELECT Audit_ID FROM Record WHERE Sample_ID IN (SELECT Sample_ID FROM Sample WHERE Feature_ID = " + featID + ")");
 		while (rs.next()) {
@@ -61,10 +64,12 @@ public class FolderUtils {
 		conn.executeUpdate("DELETE FROM Feature WHERE Feature_ID = " + featID);
 		conn.executeUpdate("DELETE FROM Audit_Table WHERE Audit_ID IN (" + auditID + ")");
 		conn.releaseStatement();
+	*/	Locality locality = LocalityFactory.getLocality(featType, Integer.parseInt(featID), user, state);
+		locality.delete();
 	}
 
-	public static void submitLocality(String featID, String foldID, User user, PageState state) throws SQLException, IOException, FolderUtilException {
-		int userID = user.getPersonId();
+	public static void submitLocality(String featID, String featType, String foldID, User user, PageState state) throws FolderUtilException, NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+/*		int userID = user.getPersonId();
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		ResultSet rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Site_ID IS NOT NULL AND Locality IS NOT NULL AND Feature_Type IS NOT NULL AND Feature_ID = " + featID);
 		if (rs.next()) {
@@ -97,6 +102,8 @@ public class FolderUtils {
 			throw new FolderUtilException("Cannot submit locality as not all mandatory fields have been completed");
 		}
 		conn.releaseStatement();
+	*/	Locality locality = LocalityFactory.getLocality(featType, Integer.parseInt(featID), user, state);
+		locality.submit();
 	}
 	
 	public static void submitRecord(String recID, String recType, String foldID, User user, PageState state) throws IOException, SQLException, FolderUtilException {
@@ -128,8 +135,8 @@ public class FolderUtils {
 		conn.releaseStatement();
 	}
 	
-	public static void revokeLocality(String featID, String foldID, PageState state) throws IOException, SQLException {
-		DBConnection conn = FREDUtils.getFREDConnection(state);
+	public static void revokeLocality(String featID, String featType, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+/*		DBConnection conn = FREDUtils.getFREDConnection(state);
 		conn.executeUpdate("UPDATE Audit_Table SET Status = 'working', Working_Folder_ID = " + foldID + " WHERE Audit_ID IN (SELECT Audit_ID FROM Feature WHERE Feature_ID = " + featID + ")");
 		//decide whether drillhole or outcrop
 		ResultSet rs = conn.executeQuery("SELECT Feature_Type FROM Feature WHERE Feature_ID = " + featID);
@@ -137,7 +144,9 @@ public class FolderUtils {
 		if (rs.getString(1).equals("Outcrop")) { //outcrop so also revoke sample property record
 			conn.executeUpdate("UPDATE Audit_Table SET Status = 'working', Working_Folder_ID = " + foldID + " WHERE Audit_ID IN (SELECT DISTINCT Audit_ID FROM Sample_Property_All_View WHERE Feature_ID = " + featID + ")");
 		}
-		conn.releaseStatement();	
+		conn.releaseStatement();
+	*/	Locality locality = LocalityFactory.getLocality(featType, Integer.parseInt(featID), user, state);
+		locality.revoke();	
 	}
 	
 	public static void copyLocality(String oldFeatID, String newFeatName, String foldID, User user, PageState state) throws IOException, SQLException {

@@ -170,5 +170,4 @@ public class FREDUtils {
 	public static String makeDropDownNulls(String in) {
 		return (in == null || in.equals("-")) ? "null" : "'" + in + "'";
 	}
-
 }

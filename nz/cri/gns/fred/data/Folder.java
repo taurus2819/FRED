@@ -28,6 +28,10 @@ public class Folder {
 		this.userRights = FREDUtils.getUserFolderRights(user, fd.getAsString(FOLDER_ID), state);
 	}
 
+	public int getFolderID() {
+		return fd.getAsInt(Folder.FOLDER_ID);
+	}
+
 	public int getUserRights() {
 		return userRights;
 	}
