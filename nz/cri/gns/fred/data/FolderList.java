@@ -7,6 +7,7 @@ import java.sql.Types;
 import java.util.Vector;
 
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.PageState;
@@ -18,21 +19,16 @@ public class FolderList {
 
 	public FolderList(User user, PageState state) throws IOException, SQLException {
 		if (user != null) {
-			int userID = user.getPersonId();
 			DBConnection conn = FREDUtils.getFREDConnection(state);
-			int[] types = { Types.NUMERIC };
-			Object[] data = new Object[1];
-			data[0] = new Integer(userID);
-			String query = ("SELECT Folder_Type, Folder_ID FROM Folder_View WHERE User_ID = ? ORDER BY Folder_Name");
-			ResultSet rs = conn.executeQuery(query, types, data);
-			conn.preservePreparedStatement();
+			String query = ("SELECT folder_type, folder_id, folder_name FROM folder_view WHERE user_id = ? ORDER BY folder_name");
+			ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(user.getPersonId())});
 			personalFolders = new Vector();
 			adminFolders = new Vector();
 			while (rs.next()) {
 				if (rs.getString(1).equals("personal")) {
-					personalFolders.add(new Integer(rs.getInt(2)));
+					personalFolders.add(new KeyValueObject(rs.getString(2), rs.getString(3)));
 				} else {
-					adminFolders.add(new Integer(rs.getInt(2)));
+					adminFolders.add(new KeyValueObject(rs.getString(2), rs.getString(3)));
 				}
 			}
 			conn.releaseStatement();

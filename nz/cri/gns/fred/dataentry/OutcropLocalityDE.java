@@ -123,22 +123,22 @@ public class OutcropLocalityDE extends LocalityDE {
 			conn.getConnection().rollback();
 			conn.getConnection().setAutoCommit(true);
 			conn.releaseStatement();
-			throw new SQLException(e.getMessage());
+			throw e;
 		} catch (IOException e) {
 			conn.getConnection().rollback();
 			conn.getConnection().setAutoCommit(true);
 			conn.releaseStatement();
-			throw new IOException(e.getMessage());
+			throw e;
 		} catch (InvalidCredentialsException e) {
 			conn.getConnection().rollback();
 			conn.getConnection().setAutoCommit(true);
 			conn.releaseStatement();
-			throw new InvalidCredentialsException();
+			throw e;
 		} catch (DataInputException e) {
 			conn.getConnection().rollback();
 			conn.getConnection().setAutoCommit(true);
 			conn.releaseStatement();
-			throw new DataInputException(e.getField(), e.getMessage());
+			throw e;
 		}
 		return feature.getFeatureID();	
 	}
