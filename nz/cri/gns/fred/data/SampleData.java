@@ -9,6 +9,8 @@ import java.util.Vector;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.fred.FREDUtils;
+import nz.cri.gns.db.metadata.DocumentAttacher;
+import nz.cri.gns.db.metadata.MetadataRecord;
 import nz.cri.gns.db.pool.Finder;
 import nz.cri.gns.db.pool.Pool;
 import nz.cri.gns.intranet.DBConnection;
@@ -26,6 +28,8 @@ public class SampleData {
 	private Object[] values = new Object[135];
 	private int[] types = { Types.NUMERIC };
 	private Object[] data = new Object[1];
+	protected MetadataRecord[] featMR;
+	protected MetadataRecord[] sampMR;
 
 	/**
 	 * Cannot be called directly. use static getContactPerson method instead.
@@ -307,6 +311,14 @@ public class SampleData {
 			pool.removeMe(this);
 			throw DBUtils.fixSQLException(_e, query, conn);
 		}
+		try {
+			DocumentAttacher attacher = DocumentAttacher.createFREDSampleDocumentAttacher(state.session, state.context);
+			sampMR = attacher.getDocumentsForId(id);
+			attacher = DocumentAttacher.createFREDFeatureDocumentAttacher(state.session, state.context);
+			featMR = attacher.getDocumentsForId(getAsInt(Sample.FEATURE_ID));
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 	}
 
 	/**
@@ -438,9 +450,5 @@ public class SampleData {
 	public String toString() {
 		return (values[5]).toString();
 	}
-
-	//public void finalize() throws Throwable {
-	//	pool.removeMe(this);
-	//}
 
 }

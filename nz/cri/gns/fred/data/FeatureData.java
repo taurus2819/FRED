@@ -8,6 +8,8 @@ import java.util.Vector;
 
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.FREDUtils;
+import nz.cri.gns.db.metadata.DocumentAttacher;
+import nz.cri.gns.db.metadata.MetadataRecord;
 import nz.cri.gns.db.pool.Finder;
 import nz.cri.gns.db.pool.Pool;
 import nz.cri.gns.intranet.DBConnection;
@@ -25,6 +27,7 @@ public class FeatureData {
 	private int[] types = { Types.NUMERIC };
 	private Object[] data = new Object[1];
 	private Object[] values = new Object[27];
+	protected MetadataRecord[] mr;
 
 	/**
 	 * Cannot be called directly. use static getDate method instead.
@@ -110,6 +113,12 @@ public class FeatureData {
 		} catch (SQLException _e) {
 			pool.removeMe(this);
 			throw DBUtils.fixSQLException(_e, query, conn);
+		}
+		try {
+			DocumentAttacher recordAttacher = DocumentAttacher.createFREDFeatureDocumentAttacher(state.session, state.context);
+			mr = recordAttacher.getDocumentsForId(id);
+		} catch (Exception e) {
+			System.out.println(e);
 		}
 	}
 

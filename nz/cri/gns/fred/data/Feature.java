@@ -10,6 +10,7 @@ import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.QueryDescriptor;
+import nz.cri.gns.db.metadata.MetadataRecord;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.intranet.DBConnection;
@@ -94,6 +95,20 @@ public class Feature {
 		return fd.getAsVector(SAMPLES).size();
 	}
 
+	public MetadataRecord[] getMetadataRecords() throws InvalidCredentialsException {
+		if (!authenticated)
+			throw new InvalidCredentialsException();
+		return fd.mr;
+	}
+	
+	public int getMetadataRecordsCount() throws InvalidCredentialsException {
+		if (!authenticated)
+			throw new InvalidCredentialsException();
+		if (fd.mr != null)
+			return fd.mr.length;
+		return 0;
+	}		
+	
 	private boolean isAllowedField(int field) {
 		if (authenticated) {
 			return true;

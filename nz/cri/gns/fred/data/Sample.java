@@ -11,6 +11,7 @@ import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.db.QueryDescriptor;
+import nz.cri.gns.db.metadata.MetadataRecord;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.intranet.DBConnection;
@@ -236,6 +237,34 @@ public class Sample {
 		}
 		return palCount;		
 	}
+	
+	public MetadataRecord[] getSampleMetadataRecords() throws InvalidCredentialsException {
+		if (!authenticated)
+			throw new InvalidCredentialsException();
+		return sd.sampMR;
+	}
+	
+	public int getSampleMetadataRecordsCount() throws InvalidCredentialsException {
+		if (!authenticated)
+			throw new InvalidCredentialsException();
+		if (sd.sampMR != null)
+			return sd.sampMR.length;
+		return 0;
+	}	
+
+	public MetadataRecord[] getFeatureMetadataRecords() throws InvalidCredentialsException {
+		if (!authenticated)
+			throw new InvalidCredentialsException();
+		return sd.featMR;
+	}
+	
+	public int getFeatureMetadataRecordsCount() throws InvalidCredentialsException {
+		if (!authenticated)
+			throw new InvalidCredentialsException();
+		if (sd.sampMR != null)
+			return sd.featMR.length;
+		return 0;
+	}	
 	
 	private boolean isAllowedField(int field) {
 		if (authenticated) {

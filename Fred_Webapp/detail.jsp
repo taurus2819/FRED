@@ -4,14 +4,13 @@
 %><%
 	User user = (User)getUser(session);
 	PageState state = new PageState(request, response, getServletContext());
-	//DocumentAttacher attacher = DocumentAttacher.createFREDDocumentAttacher(session, application);
 	DecimalFormat nzmg = new DecimalFormat("######0");
 	DecimalFormat latlong = new DecimalFormat("#00.0000");
 	String sampID, recID, featType;
 	boolean authorChk = false, sCountChk = false, sCoordChk = false, commChk = true;
 
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	//if FeatureID given then get SampleID or transer to drillhole
 	if (request.getParameter("FeatID") != null) {
@@ -309,6 +308,22 @@
 					out.println("</td><td>" + sample.getAsString(Sample.FINISH_DEPTH) + " m</td></tr>");
 				}
 			}
+			//Image/Files
+			if (sample.isUserAuthenticated() && sample.getFeatureMetadataRecordsCount() > 0) {
+				out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
+				MetadataRecord[] mr = sample.getFeatureMetadataRecords();
+				out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
+				int y = 1;
+				out.print("<tr>");
+				for (int x = 0; x < mr.length; x++) {
+					if (y++ == 5) {
+						out.println("</tr><tr>");
+						y = 2;
+					}
+					out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
+				}
+				out.println("</td></tr></table></td></tr>");
+			}
 			out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");	
 
 			if (sample.isUserAuthenticated()) {
@@ -390,27 +405,25 @@
 				if (sample.get(Sample.DEPOSITION_ENV) != null) { out.println("<tr><td class='heading'>Inferred Environment</td><td>" + sample.getAsString(Sample.DEPOSITION_ENV) + "</td></tr>"); }
 				if (sample.get(Sample.ROCK_NATURE) != null) { out.println("<tr><td class='heading'>Nature of Rock Unit</td><td>" + sample.getAsString(Sample.ROCK_NATURE) + "</td></tr>"); }
 				if (sample.get(Sample.CORRESPONDENCE) != null) { out.println("<tr><td class='heading'>Correspondence</td><td>" + sample.getAsString(Sample.CORRESPONDENCE) + "</td></tr>"); }
-				/*			//Image/Files
-							MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
-							if (mr != null) {
-								out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
-								out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
-								int y = 1;
-								out.print("<tr>");
-								for (int x = 0; x < mr.length; x++) {
-									if (y++ == 5) {
-										out.println("</tr><tr>");
-										y = 2;
-									}
-									out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
-								}
-								out.println("</td></tr></table></td></tr>");
-							}
-			*/	
+				//Image/Files
+				if (sample.getSampleMetadataRecordsCount() > 0) {
+					out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
+					MetadataRecord[] mr = sample.getSampleMetadataRecords();
+					out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
+					int y = 1;
+					out.print("<tr>");
+					for (int x = 0; x < mr.length; x++) {
+						if (y++ == 5) {
+							out.println("</tr><tr>");
+							y = 2;
+						}
+						out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
+					}
+					out.println("</td></tr></table></td></tr>");
+				}
 				out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
 
-				
-			if (sample.get(Sample.RECORDS) != null) {
+				if (sample.get(Sample.RECORDS) != null) {
 					//Adoption
 					for (Iterator i = sample.getAsVector(Sample.RECORDS).iterator(); i.hasNext(); ) {
 						KeyValueObject rec = (KeyValueObject)i.next();
@@ -430,10 +443,10 @@
 								if (ado.get(AdoptionRecord.ADOPTION_DATE) != null) { out.print("<tr><td class='heading'>Adoption Date</td><td>" + FREDUtils.formatDateForOutput(ado.getAsDate(AdoptionRecord.ADOPTION_DATE), ado.getAsString(AdoptionRecord.ADOPTION_DATE_ROUNDING)) + "</td></tr>"); }
 								if (ado.get(AdoptionRecord.ADOPTED_STAGE) != null) { out.println("<tr><td class='heading'>Adopted Stage</td><td>" + ado.getAsString(AdoptionRecord.ADOPTED_STAGE) + "</td></tr>"); }
 								if (ado.get(AdoptionRecord.COMMENTS) != null) { out.println("<tr><td class='heading'>Comments</td><td>" + ado.getAsString(AdoptionRecord.COMMENTS) + "</td></tr>"); }
-					/*			//Image/Files
-								MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
-								if (mr != null) {
+								//Image/Files
+								if (ado.getMetadataRecordsCount() > 0) {
 									out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
+									MetadataRecord[] mr = ado.getMetadataRecords();
 									out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
 									int y = 1;
 									out.print("<tr>");
@@ -446,7 +459,7 @@
 									}
 									out.println("</td></tr></table></td></tr>");
 								}
-					*/			out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
+								out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
 							} catch (Exception e) {
 							}
 						}
@@ -504,10 +517,10 @@
 									}
 									out.println("</td></tr></table></td></tr>");
 								}
-					/*			//Image/Files
-								MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
-								if (mr != null) {
+								//Image/Files
+								if (pal.getMetadataRecordsCount() > 0) {
 									out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
+									MetadataRecord[] mr = pal.getMetadataRecords();
 									out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
 									int y = 1;
 									out.print("<tr>");
@@ -520,7 +533,7 @@
 									}
 									out.println("</td></tr></table></td></tr>");
 								}
-					*/		} catch (Exception e) {
+							} catch (Exception e) {
 							}
 						}
 					}

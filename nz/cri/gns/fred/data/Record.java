@@ -9,7 +9,10 @@ import java.util.Vector;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.db.DataException;
 import nz.cri.gns.db.KeyValueObject;
+import nz.cri.gns.db.metadata.DocumentAttacher;
+import nz.cri.gns.db.metadata.MetadataRecord;
 import nz.cri.gns.db.pool.Finder;
 import nz.cri.gns.db.pool.Pool;
 import nz.cri.gns.fred.FREDUtils;
@@ -86,18 +89,21 @@ public class Record {
 	
 	private static Pool pool = new Pool();
 	protected int id;
-	protected Object[] values = new Object[39];
+	protected Object[] values = new Object[38];
 	protected int[] types = { Types.NUMERIC };
 	protected Object[] data = new Object[1];
+	private MetadataRecord[] mr;
 	
 	protected Record() {
 	}
 	
 	/**
 	 * Cannot be called directly. use static getData method instead.
+	 * @throws IOException
+	 * @throws SQLException
+	 * @throws DataException
 	 */
-	protected Record(int id, PageState state)
-		throws SQLException, IOException {
+	protected Record(int id, PageState state) throws IOException, SQLException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		this.id = id;
 		pool.add(this);
@@ -136,6 +142,12 @@ public class Record {
 			pool.removeMe(this);
 			throw DBUtils.fixSQLException(_e, query, conn);
 		}
+		try {
+			DocumentAttacher recordAttacher = DocumentAttacher.createFREDRecordDocumentAttacher(state.session, state.context);
+			mr = recordAttacher.getDocumentsForId(id);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 	}
 	
 	public int getRecordID() {
@@ -150,6 +162,16 @@ public class Record {
 	
 	public String getRecordType() {
 		return getAsString(RECORD_TYPE);
+	}
+	
+	public MetadataRecord[] getMetadataRecords() {
+		return mr;
+	}
+	
+	public int getMetadataRecordsCount() {
+		if (mr != null)
+			return mr.length;
+		return 0;
 	}
 	
 	/**
