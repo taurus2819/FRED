@@ -18,7 +18,7 @@ public class DataEntryFormFactory {
 	  		return new OutcropLocalityDE(id, user, state);
 	  	} else if (feature.getAsString(Feature.FEATURE_TYPE).equals("Drillhole")) {
 	  		return new DrillholeLocalityDE(id, user, state);
-		} else if (feature.getAsString(Feature.FEATURE_TYPE).equals("VertSect")) {
+		} else if (feature.getAsString(Feature.FEATURE_TYPE).equals("Vertical Section")) {
 			return new VertSectLocalityDE(id, user, state);
 	  	} else {
 	  		throw new DataInputException("Feature Type", "Invalid");
@@ -30,7 +30,7 @@ public class DataEntryFormFactory {
 			return new OutcropLocalityDE(user, folderID, state);
 		} else if (type.equals("Drillhole")) {
 			return new DrillholeLocalityDE(user, folderID, state);
-		} else if (type.equals("VertSect")) {
+		} else if (type.equals("Vertical Section")) {
 			return new VertSectLocalityDE(user, folderID, state);
 		} else {
 			throw new DataInputException("Feature Type", "Invalid");

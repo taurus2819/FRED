@@ -45,7 +45,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		this.state = state;
 		if (!(featureType.equals("Outcrop")
 			|| featureType.equals("Drillhole")
-			|| featureType.equals("VertSect")))
+			|| featureType.equals("Vertical Section")))
 			throw new DataInputException("Feature Type", "Invalid value");
 		this.featureType = featureType;
 		this.folder = new Folder(folderID, user, state);
@@ -198,15 +198,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			"<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>\n");
 		out.write(
 			"<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>\n");
-		out.write("<tr><td colspan='2' align='center' class='heading'>\n");
-		if (featureType.equals("Outcrop")) {
-			out.write("Outcrop");
-		} else if (featureType.equals("Drillhole")) {
-			out.write("Drillhole");
-		} else if (featureType.equals("VertSect")) {
-			out.write("Vertical Section");
-		}
-		out.write(" Locality</td></tr>\n");
+		out.write("<tr><td colspan='2' align='center' class='heading'>" + featureType + " Locality</td></tr>\n");
 		out.write("<tr><td>&nbsp;</td></tr>\n");
 		out.write(
 			"<tr><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
@@ -438,10 +430,7 @@ public abstract class LocalityDE implements DataEntryForm {
 						+ ", "
 						+ JspUtils.sqlEscape(fields[REGISTRATION_AREA])
 						+ ")");
-				conn.executeUpdate(
-					"INSERT INTO Sample (Feature_ID) VALUES ("
-						+ featureID
-						+ ")");
+				conn.executeUpdate("INSERT INTO Sample (Feature_ID) VALUES (" + featureID + ")");
 				feature = new Feature(featureID, user, state, true);
 				int sampleID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
 				sample = new Sample(sampleID, user, state, true);
@@ -451,10 +440,7 @@ public abstract class LocalityDE implements DataEntryForm {
 				if (!folder.isAllowedEditLocalities())
 					throw new InvalidCredentialsException();
 				//Update AUDIT
-				rs =
-					conn.executeQuery(
-						"SELECT Audit_ID FROM Feature WHERE Feature_ID = "
-							+ feature.getFeatureID());
+				rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
 				rs.next();
 				String auditID = rs.getString(1);
 				conn.executeUpdate(

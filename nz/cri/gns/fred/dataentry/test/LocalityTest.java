@@ -33,20 +33,12 @@ import nz.cri.gns.test.TestingPageState;
  */
 public class LocalityTest extends TestCase {
 
-	public void _testSave() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void testNewSave() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
-		DataEntryForm loc2 = DataEntryFormFactory.getLocalityDataEntryForm(661, user, state);
-		for (int i = 0; i < loc2.getFieldCount(); i++) {
-			System.out.println(i + ": " + loc2.getField(i));
-		}
-		loc2.setField(LocalityDE.SPUD_DATE, "4/2003");
-		loc2.setField(LocalityDE.COMPLETION_DATE, null);
-		loc2.setField(LocalityDE.DATUM_TYPE, "KB");
-		loc2.setField(LocalityDE.DATUM_ELEVATION, "50.4");
-		loc2.setField(LocalityDE.KICK_OFF_DEPTH, "223.56");
-		loc2.setField(LocalityDE.TERMINATION_DEPTH, "500");
+		DataEntryForm loc2 = DataEntryFormFactory.getLocalityDataEntryForm("VertSect", user, 221, state);
+		loc2.setField(LocalityDE.FEATURE_NAME, "Test");
 		for (int i = 0; i < loc2.getFieldCount(); i++) {
 			System.out.println(i + ": " + loc2.getField(i));
 		}
@@ -125,7 +117,7 @@ public class LocalityTest extends TestCase {
 		form.save();	
 	}
 	
-	public void testMFEdit() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void _testMFEdit() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);

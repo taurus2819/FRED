@@ -22,7 +22,7 @@ public class VertSectLocalityDE extends LocalityDE {
 
 	public VertSectLocalityDE(User user, int folderID, PageState state)
 		throws SQLException, IOException, DataInputException {
-		super(user, folderID, "VertSect", state);
+		super(user, folderID, "Vertical Section", state);
 	}
 
 	public VertSectLocalityDE(int id, User user, PageState state)
@@ -32,7 +32,7 @@ public class VertSectLocalityDE extends LocalityDE {
 			DataInputException,
 			InvalidCredentialsException {
 		super(id, user, state);
-		if (!featureType.equals("VertSect"))
+		if (!featureType.equals("Vertical Section"))
 			throw new DataInputException("Feature Type", "Invalid");
 		setField(SECTION_COLLECTOR, sample.getAsString(Sample.PERSON));
 		setField(
@@ -162,7 +162,7 @@ public class VertSectLocalityDE extends LocalityDE {
 				+ FREDUtils.noNulls(getField(DATUM_ELEVATION))
 				+ "' size='10'>&nbsp;m&nbsp;asl</td></tr>\n");
 		out.write(
-			"<tr><td class='heading'>Drillhole Depths</td><td class='smallheading'>Top Horizon</td><td class='smallheading'><input type='text' name='StartDepth' value='"
+			"<tr><td class='heading'>Section Heights</td><td class='smallheading'>Top Horizon</td><td class='smallheading'><input type='text' name='StartDepth' value='"
 				+ FREDUtils.noNulls(getField(KICK_OFF_DEPTH))
 				+ "'>&nbsp;m</td></tr>\n");
 		out.write(
@@ -209,13 +209,8 @@ public class VertSectLocalityDE extends LocalityDE {
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = true;
-				feature =
-					new Feature(feature.getFeatureID(), user, state, true);
-				int sampleID =
-					((Integer) feature
-						.getAsVector(Feature.SAMPLES)
-						.firstElement())
-						.intValue();
+				feature = new Feature(feature.getFeatureID(), user, state, true);
+				int sampleID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
 				sample = new Sample(sampleID, user, state, true);
 			} catch (SQLException e) {
 				conn.getConnection().rollback();
