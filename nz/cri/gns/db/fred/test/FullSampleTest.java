@@ -31,62 +31,62 @@ public class FullSampleTest extends TestCase {
 					"ip",
 					state.getContext());
 		try {
-			this.user = new User("ben", "St.Bathans", ipConn);
+			this.user = new User("pseudo_ben", "santor32", ipConn);
 		} catch (Exception e) {
 		}
 	}
 
 
-public void testPooling() throws NotBoundException, SQLException, IOException, AccessDeniedException {
-	FullSample.purge();
-	FullSample sv1 = FullSample.getFullSample(390, this.user, this.state);
-	FullSample sv2 = FullSample.getFullSample(390, this.user, this.state);
-	assertEquals(sv1.toString(), sv2.toString());
-	assertEquals(1, FullSample.getPoolSize());
-	FullSample sv3 = FullSample.getFullSample(391, this.user, this.state);
-	assertNotSame(sv1.toString(), sv3.toString());
-	assertEquals(2, FullSample.getPoolSize());
-	FullSample sv4 = FullSample.getFullSample(390, this.user, this.state);
-	assertEquals(2, FullSample.getPoolSize());
-	FullSample sv5 = FullSample.getFullSample(390, null, this.state);
-	assertEquals(2, FullSample.getPoolSize());
-	assertEquals(sv1.toString(), sv5.toString());
-}
-
-public void testFRNum() throws IOException, SQLException, AccessDeniedException {
-	FullSample.purge();
-	try {
-	FullSample sv = FullSample.getFullSample(390, this.user, this.state);
-	String frNum = sv.getAsString(FullSample.FR_NUMBER);
-	assertNotNull(frNum);
-	assertEquals("Q22/f7733", frNum);
-	} catch (Exception e) {}
-}
-
-public void testRestrictions() throws SQLException, IOException, AccessDeniedException {
-	String test = null;
-	FullSample.purge();
-	FullSample f = FullSample.getFullSample(390, null, this.state);
-	try {
-		test = f.getAsString(FullSample.FEATURE_TYPE);
-	} catch (Exception e) {}
-	assertNotNull(test);
-	test = null;
-	try {
-		test = f.getAsString(FullSample.LOCALITY);
-	} catch (Exception e) {}
-	assertNull(test);
-	System.out.println(f.getAsString(FullSample.SECURITY_CLASS_ID));
-}
-
-public void testDrillholeSamples() throws SQLException, IOException, AccessDeniedException {
-	FullSample.purge();
-	FullSample f = FullSample.getFullSample(3, this.user, this.state);
-	FullSample bf = FREDUtils.getSampleBelow(f, user, this.state);
-	assertEquals(4, bf.getAsInt(FullSample.SAMPLE_ID));
-	FullSample af = FREDUtils.getSampleAbove(f, user, this.state);
-	assertEquals(2, af.getAsInt(FullSample.SAMPLE_ID));
-	assertEquals(3, FullSample.getPoolSize());
-}
+	public void testPooling() throws NotBoundException, SQLException, IOException, AccessDeniedException {
+		FullSample.purge();
+		FullSample sv1 = FullSample.getFullSample(390, this.user, this.state);
+		FullSample sv2 = FullSample.getFullSample(390, this.user, this.state);
+		assertEquals(sv1.toString(), sv2.toString());
+		assertEquals(1, FullSample.getPoolSize());
+		FullSample sv3 = FullSample.getFullSample(391, this.user, this.state);
+		assertNotSame(sv1.toString(), sv3.toString());
+		assertEquals(2, FullSample.getPoolSize());
+		FullSample sv4 = FullSample.getFullSample(390, this.user, this.state);
+		assertEquals(2, FullSample.getPoolSize());
+		FullSample sv5 = FullSample.getFullSample(390, null, this.state);
+		assertEquals(2, FullSample.getPoolSize());
+		assertEquals(sv1.toString(), sv5.toString());
+	}
+	
+	public void testFRNum() throws IOException, SQLException, AccessDeniedException {
+		FullSample.purge();
+		try {
+		FullSample sv = FullSample.getFullSample(390, this.user, this.state);
+		String frNum = sv.getAsString(FullSample.FR_NUMBER);
+		assertNotNull(frNum);
+		assertEquals("Q22/f7733", frNum);
+		} catch (Exception e) {}
+	}
+	
+	public void testRestrictions() throws SQLException, IOException, AccessDeniedException {
+		String test = null;
+		FullSample.purge();
+		FullSample f = FullSample.getFullSample(390, null, this.state);
+		try {
+			test = f.getAsString(FullSample.FEATURE_TYPE);
+		} catch (Exception e) {}
+		assertNotNull(test);
+		test = null;
+		try {
+			test = f.getAsString(FullSample.LOCALITY);
+		} catch (Exception e) {}
+		assertNull(test);
+		System.out.println(f.getAsString(FullSample.SECURITY_CLASS_ID));
+	}
+	
+	public void testDrillholeSamples() throws SQLException, IOException, AccessDeniedException {
+		FullSample.purge();
+		FullSample f = FullSample.getFullSample(3, this.user, this.state);
+		FullSample bf = FREDUtils.getSampleBelow(f, user, this.state);
+		assertEquals(4, bf.getAsInt(FullSample.SAMPLE_ID));
+		FullSample af = FREDUtils.getSampleAbove(f, user, this.state);
+		assertEquals(2, af.getAsInt(FullSample.SAMPLE_ID));
+		assertEquals(3, FullSample.getPoolSize());
+	}
 
 }

@@ -39,33 +39,33 @@ public class FullPalRecordTest extends TestCase {
 	}
 
 
-public void testPooling() throws NotBoundException, SQLException, IOException, AccessDeniedException {
-	FullPaleontologyRecord.purge();
-	FullPaleontologyRecord sv1 = FullPaleontologyRecord.getFullPaleontologyRecord(781, this.user, this.state);
-	FullPaleontologyRecord sv2 = FullPaleontologyRecord.getFullPaleontologyRecord(781, this.user, this.state);
-	assertEquals(sv1.toString(), sv2.toString());
-	assertEquals(1, FullPaleontologyRecord.getPoolSize());
-	FullPaleontologyRecord sv3 = FullPaleontologyRecord.getFullPaleontologyRecord(223, this.user, this.state);
-	assertNotSame(sv1.toString(), sv3.toString());
-	assertEquals(2, FullPaleontologyRecord.getPoolSize());
-	FullPaleontologyRecord sv4 = FullPaleontologyRecord.getFullPaleontologyRecord(781, this.user, this.state);
-	assertEquals(2, FullPaleontologyRecord.getPoolSize());
-}
-
-public void testPalList() throws NotBoundException, SQLException, IOException, AccessDeniedException {
-	FullPaleontologyRecord sv1 = FullPaleontologyRecord.getFullPaleontologyRecord(781, this.user, this.state);
-	assertNotNull(sv1.get(FullPaleontologyRecord.TAXONOMIC_LIST));
-	System.out.println(sv1.getAsVector(FullPaleontologyRecord.TAXONOMIC_LIST).size());
-	for (Iterator i = sv1.getAsVector(FullPaleontologyRecord.TAXONOMIC_LIST).iterator(); i.hasNext(); ) {
-		TaxaGroup tg = (TaxaGroup)i.next();
-		System.out.println(tg.getGroupName());
-		if (tg.getTaxaList() != null) {
-			for (Iterator i2 = tg.getTaxaList().iterator(); i2.hasNext(); ) {
-				Taxa taxa = (Taxa)i2.next();
-				System.out.println(tg.getGroupName() + ": " + taxa.getTaxonomicName());
+	public void testPooling() throws NotBoundException, SQLException, IOException, AccessDeniedException {
+		FullPaleontologyRecord.purge();
+		FullPaleontologyRecord sv1 = FullPaleontologyRecord.getFullPaleontologyRecord(781, this.user, this.state);
+		FullPaleontologyRecord sv2 = FullPaleontologyRecord.getFullPaleontologyRecord(781, this.user, this.state);
+		assertEquals(sv1.toString(), sv2.toString());
+		assertEquals(1, FullPaleontologyRecord.getPoolSize());
+		FullPaleontologyRecord sv3 = FullPaleontologyRecord.getFullPaleontologyRecord(223, this.user, this.state);
+		assertNotSame(sv1.toString(), sv3.toString());
+		assertEquals(2, FullPaleontologyRecord.getPoolSize());
+		FullPaleontologyRecord sv4 = FullPaleontologyRecord.getFullPaleontologyRecord(781, this.user, this.state);
+		assertEquals(2, FullPaleontologyRecord.getPoolSize());
+	}
+	
+	public void testPalList() throws NotBoundException, SQLException, IOException, AccessDeniedException {
+		FullPaleontologyRecord sv1 = FullPaleontologyRecord.getFullPaleontologyRecord(781, this.user, this.state);
+		assertNotNull(sv1.get(FullPaleontologyRecord.TAXONOMIC_LIST));
+		System.out.println(sv1.getAsVector(FullPaleontologyRecord.TAXONOMIC_LIST).size());
+		for (Iterator i = sv1.getAsVector(FullPaleontologyRecord.TAXONOMIC_LIST).iterator(); i.hasNext(); ) {
+			TaxaGroup tg = (TaxaGroup)i.next();
+			System.out.println(tg.getGroupName());
+			if (tg.getTaxaList() != null) {
+				for (Iterator i2 = tg.getTaxaList().iterator(); i2.hasNext(); ) {
+					Taxa taxa = (Taxa)i2.next();
+					System.out.println(tg.getGroupName() + ": " + taxa.getTaxonomicName());
+				}
 			}
 		}
 	}
-}
 
 }
