@@ -84,7 +84,7 @@
 			}
 
 			//list matching records
-			out.println("<p><table border='0' width='400'>");
+			out.println("<table border='0' width='400'>");
 			out.println("<tr><td colspan='2'>Search Criteria: <em>" + queryString + "</em></td></tr>");
 			if (maxRangePage > 1) {
 				out.println("<tr><td></td></tr>");
@@ -97,10 +97,10 @@
 				}
 			}
 			out.println("</td></tr>");
-			out.println("</table></p>");
+			out.println("</table>");
 
-			out.println("<p><table border='0' cellspacing='0' cellpadding='3' width='400'>");
-			out.print("<tr><th>FR Number&nbsp;&nbsp;</th><th>Yard FR Number&nbsp;&nbsp</th><th>Drillhole Name&nbsp;&nbsp;</th></tr>");
+			out.println("<table border='0' cellspacing='0' cellpadding='3' width='400'>");
+			out.print("<tr><th>FR Number&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Yard FR Number&nbsp;&nbsp;</th><th>Field Number/<br />Drillhole Name&nbsp;&nbsp;</th></tr>");
 			Iterator it = queryRes.iterator();
 			try {
 				for (int i = 0; i < startIndex - 1; i++) { it.next(); }
@@ -111,23 +111,14 @@
 				featIDs.append("," + (String) it.next());
 			}
 
-			rs = statement.executeQuery("SELECT DISTINCT Feature_ID, Sample_Name, Drillhole_Name, Yard_FR_Number FROM Sample_View WHERE Feature_ID IN (" + featIDs + ") ORDER BY Sample_Name");
+			rs = statement.executeQuery("SELECT Feature_ID, Sample_Name, Feature_Type, Feature_Name, Yard_FR_Number FROM Sample_View WHERE Feature_ID IN (" + featIDs + ") GROUP BY Feature_ID, Sample_Name, Feature_Type, Feature_Name, Yard_FR_Number ORDER BY Sample_Name");
 			while (rs.next()) {
-				out.print("<tr>");
-				if (rs.getString(3) != null) { //drillhole
-					out.print("<td><a href='detail.jsp?FeatID=" + rs.getString(1) + "' class='heading'>" + rs.getString(2) + "</a>&nbsp;&nbsp;</td><td>" + noNulls(rs.getString(4)) + "&nbsp;&nbsp;</td><td><a href='detail.jsp?FeatID=" + rs.getString(1) + "' class='heading'>" + rs.getString(3) + "</a></td>");
-				} else {
-					rs2 = statement2.executeQuery("SELECT Sample_ID FROM Sample_View WHERE Feature_ID = " + rs.getString(1));
-					rs2.next();
-					out.print("<td><a href='detail.jsp?ID=" + rs2.getString(1) + "' class='heading'>" + rs.getString(2) + "</a>&nbsp;&nbsp;</td><td>" + noNulls(rs.getString(4)) + "&nbsp;&nbsp;</td>");
-				}
-				out.print("</tr>");
+				out.println("<tr><td class='heading'><a href='detail.jsp?FeatID=" + rs.getString(1) + "'>" + rs.getString(2) + "</a>&nbsp;&nbsp;</td><td>" + rs.getString(3) + "</td><td>" + noNulls(rs.getString(5)) + "&nbsp;&nbsp;</td><td>" + noNulls(rs.getString(4)) + "</td></tr>");
 			}
-			out.println("</table></p>");
+			out.println("</table>");
 
-			//list matching records
 			if (maxRangePage > 1) {
-				out.println("<p><table border='0' width='400'>");
+				out.println("<table border='0' width='400'>");
 				out.println("<tr><td class='heading'>Displaying records " + startIndex + " to " + endIndex + " of " + numRecords + "</td>");
 				out.print("<td align='right'>");
 				for (int i = minRangePage; i <= maxRangePage; i++) {
@@ -136,7 +127,7 @@
 					out.print(">" + i + "</a>");
 				}
 				out.println("</td></tr>");
-				out.println("</table></p>");
+				out.println("</table>");
 			}
 
 		}

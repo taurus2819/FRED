@@ -24,7 +24,7 @@
 	Statement statement = connection.statement;
 	ResultSet rs;
 	User user = getUser(session);
-	String formType, featID = "0", loadFeatID, foldID, fieldNum = "", drillName = "", recoll = "", workComm = "", coord = "TruncNZMG:", locMethod = null, accuracy = "", loc = "", regAreaID = "400";
+	String formType, featID = "0", loadFeatID, foldID, featName = "", recoll = "", workComm = "", coord = "", locMethod = null, accuracy = "", loc = "", regAreaID = "400";
 	int userID = user.getPersonId(), userRights = 0, execUp;
 	java.util.Date adoDate = new java.util.Date();
 	ComboDescriptor cd;
@@ -68,9 +68,9 @@ function submitForm (form) {
 
 function checkForm(form) {
 	with (form) {
-		if (LocName.value == "") {
+		if (FeatName.value == "") {
 			alert ("Please enter a name");
-			LocName.select();
+			FeatName.select();
 			return false;
 		}
 		if (parseCoord(form, Coord.value) == 0) {
@@ -149,10 +149,9 @@ function parseCoord(form, coord) {
 			if (((rs.getString(1).equals("working") || rs.getString(1).equals("rejected")) && (userRights & 2) != 0) || (rs.getString(1).equals("waiting") && (userRights & 64) != 0)) {
 				//OK
 				//Get FieldNum/Drillhole name from original FeatID not LoadFeatID
-				rs = statement.executeQuery("SELECT Field_Number, Drillhole_Name FROM Sample_All_View WHERE Feature_ID = " + featID);
+				rs = statement.executeQuery("SELECT Feature_Name FROM Sample_All_View WHERE Feature_ID = " + featID);
 				if (rs.next()) {
-					fieldNum = noNulls(rs.getString(1));
-					drillName = noNulls(rs.getString(2));
+					featName = noNulls(rs.getString(1));
 				}
 				rs = statement.executeQuery("SELECT Reg_Area_ID, Locality, Working_Comments FROM Sample_All_View WHERE Feature_ID = " + loadFeatID);
 				rs.next();
@@ -219,11 +218,11 @@ function parseCoord(form, coord) {
 
 			out.println("<table border='0' cellspacing='0' cellpadding='2'>");
 			if (formType.equals("Outcrop")) {
-				out.println("<tr><td class='heading' colspan='2'>Field Number</td><td><input type='text' name='LocName' value='" + fieldNum + "'></td></tr>");
+				out.println("<tr><td class='heading' colspan='2'>Field Number</td><td><input type='text' name='FeatName' value='" + featName + "'></td></tr>");
 			} else if (formType.equals("Drillhole")) {
-				out.println("<tr><td class='heading' colspan='2'>Drillhole Name</td><td><input type='text' name='LocName' value='" + drillName + "'></td></tr>");
+				out.println("<tr><td class='heading' colspan='2'>Drillhole Name</td><td><input type='text' name='FeatName' value='" + featName + "'></td></tr>");
 			} else if (formType.equals("VertSect")) {
-				out.println("<tr><td class='heading' colspan='2'>Vertical Section Name</td><td><input type='text' name='LocName' value='" + drillName + "'></td></tr>");
+				out.println("<tr><td class='heading' colspan='2'>Vertical Section Name</td><td><input type='text' name='FeatName' value='" + featName + "'></td></tr>");
 			}
 			out.println("<tr><td class='heading'>Registration Area</td><td></td><td>");
 			cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");

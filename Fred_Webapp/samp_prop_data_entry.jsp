@@ -313,10 +313,10 @@ function parseSedFeat(sedFeat) {
 
 			out.println("<table border='0' cellspacing='0' cellpadding='2'>");
 
-			rs = statement.executeQuery("SELECT Sample_Name, Drillhole_Name, Drillhole_Depth FROM Sample_All_View WHERE Sample_ID = " + sampID);
+			rs = statement.executeQuery("SELECT Sample_Name, Feature_Type, Feature_Name, Drillhole_Depth FROM Sample_All_View WHERE Sample_ID = " + sampID);
 			rs.next();
 			out.print("<tr><td class='heading'>Sample Name</td><td></td><td class='heading'>" + rs.getString(1));
-			if (rs.getString(2) != null) { out.print("<br>" + rs.getString(2) + ": " + rs.getString(3)); }
+			if (!rs.getString(2).equals("Outcrop")) { out.print("<br>" + noNulls(rs.getString(3)) + ": " + rs.getString(4)); }
 			out.println("</td></tr>");
 %>
 			<tr><td class='heading' colspan='2'>Working Comments<br><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'><%=workComm%></textarea></td></tr>

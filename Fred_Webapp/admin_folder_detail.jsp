@@ -80,14 +80,14 @@
 			while (rs3.next()) {
 				if (rs3.getString(1).equals(featID)) { continue; }
 				featID = rs3.getString(1);
-				rs = statement.executeQuery("SELECT S.Sample_ID, S.Sample_Name, S.Drillhole_Name, S.Field_Number, A.Submitted_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = " + featID);
+				rs = statement.executeQuery("SELECT S.Sample_ID, S.Sample_Name, S.Feature_Type, S.Feature_Name, A.Submitted_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = " + featID);
 				rs.next();
-				if (rs.getString(3) != null) { //drillhole so loop through individual sample names
+				if (!rs.getString(3).equals("Outcrop")) { //drillhole so loop through individual sample names
 					drillSampName = "";
 					rs2 = statement2.executeQuery("SELECT DISTINCT Sample_Name FROM Sample_All_View WHERE Feature_ID = " + featID + " ORDER BY Sample_Name");
 					while (rs2.next()) { drillSampName = drillSampName + rs2.getString(1) + ", "; }
 					drillSampName = drillSampName.substring(0, drillSampName.length() - 2);
-					out.print("<tr><td><img src='images/loc.gif' height='20' width='20' /><img src='images/blank.gif' width='5' height='20' /></td><td class='heading'><a href='drillhole_detail.jsp?ID=" + featID + "'>" + drillSampName + "</a></td><td class='heading'><a href='drillhole_detail.jsp?ID=" + featID + "'>" + rs.getString(3) +"</a></td><td>");
+					out.print("<tr><td><img src='images/loc.gif' height='20' width='20' /><img src='images/blank.gif' width='5' height='20' /></td><td class='heading'><a href='detail.jsp?FeatID=" + featID + "'>" + drillSampName + "</a></td><td class='heading'><a href='drillhole_detail.jsp?ID=" + featID + "'>" + rs.getString(4) +"</a></td><td>");
 				} else {
 					out.print("<tr><td class='heading'><img src='images/loc.gif' height='20' width='20' /><img src='images/blank.gif' width='5' height='20' /></td><td class='heading'><a href='detail.jsp?ID=" + rs.getString(1) + "'>" + rs.getString(2) + "</a></td><td>" + noNulls(rs.getString(4)) + "</td><td>");
 				}
@@ -110,14 +110,14 @@
 			while (rs3.next()) {
 				if (rs3.getString(1).equals(featID)) { continue; }
 				featID = rs3.getString(1);
-				rs = statement.executeQuery("SELECT S.Sample_ID, S.Sample_Name, S.Drillhole_Name, S.Field_Number, A.Submitted_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = " + featID);
+				rs = statement.executeQuery("SELECT S.Sample_ID, S.Sample_Name, S.Feature_Type, S.Feature_Name, A.Submitted_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = " + featID);
 				rs.next();
-				if (rs.getString(3) != null) { //drillhole so loop through individual sample names
+				if (!rs.getString(3).equals("Outcrop")) { //drillhole so loop through individual sample names
 					drillSampName = "";
 					rs2 = statement2.executeQuery("SELECT DISTINCT Sample_Name FROM Sample_All_View WHERE Feature_ID = " + featID + " ORDER BY Sample_Name");
 					while (rs2.next()) { drillSampName = drillSampName + rs2.getString(1) + ", "; }
 					drillSampName = drillSampName.substring(0, drillSampName.length() - 2);
-					out.print("<tr><td><img src='images/loc.gif' height='20' width='20' /><img src='images/blank.gif' width='5' height='20' /></td><td class='heading'><a href='drillhole_detail.jsp?ID=" + featID + "'>" + drillSampName + "</a></td><td class='heading'><a href='drillhole_detail.jsp?ID=" + featID + "'>" + rs.getString(3) +"</a></td><td>");
+					out.print("<tr><td><img src='images/loc.gif' height='20' width='20' /><img src='images/blank.gif' width='5' height='20' /></td><td class='heading'><a href='detail.jsp?FeatID=" + featID + "'>" + drillSampName + "</a></td><td class='heading'><a href='drillhole_detail.jsp?ID=" + featID + "'>" + noNulls(rs.getString(4)) +"</a></td><td>");
 				} else {
 					out.print("<tr><td class='heading'><img src='images/loc.gif' height='20' width='20' /><img src='images/blank.gif' width='5' height='20' /></td><td class='heading'><a href='detail.jsp?ID=" + rs.getString(1) + "'>" + rs.getString(2) + "</a></td><td>" + noNulls(rs.getString(4)) + "</td><td>");
 				}

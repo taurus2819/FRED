@@ -33,7 +33,7 @@
 	ResultSet rs;
 	int userRights = 0, execUp;
 	double latitude = 0, longitude = 0;
-	String formType, foldID, featID, auditID, siteID, featStatus, recoll = "", origCoord = "", fieldNum = "", drillName = "";
+	String formType, foldID, featID, auditID, siteID, featStatus, recoll = "", origCoord = "";
 	User user = getUser(session);
 	int userID = user.getPersonId();
 
@@ -44,11 +44,7 @@
 	if (request.getParameter("Type") != null && request.getParameter("FoldID") != null && request.getParameter("SaveType") != null && request.getParameter("FeatID") != null) {
 
 		formType = request.getParameter("Type");
-		if (formType.equals("Outcrop")) {
-			fieldNum = request.getParameter("LocName");
-		} else {
-			drillName = request.getParameter("LocName");
-		}
+		if (formType.equals("VertSect")) { formType = "Vertical Section"; }
 		foldID = request.getParameter("FoldID");
 		featID = request.getParameter("FeatID");
 
@@ -81,10 +77,10 @@
 			}
 
 			//Location Name
-			if (request.getParameter("LocName") != null) {
-				rs = statement.executeQuery("SELECT * FROM Feature_Security_View WHERE User_ID = " + JspUtils.getUser(session) + " AND Feature_ID <> " + featID + " AND Sample_Name = '" + request.getParameter("LocName") + "'");
+			if (request.getParameter("FeatName") != null) {
+				rs = statement.executeQuery("SELECT * FROM Feature_Security_View WHERE User_ID = " + JspUtils.getUser(session) + " AND Feature_ID <> " + featID + " AND Sample_Name = '" + request.getParameter("FeatName") + "'");
 				if (rs.next()) {
-					throw new DataInputException("Name", request.getParameter("LocName") + " already being used by you.  Please select a unique name");
+					throw new DataInputException("Name", request.getParameter("FeatName") + " already being used by you.  Please select a unique name");
 				}
 			}
 
@@ -130,7 +126,7 @@
 					rs = statement.executeQuery("SELECT SC.Site_Seq.NEXTVAL FROM DUAL");
 					rs.next();
 					siteID = rs.getString(1);
-					execUp = statement.executeUpdate("INSERT INTO SC.Site (Site_ID, Site_Name, Latitude, Longitude, Method_ID, Accuracy, Directions, Orig_system_ID, Orig_Coord, Country_Code) VALUES (" + siteID + ", " + JspUtils.sqlEscape(request.getParameter("FieldNum")) + ", " + latitude + ", " + longitude + ", " + makeDropDownNulls(request.getParameter("LocMethodID")) + ", " + JspUtils.sqlEscape(request.getParameter("Accuracy")) + ", " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", " + request.getParameter("OrigCoord") + ", '" + origCoord + "', '" + request.getParameter("Country") + "')");
+					execUp = statement.executeUpdate("INSERT INTO SC.Site (Site_ID, Site_Name, Latitude, Longitude, Method_ID, Accuracy, Directions, Orig_system_ID, Orig_Coord, Country_Code) VALUES (" + siteID + ", " + JspUtils.sqlEscape(request.getParameter("FeatName")) + ", " + latitude + ", " + longitude + ", " + makeDropDownNulls(request.getParameter("LocMethodID")) + ", " + JspUtils.sqlEscape(request.getParameter("Accuracy")) + ", " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", " + request.getParameter("OrigCoord") + ", '" + origCoord + "', '" + request.getParameter("Country") + "')");
 				}
 			} else {
 				siteID = "NULL";
@@ -146,12 +142,8 @@
 				rs = statement.executeQuery("SELECT Feature_Seq.NEXTVAL FROM DUAL");
 				rs.next();
 				featID = rs.getString(1);
-				execUp = statement.executeUpdate("INSERT INTO Feature (Feature_ID, Site_ID, Audit_ID, Locality, Field_Number, Drillhole_Name, Reg_Area_ID) VALUES (" + featID + ", " + siteID + ", " + auditID + ", " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", " + JspUtils.sqlEscape(fieldNum) + ", " + JspUtils.sqlEscape(drillName) + ", " + makeDropDownNulls(request.getParameter("RegAreaID")) + ")");
-				if (formType.equals("VertSect")) {
-					execUp = statement.executeUpdate("INSERT INTO Sample (Feature_ID, Drill_Type_ID) VALUES (" + featID + ", 13)");
-				} else {
-					execUp = statement.executeUpdate("INSERT INTO Sample (Feature_ID) VALUES (" + featID + ")");
-				}
+				execUp = statement.executeUpdate("INSERT INTO Feature (Feature_ID, Site_ID, Audit_ID, Locality, Feature_Type, Feature_Name, Reg_Area_ID) VALUES (" + featID + ", " + siteID + ", " + auditID + ", " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", '" + formType + "', " + JspUtils.sqlEscape(request.getParameter("FeatName")) + ", " + makeDropDownNulls(request.getParameter("RegAreaID")) + ")");
+				execUp = statement.executeUpdate("INSERT INTO Sample (Feature_ID) VALUES (" + featID + ")");
 			} else { // edit
 				//Update edited by fields
 				if ((userRights & 2) == 0) { throw new BadRightsException(); }
@@ -159,7 +151,7 @@
 				rs.next();
 				auditID = rs.getString(1);
 				execUp = statement.executeUpdate("UPDATE Audit_Table SET Modified_By_ID = " + userID + ", Modified_Date = SYSDATE, Working_Comments = " + JspUtils.sqlEscape(recoll + request.getParameter("WorkComm")) + " WHERE Audit_ID = " + auditID);
-				execUp = statement.executeUpdate("UPDATE Feature SET Site_ID = " + siteID + ", Locality = " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", Field_Number = " + JspUtils.sqlEscape(fieldNum) + ", Drillhole_Name = " + JspUtils.sqlEscape(drillName) + ", Reg_Area_ID = " + makeDropDownNulls(request.getParameter("RegAreaID")) + " WHERE Feature_ID = " + featID);
+				execUp = statement.executeUpdate("UPDATE Feature SET Site_ID = " + siteID + ", Locality = " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", Feature_Name = " + JspUtils.sqlEscape(request.getParameter("FeatName")) + ", Reg_Area_ID = " + makeDropDownNulls(request.getParameter("RegAreaID")) + " WHERE Feature_ID = " + featID);
 			}
 
 			if (featStatus.equals("waiting")) { //submitted

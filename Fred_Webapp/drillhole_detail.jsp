@@ -32,43 +32,44 @@
 			userRights = (userRights | rs.getInt(2));
 		}
 
-		rs = statement.executeQuery("SELECT Drillhole_Name FROM Sample_All_View WHERE Drillhole_Name IS NOT NULL AND Feature_ID = " + featID);
+		rs = statement.executeQuery("SELECT Feature_Name FROM Sample_All_View WHERE Feature_Type <> 'Outcrop' AND Feature_ID = " + featID);
 		
-		if ((userRights & 1) != 0 && rs.next()) { //allowed to view this record and the record is a drillhole
+		if ((userRights & 1) != 0 && rs.next()) { //allowed to view this record and the record is not an outcrop
 
 			out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
-			rs = statement.executeQuery("SELECT S.Drillhole_Name, S.Masterfile_Name, S.Status, A.Created_By, A.Created_Date, A.Modified_By, A.Modified_Date, A.Submitted_By, A.Submitted_Date, A.Approved_By, A.Approved_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = " + featID);
+			rs = statement.executeQuery("SELECT S.Feature_Name, S.Feature_Type, S.Masterfile_Name, S.Status, A.Created_By, A.Created_Date, A.Modified_By, A.Modified_Date, A.Submitted_By, A.Submitted_Date, A.Approved_By, A.Approved_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = " + featID);
 			rs.next();
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
-			out.print("<tr><td colspan='2' align='center' class='bigheading' >" + rs.getString(1) + "</td></tr>");
-			if (rs.getString(2) != null) {
-				out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + rs.getString(2) + "</td></tr>");
+			out.println("<tr><td colspan='2' align='center' class='bigheading' >" + rs.getString(1) + "</td></tr>");
+			out.println("<tr><td colspan='2' align='center'>" + rs.getString(2) + "</td></tr>");
+			if (rs.getString(3) != null) {
+				out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + rs.getString(3) + "</td></tr>");
 			}
-			if (!rs.getString(3).equals("approved")) {
-				out.println("<tr><td class='smallheading'>Status:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + rs.getString(3) + "</td></tr>");
+			if (!rs.getString(4).equals("approved")) {
+				out.println("<tr><td class='smallheading'>Status:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + rs.getString(4) + "</td></tr>");
 			}
-			if (rs.getString(4) != null || rs.getString(5) != null) {
+			if (rs.getString(5) != null || rs.getString(6) != null) {
 				out.println("<tr><td class='smallheading'>Created:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(4) != null) { out.print(rs.getString(4) + "<br />"); }
-				if (rs.getString(5) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(5))); }
+				if (rs.getString(5) != null) { out.print(rs.getString(5) + "<br />"); }
+				if (rs.getString(6) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(6))); }
 				out.println("</td></tr>");
 			}
-			if (rs.getString(6) != null || rs.getString(7) != null) {
+			if (rs.getString(7) != null || rs.getString(8) != null) {
 				out.println("<tr><td class='smallheading'>Edited:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(6) != null) { out.print(rs.getString(6) + "<br />"); }
-				if (rs.getString(7) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(7))); }
+				if (rs.getString(7) != null) { out.print(rs.getString(7) + "<br />"); }
+				if (rs.getString(8) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(8))); }
 				out.println("</td></tr>");
 			}
-			if (rs.getString(8) != null || rs.getString(9) != null) {
+			if (rs.getString(9) != null || rs.getString(10) != null) {
 				out.println("<tr><td class='smallheading'>Submitted:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(8) != null) { out.print(rs.getString(8) + "<br />"); }
-				if (rs.getString(9) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(9))); }
+				if (rs.getString(9) != null) { out.print(rs.getString(9) + "<br />"); }
+				if (rs.getString(10) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(10))); }
 				out.println("</td></tr>");
 			}
-			if (rs.getString(10) != null || rs.getString(11) != null) {
+			if (rs.getString(11) != null || rs.getString(12) != null) {
 				out.println("<tr><td class='smallheading'>Approved:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(10) != null) { out.print(rs.getString(10) + "<br />"); }
-				if (rs.getString(11) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(11))); }
+				if (rs.getString(11) != null) { out.print(rs.getString(11) + "<br />"); }
+				if (rs.getString(12) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(12))); }
 				out.println("</td></tr>");
 			}
 			out.println("</table>");

@@ -86,7 +86,7 @@
 	Statement statement4 = connection.getExtraStatement();
 	ResultSet rs, rs2, rs3, rs4;
 	User user = getUser(session);
-	String foldID, featID, recID, recType, sampID, auditID, drillSampName, locStatus;
+	String foldID, featID, recID, featType, sampID, auditID, drillSampName, locStatus;
 	int userID = user.getPersonId(), i = 0, j = 0, k = 0, tableWidth, recCount, execUp, userRights;
 	boolean sampPropFlag;
 
@@ -157,11 +157,12 @@
 				sampPropFlag = false;
 				if (rs3.getString(1).equals(featID)) { continue; }
 				featID = rs3.getString(1);
-				rs = statement.executeQuery("SELECT Sample_ID, Sample_Name, Drillhole_Name, Field_Number, Status, Last_Change, Drill_Type FROM Sample_All_View WHERE Feature_ID = " + featID);
+				rs = statement.executeQuery("SELECT Sample_ID, Sample_Name, Feature_Type, Feature_Name, Status, Last_Change FROM Sample_All_View WHERE Feature_ID = " + featID);
 				rs.next();
+				featType = rs.getString(3);
+				if (featType.equals("Vertical Section")) { featType = "VertSect"; }
 				locStatus = rs.getString(5);
-
-				if (rs.getString(3) != null) { //drillhole so loop through individual samples
+				if (!featType.equals("Outcrop")) { //drillhole/vertsect so loop through individual samples
 					drillSampName = "";
 					rs2 = statement2.executeQuery("SELECT DISTINCT Sample_Name FROM Sample_All_View WHERE Feature_ID = " + featID + " ORDER BY Sample_Name");
 					rs2.next();
@@ -169,14 +170,9 @@
 					while (rs2.next()) { drillSampName = drillSampName + ", " + rs2.getString(1); }
 					out.print("<tr>");
 					//out.print("<td><input type='checkbox' name='Check" + k++ + "' value='" + featID + "'></td>");
-					out.print("<td width='20'><img src='images/loc.gif' height='20' width='20' /></td><td colspan='3' class='heading'><a href='drillhole_detail.jsp?ID=" + featID + "'>" + drillSampName + "</a>&nbsp;&nbsp;");
-					if (rs.getString(3) != null && !drillSampName.equals(rs.getString(3))) { out.print("<br /><a href='drillhole_detail.jsp?ID=" + featID + "'>(" + rs.getString(3) +")</a>&nbsp;&nbsp;"); }
-					if (rs.getString(7) != null && rs.getString(7).equals("Exposure")) {
-						out.print("</td><td>Vert Sect");
-					} else {
-						out.print("</td><td>Drillhole");
-					}
-					out.print("</td><td class='smallstar'>");
+					out.print("<td width='20'><img src='images/loc.gif' height='20' width='20' /></td><td colspan='3' class='heading'><a href='detail.jsp?FeatID=" + featID + "'>" + drillSampName + "</a>&nbsp;&nbsp;");
+					if (rs.getString(4) != null && !drillSampName.equals(rs.getString(4))) { out.print("<br /><a href='detail.jsp?FeatID=" + featID + "'>(" + rs.getString(4) +")</a>&nbsp;&nbsp;"); }
+					out.print("</td><td>" + featType + "</td><td class='smallstar'>");
 					if (!rs.getString(5).equals("approved")) {
 						out.print(rs.getString(5) + "</td><td>");
 						if (rs.getString(6) != null) { 
@@ -188,11 +184,11 @@
 					}
 					out.print("<td>");
 					if ((rs.getString(5).equals("working") || rs.getString(5).equals("rejected")) && (userRights & 2) != 0) {
-						out.print("<a href='feat_data_entry.jsp?Type=Drillhole&FeatID=" + featID + "&FoldID=" + foldID + "' title='Edit Locality'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+						out.print("<a href='feat_data_entry.jsp?Type=" + featType + "&FeatID=" + featID + "&FoldID=" + foldID + "' title='Edit Locality'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					}
 					out.print("</td><td>");
 					if ((userRights & 4) != 0) {
-						out.print("<a href='#' onClick='prmpt=prompt(\"Please enter the new drillhole name\", \"New Drillhole\");if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value=\"CopyDrill\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Copy Locality'><img src='images/copy.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+						out.print("<a href='#' onClick='prmpt=prompt(\"Please enter the new name\", \"New " + featType + "\");if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value=\"CopyFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}' title='Copy Locality'><img src='images/copy.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					}
 					out.print("</td><td>");
 					if ((rs.getString(5).equals("working") || rs.getString(5).equals("rejected")) && (userRights & 8) != 0) {

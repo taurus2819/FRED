@@ -39,18 +39,6 @@
 
 	if (request.getParameter("ID") != null) {
 		sampID = request.getParameter("ID");
-		
-
-		
-//		out.println("<script><!--");
-//		out.println("if (document.layers) {");
-//		out.println("\tdocument.write('<layer id=\"heracles\" top=\"100\" left=\"300\" bgcolor=\"white\" style=\"position: absolute; top: 100px; left: 300px; background-color; white; border: solid 1pt black; z-index: 1\"><img src=\"/online/images/loading.gif\" alt=\"Loading data...\" /></layer>');");
-//		out.println("} else {");
-//		out.println("\tdocument.write('<div id=\"heracles\" style=\"position: absolute; top: 100px; left: 300px; background-color; white;\"><img src=\"/online/images/loading.gif\" alt=\"Loading data...\" /></div>');");
-//		out.println("}");
-//		out.println("//--></script>");
-
-//		out.flush();
 
 		//check if user can view this record and that record exists
 		rs = statement.executeQuery("SELECT Status, User_Rights FROM Sample_Security_View WHERE Sample_ID = " + sampID + " AND (User_ID IS NULL OR User_ID = " + userID + ")");
@@ -64,30 +52,20 @@
 			out.println("<table border='1' cellspacing='0' cellpadding='10' width='620'>");
 			out.println("<tr><td>");
 
-			rs = statement.executeQuery("SELECT S.Sample_Name, S.Masterfile_Name, S.Drillhole_Name, S.Drill_Type, A.Approved_By, A.Approved_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Sample_ID = " + sampID);
+			rs = statement.executeQuery("SELECT S.Sample_Name, S.Masterfile_Name, S.Feature_Type, A.Approved_By, A.Approved_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Sample_ID = " + sampID);
 			rs.next();			
 			out.println("<table border='0' cellspacing='0' cellpadding='0' width='600'>");
 			out.println("<tr><td rowspan='2'><img src='images/gslogo.gif' width='42' height='50' /></td><td class='smallheading'>GEOLOGICAL SOCIETY OF NEW ZEALAND</td><td class='hugeheading' align='right'>" + rs.getString(1) + "</td></tr>");
-			out.print("<tr><td class='hugeheading'>FOSSIL RECORD FORM</td><td align='right' class='heading'>");
-			if (rs.getString(3) == null) {
-				out.print("Outcrop");
-			} else {
-				if (rs.getString(4) != null && rs.getString(4).equals("Exposure")) {
-					out.print("Vertical Section");
-				} else {
-					out.print("Drillhole");
-				}
-			}
-			out.println("</td></tr>");		
+			out.print("<tr><td class='hugeheading'>FOSSIL RECORD FORM</td><td align='right' class='heading'>" + rs.getString(3) + "</td></tr>");		
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
 			out.println("</table>");
 			
 			out.println("<table border='0' cellspacing='0' cellpadding='0' width='600'>");
 			if (rs.getString(2) != null) { out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + rs.getString(2) + "</td></tr>"); }
-			if (rs.getString(5) != null || rs.getString(6) != null) {
+			if (rs.getString(4) != null || rs.getString(5) != null) {
 				out.println("<tr><td class='smallheading'>MF Curator Approved:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(5) != null) { out.print(rs.getString(5) + "&nbsp;&nbsp;"); }
-				if (rs.getString(6) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(6))); }
+				if (rs.getString(4) != null) { out.print(rs.getString(4) + "&nbsp;&nbsp;"); }
+				if (rs.getString(5) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(5))); }
 				out.println("</td></tr>");
 			}
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
@@ -95,12 +73,19 @@
 
 
 			out.println("<table border='0' cellspacing='0' cellpadding='2' width='600'>");
-			rs = statement.executeQuery("SELECT Feature_ID, Field_Number, Drillhole_Name, NZMG_Sheet, NZMG_East, NZMG_North, Latitude, Longitude, Accuracy, Method, Locality, Drillhole_Depth FROM Sample_All_View WHERE Sample_ID = " + sampID);
+			rs = statement.executeQuery("SELECT Feature_ID, Feature_Type, Feature_Name, NZMG_Sheet, NZMG_East, NZMG_North, Latitude, Longitude, Accuracy, Method, Locality, Drillhole_Depth FROM Sample_All_View WHERE Sample_ID = " + sampID);
 			rs.next();
 			
 			out.println("<tr><td class='bigheading' colspan='2'>Mandatory Data</td></tr>");
-			if (rs.getString(2) != null && userID != 0) { out.println("<tr><td class='heading'>Field Number</td><td>" + (rs.getString(2)) + "</td></tr>"); }
-			if (rs.getString(3) != null) { out.println("<tr><td class='heading'>Drillhole Name</td><td>" + rs.getString(3) + "</td></tr>"); }
+			if (rs.getString(3) != null && userID != 0) {
+				if (rs.getString(2).equals("Outcrop")) {
+					out.println("<tr><td class='heading'>Field Number</td><td>" + rs.getString(3) + "</td></tr>");
+				} else if (rs.getString(2).equals("Drillhole")) {
+					out.println("<tr><td class='heading'>Drillhole Name</td><td>" + rs.getString(3) + "</td></tr>");
+				} else {
+					out.println("<tr><td class='heading'>Section Name</td><td>" + rs.getString(3) + "</td></tr>");
+				}
+			}
 			if (rs.getString(7) != null) {
 				out.print("<tr><td class='heading'>Grid Ref</td><td>");
 				if (rs.getString(4) != null) {

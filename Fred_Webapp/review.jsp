@@ -80,12 +80,13 @@
 			}
 
 			out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
-			rs = statement.executeQuery("SELECT DISTINCT S.Sample_Name, S.Masterfile_Name, S.Drillhole_Name, A.Created_By, A.Created_Date, A.Modified_By, A.Modified_Date, A.Submitted_By, A.Submitted_Date, A.Working_Comments FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = " + featID);
+			rs = statement.executeQuery("SELECT DISTINCT S.Sample_Name, S.Feature_Type, S.Masterfile_Name, A.Created_By, A.Created_Date, A.Modified_By, A.Modified_Date, A.Submitted_By, A.Submitted_Date, A.Working_Comments FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = " + featID);
 			rs.next();
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
-			out.print("<tr><td colspan='2' align='center' class='bigheading' >" + rs.getString(1) + "</td></tr>");
-			if (rs.getString(2) != null) {
-				out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + rs.getString(2) + "</td></tr>");
+			out.println("<tr><td colspan='2' align='center' class='bigheading' >" + rs.getString(1) + "</td></tr>");
+			out.println("<tr><td colspan='2' align='center'>" + rs.getString(2) + "</td></tr>");
+			if (rs.getString(3) != null) {
+				out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + rs.getString(3) + "</td></tr>");
 			}
 			if (rs.getString(4) != null || rs.getString(5) != null) {
 				out.println("<tr><td class='smallheading'>Created:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
@@ -181,11 +182,8 @@
 			out.println("<tr><td>");
 
 			out.println("<p><table border='0' cellspacing='0' width='500'>");
-			rs = statement.executeQuery("SELECT Feature_ID, Field_Number, Drillhole_Name, NZMG_Sheet, NZMG_East, NZMG_North, Latitude, Longitude, Accuracy, Method, Locality FROM Sample_All_View S WHERE Feature_ID = " + featID);
+			rs = statement.executeQuery("SELECT Feature_ID, Feature_Type, Feature_Name, NZMG_Sheet, NZMG_East, NZMG_North, Latitude, Longitude, Accuracy, Method, Locality FROM Sample_All_View S WHERE Feature_ID = " + featID);
 			rs.next();
-
-			if (rs.getString(2) != null) { out.println("<tr><td class='heading' width='135'>Field Number</td><td>" + (rs.getString(2)) + "</td></tr>"); }
-			if (rs.getString(3) != null) { out.println("<tr><td class='heading' width='135'>Drillhole Name</td><td>" + (rs.getString(3)) + "</td></tr>"); }
 			if (rs.getString(7) != null) {
 				out.print("<tr><td class='heading'>Grid Ref</td><td>");
 				if (rs.getString(4) != null) {
@@ -207,11 +205,20 @@
 				out.println("</td></tr>");
 			}
 			if (rs.getString(10) != null) { out.println("<tr><td class='heading' width='135'>Method</td><td>" + rs.getString(10) + "</td></tr>"); }
+			if (rs.getString(3) != null) {
+				if (rs.getString(2).equals("Outcrop")) {
+					out.println("<tr><td class='heading'>Field Number</td><td>" + (rs.getString(3)) + "</td></tr>");
+				} else if (rs.getString(2).equals("Drillhole")) {
+					out.println("<tr><td class='heading'>Drillhole Name</td><td><a href='drillhole_detail.jsp?ID=" + rs.getString(1) + "'>" + rs.getString(3) + "</a></td></tr>");
+				} else {
+					out.println("<tr><td class='heading'>Section Name</td><td><a href='drillhole_detail.jsp?ID=" + rs.getString(1) + "'>" + rs.getString(3) + "</a></td></tr>");
+				}
+			}
 			if (rs.getString(11) != null) { out.println("<tr><td class='heading' width='135'>Locality</td><td>" + rs.getString(11) + "</td></tr>"); }
 			if (!workComm.equals("")) { out.println("<tr><td class='heading' width='135'>Working Comments</td><td>" + workComm + "</td></tr>"); }
 			out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
 
-			if (rs.getString(2) != null) { //outcrop locality so show sample property record as well
+			if (rs.getString(2).equals("Outcrop")) { //outcrop locality so show sample property record as well
 				rs = statement.executeQuery("SELECT Record_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage, Known_Stage, Column_Map, Dip, Dip_Direction, Strike, Facing, Grainsize, Comparator_Used, Bed_Thickness, Bedding, Weathering, Hardness, Carbonate, Colour, Deposition_Env, Rock_Nature, Correspondence, Record_ID FROM Sample_Property_All_View WHERE Feature_ID = " + featID);
 				if (rs.next()) {
 					recID = rs.getString(1);
