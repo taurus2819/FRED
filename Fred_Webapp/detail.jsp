@@ -32,7 +32,7 @@
 	}
 
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	drawTop(out, et, request, response);
 
@@ -229,7 +229,7 @@
 					rs2.next();
 					if (rs2.getInt(1) > 0) {
 						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Collectors</td>");
-						rs2 = statement2.executeQuery("SELECT Name FROM SC.Person_View P, Collector C WHERE P.Person_ID = C.Person_ID AND C.Record_ID = " + recID + " ORDER BY Name");
+						rs2 = statement2.executeQuery("SELECT Name FROM Person_View P, Collector C WHERE P.Person_ID = C.Person_ID AND C.Record_ID = " + recID + " ORDER BY Name");
 						rs2.next();
 						out.println("<td>" + rs2.getString(1) + "</td></tr>");
 						while (rs2.next()) {

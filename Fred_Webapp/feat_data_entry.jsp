@@ -190,10 +190,10 @@ function parseCoord(form, coord) {
 			out.println("<input type='hidden' name='SaveType' value=''>");
 
 			//build array of datum methods
-			rs = statement.executeQuery("SELECT MAX(Datum_ID) FROM SC.Datum_Method");
+			rs = statement.executeQuery("SELECT MAX(Method_ID) FROM SC.Method");
 			rs.next();
 			out.println("<script language='JavaScript'>var datumMethod = new Array(" + (rs.getInt(1) + 1) + ");");
-			rs =statement.executeQuery("SELECT Datum_ID, Nom_Accuracy_XY FROM SC.Datum_Method WHERE Nom_Accuracy_XY IS NOT NULL ORDER BY Datum_ID");
+			rs =statement.executeQuery("SELECT Method_ID, Nom_Accuracy_XY FROM SC.Method WHERE Nom_Accuracy_XY IS NOT NULL ORDER BY Method_ID");
 			while (rs.next()) {
 				out.println("datumMethod[" + rs.getString(1) + "] = '" + noNulls(rs.getString(2)) + "';");
 			}
@@ -245,11 +245,11 @@ function parseCoord(form, coord) {
 			<input type='hidden' name='East' value=''>
 			<input type='hidden' name='North' value=''>
 			<tr><td></td><td class='smallheading'>Method</td><td>
-<%			cd = new ComboDescriptor("SC.Datum_Method", "Datum_ID", "Method");
+<%			cd = new ComboDescriptor("SC.Method", "Method_ID", "Method");
 			cd.name = "LocMethodID";
 			cd.prompt = "-- Choose --";
 			cd.selected = locMethod;
-			cd.orderBy = "Datum_ID";
+			cd.orderBy = "Method_ID";
 			cd.join = "Nom_Accuracy_XY IS NOT NULL";
 			cd.tagParams = "onChange='setAccuracy(this.value, this.form)'";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);

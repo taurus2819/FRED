@@ -283,7 +283,7 @@ function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
 
 		if (request.getParameter("Add") != null) {  //add data to lookup tables
 			if (request.getParameter("Add").equals("Person")) {
-				execUp = statement.executeUpdate("INSERT INTO SC.Person (Given_Name, Family_Name) VALUES (" + JspUtils.sqlEscape(request.getParameter("GivenName")) + ", " + JspUtils.sqlEscape(request.getParameter("FamilyName")) + ")");
+				execUp = statement.executeUpdate("INSERT INTO Person (Given_Name, Family_Name) VALUES (" + JspUtils.sqlEscape(request.getParameter("GivenName")) + ", " + JspUtils.sqlEscape(request.getParameter("FamilyName")) + ")");
 				out.println("<script language='JavaScript'>alert(\"Name added to list.  Please now select to add to form\");</script>");
 			}
 		}
@@ -342,7 +342,7 @@ function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
 			out.println("<tr><td colspan='2'>Select a person/company from the drop-down list.  New collectors can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button<br />You may add multiple collectors by clicking the Add To Main Form icon between each collector and then Close to end.</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.print("<tr><td class='heading'>Person/Company</td><td>");
-			cd = new ComboDescriptor("SC.Person_View", "Name", "Name");
+			cd = new ComboDescriptor("Person_View", "Name", "Name");
 			cd.name = "Person";
 			cd.prompt = "-- Choose --";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
@@ -362,7 +362,7 @@ function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
 			out.println("<tr><td colspan='2'>Select a person/company from the drop-down list.  New adoptors can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button.</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.print("<tr><td class='heading'>Person</td><td>");
-			cd = new ComboDescriptor("SC.Person_View", "Name", "Name");
+			cd = new ComboDescriptor("Person_View", "Name", "Name");
 			cd.name = "Person";
 			cd.prompt = "-- Choose --";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
@@ -382,7 +382,7 @@ function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
 			out.println("<tr><td colspan='2'>Select a person/company from the drop-down list.  New identifiers can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button.</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.print("<tr><td class='heading'>Person</td><td>");
-			cd = new ComboDescriptor("SC.Person_View", "Name", "Name");
+			cd = new ComboDescriptor("Person_View", "Name", "Name");
 			cd.name = "Person";
 			cd.prompt = "-- Choose --";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
@@ -423,7 +423,7 @@ function parseDate(dateDay, dateMonth, dateYear, dateUnk, dateRnd) {
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, "Group", null, null, null, "Lookup", "Name", "Name", null, "FieldName = 'FossilGroup'");
 			out.print("</td></tr>");
 			out.print("<tr><td class='heading'>Person</td><td>");
-			cd = new ComboDescriptor("SC.Person_View", "Name", "Name");
+			cd = new ComboDescriptor("Person_View", "Name", "Name");
 			cd.name = "Person";
 			cd.prompt = "-- Choose --";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);

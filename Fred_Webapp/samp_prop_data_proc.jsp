@@ -123,7 +123,7 @@
 				i = 0;
 				while (coll.length() > 0) {
 					if (coll.indexOf("\n") == -1) { coll = coll + "\n"; }
-					rs = statement.executeQuery("SELECT Person_ID FROM SC.Person_View WHERE Name = '" + coll.substring(0, coll.indexOf("\n")).trim() + "'");
+					rs = statement.executeQuery("SELECT Person_ID FROM Person_View WHERE Name = '" + coll.substring(0, coll.indexOf("\n")).trim() + "'");
 					if (rs.next()) {
 						collID[++i] = rs.getLong(1);
 					} else {  //Collector not in database so throw exception
@@ -152,7 +152,7 @@
 						throw new DataInputException("Sent To - Group", stGroup + " not a valid sent to group");
 					}
 					if (!stPerson.equals("")) {
-						rs = statement.executeQuery("SELECT Person_ID FROM SC.Person_View WHERE Name = " + JspUtils.sqlEscape(stPerson));
+						rs = statement.executeQuery("SELECT Person_ID FROM Person_View WHERE Name = " + JspUtils.sqlEscape(stPerson));
 						if (rs.next()) {
 							stPersonID[i] = rs.getString(1);
 						} else { // not valid person

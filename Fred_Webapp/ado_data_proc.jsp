@@ -95,7 +95,7 @@
 			//Adoptor_ID
 			if (!request.getParameter("Adoptor").equals("")) {
 				String adoptor = request.getParameter("Adoptor");
-				rs = statement.executeQuery("SELECT Person_ID FROM SC.Person_View WHERE Name = '" + adoptor + "'");
+				rs = statement.executeQuery("SELECT Person_ID FROM Person_View WHERE Name = '" + adoptor + "'");
 				if (rs.next()) {
 					adoptorID = rs.getString(1);
 				} else {  //Collector not in database so throw exception

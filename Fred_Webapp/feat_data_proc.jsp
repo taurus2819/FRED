@@ -126,7 +126,7 @@
 					rs = statement.executeQuery("SELECT SC.Site_Seq.NEXTVAL FROM DUAL");
 					rs.next();
 					siteID = rs.getString(1);
-					execUp = statement.executeUpdate("INSERT INTO SC.Site (Site_ID, Site_Name, Latitude, Longitude, Method_ID, Accuracy, Directions, Orig_system_ID, Orig_Coord, Country_Code) VALUES (" + siteID + ", " + JspUtils.sqlEscape(request.getParameter("FeatName")) + ", " + latitude + ", " + longitude + ", " + makeDropDownNulls(request.getParameter("LocMethodID")) + ", " + JspUtils.sqlEscape(request.getParameter("Accuracy")) + ", " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", " + request.getParameter("OrigCoord") + ", '" + origCoord + "', '" + request.getParameter("Country") + "')");
+					execUp = statement.executeUpdate("INSERT INTO SC.Site (Site_ID, Site_Name, Latitude, Longitude, Method_ID, Accuracy, Directions, Orig_System_ID, Orig_Coord, Country_Code) VALUES (" + siteID + ", " + JspUtils.sqlEscape(request.getParameter("FeatName")) + ", " + latitude + ", " + longitude + ", " + makeDropDownNulls(request.getParameter("LocMethodID")) + ", " + JspUtils.sqlEscape(request.getParameter("Accuracy")) + ", " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", " + request.getParameter("OrigCoord") + ", '" + origCoord + "', '" + request.getParameter("Country") + "')");
 				}
 			} else {
 				siteID = "NULL";

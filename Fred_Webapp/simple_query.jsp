@@ -324,10 +324,10 @@ function parseSerialNum(serialNum, prefix) {
 	</select>
 </td></tr>
 <tr><td class='heading'>Collector&nbsp;&nbsp;</td><td></td><td colspan='3'>
-<%	cd = new ComboDescriptor("SC.Person_View", "Person_ID", "Name");
+<%	cd = new ComboDescriptor("Person_View", "Person_ID", "Name");
 	cd.name = "Coll";
 	cd.prompt = "-- All --";
-	cd.orderBy = "Family_Name";
+	cd.orderBy = "UPPER(Name)";
 	HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 %>
 </td></tr>
