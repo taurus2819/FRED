@@ -58,16 +58,13 @@ function saveData(type) {
 	with (document.form1) {
 		if (type == "Coord") {
 			if (checkCoord() == 1) {
-				for (i = 0; i < CoordType.length; i++) {
-					if (CoordType[i].checked) { window.opener.form1.GridRef.value = CoordType[i].value + ":"; }
-				}
-				if (CoordType[1].checked) { window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + NZMGSheet.value.toUpperCase() + "*"; }
-				if (CoordType[2].checked || CoordType[3].checked) {
+				window.opener.form1.GridRef.value = CoordType.value + ":";
+				if (CoordType.value == "TruncNZMG") {
+					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + NZMGSheet.value.toUpperCase() + "*";
+				} else if (CoordType.value == "LL49" || CoordType.value == "LL2000") {
 					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + Country.value.toUpperCase() + "*";
-					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + North.value + "*" + East.value;
-				} else {
-					window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + East.value + "*" + North.value;
-				}
+				} 
+				window.opener.form1.GridRef.value = window.opener.form1.GridRef.value + East.value + "*" + North.value;
 				window.close();
 			}
 		}
@@ -181,7 +178,7 @@ function parseDate(day, montha, year, rnd) {
 
 function checkCoord() {
 	with (document.form1) {
-		if (CoordType[0].checked) {// Full NZMG
+		if (CoordType.value == "NZMG") {
 			if (East.value.length != 7 || isNaN(East.value)) {
 				alert ("Please enter a valid easting (7 digits for Full NZMG)");
 				East.select();
@@ -192,7 +189,7 @@ function checkCoord() {
 				North.select();
 				return 0;
 			}
-		} else if (CoordType[1].checked) { // Trunc NZMG
+		} else if (CoordType.value == "TruncNZMG") { // Trunc NZMG
 			if (NZMGSheet.value.length != 3 || NZMGSheet.value.charAt(0) <= "9" || isNaN(NZMGSheet.value.substring(1, 2))) {
 				alert ("Please enter a valid NZMG Sheet (required for Trunc NZMG)");
 				NZMGSheet.select();
@@ -213,7 +210,7 @@ function checkCoord() {
 				East.select();
 				return 0;
 			}
-		} else { // Lat/Long
+		} else if (CoordType.value.substring(0, 2) == "LL") { // Lat/Long
 			if (East.value.length == 0 || isNaN(East.value) || East.value < -180 || East.value > 180) {
 				alert ("Please enter a valid longitude (between -180 and 180 for Lat/Long)");
 				East.select();
@@ -310,8 +307,16 @@ function parseDropDown(val) {
 			out.println("<tr><td class='heading' colspan='2'>Coordinates</td></tr>");
 			out.println("<tr><td colspan='2'>Please select the type and then enter the coordinates in the appropriate text boxes.<br />For <em>Full NZMG</em> enter 7-digit eastings and northings, for <em>Trunc NZMG</em> enter the map sheet plus either 3 or 4-digit eastings and northings and for <em>Lat/Long</em> enter NZGD49 latitudes and longitudes in decimal degrees (-ve numbers for west and south).</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
-			out.println("<tr><td class='heading'>Coord Type</td><td><input type='radio' name='CoordType' value='NZMG' checked />Full NZMG&nbsp&nbsp<input type='radio' name='CoordType' value='TruncNZMG' />Trunc NZMG&nbsp&nbsp<input type='radio' name='CoordType' value='LL49' />Lat/Long NZGD49&nbsp&nbsp<input type='radio' name='CoordType' value='LL2000' />Lat/Long NZGD2000/WGS84</td></tr>");
-			out.println("<tr><td class='heading'>NZMG Sheet</td><td><input type='text' name='NZMGSheet' /></td></tr>");
+			out.println("<tr><td class='heading'>Coord Type</td><td>");
+			out.println("<select name='CoordType'>");
+			out.println("<option value='NZMG' selected>Full NZMG</option>");
+			out.println("<option value='TruncNZMG'>Trunc NZMG</option>");
+			out.println("<option value='LL49'>Lat/Long NZGD49</option>");
+			out.println("<option value='LL2000'>Lat/Long NZGD2000/WGS84</option>");
+			out.println("<option value='AUCK'>Auckland Island TM</option>");
+			out.println("<option value='CAMP'>Campbell Island TM</option>");
+			out.println("</select></td></tr>");
+			out.println("<tr><td class='heading'>NZMS260 Sheet</td><td><input type='text' name='NZMGSheet' /></td></tr>");
 			out.println("<tr><td class='heading'>Easting/Longitude</td><td><input type='text' name='East' /></td></tr>");
 			out.println("<tr><td class='heading'>Northing/Latitude</td><td><input type='text' name='North' /></td></tr>");
 			out.print("<tr><td class='heading'>Country</td><td>");
