@@ -123,7 +123,7 @@ public class FolderUtils {
 		QueryDescriptor qd = new QueryDescriptor("audit_table");
 		qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
 		qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(userID));
-		qd.addQueryColumn("created_date", Types.DATE, FREDUtils.getNowForSQL());
+		qd.addQueryColumn("created_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
 		qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(folderID));
 		String featureAuditID = DBUtils.doInsertUsingSequence(qd, "audit_id", "audit_seq", conn, true);
 		ResultSet seqRst = conn.executeQuery("SELECT feature_seq.NEXTVAL FROM DUAL");
@@ -147,7 +147,7 @@ public class FolderUtils {
 				qd = new QueryDescriptor("audit_table");
 				qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
 				qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(userID));
-				qd.addQueryColumn("created_date", Types.DATE, FREDUtils.getNowForSQL());
+				qd.addQueryColumn("created_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL())));
 				qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(folderID));
 				qd.addQueryColumn("security_class_id", Types.NUMERIC, new Integer(4));
 				sampleAuditID = DBUtils.doInsertUsingSequence(qd, "audit_id", "audit_seq", conn, true);
@@ -175,7 +175,7 @@ public class FolderUtils {
 				qd = new QueryDescriptor("audit_table");
 				qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
 				qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(userID));
-				qd.addQueryColumn("created_date", Types.DATE, FREDUtils.getNowForSQL());
+				qd.addQueryColumn("created_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL())));
 				qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(folderID));
 				qd.addQueryColumn("security_class_id", Types.NUMERIC, new Integer(4));
 				String recordAuditID = DBUtils.doInsertUsingSequence(qd, "audit_id", "audit_seq", conn, true);
