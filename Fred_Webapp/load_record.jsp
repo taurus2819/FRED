@@ -1,5 +1,5 @@
-<%@page	extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
+<%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
+		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -20,7 +20,8 @@
 		}
 	}
 %><%
-	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
+	PageState state = new PageState(request, response, getServletContext());
+	DBConnection connection = FREDUtils.getFREDConnection(state);
 	Statement statement = connection.statement;
 	ResultSet rs;
 	User user = getUser(session);
@@ -94,7 +95,7 @@
 				}
 				out.println("</td></tr>");
 				while (rs.next()) {
-					out.print("<tr><td><a href='" + returnURL + "?FoldID=" + foldID + "&SampID=" + request.getParameter("SampID") + "&RecID=" + recID + "&LoadRecID=" + rs.getString(1) + "' title='Copy Record'><img src='images/load.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' width='10' height='1' /></td><td>" + rs.getString(2) + "<img src='images/blank.gif' width='10' height='1' /></td><td>" + noNulls(rs.getString(3)));
+					out.print("<tr><td><a href='" + returnURL + "?FoldID=" + foldID + "&SampID=" + request.getParameter("SampID") + "&RecID=" + recID + "&LoadRecID=" + rs.getString(1) + "' title='Copy Record'><img src='images/load.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' width='10' height='1' /></td><td>" + rs.getString(2) + "<img src='images/blank.gif' width='10' height='1' /></td><td>" +FREDUtils.noNulls(rs.getString(3)));
 					if (!recType.equals("SMP")) {
 					 out.print("<img src='images/blank.gif' width='10' height='1' /></td><td>" + rs.getString(4));
 					}

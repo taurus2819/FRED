@@ -1,5 +1,5 @@
-<%@		page extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.fred.*, nz.cri.gns.db.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, nz.cri.gns.db.metadata.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
+<%@		page extends="nz.cri.gns.fred.FREDIPSysJspPage"
+		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, nz.cri.gns.db.metadata.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
 %><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 	User user = getUser(session);
@@ -418,10 +418,10 @@
 										for (Iterator i3 = taxaGroup.getTaxaList().iterator(); i3.hasNext(); ) {
 											Taxa taxa = (Taxa)i3.next();
 											out.print("<tr><td>" + taxa.getTaxonomicName() + "&nbsp;&nbsp;</td>");
-											if (authorChk) { out.print("<td><i>" + noNulls(taxa.getAuthor()) + "</i>&nbsp;&nbsp;</td>"); }
-											if (sCountChk) { out.print("<td>" + noNulls(String.valueOf(taxa.getSpecimenCount())) + "&nbsp;&nbsp;</td>"); }
-											if (sCoordChk) { out.print("<td>" + noNulls(taxa.getSpecimenCoords()) + "&nbsp;&nbsp;</td>"); }
-											if (commChk) { out.print("<td>" + noNulls(taxa.getComments()) + "&nbsp;&nbsp;</td>"); }
+											if (authorChk) { out.print("<td><i>" +FREDUtils.noNulls(taxa.getAuthor()) + "</i>&nbsp;&nbsp;</td>"); }
+											if (sCountChk) { out.print("<td>" +FREDUtils.noNulls(String.valueOf(taxa.getSpecimenCount())) + "&nbsp;&nbsp;</td>"); }
+											if (sCoordChk) { out.print("<td>" +FREDUtils.noNulls(taxa.getSpecimenCoords()) + "&nbsp;&nbsp;</td>"); }
+											if (commChk) { out.print("<td>" +FREDUtils.noNulls(taxa.getComments()) + "&nbsp;&nbsp;</td>"); }
 											out.println("</tr>");
 										}
 									} else {

@@ -1,8 +1,9 @@
-<%@page	extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*, java.util.*"
+<%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
+		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*, java.util.*"
 %><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
-	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
+	PageState state = new PageState(request, response, getServletContext());
+	DBConnection connection = FREDUtils.getFREDConnection(state);
 	Statement statement = connection.statement;
 	Statement statement2 = connection.getExtraStatement();
 	ResultSet rs, rs2;
@@ -116,7 +117,7 @@
 
 			rs = statement.executeQuery("SELECT Feature_ID, Sample_Name, Feature_Type, Feature_Name, Yard_FR_Number FROM Sample_View WHERE Feature_ID IN (" + featIDs + ") GROUP BY Feature_ID, Sample_Name, Feature_Type, Feature_Name, Yard_FR_Number ORDER BY Sample_Name");
 			while (rs.next()) {
-				out.println("<tr><td class='heading'><a href='detail.jsp?FeatID=" + rs.getString(1) + "'>" + rs.getString(2) + "</a>&nbsp;&nbsp;</td><td>" + rs.getString(3) + "</td><td>" + noNulls(rs.getString(5)) + "&nbsp;&nbsp;</td><td>" + noNulls(rs.getString(4)) + "</td></tr>");
+				out.println("<tr><td class='heading'><a href='detail.jsp?FeatID=" + rs.getString(1) + "'>" + rs.getString(2) + "</a>&nbsp;&nbsp;</td><td>" + rs.getString(3) + "</td><td>" +FREDUtils.noNulls(rs.getString(5)) + "&nbsp;&nbsp;</td><td>" +FREDUtils.noNulls(rs.getString(4)) + "</td></tr>");
 			}
 			out.println("</table>");
 

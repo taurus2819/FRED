@@ -1,5 +1,5 @@
-<%@		page extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, java.text.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*"
+<%@		page extends="nz.cri.gns.fred.FREDIPSysJspPage"
+		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, java.text.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -20,7 +20,8 @@
 		}
 	}
 %><%
-	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
+	PageState state = new PageState(request, response, getServletContext());
+	DBConnection connection = FREDUtils.getFREDConnection(state);
 	Statement statement = connection.statement;
 	ResultSet rs;
 	DocumentAttacher attacher = DocumentAttacher.createFREDDocumentAttacher(session, application);
@@ -136,7 +137,7 @@ function parseDoubleDropDown(first, second) {
 				rs = statement.executeQuery("SELECT Sample_ID, Working_Comments FROM Record_All_View WHERE Record_ID = " + loadRecID);
 				rs.next();
 				if (sampID == null) { sampID = rs.getString(1); }
-				workComm = noNulls(rs.getString(2));
+				workComm = FREDUtils.noNulls(rs.getString(2));
 				rs = statement.executeQuery("SELECT Adoption_Date, Date_Rounding, Comments FROM Adoption WHERE Record_ID = " + loadRecID);
 				if (rs.next()) {
 					if (rs.getString(1) != null) {
@@ -148,7 +149,7 @@ function parseDoubleDropDown(first, second) {
 							adoDate = yearDateFormatter.format(rs.getDate(1));
 						}
 					}
-					comm = noNulls(rs.getString(3));
+					comm = FREDUtils.noNulls(rs.getString(3));
 				}
 				rs = statement.executeQuery("SELECT DISTINCT Adoptor FROM Adoption_All_View WHERE Record_ID = " + loadRecID);
 				while (rs.next()) {
@@ -198,7 +199,7 @@ function parseDoubleDropDown(first, second) {
 			rs = statement.executeQuery("SELECT Sample_Name, Feature_Type, Feature_Name, Drillhole_Depth FROM Sample_All_View WHERE Sample_ID = " + sampID);
 			rs.next();
 			out.print("<tr><td class='heading'>Sample Name</td><td></td><td class='heading'>" + rs.getString(1));
-			if (!rs.getString(2).equals("Outcrop")) { out.print("<br>" + noNulls(rs.getString(3)) + ": " + rs.getString(4)); }
+			if (!rs.getString(2).equals("Outcrop")) { out.print("<br>" + FREDUtils.noNulls(rs.getString(3)) + ": " + rs.getString(4)); }
 			out.println("</td></tr>");
 %>
 			<tr><td class='heading' colspan='2'>Working Comments<br><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'><%=workComm%></textarea></td></tr>

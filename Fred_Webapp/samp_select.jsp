@@ -1,5 +1,5 @@
-<%@page	extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, nz.cri.gns.auth.*"
+<%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
+		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, nz.cri.gns.auth.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -20,7 +20,8 @@
 		}
 	}
 %><%
-	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
+	PageState state = new PageState(request, response, getServletContext());
+	DBConnection connection = FREDUtils.getFREDConnection(state);
 	Statement statement = connection.statement;
 	ResultSet rs;
 	ComboDescriptor cd;
@@ -80,7 +81,7 @@ function checkDrill() {
 
 			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
 			out.println("<tr><td colspan='2' align='center'><img src='images/drill.gif' height='20' width='20' /></td></tr>");
-			out.println("<tr><td colspan='2' class='bigheading' align='center'>" + rs.getString(1) + ": " + noNulls(rs.getString(2)) + "</td></tr>");
+			out.println("<tr><td colspan='2' class='bigheading' align='center'>" + rs.getString(1) + ": " +FREDUtils.noNulls(rs.getString(2)) + "</td></tr>");
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 			out.println("<tr><td><a href='#' onClick='if(checkDrill()) {sampForm.submit();}' title='Select'><img src='images/ok.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='#' onClick='if(checkDrill()) {sampForm.submit();}' class='heading'>Select</a></td></tr>");
 			out.println("<tr><td><a href='javascript:history.back();' title='Quit'><img src='images/cancel.gif' width='20' height='20' border='0' /><img src='images/blank.gif' width='10' height='1' border='0' /></a></td><td><a href='javascript:history.back();' class='heading'>Quit</a></td></tr>");

@@ -1,5 +1,5 @@
-<%@		page extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, java.text.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*"
+<%@		page extends="nz.cri.gns.fred.FREDIPSysJspPage"
+		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, java.text.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -21,7 +21,8 @@
 	}
 %><%
 try {
-	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
+	PageState state = new PageState(request, response, getServletContext());
+	DBConnection connection = FREDUtils.getFREDConnection(state);
 	Statement statement = connection.statement;
 	ResultSet rs;
 	DocumentAttacher attacher = DocumentAttacher.createFREDDocumentAttacher(session, application);
@@ -218,7 +219,7 @@ function parseSedFeat(sedFeat) {
 				rs = statement.executeQuery("SELECT Sample_ID, Working_Comments FROM Record_All_View WHERE Record_ID = " + loadRecID);
 				rs.next();
 				if (sampID == null) { sampID = rs.getString(1); }
-				workComm = noNulls(rs.getString(2));
+				workComm =FREDUtils.noNulls(rs.getString(2));
 
 				rs = statement.executeQuery("SELECT Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Column_Map, Dip, Dip_Direction, Strike, Facing, Primary_Grainsize_ID, Secondary_Grainsize_ID, Comparator_Used, Bed_Thick_ID, Primary_Bedding_ID, Secondary_Bedding_ID, Weathering_ID, Hardness_ID, Carbonate_ID, Colour_Modifier_ID, Primary_Colour_ID, Secondary_Colour_ID, Wet, Deposition_Env, Rock_Nature, Correspondence FROM Sample_Property WHERE Record_ID = " + loadRecID);
 				if (rs.next()) {
@@ -231,28 +232,28 @@ function parseSedFeat(sedFeat) {
 							collDate = yearDateFormatter.format(rs.getDate(1));
 						}
 					}
-					stratName = noNulls(rs.getString(3));
-					inPlace = noNulls(rs.getString(4));
-					notColl = noNulls(rs.getString(5));
-					sig = noNulls(rs.getString(6));
-					colMap = noNulls(rs.getString(7));
-					dip = noNulls(rs.getString(8));
-					dipDir = noNulls(rs.getString(9));
-					strike = noNulls(rs.getString(10));
-					facing = noNulls(rs.getString(11));
-					grainSizeP = noNulls(rs.getString(12));
-					grainSizeS = noNulls(rs.getString(13));
-					gSComp = noNulls(rs.getString(14));
-					bedThick = noNulls(rs.getString(15));
-					beddingP = noNulls(rs.getString(16));
-					beddingS = noNulls(rs.getString(17));
-					weath = noNulls(rs.getString(18));
-					hard = noNulls(rs.getString(19));
-					carb = noNulls(rs.getString(20));
-					colMod = noNulls(rs.getString(21));
-					colourP = noNulls(rs.getString(22));
-					colourS = noNulls(rs.getString(23));
-					wet = noNulls(rs.getString(24));
+					stratName =FREDUtils.noNulls(rs.getString(3));
+					inPlace =FREDUtils.noNulls(rs.getString(4));
+					notColl =FREDUtils.noNulls(rs.getString(5));
+					sig =FREDUtils.noNulls(rs.getString(6));
+					colMap =FREDUtils.noNulls(rs.getString(7));
+					dip =FREDUtils.noNulls(rs.getString(8));
+					dipDir =FREDUtils.noNulls(rs.getString(9));
+					strike =FREDUtils.noNulls(rs.getString(10));
+					facing =FREDUtils.noNulls(rs.getString(11));
+					grainSizeP =FREDUtils.noNulls(rs.getString(12));
+					grainSizeS =FREDUtils.noNulls(rs.getString(13));
+					gSComp =FREDUtils.noNulls(rs.getString(14));
+					bedThick =FREDUtils.noNulls(rs.getString(15));
+					beddingP =FREDUtils.noNulls(rs.getString(16));
+					beddingS =FREDUtils.noNulls(rs.getString(17));
+					weath =FREDUtils.noNulls(rs.getString(18));
+					hard =FREDUtils.noNulls(rs.getString(19));
+					carb =FREDUtils.noNulls(rs.getString(20));
+					colMod =FREDUtils.noNulls(rs.getString(21));
+					colourP =FREDUtils.noNulls(rs.getString(22));
+					colourS =FREDUtils.noNulls(rs.getString(23));
+					wet =FREDUtils.noNulls(rs.getString(24));
 					if (rs.getString(25) != null) {
 						if (rs.getString(25).indexOf("Marine:") != -1) {
 							depEnv1 = "Marine";
@@ -264,8 +265,8 @@ function parseSedFeat(sedFeat) {
 							depEnv2 = rs.getString(25);
 						}
 					}
-					rockNat = noNulls(rs.getString(26));
-					corr = noNulls(rs.getString(27));
+					rockNat =FREDUtils.noNulls(rs.getString(26));
+					corr =FREDUtils.noNulls(rs.getString(27));
 				}
 				rs = statement.executeQuery("SELECT DISTINCT Collector FROM Sample_Property_All_View WHERE Record_ID = " + loadRecID);
 				while (rs.next()) {
@@ -284,7 +285,7 @@ function parseSedFeat(sedFeat) {
 				}
 				rs = statement.executeQuery("SELECT Fossil_Group, Person_Name, Lab_Name, Comments FROM Sent_To_View WHERE Record_ID = " + loadRecID);
 				while (rs.next()) {
-					sentTo = sentTo + rs.getString(1) + "*" + noNulls(rs.getString(2)) + "*" + noNulls(rs.getString(3)) + "*" + noNulls(rs.getString(4)) + "\n";
+					sentTo = sentTo + rs.getString(1) + "*" +FREDUtils.noNulls(rs.getString(2)) + "*" +FREDUtils.noNulls(rs.getString(3)) + "*" +FREDUtils.noNulls(rs.getString(4)) + "\n";
 				}
 				rs = statement.executeQuery("SELECT Relationship_Type, Relation_Type_ID, Distance, Distance_Range, Distance_Mod, Relation_Type, Related_Sample_Name, Strat_Unit FROM Relationship_View WHERE Record_ID = " + loadRecID);
 				while (rs.next()) {
@@ -293,13 +294,13 @@ function parseSedFeat(sedFeat) {
 							prevSamp = prevSamp + rs.getString(5) + ";";
 						} else {
 							if (rs.getString(5) != null) { sampRel = sampRel + "c. "; }
-							sampRel = sampRel + noNulls(rs.getString(3));
+							sampRel = sampRel +FREDUtils.noNulls(rs.getString(3));
 							if (rs.getString(4) != null) { sampRel = sampRel + " - " + rs.getString(4); }
 							sampRel = sampRel + " " + rs.getString(6) + " " + rs.getString(7) + "\n";
 						}
 					} else if (rs.getString(1).equals("Strat")) {
 						if (rs.getString(5) != null) { stratRel = stratRel + "c. "; }
-						stratRel = stratRel + noNulls(rs.getString(3));
+						stratRel = stratRel +FREDUtils.noNulls(rs.getString(3));
 						if (rs.getString(4) != null) { stratRel = stratRel + " - " + rs.getString(4); }
 						stratRel = stratRel + " " + rs.getString(6) + " " + rs.getString(8) + "\n";
 					}
@@ -347,7 +348,7 @@ function parseSedFeat(sedFeat) {
 			rs = statement.executeQuery("SELECT Sample_Name, Feature_Type, Feature_Name, Drillhole_Depth FROM Sample_All_View WHERE Sample_ID = " + sampID);
 			rs.next();
 			out.print("<tr><td class='heading'>Sample Name</td><td></td><td class='heading'>" + rs.getString(1));
-			if (!rs.getString(2).equals("Outcrop")) { out.print("<br>" + noNulls(rs.getString(3)) + ": " + rs.getString(4)); }
+			if (!rs.getString(2).equals("Outcrop")) { out.print("<br>" +FREDUtils.noNulls(rs.getString(3)) + ": " + rs.getString(4)); }
 			out.println("</td></tr>");
 %>
 			<tr><td class='heading' colspan='2'>Working Comments<br><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'><%=workComm%></textarea></td></tr>

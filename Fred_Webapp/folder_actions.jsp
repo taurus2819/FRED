@@ -1,5 +1,5 @@
-<%@page	extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
+<%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
+		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -21,11 +21,6 @@
 	}
 %><%
 	PageState state = new PageState(request, response, getServletContext());
-	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
-	Statement statement = connection.statement;
-	Statement statement2 = connection.getExtraStatement();
-	Statement statement3 = connection.getExtraStatement();
-	ResultSet rs, rs2, rs3;
 	User user = getUser(session);
 	String featID, recID, mfID, recType, sampID, auditID, drillSampName, errMessage = "";
 	int execUp, recCount, i;

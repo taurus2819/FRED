@@ -1,5 +1,5 @@
-<%@		page extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, java.text.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*, nz.cri.gns.util.map.*"
+<%@		page extends="nz.cri.gns.fred.FREDIPSysJspPage"
+		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, java.text.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*, nz.cri.gns.util.map.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -20,7 +20,8 @@
 		}
 	}
 %><%
-	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
+	PageState state = new PageState(request, response, getServletContext());
+	DBConnection connection = FREDUtils.getFREDConnection(state);
 	Statement statement = connection.statement;
 	ResultSet rs;
 	User user = getUser(session);
@@ -213,19 +214,19 @@ function parseDate(date, dateRnd) {
 				//Get FieldNum/Drillhole name from original FeatID not LoadFeatID
 				rs = statement.executeQuery("SELECT Feature_Name FROM Sample_All_View WHERE Feature_ID = " + featID);
 				if (rs.next()) {
-					featName = noNulls(rs.getString(1));
+					featName =FREDUtils.noNulls(rs.getString(1));
 				}
 				rs = statement.executeQuery("SELECT Reg_Area_ID, Locality, Working_Comments, Drillhole_Licence_Name, Person, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth FROM Sample_All_View WHERE Feature_ID = " + loadFeatID);
 				rs.next();
 				if (rs.getString(1) != null) { regAreaID = rs.getString(1); }
-				loc = noNulls(rs.getString(2));
-				workComm = noNulls(rs.getString(3));
+				loc =FREDUtils.noNulls(rs.getString(2));
+				workComm =FREDUtils.noNulls(rs.getString(3));
 				if (workComm.indexOf("*Recoll:") >= 0) {
 					recoll = workComm.substring(8, workComm.indexOf("*", 2)).trim();
 					workComm = workComm.substring(workComm.indexOf("*", 2) + 1, workComm.length()).trim();
 				}
-				licArea = noNulls(rs.getString(4));
-				person = noNulls(rs.getString(5));
+				licArea =FREDUtils.noNulls(rs.getString(4));
+				person =FREDUtils.noNulls(rs.getString(5));
 				if (rs.getString(6) != null) {
 					if (rs.getString(7) == null) {
 						startDate = dateFormatter.format(rs.getDate(6));
@@ -244,10 +245,10 @@ function parseDate(date, dateRnd) {
 						finishDate = yearDateFormatter.format(rs.getDate(8));
 					}
 				}
-				datumType = noNulls(rs.getString(10));
-				datumEl = noNulls(rs.getString(11));
-				startDepth = noNulls(rs.getString(12));
-				finishDepth = noNulls(rs.getString(13));
+				datumType =FREDUtils.noNulls(rs.getString(10));
+				datumEl =FREDUtils.noNulls(rs.getString(11));
+				startDepth =FREDUtils.noNulls(rs.getString(12));
+				finishDepth =FREDUtils.noNulls(rs.getString(13));
 				rs = statement.executeQuery("SELECT Orig_System_ID, Orig_Coord, Method_ID, Accuracy, Country_Code FROM SC.Site S, Feature F WHERE F.Site_ID = S.Site_ID AND F.Feature_ID = " + loadFeatID);
 				if (rs.next()) {
 					if (rs.getInt(1) == 38) { //Full NZMG
@@ -257,8 +258,8 @@ function parseDate(date, dateRnd) {
 					} else if (rs.getInt(1) == 29) {
 						coord = "LatLong:" + rs.getString(5) + "*" + rs.getString(2).replace('|', '*');
 					}
-					locMethod = noNulls(rs.getString(3));
-					accuracy = noNulls(rs.getString(4));
+					locMethod =FREDUtils.noNulls(rs.getString(3));
+					accuracy =FREDUtils.noNulls(rs.getString(4));
 				}
 			}
 			else { //no rights to edit or not editable
@@ -281,7 +282,7 @@ function parseDate(date, dateRnd) {
 			out.println("<script language='JavaScript'>var datumMethod = new Array(" + (rs.getInt(1) + 1) + ");");
 			rs =statement.executeQuery("SELECT Method_ID, Nom_Accuracy_XY FROM SC.Method WHERE Nom_Accuracy_XY IS NOT NULL ORDER BY Method_ID");
 			while (rs.next()) {
-				out.println("datumMethod[" + rs.getString(1) + "] = '" + noNulls(rs.getString(2)) + "';");
+				out.println("datumMethod[" + rs.getString(1) + "] = '" +FREDUtils.noNulls(rs.getString(2)) + "';");
 			}
 			out.println("</script>");
 

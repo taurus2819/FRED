@@ -1,5 +1,5 @@
-<%@page	extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, nz.cri.gns.auth.*"
+<%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
+		import="nz.cri.gns.jsp.*, nz.cri.gns.auth.*"
 %><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 	ExtranetTemplate et = getExtranetTemplate();

@@ -1,5 +1,5 @@
-<%@page	extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*"
+<%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
+		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -20,7 +20,8 @@
 		}
 	}
 %><%
-	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
+	PageState state = new PageState(request, response, getServletContext());
+	DBConnection connection = FREDUtils.getFREDConnection(state);
 	Statement statement = connection.statement;
 	ResultSet rs;
 	User user = getUser(session);
@@ -74,7 +75,7 @@
 				out.println("<tr><th>Name<img src='blank.gif' width='10' height='1' /></th><th>Author<img src='blank.gif' width='10' height='1' /></th><th>Submitted By</th></tr>");
 				rs = statement.executeQuery("SELECT TL.Taxa_ID, TL.Taxonomic_Name, TL.Author, FU.Full_Name FROM Taxonomic_Lookup TL, FR_User_View FU WHERE TL.Submitted_By_ID = FU.PE_ID AND TL.Group_ID = " + groupID + " AND TL.Status = 'provisional' ORDER BY Taxonomic_Name");
 				while (rs.next()) {
-					out.println("<tr><td class='heading'>" + rs.getString(2) + "<img src='images/blank.gif' width='20' height='1' /></td><td>" + noNulls(rs.getString(3)) + "<img src='images/blank.gif' width='20' height='1' /></td><td>" + rs.getString(4) + "<img src='images/blank.gif' width='20' height='1' /></td><td><a href='taxa_group_detail.jsp?ID=" + groupID + "&ActionType=Approve&TaxaID=" + rs.getString(1) + "' title='Approve'><img src='images/ok.gif' border='0' height='20' width='20' /></td><td><a href='taxa_group_detail.jsp?ID=" + groupID + "&ActionType=Reject&TaxaID=" + rs.getString(1) + "' title='Reject'><img src='images/cancel.gif' border='0' height='20' width='20' /></a></td></tr>");
+					out.println("<tr><td class='heading'>" + rs.getString(2) + "<img src='images/blank.gif' width='20' height='1' /></td><td>" +FREDUtils.noNulls(rs.getString(3)) + "<img src='images/blank.gif' width='20' height='1' /></td><td>" + rs.getString(4) + "<img src='images/blank.gif' width='20' height='1' /></td><td><a href='taxa_group_detail.jsp?ID=" + groupID + "&ActionType=Approve&TaxaID=" + rs.getString(1) + "' title='Approve'><img src='images/ok.gif' border='0' height='20' width='20' /></td><td><a href='taxa_group_detail.jsp?ID=" + groupID + "&ActionType=Reject&TaxaID=" + rs.getString(1) + "' title='Reject'><img src='images/cancel.gif' border='0' height='20' width='20' /></a></td></tr>");
 				}
 			}
 
@@ -84,7 +85,7 @@
 			out.println("<tr><th>Name<img src='blank.gif' width='10' height='1' /></th><th>Author<img src='blank.gif' width='10' height='1' /></th><th>Approved By</th></tr>");
 			rs = statement.executeQuery("SELECT TL.Taxonomic_Name, TL.Author, FU.Full_Name FROM Taxonomic_Lookup TL, FR_User_View FU WHERE TL.Approved_By_ID = FU.PE_ID(+) AND TL.Group_ID = " + groupID + " AND TL.Status = 'approved' ORDER BY Taxonomic_Name");
 			while (rs.next()) {
-				out.println("<tr><td class='heading'>" + rs.getString(1) + "<img src='images/blank.gif' width='20' height='1' /></td><td>" + noNulls(rs.getString(2)) + "<img src='images/blank.gif' width='20' height='1' /></td><td>" + noNulls(rs.getString(3)) + "</td></tr>");
+				out.println("<tr><td class='heading'>" + rs.getString(1) + "<img src='images/blank.gif' width='20' height='1' /></td><td>" +FREDUtils.noNulls(rs.getString(2)) + "<img src='images/blank.gif' width='20' height='1' /></td><td>" +FREDUtils.noNulls(rs.getString(3)) + "</td></tr>");
 			}
 
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
@@ -93,7 +94,7 @@
 			out.println("<tr><th>Name<img src='blank.gif' width='10' height='1' /></th><th>Author</th></tr>");
 			rs = statement.executeQuery("SELECT Taxonomic_Name, Author FROM Taxonomic_Lookup WHERE Group_ID = " + groupID + " AND Status = 'obsolete' ORDER BY Taxonomic_Name");
 			while (rs.next()) {
-				out.println("<tr><td class='heading'>" + rs.getString(1) + "<img src='images/blank.gif' width='20' height='1' /></td><td>" + noNulls(rs.getString(2)) + "</td></tr>");
+				out.println("<tr><td class='heading'>" + rs.getString(1) + "<img src='images/blank.gif' width='20' height='1' /></td><td>" +FREDUtils.noNulls(rs.getString(2)) + "</td></tr>");
 			}
 
 			out.println("</table>");

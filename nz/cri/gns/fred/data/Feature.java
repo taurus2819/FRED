@@ -1,0 +1,176 @@
+package nz.cri.gns.fred.data;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Vector;
+
+import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.User;
+import nz.cri.gns.fred.FREDUtils;
+import nz.cri.gns.jsp.PageState;
+
+/**
+ * Class that represents a Feature record.
+ * Fields map to columns in database - use as arguments for the get methods.
+ * Pooling is used so cannot instantiate directly - use static getAudit method instead.
+ */
+public class Feature {
+
+	public static final int FEATURE_ID = 0;
+	public static final int SITE_ID = 1;
+	public static final int AUDIT_ID = 2;
+	public static final int SECURITY_CLASS_ID = 20;
+	public static final int STATUS = 23;
+	public static final int LAST_CHANGE = 25;
+	public static final int MASTERFILE_ID = 3;
+	public static final int MASTERFILE_NAME = 4;
+	public static final int LOCALITY = 5;
+	public static final int REG_AREA_ID = 6;
+	public static final int COMMENTS = 7;
+	public static final int FEATURE_TYPE = 8;
+	public static final int FEATURE_NAME = 9;
+	public static final int SAMPLE_NAMES = 24;
+	public static final int DRILLHOLE_LICENCE_NAME = 10;
+	public static final int START_DATE = 11;
+	public static final int START_DATE_ROUNDING = 12;
+	public static final int FINISH_DATE = 13;
+	public static final int FINISH_DATE_ROUNDING = 14;
+	public static final int PERSON_ID = 15;
+	public static final int DATUM_TYPE = 16;
+	public static final int DATUM_ELEVATION = 17;
+	public static final int START_DEPTH = 18;
+	public static final int FINISH_DEPTH = 19;
+	public static final int SAMPLES = 21;
+
+	private FeatureData fd;
+	private boolean authenticated;
+
+	public Feature(int id, User user, PageState state) throws SQLException, IOException {
+		fd = FeatureData.getData(id, state);
+		if (!FREDUtils.isAllowedLocality(user, fd.getAsString(SECURITY_CLASS_ID), fd.getAsString(STATUS), fd.getAsString(FEATURE_ID), state)) {
+			authenticated = false;
+		} else {
+			authenticated = true;
+		}		
+	}
+
+	public boolean isUserAuthenticated() {
+		return authenticated;
+	}
+	
+	public boolean isApprovedLocality() {
+		return (fd.getAsString(STATUS).equals("approved"));
+	}
+
+	public int getSampleCount() {
+		return fd.getAsVector(SAMPLES).size();
+	}
+
+	private boolean isAllowedField(int field) {
+		if (authenticated) {
+			return true;
+		}
+		if (isApprovedLocality()) {
+			switch (field) {
+				case FEATURE_ID :
+				case FEATURE_TYPE :
+				case FEATURE_NAME :
+				case SAMPLE_NAMES :
+				case MASTERFILE_ID :
+				case MASTERFILE_NAME :
+				case AUDIT_ID :
+				case SECURITY_CLASS_ID :
+				case STATUS :
+				case SITE_ID :
+				case SAMPLES :
+				return true;
+			}		
+		}
+		return false;
+	}
+
+	/**
+	 * Attempts to return the given field as an int.
+	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an int.
+	 */
+	public int getAsInt(int field) throws InvalidCredentialsException {
+		if (!isAllowedField(field)) {
+			throw new InvalidCredentialsException();
+		}
+		return fd.getAsInt(field);
+	}
+
+	/**
+	 * Attempts to return the given field as an double.
+	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an double.
+	 */
+	public double getAsDouble(int field) throws InvalidCredentialsException {
+		if (!isAllowedField(field)) {
+			throw new InvalidCredentialsException();
+		}
+		return fd.getAsDouble(field);
+	}
+
+	/**
+	 * Attempts to return the given field as a Date.
+	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an Date.
+	 */
+	public java.util.Date getAsDate(int field) throws InvalidCredentialsException {
+		if (!isAllowedField(field)) {
+			throw new InvalidCredentialsException();
+		}
+		return fd.getAsDate(field);
+	}
+
+	/**
+	 * Attempts to return the given field as a String.
+	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a String.
+	 */
+	public String getAsString(int field) throws InvalidCredentialsException {
+		if (!isAllowedField(field)) {
+			throw new InvalidCredentialsException();
+		}
+		return fd.getAsString(field);
+	}
+
+	/**
+	 * Attempts to return the given field as a Vector.
+	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a Vector.
+	 */
+	public Vector getAsVector(int field) throws InvalidCredentialsException {
+		if (!isAllowedField(field)) {
+			throw new InvalidCredentialsException();
+		}
+		return fd.getAsVector(field);
+	}
+	
+	/**
+	 * Returns the given field as an object. Use if all else fails.
+	 * @throws IllegalArgumentException if the field doesn't exist.
+	 */
+	public Object get(int field) throws InvalidCredentialsException {
+		if (!isAllowedField(field)) {
+			throw new InvalidCredentialsException();
+		}
+		return fd.get(field);
+	}
+
+	/**
+	 * created for testing purposes (grrrr) - use to test object pooling.
+	 */
+	public static int getPoolSize() {
+		return FeatureData.getPoolSize();
+	}
+
+	/**
+	 * Use to empty the pool of all objects.
+	 */
+	public static void purge() {
+		FeatureData.purge();
+	}
+
+	public String toString() {
+		return fd.toString();
+	}
+
+}

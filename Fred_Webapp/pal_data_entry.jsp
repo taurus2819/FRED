@@ -1,5 +1,5 @@
-<%@		page extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, java.text.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*"
+<%@		page extends="nz.cri.gns.fred.FREDIPSysJspPage"
+		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, java.text.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -20,7 +20,8 @@
 		}
 	}
 %><%
-	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
+	PageState state = new PageState(request, response, getServletContext());
+	DBConnection connection = FREDUtils.getFREDConnection(state);
 	Statement statement = connection.statement;
 	Statement statement2 = connection.getExtraStatement();
 	ResultSet rs, rs2;
@@ -166,7 +167,7 @@ function parseTaxa(taxa) {
 				rs = statement.executeQuery("SELECT Sample_ID, Working_Comments FROM Record_All_View WHERE Record_ID = " + loadRecID);
 				rs.next();
 				if (sampID == null) { sampID = rs.getString(1); }
-				workComm = noNulls(rs.getString(2));
+				workComm =FREDUtils.noNulls(rs.getString(2));
 				rs = statement.executeQuery("SELECT Identification_Date, Date_Rounding, Stage_Comments, Lab_Section_ID, Lab_Number, Collection_Comments FROM Paleontology WHERE Record_ID = " + loadRecID);
 				if (rs.next()) {
 					if (rs.getString(1) != null) {
@@ -178,15 +179,15 @@ function parseTaxa(taxa) {
 							palDate = yearDateFormatter.format(rs.getDate(1));
 						}
 					}
-					stComm = noNulls(rs.getString(3));
+					stComm =FREDUtils.noNulls(rs.getString(3));
 					if (rs.getString(4) != null) {
 						sectID = rs.getString(4);
 						rs2 = statement2.executeQuery("SELECT Lab_ID FROM Lab_Section WHERE Lab_Section_ID = " + rs.getString(4));
 						rs2.next();
 						labID = rs2.getString(1);
 					}
-					labNum = noNulls(rs.getString(5));
-					collComm = noNulls(rs.getString(6));
+					labNum =FREDUtils.noNulls(rs.getString(5));
+					collComm =FREDUtils.noNulls(rs.getString(6));
 				}
 				rs = statement.executeQuery("SELECT DISTINCT Identifier FROM Paleontology_All_View WHERE Record_ID = " + loadRecID);
 				while (rs.next()) {
@@ -201,7 +202,7 @@ function parseTaxa(taxa) {
 				}
 				rs = statement.executeQuery("SELECT Group_Name, Taxonomic_Name, Author, Specimen_Count, Specimen_Coords, Comments FROM Taxa_View WHERE Record_ID = " + loadRecID);
 				while (rs.next()) {
-					taxa = taxa + rs.getString(1) + "*" + rs.getString(2) + "*" + noNulls(rs.getString(3)) + "*" + noNulls(rs.getString(4)) + "*" + noNulls(rs.getString(5)) + "*" + noNulls(rs.getString(6)) + "\n";
+					taxa = taxa + rs.getString(1) + "*" + rs.getString(2) + "*" +FREDUtils.noNulls(rs.getString(3)) + "*" +FREDUtils.noNulls(rs.getString(4)) + "*" +FREDUtils.noNulls(rs.getString(5)) + "*" +FREDUtils.noNulls(rs.getString(6)) + "\n";
 				}
 			}
 			else { //no rights to edit or not editable
@@ -273,7 +274,7 @@ function swapSection(frm){
 			rs = statement.executeQuery("SELECT Sample_Name, Feature_Type, Feature_Name, Drillhole_Depth FROM Sample_All_View WHERE Sample_ID = " + sampID);
 			rs.next();
 			out.print("<tr><td class='heading'>Sample Name</td><td></td><td class='heading'>" + rs.getString(1));
-			if (!rs.getString(2).equals("Outcrop")) { out.print("<br>" + noNulls(rs.getString(3)) + ": " + rs.getString(4)); }
+			if (!rs.getString(2).equals("Outcrop")) { out.print("<br>" +FREDUtils.noNulls(rs.getString(3)) + ": " + rs.getString(4)); }
 			out.println("</td></tr>");
 %>
 			<tr><td class='heading' colspan='2'>Working Comments<br><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'><%=workComm%></textarea></td></tr>

@@ -1,5 +1,5 @@
-<%@		page extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*"
+<%@		page extends="nz.cri.gns.fred.FREDIPSysJspPage"
+		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -41,7 +41,8 @@
 			return 1;
 		}
 %><%
-	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
+	PageState state = new PageState(request, response, getServletContext());
+	DBConnection connection = FREDUtils.getFREDConnection(state);
 	Statement statement = connection.statement;
 	Statement statement2 = connection.getExtraStatement();
 	ResultSet rs;
@@ -139,7 +140,7 @@
 
 			//Create STAGE entry
 			if (!request.getParameter("StageStart").equals("-")) {
-				rs = statement.executeQuery("SELECT Get_Stage_ID(" + request.getParameter("StageStart") + ", " + makeDropDownNulls(request.getParameter("SartMod")) + ", " + makeDropDownNulls(request.getParameter("StageStop")) + ", " + makeDropDownNulls(request.getParameter("StopMod")) + ") FROM DUAL");
+				rs = statement.executeQuery("SELECT Get_Stage_ID(" + request.getParameter("StageStart") + ", " + FREDUtils.makeDropDownNulls(request.getParameter("SartMod")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("StageStop")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("StopMod")) + ") FROM DUAL");
 				rs.next();
 				if (rs.getString(1) != null) {
 					stageID = rs.getString(1);
@@ -147,12 +148,12 @@
 					rs = statement.executeQuery("SELECT Stage_Seq.NEXTVAL FROM DUAL");
 					rs.next();
 					stageID = rs.getString(1);
-					execUp = statement.executeUpdate("INSERT INTO Stage (Stage_ID, Stage_Lower_ID, Stage_Lower_Mod, Stage_Upper_ID, Stage_Upper_Mod) VALUES (" + stageID + ", " + request.getParameter("StageStart") + ", " + makeDropDownNulls(request.getParameter("StartMod")) + ", " + makeDropDownNulls(request.getParameter("StageStop")) + ", " + makeDropDownNulls(request.getParameter("StopMod")) + ")");
+					execUp = statement.executeUpdate("INSERT INTO Stage (Stage_ID, Stage_Lower_ID, Stage_Lower_Mod, Stage_Upper_ID, Stage_Upper_Mod) VALUES (" + stageID + ", " + request.getParameter("StageStart") + ", " + FREDUtils.makeDropDownNulls(request.getParameter("StartMod")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("StageStop")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("StopMod")) + ")");
 				}
 			}
 
 			//Create PALEONTOLOGY entry
-			execUp = statement.executeUpdate("INSERT INTO Paleontology (Record_ID, Identification_Date, Date_Rounding, Stage_ID, Stage_Comments, Lab_Section_ID, Lab_Number, Collection_Comments) VALUES (" + recID + ", TO_DATE('" + palDate + "'), " + JspUtils.sqlEscape(dateRnd) + ", " + JspUtils.sqlEscape(stageID) + ", " + JspUtils.sqlEscape(request.getParameter("StComm")) + ", " + makeDropDownNulls(request.getParameter("SectID")) + ", " + JspUtils.sqlEscape(request.getParameter("LabNum")) + ", " + JspUtils.sqlEscape(request.getParameter("CollComm")) + ")");
+			execUp = statement.executeUpdate("INSERT INTO Paleontology (Record_ID, Identification_Date, Date_Rounding, Stage_ID, Stage_Comments, Lab_Section_ID, Lab_Number, Collection_Comments) VALUES (" + recID + ", TO_DATE('" + palDate + "'), " + JspUtils.sqlEscape(dateRnd) + ", " + JspUtils.sqlEscape(stageID) + ", " + JspUtils.sqlEscape(request.getParameter("StComm")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("SectID")) + ", " + JspUtils.sqlEscape(request.getParameter("LabNum")) + ", " + JspUtils.sqlEscape(request.getParameter("CollComm")) + ")");
 
 			//Create IDENTIFIERS entries
 			for (int j = 0; j < identID.length; j++) {

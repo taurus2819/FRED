@@ -1,5 +1,5 @@
-<%@		page extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*"
+<%@		page extends="nz.cri.gns.fred.FREDIPSysJspPage"
+		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -49,7 +49,8 @@
 			return 1;
 		}
 %><%	
-	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
+	PageState state = new PageState(request, response, getServletContext());
+	DBConnection connection = FREDUtils.getFREDConnection(state);
 	Statement statement = connection.statement;
 	Statement statement2 = connection.getExtraStatement();
 	ResultSet rs;
@@ -340,7 +341,7 @@
 
 			//Create STAGE entry
 			if (!request.getParameter("InfStageStart").equals("-")) {
-				rs = statement.executeQuery("SELECT Get_Stage_ID(" + request.getParameter("InfStageStart") + ", " + makeDropDownNulls(request.getParameter("InfStartMod")) + ", " + makeDropDownNulls(request.getParameter("InfStageStop")) + ", " + makeDropDownNulls(request.getParameter("InfStopMod")) + ") FROM DUAL");
+				rs = statement.executeQuery("SELECT Get_Stage_ID(" + request.getParameter("InfStageStart") + ", " + FREDUtils.makeDropDownNulls(request.getParameter("InfStartMod")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("InfStageStop")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("InfStopMod")) + ") FROM DUAL");
 				rs.next();
 				if (rs.getString(1) != null) {
 					infStageID = rs.getString(1);
@@ -348,11 +349,11 @@
 					rs = statement.executeQuery("SELECT Stage_Seq.NEXTVAL FROM DUAL");
 					rs.next();
 					infStageID = rs.getString(1);
-					execUp = statement.executeUpdate("INSERT INTO Stage (Stage_ID, Stage_Lower_ID, Stage_Lower_Mod, Stage_Upper_ID, Stage_Upper_Mod) VALUES (" + infStageID + ", " + request.getParameter("InfStageStart") + ", " + makeDropDownNulls(request.getParameter("InfStartMod")) + ", " + makeDropDownNulls(request.getParameter("InfStageStop")) + ", " + makeDropDownNulls(request.getParameter("InfStopMod")) + ")");
+					execUp = statement.executeUpdate("INSERT INTO Stage (Stage_ID, Stage_Lower_ID, Stage_Lower_Mod, Stage_Upper_ID, Stage_Upper_Mod) VALUES (" + infStageID + ", " + request.getParameter("InfStageStart") + ", " + FREDUtils.makeDropDownNulls(request.getParameter("InfStartMod")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("InfStageStop")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("InfStopMod")) + ")");
 				}
 			}
 			if (!request.getParameter("KnwStageStart").equals("-")) {
-				rs = statement.executeQuery("SELECT Get_Stage_ID(" + request.getParameter("KnwStageStart") + ", " + makeDropDownNulls(request.getParameter("KnwStartMod")) + ", " + makeDropDownNulls(request.getParameter("KnwStageStop")) + ", " + makeDropDownNulls(request.getParameter("KnwStopMod")) + ") FROM DUAL");
+				rs = statement.executeQuery("SELECT Get_Stage_ID(" + request.getParameter("KnwStageStart") + ", " + FREDUtils.makeDropDownNulls(request.getParameter("KnwStartMod")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("KnwStageStop")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("KnwStopMod")) + ") FROM DUAL");
 				rs.next();
 				if (rs.getString(1) != null) {
 					knwStageID = rs.getString(1);
@@ -360,12 +361,12 @@
 					rs = statement.executeQuery("SELECT Stage_Seq.NEXTVAL FROM DUAL");
 					rs.next();
 					knwStageID = rs.getString(1);
-					execUp = statement.executeUpdate("INSERT INTO Stage (Stage_ID, Stage_Lower_ID, Stage_Lower_Mod, Stage_Upper_ID, Stage_Upper_Mod) VALUES (" + knwStageID + ", " + request.getParameter("KnwStageStart") + ", " + makeDropDownNulls(request.getParameter("KnwStartMod")) + ", " + makeDropDownNulls(request.getParameter("KnwStageStop")) + ", " + makeDropDownNulls(request.getParameter("KnwStopMod")) + ")");
+					execUp = statement.executeUpdate("INSERT INTO Stage (Stage_ID, Stage_Lower_ID, Stage_Lower_Mod, Stage_Upper_ID, Stage_Upper_Mod) VALUES (" + knwStageID + ", " + request.getParameter("KnwStageStart") + ", " + FREDUtils.makeDropDownNulls(request.getParameter("KnwStartMod")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("KnwStageStop")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("KnwStopMod")) + ")");
 				}
 			}
 
 			//Create SAMPLE_PROPERTY entry
-			execUp = statement.executeUpdate("INSERT INTO Sample_Property (Record_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage_ID, Known_Stage_ID, Column_Map, Dip, Dip_Direction, Strike, Facing, Primary_Grainsize_ID, Secondary_Grainsize_ID, Comparator_Used, Bed_Thick_ID, Primary_Bedding_ID, Secondary_Bedding_ID, Weathering_ID, Hardness_ID, Carbonate_ID, Colour_Modifier_ID, Primary_Colour_ID, Secondary_Colour_ID, Wet, Deposition_Env, Rock_Nature, Correspondence) VALUES (" + recID + ", TO_DATE('" + collDate + "'), " + JspUtils.sqlEscape(dateRnd) + ", " + JspUtils.sqlEscape(request.getParameter("StratName")) + ", '" + request.getParameter("InPlace") + "', " + JspUtils.sqlEscape(request.getParameter("NotColl")) + ", " + JspUtils.sqlEscape(request.getParameter("Sig")) + ", " + JspUtils.sqlEscape(infStageID) + ", " + JspUtils.sqlEscape(knwStageID) + ", " + JspUtils.sqlEscape(request.getParameter("ColMap")) + ", " + JspUtils.sqlEscape(request.getParameter("Dip")) + ", '" + request.getParameter("DipDir") + "', " + JspUtils.sqlEscape(request.getParameter("Strike")) + ", '" + request.getParameter("Facing") + "', " + makeDropDownNulls(request.getParameter("GrainSizeP")) + ", " + makeDropDownNulls(request.getParameter("GrainSizeS")) + ", '" + request.getParameter("GSComp") + "', " + makeDropDownNulls(request.getParameter("BedThick")) + ", " + makeDropDownNulls(request.getParameter("BeddingP")) + ", " + makeDropDownNulls(request.getParameter("BeddingS")) + ", " + makeDropDownNulls(request.getParameter("Weath")) + ", " + makeDropDownNulls(request.getParameter("Hard")) + ", " + makeDropDownNulls(request.getParameter("Carb")) + ", " + makeDropDownNulls(request.getParameter("ColMod")) + ", " + makeDropDownNulls(request.getParameter("ColourP")) + ", " + makeDropDownNulls(request.getParameter("ColourS")) + ", '" + request.getParameter("Wet") + "', " + JspUtils.sqlEscape(depEnv) + ", " + JspUtils.sqlEscape(request.getParameter("RockNat")) + ", " + JspUtils.sqlEscape(request.getParameter("Corr")) + ")");
+			execUp = statement.executeUpdate("INSERT INTO Sample_Property (Record_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage_ID, Known_Stage_ID, Column_Map, Dip, Dip_Direction, Strike, Facing, Primary_Grainsize_ID, Secondary_Grainsize_ID, Comparator_Used, Bed_Thick_ID, Primary_Bedding_ID, Secondary_Bedding_ID, Weathering_ID, Hardness_ID, Carbonate_ID, Colour_Modifier_ID, Primary_Colour_ID, Secondary_Colour_ID, Wet, Deposition_Env, Rock_Nature, Correspondence) VALUES (" + recID + ", TO_DATE('" + collDate + "'), " + JspUtils.sqlEscape(dateRnd) + ", " + JspUtils.sqlEscape(request.getParameter("StratName")) + ", '" + request.getParameter("InPlace") + "', " + JspUtils.sqlEscape(request.getParameter("NotColl")) + ", " + JspUtils.sqlEscape(request.getParameter("Sig")) + ", " + JspUtils.sqlEscape(infStageID) + ", " + JspUtils.sqlEscape(knwStageID) + ", " + JspUtils.sqlEscape(request.getParameter("ColMap")) + ", " + JspUtils.sqlEscape(request.getParameter("Dip")) + ", '" + request.getParameter("DipDir") + "', " + JspUtils.sqlEscape(request.getParameter("Strike")) + ", '" + request.getParameter("Facing") + "', " + FREDUtils.makeDropDownNulls(request.getParameter("GrainSizeP")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("GrainSizeS")) + ", '" + request.getParameter("GSComp") + "', " + FREDUtils.makeDropDownNulls(request.getParameter("BedThick")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("BeddingP")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("BeddingS")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("Weath")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("Hard")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("Carb")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("ColMod")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("ColourP")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("ColourS")) + ", '" + request.getParameter("Wet") + "', " + JspUtils.sqlEscape(depEnv) + ", " + JspUtils.sqlEscape(request.getParameter("RockNat")) + ", " + JspUtils.sqlEscape(request.getParameter("Corr")) + ")");
 
 			//Create COLLECTORS entries
 			for (int j = 0; j < collID.length; j++) {

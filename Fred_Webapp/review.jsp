@@ -1,5 +1,5 @@
-<%@page	extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
+<%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
+		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -20,7 +20,8 @@
 		}
 	}
 %><%
-	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
+	PageState state = new PageState(request, response, getServletContext());
+	DBConnection connection = FREDUtils.getFREDConnection(state);
 	Statement statement = connection.statement;
 	Statement statement2 = connection.getExtraStatement();
 	Statement statement3 = connection.getExtraStatement();
@@ -107,7 +108,7 @@
 				out.println("</td></tr>");
 			}
 
-			workComm = noNulls(rs.getString(10));
+			workComm =FREDUtils.noNulls(rs.getString(10));
 			if (workComm.indexOf("*Recoll:") >= 0) {
 				recoll = workComm.substring(8, workComm.indexOf("*", 2)).trim();
 				workComm = workComm.substring(workComm.indexOf("*", 2) + 1, workComm.length()).trim();
@@ -169,7 +170,7 @@
 				if (recoll != null) {
 					out.println("<tr><td colspan='2'>The submitter has indicated that this record is a recollection of " + recoll + ".  If you agree then amend the FRNumber below as appropriate</td></tr>");
 				}
-				out.println("<tr><td colspan='2'><input type='text' name='MapSheet' size='9' value='" + mapSheet + "'>&nbsp;/f&nbsp;<input type='text' name='SerialNum' size='4' value='" + serialNum + "'>&nbsp;<input type='text' name='RecollNum' size='1' value='" + noNulls(recollNum) + "'></td></tr>");
+				out.println("<tr><td colspan='2'><input type='text' name='MapSheet' size='9' value='" + mapSheet + "'>&nbsp;/f&nbsp;<input type='text' name='SerialNum' size='4' value='" + serialNum + "'>&nbsp;<input type='text' name='RecollNum' size='1' value='" +FREDUtils.noNulls(recollNum) + "'></td></tr>");
 				out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
 				out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Reject\";document.RevForm.submit();' title='reject'><img src='images/cancel.gif' width='20' height='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' /></td><td class='heading'>Comments to Submitter</td></tr>");
 				out.println("<tr><td colspan='2'><textarea name='RejComm' rows='5' cols='25'></textarea></td></tr>");

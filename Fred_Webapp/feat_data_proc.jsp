@@ -1,5 +1,5 @@
-<%@		page extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*, nz.cri.gns.util.map.*"
+<%@		page extends="nz.cri.gns.fred.FREDIPSysJspPage"
+		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*, nz.cri.gns.util.map.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -27,7 +27,8 @@
 			public String getField() { return field; }
 		}
 %><%
-	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
+	PageState state = new PageState(request, response, getServletContext());
+	DBConnection connection = FREDUtils.getFREDConnection(state);
 	Statement statement = connection.statement;
 	Statement statement2 = connection.getExtraStatement();
 	ResultSet rs;
@@ -150,7 +151,7 @@
 			//create SITE entry (if coords entered)
 			//check for existing site (and create new one of necessary)
 			if (!request.getParameter("Coord").equals("")) {
-				rs = statement.executeQuery("SELECT SC.Site_Check(" + latitude + ", " + longitude + ", " + makeDropDownNulls(request.getParameter("LocMethodID")) + ", " + makeNulls(request.getParameter("Accuracy")) + ") FROM DUAL");
+				rs = statement.executeQuery("SELECT SC.Site_Check(" + latitude + ", " + longitude + ", " + FREDUtils.makeDropDownNulls(request.getParameter("LocMethodID")) + ", " + FREDUtils.makeNulls(request.getParameter("Accuracy")) + ") FROM DUAL");
 				rs.next();
 				if (rs.getString(1) != null) {
 					siteID = rs.getString(1);
@@ -158,7 +159,7 @@
 					rs = statement.executeQuery("SELECT SC.Site_Seq.NEXTVAL FROM DUAL");
 					rs.next();
 					siteID = rs.getString(1);
-					execUp = statement.executeUpdate("INSERT INTO SC.Site (Site_ID, Site_Name, Latitude, Longitude, Method_ID, Accuracy, Directions, Orig_System_ID, Orig_Coord, Country_Code) VALUES (" + siteID + ", " + JspUtils.sqlEscape(request.getParameter("FeatName")) + ", " + latitude + ", " + longitude + ", " + makeDropDownNulls(request.getParameter("LocMethodID")) + ", " + JspUtils.sqlEscape(request.getParameter("Accuracy")) + ", " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", " + request.getParameter("OrigCoord") + ", '" + origCoord + "', '" + request.getParameter("Country") + "')");
+					execUp = statement.executeUpdate("INSERT INTO SC.Site (Site_ID, Site_Name, Latitude, Longitude, Method_ID, Accuracy, Directions, Orig_System_ID, Orig_Coord, Country_Code) VALUES (" + siteID + ", " + JspUtils.sqlEscape(request.getParameter("FeatName")) + ", " + latitude + ", " + longitude + ", " + FREDUtils.makeDropDownNulls(request.getParameter("LocMethodID")) + ", " + JspUtils.sqlEscape(request.getParameter("Accuracy")) + ", " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", " + request.getParameter("OrigCoord") + ", '" + origCoord + "', '" + request.getParameter("Country") + "')");
 				}
 			} else {
 				siteID = "NULL";
@@ -174,7 +175,7 @@
 				rs = statement.executeQuery("SELECT Feature_Seq.NEXTVAL FROM DUAL");
 				rs.next();
 				featID = rs.getString(1);
-				execUp = statement.executeUpdate("INSERT INTO Feature (Feature_ID, Site_ID, Audit_ID, Locality, Feature_Type, Feature_Name, Reg_Area_ID, Drillhole_Licence_Name, Person_ID, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth) VALUES (" + featID + ", " + siteID + ", " + auditID + ", " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", '" + formType + "', " + JspUtils.sqlEscape(request.getParameter("FeatName")) + ", " + makeDropDownNulls(request.getParameter("RegAreaID")) + ", " + JspUtils.sqlEscape(request.getParameter("LicArea")) + ", " + JspUtils.sqlEscape(personID) + ", TO_DATE('" + startDate + "'), '" + startDateRnd + "', TO_DATE('" + finishDate + "'), '" + finishDateRnd + "', " + makeDropDownNulls(request.getParameter("DatumType")) + ", " + JspUtils.sqlEscape(request.getParameter("DatumEl")) + ", " + JspUtils.sqlEscape(request.getParameter("StartDepth")) + ", " + JspUtils.sqlEscape(request.getParameter("FinishDepth")) + ")");
+				execUp = statement.executeUpdate("INSERT INTO Feature (Feature_ID, Site_ID, Audit_ID, Locality, Feature_Type, Feature_Name, Reg_Area_ID, Drillhole_Licence_Name, Person_ID, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth) VALUES (" + featID + ", " + siteID + ", " + auditID + ", " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", '" + formType + "', " + JspUtils.sqlEscape(request.getParameter("FeatName")) + ", " + FREDUtils.makeDropDownNulls(request.getParameter("RegAreaID")) + ", " + JspUtils.sqlEscape(request.getParameter("LicArea")) + ", " + JspUtils.sqlEscape(personID) + ", TO_DATE('" + startDate + "'), '" + startDateRnd + "', TO_DATE('" + finishDate + "'), '" + finishDateRnd + "', " + FREDUtils.makeDropDownNulls(request.getParameter("DatumType")) + ", " + JspUtils.sqlEscape(request.getParameter("DatumEl")) + ", " + JspUtils.sqlEscape(request.getParameter("StartDepth")) + ", " + JspUtils.sqlEscape(request.getParameter("FinishDepth")) + ")");
 				execUp = statement.executeUpdate("INSERT INTO Sample (Feature_ID) VALUES (" + featID + ")");
 			} else { // edit
 				//Update edited by fields
@@ -183,12 +184,12 @@
 				rs.next();
 				auditID = rs.getString(1);
 				execUp = statement.executeUpdate("UPDATE Audit_Table SET Modified_By_ID = " + userID + ", Modified_Date = SYSDATE, Working_Comments = " + JspUtils.sqlEscape(recoll + request.getParameter("WorkComm")) + " WHERE Audit_ID = " + auditID);
-				execUp = statement.executeUpdate("UPDATE Feature SET Site_ID = " + siteID + ", Locality = " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", Feature_Name = " + JspUtils.sqlEscape(request.getParameter("FeatName")) + ", Reg_Area_ID = " + makeDropDownNulls(request.getParameter("RegAreaID")) + ", Drillhole_Licence_Name = " + JspUtils.sqlEscape(request.getParameter("LicArea")) + ", Person_ID = " + JspUtils.sqlEscape(personID) + ", Start_Date = TO_DATE('" + startDate + "'), Start_Date_Rounding = '" + startDateRnd + "', Finish_Date = TO_DATE('" + finishDate + "'), Finish_Date_Rounding = '" + finishDateRnd + "', Datum_Type = " + makeDropDownNulls(request.getParameter("DatumType")) + ", Datum_Elevation = " + JspUtils.sqlEscape(request.getParameter("DatumEl")) + ", Start_Depth = " + JspUtils.sqlEscape(request.getParameter("StartDepth")) + ", Finish_Depth = " + JspUtils.sqlEscape(request.getParameter("FinishDepth")) + " WHERE Feature_ID = " + featID);
+				execUp = statement.executeUpdate("UPDATE Feature SET Site_ID = " + siteID + ", Locality = " + JspUtils.sqlEscape(request.getParameter("Loc")) + ", Feature_Name = " + JspUtils.sqlEscape(request.getParameter("FeatName")) + ", Reg_Area_ID = " + FREDUtils.makeDropDownNulls(request.getParameter("RegAreaID")) + ", Drillhole_Licence_Name = " + JspUtils.sqlEscape(request.getParameter("LicArea")) + ", Person_ID = " + JspUtils.sqlEscape(personID) + ", Start_Date = TO_DATE('" + startDate + "'), Start_Date_Rounding = '" + startDateRnd + "', Finish_Date = TO_DATE('" + finishDate + "'), Finish_Date_Rounding = '" + finishDateRnd + "', Datum_Type = " + FREDUtils.makeDropDownNulls(request.getParameter("DatumType")) + ", Datum_Elevation = " + JspUtils.sqlEscape(request.getParameter("DatumEl")) + ", Start_Depth = " + JspUtils.sqlEscape(request.getParameter("StartDepth")) + ", Finish_Depth = " + JspUtils.sqlEscape(request.getParameter("FinishDepth")) + " WHERE Feature_ID = " + featID);
 			}
 
 			if (featStatus.equals("waiting")) { //submitted
 				//change status, check MF & add saved record to folder
-				rs = statement.executeQuery("SELECT Code FROM Lookup WHERE FieldName = 'RegArea' AND Lookup_ID = " + makeDropDownNulls(request.getParameter("RegAreaID")));
+				rs = statement.executeQuery("SELECT Code FROM Lookup WHERE FieldName = 'RegArea' AND Lookup_ID = " + FREDUtils.makeDropDownNulls(request.getParameter("RegAreaID")));
 				if (rs.next()) {
 					rs = statement.executeQuery("SELECT Which_Masterfile('" + rs.getString(1) + "', " + latitude + ", " + longitude + ") FROM DUAL");
 					rs.next();

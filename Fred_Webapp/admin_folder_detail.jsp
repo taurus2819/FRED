@@ -1,5 +1,5 @@
-<%@page	extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
+<%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
+		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.text.*, nz.cri.gns.auth.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -20,7 +20,8 @@
 		}
 	}
 %><%
-	nz.cri.gns.intranet.DBConnection connection = JspUtils.createDatabaseConnection(session, CONNECTION, DB_NAME, application);
+	PageState state = new PageState(request, response, getServletContext());
+	DBConnection connection = FREDUtils.getFREDConnection(state);
 	Statement statement = connection.statement;
 	Statement statement2 = connection.getExtraStatement();
 	Statement statement3 = connection.getExtraStatement();
@@ -89,7 +90,7 @@
 					drillSampName = drillSampName.substring(0, drillSampName.length() - 2);
 					out.print("<tr><td><img src='images/loc.gif' height='20' width='20' /><img src='images/blank.gif' width='5' height='20' /></td><td class='heading'><a href='detail.jsp?FeatID=" + featID + "'>" + drillSampName + "</a></td><td class='heading'><a href='drillhole_detail.jsp?ID=" + featID + "'>" + rs.getString(4) +"</a></td><td>");
 				} else {
-					out.print("<tr><td class='heading'><img src='images/loc.gif' height='20' width='20' /><img src='images/blank.gif' width='5' height='20' /></td><td class='heading'><a href='detail.jsp?ID=" + rs.getString(1) + "'>" + rs.getString(2) + "</a></td><td>" + noNulls(rs.getString(4)) + "</td><td>");
+					out.print("<tr><td class='heading'><img src='images/loc.gif' height='20' width='20' /><img src='images/blank.gif' width='5' height='20' /></td><td class='heading'><a href='detail.jsp?ID=" + rs.getString(1) + "'>" + rs.getString(2) + "</a></td><td>" + FREDUtils.noNulls(rs.getString(4)) + "</td><td>");
 				}
 				if (rs.getString(5) != null) { 
 						out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(5)));
@@ -117,9 +118,9 @@
 					rs2 = statement2.executeQuery("SELECT DISTINCT Sample_Name FROM Sample_All_View WHERE Feature_ID = " + featID + " ORDER BY Sample_Name");
 					while (rs2.next()) { drillSampName = drillSampName + rs2.getString(1) + ", "; }
 					drillSampName = drillSampName.substring(0, drillSampName.length() - 2);
-					out.print("<tr><td><img src='images/loc.gif' height='20' width='20' /><img src='images/blank.gif' width='5' height='20' /></td><td class='heading'><a href='detail.jsp?FeatID=" + featID + "'>" + drillSampName + "</a></td><td class='heading'><a href='drillhole_detail.jsp?ID=" + featID + "'>" + noNulls(rs.getString(4)) +"</a></td><td>");
+					out.print("<tr><td><img src='images/loc.gif' height='20' width='20' /><img src='images/blank.gif' width='5' height='20' /></td><td class='heading'><a href='detail.jsp?FeatID=" + featID + "'>" + drillSampName + "</a></td><td class='heading'><a href='drillhole_detail.jsp?ID=" + featID + "'>" + FREDUtils.noNulls(rs.getString(4)) +"</a></td><td>");
 				} else {
-					out.print("<tr><td class='heading'><img src='images/loc.gif' height='20' width='20' /><img src='images/blank.gif' width='5' height='20' /></td><td class='heading'><a href='detail.jsp?ID=" + rs.getString(1) + "'>" + rs.getString(2) + "</a></td><td>" + noNulls(rs.getString(4)) + "</td><td>");
+					out.print("<tr><td class='heading'><img src='images/loc.gif' height='20' width='20' /><img src='images/blank.gif' width='5' height='20' /></td><td class='heading'><a href='detail.jsp?ID=" + rs.getString(1) + "'>" + rs.getString(2) + "</a></td><td>" + FREDUtils.noNulls(rs.getString(4)) + "</td><td>");
 				}
 				if (rs.getString(5) != null) { 
 						out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(5)));
