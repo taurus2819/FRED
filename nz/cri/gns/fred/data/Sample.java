@@ -73,6 +73,8 @@ public class Sample {
 	public static final int FINISH_DEPTH = 49;
 	public static final int RECORDS = 50;
 	public static final int WORKING_RECORDS = 51;
+	public static final int SAMPLE_PROPERTY_RECORD_ID = 58;
+	public static final int SAMPLE_PROPERTY_RECORD_STATUS = 59;
 
 	private SampleData sd;
 	private boolean authenticated = false;

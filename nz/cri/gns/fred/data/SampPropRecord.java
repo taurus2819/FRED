@@ -312,7 +312,7 @@ public class SampPropRecord extends Record {
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
 	public static Record getData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, InvalidCredentialsException {
-		System.out.println("Starting");
+		System.out.println("Starting SampPropRecord");
 		Record rec = (SampPropRecord) pool.retrieve(new DataFinder(id));
 		System.out.println("Finished checking pool");
 		if (forceRefresh && rec != null) {

@@ -42,7 +42,7 @@
 
 		if (folder.isAllowedReadLocalities()) {
 		
-			Feature feature = new Feature(Integer.parseInt(featID), user, state);
+			Feature feature = new Feature(Integer.parseInt(featID), user, state, true);
 			String featType = feature.getAsString(Feature.FEATURE_TYPE);
 			String sampName = feature.getAsString(Feature.SAMPLE_NAMES);
 			if (featType.equals("Vertical Section")) { featType = "VertSect"; }
@@ -55,13 +55,7 @@
 			out.println("<tr><td colspan='2' align='center'>" + featType + "</td></tr>");
 			out.println("<tr><td><img src='images/blank.gif' widfth='1' height='10' /></td></tr>");
 			out.println("<tr><td><a href='folder_detail.jsp?ID=" + foldID + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Folder Detail'/></a>&nbsp;&nbsp;</td><td><a href='folder_detail.jsp?ID=" + foldID + "' class='boldlink'>Back to Folder Detail</a></td></tr>");
-/*			if (folder.isAllowedCreateLocalities()) {
-				out.println("<tr><td><a href='feat_data_entry.jsp?Type=Outcrop&FoldID=" + foldID + "' title='Add New Locality'><img src='images/new.gif' width='20' height='20' border='0' /><img src='images/blank.gif' width='10' height='1' border='0' /></a></td><td><a href='feat_data_entry.jsp?Type=Outcrop&FoldID=" + foldID + "' class='heading'>New Outcrop Locality</a></td></tr>");
-				out.println("<tr><td><a href='feat_data_entry.jsp?Type=Drillhole&FoldID=" + foldID + "' title='Add New Locality'><img src='images/new.gif' width='20' height='20' border='0' /><img src='images/blank.gif' width='10' height='1' border='0' /></a></td><td><a href='feat_data_entry.jsp?Type=Drillhole&FoldID=" + foldID + "' class='heading'>New Drillhole Locality</a></td></tr>");
-				out.println("<tr><td><a href='feat_data_entry.jsp?Type=VertSect&FoldID=" + foldID + "' title='Add New Locality'><img src='images/new.gif' width='20' height='20' border='0' /><img src='images/blank.gif' width='10' height='1' border='0' /></a></td><td><a href='feat_data_entry.jsp?Type=VertSect&FoldID=" + foldID + "' class='heading'>New Vertical Section Locality</a></td></tr>");
-				out.println("<tr><td><a href='simple_query.jsp?FoldID=" + foldID + "' title='Search for a Locality' title='Search for a Locality'><img src='images/search.gif' width='20' height='20' border='0' /><img src='images/blank.gif' width='10' height='1' border='0' /></a></td><td><a href='simple_query.jsp?FoldID=" + foldID + "' class='heading'>Search</a></td></tr>");
-			}
-*/			out.println("</table>");
+			out.println("</table>");
 
 			drawEndNavigation(out);
 
@@ -123,22 +117,26 @@
 				
 			//Samples
 			for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
-				Sample sample = new Sample(((Integer) i.next()).intValue(), user, state);
-				int sampID = sample.getSampleID();
+				Sample sample = new Sample(((Integer) i.next()).intValue(), user, state, true);
 				if (!featType.equals("Outcrop")) {
 					out.print("<tr><td><img src='images/drill.gif' height='20' width='20' />&nbsp;</td><td colspan='3'>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td>");
 					out.print("<td></td><td>");
-					if (folder.isAllowedEditLocalities())
-						out.print("<a href='data_entry.jsp?Type=SMP&FoldID=" + foldID + "&SampID=" + sampID + "' title='Edit Sample Details'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+					if (sample.get(Sample.SAMPLE_PROPERTY_RECORD_ID) != null) {
+						if ((sample.getAsString(Sample.SAMPLE_PROPERTY_RECORD_STATUS).equals("working") || sample.getAsString(Sample.SAMPLE_PROPERTY_RECORD_STATUS).equals("rejected")) && folder.isAllowedEditLocalities())
+							out.print("<a href='data_entry.jsp?Type=SMP&FoldID=" + foldID + "&RecID=" + sample.getAsString(Sample.SAMPLE_PROPERTY_RECORD_ID) + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Sample Details' /></a><img src='images/blank.gif' height='20' width='2' />");
+					} else {
+						if (folder.isAllowedCreateLocalities())
+							out.print("<a href='data_entry.jsp?Type=SMP&FoldID=" + foldID + "&SampID=" + sample.getSampleID() + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Sample Details' /></a><img src='images/blank.gif' height='20' width='2' />");
+					}
 					out.print("</td><td></td><td>");
 					if (folder.isAllowedDeleteLocalities())
 						out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this sample\") == true) {document.FoldForm.ActionType.value=\"DeleteSamp\";document.FoldForm.SampID.value=\"" + sample.getSampleID() + "\";document.FoldForm.submit();}' title='Delete Sample'><img src='images/delete.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					out.print("</td><td></td><td>");
 					if (folder.isAllowedCreateLocalities())
-						out.print("<a href='ado_data_entry.jsp?FoldID=" + foldID + "&SampID=" + sampID + "' title='Add Adoption Record'><img src='images/new_ado.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+						out.print("<a href='ado_data_entry.jsp?FoldID=" + foldID + "&SampID=" + sample.getSampleID() + "' title='Add Adoption Record'><img src='images/new_ado.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					out.print("</td><td>");
 					if (folder.isAllowedCreateLocalities())
-						out.print("<a href='pal_data_entry.jsp?FoldID=" + foldID + "&SampID=" + sampID + "' title='Add Paleontology Record'><img src='images/new_pal.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+						out.print("<a href='pal_data_entry.jsp?FoldID=" + foldID + "&SampID=" + sample.getSampleID() + "' title='Add Paleontology Record'><img src='images/new_pal.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					out.print("</td>");
 					out.println("</tr>");
 				}
@@ -208,8 +206,8 @@
 		}
 		else { //no folder found
 			drawEndNavigation(out);
-			out.println("<p><span class='heading'>No folder found</span></p>");
-			out.println("<p>An incorrect parameter has been recieved by this page.  Please press the Back button and try again</p>");
+			out.println("<p><span class='bigheading'>Access Denied</span><br />");
+			out.println("You don't have rights to edit this locality</p>");
 		}
 	}
 

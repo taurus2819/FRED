@@ -36,7 +36,7 @@
 			out.println(request.getParameter("ErrMsg"));
 		}
 
-		Folder folder = new Folder(Integer.parseInt(foldID), user, state);
+		Folder folder = new Folder(Integer.parseInt(foldID), user, state, true);
 
 		if (folder.isAllowedReadLocalities()) {
 			
@@ -73,7 +73,7 @@
 
 			Feature feature;
 			for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
-				feature = new Feature(((Integer) i.next()).intValue(), user, state);
+				feature = new Feature(((Integer) i.next()).intValue(), user, state, true);
 
 				String featID  = feature.getAsString(Feature.FEATURE_ID);
 				String sampName = feature.getAsString(Feature.SAMPLE_NAMES);

@@ -128,7 +128,8 @@ public class FREDUtils {
 			int userID = user.getPersonId();
 			ResultSet rs =
 				conn.executeQuery(
-					"SELECT User_Rights FROM Folder_Content_Short_View NATURAL JOIN Record WHERE Record_ID = "
+					"SELECT User_Rights FROM Folder_Content_Short_View FC, Sample S, Record R "
+						+ "WHERE FC.Feature_ID = S.Feature_ID AND R.Sample_ID = S.Sample_ID AND Record_ID = "
 						+ recID
 						+ " AND User_ID = "
 						+ userID);
@@ -278,51 +279,51 @@ public class FREDUtils {
 				statement.close();
 				break;
 			case 24 : //org
-			rs =
-				conn.executeQuery(
-					"SELECT or_sc_id FROM org_right, user_right, group_right WHERE or_sc_id = ur_sc_id(+) AND or_sc_id = gr_sc_id(+) AND ur_id IS NULL AND gr_id IS NULL AND or_org_id = "
-						+ user.getOrgId());
-			while (rs.next()) {
-				;
-				rs2 =
-					statement.executeQuery(
-						"SELECT COUNT(*) FROM org_right WHERE or_sc_id = "
-							+ rs.getString(1)
-							+ " AND or_org_id <> "
+				rs =
+					conn.executeQuery(
+						"SELECT or_sc_id FROM org_right, user_right, group_right WHERE or_sc_id = ur_sc_id(+) AND or_sc_id = gr_sc_id(+) AND ur_id IS NULL AND gr_id IS NULL AND or_org_id = "
 							+ user.getOrgId());
-				rs2.next();
-				if (rs2.getInt(1) == 0) {
-					secClass = rs.getInt(1);
-					break;
+				while (rs.next()) {
+					;
+					rs2 =
+						statement.executeQuery(
+							"SELECT COUNT(*) FROM org_right WHERE or_sc_id = "
+								+ rs.getString(1)
+								+ " AND or_org_id <> "
+								+ user.getOrgId());
+					rs2.next();
+					if (rs2.getInt(1) == 0) {
+						secClass = rs.getInt(1);
+						break;
+					}
 				}
-			}
-			if (secClass == 0)
-				secClass = addOrgRight(user, state, false);
-			statement.close();
-			break;
+				if (secClass == 0)
+					secClass = addOrgRight(user, state, false);
+				statement.close();
+				break;
 			case 25 : // org + paleo
-			rs =
-				conn.executeQuery(
-					"SELECT or_sc_id FROM org_right, user_right, group_right WHERE or_sc_id = ur_sc_id(+) AND or_sc_id = gr_sc_id AND ur_id IS NULL AND gr_id = 1 AND or_org_id = "
-						+ user.getOrgId());
-			while (rs.next()) {
-				;
-				rs2 =
-					statement.executeQuery(
-						"SELECT COUNT(*) FROM org_right WHERE or_sc_id = "
-							+ rs.getString(1)
-							+ " AND or_org_id <> "
+				rs =
+					conn.executeQuery(
+						"SELECT or_sc_id FROM org_right, user_right, group_right WHERE or_sc_id = ur_sc_id(+) AND or_sc_id = gr_sc_id AND ur_id IS NULL AND gr_id = 1 AND or_org_id = "
 							+ user.getOrgId());
-				rs2.next();
-				if (rs2.getInt(1) == 0) {
-					secClass = rs.getInt(1);
-					break;
+				while (rs.next()) {
+					;
+					rs2 =
+						statement.executeQuery(
+							"SELECT COUNT(*) FROM org_right WHERE or_sc_id = "
+								+ rs.getString(1)
+								+ " AND or_org_id <> "
+								+ user.getOrgId());
+					rs2.next();
+					if (rs2.getInt(1) == 0) {
+						secClass = rs.getInt(1);
+						break;
+					}
 				}
-			}
-			if (secClass == 0)
-				secClass = addOrgRight(user, state, true);
-			statement.close();
-			break;
+				if (secClass == 0)
+					secClass = addOrgRight(user, state, true);
+				statement.close();
+				break;
 		}
 		return secClass;
 	}
@@ -330,7 +331,12 @@ public class FREDUtils {
 	private static int addUserRight(User user, PageState state, boolean paleo)
 		throws IOException, SQLException {
 		DBConnection conn = getIPConnection(state);
-		SecurityClass sc = AuthUtils.addSecurityClass("FR", user, conn, "FRED Private User Class");
+		SecurityClass sc =
+			AuthUtils.addSecurityClass(
+				"FR",
+				user,
+				conn,
+				"FRED Private User Class");
 		sc.addUserToClass(user, new Right(1), conn);
 		if (paleo)
 			sc.addGroupToClass(1, new Right(1), conn);
@@ -340,7 +346,12 @@ public class FREDUtils {
 	private static int addOrgRight(User user, PageState state, boolean paleo)
 		throws IOException, SQLException {
 		DBConnection conn = getIPConnection(state);
-		SecurityClass sc = AuthUtils.addSecurityClass("FR", user, conn, "FRED Private Org Class");
+		SecurityClass sc =
+			AuthUtils.addSecurityClass(
+				"FR",
+				user,
+				conn,
+				"FRED Private Org Class");
 		sc.addUsersOrgToClass(user, new Right(1), conn);
 		if (paleo)
 			sc.addGroupToClass(1, new Right(1), conn);
@@ -370,10 +381,7 @@ public class FREDUtils {
 		Sample sample,
 		User user,
 		PageState state)
-		throws
-			SQLException,
-			IOException,
-			InvalidCredentialsException {
+		throws SQLException, IOException, InvalidCredentialsException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		int[] types = { Types.NUMERIC, Types.NUMERIC };
 		Object data[] = new Object[2];
@@ -390,10 +398,7 @@ public class FREDUtils {
 		Sample sample,
 		User user,
 		PageState state)
-		throws
-			SQLException,
-			IOException,
-			InvalidCredentialsException {
+		throws SQLException, IOException, InvalidCredentialsException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		int[] types = { Types.NUMERIC, Types.NUMERIC };
 		Object data[] = new Object[2];

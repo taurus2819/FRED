@@ -36,11 +36,7 @@ public class SampPropRecordDE extends RecordDE {
 	private Vector sentTo;
 	private Vector stratRel;
 
-	public SampPropRecordDE(
-		User user,
-		int sampleID,
-		int folderID,
-		PageState state)
+	public SampPropRecordDE(User user, int sampleID, int folderID, PageState state)
 		throws SQLException, IOException, DataInputException {
 		super(user, sampleID, folderID, "SMP", state);
 	}
@@ -51,12 +47,7 @@ public class SampPropRecordDE extends RecordDE {
 	}
 
 	public SampPropRecordDE(int recID, User user, PageState state)
-		throws
-			IllegalArgumentException,
-			DataInputException,
-			SQLException,
-			IOException,
-			InvalidCredentialsException {
+		throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
 		super(recID, user, state);
 		record = (SampPropRecord) SampPropRecord.getData(recID, user, state);
 		recordType = "SMP";
@@ -1501,6 +1492,11 @@ public class SampPropRecordDE extends RecordDE {
 
 		}
 		return record.getRecordID();
+	}
+
+	protected void checkMandatoryFields() throws DataInputException {
+		if (getField(COLLECTORS) == null || getField(COLLECTION_DATE) == null || getField(FOSSILS_IN_PLACE) == null)
+			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
 	}
 
 }

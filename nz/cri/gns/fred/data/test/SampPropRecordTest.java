@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import junit.framework.TestCase;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
-import nz.cri.gns.fred.data.Record;
 import nz.cri.gns.fred.data.SampPropRecord;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
@@ -60,21 +59,12 @@ public class SampPropRecordTest extends TestCase {
 		System.out.println(sampName);
 	}
 	
-	public void _testAuthentication() throws SQLException, IOException, InvalidCredentialsException {
+	public void testAuthentication() throws SQLException, IOException, InvalidCredentialsException {
 		SampPropRecord.purge();
-		SampPropRecord sp = (SampPropRecord) SampPropRecord.getData(1140, user, state);
-		SampPropRecord sp1 = (SampPropRecord) SampPropRecord.getData(1140, null, state);
+		SampPropRecord sp = (SampPropRecord) SampPropRecord.getData(301, user, state);
+		SampPropRecord sp1 = (SampPropRecord) SampPropRecord.getData(301, null, state);
 		assertNotNull(sp);
 		assertNull(sp1);
-	}
-	
-	public void testFields() throws SQLException, IOException, InvalidCredentialsException {
-		//SampPropRecord.purge();
-		Record r = Record.getData(1220, user, state);
-		SampPropRecord sp = (SampPropRecord) SampPropRecord.getData(1220, user, state);
-		//for (int i = 0; i < 80; i++) {
-		//	System.out.println(i + ": " + sp.getAsString(i));
-		//}				
 	}
 
 }

@@ -23,7 +23,7 @@ public class SampleData {
 
 	private static Pool pool = new Pool();
 	private int id;
-	private Object[] values = new Object[58];
+	private Object[] values = new Object[60];
 	private int[] types = { Types.NUMERIC };
 	private Object[] data = new Object[1];
 
@@ -166,9 +166,13 @@ public class SampleData {
 				rec.add(new KeyValueObject(rs.getString(1), rs.getString(2)));
 				if (!rs.getString(3).equals("approved"))
 					wRec.add(new KeyValueObject(rs.getString(1), rs.getString(2)));
+				if (rs.getString(2).equals("SMP")) {
+					values[Sample.SAMPLE_PROPERTY_RECORD_ID] = new Integer(rs.getInt(1));
+					values[Sample.SAMPLE_PROPERTY_RECORD_STATUS] = rs.getString(3);
+				} 
 			}
-			values[50] = rec;
-			values[51] = wRec;
+			values[Sample.RECORDS] = rec;
+			values[Sample.WORKING_RECORDS] = wRec;
 			rs.close();
 			conn.releaseStatement();
 		} catch (SQLException _e) {

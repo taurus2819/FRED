@@ -16,6 +16,7 @@ import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.SampPropRecord;
 import nz.cri.gns.fred.dataentry.DataEntryForm;
+import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
 import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.fred.dataentry.RecordDE;
 import nz.cri.gns.fred.dataentry.SampPropRecordDE;
@@ -30,7 +31,7 @@ import nz.cri.gns.test.TestingPageState;
  */
 public class RecordTest extends TestCase {
 
-	public static void testLoad() throws NotBoundException, InvalidCredentialsException, IllegalArgumentException, SQLException, IOException, DataInputException {
+	public void _testLoad() throws NotBoundException, InvalidCredentialsException, IllegalArgumentException, SQLException, IOException, DataInputException {
 		SampPropRecord.purge();
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
@@ -42,6 +43,30 @@ public class RecordTest extends TestCase {
 		}
 		record.setField(DataEntryForm.HARDNESS, "152");
 		System.out.println(record.save());
+	}
+
+	public void testDataEntryForm() throws NotBoundException, DataInputException, InvalidCredentialsException, SQLException, IOException {
+		TestingPageState state = new TestingPageState();
+		DBConnection ipConn = FREDUtils.getIPConnection(state);
+		User user = new User("test", "test", ipConn);
+		DataEntryForm form = DataEntryFormFactory.getRecordDataEntryForm(301, user, state);
+		for (int i = 0; i < form.getFieldCount(); i++) {
+			System.out.println(i + ": " + form.getField(i));
+		}
+		form.setField(DataEntryForm.HARDNESS, "152");
+		form.save();
+	}
+
+	public void _testDataEntryForm2() throws NotBoundException, DataInputException, InvalidCredentialsException, SQLException, IOException {
+		TestingPageState state = new TestingPageState();
+		DBConnection ipConn = FREDUtils.getIPConnection(state);
+		User user = new User("pseudo_ben", "santor32", ipConn);
+		DataEntryForm form = DataEntryFormFactory.getRecordDataEntryForm("SMP", user, 1042, 221, state);
+		for (int i = 0; i < form.getFieldCount(); i++) {
+			System.out.println(i + ": " + form.getField(i));
+		}
+		form.setField(DataEntryForm.HARDNESS, "152");
+		form.save();
 	}
 
 }

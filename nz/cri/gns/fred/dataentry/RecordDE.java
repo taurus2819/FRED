@@ -130,16 +130,15 @@ public abstract class RecordDE implements DataEntryForm {
 		}
 		out.write(" Record</td></tr>\n");
 		out.write("<tr><td>&nbsp;</td></tr>");
-		out.write("<tr><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
-		if (record != null) out.write("&RecID=" + record.getRecordID());
-		out.write("&SampID=" + sample.getSampleID() + "&RecType=SMP' title='Copy From'><img src='images/load.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
-		if (record != null) out.write("&RecID=" + record.getRecordID());
-		out.write("&SampID=" + sample.getSampleID() + "&RecType=SMP' class='heading'>Copy From</a></td></tr>");
-		out.write("<tr><td><a href='#' onClick='if (saveForm(form1)) {form1.submit();}' title='Save'><img src='images/save.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='#' onClick='if (saveForm(form1)) {form1.submit();}' class='heading'>Save</a></td></tr>");
-		if (folder.isAllowedSubmitLocalities()) {
-			out.write("<tr><td><a href='#' onClick='if (submitForm(form1)) {form1.submit();}' title='Submit to Database'><img src='images/submit.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='#' class='heading' onClick='if (submitForm(form1)) {form1.submit();}' class='heading'>Submit</a></td></tr>");
-		}
-		out.write("<tr><td><a href='folder_detail.jsp?ID=" + folder.getFolderID() + "' title='Quit Without Saving'><img src='images/cancel.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_detail.jsp?ID=" + folder.getFolderID() + "' class='heading'>Quit</a></td></tr>");
+		//out.write("<tr><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
+		//if (record != null) out.write("&RecID=" + record.getRecordID());
+		//out.write("&SampID=" + sample.getSampleID() + "&RecType=SMP'><img src='images/load.gif' height='20' width='20' border='0' alt='Copy From' /></a>&nbsp;&nbsp;</td><td><a href='load_record.jsp?FoldID=" + folder.getFolderID());
+		//if (record != null) out.write("&RecID=" + record.getRecordID());
+		//out.write("&SampID=" + sample.getSampleID() + "&RecType=SMP' class='heading'>Copy From</a></td></tr>");
+		out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
+		if (folder.isAllowedSubmitLocalities())
+			out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Submit\";form1.submit();'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database' /></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick='form1.SaveType.value=\"Submit\";form1.submit();' class='boldlink'>Submit</a></td></tr>\n");
+		out.write("<tr><td><a href='javascript:history.back();'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a>&nbsp;&nbsp;</td><td><a href='javascript:history.back();' class='heading'>Quit</a></td></tr>");
 		out.write("</table>");
 	}
 
@@ -147,7 +146,7 @@ public abstract class RecordDE implements DataEntryForm {
 		out.write("<table border='0' cellspacing='0' cellpadding='2'>\n");
 		try {
 			out.write("<tr><td class='heading'>Sample Name</td><td></td><td class='heading'>" + sample.getAsString(Sample.SAMPLE_NAME));
-			if (sample.getAsString(Sample.FEATURE_TYPE).equals("Outcrop")) out.write("<br>" +FREDUtils.noNulls(sample.getAsString(Sample.FEATURE_NAME)) + ": " + FREDUtils.noNulls(sample.getAsString(Sample.DRILLHOLE_DEPTH)));
+			out.write("<br>" + FREDUtils.noNulls(sample.getAsString(Sample.FEATURE_NAME)) + ": " + FREDUtils.noNulls(sample.getAsString(Sample.DRILLHOLE_DEPTH)));
 		} catch (Exception e) {	}
 		out.write("</td></tr>\n");
 		out.write("<tr><td class='heading' colspan='2'>Working Comments<br><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'>" + FREDUtils.noNulls(getField(WORKING_COMMENTS)) + "</textarea></td></tr>\n");
@@ -168,9 +167,11 @@ public abstract class RecordDE implements DataEntryForm {
 	protected void makeEndBitHTML(Writer out) throws IOException {
 		out.write("<table border='0' cellpadding='0' cellspacing='2'>\n");
 		out.write("<tr><td>&nbsp;</td></tr>\n");
-		out.write("<tr><td><a href='#' onClick='if (saveForm(form1)) {form1.submit();}' title='Save'><img src='images/save.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='#' onClick='if (saveForm(form1)) {form1.submit();}' class='heading'>Save</a></td></tr>\n");
-		if (folder.isAllowedSubmitLocalities())
-			out.write("<tr><td><a href='#' onClick='if (submitForm(form1)) {form1.submit();}' title='Submit to Database'><img src='images/submit.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='#' class='heading' onClick='if (submitForm(form1)) {form1.submit();}' class='heading'>Submit</a></td></tr>\n");
+		out.write(
+			"<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
+		if (folder.isAllowedSubmitLocalities()) {
+			out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Submit\";form1.submit();'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database'/></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick='form1.SaveType.value=\"Submit\";form1.submit();' class='boldlink'>Submit</a></td></tr>\n");
+		}
 		out.write("</table>\n");
 	}
 
@@ -179,8 +180,8 @@ public abstract class RecordDE implements DataEntryForm {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			ResultSet rs;
 			if (record == null) {
-				if (!folder.isAllowedCreateLocalities())
-					throw new InvalidCredentialsException();
+				if (!folder.isAllowedCreateLocalities()) throw new InvalidCredentialsException();
+				
 				//create new AUDIT and RECORD records
 				rs = conn.executeQuery("SELECT Audit_Seq.NEXTVAL FROM DUAL");
 				rs.next();
@@ -195,7 +196,7 @@ public abstract class RecordDE implements DataEntryForm {
 						+ ", "
 						+ folder.getFolderID()
 						+ ", " 
-						+ secClassID.toString()
+						+ ((secClassID != null) ? secClassID.toString() : "21") 
 						+ ")");
 				rs = conn.executeQuery("SELECT Record_Seq.NEXTVAL FROM DUAL");
 				rs.next();
@@ -240,16 +241,36 @@ public abstract class RecordDE implements DataEntryForm {
 	}
 
 
-	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
-		// TODO Auto-generated method stub
-		return 0;
+	public int submit()
+		throws SQLException, IOException, InvalidCredentialsException, DataInputException {
+		if (!folder.isAllowedSubmitLocalities())
+			throw new InvalidCredentialsException();
+		checkMandatoryFields();
+		int recordID = save();
+		//change status, check MF & add saved record to folder
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		ResultSet rs =
+			conn.executeQuery(
+				"SELECT Audit_ID FROM Record WHERE Record_ID = " + recordID);
+		rs.next();
+		String auditID = rs.getString(1);
+		conn.executeUpdate(
+			"UPDATE Audit_Table SET Status = 'approved', Submitted_By_ID = "
+				+ user.getPersonId()
+				+ ", Submitted_Date = SYSDATE, Working_Folder_ID = NULL, Working_Comments = NULL WHERE Audit_ID = "
+				+ auditID);
+		conn.releaseStatement();
+		return recordID;
 	}
-
+	
+	protected void checkMandatoryFields() throws DataInputException {
+	}
+	
 	public void delete() throws IOException, SQLException, InvalidCredentialsException {
 		if (record != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			conn.executeUpdate("DELETE FROM Record WHERE Record_ID = " + record.getRecordID());
 		}
 	}
-
+	
 }

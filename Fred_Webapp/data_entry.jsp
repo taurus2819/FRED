@@ -26,34 +26,38 @@
 
 	drawTop(out, et, request, response);
 	
-	if (request.getParameter("Type") != null && request.getParameter("FoldID") != null) {
-		String formType = request.getParameter("Type");
-		String foldID = request.getParameter("FoldID");
-		String featID = request.getParameter("FeatID");
-		String sampID = request.getParameter("SampID");
-		String recID = request.getParameter("RecID");
-		Folder folder = new Folder(Integer.parseInt(foldID), user, state);
-		DataEntryForm dataEntryForm;
+	String formType = request.getParameter("Type");
+	String foldID = request.getParameter("FoldID");
+	String featID = request.getParameter("FeatID");
+	String sampID = request.getParameter("SampID");
+	String recID = request.getParameter("RecID");
+	Folder folder = new Folder(Integer.parseInt(foldID), user, state);
+	DataEntryForm dataEntryForm;
 		
-		if (formType.equals("Outcrop") || formType.equals("Drillhole") || formType.equals("VertSect")) {
-			if (request.getParameter("LoadFeatID") != null) { //copying
-				if (featID == null) {
-					dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), user, Integer.parseInt(foldID), state);
-				} else {
-					dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), Integer.parseInt(featID), user, state);
-				}
-			} else if (featID != null) { //editing
-				dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
+	if (formType.equals("Outcrop") || formType.equals("Drillhole") || formType.equals("VertSect")) {
+		if (request.getParameter("LoadFeatID") != null) { //copying
+			if (featID == null) {
+				dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), user, Integer.parseInt(foldID), state);
 			} else {
-				dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(formType, user, Integer.parseInt(foldID), state);
+				dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), Integer.parseInt(featID), user, state);
 			}
+		} else if (featID != null) { //editing
+			dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
 		} else {
-			if (featID != null) { //editing
-				dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(featID), user, state);
-			} else {
-				dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(formType, user, Integer.parseInt(request.getParameter("SampID")), Integer.parseInt(foldID), state);
-			}
+			dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(formType, user, Integer.parseInt(foldID), state);
 		}
+	} else {
+		if (recID != null) { //editing
+			dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(recID), user, state);
+		} else {
+			dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(formType, user, Integer.parseInt(sampID), Integer.parseInt(foldID), state);
+		}
+	}
+
+	if (dataEntryForm != null) {
+		
+		//save DataEntryForm in session
+		session.setAttribute("dataEntryForm", dataEntryForm);
 		
 		//form creation if proper rights
 		if ((folder.isAllowedCreateLocalities() && featID ==  null) || (folder.isAllowedEditLocalities() && featID != null)) {
@@ -64,7 +68,7 @@
 			if (featID != null) out.println("<input type='hidden' name='FeatID' value='" + featID + "'>");
 			if (sampID != null) out.println("<input type='hidden' name='SampID' value='" + sampID + "'>");
 			if (recID != null) out.println("<input type='hidden' name='RecID' value='" + recID + "'>");
-			out.println("<input formType='hidden' name='SaveType' value=''>");
+			out.println("<input type='hidden' name='SaveType' value=''>");
 
 			dataEntryForm.makeNavPanelHTML(new PrintWriter(out));
 
@@ -80,7 +84,6 @@
 		}
 		else {
 			drawEndNavigation(out);
-
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");
 			out.println("<p><span class='bigheading'>Access denied</span><br />You don't have sufficient rights in this folder</p>");

@@ -33,6 +33,8 @@
 		String foldID = request.getParameter("FoldID");
 		String saveType = request.getParameter("SaveType");
 		String featID = request.getParameter("FeatID");
+		String sampID = request.getParameter("SampID");
+		String recID = request.getParameter("RecID");
 
 		out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
 		out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
@@ -48,21 +50,8 @@
 		out.println("<tr><td>");
 
 		try {
-			DataEntryForm dataEntryForm;
+			DataEntryForm dataEntryForm = (DataEntryForm) session.getAttribute("dataEntryForm");;
 
-			if (featType.equals("Outcrop") || featType.equals("Drillhole") || featType.equals("VertSect")) {
-				if (featID != null) {
-					dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
-				} else {
-					dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(featType, user, Integer.parseInt(foldID), state);
-				}
-			} else {
-				if (featID != null) {
-					dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(featID), user, state);
-				} else {
-					dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(featType, user, 1, Integer.parseInt(foldID), state);
-				}
-			}
 
 			dataEntryForm.setField(DataEntryForm.FEATURE_NAME, request.getParameter("FeatName"));
 			dataEntryForm.setField(DataEntryForm.REGISTRATION_AREA, request.getParameter("RegAreaID"));
@@ -143,11 +132,11 @@
 			out.println("<p><div class='bigheading'>Access Denied</div></p>");
 			out.println("<p>You do not have sufficient rights to save this record</p>");
 		} catch (IOException e) {
-			out.println("<p><div class='bigheading'>Error</div></p>");
+			out.println("<p><div class='bigheading'>IO Error</div></p>");
 			out.println("<p>Database Error</p>");
-		} catch (SQLException e) {
-			out.println("<p><div class='bigheading'>Error</div></p>");
-			out.println("<p>Database Error</p>");
+		//} catch (SQLException e) {
+		//	out.println("<p><div class='bigheading'>SQL Error</div></p>");
+		//	out.println("<p>Database Error</p>");
 		}
 	}
 

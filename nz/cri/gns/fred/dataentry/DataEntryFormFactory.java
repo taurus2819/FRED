@@ -66,7 +66,7 @@ public class DataEntryFormFactory {
 	
 	public static RecordDE getRecordDataEntryForm(String type, User user, int sampleID, int folderID, PageState state) throws SQLException, IOException, DataInputException {
 		if (type.equals("SMP")) {
-			return new SampPropRecordDE(user, folderID, sampleID, state);
+			return new SampPropRecordDE(user, sampleID, folderID, state);
 		} else {
 			throw new DataInputException("Feature Type", "Invalid");
 		}	
