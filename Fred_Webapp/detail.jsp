@@ -391,25 +391,36 @@
 				}
 
 				//Adoption
-				rs = statement.executeQuery("SELECT Record_ID, Adoptor, Adoption_Date, Date_Rounding, Adopted_Stage, Comments FROM Adoption_All_View WHERE Sample_ID = " + sampID);
+				rs = statement.executeQuery("SELECT Record_ID, Adoption_Date, Date_Rounding, Adopted_Stage, Comments FROM Adoption_All_View WHERE Sample_ID = " + sampID);
 				while (rs.next()) {
 					out.println("<tr><td colspan='2' class='bigheading'>Adoption Data</td></tr>");
 
 					recID = rs.getString(1);
-					if (rs.getString(2) != null) { out.println("<tr><td class='heading'>Adoptor</td><td>" + rs.getString(2) + "</td></tr>"); }
-					if (rs.getString(3) != null) {
+					//adoptors (repeating)
+					rs2 = statement2.executeQuery("SELECT COUNT(*) FROM Adoptor WHERE Record_ID = " + recID);
+					rs2.next();
+					if (rs2.getInt(1) > 0) {
+						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Adoptors</td>");
+						rs2 = statement2.executeQuery("SELECT Name FROM Person_View P, Adoptor A WHERE P.Person_ID = A.Person_ID AND A.Record_ID = " + recID + " ORDER BY Name");
+						rs2.next();
+						out.println("<td>" + rs2.getString(1) + "</td></tr>");
+						while (rs2.next()) {
+							out.println("<tr><td>" + rs2.getString(1) + "</td></tr>");
+						}
+					}
+					if (rs.getString(2) != null) {
 						out.print("<tr><td class='heading'>Adoption Date</td><td>");
-						if (rs.getString(4) == null) {
-							out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(3)));
-						} else if (rs.getString(4).equals("Year")) {
-							out.print(yearFormatter.format(rs.getDate(3)));
-						} else if (rs.getString(4).equals("Month")) {
-							out.print(monthFormatter.format(rs.getDate(3)));
+						if (rs.getString(3) == null) {
+							out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(2)));
+						} else if (rs.getString(3).equals("Year")) {
+							out.print(yearFormatter.format(rs.getDate(2)));
+						} else if (rs.getString(3).equals("Month")) {
+							out.print(monthFormatter.format(rs.getDate(2)));
 						}
 						out.println("</td></tr>");
 					}
-					if (rs.getString(5) != null) { out.println("<tr><td class='heading'>Adopted Stage</td><td>" + rs.getString(5) + "</td></tr>"); }
-					if (rs.getString(6) != null) { out.println("<tr><td class='heading'>Comments</td><td>" + rs.getString(6) + "</td></tr>"); }
+					if (rs.getString(4) != null) { out.println("<tr><td class='heading'>Adopted Stage</td><td>" + rs.getString(4) + "</td></tr>"); }
+					if (rs.getString(5) != null) { out.println("<tr><td class='heading'>Comments</td><td>" + rs.getString(5) + "</td></tr>"); }
 					//Image/Files
 					MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
 					if (mr != null) {
