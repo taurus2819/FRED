@@ -10,7 +10,7 @@
 	boolean authorChk = false, sCountChk = false, sCoordChk = false, commChk = true;
 
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 
 	//if FeatureID given then get SampleID or transer to drillhole
 	if (request.getParameter("FeatID") != null) {
@@ -320,7 +320,7 @@
 						out.println("</tr><tr>");
 						y = 2;
 					}
-					out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
+					out.print("<td width='150' align='center' class='smalltext'><img border='0' src='http://falcon:8000/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
 				}
 				out.println("</td></tr></table></td></tr>");
 			}
@@ -417,7 +417,7 @@
 							out.println("</tr><tr>");
 							y = 2;
 						}
-						out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
+						out.print("<td width='150' align='center' class='smalltext'><img border='0' src='http://falcon:8000/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
 					}
 					out.println("</td></tr></table></td></tr>");
 				}
@@ -455,7 +455,7 @@
 											out.println("</tr><tr>");
 											y = 2;
 										}
-										out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
+										out.print("<td width='150' align='center' class='smalltext'><img border='0' src='http://falcon:8000/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
 									}
 									out.println("</td></tr></table></td></tr>");
 								}
@@ -529,7 +529,7 @@
 											out.println("</tr><tr>");
 											y = 2;
 										}
-										out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
+										out.print("<td width='150' align='center' class='smalltext'><img border='0' src='http://falcon:8000/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
 									}
 									out.println("</td></tr></table></td></tr>");
 								}

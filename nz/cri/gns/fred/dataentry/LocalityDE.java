@@ -12,6 +12,7 @@ import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.HTMLUtils;
 import nz.cri.gns.db.QueryDescriptor;
+import nz.cri.gns.db.metadata.MetadataRecord;
 import nz.cri.gns.db.site.DatumMethod;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.FREDUtils;
@@ -270,22 +271,16 @@ public abstract class LocalityDE implements DataEntryForm {
 		out.write(
 			"<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
 
-/*		out.write(
-			"<tr><td class='heading' colspan='2'>Security Setting</td><td>");
-		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
-		cd.name = "SecType";
-		if (getFieldForHTML(SECURITY_TYPE) != null) {
-			cd.selected = getFieldForHTML(SECURITY_TYPE);
-		} else {
-			cd.selected = "21";
-		}
-		cd.orderBy = "Lookup_ID";
-		cd.join = "FieldName = 'SecurityClass'";
-		HTMLUtils.makeDropBox(out, conn, cd);
-		out.write("</td></tr>\n");
-		out.write(
-			"<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
-*/
+		out.write("<tr><td class='heading' colspan='2'>Attached Files/Images<br /><span class='smalltext'>Click <a href='binary_data_entry.jsp?ID=" + feature.getFeatureID() + "&RecType=" + feature.getFeatureType() + "&FoldID=" + folder.getFolderID() + "'>here</a> to add/edit</span></td><td>");
+		try {
+			if (feature != null && feature.getMetadataRecordsCount() > 0) {	
+				MetadataRecord[] mr = feature.getMetadataRecords();
+				for (int i = 0; i < mr.length; i++)
+					out.write(mr[i].getTitle() + "<br />");
+			}
+		} catch (Exception e) {}
+		out.write("</td></tr>");
+		
 		out.write(
 			"<tr><td class='heading'>Location</td><td class='smallheading'>Grid Ref.</td><td><input type='text' name='GridRef' size='40' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(LocalityDE.GRID_REF))

@@ -12,6 +12,7 @@ import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.HTMLUtils;
 import nz.cri.gns.db.QueryDescriptor;
+import nz.cri.gns.db.metadata.MetadataRecord;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.AdoptionRecord;
 import nz.cri.gns.fred.data.Audit;
@@ -193,18 +194,15 @@ public abstract class RecordDE implements DataEntryForm {
 					 + "&RecType=" + recordType + "'><img src='images/edit.gif' width='20' height='20' border='0' alt='Edit' /></a></td>");
 		} catch (Exception e) {}
 		out.write("</tr>\n");
-		out.write("<tr><td class='heading' colspan='2'>Working Comments<br><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'>" + FREDUtils.noNulls(getFieldForHTML(WORKING_COMMENTS)) + "</textarea></td></tr>\n");
-/*			if (!recID.equals("0")) {
-				out.println("<tr><td class='heading' colspan='2'>Attached Files/Images<br><span class='smalltext'>Click <a href='binary_data_entry.jsp?RecID=" + recID + "&RecType=SMP&FoldID=" + foldID + "'>here</a> to add/edit</span></td><td>");
-				MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
-				if (mr != null) {
-					for (int i = 0; i < mr.length; i++) {
-						out.println(mr[i].getTitle() + "<br>");
-					}
-				}
-				out.println("</td></tr>");
-			}
-*/
+		out.write("<tr><td class='heading' colspan='2'>Working Comments<br /><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'>" + FREDUtils.noNulls(getFieldForHTML(WORKING_COMMENTS)) + "</textarea></td></tr>\n");
+		out.write("<tr><td class='heading' colspan='2'>Attached Files/Images<br /><span class='smalltext'>Click <a href='binary_data_entry.jsp?ID=" + record.getRecordID() + "&RecType=" + record.getRecordType() + "&FoldID=" + folder.getFolderID() + "'>here</a> to add/edit</span></td><td>");
+		if (record != null && record.getMetadataRecordsCount() > 0) {	
+			MetadataRecord[] mr = record.getMetadataRecords();
+			for (int i = 0; i < mr.length; i++)
+				out.write(mr[i].getTitle() + "<br />");
+		}
+		out.write("</td></tr>");
+
 		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
 		
 		out.write("<tr><td class='heading' colspan='2'>Security Setting</td><td>");
