@@ -33,7 +33,7 @@ import nz.cri.gns.test.TestingPageState;
  */
 public class LocalityTest extends TestCase {
 
-	public void testNewSave() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void _testNewSave() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("ben", "St.Bathans", ipConn);
@@ -94,12 +94,12 @@ public class LocalityTest extends TestCase {
 		loc.submit();
 	}
 	
-	public void _testSite() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void testSite() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
 		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm(1402, user, state);
-		form.setField(DataEntryForm.GRID_REF, "TruncNZMG:F45*810*610");
+		form.setField(DataEntryForm.GRID_REF, "AUCK:289400*680300");
 		//form.setField(DataEntryForm.GRID_REF, "NZMG:2181000*5461000");
 		//form.setField(DataEntryForm.GRID_REF, "LL49:NZ*-45*165");
 		//form.setField(DataEntryForm.GRID_REF, "LL2000:NZ*-45*165");
