@@ -49,115 +49,66 @@ public class SampleData {
 		data[0] = new Integer(this.id);
 		try {
 			ResultSet rs = conn.executeQuery(query, types, data);
-			if (!rs.next()) {
-				throw new SQLException(
-					"Cannot find record in database with this id: " + this.id);
-			}
-			values[0] = new Integer(rs.getInt(1));
-			values[1] = new Integer(rs.getInt(2));
-			values[2] = rs.getString(3);
-			values[3] = rs.getString(4);
-			values[4] =
-				((rs.getString(5) != null) ? new Integer(rs.getInt(5)) : null);
-			values[5] = rs.getString(6);
-			values[6] =
-				((rs.getString(7) != null) ? new Integer(rs.getInt(7)) : null);
-			values[7] = rs.getString(8);
-			values[8] = rs.getString(9);
-			values[9] = rs.getString(10);
-			values[10] =
-				((rs.getString(11) != null)
-					? new Integer(rs.getInt(11))
-					: null);
-			values[11] = rs.getString(12);
-			values[12] = rs.getString(13);
-			values[13] =
-				((rs.getString(14) != null)
-					? new Integer(rs.getInt(14))
-					: null);
-			values[14] = rs.getString(15);
-			values[15] = rs.getString(16);
-			values[16] =
-				((rs.getString(17) != null)
-					? new Double(rs.getDouble(17))
-					: null);
-			values[17] =
-				((rs.getString(18) != null)
-					? new Double(rs.getDouble(18))
-					: null);
+			if (!rs.next())
+				throw new SQLException("Cannot find record in database with this id: " + this.id);
+			values[Sample.FEATURE_ID] = new Integer(rs.getInt(1));
+			values[Sample.SAMPLE_ID] = new Integer(rs.getInt(2));
+			values[Sample.FEATURE_TYPE] = rs.getString(3);
+			values[Sample.SAMPLE_NAME] = rs.getString(4);
+			values[Sample.FR_ID] = ((rs.getString(5) != null) ? new Integer(rs.getInt(5)) : null);
+			values[Sample.FR_NUMBER] = rs.getString(6);
+			values[Sample.YARD_FR_ID] = ((rs.getString(7) != null) ? new Integer(rs.getInt(7)) : null);
+			values[Sample.YARD_FR_NUMBER] = rs.getString(8);
+			values[Sample.FEATURE_NAME] = rs.getString(9);
+			values[Sample.MAP_SHEET] = rs.getString(10);
+			values[Sample.SERIAL_NUMBER] = ((rs.getString(11) != null) ? new Integer(rs.getInt(11)) : null);
+			values[Sample.RECOLLECTION_NUMBER] = rs.getString(12);
+			values[Sample.YARD_MAP_SHEET] = rs.getString(13);
+			values[Sample.YARD_SERIAL_NUMBER] = ((rs.getString(14) != null) ? new Integer(rs.getInt(14)) : null);
+			values[Sample.YARD_RECOLLECTION_NUMBER] = rs.getString(15);
+			values[Sample.DRILLHOLE_DEPTH] = rs.getString(16);
+			values[Sample.TOP_DEPTH] = ((rs.getString(17) != null) ? new Double(rs.getDouble(17)) : null);
+			values[Sample.BOTTOM_DEPTH] = ((rs.getString(18) != null) ? new Double(rs.getDouble(18)) : null);
 			values[Sample.DRILL_TYPE_ID] = rs.getString(58);
-			values[18] = rs.getString(19);
-			values[19] =
-				((rs.getString(20) != null)
-					? new Integer(rs.getInt(20))
-					: null);
-			values[20] = rs.getString(21);
-			values[21] =
-				((rs.getString(22) != null)
-					? new Integer(rs.getInt(22))
-					: null);
-			values[22] = rs.getString(23);
-			values[23] = new Integer(rs.getInt(24));
-			values[24] = rs.getString(25);
-			values[25] = rs.getString(26);
-			values[26] =
-				((rs.getString(27) != null)
-					? new Integer(rs.getInt(27))
-					: null);
-			values[27] = rs.getString(28);
-			values[28] =
-				((rs.getString(29) != null)
-					? new Integer(rs.getInt(29))
-					: null);
-			values[29] =
-				((rs.getString(30) != null)
-					? new Integer(rs.getInt(30))
-					: null);
-			values[30] =
-				((rs.getString(31) != null)
-					? new Double(rs.getDouble(31))
-					: null);
-			values[31] =
-				((rs.getString(32) != null)
-					? new Double(rs.getDouble(32))
-					: null);
-			values[32] = rs.getString(33);
-			values[33] = rs.getString(34);
-			values[34] =
-				((rs.getString(35) != null)
-					? new Double(rs.getDouble(35))
-					: null);
-			values[35] =
-				((rs.getString(36) != null)
-					? new Double(rs.getDouble(36))
-					: null);
-			values[36] = rs.getString(37);
-			values[37] =
-				((rs.getString(38) != null)
-					? new Integer(rs.getInt(38))
-					: null);
-			values[38] = rs.getString(39);
-			values[39] = rs.getString(40);
-			values[40] =
-				((rs.getString(41) != null)
-					? new Integer(rs.getInt(41))
-					: null);
-			values[41] = rs.getString(42);
-			values[42] = rs.getDate(43);
-			values[43] = rs.getString(44);
-			values[44] = rs.getDate(45);
-			values[45] = rs.getString(46);
-			values[46] = rs.getString(47);
-			values[47] = ((rs.getString(48) != null) ? new Double(rs.getDouble(48))	: null);
-			values[48] = ((rs.getString(49) != null) ? new Double(rs.getDouble(49))	: null);
-			values[49] = ((rs.getString(50) != null) ? new Double(rs.getDouble(50))	: null);
-			values[52] = ((rs.getString(51) != null) ? new Integer(rs.getInt(51)) : null);
-			values[53] = ((rs.getString(52) != null) ? new Integer(rs.getInt(52)) : null);
-			values[54] = rs.getString(53);
-			values[55] = rs.getString(54);
-			values[56] = rs.getString(55);
-			values[57] = rs.getString(56);
+			values[Sample.DRILL_TYPE] = rs.getString(19);
+			values[Sample.MASTERFILE_ID] = ((rs.getString(20) != null) ? new Integer(rs.getInt(20)) : null);
+			values[Sample.MASTERFILE_NAME] = rs.getString(21);
+			values[Sample.REG_AREA_ID] = ((rs.getString(22) != null) ? new Integer(rs.getInt(22)) : null);
 			values[Sample.REG_AREA_CODE] = rs.getString(57);
+			values[Sample.REG_AREA_NAME] = rs.getString(23);
+			values[Sample.AUDIT_ID] = new Integer(rs.getInt(24));
+			values[Sample.STATUS] = rs.getString(25);
+			values[Sample.LAST_CHANGE] = rs.getDate(26);
+			values[Sample.WORKING_FOLDER_ID] = ((rs.getString(27) != null) ? new Integer(rs.getInt(27)) : null);
+			values[Sample.WORKING_COMMENTS] = rs.getString(28);
+			values[Sample.SECURITY_CLASS_ID] = ((rs.getString(29) != null) ? new Integer(rs.getInt(29)) : null);
+			values[Sample.SITE_ID] = ((rs.getString(30) != null) ? new Integer(rs.getInt(30)) : null);
+			values[Sample.LATITUDE] = ((rs.getString(31) != null) ? new Double(rs.getDouble(31)) : null);
+			values[Sample.LONGITUDE] = ((rs.getString(32) != null) ? new Double(rs.getDouble(32)) : null);
+			values[Sample.COUNTRY_CODE] = rs.getString(55);
+			values[Sample.COUNTRY_NAME] = rs.getString(56);
+			values[Sample.ORIG_SYSTEM_ID] = ((rs.getString(52) != null) ? new Integer(rs.getInt(52)) : null);
+			values[Sample.COORD_SYSTEM] = rs.getString(53);
+			values[Sample.ORIG_COORD] = rs.getString(54);
+			values[Sample.QMAP_SHEET] = rs.getString(33);
+			values[Sample.NZMG_SHEET] = rs.getString(34);
+			values[Sample.NZMG_EAST] = ((rs.getString(35) != null) ? new Double(rs.getDouble(35)) : null);
+			values[Sample.NZMG_NORTH] =	((rs.getString(36) != null)	? new Double(rs.getDouble(36)) : null);
+			values[Sample.METHOD_ID] = ((rs.getString(51) != null) ? new Integer(rs.getInt(51)) : null);
+			values[Sample.METHOD] = rs.getString(37);
+			values[Sample.ACCURACY] = ((rs.getString(38) != null) ? new Double(rs.getDouble(38)): null);
+			values[Sample.LOCALITY] = rs.getString(39);
+			values[Sample.DRILLHOLE_LICENCE_NAME] = rs.getString(40);
+			values[Sample.PERSON_ID] = ((rs.getString(41) != null) ? new Integer(rs.getInt(41)) : null);
+			values[Sample.PERSON] = rs.getString(42);
+			values[Sample.START_DATE] = rs.getDate(43);
+			values[Sample.START_DATE_ROUNDING] = rs.getString(44);
+			values[Sample.FINISH_DATE] = rs.getDate(45);
+			values[Sample.FINISH_DATE_ROUNDING] = rs.getString(46);
+			values[Sample.DATUM_TYPE] = rs.getString(47);
+			values[Sample.DATUM_ELEVATION] = ((rs.getString(48) != null) ? new Double(rs.getDouble(48))	: null);
+			values[Sample.START_DEPTH] = ((rs.getString(49) != null) ? new Double(rs.getDouble(49))	: null);
+			values[Sample.FINISH_DATE] = ((rs.getString(50) != null) ? new Double(rs.getDouble(50))	: null);
 			rs.close();
 			query =
 				"SELECT Record_ID, Record_Type, Status, Last_Change FROM Record_All_View WHERE Sample_ID = ? ORDER BY Record_Type, Record_Name";
