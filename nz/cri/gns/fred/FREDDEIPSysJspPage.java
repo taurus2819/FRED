@@ -20,6 +20,7 @@ public abstract class FREDDEIPSysJspPage extends FREDIPSysJspPage{
 							getServletConfig().getServletContext())),
 					Right.ANY_RIGHT)};
 		} catch (Exception e) {
+			e.printStackTrace();
 			//Database error, so just block them
 			return new Authenticable[] {
 				 new IPRightAccess(
