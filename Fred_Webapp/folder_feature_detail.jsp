@@ -1,24 +1,5 @@
-<%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
+<%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
-%><%!
-	public Authenticable[] getRequiredRights(HttpServletRequest request) {
-		try {
-			return new Authenticable[] {
-				 new IPRightAccess(
-					new IPRight(
-						"FRED data entry",
-						getIPApp(
-							request.getSession(),
-							getServletConfig().getServletContext())),
-					Right.ANY_RIGHT)};
-		} catch (Exception e) {
-			//Database error, so just block them
-			return new Authenticable[] {
-				 new IPRightAccess(
-					IPRight.BLOCKED_IP_RIGHT,
-					Right.BLOCKED_RIGHT)};
-		}
-	}
 %><%
 	User user = getUser(session);
 	PageState state = new PageState(request, response, getServletContext());

@@ -7,9 +7,7 @@
 package nz.cri.gns.fred.dataentry.test;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.sql.SQLException;
 
 import junit.framework.TestCase;
