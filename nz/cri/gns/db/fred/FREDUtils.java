@@ -27,6 +27,8 @@ import nz.cri.gns.jsp.PageState;
 public class FREDUtils implements FREDConstants  {
 
   public static boolean isAllowedToView(User user, int securityClassID, PageState state) throws IOException, SQLException {
+  	if (user == null)
+  		return false;
 	DBConnection conn = ExternalUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext());
   	SecurityClass sc = new SecurityClass(securityClassID, conn);
   	SecurityClassAccess sca = new SecurityClassAccess(sc, Right.ANY_RIGHT);

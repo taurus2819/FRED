@@ -55,24 +55,6 @@
 
 	if (sampID != null) {
 
-		FullSample sv = FullSample.getFullSample(Integer.parseInt(sampID), state);
-		out.println("FR Num" + sv.getAsString(FullSample.FR_NUMBER, user) + "<br />");
-		
-		query = "SELECT Record_ID FROM Record NATURAL JOIN Sample_Property WHERE Sample_ID = ?";
-		data[0] = new Integer(Integer.parseInt(sampID));
-		rs = frConn.executeQuery(query, types, data);
-		if (rs.next()) {
-			FullSampPropRecord sp = FullSampPropRecord.getFullSampPropRecord(rs.getInt(1), state);
-			out.println("Coll Date: " + DateFormat.getDateInstance(DateFormat.LONG).format(sp.getAsDate(FullSampPropRecord.COLLECTION_DATE, user)) + "<br />");
-		
-			Vector collVect = sp.getAsVector(FullSampPropRecord.COLLECTOR, user);
-			for (Iterator i = collVect.iterator(); i.hasNext(); ) {
-				out.println("Collector: " + (String) i.next() + "<br />");
-			}
-		}
-		out.println("Sample Pool: " + FullSample.getPoolSize() + "<br />");
-		out.println("SampProp Pool: " + FullSampPropRecord.getPoolSize() + "<br />");
-
 		//create connection:  userConnection if logged in, otherwise FR
 		if (user !=  null) {
 			connection = user.getUsersConnection(new PageState(request, response, application), frConn);
@@ -87,44 +69,49 @@
 
 		//List data
 		out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
+		try {
+			FullSample fullSample = FullSample.getFullSample(Integer.parseInt(sampID), user, state);
+			Audit audit = Audit.getAudit(fullSample.getAsInt(FullSample.AUDIT_ID), state);
+
 		query = "SELECT S.Feature_Type, S.Sample_Name, S.Masterfile_Name, S.Status, A.Created_By, A.Created_Date, A.Modified_By, A.Modified_Date, A.Submitted_By, A.Submitted_Date, A.Approved_By, A.Approved_Date FROM Sample_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Sample_ID = ?";
 		data[0] = new Integer(Integer.parseInt(sampID));
 		rs = frConn.executeQuery(query, types, data);
+		rs.next();
 
-		if (rs.next()) {
+		//if (rs.next()) {
 
-			featType = rs.getString(1);
+			featType = fullSample.getAsString(FullSample.FEATURE_TYPE);
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
-			out.println("<tr><td colspan='2' align='center' class='bigheading' >" + rs.getString(2) + "</td></tr>");
+			out.println("<tr><td colspan='2' align='center' class='bigheading' >" + fullSample.getAsString(FullSample.SAMPLE_NAME) + "</td></tr>");
 			out.println("<tr><td colspan='2' align='center'>" + featType + "</td></tr>");
-			if (rs.getString(3) != null) {
-				out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + rs.getString(3) + "</td></tr>");
+			if (fullSample.get(fullSample.MASTERFILE_NAME) != null) {
+				out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + fullSample.getAsString(FullSample.MASTERFILE_NAME) + "</td></tr>");
 			}
-			if (!rs.getString(4).equals("approved")) {
-				out.println("<tr><td class='smallheading'>Status:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + rs.getString(4) + "</td></tr>");
+			if (!fullSample.getAsString(FullSample.STATUS).equals("approved")) {
+				out.println("<tr><td class='smallheading'>Status:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + fullSample.getAsString(FullSample.STATUS) + "</td></tr>");
 			}
-			if (rs.getString(5) != null || rs.getString(6) != null) {
+			if (audit.get(Audit.CREATED_BY) != null || audit.get(Audit.CREATED_DATE) != null) {
 				out.println("<tr><td class='smallheading'>Created:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(5) != null) { out.print(rs.getString(5) + "<br />"); }
-				if (rs.getString(6) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(6))); }
+				if (audit.get(Audit.CREATED_BY) != null) { out.print(audit.getAsString(Audit.CREATED_BY) + "<br />"); }
+				if (audit.get(Audit.CREATED_DATE) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(audit.getAsDate(Audit.CREATED_DATE))); }
 				out.println("</td></tr>");
 			}
-			if (rs.getString(7) != null || rs.getString(8) != null) {
+			if (audit.get(Audit.MODIFIED_BY) != null || audit.get(Audit.MODIFIED_DATE) != null) {
 				out.println("<tr><td class='smallheading'>Edited:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(7) != null) { out.print(rs.getString(7) + "<br />"); }
-				if (rs.getString(8) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(8))); }
+				if (audit.get(Audit.MODIFIED_BY) != null) { out.print(audit.getAsString(Audit.MODIFIED_BY) + "<br />"); }
+				if (audit.get(Audit.MODIFIED_DATE) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(audit.getAsDate(Audit.MODIFIED_DATE))); }
 				out.println("</td></tr>");
 			}
-			if (rs.getString(9) != null || rs.getString(10) != null) {
+			if (audit.get(Audit.SUBMITTED_BY) != null || audit.get(Audit.SUBMITTED_DATE) != null) {
 				out.println("<tr><td class='smallheading'>Submitted:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(9) != null) { out.print(rs.getString(9) + "<br />"); }
-				if (rs.getString(10) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(10))); }
+				if (audit.get(Audit.SUBMITTED_BY) != null) { out.print(audit.getAsString(Audit.SUBMITTED_BY) + "<br />"); }
+				if (audit.get(Audit.SUBMITTED_DATE) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(audit.getAsDate(Audit.SUBMITTED_DATE))); }
 				out.println("</td></tr>");
 			}
-			if (rs.getString(11) != null || rs.getString(12) != null) {
+			if (audit.get(Audit.APPROVED_BY) != null || audit.get(Audit.APPROVED_DATE) != null) {
 				out.println("<tr><td class='smallheading'>Approved:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (rs.getString(11) != null) { out.print(rs.getString(11) + "<br />"); }
-				if (rs.getString(12) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(12))); }
+				if (audit.get(Audit.APPROVED_BY) != null) { out.print(audit.getAsString(Audit.APPROVED_BY) + "<br />"); }
+				if (audit.get(Audit.APPROVED_DATE) != null) { out.print(DateFormat.getDateInstance(DateFormat.LONG).format(audit.getAsDate(Audit.APPROVED_DATE))); }
 				out.println("</td></tr>");
 			}
 				if (user != null) {
@@ -611,7 +598,7 @@
 			if (user ==  null) { out.println("<tr><td colspan='2'>More data may be available for this locality for <a href='login.jsp?loginpage=" + URLEncoder.encode("/fred/detail.jsp") + "' class='boldlink'>logged</a> in users</td></tr>"); }
 			out.println("</table></td></tr></table>");
 		}
-		else { // no record
+		catch (Exception e) { // no record
 			drawEndNavigation(out);
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");

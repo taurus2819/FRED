@@ -207,10 +207,6 @@ public class FullSampPropRecord {
 	/**
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
-	 */
-	/**
-	 *  Use this to get a new instance of this class. 
-	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 * @throws AccessDeniedException where user not allowed access to this row
 	 */
 	public static FullSampPropRecord getFullSampPropRecord(int id, User user, PageState state)
@@ -220,7 +216,7 @@ public class FullSampPropRecord {
 		if (f == null) {
 			f = new FullSampPropRecord(id, state);
 		}
-		if (!FREDUtils.isAllowedToView(user, f.getAsInt(FEATURE_SECURITY_CLASS_ID), state) || !FREDUtils.isAllowedToView(user, f.getAsInt(SECURITY_CLASS_ID), state)) {
+		if (f.get(FEATURE_SECURITY_CLASS_ID) != null && f.get(SECURITY_CLASS_ID) != null && (!FREDUtils.isAllowedToView(user, f.getAsInt(FEATURE_SECURITY_CLASS_ID), state) || !FREDUtils.isAllowedToView(user, f.getAsInt(SECURITY_CLASS_ID), state))) {
 			throw new AccessDeniedException();
 		}
 		return f;

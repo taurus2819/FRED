@@ -78,13 +78,20 @@ public class FullSample {
 	private Object[] values = new Object[50];
 	private int[] types = { Types.NUMERIC };
 	private Object[] data = new Object[1];
+	private boolean authenticated = false;
 
 	/**
 	 * Cannot be called directly. use static getContactPerson method instead.
 	 */
-	protected FullSample(int id, PageState state) throws SQLException, IOException {
+	protected FullSample(int id, PageState state)
+		throws SQLException, IOException {
 		this.state = state;
-		DBConnection conn =	ExternalUtils.createDatabaseConnection(state.getSession(), FREDConstants.CONNECTION, FREDConstants.DB_NAME, state.getContext());
+		DBConnection conn =
+			ExternalUtils.createDatabaseConnection(
+				state.getSession(),
+				FREDConstants.CONNECTION,
+				FREDConstants.DB_NAME,
+				state.getContext());
 		this.id = id;
 		fullSamplePool.add(this);
 		String query =
@@ -218,17 +225,34 @@ public class FullSample {
 		}
 	}
 
+	private boolean isAllowedToView(int field) {
+		if (authenticated) {
+			return true;
+		}
+		switch (field) {
+			case FEATURE_ID :
+			case SAMPLE_ID :
+			case FEATURE_TYPE :
+			case SAMPLE_NAME :
+			case SECURITY_CLASS_ID :
+				return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Attempts to return the given field as an int.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an int.
 	 */
 	public int getAsInt(int field) {
-		if (values.length < field)
+		if (values.length < field || !isAllowedToView(field))
 			throw new IllegalArgumentException("Invalid field");
 		try {
 			return ((Integer) values[field]).intValue();
 		} catch (Exception _e) {
-			throw new IllegalArgumentException("Field cannot be returned as an int");
+			throw new IllegalArgumentException(
+				"Field cannot be returned as an int, class is "
+					+ values[field].getClass().getName());
 		}
 	}
 
@@ -237,12 +261,14 @@ public class FullSample {
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an double.
 	 */
 	public double getAsDouble(int field) {
-		if (values.length < field)
+		if (values.length < field || !isAllowedToView(field))
 			throw new IllegalArgumentException("Invalid field");
 		try {
 			return ((Double) values[field]).doubleValue();
 		} catch (Exception _e) {
-			throw new IllegalArgumentException("Field cannot be returned as an double");
+			throw new IllegalArgumentException(
+				"Field cannot be returned as an double, class is "
+					+ values[field].getClass().getName());
 		}
 	}
 
@@ -251,15 +277,14 @@ public class FullSample {
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an Date.
 	 */
 	public java.util.Date getAsDate(int field) {
-		if (values.length < field)
+		if (values.length < field || !isAllowedToView(field))
 			throw new IllegalArgumentException("Invalid field");
-		Object thing = values[field];
 		try {
-			return (java.util.Date) thing;
+			return (java.util.Date) values[field];
 		} catch (Exception _e) {
 			throw new IllegalArgumentException(
 				"Field cannot be returned as a Date, class is "
-					+ thing.getClass().getName());
+					+ values[field].getClass().getName());
 		}
 	}
 
@@ -268,7 +293,7 @@ public class FullSample {
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a String.
 	 */
 	public String getAsString(int field) throws IOException, SQLException {
-		if (values.length < field)
+		if (values.length < field || !isAllowedToView(field))
 			throw new IllegalArgumentException("Invalid field");
 		if (values[field] == null)
 			return null;
@@ -280,7 +305,7 @@ public class FullSample {
 	 * @throws IllegalArgumentException if the field doesn't exist.
 	 */
 	public Object get(int field) {
-		if (values.length < field)
+		if (values.length < field || !isAllowedToView(field))
 			throw new IllegalArgumentException("Invalid field");
 		return values[field];
 	}
@@ -296,7 +321,6 @@ public class FullSample {
 		public boolean isObject(Object o) {
 			return (o instanceof FullSample && ((FullSample) o).id == this.id);
 		}
-
 	}
 
 	/**
@@ -325,8 +349,14 @@ public class FullSample {
 		if (f == null) {
 			f = new FullSample(id, state);
 		}
-		if (!FREDUtils.isAllowedToView(user, f.getAsInt(SECURITY_CLASS_ID), state)) {
-			throw new AccessDeniedException();
+		if (f.get(SECURITY_CLASS_ID) != null
+			&& !FREDUtils.isAllowedToView(
+				user,
+				f.getAsInt(SECURITY_CLASS_ID),
+				state)) {
+			f.authenticated = false;
+		} else {
+			f.authenticated = true;
 		}
 		return f;
 	}

@@ -36,25 +36,20 @@ public class FullSampleTest extends TestCase {
 	}
 
 
-public void _testPooling() throws NotBoundException, SQLException, IOException, AccessDeniedException {
+public void testPooling() throws NotBoundException, SQLException, IOException, AccessDeniedException {
 	FullSample.purge();
-	FullSample sv1 = null, sv2 = null, sv3 = null, sv4 = null;
-	try {
-		sv1 = FullSample.getFullSample(390, this.user, this.state);
-		sv2 = FullSample.getFullSample(390, this.user, this.state);
-	} catch (Exception e) {}
-	//assertEquals(sv1.toString(), sv2.toString());
+	FullSample sv1 = FullSample.getFullSample(390, this.user, this.state);
+	FullSample sv2 = FullSample.getFullSample(390, this.user, this.state);
+	assertEquals(sv1.toString(), sv2.toString());
 	assertEquals(1, FullSample.getPoolSize());
-	System.out.println(FullSample.getPoolSize());
-	try {
-		sv3 = FullSample.getFullSample(391, this.user, this.state);
-	} catch (Exception e) {}
-	//assertNotSame(sv1.toString(), sv3.toString());
+	FullSample sv3 = FullSample.getFullSample(391, this.user, this.state);
+	assertNotSame(sv1.toString(), sv3.toString());
 	assertEquals(2, FullSample.getPoolSize());
-	try {
-		sv4 = FullSample.getFullSample(390, this.user, this.state);
-	} catch (Exception e) {}
+	FullSample sv4 = FullSample.getFullSample(390, this.user, this.state);
 	assertEquals(2, FullSample.getPoolSize());
+	FullSample sv5 = FullSample.getFullSample(390, null, this.state);
+	assertEquals(2, FullSample.getPoolSize());
+	assertEquals(sv1.toString(), sv5.toString());
 }
 
 public void testFRNum() throws IOException, SQLException, AccessDeniedException {
@@ -65,6 +60,22 @@ public void testFRNum() throws IOException, SQLException, AccessDeniedException 
 	assertNotNull(frNum);
 	assertEquals("Q22/f7733", frNum);
 	} catch (Exception e) {}
+}
+
+public void testRestrictions() throws SQLException, IOException, AccessDeniedException {
+	String test = null;
+	FullSample.purge();
+	FullSample f = FullSample.getFullSample(390, null, this.state);
+	try {
+		test = f.getAsString(FullSample.FEATURE_TYPE);
+	} catch (Exception e) {}
+	assertNotNull(test);
+	test = null;
+	try {
+		test = f.getAsString(FullSample.LOCALITY);
+	} catch (Exception e) {}
+	assertNull(test);
+	System.out.println(f.getAsString(FullSample.SECURITY_CLASS_ID));
 }
 
 }
