@@ -1,5 +1,5 @@
 <%@page	extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
+		import="nz.cri.gns.db.fred.*, nz.cri.gns.db.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
 %><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 	User user = getUser(session);
@@ -9,7 +9,7 @@
 	String featType, featID;
 
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	if (request.getParameter("ID") != null) {
 		featID = request.getParameter("ID");
@@ -70,7 +70,7 @@
 
 			if (feature.get(Feature.SAMPLE) != null) {
 				int minSampID = ((Integer) feature.getAsVector(Feature.SAMPLE).firstElement()).intValue();
-				FullSample fullSample = FullSample.getFullSample(minSampID, user, state);
+				FullSample fullSample = new FullSample(minSampID, user, state);
 
 				out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
 				if (fullSample.get(FullSample.YARD_FR_ID) != null) { out.println("<tr><td class='heading'>Yard FR Number</td><td>" + fullSample.getAsString(FullSample.YARD_FR_NUMBER) + "</td></tr>"); }
@@ -144,7 +144,7 @@
 				out.println("<tr><th>Locality Name<img src='images/blank.gif' height='1' width='20' /></th><th colspan='2'>Sample Depth</th></tr>");
 				FullSample drillSample;
 				for (Iterator i = feature.getAsVector(Feature.SAMPLE).iterator(); i.hasNext(); ) {
-					drillSample = FullSample.getFullSample(((Integer) i.next()).intValue(), user, state);
+					drillSample = new FullSample(((Integer) i.next()).intValue(), user, state);
 					out.println("<tr><td class='heading'>" + drillSample.getAsString(FullSample.SAMPLE_NAME) + "&nbsp;&nbsp;</td><td width='25'><img src='images/drill.gif' height='20' width='20' /></td><td><a href='detail.jsp?ID=" + drillSample.getAsInt(FullSample.SAMPLE_ID) + "' class='heading'>" + drillSample.getAsString(FullSample.DRILLHOLE_DEPTH) + "</a></td></tr>");
 				}
 

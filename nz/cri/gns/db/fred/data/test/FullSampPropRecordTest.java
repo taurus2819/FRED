@@ -1,4 +1,4 @@
-package nz.cri.gns.db.fred.test;
+package nz.cri.gns.db.fred.data.test;
 
 import java.io.IOException;
 import java.rmi.NotBoundException;
@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 import junit.framework.TestCase;
 import nz.cri.gns.auth.User;
-import nz.cri.gns.db.fred.AccessDeniedException;
-import nz.cri.gns.db.fred.FullSampPropRecord;
-import nz.cri.gns.db.fred.FullSample;
+import nz.cri.gns.db.fred.data.AccessDeniedException;
+import nz.cri.gns.db.fred.data.FullSampPropRecord;
+import nz.cri.gns.db.fred.data.FullSample;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.test.TestingPageState;

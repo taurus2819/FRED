@@ -1,9 +1,3 @@
-/*
- * Created on 12/01/2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package nz.cri.gns.db.fred;
 
 import java.io.IOException;
@@ -19,6 +13,8 @@ import nz.cri.gns.auth.Right;
 import nz.cri.gns.auth.SecurityClass;
 import nz.cri.gns.auth.SecurityClassAccess;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.fred.data.AccessDeniedException;
+import nz.cri.gns.db.fred.data.FullSample;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.FREDConstants;
 import nz.cri.gns.jsp.JspUtils;

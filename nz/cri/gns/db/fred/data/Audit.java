@@ -1,4 +1,4 @@
-package nz.cri.gns.db.fred;
+package nz.cri.gns.db.fred.data;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.db.fred.FREDUtils;
 import nz.cri.gns.db.pool.Finder;
 import nz.cri.gns.db.pool.Pool;
 import nz.cri.gns.intranet.DBConnection;

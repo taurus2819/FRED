@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-package nz.cri.gns.db.fred.test;
+package nz.cri.gns.db.fred.data.test;
 
 import java.io.IOException;
 import java.rmi.NotBoundException;
@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import junit.framework.TestCase;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
-import nz.cri.gns.db.fred.Folder;
+import nz.cri.gns.db.fred.data.Folder;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.test.TestingPageState;

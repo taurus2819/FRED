@@ -1,4 +1,4 @@
-package nz.cri.gns.db.fred;
+package nz.cri.gns.db.fred.data;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.fred.FREDUtils;
 import nz.cri.gns.jsp.PageState;
 
 /**
@@ -71,7 +72,7 @@ public class FullSample {
 	private boolean authenticated = false;
 
 	public FullSample(int id, User user, PageState state) throws SQLException, IOException {
-		fsd = FullSampleData.getFullSampleData(id, state);
+		fsd = FullSampleData.getData(id, state);
 		if (fsd.get(SECURITY_CLASS_ID) != null
 			&& !FREDUtils.isAllowedRecord(user, fsd.getAsInt(SECURITY_CLASS_ID), state)) {
 			authenticated = false;

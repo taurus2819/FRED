@@ -1,20 +1,17 @@
-package nz.cri.gns.db.fred;
+package nz.cri.gns.db.fred.data;
 
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Vector;
 
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.fred.FREDUtils;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.FREDConstants;
 import nz.cri.gns.jsp.PageState;
 
-/**
- * Class that represents an Audit record.
- * Fields map to columns in database - use as arguments for the get methods.
- * Pooling is used so cannot instantiate directly - use static getAudit method instead.
- */
 public class FolderList implements FREDConstants {
 
 	private Vector personalFolders;
@@ -24,7 +21,12 @@ public class FolderList implements FREDConstants {
 		if (user != null) {
 			int userID = user.getPersonId();
 			DBConnection conn = FREDUtils.getFREDConnection(state);
-			ResultSet rs = conn.executeQuery("SELECT Folder_Type, Folder_ID FROM Folder_View WHERE User_ID = " + userID);
+			int[] types = { Types.NUMERIC };
+			Object[] data = new Object[1];
+			data[0] = new Integer(userID);
+			String query = ("SELECT Folder_Type, Folder_ID FROM Folder_View WHERE User_ID = ?");
+			ResultSet rs = conn.executeQuery(query, types, data);
+			conn.preservePreparedStatement();
 			personalFolders = new Vector();
 			adminFolders = new Vector();
 			while (rs.next()) {

@@ -1,4 +1,4 @@
-package nz.cri.gns.db.fred;
+package nz.cri.gns.db.fred.data;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.fred.FREDUtils;
 import nz.cri.gns.jsp.FREDConstants;
 import nz.cri.gns.jsp.PageState;
 
@@ -22,7 +23,7 @@ public class Folder implements FREDConstants {
 	private int userRights = 0;
 
 	public Folder(int id, User user, PageState state) throws SQLException, IOException {
-		this.fd = FolderData.getFolderData(id, state);
+		this.fd = FolderData.getData(id, state);
 		this.userRights = FREDUtils.getUserFolderRights(user, fd.getAsString(FOLDER_ID), state);
 	}
 

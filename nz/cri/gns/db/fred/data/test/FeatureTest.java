@@ -1,0 +1,89 @@
+package nz.cri.gns.db.fred.data.test;
+
+import java.io.IOException;
+import java.rmi.NotBoundException;
+import java.sql.SQLException;
+
+import junit.framework.TestCase;
+import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.User;
+import nz.cri.gns.db.fred.data.AccessDeniedException;
+import nz.cri.gns.db.fred.data.Feature;
+import nz.cri.gns.intranet.DBConnection;
+import nz.cri.gns.jsp.JspUtils;
+import nz.cri.gns.test.TestingPageState;
+
+public class FeatureTest extends TestCase {
+
+	TestingPageState state;
+	DBConnection conn;
+	User user, user2;
+
+	public FeatureTest(String arg0)
+		throws NotBoundException, IOException, SQLException {
+		super(arg0);
+		Feature.purge();
+		this.state = new TestingPageState();
+			DBConnection ipConn =
+				JspUtils.createDatabaseConnection(
+					state.getSession(),
+					"nz.cri.gns.db.fred.test.ipConn",
+					"ip",
+					state.getContext());
+		try {
+			this.user = new User("pseudo_ben", "santor32", ipConn);
+			this.user2 = new User("test", "test", ipConn);
+		} catch (Exception e) {
+		}
+	}
+
+
+	public void _testPooling() throws NotBoundException, SQLException, IOException, AccessDeniedException {
+		Feature.purge();
+		Feature sv1 = new Feature(509, this.user, this.state);
+		Feature sv2 = new Feature(509, this.user2, this.state);
+		assertEquals(sv1.toString(), sv2.toString());
+		assertEquals(1, Feature.getPoolSize());
+		Feature sv3 = new Feature(507, this.user, this.state);
+		assertNotSame(sv1.toString(), sv3.toString());
+		assertEquals(2, Feature.getPoolSize());
+		Feature sv4 = new Feature(509, this.user, this.state);
+		assertEquals(2, Feature.getPoolSize());
+		Feature sv5 = new Feature(509, null, this.state);
+		assertEquals(2, Feature.getPoolSize());
+		assertEquals(sv1.toString(), sv5.toString());
+	}
+	
+	public void testSamples() throws SQLException, IOException, InvalidCredentialsException {
+		Feature.purge();
+		Feature f = new Feature(509, user, state);
+		Feature dhole = new Feature(1, user, state);
+		assertEquals(f.getAsVector(Feature.SAMPLE).size(), 1);
+		assertEquals(dhole.getAsVector(Feature.SAMPLE).size(), 5);
+	}
+	
+	public void _testRestrictions() throws SQLException, IOException, AccessDeniedException, InvalidCredentialsException {
+		String test = null;
+		Feature.purge();
+		Feature f = new Feature(509, null, state);
+		try {
+			test = f.getAsString(Feature.FEATURE_TYPE);
+		} catch (Exception e) {}
+		assertNotNull(test);
+		test = null;
+		try {
+			test = f.getAsString(Feature.LOCALITY);
+		} catch (Exception e) {}
+		assertNull(test);
+		System.out.println(f.getAsString(Feature.SECURITY_CLASS_ID));
+	}
+	
+	public void _testMultipleUsers() throws SQLException, IOException {
+		Feature.purge();
+		Feature f = new Feature(509, null, state);
+		Feature f2 = new Feature(509, user, state);
+		assertFalse(f.isAuthenticated());
+		assertTrue(f2.isAuthenticated());		
+	}
+
+}

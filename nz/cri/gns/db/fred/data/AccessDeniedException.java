@@ -1,4 +1,4 @@
-package nz.cri.gns.db.fred;
+package nz.cri.gns.db.fred.data;
 
 public class AccessDeniedException extends Exception {
 

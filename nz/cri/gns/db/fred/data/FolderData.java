@@ -1,4 +1,4 @@
-package nz.cri.gns.db.fred;
+package nz.cri.gns.db.fred.data;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -7,6 +7,7 @@ import java.sql.Types;
 import java.util.Vector;
 
 import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.db.fred.FREDUtils;
 import nz.cri.gns.db.pool.Finder;
 import nz.cri.gns.db.pool.Pool;
 import nz.cri.gns.intranet.DBConnection;
@@ -20,7 +21,7 @@ import nz.cri.gns.jsp.PageState;
  */
 public class FolderData implements FREDConstants {
 
-	private static Pool folderDataPool = new Pool();
+	private static Pool pool = new Pool();
 	private int id;
 	private Object[] values = new Object[5];
 	private int[] types = { Types.NUMERIC };
@@ -32,7 +33,7 @@ public class FolderData implements FREDConstants {
 	private FolderData(int id, PageState state) throws SQLException, IOException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		this.id = id;
-		folderDataPool.add(this);
+		pool.add(this);
 		String query =
 			"SELECT Folder_ID, Name, Folder_Type, Owner_ID, Full_Name "
 				+ "FROM Folder JOIN IP.Person_View ON Owner_ID = PE_ID WHERE Folder_ID = ?";
@@ -49,9 +50,9 @@ public class FolderData implements FREDConstants {
 			values[3] = new Integer(rs.getInt(4));
 			values[4] = rs.getString(5);
 			rs.close();
-			conn.releaseStatement();
+			//conn.releaseStatement();
 		} catch (SQLException _e) {
-			folderDataPool.removeMe(this);
+			pool.removeMe(this);
 			throw DBUtils.fixSQLException(_e, query, conn);
 		}
 	}
@@ -61,14 +62,11 @@ public class FolderData implements FREDConstants {
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an int.
 	 */
 	protected int getAsInt(int field) throws IllegalArgumentException {
-		if (values.length < field)
-			throw new IllegalArgumentException("Invalid field");
 		try {
-			return ((Integer) values[field]).intValue();
-		} catch (Exception _e) {
-			throw new IllegalArgumentException(
-				"Field cannot be returned as an int, class is "
-					+ values[field].getClass().getName());
+			Object thing = values[field];
+			return ((Integer) thing).intValue();
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
 		}
 	}
 
@@ -77,14 +75,11 @@ public class FolderData implements FREDConstants {
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an double.
 	 */
 	protected double getAsDouble(int field) throws IllegalArgumentException {
-		if (values.length < field)
-			throw new IllegalArgumentException("Invalid field");
 		try {
-			return ((Double) values[field]).doubleValue();
-		} catch (Exception _e) {
-			throw new IllegalArgumentException(
-				"Field cannot be returned as an double, class is "
-					+ values[field].getClass().getName());
+			Object thing = values[field];
+			return ((Double) thing).doubleValue();
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
 		}
 	}
 
@@ -93,14 +88,11 @@ public class FolderData implements FREDConstants {
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an Date.
 	 */
 	protected java.util.Date getAsDate(int field) throws IllegalArgumentException {
-		if (values.length < field)
-			throw new IllegalArgumentException("Invalid field");
 		try {
-			return (java.util.Date) values[field];
-		} catch (Exception _e) {
-			throw new IllegalArgumentException(
-				"Field cannot be returned as a Date, class is "
-					+ values[field].getClass().getName());
+			Object thing = values[field];
+			return (java.util.Date) thing;
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
 		}
 	}
 
@@ -109,11 +101,12 @@ public class FolderData implements FREDConstants {
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a String.
 	 */
 	protected String getAsString(int field) throws IllegalArgumentException {
-		if (values.length < field)
-			throw new IllegalArgumentException("Invalid field");
-		if (values[field] == null)
-			return null;
-		return values[field].toString();
+		try {
+			Object thing = values[field];
+			return thing.toString();
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	/**
@@ -121,15 +114,11 @@ public class FolderData implements FREDConstants {
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a Vector.
 	 */
 	protected Vector getAsVector(int field) throws IllegalArgumentException {
-		if (values.length < field)
-			throw new IllegalArgumentException("Invalid field");
-		Object thing = values[field];
 		try {
+			Object thing = values[field];
 			return (Vector) thing;
-		} catch (Exception _e) {
-			throw new IllegalArgumentException(
-				"Field cannot be returned as a Vector, class is "
-					+ thing.getClass().getName());
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
 		}
 	}
 	
@@ -138,17 +127,20 @@ public class FolderData implements FREDConstants {
 	 * @throws IllegalArgumentException if the field doesn't exist.
 	 */
 	protected Object get(int field) throws IllegalArgumentException {
-		if (values.length < field)
-			throw new IllegalArgumentException("Invalid field");
-		return values[field];
+		try {
+			Object thing = values[field];
+			return thing;
+		} catch (Exception e) {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	/**
 	 * Inner class used for object pooling.
 	 */
-	protected static class FolderDataFinder implements Finder {
+	protected static class DataFinder implements Finder {
 		int id;
-		public FolderDataFinder(int id) {
+		public DataFinder(int id) {
 			this.id = id;
 		}
 		public boolean isObject(Object o) {
@@ -161,23 +153,23 @@ public class FolderData implements FREDConstants {
 	 * created for testing purposes (grrrr) - use to test object pooling.
 	 */
 	protected static int getPoolSize() {
-		return folderDataPool.size();
+		return pool.size();
 	}
 
 	/**
 	 * Use to empty the pool of all objects.
 	 */
 	protected static void purge() {
-		folderDataPool.removeAllElements();
+		pool.removeAllElements();
 	}
 
 	/**
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
-	protected static FolderData getFolderData(int id, PageState state)
+	protected static FolderData getData(int id, PageState state)
 		throws SQLException, IOException {
-		FolderData f = (FolderData) folderDataPool.retrieve(new FolderDataFinder(id));
+		FolderData f = (FolderData) pool.retrieve(new DataFinder(id));
 		if (f == null) {
 			f = new FolderData(id, state);
 		}
@@ -190,7 +182,7 @@ public class FolderData implements FREDConstants {
 	}
 
 	public void finalize() throws Throwable {
-		folderDataPool.removeMe(this);
+		pool.removeMe(this);
 	}
 
 }

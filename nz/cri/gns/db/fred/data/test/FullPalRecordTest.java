@@ -1,4 +1,4 @@
-package nz.cri.gns.db.fred.test;
+package nz.cri.gns.db.fred.data.test;
 
 import java.io.IOException;
 import java.rmi.NotBoundException;
@@ -7,10 +7,10 @@ import java.util.Iterator;
 
 import junit.framework.TestCase;
 import nz.cri.gns.auth.User;
-import nz.cri.gns.db.fred.AccessDeniedException;
-import nz.cri.gns.db.fred.FullPaleontologyRecord;
-import nz.cri.gns.db.fred.Taxa;
-import nz.cri.gns.db.fred.TaxaGroup;
+import nz.cri.gns.db.fred.data.AccessDeniedException;
+import nz.cri.gns.db.fred.data.FullPaleontologyRecord;
+import nz.cri.gns.db.fred.data.Taxa;
+import nz.cri.gns.db.fred.data.TaxaGroup;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.test.TestingPageState;
