@@ -7,7 +7,7 @@
 <web-app>
     <context-param>
 	<param-name>rmiServer</param-name>
-	<param-value>falcon</param-value>
+	<param-value>condor</param-value>
     </context-param>
     <context-param>
 	<param-name>dbConnect</param-name>
