@@ -93,9 +93,7 @@ public class OutcropLocalityDE extends LocalityDE {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			conn.getConnection().setAutoCommit(false);
 			try {
-				System.out.println("Starting to save locality");
 				super.save();
-				System.out.println("Finished");
 				sampPropRecordDE.setSample(sample);
 				sampPropRecordDE.save();
 				conn.getConnection().commit();
