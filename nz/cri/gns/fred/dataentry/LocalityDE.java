@@ -9,6 +9,8 @@ import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.HTMLUtils;
+import nz.cri.gns.db.site.DatumMethod;
+import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.data.Folder;
@@ -17,8 +19,7 @@ import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 import nz.cri.gns.util.map.Datum;
-import nz.cri.gns.util.map.NZMG;
-import nz.cri.gns.util.map.NZMS260;
+import nz.cri.gns.util.map.DatumFactory;
 import nz.cri.gns.util.map.NorthingEasting;
 import nz.cri.gns.util.map.TruncNorthingEasting;
 
@@ -33,7 +34,9 @@ public abstract class LocalityDE implements DataEntryForm {
 	private Integer secClassID;
 	protected String[] fields = new String[120];
 	private Double latitude, longitude;
-	private String origSystemID, origCoord, countryCode, recoll;
+	private String origSystemID, countryCode, recoll;
+	private Datum origSystem;
+	private Datum.Coordinate origCoord;
 	protected boolean savedFlag = false;
 
 	public LocalityDE(
@@ -189,10 +192,7 @@ public abstract class LocalityDE implements DataEntryForm {
 						state);
 					break;
 				case GRID_REF :
-					if (!parseCoord(value))
-						throw new DataInputException(
-							"Coordinate",
-							"Invalid value");
+					parseCoord(value);
 					break;
 				case METHOD :
 					DataEntryUtils.parseDropDownID(
@@ -392,88 +392,47 @@ public abstract class LocalityDE implements DataEntryForm {
 		out.write("</table>\n");
 	}
 
-	private boolean parseCoord(String coord) {
-		if (coord.indexOf("*") == -1
-			|| coord.indexOf("*") == coord.length() - 1)
-			return false;
+	private void parseCoord(String coord) throws DataInputException {
+		if (coord.indexOf("*") == -1 || coord.indexOf("*") == coord.length() - 1)
+			throw new DataInputException("Coordinate", "Invalid value");
 		if (coord.indexOf("NZMG:") == 0) {
 			String east = coord.substring(5, coord.indexOf("*"));
-			String north =
-				coord.substring(coord.indexOf("*") + 1, coord.length());
-			if (east.length() != 7 || north.length() != 7)
-				return false;
+			String north = coord.substring(coord.indexOf("*") + 1, coord.length());
 			try {
-				NorthingEasting nzmgCoord =
-					new NorthingEasting(
-						Double.parseDouble(north),
-						Double.parseDouble(east));
-				NZMG nzmg = new NZMG();
-				Datum.LatLong latLong = nzmg.convertToNZGD49(nzmgCoord);
-				latitude = new Double(latLong.getNorthSouth());
-				longitude = new Double(latLong.getEastWest());
-				origCoord = east + "|" + north;
-				origSystemID = "38";
+				origCoord =	new NorthingEasting(Double.parseDouble(north), Double.parseDouble(east));
+				origSystem = DatumFactory.createNZMG();
 				countryCode = "NZ";
 			} catch (Exception e) {
-				return false;
+				throw new DataInputException("Coordinate", "Invalid value");
 			}
 		} else if (coord.indexOf("TruncNZMG:") == 0) {
 			if (coord.indexOf("*") == coord.lastIndexOf("*"))
-				return false;
+				throw new DataInputException("Coordinate", "Invalid value");
 			String sheet = coord.substring(10, coord.indexOf("*"));
-			String east =
-				coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
-			String north =
-				coord.substring(coord.lastIndexOf("*") + 1, coord.length());
-			if (sheet.length() != 3
-				|| east.length() < 3
-				|| east.length() > 4
-				|| north.length() < 3
-				|| north.length() > 4
-				|| east.length() != north.length())
-				return false;
+			String east = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
+			String north = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
 			try {
-				TruncNorthingEasting truncNzmgCoord =
-					new TruncNorthingEasting(
-						Double.parseDouble(north),
-						Double.parseDouble(east),
-						sheet,
-						east.length());
-				NZMS260 nzms260 = new NZMS260();
-				Datum.LatLong latLong = nzms260.convertToNZGD49(truncNzmgCoord);
-				latitude = new Double(latLong.getNorthSouth());
-				longitude = new Double(latLong.getEastWest());
-				origCoord = sheet + "|" + east + "|" + north;
-				origSystemID = "16";
+				origCoord = new TruncNorthingEasting(Double.parseDouble(north), Double.parseDouble(east), sheet, east.length());
+				origSystem = DatumFactory.createNZMS260();
 				countryCode = "NZ";
 			} catch (Exception e) {
-				return false;
+				throw new DataInputException("Coordinate", "Invalid value");
 			}
 		} else if (coord.indexOf("LatLong:") == 0) {
 			if (coord.indexOf("*") == coord.lastIndexOf("*"))
-				return false;
-			String north =
-				coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
-			String east =
-				coord.substring(coord.lastIndexOf("*") + 1, coord.length());
+			throw new DataInputException("Coordinate", "Invalid value");
+			String north = coord.substring(coord.indexOf("*") + 1, coord.lastIndexOf("*"));
+			String east = coord.substring(coord.lastIndexOf("*") + 1, coord.length());
 			try {
-				latitude = new Double(north);
-				longitude = new Double(east);
-				if (longitude.doubleValue() <= -180
-					|| longitude.doubleValue() > 180
-					|| latitude.doubleValue() <= -90
-					|| latitude.doubleValue() > 90)
-					return false;
-				origCoord = latitude + "|" + longitude;
-				origSystemID = "29";
+				origCoord = new Datum.LatLong(Double.parseDouble(north), Double.parseDouble(east));
+				origSystem = DatumFactory.createNZGD49();
 				countryCode = coord.substring(8, coord.indexOf("*"));
 			} catch (Exception e) {
-				return false;
+				throw new DataInputException("Coordinate", "Invalid value");
 			}
 		} else {
-			return false;
+			throw new DataInputException("Coordinate", "Invalid value");
 		}
-		return true;
 	}
 
 	public int save()
@@ -677,52 +636,22 @@ public abstract class LocalityDE implements DataEntryForm {
 		conn.releaseStatement();
 	}
 
-	private String getSiteID() throws IOException, SQLException {
-		DBConnection conn = FREDUtils.getFREDConnection(state);
-		String siteID;
-		ResultSet rs =
-			conn.executeQuery(
-				"SELECT SC.Site_Check("
-					+ latitude
-					+ ", "
-					+ longitude
-					+ ", "
-					+ JspUtils.sqlEscape(fields[METHOD])
-					+ ", "
-					+ JspUtils.sqlEscape(fields[ACCURACY])
-					+ ") FROM DUAL");
-		rs.next();
-		if (rs.getString(1) != null) {
-			siteID = rs.getString(1);
-		} else {
-			rs = conn.executeQuery("SELECT SC.Site_Seq.NEXTVAL FROM DUAL");
-			rs.next();
-			siteID = rs.getString(1);
-			conn.executeUpdate(
-				"INSERT INTO SC.Site (Site_ID, Site_Name, Latitude, Longitude, Method_ID, Accuracy, Directions, Orig_System_ID, Orig_Coord, Country_Code) VALUES ("
-					+ siteID
-					+ ", "
-					+ JspUtils.sqlEscape(fields[FIELD_NUMBER])
-					+ ", "
-					+ latitude
-					+ ", "
-					+ longitude
-					+ ", "
-					+ JspUtils.sqlEscape(fields[METHOD])
-					+ ", "
-					+ JspUtils.sqlEscape(fields[ACCURACY])
-					+ ", "
-					+ JspUtils.sqlEscape(fields[LOCALITY_DESC])
-					+ ", "
-					+ JspUtils.sqlEscape(origSystemID)
-					+ ", "
-					+ JspUtils.sqlEscape(origCoord)
-					+ ", "
-					+ JspUtils.sqlEscape(countryCode)
-					+ ")");
+	private String getSiteID() throws SQLException, IOException  {
+		DatumMethod horzDM = null;
+		try {
+			if (fields[METHOD] != null) {
+				horzDM = DatumMethod.getDatumMethod(Integer.parseInt(fields[METHOD]), FREDUtils.getFREDConnection(state));
+				if (fields[ACCURACY] != null) {
+					horzDM.setHorizontalAccuracy(Float.parseFloat(fields[ACCURACY]));
+				}
+			}
+			SiteRecord sr = SiteRecord.insertSite(fields[FIELD_NUMBER], origSystem, origCoord, null, horzDM, null, null, fields[LOCALITY_DESC], countryCode, String.valueOf(user.getPersonId()), JspUtils.getInstance(state.getContext()));
+			System.out.println("SiteID: " + sr.getId());
+			return String.valueOf(sr.getId());
+		} catch (Exception e) {
+			System.out.println(e);
+			throw new SQLException();
 		}
-		conn.releaseStatement();
-		return siteID;
 	}
 
 }

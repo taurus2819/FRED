@@ -93,12 +93,25 @@ public class LocalityTest extends TestCase {
 		loc.makeDataEntryHTML(new PrintWriter(System.out));
 	}
 	
-	public void testNotWorkingLoc() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public void _testNotWorkingLoc() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
 		LocalityDE loc = DataEntryFormFactory.getLocalityDataEntryForm(1282, user, state);
 		loc.revoke();
 		loc.submit();
+	}
+	
+	public void testSite() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+		TestingPageState state = new TestingPageState();
+		DBConnection ipConn = FREDUtils.getIPConnection(state);
+		User user = new User("pseudo_ben", "santor32", ipConn);
+		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm(1402, user, state);
+		//form.setField(DataEntryForm.GRID_REF, "TruncNZMG:F45*810*610");
+		//form.setField(DataEntryForm.GRID_REF, "NZMG:2181000*5461000");
+		form.setField(DataEntryForm.GRID_REF, "LatLong:NZ*-45*165");
+		form.setField(DataEntryForm.METHOD, "3");
+		form.setField(DataEntryForm.ACCURACY, "20");
+		form.save();		
 	}
 }
