@@ -38,7 +38,6 @@ public abstract class LocalityDE implements DataEntryForm {
 	private String origSystemID, countryCode, recoll;
 	private Datum origSystem;
 	private Datum.Coordinate origCoord;
-	private SiteRecord sr;
 	protected boolean savedFlag = false;
 
 	public LocalityDE(User user, int folderID, String featureType, PageState state)
@@ -447,7 +446,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			ResultSet rs;
 			String siteID = null;
 			if (fields[GRID_REF] != null)
-				siteID = getSiteID();
+				siteID = String.valueOf(getSite().getId());
 			if (secClassID == null)
 				secClassID = new Integer(4);
 			if (feature == null) {
@@ -536,6 +535,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
 		rs.next();
 		String auditID = rs.getString(1);
+		SiteRecord sr = getSite();
 		rs = conn.executeQuery("SELECT Which_Masterfile(" + JspUtils.sqlEscape(regCode)	+ ", " + sr.getLatAsDouble() + ", " + sr.getLonAsDouble() + ") FROM DUAL");
 		rs.next();
 		String mfID = rs.getString(1);
@@ -624,7 +624,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		conn.releaseStatement();
 	}
 
-	private String getSiteID() throws SQLException  {
+	private SiteRecord getSite() throws SQLException  {
 		DatumMethod horzDM = null;
 		try {
 			if (fields[METHOD] != null) {
@@ -633,8 +633,7 @@ public abstract class LocalityDE implements DataEntryForm {
 					horzDM.setHorizontalAccuracy(Float.parseFloat(fields[ACCURACY]));
 				}
 			}
-			sr = SiteRecord.insertSite(fields[FIELD_NUMBER], origSystem, origCoord, null, horzDM, null, null, fields[LOCALITY_DESC], countryCode, String.valueOf(user.getPersonId()), 0, JspUtils.getInstance(state.getContext()));
-			return String.valueOf(sr.getId());
+			return SiteRecord.insertSite(fields[FIELD_NUMBER], origSystem, origCoord, null, horzDM, null, null, fields[LOCALITY_DESC], countryCode, String.valueOf(user.getPersonId()), 0, JspUtils.getInstance(state.getContext()));
 		} catch (Exception e) {
 			throw new SQLException("Problem creating SITE: " + e.getMessage());
 		}

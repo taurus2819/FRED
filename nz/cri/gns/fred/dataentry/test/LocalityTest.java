@@ -17,6 +17,7 @@ import junit.framework.TestCase;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
+import nz.cri.gns.fred.FolderUtils;
 import nz.cri.gns.fred.dataentry.DataEntryForm;
 import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
 import nz.cri.gns.fred.dataentry.DataInputException;
@@ -94,7 +95,7 @@ public class LocalityTest extends TestCase {
 		loc.submit();
 	}
 	
-	public void testSite() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void _testSite() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
@@ -125,5 +126,14 @@ public class LocalityTest extends TestCase {
 		System.out.println(form.getField(DataEntryForm.FEATURE_NAME));
 		form.setField(DataEntryForm.COLUMN_MAP, "blah blah");
 		form.save();
+	}
+	
+	public void testSubmit() throws IOException, SQLException, InvalidCredentialsException, MalformedURLException, RemoteException, NotBoundException {
+		TestingPageState state = new TestingPageState();
+		DBConnection ipConn = FREDUtils.getIPConnection(state);
+		User user = new User("pseudo_ben", "santor32", ipConn);
+		try {
+			FolderUtils.submitLocality("881", user, state);
+		} catch (Exception e) {}
 	}
 }

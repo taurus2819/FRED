@@ -25,6 +25,7 @@
 				}
 				// submit working locality
 				else if (actionType.equals("Submit") && folder.isAllowedSubmitLocalities()) {
+					System.out.println("Submitting locality: " + request.getParameter("FeatID"));
 					FolderUtils.submitLocality(request.getParameter("FeatID"), user, state);
 				}
 				//Revoke waiting records
@@ -32,7 +33,7 @@
 					FolderUtils.revokeLocality(request.getParameter("FeatID"), user, state);
 				}
 			} catch (Exception e) {
-				err = "&ErrMsg=" + URLEncoder.encode("An Error has occured", "UTF-8");
+				err = "&ErrMsg=" + URLEncoder.encode("An Error has occured: " + e, "UTF-8");
 			}
 			response.sendRedirect("folder_detail.jsp?ID=" + folder.getFolderID() + err);
 			return;

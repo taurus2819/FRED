@@ -24,7 +24,7 @@ public class OutcropLocalityDE extends LocalityDE {
 	public OutcropLocalityDE(int featureID, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException  {
 		super(featureID, user, state);
 		if (!featureType.equals("Outcrop")) throw new DataInputException("Feature Type", "Invalid");
-		sampleDE = new SampleDE(user, featureID, folder.getFolderID(), state);
+		sampleDE = new SampleDE(sample.getSampleID(), user, state);
 		sampleDE.setOutcropSamp(true);
 	}
 
