@@ -3,12 +3,14 @@ package nz.cri.gns.fred.dataentry;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.db.QueryDescriptor;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 
@@ -89,36 +91,39 @@ public class DataEntryUtils {
 	}
 
 	public static String getStageID(String stageStartID, String startMod, String stageStopID, String stopMod, PageState state) throws IOException, SQLException {
-		DBConnection conn = FREDUtils.getFREDConnection(state);
-		String stageID = null;
 		if (stageStartID != null) {
-			ResultSet rs = conn.executeQuery("SELECT Get_Stage_ID(" + stageStartID + ", " + JspUtils.sqlEscape(startMod) + ", " + JspUtils.sqlEscape(stageStopID) + ", " + JspUtils.sqlEscape(stopMod) + ") FROM DUAL");
+			DBConnection conn = FREDUtils.getFREDConnection(state);
+			String query = "SELECT Get_Stage_ID(?, ?, ?, ?) FROM DUAL";
+			ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.VARCHAR, Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(stageStartID), startMod, new Integer(stageStopID), stopMod});
 			rs.next();
-			if (rs.getString(1) != null) {
-				stageID = rs.getString(1);
-			} else {
-				rs = conn.executeQuery("SELECT Stage_Seq.NEXTVAL FROM DUAL");
-				rs.next();
-				stageID = rs.getString(1);
-				conn.executeUpdate("INSERT INTO Stage (Stage_ID, Stage_Lower_ID, Stage_Lower_Mod, Stage_Upper_ID, Stage_Upper_Mod) VALUES (" + stageID + ", " + stageStartID + ", " + JspUtils.sqlEscape(startMod) + ", " + JspUtils.sqlEscape(stageStopID) + ", " + JspUtils.sqlEscape(stopMod) + ")");
-			}
+			if (rs.getString(1) != null)
+				return rs.getString(1);
+			QueryDescriptor qd = new QueryDescriptor("stage");
+			qd.addQueryColumn("stage_lower_id", Types.NUMERIC, new Integer(stageStartID));
+			qd.addQueryColumn("stage_lower_mod", Types.VARCHAR, startMod);
+			if (stageStopID != null)
+				qd.addQueryColumn("stage_upper_id", Types.NUMERIC, new Integer(stageStopID));
+			qd.addQueryColumn("stage_upper_mod", Types.VARCHAR, stopMod);
+			return DBUtils.doInsertUsingSequence(qd, "stage_id", "stage_seq", conn, true);
 		}
-		return stageID;
+		return null;
 	}
 	
 	public static void parseAge(String stageStart, String stageStop, String fieldName, PageState state) throws DataInputException {
 		try {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
-			ResultSet rs = conn.executeQuery("SELECT Ta_Age_Start, Ta_Age_Stop FROM Age_View WHERE Ag_ID = " + stageStart);
+			String query = "SELECT ta_age_state, ta_age_stop FROM age_view WHERE ag_id = ?";
+			ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(stageStart)});
 			rs.next();
 			double startStart = rs.getDouble(1);
 			double startStop = rs.getDouble(2);
 			if (stageStop != null) {
-				rs = conn.executeQuery("SELECT Ta_Age_Start, Ta_Age_Stop FROM Age_View WHERE Ag_ID = " + stageStop);
+				rs = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(stageStop)});
 				rs.next();
 				double stopStart = rs.getDouble(1);
 				double stopStop = rs.getDouble(2);
-				if (startStart < stopStart || startStop < stopStop) throw new DataInputException(fieldName, "Stop age younger than start age");
+				if (startStart < stopStart || startStop < stopStop)
+					throw new DataInputException(fieldName, "Stop age younger than start age");
 			}
 		} catch (Exception e) {
 			throw new DataInputException(fieldName, "Invalid");
