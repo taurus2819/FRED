@@ -199,8 +199,4 @@ public class FolderData {
 		return (values[1]).toString();
 	}
 
-	//public void finalize() throws Throwable {
-	//	pool.removeMe(this);
-	//}
-
 }

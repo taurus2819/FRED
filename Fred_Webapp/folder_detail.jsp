@@ -107,7 +107,6 @@
 				}
 				out.print("</td><td>");
 				if (folder.isAllowedCreateLocalities()) {
-					if (featType.equals("Vertical Section")) featType = "VertSect";
 //					out.print("<a href='#' onClick='prmpt=prompt(\"Please enter the new name\", \"New " + featType + "\");if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value=\"CopyFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}'><img src='images/copy.gif' border='0' height='20' width='20' alt='Copy Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				}
 				out.print("</td><td>");
