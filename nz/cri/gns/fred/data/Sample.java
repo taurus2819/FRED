@@ -172,7 +172,7 @@ public class Sample {
 			authenticated = false;
 		} else {
 			authenticated = true;
-		}		
+		}
 	}
 
 	public Sample(int id, User user, PageState state) throws SQLException, IOException {

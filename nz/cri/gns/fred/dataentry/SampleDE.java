@@ -223,8 +223,7 @@ public class SampleDE implements DataEntryForm {
 		this.auditID = auditID;
 	}
 
-	protected void parseField(int field, String value)
-		throws DataInputException, TaxonomicListException {
+	protected void parseField(int field, String value) throws DataInputException, TaxonomicListException {
 		try {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			ResultSet rs;
@@ -335,15 +334,15 @@ public class SampleDE implements DataEntryForm {
 						if (value.indexOf(";") == -1)
 							value += ";";
 						String sampName = value.substring(0, value.indexOf(";")).trim();
-						String query = "SELECT feature_id FROM feature_view WHERE sample_name = ? AND feature_status = ?";
-						rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {sampName, "approved"});
+						String query = "SELECT feature_id FROM feature_view WHERE UPPER(sample_name) = ? AND feature_status = ?";
+						rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {sampName.toUpperCase(), "approved"});
 						if (rs.next()) {
 							ps = new Relationship();
 							ps.setRelatedFeatureID(new Integer(rs.getInt(1)));
 							prevSamp.add(ps);
 						} else {
-							query = "SELECT feature_id FROM feature_view fv, folder_view fd WHERE fv.working_folder_id = fd.folder_id AND fv.feature_status <> ? AND fd.user_id = ? AND fd.folder_type = ? AND fv.sample_name = ?";
-							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.NUMERIC, Types.VARCHAR, Types.VARCHAR}, new Object[] {"approved", new Integer(user.getPersonId()), "personal", sampName});
+							query = "SELECT feature_id FROM feature_view fv, folder_view fd WHERE fv.feature_working_folder_id = fd.folder_id AND fv.feature_status <> ? AND fd.user_id = ? AND fd.folder_type = ? AND UPPER(fv.sample_name) = ?";
+							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.NUMERIC, Types.VARCHAR, Types.VARCHAR}, new Object[] {"approved", new Integer(user.getPersonId()), "personal", sampName.toUpperCase()});
 							if (rs.next()) {
 								ps = new Relationship();
 								ps.setRelatedFeatureID(new Integer(rs.getInt(1)));
@@ -373,9 +372,7 @@ public class SampleDE implements DataEntryForm {
 							srDistance = srLine.substring(0, srLine.indexOf("below")).trim();
 							srFeat = srLine.substring(srLine.indexOf("below") + 5, srLine.length()).trim();
 						} else {
-							throw new DataInputException(
-								"Sample Relationships",
-								srLine + " invalid.  Please use the builder");
+							throw new DataInputException("Sample Relationships", srLine + " invalid.  Please use the builder");
 						}
 						srDistMod = null;
 						srDistRange = null;
@@ -391,13 +388,13 @@ public class SampleDE implements DataEntryForm {
 							srDistRange = srDistance.substring(srDistance.indexOf("-") + 1, srDistance.length()).trim();
 						}
 						srDistance = srDistance.trim();
-						String query = "SELECT feature_id FROM feature_view WHERE sample_name = ? AND feature_status = ?";
-						rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {srFeat, "approved"});
+						String query = "SELECT feature_id FROM feature_view WHERE UPPER(sample_name) = ? AND feature_status = ?";
+						rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {srFeat.toUpperCase(), "approved"});
 						if (rs.next()) {
 							srFeatID = new Integer(rs.getInt(1));
 						} else {
-							query = "SELECT feature_id FROM feature_view fv, folder_view fd WHERE fv.working_folder_id = fd.folder_id AND fv.feature_status <> ? AND fd.user_id = ? AND fd.folder_type = ? AND fv.sample_name = ?";
-							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.NUMERIC, Types.VARCHAR, Types.VARCHAR}, new Object[] {"approved", new Integer(user.getPersonId()), "personal", srFeat});
+							query = "SELECT feature_id FROM feature_view fv, folder_view fd WHERE fv.feature_working_folder_id = fd.folder_id AND fv.feature_status <> ? AND fd.user_id = ? AND fd.folder_type = ? AND UPPER(fv.sample_name) = ?";
+							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.NUMERIC, Types.VARCHAR, Types.VARCHAR}, new Object[] {"approved", new Integer(user.getPersonId()), "personal", srFeat.toUpperCase()});
 							if (rs.next()) {
 								srFeatID = new Integer(rs.getInt(1));
 							} else {
@@ -1010,7 +1007,6 @@ public class SampleDE implements DataEntryForm {
 					DBUtils.doUpdate(qd, "sample_id = ?", conn);
 				}
 				
-				//TODO rework DB stuff from here down
 				//Delete and then add new repeating records
 				int[] numericType = new int[] {Types.NUMERIC};
 				Object[] sampIDObj = new Object[] {new Integer(sampleID)};
@@ -1179,13 +1175,15 @@ public class SampleDE implements DataEntryForm {
 			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
 		save();
 		if (!outcropSamp) {
-			//change status & add saved record to folder
 			DBConnection conn = FREDUtils.getFREDConnection(state);
-			conn.executeUpdate("UPDATE Audit_Table SET Status = 'approved', Submitted_By_ID = "
-				+ user.getPersonId()
-				+ ", Submitted_Date = SYSDATE, Working_Folder_ID = NULL, Working_Comments = NULL WHERE Audit_ID = "
-				+ auditID);
-			conn.releaseStatement();
+			QueryDescriptor qd = new QueryDescriptor("audit_table");
+			qd.addQueryColumn("status", Types.VARCHAR, "approved");
+			qd.addQueryColumn("submitted_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
+			qd.addQueryColumn("submitted_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
+			qd.addQueryColumn("working_comments", Types.VARCHAR, null);
+			qd.addQueryColumn("working_folder_id", Types.NUMERIC, null);
+			qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(sample.getAsInt(Sample.SAMPLE_AUDIT_ID)));
+			DBUtils.doUpdate(qd, "audit_id = ?", conn);
 		}
 		sample = new Sample(sample.getSampleID(), user, state, true);
 		return sample.getSampleID();
@@ -1194,8 +1192,7 @@ public class SampleDE implements DataEntryForm {
 	public void delete() throws IOException, SQLException, InvalidCredentialsException {
 		if (sample != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
-			conn.executeUpdate("DELETE FROM Sample WHERE Sample_ID = " + sample.getSampleID());
-			conn.executeUpdate("DELETE FROM Audit_Table WHERE Audit_ID = " + auditID);
+			conn.executeUpdate("DELETE FROM Sample WHERE Sample_ID = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(sample.getSampleID())});
 			conn.releaseStatement();
 		}	
 	}
