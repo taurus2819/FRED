@@ -157,13 +157,11 @@ public class LocalityTest extends TestCase {
 		form.save();
 	}
 	
-	public void _testSubmit() throws IOException, SQLException, InvalidCredentialsException, MalformedURLException, RemoteException, NotBoundException {
+	public void testSubmit() throws NotBoundException, NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
-		User user = new User("pseudo_ben", "santor32", ipConn);
-		try {
-			FolderUtils.submitLocality("881", user, state);
-		} catch (Exception e) {}
+		User user = new User("test", "test", ipConn);
+		FolderUtils.submitLocality(String.valueOf(TEST_DRILLHOLE), user, state);
 	}
 	
 	public void _testOutcropSave() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {

@@ -111,7 +111,7 @@
 				if (featName != null && !sampName.equals(featName)) 
 					out.print("<br />(" + featName +")&nbsp;&nbsp;");
 				out.print("</td><td style='color: #FF0000'>");
-				if (!locStatus.equals("approved")) {
+				if (!locStatus.equals(Audit.STATUS_APPROVED)) {
 					out.print(locStatus + "&nbsp;&nbsp;</td><td>");
 					if (feature.get(Feature.LAST_CHANGE) != null)
 						out.print(DateFormat.getDateInstance(DateFormat.LONG).format(feature.getAsDate(Feature.LAST_CHANGE)) + "&nbsp;&nbsp;");
@@ -120,15 +120,15 @@
 					out.print("</td><td></td>");
 				}
 				out.print("<td>");
-				if ((locStatus.equals("working") || locStatus.equals("rejected")) && folder.isAllowedEditLocalities())
+				if ((locStatus.equals(Audit.STATUS_WORKING) || locStatus.equals(Audit.STATUS_REJECTED)) && folder.isAllowedEditLocalities())
 					out.print("<a href='data_entry.jsp?Type=" + featType + "&FeatID=" + featID + "&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				out.print("</td><td>");
-	//			if ((locStatus.equals("working") || locStatus.equals("rejected")) && folder.isAllowedDeleteLocalities())
+	//			if ((locStatus.equals(Audit.STATUS_WORKING) || locStatus.equals(Audit.STATUS_REJECTED)) && folder.isAllowedDeleteLocalities())
 	//				out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this locality\") == true) {document.FoldForm.ActionType.value=\"DeleteFeat\";document.FoldForm.submit();}'><img src='images/delete.gif' border='0' height='20' width='20' alt='Delete Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				out.print("</td><td>");
-				if ((locStatus.equals("working") || locStatus.equals("rejected")) && folder.isAllowedSubmitLocalities())
+				if ((locStatus.equals(Audit.STATUS_WORKING) || locStatus.equals(Audit.STATUS_REJECTED)) && folder.isAllowedSubmitLocalities())
 					out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to submit this locality\") == true) {document.FoldForm.ActionType.value=\"Submit\";document.FoldForm.submit();}'><img src='images/submit.gif' border='0' height='20' width='20' alt='Submit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
-				if (locStatus.equals("waiting") && folder.isAllowedSubmitLocalities())
+				if (locStatus.equals(Audit.STATUS_WAITING) && folder.isAllowedSubmitLocalities())
 					out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to revoke this locality\") == true) {document.FoldForm.ActionType.value=\"Revoke\";document.FoldForm.submit();}'><img src='images/revoke.gif' border='0' height='20' width='20' alt='Revoke Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				out.println("</td><td>");
 				if (folder.isAllowedCreateLocalities()) {
@@ -149,11 +149,11 @@
 				//Samples
 				for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
 					Sample sample = new Sample(((Integer) i.next()).intValue(), user, state, true);
-					if (sample.getAsString(Sample.SAMPLE_STATUS).equals("approved") || (sample.get(Sample.SAMPLE_WORKING_FOLDER_ID) != null && sample.getAsInt(Sample.SAMPLE_WORKING_FOLDER_ID) == folder.getFolderID())) {
+					if (sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_APPROVED) || (sample.get(Sample.SAMPLE_WORKING_FOLDER_ID) != null && sample.getAsInt(Sample.SAMPLE_WORKING_FOLDER_ID) == folder.getFolderID())) {
 						if (!featType.equals(Feature.OUTCROP_LOCALITY) && !sample.getAsString(Sample.DRILLHOLE_DEPTH).equals("Depth Not Specified")) {
 							out.print("<tr><td><a href='detail.jsp?ID=" + sample.getSampleID() + "'><img src='images/drill.gif' height='20' width='20' border='0' alt='View Sample Details' /></a>&nbsp;</td><td>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "&nbsp;&nbsp;</td>");
 							out.print("<td style='color: #FF0000'>");
-							if (!sample.getAsString(Sample.SAMPLE_STATUS).equals("approved")) {
+							if (!sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_APPROVED)) {
 								out.print(sample.getAsString(Sample.SAMPLE_STATUS) + "&nbsp;&nbsp;");
 								out.println("</td><td>");
 								if (sample.get(Sample.SAMPLE_LAST_CHANGE) != null)
@@ -163,13 +163,13 @@
 							}
 							out.print("</td>");
 							out.print("<td>");
-							if ((sample.getAsString(Sample.SAMPLE_STATUS).equals("working") || sample.getAsString(Sample.SAMPLE_STATUS).equals("rejected")) && folder.isAllowedEditLocalities())
+							if ((sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_WORKING) || sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_REJECTED)) && folder.isAllowedEditLocalities())
 								out.print("<a href='data_entry.jsp?Type=Sample&FoldID=" + folder.getFolderID() + "&SampID=" + sample.getAsString(Sample.SAMPLE_ID) + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Sample Details' /></a><img src='images/blank.gif' height='20' width='2' />");
 							out.print("</td><td>");
-							if ((sample.getAsString(Sample.SAMPLE_STATUS).equals("working") || sample.getAsString(Sample.SAMPLE_STATUS).equals("rejected")) && folder.isAllowedDeleteLocalities())
+							if ((sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_WORKING) || sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_REJECTED)) && folder.isAllowedDeleteLocalities())
 								out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this sample\") == true) {document.FoldForm.ActionType.value=\"DeleteSamp\";document.FoldForm.SampID.value=\"" + sample.getSampleID() + "\";document.FoldForm.submit();}' title='Delete Sample'><img src='images/delete.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 							out.print("</td><td>");
-							if (sample.getAsString(Sample.SAMPLE_STATUS).equals("working") && folder.isAllowedSubmitLocalities())
+							if (sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_WORKING) && folder.isAllowedSubmitLocalities())
 								out.println("<a href='#' onClick='document.FoldForm.ActionType.value=\"SubmitSamp\";document.FoldForm.SampID.value=\"" + sample.getSampleID() + "\";document.FoldForm.submit();'><img src='images/submit.gif' border='0' height='20' width='20' alt='Submit Sample' /></a><img src='images/blank.gif' height='20' width='2' />");
 							out.println("</td><td>");
 							if (folder.isAllowedCreateLocalities())
@@ -203,7 +203,7 @@
 									out.print("<tr><td><img src='images/child.gif' width='20' height='20' /><img src='images/" + imageName + "' width='20' height='20' /></td><td class='smalltext'");
 									//if (provFlag) { returnVal.append(" style='color: #FF0000'"); }
 									out.print(">" + FREDUtils.noNulls(record.getAsString(Record.RECORD_NAME)) + "&nbsp;&nbsp;</td><td class='smalltext' style='color: #FF0000'>");
-									if (record.getAsString(Record.STATUS).equals("working")) {
+									if (record.getAsString(Record.STATUS).equals(Audit.STATUS_WORKING)) {
 										out.print("working&nbsp;&nbsp;</td><td class='smalltext'>");
 										if (record.get(Record.LAST_CHANGE) != null)
 											out.print(DateFormat.getDateInstance(DateFormat.LONG).format(record.getAsDate(Record.LAST_CHANGE)) + "&nbsp;&nbsp;");
@@ -213,13 +213,13 @@
 									}
 									out.print("<td>");
 									//Record Options
-									if (record.getAsString(Record.STATUS).equals("working") && folder.isAllowedEditLocalities())
+									if (record.getAsString(Record.STATUS).equals(Audit.STATUS_WORKING) && folder.isAllowedEditLocalities())
 										out.println("<a href='data_entry.jsp?Type=" + recType + "&FoldID=" + folder.getFolderID() + "&RecID=" + recID + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Record' /></a><img src='images/blank.gif' height='20' width='2' />");
 									out.println("</td><td>");
-									if (record.getAsString(Record.STATUS).equals("working") && folder.isAllowedDeleteLocalities())
+									if (record.getAsString(Record.STATUS).equals(Audit.STATUS_WORKING) && folder.isAllowedDeleteLocalities())
 										out.println("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this record\") == true) {document.FoldForm.ActionType.value=\"DeleteRec\";document.FoldForm.RecID.value=\"" + recID + "\";document.FoldForm.submit();}'><img src='images/delete.gif' border='0' height='20' width='20' alt='Delete Record' /></a><img src='images/blank.gif' height='20' width='2' />");
 									out.println("</td><td>");
-									if (record.getAsString(Record.STATUS).equals("working") && folder.isAllowedSubmitLocalities())
+									if (record.getAsString(Record.STATUS).equals(Audit.STATUS_WORKING) && folder.isAllowedSubmitLocalities())
 										out.println("<a href='#' onClick='document.FoldForm.ActionType.value=\"SubmitRec\";document.FoldForm.RecID.value=\"" + recID + "\";document.FoldForm.submit();'><img src='images/submit.gif' border='0' height='20' width='20' alt='Submit Record' /></a><img src='images/blank.gif' height='20' width='2' />");
 									out.println("</td></tr>");
 								}

@@ -39,6 +39,12 @@ public class Audit {
 	public static final int WORKING_COMMENTS = 17;
 	public static final int WORKING_FOLDER_ID = 18;
 
+	public static final String STATUS_WORKING = "working";
+	public static final String STATUS_WAITING = "waiting";
+	public static final String STATUS_REJECTED = "rejected";
+	public static final String STATUS_APPROVED = "approved";
+	
+
 	private PageState state;
 	private static Pool auditPool = new Pool();
 	private int id;

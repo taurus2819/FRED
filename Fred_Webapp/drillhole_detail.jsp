@@ -54,7 +54,7 @@
 						if (feature.get(Feature.MASTERFILE_NAME) != null) {
 							out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + feature.getAsString(Feature.MASTERFILE_NAME) + "</td></tr>");
 						}
-						if (!audit.getAsString(Audit.STATUS).equals("approved")) {
+						if (!audit.getAsString(Audit.STATUS).equals(Audit.STATUS_APPROVED)) {
 							out.println("<tr><td class='smallheading'>Status:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + audit.getAsString(Audit.STATUS) + "</td></tr>");
 						}
 						if (audit.get(Audit.CREATED_BY) != null || audit.get(Audit.CREATED_DATE) != null) {

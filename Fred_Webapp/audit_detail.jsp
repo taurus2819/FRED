@@ -33,7 +33,7 @@
 		out.println("<table style='margin-left:20px; width:350px;' border='0'>");		
 		
 		out.println("<tr><td class=\"bigheading\" colspan=\"3\">Locality</td></tr>");
-		if (!audit.getAsString(Audit.STATUS).equals("approved"))
+		if (!audit.getAsString(Audit.STATUS).equals(Audit.STATUS_APPROVED))
 			out.println("<tr><td class=\"heading\">Status:&nbsp;&nbsp;</td><td style=\"color: #FF0000\">" + audit.getAsString(Audit.STATUS) + "</td></tr>");
 		if (audit.get(Audit.CREATED_BY) != null || audit.get(Audit.CREATED_DATE) != null)
 			out.println("<tr><td class=\"heading\">Created:&nbsp;&nbsp;</td><td>"
@@ -64,7 +64,7 @@
 		if (!featType.equals(Feature.OUTCROP_LOCALITY)) {
 			audit = Audit.getAudit(sample.getAsInt(Sample.SAMPLE_AUDIT_ID), state);
 			out.println("<tr><td class=\"bigheading\" colspan=\"3\">Sample</td></tr>");
-			if (!audit.getAsString(Audit.STATUS).equals("approved"))
+			if (!audit.getAsString(Audit.STATUS).equals(Audit.STATUS_APPROVED))
 				out.println("<tr><td class=\"heading\">Status:&nbsp;&nbsp;</td><td style=\"color: #FF0000\">" + audit.getAsString(Audit.STATUS) + "</td></tr>");
 			if (audit.get(Audit.CREATED_BY) != null || audit.get(Audit.CREATED_DATE) != null)
 				out.println("<tr><td class=\"heading\">Created:&nbsp;&nbsp;</td><td>"
@@ -109,7 +109,7 @@
 					out.println("<tr><td class=\"bigheading\" colspan=\"3\">"
 						+ ((rec.getValue().equals(Record.ADOPTION_RECORD)) ? "Adoption" : "Paleontology")
 						+ " <span class=\"heading\">" + record + "</span></td></tr>");
-					if (!audit.getAsString(Audit.STATUS).equals("approved"))
+					if (!audit.getAsString(Audit.STATUS).equals(Audit.STATUS_APPROVED))
 						out.println("<tr><td class=\"heading\">Status:&nbsp;&nbsp;</td><td style=\"color: #FF0000\">" + audit.getAsString(Audit.STATUS) + "</td></tr>");
 					if (audit.get(Audit.CREATED_BY) != null || audit.get(Audit.CREATED_DATE) != null)
 						out.println("<tr><td class=\"heading\">Created:&nbsp;&nbsp;</td><td>"

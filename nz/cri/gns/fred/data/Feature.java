@@ -87,7 +87,7 @@ public class Feature {
 	}
 	
 	public boolean isApprovedLocality() {
-		return (fd.getAsString(STATUS).equals("approved"));
+		return (fd.getAsString(STATUS).equals(Audit.STATUS_APPROVED));
 	}
 
 	public int getSampleCount() {
@@ -220,7 +220,7 @@ public class Feature {
 				conn.executeUpdate("DELETE FROM sample WHERE sample_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(rs.getInt(1))});
 			//Add new AUDIT and SAMPLE records	
 			QueryDescriptor qd = new QueryDescriptor("audit_table");
-			qd.addQueryColumn("status", Types.VARCHAR, "working");
+			qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
 			qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
 			qd.addQueryColumn("created_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
 			qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(workingFolderID));

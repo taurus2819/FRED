@@ -194,11 +194,11 @@ public class Sample {
 	}
 
 	public boolean isApprovedLocality() {
-		return (sd.getAsString(FEATURE_STATUS).equals("approved"));
+		return (sd.getAsString(FEATURE_STATUS).equals(Audit.STATUS_APPROVED));
 	}
 
 	public boolean isApprovedSample() {
-		return (sd.getAsString(SAMPLE_STATUS).equals("approved"));
+		return (sd.getAsString(SAMPLE_STATUS).equals(Audit.STATUS_APPROVED));
 	}
 
 	public int getRecordCount() throws InvalidCredentialsException {

@@ -16,6 +16,7 @@ import nz.cri.gns.auth.Right;
 import nz.cri.gns.auth.SecurityClass;
 import nz.cri.gns.auth.SecurityClassAccess;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.fred.data.Audit;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
@@ -79,7 +80,7 @@ public class FREDUtils {
 		throws IOException, SQLException {
 		if (user == null)
 			return false;
-		if (!status.equals("approved"))
+		if (!status.equals(Audit.STATUS_APPROVED))
 			return (getUserWorkingLocalityRights(user, featureID, state) & 1) > 0;
 	//	if (securityClassID != null)
 	//		return hasMasterfileRights(user, featID, state) || checkSecurityClass(Integer.parseInt(securityClassID), user, state);
@@ -93,7 +94,7 @@ public class FREDUtils {
 		throws IOException, SQLException {
 		if (user == null)
 			return false;
-		if (!status.equals("approved"))
+		if (!status.equals(Audit.STATUS_APPROVED))
 			return (getUserWorkingSampleRights(user, sampleID, state) & 1) > 0;
 		if (securityClassID != null)
 			return hasMasterfileSampleRights(user, sampleID, state) || checkSecurityClass(Integer.parseInt(securityClassID), user, state);
@@ -107,7 +108,7 @@ public class FREDUtils {
 		throws IOException, SQLException {
 		if (user == null)
 			return false;
-		if (!status.equals("approved"))
+		if (!status.equals(Audit.STATUS_APPROVED))
 			return (getUserWorkingRecordRights(user, recordID, state) & 1) > 0;
 		if (securityClassID != null)
 			return hasMasterfileRecordRights(user, recordID, state) || checkSecurityClass(Integer.parseInt(securityClassID), user, state);
@@ -164,7 +165,7 @@ public class FREDUtils {
 	 * Returns true is the user is allowed to approve the locality
 	 */
 	public static boolean isAllowedApproveLocality(User user, String featureID, String status, PageState state) throws IOException, SQLException {
-		if (status != null && status.equals("waiting"))
+		if (status != null && status.equals(Audit.STATUS_WAITING))
 			return (getUserWorkingLocalityRights(user, featureID, state) & 64) > 0;
 		return false;
 	}

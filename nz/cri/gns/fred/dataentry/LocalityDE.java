@@ -15,6 +15,7 @@ import nz.cri.gns.db.QueryDescriptor;
 import nz.cri.gns.db.site.DatumMethod;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.FREDUtils;
+import nz.cri.gns.fred.data.Audit;
 import nz.cri.gns.fred.data.FRNumber;
 import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.data.Folder;
@@ -60,9 +61,9 @@ public abstract class LocalityDE implements DataEntryForm {
 		featureType = feature.getFeatureType();
 		
 		//check status for editing
-		if (feature.getAsString(Feature.STATUS).equals("approved")) {
+		if (feature.getAsString(Feature.STATUS).equals(Audit.STATUS_APPROVED)) {
 			throw new DataInputException("Locality", "Locality not editable");		
-		} else if (feature.getAsString(Feature.STATUS).equals("waiting")) {
+		} else if (feature.getAsString(Feature.STATUS).equals(Audit.STATUS_WAITING)) {
 			if (FREDUtils.hasMasterfileRights(user, String.valueOf(featureID), state)) {
 				folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state);
 			} else {
@@ -446,7 +447,7 @@ public abstract class LocalityDE implements DataEntryForm {
 				if (!folder.isAllowedCreateLocalities())
 					throw new InvalidCredentialsException();
 				QueryDescriptor qd = new QueryDescriptor("audit_table");
-				qd.addQueryColumn("status", Types.VARCHAR, "working");
+				qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
 				qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
 				qd.addQueryColumn("created_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
 				qd.addQueryColumn("working_comments", Types.VARCHAR, FREDUtils.noNulls(recoll) + FREDUtils.noNulls(fields[WORKING_COMMENTS]));
@@ -464,7 +465,7 @@ public abstract class LocalityDE implements DataEntryForm {
 				String featureID = DBUtils.doInsertUsingSequence(qd, "feature_id", "feature_seq", conn, true);
 				feature = new Feature(Integer.parseInt(featureID), user, state, true);
 			} else { // edit
-				if (!folder.isAllowedApproveLocalities() && feature.getAsString(Feature.STATUS).equals("waiting"))
+				if (!folder.isAllowedApproveLocalities() && feature.getAsString(Feature.STATUS).equals(Audit.STATUS_WAITING))
 					throw new InvalidCredentialsException();
 				if (!folder.isAllowedEditLocalities())
 					throw new InvalidCredentialsException();
@@ -491,7 +492,7 @@ public abstract class LocalityDE implements DataEntryForm {
 	}
 
 	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
-		if ((feature != null && feature.getAsString(Feature.STATUS).equals("waiting")) || !folder.isAllowedSubmitLocalities())
+		if ((feature != null && feature.getAsString(Feature.STATUS).equals(Audit.STATUS_WAITING)) || !folder.isAllowedSubmitLocalities())
 			throw new InvalidCredentialsException();
 		if (featureType == null || fields[GRID_REF] == null || fields[REGISTRATION_AREA] == null)
 			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
@@ -499,27 +500,27 @@ public abstract class LocalityDE implements DataEntryForm {
 		//change status and set Masterfile
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		QueryDescriptor qd = new QueryDescriptor("audit_table");
-		qd.addQueryColumn("status", Types.VARCHAR, "waiting");
+		qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WAITING);
 		qd.addQueryColumn("submitted_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
 		qd.addQueryColumn("submitted_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
 		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getAsInt(Feature.AUDIT_ID)));
-		DBUtils.doUpdate(qd, "audit_id=?", conn);
+		DBUtils.doUpdate(qd, "audit_id = ?", conn);
 		int mfID = FREDUtils.getMasterfile(Integer.parseInt(fields[REGISTRATION_AREA]), getSite().getLatLong());
 		qd = new QueryDescriptor("feature");
 		qd.addQueryColumn("masterfile_id", Types.NUMERIC, new Integer(mfID));
 		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getFeatureID()));
-		DBUtils.doUpdate(qd, "feature_id=?", conn);
+		DBUtils.doUpdate(qd, "feature_id = ?", conn);
 		feature = new Feature(feature.getFeatureID(), user, state, true);
 		return feature.getFeatureID();
 	}
 
 	public void revoke()
 		throws SQLException, IOException, InvalidCredentialsException {
-		if (feature == null || !feature.getAsString(Feature.STATUS).equals("waiting") || !folder.isAllowedSubmitLocalities())
+		if (feature == null || !feature.getAsString(Feature.STATUS).equals(Audit.STATUS_WAITING) || !folder.isAllowedSubmitLocalities())
 			throw new InvalidCredentialsException();
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		QueryDescriptor qd = new QueryDescriptor("audit_table");
-		qd.addQueryColumn("status", Types.VARCHAR, "working");
+		qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
 		qd.addQueryColumn("submitted_by_id", Types.NUMERIC, null);
 		qd.addQueryColumn("submitted_date", Types.DATE, null);
 		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getAsInt(Feature.AUDIT_ID)));
@@ -542,12 +543,12 @@ public abstract class LocalityDE implements DataEntryForm {
 		DBUtils.doUpdate(qd, "feature_id = ?", conn);
 		try {
 			//explicitly add to working folder
-			String query = "INSERT INTO folder_content (folder_id, feature_id) VALUES (?,?)";
+			String query = "INSERT INTO folder_content (folder_id, feature_id) VALUES (?, ?)";
 			conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(feature.getAsInt(Feature.WORKING_FOLDER_ID)), new Integer(feature.getFeatureID())});
 		} catch (Exception e) {}
 		//update audit table
 		qd = new QueryDescriptor("audit_table");
-		qd.addQueryColumn("status", Types.VARCHAR, "approved");
+		qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_APPROVED);
 		qd.addQueryColumn("approved_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
 		qd.addQueryColumn("approved_date", Types.DATE, FREDUtils.getNowForSQL());
 		qd.addQueryColumn("working_folder_id", Types.NUMERIC, null);
@@ -562,7 +563,7 @@ public abstract class LocalityDE implements DataEntryForm {
 	public void reject(String comments) throws SQLException, IOException, InvalidCredentialsException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		QueryDescriptor qd = new QueryDescriptor("audit_table");
-		qd.addQueryColumn("status", Types.VARCHAR, "rejected");
+		qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_REJECTED);
 		qd.addQueryColumn("curator_comments", Types.VARCHAR, comments);
 		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getAsInt(Feature.AUDIT_ID)));
 		DBUtils.doUpdate(qd, "audit_id = ?", conn);

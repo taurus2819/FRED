@@ -16,6 +16,7 @@ import nz.cri.gns.db.HTMLUtils;
 import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.db.QueryDescriptor;
 import nz.cri.gns.fred.FREDUtils;
+import nz.cri.gns.fred.data.Audit;
 import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.Relationship;
 import nz.cri.gns.fred.data.Sample;
@@ -41,7 +42,7 @@ public class SampleDE implements DataEntryForm {
 	private Vector collectors;
 	private String depEnv;
 
-	private boolean outcropSamp = false;
+	private boolean outcropSample = false;
 	private Vector prevSamp;
 	private Vector sampRel;
 	private Vector sedFeat;
@@ -74,9 +75,9 @@ public class SampleDE implements DataEntryForm {
 		sample = new Sample(sampleID, user, state, true);
 		
 		//check Status for editing
-		if (sample.getAsString(Sample.SAMPLE_STATUS).equals("approved")) {
+		if (sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_APPROVED)) {
 			throw new DataInputException("Sample", "Sample not editable");
-		} else if (sample.getAsString(Sample.SAMPLE_STATUS).equals("waiting")) {
+		} else if (sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_WAITING)) {
 			if (FREDUtils.hasMasterfileRights(user, String.valueOf(sample.getFeatureID()), state)) {
 				folder = new Folder(sample.getAsInt(Sample.MASTERFILE_ID), user, state);
 			} else {
@@ -212,7 +213,7 @@ public class SampleDE implements DataEntryForm {
 	}
 
 	public void setOutcropSamp(boolean outcropSamp) {
-		this.outcropSamp = outcropSamp;
+		this.outcropSample = outcropSamp;
 	}
 
 	public void setFeatureID(int featureID) {
@@ -335,14 +336,14 @@ public class SampleDE implements DataEntryForm {
 							value += ";";
 						String sampName = value.substring(0, value.indexOf(";")).trim();
 						String query = "SELECT feature_id FROM feature_view WHERE UPPER(sample_name) = ? AND feature_status = ?";
-						rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {sampName.toUpperCase(), "approved"});
+						rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {sampName.toUpperCase(), Audit.STATUS_APPROVED});
 						if (rs.next()) {
 							ps = new Relationship();
 							ps.setRelatedFeatureID(new Integer(rs.getInt(1)));
 							prevSamp.add(ps);
 						} else {
 							query = "SELECT feature_id FROM feature_view fv, folder_view fd WHERE fv.feature_working_folder_id = fd.folder_id AND fv.feature_status <> ? AND fd.user_id = ? AND fd.folder_type = ? AND UPPER(fv.sample_name) = ?";
-							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.NUMERIC, Types.VARCHAR, Types.VARCHAR}, new Object[] {"approved", new Integer(user.getPersonId()), "personal", sampName.toUpperCase()});
+							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.NUMERIC, Types.VARCHAR, Types.VARCHAR}, new Object[] {Audit.STATUS_APPROVED, new Integer(user.getPersonId()), "personal", sampName.toUpperCase()});
 							if (rs.next()) {
 								ps = new Relationship();
 								ps.setRelatedFeatureID(new Integer(rs.getInt(1)));
@@ -389,12 +390,12 @@ public class SampleDE implements DataEntryForm {
 						}
 						srDistance = srDistance.trim();
 						String query = "SELECT feature_id FROM feature_view WHERE UPPER(sample_name) = ? AND feature_status = ?";
-						rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {srFeat.toUpperCase(), "approved"});
+						rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {srFeat.toUpperCase(), Audit.STATUS_APPROVED});
 						if (rs.next()) {
 							srFeatID = new Integer(rs.getInt(1));
 						} else {
 							query = "SELECT feature_id FROM feature_view fv, folder_view fd WHERE fv.feature_working_folder_id = fd.folder_id AND fv.feature_status <> ? AND fd.user_id = ? AND fd.folder_type = ? AND UPPER(fv.sample_name) = ?";
-							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.NUMERIC, Types.VARCHAR, Types.VARCHAR}, new Object[] {"approved", new Integer(user.getPersonId()), "personal", srFeat.toUpperCase()});
+							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.NUMERIC, Types.VARCHAR, Types.VARCHAR}, new Object[] {Audit.STATUS_APPROVED, new Integer(user.getPersonId()), "personal", srFeat.toUpperCase()});
 							if (rs.next()) {
 								srFeatID = new Integer(rs.getInt(1));
 							} else {
@@ -645,7 +646,7 @@ public class SampleDE implements DataEntryForm {
 		ComboDescriptor cd;
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 
-		if (!outcropSamp) {
+		if (!outcropSample) {
 			try {
 				out.write("<tr><td class='heading'>Sample Name</td><td></td><td class='heading'>" + sample.getAsString(Sample.SAMPLE_NAME));
 				out.write("<br>" + FREDUtils.noNulls(sample.getAsString(Sample.FEATURE_NAME)) + ": " + FREDUtils.noNulls(sample.getAsString(Sample.DRILLHOLE_DEPTH)));
@@ -950,7 +951,7 @@ public class SampleDE implements DataEntryForm {
 		out.write("<tr><td class='heading' colspan='2'>Correspondence</td><td><textarea name='Corr' cols='40' rows='3'>"
 				+ FREDUtils.noNulls(getFieldForHTML(CORRESPONDENCE))
 				+ "</textarea></td></tr>\n");
-		if (!outcropSamp) {
+		if (!outcropSample) {
 			out.write("<table border='0' cellpadding='0' cellspacing='2'>\n");
 			out.write("<tr><td>&nbsp;</td></tr>\n");
 			out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
@@ -975,7 +976,7 @@ public class SampleDE implements DataEntryForm {
 					if (auditID == -1) {	//ie not an outcrop sample
 						//create new AUDIT record
 						QueryDescriptor qd = new QueryDescriptor("audit_table");
-						qd.addQueryColumn("status", Types.VARCHAR, "working");
+						qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
 						qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
 						qd.addQueryColumn("created_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
 						qd.addQueryColumn("working_comments", Types.VARCHAR, fields[WORKING_COMMENTS]);
@@ -990,19 +991,21 @@ public class SampleDE implements DataEntryForm {
 					sampleID = DBUtils.doInsertUsingSequence(qd, "sample_id", "sample_seq", conn, true);
 				} else { // edit
 					sampleID = String.valueOf(sample.getSampleID());
-					if ((!FREDUtils.hasMasterfileSampleRights(user, sampleID, state) && sample.getAsString(Sample.SAMPLE_STATUS).equals("approved")) || !folder.isAllowedEditLocalities())
+					if ((!FREDUtils.hasMasterfileSampleRights(user, sampleID, state) && sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_APPROVED)) || !folder.isAllowedEditLocalities())
 						throw new InvalidCredentialsException();
-					//Update AUDIT
-					QueryDescriptor qd = new QueryDescriptor("audit_table");
-					qd.addQueryColumn("status", Types.VARCHAR, "working");
-					qd.addQueryColumn("modified_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
-					qd.addQueryColumn("modified_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
-					qd.addQueryColumn("working_comments", Types.VARCHAR, fields[WORKING_COMMENTS]);
-					qd.addQueryColumn("security_class_id", Types.NUMERIC, ((secClassID != null) ? secClassID : new Integer(4)));
-					qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(auditID));
-					DBUtils.doUpdate(qd, "audit_id = ?", conn);
+					if (!outcropSample) {
+						//Update AUDIT
+						QueryDescriptor qd = new QueryDescriptor("audit_table");
+						qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
+						qd.addQueryColumn("modified_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
+						qd.addQueryColumn("modified_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
+						qd.addQueryColumn("working_comments", Types.VARCHAR, fields[WORKING_COMMENTS]);
+						qd.addQueryColumn("security_class_id", Types.NUMERIC, ((secClassID != null) ? secClassID : new Integer(4)));
+						qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(auditID));
+						DBUtils.doUpdate(qd, "audit_id = ?", conn);
+					}
 					//Update SAMPLE
-					qd = getSampleQD();
+					QueryDescriptor qd = getSampleQD();
 					qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(sampleID));
 					DBUtils.doUpdate(qd, "sample_id = ?", conn);
 				}
@@ -1106,9 +1109,9 @@ public class SampleDE implements DataEntryForm {
 		String knwStageID = DataEntryUtils.getStageID(getField(KNW_AGE_START), getField(KNW_START_MOD), getField(KNW_AGE_STOP), getField(KNW_STOP_MOD), state);
 		qd.addQueryColumn("known_stage_id", Types.NUMERIC, ((knwStageID != null) ? new Integer(knwStageID) : null));
 		qd.addQueryColumn("column_map", Types.VARCHAR, getField(COLUMN_MAP));
-		qd.addQueryColumn("dip", Types.NUMERIC, ((getField(DIP) != null) ? new Double(getField(DIP)) : null));
+		qd.addQueryColumn("dip", Types.NUMERIC, ((getField(DIP) != null) ? new Integer(getField(DIP)) : null));
 		qd.addQueryColumn("dip_direction", Types.VARCHAR, getField(DIP_DIRECTION));
-		qd.addQueryColumn("strike", Types.NUMERIC, ((getField(STRIKE) != null) ? new Double(getField(STRIKE)) : null));
+		qd.addQueryColumn("strike", Types.NUMERIC, ((getField(STRIKE) != null) ? new Integer(getField(STRIKE)) : null));
 		qd.addQueryColumn("facing", Types.VARCHAR, getField(FACING));
 		qd.addQueryColumn("primary_grainsize_id", Types.NUMERIC, ((getField(GRAIN_SIZE_P) != null) ? new Integer(getField(GRAIN_SIZE_P)) : null));
 		qd.addQueryColumn("secondary_grainsize_id", Types.NUMERIC, ((getField(GRAIN_SIZE_S) != null) ? new Integer(getField(GRAIN_SIZE_S)) : null));
@@ -1169,15 +1172,15 @@ public class SampleDE implements DataEntryForm {
 	}
 
 	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
-		if ((sample != null && sample.getAsString(Sample.SAMPLE_STATUS).equals("waiting")) || !folder.isAllowedSubmitLocalities())
+		if ((sample != null && sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_WAITING)) || !folder.isAllowedSubmitLocalities())
 			throw new InvalidCredentialsException();
 		if (getField(COLLECTORS) == null || getField(COLLECTION_DATE) == null || getField(FOSSILS_IN_PLACE) == null)
 			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
 		save();
-		if (!outcropSamp) {
+		if (!outcropSample) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			QueryDescriptor qd = new QueryDescriptor("audit_table");
-			qd.addQueryColumn("status", Types.VARCHAR, "approved");
+			qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_APPROVED);
 			qd.addQueryColumn("submitted_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
 			qd.addQueryColumn("submitted_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
 			qd.addQueryColumn("working_comments", Types.VARCHAR, null);

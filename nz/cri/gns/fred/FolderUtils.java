@@ -11,6 +11,7 @@ import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.QueryDescriptor;
+import nz.cri.gns.fred.data.Audit;
 import nz.cri.gns.fred.data.FRNumber;
 import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.data.Folder;
@@ -79,15 +80,15 @@ public class FolderUtils {
 
 	public static void removeLocality(String featureID, String folderID, User user, PageState state) throws IOException, SQLException, InvalidCredentialsException, FolderUtilException {
 		Feature feature = new Feature(Integer.parseInt(featureID), user, state);
-		if (!feature.getAsString(Feature.STATUS).equals("approved"))
+		if (!feature.getAsString(Feature.STATUS).equals(Audit.STATUS_APPROVED))
 			throw new FolderUtilException("Cannot remove a working locality");
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		String query = "DELETE FROM folder_content WHERE folder_id = ? AND feature_id = ?";
 		conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(folderID), new Integer(featureID)});
 	}
 
-	public static void submitLocality(String featID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
-		LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
+	public static void submitLocality(String featureID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+		LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featureID), user, state);
 		form.submit();
 	}
 	
@@ -120,7 +121,7 @@ public class FolderUtils {
 		int userID = user.getPersonId();
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		QueryDescriptor qd = new QueryDescriptor("audit_table");
-		qd.addQueryColumn("status", Types.VARCHAR, "working");
+		qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
 		qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(userID));
 		qd.addQueryColumn("created_date", Types.DATE, FREDUtils.getNowForSQL());
 		qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(folderID));
@@ -144,7 +145,7 @@ public class FolderUtils {
 				sampleAuditID = featureAuditID; 
 			} else {
 				qd = new QueryDescriptor("audit_table");
-				qd.addQueryColumn("status", Types.VARCHAR, "working");
+				qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
 				qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(userID));
 				qd.addQueryColumn("created_date", Types.DATE, FREDUtils.getNowForSQL());
 				qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(folderID));
@@ -172,7 +173,7 @@ public class FolderUtils {
 				int oldRecordID = rs2.getInt(1);
 				String recordType = rs2.getString(2);
 				qd = new QueryDescriptor("audit_table");
-				qd.addQueryColumn("status", Types.VARCHAR, "working");
+				qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
 				qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(userID));
 				qd.addQueryColumn("created_date", Types.DATE, FREDUtils.getNowForSQL());
 				qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(folderID));

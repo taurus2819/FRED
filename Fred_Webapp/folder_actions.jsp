@@ -85,7 +85,7 @@
 						featID = request.getParameter("Check" + i);
 						//check that not a working feature
 						rs = statement.executeQuery("SELECT Status FROM Sample_All_View WHERE Feature_ID = " + featID);
-						if (rs.next() && rs.getString(1).equals("approved")) {
+						if (rs.next() && rs.getString(1).equals(Audit.STATUS_APPROVED)) {
 						//insert into FOLDER_CONTENT (if not a working feature)
 							rs = statement.executeQuery("SELECT * FROM Folder_Content WHERE Folder_ID = " + request.getParameter("NewFoldID") + " AND Feature_ID = " + featID);
 							if (!rs.next()) {

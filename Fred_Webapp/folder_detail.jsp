@@ -14,7 +14,7 @@
 		if (request.getParameter("ActionType") != null) { //do something
 			String actionType = request.getParameter("ActionType");
 			String err = "";
-			try {
+			//try {
 				//Copy locality
 				if (actionType.equals("CopyFeat") && folder.isAllowedCreateLocalities()) {
 					FolderUtils.copyLocality(request.getParameter("FeatID"), request.getParameter("NewFeatName"), String.valueOf(folder.getFolderID()), user, state);
@@ -35,12 +35,12 @@
 				else if (actionType.equals("Revoke") && folder.isAllowedSubmitLocalities()) {
 					FolderUtils.revokeLocality(request.getParameter("FeatID"), user, state);
 				}
-			} catch (Exception e) {
-				err = "&ErrMsg=" + URLEncoder.encode("An Error has occured: " + e.getMessage(), "UTF-8");
-			}
+			//} catch (Exception e) {
+			//	err = "&ErrMsg=" + URLEncoder.encode("An Error has occured: " + e.getMessage(), "UTF-8");
+			//}
 			folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state, true);
-			response.sendRedirect("folder_detail.jsp?ID=" + folder.getFolderID() + err);
-			return;
+			//response.sendRedirect("folder_detail.jsp?ID=" + folder.getFolderID() + err);
+			//return;
 		}
 
 		drawTop(out, et, request, response);
@@ -98,7 +98,7 @@
 				out.println("<td class='heading'><a href='folder_feature_detail.jsp?FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "'>" + sampName + "</a>&nbsp;&nbsp;");
 				if (featName != null && !sampName.equals(featName)) { out.print("<br />(" + featName +")&nbsp;&nbsp;"); }
 				out.print("</td><td>" + featType + "&nbsp;&nbsp;</td><td style='color: #FF0000'>");
-				if (!locStatus.equals("approved")) {
+				if (!locStatus.equals(Audit.STATUS_APPROVED)) {
 					out.print(locStatus + "&nbsp;&nbsp;</td><td>");
 					if (feature.get(Feature.LAST_CHANGE) != null) { 
 						out.print(DateFormat.getDateInstance(DateFormat.LONG).format(feature.getAsDate(Feature.LAST_CHANGE)) + "&nbsp;&nbsp;");
@@ -108,21 +108,21 @@
 					out.print("</td><td></td>");
 				}
 				out.print("<td>");
-				if ((locStatus.equals("working") || locStatus.equals("rejected")) && folder.isAllowedEditLocalities())
+				if ((locStatus.equals(Audit.STATUS_WORKING) || locStatus.equals(Audit.STATUS_REJECTED)) && folder.isAllowedEditLocalities())
 					out.print("<a href='data_entry.jsp?Type=" + featType + "&FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				out.print("</td><td>");
 //				if (folder.isAllowedCreateLocalities())
 //					out.print("<a href='#' onClick='prmpt=prompt(\"Please enter the new name\", \"New " + featType + "\");if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value=\"CopyFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}'><img src='images/copy.gif' border='0' height='20' width='20' alt='Copy Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				out.print("</td><td>");
-				if ((locStatus.equals("working") || locStatus.equals("rejected")) && folder.isAllowedDeleteLocalities()) {
+				if ((locStatus.equals(Audit.STATUS_WORKING) || locStatus.equals(Audit.STATUS_REJECTED)) && folder.isAllowedDeleteLocalities()) {
 					out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this locality\") == true) {document.FoldForm.ActionType.value=\"DeleteFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}'><img src='images/delete.gif' border='0' height='20' width='20' alt='Delete Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
-				} else if (locStatus.equals("approved")) {
+				} else if (locStatus.equals(Audit.STATUS_APPROVED)) {
 					out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to remove this locality from your folder\") == true) {document.FoldForm.ActionType.value=\"RemoveFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}'><img src='images/delete.gif' border='0' height='20' width='20' alt='Remove Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				}
 				out.print("</td><td>");
-				if ((locStatus.equals("working") || locStatus.equals("rejected")) && folder.isAllowedSubmitLocalities())
+				if ((locStatus.equals(Audit.STATUS_WORKING) || locStatus.equals(Audit.STATUS_REJECTED)) && folder.isAllowedSubmitLocalities())
 					out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to submit this locality\") == true) {document.FoldForm.ActionType.value=\"Submit\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}'><img src='images/submit.gif' border='0' height='20' width='20' alt='Submit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
-				else if (locStatus.equals("waiting") && folder.isAllowedSubmitLocalities())
+				else if (locStatus.equals(Audit.STATUS_WAITING) && folder.isAllowedSubmitLocalities())
 					out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to revoke this locality\") == true) {document.FoldForm.ActionType.value=\"Revoke\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}'><img src='images/revoke.gif' border='0' height='20' width='20' alt='Revoke Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				out.println("</td></tr>");
 

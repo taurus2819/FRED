@@ -14,6 +14,7 @@ import nz.cri.gns.db.HTMLUtils;
 import nz.cri.gns.db.QueryDescriptor;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.AdoptionRecord;
+import nz.cri.gns.fred.data.Audit;
 import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.PaleontologyRecord;
 import nz.cri.gns.fred.data.Record;
@@ -68,7 +69,7 @@ public abstract class RecordDE implements DataEntryForm {
 			} catch (Exception e) {
 				setField(SECURITY_TYPE, "21");
 			}
-			if (record.getAsString(Record.STATUS).equals("approved")) {
+			if (record.getAsString(Record.STATUS).equals(Audit.STATUS_APPROVED)) {
 				if (FREDUtils.hasMasterfileRecordRights(user, String.valueOf(recID), state)) {
 					folder = new Folder(sample.getAsInt(Sample.MASTERFILE_ID), user, state);
 				} else {
@@ -228,7 +229,7 @@ public abstract class RecordDE implements DataEntryForm {
 				if (!folder.isAllowedCreateLocalities()) throw new InvalidCredentialsException();
 				//create new AUDIT record
 				QueryDescriptor qd = new QueryDescriptor("audit_table");
-				qd.addQueryColumn("status", Types.VARCHAR, "working");
+				qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
 				qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
 				qd.addQueryColumn("created_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
 				qd.addQueryColumn("working_comments", Types.VARCHAR, fields[WORKING_COMMENTS]);
@@ -244,11 +245,11 @@ public abstract class RecordDE implements DataEntryForm {
 					record = Record.getData(Integer.parseInt(recordID), user, state, true);
 				} catch (Exception e) {}
 			} else { // edit
-				if ((!FREDUtils.hasMasterfileRecordRights(user, String.valueOf(record.getRecordID()), state) && record.getAsString(Record.STATUS).equals("approved")) || !folder.isAllowedEditLocalities())
+				if ((!FREDUtils.hasMasterfileRecordRights(user, String.valueOf(record.getRecordID()), state) && record.getAsString(Record.STATUS).equals(Audit.STATUS_APPROVED)) || !folder.isAllowedEditLocalities())
 					throw new InvalidCredentialsException();
 				//Update AUDIT
 				QueryDescriptor qd = new QueryDescriptor("audit_table");
-				qd.addQueryColumn("status", Types.VARCHAR, "working");
+				qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
 				qd.addQueryColumn("modified_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
 				qd.addQueryColumn("modified_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
 				qd.addQueryColumn("working_comments", Types.VARCHAR, fields[WORKING_COMMENTS]);
@@ -275,7 +276,7 @@ public abstract class RecordDE implements DataEntryForm {
 		//change status
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		QueryDescriptor qd = new QueryDescriptor("audit_table");
-		qd.addQueryColumn("status", Types.VARCHAR, "approved");
+		qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_APPROVED);
 		qd.addQueryColumn("submitted_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
 		qd.addQueryColumn("submitted_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
 		qd.addQueryColumn("working_comments", Types.VARCHAR, null);

@@ -150,9 +150,9 @@ public class SampleData {
 			values[Sample.KNOWN_AGE_START] = ((rs.getString(91) != null) ? new Double(rs.getDouble(91))	: null);
 			values[Sample.KNOWN_AGE_STOP] = ((rs.getString(92) != null) ? new Double(rs.getDouble(92)) : null);
 			values[Sample.COLUMN_MAP] = rs.getString(93);
-			values[Sample.DIP] = ((rs.getString(94) != null) ? new Double(rs.getDouble(94)) : null);
+			values[Sample.DIP] = ((rs.getString(94) != null) ? new Integer(rs.getInt(94)) : null);
 			values[Sample.DIP_DIRECTION] = rs.getString(95);
-			values[Sample.STRIKE] = ((rs.getString(96) != null) ? new Double(rs.getDouble(96)) : null);
+			values[Sample.STRIKE] = ((rs.getString(96) != null) ? new Integer(rs.getInt(96)) : null);
 			values[Sample.FACING] = rs.getString(97);
 			values[Sample.GRAINSIZE] = rs.getString(98);
 			values[Sample.PRIMARY_GRAINSIZE_ID] = ((rs.getString(99) != null) ? new Integer(rs.getInt(99)) : null);
@@ -193,7 +193,7 @@ public class SampleData {
 			Vector wRec = new Vector();
 			while (rs.next()) {
 				rec.add(new KeyValueObject(rs.getString(1), rs.getString(2)));
-				if (!rs.getString(3).equals("approved"))
+				if (!rs.getString(3).equals(Audit.STATUS_APPROVED))
 					wRec.add(new KeyValueObject(rs.getString(1), rs.getString(2)));
 			}
 			values[Sample.RECORDS] = rec;
