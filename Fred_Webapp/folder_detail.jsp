@@ -5,7 +5,7 @@
 	PageState state = new PageState(request, response, getServletContext());
 
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 
 	drawTop(out, et, request, response);
 
@@ -36,7 +36,8 @@
 			} catch (Exception e) {
 				err = "&ErrMsg=" + URLEncoder.encode("An Error has occured", "UTF-8");
 			}
-			response.sendRedirect("folder_detail.jsp?ID=" + folder.getFolderID() + err);
+			//response.sendRedirect("folder_detail.jsp?ID=" + folder.getFolderID() + err);
+			folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state, true);
 		}
 
 		if (folder.isAllowedReadLocalities()) {
@@ -49,7 +50,7 @@
 			if (folder.isAllowedCreateLocalities()) {
 				out.println("<tr><td><a href='data_entry.jsp?Type=Outcrop&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Outcrop&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "' class='heading'>New Outcrop Locality</a></td></tr>");
 				out.println("<tr><td><a href='data_entry.jsp?Type=Drillhole&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Drillhole&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "' class='heading'>New Drillhole Locality</a></td></tr>");
-				out.println("<tr><td><a href='data_entry.jsp?Type=VertSect&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=VertSect&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "' class='heading'>New Vertical Section Locality</a></td></tr>");
+				out.println("<tr><td><a href='data_entry.jsp?Type=Vertical Section&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Vertical Section&FoldID=" + folder.getFolderID() + "&Redirect=" + redirect + "' class='heading'>New Vertical Section Locality</a></td></tr>");
 				out.println("<tr><td><a href='simple_query.jsp?FoldID=" + folder.getFolderID() + "'><img src='images/search.gif' width='20' height='20' border='0' alt='Search for a Locality' /></a>&nbsp;&nbsp;</td><td><a href='simple_query.jsp?FoldID=" + folder.getFolderID() + "' class='heading'>Search</a></td></tr>");
 			}
 			out.println("</table>");
@@ -111,7 +112,7 @@
 				}
 				out.print("</td><td>");
 				if ((locStatus.equals("working") || locStatus.equals("rejected")) && folder.isAllowedDeleteLocalities()) {
-//					out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this locality\") == true) {document.FoldForm.ActionType.value=\"DeleteFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}'><img src='images/delete.gif' border='0' height='20' width='20' alt='Delete Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
+					out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this locality\") == true) {document.FoldForm.ActionType.value=\"DeleteFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}'><img src='images/delete.gif' border='0' height='20' width='20' alt='Delete Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				}
 				out.print("</td><td>");
 				if ((locStatus.equals("working") || locStatus.equals("rejected")) && folder.isAllowedSubmitLocalities()) {

@@ -16,7 +16,7 @@
 	DataEntryForm dataEntryForm = null;
 	
 	try {
-		if (formType.equals("Outcrop") || formType.equals("Drillhole") || formType.equals("VertSect")) {
+		if (formType.equals("Outcrop") || formType.equals("Drillhole") || formType.equals("Vertical Section")) {
 			if (request.getParameter("LoadFeatID") != null) { //copying
 				if (featID == null) {
 					dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), user, Integer.parseInt(foldID), state);
