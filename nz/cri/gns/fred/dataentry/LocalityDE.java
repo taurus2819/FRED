@@ -61,6 +61,8 @@ public abstract class LocalityDE implements DataEntryForm {
 		this.user = user;
 		this.state = state;
 		feature = new Feature(id, user, state, true);
+		if (feature.getAsString(Feature.STATUS).equals("approved"))
+			throw new DataInputException("Locality", "Locality not editable");
 		int sampleID =
 			((Integer) feature.getAsVector(Feature.SAMPLES).firstElement())
 				.intValue();
@@ -536,6 +538,8 @@ public abstract class LocalityDE implements DataEntryForm {
 						.intValue();
 				sample = new Sample(sampleID, user, state, true);
 			} else { // edit
+				if (!folder.isAllowedApproveLocalities() && feature.getAsString(Feature.STATUS).equals("waiting"))
+					throw new InvalidCredentialsException();
 				if (!folder.isAllowedEditLocalities())
 					throw new InvalidCredentialsException();
 				//Update AUDIT
@@ -582,21 +586,12 @@ public abstract class LocalityDE implements DataEntryForm {
 		return feature.getFeatureID();
 	}
 
-	public int submit()
-		throws
-			SQLException,
-			IOException,
-			InvalidCredentialsException,
-			DataInputException {
-		if (!folder.isAllowedSubmitLocalities())
+	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
+		if ((feature != null && feature.getAsString(Feature.STATUS).equals("waiting")) || !folder.isAllowedSubmitLocalities())
 			throw new InvalidCredentialsException();
-		if (featureType == null
-			|| fields[GRID_REF] == null
-			|| fields[REGISTRATION_AREA] == null)
-			throw new DataInputException(
-				"Mandatory Fields",
-				"Not all completed");
-		int featureID = save();
+		if (featureType == null || fields[GRID_REF] == null || fields[REGISTRATION_AREA] == null)
+			throw new DataInputException("Mandatory Fields", "Not all completed");
+		save();
 		//change status, check MF & add saved record to folder
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		ResultSet rs =
@@ -607,7 +602,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		String regCode = rs.getString(1);
 		rs =
 			conn.executeQuery(
-				"SELECT Audit_ID FROM Feature WHERE Feature_ID = " + featureID);
+				"SELECT Audit_ID FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
 		rs.next();
 		String auditID = rs.getString(1);
 		rs =
@@ -625,35 +620,21 @@ public abstract class LocalityDE implements DataEntryForm {
 			"UPDATE Feature SET Masterfile_ID = "
 				+ mfID
 				+ " WHERE Feature_ID = "
-				+ featureID);
+				+ feature.getFeatureID());
 		conn.executeUpdate(
 			"UPDATE Audit_Table SET Status = 'waiting', Submitted_By_ID = "
 				+ user.getPersonId()
-				+ ", Submitted_Date = SYSDATE, Working_Folder_ID = NULL, Working_Comments = NULL WHERE Audit_ID = "
+				+ ", Submitted_Date = SYSDATE WHERE Audit_ID = "
 				+ auditID);
-		rs =
-			conn.executeQuery(
-				"SELECT * FROM Folder_Content_View WHERE Feature_ID = "
-					+ featureID
-					+ " AND Folder_ID = "
-					+ folder.getFolderID());
-		if (!rs.next()) {
-			conn.executeUpdate(
-				"INSERT INTO Folder_Content (Folder_ID, Feature_ID) VALUES ("
-					+ folder.getFolderID()
-					+ ", "
-					+ featureID
-					+ ")");
-		}
 		conn.releaseStatement();
-		return featureID;
+		feature = new Feature(feature.getFeatureID(), user, state, true);
+		return feature.getFeatureID();
 	}
 
 	public void revoke()
 		throws SQLException, IOException, InvalidCredentialsException {
-		if (!folder.isAllowedSubmitLocalities() && feature != null)
+		if (feature == null || !feature.getAsString(Feature.STATUS).equals("waiting") || !folder.isAllowedSubmitLocalities())
 			throw new InvalidCredentialsException();
-		save();
 		//change status, check MF & add saved record to folder
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		ResultSet rs =
@@ -663,11 +644,10 @@ public abstract class LocalityDE implements DataEntryForm {
 		rs.next();
 		String auditID = rs.getString(1);
 		conn.executeUpdate(
-			"UPDATE Audit_Table SET Status = 'revoked', Working_Folder_ID = "
-				+ folder.getFolderID()
-				+ ", Working_Comments = NULL WHERE Audit_ID = "
+			"UPDATE Audit_Table SET Status = 'working' WHERE Audit_ID = "
 				+ auditID);
 		conn.releaseStatement();
+		feature = new Feature(feature.getFeatureID(), user, state, true);
 	}
 
 	public void delete()

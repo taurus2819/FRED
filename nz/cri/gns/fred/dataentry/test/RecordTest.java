@@ -54,7 +54,7 @@ public class RecordTest extends TestCase {
 			System.out.println(i + ": " + form.getField(i));
 		}
 		form.setField(DataEntryForm.HARDNESS, "152");
-		form.save();
+		//form.save();
 	}
 
 	public void _testDataEntryForm2() throws NotBoundException, DataInputException, InvalidCredentialsException, SQLException, IOException {

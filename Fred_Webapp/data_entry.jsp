@@ -32,27 +32,29 @@
 	String sampID = request.getParameter("SampID");
 	String recID = request.getParameter("RecID");
 	Folder folder = new Folder(Integer.parseInt(foldID), user, state);
-	DataEntryForm dataEntryForm;
-		
-	if (formType.equals("Outcrop") || formType.equals("Drillhole") || formType.equals("VertSect")) {
-		if (request.getParameter("LoadFeatID") != null) { //copying
-			if (featID == null) {
-				dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), user, Integer.parseInt(foldID), state);
+	DataEntryForm dataEntryForm = null;
+	
+	try {
+		if (formType.equals("Outcrop") || formType.equals("Drillhole") || formType.equals("VertSect")) {
+			if (request.getParameter("LoadFeatID") != null) { //copying
+				if (featID == null) {
+					dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), user, Integer.parseInt(foldID), state);
+				} else {
+					dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), Integer.parseInt(featID), user, state);
+				}
+			} else if (featID != null) { //editing
+				dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
 			} else {
-				dataEntryForm = DataEntryFormFactory.copyLocalityDataEntryForm(Integer.parseInt(request.getParameter("LoadFeatID")), Integer.parseInt(featID), user, state);
+				dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(formType, user, Integer.parseInt(foldID), state);
 			}
-		} else if (featID != null) { //editing
-			dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
 		} else {
-			dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(formType, user, Integer.parseInt(foldID), state);
+			if (recID != null) { //editing
+				dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(recID), user, state);
+			} else {
+				dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(formType, user, Integer.parseInt(sampID), Integer.parseInt(foldID), state);
+			}
 		}
-	} else {
-		if (recID != null) { //editing
-			dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(recID), user, state);
-		} else {
-			dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(formType, user, Integer.parseInt(sampID), Integer.parseInt(foldID), state);
-		}
-	}
+	} catch (Exception e) {}
 
 	if (dataEntryForm != null) {
 		
@@ -88,6 +90,12 @@
 			out.println("<tr><td>");
 			out.println("<p><span class='bigheading'>Access denied</span><br />You don't have sufficient rights in this folder</p>");
 		}
+	}
+	else {
+		drawEndNavigation(out);
+		out.println("<table style='margin-left:20px; width:550px;' border='0'>");
+		out.println("<tr><td>");
+		out.println("<p><span class='bigheading'>Access denied</span><br />You don't have sufficient rights in this folder</p>");
 	}
 
 	out.println("</td></tr></table>");

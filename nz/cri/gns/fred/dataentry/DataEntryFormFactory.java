@@ -59,6 +59,10 @@ public class DataEntryFormFactory {
 		Record record = Record.getData(id, user, state);
 		if (record.getAsString(Record.RECORD_TYPE).equals("SMP")) {
 			return new SampPropRecordDE(id, user, state);
+		} else if (record.getAsString(Record.RECORD_TYPE).equals("ADO")) {
+			return new AdoptionRecordDE(id, user, state);
+		} else if (record.getAsString(Record.RECORD_TYPE).equals("PAL")) {
+			return new PaleontologyRecordDE(id, user, state);
 		} else {
 			throw new DataInputException("Feature Type", "Invalid");
 		}
@@ -67,6 +71,10 @@ public class DataEntryFormFactory {
 	public static RecordDE getRecordDataEntryForm(String type, User user, int sampleID, int folderID, PageState state) throws SQLException, IOException, DataInputException {
 		if (type.equals("SMP")) {
 			return new SampPropRecordDE(user, sampleID, folderID, state);
+		} else if (type.equals("ADO")) {
+			return new AdoptionRecordDE(user, sampleID, folderID, state);
+		} else if (type.equals("PAL")) {
+			return new PaleontologyRecordDE(user, sampleID, folderID, state);
 		} else {
 			throw new DataInputException("Feature Type", "Invalid");
 		}	

@@ -312,25 +312,17 @@ public class SampPropRecord extends Record {
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
 	public static Record getData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, InvalidCredentialsException {
-		System.out.println("Starting SampPropRecord");
 		Record rec = (SampPropRecord) pool.retrieve(new DataFinder(id));
-		System.out.println("Finished checking pool");
 		if (forceRefresh && rec != null) {
 			pool.removeMe(rec);
 			rec = null;
-			System.out.println("Finished refreshing pool");
 		}
-		if (rec == null) {
-			System.out.println("Need to create new Record");
+		if (rec == null)
 			rec = new SampPropRecord(id, state);
-			System.out.println("Finished creating new Record");
-		}
-		System.out.println("Starting to check security");
 		if (!FREDUtils.isAllowedLocality(user, rec.getAsString(FEATURE_SECURITY_CLASS_ID), rec.getAsString(FEATURE_STATUS), rec.getAsString(FEATURE_ID), state)
 				|| !FREDUtils.isAllowedRecord(user, rec.getAsString(SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(RECORD_ID), state)) {
 			throw new InvalidCredentialsException();
 		}
-		System.out.println("Finished checking security");
 		return rec;
 	}
 

@@ -43,11 +43,11 @@ public class FolderData {
 				throw new SQLException(
 					"Cannot find record in database with this id: " + this.id);
 			}
-			values[0] = new Integer(rs.getInt(1));
-			values[1] = rs.getString(2);
-			values[2] = rs.getString(3);
-			values[3] = new Integer(rs.getInt(4));
-			values[4] = rs.getString(5);
+			values[Folder.FOLDER_ID] = new Integer(rs.getInt(1));
+			values[Folder.NAME] = rs.getString(2);
+			values[Folder.FOLDER_TYPE] = rs.getString(3);
+			values[Folder.OWNER_ID] = new Integer(rs.getInt(4));
+			values[Folder.OWNER] = rs.getString(5);
 			rs.close();
 			query = "SELECT DISTINCT Feature_ID, Sample_Name FROM Folder_Content_View WHERE Folder_ID = ? ORDER BY UPPER(Sample_Name)";
 			rs = conn.executeQuery(query, types, data);
@@ -59,7 +59,7 @@ public class FolderData {
 					featIDs += rs.getString(1) + "*";
 				}
 			}
-			values[5] = feats;
+			values[Folder.FEATURES] = feats;
 			rs.close();
 			conn.releaseStatement();
 		} catch (SQLException _e) {

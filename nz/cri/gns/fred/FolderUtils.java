@@ -5,13 +5,17 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Iterator;
 
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.fred.data.Folder;
+import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.fred.dataentry.LocalityDE;
 import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
+import nz.cri.gns.fred.dataentry.RecordDE;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
@@ -39,117 +43,49 @@ public class FolderUtils {
 		conn.releaseStatement();
 	}
 	
-	public static void deleteRecord(String recID, PageState state) throws IOException, SQLException {
-		DBConnection conn = FREDUtils.getFREDConnection(state);
-		ResultSet rs = conn.executeQuery("SELECT Audit_ID FROM Record WHERE Record_ID = " + recID);
-		if (rs.next()) {
-			String auditID = rs.getString(1);
-			conn.executeUpdate("DELETE FROM Record WHERE Record_ID = " + recID);
-			conn.executeUpdate("DELETE FROM Audit_Table WHERE Audit_ID = " + auditID);
-		}
-		conn.releaseStatement();
+	public static void deleteLocality(String featID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+		LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
+		form.delete();
 	}
-
-	public static void deleteFeature(String featID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
-/*		DBConnection conn = FREDUtils.getFREDConnection(state);
-		StringBuffer auditID = new StringBuffer();
-		ResultSet rs = conn.executeQuery("SELECT Audit_ID FROM Record WHERE Sample_ID IN (SELECT Sample_ID FROM Sample WHERE Feature_ID = " + featID + ")");
-		while (rs.next()) {
-			auditID.append(rs.getString(1) + ",");
+	
+	public static void deleteSample(String sampID, User user, PageState state) throws NumberFormatException, InvalidCredentialsException, DataInputException, SQLException, IOException {
+		Sample sample = new Sample(Integer.parseInt(sampID), user, state);
+		if (sample.isUserAuthenticated() && !sample.isApprovedLocality()) {
+			DBConnection conn = FREDUtils.getFREDConnection(state);
+			if (sample.get(Sample.RECORDS) != null) {
+				for (Iterator i = sample.getAsVector(Sample.RECORDS).iterator();	i.hasNext();) {
+					KeyValueObject rec = (KeyValueObject) i.next();
+					int recID = Integer.parseInt(rec.getKey());
+					RecordDE recDE = DataEntryFormFactory.getRecordDataEntryForm(recID, user, state);
+					recDE.delete();
+				}
+			}
+			conn.executeUpdate("DELETE FROM Sample WHERE Sample_ID = " + sampID);
 		}
-		rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + featID);
-		rs.next();
-		auditID.append(rs.getString(1));
-		conn.executeUpdate("DELETE FROM Record WHERE Sample_ID IN (SELECT Sample_ID FROM Sample WHERE Feature_ID = " + featID + ")");
-		conn.executeUpdate("DELETE FROM Feature WHERE Feature_ID = " + featID);
-		conn.executeUpdate("DELETE FROM Audit_Table WHERE Audit_ID IN (" + auditID + ")");
-		conn.releaseStatement();
-	*/	LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
+	}
+	
+	public static void deleteRecord(String recID, User user, PageState state) throws NumberFormatException, DataInputException, InvalidCredentialsException, SQLException, IOException {
+		RecordDE form = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(recID), user, state);
 		form.delete();
 	}
 
-	public static void submitLocality(String featID, String foldID, User user, PageState state) throws FolderUtilException, NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
-/*		int userID = user.getPersonId();
-		DBConnection conn = FREDUtils.getFREDConnection(state);
-		ResultSet rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Site_ID IS NOT NULL AND Locality IS NOT NULL AND Feature_Type IS NOT NULL AND Feature_ID = " + featID);
-		if (rs.next()) {
-			String auditID = rs.getString(1);
-			rs = conn.executeQuery("SELECT Feature_Type FROM Feature WHERE Feature_ID = " + featID);
-			rs.next();
-			if (rs.getString(1).equals("Outcrop")) { //outcrop so also check sample property record
-				rs = conn.executeQuery("SELECT Audit_ID FROM Sample_Property_All_View WHERE Collection_Date IS NOT NULL AND Collector IS NOT NULL AND Strat_Unit IS NOT NULL AND In_Place IS NOT NULL AND Feature_ID = " + featID);
-				if (rs.next()) {
-					//OK so update sample property audit table
-					conn.executeUpdate("UPDATE Audit_Table SET Status = 'approved', Submitted_By_ID = " + userID + ", Submitted_Date = SYSDATE, Working_Folder_ID = NULL, Working_Comments = NULL WHERE Audit_ID = " + rs.getString(1));
-				} else {
-					//not OK, so return error message
-					throw new FolderUtilException("Cannot submit locality as not all mandatory fields in sample property record have been completed");
-				}
-			}
-			//Update Masterfile region
-			rs = conn.executeQuery("SELECT Which_Masterfile('NZ', S.Latitude, S.Longitude) FROM Feature F, SC.Site S WHERE F.Site_ID = S.Site_ID AND F.Feature_ID = " + featID);
-			rs.next();
-			String mfID = rs.getString(1);
-			conn.executeUpdate("UPDATE Feature SET Masterfile_ID = " + mfID + " WHERE Feature_ID = " + featID);
-			//Update AUDIT_TABLE
-			conn.executeUpdate("UPDATE Audit_Table SET Status = 'waiting', Submitted_By_ID = " + userID + ", Submitted_Date = SYSDATE, Working_Folder_ID = NULL WHERE Audit_ID = " + auditID);
-			//Check if need to add to FOLDER_CONTENT
-			rs = conn.executeQuery("SELECT * FROM Folder_Content_View WHERE Feature_ID = " + featID + " AND Folder_ID = " + foldID);
-			if (!rs.next()) {
-				conn.executeUpdate("INSERT INTO Folder_Content (Folder_ID, Feature_ID) VALUES (" + foldID + ", " + featID + ")");
-			}
-		} else {
-			throw new FolderUtilException("Cannot submit locality as not all mandatory fields have been completed");
-		}
-		conn.releaseStatement();
-	*/	LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
+	public static void submitLocality(String featID, User user, PageState state) throws FolderUtilException, NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+		LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
 		form.submit();
 	}
 	
-	public static void submitRecord(String recID, String recType, String foldID, User user, PageState state) throws IOException, SQLException, FolderUtilException {
-		int userID = user.getPersonId();
-		DBConnection conn = FREDUtils.getFREDConnection(state);
-		ResultSet rs = null;
-		//check mandatory fields
-		if (recType.equals("SMP")) {
-			rs = conn.executeQuery("SELECT Audit_ID FROM Sample_Property_All_View WHERE Collection_Date IS NOT NULL AND Collector IS NOT NULL AND Strat_Unit IS NOT NULL AND In_Place IS NOT NULL AND Record_ID = " + recID);
-		} else if (recType.equals("ADO")) {
-			rs = conn.executeQuery("SELECT Audit_ID FROM Adoption_All_View WHERE Adoptor IS NOT NULL AND Adoption_Date IS NOT NULL AND Record_ID = " + recID);
-		} else if (recType.equals("PAL")) {
-			rs = conn.executeQuery("SELECT Audit_ID FROM Paleontology_All_View WHERE Identifier IS NOT NULL AND Identification_Date IS NOT NULL AND Record_ID = " + recID);
-		}
-		if (rs.next()) {
-			//update audit table
-			conn.executeUpdate("UPDATE Audit_Table SET Status = 'approved', Submitted_By_ID = " + userID + ", Submitted_Date = SYSDATE, Working_Folder_ID = NULL, Working_Comments = NULL WHERE Audit_ID = " + rs.getString(1));
-			//add feature to FOLDER_CONTENT if not already there (as no longer listed as a working record
-			rs = conn.executeQuery("SELECT S.Feature_ID FROM Sample S, Record R WHERE S.Sample_ID = R.Sample_ID AND R.Record_ID = " + recID);
-			rs.next();
-			String featID = rs.getString(1);
-			rs = conn.executeQuery("SELECT * FROM Folder_Content WHERE Folder_ID = " + foldID + " AND Feature_ID = " + featID);
-			if (!rs.next()) {
-				conn.executeUpdate("INSERT INTO Folder_Content (Folder_ID, Feature_ID) VALUES (" + foldID + ", " + featID + ")");
-			}
-		} else {
-			throw new FolderUtilException("Cannot submit record as not all mandatory fields have been completed");
-		}
-		conn.releaseStatement();
+	public static void submitRecord(String recID, String recType, String foldID, User user, PageState state) throws FolderUtilException, NumberFormatException, DataInputException, InvalidCredentialsException, SQLException, IOException {
+		RecordDE form = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(recID), user, state);
+		form.submit();
 	}
 	
 	public static void revokeLocality(String featID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
-/*		DBConnection conn = FREDUtils.getFREDConnection(state);
-		conn.executeUpdate("UPDATE Audit_Table SET Status = 'working', Working_Folder_ID = " + foldID + " WHERE Audit_ID IN (SELECT Audit_ID FROM Feature WHERE Feature_ID = " + featID + ")");
-		//decide whether drillhole or outcrop
-		ResultSet rs = conn.executeQuery("SELECT Feature_Type FROM Feature WHERE Feature_ID = " + featID);
-		rs.next();
-		if (rs.getString(1).equals("Outcrop")) { //outcrop so also revoke sample property record
-			conn.executeUpdate("UPDATE Audit_Table SET Status = 'working', Working_Folder_ID = " + foldID + " WHERE Audit_ID IN (SELECT DISTINCT Audit_ID FROM Sample_Property_All_View WHERE Feature_ID = " + featID + ")");
-		}
-		conn.releaseStatement();
-	*/	LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
+		LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
 		form.revoke();	
 	}
 	
 	public static void copyLocality(String oldFeatID, String newFeatName, String foldID, User user, PageState state) throws IOException, SQLException {
+		//TODO fix statements - statement2 and 3 are not seperate
 		int userID = user.getPersonId();
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		Statement statement2 = conn.getExtraStatement();
@@ -159,7 +95,7 @@ public class FolderUtils {
 		ResultSet rs = conn.executeQuery("SELECT Audit_Seq.NEXTVAL FROM DUAL");
 		rs.next();
 		String auditID = rs.getString(1);
-		conn.executeUpdate("INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Folder_ID) VALUES (" + auditID + ", 'working', " + userID + ", SYSDATE, " + foldID + ")");
+		conn.executeUpdate("INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Folder_ID, Security_Class_ID) VALUES (" + auditID + ", 'working', " + userID + ", SYSDATE, " + foldID + ", 4)");
 		rs = conn.executeQuery("SELECT Feature_Seq.NEXTVAL FROM DUAL");
 		rs.next();
 		String featID = rs.getString(1);
@@ -177,7 +113,7 @@ public class FolderUtils {
 				rs3 = statement3.executeQuery("SELECT Audit_Seq.NEXTVAL FROM DUAL");
 				rs3.next();
 				auditID = rs3.getString(1);
-				statement3.executeUpdate("INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Folder_ID) VALUES (" + auditID + ", 'working', " + userID + ", SYSDATE, " + foldID + ")");
+				statement3.executeUpdate("INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Folder_ID, Security_Class_ID) VALUES (" + auditID + ", 'working', " + userID + ", SYSDATE, " + foldID + ", 4)");
 				rs3 = statement3.executeQuery("SELECT Record_Seq.NEXTVAL FROM DUAL");
 				rs3.next();
 				recID = rs3.getString(1);

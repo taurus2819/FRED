@@ -193,7 +193,7 @@ public class Feature {
 
 	public int addNewSample(String topDepth, String bottomDepth, String drillTypeID) throws SQLException, IOException, DataInputException {
 		int sampID;
-		if (!FREDUtils.isNumeric(topDepth) || !FREDUtils.isNumeric(bottomDepth) || !FREDUtils.isNumeric(drillTypeID)) {
+		if (!FREDUtils.isNumeric(topDepth) || (bottomDepth != null && !FREDUtils.isNumeric(bottomDepth)) || (drillTypeID != null && !FREDUtils.isNumeric(drillTypeID))) {
 			throw new DataInputException();
 		}
 		DBConnection conn = FREDUtils.getFREDConnection(state);

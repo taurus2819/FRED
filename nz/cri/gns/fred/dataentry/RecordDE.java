@@ -46,6 +46,9 @@ public abstract class RecordDE implements DataEntryForm {
 		this.user = user;
 		this.state = state;
 		this.record = Record.getData(recID, user, state);
+		if (record.getAsString(Record.STATUS).equals("approved"))
+			throw new DataInputException("Record", "Record not editable");
+
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		ResultSet rs = conn.executeQuery("SELECT Sample_ID FROM Record WHERE Record_ID = " + recID);
 		rs.next();
@@ -181,7 +184,6 @@ public abstract class RecordDE implements DataEntryForm {
 			ResultSet rs;
 			if (record == null) {
 				if (!folder.isAllowedCreateLocalities()) throw new InvalidCredentialsException();
-				
 				//create new AUDIT and RECORD records
 				rs = conn.executeQuery("SELECT Audit_Seq.NEXTVAL FROM DUAL");
 				rs.next();
@@ -213,7 +215,7 @@ public abstract class RecordDE implements DataEntryForm {
 					record = Record.getData(recordID, user, state, true);
 				} catch (Exception e) {}
 			} else { // edit
-				if (!folder.isAllowedEditLocalities())
+				if (record.getAsString(Record.STATUS).equals("approved") || !folder.isAllowedEditLocalities())
 					throw new InvalidCredentialsException();
 				//Update AUDIT
 				conn.executeUpdate(
@@ -269,7 +271,13 @@ public abstract class RecordDE implements DataEntryForm {
 	public void delete() throws IOException, SQLException, InvalidCredentialsException {
 		if (record != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
-			conn.executeUpdate("DELETE FROM Record WHERE Record_ID = " + record.getRecordID());
+			ResultSet rs = conn.executeQuery("SELECT Audit_ID FROM Record WHERE Record_ID = " + record.getRecordID());
+			if (rs.next()) {
+				String auditID = rs.getString(1);
+				conn.executeUpdate("DELETE FROM Record WHERE Record_ID = " + record.getRecordID());
+				conn.executeUpdate("DELETE FROM Audit_Table WHERE Audit_ID = " + auditID);
+			}
+			conn.releaseStatement();
 		}
 	}
 	

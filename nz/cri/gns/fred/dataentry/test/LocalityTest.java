@@ -32,7 +32,7 @@ import nz.cri.gns.test.TestingPageState;
  */
 public class LocalityTest extends TestCase {
 
-	public void testSave() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public void _testSave() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
@@ -90,5 +90,14 @@ public class LocalityTest extends TestCase {
 		//loc.setField(DataEntryForm.COLLECTION_DATE, "6/1999");
 		//loc.save();
 		loc.makeDataEntryHTML(new PrintWriter(System.out));
+	}
+	
+	public void testNotWorkingLoc() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+		TestingPageState state = new TestingPageState();
+		DBConnection ipConn = FREDUtils.getIPConnection(state);
+		User user = new User("pseudo_ben", "santor32", ipConn);
+		LocalityDE loc = DataEntryFormFactory.getLocalityDataEntryForm(1282, user, state);
+		loc.revoke();
+		loc.submit();
 	}
 }

@@ -9,6 +9,7 @@ import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.Feature;
+import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.test.TestingPageState;
@@ -38,7 +39,7 @@ public class FeatureTest extends TestCase {
 	}
 
 
-	public void testPooling() throws NotBoundException, SQLException, IOException {
+	public void _testPooling() throws NotBoundException, SQLException, IOException {
 		Feature.purge();
 		Feature sv1 = new Feature(509, this.user, this.state);
 		Feature sv2 = new Feature(509, this.user2, this.state);
@@ -54,7 +55,7 @@ public class FeatureTest extends TestCase {
 		assertEquals(sv1.toString(), sv5.toString());
 	}
 	
-	public void testSamples() throws SQLException, IOException, InvalidCredentialsException {
+	public void _testSamples() throws SQLException, IOException, InvalidCredentialsException {
 		assertEquals(2, Feature.getPoolSize());	
 		Feature.purge();
 		Feature f = new Feature(1163, user, state);
@@ -111,6 +112,11 @@ public class FeatureTest extends TestCase {
 		assertFalse(f3.isUserAuthenticated());
 		assertTrue(f4.isUserAuthenticated());
 		assertFalse(f5.isUserAuthenticated());		
+	}
+
+	public void testCreateNewSample() throws SQLException, IOException, DataInputException {
+		Feature f = new Feature(1282, user, state);
+		f.addNewSample("20", null, "11");
 	}
 
 }

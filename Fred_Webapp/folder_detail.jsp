@@ -29,14 +29,35 @@
 	drawTop(out, et, request, response);
 
 	if (request.getParameter("ID") != null) {
-		String foldID = request.getParameter("ID");
-
-		//print error message (if any) from folder_actions
-		if (request.getParameter("ErrMsg") != null) {
-			out.println(request.getParameter("ErrMsg"));
+		Folder folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state, true);
+		
+		if (request.getParameter("ActionType") != null) { //do something
+			String actionType = request.getParameter("ActionType");
+			//try {
+				//Copy locality
+				if (actionType.equals("CopyFeat") && folder.isAllowedCreateLocalities()) {
+					FolderUtils.copyLocality(request.getParameter("FeatID"), request.getParameter("NewFeatName"), String.valueOf(folder.getFolderID()), user, state);
+				}
+				 //Delete feature
+				else if (actionType.equals("DeleteFeat") && folder.isAllowedDeleteLocalities()) {
+					FolderUtils.deleteLocality(request.getParameter("FeatID"), user, state);
+				}
+				// submit working locality
+				else if (actionType.equals("Submit") && folder.isAllowedSubmitLocalities()) {
+					FolderUtils.submitLocality(request.getParameter("FeatID"), user, state);
+				}
+				//Revoke waiting records
+				else if (actionType.equals("Revoke") && folder.isAllowedSubmitLocalities()) {
+					FolderUtils.revokeLocality(request.getParameter("FeatID"), user, state);
+				}
+			//} catch (Exception e) {}
+			//response.sendRedirect("folder_detail.jsp?ID=" + folder.getFolderID());
 		}
 
-		Folder folder = new Folder(Integer.parseInt(foldID), user, state, true);
+//		//print error message (if any) from folder_actions
+//		if (request.getParameter("ErrMsg") != null) {
+//			out.println(request.getParameter("ErrMsg"));
+//		}
 
 		if (folder.isAllowedReadLocalities()) {
 			
@@ -46,10 +67,10 @@
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 			out.println("<tr><td><a href='folder_list.jsp' title='Back to Folders'><img src='images/back_arrow.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_list.jsp' class='heading'>Back to Folders</a></td></tr>");
 			if (folder.isAllowedCreateLocalities()) {
-				out.println("<tr><td><a href='data_entry.jsp?Type=Outcrop&FoldID=" + foldID + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Outcrop&FoldID=" + foldID + "' class='heading'>New Outcrop Locality</a></td></tr>");
-				out.println("<tr><td><a href='data_entry.jsp?Type=Drillhole&FoldID=" + foldID + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Drillhole&FoldID=" + foldID + "' class='heading'>New Drillhole Locality</a></td></tr>");
-				out.println("<tr><td><a href='data_entry.jsp?Type=VertSect&FoldID=" + foldID + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=VertSect&FoldID=" + foldID + "' class='heading'>New Vertical Section Locality</a></td></tr>");
-				out.println("<tr><td><a href='simple_query.jsp?FoldID=" + foldID + "'><img src='images/search.gif' width='20' height='20' border='0' alt='Search for a Locality' /></a>&nbsp;&nbsp;</td><td><a href='simple_query.jsp?FoldID=" + foldID + "' class='heading'>Search</a></td></tr>");
+				out.println("<tr><td><a href='data_entry.jsp?Type=Outcrop&FoldID=" + folder.getFolderID() + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Outcrop&FoldID=" + folder.getFolderID() + "' class='heading'>New Outcrop Locality</a></td></tr>");
+				out.println("<tr><td><a href='data_entry.jsp?Type=Drillhole&FoldID=" + folder.getFolderID() + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=Drillhole&FoldID=" + folder.getFolderID() + "' class='heading'>New Drillhole Locality</a></td></tr>");
+				out.println("<tr><td><a href='data_entry.jsp?Type=VertSect&FoldID=" + folder.getFolderID() + "'><img src='images/new.gif' width='20' height='20' border='0' alt='Add New Locality' /></a>&nbsp;&nbsp;</td><td><a href='data_entry.jsp?Type=VertSect&FoldID=" + folder.getFolderID() + "' class='heading'>New Vertical Section Locality</a></td></tr>");
+				out.println("<tr><td><a href='simple_query.jsp?FoldID=" + folder.getFolderID() + "'><img src='images/search.gif' width='20' height='20' border='0' alt='Search for a Locality' /></a>&nbsp;&nbsp;</td><td><a href='simple_query.jsp?FoldID=" + folder.getFolderID() + "' class='heading'>Search</a></td></tr>");
 			}
 			out.println("</table>");
 
@@ -63,13 +84,13 @@
 			out.println("Click on the locality to add/edit locality records</p>");
 
 			//Table header
-			out.println("<p><table border='1' cellspacing='0' cellpadding='1' width='550'>");
+			out.println("<p><table border='0' cellspacing='0' cellpadding='1' width='550'>");
 			out.print("<tr>");
 			//out.print("<td></td>");
 			out.print("<th>Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Last Change&nbsp;&nbsp;</th><th colspan='5'>Options</th></tr>");
 			out.println("<tr><td colspan='9'><img src='images/line.gif' height='3' width='550' /></td></tr>");
 
-			out.println("<form name='FoldForm' method='get' action='folder_actions.jsp'>");
+			out.println("<form name='FoldForm' method='put' action='folder_detail.jsp'>");
 
 			Feature feature;
 			for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
@@ -81,7 +102,7 @@
 				String featName = feature.getAsString(Feature.FEATURE_NAME);
 				String locStatus = feature.getAsString(Feature.STATUS);
 				
-				out.print("<tr><td class='heading'><a href='folder_feature_detail.jsp?FoldID=" + foldID + "&FeatID=" + featID + "'>" + sampName + "</a>&nbsp;&nbsp;");
+				out.print("<tr><td class='heading'><a href='folder_feature_detail.jsp?FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "'>" + sampName + "</a>&nbsp;&nbsp;");
 				if (featName != null && !sampName.equals(featName)) { out.print("<br />(" + featName +")&nbsp;&nbsp;"); }
 				out.print("</td><td>" + featType + "&nbsp;&nbsp;</td><td style='color: #FF0000'>");
 				if (!locStatus.equals("approved")) {
@@ -96,16 +117,16 @@
 				out.print("<td><a href='detail.jsp?FeatID=" + featID + "'><img src='images/loc.gif' border='0' height='20' width='20' alt='View Locality' /></a><img src='images/blank.gif' height='20' width='2' /></td>");
 				out.print("<td>");
 				if ((locStatus.equals("working") || locStatus.equals("rejected")) && folder.isAllowedEditLocalities()) {
-					out.print("<a href='data_entry.jsp?Type=" + featType + "&FoldID=" + foldID + "&FeatID=" + featID + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
+					out.print("<a href='data_entry.jsp?Type=" + featType + "&FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				}
 				out.print("</td><td>");
 				if (folder.isAllowedCreateLocalities()) {
 					if (featType.equals("Vertical Section")) featType = "VertSect";
-					out.print("<a href='#' onClick='prmpt=prompt(\"Please enter the new name\", \"New " + featType + "\");if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value=\"CopyFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}'><img src='images/copy.gif' border='0' height='20' width='20' alt='Copy Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
+//					out.print("<a href='#' onClick='prmpt=prompt(\"Please enter the new name\", \"New " + featType + "\");if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value=\"CopyFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}'><img src='images/copy.gif' border='0' height='20' width='20' alt='Copy Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				}
 				out.print("</td><td>");
 				if ((locStatus.equals("working") || locStatus.equals("rejected")) && folder.isAllowedDeleteLocalities()) {
-					out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this locality\") == true) {document.FoldForm.ActionType.value=\"DeleteFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}'><img src='images/delete.gif' border='0' height='20' width='20' alt='Delete Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
+//					out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this locality\") == true) {document.FoldForm.ActionType.value=\"DeleteFeat\";document.FoldForm.FeatID.value=\"" + featID + "\";document.FoldForm.submit();}'><img src='images/delete.gif' border='0' height='20' width='20' alt='Delete Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 				}
 				out.print("</td><td>");
 				if ((locStatus.equals("working") || locStatus.equals("rejected")) && folder.isAllowedSubmitLocalities()) {
@@ -119,11 +140,9 @@
 				out.println("<tr><td colspan='9'><img src='images/line.gif' height='3' width='550' /></td></tr>");
 			}
 			out.println("<input type='hidden' name='ActionType' value=''>");
-			out.println("<input type='hidden' name='ID' value='" + foldID + "'>");
+			out.println("<input type='hidden' name='ID' value='" + folder.getFolderID() + "'>");
 			out.println("<input type='hidden' name='FeatID' value=''>");
 			out.println("<input type='hidden' name='NewFoldID' value=''>");
-			out.println("<input type='hidden' name='RecID' value=''>");
-			out.println("<input type='hidden' name='RecType' value=''>");
 			out.println("<input type='hidden' name='NewFeatName' value=''>");
 
 			out.println("</table></p>");
