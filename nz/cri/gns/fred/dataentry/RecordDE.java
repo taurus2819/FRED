@@ -8,15 +8,15 @@ import java.sql.SQLException;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
+import nz.cri.gns.fred.data.AccessDeniedException;
 import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.Record;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
+import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 public abstract class RecordDE implements DataEntryForm {
-
-	public static final int WORKING_COMMENTS = 0;
 
 	protected Sample sample;
 	protected User user;
@@ -24,7 +24,8 @@ public abstract class RecordDE implements DataEntryForm {
 	protected Folder folder;
 	protected Record record;
 	protected String recordType;
-	protected String[] fields = new String[50];
+	private Integer secClassID;
+	protected String[] fields = new String[100];
 	protected boolean savedFlag = false;
 
 	public RecordDE(User user, int folderID, String recordType, PageState state) throws DataInputException, SQLException, IOException {
@@ -42,13 +43,20 @@ public abstract class RecordDE implements DataEntryForm {
 			this.sample = new Sample(sampleID, user, state);
 	}
 
-	public RecordDE(int recID, User user, PageState state) throws SQLException, IOException, InvalidCredentialsException {
+	public RecordDE(int recID, User user, PageState state) throws InvalidCredentialsException, DataInputException, SQLException, IOException, AccessDeniedException {
 		this.user = user;
 		this.state = state;
+		this.record = Record.getData(recID, user, state);
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		ResultSet rs = conn.executeQuery("SELECT Sample_ID FROM Record WHERE Record_ID = " + recID);
 		rs.next();
 		this.sample = new Sample(rs.getInt(1), user, state);
+		setField(WORKING_COMMENTS, record.getAsString(Record.WORKING_COMMENTS));
+		try {
+			setField(SECURITY_TYPE, String.valueOf(FREDUtils.getSecurityType(record.getAsInt(Record.SECURITY_CLASS_ID), user, state)));
+		} catch (Exception e) {
+			setField(SECURITY_TYPE, "21");
+		}
 	}
 
 	public int getFieldCount() {
@@ -70,9 +78,38 @@ public abstract class RecordDE implements DataEntryForm {
 
 	public void setSample(Sample sample) {
 		this.sample = sample;
+		savedFlag = false;
 	}
 
 	protected void parseField(int field, String value) throws DataInputException {
+		switch (field) {
+			case SECURITY_TYPE :
+				try {
+					secClassID = new Integer(FREDUtils.getSecurityClass(Integer.parseInt(value), user, state));
+				} catch (Exception e) {
+					throw new DataInputException("Security Class", "Invalid");
+				}
+				break;
+		}
+	}
+
+	protected void parseAge(String stageStart, String stageStop, String fieldName) throws DataInputException {
+		try {
+			DBConnection conn = FREDUtils.getFREDConnection(state);
+			ResultSet rs = conn.executeQuery("SELECT Ta_Age_Start, Ta_Age_Stop FROM Age_View WHERE Ag_ID = " + stageStart);
+			rs.next();
+			double startStart = rs.getDouble(1);
+			double startStop = rs.getDouble(2);
+			if (stageStop != null) {
+				rs = conn.executeQuery("SELECT Ta_Age_Start, Ta_Age_Stop FROM Age_View WHERE Ag_ID = " + stageStop);
+				rs.next();
+				double stopStart = rs.getDouble(1);
+				double stopStop = rs.getDouble(2);
+				if (startStart < stopStart || startStop < stopStop) throw new DataInputException(fieldName, "Stop age younger than start age");
+			}
+		} catch (Exception e) {
+			throw new DataInputException(fieldName, "Invalid");
+		}
 	}
 
 	public void makeNavPanelHTML(Writer out) throws IOException {
@@ -132,12 +169,69 @@ public abstract class RecordDE implements DataEntryForm {
 		out.write("</table>\n");
 	}
 
-	/* (non-Javadoc)
-	 * @see nz.cri.gns.fred.dataentry.DataEntryForm#save()
-	 */
-	public int save() throws SQLException, IOException, InvalidCredentialsException {
-		// TODO Auto-generated method stub
-		return 0;
+	public int save() throws InvalidCredentialsException, SQLException, IOException {
+		if (!savedFlag) {
+			DBConnection conn = FREDUtils.getFREDConnection(state);
+			ResultSet rs;
+			if (record == null) {
+				if (!folder.isAllowedCreateLocalities())
+					throw new InvalidCredentialsException();
+				//create new AUDIT and RECORD records
+				rs = conn.executeQuery("SELECT Audit_Seq.NEXTVAL FROM DUAL");
+				rs.next();
+				String auditID = rs.getString(1);
+				conn.executeUpdate(
+					"INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Comments, Working_Folder_ID, Security_Class_ID) VALUES ("
+						+ auditID
+						+ ", 'working', "
+						+ user.getPersonId()
+						+ ", SYSDATE, "
+						+ JspUtils.sqlEscape(fields[WORKING_COMMENTS])
+						+ ", "
+						+ folder.getFolderID()
+						+ ", " 
+						+ secClassID.toString()
+						+ ")");
+				rs = conn.executeQuery("SELECT Record_Seq.NEXTVAL FROM DUAL");
+				rs.next();
+				int recordID = rs.getInt(1);
+				conn.executeUpdate(
+					"INSERT INTO Record (Record_ID, Sample_ID, Audit_ID) VALUES ("
+						+ recordID
+						+ ", "
+						+ sample.getSampleID()
+						+ ", "
+						+ auditID
+						+ ")");
+				try {
+					record = Record.getData(recordID, user, state, true);
+				} catch (Exception e) {}
+			} else { // edit
+				if (!folder.isAllowedEditLocalities())
+					throw new InvalidCredentialsException();
+				//Update AUDIT
+				conn.executeUpdate(
+					"UPDATE Audit_Table SET Modified_By_ID = "
+						+ user.getPersonId()
+						+ ", Modified_Date = SYSDATE, Working_Comments = "
+						+ JspUtils.sqlEscape(fields[WORKING_COMMENTS])
+						+ ", Security_Class_ID = "
+						+ secClassID.toString()
+						+ " WHERE Audit_ID = "
+						+ record.getAsString(Record.AUDIT_ID));
+				conn.executeUpdate(
+					"UPDATE Record SET Sample_ID = "
+						+ sample.getSampleID()
+						+ " WHERE Record_ID = "
+						+ record.getRecordID());
+				try {
+					record = Record.getData(record.getRecordID(), user, state, true);
+				} catch (Exception e) {}
+			}
+			conn.releaseStatement();
+		}
+		savedFlag = true;
+		return record.getRecordID();
 	}
 
 	/* (non-Javadoc)

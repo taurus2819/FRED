@@ -56,33 +56,39 @@
 				} else {
 					dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(featType, user, Integer.parseInt(foldID), state);
 				}
-				dataEntryForm.setField(Locality.FEATURE_NAME, request.getParameter("FeatName"));
-				dataEntryForm.setField(Locality.REGISTRATION_AREA, request.getParameter("RegAreaID"));
-				dataEntryForm.setField(Locality.WORKING_COMMENTS, request.getParameter("WorkComm"));
-				dataEntryForm.setField(Locality.GRID_REF, request.getParameter("GridRef"));
-				dataEntryForm.setField(Locality.METHOD, request.getParameter("LocMethodID"));
-				dataEntryForm.setField(Locality.ACCURACY, request.getParameter("Accuracy"));
-				dataEntryForm.setField(Locality.LOCALITY_DESC, request.getParameter("Loc"));
-				dataEntryForm.setField(Locality.RECOLLECTION, request.getParameter("Recoll"));
-				if (!featType.equals("Outcrop")) {
-					dataEntryForm.setField(Locality.OPERATING_COMPANY, request.getParameter("Person"));
-					dataEntryForm.setField(Locality.START_DATE, request.getParameter("StartDate"));
-					dataEntryForm.setField(Locality.COMPLETION_DATE, request.getParameter("FinishDate"));
-					if (featType.equals("Drillhole")) dataEntryForm.setField(Locality.LICENCE_AREA, request.getParameter("LicArea"));
-					dataEntryForm.setField(Locality.DATUM_TYPE, request.getParameter("DatumType"));
-					dataEntryForm.setField(Locality.DATUM_ELEVATION, request.getParameter("DatumEl"));
-					dataEntryForm.setField(Locality.KICK_OFF_DEPTH, request.getParameter("StartDepth"));
-					dataEntryForm.setField(Locality.TERMINATION_DEPTH, request.getParameter("FinishDepth"));
-				}
-				
-				if (saveType.equals("Submit")) {
-					dataEntryForm.submit();
+			} else {
+				if (featID != null) {
+					dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(featID), user, state);
 				} else {
-					dataEntryForm.save();
+					dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(featType, user, 1, Integer.parseInt(foldID), state);
 				}
 			}
 
+			dataEntryForm.setField(DataEntryForm.FEATURE_NAME, request.getParameter("FeatName"));
+			dataEntryForm.setField(DataEntryForm.REGISTRATION_AREA, request.getParameter("RegAreaID"));
+			dataEntryForm.setField(DataEntryForm.WORKING_COMMENTS, request.getParameter("WorkComm"));
+			dataEntryForm.setField(DataEntryForm.SECURITY_TYPE, request.getParameter("SecType"));
+			dataEntryForm.setField(DataEntryForm.GRID_REF, request.getParameter("GridRef"));
+			dataEntryForm.setField(DataEntryForm.METHOD, request.getParameter("LocMethodID"));
+			dataEntryForm.setField(DataEntryForm.ACCURACY, request.getParameter("Accuracy"));
+			dataEntryForm.setField(DataEntryForm.LOCALITY_DESC, request.getParameter("Loc"));
+			dataEntryForm.setField(DataEntryForm.RECOLLECTION, request.getParameter("Recoll"));
+			dataEntryForm.setField(DataEntryForm.OPERATING_COMPANY, request.getParameter("Person"));
+			dataEntryForm.setField(DataEntryForm.START_DATE, request.getParameter("StartDate"));
+			dataEntryForm.setField(DataEntryForm.COMPLETION_DATE, request.getParameter("FinishDate"));
+			dataEntryForm.setField(DataEntryForm.LICENCE_AREA, request.getParameter("LicArea"));
+			dataEntryForm.setField(DataEntryForm.DATUM_TYPE, request.getParameter("DatumType"));
+			dataEntryForm.setField(DataEntryForm.DATUM_ELEVATION, request.getParameter("DatumEl"));
+			dataEntryForm.setField(DataEntryForm.KICK_OFF_DEPTH, request.getParameter("StartDepth"));
+			dataEntryForm.setField(DataEntryForm.TERMINATION_DEPTH, request.getParameter("FinishDepth"));
+			
+			dataEntryForm.setField(DataEntryForm.COLLECTION_DATE, request.getParameter("CollDate"));
 
+			if (saveType.equals("Submit")) {
+				dataEntryForm.submit();
+			} else {
+				dataEntryForm.save();
+			}
 
 			response.sendRedirect("folder_detail.jsp?ID=" + foldID);
 

@@ -1,4 +1,4 @@
-package nz.cri.gns.fred;
+package nz.cri.gns.fred.dataentry;
 
 public class RoundedDate {
 

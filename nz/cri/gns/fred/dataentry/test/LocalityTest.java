@@ -8,18 +8,20 @@ package nz.cri.gns.fred.dataentry.test;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 
 import junit.framework.TestCase;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.dataentry.DataEntryForm;
+import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
 import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.fred.dataentry.LocalityDE;
-import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.test.TestingPageState;
 
 /**
@@ -30,14 +32,9 @@ import nz.cri.gns.test.TestingPageState;
  */
 public class LocalityTest extends TestCase {
 
-	public static void _testSave() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public void _testSave() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
-		DBConnection ipConn =
-			JspUtils.createDatabaseConnection(
-				state.getSession(),
-				"nz.cri.gns.db.fred.test.ipConn",
-				"ip",
-				state.getContext());
+		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
 		DataEntryForm loc2 = DataEntryFormFactory.getLocalityDataEntryForm(661, user, state);
 		loc2.setField(LocalityDE.SPUD_DATE, "4/2003");
@@ -49,22 +46,17 @@ public class LocalityTest extends TestCase {
 		loc2.save();
 	}
 	
-	public static void testCopy() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public void testCopy() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
-		DBConnection ipConn =
-			JspUtils.createDatabaseConnection(
-				state.getSession(),
-				"nz.cri.gns.db.fred.test.ipConn",
-				"ip",
-				state.getContext());
+		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
-		LocalityDE loc = DataEntryFormFactory.getLocalityDataEntryForm(1282, user, state);
+		LocalityDE loc = DataEntryFormFactory.getLocalityDataEntryForm(808, user, state);
 		//loc.setField(Locality.GRID_REF, "TruncNZMG:D39*1300*2100");
 		for (int i = 0; i < loc.getFieldCount(); i++) {
 			System.out.println(i + ": " + loc.getField(i));
 		}
-		System.out.println(loc.save());
-		loc.makeDataEntryHTML(new PrintWriter(System.out));
+		//System.out.println(loc.save());
+		//loc.makeDataEntryHTML(new PrintWriter(System.out));
 		//Locality loc2 = LocalityFactory.copyLocality(661, 1282, user, state);
 		//for (int i = 0; i < loc2.getFieldCount(); i++) {
 		//	System.out.println(i + ": " + loc2.getField(i));
@@ -72,4 +64,25 @@ public class LocalityTest extends TestCase {
 		//System.out.println(loc2.save());
 	}
 
+	public void _testSecType() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+		TestingPageState state = new TestingPageState();
+		DBConnection ipConn = FREDUtils.getIPConnection(state);
+		User user = new User("pseudo_ben", "santor32", ipConn);
+		LocalityDE loc = DataEntryFormFactory.getLocalityDataEntryForm(1264, user, state);
+		System.out.println(loc.getField(LocalityDE.SECURITY_TYPE));
+		loc.setField(LocalityDE.SECURITY_TYPE, "23");
+		loc.save();
+		System.out.println(loc.getField(LocalityDE.SECURITY_TYPE));
+	} 
+	
+	public void _testOutcrop() throws IOException, SQLException, DataInputException, InvalidCredentialsException, MalformedURLException, RemoteException, NotBoundException {
+		TestingPageState state = new TestingPageState();
+		DBConnection ipConn = FREDUtils.getIPConnection(state);
+		User user = new User("pseudo_ben", "santor32", ipConn);
+		LocalityDE loc = DataEntryFormFactory.getLocalityDataEntryForm(1264, user, state);
+		System.out.println(loc.getField(DataEntryForm.COLLECTION_DATE));
+		//loc.setField(DataEntryForm.COLLECTION_DATE, "6/1999");
+		//loc.save();
+		loc.makeDataEntryHTML(new PrintWriter(System.out));
+	}
 }

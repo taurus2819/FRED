@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
-import nz.cri.gns.fred.RoundedDate;
 import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
@@ -29,8 +28,8 @@ public class VertSectLocalityDE extends LocalityDE {
 		super(id, user, state);
 		if (!featureType.equals("VertSect")) throw new DataInputException("Feature Type", "Invalid");
 		setField(SECTION_COLLECTOR, sample.getAsString(Sample.PERSON));
-		setField(START_DATE, FREDUtils.reverseParseDate(sample.getAsDate(Sample.START_DATE), sample.getAsString(Sample.START_DATE_ROUNDING)));
-		setField(COMPLETION_DATE, FREDUtils.reverseParseDate(sample.getAsDate(Sample.FINISH_DATE), sample.getAsString(Sample.FINISH_DATE_ROUNDING)));
+		setField(START_DATE, DataEntryUtils.reverseParseDate(sample.getAsDate(Sample.START_DATE), sample.getAsString(Sample.START_DATE_ROUNDING)));
+		setField(COMPLETION_DATE, DataEntryUtils.reverseParseDate(sample.getAsDate(Sample.FINISH_DATE), sample.getAsString(Sample.FINISH_DATE_ROUNDING)));
 		setField(DATUM_TYPE, sample.getAsString(Sample.DATUM_TYPE));
 		setField(DATUM_ELEVATION, sample.getAsString(Sample.DATUM_ELEVATION));
 		setField(TOP_HORIZON, sample.getAsString(Sample.START_DEPTH));
@@ -50,10 +49,10 @@ public class VertSectLocalityDE extends LocalityDE {
 					personID = rs.getString(1);
 					break;
 				case START_DATE :
-					startDate = FREDUtils.parseRoundedDate(value);
+					startDate = DataEntryUtils.parseRoundedDate(value);
 					break;
 				case COMPLETION_DATE :
-					compDate = FREDUtils.parseRoundedDate(value);
+					compDate = DataEntryUtils.parseRoundedDate(value);
 					break;
 				case DATUM_TYPE :
 					if (!(value.equals("Top") || value.equals("Bottom"))) throw new DataInputException("Datum Type", "Invalid Data");

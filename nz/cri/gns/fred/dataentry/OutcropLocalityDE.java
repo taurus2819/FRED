@@ -42,6 +42,23 @@ public class OutcropLocalityDE extends LocalityDE {
 		sampPropRecordDE.setOutcropSamp(true);
 	}
 
+	public void setField(int field, String value) throws DataInputException {
+		if (field < 30) {
+			super.setField(field, value);
+		} else {
+			sampPropRecordDE.setField(field, value);
+		}
+		savedFlag = false;
+	}
+
+	public String getField(int field) {
+		if (field < 30) {
+			return super.getField(field);
+		} else {
+			return sampPropRecordDE.getField(field); 
+		}
+	}
+
 	public void makeDataEntryHTML(Writer out) throws IOException, SQLException {
 		out.write("<table border='0' cellspacing='0' cellpadding='2'>\n");
 		out.write("<tr><td class='heading' colspan='2'>Field Number</td><td><input type='text' name='FeatName' value='" + FREDUtils.noNulls(getField(LocalityDE.FIELD_NUMBER)) + "'></td></tr>\n");

@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
-import nz.cri.gns.fred.RoundedDate;
 import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.intranet.DBConnection;
@@ -29,8 +28,8 @@ public class DrillholeLocalityDE extends LocalityDE {
 		super(id, user, state);
 		if (!featureType.equals("Drillhole")) throw new DataInputException("Feature Type", "Invalid");
 		setField(OPERATING_COMPANY, sample.getAsString(Sample.PERSON));
-		setField(SPUD_DATE, FREDUtils.reverseParseDate(sample.getAsDate(Sample.START_DATE), sample.getAsString(Sample.START_DATE_ROUNDING)));
-		setField(COMPLETION_DATE, FREDUtils.reverseParseDate(sample.getAsDate(Sample.FINISH_DATE), sample.getAsString(Sample.FINISH_DATE_ROUNDING)));
+		setField(SPUD_DATE, DataEntryUtils.reverseParseDate(sample.getAsDate(Sample.START_DATE), sample.getAsString(Sample.START_DATE_ROUNDING)));
+		setField(COMPLETION_DATE, DataEntryUtils.reverseParseDate(sample.getAsDate(Sample.FINISH_DATE), sample.getAsString(Sample.FINISH_DATE_ROUNDING)));
 		setField(LICENCE_AREA, sample.getAsString(Sample.DRILLHOLE_LICENCE_NAME));
 		setField(DATUM_TYPE, sample.getAsString(Sample.DATUM_TYPE));
 		setField(DATUM_ELEVATION, sample.getAsString(Sample.DATUM_ELEVATION));
@@ -51,10 +50,10 @@ public class DrillholeLocalityDE extends LocalityDE {
 					personID = rs.getString(1);
 					break;
 				case SPUD_DATE :
-					spudDate = FREDUtils.parseRoundedDate(value);
+					spudDate = DataEntryUtils.parseRoundedDate(value);
 					break;
 				case COMPLETION_DATE :
-					compDate = FREDUtils.parseRoundedDate(value);
+					compDate = DataEntryUtils.parseRoundedDate(value);
 					break;
 				case DATUM_TYPE :
 					if (!(value.equals("RT") || value.equals("KB"))) throw new DataInputException("Datum Type", "Invalid Data");

@@ -384,8 +384,12 @@ public class SampPropRecord extends Record {
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
-	public static SampPropRecord getSampPropData(int id, User user, PageState state) throws SQLException, IOException, AccessDeniedException {
+	public static SampPropRecord getSampPropData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, AccessDeniedException {
 		SampPropRecord sp = (SampPropRecord) pool.retrieve(new DataFinder(id));
+		if (forceRefresh && sp != null) {
+			pool.removeMe(sp);
+			sp = null;
+		}
 		if (sp == null) {
 			sp = new SampPropRecord(id, state);
 		}
@@ -394,6 +398,14 @@ public class SampPropRecord extends Record {
 			throw new AccessDeniedException();
 		}
 		return sp;
+	}
+
+	/**
+	 *  Use this to get a new instance of this class. 
+	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
+	 */
+	public static SampPropRecord getSampPropData(int id, User user, PageState state) throws SQLException, IOException, AccessDeniedException {
+		return getSampPropData(id, user, state, false);
 	}
 
 	public String toString() {

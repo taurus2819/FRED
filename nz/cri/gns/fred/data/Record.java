@@ -208,8 +208,12 @@ public class Record {
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
-	public static Record getData(int id, User user, PageState state) throws SQLException, IOException, AccessDeniedException {
+	public static Record getData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, AccessDeniedException {
 		Record rec = (Record) pool.retrieve(new DataFinder(id));
+		if (forceRefresh && rec != null) {
+			pool.removeMe(rec);
+			rec = null;
+		}
 		if (rec == null) {
 			rec = new Record(id, state);
 		}
@@ -218,6 +222,14 @@ public class Record {
 			throw new AccessDeniedException();
 		}
 		return rec;
+	}
+
+	/**
+	 *  Use this to get a new instance of this class. 
+	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
+	 */
+	public static Record getData(int id, User user, PageState state) throws SQLException, IOException, AccessDeniedException {
+		return getData(id, user, state, false);
 	}
 
 	public String toString() {

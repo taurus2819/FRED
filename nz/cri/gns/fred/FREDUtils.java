@@ -3,19 +3,21 @@ package nz.cri.gns.fred;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import nz.cri.gns.auth.AuthUtils;
 import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.NoSuchSecurityClassException;
 import nz.cri.gns.auth.Right;
 import nz.cri.gns.auth.SecurityClass;
 import nz.cri.gns.auth.SecurityClassAccess;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.data.AccessDeniedException;
 import nz.cri.gns.fred.data.Sample;
-import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
@@ -24,8 +26,11 @@ public class FREDUtils {
 
 	public static final String CONNECTION = "nz.cri.gns.fr.connection";
 	public static final String DB_NAME = "fr";
+	public static final String IP_CONNECTION = "nz.cri.gns.ip.connection";
+	public static final String IP_DB_NAME = "ip";
 
-	public static DBConnection getFREDConnection(PageState state) throws IOException {
+	public static DBConnection getFREDConnection(PageState state)
+		throws IOException {
 		return JspUtils.createDatabaseConnection(
 			state.getSession(),
 			CONNECTION,
@@ -33,78 +38,122 @@ public class FREDUtils {
 			state.getContext());
 	}
 
-	public static boolean isAllowedLocality(User user, String securityClassID, String status, String featID, PageState state) throws IOException, SQLException {
+	public static DBConnection getIPConnection(PageState state)
+		throws IOException {
+		return JspUtils.createDatabaseConnection(
+			state.getSession(),
+			IP_CONNECTION,
+			IP_DB_NAME,
+			state.getContext());
+	}
+
+	public static boolean isAllowedLocality(
+		User user,
+		String securityClassID,
+		String status,
+		String featID,
+		PageState state)
+		throws IOException, SQLException {
 		if (user == null)
 			return false;
 		if (!status.equals("approved")) {
-			return ((getUserWorkingLocalityRights(user, featID, state) & 1) > 0);
+			return (
+				(getUserWorkingLocalityRights(user, featID, state) & 1) > 0);
 		}
 		if (securityClassID != null) {
-			DBConnection conn =	JspUtils.createDatabaseConnection(
-					state.getSession(),
-					"nz.cri.gns.ip.connection",
-					"ip",
-					state.getContext());
-			SecurityClass sc = new SecurityClass(Integer.parseInt(securityClassID), conn);
-			SecurityClassAccess sca = new SecurityClassAccess(sc, Right.ANY_RIGHT);
+			DBConnection conn = getIPConnection(state);
+			SecurityClass sc =
+				new SecurityClass(Integer.parseInt(securityClassID), conn);
+			SecurityClassAccess sca =
+				new SecurityClassAccess(sc, Right.ANY_RIGHT);
 			return sca.isAccessibleTo(user, conn);
 		} else {
 			return false;
 		}
 	}
 
-	public static boolean isAllowedRecord(User user, String securityClassID, String status, String recID, PageState state) throws IOException, SQLException {
+	public static boolean isAllowedRecord(
+		User user,
+		String securityClassID,
+		String status,
+		String recID,
+		PageState state)
+		throws IOException, SQLException {
 		if (user == null)
 			return false;
 		if (!status.equals("approved")) {
 			return ((getUserWorkingRecordRights(user, recID, state) & 1) > 0);
 		}
 		if (securityClassID != null) {
-			DBConnection conn =
-				JspUtils.createDatabaseConnection(
-					state.getSession(),
-					"nz.cri.gns.ip.connection",
-					"ip",
-					state.getContext());
-			SecurityClass sc = new SecurityClass(Integer.parseInt(securityClassID), conn);
-			SecurityClassAccess sca = new SecurityClassAccess(sc, Right.ANY_RIGHT);
+			DBConnection conn = getIPConnection(state);
+			SecurityClass sc =
+				new SecurityClass(Integer.parseInt(securityClassID), conn);
+			SecurityClassAccess sca =
+				new SecurityClassAccess(sc, Right.ANY_RIGHT);
 			return sca.isAccessibleTo(user, conn);
 		} else {
 			return false;
 		}
 	}
 
-	public static int getUserWorkingLocalityRights(User user, String featID, PageState state) throws IOException, SQLException {
+	public static int getUserWorkingLocalityRights(
+		User user,
+		String featID,
+		PageState state)
+		throws IOException, SQLException {
 		int userRights = 0;
 		if (user != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			int userID = user.getPersonId();
-			ResultSet rs = conn.executeQuery("SELECT DISTINCT User_Rights FROM Folder_Content_Short_View WHERE Feature_ID = " + featID + " AND User_ID = " + userID);
+			ResultSet rs =
+				conn.executeQuery(
+					"SELECT DISTINCT User_Rights FROM Folder_Content_Short_View WHERE Feature_ID = "
+						+ featID
+						+ " AND User_ID = "
+						+ userID);
 			while (rs.next()) {
 				userRights = userRights | rs.getInt(1);
 			}
 		}
-		return userRights;	
+		return userRights;
 	}
 
-	public static int getUserWorkingRecordRights(User user, String recID, PageState state) throws IOException, SQLException {
+	public static int getUserWorkingRecordRights(
+		User user,
+		String recID,
+		PageState state)
+		throws IOException, SQLException {
 		int userRights = 0;
 		if (user != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			int userID = user.getPersonId();
-			ResultSet rs = conn.executeQuery("SELECT User_Rights FROM Folder_Content_Short_View NATURAL JOIN Record WHERE Record_ID = " + recID + " AND User_ID = " + userID);
+			ResultSet rs =
+				conn.executeQuery(
+					"SELECT User_Rights FROM Folder_Content_Short_View NATURAL JOIN Record WHERE Record_ID = "
+						+ recID
+						+ " AND User_ID = "
+						+ userID);
 			while (rs.next()) {
 				userRights = userRights | rs.getInt(1);
 			}
 		}
-		return userRights;		
+		return userRights;
 	}
 
-	public static int getUserFolderRights(User user, String folderID, PageState state) throws IOException, SQLException {
+	public static int getUserFolderRights(
+		User user,
+		String folderID,
+		PageState state)
+		throws IOException, SQLException {
 		if (user != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			int userID = user.getPersonId();
-			ResultSet rs = conn.executeQuery("SELECT User_Rights FROM Folder_View WHERE Folder_ID = " + folderID + " AND User_ID = " + userID);
+			ResultSet rs =
+				conn.executeQuery(
+					"SELECT User_Rights FROM Folder_View WHERE Folder_ID = "
+						+ folderID
+						+ " AND User_ID = "
+						+ userID);
 			if (rs.next()) {
 				return rs.getInt(1);
 			} else { //no record
@@ -113,6 +162,190 @@ public class FREDUtils {
 		} else {
 			return 0;
 		}
+	}
+
+	public static int getSecurityType(
+		int secClassID,
+		User user,
+		PageState state)
+		throws IOException, SQLException {
+		if (secClassID == 4)
+			return 21; //public
+		int secType;
+		DBConnection conn = getIPConnection(state);
+		ResultSet rs =
+			conn.executeQuery(
+				"SELECT COUNT(*) FROM user_right WHERE ur_sc_id = "
+					+ secClassID);
+		rs.next();
+		if (rs.getInt(1) == 0) {
+			rs =
+				conn.executeQuery(
+					"SELECT COUNT(*) FROM org_right WHERE or_sc_id = "
+						+ secClassID);
+			rs.next();
+			if (rs.getInt(1) == 1) {
+				rs =
+					conn.executeQuery(
+						"SELECT or_org_id FROM org_right WHERE or_sc_id = "
+							+ secClassID);
+				rs.next();
+				if (rs.getInt(1) == user.getOrgId()) {
+					secType = 24;
+				} else {
+					throw new NoSuchSecurityClassException(secClassID);
+				}
+			} else {
+				throw new NoSuchSecurityClassException(secClassID);
+			}
+		} else if (rs.getInt(1) == 1) {
+			rs =
+				conn.executeQuery(
+					"SELECT ur_person_id FROM user_right WHERE ur_sc_id = "
+						+ secClassID);
+			rs.next();
+			if (rs.getInt(1) == user.getPersonId()) {
+				secType = 22;
+			} else {
+				throw new NoSuchSecurityClassException(secClassID);
+			}
+		} else {
+			throw new NoSuchSecurityClassException(secClassID);
+		}
+		rs =
+			conn.executeQuery(
+				"SELECT COUNT(*) FROM group_right WHERE gr_id = 1 AND gr_sc_id = "
+					+ secClassID);
+		rs.next();
+		if (rs.getInt(1) == 1)
+			secType += 1;
+		return secType;
+	}
+
+	public static int getSecurityClass(int secType, User user, PageState state)
+		throws IOException, SQLException {
+		int secClass = 0;
+		DBConnection conn = getIPConnection(state);
+		Statement statement = conn.getExtraStatement();
+		ResultSet rs, rs2;
+		switch (secType) {
+			case 21 : //public
+				secClass = 4;
+				break;
+			case 22 : //user
+				rs =
+					conn.executeQuery(
+						"SELECT ur_sc_id FROM user_right, org_right, group_right WHERE ur_sc_id = or_sc_id(+) AND ur_sc_id = gr_sc_id(+) AND or_id IS NULL AND gr_id IS NULL AND ur_person_id = "
+							+ user.getPersonId());
+				while (rs.next()) {
+					;
+					rs2 =
+						statement.executeQuery(
+							"SELECT COUNT(*) FROM user_right WHERE ur_sc_id = "
+								+ rs.getString(1)
+								+ " AND ur_person_id <> "
+								+ user.getPersonId());
+					rs2.next();
+					if (rs2.getInt(1) == 0) {
+						secClass = rs.getInt(1);
+						break;
+					}
+				}
+				if (secClass == 0)
+					secClass = addUserRight(user, state, false);
+				statement.close();
+				break;
+			case 23 : //user + paleo
+				rs =
+					conn.executeQuery(
+						"SELECT ur_sc_id FROM user_right, org_right, group_right WHERE ur_sc_id = or_sc_id(+) AND ur_sc_id = gr_sc_id AND or_id IS NULL AND gr_id = 1 AND ur_person_id = "
+							+ user.getPersonId());
+				while (rs.next()) {
+					;
+					rs2 =
+						statement.executeQuery(
+							"SELECT COUNT(*) FROM user_right WHERE ur_sc_id = "
+								+ rs.getString(1)
+								+ " AND ur_person_id <> "
+								+ user.getPersonId());
+					rs2.next();
+					if (rs2.getInt(1) == 0) {
+						secClass = rs.getInt(1);
+						break;
+					}
+				}
+				if (secClass == 0)
+					secClass = addUserRight(user, state, true);
+				statement.close();
+				break;
+			case 24 : //org
+			rs =
+				conn.executeQuery(
+					"SELECT or_sc_id FROM org_right, user_right, group_right WHERE or_sc_id = ur_sc_id(+) AND or_sc_id = gr_sc_id(+) AND ur_id IS NULL AND gr_id IS NULL AND or_org_id = "
+						+ user.getOrgId());
+			while (rs.next()) {
+				;
+				rs2 =
+					statement.executeQuery(
+						"SELECT COUNT(*) FROM org_right WHERE or_sc_id = "
+							+ rs.getString(1)
+							+ " AND or_org_id <> "
+							+ user.getOrgId());
+				rs2.next();
+				if (rs2.getInt(1) == 0) {
+					secClass = rs.getInt(1);
+					break;
+				}
+			}
+			if (secClass == 0)
+				secClass = addOrgRight(user, state, false);
+			statement.close();
+			break;
+			case 25 : // org + paleo
+			rs =
+				conn.executeQuery(
+					"SELECT or_sc_id FROM org_right, user_right, group_right WHERE or_sc_id = ur_sc_id(+) AND or_sc_id = gr_sc_id AND ur_id IS NULL AND gr_id = 1 AND or_org_id = "
+						+ user.getOrgId());
+			while (rs.next()) {
+				;
+				rs2 =
+					statement.executeQuery(
+						"SELECT COUNT(*) FROM org_right WHERE or_sc_id = "
+							+ rs.getString(1)
+							+ " AND or_org_id <> "
+							+ user.getOrgId());
+				rs2.next();
+				if (rs2.getInt(1) == 0) {
+					secClass = rs.getInt(1);
+					break;
+				}
+			}
+			if (secClass == 0)
+				secClass = addOrgRight(user, state, true);
+			statement.close();
+			break;
+		}
+		return secClass;
+	}
+
+	private static int addUserRight(User user, PageState state, boolean paleo)
+		throws IOException, SQLException {
+		DBConnection conn = getIPConnection(state);
+		SecurityClass sc = AuthUtils.addSecurityClass("FR", user, conn, "FRED Private User Class");
+		sc.addUserToClass(user, new Right(1), conn);
+		if (paleo)
+			sc.addGroupToClass(1, new Right(1), conn);
+		return sc.getId();
+	}
+
+	private static int addOrgRight(User user, PageState state, boolean paleo)
+		throws IOException, SQLException {
+		DBConnection conn = getIPConnection(state);
+		SecurityClass sc = AuthUtils.addSecurityClass("FR", user, conn, "FRED Private Org Class");
+		sc.addUsersOrgToClass(user, new Right(1), conn);
+		if (paleo)
+			sc.addGroupToClass(1, new Right(1), conn);
+		return sc.getId();
 	}
 
 	public static String formatDateForOutput(Date date, String rounding) {
@@ -134,12 +367,20 @@ public class FREDUtils {
 		return formatDateForOutput(date, null);
 	}
 
-	public static Sample getSampleAbove(Sample sample, User user, PageState state)
-		throws SQLException, IOException, AccessDeniedException, InvalidCredentialsException {
+	public static Sample getSampleAbove(
+		Sample sample,
+		User user,
+		PageState state)
+		throws
+			SQLException,
+			IOException,
+			AccessDeniedException,
+			InvalidCredentialsException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		int[] types = {Types.NUMERIC, Types.NUMERIC};
+		int[] types = { Types.NUMERIC, Types.NUMERIC };
 		Object data[] = new Object[2];
-		String query = "SELECT Sample_ID FROM FR.Sample_All_View WHERE Feature_ID = ? AND Top_Depth < ? ORDER BY Top_Depth DESC";
+		String query =
+			"SELECT Sample_ID FROM FR.Sample_All_View WHERE Feature_ID = ? AND Top_Depth < ? ORDER BY Top_Depth DESC";
 		data[0] = new Integer(sample.getAsInt(Sample.FEATURE_ID));
 		data[1] = new Double(sample.getAsDouble(Sample.TOP_DEPTH));
 		ResultSet rs = conn.executeQuery(query, types, data);
@@ -147,75 +388,25 @@ public class FREDUtils {
 		return new Sample(rs.getInt(1), user, state);
 	}
 
-	public static Sample getSampleBelow(Sample sample, User user, PageState state)
-		throws SQLException, IOException, AccessDeniedException, InvalidCredentialsException {
+	public static Sample getSampleBelow(
+		Sample sample,
+		User user,
+		PageState state)
+		throws
+			SQLException,
+			IOException,
+			AccessDeniedException,
+			InvalidCredentialsException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		int[] types = {Types.NUMERIC, Types.NUMERIC};
+		int[] types = { Types.NUMERIC, Types.NUMERIC };
 		Object data[] = new Object[2];
-		String query = "SELECT Sample_ID FROM FR.Sample_All_View WHERE Feature_ID = ? AND Top_Depth > ? ORDER BY Top_Depth";
+		String query =
+			"SELECT Sample_ID FROM FR.Sample_All_View WHERE Feature_ID = ? AND Top_Depth > ? ORDER BY Top_Depth";
 		data[0] = new Integer(sample.getAsInt(Sample.FEATURE_ID));
 		data[1] = new Double(sample.getAsDouble(Sample.TOP_DEPTH));
 		ResultSet rs = conn.executeQuery(query, types, data);
 		rs.next();
 		return new Sample(rs.getInt(1), user, state);
-	}
-
-	public static String reverseParseDate(Date date, String dateRnd) {
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("d/M/yyyy");
-		SimpleDateFormat monthDateFormatter = new SimpleDateFormat("M/yyyy");
-		SimpleDateFormat yearDateFormatter = new SimpleDateFormat("yyyy");
-		if (date != null) {
-			if (dateRnd == null) {
-				return dateFormatter.format(date);
-			} else if (dateRnd.equals("Month")) {
-				return monthDateFormatter.format(date);
-			} else if (dateRnd.equals("Year")) {
-				return yearDateFormatter.format(date);
-			} else {
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
-
-	public static RoundedDate parseRoundedDate(String dateStr) throws DataInputException {
-		String date, dateRnd, day, month, year;
-		if (dateStr.lastIndexOf("/") == dateStr.length() - 1) throw new DataInputException("Date", "Invalid Data"); //ends with slash
-		if (dateStr.indexOf("/") == -1 && dateStr.length() == 4) { //year only
-			try {
-				date = "1/1/" + Integer.parseInt(dateStr);
-				return new RoundedDate(date, "Year");
-			} catch (Exception e) {
-				throw new DataInputException("Date", "Invalid Data");
-			}
-		} else {
-			if (dateStr.indexOf("/") == dateStr.lastIndexOf("/")) {
-				dateRnd = "Month";
-				day = "1";
-				month = dateStr.substring(0, dateStr.indexOf("/"));
-				year = dateStr.substring(dateStr.indexOf("/") + 1, dateStr.length());
-			} else {
-				dateRnd = null;
-				day = dateStr.substring(0, dateStr.indexOf("/"));
-				month = dateStr.substring(dateStr.indexOf("/") + 1, dateStr.lastIndexOf("/"));
-				year = dateStr.substring(dateStr.lastIndexOf("/") + 1, dateStr.length());
-			}
-			try {
-				int iDay = Integer.parseInt(day);
-				int iMonth = Integer.parseInt(month);
-				int iYear = Integer.parseInt(year);
-				if (iDay < 0 || iDay > 31) throw new DataInputException("Date", "Invalid Data"); //bad day
-				if (iMonth < 0 || iMonth > 12) throw new DataInputException("Date", "Invalid Data"); //bad month
-				if (year.length() != 4) throw new DataInputException("Date", "Invalid Data"); //bad year
-				if (iMonth == 2 && iDay > 28) throw new DataInputException("Date", "Invalid Data"); //bad Feb
-				if ((iMonth == 4 || iMonth == 6 || iMonth == 9 || iMonth == 11) && iDay > 30) throw new DataInputException("Date", "Invalid Data"); //bad 30 day months
-			} catch (Exception e) {
-				throw new DataInputException("Date", "Invalid Data");
-			}
-			date = day + "/" + month + "/" + year;
-			return new RoundedDate(date, dateRnd);
-		}
 	}
 
 	public static boolean isNumeric(String str) {

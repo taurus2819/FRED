@@ -22,7 +22,7 @@
 				if (feature.getAsVector(Feature.SAMPLES).size() > 1) {
 					response.sendRedirect("drillhole_detail.jsp?ID=" + featID);
 				} else {
-					response.sendRedirect("detail.jsp?ID=" + ((SampleHeader) feature.getAsVector(Feature.SAMPLES).firstElement()).getSampleID());
+					response.sendRedirect("detail.jsp?ID=" + ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).toString());
 				}
 			} else {
 				response.sendRedirect("drillhole_detail.jsp?ID=" + featID);
@@ -236,7 +236,7 @@
 					KeyValueObject rec = (KeyValueObject)i.next();
 					if (rec.getValue().equals("SMP")) {
 						try {
-							SampPropRecord sampProp = SampPropRecord.getData(Integer.parseInt(rec.getKey()), user, state);
+							SampPropRecord sampProp = SampPropRecord.getSampPropData(Integer.parseInt(rec.getKey()), user, state);
 							out.println("<tr><td class='bigheading' colspan='2'>Sample Property Data</td></tr>");
 							//collectors (repeating)
 							if (sampProp.get(SampPropRecord.COLLECTOR) != null) {
@@ -343,7 +343,7 @@
 					KeyValueObject rec = (KeyValueObject)i.next();
 					if (rec.getValue().equals("ADO")) {
 						try {
-							AdoptionRecord ado = AdoptionRecord.getData(Integer.parseInt(rec.getKey()), user, state);
+							AdoptionRecord ado = AdoptionRecord.getAdoptionData(Integer.parseInt(rec.getKey()), user, state);
 							out.println("<tr><td colspan='2' class='bigheading'>Adoption Data</td></tr>");
 							//adoptors (repeating)
 							if (ado.get(AdoptionRecord.ADOPTOR) != null) {
@@ -384,7 +384,7 @@
 					KeyValueObject rec = (KeyValueObject)i.next();
 					if (rec.getValue().equals("PAL")) {
 						try {
-							PaleontologyRecord pal = PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state);
+							PaleontologyRecord pal = PaleontologyRecord.getPaleontologyData(Integer.parseInt(rec.getKey()), user, state);
 							out.println("<tr><td colspan='2' class='bigheading'>Paleontology Data</td></tr>");
 							//identifiers (repeating)
 							if (pal.get(PaleontologyRecord.IDENTIFIER) != null) {

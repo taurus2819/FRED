@@ -14,6 +14,9 @@ public class Relationship {
 	private Integer relationTypeId;
 	private String relationType;
 
+	public Relationship() {
+	}
+
 	public Relationship(String relationship) {
 		this.relationship = relationship;
 	}

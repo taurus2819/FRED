@@ -24,38 +24,14 @@ import nz.cri.gns.util.map.TruncNorthingEasting;
 
 public abstract class LocalityDE implements DataEntryForm {
 
-	public static final int FEATURE_NAME = 0;
-	public static final int FIELD_NUMBER = 0;
-	public static final int DRILLHOLE_NAME = 0;
-	public static final int SECTION_NAME = 0;
-	public static final int REGISTRATION_AREA = 1;
-	public static final int WORKING_COMMENTS = 2;
-	public static final int GRID_REF = 3;
-	public static final int METHOD = 4;
-	public static final int ACCURACY = 5;
-	public static final int LOCALITY_DESC = 6;
-	public static final int RECOLLECTION = 7;
-	public static final int SIDETRACK = 7;
-	public static final int OPERATING_COMPANY = 8;
-	public static final int SECTION_COLLECTOR = 8;
-	public static final int SPUD_DATE = 9;
-	public static final int START_DATE = 9;
-	public static final int COMPLETION_DATE = 10;
-	public static final int LICENCE_AREA = 11;
-	public static final int DATUM_TYPE = 12;
-	public static final int DATUM_ELEVATION = 13;
-	public static final int KICK_OFF_DEPTH = 14;
-	public static final int TOP_HORIZON = 14;
-	public static final int TERMINATION_DEPTH = 15;
-	public static final int BASE_HORIZON = 15;
-
 	protected User user;
 	protected PageState state;
 	protected Folder folder;
 	protected Feature feature;
 	protected Sample sample;
 	protected String featureType;
-	protected String[] fields = new String[16];
+	private Integer secClassID;
+	protected String[] fields = new String[100];
 	private Double latitude, longitude;
 	private String origSystemID, origCoord, countryCode, recoll;
 	protected boolean savedFlag = false;
@@ -103,6 +79,11 @@ public abstract class LocalityDE implements DataEntryForm {
 		setField(METHOD, sample.getAsString(Sample.METHOD_ID));
 		setField(ACCURACY, sample.getAsString(Sample.ACCURACY));
 		setField(LOCALITY_DESC, sample.getAsString(Sample.LOCALITY));
+		try {
+			setField(SECURITY_TYPE, String.valueOf(FREDUtils.getSecurityType(sample.getAsInt(Sample.SECURITY_CLASS_ID), user, state)));
+		} catch (Exception e) {
+			setField(SECURITY_TYPE, "21");
+		}
 		savedFlag = true;
 	}
 
@@ -150,15 +131,9 @@ public abstract class LocalityDE implements DataEntryForm {
 			ResultSet rs;
 			switch (field) {
 				case REGISTRATION_AREA :
-					rs =
-						conn.executeQuery(
-							"SELECT * FROM Lookup WHERE Lookup_ID = "
-								+ value
-								+ " AND FieldName = 'RegArea'");
-					if (!rs.next())
-						throw new DataInputException(
-							"Registration Area",
-							"Invalid value");
+					DataEntryUtils.parseDropDownID("Registration Area", "SELECT * FROM Lookup WHERE Lookup_ID = "
+				+ value
+				+ " AND FieldName = 'RegArea'", state);
 					break;
 				case GRID_REF :
 					if (!parseCoord(value))
@@ -167,14 +142,9 @@ public abstract class LocalityDE implements DataEntryForm {
 							"Invalid value");
 					break;
 				case METHOD :
-					rs =
-						conn.executeQuery(
+				DataEntryUtils.parseDropDownID("Method", 
 							"SELECT * FROM SC.Method WHERE Method_ID = "
-								+ value);
-					if (!rs.next())
-						throw new DataInputException(
-							"Coordinate Method",
-							"Invalid value");
+								+ value, state);
 					break;
 				case ACCURACY :
 					try {
@@ -199,6 +169,13 @@ public abstract class LocalityDE implements DataEntryForm {
 							"Recollection/Sidetrack",
 							value
 								+ " is not an existing FR Number or temporary name.  Please use the builder to select.");
+					}
+					break;
+				case SECURITY_TYPE :
+					try {
+						secClassID = new Integer(FREDUtils.getSecurityClass(Integer.parseInt(value), user, state));
+					} catch (Exception e) {
+						throw new DataInputException("Security Class", "Invalid");
 					}
 					break;
 			}
@@ -261,8 +238,22 @@ public abstract class LocalityDE implements DataEntryForm {
 			"<tr><td class='heading' colspan='2'>Working Comments<br><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'>"
 				+ FREDUtils.noNulls(getField(LocalityDE.WORKING_COMMENTS))
 				+ "</textarea></td></tr>\n");
-		out.write(
-			"<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
+		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
+		
+		out.write("<tr><td class='heading' colspan='2'>Security Setting</td><td>");
+		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
+		cd.name = "SecType";
+		if (getField(SECURITY_TYPE) != null) {
+			cd.selected = getField(SECURITY_TYPE);
+		} else {
+			cd.selected = "21"; 
+		}
+		cd.orderBy = "Lookup_ID";
+		cd.join = "FieldName = 'SecurityClass'";
+		HTMLUtils.makeDropBox(out, conn, cd);
+		out.write("</td></tr>\n");
+		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
+				
 		out.write(
 			"<tr><td class='heading'>Location</td><td class='smallheading'>Grid Ref.</td><td><input type='text' name='GridRef' size='40' value='"
 				+ FREDUtils.noNulls(getField(LocalityDE.GRID_REF))
@@ -411,6 +402,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			String siteID = null;
 			if (fields[GRID_REF] != null)
 				siteID = getSiteID();
+			if (secClassID == null) secClassID = new Integer(4);
 			if (feature == null) {
 				if (!folder.isAllowedCreateLocalities())
 					throw new InvalidCredentialsException();
@@ -419,7 +411,7 @@ public abstract class LocalityDE implements DataEntryForm {
 				rs.next();
 				String auditID = rs.getString(1);
 				conn.executeUpdate(
-					"INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Comments, Working_Folder_ID) VALUES ("
+					"INSERT INTO Audit_Table (Audit_ID, Status, Created_By_ID, Created_Date, Working_Comments, Working_Folder_ID, Security_Class_ID) VALUES ("
 						+ auditID
 						+ ", 'working', "
 						+ user.getPersonId()
@@ -429,6 +421,8 @@ public abstract class LocalityDE implements DataEntryForm {
 								+ FREDUtils.noNulls(fields[WORKING_COMMENTS]))
 						+ ", "
 						+ folder.getFolderID()
+						+ ", " 
+						+ secClassID.toString()
 						+ ")");
 				rs = conn.executeQuery("SELECT Feature_Seq.NEXTVAL FROM DUAL");
 				rs.next();
@@ -473,6 +467,8 @@ public abstract class LocalityDE implements DataEntryForm {
 						+ JspUtils.sqlEscape(
 							FREDUtils.noNulls(recoll)
 								+ FREDUtils.noNulls(fields[WORKING_COMMENTS]))
+						+ ", Security_Class_ID = "
+						+ secClassID.toString()
 						+ " WHERE Audit_ID = "
 						+ auditID);
 				conn.executeUpdate(
