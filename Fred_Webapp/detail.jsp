@@ -251,313 +251,228 @@
 			out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");	
 	
 			//Sample Property Data
-	FullSampPropRecord sampProp =  null;
-	for (Iterator i = fullSample.getAsVector(FullSample.RECORD).iterator(); i.hasNext(); ) {
-		KeyValueObject rec = (KeyValueObject)i.next();
-		out.println(rec.getKey() + ":" + rec.getValue());
-		if (rec.getValue().equals("SMP")) {
-			sampProp = FullSampPropRecord.getFullSampPropRecord(Integer.parseInt(rec.getKey()), user, state);
-		}
-		break;
-	}			
-			
-			query = "SELECT Record_ID FROM Record NATURAL JOIN Sample_Property WHERE Sample_ID = ?";
-			data[0] = new Integer(Integer.parseInt(sampID));
-			rs = frConn.executeQuery(query, types, data);
-			if (rs.next()) {
-				recID = rs.getString(1);
-				query = "SELECT Record_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage, Known_Stage, Column_Map, Dip, Dip_Direction, Strike, Facing, Grainsize, Comparator_Used, Bed_Thickness, Bedding, Weathering, Hardness, Carbonate, Colour, Deposition_Env, Rock_Nature, Correspondence, Collector_ID, Sent_To_Fossil_Group_ID, Sed_Feature_ID FROM FR.Sample_Property_View WHERE Record_ID = ?";
-				data[0] = new Integer(Integer.parseInt(recID));
-				rs = connection.executeQuery(query, types, data);
-				preserveStatement = connection.preservePreparedStatement();
-				if (rs.next()) {
-					//recID = rs.getString(1);
-					out.println("<tr><td class='bigheading' colspan='2'>Sample Property Data</td></tr>");
-				if (rs.getString(2) != null) {
-					out.print("<tr><td class='heading'>Collection Date</td><td>" + FREDUtils.formatDateForOutput(rs.getDate(2), rs.getString(3)) + "</td></tr>");
-				}
-				if (sampProp.get(FullSampPropRecord.COLLECTION_DATE) != null) {
-					out.print("<tr><td class='heading'>Collection Date</td><td>" + FREDUtils.formatDateForOutput(sampProp.getAsDate(FullSampPropRecord.COLLECTION_DATE), sampProp.getAsString(FullSampPropRecord.DATE_ROUNDING)) + "</td></tr>");
-				}
-					//collectors (repeating)
-					if (rs.getString(26) != null) {
-						out.print("<tr><td class='heading'>Collectors</td>");
-						query = "SELECT Name FROM Person_View P, Collector C WHERE P.Person_ID = C.Person_ID AND C.Record_ID = ? ORDER BY Name";
-						data[0] = new Integer(Integer.parseInt(recID));
-						rs2 = frConn.executeQuery(query, types, data);
-						rs2.next();
-						out.println("<td>" + rs2.getString(1) + "</td></tr>");
-						while (rs2.next()) {
-							out.println("<tr><td></td><td>" + rs2.getString(1) + "</td></tr>");
-						}
-					}
-					
-		for (Iterator i = sampProp.getAsVector(FullSampPropRecord.COLLECTOR).iterator(); i.hasNext(); ) {
-			KeyValueObject coll = (KeyValueObject)i.next();
-			out.println("<tr><td>" + coll.getValue() + "</td></tr>");
-		}
-					
-					
-					if (rs.getString(4) != null) { out.println("<tr><td class='heading'>Strat Name</td><td>" + rs.getString(4) + "</td></tr>"); }
-					if (rs.getString(5) != null) { out.println("<tr><td class='heading'>In Place</td><td>" + rs.getString(5) + "</td></tr>"); }
-					//sent to (repeating)
-					if (rs.getString(27) != null) {
-						out.print("<tr><td class='heading'>Sent To</td>");
-						query = "SELECT Sent_To FROM Sent_To_View WHERE Record_ID = ? ORDER BY Sent_To";
-						data[0] = new Integer(Integer.parseInt(recID));
-						rs2 = frConn.executeQuery(query, types, data);
-						rs2.next();
-						out.print("<td>" + rs2.getString(1) + "</td></tr>");
-						while (rs2.next()) {
-							out.println("<tr><td></td><td>" + rs2.getString(1) + "</td></tr>");
-						}
-					}
-					if (rs.getString(6) != null) { out.println("<tr><td class='heading'>Not Collected</td><td>" + rs.getString(6) + "</td></tr>"); }
-					//Stratigraphy
-					if (rs.getString(7) != null) { out.println("<tr><td class='heading'>Significance</td><td>" + rs.getString(7) + "</td></tr>"); }
-					if (rs.getString(8) != null) { out.println("<tr><td class='heading'>Inferred Stage</td><td>" + rs.getString(8) + "</td></tr>"); }
-					if (rs.getString(9) != null) { out.println("<tr><td class='heading'>Known Stage</td><td>" + rs.getString(9) + "</td></tr>"); }
-					//Nearby samples (repeating)
-					query = "SELECT COUNT(*) FROM Relationship WHERE Relationship_Type = 'Sample' AND Relation_Type_ID = 231 AND Record_ID = ?";
-					data[0] = new Integer(Integer.parseInt(recID));
-					rs2 = frConn.executeQuery(query, types, data);
-					rs2.next();
-					if (rs2.getInt(1) > 0) {
-						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Samples Nearby</td>");
-						query = "SELECT Related_Feature_ID, Related_Sample_Name FROM Relationship_View WHERE Relationship_Type = 'Sample' AND Relation_Type_ID = 231 AND Record_ID = ? ORDER BY Related_Sample_Name";
-						data[0] = new Integer(Integer.parseInt(recID));
-						rs2 = frConn.executeQuery(query, types, data);
-						rs2.next();
-						out.print("<td><a href='detail.jsp?FeatID=" + rs2.getString(1) + "'>" + rs2.getString(2) + "</a></td></tr>");
-						while (rs2.next()) {
-							out.println("<tr><td><a href='detail.jsp?FeatID=" + rs2.getString(1) + "'>" + rs2.getString(2) + "</a></td></tr>");
-						}
-					}
-					//Sample relationships (repeating)
-					query = "SELECT COUNT(*) FROM Relationship WHERE Relation_Type_ID <> 231 AND Relationship_Type = 'Sample' AND Record_ID = ?";
-					data[0] = new Integer(Integer.parseInt(recID));
-					rs2 = frConn.executeQuery(query, types, data);
-					rs2.next();
-					if (rs2.getInt(1) > 0) {
-						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Sample Relationships</td>");
-						query = "SELECT Distance_Relation, Related_Feature_ID, Related_Sample_Name FROM Relationship_View WHERE Relation_Type_ID <> 231 AND Relationship_Type = 'Sample' AND Record_ID = ? ORDER BY Related_Sample_Name";
-						data[0] = new Integer(Integer.parseInt(recID));
-						rs2 = frConn.executeQuery(query, types, data);
-						rs2.next();
-						out.print("<td>" + rs2.getString(1) + " <a href='detail.jsp?FeatID=" + rs2.getString(2) + "'>" + rs2.getString(3) + "</a></td></tr>");
-						while (rs2.next()) {
-							out.println("<tr><td>" + rs2.getString(1) + " <a href='detail.jsp?FeatID=" + rs2.getString(2) + "'>" + rs2.getString(3) + "</a></td></tr>");
-						}
-					}
-					//Strat relationships (repeating)
-					query = "SELECT COUNT(*) FROM Relationship WHERE Relationship_Type = 'Strat' AND Record_ID = ?";
-					data[0] = new Integer(Integer.parseInt(recID));
-					rs2 = frConn.executeQuery(query, types, data);
-					rs2.next();
-					if (rs2.getInt(1) > 0) {
-						out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Stratigraphic Relationships</td>");
-						query = "SELECT Relationship FROM Relationship_View WHERE Relationship_Type = 'Strat' AND Record_ID = ? ORDER BY Strat_Unit";
-						data[0] = new Integer(Integer.parseInt(recID));
-						rs2 = frConn.executeQuery(query, types, data);
-						rs2.next();
-						out.print("<td>" + rs2.getString(1) + "</td></tr>");
-						while (rs2.next()) {
-							out.println("<tr><td>" + rs2.getString(1) + "</td></tr>");
-						}
-					}
-					if (rs.getString(10) != null) { out.println("<tr><td class='heading'>Column/Map</td><td>" + rs.getString(10) + "</td></tr>"); }
-					if (rs.getString(11) != null) { out.println("<tr><td class='heading'>Dip</td><td>" + rs.getString(11) + "</td></tr>"); }
-					if (rs.getString(12) != null) { out.println("<tr><td class='heading'>Dip Direction</td><td>" + rs.getString(12) + "</td></tr>"); }
-					if (rs.getString(13) != null) { out.println("<tr><td class='heading'>Strike</td><td>" + rs.getString(13) + "</td></tr>"); }
-					if (rs.getString(14) != null) { out.println("<tr><td class='heading'>Facing</td><td>" + rs.getString(14) + "</td></tr>"); }
-					if (rs.getString(15) != null) { out.println("<tr><td class='heading'>Grain Size</td><td>" + rs.getString(15) + "</td></tr>"); }
-					if (rs.getString(16) != null) { out.println("<tr><td class='heading'>Comparator Used</td><td>" + rs.getString(16) + "</td></tr>"); }
-					if (rs.getString(17) != null) { out.println("<tr><td class='heading'>Bed Thickness</td><td>" + rs.getString(17) + "</td></tr>"); }
-					if (rs.getString(18) != null) { out.println("<tr><td class='heading'>Bedding</td><td>" + rs.getString(18) + "</td></tr>"); }
-					if (rs.getString(19) != null) { out.println("<tr><td class='heading'>Weathering</td><td>" + rs.getString(19) + "</td></tr>"); }
-					if (rs.getString(20) != null) { out.println("<tr><td class='heading'>Hardness</td><td>" + rs.getString(20) + "</td></tr>"); }
-					if (rs.getString(21) != null) { out.println("<tr><td class='heading'>Carbonate</td><td>" + rs.getString(21) + "</td></tr>"); }
-					if (rs.getString(22) != null) { out.println("<tr><td class='heading'>Colour</td><td>" + rs.getString(22) + "</td></tr>"); }
-					//sed features (repeating)
-					if (rs.getString(28) != null) {
-						out.print("<tr><td class='heading'>Additional Features</td>");
-						query = "SELECT Sedimentary_Feature FROM Sedimentary_Feature_View WHERE Record_ID = ? ORDER BY Sed_Feature";
-						data[0] = new Integer(Integer.parseInt(recID));
-						rs2 = frConn.executeQuery(query, types, data);
-						rs2.next();
-						out.print("<td>" + rs2.getString(1) + "</td></tr>");
-						while (rs2.next()) {
-							out.println("<tr><td></td><td>" + rs2.getString(1) + "</td></tr>");
-						}
-					}
-					if (rs.getString(23) != null) { out.println("<tr><td class='heading'>Inferred Environment</td><td>" + rs.getString(23) + "</td></tr>"); }
-					if (rs.getString(24) != null) { out.println("<tr><td class='heading'>Nature of Rock Unit</td><td>" + rs.getString(24) + "</td></tr>"); }
-					if (rs.getString(25) != null) { out.println("<tr><td class='heading'>Correspondence</td><td>" + rs.getString(25) + "</td></tr>"); }
-		/*			//Image/Files
-					MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
-					if (mr != null) {
-						out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
-						out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
-						int y = 1;
-						out.print("<tr>");
-						for (int x = 0; x < mr.length; x++) {
-							if (y++ == 5) {
-								out.println("</tr><tr>");
-								y = 2;
+			for (Iterator i = fullSample.getAsVector(FullSample.RECORD).iterator(); i.hasNext(); ) {
+				KeyValueObject rec = (KeyValueObject)i.next();
+				out.println("<tr><td>" + rec.getKey() + ":" + rec.getValue() + "</td></tr>");
+				if (rec.getValue().equals("SMP")) {
+					try {
+						FullSampPropRecord sampProp = FullSampPropRecord.getFullSampPropRecord(Integer.parseInt(rec.getKey()), user, state);
+						out.println("<tr><td class='bigheading' colspan='2'>Sample Property Data</td></tr>");
+						//collectors (repeating)
+						if (sampProp.get(FullSampPropRecord.COLLECTOR) != null) {
+							out.print("<tr><td class='heading'>Collectors</td><td>");
+							for (Iterator i2 = sampProp.getAsVector(FullSampPropRecord.COLLECTOR).iterator(); i2.hasNext(); ) {
+								KeyValueObject coll = (KeyValueObject)i2.next();
+								out.print(coll.getValue() + "<br />");
 							}
-							out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
+							out.print("</td></tr>");
 						}
-						out.println("</td></tr></table></td></tr>");
+						if (sampProp.get(FullSampPropRecord.COLLECTION_DATE) != null) { out.print("<tr><td class='heading'>Collection Date</td><td>" + FREDUtils.formatDateForOutput(sampProp.getAsDate(FullSampPropRecord.COLLECTION_DATE), sampProp.getAsString(FullSampPropRecord.DATE_ROUNDING)) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.STRAT_UNIT) != null) { out.println("<tr><td class='heading'>Strat Name</td><td>" + sampProp.getAsString(FullSampPropRecord.STRAT_UNIT) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.IN_PLACE) != null) { out.println("<tr><td class='heading'>In Place</td><td>" + sampProp.getAsString(FullSampPropRecord.IN_PLACE) + "</td></tr>"); }
+						//sent to (repeating)
+						if (sampProp.get(FullSampPropRecord.SENT_TO) != null) {
+							out.print("<tr><td class='heading'>Sent To</td><td>");
+							for (Iterator i2 = sampProp.getAsVector(FullSampPropRecord.SENT_TO).iterator(); i2.hasNext(); ) {
+								SentTo sentTo = (SentTo)i2.next();
+								out.print(sentTo.getSentTo() + "<br />");
+							}
+						out.print("</td></tr>");
+						}
+						if (sampProp.get(FullSampPropRecord.NOT_COLLECTED) != null) { out.println("<tr><td class='heading'>Not Collected</td><td>" + sampProp.getAsString(FullSampPropRecord.NOT_COLLECTED) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.SIGNIFICANCE) != null) { out.println("<tr><td class='heading'>Significance</td><td>" + sampProp.getAsString(FullSampPropRecord.SIGNIFICANCE) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.INFERRED_STAGE) != null) { out.println("<tr><td class='heading'>Inferred Stage</td><td>" + sampProp.getAsString(FullSampPropRecord.INFERRED_STAGE) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.KNOWN_STAGE) != null) { out.println("<tr><td class='heading'>Known Stage</td><td>" + sampProp.getAsString(FullSampPropRecord.KNOWN_STAGE) + "</td></tr>"); }
+						//Nearby samples (repeating)
+						if (sampProp.get(FullSampPropRecord.RELATIONSHIP_NEARBY) != null) {
+							out.print("<tr><td class='heading'>Samples Nearby</td><td>");
+							for (Iterator i2 = sampProp.getAsVector(FullSampPropRecord.RELATIONSHIP_NEARBY).iterator(); i2.hasNext(); ) {
+								Relationship nearRel = (Relationship)i2.next();
+								out.print(nearRel.getDistanceRelation() + " <a href='detail.jsp?FeatID=" + nearRel.getRelatedFeatureId() + "'>" + nearRel.getRelatedSampleName() +"</a><br />");
+							}
+						out.print("</td></tr>");
+						}
+						//Sample relationships (repeating)
+						if (sampProp.get(FullSampPropRecord.RELATIONSHIP_SAMPLE) != null) {
+							out.print("<tr><td class='heading'>Sample Relationships</td><td>");
+							for (Iterator i2 = sampProp.getAsVector(FullSampPropRecord.RELATIONSHIP_SAMPLE).iterator(); i2.hasNext(); ) {
+								Relationship sampRel = (Relationship)i2.next();
+								out.print(sampRel.getDistanceRelation() + " <a href='detail.jsp?FeatID=" + sampRel.getRelatedFeatureId() + "'>" + sampRel.getRelatedSampleName() + "</a><br />");
+							}
+						out.print("</td></tr>");
+						}
+						//Strat relationships (repeating)
+						if (sampProp.get(FullSampPropRecord.RELATIONSHIP_STRAT) != null) {
+							out.print("<tr><td class='heading'>Stratigraphic Relationships</td><td>");
+							for (Iterator i2 = sampProp.getAsVector(FullSampPropRecord.RELATIONSHIP_STRAT).iterator(); i2.hasNext(); ) {
+								Relationship stratRel = (Relationship)i2.next();
+								out.print(stratRel.getRelationship() + "<br />");
+							}
+						out.print("</td></tr>");
+						}
+						if (sampProp.get(FullSampPropRecord.COLUMN_MAP) != null) { out.println("<tr><td class='heading'>Column/Map</td><td>" + sampProp.getAsString(FullSampPropRecord.COLUMN_MAP) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.DIP) != null) { out.println("<tr><td class='heading'>Dip</td><td>" + sampProp.getAsString(FullSampPropRecord.DIP) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.DIP_DIRECTION) != null) { out.println("<tr><td class='heading'>Dip Direction</td><td>" + sampProp.getAsString(FullSampPropRecord.DIP_DIRECTION) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.STRIKE) != null) { out.println("<tr><td class='heading'>Strike</td><td>" + sampProp.getAsString(FullSampPropRecord.STRIKE) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.FACING) != null) { out.println("<tr><td class='heading'>Facing</td><td>" + sampProp.getAsString(FullSampPropRecord.FACING) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.GRAINSIZE) != null) { out.println("<tr><td class='heading'>Grain Size</td><td>" + sampProp.getAsString(FullSampPropRecord.GRAINSIZE) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.COMPARATOR_USED) != null) { out.println("<tr><td class='heading'>Comparator Used</td><td>" + sampProp.getAsString(FullSampPropRecord.COMPARATOR_USED) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.BED_THICKNESS) != null) { out.println("<tr><td class='heading'>Bed Thickness</td><td>" + sampProp.getAsString(FullSampPropRecord.BED_THICKNESS) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.BEDDING) != null) { out.println("<tr><td class='heading'>Bedding</td><td>" + sampProp.getAsString(FullSampPropRecord.BEDDING) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.WEATHERING) != null) { out.println("<tr><td class='heading'>Weathering</td><td>" + sampProp.getAsString(FullSampPropRecord.WEATHERING) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.HARDNESS) != null) { out.println("<tr><td class='heading'>Hardness</td><td>" + sampProp.getAsString(FullSampPropRecord.HARDNESS) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.CARBONATE) != null) { out.println("<tr><td class='heading'>Carbonate</td><td>" + sampProp.getAsString(FullSampPropRecord.CARBONATE) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.COLOUR) != null) { out.println("<tr><td class='heading'>Colour</td><td>" + sampProp.getAsString(FullSampPropRecord.COLOUR) + "</td></tr>"); }
+						//sed features (repeating)
+						if (sampProp.get(FullSampPropRecord.SED_FEATURE) != null) {
+							out.print("<tr><td class='heading'>Additional Features</td><td>");
+							for (Iterator i2 = sampProp.getAsVector(FullSampPropRecord.SED_FEATURE).iterator(); i2.hasNext(); ) {
+								SedFeature sf = (SedFeature)i2.next();
+								out.print(sf.getSedFeature() + "<br />");
+							}
+						out.print("</td></tr>");
+						}
+						if (sampProp.get(FullSampPropRecord.DEPOSITION_ENV) != null) { out.println("<tr><td class='heading'>Inferred Environment</td><td>" + sampProp.getAsString(FullSampPropRecord.DEPOSITION_ENV) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.ROCK_NATURE) != null) { out.println("<tr><td class='heading'>Nature of Rock Unit</td><td>" + sampProp.getAsString(FullSampPropRecord.ROCK_NATURE) + "</td></tr>"); }
+						if (sampProp.get(FullSampPropRecord.CORRESPONDENCE) != null) { out.println("<tr><td class='heading'>Correspondence</td><td>" + sampProp.getAsString(FullSampPropRecord.CORRESPONDENCE) + "</td></tr>"); }
+			/*			//Image/Files
+						MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
+						if (mr != null) {
+							out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
+							out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
+							int y = 1;
+							out.print("<tr>");
+							for (int x = 0; x < mr.length; x++) {
+								if (y++ == 5) {
+									out.println("</tr><tr>");
+									y = 2;
+								}
+								out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
+							}
+							out.println("</td></tr></table></td></tr>");
+						}
+		*/				out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
+					} catch (Exception e) {
 					}
-*/
-				out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
+					break;
 				}
-				preserveStatement.close();
 			}
-	
+
 			//Adoption
-			query = "SELECT Record_ID, Adoption_Date, Date_Rounding, Adopted_Stage, Comments FROM FR.Adoption_View WHERE Sample_ID = ?";
-			data[0] = new Integer(Integer.parseInt(sampID));
-			rs = connection.executeQuery(query, types, data);
-			preserveStatement = connection.preservePreparedStatement();
-			while (rs.next()) {
-				out.println("<tr><td colspan='2' class='bigheading'>Adoption Data</td></tr>");
-				recID = rs.getString(1);
-				//adoptors (repeating)
-				query = "SELECT COUNT(*) FROM Adoptor WHERE Record_ID = ?";
-				data[0] = new Integer(Integer.parseInt(recID));
-				rs2 = frConn.executeQuery(query, types, data);
-				rs2.next();
-				if (rs2.getInt(1) > 0) {
-					out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Adoptors</td>");
-					query = "SELECT Name FROM Person_View P, Adoptor A WHERE P.Person_ID = A.Person_ID AND A.Record_ID = ? ORDER BY Name";
-					data[0] = new Integer(Integer.parseInt(recID));
-					rs2 = frConn.executeQuery(query, types, data);
-					rs2.next();
-					out.println("<td>" + rs2.getString(1) + "</td></tr>");
-					while (rs2.next()) {
-						out.println("<tr><td>" + rs2.getString(1) + "</td></tr>");
-					}
-				}
-				if (rs.getString(2) != null) {
-					out.print("<tr><td class='heading'>Adoption Date</td><td>" + FREDUtils.formatDateForOutput(rs.getDate(2), rs.getString(3)) + "</td></tr>");
-				}
-				if (rs.getString(4) != null) { out.println("<tr><td class='heading'>Adopted Stage</td><td>" + rs.getString(4) + "</td></tr>"); }
-				if (rs.getString(5) != null) { out.println("<tr><td class='heading'>Comments</td><td>" + rs.getString(5) + "</td></tr>"); }
-	/*			//Image/Files
-				MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
-				if (mr != null) {
-					out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
-					out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
-					int y = 1;
-					out.print("<tr>");
-					for (int x = 0; x < mr.length; x++) {
-						if (y++ == 5) {
-							out.println("</tr><tr>");
-							y = 2;
-						}
-						out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
-					}
-					out.println("</td></tr></table></td></tr>");
-				}
-	*/			out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
-			}
-			preserveStatement.close();
-	
-			//Paleontology
-			query = "SELECT DISTINCT Record_ID, Identification_Date, Date_Rounding, Stage, Stage_Comments, Lab, Lab_Number, Collection_Comments FROM FR.Paleontology_View WHERE Sample_ID = ?";
-			data[0] = new Integer(Integer.parseInt(sampID));
-			rs = connection.executeQuery(query, types, data);
-			preserveStatement = connection.preservePreparedStatement();
-			while (rs.next()) {
-				out.println("<tr><td colspan='2' class='bigheading'>Paleontology Data</td></tr>");
-				recID = rs.getString(1);
-				//identifiers (repeating)
-				query = "SELECT COUNT(*) FROM Identifier WHERE Record_ID = ?";
-				data[0] = new Integer(Integer.parseInt(recID));
-				rs2 = frConn.executeQuery(query, types, data);
-				rs2.next();
-				if (rs2.getInt(1) > 0) {
-					out.print("<tr><td rowspan='" + rs2.getString(1) + "' class='heading'>Identifiers</td>");
-					query = "SELECT Name FROM Person_View P, Identifier I WHERE P.Person_ID = I.Person_ID AND I.Record_ID = ? ORDER BY Name";
-					data[0] = new Integer(Integer.parseInt(recID));
-					rs2 = frConn.executeQuery(query, types, data);
-					rs2.next();
-					out.println("<td>" + rs2.getString(1) + "</td></tr>");
-					while (rs2.next()) {
-						out.println("<tr><td>" + rs2.getString(1) + "</td></tr>");
-					}
-				}
-				if (rs.getString(2) != null) {
-					out.print("<tr><td class='heading'>Identification Date</td><td>" + FREDUtils.formatDateForOutput(rs.getDate(2), rs.getString(3)) + "</td></tr>");
-				}
-				if (rs.getString(4) != null) { out.println("<tr><td class='heading'>Stage</td><td>" + rs.getString(4) + "</td></tr>"); }
-				if (rs.getString(5) != null) { out.println("<tr><td class='heading'>Stage Comments</td><td>" + rs.getString(5) + "</td></tr>"); }
-				if (rs.getString(6) != null) { out.println("<tr><td class='heading'>Lab</td><td>" + rs.getString(6) + "</td></tr>"); }
-				if (rs.getString(7) != null) { out.println("<tr><td class='heading'>Lab Number</td><td>" + rs.getString(7) + "</td></tr>"); }
-				if (rs.getString(8) != null) { out.println("<tr><td class='heading'>Collection Comments</td><td>" + rs.getString(8) + "</td></tr>"); }
-				//taxa (double repeating)
-				query = "SELECT COUNT(*) FROM Pal_List WHERE Record_ID = ?";
-				data[0] = new Integer(Integer.parseInt(recID));
-				rs2 = frConn.executeQuery(query, types, data);
-				rs2.next();
-				if (rs2.getInt(1) > 0) {
-					out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
-					query = "SELECT DISTINCT P.Group_ID, L.Name FROM Pal_List P, Lookup L WHERE P.Group_ID = L.Lookup_ID AND P.Record_ID = ? ORDER BY P.Group_ID";
-					data[0] = new Integer(Integer.parseInt(recID));
-					rs2 = frConn.executeQuery(query, types, data);
-					preserveStatement2 = frConn.preservePreparedStatement();
-					while (rs2.next()) {
-						out.println("<tr><td colspan='4' class='heading'>" + rs2.getString(2) + "</td></tr>");
-						query = "SELECT * FROM Pal_List WHERE Record_ID = ? AND Group_ID = ? AND Taxonomic_Name IS NOT NULL";
-						doubleData[0] = new Integer(Integer.parseInt(recID));
-						doubleData[1] = new Integer(rs2.getInt(1));
-						rs3 = frConn.executeQuery(query, doubleTypes, doubleData);
-						if (rs3.next()) {
-							out.print("<tr class='heading'><td>Taxonomic Name&nbsp;&nbsp;</td>");
-							if (authorChk) { out.print("<td>Author&nbsp;&nbsp;</td>"); }
-							if (sCountChk) { out.print("<td>Spec Count&nbsp;&nbsp;</td>"); }
-							if (sCoordChk) { out.print("<td>Spec Coord&nbsp;&nbsp;</td>"); }
-							if (commChk) { out.print("<td>Comments&nbsp;&nbsp;</td>"); }
-							out.println("</tr>");
-							query = "SELECT P.Taxonomic_Name, T.Author, P.Specimen_Count, P.Specimen_Coords, P.Comments FROM Pal_List P, Taxonomic_Lookup T WHERE P.Taxa_ID = T.Taxa_ID AND Record_ID = ? AND T.Group_ID = ? ORDER BY P.Taxonomic_Name";
-							doubleData[0] = new Integer(Integer.parseInt(recID));
-							doubleData[1] = new Integer(rs2.getInt(1));
-							rs3 = frConn.executeQuery(query, doubleTypes, doubleData);
-							while (rs3.next()) {
-								out.print("<tr><td>" + rs3.getString(1) + "&nbsp;&nbsp;</td>");
-								if (authorChk) { out.print("<td><i>" + noNulls(rs3.getString(2)) + "</i>&nbsp;&nbsp;</td>"); }
-								if (sCountChk) { out.print("<td>" + noNulls(rs3.getString(3)) + "&nbsp;&nbsp;</td>"); }
-								if (sCoordChk) { out.print("<td>" + noNulls(rs3.getString(4)) + "&nbsp;&nbsp;</td>"); }
-								if (commChk) { out.print("<td>" + noNulls(rs3.getString(5)) + "&nbsp;&nbsp;</td>"); }
-								out.println("</tr>");
+			for (Iterator i = fullSample.getAsVector(FullSample.RECORD).iterator(); i.hasNext(); ) {
+				KeyValueObject rec = (KeyValueObject)i.next();
+				out.println("<tr><td>" + rec.getKey() + ":" + rec.getValue() + "</td></tr>");
+				if (rec.getValue().equals("ADO")) {
+					try {
+						FullAdoptionRecord ado = FullAdoptionRecord.getFullAdoptionRecord(Integer.parseInt(rec.getKey()), user, state);
+						out.println("<tr><td colspan='2' class='bigheading'>Adoption Data</td></tr>");
+						//adoptors (repeating)
+						if (ado.get(FullAdoptionRecord.ADOPTOR) != null) {
+							out.print("<tr><td class='heading'>Adoptors</td><td>");
+							for (Iterator i2 = ado.getAsVector(FullAdoptionRecord.ADOPTOR).iterator(); i2.hasNext(); ) {
+								KeyValueObject coll = (KeyValueObject)i2.next();
+								out.print(coll.getValue() + "<br />");
 							}
-						} else {
-							out.println("<tr><td colspan='4'>No fossils listed</td></tr>");
+							out.print("</td></tr>");
 						}
-						out.println("<tr><td><img src='images/blank.gif' height='10' width='1' /></td></tr>");
-					}
-					preserveStatement2.close();
-					out.println("</td></tr></table></td></tr>");
-				}
-	/*			//Image/Files
-				MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
-				if (mr != null) {
-					out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
-					out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
-					int y = 1;
-					out.print("<tr>");
-					for (int x = 0; x < mr.length; x++) {
-						if (y++ == 5) {
-							out.println("</tr><tr>");
-							y = 2;
+						if (ado.get(FullAdoptionRecord.ADOPTION_DATE) != null) { out.print("<tr><td class='heading'>Adoption Date</td><td>" + FREDUtils.formatDateForOutput(ado.getAsDate(FullAdoptionRecord.ADOPTION_DATE), ado.getAsString(FullAdoptionRecord.DATE_ROUNDING)) + "</td></tr>"); }
+						if (ado.get(FullAdoptionRecord.ADOPTED_STAGE) != null) { out.println("<tr><td class='heading'>Adopted Stage</td><td>" + ado.getAsString(FullAdoptionRecord.ADOPTED_STAGE) + "</td></tr>"); }
+						if (ado.get(FullAdoptionRecord.COMMENTS) != null) { out.println("<tr><td class='heading'>Comments</td><td>" + ado.getAsString(FullAdoptionRecord.COMMENTS) + "</td></tr>"); }
+			/*			//Image/Files
+						MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
+						if (mr != null) {
+							out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
+							out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
+							int y = 1;
+							out.print("<tr>");
+							for (int x = 0; x < mr.length; x++) {
+								if (y++ == 5) {
+									out.println("</tr><tr>");
+									y = 2;
+								}
+								out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
+							}
+							out.println("</td></tr></table></td></tr>");
 						}
-						out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
+			*/			out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
+					} catch (Exception e) {
 					}
-					out.println("</td></tr></table></td></tr>");
 				}
-	*/		}
-			preserveStatement.close();
+			}
+
+			//Paleontology
+			for (Iterator i = fullSample.getAsVector(FullSample.RECORD).iterator(); i.hasNext(); ) {
+				KeyValueObject rec = (KeyValueObject)i.next();
+				out.println("<tr><td>" + rec.getKey() + ":" + rec.getValue() + "</td></tr>");
+				if (rec.getValue().equals("PAL")) {
+					try {
+						FullPaleontologyRecord pal = FullPaleontologyRecord.getFullPaleontologyRecord(Integer.parseInt(rec.getKey()), user, state);
+						out.println("<tr><td colspan='2' class='bigheading'>Paleontology Data</td></tr>");
+						//identifiers (repeating)
+						if (pal.get(FullPaleontologyRecord.IDENTIFIER) != null) {
+							out.print("<tr><td class='heading'>Identifiers</td><td>");
+							for (Iterator i2 = pal.getAsVector(FullPaleontologyRecord.IDENTIFIER).iterator(); i2.hasNext(); ) {
+								KeyValueObject coll = (KeyValueObject)i2.next();
+								out.print(coll.getValue() + "<br />");
+							}
+							out.print("</td></tr>");
+						}
+						if (pal.get(FullPaleontologyRecord.IDENTIFICATION_DATE) != null) { out.print("<tr><td class='heading'>Identification Date</td><td>" + FREDUtils.formatDateForOutput(pal.getAsDate(FullPaleontologyRecord.IDENTIFICATION_DATE), pal.getAsString(FullPaleontologyRecord.DATE_ROUNDING)) + "</td></tr>"); }
+						if (pal.get(FullPaleontologyRecord.STAGE) != null) { out.println("<tr><td class='heading'>Stage</td><td>" + pal.getAsString(FullPaleontologyRecord.STAGE) + "</td></tr>"); }
+						if (pal.get(FullPaleontologyRecord.STAGE_COMMENTS) != null) { out.println("<tr><td class='heading'>Stage Comments</td><td>" + pal.getAsString(FullPaleontologyRecord.STAGE_COMMENTS) + "</td></tr>"); }
+						if (pal.get(FullPaleontologyRecord.LAB) != null) { out.println("<tr><td class='heading'>Lab</td><td>" + pal.getAsString(FullPaleontologyRecord.LAB) + "</td></tr>"); }
+						if (pal.get(FullPaleontologyRecord.LAB_NUMBER) != null) { out.println("<tr><td class='heading'>Lab Number</td><td>" + pal.getAsString(FullPaleontologyRecord.LAB_NUMBER) + "</td></tr>"); }
+						if (pal.get(FullPaleontologyRecord.COLLECTION_COMMENTS) != null) { out.println("<tr><td class='heading'>Collection Comments</td><td>" + pal.getAsString(FullPaleontologyRecord.COLLECTION_COMMENTS) + "</td></tr>"); }
+
+						//taxa (double repeating)
+						if (pal.get(FullPaleontologyRecord.TAXONOMIC_LIST) != null) {
+							out.println("<tr><td colspan='2'><table border='0' cellspacing='0' cellpadding='2'>");
+							for (Iterator i2 = pal.getAsVector(FullPaleontologyRecord.TAXONOMIC_LIST).iterator(); i2.hasNext(); ) {
+								TaxaGroup taxaGroup = (TaxaGroup)i2.next();
+								out.println("<tr><td colspan='4' class='heading'>" + taxaGroup.getGroupName() + "</td></tr>");
+								if (taxaGroup.getTaxaList() != null) {
+									out.print("<tr class='heading'><td>Taxonomic Name&nbsp;&nbsp;</td>");
+									if (authorChk) { out.print("<td>Author&nbsp;&nbsp;</td>"); }
+									if (sCountChk) { out.print("<td>Spec Count&nbsp;&nbsp;</td>"); }
+									if (sCoordChk) { out.print("<td>Spec Coord&nbsp;&nbsp;</td>"); }
+									if (commChk) { out.print("<td>Comments&nbsp;&nbsp;</td>"); }
+									out.println("</tr>");
+									for (Iterator i3 = taxaGroup.getTaxaList().iterator(); i3.hasNext(); ) {
+										Taxa taxa = (Taxa)i3.next();
+										out.print("<tr><td>" + taxa.getTaxonomicName() + "&nbsp;&nbsp;</td>");
+										if (authorChk) { out.print("<td><i>" + noNulls(taxa.getAuthor()) + "</i>&nbsp;&nbsp;</td>"); }
+										if (sCountChk) { out.print("<td>" + noNulls(String.valueOf(taxa.getSpecimenCount())) + "&nbsp;&nbsp;</td>"); }
+										if (sCoordChk) { out.print("<td>" + noNulls(taxa.getSpecimenCoords()) + "&nbsp;&nbsp;</td>"); }
+										if (commChk) { out.print("<td>" + noNulls(taxa.getComments()) + "&nbsp;&nbsp;</td>"); }
+										out.println("</tr>");
+									}
+								} else {
+									out.println("<tr><td colspan='4'>No fossils listed</td></tr>");
+								}
+								out.println("<tr><td><img src='images/blank.gif' height='10' width='1' /></td></tr>");
+							}
+							out.println("</td></tr></table></td></tr>");
+						}
+			/*			//Image/Files
+						MetadataRecord[] mr = attacher.getDocumentsForId(Integer.parseInt(recID));
+						if (mr != null) {
+							out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
+							out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
+							int y = 1;
+							out.print("<tr>");
+							for (int x = 0; x < mr.length; x++) {
+								if (y++ == 5) {
+									out.println("</tr><tr>");
+									y = 2;
+								}
+								out.print("<td width='150' align='center' class='smalltext'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "'><br />" + mr[x].getTitle() + "</td>");
+							}
+							out.println("</td></tr></table></td></tr>");
+						}
+			*/		} catch (Exception e) {
+					}
+				}
+			}
 	
 			if (user ==  null) { out.println("<tr><td colspan='2'>More data may be available for this locality for <a href='login.jsp?loginpage=" + URLEncoder.encode("/fred/detail.jsp") + "' class='boldlink'>logged</a> in users</td></tr>"); }
 			out.println("</table></td></tr></table>");

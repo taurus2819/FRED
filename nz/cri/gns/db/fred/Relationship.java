@@ -2,23 +2,20 @@ package nz.cri.gns.db.fred;
 
 public class Relationship {
 
-	private String relationshipType;
 	private String relationship;
-	private int relatedFeatureId;
+	private String relationshipType;
+	private String distanceRelation;
+	private Integer relatedFeatureId;
+	private String relatedSampleName;
 	private String relatedStratUnit;
-	private double distance;
-	private int typeId;
-	private String type;
+	private Double distance;
+	private Double distanceRange;
+	private String distanceMod;
+	private Integer relationTypeId;
+	private String relationType;
 
-	public Relationship() {
-	}
-
-	public void setRelationshipType(String relationshipType) {
-		this.relationshipType = relationshipType;
-	}
-
-	public String getRelationshipType() {
-		return relationshipType;
+	public Relationship(String relationship) {
+		this.relationship = relationship;
 	}
 
 	public void setRelationship(String relationship) {
@@ -28,13 +25,37 @@ public class Relationship {
 	public String getRelationship() {
 		return relationship;
 	}
+	
+	public void setRelationshipType(String relationshipType) {
+		this.relationshipType = relationshipType;
+	}
 
-	public void setRelatedFeatureId(int relatedFeatureID) {
+	public String getRelationshipType() {
+		return relationshipType;
+	}
+
+	public void setDistanceRelation(String distanceRelation) {
+		this.distanceRelation = distanceRelation;
+	}
+
+	public String getDistanceRelation() {
+		return distanceRelation;
+	}
+
+	public void setRelatedFeatureId(Integer relatedFeatureID) {
 		this.relatedFeatureId = relatedFeatureID;
 	}
 
-	public int getRelatedFeatureId() {
+	public Integer getRelatedFeatureId() {
 		return relatedFeatureId;
+	}
+
+	public void setRelatedSampleName(String relatedSampleName) {
+		this.relatedSampleName = relatedSampleName;
+	}
+
+	public String getRelatedSampleName() {
+		return relatedSampleName;
 	}
 
 	public void setRelatedStratUnit(String relatedStratUnit) {
@@ -45,28 +66,44 @@ public class Relationship {
 		return relatedStratUnit;
 	}
 
-	public void setDistance(double distance) {
+	public void setDistance(Double distance) {
 		this.distance = distance;
 	}
 
-	public double getDistance() {
+	public Double getDistance() {
 		return distance;
 	}
 
-	public void setTypeId(int typeId) {
-		this.typeId = typeId;
+	public void setDistanceRange(Double distanceRange) {
+		this.distanceRange = distanceRange;
 	}
 
-	public int getTypeId() {
-		return typeId;
+	public Double getDistanceRange() {
+		return distanceRange;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setDistanceMod(String distanceMod) {
+		this.distanceMod = distanceMod;
 	}
 
-	public String getType() {
-		return type;
+	public String getDistanceMod() {
+		return distanceMod;
+	}
+
+	public void setRelationTypeId(Integer typeId) {
+		this.relationTypeId = typeId;
+	}
+
+	public Integer getRelationTypeId() {
+		return relationTypeId;
+	}
+
+	public void setRelationType(String type) {
+		this.relationType = type;
+	}
+
+	public String getRelationType() {
+		return relationType;
 	}
 
 }

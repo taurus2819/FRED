@@ -2,19 +2,17 @@ package nz.cri.gns.db.fred;
 
 public class SedFeature {
 
-	private int sedFeatureId;
 	private String sedFeature;
+	private Integer sedFeatureId;
+	private String feat;
 	private String abundant;
 
-	public SedFeature() {
+	public SedFeature(String sedFeature) {
+		this.sedFeature = sedFeature;
 	}
 
-	public void setSedFeatureId(int sedFeatureId) {
-		this.sedFeatureId = sedFeatureId;
-	}
-
-	public int getSedFeatureId() {
-		return sedFeatureId;
+	public String toString() {
+		return sedFeature;
 	}
 
 	public void setSedFeature(String sedFeature) {
@@ -23,6 +21,22 @@ public class SedFeature {
 
 	public String getSedFeature() {
 		return sedFeature;
+	}
+	
+	public void setSedFeatureId(Integer sedFeatureId) {
+		this.sedFeatureId = sedFeatureId;
+	}
+
+	public Integer getSedFeatureId() {
+		return sedFeatureId;
+	}
+
+	public void setFeat(String feat) {
+		this.feat = feat;
+	}
+
+	public String getFeat() {
+		return feat;
 	}
 
 	public void setAbundant(String abundant) {
