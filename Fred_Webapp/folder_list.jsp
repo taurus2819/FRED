@@ -5,7 +5,7 @@
 	PageState state = new PageState(request, response, getServletContext());
 
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 
 	if (request.getParameter("ActionType") != null) { //do something
 		String actionType = request.getParameter("ActionType");
@@ -18,6 +18,7 @@
 			} catch (Exception e) {}
 		}
 		response.sendRedirect("folder_list.jsp");
+		return;
 	}
 
 	drawTop(out, et, request, response);

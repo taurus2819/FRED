@@ -7,32 +7,22 @@
 	ResultSet rs;
 	User user = getUser(session);
 	int userID = user.getPersonId(), execUp, i, userRightValue[], maxRights, rightCode = 0;
-	String foldType, userRight[], foldID;
+	String userRight[];
 	userRightValue = new int[10];
 	userRight = new String[10];
 	ComboDescriptor cd;
 
 	ExtranetTemplate et = getExtranetTemplate();
 
-	drawTop(out, et, request, response);
-
-	out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
-	out.println("<tr><td><a href='folder_list.jsp' title='Back to Folders'><img src='images/back_arrow.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_list.jsp' class='heading'>Back to Folders</a></td></tr>");
-	out.println("</table>");
-
-	drawEndNavigation(out);
-
-	out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-	out.println("<tr><td>");
-	
 	if (request.getParameter("FoldID") != null) {
-		foldID = request.getParameter("FoldID");
-		rs =statement.executeQuery("SELECT Folder_Name, Folder_Owner, User_Rights, Folder_Type FROM Folder_View WHERE User_ID = " + userID + " AND Folder_ID = " + foldID);
+		String foldID = request.getParameter("FoldID");
+		
+		rs = statement.executeQuery("SELECT Folder_Name, Folder_Owner, User_Rights, Folder_Type FROM Folder_View WHERE User_ID = " + userID + " AND Folder_ID = " + foldID);
 		if (rs.next() && (rs.getInt(3) & 32) == 32) { //to get past this if statement user must either be the owner of the folder or have admin rights
-			out.println("<p><span class='bigheading'>Folder: " + rs.getString(1) + "</span><br>");
-			out.println("<span class='heading'>Owner: " + rs.getString(2) + "</span></p>");
-						foldType = rs.getString(4);
-
+			String folderName = rs.getString(1);
+			String folderOwner = rs.getString(2);
+			String foldType = rs.getString(4);
+			
 			//build array of rights
 			if (foldType.equals("personal")) {
 				rs = statement.executeQuery("SELECT Name, Code FROM Lookup WHERE FieldName = 'FolderRight' AND Code NOT IN ('1', '64') ORDER BY Lookup_ID");
@@ -45,7 +35,7 @@
 				userRightValue[i] = rs.getInt(2);
 			}
 			maxRights = ++i;
-
+	
 			//process any changes
 			if (request.getParameter("ActionType") != null) {
 				String actionType = request.getParameter("ActionType");
@@ -59,7 +49,22 @@
 					execUp = statement.executeUpdate("UPDATE Folder_User SET User_Rights = User_Rights + " + request.getParameter("Right") + " WHERE User_ID = " + request.getParameter("UserID") + " AND Folder_ID = " + foldID);
 				}
 				response.sendRedirect("folder_user.jsp?FoldID=" + foldID);
+				return;
 			}
+	
+			drawTop(out, et, request, response);
+	
+			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
+			out.println("<tr><td><a href='folder_list.jsp' title='Back to Folders'><img src='images/back_arrow.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_list.jsp' class='heading'>Back to Folders</a></td></tr>");
+			out.println("</table>");
+		
+			drawEndNavigation(out);
+		
+			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
+			out.println("<tr><td>");
+
+			out.println("<p><span class='bigheading'>Folder: " + folderName + "</span><br>");
+			out.println("<span class='heading'>Owner: " + folderOwner + "</span></p>");
 
 			out.println("<p>The users listed below have rights to this folder.<br>Users can be added or deleted from this list and their rights altered by clicking on the <img src='images/ok.gif' width='20' height='20' border='0' /> or <img src='images/cancel.gif' width='20' height='20' border='0' /> icons.</p>");
 
@@ -96,15 +101,17 @@
 				out.println("</tr>");
 			}
 			out.println("</table></p>");
+			out.println("</table>");
+			out.println("</td></tr></table>");
 		}
 		else { //no rights
 			out.println("<p><span class='subhead'>Access denied</span></p>Either there is no folder matching the ID you entered or you have insufficient rights to edit the folder.  Click <a href='index.jsp' class='fname'>here</a> to return to the FRED home page.");
 		}
+	} else {
+		drawTop(out, et, request, response);
+		drawEndNavigation(out);
 	}
 
-	out.println("</table>");
-
-	out.println("</td></tr></table>");
 	drawBottom(out, et);
 
 %>

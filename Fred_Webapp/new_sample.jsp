@@ -6,8 +6,26 @@
 	ComboDescriptor cd;
 
 	ExtranetTemplate et = getExtranetTemplate();
+	et.setDisplayLoadingMessage(true);
 
-	drawTop(out, et, request, response);
+	if (request.getParameter("FeatID") != null && request.getParameter("FoldID") != null) {
+		String featID = request.getParameter("FeatID");
+		String foldID = request.getParameter("FoldID");
+
+		Feature feature = new Feature(Integer.parseInt(featID), user, state);
+		Folder folder = new Folder(Integer.parseInt(foldID), user, state);
+		if (folder.isAllowedCreateLocalities()) {
+			if (!feature.getAsString(Feature.FEATURE_TYPE).equals("Outcrop")) {
+			
+				if (request.getParameter("ActionType") != null) {
+					try {
+						feature.addNewSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"));
+					} catch (Exception e) {}
+					response.sendRedirect("folder_feature_detail.jsp?FeatID=" + featID + "&FoldID=" + foldID);
+					return;
+				}
+				
+				drawTop(out, et, request, response);
 %>
 <script language='JavaScript'>
 
@@ -39,22 +57,7 @@ function checkDrill() {
 
 </script>
 
-<%	if (request.getParameter("FeatID") != null && request.getParameter("FoldID") != null) {
-		String featID = request.getParameter("FeatID");
-		String foldID = request.getParameter("FoldID");
-
-		Feature feature = new Feature(Integer.parseInt(featID), user, state);
-		Folder folder = new Folder(Integer.parseInt(foldID), user, state);
-		if (folder.isAllowedCreateLocalities()) {
-			if (!feature.getAsString(Feature.FEATURE_TYPE).equals("Outcrop")) {
-			
-				if (request.getParameter("ActionType") != null) {
-					try {
-						feature.addNewSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"));
-					} catch (Exception e) {}
-					response.sendRedirect("folder_feature_detail.jsp?FeatID=" + featID + "&FoldID=" + foldID);
-				}
-	
+<%
 				out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
 				out.println("<tr><td colspan='2' align='center'><img src='images/drill.gif' height='20' width='20' /></td></tr>");
 				out.println("<tr><td colspan='2' class='bigheading' align='center'>" + feature.getAsString(Feature.SAMPLE_NAMES) + "</td></tr>");
@@ -91,13 +94,19 @@ function checkDrill() {
 				out.println("</td></tr></table>");
 	
 			} else {
+				drawTop(out, et, request, response);
 				drawEndNavigation(out);	
 				out.println("No drillhole/vertical section found");
 			}
 		} else {
+			drawTop(out, et, request, response);
 			drawEndNavigation(out);
 			out.println("You don't have sufficient rights to create samples in this folder");
 		}
+	}
+	else {
+		drawTop(out, et, request, response);
+		drawEndNavigation(out);
 	}
 	drawBottom(out, et);
 

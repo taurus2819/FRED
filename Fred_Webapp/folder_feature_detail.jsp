@@ -6,8 +6,6 @@
 
 	ExtranetTemplate et = getExtranetTemplate();
 
-	drawTop(out, et, request, response);
-
 	if (request.getParameter("FoldID") != null && request.getParameter("FeatID") != null) {
 		int featID = Integer.parseInt(request.getParameter("FeatID"));
 
@@ -58,7 +56,10 @@
 			} catch (Exception e) {
 			}
 			response.sendRedirect("folder_feature_detail.jsp?FoldID=" + folder.getFolderID() + "&FeatID=" + featID);
+			return;
 		}
+
+		drawTop(out, et, request, response);
 
 		if (folder.isAllowedReadLocalities() && ok) {
 			Feature feature = new Feature(featID, user, state, true);
@@ -215,6 +216,7 @@
 			out.println("</table></p>");
 
 			out.println("</form>");
+			out.println("</td></tr></table>");
 		}
 		else { //no folder found
 			drawEndNavigation(out);
@@ -222,7 +224,10 @@
 			out.println("You don't have rights to edit this locality</p>");
 		}
 	}
+	else {
+		drawTop(out, et, request, response);
+		drawEndNavigation(out);
+	}
 
-	out.println("</td></tr></table>");
 	drawBottom(out, et);
 %>

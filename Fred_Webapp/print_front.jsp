@@ -17,8 +17,8 @@
 			Feature feature = new Feature(Integer.parseInt(request.getParameter("FeatID")), user, state);
 			if (feature.get(Feature.SAMPLES) != null)
 				response.sendRedirect("print_front.jsp?ID=" + ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).toString());
-		} catch (Exception e) {
-		}
+				return;
+		} catch (Exception e) {}
 	}
 	
 	out.println("<!DOCTYPE html ");

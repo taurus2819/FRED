@@ -7,8 +7,6 @@
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
 
-	drawTop(out, et, request, response);
-
 	if (request.getParameter("ID") != null) {
 		Folder folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state, true);
 		String redirect = URLEncoder.encode("folder_detail.jsp?ID=" + folder.getFolderID(), "UTF-8");
@@ -36,9 +34,12 @@
 			} catch (Exception e) {
 				err = "&ErrMsg=" + URLEncoder.encode("An Error has occured", "UTF-8");
 			}
-			//response.sendRedirect("folder_detail.jsp?ID=" + folder.getFolderID() + err);
-			folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state, true);
+			response.sendRedirect("folder_detail.jsp?ID=" + folder.getFolderID() + err);
+			return;
+			//folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state, true);
 		}
+
+		drawTop(out, et, request, response);
 
 		if (folder.isAllowedReadLocalities()) {
 			
@@ -156,6 +157,7 @@
 			}
 			out.println("</table></p>");  */
 			out.println("</form>");
+			out.println("</td></tr></table>");
 		}
 		else { //no folder found
 			drawEndNavigation(out);
@@ -163,7 +165,10 @@
 			out.println("<p>An incorrect parameter has been recieved by this page.  Please press the Back button and try again</p>");
 		}
 	}
+	else {
+		drawTop(out, et, request, response);
+		drawEndNavigation(out);
+	}
 
-	out.println("</td></tr></table>");
 	drawBottom(out, et);
 %>
