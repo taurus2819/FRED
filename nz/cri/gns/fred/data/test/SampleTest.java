@@ -23,7 +23,7 @@ public class SampleTest extends TestCase {
 		super(arg0);
 		Sample.purge();
 		this.state = new TestingPageState();
-			DBConnection ipConn = FREDUtils.getIPConnection(state);
+		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		try {
 			this.user = new User("pseudo_ben", "santor32", ipConn);
 			this.user2 = new User("test", "test", ipConn);
@@ -31,7 +31,12 @@ public class SampleTest extends TestCase {
 		}
 	}
 
-
+	public void testSample() throws SQLException, IOException, InvalidCredentialsException {
+		Sample.purge();
+		Sample s1 = new Sample(83465, this.user, this.state);
+		System.out.println(s1.getAsString(Sample.SAMPLE_NAME));
+	}
+	
 	public void _testPooling() throws NotBoundException, SQLException, IOException {
 		Sample.purge();
 		Sample sv1 = new Sample(390, this.user, this.state);
@@ -99,7 +104,7 @@ public class SampleTest extends TestCase {
 		System.out.println(test1);
 	}
 
-	public void testRecords() throws SQLException, IOException, InvalidCredentialsException {
+	public void _testRecords() throws SQLException, IOException, InvalidCredentialsException {
 		Sample s = new Sample(1262, user, state);
 		System.out.println(s.getAsString(Sample.RECORDS));
 	}

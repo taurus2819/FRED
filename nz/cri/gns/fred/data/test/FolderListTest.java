@@ -28,7 +28,7 @@ public class FolderListTest extends TestCase {
 					"ip",
 					state.getContext());
 		try {
-			this.user = new User("pseudo_ben", "santor32", ipConn);
+			this.user = new User("test", "test", ipConn);
 		} catch (Exception e) {
 		}
 	}

@@ -9,6 +9,7 @@
 	ComboDescriptor cd;
 
 	ExtranetTemplate et = getExtranetTemplate();
+	et.setDisplayLoadingMessage(true);
 
 	drawTop(out, et, request, response);
 
@@ -31,7 +32,7 @@ function replaceSingleQuote(str1) {
 }
 
 function generateSQL(form) {
-	var queryString = "", whereSQL = "SV.Status = 'approved' AND ", tableName = "Sample_All_View SV", tableJoin = "", frNum, aStart = "", aStop = "", aQuery;
+	var queryString = "", whereSQL = "SV.Feature_Status = 'approved' AND ", tableName = "Sample_All_View SV", tableJoin = "", frNum, aStart = "", aStop = "", aQuery;
 	var recFlag = false, sampPropFlag = false, adoFlag = false, palFlag = false;
 	with (form) {
 		if (FRNum.value.length > 0) {
