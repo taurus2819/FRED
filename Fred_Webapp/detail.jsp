@@ -11,7 +11,7 @@
 	boolean authorChk = false, sCountChk = false, sCoordChk = false, commChk = true;
 
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 
 	//if FeatureID given then get SampleID or transer to drillhole
 	if (request.getParameter("FeatID") != null) {
@@ -106,9 +106,12 @@
 				if (audit.get(Audit.APPROVED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.APPROVED_DATE))); }
 				out.println("</td></tr>");
 			}
-			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
+
 			if (user != null) {
-			
+
+				out.println("<tr><td class=\"smallheading\"><a href=\"audit_detail.jsp?ID=" + sample.getSampleID() + "\" target=\"audit\">More...</a></td></tr>");
+
+				out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 				out.println("<tr><td colspan='2'><table border='0'>");
 				out.println("<tr><td><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;</td><td><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' class='heading' target='print'>Print Front</a></td></tr>");
 				if (sample.getPaleontologyRecordCount() > 0) {
@@ -116,10 +119,7 @@
 						KeyValueObject rec = (KeyValueObject)i.next();
 						if (rec.getValue().equals("PAL")) {
 							PaleontologyRecord pal = (PaleontologyRecord) PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state);
-							String ident = ((pal.get(Record.IDENTIFIER) != null) ? ((KeyValueObject) pal.getAsVector(Record.IDENTIFIER).firstElement()).getValue() : "");
-							String identDate = ((pal.get(Record.IDENTIFICATION_DATE) != null) ? FREDUtils.formatDateForOutput(pal.getAsDate(PaleontologyRecord.IDENTIFICATION_DATE), pal.getAsString(PaleontologyRecord.IDENTIFICATION_DATE_ROUNDING)) : "");
-							String identifier = ((ident.length() + identDate.length() > 0) ? "(" + ident + ((ident.length() > 0 && identDate.length() > 0) ? ", " : "") + identDate + ")" : "");
-							out.println("<tr><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;</td><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' class='heading' target='print'>Print Pal Record</br >" + identifier + "</a></td></tr>");
+							out.println("<tr><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;</td><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' class='heading' target='print'>Print Pal Record</br >" + pal + "</a></td></tr>");
 						}
 					}
 				}
@@ -258,7 +258,6 @@
 					}
 					out.print("</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.START_DATE), sample.getAsString(Sample.START_DATE_ROUNDING)) + "</td></tr>");
 				}
-				System.out.println(sample.getAsString(Sample.FINISH_DATE));
 				if (sample.isUserAuthenticated() && sample.get(Sample.FINISH_DATE) != null) {
 					out.print("<tr><td class='heading'>Completion Date</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.FINISH_DATE), sample.getAsString(Sample.FINISH_DATE_ROUNDING)) + "</td></tr>");
 				}
