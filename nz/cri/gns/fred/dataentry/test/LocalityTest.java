@@ -48,8 +48,7 @@ public class LocalityTest extends TestCase {
 		//this.state.setInstance("gns");
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		try {
-			//this.user = new User("test", "test", ipConn);
-			this.user = new User("ben", "St.Bathans", ipConn);
+			this.user = new User("test", "test", ipConn);
 		} catch (Exception e) {}
 	}
 
