@@ -14,7 +14,7 @@
 		out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
 		out.println("<tr><td colspan='2' align='center' class='heading'>Data Entry Error</td></tr>");
 		out.println("<tr><td>&nbsp;</td></tr>");
-		out.println("<tr><td><a href='" + request.getParameter("ErrorRedirect") + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + request.getParameter("ErrorRedirect") + "' class='heading'>Back to Data Entry</a></td></tr>");
+		out.println("<tr><td><a href='" + request.getParameter("ErrorRedirect") + "&Redirect=" + request.getParameter("Redirect") + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + request.getParameter("ErrorRedirect") + "&Redirect=" + request.getParameter("Redirect") + "' class='heading'>Back to Data Entry</a></td></tr>");
 		out.println("<tr><td><a href='" + request.getParameter("Redirect") + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + request.getParameter("Redirect") + "' class='heading'>Quit</a></td></tr>");
 		out.println("</table>");
 
