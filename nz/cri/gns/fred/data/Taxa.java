@@ -118,6 +118,7 @@ public class Taxa {
 			qd.addQueryColumn("submitted_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
 			qd.addQueryColumn("submitted_date", Types.DATE, Date.valueOf(FREDUtils.getNowForSQL()));
 			DBUtils.doInsertUsingSequence(qd, "taxa_id", "taxa_seq", conn, false);
+			TaxaPanel tp = new TaxaPanel(groupID.intValue(), user, state, true);
 		}
 	}
 

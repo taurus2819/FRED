@@ -20,6 +20,7 @@ import nz.cri.gns.fred.data.Record;
 import nz.cri.gns.fred.data.Sample;
 import nz.cri.gns.fred.data.Taxa;
 import nz.cri.gns.fred.data.TaxaGroup;
+import nz.cri.gns.fred.data.TaxonomicLookup;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.PageState;
 
@@ -30,6 +31,7 @@ public class PaleontologyRecordDE extends RecordDE {
 	private String lab;
 	private Vector taxaList;
 	private Vector badTaxaList;
+	private boolean nonApprovedTaxaFlag = false;
 
 	public PaleontologyRecordDE(User user, int sampleID, int folderID, PageState state) throws SQLException, IOException, DataInputException {
 		super(user, sampleID, folderID, Record.PALEONTOLOGY_RECORD, state);
@@ -126,6 +128,7 @@ public class PaleontologyRecordDE extends RecordDE {
 				case TAXA_LIST :
 					taxaList = new Vector();
 					badTaxaList = new Vector();
+					nonApprovedTaxaFlag = false;
 					while (value.length() > 0) {
 						if (value.indexOf("\n") == -1)
 							value =  value + "\n";
@@ -165,12 +168,16 @@ public class PaleontologyRecordDE extends RecordDE {
 							String cleanName = getCleanedName(taxaName);
 							//check TaxaName against thesaurus
 							try {
-								String query = "SELECT taxa_id FROM taxonomic_lookup WHERE group_id = ? AND taxonomic_name = ?";
+								String query = "SELECT taxa_id, status FROM taxonomic_lookup WHERE group_id = ? AND taxonomic_name = ?";
 								rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {taxa.getGroupID(), cleanName});
 								rs.next();
 								taxa.setTaxaID(new Integer(rs.getInt(1)));
 								taxa.setTaxonomicName(taxaName);
 								taxaList.add(taxa);
+								if (!rs.getString(2).equals(TaxonomicLookup.APPROVED_STATUS)) {
+									System.out.println("Status of " + taxaName + " is " + rs.getString(2));
+									nonApprovedTaxaFlag = true;
+								}
 							} catch (Exception e) {  // not valid name
 								taxa.setTaxonomicName(taxaName);
 								taxa.setCleanTaxonomicName(cleanName);
@@ -388,12 +395,15 @@ public class PaleontologyRecordDE extends RecordDE {
 	}
 	
 	protected void checkMandatoryFields() throws DataInputException {
-		try {
-			if (!FolderUtils.isTaxaApproved(record.getRecordID(), user, state))
-				throw new DataInputException("Mandatory Fields", "Not all taxonomic entries are approved");
-		} catch (Exception e) {
+		//try {
+		//	if (!FolderUtils.isTaxaApproved(record.getRecordID(), user, state))
+		//		throw new DataInputException("Mandatory Fields", "Not all taxonomic entries are approved");
+		//} catch (Exception e) {
+		System.out.println("BadTaxaSize: " + badTaxaList.size());
+		System.out.println("nonAppFlag: " + nonApprovedTaxaFlag);
+		if (badTaxaList.size() > 0 || nonApprovedTaxaFlag)
 			throw new DataInputException("Mandatory Fields", "Not all taxonomic entries are approved");
-		}
+		//}
 	}
 	
 	public static String getCleanedName(String cleanName) throws DataInputException {

@@ -100,14 +100,19 @@
 				dataEntryForm.setTempField(DataEntryForm.LAB_SECTION, request.getParameter("SectID"));
 				dataEntryForm.setTempField(DataEntryForm.LAB_NUMBER, request.getParameter("LabNum"));
 				dataEntryForm.setTempField(DataEntryForm.COLLECTION_COMMENTS, request.getParameter("CollComm"));
+				System.out.println(request.getParameter("Taxa"));
 				dataEntryForm.setTempField(DataEntryForm.TAXA_LIST, request.getParameter("Taxa"));
+
+				session.setAttribute("dataEntryForm", dataEntryForm);
+	
+				dataEntryForm.setFieldsFromTemp();
+
 			}
 
-			session.setAttribute("dataEntryForm", dataEntryForm);
-
-			dataEntryForm.setFieldsFromTemp();
+			System.out.println("OK");
 
 			if (request.getParameter("SaveType").equals("Submit")) {
+				System.out.println("Submitting");
 				dataEntryForm.submit();
 			} else {
 				dataEntryForm.save();
@@ -159,7 +164,7 @@
 				out.println("<tr><td>" + t.getGroupName() + "&nbsp;&nbsp;</td><td>" + t.getTaxonomicName() + "&nbsp;&nbsp;</td><td>" + t.getCleanTaxonomicName() + "&nbsp;&nbsp;</td><td>" + t.getAuthor() + "</td></tr>");
 			}
 			out.println("</table>");
-			out.println("<p><a href='data_proc.jsp?Action=SubmitTaxa&SaveType=" + request.getParameter("SaveType") + "&Redirect=" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit Taxa' /></a>&nbsp;<a href='data_proc.jsp?Action=SubmitTaxa&SaveType=" + request.getParameter("SaveType") + "&Redirect=" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "' class='boldlink'>Submit Taxa and " + request.getParameter("SaveType") + " record.</a></p>");
+			out.println("<p><a href='data_proc.jsp?Action=SubmitTaxa&SaveType=Save&Redirect=" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit Taxa' /></a>&nbsp;<a href='data_proc.jsp?Action=SubmitTaxa&SaveType=Save&Redirect=" + URLEncoder.encode(request.getParameter("Redirect"), "UTF-8") + "' class='boldlink'>Submit Taxa and Save Record.</a></p>");
 			out.println("<p>Note: No data has been saved yet.  You must either choose to submit the above taxa or return to the data entry form, edit and re-save</p>");
 		} catch (InvalidCredentialsException e) {
 			drawTop(out, et, request, response);

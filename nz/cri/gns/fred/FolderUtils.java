@@ -19,6 +19,7 @@ import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.PaleontologyRecord;
 import nz.cri.gns.fred.data.Record;
 import nz.cri.gns.fred.data.Sample;
+import nz.cri.gns.fred.data.TaxaPanel;
 import nz.cri.gns.fred.data.TaxonomicLookup;
 import nz.cri.gns.fred.dataentry.DataEntryFormFactory;
 import nz.cri.gns.fred.dataentry.DataInputException;
@@ -274,5 +275,33 @@ public class FolderUtils {
 		}
 		return true;
 	}
+	
+	public static void approveTaxa(String taxaID, String groupID, User user, PageState state) throws IOException, InvalidCredentialsException, SQLException {
+		if (!FREDUtils.isTaxaPanelMember(user, groupID, state))
+			throw new InvalidCredentialsException();
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		QueryDescriptor qd = new QueryDescriptor("taxonomic_lookup");
+		qd.addQueryColumn("status", Types.VARCHAR, TaxonomicLookup.APPROVED_STATUS);
+		qd.addQueryColumn("approved_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
+		qd.addQueryColumn("approved_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
+		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(taxaID));
+		DBUtils.doUpdate(qd, "taxa_id = ?", conn);
+		TaxonomicLookup tl = new TaxonomicLookup(Integer.parseInt(taxaID), user, state, true);
+		TaxaPanel tlp = new TaxaPanel(Integer.parseInt(groupID), user, state, true);
+	}
+	
+	public static void rejectTaxa(String taxaID, String groupID, User user, PageState state) throws IOException, InvalidCredentialsException, SQLException {
+		if (!FREDUtils.isTaxaPanelMember(user, groupID, state))
+			throw new InvalidCredentialsException();
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		QueryDescriptor qd = new QueryDescriptor("taxonomic_lookup");
+		qd.addQueryColumn("status", Types.VARCHAR, TaxonomicLookup.REJECTED_STATUS);
+		qd.addQueryColumn("approved_by_id", Types.NUMERIC, new Integer(user.getPersonId()));
+		qd.addQueryColumn("approved_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
+		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(taxaID));
+		DBUtils.doUpdate(qd, "taxa_id = ?", conn);
+		TaxonomicLookup tl = new TaxonomicLookup(Integer.parseInt(taxaID), user, state, true);
+		TaxaPanel tlp = new TaxaPanel(Integer.parseInt(groupID), user, state, true);
+	}	
 	
 }

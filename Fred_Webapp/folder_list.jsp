@@ -42,7 +42,6 @@
 	out.println("<table border='0' cellspacing='0' cellpadding='2' width='550'>");
 
 	FolderList folderList = new FolderList(user, state);
-
 	Vector folders = new Vector();
 
 	//List Working folders
@@ -76,7 +75,8 @@
 			Folder folder = new Folder(Integer.parseInt(kv.getKey()), user, state);
 			folders.add(folder);
 			out.print("<tr><td><a href='admin_folder_detail.jsp?ID=" + folder.getAsString(Folder.FOLDER_ID) + "' class='heading'>" + folder.getAsString(Folder.NAME) + "</a>&nbsp;&nbsp;</td><td style='font-size: 14pt; font-weight: bold; color: #FF0000'>");
-			if (folder.getLocalityCount() > 0) { out.print("*"); }
+			if (folder.getLocalityCount() > 0)
+				out.print("*");
 			out.print("&nbsp;</td><td>" + folder.getAsString(Folder.OWNER) + "&nbsp;&nbsp;</td><td>");
 			if (folder.isAllowedAdmin()) { 
 				out.print("<a href='folder_user.jsp?FoldID=" + folder.getAsString(Folder.FOLDER_ID) + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a>");
@@ -88,34 +88,25 @@
 
 	session.setAttribute("folders", folders);
 
+	TaxaPanelList panelList = new TaxaPanelList(user, state);
+	Vector panels = new Vector();
+
 	//List Taxonomic groups (if any)
-	nz.cri.gns.intranet.DBConnection connection = FREDUtils.getFREDConnection(state);
-	Statement statement = connection.statement;
-	Statement statement2 = connection.getExtraStatement();
-	ResultSet rs, rs2;
-	String query;
-	int[] types = {Types.NUMERIC};
-	Object data[];
-	data = new Object[1];
-	query = "SELECT * FROM Taxa_Panel_View WHERE Panelist_ID = ?";
-	data[0] = new Integer(user.getPersonId());
-	rs = connection.executeQuery(query, types, data);
-	if (rs.next()) {
-		query = "SELECT DISTINCT Group_ID, Group_Name FROM Taxa_Panel_View WHERE Panelist_ID = ? ORDER BY Group_Name";
-		rs = connection.executeQuery(query, types, data);
-		statement2 = connection.preservePreparedStatement();
+	if (panelList.getPanelCount() > 0) {
 		out.println("<tr><th>Taxonomic Groups<img src='images/blank.gif' width='20' height='1' /></th><td></td><td></td></th><th>Options</th></tr>");
 		out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
-		while (rs.next()) {
-			out.print("<tr><td><a href='taxa_group_detail.jsp?ID=" + rs.getString(1) + "' class='heading'>" + rs.getString(2) + "</a><img src='images/blank.gif' width='20' height='1' /></td><td style='font-size: 14pt; font-weight: bold; color: #FF0000'>");
-			query = "SELECT * FROM Taxonomic_Lookup WHERE Status = 'provisional' AND Group_ID = ?";
-			data[0] = new Integer(rs.getInt(1));
-			rs2 = connection.executeQuery(query, types, data);
-			if (rs2.next()) { out.print("*"); }
-			out.print("<img src='images/blank.gif' width='10' height='1' /></td><td></td><td><a href='taxa_panelist.jsp?GroupID=" + rs.getString(1) + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a></td></tr>");
+		for (Iterator i = panelList.getPanels().iterator(); i.hasNext(); ) {
+			KeyValueObject kv = (KeyValueObject) i.next();
+			TaxaPanel panel = new TaxaPanel(Integer.parseInt(kv.getKey()), user, state);
+			panels.add(panel);
+			out.print("<tr><td><a href='taxa_group_detail.jsp?ID=" + panel.getPanelID() + "' class='heading'>" + panel.getAsString(TaxaPanel.NAME) + "</a><img src='images/blank.gif' width='20' height='1' /></td><td style='font-size: 14pt; font-weight: bold; color: #FF0000'>");
+			if (panel.getProvisionalCount() > 0)
+				out.print("*");
+			out.print("<img src='images/blank.gif' width='10' height='1' /></td><td></td><td><a href='taxa_panelist.jsp?GroupID=" + panel.getPanelID() + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a></td></tr>");
 		}
-		statement2.close();
 	}
+	session.setAttribute("panels", panels);
+
 
 	out.println("</table>");
 
