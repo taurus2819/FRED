@@ -53,16 +53,17 @@ public abstract class Locality implements DataEntryForm {
 		fields[7] = sample.getAsString(Sample.RECOLLECTION_NUMBER);
 	}
 
-	public void setField(int field, String value) {
+	public void setField(int field, String value) throws DataInputException {
+		parseField(field, value);
 		fields[field] = value;
 	}
 
-	public void parseField(int field) throws DataInputException {
+	private void parseField(int field, String value) throws DataInputException {
 		try {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			switch (field) {
 				case 1:
-					ResultSet rs = conn.executeQuery("SELECT * FROM Lookup WHERE Lookup_ID = " + fields[1] + " AND FieldName = 'RegAreaID'");
+					ResultSet rs = conn.executeQuery("SELECT * FROM Lookup WHERE Lookup_ID = " + value + " AND FieldName = 'RegAreaID'");
 					if (!rs.next()) throw new DataInputException("Registration Area", "Invalid value");
 					break;
 				case 3:

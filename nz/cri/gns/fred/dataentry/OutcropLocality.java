@@ -18,7 +18,7 @@ public class OutcropLocality extends Locality {
 		fields[8] = "test";
 	}
 
-	public void parseField(int field) throws DataInputException {
+	private void parseField(int field) throws DataInputException {
 		// TODO Auto-generated method stub
 	}
 
