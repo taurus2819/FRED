@@ -159,7 +159,7 @@
 				} else {
 					out.print(latlong.format(Math.abs(fullSample.getAsDouble(FullSample.LATITUDE))) + "&#176S");
 				}
-				out.println("/");
+				out.print("/");
 				if (fullSample.getAsDouble(FullSample.LONGITUDE) > 0) {
 					out.print(latlong.format(fullSample.getAsDouble(FullSample.LONGITUDE)) + "&#176E");
 				} else {
