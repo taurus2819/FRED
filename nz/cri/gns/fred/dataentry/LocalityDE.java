@@ -570,33 +570,18 @@ public abstract class LocalityDE implements DataEntryForm {
 		save();
 		//change status, check MF & add saved record to folder
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		ResultSet rs =
-			conn.executeQuery(
-				"SELECT Code FROM Lookup WHERE FieldName = 'RegArea' AND Lookup_ID = "
-					+ fields[REGISTRATION_AREA]);
+		ResultSet rs = conn.executeQuery("SELECT Code FROM Lookup WHERE FieldName = 'RegArea' AND Lookup_ID = " + fields[REGISTRATION_AREA]);
 		rs.next();
 		String regCode = rs.getString(1);
-		rs =
-			conn.executeQuery(
-				"SELECT Audit_ID FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
+		rs = conn.executeQuery("SELECT Audit_ID FROM Feature WHERE Feature_ID = " + feature.getFeatureID());
 		rs.next();
 		String auditID = rs.getString(1);
-		rs =
-			conn.executeQuery(
-				"SELECT Which_Masterfile("
-					+ JspUtils.sqlEscape(regCode)
-					+ ", "
-					+ latitude
-					+ ", "
-					+ longitude
-					+ ") FROM DUAL");
+		System.out.println("SELECT Which_Masterfile(" + JspUtils.sqlEscape(regCode)	+ ", " + latitude + ", " + longitude + ") FROM DUAL");
+		rs = conn.executeQuery("SELECT Which_Masterfile(" + JspUtils.sqlEscape(regCode)	+ ", " + latitude + ", " + longitude + ") FROM DUAL");
 		rs.next();
 		String mfID = rs.getString(1);
-		conn.executeUpdate(
-			"UPDATE Feature SET Masterfile_ID = "
-				+ mfID
-				+ " WHERE Feature_ID = "
-				+ feature.getFeatureID());
+		System.out.println(mfID);
+		conn.executeUpdate("UPDATE Feature SET Masterfile_ID = " + mfID + " WHERE Feature_ID = " + feature.getFeatureID());
 		conn.executeUpdate(
 			"UPDATE Audit_Table SET Status = 'waiting', Submitted_By_ID = "
 				+ user.getPersonId()
