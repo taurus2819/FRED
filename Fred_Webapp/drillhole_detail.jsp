@@ -12,7 +12,7 @@
 	SimpleDateFormat yearFormatter = new SimpleDateFormat ("yyyy");
 	SimpleDateFormat monthFormatter = new SimpleDateFormat ("MMM yyyy");
 	User user = getUser(session);
-	String featID, palID, status = "";
+	String featType = "", featID, palID, status = "";
 	int i = 1, userRights = 0, execUp, userID = 0;
 
 	if (user != null) { userID = user.getPersonId(); }
@@ -39,9 +39,10 @@
 			out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
 			rs = statement.executeQuery("SELECT S.Feature_Name, S.Feature_Type, S.Masterfile_Name, S.Status, A.Created_By, A.Created_Date, A.Modified_By, A.Modified_Date, A.Submitted_By, A.Submitted_Date, A.Approved_By, A.Approved_Date FROM Sample_All_View S, Audit_View A WHERE S.Audit_ID = A.Audit_ID AND S.Feature_ID = " + featID);
 			rs.next();
+			featType = rs.getString(2);
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
 			out.println("<tr><td colspan='2' align='center' class='bigheading' >" + rs.getString(1) + "</td></tr>");
-			out.println("<tr><td colspan='2' align='center'>" + rs.getString(2) + "</td></tr>");
+			out.println("<tr><td colspan='2' align='center'>" + featType + "</td></tr>");
 			if (rs.getString(3) != null) {
 				out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + rs.getString(3) + "</td></tr>");
 			}
@@ -79,7 +80,7 @@
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");
 
-			rs = statement.executeQuery("SELECT NZMG_Sheet, NZMG_East, NZMG_North, Latitude, Longitude, Accuracy, Method, Locality FROM Sample_All_View WHERE Feature_ID = " + featID);
+			rs = statement.executeQuery("SELECT NZMG_Sheet, NZMG_East, NZMG_North, Latitude, Longitude, Accuracy, Method, Locality, Person, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Drillhole_Licence_Name, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth FROM Sample_All_View WHERE Feature_ID = " + featID);
 			rs.next();
 
 			out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
@@ -103,8 +104,68 @@
 				if (rs.getString(6) != null) { out.print(" (&#177 " + rs.getString(6) + "m)"); }
 				out.println("</td></tr>");
 			}
-			if (rs.getString(7) != null && userID != 0) { out.println("<tr><td class='heading' width='135'>Method</td><td>" + rs.getString(7) + "</td></tr>"); }
-			if (rs.getString(8) != null && userID != 0) { out.println("<tr><td class='heading' width='135'>Locality</td><td>" + rs.getString(8) + "</td></tr>"); }
+			if (userID != 0) {
+				if (rs.getString(7) != null) { out.println("<tr><td class='heading' width='135'>Method</td><td>" + rs.getString(7) + "</td></tr>"); }
+				if (rs.getString(8) != null) { out.println("<tr><td class='heading' width='135'>Locality</td><td>" + rs.getString(8) + "</td></tr>"); }
+				if (rs.getString(9) != null) {
+					out.print("<tr><td class='heading' width='135'>");
+					if (featType.equals("Drillhole")) {
+						out.print("Operating Company");
+					} else {
+						out.print("Section Collector");
+					}
+					out.println("</td><td>" + rs.getString(9) + "</td></tr>");
+				}
+				if (rs.getString(10) != null) {
+					out.print("<tr><td class='heading'>");
+					if (featType.equals("Drillhole")) {
+						out.print("SPUD Date");
+					} else {
+						out.print("Sampling Start Date");
+					}
+					out.print("</td><td>");
+					if (rs.getString(11) == null) {
+						out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(10)));
+					} else if (rs.getString(11).equals("Year")) {
+						out.print(yearFormatter.format(rs.getDate(10)));
+					} else if (rs.getString(11).equals("Month")) {
+						out.print(monthFormatter.format(rs.getDate(10)));
+					}
+					out.println("</td></tr>");
+				}
+				if (rs.getString(12) != null) {
+					out.print("<tr><td class='heading'>	Completion Date</td><td>");
+					if (rs.getString(13) == null) {
+						out.print(DateFormat.getDateInstance(DateFormat.LONG).format(rs.getDate(12)));
+					} else if (rs.getString(13).equals("Year")) {
+						out.print(yearFormatter.format(rs.getDate(12)));
+					} else if (rs.getString(13).equals("Month")) {
+						out.print(monthFormatter.format(rs.getDate(12)));
+					}
+					out.println("</td></tr>");
+				}
+				if (featType.equals("Drillhole") && rs.getString(14) != null) { out.println("<tr><td class='heading' width='135'>Licence Area</td><td>" + rs.getString(14) + "</td></tr>"); }
+				if (rs.getString(15) != null) { out.println("<tr><td class='heading' width='135'>Datum Type</td><td>" + rs.getString(15) + "</td></tr>"); }
+				if (rs.getString(16) != null) { out.println("<tr><td class='heading' width='135'>Datum Elevation</td><td>" + rs.getString(16) + " m asl</td></tr>"); }
+				if (rs.getString(17) != null) {
+					out.print("<tr><td class='heading' width='135'>");
+					if (featType.equals("Drillhole")) {
+						out.print("Kick-off Depth");
+					} else {
+						out.print("Top Horizon");
+					}
+					out.println("</td><td>" + rs.getString(17) + " m</td></tr>");
+				}
+				if (rs.getString(18) != null) {
+					out.print("<tr><td class='heading' width='135'>");
+					if (featType.equals("Drillhole")) {
+						out.print("Termination Depth");
+					} else {
+						out.print("Bottom Horizon");
+					}
+					out.println("</td><td>" + rs.getString(18) + " m</td></tr>");
+				}
+			}
 			out.println("</table></p>");
 
 			if (userID != 0) {

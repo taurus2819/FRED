@@ -24,7 +24,7 @@
 	Statement statement = connection.statement;
 	ResultSet rs;
 	ComboDescriptor cd;
-	String featID, sampID;
+	String featType = "", featID, sampID;
 	int execUp;
 
 	ExtranetTemplate et = getExtranetTemplate();
@@ -74,6 +74,7 @@ function checkDrill() {
 		
 		rs = statement.executeQuery("SELECT Feature_Type, Feature_Name FROM Feature WHERE Feature_ID = " + featID);
 		if(rs.next() && !rs.getString(1).equals("Outcrop")) {
+			featType = rs.getString(1);
 
 			out.println("<p><form name='sampForm' method='get' action='samp_select.jsp'>");
 
@@ -129,17 +130,21 @@ function checkDrill() {
 			out.println("<tr><td></td><td class='heading'>OR</td></tr>");
 			out.println("<tr><td class='heading'>Top Depth</td><td><input type='text' name='TopDepth'></td></tr>");
 			out.println("<tr><td class='heading'>Bottom Depth</td><td><input type='text' name='BottomDepth'></td></tr>");
-			out.println("<tr><td class='heading'>Type</td><td>");
-			cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
-			cd.name = "DrillType";
-			cd.join = "FieldName = 'DrillType'";
-			cd.orderBy = "Lookup_ID";
-			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
-			out.println("<tr><td>&nbsp</td></tr>");
-			out.println("<input type='hidden' name='FeatID' value='" + featID + "'>");
-			out.println("<input type='hidden' name='FoldID' value='" + request.getParameter("FoldID") + "'>");
-			out.println("<input type='hidden' name='ReturnURL' value='" + request.getParameter("ReturnURL") + "'>");
-			out.println("<input type='hidden' name='ActionType' value='Go'>");
+			if (featType.equals("Drillhole")) {
+				out.println("<tr><td class='heading'>Type</td><td>");
+				cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
+				cd.name = "DrillType";
+				cd.join = "FieldName = 'DrillType'";
+				cd.orderBy = "Lookup_ID";
+				HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+				out.println("<tr><td>&nbsp</td></tr>");
+			} else {
+				out.println("<input type='hidden' name='DrillType' value='' />");
+			}
+			out.println("<input type='hidden' name='FeatID' value='" + featID + "' />");
+			out.println("<input type='hidden' name='FoldID' value='" + request.getParameter("FoldID") + "' />");
+			out.println("<input type='hidden' name='ReturnURL' value='" + request.getParameter("ReturnURL") + "' />");
+			out.println("<input type='hidden' name='ActionType' value='Go'/ >");
 			out.println("</table></p>");
 			out.println("<p><a href='#' onClick='if(checkDrill()) {sampForm.submit();}' title='Select'><img src='images/ok.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /><a href='#' onClick='if(checkDrill()) {sampForm.submit();}' class='heading'>Select</a></p>");
 			out.println("</form>");

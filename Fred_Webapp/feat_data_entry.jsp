@@ -1,5 +1,5 @@
 <%@		page extends="nz.cri.gns.jsp.FREDIPSysJspPage"
-		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*, nz.cri.gns.util.map.*"
+		import="nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, java.text.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*, nz.cri.gns.util.map.*"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		try {
@@ -26,7 +26,9 @@
 	User user = getUser(session);
 	String formType, featID = "0", loadFeatID, foldID, featName = "", recoll = "", workComm = "", coord = "", locMethod = null, accuracy = "", loc = "", regAreaID = "400", person = "", startDate = "", finishDate = "", licArea = "", datumType = "", datumEl = "", startDepth = "", finishDepth = "";
 	int userID = user.getPersonId(), userRights = 0, execUp;
-	java.util.Date adoDate = new java.util.Date();
+	SimpleDateFormat dateFormatter = new SimpleDateFormat ("d/M/yyyy");
+	SimpleDateFormat monthDateFormatter = new SimpleDateFormat ("M/yyyy");
+	SimpleDateFormat yearDateFormatter = new SimpleDateFormat ("yyyy");
 	ComboDescriptor cd;
 
 	ExtranetTemplate et = getExtranetTemplate();
@@ -216,7 +218,7 @@ function parseDate(date, dateRnd) {
 				if (rs.next()) {
 					featName = noNulls(rs.getString(1));
 				}
-				rs = statement.executeQuery("SELECT Reg_Area_ID, Locality, Working_Comments, Drillhole_Licence_Name, Person, Start_Date, Finish_Date, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth FROM Sample_All_View WHERE Feature_ID = " + loadFeatID);
+				rs = statement.executeQuery("SELECT Reg_Area_ID, Locality, Working_Comments, Drillhole_Licence_Name, Person, Start_Date, Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth FROM Sample_All_View WHERE Feature_ID = " + loadFeatID);
 				rs.next();
 				if (rs.getString(1) != null) { regAreaID = rs.getString(1); }
 				loc = noNulls(rs.getString(2));
@@ -227,12 +229,28 @@ function parseDate(date, dateRnd) {
 				}
 				licArea = noNulls(rs.getString(4));
 				person = noNulls(rs.getString(5));
-				startDate = noNulls(rs.getString(6));
-				finishDate = noNulls(rs.getString(7));
-				datumType = noNulls(rs.getString(8));
-				datumEl = noNulls(rs.getString(9));
-				startDepth = noNulls(rs.getString(10));
-				finishDepth = noNulls(rs.getString(11));
+				if (rs.getString(6) != null) {
+					if (rs.getString(7) == null) {
+						startDate = dateFormatter.format(rs.getDate(6));
+					} else if (rs.getString(7).equals("Month")) {
+						startDate = monthDateFormatter.format(rs.getDate(6));
+					} else {
+						startDate = yearDateFormatter.format(rs.getDate(6));
+					}
+				}
+				if (rs.getString(8) != null) {
+					if (rs.getString(9) == null) {
+						finishDate = dateFormatter.format(rs.getDate(8));
+					} else if (rs.getString(9).equals("Month")) {
+						finishDate = monthDateFormatter.format(rs.getDate(8));
+					} else {
+						finishDate = yearDateFormatter.format(rs.getDate(8));
+					}
+				}
+				datumType = noNulls(rs.getString(10));
+				datumEl = noNulls(rs.getString(11));
+				startDepth = noNulls(rs.getString(12));
+				finishDepth = noNulls(rs.getString(13));
 				rs = statement.executeQuery("SELECT Orig_System_ID, Orig_Coord, Method_ID, Accuracy, Country_Code FROM SC.Site S, Feature F WHERE F.Site_ID = S.Site_ID AND F.Feature_ID = " + loadFeatID);
 				if (rs.next()) {
 					if (rs.getInt(1) == 38) { //Full NZMG

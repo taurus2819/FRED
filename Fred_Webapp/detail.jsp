@@ -185,7 +185,7 @@
 				} else { // VertSect
 					if (rs.getString(4) != null) { out.println("<tr><td class='heading'>Section Name</td><td><a href='drillhole_detail.jsp?ID=" + rs.getString(1) + "'>" + rs.getString(4) + "</a></td></tr>"); }
 					if (rs.getString(13) != null) { out.println("<tr><td class='heading'>Sample Depth</td><td>" + rs.getString(13) + "</td></tr>"); }
-					out.println("<tr><td class='heading'>Other Drillhole Samples</td><td>");
+					out.println("<tr><td class='heading'>Other Section Samples</td><td>");
 					//check for samples above and below current one
 					rs2 = statement2.executeQuery("SELECT Sample_ID, Sample_Name, Drillhole_Depth FROM Sample_All_View WHERE Feature_ID = " + rs.getString(1) + " AND Top_Depth IS NOT NULL ORDER BY Top_Depth");
 					String dholeID = "", dholeSampName = "", dhole = "";

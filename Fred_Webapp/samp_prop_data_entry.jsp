@@ -346,7 +346,7 @@ function parseSedFeat(sedFeat) {
 			<tr><td class='heading'>Not Collected<br><span class='smalltext'>specify fossils seen but not collected</span></td><td></td><td><textarea name='NotColl' cols='40' rows='3'><%=notColl%></textarea></td></tr>
 
 			<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>
-			<tr><td class='heading'> colspan='2'Significance/Comments</td><td><textarea name='Sig' cols='40' rows='3'><%=sig%></textarea></td></tr>
+			<tr><td class='heading' colspan='2'>Significance/Comments</td><td><textarea name='Sig' cols='40' rows='3'><%=sig%></textarea></td></tr>
 			<tr><td class='heading'>Stage Limits</td><td class='smallheading'>Inferred</td><td>
 			<table border='0' cellspacing='0'>
 			<tr><td>
