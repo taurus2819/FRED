@@ -80,7 +80,7 @@ public class DrillholeLocalityDE extends LocalityDE {
 					compDate = DataEntryUtils.parseRoundedDate(value);
 					break;
 				case DATUM_TYPE :
-					if (!(value.equals("RT") || value.equals("KB")))
+					if (!(value.equals("RT") || value.equals("KB") || value.equals("Seafloor")))
 						throw new DataInputException(
 							"Datum Type",
 							"Invalid Data");
@@ -163,12 +163,12 @@ public class DrillholeLocalityDE extends LocalityDE {
 					&& getFieldForHTML(DATUM_TYPE).equals("KB"))
 					? " selected"
 					: "")
-				+ ">KB</option><option value='seafloor'"
+				+ ">KB</option><option value='Seafloor'"
 				+ ((getFieldForHTML(DATUM_TYPE) != null
-					&& getFieldForHTML(DATUM_TYPE).equals("seafloor"))
+					&& getFieldForHTML(DATUM_TYPE).equals("Seafloor"))
 					? " selected"
 					: "")
-				+ ">seafloor</option></select>&nbsp;&nbsp;");
+				+ ">Seafloor</option></select>&nbsp;&nbsp;");
 		out.write(
 			"<input type='text' name='DatumEl' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(DATUM_ELEVATION))
