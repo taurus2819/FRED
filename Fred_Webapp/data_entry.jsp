@@ -14,7 +14,7 @@
 	String recID = request.getParameter("RecID");
 	DataEntryForm dataEntryForm = null;
 	
-	//try {
+	try {
 		if (request.getParameter("Err") != null) {
 			dataEntryForm = (DataEntryForm) session.getAttribute("dataEntryForm");
 		} else if (request.getParameter("CopyID") != null) {
@@ -43,9 +43,9 @@
 				}
 			}
 		}
-	//} catch (Exception e) {
-	//	System.out.println(e.getMessage());
-	//}
+	} catch (Exception e) {
+		System.out.println(e.getMessage());
+	}
 
 	if (dataEntryForm != null) {
 		//save DataEntryForm in session
@@ -67,6 +67,8 @@
 		out.println("</table>");
 		drawEndNavigation(out);
 		out.println("<table style='margin-left:20px; width:550px;' border='0'>");
+		out.println("<tr><td>Please fill out the following fields.  Click the <img src=\"images/build.gif\" height=\"20\" width=\"20\" alt=\"Build...\"> icon to open the field builder for more help.  <span style=\"color: #FF0000\">Red</span> fields must be completed before submitting this form.</td></tr>");
+		out.println("<tr><td>&nbsp;</td></tr>");
 		out.println("<tr><td>");
 		dataEntryForm.makeDataEntryHTML(new PrintWriter(out));
 		out.println("</td></tr></table>");
