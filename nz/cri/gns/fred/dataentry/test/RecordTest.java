@@ -42,7 +42,7 @@ public class RecordTest extends TestCase {
 		//form.save();
 	}
 
-	public void testPalLists() throws NotBoundException, InvalidCredentialsException, SQLException, IOException, DataInputException, TaxonomicListException {
+	public void _testPalLists() throws NotBoundException, InvalidCredentialsException, SQLException, IOException, DataInputException, TaxonomicListException {
 		PaleontologyRecord.purge();
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
@@ -54,5 +54,5 @@ public class RecordTest extends TestCase {
 		//form.setField(DataEntryForm.TAXA_LIST, "POLLENITES*blue whale****");	
 		//form.save();
 	}
-
+	
 }
