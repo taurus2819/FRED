@@ -89,8 +89,9 @@
 				out.print("</td><td class='smallheading'>");
 				if ((userRights & 64) != 0) {
 					out.print("<a href='review.jsp?ID=" + featID + "' title='Review'><img src='images/review.gif' width='20' height='20' border='0' /></a>");
+					out.print("<img src='images/blank.gif' height='20' width='20' /><a href='feat_data_entry.jsp?Type=Outcrop&FeatID=" + featID + "&FoldID=" + foldID + " 'title='Edit Locality'><img src='images/edit.gif' border='0' height='20' width='20'></a>");
 				}
-				out.println("&nbsp</td></tr>");
+				out.println("&nbsp;</td></tr>");
 			}
 			out.println("</table></p>");
 		}

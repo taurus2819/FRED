@@ -68,14 +68,9 @@ function submitForm (form) {
 
 function checkForm(form) {
 	with (form) {
-		if (FieldNum.value == "" && DrillName.value == "") {
+		if (LocName.value == "") {
 			alert ("Please enter a name");
-			FieldNum.select();
-			return false;
-		}
-		if (FieldNum.value != "" && DrillName.value != "") {
-			alert ("Please enter only one of field number and drillhole name");
-			FieldNum.select();
+			LocName.select();
 			return false;
 		}
 		if (parseCoord(form, Coord.value) == 0) {
@@ -149,8 +144,9 @@ function parseCoord(form, coord) {
 			}
 
 			//check rights match folder rights and record is editable
-			rs = statement.executeQuery("SELECT * FROM Folder_Content_View WHERE Feature_ID = " + loadFeatID + " AND Folder_ID = " + foldID + " AND Status IN ('working', 'rejected')");
-			if (rs.next() && (userRights & 2) != 0) {
+			rs = statement.executeQuery("SELECT Status FROM Sample_All_View WHERE Feature_ID = " + loadFeatID);
+			rs.next();
+			if (((rs.getString(1).equals("working") || rs.getString(1).equals("rejected")) && (userRights & 2) != 0) || (rs.getString(1).equals("waiting") && (userRights & 64) != 0)) {
 				//OK
 				//Get FieldNum/Drillhole name from original FeatID not LoadFeatID
 				rs = statement.executeQuery("SELECT Field_Number, Drillhole_Name FROM Sample_All_View WHERE Feature_ID = " + featID);
@@ -189,7 +185,7 @@ function parseCoord(form, coord) {
 		if (((userRights & 4) != 0 && featID.equals("0")) || ((userRights & 2) !=0 && featID != null)) {
 
 			out.println("<form name='form1' method='post' action='feat_data_proc.jsp'>");
-			out.println("<input type='hidden' name='Type' valye='" + formType + "'>");
+			out.println("<input type='hidden' name='Type' value='" + formType + "'>");
 			out.println("<input type='hidden' name='FoldID' value='" + foldID + "'>");
 			out.println("<input type='hidden' name='FeatID' value='" + featID + "'>");
 			out.println("<input type='hidden' name='SaveType' value=''>");
@@ -223,11 +219,11 @@ function parseCoord(form, coord) {
 
 			out.println("<table border='0' cellspacing='0' cellpadding='2'>");
 			if (formType.equals("Outcrop")) {
-				out.println("<tr><td class='heading'>Field Number</td><td></td><td><input type='text' name='FieldNum' value='" + fieldNum + "'></td></tr>");
+				out.println("<tr><td class='heading' colspan='2'>Field Number</td><td><input type='text' name='LocName' value='" + fieldNum + "'></td></tr>");
 			} else if (formType.equals("Drillhole")) {
-				out.println("<tr><td class='heading'>Drillhole Name</td><td></td><td><input type='text' name='DrillName' value='" + drillName + "'></td></tr>");
+				out.println("<tr><td class='heading' colspan='2'>Drillhole Name</td><td><input type='text' name='LocName' value='" + drillName + "'></td></tr>");
 			} else if (formType.equals("VertSect")) {
-				out.println("<tr><td class='heading'>Vertical Section Name</td><td></td><td><input type='text' name='DrillName' value='" + drillName + "'></td></tr>");			
+				out.println("<tr><td class='heading' colspan='2'>Vertical Section Name</td><td><input type='text' name='LocName' value='" + drillName + "'></td></tr>");
 			}
 			out.println("<tr><td class='heading'>Registration Area</td><td></td><td>");
 			cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");

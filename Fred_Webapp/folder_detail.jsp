@@ -74,6 +74,8 @@
 				}
 				returnVal.append("</td></tr>\n");
 			}
+			statement.close();
+			statement2.close();
 			return returnVal.toString();
 		}
 %><%
@@ -89,6 +91,7 @@
 	boolean sampPropFlag;
 
 	ExtranetTemplate et = getExtranetTemplate();
+	et.setDisplayLoadingMessage(true);
 
 	drawTop(out, et, request, response);
 
@@ -117,7 +120,9 @@
 			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 			out.println("<tr><td><a href='folder_list.jsp' title='Back to Folders'><img src='images/back_arrow.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_list.jsp' class='heading'>Back to Folders</a></td></tr>");
 			if ((userRights & 4) != 0) {
-				out.println("<tr><td><a href='feat_data_entry.jsp?FoldID=" + foldID + "' title='Add New Locality'><img src='images/new.gif' width='20' height='20' border='0' /><img src='images/blank.gif' width='10' height='1' border='0' /></a></td><td><a href='feat_data_entry.jsp?Type=Outcrop&FoldID=" + foldID + "' class='heading'>New Outcrop Locality</a></td></tr>");
+				out.println("<tr><td><a href='feat_data_entry.jsp?Type=Outcrop&FoldID=" + foldID + "' title='Add New Locality'><img src='images/new.gif' width='20' height='20' border='0' /><img src='images/blank.gif' width='10' height='1' border='0' /></a></td><td><a href='feat_data_entry.jsp?Type=Outcrop&FoldID=" + foldID + "' class='heading'>New Outcrop Locality</a></td></tr>");
+				out.println("<tr><td><a href='feat_data_entry.jsp?Type=Drillhole&FoldID=" + foldID + "' title='Add New Locality'><img src='images/new.gif' width='20' height='20' border='0' /><img src='images/blank.gif' width='10' height='1' border='0' /></a></td><td><a href='feat_data_entry.jsp?Type=Drillhole&FoldID=" + foldID + "' class='heading'>New Drillhole Locality</a></td></tr>");
+				out.println("<tr><td><a href='feat_data_entry.jsp?Type=VertSect&FoldID=" + foldID + "' title='Add New Locality'><img src='images/new.gif' width='20' height='20' border='0' /><img src='images/blank.gif' width='10' height='1' border='0' /></a></td><td><a href='feat_data_entry.jsp?Type=VertSect&FoldID=" + foldID + "' class='heading'>New Vertical Section Locality</a></td></tr>");
 				out.println("<tr><td><a href='simple_query.jsp?FoldID=" + foldID + "' title='Search for a Locality' title='Search for a Locality'><img src='images/search.gif' width='20' height='20' border='0' /><img src='images/blank.gif' width='10' height='1' border='0' /></a></td><td><a href='simple_query.jsp?FoldID=" + foldID + "' class='heading'>Search</a></td></tr>");
 			}
 			out.println("</table>");
@@ -139,7 +144,7 @@
 			out.println("<p><table border='0' cellspacing='0' cellpadding='1' width='550'>");
 			out.print("<tr>");
 			//out.print("<td></td>");
-			out.print("<th colspan='4'>Name<img src='blank.gif' width='10' height='1' /></th><th>Field&nbsp;No/<br>Drillhole<img src='images/blank.gif' width='10' height='1' /></th><th>Status<img src='images/blank.gif' width='10' height='1' /></th><th>Last Change<img src='images/blank.gif' width='10' height='1' /></th><th colspan='7'>Options</th></tr>");
+			out.print("<th colspan='4'>Name<img src='blank.gif' width='10' height='1' /></th><th>Type<src='images/blank.gif' width='10' height='1' /></th><th>Status<img src='images/blank.gif' width='10' height='1' /></th><th>Last Change<img src='images/blank.gif' width='10' height='1' /></th><th colspan='7'>Options</th></tr>");
 			out.println("<tr><td colspan='14'><img src='images/line.gif' height='3' width='550' /></td></tr>");
 
 			//Record list
@@ -152,7 +157,7 @@
 				sampPropFlag = false;
 				if (rs3.getString(1).equals(featID)) { continue; }
 				featID = rs3.getString(1);
-				rs = statement.executeQuery("SELECT Sample_ID, Sample_Name, Drillhole_Name, Field_Number, Status, Last_Change FROM Sample_All_View WHERE Feature_ID = " + featID);
+				rs = statement.executeQuery("SELECT Sample_ID, Sample_Name, Drillhole_Name, Field_Number, Status, Last_Change, Drill_Type FROM Sample_All_View WHERE Feature_ID = " + featID);
 				rs.next();
 				locStatus = rs.getString(5);
 
@@ -164,7 +169,14 @@
 					while (rs2.next()) { drillSampName = drillSampName + ", " + rs2.getString(1); }
 					out.print("<tr>");
 					//out.print("<td><input type='checkbox' name='Check" + k++ + "' value='" + featID + "'></td>");
-					out.print("<td width='20'><img src='images/loc.gif' height='20' width='20' /></td><td colspan='3' class='heading'><a href='drillhole_detail.jsp?ID=" + featID + "'>" + drillSampName + "</a>&nbsp;&nbsp;</td><td class='heading'><a href='drillhole_detail.jsp?ID=" + featID + "'>" + rs.getString(3) +"</a></td><td class='smallstar'>");
+					out.print("<td width='20'><img src='images/loc.gif' height='20' width='20' /></td><td colspan='3' class='heading'><a href='drillhole_detail.jsp?ID=" + featID + "'>" + drillSampName + "</a>&nbsp;&nbsp;");
+					if (rs.getString(3) != null && !drillSampName.equals(rs.getString(3))) { out.print("<br /><a href='drillhole_detail.jsp?ID=" + featID + "'>(" + rs.getString(3) +")</a>&nbsp;&nbsp;"); }
+					if (rs.getString(7) != null && rs.getString(7).equals("Exposure")) {
+						out.print("</td><td>Vert Sect");
+					} else {
+						out.print("</td><td>Drillhole");
+					}
+					out.print("</td><td class='smallstar'>");
 					if (!rs.getString(5).equals("approved")) {
 						out.print(rs.getString(5) + "</td><td>");
 						if (rs.getString(6) != null) { 
@@ -176,7 +188,7 @@
 					}
 					out.print("<td>");
 					if ((rs.getString(5).equals("working") || rs.getString(5).equals("rejected")) && (userRights & 2) != 0) {
-						out.print("<a href='feat_data_entry.jsp?FeatID=" + featID + "&FoldID=" + foldID + "' title='Edit Locality'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+						out.print("<a href='feat_data_entry.jsp?Type=Drillhole&FeatID=" + featID + "&FoldID=" + foldID + "' title='Edit Locality'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					}
 					out.print("</td><td>");
 					if ((userRights & 4) != 0) {
@@ -235,7 +247,9 @@
 					rs2.next();
 					out.print("<tr>");
 					//out.print("<td><input type='checkbox' name='Check" + k++ + "' value='" + featID + "'></td>");
-					out.print("<td width='20'><img src='images/loc.gif' height='20' width='20' /></td><td colspan='3' class='heading'><a href='detail.jsp?ID=" + sampID + "'>" + rs.getString(2) + "</a>&nbsp;&nbsp;</td><td>" + noNulls(rs.getString(4)) + "</td><td class='smallstar'>");
+					out.print("<td width='20'><img src='images/loc.gif' height='20' width='20' /></td><td colspan='3' class='heading'><a href='detail.jsp?ID=" + sampID + "'>" + rs.getString(2) + "</a>&nbsp;&nbsp;");
+					if (rs.getString(4) != null && !rs.getString(2).equals(rs.getString(4))) { out.print("<br /><a href='detail.jsp?ID=" + sampID + "'>(" + rs.getString(4) + ")</a>&nbsp;&nbsp;"); }
+					out.print("</td><td>Outcrop</td><td class='smallstar'>");
 					if (!rs.getString(5).equals("approved")) {
 						out.print(rs.getString(5) + "</td><td>");
 						if (rs.getString(6) != null) { 
@@ -247,7 +261,7 @@
 					}
 					out.print("<td>");
 					if ((rs.getString(5).equals("working") || rs.getString(5).equals("rejected")) && (userRights & 2) != 0) {
-						out.print("<a href='feat_data_entry.jsp?FeatID=" + featID + "&FoldID=" + foldID + " 'title='Edit Locality'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
+						out.print("<a href='feat_data_entry.jsp?Type=Outcrop&FeatID=" + featID + "&FoldID=" + foldID + " 'title='Edit Locality'><img src='images/edit.gif' border='0' height='20' width='20'></a><img src='images/blank.gif' height='20' width='2' />");
 					}
 					out.print("</td><td>");
 					if ((userRights & 4) != 0) {
@@ -325,4 +339,6 @@
 	drawBottom(out, et);
 
 	statement2.close();
+	statement3.close();
+	statement4.close();
 %>
