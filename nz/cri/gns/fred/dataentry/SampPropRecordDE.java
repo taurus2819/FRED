@@ -1243,7 +1243,6 @@ public class SampPropRecordDE extends RecordDE {
 				conn.executeUpdate(
 					"DELETE FROM Sample_Property WHERE Record_ID = "
 						+ record.getRecordID());
-
 				//Create SAMPLE_PROPERTY entry
 				conn.executeUpdate(
 					"INSERT INTO Sample_Property (Record_ID, Collection_Date, Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage_ID, Known_Stage_ID, Column_Map, Dip, Dip_Direction, Strike, Facing, Primary_Grainsize_ID, Secondary_Grainsize_ID, Comparator_Used, Bed_Thick_ID, Primary_Bedding_ID, Secondary_Bedding_ID, Weathering_ID, Hardness_ID, Carbonate_ID, Colour_Modifier_ID, Primary_Colour_ID, Secondary_Colour_ID, Wet, Deposition_Env, Rock_Nature, Correspondence) VALUES ("
@@ -1321,7 +1320,6 @@ public class SampPropRecordDE extends RecordDE {
 						+ ", "
 						+ JspUtils.sqlEscape(getField(CORRESPONDENCE))
 						+ ")");
-
 				//Create COLLECTORS entries
 				if (collectors != null) {
 					for (Iterator i = collectors.iterator(); i.hasNext();) {
@@ -1333,7 +1331,6 @@ public class SampPropRecordDE extends RecordDE {
 								+ ")");
 					}
 				}
-
 				//Create SENT TO entries
 				if (sentTo != null) {
 					for (Iterator i = sentTo.iterator(); i.hasNext();) {
@@ -1353,7 +1350,6 @@ public class SampPropRecordDE extends RecordDE {
 									+ ")");
 					}
 				}
-
 				//Create RELATIONSHIP entries
 				if (prevSamp != null) {
 					for (Iterator i = prevSamp.iterator(); i.hasNext();) {
@@ -1407,7 +1403,6 @@ public class SampPropRecordDE extends RecordDE {
 								+ ")");
 					}
 				}
-
 				//Create SEDIMENTARY FEATURE entries
 				if (sedFeat != null) {
 					for (Iterator i = sedFeat.iterator(); i.hasNext();) {
