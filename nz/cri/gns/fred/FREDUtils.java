@@ -68,26 +68,27 @@ public class FREDUtils {
 		return JspUtils.createDatabaseConnection(state.getSession(), CONNECTION, DB_NAME, state.getContext());
 	}
 
-	public static DBConnection getIPConnection(PageState state)
-		throws IOException {
-		return JspUtils.createDatabaseConnection(
-			state.getSession(),
-			IP_CONNECTION,
-			IP_DB_NAME,
-			state.getContext());
+	public static DBConnection getIPConnection(PageState state) throws IOException {
+		return JspUtils.createDatabaseConnection(state.getSession(), IP_CONNECTION, IP_DB_NAME, state.getContext());
 	}
 
-	public static boolean isAllowedLocality(User user, String securityClassID, String status, String featID, PageState state)
+	/**
+	 * Returns true if this locality can be viewed by the user
+	 */
+	public static boolean isAllowedLocality(User user, String securityClassID, String status, String featureID, PageState state)
 		throws IOException, SQLException {
 		if (user == null)
 			return false;
 		if (!status.equals("approved"))
-			return (getUserWorkingLocalityRights(user, featID, state) & 1) > 0;
+			return (getUserWorkingLocalityRights(user, featureID, state) & 1) > 0;
 	//	if (securityClassID != null)
 	//		return hasMasterfileRights(user, featID, state) || checkSecurityClass(Integer.parseInt(securityClassID), user, state);
 		return true;
 	}
 
+	/**
+	 * Returns true if this sample can be viewed by the user
+	 */
 	public static boolean isAllowedSample(User user, String securityClassID, String status, String sampleID, PageState state)
 		throws IOException, SQLException {
 		if (user == null)
@@ -99,138 +100,141 @@ public class FREDUtils {
 		return true;
 	}
 
-	public static boolean isAllowedRecord(User user, String securityClassID, String status, String recID, PageState state)
+	/**
+	 * Returns true if this record can be viewed by the user
+	 */
+	public static boolean isAllowedRecord(User user, String securityClassID, String status, String recordID, PageState state)
 		throws IOException, SQLException {
 		if (user == null)
 			return false;
 		if (!status.equals("approved"))
-			return (getUserWorkingRecordRights(user, recID, state) & 1) > 0;
+			return (getUserWorkingRecordRights(user, recordID, state) & 1) > 0;
 		if (securityClassID != null)
-			return hasMasterfileRecordRights(user, recID, state) || checkSecurityClass(Integer.parseInt(securityClassID), user, state);
+			return hasMasterfileRecordRights(user, recordID, state) || checkSecurityClass(Integer.parseInt(securityClassID), user, state);
 		return true;
 	}
 
-	public static boolean hasMasterfileRights(User user, String featID, PageState state) throws IOException, SQLException {
-		if (user == null || featID == null || state == null)
+	/**
+	 * Returns true if the user has masterfile rights for this locality
+	 */
+	public static boolean hasMasterfileRights(User user, String featureID, PageState state) throws IOException, SQLException {
+		if (user == null || featureID == null)
 			return false;
 		int userRights = 0;
 		DBConnection conn = getFREDConnection(state);
-		ResultSet rs = conn.executeQuery("SELECT Masterfile_ID FROM Feature WHERE Feature_ID = " + featID);
+		String query = "SELECT masterfile_id FROM feature WHERE feature_id = ?";
+		ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(featureID)});
 		if (rs.next()) {
-			rs = conn.executeQuery("SELECT User_Rights FROM Folder_View WHERE User_ID = " + user.getPersonId() + " AND Folder_ID = " + rs.getString(1));
+			query = "SELECT user_rights FROM folder_view WHERE user_id = ? AND folder_id = ?";
+			rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(user.getPersonId()), new Integer(rs.getInt(1))});
 			if (rs.next())
 				userRights = rs.getInt(1);
 		}
 		return (userRights & 1) > 0;
 	}
 
+	/**
+	 * Returns true is the user has masterfile rights for this sample (by checking rights for the locality
+	 */
 	public static boolean hasMasterfileSampleRights(User user, String sampleID, PageState state) throws IOException, SQLException {
-		if (user == null || sampleID == null || state == null)
+		if (user == null || sampleID == null)
 			return false;
 		DBConnection conn = getFREDConnection(state);
-		ResultSet rs = conn.executeQuery("SELECT Feature_ID FROM Sample WHERE Sample_ID = " + sampleID);
-		if (rs.next()) {
+		String query = "SELECT feature_id FROM sample WHERE sample_id = ?";
+		ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(sampleID)});
+		if (rs.next()) 
 			return hasMasterfileRights(user, rs.getString(1), state);
-		} else {
-			return false;
-		}		
+		return false;		
 	}
 
-	public static boolean hasMasterfileRecordRights(User user, String recID, PageState state) throws IOException, SQLException {
-		if (user == null || recID == null || state == null)
+	/**
+	 * Returns true is the user has masterfile rights for this record (by checking rights for the locality
+	 */
+	public static boolean hasMasterfileRecordRights(User user, String recordID, PageState state) throws IOException, SQLException {
+		if (user == null || recordID == null || state == null)
 			return false;
 		DBConnection conn = getFREDConnection(state);
-		ResultSet rs = conn.executeQuery("SELECT Feature_ID FROM Record_All_View WHERE Record_ID = " + recID);
-		if (rs.next()) {
+		String query = "SELECT feature_id FROM record_all_view WHERE record_id = ?";
+		ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(recordID)});
+		if (rs.next())
 			return hasMasterfileRights(user, rs.getString(1), state);
-		} else {
-			return false;
-		}
+		return false;
 	}
-
-	public static boolean isAllowedApproveLocality(User user, String featID, String status, PageState state) throws IOException, SQLException {
-		if (status != null && status.equals("waiting")) {
-			return (getUserWorkingLocalityRights(user, featID, state) & 64) > 0;
-		} else {
-			return false;
-		}
+	/**
+	 * Returns true is the user is allowed to approve the locality
+	 */
+	public static boolean isAllowedApproveLocality(User user, String featureID, String status, PageState state) throws IOException, SQLException {
+		if (status != null && status.equals("waiting"))
+			return (getUserWorkingLocalityRights(user, featureID, state) & 64) > 0;
+		return false;
 	}
 
 	private static boolean checkSecurityClass(int secClassID, User user, PageState state) throws IOException, SQLException {
 		DBConnection conn = getIPConnection(state);
-		SecurityClass sc =
-			new SecurityClass(secClassID, conn);
-		SecurityClassAccess sca =
-			new SecurityClassAccess(sc, Right.ANY_RIGHT);
+		SecurityClass sc = new SecurityClass(secClassID, conn);
+		SecurityClassAccess sca = new SecurityClassAccess(sc, Right.ANY_RIGHT);
 		return sca.isAccessibleTo(user, conn);		
 	}
 
-	public static int getUserWorkingLocalityRights(User user, String featID, PageState state)
+	/**
+	 * Returns the rights the user_rights for the given locality
+	 */
+	public static int getUserWorkingLocalityRights(User user, String featureID, PageState state)
 		throws IOException, SQLException {
 		int userRights = 0;
 		if (user != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
-			int userID = user.getPersonId();
-			ResultSet rs = conn.executeQuery(
-					"SELECT DISTINCT User_Rights FROM Folder_Content_Short_View WHERE Feature_ID = "
-						+ featID
-						+ " AND User_ID = "
-						+ userID);
+			String query = "SELECT DISTINCT user_rights FROM folder_content_short_view WHERE feature_id = ? AND user_id = ?";
+			ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(featureID), new Integer(user.getPersonId())});
 			while (rs.next())
 				userRights = userRights | rs.getInt(1);
 		}
 		return userRights;
 	}
 
+	/**
+	 * Returns the rights the user_rights for the given sample
+	 */
 	public static int getUserWorkingSampleRights(User user, String sampleID, PageState state) throws IOException, SQLException {
 		int userRights = 0;
 		if (user != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
-			int userID = user.getPersonId();
-			ResultSet rs =	conn.executeQuery(
-					"SELECT User_Rights FROM Folder_Content_Short_View FC, Sample S "
-						+ "WHERE FC.Feature_ID = S.Feature_ID AND S.Sample_ID = "
-						+ sampleID
-						+ " AND User_ID = "
-						+ userID);
+			String query = "SELECT fc.user_rights FROM folder_content_short_view fc, sample s WHERE fc.feature_id = s.feature_id AND s.sample_id = ? AND fc.user_id = ?";
+			ResultSet rs =	conn.executeQuery(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(sampleID), new Integer(user.getPersonId())});
 			while (rs.next())
 				userRights = userRights | rs.getInt(1);
 		}
 		return userRights;
 	}
 
-	public static int getUserWorkingRecordRights(User user, String recID, PageState state) throws IOException, SQLException {
+	/**
+	 * Returns the rights the user_rights for the given record
+	 */
+	public static int getUserWorkingRecordRights(User user, String recordID, PageState state) throws IOException, SQLException {
 		int userRights = 0;
 		if (user != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
-			int userID = user.getPersonId();
-			ResultSet rs = conn.executeQuery(
-					"SELECT User_Rights FROM Folder_Content_Short_View FC, Sample S, Record R "
-						+ "WHERE FC.Feature_ID = S.Feature_ID AND R.Sample_ID = S.Sample_ID AND Record_ID = "
-						+ recID
-						+ " AND User_ID = "
-						+ userID);
+			String query = "SELECT fc.user_rights FROM folder_content_short_view fc, sample s, record r WHERE fc.feature_id = s.feature_id AND r.sample_id = s.sample_id AND r.record_id = ? AND fc.user_id = ?";
+			ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(recordID), new Integer(user.getPersonId())}); 
 			while (rs.next())
 				userRights = userRights | rs.getInt(1);
 		}
 		return userRights;
 	}
 
+	/**
+	 * Returns the rights the user_rights for the given folder
+	 */
 	public static int getUserFolderRights(User user,  String folderID, PageState state) throws IOException, SQLException {
 		if (user != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
-			int userID = user.getPersonId();
-			ResultSet rs = conn.executeQuery(
-					"SELECT User_Rights FROM Folder_View WHERE Folder_ID = "
-						+ folderID
-						+ " AND User_ID = "
-						+ userID);
+			String query = "SELECT user_rights FROM folder_view WHERE folder_id = ? AND user_id = ?";
+			ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(folderID), new Integer(user.getPersonId())}); 
 			if (rs.next())
 				return rs.getInt(1);
-			return 0;
-		} else {
-			return 0;
 		}
+		return 0;
+
 	}
 
 	public static int getSecurityType(int secClassID, User user, PageState state) throws IOException, SQLException {
@@ -349,6 +353,33 @@ public class FREDUtils {
 		return secClass;
 	}
 
+	/**
+	 * Returns the Sample immediately above the given Sample in a drillhole or vertical section
+	 */
+	public static Sample getSampleAbove(Sample sample, User user, PageState state) throws SQLException, IOException, InvalidCredentialsException {
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		String query = "SELECT sample_id FROM sample_all_view WHERE feature_id = ? AND top_depth < ? ORDER BY top_depth DESC";
+		ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(sample.getAsInt(Sample.FEATURE_ID)), new Double(sample.getAsDouble(Sample.TOP_DEPTH))});
+		if (rs.next())
+			return new Sample(rs.getInt(1), user, state);
+		return null;
+	}
+
+	/**
+	 * Returns the Sample immediately below the given Sample in a drillhole or vertical section
+	 */
+	public static Sample getSampleBelow(Sample sample, User user, PageState state) throws SQLException, IOException, InvalidCredentialsException {
+		DBConnection conn = FREDUtils.getFREDConnection(state);
+		String query = "SELECT sample_id FROM sample_all_view WHERE feature_id = ? AND top_depth > ? ORDER BY top_depth";
+		ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(sample.getAsInt(Sample.FEATURE_ID)), new Double(sample.getAsDouble(Sample.TOP_DEPTH))});
+		if (rs.next())
+			return new Sample(rs.getInt(1), user, state);
+		return null;
+	}
+	
+	/**
+	 * Returns the Masterfile for a given locality
+	 */
 	public static int getMasterfile(int regAreaID, Datum.LatLong latLong) {
 		switch (regAreaID) {
 			case REG_MAINLAND_NZ :
@@ -399,40 +430,30 @@ public class FREDUtils {
 		return MASTERFILE_OFFSHORE;
 	}
 
-	private static int addUserRight(User user, PageState state, boolean paleo)
-		throws IOException, SQLException {
+	private static int addUserRight(User user, PageState state, boolean paleo) throws IOException, SQLException {
 		DBConnection conn = getIPConnection(state);
-		SecurityClass sc =
-			AuthUtils.addSecurityClass(
-				"FR",
-				user,
-				conn,
-				"FRED Private User Class");
+		SecurityClass sc = AuthUtils.addSecurityClass("FR", user, conn,	"FRED Private User Class");
 		sc.addUserToClass(user, new Right(1), conn);
 		if (paleo)
 			sc.addGroupToClass(1, new Right(1), conn);
 		return sc.getId();
 	}
 
-	private static int addOrgRight(User user, PageState state, boolean paleo)
-		throws IOException, SQLException {
+	private static int addOrgRight(User user, PageState state, boolean paleo) throws IOException, SQLException {
 		DBConnection conn = getIPConnection(state);
-		SecurityClass sc =
-			AuthUtils.addSecurityClass(
-				"FR",
-				user,
-				conn,
-				"FRED Private Org Class");
+		SecurityClass sc = AuthUtils.addSecurityClass("FR", user, conn, "FRED Private Org Class");
 		sc.addUsersOrgToClass(user, new Right(1), conn);
 		if (paleo)
 			sc.addGroupToClass(1, new Right(1), conn);
 		return sc.getId();
 	}
 
+	/**
+	 * Returns a string of a date with appropriate formatting 
+	 */
 	public static String formatDateForOutput(Date date, String rounding) {
 		SimpleDateFormat yearFormatter = new SimpleDateFormat("yyyy");
 		SimpleDateFormat monthFormatter = new SimpleDateFormat("MMMM yyyy");
-
 		if (rounding == null) {
 			return DateFormat.getDateInstance(DateFormat.LONG).format(date);
 		} else if (rounding.equals("Year")) {
@@ -444,49 +465,24 @@ public class FREDUtils {
 		}
 	}
 
+	/**
+	 * Returns a string of a date with DateFormat.LONG formatting 
+	 */
 	public static String formatDateForOutput(Date date) {
 		return formatDateForOutput(date, null);
 	}
 
+	/**
+	 * Returns a string of a lat/long formatted for output
+	 */
 	public static String formatLatLongForOutput(double latitude, double longitude) {
 		Datum.LatLong latlong = new Datum.LatLong(latitude, longitude);
 		return latlong.getLatAsDegMinSec(2) + "|" + latlong.getLongAsDegMinSec(2);
 	}
 
-	public static Sample getSampleAbove(
-		Sample sample,
-		User user,
-		PageState state)
-		throws SQLException, IOException, InvalidCredentialsException {
-		DBConnection conn = FREDUtils.getFREDConnection(state);
-		int[] types = { Types.NUMERIC, Types.NUMERIC };
-		Object data[] = new Object[2];
-		String query =
-			"SELECT Sample_ID FROM FR.Sample_All_View WHERE Feature_ID = ? AND Top_Depth < ? ORDER BY Top_Depth DESC";
-		data[0] = new Integer(sample.getAsInt(Sample.FEATURE_ID));
-		data[1] = new Double(sample.getAsDouble(Sample.TOP_DEPTH));
-		ResultSet rs = conn.executeQuery(query, types, data);
-		rs.next();
-		return new Sample(rs.getInt(1), user, state);
-	}
-
-	public static Sample getSampleBelow(
-		Sample sample,
-		User user,
-		PageState state)
-		throws SQLException, IOException, InvalidCredentialsException {
-		DBConnection conn = FREDUtils.getFREDConnection(state);
-		int[] types = { Types.NUMERIC, Types.NUMERIC };
-		Object data[] = new Object[2];
-		String query =
-			"SELECT Sample_ID FROM FR.Sample_All_View WHERE Feature_ID = ? AND Top_Depth > ? ORDER BY Top_Depth";
-		data[0] = new Integer(sample.getAsInt(Sample.FEATURE_ID));
-		data[1] = new Double(sample.getAsDouble(Sample.TOP_DEPTH));
-		ResultSet rs = conn.executeQuery(query, types, data);
-		rs.next();
-		return new Sample(rs.getInt(1), user, state);
-	}
-
+	/**
+	 * Returns a string of the current date formatted correctly for DBUtils methods
+	 */
 	public static String getNowForSQL() {
 		return new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
 	}
@@ -499,7 +495,7 @@ public class FREDUtils {
 			return false;
 		}
 	}
-
+	
 	public static String noNulls(String in) {
 		return (in == null || in.equals("null")) ? "" : in;
 	}
