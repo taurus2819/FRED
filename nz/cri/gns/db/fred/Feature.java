@@ -12,7 +12,6 @@ import nz.cri.gns.db.pool.Finder;
 import nz.cri.gns.db.pool.Pool;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.FREDConstants;
-import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 /**
@@ -60,12 +59,7 @@ public class Feature implements FREDConstants {
 	protected Feature(int id, PageState state)
 		throws SQLException, IOException {
 		this.state = state;
-		DBConnection conn =
-			JspUtils.createDatabaseConnection(
-				state.getSession(),
-				CONNECTION,
-				DB_NAME,
-				state.getContext());
+		DBConnection conn = FREDUtils.getFREDConnection(state);
 		this.id = id;
 		featurePool.add(this);
 		String query =

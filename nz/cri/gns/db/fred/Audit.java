@@ -10,7 +10,6 @@ import nz.cri.gns.db.pool.Finder;
 import nz.cri.gns.db.pool.Pool;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.FREDConstants;
-import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 /**
@@ -52,12 +51,7 @@ public class Audit implements FREDConstants {
 	 */
 	protected Audit(int id, PageState state) throws SQLException, IOException {
 		this.state = state;
-		DBConnection conn =
-			JspUtils.createDatabaseConnection(
-				state.getSession(),
-				CONNECTION,
-				DB_NAME,
-				state.getContext());
+		DBConnection conn = FREDUtils.getFREDConnection(state);
 		this.id = id;
 		auditPool.add(this);
 		String query =
