@@ -21,6 +21,8 @@ import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 import nz.cri.gns.util.map.Datum;
+import nz.cri.gns.util.map.NZMG;
+import nz.cri.gns.util.map.NZMS260;
 
 public class FREDUtils {
 
@@ -28,14 +30,42 @@ public class FREDUtils {
 	public static final String DB_NAME = "fr";
 	public static final String IP_CONNECTION = "nz.cri.gns.ip.connection";
 	public static final String IP_DB_NAME = "ip";
+	
+	public static final int REG_MAINLAND_NZ = 400;
+	public static final int REG_CHATHAM_ISLANDS = 401;
+	public static final int REG_ROSS_SEA = 402;
+	public static final int REG_NEW_CALEDONIA = 403;
+	public static final int REG_TOKELAU = 404;
+	public static final int REG_FIJI = 405;
+	public static final int REG_SAMOA = 406;
+	public static final int REG_NIUE = 407;
+	public static final int REG_COOK_ISLANDS = 408;
+	public static final int REG_NORFOLK_ISLAND = 409;
+	public static final int REG_TONGA = 410;
+	public static final int REG_LORD_HOWE_ISLAND = 411;
+	public static final int REG_KERMADEC_ISLANDS = 412;
+	public static final int REG_BOUNTY_ISLANDS = 413;
+	public static final int REG_THE_SNARES = 414;
+	public static final int REG_CAMPBELL_ISLAND = 415;
+	public static final int REG_AUCKLAND_ISLANDS = 416;
+	public static final int REG_ANTIPODES_ISLANDS = 417;
+	public static final int REG_MACQUARIE_ISLAND = 418;
+	public static final int REG_OTHER = 419;
 
-	public static DBConnection getFREDConnection(PageState state)
-		throws IOException {
-		return JspUtils.createDatabaseConnection(
-			state.getSession(),
-			CONNECTION,
-			DB_NAME,
-			state.getContext());
+	public static final int MASTERFILE_NTH_NI = 1;
+	public static final int MASTERFILE_CEN_NI = 2;
+	public static final int MASTERFILE_STH_NI = 3;
+	public static final int MASTERFILE_NELSON = 4;
+	public static final int MASTERFILE_CEN_SI = 5;
+	public static final int MASTERFILE_STH_SI = 6;
+	public static final int MASTERFILE_NZ_ISLANDS = 7;
+	public static final int MASTERFILE_ANTARCTICA = 8;
+	public static final int MASTERFILE_PACIFIC_ISLANDS = 9;
+	public static final int MASTERFILE_NEW_CALEDONIA = 10;
+	public static final int MASTERFILE_OFFSHORE = 11;
+
+	public static DBConnection getFREDConnection(PageState state) throws IOException {
+		return JspUtils.createDatabaseConnection(state.getSession(), CONNECTION, DB_NAME, state.getContext());
 	}
 
 	public static DBConnection getIPConnection(PageState state)
@@ -141,15 +171,13 @@ public class FREDUtils {
 		if (user != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			int userID = user.getPersonId();
-			ResultSet rs =
-				conn.executeQuery(
+			ResultSet rs = conn.executeQuery(
 					"SELECT DISTINCT User_Rights FROM Folder_Content_Short_View WHERE Feature_ID = "
 						+ featID
 						+ " AND User_ID = "
 						+ userID);
-			while (rs.next()) {
+			while (rs.next())
 				userRights = userRights | rs.getInt(1);
-			}
 		}
 		return userRights;
 	}
@@ -159,16 +187,14 @@ public class FREDUtils {
 		if (user != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			int userID = user.getPersonId();
-			ResultSet rs =
-				conn.executeQuery(
+			ResultSet rs =	conn.executeQuery(
 					"SELECT User_Rights FROM Folder_Content_Short_View FC, Sample S "
 						+ "WHERE FC.Feature_ID = S.Feature_ID AND S.Sample_ID = "
 						+ sampleID
 						+ " AND User_ID = "
 						+ userID);
-			while (rs.next()) {
+			while (rs.next())
 				userRights = userRights | rs.getInt(1);
-			}
 		}
 		return userRights;
 	}
@@ -178,69 +204,47 @@ public class FREDUtils {
 		if (user != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			int userID = user.getPersonId();
-			ResultSet rs =
-				conn.executeQuery(
+			ResultSet rs = conn.executeQuery(
 					"SELECT User_Rights FROM Folder_Content_Short_View FC, Sample S, Record R "
 						+ "WHERE FC.Feature_ID = S.Feature_ID AND R.Sample_ID = S.Sample_ID AND Record_ID = "
 						+ recID
 						+ " AND User_ID = "
 						+ userID);
-			while (rs.next()) {
+			while (rs.next())
 				userRights = userRights | rs.getInt(1);
-			}
 		}
 		return userRights;
 	}
 
-	public static int getUserFolderRights(
-		User user,
-		String folderID,
-		PageState state)
-		throws IOException, SQLException {
+	public static int getUserFolderRights(User user,  String folderID, PageState state) throws IOException, SQLException {
 		if (user != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			int userID = user.getPersonId();
-			ResultSet rs =
-				conn.executeQuery(
+			ResultSet rs = conn.executeQuery(
 					"SELECT User_Rights FROM Folder_View WHERE Folder_ID = "
 						+ folderID
 						+ " AND User_ID = "
 						+ userID);
-			if (rs.next()) {
+			if (rs.next())
 				return rs.getInt(1);
-			} else { //no record
-				return 0;
-			}
+			return 0;
 		} else {
 			return 0;
 		}
 	}
 
-	public static int getSecurityType(
-		int secClassID,
-		User user,
-		PageState state)
-		throws IOException, SQLException {
+	public static int getSecurityType(int secClassID, User user, PageState state) throws IOException, SQLException {
 		if (secClassID == 4)
 			return 21; //public
 		int secType;
 		DBConnection conn = getIPConnection(state);
-		ResultSet rs =
-			conn.executeQuery(
-				"SELECT COUNT(*) FROM user_right WHERE ur_sc_id = "
-					+ secClassID);
+		ResultSet rs = conn.executeQuery("SELECT COUNT(*) FROM user_right WHERE ur_sc_id = " + secClassID);
 		rs.next();
 		if (rs.getInt(1) == 0) {
-			rs =
-				conn.executeQuery(
-					"SELECT COUNT(*) FROM org_right WHERE or_sc_id = "
-						+ secClassID);
+			rs = conn.executeQuery("SELECT COUNT(*) FROM org_right WHERE or_sc_id = " + secClassID);
 			rs.next();
 			if (rs.getInt(1) == 1) {
-				rs =
-					conn.executeQuery(
-						"SELECT or_org_id FROM org_right WHERE or_sc_id = "
-							+ secClassID);
+				rs = conn.executeQuery("SELECT or_org_id FROM org_right WHERE or_sc_id = " + secClassID);
 				rs.next();
 				if (rs.getInt(1) == user.getOrgId()) {
 					secType = 24;
@@ -251,10 +255,7 @@ public class FREDUtils {
 				throw new NoSuchSecurityClassException(secClassID);
 			}
 		} else if (rs.getInt(1) == 1) {
-			rs =
-				conn.executeQuery(
-					"SELECT ur_person_id FROM user_right WHERE ur_sc_id = "
-						+ secClassID);
+			rs = conn.executeQuery("SELECT ur_person_id FROM user_right WHERE ur_sc_id = " + secClassID);
 			rs.next();
 			if (rs.getInt(1) == user.getPersonId()) {
 				secType = 22;
@@ -264,18 +265,14 @@ public class FREDUtils {
 		} else {
 			throw new NoSuchSecurityClassException(secClassID);
 		}
-		rs =
-			conn.executeQuery(
-				"SELECT COUNT(*) FROM group_right WHERE gr_id = 1 AND gr_sc_id = "
-					+ secClassID);
+		rs = conn.executeQuery("SELECT COUNT(*) FROM group_right WHERE gr_id = 1 AND gr_sc_id = " + secClassID);
 		rs.next();
 		if (rs.getInt(1) == 1)
 			secType += 1;
 		return secType;
 	}
 
-	public static int getSecurityClass(int secType, User user, PageState state)
-		throws IOException, SQLException {
+	public static int getSecurityClass(int secType, User user, PageState state) throws IOException, SQLException {
 		int secClass = 0;
 		DBConnection conn = getIPConnection(state);
 		Statement statement = conn.getExtraStatement();
@@ -285,18 +282,11 @@ public class FREDUtils {
 				secClass = 4;
 				break;
 			case 22 : //user
-				rs =
-					conn.executeQuery(
+				rs = conn.executeQuery(
 						"SELECT ur_sc_id FROM user_right, org_right, group_right WHERE ur_sc_id = or_sc_id(+) AND ur_sc_id = gr_sc_id(+) AND or_id IS NULL AND gr_id IS NULL AND ur_person_id = "
 							+ user.getPersonId());
 				while (rs.next()) {
-					;
-					rs2 =
-						statement.executeQuery(
-							"SELECT COUNT(*) FROM user_right WHERE ur_sc_id = "
-								+ rs.getString(1)
-								+ " AND ur_person_id <> "
-								+ user.getPersonId());
+					rs2 = statement.executeQuery("SELECT COUNT(*) FROM user_right WHERE ur_sc_id = " + rs.getString(1) + " AND ur_person_id <> " + user.getPersonId());
 					rs2.next();
 					if (rs2.getInt(1) == 0) {
 						secClass = rs.getInt(1);
@@ -308,18 +298,11 @@ public class FREDUtils {
 				statement.close();
 				break;
 			case 23 : //user + paleo
-				rs =
-					conn.executeQuery(
+				rs = conn.executeQuery(
 						"SELECT ur_sc_id FROM user_right, org_right, group_right WHERE ur_sc_id = or_sc_id(+) AND ur_sc_id = gr_sc_id AND or_id IS NULL AND gr_id = 1 AND ur_person_id = "
 							+ user.getPersonId());
 				while (rs.next()) {
-					;
-					rs2 =
-						statement.executeQuery(
-							"SELECT COUNT(*) FROM user_right WHERE ur_sc_id = "
-								+ rs.getString(1)
-								+ " AND ur_person_id <> "
-								+ user.getPersonId());
+					rs2 = statement.executeQuery("SELECT COUNT(*) FROM user_right WHERE ur_sc_id = " + rs.getString(1) + " AND ur_person_id <> " + user.getPersonId());
 					rs2.next();
 					if (rs2.getInt(1) == 0) {
 						secClass = rs.getInt(1);
@@ -331,18 +314,11 @@ public class FREDUtils {
 				statement.close();
 				break;
 			case 24 : //org
-				rs =
-					conn.executeQuery(
+				rs = conn.executeQuery(
 						"SELECT or_sc_id FROM org_right, user_right, group_right WHERE or_sc_id = ur_sc_id(+) AND or_sc_id = gr_sc_id(+) AND ur_id IS NULL AND gr_id IS NULL AND or_org_id = "
 							+ user.getOrgId());
 				while (rs.next()) {
-					;
-					rs2 =
-						statement.executeQuery(
-							"SELECT COUNT(*) FROM org_right WHERE or_sc_id = "
-								+ rs.getString(1)
-								+ " AND or_org_id <> "
-								+ user.getOrgId());
+					rs2 = statement.executeQuery("SELECT COUNT(*) FROM org_right WHERE or_sc_id = " + rs.getString(1) + " AND or_org_id <> " + user.getOrgId());
 					rs2.next();
 					if (rs2.getInt(1) == 0) {
 						secClass = rs.getInt(1);
@@ -354,18 +330,11 @@ public class FREDUtils {
 				statement.close();
 				break;
 			case 25 : // org + paleo
-				rs =
-					conn.executeQuery(
+				rs = conn.executeQuery(
 						"SELECT or_sc_id FROM org_right, user_right, group_right WHERE or_sc_id = ur_sc_id(+) AND or_sc_id = gr_sc_id AND ur_id IS NULL AND gr_id = 1 AND or_org_id = "
 							+ user.getOrgId());
 				while (rs.next()) {
-					;
-					rs2 =
-						statement.executeQuery(
-							"SELECT COUNT(*) FROM org_right WHERE or_sc_id = "
-								+ rs.getString(1)
-								+ " AND or_org_id <> "
-								+ user.getOrgId());
+					rs2 = statement.executeQuery("SELECT COUNT(*) FROM org_right WHERE or_sc_id = " + rs.getString(1) + " AND or_org_id <> " + user.getOrgId());
 					rs2.next();
 					if (rs2.getInt(1) == 0) {
 						secClass = rs.getInt(1);
@@ -378,6 +347,56 @@ public class FREDUtils {
 				break;
 		}
 		return secClass;
+	}
+
+	public static int getMasterfile(int regAreaID, Datum.LatLong latLong) {
+		switch (regAreaID) {
+			case REG_MAINLAND_NZ :
+				try {
+					Datum.Coordinate nzms260Coord = new NZMS260().convertFromNZGD49(latLong);
+				} catch (Exception e) {
+					return MASTERFILE_OFFSHORE;
+				}
+				Datum.Coordinate nzmgCoord = new NZMG().convertFromNZGD49(latLong);
+				double easting = nzmgCoord.getEastWest();
+				double northing = nzmgCoord.getNorthSouth();
+				if (easting <= 2810000 && northing >= 6250000)
+					return MASTERFILE_NTH_NI;
+				if (northing >= 6160000 || (easting >= 2730000 && northing >= 6070000))
+					return MASTERFILE_CEN_NI;
+			  	if (easting >= 2650000)
+			  		return 	MASTERFILE_STH_NI;
+			  	if (northing >= 5920000)
+			  		return MASTERFILE_NELSON;
+				if (easting >= 2210000 && northing >= 5620000)
+					return MASTERFILE_CEN_SI;
+				return MASTERFILE_STH_SI;
+			case REG_CHATHAM_ISLANDS :
+			case REG_CAMPBELL_ISLAND :
+			case REG_AUCKLAND_ISLANDS :
+			case REG_ANTIPODES_ISLANDS :
+			case REG_THE_SNARES :
+				return MASTERFILE_NZ_ISLANDS;
+			case REG_ROSS_SEA :
+	  			return MASTERFILE_ANTARCTICA;
+	  		case REG_TOKELAU :
+	  		case REG_FIJI :
+	  		case REG_SAMOA :
+	  		case REG_NIUE :
+	  		case REG_COOK_ISLANDS :
+	  		case REG_NORFOLK_ISLAND :
+	   		case REG_TONGA :
+	   		case REG_LORD_HOWE_ISLAND :
+	   		case REG_KERMADEC_ISLANDS :
+	   		case REG_BOUNTY_ISLANDS :
+	   		case REG_MACQUARIE_ISLAND :
+	   			return MASTERFILE_PACIFIC_ISLANDS;
+			case REG_NEW_CALEDONIA :
+				return MASTERFILE_NEW_CALEDONIA;
+			case REG_OTHER :
+				return MASTERFILE_OFFSHORE;
+		}
+		return MASTERFILE_OFFSHORE;
 	}
 
 	private static int addUserRight(User user, PageState state, boolean paleo)
