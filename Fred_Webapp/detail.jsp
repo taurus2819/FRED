@@ -32,7 +32,7 @@
 	}
 
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 
 	drawTop(out, et, request, response);
 
