@@ -16,8 +16,9 @@
 				<fileset dir="/opt/jdk1.4/jre/lib/ext">
 					<include name="*.jar" />
 				</fileset>
-				<fileset dir="..">
+				<fileset dir="/usr/local/build">
 					<include name="gol.jar" />
+					<include name="gol-test.jar" />
 				</fileset>
 			</classpath>
 		</javac>
