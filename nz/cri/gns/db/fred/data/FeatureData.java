@@ -103,7 +103,7 @@ public class FeatureData {
 				}
 				rs.close();
 			}
-			query = "SELECT Sample_ID FROM Sample_All_View WHERE Feature_ID = ?";
+			query = "SELECT Sample_ID FROM Sample_All_View WHERE Feature_ID = ? ORDER BY Sample_Name";
 			data[0] = values[0];
 			rs = conn.executeQuery(query, types, data);
 			Vector samp = new Vector();
@@ -255,8 +255,8 @@ public class FeatureData {
 		return (values[9]).toString();
 	}
 	
-	public void finalize() throws Throwable {
-		pool.removeMe(this);
-	}
+	//public void finalize() throws Throwable {
+	//	pool.removeMe(this);
+	//}
 
 }

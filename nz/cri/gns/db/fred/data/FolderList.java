@@ -23,7 +23,7 @@ public class FolderList {
 			int[] types = { Types.NUMERIC };
 			Object[] data = new Object[1];
 			data[0] = new Integer(userID);
-			String query = ("SELECT Folder_Type, Folder_ID FROM Folder_View WHERE User_ID = ?");
+			String query = ("SELECT Folder_Type, Folder_ID FROM Folder_View WHERE User_ID = ? ORDER BY Folder_Name");
 			ResultSet rs = conn.executeQuery(query, types, data);
 			conn.preservePreparedStatement();
 			personalFolders = new Vector();

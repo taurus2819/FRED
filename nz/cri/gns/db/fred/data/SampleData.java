@@ -158,7 +158,7 @@ public class SampleData {
 					? new Double(rs.getDouble(50))
 					: null);
 			rs.close();
-			query = "SELECT Record_ID, Record_Type, Status FROM Record_All_View WHERE Sample_ID = ?";
+			query = "SELECT Record_ID, Record_Type, Status FROM Record_All_View WHERE Sample_ID = ? ORDER BY Record_Type, Record_Name";
 			rs = conn.executeQuery(query, types, data);
 			Vector rec = new Vector();
 			Vector wRec = new Vector();
@@ -305,8 +305,8 @@ public class SampleData {
 		return (values[5]).toString();
 	}
 
-	public void finalize() throws Throwable {
-		pool.removeMe(this);
-	}
+	//public void finalize() throws Throwable {
+	//	pool.removeMe(this);
+	//}
 
 }

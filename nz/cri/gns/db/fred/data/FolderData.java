@@ -49,7 +49,7 @@ public class FolderData {
 			values[3] = new Integer(rs.getInt(4));
 			values[4] = rs.getString(5);
 			rs.close();
-			query = "SELECT DISTINCT Feature_ID FROM Folder_Content_View WHERE Folder_ID = ?";
+			query = "SELECT DISTINCT Feature_ID, Sample_Name FROM Folder_Content_View WHERE Folder_ID = ? ORDER BY Sample_Name";
 			rs = conn.executeQuery(query, types, data);
 			Vector feats = new Vector();
 			while (rs.next()) {
@@ -191,8 +191,8 @@ public class FolderData {
 		return (values[1]).toString();
 	}
 
-	public void finalize() throws Throwable {
-		pool.removeMe(this);
-	}
+	//public void finalize() throws Throwable {
+	//	pool.removeMe(this);
+	//}
 
 }
