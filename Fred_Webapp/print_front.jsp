@@ -100,7 +100,7 @@
 			out.println(" (NZGD49 Datum)</td></tr>");
 		}
 		if (sample.get(Sample.METHOD) != null) { out.println("<tr><td class='heading'>Method</td><td>" + sample.getAsString(Sample.METHOD) + "</td></tr>"); }
-		if (sample.get(Sample.ACCURACY) != null) { out.println("<tr><td class='heading'>Accuracy</td><td>&#177 " + sample.getAsInt(Sample.ACCURACY) + "m</td></tr>"); }
+		if (sample.get(Sample.ACCURACY) != null) { out.println("<tr><td class='heading'>Accuracy</td><td>&#177 " + sample.getAsDouble(Sample.ACCURACY) + "m</td></tr>"); }
 		if (sample.isUserAuthenticated() && sample.get(Sample.LOCALITY) != null) { out.println("<tr><td class='heading'>Locality</td><td>" + sample.getAsString(Sample.LOCALITY) + "</td></tr>"); }
 		if (!featType.equals("Outcrop")) {
 			if (sample.isUserAuthenticated() && sample.get(Sample.PERSON) != null) {
