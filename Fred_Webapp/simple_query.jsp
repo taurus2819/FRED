@@ -30,7 +30,7 @@ function replaceSingleQuote(str1) {
 }
 
 function generateSQL(form) {
-	var queryString = "", whereSQL = "", tableName = "Sample_View SV", tableJoin = "", frNum, aStart = "", aStop = "", aQuery;
+	var queryString = "", whereSQL = "SV.Status = 'approved' AND ", tableName = "Sample_All_View SV", tableJoin = "", frNum, aStart = "", aStop = "", aQuery;
 	var recFlag = false, sampPropFlag = false, adoFlag = false, palFlag = false;
 	with (form) {
 		if (FRNum.value.length > 0) {
@@ -201,9 +201,7 @@ function generateSQL(form) {
 			tableJoin = tableJoin + "R.Sample_ID = SV.Sample_ID AND ";
 		}
 		if (whereSQL.length > 0)
-		{
-			whereSQL = whereSQL.substring(0, whereSQL.length - 5);
-		}
+		whereSQL = whereSQL.substring(0, whereSQL.length - 5);
 		if (tableJoin.length > 0)
 		{
 			tableJoin = tableJoin.substring(0, tableJoin.length - 5);
