@@ -34,7 +34,7 @@
 </form>
 </table>
 <%
-	System.out.println(new Date() + ": End of navigation");
+	System.out.println(new java.util.Date() + ": End of navigation");
 	drawEndNavigation(out);
 	out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 	out.println("<tr><td>");
@@ -46,7 +46,7 @@
 	FolderList folderList = new FolderList(user, state);
 	Vector folders = new Vector();
 
-	System.out.println(new Date() + ": Got folder list");
+	System.out.println(new java.util.Date() + ": Got folder list");
 	//List Working folders
 	if (folderList.getPersonalFolderCount() > 0) {
 		out.println("<tr><th>Working Folder&nbsp;&nbsp;</th><th>Owner&nbsp;&nbsp;</th><th>Options</th></tr>");
@@ -66,7 +66,7 @@
 		out.println("</form>");
 		out.println("<tr><td>&nbsp;</td></tr>");
 	}
-	System.out.println(new Date() + ": Finished displaying personal folder list");
+	System.out.println(new java.util.Date() + ": Finished displaying personal folder list");
 
 
 	//List Masterfile folders (if any)
@@ -88,14 +88,14 @@
 		out.println("<tr><td>&nbsp;</td></tr>");
 	}
 
-	System.out.println(new Date() + ": Finished displaying masterfile folders");
+	System.out.println(new java.util.Date() + ": Finished displaying masterfile folders");
 
 	session.setAttribute("folders", folders);
 
 	TaxaPanelList panelList = new TaxaPanelList(user, state);
 	Vector panels = new Vector();
 
-	System.out.println(new Date() + ": Got taxa panels");
+	System.out.println(new java.util.Date() + ": Got taxa panels");
 
 	//List Taxonomic groups (if any)
 	if (panelList.getPanelCount() > 0) {
@@ -111,7 +111,7 @@
 			out.print("<img src='images/blank.gif' width='10' height='1' /></td><td><a href='taxa_panelist.jsp?GroupID=" + panel.getPanelID() + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a></td></tr>");
 		}
 	}
-	System.out.println(new Date() + ": Finished displaying taxa panels");
+	System.out.println(new java.util.Date() + ": Finished displaying taxa panels");
 	session.setAttribute("panels", panels);
 
 
