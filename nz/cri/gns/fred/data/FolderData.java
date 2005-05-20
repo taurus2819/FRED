@@ -52,12 +52,11 @@ public class FolderData {
 			query = "SELECT DISTINCT feature_id, sample_name FROM folder_content_view WHERE folder_id = ? ORDER BY UPPER(sample_name)";
 			rs = conn.executeQuery(query, types, data);
 			Vector feats = new Vector();
-			String featIDs = "*";
 			while (rs.next()) {
-				if (featIDs.indexOf("*" + rs.getString(1) + "*") < 0) { 
-					feats.add(new Integer(rs.getInt(1)));
-					featIDs += rs.getString(1) + "*";
-				}
+				Integer featureId = new Integer(rs.getInt(1));
+				System.out.println(featureId);
+				if (!feats.contains(featureId))
+					feats.add(featureId);
 			}
 			values[Folder.FEATURES] = feats;
 			rs.close();
