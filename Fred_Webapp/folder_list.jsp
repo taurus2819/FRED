@@ -23,16 +23,18 @@
 
 	drawTop(out, et, request, response);
 
-	out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
-	out.println("<tr><td colspan='2' class='bigheading' align='center'>" + user.getFullName() + "'s<br />Folders</td></tr>");
-	out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
-	out.println("<form name='NewFoldForm' method='post' action='folder_list.jsp'>");
-	out.println("<tr><td><a href='#' onClick='document.NewFoldForm.FoldName.value=prompt(\"Please enter the folder name\", \"New Working Folder\");document.NewFoldForm.submit();' title='Add New Folder'><img src='images/folder.gif' width='20' height='20' border='0' />&nbsp;</a></td><td><a href='#' onClick='document.NewFoldForm.FoldName.value=prompt(\"Please enter the folder name\", \"New Folder\");document.NewFoldForm.submit();' class='heading'>New Folder</a></td></tr>");
-	out.println("<input type='hidden' name='ActionType' value='Add'>");
-	out.println("<input type='hidden' name='FoldName' value=''>");
-	out.println("</form>");
-	out.println("</table>");
-
+%>
+<table style="margin-left:20px; margin-top:20px; width:150px;" border="0">
+<tr><td colspan="2" class="bigheading" align="center">" + user.getFullName() + ""s<br />Folders</td></tr>
+<tr><td><img src="images/blank.gif" width="1" height="10" /></td></tr>
+<form name="NewFoldForm" method="post" action="folder_list.jsp">
+<tr><td><a href="javascript:document.NewFoldForm.FoldName.value=prompt('Please enter the folder name', 'New Working Folder');document.NewFoldForm.submit();" title="Add New Folder"><img src="images/folder.gif" width="20" height="20" border="0" />&nbsp;</a></td><td><a href="javascript:document.NewFoldForm.FoldName.value=prompt('Please enter the folder name', 'New Folder');document.NewFoldForm.submit();" class="heading">New Folder</a></td></tr>
+<input type="hidden" name="ActionType" value="Add">
+<input type="hidden" name="FoldName" value="">
+</form>
+</table>
+<%
+	System.out.println(new Date() + ": End of navigation");
 	drawEndNavigation(out);
 	out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 	out.println("<tr><td>");
@@ -44,6 +46,7 @@
 	FolderList folderList = new FolderList(user, state);
 	Vector folders = new Vector();
 
+	System.out.println(new Date() + ": Got folder list");
 	//List Working folders
 	if (folderList.getPersonalFolderCount() > 0) {
 		out.println("<tr><th>Working Folder&nbsp;&nbsp;</th><th>Owner&nbsp;&nbsp;</th><th>Options</th></tr>");
@@ -63,6 +66,7 @@
 		out.println("</form>");
 		out.println("<tr><td>&nbsp;</td></tr>");
 	}
+	System.out.println(new Date() + ": Finished displaying personal folder list");
 
 
 	//List Masterfile folders (if any)
@@ -84,10 +88,14 @@
 		out.println("<tr><td>&nbsp;</td></tr>");
 	}
 
+	System.out.println(new Date() + ": Finished displaying masterfile folders");
+
 	session.setAttribute("folders", folders);
 
 	TaxaPanelList panelList = new TaxaPanelList(user, state);
 	Vector panels = new Vector();
+
+	System.out.println(new Date() + ": Got taxa panels");
 
 	//List Taxonomic groups (if any)
 	if (panelList.getPanelCount() > 0) {
@@ -103,6 +111,7 @@
 			out.print("<img src='images/blank.gif' width='10' height='1' /></td><td><a href='taxa_panelist.jsp?GroupID=" + panel.getPanelID() + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a></td></tr>");
 		}
 	}
+	System.out.println(new Date() + ": Finished displaying taxa panels");
 	session.setAttribute("panels", panels);
 
 
@@ -112,5 +121,3 @@
 	drawBottom(out, et);
 
 %>
-
-
