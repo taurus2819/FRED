@@ -9,7 +9,7 @@
 	//et.setDisplayLoadingMessage(true);
 
 	if (request.getParameter("ID") == null) {
-		request.sendRedirect("folder_list.jsp");
+		response.sendRedirect("folder_list.jsp");
 		return;
 	}
 	Folder folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state);
