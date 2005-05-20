@@ -9,7 +9,6 @@ import java.util.Vector;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.db.pool.Finder;
-import nz.cri.gns.db.pool.Pool;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.PageState;
 
@@ -20,7 +19,6 @@ import nz.cri.gns.jsp.PageState;
  */
 public class FolderData {
 
-	private static Pool pool = new Pool();
 	private int id;
 	private Object[] values = new Object[6];
 	private int[] types = { Types.NUMERIC };
@@ -32,7 +30,6 @@ public class FolderData {
 	private FolderData(int id, PageState state) throws SQLException, IOException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		this.id = id;
-		pool.add(this);
 		String query =
 			"SELECT f.folder_id, f.name, f.folder_type, f.owner_id, pv.full_name "
 				+ "FROM folder f, ip.person_view pv WHERE f.owner_id = pe_id(+) AND folder_id = ?";
@@ -62,7 +59,6 @@ public class FolderData {
 			rs.close();
 			conn.releaseStatement();
 		} catch (SQLException _e) {
-			pool.removeMe(this);
 			throw DBUtils.fixSQLException(_e, query, conn);
 		}
 	}
@@ -162,34 +158,27 @@ public class FolderData {
 
 	}
 
-	/**
+	/*
 	 * created for testing purposes (grrrr) - use to test object pooling.
-	 */
+	 *
 	protected static int getPoolSize() {
 		return pool.size();
 	}
 
 	/**
 	 * Use to empty the pool of all objects.
-	 */
+	 *
 	protected static void purge() {
 		pool.removeAllElements();
 	}
-
+	*/
 	/**
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
 	protected static FolderData getData(int id, PageState state, boolean forceRefresh)
 		throws SQLException, IOException {
-		FolderData f = (FolderData) pool.retrieve(new DataFinder(id));
-		if (forceRefresh && f != null) {
-			pool.removeMe(f);
-			f = null;
-		}
-		if (f == null)
-			f = new FolderData(id, state);
-		return f;
+		return new FolderData(id, state);
 	}
 		
 

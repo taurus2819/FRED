@@ -152,19 +152,4 @@ public class Folder {
 		}
 		return fd.get(field);
 	}
-
-	/**
-	 * created for testing purposes (grrrr) - use to test object pooling.
-	 */
-	public static int getPoolSize() {
-		return FolderData.getPoolSize();
-	}
-
-	/**
-	 * Use to empty the pool of all objects.
-	 */
-	public static void purge() {
-		FolderData.purge();
-	}
-
 }

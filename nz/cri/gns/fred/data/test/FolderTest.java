@@ -56,21 +56,8 @@ public class FolderTest extends TestCase {
 		FolderUtils.addFolder("JUnit Test Folder", user2, state);
 	}
 
-	public void _testPooling() throws NotBoundException, SQLException, IOException {
-		Folder.purge();
-		Folder sv1 = new Folder(18, user, state);
-		Folder sv2 = new Folder(18, user2, state);
-		assertEquals(sv1.toString(), sv2.toString());
-		assertEquals(1, Folder.getPoolSize());
-		Folder sv3 = new Folder(8, user, state);
-		assertNotSame(sv1.toString(), sv3.toString());
-		assertEquals(2, Folder.getPoolSize());
-		Folder sv4 = new Folder(18, user, state);
-		assertEquals(2, Folder.getPoolSize());
-	}
 
 	public void _testFolderName() throws IOException, SQLException, InvalidCredentialsException {
-		Folder.purge();
 		Folder sv = new Folder(18, user2, state);
 		String foldName = sv.getAsString(Folder.NAME);
 		assertNotNull(foldName);
@@ -78,7 +65,6 @@ public class FolderTest extends TestCase {
 	}
 	
 	public void _testFolderRights() throws SQLException, IOException {
-		Folder.purge();
 		Folder sv = new Folder(18, user, state);
 		Folder sv2 = new Folder(18, user2, state);
 		assertEquals(sv.getUserRights(), 63);
@@ -90,7 +76,6 @@ public class FolderTest extends TestCase {
 
 	public void testMultSampName() throws SQLException, IOException, InvalidCredentialsException {
 		Feature feature;
-		Folder.purge();
 		//Feature.purge();
 		Folder f = new Folder(12, user, state);
 		assertEquals(f.getLocalityCount(), 20);
