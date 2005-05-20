@@ -96,6 +96,7 @@
 		for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
 			Feature feature = new Feature(((Integer) i.next()).intValue(), user, state);
 			features.add(feature);
+			System.out.println("Folder detail:" + new java.util.Date() + ": Got feature " + feature);
 			String featID  = feature.getAsString(Feature.FEATURE_ID);
 			String sampName = feature.getAsString(Feature.SAMPLE_NAMES);
 			String featType = feature.getAsString(Feature.FEATURE_TYPE);
@@ -116,6 +117,8 @@
 				out.print("</td><td></td>");
 			}
 			out.print("<td>");
+			System.out.println("Folder detail:" + new java.util.Date() + ": Mid feature");
+			
 			if (FREDUtils.isAllowedEditLocality(user, locStatus, featID, state))
 				out.print("<a href='data_entry.jsp?Type=" + featType + "&FeatID=" + featID + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 			out.print("</td><td>");
