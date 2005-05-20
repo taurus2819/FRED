@@ -20,7 +20,7 @@ import nz.cri.gns.jsp.PageState;
  * Fields map to columns in database - use as arguments for the get methods.
  * Pooling is used so cannot instantiate directly - use static getData method instead.
  */
-public class FeatureData {
+public class FeatureData implements FeatureConstants {
 
 	private static Pool pool = new Pool();
 	private int id;
@@ -51,62 +51,62 @@ public class FeatureData {
 				throw new SQLException(
 					"Cannot find record in database with this id: " + this.id);
 			}
-			values[Feature.FEATURE_ID] = new Integer(rs.getInt(1));
-			values[Feature.SITE_ID] = ((rs.getString(2) != null) ? new Integer(rs.getInt(2)) : null);
-			values[Feature.AUDIT_ID] = ((rs.getString(3) != null) ? new Integer(rs.getInt(3)) : null);
-			values[Feature.MASTERFILE_ID] = ((rs.getString(4) != null) ? new Integer(rs.getInt(4)) : null);
-			values[Feature.MASTERFILE_NAME] = rs.getString(5);
-			values[Feature.LOCALITY] = rs.getString(6);
-			values[Feature.REG_AREA_ID] = ((rs.getString(7) != null) ? new Integer(rs.getInt(7)) : null);
-			values[Feature.COMMENTS] = rs.getString(8);
-			values[Feature.FEATURE_TYPE] = rs.getString(9);
-			values[Feature.FEATURE_NAME] = rs.getString(10);
-			values[Feature.DRILLHOLE_LICENCE_NAME] = rs.getString(11);
-			values[Feature.START_DATE] = rs.getDate(12);
-			values[Feature.START_DATE_ROUNDING] = rs.getString(13);
-			values[Feature.FINISH_DATE] = rs.getDate(14);
-			values[Feature.FINISH_DATE_ROUNDING] = rs.getString(15);
-			values[Feature.PERSON_ID] = ((rs.getString(16) != null) ? new Integer(rs.getInt(16)) : null);
-			values[Feature.DATUM_TYPE] = rs.getString(17);
-			values[Feature.DATUM_ELEVATION] = ((rs.getString(18) != null) ? new Double(rs.getDouble(18)) : null);
-			values[Feature.START_DEPTH] = ((rs.getString(19) != null) ? new Double(rs.getDouble(19)) : null);
-			values[Feature.FINISH_DEPTH] = ((rs.getString(20) != null) ? new Double(rs.getDouble(20)) : null);
-			values[Feature.SECURITY_CLASS_ID] = ((rs.getString(21) != null) ? new Integer(rs.getInt(21)) : null);
-			values[Feature.STATUS] = rs.getString(22);
-			values[Feature.WORKING_FOLDER_ID] = ((rs.getString(23) != null) ? new Integer(rs.getInt(23)) : null);
-			values[Feature.CREATED_DATE] = rs.getDate(24);
+			values[FEATURE_ID] = new Integer(rs.getInt(1));
+			values[SITE_ID] = ((rs.getString(2) != null) ? new Integer(rs.getInt(2)) : null);
+			values[AUDIT_ID] = ((rs.getString(3) != null) ? new Integer(rs.getInt(3)) : null);
+			values[MASTERFILE_ID] = ((rs.getString(4) != null) ? new Integer(rs.getInt(4)) : null);
+			values[MASTERFILE_NAME] = rs.getString(5);
+			values[LOCALITY] = rs.getString(6);
+			values[REG_AREA_ID] = ((rs.getString(7) != null) ? new Integer(rs.getInt(7)) : null);
+			values[COMMENTS] = rs.getString(8);
+			values[FEATURE_TYPE] = rs.getString(9);
+			values[FEATURE_NAME] = rs.getString(10);
+			values[DRILLHOLE_LICENCE_NAME] = rs.getString(11);
+			values[START_DATE] = rs.getDate(12);
+			values[START_DATE_ROUNDING] = rs.getString(13);
+			values[FINISH_DATE] = rs.getDate(14);
+			values[FINISH_DATE_ROUNDING] = rs.getString(15);
+			values[PERSON_ID] = ((rs.getString(16) != null) ? new Integer(rs.getInt(16)) : null);
+			values[DATUM_TYPE] = rs.getString(17);
+			values[DATUM_ELEVATION] = ((rs.getString(18) != null) ? new Double(rs.getDouble(18)) : null);
+			values[START_DEPTH] = ((rs.getString(19) != null) ? new Double(rs.getDouble(19)) : null);
+			values[FINISH_DEPTH] = ((rs.getString(20) != null) ? new Double(rs.getDouble(20)) : null);
+			values[SECURITY_CLASS_ID] = ((rs.getString(21) != null) ? new Integer(rs.getInt(21)) : null);
+			values[STATUS] = rs.getString(22);
+			values[WORKING_FOLDER_ID] = ((rs.getString(23) != null) ? new Integer(rs.getInt(23)) : null);
+			values[CREATED_DATE] = rs.getDate(24);
 			rs.close();
 			query = "SELECT sample_id FROM sample WHERE feature_id = ? ORDER BY top_depth";
-			data[0] = values[Feature.FEATURE_ID];
+			data[0] = values[FEATURE_ID];
 			rs = conn.executeQuery(query, types, data);
 			Vector samp = new Vector();
 			while (rs.next()) {
 				samp.add(new Integer(rs.getInt(1)));
 			}
-			values[Feature.SAMPLES] = samp;
+			values[SAMPLES] = samp;
 			rs.close();
 			query = "SELECT DISTINCT sample_name FROM feature_view WHERE feature_id = ? ORDER BY sample_name";
-			data[0] = values[Feature.FEATURE_ID];
+			data[0] = values[FEATURE_ID];
 			rs = conn.executeQuery(query, types, data);
 			if (rs.next()) {
 				String sampName = rs.getString(1);
 				while (rs.next()) {
 					sampName += ", " + rs.getString(1);
 				}
-				values[Feature.SAMPLE_NAMES] = sampName;
+				values[SAMPLE_NAMES] = sampName;
 			}
 			rs.close();
-			if (values[Feature.FEATURE_NAME] != null) {
+			if (values[FEATURE_NAME] != null) {
 				query = "SELECT well_name FROM petroleum.petroleum_well WHERE UPPER(well_name) = ?";
 				types[0] = Types.VARCHAR;
-				data[0] = values[Feature.FEATURE_NAME].toString().toUpperCase();
+				data[0] = values[FEATURE_NAME].toString().toUpperCase();
 				try {
 					rs = conn.executeQuery(query, types, data);
 					rs.next();
-					values[Feature.PETWELL_LINK] = "/seismic/petwell.jsp?wellname=" + rs.getString(1);
+					values[PETWELL_LINK] = "/seismic/petwell.jsp?wellname=" + rs.getString(1);
 					rs.close();
 				} catch (Exception e) {
-					values[Feature.PETWELL_LINK] = null;
+					values[PETWELL_LINK] = null;
 				}
 			}
 			conn.releaseStatement();
@@ -248,7 +248,7 @@ public class FeatureData {
 	}
 
 	public String toString() {
-		return (values[9]).toString();
+		return (values[FEATURE_NAME] == null) ? "Unnamed feature" : values[FEATURE_NAME].toString();
 	}
 
 }
