@@ -1,6 +1,9 @@
 <%@		page extends="nz.cri.gns.fred.FREDIPSysJspPage"
 		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, nz.cri.gns.db.metadata.*, nz.cri.gns.db.site.*, nz.cri.gns.util.map.*, java.net.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
-%><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
+%><%!	
+	public Authenticable[] getRequiredRights(HttpServletRequest request) { 
+		return new Authenticable[0]; 
+	}
 %><%
 	User user = (User)getUser(session);
 	PageState state = new PageState(request, response, getServletContext());
