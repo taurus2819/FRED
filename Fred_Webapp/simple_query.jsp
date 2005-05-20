@@ -15,6 +15,10 @@
 
 %>
 <script language="JavaScript">
+function submitForm(form) {
+	if (generateSQL(form))
+		form.submit();
+}
 
 function trim(str)
 {
@@ -285,7 +289,7 @@ function parseSerialNum(serialNum, prefix) {
 <tr><td colspan="2" align="center"><img src="images/search.gif" height="20" width="20" /></td></tr>
 <tr><td colspan="2" class="bigheading" align="center">Search FRED</td></tr>
 <tr><td><img src="images/blank.gif" width="1" height="10" /></td></tr>
-<tr><td><a href="javascript:document.QueryForm.submit()" title="Run Query"><img src="images/ok.gif" height="20" width="20" border="0" /></a><img src="images/blank.gif" height="20" width="10" border="0" /></td><td><a href="javascript:document.QueryForm.submit()" class="heading">Run Query</a></td></tr>
+<tr><td><a href="javascript:submitForm(document.QueryForm)" title="Run Query"><img src="images/ok.gif" height="20" width="20" border="0" /></a><img src="images/blank.gif" height="20" width="10" border="0" /></td><td><a href="javascript:submitForm(document.QueryForm)" class="heading">Run Query</a></td></tr>
 <%
 	if (request.getParameter("FoldID") != null) {
 		out.println("<tr><td><a href='folder_detail.jsp?ID=" + request.getParameter("FoldID") + "' title='Quit'><img src='images/cancel.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_detail.jsp?ID=" + request.getParameter("FoldID") + "' class='heading'>Quit</a></td></tr>");
@@ -366,7 +370,7 @@ function parseSerialNum(serialNum, prefix) {
 <input type="hidden" name="WhereSQL" value="" />
 <input type="hidden" name="QueryString" value="" />
 <input type="hidden" name="TableName" value="" />
-<p><a href="javascript:document.QueryForm.submit()" title="Run Query"><img src="images/ok.gif" height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /><a href="javascript:document.QueryForm.submit()" class='heading'>Run Query</a></p>
+<p><a href="javascript:submitForm(document.QueryForm)" title="Run Query"><img src="images/ok.gif" height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /><a href="javascript:submitForm(document.QueryForm)" class='heading'>Run Query</a></p>
 </form>
 
 <%	out.println("</td></tr></table>");
