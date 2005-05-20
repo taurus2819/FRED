@@ -54,7 +54,7 @@ public class FolderData {
 			Vector feats = new Vector();
 			while (rs.next()) {
 				Integer featureId = new Integer(rs.getInt(1));
-				System.out.println(featureId);
+				System.out.println(featureId + ": " + rs.getString(2));
 				if (!feats.contains(featureId))
 					feats.add(featureId);
 			}
