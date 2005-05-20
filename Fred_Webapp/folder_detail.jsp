@@ -96,7 +96,7 @@
 				
 				out.print("<tr><td><a href='detail.jsp?FeatID=" + featID + "'><img src='images/loc.gif' border='0' height='20' width='20' alt='View Locality' /></a></td>");
 				out.println("<td class='heading'><a href='folder_feature_detail.jsp?FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "'>" + sampName + "</a>&nbsp;&nbsp;");
-				if (featName != null && !sampName.equals(featName)) { out.print("<br />(" + featName +")&nbsp;&nbsp;"); }
+				if (featName != null && !featName.equals(sampName)) { out.print("<br />(" + featName +")&nbsp;&nbsp;"); }
 				out.print("</td><td>" + featType + "&nbsp;&nbsp;</td><td style='color: #FF0000'>");
 				if (!locStatus.equals(Audit.STATUS_APPROVED)) {
 					out.print(locStatus + "&nbsp;&nbsp;</td><td>");
