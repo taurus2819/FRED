@@ -10,7 +10,7 @@ import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.jsp.PageState;
 
 
-public class Folder {
+public class Folder implements FREDFolder {
 
 	public static final int FOLDER_ID = 0;
 	public static final int NAME = 1;
@@ -18,15 +18,6 @@ public class Folder {
 	public static final int OWNER_ID = 3;
 	public static final int OWNER = 4;
 	public static final int FEATURES = 5;
-	
-	public static final int FOLDER_READ_RIGHT = 1;
-	public static final int FOLDER_EDIT_RIGHT = 2;
-	public static final int FOLDER_CREATE_RIGHT = 4;
-	public static final int FOLDER_DELETE_RIGHT = 8;
-	public static final int FOLDER_SUBMIT_RIGHT = 16;
-	public static final int FOLDER_ADMIN_RIGHT = 32;
-	public static final int FOLDER_APPROVE_RIGHT = 64;
-	
 	
 	private FolderData fd;
 	private int userRights = 0;

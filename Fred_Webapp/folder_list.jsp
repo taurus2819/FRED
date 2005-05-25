@@ -96,8 +96,6 @@
 
 	System.out.println("Folder list:" + new java.util.Date() + ": Finished displaying masterfile folders");
 
-	session.setAttribute("folders", folders);
-
 	TaxaPanelList panelList = new TaxaPanelList(user, state);
 	Vector panels = new Vector();
 
