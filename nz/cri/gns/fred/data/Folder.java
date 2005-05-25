@@ -32,8 +32,11 @@ public class Folder {
 	private int userRights = 0;
 
 	public Folder(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException {
+		System.out.println("Folder " + id + ":" + new java.util.Date() + ": Getting folder data");
 		this.fd = FolderData.getData(id, state, forceRefresh);
+		System.out.println("Folder " + id + ":" + new java.util.Date() + ": Got folder data");
 		this.userRights = FREDUtils.getUserFolderRights(user, fd.getAsString(FOLDER_ID), state);
+		System.out.println("Folder " + id + ":" + new java.util.Date() + ": Got rights");
 	}
 
 	public Folder(int id, User user, PageState state) throws SQLException, IOException {
