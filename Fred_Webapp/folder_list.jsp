@@ -44,27 +44,32 @@
 	out.println("<table border='0' cellspacing='0' cellpadding='2' width='550'>");
 
 	FolderList folderList = new FolderList(user, state);
-	Vector folders = new Vector();
 
 	System.out.println("Folder list:" + new java.util.Date() + ": Got folder list");
 	//List Working folders
 	if (folderList.getPersonalFolderCount() > 0) {
-		out.println("<tr><th>Working Folder&nbsp;&nbsp;</th><th>Owner&nbsp;&nbsp;</th><th>Options</th></tr>");
-		out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
-		out.println("<form name='PersForm' method='post' action='folder_list.jsp'>");
+		%>
+		<tr><th>Working Folder&nbsp;&nbsp;</th><th>Owner&nbsp;&nbsp;</th><th>Options</th></tr>
+		<tr><td><img src="images/blank.gif" height="5" width="1" /></td></tr>
+		<form name="PersForm" method="post" action="folder_list.jsp">
+<%
 		for (Iterator i = folderList.getPersonalFolders().iterator(); i.hasNext(); ) {
-			KeyValueObject kv = (KeyValueObject) i.next();
-			Folder folder = new Folder(Integer.parseInt(kv.getKey()), user, state);
-			folders.add(folder);
-			out.print("<tr><td><a href='folder_detail.jsp?ID=" + folder.getAsString(Folder.FOLDER_ID) + "' class='heading'>" + folder.getAsString(Folder.NAME) + "</a>&nbsp;&nbsp;</td><td>" + folder.getAsString(Folder.OWNER) + "&nbsp;&nbsp;</td><td>");
-			if (folder.isAllowedAdmin())
-				out.print("<a href='folder_user.jsp?FoldID=" + folder.getAsString(Folder.FOLDER_ID) + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a>&nbsp;&nbsp;&nbsp;<a href='#' onClick='if (confirm(\"Are you sure you want to delete this folder\") == true) {document.PersForm.FoldID.value=\"" + folder.getAsString(Folder.FOLDER_ID) + "\";document.PersForm.submit();}' title='Delete Folder'><img src='images/delete.gif' border='0' height='20' width='20' /></a>");
-			out.println("<img src='images/blank.gif' width='1' height='20' /></td></tr>");
+			FolderSkeleton folder = (FolderSkeleton) i.next();
+			%><tr><td><a href="folder_detail.jsp?ID=<%=folder.key%>" class="heading"><%=folder.value%></a>&nbsp;&nbsp;</td><td><%=folder.getOwner()%>&nbsp;&nbsp;</td><td>
+<%
+			if (folder.isAllowedAdmin()) {
+				%><a href="folder_user.jsp?FoldID=<%=folder.key%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a>&nbsp;&nbsp;&nbsp;<a href="javascript:if (confirm('Are you sure you want to delete this folder') == true) {document.PersForm.FoldID.value='<%=folder.key%>';document.PersForm.submit();}" title="Delete Folder"><img src="images/delete.gif" border="0" height="20" width="20" /></a>
+<img src="images/blank.gif" width="1" height="20" /><%
+			}
+			%></td></tr>
+<%
 		}
-		out.println("<input type='hidden' name='ActionType' value='Delete'>");
-		out.println("<input type='hidden' name='FoldID' value=''>");
-		out.println("</form>");
-		out.println("<tr><td>&nbsp;</td></tr>");
+		%>
+<input type="hidden" name="ActionType" value="Delete">
+<input type="hidden" name="FoldID" value="">
+</form>
+<tr><td>&nbsp;</td></tr>
+<%
 	}
 	System.out.println("Folder list:" + new java.util.Date() + ": Finished displaying personal folder list");
 
@@ -74,16 +79,17 @@
 		out.println("<tr><th>Masterfile Folder&nbsp;&nbsp;</th><th></th><th>Options</th></tr>");
 		out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
 		for (Iterator i = folderList.getAdminFolders().iterator(); i.hasNext(); ) {
-			KeyValueObject kv = (KeyValueObject) i.next();
-			Folder folder = new Folder(Integer.parseInt(kv.getKey()), user, state);
-			folders.add(folder);
-			out.print("<tr><td><a href='admin_folder_detail.jsp?ID=" + folder.getAsString(Folder.FOLDER_ID) + "' class='heading'>" + folder.getAsString(Folder.NAME) + "</a>&nbsp;&nbsp;</td><td style='font-size: 10pt; font-weight: bold; color: #FF0000'>");
-			if (folder.getLocalityCount() > 0)
+			FolderSkeleton folder = (FolderSkeleton) i.next();
+			%><tr><td><a href="admin_folder_detail.jsp?ID=<%=folder.key%>" class="heading"><%=folder.value%></a>&nbsp;&nbsp;</td><td style="font-size: 10pt; font-weight: bold; color: #FF0000"><%
+			if (folder.getLocalityCount(state) > 0)
 				out.print("new data");
 			out.print("&nbsp;</td><td>");
-			if (folder.isAllowedAdmin())
-				out.print("<a href='folder_user.jsp?FoldID=" + folder.getAsString(Folder.FOLDER_ID) + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a>");
-			out.println("<img src='images/blank.gif' width='1' height='20' /></td></tr>");
+			if (folder.isAllowedAdmin()) {
+				%><a href="folder_user.jsp?FoldID=<%=folder.key%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a>");
+<img src="images/blank.gif" width="1" height="20" /><%
+			}
+			%>/td></tr>
+<%
 		}
 		out.println("<tr><td>&nbsp;</td></tr>");
 	}
