@@ -1,5 +1,7 @@
 package nz.cri.gns.fred;
 
+import java.io.File;
+
 import javax.servlet.http.HttpServletRequest;
 
 import nz.cri.gns.auth.Authenticable;
@@ -7,8 +9,10 @@ import nz.cri.gns.auth.IPRight;
 import nz.cri.gns.auth.IPRightAccess;
 import nz.cri.gns.auth.Right;
 import nz.cri.gns.db.KeyValueObject;
+import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.jsp.ExtranetTemplate;
 import nz.cri.gns.jsp.IPSysJspPage;
+import nz.cri.gns.jsp.PageState;
 
 public abstract class FREDIPSysJspPage extends IPSysJspPage {
 
@@ -54,4 +58,12 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 		return et;
 	}
 
+	public ContentProvider getContentProvider(PageState state) {
+		ContentProvider cp = (ContentProvider)state.session.getAttribute("fred.content.provider");
+		if (cp == null) {
+			cp = new ContentProvider(new File(state.context.getRealPath("/content")));
+			state.session.setAttribute("fred.content.provider", cp);
+		}
+		return cp;
+	}
 }
