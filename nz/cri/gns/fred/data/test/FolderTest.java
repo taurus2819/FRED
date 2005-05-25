@@ -81,7 +81,7 @@ public class FolderTest extends TestCase {
 		assertEquals(f.getLocalityCount(), 20);
 		for (Iterator i = f.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
 			feature = new Feature(((Integer) i.next()).intValue(), user, state);
-			System.out.println(feature.getAsString(Feature.FEATURE_ID) + " : " + feature.getAsString(Feature.STATUS) + " : " + Feature.getPoolSize());
+			//System.out.println(feature.getAsString(Feature.FEATURE_ID) + " : " + feature.getAsString(Feature.STATUS) + " : " + Feature.getPoolSize());
 		}
 	}
 

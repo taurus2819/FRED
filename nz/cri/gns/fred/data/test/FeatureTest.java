@@ -23,7 +23,7 @@ public class FeatureTest extends TestCase {
 	public FeatureTest(String arg0)
 		throws NotBoundException, IOException, SQLException {
 		super(arg0);
-		Feature.purge();
+		//Feature.purge();
 		this.state = new TestingPageState();
 			DBConnection ipConn =
 				JspUtils.createDatabaseConnection(
@@ -39,24 +39,24 @@ public class FeatureTest extends TestCase {
 	}
 
 	public void testPooling() throws NotBoundException, SQLException, IOException {
-		Feature.purge();
+		//Feature.purge();
 		Feature sv1 = new Feature(509, this.user, this.state);
 		Feature sv2 = new Feature(509, this.user2, this.state);
 		assertEquals(sv1.toString(), sv2.toString());
-		assertEquals(1, Feature.getPoolSize());
+		//assertEquals(1, Feature.getPoolSize());
 		Feature sv3 = new Feature(507, this.user, this.state);
 		assertNotSame(sv1.toString(), sv3.toString());
-		assertEquals(2, Feature.getPoolSize());
+		//assertEquals(2, Feature.getPoolSize());
 		Feature sv4 = new Feature(509, this.user, this.state);
-		assertEquals(2, Feature.getPoolSize());
+		//assertEquals(2, Feature.getPoolSize());
 		Feature sv5 = new Feature(509, null, this.state);
-		assertEquals(2, Feature.getPoolSize());
+		//assertEquals(2, Feature.getPoolSize());
 		assertEquals(sv1.toString(), sv5.toString());
 	}
 	
 	public void _testSamples() throws SQLException, IOException, InvalidCredentialsException {
-		assertEquals(2, Feature.getPoolSize());	
-		Feature.purge();
+		//assertEquals(2, Feature.getPoolSize());	
+		//Feature.purge();
 		Feature f = new Feature(1163, user, state);
 		Feature dhole = new Feature(1, user, state);
 		assertEquals(f.getSampleCount(), 2);
@@ -65,7 +65,7 @@ public class FeatureTest extends TestCase {
 	
 	public void _testRestrictions() throws SQLException, IOException, InvalidCredentialsException {
 		String test = null;
-		Feature.purge();
+		//Feature.purge();
 		Feature f = new Feature(1464, null, state);
 		try {
 			test = f.getAsString(Feature.FEATURE_TYPE);
@@ -82,7 +82,7 @@ public class FeatureTest extends TestCase {
 	
 	public void _testWorkingFeature() throws SQLException, IOException, InvalidCredentialsException {
 		String test = null;
-		Feature.purge();
+	//	Feature.purge();
 		Feature f = new Feature(1163, user, state);
 /*		try {
 			test = f.getAsString(Feature.FEATURE_TYPE);
@@ -101,7 +101,7 @@ public class FeatureTest extends TestCase {
 	}
 	
 	public void _testMultipleUsers() throws SQLException, IOException {
-		Feature.purge();
+		//Feature.purge();
 		Feature f = new Feature(562, null, state);
 		Feature f2 = new Feature(562, user, state);
 		Feature f3 = new Feature(509, null, state);

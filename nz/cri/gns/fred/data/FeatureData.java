@@ -11,7 +11,6 @@ import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.db.metadata.DocumentAttacher;
 import nz.cri.gns.db.metadata.MetadataRecord;
 import nz.cri.gns.db.pool.Finder;
-import nz.cri.gns.db.pool.Pool;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.PageState;
 
@@ -22,7 +21,7 @@ import nz.cri.gns.jsp.PageState;
  */
 public class FeatureData implements FeatureConstants {
 
-	private static Pool pool = new Pool();
+	//private static Pool pool = new Pool();
 	private int id;
 	private int[] types = { Types.NUMERIC };
 	private Object[] data = new Object[1];
@@ -36,7 +35,7 @@ public class FeatureData implements FeatureConstants {
 		throws SQLException, IOException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		this.id = id;
-		pool.add(this);
+		//pool.add(this);
 		String query =
 			"SELECT f.feature_id, f.site_id, f.audit_id, f.masterfile_id, fd.name, f.locality, f.reg_area_id, f.comments, "
 				+ "f.feature_type, f.feature_name, f.drillhole_licence_name, f.start_date, f.start_date_rounding, f.finish_date, "
@@ -111,7 +110,7 @@ public class FeatureData implements FeatureConstants {
 			}
 			conn.releaseStatement();
 		} catch (SQLException _e) {
-			pool.removeMe(this);
+			//pool.removeMe(this);
 			throw DBUtils.fixSQLException(_e, query, conn);
 		}
 		try {
@@ -219,24 +218,25 @@ public class FeatureData implements FeatureConstants {
 
 	/**
 	 * created for testing purposes (grrrr) - use to test object pooling.
-	 */
+	 *
 	protected static int getPoolSize() {
 		return pool.size();
 	}
 
 	/**
 	 * Use to empty the pool of all objects.
-	 */
+	 *
 	protected static void purge() {
 		pool.removeAllElements();
 	}
-
+*/
 	/**
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not sample for given ID, as well as normal SQLExceptions.
 	 */
 	protected static FeatureData getData(int id, PageState state, boolean forceRefresh)
 		throws SQLException, IOException {
+		/*
 		FeatureData f = (FeatureData) pool.retrieve(new DataFinder(id));
 		if (forceRefresh && f != null) {
 			pool.removeMe(f);
@@ -245,6 +245,8 @@ public class FeatureData implements FeatureConstants {
 		if (f == null)
 			f = new FeatureData(id, state);
 		return f;
+		*/
+		return new FeatureData(id, state);
 	}
 
 	public String toString() {

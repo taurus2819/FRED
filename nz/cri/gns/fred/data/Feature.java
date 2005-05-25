@@ -169,18 +169,18 @@ public class Feature implements FeatureConstants {
 
 	/**
 	 * created for testing purposes (grrrr) - use to test object pooling.
-	 */
+	 *
 	public static int getPoolSize() {
 		return FeatureData.getPoolSize();
 	}
 
 	/**
 	 * Use to empty the pool of all objects.
-	 */
+	 *
 	public static void purge() {
 		FeatureData.purge();
 	}
-
+*/
 	public String toString() {
 		return fd.toString();
 	}
