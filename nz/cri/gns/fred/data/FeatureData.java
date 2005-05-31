@@ -114,7 +114,7 @@ public class FeatureData implements FeatureConstants {
 			throw DBUtils.fixSQLException(_e, query, conn);
 		}
 		try {
-			DocumentAttacher recordAttacher = DocumentAttacher.createFREDFeatureDocumentAttacher(state.session, state.context);
+			DocumentAttacher recordAttacher = FREDUtils.createFREDFeatureDocumentAttacher(state.session, state.context);
 			mr = recordAttacher.getDocumentsForId(id);
 		} catch (Exception e) {
 			System.out.println(e);

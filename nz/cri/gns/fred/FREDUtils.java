@@ -9,6 +9,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
+
 import nz.cri.gns.auth.AuthUtils;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.NoSuchSecurityClassException;
@@ -16,6 +19,8 @@ import nz.cri.gns.auth.Right;
 import nz.cri.gns.auth.SecurityClass;
 import nz.cri.gns.auth.SecurityClassAccess;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.db.DataException;
+import nz.cri.gns.db.metadata.DocumentAttacher;
 import nz.cri.gns.fred.data.Audit;
 import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.Sample;
@@ -610,5 +615,38 @@ public class FREDUtils {
 	public static String makeDropDownNulls(String in) {
 		return (in == null || in.equals("-")) ? null : "'" + in + "'";
 	}
+
+	public static DocumentAttacher createFREDRecordDocumentAttacher(HttpSession session, ServletContext context) throws SQLException, DataException, IOException {
+		return new DocumentAttacher(session,
+				context,
+				JspUtils.createDatabaseConnection(session, "nz.cri.gns.fr.connection", "fr", context),
+				"Fossil Record File",
+				1,
+				"RECORD_META",
+				new String[] {"RECORD_ID", "META_ID"},
+				new Object[] {DocumentAttacher.ID_PLACEHOLDER, DocumentAttacher.DOCUMENT_PLACEHOLDER});
+	}
+
+	public static DocumentAttacher createFREDFeatureDocumentAttacher(HttpSession session, ServletContext context) throws IOException, DataException, SQLException {
+		return new DocumentAttacher(session,
+			context,
+			JspUtils.createDatabaseConnection(session, "nz.cri.gns.fr.connection", "fr", context),
+			"Fossil Record File",
+			1,
+			"FEATURE_META",
+			new String[] {"FEATURE_ID", "META_ID"},
+			new Object[] {DocumentAttacher.ID_PLACEHOLDER, DocumentAttacher.DOCUMENT_PLACEHOLDER});
+	}
+
+	public static DocumentAttacher createFREDSampleDocumentAttacher(HttpSession session, ServletContext context) throws IOException, DataException, SQLException {
+		return new DocumentAttacher(session,
+			context,
+			JspUtils.createDatabaseConnection(session, "nz.cri.gns.fr.connection", "fr", context),
+			"Fossil Record File",
+			1,
+			"SAMPLE_META",
+			new String[] {"SAMPLE_ID", "META_ID"},
+			new Object[] {DocumentAttacher.ID_PLACEHOLDER, DocumentAttacher.DOCUMENT_PLACEHOLDER});
+	}	
 	
 }

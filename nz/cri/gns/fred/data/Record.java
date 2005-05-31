@@ -143,7 +143,7 @@ public class Record {
 			throw DBUtils.fixSQLException(_e, query, conn);
 		}
 		try {
-			DocumentAttacher recordAttacher = DocumentAttacher.createFREDRecordDocumentAttacher(state.session, state.context);
+			DocumentAttacher recordAttacher = FREDUtils.createFREDRecordDocumentAttacher(state.session, state.context);
 			mr = recordAttacher.getDocumentsForId(id);
 		} catch (Exception e) {
 			System.out.println(e);

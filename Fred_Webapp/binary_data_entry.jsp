@@ -29,16 +29,16 @@
 			MetadataRecord[] mr = null;
 			if (recType.equals(Record.ADOPTION_RECORD) || recType.equals(Record.PALEONTOLOGY_RECORD)) {
 				Record record = Record.getData(Integer.parseInt(id), user, state, true);
-				attacher = DocumentAttacher.createFREDRecordDocumentAttacher(state.session, state.context);
+				attacher = FREDUtils.createFREDRecordDocumentAttacher(state.session, state.context);
 				mr = record.getMetadataRecords();
 			} else if (recType.equals("SMP")) {
 				Sample sample = new Sample(Integer.parseInt(id), user, state, true);
-				attacher = DocumentAttacher.createFREDSampleDocumentAttacher(state.session, state.context);
+				attacher = FREDUtils.createFREDSampleDocumentAttacher(state.session, state.context);
 				mr = sample.getSampleMetadataRecords();
 			} else if (recType.equals(Feature.OUTCROP_LOCALITY) || recType.equals(Feature.DRILLHOLE_LOCALITY) || recType.equals(Feature.VERTICAL_SECTION_LOCALITY)) {
 				Feature feature = new Feature(Integer.parseInt(id), user, state, true);
 				Sample sample = new Sample(((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue(), user, state, true);
-				attacher = DocumentAttacher.createFREDFeatureDocumentAttacher(state.session, state.context);
+				attacher = FREDUtils.createFREDFeatureDocumentAttacher(state.session, state.context);
 				mr = feature.getMetadataRecords();
 			}
 

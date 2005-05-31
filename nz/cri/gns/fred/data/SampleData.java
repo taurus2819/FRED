@@ -311,13 +311,13 @@ public class SampleData {
 			throw DBUtils.fixSQLException(_e, query, conn);
 		}
 		try {
-			DocumentAttacher attacher = DocumentAttacher.createFREDSampleDocumentAttacher(state.session, state.context);
+			DocumentAttacher attacher = FREDUtils.createFREDSampleDocumentAttacher(state.session, state.context);
 			sampMR = attacher.getDocumentsForId(id);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
 		try {
-			DocumentAttacher attacher = DocumentAttacher.createFREDFeatureDocumentAttacher(state.session, state.context);
+			DocumentAttacher attacher = FREDUtils.createFREDFeatureDocumentAttacher(state.session, state.context);
 			featMR = attacher.getDocumentsForId(getAsInt(Sample.FEATURE_ID));
 		} catch (Exception e) {
 			System.out.println(e);
