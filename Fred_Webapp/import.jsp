@@ -57,7 +57,7 @@
 		} catch (InvalidCredentialsException e) {
 			status = "AuthError";
 			message = "User not authorised";
-	    } catch (BadDataException e) {
+	    } catch (DataInputException e) {
 	    	status = "Error";
 			message = "Data Error: " + e.getMessage();
 	    } catch (Exception e) {
