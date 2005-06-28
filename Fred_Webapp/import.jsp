@@ -55,9 +55,8 @@
 	    	} else {
 	    		id = dataEntryForm.submit();
 	    	}
-				status = "Loaded OK";
-				message = String.valueOf(id);
-			}
+			status = "Loaded OK";
+			message = String.valueOf(id);
 		} catch (InvalidCredentialsException e) {
 			status = "AuthError";
 			message = "User not authorised";
