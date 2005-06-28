@@ -69,7 +69,7 @@
 			} else if (listName.equals("person")) {
 				rs = statement.executeQuery("SELECT name FROM person_view ORDER BY family_name, given_name");
 			} else if (listName.equals("regArea")) {
-				rs = statement.executeQuery("SELECT name FROM lookup WHERE fieldname = 'RegArea' ORDER BY name");
+				rs = statement.executeQuery("SELECT name || '</td><td>' || lookup_id  FROM lookup WHERE fieldname = 'RegArea' ORDER BY name");
 			} else if (listName.equals("thickness")) {
 				rs = statement.executeQuery("SELECT code || ': ' || name FROM lookup WHERE fieldname = 'BedThick' ORDER BY code");
 			} else if (listName.equals("weathering")) {
