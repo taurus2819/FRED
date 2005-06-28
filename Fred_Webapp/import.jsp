@@ -23,12 +23,9 @@
 	}
 	
 	if (formType != null && user != null) {
-		DataEntryForm dataEntyForm;
 	    try {
-	    	//if (formType.equals("Loc")) {
-	    		String locType = request.getParameter("loc_type");
-	    		dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(locType, user, Integer.parseInt(foldID), state);
-	    	//}
+	    	String locType = request.getParameter("loc_type");
+	    	DataEntryForm dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(locType, user, Integer.parseInt(foldID), state);
 
 			dataEntryForm.setTempField(DataEntryForm.FEATURE_NAME, request.getParameter("FeatName"));
 			dataEntryForm.setTempField(DataEntryForm.REGISTRATION_AREA, request.getParameter("RegAreaID"));
