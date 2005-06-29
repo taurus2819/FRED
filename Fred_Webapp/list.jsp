@@ -40,11 +40,17 @@
 		} else if (listName.equals("blankFolderList")) {
 			out.println("<tr><td>No folders defined</td><td></td></tr>");
 		} else if (listName.equals("datum")) {
-			Datum[] datums = DatumFactory.getOrderedDatums();
-			for (int i = 0; i < datums.length; i++) {
-				if (datums[i].getHumanName().indexOf("Local Circuit") == -1)
-					out.println("<tr><td>" + datums[i].getHumanName().replaceAll("Geographic", "Lat/Long") + "</td><td>" + datums[i].getDatabaseId() + "</td></tr>");
-			}
+			out.println("<tr><td>New Zealand Map Grid</td><td>NZMG</td></tr>");
+			out.println("<tr><td>NZMS260</td><td>NZMS260</td></tr>");
+			out.println("<tr><td>NZ Yard Grid (Sth Isl)</td><td>NZYS</td></tr>");
+			out.println("<tr><td>NZ Yard Grid (Nth Isl)</td><td>NZYN</td></tr>");
+			out.println("<tr><td>NZMS1 (Sth Isl)</td><td>NZMS1S</td></tr>");
+			out.println("<tr><td>NZMS1 (Nth Isl)</td><td>NZMS1N</td></tr>");
+			out.println("<tr><td>Chatham Island Grid</td><td>CHAT</td></tr>");
+			out.println("<tr><td>Auckland Island Grid</td><td>AUCK</td></tr>");
+			out.println("<tr><td>Campbell Island Grid</td><td>CAMP</td></tr>");
+			out.println("<tr><td>Lat/Long NZGD49</td><td>NZGD49</td></tr>");
+			out.println("<tr><td>Lat/Long WGS84/NZGD2000</td><td>WGS84</td></tr>");
 		} else if (listName.equals("localityType")) {
 			out.println("<tr><td>Outcrop</td></tr>");
 			out.println("<tr><td>Drillhole</td></tr>");
