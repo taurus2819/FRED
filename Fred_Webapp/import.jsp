@@ -30,7 +30,7 @@
 			dataEntryForm.setTempField(DataEntryForm.FEATURE_NAME, request.getParameter("FeatName"));
 			dataEntryForm.setTempField(DataEntryForm.REGISTRATION_AREA, request.getParameter("RegAreaID"));
 			dataEntryForm.setTempField(DataEntryForm.WORKING_COMMENTS, request.getParameter("WorkComm"));
-		/*	dataEntryForm.setTempField(DataEntryForm.SECURITY_TYPE, request.getParameter("SecType"));
+			dataEntryForm.setTempField(DataEntryForm.SECURITY_TYPE, request.getParameter("SecType"));
 			dataEntryForm.setTempField(DataEntryForm.GRID_REF, request.getParameter("GridRef"));
 			dataEntryForm.setTempField(DataEntryForm.METHOD, request.getParameter("LocMethodID"));
 			dataEntryForm.setTempField(DataEntryForm.ACCURACY, request.getParameter("Accuracy"));
@@ -44,7 +44,7 @@
 			dataEntryForm.setTempField(DataEntryForm.DATUM_ELEVATION, request.getParameter("DatumEl"));
 			dataEntryForm.setTempField(DataEntryForm.KICK_OFF_DEPTH, request.getParameter("StartDepth"));
 			dataEntryForm.setTempField(DataEntryForm.TERMINATION_DEPTH, request.getParameter("FinishDepth"));
-*/
+
 			dataEntryForm.setFieldsFromTemp();
 			int id;
 	    	if (button.equals("save")) {
