@@ -66,6 +66,7 @@ public class FolderSkeleton extends KeyValueObject implements FREDFolder {
 				new int[] {Types.INTEGER},
 				new Object[] {new Integer(key)}
 		);
+		rs.next();
 		int count = rs.getInt(1);
 		conn.releaseStatement();
 		return count;
