@@ -65,7 +65,7 @@
 			} else if (listName.equals("colourMod")) {
 				rs = statement.executeQuery("SELECT code || ': ' || name FROM lookup WHERE fieldname = 'ColourMod' ORDER BY code");
 			} else if (listName.equals("country")) {
-				rs = statement.executeQuery("SELECT country_name FROM mis.country ORDER BY country_name");
+				rs = statement.executeQuery("SELECT country_name || '</td><td>' || country_code FROM mis.country ORDER BY country_name");
 			} else if (listName.equals("grainSize")) {
 				rs = statement.executeQuery("SELECT code || ': ' || name FROM lookup WHERE fieldname = 'GrainSize' ORDER BY code");
 			} else if (listName.equals("hardness")) {
