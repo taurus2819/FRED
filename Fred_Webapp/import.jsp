@@ -59,7 +59,7 @@
 			message = "User not authorised";
 	    } catch (DataInputException e) {
 	    	status = "Error";
-			message = "Data Error: " + e.getMessage();
+			message = "Data Error: " + e.getField() + " - " + e.getMessage();
 	    } catch (Exception e) {
 	    	status = "Error";
 			message = "Unspecified Error: " + e.toString();
