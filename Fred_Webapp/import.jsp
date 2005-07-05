@@ -49,10 +49,11 @@
 			int id;
 	    	if (button.equals("save")) {
 	    		id = dataEntryForm.save();
+	    		status = "Saved OK";
 	    	} else {
 	    		id = dataEntryForm.submit();
+	    		status = "Submitted OK";
 	    	}
-			status = "Loaded OK";
 			message = String.valueOf(id);
 		} catch (InvalidCredentialsException e) {
 			status = "AuthError";
