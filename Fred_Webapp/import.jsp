@@ -27,10 +27,10 @@
 	    	String locType = request.getParameter("loc_type");
 	    	String id = request.getParameter("id");
 	    	DataEntryForm dataEntryForm;
-	    	if (id != null) {
-	    		dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(id), user, state);
+	    	if (id == null || id.equals("")) {
+	    		dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(locType, user, Integer.parseInt(foldID), state);
 	    	} else {
-		    	dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(locType, user, Integer.parseInt(foldID), state);
+	    		dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(id), user, state);
 		    }
 
 			dataEntryForm.setTempField(DataEntryForm.FEATURE_NAME, request.getParameter("FeatName"));
