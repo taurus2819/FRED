@@ -52,15 +52,14 @@
 			dataEntryForm.setTempField(DataEntryForm.TERMINATION_DEPTH, request.getParameter("FinishDepth"));
 
 			dataEntryForm.setFieldsFromTemp();
-			int id;
 	    	if (button.equals("save")) {
-	    		id = dataEntryForm.save();
+	    		id = String.valueOf(dataEntryForm.save());
 	    		status = "Saved OK";
 	    	} else {
-	    		id = dataEntryForm.submit();
+	    		id = String.valueOf(dataEntryForm.submit());
 	    		status = "Submitted OK";
 	    	}
-			message = String.valueOf(id);
+			message = id;
 		} catch (InvalidCredentialsException e) {
 			status = "AuthError";
 			message = "User not authorised";
