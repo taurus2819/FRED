@@ -34,7 +34,6 @@
 </form>
 </table>
 <%
-	System.out.println("Folder list:" + new java.util.Date() + ": End of navigation");
 	drawEndNavigation(out);
 	out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 	out.println("<tr><td>");
@@ -45,7 +44,6 @@
 
 	FolderList folderList = new FolderList(user, state);
 
-	System.out.println("Folder list:" + new java.util.Date() + ": Got folder list");
 	//List Working folders
 	if (folderList.getPersonalFolderCount() > 0) {
 		%>
@@ -71,8 +69,6 @@
 <tr><td>&nbsp;</td></tr>
 <%
 	}
-	System.out.println("Folder list:" + new java.util.Date() + ": Finished displaying personal folder list");
-
 
 	//List Masterfile folders (if any)
 	if (folderList.getAdminFolderCount() > 0) {
@@ -94,12 +90,8 @@
 		out.println("<tr><td>&nbsp;</td></tr>");
 	}
 
-	System.out.println("Folder list:" + new java.util.Date() + ": Finished displaying masterfile folders");
-
 	TaxaPanelList panelList = new TaxaPanelList(user, state);
 	Vector panels = new Vector();
-
-	System.out.println("Folder list:" + new java.util.Date() + ": Got taxa panels");
 
 	//List Taxonomic groups (if any)
 	if (panelList.getPanelCount() > 0) {
@@ -115,7 +107,6 @@
 			out.print("<img src='images/blank.gif' width='10' height='1' /></td><td><a href='taxa_panelist.jsp?GroupID=" + panel.getPanelID() + "' title='Edit Users'><img src='images/prefs.gif' border='0' height='20' width='20' /></a></td></tr>");
 		}
 	}
-	System.out.println("Folder list:" + new java.util.Date() + ": Finished displaying taxa panels");
 	session.setAttribute("panels", panels);
 
 
