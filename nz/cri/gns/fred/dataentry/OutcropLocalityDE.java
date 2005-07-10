@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.sql.SQLException;
 
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.Feature;
@@ -21,7 +21,7 @@ public class OutcropLocalityDE extends LocalityDE {
 		sampleDE.setOutcropSamp(true);
 	}
 	
-	public OutcropLocalityDE(int featureID, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException  {
+	public OutcropLocalityDE(int featureID, User user, PageState state) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException  {
 		super(featureID, user, state);
 		if (!featureType.equals(Feature.OUTCROP_LOCALITY))
 			throw new DataInputException("Feature Type", "Invalid");
@@ -31,7 +31,7 @@ public class OutcropLocalityDE extends LocalityDE {
 		sampleDE.setOutcropSamp(true);
 	}
 
-	public void copyFrom(int featureID) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
+	public void copyFrom(int featureID) throws DataInputException, InsufficientPrivelegesException, SQLException, IOException {
 		super.copyFrom(featureID);
 		Feature copyFeature = new Feature(featureID, user, state);
 		int copySampleID = ((Integer) copyFeature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
@@ -80,7 +80,7 @@ public class OutcropLocalityDE extends LocalityDE {
 		super.makeEndBitHTML(out);
 	}
 
-	public int save() throws SQLException, IOException, InvalidCredentialsException {
+	public int save() throws SQLException, IOException, InsufficientPrivelegesException {
 		if (!savedFlag) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			conn.getConnection().setAutoCommit(false);
@@ -105,18 +105,18 @@ public class OutcropLocalityDE extends LocalityDE {
 				conn.releaseStatement();
 				savedFlag = false;
 				throw new IOException(e.getMessage());
-			} catch (InvalidCredentialsException e) {
+			} catch (InsufficientPrivelegesException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = false;
-				throw new InvalidCredentialsException();
+				throw new InsufficientPrivelegesException();
 			}
 		}
 		return feature.getFeatureID();
 	}
 	
-	public int submit() throws SQLException, IOException, DataInputException, InvalidCredentialsException {
+	public int submit() throws SQLException, IOException, DataInputException, InsufficientPrivelegesException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		conn.getConnection().setAutoCommit(false);
 		try {
@@ -137,7 +137,7 @@ public class OutcropLocalityDE extends LocalityDE {
 			conn.getConnection().setAutoCommit(true);
 			conn.releaseStatement();
 			throw e;
-		} catch (InvalidCredentialsException e) {
+		} catch (InsufficientPrivelegesException e) {
 			conn.getConnection().rollback();
 			conn.getConnection().setAutoCommit(true);
 			conn.releaseStatement();

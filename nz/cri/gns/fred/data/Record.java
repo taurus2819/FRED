@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Vector;
 
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.DataException;
@@ -290,7 +290,7 @@ public class Record {
 	 *  Use this to get a new instance of this class. If forceRefresh = true 
 	 * @throws SQLException if there is not a record for given ID, as well as normal SQLExceptions.
 	 */
-	public static Record getData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, InvalidCredentialsException {
+	public static Record getData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, InsufficientPrivelegesException {
 		Record rec = (Record) pool.retrieve(new DataFinder(id));
 		if (forceRefresh && rec != null) {
 			pool.removeMe(rec);
@@ -301,7 +301,7 @@ public class Record {
 		if (!FREDUtils.isAllowedLocality(user, rec.getAsString(FEATURE_STATUS), rec.getAsString(FEATURE_ID), state)
 				|| !FREDUtils.isAllowedSample(user, rec.getAsString(SAMPLE_SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(SAMPLE_ID), state)
 				|| !FREDUtils.isAllowedRecord(user, rec.getAsString(SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(RECORD_ID), state))
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		return rec;
 	}
 
@@ -309,7 +309,7 @@ public class Record {
 	 *  Use this to get a new instance of this class. If record already exists in the pool then it is retrieved
 	 * @throws SQLException if there is not a record for given ID, as well as normal SQLExceptions.
 	 */
-	public static Record getData(int id, User user, PageState state) throws SQLException, IOException, InvalidCredentialsException {
+	public static Record getData(int id, User user, PageState state) throws SQLException, IOException, InsufficientPrivelegesException {
 		return getData(id, user, state, false);
 	}
 

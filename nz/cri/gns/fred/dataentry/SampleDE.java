@@ -8,7 +8,7 @@ import java.sql.Types;
 import java.util.Iterator;
 import java.util.Vector;
 
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.DBUtils;
@@ -74,7 +74,7 @@ public class SampleDE implements DataEntryForm {
 		isAllowedSubmit = workingFolder.isAllowedSubmitLocalities();
 	}
 
-	public SampleDE(int sampleID, User user, PageState state) throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
+	public SampleDE(int sampleID, User user, PageState state) throws IllegalArgumentException, DataInputException, SQLException, IOException, InsufficientPrivelegesException {
 		this.user = user;
 		this.state = state;
 		sample = new Sample(sampleID, user, state, true);
@@ -90,12 +90,12 @@ public class SampleDE implements DataEntryForm {
 		getFromDatabase(sample);
 	}
 
-	public void copyFrom(int sampleID) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
+	public void copyFrom(int sampleID) throws DataInputException, InsufficientPrivelegesException, SQLException, IOException {
 		Sample copySample = new Sample(sampleID, user, state);
 		getFromDatabase(copySample);
 	}
 
-	private void getFromDatabase(Sample sample) throws DataInputException, InvalidCredentialsException {
+	private void getFromDatabase(Sample sample) throws DataInputException, InsufficientPrivelegesException {
 		//set fields
 		try {
 			setField(COLLECTION_DATE, DataEntryUtils.reverseParseDate(
@@ -961,9 +961,9 @@ public class SampleDE implements DataEntryForm {
 		}
 	}
 
-	public int save() throws InvalidCredentialsException, SQLException, IOException {
+	public int save() throws InsufficientPrivelegesException, SQLException, IOException {
 		if (featureID == -1)
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		if (!savedFlag) {
 			String sampleID;
 			DBConnection conn = FREDUtils.getFREDConnection(state);
@@ -1161,9 +1161,9 @@ public class SampleDE implements DataEntryForm {
 		}
 	}
 
-	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
+	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException {
 		if ((sample != null && sample.getAsString(Sample.SAMPLE_STATUS).equals(Audit.STATUS_WAITING)) || !isAllowedSubmit)
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		if (getField(COLLECTORS) == null || getField(COLLECTION_DATE) == null || getField(FOSSILS_IN_PLACE) == null)
 			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
 		save();
@@ -1182,9 +1182,9 @@ public class SampleDE implements DataEntryForm {
 		return sample.getSampleID();
 	}
 
-	public void delete() throws IOException, SQLException, InvalidCredentialsException {
+	public void delete() throws IOException, SQLException, InsufficientPrivelegesException {
 		if (!FREDUtils.isAllowedDeleteSample(user, sample.getAsString(Sample.SAMPLE_STATUS), String.valueOf(sample.getSampleID()), state) && sample != null)
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		conn.executeUpdate("DELETE FROM Sample WHERE Sample_ID = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(sample.getSampleID())});
 		conn.releaseStatement();	

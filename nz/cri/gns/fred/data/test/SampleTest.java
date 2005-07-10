@@ -5,7 +5,7 @@ import java.rmi.NotBoundException;
 import java.sql.SQLException;
 
 import junit.framework.TestCase;
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.Sample;
@@ -31,7 +31,7 @@ public class SampleTest extends TestCase {
 		}
 	}
 
-	public void testSample() throws SQLException, IOException, InvalidCredentialsException {
+	public void testSample() throws SQLException, IOException, InsufficientPrivelegesException {
 		Sample.purge();
 		Sample s1 = new Sample(83465, this.user, this.state);
 		System.out.println(s1.getAsString(Sample.SAMPLE_NAME));
@@ -53,7 +53,7 @@ public class SampleTest extends TestCase {
 		assertEquals(sv1.toString(), sv5.toString());
 	}
 	
-	public void _testFields() throws IOException, SQLException, InvalidCredentialsException {
+	public void _testFields() throws IOException, SQLException, InsufficientPrivelegesException {
 		Sample.purge();
 		Sample sv = new Sample(601, this.user, this.state);
 		String frNum = sv.getAsString(Sample.FR_NUMBER);
@@ -62,7 +62,7 @@ public class SampleTest extends TestCase {
 		System.out.println(sv.getAsInt(Sample.ACCURACY));
 	}
 	
-	public void _testRestrictions() throws SQLException, IOException, InvalidCredentialsException {
+	public void _testRestrictions() throws SQLException, IOException, InsufficientPrivelegesException {
 		String test = null;
 		Sample.purge();
 		Sample f = new Sample(390, null, state);
@@ -86,7 +86,7 @@ public class SampleTest extends TestCase {
 		assertTrue(f2.isUserAuthenticated());		
 	}
 	
-	public void _testDrillholeSamples() throws SQLException, IOException, InvalidCredentialsException {
+	public void _testDrillholeSamples() throws SQLException, IOException, InsufficientPrivelegesException {
 		Sample.purge();
 		Sample f = new Sample(3, this.user, this.state);
 		Sample bf = FREDUtils.getSampleBelow(f, user, this.state);
@@ -96,7 +96,7 @@ public class SampleTest extends TestCase {
 		assertEquals(3, Sample.getPoolSize());
 	}
 
-	public void _testStartDate() throws SQLException, IOException, InvalidCredentialsException {
+	public void _testStartDate() throws SQLException, IOException, InsufficientPrivelegesException {
 		Sample.purge();
 		Sample f = new Sample(1165, user, state);
 		String test1 = f.getAsString(Sample.DATUM_TYPE);
@@ -104,7 +104,7 @@ public class SampleTest extends TestCase {
 		System.out.println(test1);
 	}
 
-	public void _testRecords() throws SQLException, IOException, InvalidCredentialsException {
+	public void _testRecords() throws SQLException, IOException, InsufficientPrivelegesException {
 		Sample s = new Sample(1262, user, state);
 		System.out.println(s.getAsString(Sample.RECORDS));
 	}

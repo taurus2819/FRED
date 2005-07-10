@@ -8,7 +8,7 @@ import java.sql.Types;
 import java.util.Iterator;
 import java.util.Vector;
 
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.HTMLUtils;
@@ -41,7 +41,7 @@ public class PaleontologyRecordDE extends RecordDE {
 		super(user, folderID, Record.PALEONTOLOGY_RECORD, state);
 	}
 
-	public PaleontologyRecordDE(int recID, User user, PageState state) throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
+	public PaleontologyRecordDE(int recID, User user, PageState state) throws IllegalArgumentException, DataInputException, SQLException, IOException, InsufficientPrivelegesException {
 		super(recID, Record.PALEONTOLOGY_RECORD, user, state);
 		getFromDatabase(record);
 		savedFlag = true;
@@ -325,7 +325,7 @@ public class PaleontologyRecordDE extends RecordDE {
 	}
 
 	public int save()
-		throws InvalidCredentialsException, SQLException, IOException {
+		throws InsufficientPrivelegesException, SQLException, IOException {
 		if (!savedFlag) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			conn.getConnection().setAutoCommit(false);
@@ -386,7 +386,7 @@ public class PaleontologyRecordDE extends RecordDE {
 				conn.releaseStatement();
 				savedFlag = false;
 				throw e;
-			} catch (InvalidCredentialsException e) {
+			} catch (InsufficientPrivelegesException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
@@ -398,7 +398,7 @@ public class PaleontologyRecordDE extends RecordDE {
 		return record.getRecordID();
 	}
 	
-	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
+	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException {
 		int recordID = super.submit();
 		record = PaleontologyRecord.getData(record.getRecordID(), user, state, true);
 		return recordID;

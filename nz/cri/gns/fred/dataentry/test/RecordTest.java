@@ -11,6 +11,7 @@ import java.rmi.NotBoundException;
 import java.sql.SQLException;
 
 import junit.framework.TestCase;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
@@ -30,7 +31,7 @@ import nz.cri.gns.test.TestingPageState;
  */
 public class RecordTest extends TestCase {
 
-	public void _testDataEntryForm() throws NotBoundException, InvalidCredentialsException, SQLException, IOException, DataInputException, TaxonomicListException {
+	public void _testDataEntryForm() throws NotBoundException, InsufficientPrivelegesException, IOException, DataInputException, TaxonomicListException, SQLException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("test", "test", ipConn);
@@ -42,7 +43,7 @@ public class RecordTest extends TestCase {
 		//form.save();
 	}
 
-	public void testPalLists() throws NotBoundException, InvalidCredentialsException, SQLException, IOException, DataInputException, TaxonomicListException {
+	public void testPalLists() throws NotBoundException, InsufficientPrivelegesException, IOException, DataInputException, TaxonomicListException, SQLException, InvalidCredentialsException {
 		PaleontologyRecord.purge();
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);

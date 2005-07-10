@@ -5,6 +5,7 @@ import java.rmi.NotBoundException;
 import java.sql.SQLException;
 
 import junit.framework.TestCase;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
@@ -21,7 +22,7 @@ import nz.cri.gns.test.TestingPageState;
 
 public class SampleTest extends TestCase {
 
-	public void testAddDeleteSample() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void testAddDeleteSample() throws NotBoundException, IOException, InsufficientPrivelegesException, DataInputException, TaxonomicListException, SQLException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("test", "test", ipConn);
@@ -34,7 +35,7 @@ public class SampleTest extends TestCase {
 		//FolderUtils.deleteSample(String.valueOf(sampleID), user, state);	
 	}
 	
-	public void _testSampleProperties() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void _testSampleProperties() throws NotBoundException, IOException, InsufficientPrivelegesException, DataInputException, TaxonomicListException, SQLException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("test", "test", ipConn);

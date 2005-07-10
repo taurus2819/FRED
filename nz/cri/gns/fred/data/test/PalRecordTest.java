@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.data.PaleontologyRecord;
 import nz.cri.gns.fred.data.Taxa;
@@ -39,7 +39,7 @@ public class PalRecordTest extends TestCase {
 	}
 
 
-	public void testPooling() throws NotBoundException, SQLException, IOException, InvalidCredentialsException {
+	public void testPooling() throws NotBoundException, SQLException, IOException, InsufficientPrivelegesException {
 		PaleontologyRecord.purge();
 		PaleontologyRecord sv1 = (PaleontologyRecord) PaleontologyRecord.getData(781, this.user, this.state);
 		PaleontologyRecord sv2 = (PaleontologyRecord) PaleontologyRecord.getData(781, this.user, this.state);
@@ -52,7 +52,7 @@ public class PalRecordTest extends TestCase {
 		assertEquals(2, PaleontologyRecord.getPoolSize());
 	}
 	
-	public void testPalList() throws NotBoundException, SQLException, IOException, InvalidCredentialsException {
+	public void testPalList() throws NotBoundException, SQLException, IOException, InsufficientPrivelegesException {
 		PaleontologyRecord sv1 = (PaleontologyRecord) PaleontologyRecord.getData(781, this.user, this.state);
 		assertNotNull(sv1.get(PaleontologyRecord.TAXONOMIC_LIST));
 		System.out.println(sv1.getAsVector(PaleontologyRecord.TAXONOMIC_LIST).size());

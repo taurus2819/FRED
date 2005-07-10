@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.sql.SQLException;
 
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 
 public interface DataEntryForm {
 
@@ -113,17 +113,17 @@ public interface DataEntryForm {
 	
 	public void setFieldsFromTemp() throws DataInputException, TaxonomicListException;
 
-	public void copyFrom(int id) throws DataInputException, InvalidCredentialsException, SQLException, IOException;
+	public void copyFrom(int id) throws DataInputException, InsufficientPrivelegesException, SQLException, IOException;
 
 	public void makeNavPanelHTML(Writer out) throws IOException;
 	
 	public void makeDataEntryHTML(Writer out) throws IOException, SQLException;
 	
-	public int save() throws SQLException, IOException, InvalidCredentialsException;
+	public int save() throws SQLException, IOException, InsufficientPrivelegesException;
 	
-	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException;
+	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException;
 
-	public void delete() throws IOException, SQLException, InvalidCredentialsException;
+	public void delete() throws IOException, SQLException, InsufficientPrivelegesException;
 	
 	public int getWorkingFolderID();
 

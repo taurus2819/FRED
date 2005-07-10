@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.DBUtils;
@@ -51,7 +51,7 @@ public abstract class RecordDE implements DataEntryForm {
 			this.sample = new Sample(sampleID, user, state);
 	}
 
-	public RecordDE(int recID, String recordType, User user, PageState state) throws InvalidCredentialsException, DataInputException, SQLException, IOException {
+	public RecordDE(int recID, String recordType, User user, PageState state) throws InsufficientPrivelegesException, DataInputException, SQLException, IOException {
 		this.user = user;
 		this.state = state;
 		this.recordType = recordType;
@@ -74,7 +74,7 @@ public abstract class RecordDE implements DataEntryForm {
 		}
 	}
 
-	public void copyFrom(int recordID) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
+	public void copyFrom(int recordID) throws DataInputException, InsufficientPrivelegesException, SQLException, IOException {
 		Record copyRecord = Record.getData(recordID, user, state);
 		if (copyRecord.getRecordType().equals(Record.ADOPTION_RECORD)) {
 			copyRecord = (AdoptionRecord) AdoptionRecord.getData(recordID, user, state);
@@ -233,12 +233,12 @@ public abstract class RecordDE implements DataEntryForm {
 		out.write("</table>\n");
 	}
 
-	public int save() throws InvalidCredentialsException, SQLException, IOException {
+	public int save() throws InsufficientPrivelegesException, SQLException, IOException {
 		if (!savedFlag) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			ResultSet rs;
 			if (record == null) {
-				if (!folder.isAllowedCreateLocalities()) throw new InvalidCredentialsException();
+				if (!folder.isAllowedCreateLocalities()) throw new InsufficientPrivelegesException();
 				//create new AUDIT record
 				QueryDescriptor qd = new QueryDescriptor("audit_table");
 				qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
@@ -256,7 +256,7 @@ public abstract class RecordDE implements DataEntryForm {
 				record = Record.getData(Integer.parseInt(recordID), user, state, true);
 			} else { // edit
 				if ((!FREDUtils.hasMasterfileRecordRights(user, String.valueOf(record.getRecordID()), state) && record.getAsString(Record.STATUS).equals(Audit.STATUS_APPROVED)) || !folder.isAllowedEditLocalities())
-					throw new InvalidCredentialsException();
+					throw new InsufficientPrivelegesException();
 				//Update AUDIT
 				QueryDescriptor qd = new QueryDescriptor("audit_table");
 				qd.addQueryColumn("working_comments", Types.VARCHAR, fields[WORKING_COMMENTS]);
@@ -272,9 +272,9 @@ public abstract class RecordDE implements DataEntryForm {
 	}
 
 
-	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
+	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException {
 		if (!folder.isAllowedSubmitLocalities())
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		checkMandatoryFields();
 		int recordID = save();
 		//change status
@@ -295,7 +295,7 @@ public abstract class RecordDE implements DataEntryForm {
 	protected void checkMandatoryFields() throws DataInputException {
 	}
 	
-	public void delete() throws IOException, SQLException, InvalidCredentialsException {
+	public void delete() throws IOException, SQLException, InsufficientPrivelegesException {
 		if (record != null) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			conn.executeUpdate("DELETE FROM record WHERE record_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(record.getRecordID())});

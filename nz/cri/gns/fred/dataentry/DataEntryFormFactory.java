@@ -3,7 +3,7 @@ package nz.cri.gns.fred.dataentry;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.data.Record;
@@ -12,7 +12,7 @@ import nz.cri.gns.jsp.PageState;
 
 public class DataEntryFormFactory {
 
-	public static LocalityDE getLocalityDataEntryForm(int featureID, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public static LocalityDE getLocalityDataEntryForm(int featureID, User user, PageState state) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException {
 		Feature feature = new Feature(featureID, user, state);
 	  	if (feature.getAsString(Feature.FEATURE_TYPE).equals(Feature.OUTCROP_LOCALITY)) {
 	  		return new OutcropLocalityDE(featureID, user, state);
@@ -25,7 +25,7 @@ public class DataEntryFormFactory {
 	  	}
 	}
 
- 	 public static LocalityDE getLocalityDataEntryForm(String type, User user, int folderID, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException {
+ 	 public static LocalityDE getLocalityDataEntryForm(String type, User user, int folderID, PageState state) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException {
 		if (type.equals(Feature.OUTCROP_LOCALITY)) {
 			return new OutcropLocalityDE(user, folderID, state);
 		} else if (type.equals(Feature.DRILLHOLE_LOCALITY)) {
@@ -37,7 +37,7 @@ public class DataEntryFormFactory {
 		}
 	}
 	
-	public static LocalityDE copyLocalityDataEntryForm(int copyID, int toID, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public static LocalityDE copyLocalityDataEntryForm(int copyID, int toID, User user, PageState state) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException {
 		LocalityDE copyLoc = getLocalityDataEntryForm(copyID, user, state);
 		LocalityDE toLoc = getLocalityDataEntryForm(toID, user, state);
 		for (int i = 0; i < copyLoc.getFieldCount(); i++) {
@@ -46,7 +46,7 @@ public class DataEntryFormFactory {
 		return toLoc;
 	}
 	
-	public static LocalityDE copyLocalityDataEntryForm(int copyID, User user, int folderID, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public static LocalityDE copyLocalityDataEntryForm(int copyID, User user, int folderID, PageState state) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException {
 		LocalityDE copyLoc = getLocalityDataEntryForm(copyID, user, state);
 		LocalityDE toLoc = getLocalityDataEntryForm(copyLoc.getFeatureType(), user, folderID, state);
 		for (int i = 0; i < copyLoc.getFieldCount(); i++) {
@@ -55,7 +55,7 @@ public class DataEntryFormFactory {
 		return toLoc;
 	}
 	
-	public static SampleDE getSampleDataEntryForm(int sampleID, User user, PageState state) throws IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException  {
+	public static SampleDE getSampleDataEntryForm(int sampleID, User user, PageState state) throws IllegalArgumentException, DataInputException, SQLException, IOException, InsufficientPrivelegesException  {
 		return new SampleDE(sampleID, user, state);
 	}
 	
@@ -63,7 +63,7 @@ public class DataEntryFormFactory {
 		return new SampleDE(user, featureID, folderID, state);
 	}
 	
-	public static RecordDE getRecordDataEntryForm(int recordID, User user, PageState state) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
+	public static RecordDE getRecordDataEntryForm(int recordID, User user, PageState state) throws DataInputException, InsufficientPrivelegesException, SQLException, IOException {
 		Record record = Record.getData(recordID, user, state);
 		if (record.getAsString(Record.RECORD_TYPE).equals(Record.ADOPTION_RECORD)) {
 			return new AdoptionRecordDE(recordID, user, state);

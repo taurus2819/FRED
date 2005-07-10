@@ -14,6 +14,7 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 
 import junit.framework.TestCase;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
@@ -52,11 +53,11 @@ public class LocalityTest extends TestCase {
 		} catch (Exception e) {}
 	}
 
-	public void testAllowedEdit() throws IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public void testAllowedEdit() throws IOException, SQLException, DataInputException, InsufficientPrivelegesException {
 		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm(1704, user, state);
 	}
 	
-	public void __testCopy() throws IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public void __testCopy() throws IOException, SQLException, DataInputException, InsufficientPrivelegesException {
 		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm(Feature.DRILLHOLE_LOCALITY, user, 12, state);
 		System.out.println(form.getField(DataEntryForm.FEATURE_NAME));
 		System.out.println(form.getField(DataEntryForm.SPUD_DATE));
@@ -65,7 +66,7 @@ public class LocalityTest extends TestCase {
 		System.out.println(form.getField(DataEntryForm.SPUD_DATE));
 	}
 
-	public void _testEdit() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void _testEdit() throws NotBoundException, IOException, InsufficientPrivelegesException, DataInputException, TaxonomicListException, SQLException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
@@ -76,7 +77,7 @@ public class LocalityTest extends TestCase {
 		loc2.save();		
 	}
 	
-	public void _testCopy() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public void _testCopy() throws NotBoundException, IOException, DataInputException, InsufficientPrivelegesException, SQLException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
@@ -94,7 +95,7 @@ public class LocalityTest extends TestCase {
 		//System.out.println(loc2.save());
 	}
 
-	public void _testSecType() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public void _testSecType() throws NotBoundException, IOException, DataInputException, InsufficientPrivelegesException, SQLException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
@@ -105,7 +106,7 @@ public class LocalityTest extends TestCase {
 		System.out.println(loc.getField(LocalityDE.SECURITY_TYPE));
 	} 
 	
-	public void _testOutcrop() throws IOException, SQLException, DataInputException, InvalidCredentialsException, MalformedURLException, RemoteException, NotBoundException {
+	public void _testOutcrop() throws IOException, DataInputException, InsufficientPrivelegesException, MalformedURLException, RemoteException, NotBoundException, SQLException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
@@ -116,7 +117,7 @@ public class LocalityTest extends TestCase {
 		loc.makeDataEntryHTML(new PrintWriter(System.out));
 	}
 	
-	public void _testNotWorkingLoc() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public void _testNotWorkingLoc() throws NotBoundException, IOException, DataInputException, InsufficientPrivelegesException, SQLException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
@@ -124,7 +125,7 @@ public class LocalityTest extends TestCase {
 		loc.submit();
 	}
 	
-	public void _testSite() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void _testSite() throws NotBoundException, IOException, InsufficientPrivelegesException, DataInputException, TaxonomicListException, SQLException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
@@ -139,7 +140,7 @@ public class LocalityTest extends TestCase {
 		form.save();		
 	}
 	
-	public void _testFeatName() throws NotBoundException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public void _testFeatName() throws NotBoundException, IOException, DataInputException, InsufficientPrivelegesException, SQLException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
@@ -147,7 +148,7 @@ public class LocalityTest extends TestCase {
 		form.save();	
 	}
 	
-	public void _testMFEdit() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void _testMFEdit() throws NotBoundException, IOException, InsufficientPrivelegesException, DataInputException, TaxonomicListException, SQLException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
@@ -157,14 +158,14 @@ public class LocalityTest extends TestCase {
 		form.save();
 	}
 	
-	public void _testSubmit() throws NotBoundException, NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public void _testSubmit() throws NotBoundException, NumberFormatException, IOException, DataInputException, InsufficientPrivelegesException, SQLException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("test", "test", ipConn);
 		FolderUtils.submitLocality(String.valueOf(TEST_DRILLHOLE), user, state);
 	}
 	
-	public void _testOutcropSave() throws NotBoundException, IOException, SQLException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void _testOutcropSave() throws NotBoundException, IOException, InsufficientPrivelegesException, DataInputException, TaxonomicListException, SQLException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("pseudo_ben", "santor32", ipConn);
@@ -175,7 +176,7 @@ public class LocalityTest extends TestCase {
 		form.save();		
 	}
 	
-	public void _testCreateDeleteDrillholeLocality() throws SQLException, IOException, NotBoundException, InvalidCredentialsException, DataInputException, TaxonomicListException {
+	public void _testCreateDeleteDrillholeLocality() throws SQLException, IOException, NotBoundException, InsufficientPrivelegesException, DataInputException, TaxonomicListException {
 		DataEntryForm form = DataEntryFormFactory.getLocalityDataEntryForm(Feature.DRILLHOLE_LOCALITY, user, 18, state);
 		form.setTempField(DataEntryForm.FEATURE_NAME, "JUnit Drillhole");
 		form.setTempField(DataEntryForm.COLLECTION_DATE, "10/2004");

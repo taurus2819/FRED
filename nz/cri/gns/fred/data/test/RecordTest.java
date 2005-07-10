@@ -5,7 +5,7 @@ import java.rmi.NotBoundException;
 import java.sql.SQLException;
 
 import junit.framework.TestCase;
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DataException;
 import nz.cri.gns.db.metadata.MetadataRecord;
@@ -34,16 +34,16 @@ public class RecordTest extends TestCase {
 	}
 
 
-	public void _testPooling() throws NotBoundException, SQLException, IOException, InvalidCredentialsException {
+	public void _testPooling() throws NotBoundException, SQLException, IOException, InsufficientPrivelegesException {
 		Record record = Record.getData(1280, user, state);
 	}
 	
-	public void _testToString() throws SQLException, IOException, InvalidCredentialsException {
+	public void _testToString() throws SQLException, IOException, InsufficientPrivelegesException {
 		Record record = AdoptionRecord.getData(241, user, state);
 		System.out.println(record);
 	}
 	
-	public void testDocumentAttacher() throws DataException, NoSuchMetadataException, SQLException, IOException, InvalidCredentialsException {
+	public void testDocumentAttacher() throws DataException, NoSuchMetadataException, SQLException, IOException, InsufficientPrivelegesException {
 		Record record = AdoptionRecord.getData(61, user, state);
 		System.out.println(record.getMetadataRecordsCount());
 		MetadataRecord[] mr = record.getMetadataRecords();

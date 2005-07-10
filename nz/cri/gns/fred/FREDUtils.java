@@ -13,7 +13,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 import nz.cri.gns.auth.AuthUtils;
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.NoSuchSecurityClassException;
 import nz.cri.gns.auth.Right;
 import nz.cri.gns.auth.SecurityClass;
@@ -456,7 +456,7 @@ public class FREDUtils {
 	/**
 	 * Returns the Sample immediately above the given Sample in a drillhole or vertical section
 	 */
-	public static Sample getSampleAbove(Sample sample, User user, PageState state) throws SQLException, IOException, InvalidCredentialsException {
+	public static Sample getSampleAbove(Sample sample, User user, PageState state) throws SQLException, IOException, InsufficientPrivelegesException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		String query = "SELECT sample_id FROM sample_all_view WHERE feature_id = ? AND top_depth < ? ORDER BY top_depth DESC";
 		ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(sample.getAsInt(Sample.FEATURE_ID)), new Double(sample.getAsDouble(Sample.TOP_DEPTH))});
@@ -468,7 +468,7 @@ public class FREDUtils {
 	/**
 	 * Returns the Sample immediately below the given Sample in a drillhole or vertical section
 	 */
-	public static Sample getSampleBelow(Sample sample, User user, PageState state) throws SQLException, IOException, InvalidCredentialsException {
+	public static Sample getSampleBelow(Sample sample, User user, PageState state) throws SQLException, IOException, InsufficientPrivelegesException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		String query = "SELECT sample_id FROM sample_all_view WHERE feature_id = ? AND top_depth > ? ORDER BY top_depth";
 		ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(sample.getAsInt(Sample.FEATURE_ID)), new Double(sample.getAsDouble(Sample.TOP_DEPTH))});

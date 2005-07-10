@@ -6,7 +6,7 @@ import java.sql.Types;
 import java.util.Iterator;
 import java.util.Vector;
 
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.KeyValueObject;
@@ -202,21 +202,21 @@ public class Sample {
 		return (sd.getAsString(SAMPLE_STATUS).equals(Audit.STATUS_APPROVED));
 	}
 
-	public int getRecordCount() throws InvalidCredentialsException {
+	public int getRecordCount() throws InsufficientPrivelegesException {
 		if (!authenticated)
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		return sd.getAsVector(RECORDS).size();
 	}
 
-	public int getWorkingRecordCount() throws InvalidCredentialsException {
+	public int getWorkingRecordCount() throws InsufficientPrivelegesException {
 		if (!authenticated)
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		return sd.getAsVector(WORKING_RECORDS).size();
 	}
 
-	public int getAdoptionRecordCount() throws InvalidCredentialsException {
+	public int getAdoptionRecordCount() throws InsufficientPrivelegesException {
 		if (!authenticated)
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		int adoCount = 0;
 		for (Iterator i = sd.getAsVector(RECORDS).iterator(); i.hasNext(); ) {
 			KeyValueObject rec = (KeyValueObject)i.next();
@@ -226,9 +226,9 @@ public class Sample {
 		return adoCount;		
 	}
 
-	public int getPaleontologyRecordCount() throws InvalidCredentialsException {
+	public int getPaleontologyRecordCount() throws InsufficientPrivelegesException {
 		if (!authenticated)
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		int palCount = 0;
 		for (Iterator i = sd.getAsVector(RECORDS).iterator(); i.hasNext(); ) {
 			KeyValueObject rec = (KeyValueObject)i.next();
@@ -238,29 +238,29 @@ public class Sample {
 		return palCount;		
 	}
 	
-	public MetadataRecord[] getSampleMetadataRecords() throws InvalidCredentialsException {
+	public MetadataRecord[] getSampleMetadataRecords() throws InsufficientPrivelegesException {
 		if (!authenticated)
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		return sd.sampMR;
 	}
 	
-	public int getSampleMetadataRecordsCount() throws InvalidCredentialsException {
+	public int getSampleMetadataRecordsCount() throws InsufficientPrivelegesException {
 		if (!authenticated)
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		if (sd.sampMR != null)
 			return sd.sampMR.length;
 		return 0;
 	}	
 
-	public MetadataRecord[] getFeatureMetadataRecords() throws InvalidCredentialsException {
+	public MetadataRecord[] getFeatureMetadataRecords() throws InsufficientPrivelegesException {
 		if (!authenticated)
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		return sd.featMR;
 	}
 	
-	public int getFeatureMetadataRecordsCount() throws InvalidCredentialsException {
+	public int getFeatureMetadataRecordsCount() throws InsufficientPrivelegesException {
 		if (!authenticated)
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		if (sd.featMR != null)
 			return sd.featMR.length;
 		return 0;
@@ -320,9 +320,9 @@ public class Sample {
 	 * Attempts to return the given field as an int.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an int.
 	 */
-	public int getAsInt(int field) throws InvalidCredentialsException {
+	public int getAsInt(int field) throws InsufficientPrivelegesException {
 		if (!isAllowedField(field)) {
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		}
 		return sd.getAsInt(field);
 	}
@@ -331,9 +331,9 @@ public class Sample {
 	 * Attempts to return the given field as an double.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an double.
 	 */
-	public double getAsDouble(int field) throws InvalidCredentialsException {
+	public double getAsDouble(int field) throws InsufficientPrivelegesException {
 		if (!isAllowedField(field)) {
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		}
 		return sd.getAsDouble(field);
 	}
@@ -342,9 +342,9 @@ public class Sample {
 	 * Attempts to return the given field as a Date.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an Date.
 	 */
-	public java.util.Date getAsDate(int field) throws InvalidCredentialsException {
+	public java.util.Date getAsDate(int field) throws InsufficientPrivelegesException {
 		if (!isAllowedField(field)) {
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		}
 		return sd.getAsDate(field);
 	}
@@ -353,9 +353,9 @@ public class Sample {
 	 * Attempts to return the given field as a Vector.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a Vector.
 	 */
-	public Vector getAsVector(int field) throws InvalidCredentialsException {
+	public Vector getAsVector(int field) throws InsufficientPrivelegesException {
 		if (!isAllowedField(field)) {
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		}
 		return sd.getAsVector(field);
 	}
@@ -364,9 +364,9 @@ public class Sample {
 	 * Attempts to return the given field as a String.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a String.
 	 */
-	public String getAsString(int field) throws InvalidCredentialsException {
+	public String getAsString(int field) throws InsufficientPrivelegesException {
 		if (!isAllowedField(field)) {
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		}
 		return sd.getAsString(field);
 	}
@@ -375,9 +375,9 @@ public class Sample {
 	 * Returns the given field as an object. Use if all else fails.
 	 * @throws IllegalArgumentException if the field doesn't exist.
 	 */
-	public Object get(int field) throws InvalidCredentialsException {
+	public Object get(int field) throws InsufficientPrivelegesException {
 		if (!isAllowedField(field)) {
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		}
 		return sd.get(field);
 	}

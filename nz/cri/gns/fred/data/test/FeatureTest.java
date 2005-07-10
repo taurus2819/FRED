@@ -5,7 +5,7 @@ import java.rmi.NotBoundException;
 import java.sql.SQLException;
 
 import junit.framework.TestCase;
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.Feature;
@@ -54,7 +54,7 @@ public class FeatureTest extends TestCase {
 		assertEquals(sv1.toString(), sv5.toString());
 	}
 	
-	public void _testSamples() throws SQLException, IOException, InvalidCredentialsException {
+	public void _testSamples() throws SQLException, IOException, InsufficientPrivelegesException {
 		//assertEquals(2, Feature.getPoolSize());	
 		//Feature.purge();
 		Feature f = new Feature(1163, user, state);
@@ -63,7 +63,7 @@ public class FeatureTest extends TestCase {
 		assertEquals(dhole.getSampleCount(), 5);
 	}
 	
-	public void _testRestrictions() throws SQLException, IOException, InvalidCredentialsException {
+	public void _testRestrictions() throws SQLException, IOException, InsufficientPrivelegesException {
 		String test = null;
 		//Feature.purge();
 		Feature f = new Feature(1464, null, state);
@@ -80,7 +80,7 @@ public class FeatureTest extends TestCase {
 		System.out.println(f.isUserAuthenticated());
 	}
 	
-	public void _testWorkingFeature() throws SQLException, IOException, InvalidCredentialsException {
+	public void _testWorkingFeature() throws SQLException, IOException, InsufficientPrivelegesException {
 		String test = null;
 	//	Feature.purge();
 		Feature f = new Feature(1163, user, state);

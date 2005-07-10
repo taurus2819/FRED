@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 
 import junit.framework.TestCase;
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.FolderUtils;
 import nz.cri.gns.fred.data.Feature;
@@ -57,7 +57,7 @@ public class FolderTest extends TestCase {
 	}
 
 
-	public void _testFolderName() throws IOException, SQLException, InvalidCredentialsException {
+	public void _testFolderName() throws IOException, SQLException, InsufficientPrivelegesException {
 		Folder sv = new Folder(18, user2, state);
 		String foldName = sv.getAsString(Folder.NAME);
 		assertNotNull(foldName);
@@ -74,7 +74,7 @@ public class FolderTest extends TestCase {
 		assertTrue(sv.isAllowedAdmin());
 	}	
 
-	public void testMultSampName() throws SQLException, IOException, InvalidCredentialsException {
+	public void testMultSampName() throws SQLException, IOException, InsufficientPrivelegesException {
 		Feature feature;
 		//Feature.purge();
 		Folder f = new Folder(12, user, state);

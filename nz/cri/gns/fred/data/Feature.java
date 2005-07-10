@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Vector;
 
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.QueryDescriptor;
@@ -63,15 +63,15 @@ public class Feature implements FeatureConstants {
 		return fd.getAsVector(SAMPLES).size();
 	}
 
-	public MetadataRecord[] getMetadataRecords() throws InvalidCredentialsException {
+	public MetadataRecord[] getMetadataRecords() throws InsufficientPrivelegesException {
 		if (!authenticated)
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		return fd.mr;
 	}
 	
-	public int getMetadataRecordsCount() throws InvalidCredentialsException {
+	public int getMetadataRecordsCount() throws InsufficientPrivelegesException {
 		if (!authenticated)
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		if (fd.mr != null)
 			return fd.mr.length;
 		return 0;
@@ -105,9 +105,9 @@ public class Feature implements FeatureConstants {
 	 * Attempts to return the given field as an int.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an int.
 	 */
-	public int getAsInt(int field) throws InvalidCredentialsException {
+	public int getAsInt(int field) throws InsufficientPrivelegesException {
 		if (!isAllowedField(field)) {
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		}
 		return fd.getAsInt(field);
 	}
@@ -116,9 +116,9 @@ public class Feature implements FeatureConstants {
 	 * Attempts to return the given field as an double.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an double.
 	 */
-	public double getAsDouble(int field) throws InvalidCredentialsException {
+	public double getAsDouble(int field) throws InsufficientPrivelegesException {
 		if (!isAllowedField(field)) {
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		}
 		return fd.getAsDouble(field);
 	}
@@ -127,9 +127,9 @@ public class Feature implements FeatureConstants {
 	 * Attempts to return the given field as a Date.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as an Date.
 	 */
-	public java.util.Date getAsDate(int field) throws InvalidCredentialsException {
+	public java.util.Date getAsDate(int field) throws InsufficientPrivelegesException {
 		if (!isAllowedField(field)) {
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		}
 		return fd.getAsDate(field);
 	}
@@ -138,9 +138,9 @@ public class Feature implements FeatureConstants {
 	 * Attempts to return the given field as a String.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a String.
 	 */
-	public String getAsString(int field) throws InvalidCredentialsException {
+	public String getAsString(int field) throws InsufficientPrivelegesException {
 		if (!isAllowedField(field)) {
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		}
 		return fd.getAsString(field);
 	}
@@ -149,9 +149,9 @@ public class Feature implements FeatureConstants {
 	 * Attempts to return the given field as a Vector.
 	 * @throws IllegalArgumentException if the field doesn't exist, or can't be returned as a Vector.
 	 */
-	public Vector getAsVector(int field) throws InvalidCredentialsException {
+	public Vector getAsVector(int field) throws InsufficientPrivelegesException {
 		if (!isAllowedField(field)) {
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		}
 		return fd.getAsVector(field);
 	}
@@ -160,9 +160,9 @@ public class Feature implements FeatureConstants {
 	 * Returns the given field as an object. Use if all else fails.
 	 * @throws IllegalArgumentException if the field doesn't exist.
 	 */
-	public Object get(int field) throws InvalidCredentialsException {
+	public Object get(int field) throws InsufficientPrivelegesException {
 		if (!isAllowedField(field)) {
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		}
 		return fd.get(field);
 	}

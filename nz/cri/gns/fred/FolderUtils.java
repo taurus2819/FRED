@@ -8,7 +8,7 @@ import java.sql.Types;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.QueryDescriptor;
@@ -43,7 +43,7 @@ public class FolderUtils {
 		DBUtils.doInsertUsingSequence(qd, "folder_id", "folder_seq", FREDUtils.getFREDConnection(state), false);
 	}
 	
-	public static void deleteFolder(String folderID, User user, PageState state) throws IOException, InvalidCredentialsException, SQLException, FolderUtilException {
+	public static void deleteFolder(String folderID, User user, PageState state) throws IOException, InsufficientPrivelegesException, SQLException, FolderUtilException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		Folder folder = new Folder(Integer.parseInt(folderID), user, state);
 		if (folder.isAllowedAdmin() && folder.getLocalityCount() == 0) {
@@ -55,12 +55,12 @@ public class FolderUtils {
 		conn.releaseStatement();
 	}
 	
-	public static void deleteLocality(String featureID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public static void deleteLocality(String featureID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InsufficientPrivelegesException {
 		LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featureID), user, state);
 		form.delete();
 	}
 	
-	public static void deleteSample(String sampleID, User user, PageState state) throws NumberFormatException, InvalidCredentialsException, DataInputException, SQLException, IOException {
+	public static void deleteSample(String sampleID, User user, PageState state) throws NumberFormatException, InsufficientPrivelegesException, DataInputException, SQLException, IOException {
 		Sample sample = new Sample(Integer.parseInt(sampleID), user, state);
 		String featureID = sample.getAsString(Sample.FEATURE_ID);
 		String featAuditID = sample.getAsString(Sample.FEATURE_AUDIT_ID);
@@ -78,12 +78,12 @@ public class FolderUtils {
 		}	
 	}
 	
-	public static void deleteRecord(String recordID, User user, PageState state) throws NumberFormatException, DataInputException, InvalidCredentialsException, SQLException, IOException {
+	public static void deleteRecord(String recordID, User user, PageState state) throws NumberFormatException, DataInputException, InsufficientPrivelegesException, SQLException, IOException {
 		RecordDE form = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(recordID), user, state);
 		form.delete();
 	}
 
-	public static void removeLocality(String featureID, String folderID, User user, PageState state) throws IOException, SQLException, InvalidCredentialsException, FolderUtilException {
+	public static void removeLocality(String featureID, String folderID, User user, PageState state) throws IOException, SQLException, InsufficientPrivelegesException, FolderUtilException {
 		Feature feature = new Feature(Integer.parseInt(featureID), user, state);
 		if (!feature.getAsString(Feature.STATUS).equals(Audit.STATUS_APPROVED))
 			throw new FolderUtilException("Cannot remove a working locality");
@@ -92,7 +92,7 @@ public class FolderUtils {
 		conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(folderID), new Integer(featureID)});
 	}
 
-	public static void addLocality(String featureID, String folderID, User user, PageState state) throws IOException, SQLException, InvalidCredentialsException, FolderUtilException {
+	public static void addLocality(String featureID, String folderID, User user, PageState state) throws IOException, SQLException, InsufficientPrivelegesException, FolderUtilException {
 		Feature feature = new Feature(Integer.parseInt(featureID), user, state);
 		if (!feature.getAsString(Feature.STATUS).equals(Audit.STATUS_APPROVED))
 			throw new FolderUtilException("Cannot add a working locality");
@@ -103,32 +103,32 @@ public class FolderUtils {
 		} catch (Exception e) {}		
 	}
 
-	public static void submitLocality(String featureID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public static void submitLocality(String featureID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InsufficientPrivelegesException {
 		LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featureID), user, state);
 		form.submit();
 	}
 	
-	public static void submitSample(String sampleID, User user, PageState state) throws NumberFormatException, IllegalArgumentException, DataInputException, SQLException, IOException, InvalidCredentialsException {
+	public static void submitSample(String sampleID, User user, PageState state) throws NumberFormatException, IllegalArgumentException, DataInputException, SQLException, IOException, InsufficientPrivelegesException {
 		SampleDE form = DataEntryFormFactory.getSampleDataEntryForm(Integer.parseInt(sampleID), user, state);
 		form.submit();
 	}
 	
-	public static void submitRecord(String recID, User user, PageState state) throws NumberFormatException, DataInputException, InvalidCredentialsException, SQLException, IOException {
+	public static void submitRecord(String recID, User user, PageState state) throws NumberFormatException, DataInputException, InsufficientPrivelegesException, SQLException, IOException {
 		RecordDE form = DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(recID), user, state);
 		form.submit();
 	}
 	
-	public static void revokeLocality(String featID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public static void revokeLocality(String featID, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InsufficientPrivelegesException {
 		 Feature feature = new Feature(Integer.parseInt(featID), user, state);
 		 LocalityDE.revoke(feature, user, state);	
 	}
 	
-	public static void approveLocality(String featID, FRNumber frNum, String comments, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public static void approveLocality(String featID, FRNumber frNum, String comments, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InsufficientPrivelegesException {
 		LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
 		form.approve(frNum, comments);			
 	}
 	
-	public static void rejectLocality(String featID, String comments, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public static void rejectLocality(String featID, String comments, User user, PageState state) throws NumberFormatException, IOException, SQLException, DataInputException, InsufficientPrivelegesException {
 		LocalityDE form = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), user, state);
 		form.reject(comments);			
 	}
@@ -264,7 +264,7 @@ public class FolderUtils {
 		}
 	}
 	
-	public static boolean isTaxaApproved(int recordID, User user, PageState state) throws SQLException, IOException, InvalidCredentialsException {
+	public static boolean isTaxaApproved(int recordID, User user, PageState state) throws SQLException, IOException, InsufficientPrivelegesException {
 		Record record = PaleontologyRecord.getData(recordID, user, state);
 		if (record.get(Record.TAXA_IDS) !=  null) {
 			for (Iterator i = record.getAsVector(Record.TAXA_IDS).iterator(); i.hasNext(); ) {
@@ -276,9 +276,9 @@ public class FolderUtils {
 		return true;
 	}
 	
-	public static void approveTaxa(String taxaID, String groupID, User user, PageState state) throws IOException, InvalidCredentialsException, SQLException {
+	public static void approveTaxa(String taxaID, String groupID, User user, PageState state) throws IOException, InsufficientPrivelegesException, SQLException {
 		if (!FREDUtils.isTaxaPanelMember(user, groupID, state))
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		QueryDescriptor qd = new QueryDescriptor("taxonomic_lookup");
 		qd.addQueryColumn("status", Types.VARCHAR, TaxonomicLookup.APPROVED_STATUS);
@@ -290,9 +290,9 @@ public class FolderUtils {
 		TaxaPanel tlp = new TaxaPanel(Integer.parseInt(groupID), user, state, true);
 	}
 	
-	public static void rejectTaxa(String taxaID, String groupID, User user, PageState state) throws IOException, InvalidCredentialsException, SQLException {
+	public static void rejectTaxa(String taxaID, String groupID, User user, PageState state) throws IOException, InsufficientPrivelegesException, SQLException {
 		if (!FREDUtils.isTaxaPanelMember(user, groupID, state))
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		QueryDescriptor qd = new QueryDescriptor("taxonomic_lookup");
 		qd.addQueryColumn("status", Types.VARCHAR, TaxonomicLookup.REJECTED_STATUS);

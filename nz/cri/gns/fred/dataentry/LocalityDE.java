@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Iterator;
 
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.DBUtils;
@@ -59,7 +59,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		isAllowedSubmit = workingFolder.isAllowedSubmitLocalities();
 	}
 
-	public LocalityDE(int featureID, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public LocalityDE(int featureID, User user, PageState state) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException {
 		this.user = user;
 		this.state = state;
 		feature = new Feature(featureID, user, state, true);
@@ -75,7 +75,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		isAllowedSubmit = FREDUtils.isAllowedSubmitLocality(user, feature.getAsString(Feature.STATUS), String.valueOf(feature.getFeatureID()), state);
 	}
 
-	public void copyFrom(int featureID) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
+	public void copyFrom(int featureID) throws DataInputException, InsufficientPrivelegesException, SQLException, IOException {
 		Feature copyFeature = new Feature(featureID, user, state);
 		if (!featureType.equals(copyFeature.getFeatureType()))
 			throw new DataInputException("Locality", "Incompatible Locality Types");
@@ -84,7 +84,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		getFromDatabase(copySample);
 	}
 
-	protected void getFromDatabase(Sample sample) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
+	protected void getFromDatabase(Sample sample) throws DataInputException, InsufficientPrivelegesException, SQLException, IOException {
 		//set fields
 		setField(FEATURE_NAME, sample.getAsString(Sample.FEATURE_NAME));
 		setField(REGISTRATION_AREA, sample.getAsString(Sample.REG_AREA_ID));
@@ -503,7 +503,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			throw new DataInputException("Coordinate", "Coordinate not valid for given datum");
 	}
 
-	public int save() throws SQLException, IOException, InvalidCredentialsException {
+	public int save() throws SQLException, IOException, InsufficientPrivelegesException {
 		if (!savedFlag) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			ResultSet rs;
@@ -564,9 +564,9 @@ public abstract class LocalityDE implements DataEntryForm {
 		return feature.getFeatureID();
 	}
 
-	public int submit() throws SQLException, IOException, InvalidCredentialsException, DataInputException {
+	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException {
 		if ((feature != null && feature.getAsString(Feature.STATUS).equals(Audit.STATUS_WAITING)) || !isAllowedSubmit)
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		if (featureType == null || fields[GRID_REF] == null || fields[REGISTRATION_AREA] == null)
 			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
 		save();
@@ -589,9 +589,9 @@ public abstract class LocalityDE implements DataEntryForm {
 		return feature.getFeatureID();
 	}
 
-	public static void revoke(Feature feature, User user, PageState state) throws SQLException, IOException, InvalidCredentialsException {
+	public static void revoke(Feature feature, User user, PageState state) throws SQLException, IOException, InsufficientPrivelegesException {
 		if (!FREDUtils.isAllowedRevokeLocality(user, feature.getAsString(Feature.STATUS), String.valueOf(feature.getFeatureID()), state))
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		QueryDescriptor qd = new QueryDescriptor("audit_table");
 		qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
@@ -605,7 +605,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		Folder folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
 	}
 
-	public void approve(FRNumber frNum, String comments) throws SQLException, IOException, InvalidCredentialsException {
+	public void approve(FRNumber frNum, String comments) throws SQLException, IOException, InsufficientPrivelegesException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		//generate FR number record
 		QueryDescriptor qd = new QueryDescriptor("fr_number");
@@ -638,7 +638,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		Folder folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
 	}
 	
-	public void reject(String comments) throws SQLException, IOException, InvalidCredentialsException {
+	public void reject(String comments) throws SQLException, IOException, InsufficientPrivelegesException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		QueryDescriptor qd = new QueryDescriptor("audit_table");
 		qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_REJECTED);
@@ -650,16 +650,16 @@ public abstract class LocalityDE implements DataEntryForm {
 		Folder folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
 	}
 
-	public void delete() throws IOException, SQLException, InvalidCredentialsException {
+	public void delete() throws IOException, SQLException, InsufficientPrivelegesException {
 		if (!FREDUtils.isAllowedDeleteLocality(user, feature.getAsString(Feature.STATUS), String.valueOf(feature.getFeatureID()), state) && feature != null)
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		String query = "DELETE FROM feature WHERE feature_id = ?";
 		conn.executeUpdate(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(feature.getFeatureID())});
 		conn.releaseStatement();
 	}
 	
-	private static void refreshSamples(Feature feature, User user, PageState state) throws InvalidCredentialsException, SQLException, IOException {
+	private static void refreshSamples(Feature feature, User user, PageState state) throws InsufficientPrivelegesException, SQLException, IOException {
 		if (feature.getSampleCount() > 0) {
 			for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
 				Sample sample = new Sample(((Integer) i.next()).intValue(), user, state, true);

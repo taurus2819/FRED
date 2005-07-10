@@ -7,7 +7,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.Vector;
 
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.KeyValueObject;
@@ -29,7 +29,7 @@ public class PaleontologyRecord extends Record {
 	/**
 	 * Cannot be called directly. use static getPaleontologyRecord method instead.
 	 */
-	private PaleontologyRecord(int id, PageState state) throws SQLException, IOException {
+	public PaleontologyRecord(int id, PageState state) throws SQLException, IOException {
 		super(id, state);
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		this.id = id;
@@ -130,7 +130,7 @@ public class PaleontologyRecord extends Record {
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not a record for given ID, as well as normal SQLExceptions.
 	 */
-	public static Record getData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, InvalidCredentialsException {
+	public static Record getData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, InsufficientPrivelegesException {
 		Record rec = (PaleontologyRecord) pool.retrieve(new DataFinder(id));
 		if (forceRefresh && rec != null) {
 			pool.removeMe(rec); 
@@ -141,16 +141,7 @@ public class PaleontologyRecord extends Record {
 		if (!FREDUtils.isAllowedLocality(user, rec.getAsString(FEATURE_STATUS), rec.getAsString(FEATURE_ID), state)
 				|| !FREDUtils.isAllowedSample(user, rec.getAsString(SAMPLE_SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(SAMPLE_ID), state)
 				|| !FREDUtils.isAllowedRecord(user, rec.getAsString(SECURITY_CLASS_ID), rec.getAsString(STATUS), rec.getAsString(RECORD_ID), state))
-			throw new InvalidCredentialsException();
+			throw new InsufficientPrivelegesException();
 		return rec;
 	}
-
-	/**
-	 *  Use this to get a new instance of this class. 
-	 * @throws SQLException if there is not a record for given ID, as well as normal SQLExceptions.
-	 */
-	public static Record getData(int id, User user, PageState state) throws SQLException, IOException, InvalidCredentialsException {
-		return getData(id, user, state, false);
-	}
-
 }

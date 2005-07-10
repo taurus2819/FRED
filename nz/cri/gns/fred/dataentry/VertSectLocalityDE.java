@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.QueryDescriptor;
@@ -26,7 +26,7 @@ public class VertSectLocalityDE extends LocalityDE {
 		super(user, folderID, Feature.VERTICAL_SECTION_LOCALITY, state);
 	}
 
-	public VertSectLocalityDE(int featureID, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public VertSectLocalityDE(int featureID, User user, PageState state) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException {
 		super(featureID, user, state);
 		if (!featureType.equals(Feature.VERTICAL_SECTION_LOCALITY))
 			throw new DataInputException("Feature Type", "Invalid");
@@ -34,7 +34,7 @@ public class VertSectLocalityDE extends LocalityDE {
 		savedFlag = true;
 	}
 
-	protected void getFromDatabase(Sample sample) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
+	protected void getFromDatabase(Sample sample) throws DataInputException, InsufficientPrivelegesException, SQLException, IOException {
 		super.getFromDatabase(sample);
 		//set fields
 		setField(SECTION_COLLECTOR, sample.getAsString(Sample.PERSON));
@@ -143,7 +143,7 @@ public class VertSectLocalityDE extends LocalityDE {
 	}
 
 	public int save()
-		throws SQLException, IOException, InvalidCredentialsException {
+		throws SQLException, IOException, InsufficientPrivelegesException {
 		if (!savedFlag) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			conn.getConnection().setAutoCommit(false);
@@ -187,12 +187,11 @@ public class VertSectLocalityDE extends LocalityDE {
 				conn.releaseStatement();
 				savedFlag = false;
 				throw new IOException(e.getMessage());
-			} catch (InvalidCredentialsException e) {
+			} catch (InsufficientPrivelegesException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
 				savedFlag = false;
-				throw new InvalidCredentialsException();
 			}
 		}
 		return feature.getFeatureID();

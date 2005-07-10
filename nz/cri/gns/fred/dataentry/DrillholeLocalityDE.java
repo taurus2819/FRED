@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.QueryDescriptor;
@@ -26,7 +26,7 @@ public class DrillholeLocalityDE extends LocalityDE {
 		super(user, folderID, Feature.DRILLHOLE_LOCALITY, state);
 	}
 
-	public DrillholeLocalityDE(int featureID, User user, PageState state) throws IOException, SQLException, DataInputException, InvalidCredentialsException {
+	public DrillholeLocalityDE(int featureID, User user, PageState state) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException {
 		super(featureID, user, state);
 		if (!featureType.equals(Feature.DRILLHOLE_LOCALITY))
 			throw new DataInputException("Feature Type", "Invalid");
@@ -34,7 +34,7 @@ public class DrillholeLocalityDE extends LocalityDE {
 		savedFlag = true;
 	}
 
-	protected void getFromDatabase(Sample sample) throws DataInputException, InvalidCredentialsException, SQLException, IOException {
+	protected void getFromDatabase(Sample sample) throws DataInputException, InsufficientPrivelegesException, SQLException, IOException {
 		super.getFromDatabase(sample);
 		//set fields
 		setField(OPERATING_COMPANY, sample.getAsString(Sample.PERSON));
@@ -152,7 +152,7 @@ public class DrillholeLocalityDE extends LocalityDE {
 	}
 
 	public int save()
-		throws SQLException, IOException, InvalidCredentialsException {
+		throws SQLException, IOException, InsufficientPrivelegesException {
 		if (!savedFlag) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			conn.getConnection().setAutoCommit(false);
@@ -197,7 +197,7 @@ public class DrillholeLocalityDE extends LocalityDE {
 				conn.releaseStatement();
 				savedFlag = false;
 				throw e;
-			} catch (InvalidCredentialsException e) {
+			} catch (InsufficientPrivelegesException e) {
 				conn.getConnection().rollback();
 				conn.getConnection().setAutoCommit(true);
 				conn.releaseStatement();
