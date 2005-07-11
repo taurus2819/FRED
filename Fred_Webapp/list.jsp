@@ -26,12 +26,17 @@
 		   	} catch (Exception e) {
 		   		out.println("<tr><td>Error: Invalid username/password</td></td>");
 		   	}
-		   	Folder folder = new Folder(Integer.parseInt(request.getParameter("foldID")), user, state);
+		   	Folder folder = new Folder(Integer.parseInt(request.getParameter("folderID")), user, state);
 		   	if (folder.isAllowedReadLocalities()) {
 			   	if (request.getParameter("formType").equals("locality")) {
 				   	try {
 						for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
-							out.println("<tr><td>ID: " + (Integer) i.next() + "</td></tr>");
+							Feature feature = new Feature(((Integer) i.next()).intValue(), user, state);
+							if (feature.getAsString(Feature.STATUS).equals(Audit.STATUS_WORKING)) {
+								out.println("<tr><td>ID: " + feature.getAsString(Feature.FEATURE_ID) + "</td>");
+								out.println("<td>" + feature.getAsString(Feature.FEATURE_NAME) + "</td>");
+								out.println("<td>" + feature.getAsString(Feature.FEATURE_TYPE) + "</td></tr>");
+							}
 						}
 					} catch (Exception e) {
 						out.println("<tr><td>No localities</td><td></td></tr>");
