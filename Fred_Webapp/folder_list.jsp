@@ -23,12 +23,20 @@
 
 	drawTop(out, et, request, response);
 
-%>
+%><script><!--
+function doNewFolder() {
+	var newName = prompt('Please enter the folder name', 'New Working Folder');
+	if (newName) {
+		document.NewFoldForm.FoldName.value = newName;
+		document.NewFoldForm.submit();
+	}
+}
+//--></script>
 <table style="margin-left:20px; margin-top:20px; width:150px;" border="0">
 <tr><td colspan="2" class="bigheading" align="center"><%=user.getFullName()%>'s<br />Folders</td></tr>
 <tr><td><img src="images/blank.gif" width="1" height="10" /></td></tr>
 <form name="NewFoldForm" method="post" action="folder_list.jsp">
-<tr><td><a href="javascript:document.NewFoldForm.FoldName.value=prompt('Please enter the folder name', 'New Working Folder');document.NewFoldForm.submit();" title="Add New Folder"><img src="images/folder.gif" width="20" height="20" border="0" />&nbsp;</a></td><td><a href="javascript:document.NewFoldForm.FoldName.value=prompt('Please enter the folder name', 'New Folder');document.NewFoldForm.submit();" class="heading">New Folder</a></td></tr>
+<tr><td><a href="javascript:doNewFolder();" title="Add New Folder"><img src="images/folder.gif" width="20" height="20" border="0" />&nbsp;</a></td><td><a href="javascript:doNewFolder();" class="heading">New Folder</a></td></tr>
 <input type="hidden" name="ActionType" value="Add">
 <input type="hidden" name="FoldName" value="">
 </form>
