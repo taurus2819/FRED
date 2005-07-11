@@ -142,6 +142,19 @@ public class VertSectLocalityDE extends LocalityDE {
 		super.makeEndBitHTML(out);
 	}
 
+	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
+		super.makeExcelImportHTML(out);
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(OPERATING_COMPANY)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(SPUD_DATE)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(COMPLETION_DATE)) + "</td>");
+		out.write("<td></td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(DATUM_TYPE)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(DATUM_ELEVATION)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(KICK_OFF_DEPTH)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(TERMINATION_DEPTH)) + "</td>");
+		out.write("</tr>");
+	}
+	
 	public int save()
 		throws SQLException, IOException, InsufficientPrivelegesException {
 		if (!savedFlag) {

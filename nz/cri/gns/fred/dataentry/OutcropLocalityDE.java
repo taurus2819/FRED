@@ -80,6 +80,11 @@ public class OutcropLocalityDE extends LocalityDE {
 		super.makeEndBitHTML(out);
 	}
 
+	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
+		super.makeExcelImportHTML(out);
+		out.write("</tr>");
+	}
+	
 	public int save() throws SQLException, IOException, InsufficientPrivelegesException {
 		if (!savedFlag) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
