@@ -119,6 +119,8 @@ public interface DataEntryForm {
 	
 	public void makeDataEntryHTML(Writer out) throws IOException, SQLException;
 	
+	public void makeExcelImportHTML(Writer out) throws IOException, SQLException;
+	
 	public int save() throws SQLException, IOException, InsufficientPrivelegesException;
 	
 	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException;

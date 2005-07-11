@@ -167,6 +167,9 @@ public class AdoptionRecordDE extends RecordDE {
 		super.makeEndBitHTML(out);
 	}
 
+	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
+	}
+	
 	public int save()
 		throws InsufficientPrivelegesException, SQLException, IOException {
 		if (!savedFlag) {

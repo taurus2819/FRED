@@ -961,6 +961,9 @@ public class SampleDE implements DataEntryForm {
 		}
 	}
 
+	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
+	}
+	
 	public int save() throws InsufficientPrivelegesException, SQLException, IOException {
 		if (featureID == -1)
 			throw new InsufficientPrivelegesException();
