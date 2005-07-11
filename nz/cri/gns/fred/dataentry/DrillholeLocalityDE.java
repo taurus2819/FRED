@@ -161,7 +161,7 @@ public class DrillholeLocalityDE extends LocalityDE {
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(DATUM_ELEVATION)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(KICK_OFF_DEPTH)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(TERMINATION_DEPTH)) + "</td>");
-		out.write("</tr>");
+		out.write("</tr>\n");
 	}
 	
 	public int save()

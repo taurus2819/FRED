@@ -82,7 +82,7 @@ public class OutcropLocalityDE extends LocalityDE {
 
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
 		super.makeExcelImportHTML(out);
-		out.write("</tr>");
+		out.write("</tr>\n");
 	}
 	
 	public int save() throws SQLException, IOException, InsufficientPrivelegesException {
