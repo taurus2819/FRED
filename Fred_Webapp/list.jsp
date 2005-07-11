@@ -33,7 +33,7 @@
 						for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
 							try {
 								DataEntryForm dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(((Integer) i.next()).intValue(), user, state);
-								dataEntryForm.makeExcelImportHTML(out);
+								dataEntryForm.makeExcelImportHTML(new PrintWriter(out));
 							} catch (Exception e) {}
 						}
 					} catch (Exception e) {
