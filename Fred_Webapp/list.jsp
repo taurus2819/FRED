@@ -1,5 +1,5 @@
 <%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.jsp.*, nz.cri.gns.util.map.*, nz.cri.gns.db.*, nz.cri.gns.intranet.*, nz.cri.gns.db.site.*, java.sql.*, java.text.*, java.net.*, nz.cri.gns.auth.*, java.lang.*, java.util.*"
+		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.fred.dataentry.*, nz.cri.gns.jsp.*, nz.cri.gns.util.map.*, nz.cri.gns.db.*, nz.cri.gns.intranet.*, nz.cri.gns.db.site.*, java.sql.*, java.text.*, java.net.*, nz.cri.gns.auth.*, java.lang.*, java.util.*"
 %><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 
@@ -31,12 +31,10 @@
 			   	if (request.getParameter("formType").equals("locality")) {
 				   	try {
 						for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
-							Feature feature = new Feature(((Integer) i.next()).intValue(), user, state);
-							if (feature.getAsString(Feature.STATUS).equals(Audit.STATUS_WORKING)) {
-								out.println("<tr><td>ID: " + feature.getAsString(Feature.FEATURE_ID) + "</td>");
-								out.println("<td>" + feature.getAsString(Feature.FEATURE_NAME) + "</td>");
-								out.println("<td>" + feature.getAsString(Feature.FEATURE_TYPE) + "</td></tr>");
-							}
+							try {
+								DataEntryForm dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(((Integer) i.next()).intValue(), user, state);
+								dataEntryForm.makeExcelImportHTML(out);
+							} catch (Exception e) {}
 						}
 					} catch (Exception e) {
 						out.println("<tr><td>No localities</td><td></td></tr>");
