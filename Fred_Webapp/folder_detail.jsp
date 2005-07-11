@@ -1,5 +1,14 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
+%><%@page import="nz.cri.gns.fred.*"
+%><%@page import="nz.cri.gns.fred.data.*"
+%><%@page import="nz.cri.gns.db.*"
+%><%@page import="nz.cri.gns.jsp.*"
+%><%@page import="java.net.*"
+%><%@page import="nz.cri.gns.intranet.*"
+%><%@page import="java.sql.*"
+%><%@page import="java.text.*"
+%><%@page import="java.util.*"
+%><%@page import="nz.cri.gns.auth.*"
 %><%
 	System.out.println("Folder detail:" + new java.util.Date() + ": Starting");
 	User user =(User) getUser(session);
