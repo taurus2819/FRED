@@ -17,7 +17,30 @@
 	
 		out.println("<table>");
 		
-		if (listName.equals("folderList")) {
+		if (listName.equals("folderContent")) {
+			
+			
+			User user = null;
+			try {
+		   		user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
+		   	} catch (Exception e) {
+		   		out.println("<tr><td>Error: Invalid username/password</td></td>");
+		   	}
+		   	Folder folder = new Folder(Integer.parseInt(request.getParameter("foldID")), user, state);
+		   	if (folder.isAllowedReadLocalities()) {
+			   	if (request.getParameter("formType").equals("locality")) {
+				   	try {
+						for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
+							out.println("<tr><td>ID: " + (Integer) i.next() + "</td></tr>");
+						}
+					} catch (Exception e) {
+						out.println("<tr><td>No localities</td><td></td></tr>");
+					}
+				}
+			} else {
+				out.println("<tr><td>Error: Insufficient privileges</td></tr>");
+			}
+		} else if (listName.equals("folderList")) {
 			User user = null;
 			try {
 		   		user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
