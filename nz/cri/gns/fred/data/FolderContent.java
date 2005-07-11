@@ -13,6 +13,11 @@ import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.jsp.PageState;
 
+/**
+ * Initial attempts to import the performance of this composite query (the view folder_content).
+ * As yet, not used in the application.
+ *
+ */
 public class FolderContent extends Vector implements Comparator {
 	
 	public FolderContent(int id, PageState state) throws IOException, SQLException {
