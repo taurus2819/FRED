@@ -1,5 +1,18 @@
-<%@		page extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.fred.dataentry.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.util.*, java.io.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*, nz.cri.gns.db.metadata.*, nz.cri.gns.util.map.*"
+<%@page extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
+%><%@page import="nz.cri.gns.fred.*"
+%><%@page import="nz.cri.gns.fred.dataentry.*"
+%><%@page import="nz.cri.gns.fred.data.*"
+%><%@page import="nz.cri.gns.db.*"
+%><%@page import="nz.cri.gns.jsp.*"
+%><%@page import="java.util.*"
+%><%@page import="java.io.*"
+%><%@page import="java.net.*"
+%><%@page import="nz.cri.gns.intranet.*"
+%><%@page import="java.sql.*"
+%><%@page import="java.lang.*"
+%><%@page import="nz.cri.gns.auth.*"
+%><%@page import="nz.cri.gns.db.metadata.*"
+%><%@page import="nz.cri.gns.util.map.*"
 %><%
 	PageState state = new PageState(request, response, getServletContext());
 	User user = (User)getUser(session);
@@ -162,7 +175,7 @@
 			out.println("</table>");
 			out.println("<p><a href='data_proc.jsp?Action=SubmitTaxa&SaveType=Save'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit Taxa' /></a>&nbsp;<a href='data_proc.jsp?Action=SubmitTaxa&SaveType=Save' class='boldlink'>Submit Taxa and Save Record.</a></p>");
 			out.println("<p>Note: No data has been saved yet.  You must either choose to submit the above taxa or return to the data entry form, edit and re-save</p>");
-		} catch (InvalidCredentialsException e) {
+		} catch (InsufficientPrivelegesException e) {
 			drawTop(out, et, request, response);
 			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
