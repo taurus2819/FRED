@@ -18,8 +18,6 @@
 		out.println("<table>");
 		
 		if (listName.equals("folderContent")) {
-			
-			
 			User user = null;
 			try {
 		   		user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
@@ -42,6 +40,21 @@
 				}
 			} else {
 				out.println("<tr><td>Error: Insufficient privileges</td></tr>");
+			}
+		} else if (listName.charAt("document")) {
+			User user = null;
+			try {
+		   		user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
+		   	} catch (Exception e) {
+		   		out.println("<tr><td>Error: Invalid username/password</td></td>");
+		   	}
+		   	if (request.getParameter("formType").equals("locality")) {
+		   		try {
+					DataEntryForm dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(request.getParameter("id")), user, state);
+					dataEntryForm.makeExcelImportHTML(new PrintWriter(out));
+				} catch (Exception e) {
+					out.println("<tr><td>Error: Insufficient privileges</td></tr>");}
+				}
 			}
 		} else if (listName.equals("folderList")) {
 			User user = null;
