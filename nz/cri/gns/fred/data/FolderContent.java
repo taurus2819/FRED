@@ -24,6 +24,7 @@ public class FolderContent extends Vector implements Comparator {
 		//Folder_content_view mimic
 		DatabaseApp2 app = FREDUtils.getFREDConnection(state);
 		Integer iId = new Integer(id);
+		//Approved items in the folder
 		/*
 		 * FROM folder_view fd, folder_content fc, feature_view fv
 		 * WHERE fd.folder_id = fc.folder_id AND fc.feature_id = fv.feature_id AND fv.feature_status = 'approved'
