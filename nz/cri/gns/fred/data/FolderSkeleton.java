@@ -62,7 +62,7 @@ public class FolderSkeleton extends KeyValueObject implements FREDFolder {
 
 	public int getLocalityCount(PageState state) throws InvalidCredentialsException, IOException, SQLException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
-		ResultSet rs = conn.executeQuery("SELECT count(feature_id) FROM folder_content_view WHERE folder_id = ?", 
+		ResultSet rs = conn.executeQuery("SELECT count(feature_id) FROM folder_content_short_view WHERE folder_id = ?", 
 				new int[] {Types.INTEGER},
 				new Object[] {new Integer(key)}
 		);
