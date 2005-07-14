@@ -73,7 +73,7 @@ public class PaleontologyRecord extends Record {
 			}
 			values[IDENTIFIER] = ((identVec.size() > 0) ? identVec : null);
 			rs.close();
-			query = "SELECT DISTINCT L.Name,P.Group_ID FROM Pal_List P, Lookup L WHERE P.Group_ID = L.Lookup_ID AND P.Record_ID = ? ORDER BY UPPER(L.Name)";
+			query = "SELECT DISTINCT L.Name,P.Group_ID FROM Pal_List P, Taxonomic_Group L WHERE P.Group_ID = L.Group_ID AND P.Record_ID = ? ORDER BY UPPER(L.Name)";
 			rs = conn.executeQuery(query, types, data);
 			Statement preserveStatement = conn.preservePreparedStatement();
 			Vector taxaGroupVec = new Vector();

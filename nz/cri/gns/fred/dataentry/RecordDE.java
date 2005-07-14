@@ -208,15 +208,14 @@ public abstract class RecordDE implements DataEntryForm {
 		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
 		
 		out.write("<tr><td class='heading' colspan='2'>Security Setting</td><td>");
-		ComboDescriptor cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
+		ComboDescriptor cd = new ComboDescriptor("security_class", "class_ID", "Name");
 		cd.name = "SecType";
 		if (getField(SECURITY_TYPE) != null) {
 			cd.selected = getFieldForHTML(SECURITY_TYPE);
 		} else {
 			cd.selected = "21";
 		}
-		cd.orderBy = "Lookup_ID";
-		cd.join = "FieldName = 'SecurityClass'";
+		cd.orderBy = "class_ID";
 		HTMLUtils.makeDropBox(out, conn, cd);
 		out.write("</td></tr>\n");
 		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");

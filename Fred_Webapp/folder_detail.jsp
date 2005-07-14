@@ -9,6 +9,17 @@
 %><%@page import="java.text.*"
 %><%@page import="java.util.*"
 %><%@page import="nz.cri.gns.auth.*"
+%><%!
+	public String getName(HttpServletRequest request) {
+		return "FRED :: " + ((User)getUser(request.getSession())).getFullName() + "'s Folders";
+	}
+	
+	protected IconnedLink[] getButtons() {
+		return new IconnedLink[] {
+			new IconnedLink("javascript:doNewFolder();", "images/folder.gif", "New Folder")
+		};
+	}
+
 %><%
 	System.out.println("Folder detail:" + new java.util.Date() + ": Starting");
 	User user =(User) getUser(session);

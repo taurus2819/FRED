@@ -3,7 +3,6 @@ package nz.cri.gns.fred.data;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.Vector;
 
 import nz.cri.gns.db.DBUtils;
@@ -24,7 +23,6 @@ public class TaxaPanelData {
 	private static Pool pool = new Pool();
 	private int id;
 	private Object[] values = new Object[6];
-	private int[] types = { Types.NUMERIC };
 	private Object[] data = new Object[1];
 
 	/**
@@ -35,10 +33,10 @@ public class TaxaPanelData {
 		this.id = id;
 		pool.add(this);
 		String query =
-			"SELECT tp.group_id, l.name FROM taxa_panel tp, lookup l WHERE tp.group_id = l.lookup_id AND tp.group_id = ?";
+			"SELECT name FROM taxonomic_group WHERE group_id = ?";
 		data[0] = new Integer(this.id);
 		try {
-			ResultSet rs = conn.executeQuery(query, types, data);
+			ResultSet rs = conn.executeQuery(query, DBUtils.SINGLE_NUMBER_TYPE, data);
 			if (!rs.next()) {
 				throw new SQLException(
 					"Cannot find record in database with this id: " + this.id);
@@ -47,7 +45,7 @@ public class TaxaPanelData {
 			values[TaxaPanel.NAME] = rs.getString(2);
 			rs.close();
 			query = "SELECT taxa_id, taxonomic_name, status FROM taxonomic_lookup WHERE group_id = ? AND taxonomic_name IS NOT NULL ORDER BY UPPER(taxonomic_name)";
-			rs = conn.executeQuery(query, types, data);
+			rs = conn.executeQuery(query, DBUtils.SINGLE_NUMBER_TYPE, data);
 			Vector appVec = new Vector();
 			Vector provVec = new Vector();
 			Vector rejVec = new Vector();

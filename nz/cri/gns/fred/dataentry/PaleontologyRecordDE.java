@@ -160,8 +160,8 @@ public class PaleontologyRecordDE extends RecordDE {
 						//check TaxaGroup against lookup values
 						Taxa taxa;
 						try {
-							query = "SELECT Lookup_ID FROM Lookup WHERE Name = ? AND FieldName = ?";
-							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {taxaGroup, "TaxaGroup"});
+							query = "SELECT group_ID FROM taxonomic_group WHERE Name = ?";
+							rs = conn.executeQuery(query, new int[] {Types.VARCHAR}, new Object[] {taxaGroup});
 							rs.next();
 							taxa = new Taxa();
 							taxa.setGroupID(new Integer(rs.getInt(1)));

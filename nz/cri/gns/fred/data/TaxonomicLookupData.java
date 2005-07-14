@@ -34,8 +34,8 @@ public class TaxonomicLookupData {
 		String query =
 			"SELECT t.taxa_id, t.group_id, l.name, t.taxonomic_name, t.author, t.status, t.submitted_by_id, "
 				+ "u1.full_name, t.submitted_date, t.approved_by_id, u2.full_name, t.approved_date "
-				+ "FROM taxonomic_lookup t, lookup l, fr_user_view u1, fr_user_view u2 "
-				+ "WHERE t.group_id = l.lookup_id AND t.submitted_by_id = u1.pe_id(+) AND t.approved_by_id = u2.pe_id(+) "
+				+ "FROM taxonomic_lookup t, taxonomic_group l, fr_user_view u1, fr_user_view u2 "
+				+ "WHERE t.group_id = l.group_id AND t.submitted_by_id = u1.pe_id(+) AND t.approved_by_id = u2.pe_id(+) "
 				+ "AND t.taxa_id = ?";
 		try {
 			ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(id)});

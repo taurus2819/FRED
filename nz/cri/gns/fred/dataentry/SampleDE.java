@@ -280,8 +280,8 @@ public class SampleDE implements DataEntryForm {
 						stComments = stLine.substring(stLine.lastIndexOf("*") + 1, stLine.length());
 						//check againt lookup values
 						try {
-							query = "SELECT lookup_id FROM lookup WHERE name = ? AND fieldname = ?";
-							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {stGroup, "FossilGroup"});
+							query = "SELECT group_id FROM fossil_group WHERE name = ?";
+							rs = conn.executeQuery(query, new int[] {Types.VARCHAR}, new Object[] {stGroup});
 							rs.next();
 							stGroupID = new Integer(rs.getInt(1));
 						} catch (Exception e) {
@@ -504,34 +504,34 @@ public class SampleDE implements DataEntryForm {
 					break;
 				case GRAIN_SIZE_P :
 				case GRAIN_SIZE_S :
-					DataEntryUtils.checkDropDownID("Grainsize", "SELECT * FROM lookup WHERE lookup_id = ? AND fieldname = ?", new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(value), "GrainSize"}, state);
+					DataEntryUtils.checkDropDownID("Grainsize", "SELECT * FROM grain_size WHERE grain_size_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(value)}, state);
 					break;
 				case GS_COMP :
 					if (!(value.equals("Y") || value.equals("N")))
 						throw new DataInputException("GS Comparator", value + " is not a valid option");
 					break;
 				case BEDDING_THICKNESS :
-					DataEntryUtils.checkDropDownID("Bedding Thickness", "SELECT * FROM lookup WHERE lookup_id = ? AND fieldname = ?", new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(value), "BedThick"}, state);
+					DataEntryUtils.checkDropDownID("Bedding Thickness", "SELECT * FROM bed_thickness WHERE thickness_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(value)}, state);
 					break;
 				case BEDDING_P :
 				case BEDDING_S :
-					DataEntryUtils.checkDropDownID("Bedding", "SELECT * FROM lookup WHERE lookup_id = ? AND fieldname = ?", new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(value), "Bedding"}, state);
+					DataEntryUtils.checkDropDownID("Bedding", "SELECT * FROM bedding WHERE bedding_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(value)}, state);
 					break;
 				case WEATHERING :
-					DataEntryUtils.checkDropDownID("Weathering", "SELECT * FROM lookup WHERE lookup_id = ? AND fieldname = ?", new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(value), "Weathering"}, state);
+					DataEntryUtils.checkDropDownID("Weathering", "SELECT * FROM weathering WHERE weathering_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(value)}, state);
 					break;
 				case HARDNESS :
-					DataEntryUtils.checkDropDownID("Hardness", "SELECT * FROM lookup WHERE lookup_id = ? AND fieldname = ?", new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(value), "Hardness"}, state);
+					DataEntryUtils.checkDropDownID("Hardness", "SELECT * FROM hardness WHERE hardness_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(value)}, state);
 					break;
 				case CARBONATE :
-					DataEntryUtils.checkDropDownID("Carbonate", "SELECT * FROM lookup WHERE lookup_id = ? AND fieldname = ?", new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(value), "Carbonate"}, state);
+					DataEntryUtils.checkDropDownID("Carbonate", "SELECT * FROM carbonate WHERE carbonate_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(value)}, state);
 					break;
 				case COLOUR_MOD :
-					DataEntryUtils.checkDropDownID("Shade", "SELECT * FROM lookup WHERE lookup_id = ? AND fieldname = ?", new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(value), "ColourMod"}, state);
+					DataEntryUtils.checkDropDownID("Shade", "SELECT * FROM colour_modifier WHERE modifier_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(value)}, state);
 					break;
 				case COLOUR_P :
 				case COLOUR_S :
-					DataEntryUtils.checkDropDownID("Colour", "SELECT * FROM lookup WHERE lookup_id = ? AND fieldname = ?", new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(value), "RockColour"}, state);
+					DataEntryUtils.checkDropDownID("Colour", "SELECT * FROM rock_colour WHERE colour_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(value)}, state);
 					break;
 				case WET :
 					if (!(value.equals("Wet") || value.equals("Dry")))
@@ -545,7 +545,7 @@ public class SampleDE implements DataEntryForm {
 						sFeat = new SedFeature();
 						if (value.indexOf(";") == -1)
 							value += ";";
-						query = "SELECT lookup_id FROM lookup WHERE name = ? AND fieldname = ?";
+						query = "SELECT sedfeature_type_id FROM sedimentary_feature_type WHERE name = ?";
 						if (value.indexOf("*") != -1 && value.indexOf("*") < value.indexOf(";")) {
 							sedFeatStr = value.substring(0, value.indexOf("*")).trim();
 							sFeat.setAbundant("Y");
@@ -682,15 +682,14 @@ public class SampleDE implements DataEntryForm {
 		}
 		if (!outcropSample) {
 			out.write("<tr><td class='heading' colspan='2'>Security Setting</td><td>");
-			cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
+			cd = new ComboDescriptor("security_class", "class_id", "Name");
 			cd.name = "SecType";
 			if (getField(SECURITY_TYPE) != null) {
 				cd.selected = getFieldForHTML(SECURITY_TYPE);
 			} else {
 				cd.selected = "21";
 			}
-			cd.orderBy = "Lookup_ID";
-			cd.join = "FieldName = 'SecurityClass'";
+			cd.orderBy = "class_ID";
 			HTMLUtils.makeDropBox(out, conn, cd);
 			out.write("</td></tr>\n");
 		}
@@ -826,7 +825,7 @@ public class SampleDE implements DataEntryForm {
 		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
 
 		out.write("<tr><td class='heading'>Grain Size</td><td class='smallheading'>Pri.</td><td>");
-		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Code || ': ' || Name");
+		cd = new ComboDescriptor("grain_size", "grain_size_ID", "Code || ': ' || Name");
 		cd.name = "GrainSizeP";
 		cd.prompt = "-- Choose --";
 		cd.selected = getFieldForHTML(GRAIN_SIZE_P);
@@ -835,7 +834,7 @@ public class SampleDE implements DataEntryForm {
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 		out.write("</td></tr>\n");
 		out.write("<tr><td></td><td class='smallheading'>Sec.</td><td>");
-		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Code || ': ' || Name");
+		cd = new ComboDescriptor("grain_size", "grain_size_ID", "Code || ': ' || Name");
 		cd.name = "GrainSizeS";
 		cd.prompt = "-- Choose --";
 		cd.selected = getFieldForHTML(GRAIN_SIZE_S);
@@ -849,82 +848,73 @@ public class SampleDE implements DataEntryForm {
 				+ ((getFieldForHTML(GS_COMP) != null && getFieldForHTML(GS_COMP).equals("N")) ? " selected" : "")
 				+ ">No</option></select></td></tr>\n");
 		out.write("<tr><td class='heading'>Stratification</td><td class='smallheading'>Thickness</td><td>");
-		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Code || ': ' || Name");
+		cd = new ComboDescriptor("bed_thickness", "thickness_id", "Code || ': ' || Name");
 		cd.name = "BedThick";
 		cd.prompt = "-- Choose --";
 		cd.selected = getFieldForHTML(BEDDING_THICKNESS);
 		cd.orderBy = "Code";
-		cd.join = "FieldName = 'BedThick'";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 		out.write("</td></tr>\n");
 		out.write("<tr><td></td><td class='smallheading'>Features</td><td>");
-		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Code || ': ' || Name");
+		cd = new ComboDescriptor("bedding", "bedding_ID", "Code || ': ' || Name");
 		cd.name = "BeddingP";
 		cd.prompt = "-- Choose --";
 		cd.selected = getFieldForHTML(BEDDING_P);
 		cd.orderBy = "Code";
-		cd.join = "FieldName = 'Bedding'";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 		out.write("&nbsp;<span class='heading'>&</span>&nbsp;");
-		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Code || ': ' || Name");
+		cd = new ComboDescriptor("bedding", "bedding_ID", "Code || ': ' || Name");
 		cd.name = "BeddingS";
 		cd.prompt = "-- Choose --";
 		cd.selected = getFieldForHTML(BEDDING_S);
 		cd.orderBy = "Code";
-		cd.join = "FieldName = 'Bedding'";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 		out.write("</td></tr>\n");
 		out.write("<tr><td class='heading'>Weathering</td><td></td><td>");
-		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Code || ': ' || Name");
+		cd = new ComboDescriptor("weathering", "weathering_ID", "Code || ': ' || Name");
 		cd.name = "Weath";
 		cd.prompt = "-- Choose --";
 		cd.selected = getFieldForHTML(WEATHERING);
 		cd.orderBy = "Code";
-		cd.join = "FieldName = 'Weathering'";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 		out.write("</td></tr>\n");
 		out.write("<tr><td class='heading'>Hardness</td><td></td><td>");
-		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Code || ': ' || Name");
+		cd = new ComboDescriptor("hardness", "hardness_ID", "Code || ': ' || Name");
 		cd.name = "Hard";
 		cd.prompt = "-- Choose --";
 		cd.selected = getFieldForHTML(HARDNESS);
 		cd.orderBy = "Code";
-		cd.join = "FieldName = 'Hardness'";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 		out.write("</td></tr>\n");
 		out.write("<tr><td class='heading'>Carbonate</td><td></td><td>");
-		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Code || ': ' || Name");
+		cd = new ComboDescriptor("carbonate", "carbonate_ID", "Code || ': ' || Name");
 		cd.name = "Carb";
 		cd.prompt = "-- Choose --";
 		cd.selected = getFieldForHTML(CARBONATE);
 		cd.orderBy = "Code";
-		cd.join = "FieldName = 'Carbonate'";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 		out.write("</td></tr>\n");
 		out.write("<tr><td class='heading'>Colour</td><td class='smallheading'>Shade</td><td>");
-		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Code || ': ' || Name");
+		cd = new ComboDescriptor("colour_modifier", "modifier_ID", "Code || ': ' || Name");
 		cd.name = "ColMod";
 		cd.prompt = "-- Choose --";
 		cd.selected = getFieldForHTML(COLOUR_MOD);
 		cd.orderBy = "Code";
-		cd.join = "FieldName = 'ColourMod'";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 		out.write("</td></tr>\n");
 		out.write("<tr><td></td><td class='smallheading'>Colour</td><td>");
-		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Code || ': ' || Name");
+		cd = new ComboDescriptor("rock_colour", "colour_id", "Code || ': ' || Name");
 		cd.name = "ColourP";
 		cd.prompt = "-- Choose --";
 		cd.selected = getFieldForHTML(COLOUR_P);
 		cd.orderBy = "Code";
-		cd.join = "FieldName = 'RockColour'";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 		out.write("&nbsp;<span class='heading'>-</span>&nbsp;");
-		cd = new ComboDescriptor("Lookup", "Lookup_ID", "Code || ': ' || Name");
+		cd = new ComboDescriptor("rock_colour", "colour_id", "Code || ': ' || Name");
 		cd.name = "ColourS";
 		cd.prompt = "-- Choose --";
 		cd.selected = getFieldForHTML(COLOUR_S);
 		cd.orderBy = "Code";
-		cd.join = "FieldName = 'RockColour'";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 		out.write("</td></tr>\n");
 		out.write("<tr><td></td><td class='smallheading'>Wet/Dry</td><td><select name='Wet'><option value='' "

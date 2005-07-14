@@ -104,10 +104,9 @@ function checkDrill() {
 				out.println("/></td></tr>");
 				if (feature.getAsString(Feature.FEATURE_TYPE).equals(Feature.DRILLHOLE_LOCALITY)) {
 					out.println("<tr><td class='heading'>Type&nbsp;&nbsp;</td><td>");
-					cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
+					cd = new ComboDescriptor("drill_type", "drill_type_ID", "Name");
 					cd.name = "DrillType";
-					cd.join = "FieldName = 'DrillType'";
-					cd.orderBy = "Lookup_ID";
+					cd.orderBy = "drill_type_ID";
 					if (sample != null)
 						cd.selected = sample.getAsString(Sample.DRILL_TYPE_ID);
 					HTMLUtils.makeDropBox(new java.io.PrintWriter(out), FREDUtils.getFREDConnection(state), cd);

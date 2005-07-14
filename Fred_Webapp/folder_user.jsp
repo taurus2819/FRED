@@ -25,9 +25,9 @@
 			
 			//build array of rights
 			if (folderType.equals("personal")) {
-				rs = statement.executeQuery("SELECT Name, Code FROM Lookup WHERE FieldName = 'FolderRight' AND Code NOT IN ('1', '64') ORDER BY Lookup_ID");
+				rs = statement.executeQuery("SELECT Name, Code FROM folder_right WHERE FieldName = 'FolderRight' AND Code NOT IN ('1', '64') ORDER BY right_ID");
 			} else {
-				rs = statement.executeQuery("SELECT Name, Code FROM Lookup WHERE FieldName = 'FolderRight' AND Code IN ('32', '64') ORDER BY Lookup_ID DESC");
+				rs = statement.executeQuery("SELECT Name, Code FROM folder_right WHERE FieldName = 'FolderRight' AND Code IN ('32', '64') ORDER BY right_ID DESC");
 			}
 			i = -1;
 			while (rs.next()) {

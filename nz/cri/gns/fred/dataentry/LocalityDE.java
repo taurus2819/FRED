@@ -195,7 +195,7 @@ public abstract class LocalityDE implements DataEntryForm {
 			ResultSet rs;
 			switch (field) {
 				case REGISTRATION_AREA :
-					DataEntryUtils.checkDropDownID("Registration Area", "SELECT * FROM lookup WHERE lookup_id = ? AND fieldname = ?", new int[] {Types.NUMERIC, Types.VARCHAR}, new Object[] {new Integer(value), "RegArea"}, state);
+					DataEntryUtils.checkDropDownID("Registration Area", "SELECT * FROM registration_area WHERE reg_area_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(value)}, state);
 					break;
 				case GRID_REF :
 					parseCoord(value);
@@ -292,11 +292,10 @@ public abstract class LocalityDE implements DataEntryForm {
 					+ FREDUtils.noNulls(getFieldForHTML(DRILLHOLE_NAME)) + "'></td></tr>\n");
 		}
 		out.write("<tr><td class='heading' style=\"color: #FF0000\">Registration Area</td><td></td><td>");
-		ComboDescriptor cd = new ComboDescriptor("Lookup", "Lookup_ID", "Name");
+		ComboDescriptor cd = new ComboDescriptor("Registration_Area", "reg_area_ID", "Name");
 		cd.name = "RegAreaID";
 		cd.selected = getFieldForHTML(DataEntryForm.REGISTRATION_AREA);
-		cd.join = "FieldName = 'RegArea'";
-		cd.orderBy = "Lookup_ID";
+		cd.orderBy = "reg_area_ID";
 		HTMLUtils.makeDropBox(out, conn, cd);
 		out.write("</td></tr>\n");
 		out.write("<tr><td class='heading'>");

@@ -96,29 +96,29 @@
 			out.println("<tr><td>Vertical Section</td></tr>");
 		} else {
 			if (listName.equals("bedding")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name FROM lookup WHERE fieldname = 'Bedding' ORDER BY code");
+				rs = statement.executeQuery("SELECT code || ': ' || name FROM bedding ORDER BY code");
 			} else if (listName.equals("carbonate")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name FROM lookup WHERE fieldname = 'Carbonate' ORDER BY code");
+				rs = statement.executeQuery("SELECT code || ': ' || name FROM carbonate ORDER BY code");
 			} else if (listName.equals("colour")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name FROM lookup WHERE fieldname = 'RockColour' ORDER BY code");
+				rs = statement.executeQuery("SELECT code || ': ' || name FROM rock_colour ORDER BY code");
 			} else if (listName.equals("colourMod")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name FROM lookup WHERE fieldname = 'ColourMod' ORDER BY code");
+				rs = statement.executeQuery("SELECT code || ': ' || name FROM colour_modifier ORDER BY code");
 			} else if (listName.equals("country")) {
 				rs = statement.executeQuery("SELECT country_name || '</td><td>' || country_code FROM mis.country ORDER BY country_name");
 			} else if (listName.equals("grainSize")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name FROM lookup WHERE fieldname = 'GrainSize' ORDER BY code");
+				rs = statement.executeQuery("SELECT code || ': ' || name FROM grain_size ORDER BY code");
 			} else if (listName.equals("hardness")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name FROM lookup WHERE fieldname = 'Hardness' ORDER BY code");
+				rs = statement.executeQuery("SELECT code || ': ' || name FROM hardness ORDER BY code");
 			} else if (listName.equals("locMethod")) {
 				rs = statement.executeQuery("SELECT method || '</td><td>' || method_id || '</td><td>' || nom_accuracy_xy FROM sc.method WHERE nom_accuracy_xy IS NOT NULL ORDER BY nom_accuracy_xy");
 			} else if (listName.equals("person")) {
 				rs = statement.executeQuery("SELECT name FROM person_view ORDER BY family_name, given_name");
 			} else if (listName.equals("regArea")) {
-				rs = statement.executeQuery("SELECT name || '</td><td>' || lookup_id  FROM lookup WHERE fieldname = 'RegArea' ORDER BY name");
+				rs = statement.executeQuery("SELECT name || '</td><td>' || reg_area_id  FROM registration_area ORDER BY name");
 			} else if (listName.equals("thickness")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name FROM lookup WHERE fieldname = 'BedThick' ORDER BY code");
+				rs = statement.executeQuery("SELECT code || ': ' || name FROM bed_thickness ORDER BY code");
 			} else if (listName.equals("weathering")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name FROM lookup WHERE fieldname = 'Weathering' ORDER BY code");
+				rs = statement.executeQuery("SELECT code || ': ' || name FROM weathering ORDER BY code");
 			}
 			try {
 				while (rs.next()) {

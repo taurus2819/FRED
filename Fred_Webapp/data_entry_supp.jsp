@@ -570,7 +570,7 @@ function parseDropDown(val) {
 			out.println("<tr><td colspan='2'>Please select a fossil group and then one or both of a person and lab.<br />You may add enter multiple rows by clicking the Add To Main Form icon between each row and then Close to end.</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.print("<tr><td class='heading'>Fossil Group</td><td>");
-			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, "Group", null, null, null, "Lookup", "Name", "Name", null, "FieldName = 'FossilGroup'");
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, "Group", null, null, null, "fossil_group", "Name", "Name", null, null);
 			out.print("</td></tr>");
 			out.print("<tr><td class='heading'>Person</td><td>");
 			cd = new ComboDescriptor("Person_View", "Name", "Name");
@@ -642,11 +642,11 @@ function parseDropDown(val) {
 			out.println("<input type='text' name='Distance' />&nbsp;m&nbsp;-&nbsp;");
 			out.println("<input type='text' name='DistRange' />&nbsp;m</td></tr>");
 			out.print("<tr><td class='heading'>Relationship</td><td>");
-			cd = new ComboDescriptor("Lookup", "Name", "Name");
+			cd = new ComboDescriptor("relationship_type", "Name", "Name");
 			cd.name = "Rel";
 			cd.prompt = "-- Choose --";
 			cd.orderBy = "Lookup_ID";
-			cd.join = "FieldName = 'SampRel' AND Name <> 'nearby'";
+			cd.join = "reltype_type = 1 AND Name != 'nearby'";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("</td></tr>");
 			out.print("<tr><td class='heading'>Masterfile Area</td><td>");
@@ -693,11 +693,11 @@ function parseDropDown(val) {
 			out.println("<input type='text' name='Distance' />&nbsp;m&nbsp;-&nbsp;");
 			out.println("<input type='text' name='DistRange' />&nbsp;m</td></tr>");
 			out.print("<tr><td class='heading'>Relationship</td><td>");
-			cd = new ComboDescriptor("Lookup", "Name", "Name");
+			cd = new ComboDescriptor("relationship_type", "Name", "Name");
 			cd.name = "Rel";
 			cd.prompt = "-- Choose --";
 			cd.orderBy = "Lookup_ID";
-			cd.join = "FieldName = 'StratRel'";
+			cd.join = "reltype_type = 2";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.print("<tr><td class='heading'>NZ StratLex</td><td>");
 			cd = new ComboDescriptor("SL.Strat_Unit", "SU_Name", "SU_Name");
@@ -718,11 +718,10 @@ function parseDropDown(val) {
 			out.println("<tr><td colspan='2'>Please select a feature from the list.  Check the Abundant box to indicate the feature is abundant.<br />You may add multiple features by clicking the Add To Main Form icon between each feature and then Close to end.</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.print("<tr><td class='heading'>Feature</td><td>");
-			cd = new ComboDescriptor("Lookup", "Name", "Code || ': ' || Name");
+			cd = new ComboDescriptor("sedimentary_feature_type", "Name", "Code || ': ' || Name");
 			cd.name = "Feat";
 			cd.prompt = "-- Choose --";
 			cd.orderBy = "Code";
-			cd.join = "FieldName = 'SedFeature'";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("</td></tr>");
 			out.println("<tr><td class='heading'>Abundant</td><td><input type='checkbox' name='Abund' /></td></tr>");
@@ -738,11 +737,10 @@ function parseDropDown(val) {
 			out.println("<tr><td colspan='2'>Please select a Taxonomic Group from the drop-down list.  The Taxonomic Name List will then be filled with appropriate taxa.  Either choose from this list or enter a new name in the Taxonomic Name and Author (optional) boxes.<br />Note: new taxonomic names will be entered into the database as provisional and will be assesed by members of the taxonomic panel.  You will not be able to submit your record until the name has been approved.<br />You may add multiple taxa by clicking the Add To Main Form icon between each taxa and then Close to end.</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.print("<tr><td class='heading'>Group</td><td>");
-			cd = new ComboDescriptor("lookup", "lookup_id", "name");
+			cd = new ComboDescriptor("taxonomic_group", "group_id", "name");
 			cd.name = "Group";
 			cd.prompt = "-- Choose --";
-			cd.orderBy = "Lookup_ID";
-			cd.join = "FieldName = 'TaxaGroup'";
+			cd.orderBy = "group_ID";
 			cd.tagParams = "onChange='form1.submit();'";
 			if (request.getParameter("Group") != null) {
 				groupID = request.getParameter("Group");
