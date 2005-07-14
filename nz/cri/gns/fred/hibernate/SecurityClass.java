@@ -1,0 +1,46 @@
+package nz.cri.gns.fred.hibernate;
+
+import java.io.Serializable;
+
+
+/** @author Hibernate CodeGenerator */
+public class SecurityClass implements Serializable {
+
+    /** identifier field */
+    private Integer classId;
+
+    /** persistent field */
+    private String name;
+
+    /** full constructor */
+    public SecurityClass(Integer classId, String name) {
+        this.classId = classId;
+        this.name = name;
+    }
+
+    /** default constructor */
+    public SecurityClass() {
+    }
+
+    public Integer getClassId() {
+        return this.classId;
+    }
+
+    public void setClassId(Integer classId) {
+        this.classId = classId;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String toString() {
+        return name;
+    }
+
+
+}

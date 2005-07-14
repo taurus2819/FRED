@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.Folder" 
+    table="FOLDER"
+>
+
+    <id
+        name="folderId"
+        type="int"
+        column="FOLDER_ID"
+    >
+        <generator class="sequence">
+                <param name="sequence">FOLDER_SEQ</param>
+        </generator>
+    </id>
+
+    <property
+        name="name"
+        type="java.lang.String"
+        column="NAME"
+        not-null="true"
+        length="32"
+    />
+    <property
+        name="ownerId"
+        type="int"
+        column="OWNER_ID"
+        length="5"
+    />
+
+    <!-- Associations -->
+    <!-- bi-directional many-to-one association to Hardness -->
+    <many-to-one
+        name="folderType"
+        class="nz.cri.gns.fred.hibernate.FolderType"
+        not-null="true"
+    >
+        <column name="FOLDER_TYPE" />
+    </many-to-one>
+  
+    <!-- bi-directional one-to-many association to Record -->
+    <set
+        name="records"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="WORKING_FOLDER_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Record"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to AuditTable -->
+    <set
+        name="auditTables"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="WORKING_FOLDER_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.AuditTable"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to Feature -->
+    <set
+        name="masterfileFeatures"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="MASTERFILE_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Feature"
+        />
+    </set>
+    <!-- bi-directional many-to-many association to Feature via FolderContent -->
+    <set
+        name="features"
+        table="folder_content"
+        lazy="true"
+        inverse="true"
+		cascade="all"
+    >
+        <key>
+            <column name="FOLDER_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Feature"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to FolderUser -->
+    <set
+        name="folderUsers"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="FOLDER_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.FolderUser"
+        />
+    </set>
+
+</class>
+</hibernate-mapping>

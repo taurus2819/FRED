@@ -1,0 +1,381 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.Sample" 
+    table="SAMPLE"
+>
+
+    <id
+        name="sampleId"
+        type="int"
+        column="SAMPLE_ID"
+    >
+        <generator class="sequence">
+                <param name="sequence">SAMPLE_SEQ</param>
+        </generator>
+    </id>
+
+    <property
+        name="topDepth"
+        type="double"
+        column="TOP_DEPTH"
+        length="7"
+    />
+    <property
+        name="bottomDepth"
+        type="double"
+        column="BOTTOM_DEPTH"
+        length="7"
+    />
+    <property
+        name="comments"
+        type="java.lang.String"
+        column="COMMENTS"
+        length="255"
+    />
+    <property
+        name="yardFrId"
+        type="int"
+        column="YARD_FR_ID"
+        length="7"
+    />
+    <property
+        name="collectionDate"
+        type="java.sql.Date"
+        column="COLLECTION_DATE"
+        length="7"
+    />
+    <property
+        name="dateRounding"
+        type="java.lang.String"
+        column="DATE_ROUNDING"
+        length="5"
+    />
+    <property
+        name="stratUnit"
+        type="java.lang.String"
+        column="STRAT_UNIT"
+        length="255"
+    />
+    <property
+        name="inPlace"
+        type="java.lang.String"
+        column="IN_PLACE"
+        length="7"
+    />
+    <property
+        name="notCollected"
+        type="java.lang.String"
+        column="NOT_COLLECTED"
+        length="128"
+    />
+    <property
+        name="significance"
+        type="java.lang.String"
+        column="SIGNIFICANCE"
+        length="1024"
+    />
+    <property
+        name="columnMap"
+        type="java.lang.String"
+        column="COLUMN_MAP"
+        length="255"
+    />
+    <property
+        name="dip"
+        type="int"
+        column="DIP"
+        length="2"
+    />
+    <property
+        name="dipDirection"
+        type="java.lang.String"
+        column="DIP_DIRECTION"
+        length="2"
+    />
+    <property
+        name="strike"
+        type="int"
+        column="STRIKE"
+        length="3"
+    />
+    <property
+        name="facing"
+        type="java.lang.String"
+        column="FACING"
+        length="10"
+    />
+    <property
+        name="comparatorUsed"
+        type="java.lang.String"
+        column="COMPARATOR_USED"
+        length="1"
+    />
+    <property
+        name="wet"
+        type="java.lang.String"
+        column="WET"
+        length="3"
+    />
+    <property
+        name="rockNature"
+        type="java.lang.String"
+        column="ROCK_NATURE"
+        length="512"
+    />
+    <property
+        name="depositionEnv"
+        type="java.lang.String"
+        column="DEPOSITION_ENV"
+        length="128"
+    />
+    <property
+        name="correspondence"
+        type="java.lang.String"
+        column="CORRESPONDENCE"
+        length="512"
+    />
+    <property
+        name="sampleName"
+        type="java.lang.String"
+        column="SAMPLE_NAME"
+        length="64"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to ColourModifier -->
+    <many-to-one
+        name="colourModifier"
+        class="nz.cri.gns.fred.hibernate.ColourModifier"
+        not-null="true"
+    >
+        <column name="COLOUR_MODIFIER_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Hardness -->
+    <many-to-one
+        name="hardness"
+        class="nz.cri.gns.fred.hibernate.Hardness"
+        not-null="true"
+    >
+        <column name="HARDNESS_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Weathering -->
+    <many-to-one
+        name="weathering"
+        class="nz.cri.gns.fred.hibernate.Weathering"
+        not-null="true"
+    >
+        <column name="WEATHERING_ID" />
+    </many-to-one>
+    <!-- bi-directional one-to-many association to SedimentaryFeature -->
+    <set
+        name="sedimentaryFeatures"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="SAMPLE_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.SedimentaryFeature"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to SampleMeta -->
+    <set
+        name="sampleMetas"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="SAMPLE_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.SampleMeta"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to Record -->
+    <set
+        name="records"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="SAMPLE_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Record"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to SentTo -->
+    <set
+        name="sentTos"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="SAMPLE_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.SentTo"
+        />
+    </set>
+    <!-- bi-directional many-to-many association to Person via Collector -->
+    <set
+        name="collectors"
+        table="collector"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="SAMPLE_ID" />
+        </key>
+        <many-to-many 
+            class="nz.cri.gns.fred.hibernate.Person"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to Relationship -->
+    <set
+        name="relationships"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="SAMPLE_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Relationship"
+        />
+    </set>
+    <!-- bi-directional many-to-one association to Carbonate -->
+    <many-to-one
+        name="carbonate"
+        class="nz.cri.gns.fred.hibernate.Carbonate"
+        not-null="true"
+    >
+        <column name="CARBONATE_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to RockColour -->
+    <many-to-one
+        name="rockColourBySecondaryColourId"
+        class="nz.cri.gns.fred.hibernate.RockColour"
+        not-null="true"
+    >
+        <column name="SECONDARY_COLOUR_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to RockColour -->
+    <many-to-one
+        name="rockColourByPrimaryColourId"
+        class="nz.cri.gns.fred.hibernate.RockColour"
+        not-null="true"
+    >
+        <column name="PRIMARY_COLOUR_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Feature -->
+    <many-to-one
+        name="feature"
+        class="nz.cri.gns.fred.hibernate.Feature"
+        not-null="true"
+    >
+        <column name="FEATURE_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to AuditTable -->
+    <many-to-one
+        name="auditTable"
+        class="nz.cri.gns.fred.hibernate.AuditTable"
+        not-null="true"
+    >
+        <column name="AUDIT_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Bedding -->
+    <many-to-one
+        name="beddingByPrimaryBeddingId"
+        class="nz.cri.gns.fred.hibernate.Bedding"
+        not-null="true"
+    >
+        <column name="PRIMARY_BEDDING_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Bedding -->
+    <many-to-one
+        name="beddingBySecondaryBeddingId"
+        class="nz.cri.gns.fred.hibernate.Bedding"
+        not-null="true"
+    >
+        <column name="SECONDARY_BEDDING_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to FrNumber -->
+    <many-to-one
+        name="frNumber"
+        class="nz.cri.gns.fred.hibernate.FrNumber"
+        not-null="true"
+    >
+        <column name="FR_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to DrillType -->
+    <many-to-one
+        name="drillType"
+        class="nz.cri.gns.fred.hibernate.DrillType"
+        not-null="true"
+    >
+        <column name="DRILL_TYPE_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to GrainSize -->
+    <many-to-one
+        name="grainSizeByPrimaryGrainsizeId"
+        class="nz.cri.gns.fred.hibernate.GrainSize"
+        not-null="true"
+    >
+        <column name="PRIMARY_GRAINSIZE_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to GrainSize -->
+    <many-to-one
+        name="grainSizeBySecondaryGrainsizeId"
+        class="nz.cri.gns.fred.hibernate.GrainSize"
+        not-null="true"
+    >
+        <column name="SECONDARY_GRAINSIZE_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to BedThickness -->
+    <many-to-one
+        name="bedThickness"
+        class="nz.cri.gns.fred.hibernate.BedThickness"
+        not-null="true"
+    >
+        <column name="BED_THICK_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Stage -->
+    <many-to-one
+        name="stageByKnownStageId"
+        class="nz.cri.gns.fred.hibernate.Stage"
+        not-null="true"
+    >
+        <column name="KNOWN_STAGE_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Stage -->
+    <many-to-one
+        name="stageByInferredStageId"
+        class="nz.cri.gns.fred.hibernate.Stage"
+        not-null="true"
+    >
+        <column name="INFERRED_STAGE_ID" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

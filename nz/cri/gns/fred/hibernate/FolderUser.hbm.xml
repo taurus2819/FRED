@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.FolderUser" 
+    table="FOLDER_USER"
+>
+
+    <composite-id name="comp_id" class="nz.cri.gns.fred.hibernate.FolderUserPK">
+        <key-property 
+            name="folderId" 
+            column="FOLDER_ID" 
+            type="int"
+            length="4"
+        />
+        <key-property 
+            name="userId" 
+            column="USER_ID" 
+            type="int"
+            length="5"
+        />
+    </composite-id>    
+
+    <property
+        name="userRights"
+        type="int"
+        column="USER_RIGHTS"
+        length="3"
+    />
+
+    <!-- Associations -->
+    <!-- derived association(s) for compound key -->
+    <!-- bi-directional many-to-one association to Folder -->
+    <many-to-one
+        name="folder"
+	    class="nz.cri.gns.fred.hibernate.Folder"
+	    update="false"
+	    insert="false"
+	>
+    	<column name="FOLDER_ID" />
+	</many-to-one>
+	
+    <!-- end of derived association(s) -->
+  
+
+</class>
+</hibernate-mapping>

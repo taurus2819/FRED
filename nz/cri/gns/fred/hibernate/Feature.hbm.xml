@@ -1,0 +1,208 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.Feature" 
+    table="FEATURE"
+>
+
+    <id
+        name="featureId"
+        type="int"
+        column="FEATURE_ID"
+    >
+        <generator class="sequence">
+                <param name="sequence">FEATURE_SEQ</param>
+        </generator>
+    </id>
+
+    <property
+        name="siteId"
+        type="int"
+        column="SITE_ID"
+        length="7"
+    />
+    <property
+        name="locality"
+        type="java.lang.String"
+        column="LOCALITY"
+        length="1024"
+    />
+    <property
+        name="comments"
+        type="java.lang.String"
+        column="COMMENTS"
+        length="255"
+    />
+    <property
+        name="featureType"
+        type="java.lang.String"
+        column="FEATURE_TYPE"
+        not-null="true"
+        length="26"
+    />
+    <property
+        name="featureName"
+        type="java.lang.String"
+        column="FEATURE_NAME"
+        length="64"
+    />
+    <property
+        name="drillholeLicenceName"
+        type="java.lang.String"
+        column="DRILLHOLE_LICENCE_NAME"
+        length="64"
+    />
+    <property
+        name="startDate"
+        type="java.sql.Date"
+        column="START_DATE"
+        length="7"
+    />
+    <property
+        name="finishDate"
+        type="java.sql.Date"
+        column="FINISH_DATE"
+        length="7"
+    />
+    <property
+        name="datumElevation"
+        type="double"
+        column="DATUM_ELEVATION"
+        length="6"
+    />
+    <property
+        name="startDepth"
+        type="double"
+        column="START_DEPTH"
+        length="5"
+    />
+    <property
+        name="datumType"
+        type="java.lang.String"
+        column="DATUM_TYPE"
+        length="8"
+    />
+    <property
+        name="finishDepth"
+        type="double"
+        column="FINISH_DEPTH"
+        length="5"
+    />
+    <property
+        name="startDateRounding"
+        type="java.lang.String"
+        column="START_DATE_ROUNDING"
+        length="5"
+    />
+    <property
+        name="finishDateRounding"
+        type="java.lang.String"
+        column="FINISH_DATE_ROUNDING"
+        length="5"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to Person -->
+    <many-to-one
+        name="person"
+        class="nz.cri.gns.fred.hibernate.Person"
+        not-null="true"
+    >
+        <column name="PERSON_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Folder -->
+    <many-to-one
+        name="masterFile"
+        class="nz.cri.gns.fred.hibernate.Folder"
+        not-null="true"
+    >
+        <column name="MASTERFILE_ID" />
+    </many-to-one>
+    <!-- bi-directional one-to-many association to Sample -->
+    <set
+        name="samples"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="FEATURE_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Sample"
+        />
+    </set>
+    <!-- bi-directional many-to-many association to Folder via FolderContent -->
+    <set
+        name="folders"
+        table="folder_content"
+        lazy="true"
+        inverse="true"
+		cascade="all"
+    >
+        <key>
+            <column name="FEATURE_ID" />
+        </key>
+        <many-to-many 
+            class="nz.cri.gns.fred.hibernate.Folder"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to Relationship -->
+    <set
+        name="relationships"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="RELATED_FEATURE_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Relationship"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to FeatureMeta -->
+    <set
+        name="featureMetas"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="FEATURE_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.FeatureMeta"
+        />
+    </set>
+    <!-- bi-directional many-to-one association to AuditTable -->
+    <many-to-one
+        name="auditTable"
+        class="nz.cri.gns.fred.hibernate.AuditTable"
+        not-null="true"
+    >
+        <column name="AUDIT_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to RegistrationArea -->
+    <many-to-one
+        name="registrationArea"
+        class="nz.cri.gns.fred.hibernate.RegistrationArea"
+        not-null="true"
+    >
+        <column name="REG_AREA_ID" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

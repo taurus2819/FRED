@@ -1,0 +1,157 @@
+package nz.cri.gns.fred.hibernate;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Set;
+
+
+/** @author Hibernate CodeGenerator */
+public class TaxonomicLookup implements Serializable {
+
+    /** identifier field */
+    private Integer taxaId;
+
+    /** persistent field */
+    private String taxonomicName;
+
+    /** nullable persistent field */
+    private String author;
+
+    /** persistent field */
+    private String status;
+
+    /** nullable persistent field */
+    private Integer submittedById;
+
+    /** nullable persistent field */
+    private Date submittedDate;
+
+    /** nullable persistent field */
+    private Integer approvedById;
+
+    /** nullable persistent field */
+    private Date approvedDate;
+
+    /** nullable persistent field */
+    private String sendMessage;
+
+    /** persistent field */
+    private nz.cri.gns.fred.hibernate.TaxonomicGroup taxonomicGroup;
+
+    /** persistent field */
+    private Set palLists;
+
+    /** full constructor */
+    public TaxonomicLookup(String taxonomicName, String author, String status, Integer submittedById, Date submittedDate, Integer approvedById, Date approvedDate, String sendMessage, nz.cri.gns.fred.hibernate.TaxonomicGroup taxonomicGroup, Set palLists) {
+        this.taxonomicName = taxonomicName;
+        this.author = author;
+        this.status = status;
+        this.submittedById = submittedById;
+        this.submittedDate = submittedDate;
+        this.approvedById = approvedById;
+        this.approvedDate = approvedDate;
+        this.sendMessage = sendMessage;
+        this.taxonomicGroup = taxonomicGroup;
+        this.palLists = palLists;
+    }
+
+    /** default constructor */
+    public TaxonomicLookup() {
+    }
+
+    /** minimal constructor */
+    public TaxonomicLookup(String taxonomicName, String status, nz.cri.gns.fred.hibernate.TaxonomicGroup taxonomicGroup, Set palLists) {
+        this.taxonomicName = taxonomicName;
+        this.status = status;
+        this.taxonomicGroup = taxonomicGroup;
+        this.palLists = palLists;
+    }
+
+    public Integer getTaxaId() {
+        return this.taxaId;
+    }
+
+    public void setTaxaId(Integer taxaId) {
+        this.taxaId = taxaId;
+    }
+
+    public String getTaxonomicName() {
+        return this.taxonomicName;
+    }
+
+    public void setTaxonomicName(String taxonomicName) {
+        this.taxonomicName = taxonomicName;
+    }
+
+    public String getAuthor() {
+        return this.author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Integer getSubmittedById() {
+        return this.submittedById;
+    }
+
+    public void setSubmittedById(Integer submittedById) {
+        this.submittedById = submittedById;
+    }
+
+    public Date getSubmittedDate() {
+        return this.submittedDate;
+    }
+
+    public void setSubmittedDate(Date submittedDate) {
+        this.submittedDate = submittedDate;
+    }
+
+    public Integer getApprovedById() {
+        return this.approvedById;
+    }
+
+    public void setApprovedById(Integer approvedById) {
+        this.approvedById = approvedById;
+    }
+
+    public Date getApprovedDate() {
+        return this.approvedDate;
+    }
+
+    public void setApprovedDate(Date approvedDate) {
+        this.approvedDate = approvedDate;
+    }
+
+    public String getSendMessage() {
+        return this.sendMessage;
+    }
+
+    public void setSendMessage(String sendMessage) {
+        this.sendMessage = sendMessage;
+    }
+
+    public nz.cri.gns.fred.hibernate.TaxonomicGroup getTaxonomicGroup() {
+        return this.taxonomicGroup;
+    }
+
+    public void setTaxonomicGroup(nz.cri.gns.fred.hibernate.TaxonomicGroup taxonomicGroup) {
+        this.taxonomicGroup = taxonomicGroup;
+    }
+
+    public Set getPalLists() {
+        return this.palLists;
+    }
+
+    public void setPalLists(Set palLists) {
+        this.palLists = palLists;
+    }
+}

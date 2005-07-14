@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.RecordMeta" 
+    table="RECORD_META"
+>
+
+    <composite-id name="comp_id" class="nz.cri.gns.fred.hibernate.RecordMetaPK">
+        <key-property 
+            name="recordId" 
+            column="RECORD_ID" 
+            type="int"
+            length="8"
+        />
+        <key-property 
+            name="metaId" 
+            column="META_ID" 
+            type="java.lang.Long"
+            length="10"
+        />
+    </composite-id>    
+
+
+    <!-- Associations -->
+    <!-- derived association(s) for compound key -->
+    <!-- bi-directional many-to-one association to Record -->
+    <many-to-one
+        name="record"
+	    class="nz.cri.gns.fred.hibernate.Record"
+	    update="false"
+	    insert="false"
+	>
+    	<column name="RECORD_ID" />
+	</many-to-one>
+	
+    <!-- end of derived association(s) -->
+  
+
+</class>
+</hibernate-mapping>

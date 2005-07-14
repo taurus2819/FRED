@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.Identifier" 
+    table="IDENTIFIER"
+>
+
+    <composite-id name="comp_id" class="nz.cri.gns.fred.hibernate.IdentifierPK">
+        <key-property 
+            name="recordId" 
+            column="RECORD_ID" 
+            type="int"
+            length="7"
+        />
+        <key-property 
+            name="personId" 
+            column="PERSON_ID" 
+            type="int"
+            length="5"
+        />
+    </composite-id>    
+
+
+    <!-- Associations -->
+    <!-- derived association(s) for compound key -->
+    <!-- bi-directional many-to-one association to Person -->
+    <many-to-one
+        name="person"
+	    class="nz.cri.gns.fred.hibernate.Person"
+	    update="false"
+	    insert="false"
+	>
+    	<column name="PERSON_ID" />
+	</many-to-one>
+	
+    <!-- bi-directional many-to-one association to Paleontology -->
+    <many-to-one
+        name="paleontology"
+	    class="nz.cri.gns.fred.hibernate.Paleontology"
+	    update="false"
+	    insert="false"
+	>
+    	<column name="RECORD_ID" />
+	</many-to-one>
+	
+    <!-- end of derived association(s) -->
+  
+
+</class>
+</hibernate-mapping>

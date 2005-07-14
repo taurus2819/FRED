@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.TaxaPanel" 
+    table="TAXA_PANEL"
+>
+
+    <composite-id name="comp_id" class="nz.cri.gns.fred.hibernate.TaxaPanelPK">
+        <key-property 
+            name="groupId" 
+            column="GROUP_ID" 
+            type="int"
+            length="4"
+        />
+        <key-property 
+            name="panelistId" 
+            column="PANELIST_ID" 
+            type="int"
+            length="7"
+        />
+    </composite-id>    
+
+
+    <!-- Associations -->
+    <!-- derived association(s) for compound key -->
+    <!-- bi-directional many-to-one association to TaxonomicGroup -->
+    <many-to-one
+        name="taxonomicGroup"
+	    class="nz.cri.gns.fred.hibernate.TaxonomicGroup"
+	    update="false"
+	    insert="false"
+	>
+    	<column name="GROUP_ID" />
+	</many-to-one>
+	
+    <!-- end of derived association(s) -->
+  
+
+</class>
+</hibernate-mapping>

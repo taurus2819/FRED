@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.LabSection" 
+    table="LAB_SECTION"
+>
+
+    <id
+        name="labSectionId"
+        type="int"
+        column="LAB_SECTION_ID"
+    >
+        <generator class="sequence">
+                <param name="sequence">LAB_SECTION_SEQ</param>
+        </generator>
+    </id>
+
+    <property
+        name="labId"
+        type="double"
+        column="LAB_ID"
+        length="22"
+    />
+    <property
+        name="name"
+        type="java.lang.String"
+        column="NAME"
+        length="64"
+    />
+    <property
+        name="code"
+        type="java.lang.String"
+        column="CODE"
+        length="8"
+    />
+    <property
+        name="closed"
+        type="java.lang.String"
+        column="CLOSED"
+        length="1"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to Paleontology -->
+    <set
+        name="paleontologies"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="LAB_SECTION_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Paleontology"
+        />
+    </set>
+
+</class>
+</hibernate-mapping>

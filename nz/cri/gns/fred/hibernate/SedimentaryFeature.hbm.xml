@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.SedimentaryFeature" 
+    table="SEDIMENTARY_FEATURE"
+>
+
+    <composite-id name="comp_id" class="nz.cri.gns.fred.hibernate.SedimentaryFeaturePK">
+        <key-property 
+            name="sedFeatureId" 
+            column="SED_FEATURE_ID" 
+            type="int"
+            length="4"
+        />
+        <key-property 
+            name="sampleId" 
+            column="SAMPLE_ID" 
+            type="int"
+            length="7"
+        />
+    </composite-id>    
+
+    <property
+        name="abundant"
+        type="java.lang.String"
+        column="ABUNDANT"
+        length="1"
+    />
+
+    <!-- Associations -->
+    <!-- derived association(s) for compound key -->
+    <!-- bi-directional many-to-one association to Sample -->
+    <many-to-one
+        name="sample"
+	    class="nz.cri.gns.fred.hibernate.Sample"
+	    update="false"
+	    insert="false"
+	>
+    	<column name="SAMPLE_ID" />
+	</many-to-one>
+	
+    <!-- bi-directional many-to-one association to SedimentaryFeatureType -->
+    <many-to-one
+        name="sedimentaryFeatureType"
+	    class="nz.cri.gns.fred.hibernate.SedimentaryFeatureType"
+	    update="false"
+	    insert="false"
+	>
+    	<column name="SED_FEATURE_ID" />
+	</many-to-one>
+	
+    <!-- end of derived association(s) -->
+  
+
+</class>
+</hibernate-mapping>

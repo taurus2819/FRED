@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.AuditTable" 
+    table="AUDIT_TABLE"
+>
+
+    <id
+        name="auditId"
+        type="int"
+        column="AUDIT_ID"
+    >
+        <generator class="sequence">
+                <param name="sequence">AUDIT_SEQ</param>
+        </generator>
+    </id>
+
+    <property
+        name="status"
+        type="java.lang.String"
+        column="STATUS"
+        not-null="true"
+        length="16"
+    />
+    <property
+        name="createdById"
+        type="int"
+        column="CREATED_BY_ID"
+        length="5"
+    />
+    <property
+        name="createdDate"
+        type="java.sql.Date"
+        column="CREATED_DATE"
+        length="7"
+    />
+    <property
+        name="submittedById"
+        type="int"
+        column="SUBMITTED_BY_ID"
+        length="5"
+    />
+    <property
+        name="submittedDate"
+        type="java.sql.Date"
+        column="SUBMITTED_DATE"
+        length="7"
+    />
+    <property
+        name="approvedById"
+        type="int"
+        column="APPROVED_BY_ID"
+        length="5"
+    />
+    <property
+        name="approvedDate"
+        type="java.sql.Date"
+        column="APPROVED_DATE"
+        length="7"
+    />
+    <property
+        name="workingComments"
+        type="java.lang.String"
+        column="WORKING_COMMENTS"
+        length="255"
+    />
+    <property
+        name="curatorComments"
+        type="java.lang.String"
+        column="CURATOR_COMMENTS"
+        length="255"
+    />
+    <property
+        name="sendMessage"
+        type="java.lang.String"
+        column="SEND_MESSAGE"
+        length="6"
+    />
+    <property
+        name="securityClassId"
+        type="int"
+        column="SECURITY_CLASS_ID"
+        length="5"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to Folder -->
+    <many-to-one
+        name="folder"
+        class="nz.cri.gns.fred.hibernate.Folder"
+        not-null="true"
+    >
+        <column name="WORKING_FOLDER_ID" />
+    </many-to-one>
+    <!-- bi-directional one-to-many association to Sample -->
+    <set
+        name="samples"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="AUDIT_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Sample"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to Record -->
+    <set
+        name="records"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="AUDIT_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Record"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to Feature -->
+    <set
+        name="features"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="AUDIT_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Feature"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to AuditEdit -->
+    <set
+        name="auditEdits"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="AUDIT_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.AuditEdit"
+        />
+    </set>
+    <!-- bi-directional many-to-one association to DataOrigin -->
+    <many-to-one
+        name="dataOriginByDataHistoryId"
+        class="nz.cri.gns.fred.hibernate.DataOrigin"
+        not-null="true"
+    >
+        <column name="DATA_HISTORY_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to DataOrigin -->
+    <many-to-one
+        name="dataOriginByDataOriginId"
+        class="nz.cri.gns.fred.hibernate.DataOrigin"
+        not-null="true"
+    >
+        <column name="DATA_ORIGIN_ID" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

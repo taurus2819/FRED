@@ -1,0 +1,66 @@
+package nz.cri.gns.fred.hibernate;
+
+import java.io.Serializable;
+import java.util.Set;
+
+
+/** @author Hibernate CodeGenerator */
+public class RegistrationArea implements Serializable {
+
+    /** identifier field */
+    private Integer regAreaId;
+
+    /** persistent field */
+    private String name;
+
+    /** persistent field */
+    private String code;
+
+    /** persistent field */
+    private Set features;
+
+    /** full constructor */
+    public RegistrationArea(Integer regAreaId, String name, String code, Set features) {
+        this.regAreaId = regAreaId;
+        this.name = name;
+        this.code = code;
+        this.features = features;
+    }
+
+    /** default constructor */
+    public RegistrationArea() {
+    }
+
+    public Integer getRegAreaId() {
+        return this.regAreaId;
+    }
+
+    public void setRegAreaId(Integer regAreaId) {
+        this.regAreaId = regAreaId;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCode() {
+        return this.code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public Set getFeatures() {
+        return this.features;
+    }
+
+    public void setFeatures(Set features) {
+        this.features = features;
+    }
+
+}
