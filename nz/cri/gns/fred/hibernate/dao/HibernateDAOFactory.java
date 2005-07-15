@@ -54,6 +54,40 @@ public class HibernateDAOFactory implements DAOFactory, FolderDAO, FolderTypeDAO
 		}
 	}
 
+	public Folder save(Folder folder) throws StorageAccessException {
+	    try {
+	        Session session = provider.currentSession();
+	        session.save(folder);
+	        return folder;
+	    } catch (Exception e) {
+	        throw new StorageAccessException(e);
+	    }
+	}
+
+    public void delete(Folder folder) throws StorageAccessException {
+	    try {
+	        Session session = provider.currentSession();
+	        session.delete(folder);
+	    } catch (Exception e) {
+	        throw new StorageAccessException(e);
+	    }
+    }
+    
+    /**
+     * Returns the folder with the given id
+     */
+    public Folder getFolder(int folderId) throws StorageAccessException {
+        try {
+            Session session = provider.currentSession();
+			List list = session.find("FROM Folder WHERE folderId = ?", new Integer(folderId), new IntegerType());
+			if (list.size() == 0)
+			    return null;
+			return (Folder)list.get(0);
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+    }
+
 	public FolderTypeDAO getFolderTypeDAO() {
 		return this;
 	}

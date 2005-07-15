@@ -13,7 +13,7 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
     private String name;
 
     /** nullable persistent field */
-    private FolderType folderType;
+    private nz.cri.gns.fred.model.FolderType folderType;
 
     /** nullable persistent field */
     private Integer ownerId;
@@ -75,11 +75,11 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
         this.name = name;
     }
 
-    public FolderType getFolderType() {
+    public nz.cri.gns.fred.model.FolderType getFolderType() {
         return this.folderType;
     }
 
-    public void setFolderType(FolderType folderType) {
+    public void setFolderType(nz.cri.gns.fred.model.FolderType folderType) {
         this.folderType = folderType;
     }
 

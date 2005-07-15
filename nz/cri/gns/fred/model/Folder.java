@@ -3,8 +3,6 @@ package nz.cri.gns.fred.model;
 import java.io.Serializable;
 import java.util.Set;
 
-import nz.cri.gns.fred.hibernate.FolderType;
-
 /**
  * @author iainm
  */

@@ -1,6 +1,7 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.*"
 %><%@page import="nz.cri.gns.fred.data.*"
+%><%@page import="nz.cri.gns.fred.util.*"
 %><%@page import="nz.cri.gns.db.*"
 %><%@page import="nz.cri.gns.jsp.*"
 %><%@page import="java.net.URL"
@@ -30,15 +31,13 @@
 	if (request.getParameter("ActionType") != null) { //do something
 		String actionType = request.getParameter("ActionType");
 		if (actionType.equals("Add")) { //add folder
-			FolderUtils.addFolder(request.getParameter("FoldName"), user, state);
+			FolderUtil.addFolder(request.getParameter("FoldName"), user);
 		}
 		else if (actionType.equals("Delete")) { //Delete folder
 			try {
-				FolderUtils.deleteFolder(request.getParameter("FoldID"), user, state);
+				FolderUtil.deleteFolder(Integer.parseInt(request.getParameter("FoldID")), user);
 			} catch (Exception e) {}
 		}
-		response.sendRedirect("folder_list.jsp");
-		return;
 	}
 
 	drawTop(out, et, request, response);
@@ -79,18 +78,18 @@ function showHide(toShow, toHide) {
 <%
 	startDETable(out);
 	%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Personal Folders</td></tr><%
-	FolderList folderList = new FolderList(user, state);
+	List personalFolders = FolderUtil.getPersonalFolders(user);
 
 	//List Working folders
-	if (folderList.getPersonalFolderCount() > 0) {
+	if (personalFolders.size() > 0) {
 		%>
 		<tr><th style="text-align: left">Working Folder&nbsp;&nbsp;</th><th>Owner&nbsp;&nbsp;</th><th>Options</th></tr>
 		<tr><td><img src="images/blank.gif" height="5" width="1" /></td></tr>
 		<form name="PersForm" method="post" action="folder_list.jsp">
 <%
-		for (Iterator i = folderList.getPersonalFolders().iterator(); i.hasNext(); ) {
-			FolderSkeleton folder = (FolderSkeleton) i.next();
-			%><tr><td style="text-align: left"><a href="folder_detail.jsp?ID=<%=folder.key%>" class="heading"><%=folder.value%></a>&nbsp;&nbsp;</td><td style="text-align: left"><%=folder.getOwner()%>&nbsp;&nbsp;</td><td style="text-align: left">
+		for (Iterator i = personalFolders().iterator(); i.hasNext(); ) {
+			Folder folder = (Folder) i.next();
+			%><tr><td style="text-align: left"><a href="folder_detail.jsp?ID=<%=folder.getFolderId()%>" class="heading"><%=folder.getName()%></a>&nbsp;&nbsp;</td><td style="text-align: left"><%=UserUtil.getUserName(folder.getOwnerId())%>&nbsp;&nbsp;</td><td style="text-align: left">
 <%
 			if (folder.isAllowedAdmin()) {
 				%><a href="folder_user.jsp?FoldID=<%=folder.key%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a>&nbsp;&nbsp;&nbsp;<a href="javascript:if (confirm('Are you sure you want to delete this folder') == true) {document.PersForm.FoldID.value='<%=folder.key%>';document.PersForm.submit();}" title="Delete Folder"><img src="images/delete.gif" border="0" height="20" width="20" /></a>

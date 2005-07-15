@@ -16,16 +16,34 @@ public interface FolderDAO {
 	public Folder createNewFolder();
 	
 	/**
-	 * Returns a list of all personal folders owned by to the person
+	 * Returns a list of all <code>UserFolder</code>s representing the 
+	 * personal folders owned by to the person
 	 * @throws StorageAccessException
 	 */
 	public List getPersonalFolders(int ownerId) throws StorageAccessException;
 	
 	/**
-	 * Returns a list of folders of the given type to which the user has access 
+	 * Returns a list of <code>UserFolder</code>s of the given type to which the user has access 
 	 * but does not (necessarily?) own.
 	 * @throws StorageAccessException
 	 */
 	public List getAccessibleFolders(int userId, FolderType type) throws StorageAccessException;
+
+    /**
+     * Saves the given new folder to persistent storage
+     * @param folder
+     */
+    public Folder save(Folder folder) throws StorageAccessException;
+
+    /**
+     * Removes the current folder from persistent storage
+     * @param folder
+     */
+    public void delete(Folder folder) throws StorageAccessException;
+    
+    /**
+     * Returns the folder with the given id
+     */
+    public Folder getFolder(int folderId) throws StorageAccessException;
 	
 }
