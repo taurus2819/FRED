@@ -8,6 +8,14 @@ import java.util.Set;
  */
 public interface Folder extends Serializable, Comparable {
 	
+	public static final int FOLDER_READ_RIGHT = 1;
+	public static final int FOLDER_EDIT_RIGHT = 2;
+	public static final int FOLDER_CREATE_RIGHT = 4;
+	public static final int FOLDER_DELETE_RIGHT = 8;
+	public static final int FOLDER_SUBMIT_RIGHT = 16;
+	public static final int FOLDER_ADMIN_RIGHT = 32;
+	public static final int FOLDER_APPROVE_RIGHT = 64;
+
 	public abstract Integer getFolderId();
 
 	public abstract void setFolderId(Integer folderId);

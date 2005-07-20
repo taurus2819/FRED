@@ -11,8 +11,10 @@ import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.FolderTypeDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.dao.TaxonomicGroupDAO;
+import nz.cri.gns.fred.hibernate.FolderUser;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FolderType;
+import nz.cri.gns.fred.model.UserFolder;
 
 /**
  * @author iainm
@@ -36,7 +38,12 @@ public class HibernateDAOFactory implements DAOFactory, FolderDAO, FolderTypeDAO
 	public List getPersonalFolders(int ownerId) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-			return session.find("from Folder as folder where folder.ownerId = ?", new Integer(ownerId), new IntegerType());
+			List list = session.find("from Folder as folder where folder.ownerId = ?", new Integer(ownerId), new IntegerType());
+			for (int i=0; i<list.size(); i++) {
+				Folder folder = (Folder)list.get(i);
+				list.set(i, UserFolder.getOwnedUserFolder(folder));
+			}
+			return list;
 		} catch (Exception e) {
 			throw new StorageAccessException(e);
 		}
@@ -45,10 +52,17 @@ public class HibernateDAOFactory implements DAOFactory, FolderDAO, FolderTypeDAO
 	public List getAccessibleFolders(int userId, FolderType type) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-			Query query = session.createQuery("SELECT f FROM FolderUser as fu INNER JOIN fu.folder AS f WHERE f.folderType = :type AND fu.comp_id.userId = :user");
+			Query query = session.createQuery("FROM FolderUser as fu INNER JOIN fu.folder AS f WHERE f.folderType = :type AND fu.comp_id.userId = :user");
 			query.setEntity("type", type);
 			query.setInteger("user", userId);
-			return query.list();
+			List list = query.list();
+			for (int i=0; i<list.size(); i++) {
+				Object[] parts = (Object[])list.get(i);
+				Folder folder = (Folder)parts[1];
+				FolderUser rights = (FolderUser)parts[0];
+				list.set(i, UserFolder.getAccessibleUserFolder(folder, rights.getUserRights().intValue()));
+			}
+			return list;
 		} catch (Exception e) {
 			throw new StorageAccessException(e);
 		}
