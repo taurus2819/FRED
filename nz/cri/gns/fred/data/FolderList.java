@@ -24,7 +24,7 @@ public class FolderList {
 			personalFolders = new Vector();
 			adminFolders = new Vector();
 			while (rs.next()) {
-				if (rs.getString(1).equals("personal")) {
+				if (rs.getInt(1) == 2) {
 					personalFolders.add(new FolderSkeleton(rs.getString(2), rs.getString(3), rs.getInt(4), rs.getString(5)));
 				} else {
 					adminFolders.add(new FolderSkeleton(rs.getString(2), rs.getString(3), rs.getInt(4), rs.getString(5)));
