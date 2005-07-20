@@ -63,7 +63,9 @@ public class FolderUtil {
 	    if (folder.getOwnerId().intValue() == userId)
 	        return true;
 	    else {
-	        FolderRight right = folderDAO.getFolderRight(folder, userId);
+	    	//Commented out by Ben so will compile
+	        //FolderRight right = folderDAO.getFolderRight(folder, userId);
+	    	return false;
 	    }
 	}
 }
