@@ -1,13 +1,25 @@
 package nz.cri.gns.fred.hibernate.test;
 
+import java.io.IOException;
+import java.rmi.NotBoundException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
+
+import junit.framework.TestCase;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.SessionFactory;
 import net.sf.hibernate.cfg.Configuration;
+import nz.cri.gns.auth.InvalidCredentialsException;
+import nz.cri.gns.auth.User;
+import nz.cri.gns.db.BasicDatabaseApp2;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.hibernate.FeatureMeta;
@@ -43,10 +55,11 @@ import nz.cri.gns.fred.hibernate.TaxonomicLookup;
 import nz.cri.gns.fred.hibernate.Weathering;
 import nz.cri.gns.fred.hibernate.dao.HibernateDAOFactory;
 import nz.cri.gns.fred.hibernate.dao.HibernateProvider;
+import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.util.FolderUtil;
 import nz.cri.gns.fred.util.TaxonomiclUtil;
 
-import junit.framework.TestCase;
+import org.xml.sax.SAXException;
 
 /**
  * @author iainm
@@ -63,7 +76,7 @@ public class FolderUtilTest extends TestCase implements HibernateProvider {
 		props.put("hibernate.connection.username", "fr");
 		props.put("hibernate.connection.password", "ossify");
 		props.put("hibernate.dialect", "net.sf.hibernate.dialect.Oracle9Dialect");
-		props.put("hibernate.show_sql", "true");
+		//props.put("hibernate.show_sql", "true");
 		props.put("hibernate.cglib.use_reflection_optimizer", "false");
 
     	Configuration cfg = new Configuration().setProperties(props);
@@ -122,24 +135,28 @@ public class FolderUtilTest extends TestCase implements HibernateProvider {
 		};
 	}
 	
-	/* Commented out by Ben so will compile
-	public void testFolders() throws HibernateException, StorageAccessException {
+	public void testFolders() throws HibernateException, StorageAccessException, SQLException, InvalidCredentialsException, ClassNotFoundException, NotBoundException, ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
 		Session session = sessions.openSession();
 		
 		DAOFactory factory = new HibernateDAOFactory(this);
 		
+		Class.forName("oracle.jdbc.OracleDriver");
+		Connection conn = DriverManager.getConnection("jdbc:oracle:thin:ip/manying@raptor:1521:dev");
+		BasicDatabaseApp2 app = new BasicDatabaseApp2(conn, "1988");
+		
+		User user = new User("iainm", "****", app);
 		System.out.println("Personal");
-		List list = new FolderUtil(factory).getPersonalFolders(1988);
+		
+		List list = new FolderUtil(factory).getPersonalFolders(user);
 		for (Iterator it = list.iterator(); it.hasNext(); ) {
-			System.out.println(((Folder)it.next()).getName());
+			System.out.println(((UserFolder)it.next()).getFolder().getName());
 		}
 		System.out.println("Admin");
-		list = new FolderUtil(factory).getAdminFolders(1988);
+		list = new FolderUtil(factory).getAdminFolders(user);
 		for (Iterator it = list.iterator(); it.hasNext(); ) {
-			System.out.println(((Folder)it.next()).getName());
+			System.out.println(((UserFolder)it.next()).getFolder().getName());
 		}
 	}
-	*/
 
 	public void testPanels() throws StorageAccessException, HibernateException {
 		Session session = sessions.openSession();
