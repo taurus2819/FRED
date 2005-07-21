@@ -102,6 +102,18 @@ public class HibernateDAOFactory implements DAOFactory, FolderDAO, FolderTypeDAO
         }
     }
 
+	public List getWaitingMasterfileFeatures(Folder folder) throws StorageAccessException {
+		try {
+			Session session = provider.currentSession();
+			Query query = session.createQuery("FROM Feature WHERE masterFile = :folder AND auditTable.status = :wait");
+			query.setEntity("folder", folder);
+			query.setString("wait", "waiting");
+			return query.list();
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+		}
+	}
+
 	public FolderTypeDAO getFolderTypeDAO() {
 		return this;
 	}
@@ -123,6 +135,14 @@ public class HibernateDAOFactory implements DAOFactory, FolderDAO, FolderTypeDAO
 		try {
 			Session session = provider.currentSession();
 			return session.find("SELECT g FROM TaxaPanel tp INNER JOIN tp.taxonomicGroup g WHERE tp.comp_id.panelistId = ?", new Integer(userId), new IntegerType());
+		} catch (Exception e) {
+			throw new StorageAccessException(e);
+		}
+	}
+
+	public void closeSession() throws StorageAccessException {
+		try {
+			provider.closeSession();
 		} catch (Exception e) {
 			throw new StorageAccessException(e);
 		}

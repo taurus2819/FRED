@@ -45,5 +45,11 @@ public interface FolderDAO {
      * Returns the folder with the given id
      */
     public Folder getFolder(int folderId) throws StorageAccessException;
+
+	/**
+	 * Returns any features that are in the masterfile folder given, with a 'waiting' status
+	 * @throws StorageAccessException
+	 */
+	public List getWaitingMasterfileFeatures(Folder folder) throws StorageAccessException;
 	
 }

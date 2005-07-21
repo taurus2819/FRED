@@ -3,7 +3,15 @@ package nz.cri.gns.fred.model;
 
 public class UserFolder implements Comparable {
 
-    private Folder folder;
+	public static final int FOLDER_READ_RIGHT = 1;
+	public static final int FOLDER_EDIT_RIGHT = 2;
+	public static final int FOLDER_CREATE_RIGHT = 4;
+	public static final int FOLDER_DELETE_RIGHT = 8;
+	public static final int FOLDER_SUBMIT_RIGHT = 16;
+	public static final int FOLDER_ADMIN_RIGHT = 32;
+	public static final int FOLDER_APPROVE_RIGHT = 64;
+
+	private Folder folder;
     private int rights;
 
     /**
@@ -33,5 +41,33 @@ public class UserFolder implements Comparable {
 
 	public int compareTo(Object arg0) {
 		return folder.compareTo(((UserFolder)arg0).folder);
-	}    
+	} 
+	
+	public boolean isAllowedReadLocalities() {
+		return ((rights & FOLDER_READ_RIGHT) != 0);
+	}
+	
+	public boolean isAllowedEditLocalities() {
+		return ((rights & FOLDER_EDIT_RIGHT) != 0);
+	}
+
+	public boolean isAllowedCreateLocalities() {
+		return ((rights & FOLDER_CREATE_RIGHT) != 0);
+	}
+
+	public boolean isAllowedDeleteLocalities() {
+		return ((rights & FOLDER_DELETE_RIGHT) != 0);
+	}
+
+	public boolean isAllowedSubmitLocalities() {
+		return ((rights & FOLDER_SUBMIT_RIGHT) != 0);
+	}
+
+	public boolean isAllowedAdmin() {
+		return ((rights & FOLDER_ADMIN_RIGHT) != 0);
+	}
+
+	public boolean isAllowedApproveLocalities() {
+		return ((rights & FOLDER_APPROVE_RIGHT) != 0);
+	}
 }

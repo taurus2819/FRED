@@ -9,7 +9,6 @@ import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.FolderTypeDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.model.Folder;
-import nz.cri.gns.fred.model.FolderRight;
 
 import nz.cri.gns.auth.UserAccount
 
@@ -17,16 +16,21 @@ import nz.cri.gns.auth.UserAccount
 /**
  * @author iainm
  */
-public class FolderUtil {
+public class FolderUtil extends ModelUtil {
 
 	private FolderDAO folderDAO;
 	private FolderTypeDAO typeDAO;
+	private DAOFactory factory;
 	
 	public FolderUtil(DAOFactory dao) {
+		super(dao);
 		this.folderDAO = dao.getFolderDAO();
 		this.typeDAO = dao.getFolderTypeDAO();
 	}
 	
+	/**
+	 *@return a <code>List</code> of <code>UserFolder</code>s
+	 */
 	public List getPersonalFolders(UserAccount user) throws StorageAccessException {
 		Vector folders = new Vector();
 		folders.addAll(folderDAO.getPersonalFolders(Integer.parseInt(user.getId())));
@@ -36,6 +40,9 @@ public class FolderUtil {
 		return folders;
 	}
 	
+	/**
+	 *@return a <code>List</code> of <code>UserFolder</code>s
+	 */
 	public List getAdminFolders(UserAccount user) throws StorageAccessException {
 		List folders = folderDAO.getAccessibleFolders(Integer.parseInt(user.getId()), typeDAO.getFolderType("Admin"));
 		Collections.sort(folders);
@@ -58,14 +65,7 @@ public class FolderUtil {
 	    folderDAO.delete(folder);
 	}
 	
-	public boolean getUserHasAdminRights(Folder folder, UserAccount user) {
-	    int userId = Integer.parseInt(user.getId());
-	    if (folder.getOwnerId().intValue() == userId)
-	        return true;
-	    else {
-	    	//Commented out by Ben so will compile
-	        //FolderRight right = folderDAO.getFolderRight(folder, userId);
-	    	return false;
-	    }
+	public List getMasterfileFolderFeatures(Folder folder) throws StorageAccessException {
+		return folderDAO.getWaitingMasterfileFeatures(folder);
 	}
 }

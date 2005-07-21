@@ -4,12 +4,12 @@
 %><%@page import="nz.cri.gns.fred.util.*"
 %><%@page import="nz.cri.gns.db.*"
 %><%@page import="nz.cri.gns.jsp.*"
-%><%@page import="java.net.URL"
-%><%@page import="nz.cri.gns.intranet.*"
-%><%@page import="java.sql.*"
-%><%@page import="java.lang.*"
-%><%@page import="java.util.*"
-%><%@page import="nz.cri.gns.auth.*"
+%><%@page import="java.util.Iterator"
+%><%@page import="java.util.List"
+%><%@page import="java.util.Vector"
+%><%@page import="nz.cri.gns.auth.User"
+%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%!
 	public String getName(HttpServletRequest request) {
 		return "FRED :: " + ((User)getUser(request.getSession())).getFullName() + "'s Folders";
@@ -24,18 +24,21 @@
 %><%
 	User user = (User)getUser(session);
 	PageState state = new PageState(request, response, getServletContext());
-
+	
+	FolderUtil folderUtil = new FolderUtil(HibernateUtil.get().getDAOFactory());
+	UserUtil userUtil = new UserUtil();
+	
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
 
 	if (request.getParameter("ActionType") != null) { //do something
 		String actionType = request.getParameter("ActionType");
 		if (actionType.equals("Add")) { //add folder
-			FolderUtil.addFolder(request.getParameter("FoldName"), user);
+			folderUtil.addFolder(request.getParameter("FoldName"), user);
 		}
 		else if (actionType.equals("Delete")) { //Delete folder
 			try {
-				FolderUtil.deleteFolder(Integer.parseInt(request.getParameter("FoldID")), user);
+				folderUtil.deleteFolder(Integer.parseInt(request.getParameter("FoldID")), user);
 			} catch (Exception e) {}
 		}
 	}
@@ -78,7 +81,7 @@ function showHide(toShow, toHide) {
 <%
 	startDETable(out);
 	%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Personal Folders</td></tr><%
-	List personalFolders = FolderUtil.getPersonalFolders(user);
+	List personalFolders = folderUtil.getPersonalFolders(user);
 
 	//List Working folders
 	if (personalFolders.size() > 0) {
@@ -87,12 +90,12 @@ function showHide(toShow, toHide) {
 		<tr><td><img src="images/blank.gif" height="5" width="1" /></td></tr>
 		<form name="PersForm" method="post" action="folder_list.jsp">
 <%
-		for (Iterator i = personalFolders().iterator(); i.hasNext(); ) {
-			Folder folder = (Folder) i.next();
-			%><tr><td style="text-align: left"><a href="folder_detail.jsp?ID=<%=folder.getFolderId()%>" class="heading"><%=folder.getName()%></a>&nbsp;&nbsp;</td><td style="text-align: left"><%=UserUtil.getUserName(folder.getOwnerId())%>&nbsp;&nbsp;</td><td style="text-align: left">
+		for (Iterator i = personalFolders.iterator(); i.hasNext(); ) {
+			UserFolder folder = (UserFolder) i.next();
+			%><tr><td style="text-align: left"><a href="folder_detail.jsp?ID=<%=folder.getFolder().getFolderId()%>" class="heading"><%=folder.getFolder().getName()%></a>&nbsp;&nbsp;</td><td style="text-align: left"><%=userUtil.getUserName(folder.getFolder().getOwnerId().intValue())%>&nbsp;&nbsp;</td><td style="text-align: left">
 <%
 			if (folder.isAllowedAdmin()) {
-				%><a href="folder_user.jsp?FoldID=<%=folder.key%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a>&nbsp;&nbsp;&nbsp;<a href="javascript:if (confirm('Are you sure you want to delete this folder') == true) {document.PersForm.FoldID.value='<%=folder.key%>';document.PersForm.submit();}" title="Delete Folder"><img src="images/delete.gif" border="0" height="20" width="20" /></a>
+				%><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a>&nbsp;&nbsp;&nbsp;<a href="javascript:if (confirm('Are you sure you want to delete this folder') == true) {document.PersForm.FoldID.value='<%=folder.getFolder().getFolderId()%>';document.PersForm.submit();}" title="Delete Folder"><img src="images/delete.gif" border="0" height="20" width="20" /></a>
 <img src="images/blank.gif" width="1" height="20" /><%
 			}
 			%></td></tr>
@@ -110,22 +113,24 @@ function showHide(toShow, toHide) {
 	}
 	endDETable(out);
 
-	//List Masterfile folders (if any)
-	if (folderList.getAdminFolderCount() > 0) {
+	List adminFolders = folderUtil.getAdminFolders(user);
+
+	//List Working folders
+	if (adminFolders.size() > 0) {
 		%><p><%
 		startDETable(out);
 		%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Masterfile Folders</td></tr>
 <tr><th>Masterfile Folder&nbsp;&nbsp;</th><th></th><th>Options</th></tr>
 <tr><td colspan="3"><img src="images/blank.gif" height="5" width="1" /></td></tr><%
-		for (Iterator i = folderList.getAdminFolders().iterator(); i.hasNext(); ) {
-			FolderSkeleton folder = (FolderSkeleton) i.next();
-			%><tr><td style="text-align: left"><a href="admin_folder_detail.jsp?ID=<%=folder.key%>" class="heading"><%=folder.value%></a>&nbsp;&nbsp;</td>
+		for (Iterator i = adminFolders.iterator(); i.hasNext(); ) {
+			UserFolder folder = (UserFolder) i.next();
+			%><tr><td style="text-align: left"><a href="admin_folder_detail.jsp?ID=<%=folder.getFolder().getFolderId()%>" class="heading"><%=folder.getFolder().getName()%></a>&nbsp;&nbsp;</td>
 <td style="text-align: left; font-size: 10pt; font-weight: bold; color: #FF0000"><%
-			if (folder.getLocalityCount(state) > 0)
+			if (folderUtil.getMasterfileFolderFeatures(folder.getFolder()).size() > 0)
 				out.print("new data");
 			out.print("&nbsp;</td><td style=\"text-align: left;\">");
 			if (folder.isAllowedAdmin()) {
-				%><a href="folder_user.jsp?FoldID=<%=folder.key%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a>
+				%><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a>
 <img src="images/blank.gif" width="1" height="20" /><%
 			}
 			%></td></tr>
@@ -169,4 +174,6 @@ function showHide(toShow, toHide) {
 	out.println("</td></tr></table>");
 	drawBottom(out, et);
 
+	//Close the session
+	folderUtil.closeSession();
 %>
