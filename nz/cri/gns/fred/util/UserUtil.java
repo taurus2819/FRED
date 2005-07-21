@@ -19,7 +19,7 @@ public class UserUtil {
     public String getUserName(int userId) throws NamingException, SQLException {
         Connection conn = getConnection();
         Statement statement = conn.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT given_name || ' ' || family_name FROM ip.person WHERE person_id = " + userId);
+        ResultSet rs = statement.executeQuery("SELECT given_name || ' ' || family_name FROM ip.person_view WHERE pe_id = " + userId);
         String name = (rs.next()) ? rs.getString(1) : "";
         rs.close();
         statement.close();
