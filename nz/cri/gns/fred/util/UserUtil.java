@@ -34,7 +34,7 @@ public class UserUtil {
      */
     private Connection getConnection() throws NamingException, SQLException {
         InitialContext context = new InitialContext();
-        Context ctx = (Context)context.lookup("comp/env");
+        Context ctx = (Context)context.lookup("java:/comp/env");
         DataSource source = (DataSource)ctx.lookup("jdbc/fr");
         
         return source.getConnection();
