@@ -46,7 +46,7 @@ public abstract class FREDDEIPSysJspPage extends FREDIPSysJspPage{
 		int colspan = ((2*et.getLinkCount())+2);
 		out.println("	<td colspan=\""+colspan+"\" style=\"background: url(images/fredDEheaderBG.gif) repeat-x; vertical-align: middle\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"><tr><td class=\"bigheading\" style=\"vertical-align: middle; height: 46px; color: white\" height=\"46\">"+getName(request)+"</td></tr>");
 		out.print("   <td colspan=\"" + colspan + "\" style=\"height: 20px; vertical-align: top\" height=\"20\"><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr><td><img src=\"images/fredDEheaderDiv.gif\" border=\"0\"></td>");
-		IconnedLink[] links = getButtons();
+		IconnedLink[] links = getButtons(request);
 		for (int i=0; i<links.length; i++) {
 			out.print("<td style=\"vertical-align: middle\">&nbsp;&nbsp;&nbsp;");
 			if (links[i].icon != null)
@@ -56,7 +56,7 @@ public abstract class FREDDEIPSysJspPage extends FREDIPSysJspPage{
 		out.println("</tr></table></td></tr></table></td>");
 	}
 
-	protected IconnedLink[] getButtons() {
+	protected IconnedLink[] getButtons(HttpServletRequest request) {
 		return new IconnedLink[0];
 	}
 	

@@ -4,6 +4,7 @@ import java.util.List;
 
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FolderType;
+import nz.cri.gns.fred.model.UserFolder;
 
 /**
  * @author iainm
@@ -51,5 +52,11 @@ public interface FolderDAO {
 	 * @throws StorageAccessException
 	 */
 	public int getWaitingMasterfileFeatureCount(Folder folder) throws StorageAccessException;
+
+	/**
+	 * @return the folder with the given id, initialised for the given user
+	 * @throws StorageAccessException
+	 */
+	public UserFolder getUserFolder(int folderId, int userId) throws StorageAccessException;
 	
 }

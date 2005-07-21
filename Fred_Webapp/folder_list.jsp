@@ -10,14 +10,13 @@
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
 %><%@page import="nz.cri.gns.fred.util.UserUtil"
-%><%@page import="nz.cri.gns.jsp.PageState"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%!
 	public String getName(HttpServletRequest request) {
 		return "FRED :: " + ((User)getUser(request.getSession())).getFullName() + "'s Folders";
 	}
 	
-	protected IconnedLink[] getButtons() {
+	protected IconnedLink[] getButtons(HttpServletRequest request) {
 		return new IconnedLink[] {
 			new IconnedLink("javascript:doNewFolder();", "images/folder.gif", "New Folder")
 		};
@@ -25,7 +24,6 @@
 	
 %><%
 	User user = (User)getUser(session);
-	PageState state = new PageState(request, response, getServletContext());
 	
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	FolderUtil folderUtil = new FolderUtil(factory);

@@ -6,7 +6,7 @@ import java.util.Set;
 
 
 /** @author Hibernate CodeGenerator */
-public class Feature implements Serializable {
+public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Cloneable {
 
     /** identifier field */
     private Integer featureId;
@@ -54,16 +54,16 @@ public class Feature implements Serializable {
     private String finishDateRounding;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.Person person;
+    private nz.cri.gns.fred.model.Person person;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.Folder masterFile;
+    private nz.cri.gns.fred.model.Folder masterFile;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.AuditTable auditTable;
+    private nz.cri.gns.fred.model.Audit auditTable;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.RegistrationArea registrationArea;
+    private nz.cri.gns.fred.model.RegistrationArea registrationArea;
 
     /** persistent field */
     private Set samples;
@@ -240,35 +240,35 @@ public class Feature implements Serializable {
         this.finishDateRounding = finishDateRounding;
     }
 
-    public nz.cri.gns.fred.hibernate.Person getPerson() {
+    public nz.cri.gns.fred.model.Person getPerson() {
         return this.person;
     }
 
-    public void setPerson(nz.cri.gns.fred.hibernate.Person person) {
+    public void setPerson(nz.cri.gns.fred.model.Person person) {
         this.person = person;
     }
 
-    public nz.cri.gns.fred.hibernate.Folder getMasterFile() {
+    public nz.cri.gns.fred.model.Folder getMasterFile() {
         return this.masterFile;
     }
 
-    public void setMasterFile(nz.cri.gns.fred.hibernate.Folder masterFile) {
+    public void setMasterFile(nz.cri.gns.fred.model.Folder masterFile) {
         this.masterFile = masterFile;
     }
 
-    public nz.cri.gns.fred.hibernate.AuditTable getAuditTable() {
+    public nz.cri.gns.fred.model.Audit getAudit() {
         return this.auditTable;
     }
 
-    public void setAuditTable(nz.cri.gns.fred.hibernate.AuditTable auditTable) {
+    public void setAudit(nz.cri.gns.fred.model.Audit auditTable) {
         this.auditTable = auditTable;
     }
 
-    public nz.cri.gns.fred.hibernate.RegistrationArea getRegistrationArea() {
+    public nz.cri.gns.fred.model.RegistrationArea getRegistrationArea() {
         return this.registrationArea;
     }
 
-    public void setRegistrationArea(nz.cri.gns.fred.hibernate.RegistrationArea registrationArea) {
+    public void setRegistrationArea(nz.cri.gns.fred.model.RegistrationArea registrationArea) {
         this.registrationArea = registrationArea;
     }
 
@@ -304,4 +304,12 @@ public class Feature implements Serializable {
         this.featureMetas = featureMetas;
     }
 
+    public Object clone() { 
+    	try {
+    		return super.clone();
+    	} catch (CloneNotSupportedException e) {
+    		//But it is!
+    		return null;
+    	}
+    }
 }

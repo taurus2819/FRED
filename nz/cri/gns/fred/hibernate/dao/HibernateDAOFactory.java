@@ -7,12 +7,17 @@ import net.sf.hibernate.Session;
 import net.sf.hibernate.type.IntegerType;
 import net.sf.hibernate.type.StringType;
 import nz.cri.gns.fred.dao.DAOFactory;
+import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.FolderTypeDAO;
+import nz.cri.gns.fred.dao.SampleDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.dao.TaxonomicGroupDAO;
+import nz.cri.gns.fred.hibernate.AuditTable;
 import nz.cri.gns.fred.hibernate.FolderUser;
+import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.FREDConstants;
+import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FolderType;
 import nz.cri.gns.fred.model.TaxonomicGroup;
@@ -21,7 +26,7 @@ import nz.cri.gns.fred.model.UserFolder;
 /**
  * @author iainm
  */
-public class HibernateDAOFactory implements DAOFactory, FolderDAO, FolderTypeDAO, TaxonomicGroupDAO {
+public class HibernateDAOFactory implements DAOFactory, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO {
 
 	private HibernateProvider provider;
 
@@ -116,6 +121,32 @@ public class HibernateDAOFactory implements DAOFactory, FolderDAO, FolderTypeDAO
             throw new StorageAccessException(e);
 		}
 	}
+	
+	public UserFolder getUserFolder(int folderId, int userId) throws StorageAccessException {
+		try {
+			Session session = provider.currentSession();
+			List list = session.find("FROM Folder AS f WHERE f.folderId = ?", new Integer(folderId), new IntegerType());
+			if (list.size() == 0)
+				return null;
+			
+			Folder folder = (Folder)list.get(0);
+			if (folder.getOwnerId().intValue() == userId) {
+				return UserFolder.getOwnedUserFolder(folder);
+			}
+			
+			Query query = session.createQuery("FROM FolderUser AS fu WHERE fu.folder = :folder AND fu.comp_id.userId = :user");
+			query.setEntity("folder", folder);
+			query.setInteger("user", userId);
+			list = query.list();
+			if (list.size() == 0)
+				return null;
+			return UserFolder.getAccessibleUserFolder(folder, ((FolderUser)list.get(0)).getUserRights().intValue());
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+		}
+	}
+
+
 
 	public FolderTypeDAO getFolderTypeDAO() {
 		return this;
@@ -164,6 +195,33 @@ public class HibernateDAOFactory implements DAOFactory, FolderDAO, FolderTypeDAO
 		} catch (Exception e) {
 			throw new StorageAccessException(e);
 		}
+	}
+
+	public FeatureDAO getFeatureDAO() {
+		return this;
+	}
+
+	//FeatureDAO methods
+	public Audit createNewAudit() {
+		return new AuditTable();
+	}
+
+	public Audit save(Audit audit) throws StorageAccessException {
+	    try {
+	        Session session = provider.currentSession();
+	        session.save(audit);
+	        return audit;
+	    } catch (Exception e) {
+	        throw new StorageAccessException(e);
+	    }
+	}
+
+	public Feature cloneFeature(Feature feature) {
+		return (Feature)((nz.cri.gns.fred.hibernate.Feature)feature).clone();
+	}
+
+	public SampleDAO getSampleDAO() {
+		return this;
 	}
 
 }

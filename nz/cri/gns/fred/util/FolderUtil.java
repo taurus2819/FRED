@@ -9,10 +9,10 @@ import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.FolderTypeDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.model.Folder;
+import nz.cri.gns.fred.model.UserFolder;
 
-import nz.cri.gns.auth.UserAccount
+import nz.cri.gns.auth.UserAccount;
 
-;
 /**
  * @author iainm
  */
@@ -67,5 +67,9 @@ public class FolderUtil extends ModelUtil {
 	
 	public int getMasterfileFolderFeatureCount(Folder folder) throws StorageAccessException {
 		return folderDAO.getWaitingMasterfileFeatureCount(folder);
+	}
+	
+	public UserFolder getUserFolder(int folderId, UserAccount user) throws NumberFormatException, StorageAccessException {
+		return folderDAO.getUserFolder(folderId, Integer.parseInt(user.getId()));
 	}
 }

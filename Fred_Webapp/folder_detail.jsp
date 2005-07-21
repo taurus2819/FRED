@@ -9,56 +9,85 @@
 %><%@page import="java.text.*"
 %><%@page import="java.util.*"
 %><%@page import="nz.cri.gns.auth.*"
+%><%@page import="nz.cri.gns.fred.dao.DAOFactory"
+%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.model.UserFolder"
+%><%@page import="nz.cri.gns.fred.model.TaxonomicGroup"
+%><%@page import="nz.cri.gns.fred.util.FolderUtil"
+%><%@page import="nz.cri.gns.fred.util.FeatureUtil"
+%><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
+%><%@page import="nz.cri.gns.fred.util.UserUtil"
 %><%!
 	public String getName(HttpServletRequest request) {
 		return "FRED :: " + ((User)getUser(request.getSession())).getFullName() + "'s Folders";
 	}
 	
-	protected IconnedLink[] getButtons() {
-		return new IconnedLink[] {
-			new IconnedLink("javascript:doNewFolder();", "images/folder.gif", "New Folder")
-		};
+	protected IconnedLink[] getButtons(HttpServletRequest request) {
+		try {
+			DAOFactory factory = HibernateUtil.get().getDAOFactory();
+			FolderUtil folderUtil = new FolderUtil(factory);
+			UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), getUser(request.getSession()));
+			if (folder.isAllowedCreateLocalities()) {
+				return new IconnedLink[] {
+					new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders"),
+					new IconnedLink("data_entry.jsp?Type=Outcrop&FoldID=" + folder.getFolder().getFolderId(), "images/new.gif", "New Outcrop Locality"),
+					new IconnedLink("data_entry.jsp?Type=Drillhole&FoldID=" + folder.getFolder().getFolderId(), "images/new.gif", "New Drillhole Locality"),
+					new IconnedLink("data_entry.jsp?Type=Vertical+Section&FoldID=" + folder.getFolder().getFolderId(), "images/new.gif", "New Vert. Section Locality"),
+					new IconnedLink("simple_query.jsp?FoldID=" + folder.getFolder().getFolderId(), "images/search.gif", "Back to folders")
+				};
+			} else {
+				return new IconnedLink[] {
+					new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")
+				};
+			}
+		} catch (Exception e) {
+			return new IconnedLink[]{};
+		}
 	}
 
 %><%
-	System.out.println("Folder detail:" + new java.util.Date() + ": Starting");
-	User user =(User) getUser(session);
-	PageState state = new PageState(request, response, getServletContext());
-
-	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
-
+	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	if (request.getParameter("ID") == null) {
+		factory.closeSession();
 		response.sendRedirect("folder_list.jsp");
 		return;
 	}
-	Folder folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state);
+	
+	FolderUtil folderUtil = new FolderUtil(factory);
+	FeatureUtil featureUtil = new FeatureUtil(factory);
+	User user =(User) getUser(session);
+
+	ExtranetTemplate et = getExtranetTemplate();
+
+	UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), user);
 	session.setAttribute("dataEntryRedirect", "folder_detail.jsp?ID=" + folder.getFolderID());
-	System.out.println("Folder detail:" + new java.util.Date() + ": Got folder");
 					
 	if (request.getParameter("ActionType") != null) { //do something
 		String actionType = request.getParameter("ActionType");
 		String err = "";
 		try {
-			//Copy locality
-			if (actionType.equals("CopyFeat") && folder.isAllowedCreateLocalities()) {
-				FolderUtils.copyLocality(request.getParameter("FeatID"), request.getParameter("NewFeatName"), String.valueOf(folder.getFolderID()), user, state);
-			}
-			 //Delete locality
-			else if (actionType.equals("DeleteFeat") && folder.isAllowedDeleteLocalities()) {
-				FolderUtils.deleteLocality(request.getParameter("FeatID"), user, state);
-			}
-			//Remove locality
-			else if (actionType.equals("RemoveFeat")) {
-				FolderUtils.removeLocality(request.getParameter("FeatID"), String.valueOf(folder.getFolderID()), user, state);
-			}
-			// submit working locality
-			else if (actionType.equals("Submit") && folder.isAllowedSubmitLocalities()) {
-				FolderUtils.submitLocality(request.getParameter("FeatID"), user, state);
-			}
-			//Revoke waiting records
-			else if (actionType.equals("Revoke") && folder.isAllowedSubmitLocalities()) {
-				FolderUtils.revokeLocality(request.getParameter("FeatID"), user, state);
+			if (request.getParameter("FeatID") != null) {
+				//Get the feature
+				//Copy locality
+				if (actionType.equals("CopyFeat") && folder.isAllowedCreateLocalities()) {
+					featureUtil.copyFeature(feature, request.getParameter("NewFeatName"), folder, user);
+				}
+				 //Delete locality
+				else if (actionType.equals("DeleteFeat") && folder.isAllowedDeleteLocalities()) {
+					featureUtil.deleteFeature(feature, user);
+				}
+				//Remove locality
+				else if (actionType.equals("RemoveFeat")) {
+					featureUtil.removeFeature(feature, folder, user);
+				}
+				// submit working locality
+				else if (actionType.equals("Submit") && folder.isAllowedSubmitLocalities()) {
+					featureUtil.submitFeature(feature, user);
+				}
+				//Revoke waiting records
+				else if (actionType.equals("Revoke") && folder.isAllowedSubmitLocalities()) {
+					featureUtil.revokeFeature(feature, user);
+				}
 			}
 		} catch (Exception e) {
 			err = "&ErrMsg=" + URLEncoder.encode("An Error has occured: " + e.getMessage(), "UTF-8");
@@ -206,4 +235,7 @@
 	}
 
 	drawBottom(out, et);
+	//Close the session
+	folderUtil.closeSession();
+	
 %>

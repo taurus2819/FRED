@@ -5,7 +5,7 @@ import java.util.Set;
 
 
 /** @author Hibernate CodeGenerator */
-public class Person implements Serializable {
+public class Person implements Serializable, nz.cri.gns.fred.model.Person {
 
     /** identifier field */
     private Integer personId;

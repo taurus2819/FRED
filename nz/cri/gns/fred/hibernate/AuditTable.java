@@ -4,9 +4,12 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.Audit;
+import nz.cri.gns.fred.model.Folder;
+
 
 /** @author Hibernate CodeGenerator */
-public class AuditTable implements Serializable {
+public class AuditTable implements Serializable, Audit {
 
     /** identifier field */
     private Integer auditId;
@@ -45,7 +48,7 @@ public class AuditTable implements Serializable {
     private Integer securityClassId;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.Folder folder;
+    private nz.cri.gns.fred.model.Folder folder;
 
     /** persistent field */
     private nz.cri.gns.fred.hibernate.DataOrigin dataOriginByDataHistoryId;
@@ -199,11 +202,11 @@ public class AuditTable implements Serializable {
         this.securityClassId = securityClassId;
     }
 
-    public nz.cri.gns.fred.hibernate.Folder getFolder() {
+    public Folder getFolder() {
         return this.folder;
     }
 
-    public void setFolder(nz.cri.gns.fred.hibernate.Folder folder) {
+    public void setFolder(Folder folder) {
         this.folder = folder;
     }
 

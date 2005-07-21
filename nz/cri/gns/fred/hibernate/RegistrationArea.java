@@ -5,7 +5,7 @@ import java.util.Set;
 
 
 /** @author Hibernate CodeGenerator */
-public class RegistrationArea implements Serializable {
+public class RegistrationArea implements Serializable, nz.cri.gns.fred.model.RegistrationArea {
 
     /** identifier field */
     private Integer regAreaId;
