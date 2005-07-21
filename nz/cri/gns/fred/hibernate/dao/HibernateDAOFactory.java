@@ -105,7 +105,7 @@ public class HibernateDAOFactory implements DAOFactory, FolderDAO, FolderTypeDAO
 	public List getWaitingMasterfileFeatures(Folder folder) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-			Query query = session.createQuery("FROM Feature WHERE masterFile = :folder AND auditTable.status = :wait");
+			Query query = session.createQuery("FROM Feature AS f WHERE f.masterFile = :folder AND f.auditTable.status = :wait");
 			query.setEntity("folder", folder);
 			query.setString("wait", "waiting");
 			return query.list();
