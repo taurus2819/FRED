@@ -84,7 +84,7 @@ public class HibernateUtil implements HibernateProvider {
 	 */
 	private Configuration getConfiguration() throws MappingException {
 		Properties props = new Properties();
-        props.put("connection.datasource", "java:comp/env/jdbc/fr");
+        props.put("hibernate.connection.datasource", "java:comp/env/jdbc/fr");
 		props.put("hibernate.dialect", "net.sf.hibernate.dialect.Oracle9Dialect");
 		//props.put("hibernate.show_sql", "true");
 
