@@ -41,8 +41,8 @@ public class TaxaPanelData {
 				throw new SQLException(
 					"Cannot find record in database with this id: " + this.id);
 			}
-			values[TaxaPanel.PANEL_ID] = new Integer(rs.getInt(1));
-			values[TaxaPanel.NAME] = rs.getString(2);
+			values[TaxaPanel.PANEL_ID] = new Integer(this.id);
+			values[TaxaPanel.NAME] = rs.getString(1);
 			rs.close();
 			query = "SELECT taxa_id, taxonomic_name, status FROM taxonomic_lookup WHERE group_id = ? AND taxonomic_name IS NOT NULL ORDER BY UPPER(taxonomic_name)";
 			rs = conn.executeQuery(query, DBUtils.SINGLE_NUMBER_TYPE, data);

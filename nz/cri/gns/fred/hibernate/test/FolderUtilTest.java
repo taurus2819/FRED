@@ -67,7 +67,7 @@ import nz.cri.gns.fred.hibernate.dao.HibernateDAOFactory;
 import nz.cri.gns.fred.hibernate.dao.HibernateProvider;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.util.FolderUtil;
-import nz.cri.gns.fred.util.TaxonomiclUtil;
+import nz.cri.gns.fred.util.TaxonomicUtil;
 
 import org.xml.sax.SAXException;
 
@@ -78,8 +78,9 @@ public class FolderUtilTest extends TestCase implements HibernateProvider {
 
 	private SessionFactory sessions;
 	private Session session;
+	private User user;
 
-	public void setUp() throws HibernateException {
+	public void setUp() throws HibernateException, SQLException, InvalidCredentialsException, ClassNotFoundException {
 		Properties props = new Properties();
 		props.put("hibernate.connection.driver_class", "oracle.jdbc.OracleDriver");
 		props.put("hibernate.connection.url", "jdbc:oracle:thin:@raptor.gns.cri.nz:1521:dev");
@@ -97,6 +98,11 @@ public class FolderUtilTest extends TestCase implements HibernateProvider {
     	}
     	
     	sessions = cfg.buildSessionFactory();
+		Class.forName("oracle.jdbc.OracleDriver");
+		Connection conn = DriverManager.getConnection("jdbc:oracle:thin:ip/manying@raptor:1521:dev");
+		BasicDatabaseApp2 app = new BasicDatabaseApp2(conn, "1988");
+		
+		user = new User("iainm", "****", app);
 	}
 
 	private Class[] getHibernateClasses() {
@@ -150,11 +156,6 @@ public class FolderUtilTest extends TestCase implements HibernateProvider {
 		
 		DAOFactory factory = new HibernateDAOFactory(this);
 		
-		Class.forName("oracle.jdbc.OracleDriver");
-		Connection conn = DriverManager.getConnection("jdbc:oracle:thin:ip/manying@raptor:1521:dev");
-		BasicDatabaseApp2 app = new BasicDatabaseApp2(conn, "1988");
-		
-		User user = new User("iainm", "****", app);
 		System.out.println("Personal");
 		
 		List list = new FolderUtil(factory).getPersonalFolders(user);
@@ -173,7 +174,7 @@ public class FolderUtilTest extends TestCase implements HibernateProvider {
 		
 		DAOFactory factory = new HibernateDAOFactory(this);
 	
-		List list = new TaxonomiclUtil(factory).getPanelsIsMemberOf(1988);
+		List list = new TaxonomicUtil(factory).getPanelsIsMemberOf(user);
 		for (Iterator it = list.iterator(); it.hasNext(); ) {
 			System.out.println(((nz.cri.gns.fred.model.TaxonomicGroup)it.next()).getName());
 		}

@@ -1,15 +1,17 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
-%><%@page import="nz.cri.gns.fred.*"
-%><%@page import="nz.cri.gns.fred.data.*"
-%><%@page import="nz.cri.gns.fred.util.*"
-%><%@page import="nz.cri.gns.db.*"
-%><%@page import="nz.cri.gns.jsp.*"
 %><%@page import="java.util.Iterator"
 %><%@page import="java.util.List"
-%><%@page import="java.util.Vector"
 %><%@page import="nz.cri.gns.auth.User"
+%><%@page import="nz.cri.gns.fred.IconnedLink"
+%><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
+%><%@page import="nz.cri.gns.fred.model.TaxonomicGroup"
+%><%@page import="nz.cri.gns.fred.util.FolderUtil"
+%><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
+%><%@page import="nz.cri.gns.fred.util.UserUtil"
+%><%@page import="nz.cri.gns.jsp.PageState"
+%><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%!
 	public String getName(HttpServletRequest request) {
 		return "FRED :: " + ((User)getUser(request.getSession())).getFullName() + "'s Folders";
@@ -25,7 +27,9 @@
 	User user = (User)getUser(session);
 	PageState state = new PageState(request, response, getServletContext());
 	
-	FolderUtil folderUtil = new FolderUtil(HibernateUtil.get().getDAOFactory());
+	DAOFactory factory = HibernateUtil.get().getDAOFactory();
+	FolderUtil folderUtil = new FolderUtil(factory);
+	TaxonomicUtil taxaUtil = new TaxonomicUtil(factory);
 	UserUtil userUtil = new UserUtil();
 	
 	ExtranetTemplate et = getExtranetTemplate();
@@ -126,7 +130,7 @@ function showHide(toShow, toHide) {
 			UserFolder folder = (UserFolder) i.next();
 			%><tr><td style="text-align: left"><a href="admin_folder_detail.jsp?ID=<%=folder.getFolder().getFolderId()%>" class="heading"><%=folder.getFolder().getName()%></a>&nbsp;&nbsp;</td>
 <td style="text-align: left; font-size: 10pt; font-weight: bold; color: #FF0000"><%
-			if (folderUtil.getMasterfileFolderFeatures(folder.getFolder()).size() > 0)
+			if (folderUtil.getMasterfileFolderFeatureCount(folder.getFolder()) > 0)
 				out.print("new data");
 			out.print("&nbsp;</td><td style=\"text-align: left;\">");
 			if (folder.isAllowedAdmin()) {
@@ -141,33 +145,29 @@ function showHide(toShow, toHide) {
 		endDETable(out);
 	}
 
-	TaxaPanelList panelList = new TaxaPanelList(user, state);
-	Vector panels = new Vector();
+	List panelList = taxaUtil.getPanelsIsMemberOf(user);
 
 	//List Taxonomic groups (if any)
-	if (panelList.getPanelCount() > 0) {
+	if (panelList.size() > 0) {
 		%><p><%
 		startDETable(out);
 		%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Taxonomic Panels</td></tr>
 <tr><th>Taxonomic Groups<img src="images/blank.gif" width="20" height="1" /></th><td></td></th><th>Options</th></tr>
 <tr><td><img src="images/blank.gif" height="5" width="1" /></td></tr><%
-		for (Iterator i = panelList.getPanels().iterator(); i.hasNext(); ) {
-			KeyValueObject kv = (KeyValueObject) i.next();
-			TaxaPanel panel = new TaxaPanel(Integer.parseInt(kv.getKey()), user, state);
-			panels.add(panel);
-			%><tr><td style="text-align: left"><a href="taxa_group_detail.jsp?ID=<%=panel.getPanelID()%>" class="heading"><%=panel.getAsString(TaxaPanel.NAME)%></a><img src="images/blank.gif" width="20" height="1" /></td><td style="font-size: 10pt; font-weight: bold; color: #FF0000; text-align: left">
+		for (Iterator i = panelList.iterator(); i.hasNext(); ) {
+			TaxonomicGroup group = (TaxonomicGroup)i.next();
+
+			%><tr><td style="text-align: left"><a href="taxa_group_detail.jsp?ID=<%=group.getGroupId()%>" class="heading"><%=group.getName()%></a><img src="images/blank.gif" width="20" height="1" /></td><td style="font-size: 10pt; font-weight: bold; color: #FF0000; text-align: left">
 <%
-			if (panel.getProvisionalCount() > 0)
+			if (taxaUtil.getProvisionalCount(group) > 0)
 				out.print("new data");
-			%><img src="images/blank.gif" width="10" height="1" /></td><td style="text-align: left"><a href="taxa_panelist.jsp?GroupID=<%=panel.getPanelID()%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a></td></tr>
+			%><img src="images/blank.gif" width="10" height="1" /></td><td style="text-align: left"><a href="taxa_panelist.jsp?GroupID=<%=group.getGroupId()%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a></td></tr>
 <%
 		}
 		%></table>
 <%
 		endDETable(out);
 	}
-	session.setAttribute("panels", panels);
-
 
 	out.println("</table>");
 

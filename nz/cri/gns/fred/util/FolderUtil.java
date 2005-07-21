@@ -65,7 +65,7 @@ public class FolderUtil extends ModelUtil {
 	    folderDAO.delete(folder);
 	}
 	
-	public List getMasterfileFolderFeatures(Folder folder) throws StorageAccessException {
-		return folderDAO.getWaitingMasterfileFeatures(folder);
+	public int getMasterfileFolderFeatureCount(Folder folder) throws StorageAccessException {
+		return folderDAO.getWaitingMasterfileFeatureCount(folder);
 	}
 }

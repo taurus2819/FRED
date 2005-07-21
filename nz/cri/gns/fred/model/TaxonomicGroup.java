@@ -9,4 +9,5 @@ public interface TaxonomicGroup extends Serializable, Comparable {
 
 	public String getName();
 
+	public Integer getGroupId();
 }

@@ -12,8 +12,10 @@ import nz.cri.gns.fred.dao.FolderTypeDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.dao.TaxonomicGroupDAO;
 import nz.cri.gns.fred.hibernate.FolderUser;
+import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FolderType;
+import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.UserFolder;
 
 /**
@@ -102,13 +104,14 @@ public class HibernateDAOFactory implements DAOFactory, FolderDAO, FolderTypeDAO
         }
     }
 
-	public List getWaitingMasterfileFeatures(Folder folder) throws StorageAccessException {
+	public int getWaitingMasterfileFeatureCount(Folder folder) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-			Query query = session.createQuery("FROM Feature AS f WHERE f.masterFile = :folder AND f.auditTable.status = :wait");
+			Query query = session.createQuery("SELECT count(f) FROM Feature AS f WHERE f.masterFile = :folder AND f.auditTable.status = :wait");
 			query.setEntity("folder", folder);
-			query.setString("wait", "waiting");
-			return query.list();
+			query.setString("wait", FREDConstants.WAITING);
+			List list = query.list();
+			return ((Integer)list.get(0)).intValue();
         } catch (Exception e) {
             throw new StorageAccessException(e);
 		}
@@ -131,6 +134,7 @@ public class HibernateDAOFactory implements DAOFactory, FolderDAO, FolderTypeDAO
 		return this;
 	}
 
+	//TaxonomicDAO methods
 	public List getPanelsIsMemberOf(int userId) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
@@ -140,6 +144,20 @@ public class HibernateDAOFactory implements DAOFactory, FolderDAO, FolderTypeDAO
 		}
 	}
 
+
+	public int getProvisionalCount(TaxonomicGroup group) throws StorageAccessException {
+		try {
+			Session session = provider.currentSession();
+			Query query = session.createQuery("SELECT count(taxon) FROM TaxonomicLookup AS taxon WHERE taxon.taxonomicGroup = :group AND taxon.status = :prov AND taxon.taxonomicName IS NOT NULL");
+			query.setEntity("group", group);
+			query.setString("prov", FREDConstants.PROVISIONAL);
+			List list = query.list();
+			return ((Integer)list.get(0)).intValue();
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+		}
+	}
+	
 	public void closeSession() throws StorageAccessException {
 		try {
 			provider.closeSession();
