@@ -144,9 +144,9 @@ function showHide(toShow, toHide) {
 
 <form name="FoldForm" method="put" action="folder_detail.jsp">
 <%
-		List features = featureUtil.getFeaturesInFolder(folder);
-		for (Iterator i = features.iterator(); i.hasNext(); ) {
-			Feature feature = (Feature)i.next();
+		Feature[] features = featureUtil.getFeaturesInFolder(folder);
+		for (int i=0; i<features.length; i++) {
+			Feature feature = features[i];
 			Audit audit = feature.getAudit();
 			String status = audit.getStatus();
 			

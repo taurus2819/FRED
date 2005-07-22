@@ -1,12 +1,12 @@
 package nz.cri.gns.fred.util;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.naming.NamingException;
 
@@ -330,8 +330,8 @@ public class FeatureUtil extends ModelUtil {
 		return featureDAO.getFeature(featureId);
 	}
 	
-	public List getFeaturesInFolder(UserFolder folder) throws StorageAccessException {
-		List features = new Vector();
+	public Feature[] getFeaturesInFolder(UserFolder folder) throws StorageAccessException {
+		HashSet features = new HashSet();
 		
 		System.out.println(new java.util.Date() + ": Starting");
 		//Get from feature_content
@@ -348,11 +348,13 @@ public class FeatureUtil extends ModelUtil {
 			System.out.println(new java.util.Date() + ": Starting audit features");
 			
 			// - features
+			features.addAll(audit.getFeatures());
+			/* Need this for list instead of set
 			for (Iterator featIt = audit.getFeatures().iterator(); featIt.hasNext(); ) {
 				Feature feature = (Feature)featIt.next();
 				if (!features.contains(feature))
 					features.add(feature);
-			}
+			}*/
 			
 			System.out.println(new java.util.Date() + ": Starting audit samples");
 			//- samples
@@ -360,8 +362,8 @@ public class FeatureUtil extends ModelUtil {
 			if (samples != null && samples.size() > 0) {
 				for (Iterator sampIt = samples.iterator(); sampIt.hasNext(); ) {
 					Sample sample = (Sample)sampIt.next();
-					if (!features.contains(sample.getFeature()));
-						features.add(sample.getFeature());
+					//if (!features.contains(sample.getFeature()));
+					features.add(sample.getFeature());
 				}
 			}
 
@@ -371,12 +373,15 @@ public class FeatureUtil extends ModelUtil {
 			if (records != null && records.size() > 0) {
 				for (Iterator recIt = records.iterator(); recIt.hasNext(); ) {
 					Record record = (Record)recIt.next();
-					if (!features.contains(record.getSample().getFeature()));
-						features.add(record.getSample().getFeature());
+					//if (!features.contains(record.getSample().getFeature()));
+					features.add(record.getSample().getFeature());
 				}
 			}
 		}
-		return features;
+		
+		Feature[] featuresArray = (Feature[])features.toArray(new Feature[features.size()]); 
+		Arrays.sort(featuresArray);
+		return featuresArray;
 	}
 	
 	public boolean isAllowedEditFeature(UserAccount user, Feature feature, UserFolder folder) throws StorageAccessException, NamingException, SQLException {

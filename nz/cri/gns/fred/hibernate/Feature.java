@@ -6,7 +6,7 @@ import java.util.Set;
 
 
 /** @author Hibernate CodeGenerator */
-public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Cloneable {
+public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Cloneable, Comparable {
 
     /** identifier field */
     private Integer featureId;
@@ -312,4 +312,16 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     		return null;
     	}
     }
+    
+    public boolean equals(Object o) {
+    	if (!(o instanceof Feature))
+    		return false;
+    	if (featureId == null || ((Feature)o).featureId == null)
+    		return false;
+    	return featureId.equals(((Feature)o).featureId);
+    }
+
+	public int compareTo(Object arg0) {
+		return featureName.compareTo(((Feature)arg0).featureName);
+	}
 }
