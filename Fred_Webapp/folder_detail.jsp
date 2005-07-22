@@ -49,6 +49,7 @@
 	}
 
 %><%
+try {
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	if (request.getParameter("ID") == null) {
 		factory.closeSession();
@@ -235,5 +236,7 @@
 	
 	//Close the session
 	folderUtil.closeSession();
-	
+} catch (Throwable t) {
+	t.printStackTrace();
+}
 %>

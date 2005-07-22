@@ -23,6 +23,7 @@
 	}
 	
 %><%
+try {
 	User user = (User)getUser(session);
 	
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
@@ -176,4 +177,7 @@ function showHide(toShow, toHide) {
 
 	//Close the session
 	folderUtil.closeSession();
+} catch (Throwable t) {
+	t.printStackTrace();
+}
 %>
