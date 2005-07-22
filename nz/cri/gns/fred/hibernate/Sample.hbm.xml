@@ -28,13 +28,13 @@
 
     <property
         name="topDepth"
-        type="Double"
+        type="double"
         column="TOP_DEPTH"
         length="7"
     />
     <property
         name="bottomDepth"
-        type="Double"
+        type="double"
         column="BOTTOM_DEPTH"
         length="7"
     />

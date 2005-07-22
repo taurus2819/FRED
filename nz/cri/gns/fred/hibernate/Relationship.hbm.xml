@@ -47,7 +47,7 @@
     />
     <property
         name="distance"
-        type="Double"
+        type="double"
         column="DISTANCE"
         length="7"
     />
@@ -59,7 +59,7 @@
     />
     <property
         name="distanceRange"
-        type="Double"
+        type="double"
         column="DISTANCE_RANGE"
         length="8"
     />
