@@ -162,8 +162,8 @@ function showHide(toShow, toHide) {
 			%></td><td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 <td style='color: #FF0000'><%
 
-			if (status.equals(FREDConstants.APPROVED)) {
-				%>Approved &nbsp;&nbsp;</td><td><%=(audit.getCreatedDate() == null) ? "" : DateFormat.getDateInstance(DateFormat.LONG).format(audit.getCreatedDate())%></td>
+			if (!status.equals(FREDConstants.APPROVED)) {
+				%><%=status%> &nbsp;&nbsp;</td><td><%=(audit.getCreatedDate() == null) ? "" : DateFormat.getDateInstance(DateFormat.LONG).format(audit.getCreatedDate())%></td>
 <%
 			} else {
 				%></td><td></td>
