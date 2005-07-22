@@ -22,7 +22,11 @@ public class SampleMeta implements Serializable, nz.cri.gns.fred.model.SampleMet
         unsaved = true;
     }
 
-    /** default constructor */
+    public SampleMeta() {
+    	throw new IllegalArgumentException("Do not use this constructor");
+    }
+    
+   /** default constructor */
     public SampleMeta(boolean saved) {
     	unsaved = !saved;
     }

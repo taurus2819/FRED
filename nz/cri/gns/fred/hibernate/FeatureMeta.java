@@ -22,6 +22,10 @@ public class FeatureMeta implements Serializable, nz.cri.gns.fred.model.FeatureM
         unsaved = true;
     }
 
+    public FeatureMeta() {
+    	throw new IllegalArgumentException("Do not use this constructor");
+    }
+    
     /** default constructor */
     public FeatureMeta(boolean saved) {
     	unsaved = !saved;

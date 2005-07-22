@@ -30,6 +30,10 @@ public class SedimentaryFeature implements Serializable, nz.cri.gns.fred.model.S
         unsaved = true;
     }
 
+    public SedimentaryFeature() {
+    	throw new IllegalArgumentException("Do not use this constructor");
+    }
+    
     /** default constructor */
     public SedimentaryFeature(boolean saved) {
     	unsaved = !saved;

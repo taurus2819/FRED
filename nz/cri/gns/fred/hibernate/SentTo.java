@@ -47,7 +47,11 @@ public class SentTo implements Serializable, nz.cri.gns.fred.model.SentTo, Clone
         unsaved = true;
     }
 
-    /** default constructor */
+    public SentTo() {
+    	throw new IllegalArgumentException("Do not use this constructor");
+    }
+    
+   /** default constructor */
     public SentTo(boolean saved) {
     	unsaved = !saved;
     }
