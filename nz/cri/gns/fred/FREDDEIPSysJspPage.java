@@ -49,9 +49,20 @@ public abstract class FREDDEIPSysJspPage extends FREDIPSysJspPage{
 		IconnedLink[] links = getButtons(request);
 		for (int i=0; i<links.length; i++) {
 			out.print("<td style=\"vertical-align: middle\">&nbsp;&nbsp;&nbsp;");
-			if (links[i].icon != null)
-				out.print("<a href=\"" + links[i].key + "\"><img border=\"0\" src=\"" + links[i].icon + "\">&nbsp;</td><td style=\"vertical-align: middle\">");
-			out.print("<a class=\"buttn\" href=\"" + links[i].key + "\">" + links[i].value + "</a>&nbsp;&nbsp;&nbsp;</td><td><img src=\"images/fredDEheaderDiv.gif\" border=\"0\"></td>");
+			if (links[i].icon != null) {
+				if (links[i].key != null)
+					out.print("<a href=\"" + links[i].key + "\">");
+				out.print("<img border=\"0\" src=\"" + links[i].icon + "\">");
+				if (links[i].key != null)
+					out.print("</a>");
+				out.print("&nbsp;</td><td style=\"vertical-align: middle\">");
+			}
+			if (links[i].key != null)
+				out.print("<a class=\"buttn\" href=\"" + links[i].key + "\">");
+			out.print(links[i].value);
+			if (links[i].key != null)
+				out.print("</a>");
+			out.print("&nbsp;&nbsp;&nbsp;</td><td><img src=\"images/fredDEheaderDiv.gif\" border=\"0\"></td>");
 		}
 		out.println("</tr></table></td></tr></table></td>");
 	}

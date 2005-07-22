@@ -33,9 +33,10 @@
 			if (folder.isAllowedCreateLocalities()) {
 				return new IconnedLink[] {
 					new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders"),
-					new IconnedLink("data_entry.jsp?Type=Outcrop&FoldID=" + folder.getFolder().getFolderId(), "images/new.gif", "New Outcrop Locality"),
-					new IconnedLink("data_entry.jsp?Type=Drillhole&FoldID=" + folder.getFolder().getFolderId(), "images/new.gif", "New Drillhole Locality"),
-					new IconnedLink("data_entry.jsp?Type=Vertical+Section&FoldID=" + folder.getFolder().getFolderId(), "images/new.gif", "New Vert. Section Locality"),
+					new IconnedLink(null, "images/new.gif", "New: "),
+					new IconnedLink("data_entry.jsp?Type=Outcrop&FoldID=" + folder.getFolder().getFolderId(), null, "Outcrop"),
+					new IconnedLink("data_entry.jsp?Type=Drillhole&FoldID=" + folder.getFolder().getFolderId(), null, "Drillhole"),
+					new IconnedLink("data_entry.jsp?Type=Vertical+Section&FoldID=" + folder.getFolder().getFolderId(), null, "Vert. Section"),
 					new IconnedLink("simple_query.jsp?FoldID=" + folder.getFolder().getFolderId(), "images/search.gif", "Back to folders")
 				};
 			} else {
@@ -153,7 +154,7 @@ function showHide(toShow, toHide) {
 			//View icon and name - TODO this may be wrong as I'm entirely sure on the ins and outs of feature_name vs sample_name.  Fix later if so
 			%><tr>
 <td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
-<td class="heading"><a href="folder_feature_detail.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><%=feature.getFeatureName()%></a>&nbsp;&nbsp;
+<td class="heading"><a href="folder_feature_detail.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><%=(feature.getFeatureName() == null) ? "Unnamed Locality" : feature.getFeatureName()%></a>&nbsp;&nbsp;
 <%
 			//TODO ????
 			//if (featName != null && !featName.equals(sampName)) { out.print("<br />(" + featName +")&nbsp;&nbsp;"); }
