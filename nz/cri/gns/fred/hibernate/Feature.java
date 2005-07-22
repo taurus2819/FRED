@@ -322,6 +322,6 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     }
 
 	public int compareTo(Object arg0) {
-		return featureName.compareTo(((Feature)arg0).featureName);
+		return getFeatureName().compareTo(((Feature)arg0).getFeatureName());
 	}
 }
