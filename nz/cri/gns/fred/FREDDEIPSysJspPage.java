@@ -59,9 +59,13 @@ public abstract class FREDDEIPSysJspPage extends FREDIPSysJspPage{
 			}
 			if (links[i].key != null)
 				out.print("<a class=\"buttn\" href=\"" + links[i].key + "\">");
+			else
+				out.print("<span class=\"buttnsub\">");
 			out.print(links[i].value);
 			if (links[i].key != null)
 				out.print("</a>");
+			else 
+				out.print("</span>");
 			out.print("&nbsp;&nbsp;&nbsp;</td><td><img src=\"images/fredDEheaderDiv.gif\" border=\"0\"></td>");
 		}
 		out.println("</tr></table></td></tr></table></td>");

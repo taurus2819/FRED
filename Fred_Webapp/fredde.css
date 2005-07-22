@@ -18,6 +18,10 @@ a.buttn:hover {
 	font-weight: normal;
 	text-decoration: none;
 }
+.buttnsub {
+	color: #dddddd;
+	font-weight: normal;
+}
 .deHeading {
 	font-size: 14pt;
 	font-weight: bold;

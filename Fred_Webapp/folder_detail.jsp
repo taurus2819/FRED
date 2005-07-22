@@ -37,7 +37,7 @@
 					new IconnedLink("data_entry.jsp?Type=Outcrop&FoldID=" + folder.getFolder().getFolderId(), null, "Outcrop"),
 					new IconnedLink("data_entry.jsp?Type=Drillhole&FoldID=" + folder.getFolder().getFolderId(), null, "Drillhole"),
 					new IconnedLink("data_entry.jsp?Type=Vertical+Section&FoldID=" + folder.getFolder().getFolderId(), null, "Vert. Section"),
-					new IconnedLink("simple_query.jsp?FoldID=" + folder.getFolder().getFolderId(), "images/search.gif", "Back to folders")
+					new IconnedLink("simple_query.jsp?FoldID=" + folder.getFolder().getFolderId(), "images/search.gif", "Search")
 				};
 			} else {
 				return new IconnedLink[] {
@@ -125,6 +125,7 @@ function showHide(toShow, toHide) {
 <li>Click on the locality to add/edit locality records, or use the options to work with the locality itself:
 <ul>
 <li><img src="images/edit.gif" border="0"> to edit the locality
+<li><img src="images/copy.gif" border="0"> to makr a copy of the locality (front of form data only)
 <li><img src="images/delete.gif" border="0"> to delete the locality
 <li><img src="images/submit.gif" border="0"> to submit the locality for entry to the masterfile
 </ul>
@@ -154,11 +155,11 @@ function showHide(toShow, toHide) {
 			//View icon and name - TODO this may be wrong as I'm entirely sure on the ins and outs of feature_name vs sample_name.  Fix later if so
 			%><tr>
 <td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
-<td class="heading"><a href="folder_feature_detail.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><%=(feature.getFeatureName() == null) ? "Unnamed Locality" : feature.getFeatureName()%></a>&nbsp;&nbsp;
+<td class="heading" style="text-align: left"><a href="folder_feature_detail.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><%=(feature.getFeatureName() == null) ? "Unnamed Locality" : feature.getFeatureName()%></a>&nbsp;&nbsp;
 <%
 			//TODO ????
 			//if (featName != null && !featName.equals(sampName)) { out.print("<br />(" + featName +")&nbsp;&nbsp;"); }
-			%></td><td><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
+			%></td><td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 <td style='color: #FF0000'><%
 
 			if (status.equals(FREDConstants.APPROVED)) {
