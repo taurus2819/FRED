@@ -192,8 +192,9 @@ function showHide(toShow, toHide) {
 				%><a href="if (confirm('Are you sure you want to revoke this locality') == true) {document.FoldForm.ActionType.value='Revoke';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 			}
 			%></td></tr>
-<tr><td colspan="9"><img src="images/line.gif" height="3" width="550" /></td></tr></table><%
+<tr><td colspan="9"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 		}
+		%></table><%
 		endDETable(out);
 
 		%>
