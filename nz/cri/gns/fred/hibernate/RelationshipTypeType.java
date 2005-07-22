@@ -3,9 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
-
 /** @author Hibernate CodeGenerator */
-public class RelationshipTypeType implements Serializable {
+public class RelationshipTypeType implements Serializable, nz.cri.gns.fred.model.RelationshipTypeType {
 
     /** identifier field */
     private Integer typeId;

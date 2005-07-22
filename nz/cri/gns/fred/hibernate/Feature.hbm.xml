@@ -149,13 +149,14 @@
         name="folders"
         table="folder_content"
         lazy="true"
-        inverse="true"
+        inverse="false"
 		cascade="all"
     >
         <key>
             <column name="FEATURE_ID" />
         </key>
         <many-to-many 
+			column="FOLDER_ID"
             class="nz.cri.gns.fred.hibernate.Folder"
         />
     </set>
@@ -177,7 +178,7 @@
     <set
         name="featureMetas"
         lazy="true"
-        inverse="true"
+        inverse="false"
 		cascade="none"
     >
         <key>

@@ -8,8 +8,8 @@
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.model.TaxonomicGroup"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
+%><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
-%><%@page import="nz.cri.gns.fred.util.UserUtil"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%!
 	public String getName(HttpServletRequest request) {
@@ -28,7 +28,6 @@
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	FolderUtil folderUtil = new FolderUtil(factory);
 	TaxonomicUtil taxaUtil = new TaxonomicUtil(factory);
-	UserUtil userUtil = new UserUtil();
 	
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
@@ -71,9 +70,12 @@ function showHide(toShow, toHide) {
 	%>
 <table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
 <tr><td colspan="3" class="deHeading">Instructions</td></tr><tr><td style="text-align: left">
+<ul>
 <li>All data entry is done within a folder.
 <li>Folders to which you have access are listed below and you can create more folders by clicking on the button above.
-<li>Click on the folder name to view its contents, or use the options on the right hand side to edit the folder properties or delete the folder.</td></tr>
+<li>Click on the folder name to view its contents, or use the options on the right hand side to edit the folder properties or delete the folder.
+</ul>
+</td></tr>
 <tr><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr></table>
 <%
 	endDETable(out);
@@ -94,7 +96,7 @@ function showHide(toShow, toHide) {
 <%
 		for (Iterator i = personalFolders.iterator(); i.hasNext(); ) {
 			UserFolder folder = (UserFolder) i.next();
-			%><tr><td style="text-align: left"><a href="folder_detail.jsp?ID=<%=folder.getFolder().getFolderId()%>" class="heading"><%=folder.getFolder().getName()%></a>&nbsp;&nbsp;</td><td style="text-align: left"><%=userUtil.getUserName(folder.getFolder().getOwnerId().intValue())%>&nbsp;&nbsp;</td><td style="text-align: left">
+			%><tr><td style="text-align: left"><a href="folder_detail.jsp?ID=<%=folder.getFolder().getFolderId()%>" class="heading"><%=folder.getFolder().getName()%></a>&nbsp;&nbsp;</td><td style="text-align: left"><%=FREDUtil.getUserName(folder.getFolder().getOwnerId().intValue())%>&nbsp;&nbsp;</td><td style="text-align: left">
 <%
 			if (folder.isAllowedAdmin()) {
 				%><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a>&nbsp;&nbsp;&nbsp;<a href="javascript:if (confirm('Are you sure you want to delete this folder') == true) {document.PersForm.FoldID.value='<%=folder.getFolder().getFolderId()%>';document.PersForm.submit();}" title="Delete Folder"><img src="images/delete.gif" border="0" height="20" width="20" /></a>

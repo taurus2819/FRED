@@ -63,6 +63,7 @@ import nz.cri.gns.fred.hibernate.TaxaPanel;
 import nz.cri.gns.fred.hibernate.TaxonomicGroup;
 import nz.cri.gns.fred.hibernate.TaxonomicLookup;
 import nz.cri.gns.fred.hibernate.Weathering;
+import nz.cri.gns.fred.hibernate.dao.FREDInterceptor;
 import nz.cri.gns.fred.hibernate.dao.HibernateDAOFactory;
 import nz.cri.gns.fred.hibernate.dao.HibernateProvider;
 import nz.cri.gns.fred.model.UserFolder;
@@ -91,7 +92,7 @@ public class FolderUtilTest extends TestCase implements HibernateProvider {
 		props.put("hibernate.cglib.use_reflection_optimizer", "false");
 
     	Configuration cfg = new Configuration().setProperties(props);
-    	
+    	cfg.setInterceptor(new FREDInterceptor());
     	Class[] classes = getHibernateClasses();
     	for (int i=0; i<classes.length; i++) {
     		cfg.addClass(classes[i]);

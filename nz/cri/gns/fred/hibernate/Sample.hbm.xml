@@ -197,7 +197,7 @@
     <set
         name="sampleMetas"
         lazy="true"
-        inverse="true"
+        inverse="false"
 		cascade="none"
     >
         <key>
@@ -240,13 +240,14 @@
         name="collectors"
         table="collector"
         lazy="true"
-        inverse="true"
+        inverse="false"
 		cascade="none"
     >
         <key>
             <column name="SAMPLE_ID" />
         </key>
         <many-to-many 
+			column="PERSON_ID"
             class="nz.cri.gns.fred.hibernate.Person"
         />
     </set>
@@ -254,7 +255,7 @@
     <set
         name="relationships"
         lazy="true"
-        inverse="true"
+        inverse="false"
 		cascade="none"
     >
         <key>
@@ -298,7 +299,7 @@
     </many-to-one>
     <!-- bi-directional many-to-one association to AuditTable -->
     <many-to-one
-        name="auditTable"
+        name="audit"
         class="nz.cri.gns.fred.hibernate.AuditTable"
         not-null="true"
     >

@@ -3,9 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
-
 /** @author Hibernate CodeGenerator */
-public class Adoption implements Serializable {
+public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption {
 
     /** identifier field */
     private Integer recordId;
@@ -20,10 +19,10 @@ public class Adoption implements Serializable {
     private String comments;
 
     /** nullable persistent field */
-    private nz.cri.gns.fred.hibernate.Record record;
+    private nz.cri.gns.fred.model.Record record;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.Stage stage;
+    private nz.cri.gns.fred.model.Stage stage;
 
     /** persistent field */
     private Set adopters;
@@ -82,19 +81,19 @@ public class Adoption implements Serializable {
         this.comments = comments;
     }
 
-    public nz.cri.gns.fred.hibernate.Record getRecord() {
+    public nz.cri.gns.fred.model.Record getRecord() {
         return this.record;
     }
 
-    public void setRecord(nz.cri.gns.fred.hibernate.Record record) {
+    public void setRecord(nz.cri.gns.fred.model.Record record) {
         this.record = record;
     }
 
-    public nz.cri.gns.fred.hibernate.Stage getStage() {
+    public nz.cri.gns.fred.model.Stage getStage() {
         return this.stage;
     }
 
-    public void setStage(nz.cri.gns.fred.hibernate.Stage stage) {
+    public void setStage(nz.cri.gns.fred.model.Stage stage) {
         this.stage = stage;
     }
 

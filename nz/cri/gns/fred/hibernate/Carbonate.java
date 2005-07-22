@@ -3,9 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
-
 /** @author Hibernate CodeGenerator */
-public class Carbonate implements Serializable {
+public class Carbonate implements Serializable, nz.cri.gns.fred.model.Carbonate {
 
     /** identifier field */
     private Integer carbonateId;

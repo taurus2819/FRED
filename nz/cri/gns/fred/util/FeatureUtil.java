@@ -1,17 +1,35 @@
 package nz.cri.gns.fred.util;
 
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 
+import javax.naming.NamingException;
+
+import nz.cri.gns.auth.InsufficientPrivelegesException;
+import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FeatureDAO;
+import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
+import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
+import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.Folder;
-
-import nz.cri.gns.auth.UserAccount;
+import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.Relationship;
+import nz.cri.gns.fred.model.Sample;
+import nz.cri.gns.fred.model.SampleMeta;
+import nz.cri.gns.fred.model.SedimentaryFeature;
+import nz.cri.gns.fred.model.SentTo;
+import nz.cri.gns.fred.model.UserFolder;
 
 /**
  *
@@ -20,47 +38,124 @@ public class FeatureUtil extends ModelUtil {
 
 	private FeatureDAO featureDAO;
 	private SampleDAO sampleDAO;
+	private FolderDAO folderDAO;
 	
 	public FeatureUtil(DAOFactory factory) {
 		super(factory);
 		this.featureDAO = factory.getFeatureDAO();
 		this.sampleDAO = factory.getSampleDAO();
+		this.folderDAO = factory.getFolderDAO();
 	}
 	
-	public Feature copyFeature(Feature feature, String newName, Folder folder, UserAccount user) throws StorageAccessException {
+	public Feature copyFeature(Feature feature, String newName, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+		if (!folder.isAllowedCreateLocalities())
+			throw new InsufficientPrivelegesException();
 		Audit audit = featureDAO.createNewAudit();
 		audit.setStatus(FREDConstants.WORKING);
 		audit.setCreatedById(new Integer(user.getId()));
 		audit.setCreatedDate(new Date());
-		audit.setFolder(folder);
+		audit.setFolder(folder.getFolder());
 		featureDAO.save(audit);
 		
 		Feature newFeature = featureDAO.cloneFeature(feature);
 		newFeature.setFeatureId(null);
 		newFeature.setFeatureName(newName);
 		newFeature.setAudit(audit);
-		newFeature.setFeatureMetas(null);
+		//A new copy should not have an entry in folder_contents
+		newFeature.setFolders(null);
+		
+		//Copy feature images
+		Set images = feature.getFeatureMetas();
+		if (images != null && images.size() > 0) {
+			HashSet newImages = new HashSet();
+			for (Iterator it = images.iterator(); it.hasNext(); ) {
+				FeatureMeta meta = (FeatureMeta)it.next();
+				FeatureMeta newMeta = featureDAO.createFeatureMeta();
+				newMeta.setMetaId(meta.getMetaId());
+				newMeta.setFeature(newFeature);
+				newImages.add(newMeta);
+			}
+			newFeature.setFeatureMetas(newImages);
+		}
+		//Clear out relationships pointing _to_ it
+		newFeature.setRelationships(null);
+		//Remove any samples that have come across
+		newFeature.setSamples(null);
+		//Save the new feature!
+		featureDAO.save(newFeature);
+		
 		if (feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
 			//For outcrops we copy everything
 			
 			//Copy sample (should be only one!)
-			
+			Set samples = feature.getSamples();
+			if (samples.size() != 1) {
+				throw new IllegalStateException("Outcrop does not have a singleton sample"); 
+			}
+			Sample sample = (Sample)samples.iterator().next();
+			//Copy sample - collectors clone is OK as it's many-to-many
+			Sample newSample = sampleDAO.cloneSample(sample);
+			newSample.setSampleId(null);
+			newSample.setFeature(newFeature);
+			//Clear the fr number if it has one
+			newSample.setFrNumber(null);
+			newSample.setRecords(null);
 			//Copy relationships
-			
-			//Copy collectors
-			
+			Set relationships = sample.getRelationships();
+			if (relationships != null && relationships.size() > 0) {
+				HashSet newRels = new HashSet();
+				for (Iterator it = relationships.iterator(); it.hasNext(); ) {
+					Relationship relationship = (Relationship)it.next();
+					Relationship newRel = sampleDAO.cloneRelationship(relationship);
+					newRel.setRelationshipId(null);
+					newRel.setSample(newSample);
+					newRels.add(newRel);
+				}
+				newSample.setRelationships(newRels);
+			}
 			//Copy sent to
-			
+			Set sentTos = sample.getSentTos();
+			if (sentTos != null && sentTos.size() > 0) {
+				HashSet newSent = new HashSet();
+				for (Iterator it = sentTos.iterator(); it.hasNext(); ) {
+					SentTo sentTo = (SentTo)it.next();
+					SentTo newSentTo = sampleDAO.cloneSentTo(sentTo);
+					newSentTo.setSample(newSample);
+					newSent.add(newSentTo);
+				}
+				newSample.setSentTos(newSent);
+			}
 			//Copy sedimentary feature
+			Set sedFeatures = sample.getSedimentaryFeatures();
+			if (sedFeatures != null && sedFeatures.size() > 0) {
+				HashSet newSedFeatures = new HashSet();
+				for (Iterator it = sedFeatures.iterator(); it.hasNext(); ) {
+					SedimentaryFeature sedFeature = (SedimentaryFeature)it.next();
+					SedimentaryFeature newSedFeature = sampleDAO.cloneSedimentaryFeature(sedFeature);
+					newSedFeature.setSample(newSample);
+					newSedFeatures.add(newSedFeature);
+				}
+				newSample.setSentTos(newSedFeatures);
+			}
 			
+			//Copy sample images
+			images = sample.getSampleMetas();
+			if (images != null && images.size() > 0) {
+				HashSet newImages = new HashSet();
+				for (Iterator it = images.iterator(); it.hasNext(); ) {
+					SampleMeta meta = (SampleMeta)it.next();
+					SampleMeta newMeta = sampleDAO.createSampleMeta();
+					newMeta.setMetaId(meta.getMetaId());
+					newMeta.setSample(newSample);
+					newImages.add(newMeta);
+				}
+				newSample.setSampleMetas(newImages);
+			}
+			
+			//Save the new sample
+			sampleDAO.save(newSample);
 		} else {
-			//Clear out anything that's not actually a feature attribute
-			//Maybe images should be copied????
-			newFeature.setFeatureMetas(null);
-			newFeature.setFolders(null);
-			newFeature.setRelationships(null);
-			newFeature.setSamples(null);
-			
+			//Anything that's not actually a feature attribute doesn't get saved
 		}
 		
 		
@@ -171,19 +266,127 @@ public class FeatureUtil extends ModelUtil {
 	*/	
 	}
 
-	public void deleteFeature(Feature feature, UserAccount user) {
+	public void deleteFeature(Feature feature, UserFolder folder, UserAccount user) throws InsufficientPrivelegesException, StorageAccessException {
+		if (!feature.getAudit().getFolder().equals(folder.getFolder()))
+			throw new IllegalArgumentException("Feature was not in the given folder");
+		if (!folder.isAllowedDeleteLocalities())
+			throw new InsufficientPrivelegesException();
 		
+		featureDAO.delete(feature);
+
 	}
 
-	public void removeFeature(Feature feature, Folder folder, UserAccount user) {
+	public void removeFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+		if (!feature.getAudit().getStatus().equals(FREDConstants.APPROVED))
+			throw new IllegalStateException("Cannot remove a working locality");
+		if (!folder.isAllowedDeleteLocalities())
+			throw new InsufficientPrivelegesException();
 		
+		Set folders = feature.getFolders();
+		folders.remove(folder.getFolder());
+		featureDAO.update(feature);
 	}
 	
-	public void submitFeature(Feature feature, UserAccount user) {
+	public void submitFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
+		if (!folder.isAllowedSubmitLocalities())
+			throw new InsufficientPrivelegesException();
+
+		if (feature.getFeatureType() == null || feature.getSiteId() == null || feature.getRegistrationArea() == null)
+			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
+
+		Audit audit = feature.getAudit();
+		audit.setStatus(FREDConstants.WAITING);
+		audit.setSubmittedById(new Integer(user.getId()));
+		audit.setSubmittedDate(new Date());
+		featureDAO.update(audit);
 		
+		int masterfile = -1;
+		try {
+			masterfile = FREDUtil.getMasterfile(feature);
+		} catch (Exception e) {
+			throw new StorageAccessException(e);
+		}
+		
+		feature.setMasterFile(folderDAO.getFolder(masterfile));
+		featureDAO.update(feature);		
 	}
 
-	public void revokeFeature(Feature feature, UserAccount user) {
+	public void revokeFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+		if (!folder.isAllowedSubmitLocalities())
+			throw new InsufficientPrivelegesException();
+
+		Audit audit = feature.getAudit();
+		audit.setStatus(FREDConstants.WORKING);
+		audit.setSubmittedById(null);
+		audit.setSubmittedDate(null);
 		
+		featureDAO.update(audit);
+		
+		feature.setMasterFile(null);
+		featureDAO.update(feature);		
 	}
+	
+	public Feature getFeature(int featureId) throws StorageAccessException {
+		return featureDAO.getFeature(featureId);
+	}
+	
+	public List getFeaturesInFolder(UserFolder folder) throws StorageAccessException {
+		List features = new Vector();
+		
+		//Get from feature_content
+		features.addAll(folder.getFolder().getFeatures());
+		
+		//Get from audit
+		List audits = folderDAO.getWorkingAuditsFor(folder.getFolder());
+		for (Iterator it = audits.iterator(); it.hasNext(); ) {
+			Audit audit = (Audit)it.next();
+			
+			// - features
+			features.addAll(audit.getFeatures());
+			
+			//- samples
+			Set samples = audit.getSamples();
+			if (samples != null && samples.size() > 0) {
+				for (Iterator sampIt = samples.iterator(); sampIt.hasNext(); ) {
+					Sample sample = (Sample)sampIt.next();
+					features.add(sample.getFeature());
+				}
+			}
+			
+			//- results
+			Set records = audit.getRecords();
+			if (records != null && records.size() > 0) {
+				for (Iterator recIt = records.iterator(); recIt.hasNext(); ) {
+					Record record = (Record)recIt.next();
+					features.add(record.getSample().getFeature());
+				}
+			}
+		}
+		return features;
+	}
+	
+	public boolean isAllowedEditFeature(UserAccount user, Feature feature, UserFolder folder) throws StorageAccessException, NamingException, SQLException {
+		String status = feature.getAudit().getStatus();
+		if (status.equals(FREDConstants.APPROVED))
+			return hasMasterfileRights(user, feature, UserFolder.FOLDER_EDIT_RIGHT) || FREDUtil.checkEditSecurityClass(user);
+		
+		if (status.equals(FREDConstants.WAITING))
+			return hasMasterfileRights(user, feature, UserFolder.FOLDER_EDIT_RIGHT);
+
+		return folder.isAllowedEditLocalities();
+	}
+
+	/**
+	 * Returns true if the user has masterfile rights for this locality
+	 * @throws StorageAccessException
+	 * @throws 
+	 */
+	public boolean hasMasterfileRights(UserAccount user, Feature feature, int right) throws StorageAccessException {
+
+		Folder masterfile = feature.getMasterFile();
+		UserFolder masterfileFolder = folderDAO.getUserFolder(masterfile.getFolderId().intValue(), Integer.parseInt(user.getId()));
+		
+		return (masterfileFolder == null) ? false : (masterfileFolder.getRights() & right) > 0;
+	}
+
 }

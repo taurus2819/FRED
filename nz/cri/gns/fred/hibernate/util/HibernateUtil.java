@@ -49,6 +49,7 @@ import nz.cri.gns.fred.hibernate.TaxaPanel;
 import nz.cri.gns.fred.hibernate.TaxonomicGroup;
 import nz.cri.gns.fred.hibernate.TaxonomicLookup;
 import nz.cri.gns.fred.hibernate.Weathering;
+import nz.cri.gns.fred.hibernate.dao.FREDInterceptor;
 import nz.cri.gns.fred.hibernate.dao.HibernateDAOFactory;
 import nz.cri.gns.fred.hibernate.dao.HibernateProvider;
 
@@ -72,6 +73,7 @@ public class HibernateUtil implements HibernateProvider {
         try {
             // Create the SessionFactory
         	Configuration cfg = getConfiguration();
+        	cfg.setInterceptor(new FREDInterceptor());
             sessionFactory = getConfiguration().buildSessionFactory();
         } catch (Throwable ex) {
             throw new ExceptionInInitializerError(ex);

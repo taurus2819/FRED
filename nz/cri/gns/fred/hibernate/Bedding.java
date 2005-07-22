@@ -3,9 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
-
 /** @author Hibernate CodeGenerator */
-public class Bedding implements Serializable {
+public class Bedding implements Serializable, nz.cri.gns.fred.model.Bedding {
 
     /** identifier field */
     private Integer beddingId;

@@ -3,9 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
-
 /** @author Hibernate CodeGenerator */
-public class Weathering implements Serializable {
+public class Weathering implements Serializable, nz.cri.gns.fred.model.Weathering {
 
     /** identifier field */
     private Integer weatheringId;

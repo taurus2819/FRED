@@ -4,9 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
-
 /** @author Hibernate CodeGenerator */
-public class Sample implements Serializable {
+public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Cloneable {
 
     /** identifier field */
     private Integer sampleId;
@@ -75,55 +74,55 @@ public class Sample implements Serializable {
     private String sampleName;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.ColourModifier colourModifier;
+    private nz.cri.gns.fred.model.ColourModifier colourModifier;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.Hardness hardness;
+    private nz.cri.gns.fred.model.Hardness hardness;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.Weathering weathering;
+    private nz.cri.gns.fred.model.Weathering weathering;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.Carbonate carbonate;
+    private nz.cri.gns.fred.model.Carbonate carbonate;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.RockColour rockColourBySecondaryColourId;
+    private nz.cri.gns.fred.model.RockColour rockColourBySecondaryColourId;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.RockColour rockColourByPrimaryColourId;
+    private nz.cri.gns.fred.model.RockColour rockColourByPrimaryColourId;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.Feature feature;
+    private nz.cri.gns.fred.model.Feature feature;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.AuditTable auditTable;
+    private nz.cri.gns.fred.model.Audit auditTable;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.Bedding beddingByPrimaryBeddingId;
+    private nz.cri.gns.fred.model.Bedding beddingByPrimaryBeddingId;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.Bedding beddingBySecondaryBeddingId;
+    private nz.cri.gns.fred.model.Bedding beddingBySecondaryBeddingId;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.FrNumber frNumber;
+    private nz.cri.gns.fred.model.FrNumber frNumber;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.DrillType drillType;
+    private nz.cri.gns.fred.model.DrillType drillType;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.GrainSize grainSizeByPrimaryGrainsizeId;
+    private nz.cri.gns.fred.model.GrainSize grainSizeByPrimaryGrainsizeId;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.GrainSize grainSizeBySecondaryGrainsizeId;
+    private nz.cri.gns.fred.model.GrainSize grainSizeBySecondaryGrainsizeId;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.BedThickness bedThickness;
+    private nz.cri.gns.fred.model.BedThickness bedThickness;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.Stage stageByKnownStageId;
+    private nz.cri.gns.fred.model.Stage stageByKnownStageId;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.Stage stageByInferredStageId;
+    private nz.cri.gns.fred.model.Stage stageByInferredStageId;
 
     /** persistent field */
     private Set sedimentaryFeatures;
@@ -398,139 +397,139 @@ public class Sample implements Serializable {
         this.sampleName = sampleName;
     }
 
-    public nz.cri.gns.fred.hibernate.ColourModifier getColourModifier() {
+    public nz.cri.gns.fred.model.ColourModifier getColourModifier() {
         return this.colourModifier;
     }
 
-    public void setColourModifier(nz.cri.gns.fred.hibernate.ColourModifier colourModifier) {
+    public void setColourModifier(nz.cri.gns.fred.model.ColourModifier colourModifier) {
         this.colourModifier = colourModifier;
     }
 
-    public nz.cri.gns.fred.hibernate.Hardness getHardness() {
+    public nz.cri.gns.fred.model.Hardness getHardness() {
         return this.hardness;
     }
 
-    public void setHardness(nz.cri.gns.fred.hibernate.Hardness hardness) {
+    public void setHardness(nz.cri.gns.fred.model.Hardness hardness) {
         this.hardness = hardness;
     }
 
-    public nz.cri.gns.fred.hibernate.Weathering getWeathering() {
+    public nz.cri.gns.fred.model.Weathering getWeathering() {
         return this.weathering;
     }
 
-    public void setWeathering(nz.cri.gns.fred.hibernate.Weathering weathering) {
+    public void setWeathering(nz.cri.gns.fred.model.Weathering weathering) {
         this.weathering = weathering;
     }
 
-    public nz.cri.gns.fred.hibernate.Carbonate getCarbonate() {
+    public nz.cri.gns.fred.model.Carbonate getCarbonate() {
         return this.carbonate;
     }
 
-    public void setCarbonate(nz.cri.gns.fred.hibernate.Carbonate carbonate) {
+    public void setCarbonate(nz.cri.gns.fred.model.Carbonate carbonate) {
         this.carbonate = carbonate;
     }
 
-    public nz.cri.gns.fred.hibernate.RockColour getRockColourBySecondaryColourId() {
+    public nz.cri.gns.fred.model.RockColour getRockColourBySecondaryColourId() {
         return this.rockColourBySecondaryColourId;
     }
 
-    public void setRockColourBySecondaryColourId(nz.cri.gns.fred.hibernate.RockColour rockColourBySecondaryColourId) {
+    public void setRockColourBySecondaryColourId(nz.cri.gns.fred.model.RockColour rockColourBySecondaryColourId) {
         this.rockColourBySecondaryColourId = rockColourBySecondaryColourId;
     }
 
-    public nz.cri.gns.fred.hibernate.RockColour getRockColourByPrimaryColourId() {
+    public nz.cri.gns.fred.model.RockColour getRockColourByPrimaryColourId() {
         return this.rockColourByPrimaryColourId;
     }
 
-    public void setRockColourByPrimaryColourId(nz.cri.gns.fred.hibernate.RockColour rockColourByPrimaryColourId) {
+    public void setRockColourByPrimaryColourId(nz.cri.gns.fred.model.RockColour rockColourByPrimaryColourId) {
         this.rockColourByPrimaryColourId = rockColourByPrimaryColourId;
     }
 
-    public nz.cri.gns.fred.hibernate.Feature getFeature() {
+    public nz.cri.gns.fred.model.Feature getFeature() {
         return this.feature;
     }
 
-    public void setFeature(nz.cri.gns.fred.hibernate.Feature feature) {
+    public void setFeature(nz.cri.gns.fred.model.Feature feature) {
         this.feature = feature;
     }
 
-    public nz.cri.gns.fred.hibernate.AuditTable getAuditTable() {
+    public nz.cri.gns.fred.model.Audit getAudit() {
         return this.auditTable;
     }
 
-    public void setAuditTable(nz.cri.gns.fred.hibernate.AuditTable auditTable) {
+    public void setAudit(nz.cri.gns.fred.model.Audit auditTable) {
         this.auditTable = auditTable;
     }
 
-    public nz.cri.gns.fred.hibernate.Bedding getBeddingByPrimaryBeddingId() {
+    public nz.cri.gns.fred.model.Bedding getBeddingByPrimaryBeddingId() {
         return this.beddingByPrimaryBeddingId;
     }
 
-    public void setBeddingByPrimaryBeddingId(nz.cri.gns.fred.hibernate.Bedding beddingByPrimaryBeddingId) {
+    public void setBeddingByPrimaryBeddingId(nz.cri.gns.fred.model.Bedding beddingByPrimaryBeddingId) {
         this.beddingByPrimaryBeddingId = beddingByPrimaryBeddingId;
     }
 
-    public nz.cri.gns.fred.hibernate.Bedding getBeddingBySecondaryBeddingId() {
+    public nz.cri.gns.fred.model.Bedding getBeddingBySecondaryBeddingId() {
         return this.beddingBySecondaryBeddingId;
     }
 
-    public void setBeddingBySecondaryBeddingId(nz.cri.gns.fred.hibernate.Bedding beddingBySecondaryBeddingId) {
+    public void setBeddingBySecondaryBeddingId(nz.cri.gns.fred.model.Bedding beddingBySecondaryBeddingId) {
         this.beddingBySecondaryBeddingId = beddingBySecondaryBeddingId;
     }
 
-    public nz.cri.gns.fred.hibernate.FrNumber getFrNumber() {
+    public nz.cri.gns.fred.model.FrNumber getFrNumber() {
         return this.frNumber;
     }
 
-    public void setFrNumber(nz.cri.gns.fred.hibernate.FrNumber frNumber) {
+    public void setFrNumber(nz.cri.gns.fred.model.FrNumber frNumber) {
         this.frNumber = frNumber;
     }
 
-    public nz.cri.gns.fred.hibernate.DrillType getDrillType() {
+    public nz.cri.gns.fred.model.DrillType getDrillType() {
         return this.drillType;
     }
 
-    public void setDrillType(nz.cri.gns.fred.hibernate.DrillType drillType) {
+    public void setDrillType(nz.cri.gns.fred.model.DrillType drillType) {
         this.drillType = drillType;
     }
 
-    public nz.cri.gns.fred.hibernate.GrainSize getGrainSizeByPrimaryGrainsizeId() {
+    public nz.cri.gns.fred.model.GrainSize getGrainSizeByPrimaryGrainsizeId() {
         return this.grainSizeByPrimaryGrainsizeId;
     }
 
-    public void setGrainSizeByPrimaryGrainsizeId(nz.cri.gns.fred.hibernate.GrainSize grainSizeByPrimaryGrainsizeId) {
+    public void setGrainSizeByPrimaryGrainsizeId(nz.cri.gns.fred.model.GrainSize grainSizeByPrimaryGrainsizeId) {
         this.grainSizeByPrimaryGrainsizeId = grainSizeByPrimaryGrainsizeId;
     }
 
-    public nz.cri.gns.fred.hibernate.GrainSize getGrainSizeBySecondaryGrainsizeId() {
+    public nz.cri.gns.fred.model.GrainSize getGrainSizeBySecondaryGrainsizeId() {
         return this.grainSizeBySecondaryGrainsizeId;
     }
 
-    public void setGrainSizeBySecondaryGrainsizeId(nz.cri.gns.fred.hibernate.GrainSize grainSizeBySecondaryGrainsizeId) {
+    public void setGrainSizeBySecondaryGrainsizeId(nz.cri.gns.fred.model.GrainSize grainSizeBySecondaryGrainsizeId) {
         this.grainSizeBySecondaryGrainsizeId = grainSizeBySecondaryGrainsizeId;
     }
 
-    public nz.cri.gns.fred.hibernate.BedThickness getBedThickness() {
+    public nz.cri.gns.fred.model.BedThickness getBedThickness() {
         return this.bedThickness;
     }
 
-    public void setBedThickness(nz.cri.gns.fred.hibernate.BedThickness bedThickness) {
+    public void setBedThickness(nz.cri.gns.fred.model.BedThickness bedThickness) {
         this.bedThickness = bedThickness;
     }
 
-    public nz.cri.gns.fred.hibernate.Stage getStageByKnownStageId() {
+    public nz.cri.gns.fred.model.Stage getStageByKnownStageId() {
         return this.stageByKnownStageId;
     }
 
-    public void setStageByKnownStageId(nz.cri.gns.fred.hibernate.Stage stageByKnownStageId) {
+    public void setStageByKnownStageId(nz.cri.gns.fred.model.Stage stageByKnownStageId) {
         this.stageByKnownStageId = stageByKnownStageId;
     }
 
-    public nz.cri.gns.fred.hibernate.Stage getStageByInferredStageId() {
+    public nz.cri.gns.fred.model.Stage getStageByInferredStageId() {
         return this.stageByInferredStageId;
     }
 
-    public void setStageByInferredStageId(nz.cri.gns.fred.hibernate.Stage stageByInferredStageId) {
+    public void setStageByInferredStageId(nz.cri.gns.fred.model.Stage stageByInferredStageId) {
         this.stageByInferredStageId = stageByInferredStageId;
     }
 
@@ -582,5 +581,13 @@ public class Sample implements Serializable {
         this.relationships = relationships;
     }
 
- 
+    public Object clone() { 
+    	try {
+    		return super.clone();
+    	} catch (CloneNotSupportedException e) {
+    		//But it is!
+    		return null;
+    	}
+    }
+
 }

@@ -103,7 +103,8 @@
         <key>
             <column name="FOLDER_ID" />
         </key>
-        <one-to-many 
+        <many-to-many 
+			column="FEATURE_ID"
             class="nz.cri.gns.fred.hibernate.Feature"
         />
     </set>

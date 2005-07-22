@@ -3,9 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
-
 /** @author Hibernate CodeGenerator */
-public class SedimentaryFeatureType implements Serializable {
+public class SedimentaryFeatureType implements Serializable, nz.cri.gns.fred.model.SedimentaryFeatureType {
 
     /** identifier field */
     private Integer sedfeatureTypeId;

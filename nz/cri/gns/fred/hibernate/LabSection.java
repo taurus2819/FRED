@@ -3,9 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
-
 /** @author Hibernate CodeGenerator */
-public class LabSection implements Serializable {
+public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSection {
 
     /** identifier field */
     private Integer labSectionId;

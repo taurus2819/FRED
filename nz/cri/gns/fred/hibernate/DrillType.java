@@ -3,9 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
-
 /** @author Hibernate CodeGenerator */
-public class DrillType implements Serializable {
+public class DrillType implements Serializable, nz.cri.gns.fred.model.DrillType {
 
     /** identifier field */
     private Integer drillTypeId;

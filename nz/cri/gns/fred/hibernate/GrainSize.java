@@ -3,9 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
-
 /** @author Hibernate CodeGenerator */
-public class GrainSize implements Serializable {
+public class GrainSize implements Serializable, nz.cri.gns.fred.model.GrainSize {
 
     /** identifier field */
     private Integer grainSizeId;

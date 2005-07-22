@@ -55,8 +55,16 @@ public interface FolderDAO {
 
 	/**
 	 * @return the folder with the given id, initialised for the given user
+	 * or null if the user has no rights to the given folder
 	 * @throws StorageAccessException
 	 */
 	public UserFolder getUserFolder(int folderId, int userId) throws StorageAccessException;
+
+	/**
+	 * @param folder
+	 * @return
+	 * @throws StorageAccessException
+	 */
+	public List getWorkingAuditsFor(Folder folder) throws StorageAccessException;
 	
 }

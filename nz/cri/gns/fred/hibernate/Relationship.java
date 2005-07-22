@@ -2,9 +2,8 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 
-
 /** @author Hibernate CodeGenerator */
-public class Relationship implements Serializable {
+public class Relationship implements Serializable, nz.cri.gns.fred.model.Relationship, Cloneable {
 
     /** identifier field */
     private Integer relationshipId;
@@ -28,13 +27,13 @@ public class Relationship implements Serializable {
     private double distanceRange;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.Sample sample;
+    private nz.cri.gns.fred.model.Sample sample;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.Feature feature;
+    private nz.cri.gns.fred.model.Feature feature;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.RelationshipType relationshipType;
+    private nz.cri.gns.fred.model.RelationshipType relationshipType;
 
     /** full constructor */
     public Relationship(String relationshipTypeTypeAsString, Integer stratUnitId, String stratUnit, double distance, String distanceMod, double distanceRange, nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.RelationshipType relationshipType) {
@@ -117,27 +116,37 @@ public class Relationship implements Serializable {
         this.distanceRange = distanceRange;
     }
 
-    public nz.cri.gns.fred.hibernate.Sample getSample() {
+    public nz.cri.gns.fred.model.Sample getSample() {
         return this.sample;
     }
 
-    public void setSample(nz.cri.gns.fred.hibernate.Sample sample) {
+    public void setSample(nz.cri.gns.fred.model.Sample sample) {
         this.sample = sample;
     }
 
-    public nz.cri.gns.fred.hibernate.Feature getFeature() {
+    public nz.cri.gns.fred.model.Feature getFeature() {
         return this.feature;
     }
 
-    public void setFeature(nz.cri.gns.fred.hibernate.Feature feature) {
+    public void setFeature(nz.cri.gns.fred.model.Feature feature) {
         this.feature = feature;
     }
 
-    public nz.cri.gns.fred.hibernate.RelationshipType getRelationshipType() {
+    public nz.cri.gns.fred.model.RelationshipType getRelationshipType() {
         return this.relationshipType;
     }
 
-    public void setRelationshipType(nz.cri.gns.fred.hibernate.RelationshipType relationshipType) {
+    public void setRelationshipType(nz.cri.gns.fred.model.RelationshipType relationshipType) {
         this.relationshipType = relationshipType;
     }
+    
+    public Object clone() { 
+    	try {
+    		return super.clone();
+    	} catch (CloneNotSupportedException e) {
+    		//But it is!
+    		return null;
+    	}
+    }
+
 }

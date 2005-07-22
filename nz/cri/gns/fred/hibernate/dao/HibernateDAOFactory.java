@@ -18,8 +18,14 @@ import nz.cri.gns.fred.hibernate.FolderUser;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
+import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FolderType;
+import nz.cri.gns.fred.model.Relationship;
+import nz.cri.gns.fred.model.Sample;
+import nz.cri.gns.fred.model.SampleMeta;
+import nz.cri.gns.fred.model.SedimentaryFeature;
+import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.UserFolder;
 
@@ -76,19 +82,19 @@ public class HibernateDAOFactory implements DAOFactory, SampleDAO, FolderDAO, Fo
 	}
 
 	public Folder save(Folder folder) throws StorageAccessException {
-	    try {
-	        Session session = provider.currentSession();
-	        session.save(folder);
-	        return folder;
-	    } catch (Exception e) {
-	        throw new StorageAccessException(e);
-	    }
+	    return (Folder)save((Object)folder);
 	}
 
     public void delete(Folder folder) throws StorageAccessException {
-	    try {
+    	delete((Object)folder);
+    }
+    
+    	
+    
+	private void delete(Object object) throws StorageAccessException {
+		try {
 	        Session session = provider.currentSession();
-	        session.delete(folder);
+	        session.delete(object);
 	    } catch (Exception e) {
 	        throw new StorageAccessException(e);
 	    }
@@ -146,7 +152,17 @@ public class HibernateDAOFactory implements DAOFactory, SampleDAO, FolderDAO, Fo
 		}
 	}
 
-
+	public List getWorkingAuditsFor(Folder folder) throws StorageAccessException {
+		try {
+			Session session = provider.currentSession();
+			Query query = session.createQuery("FROM AuditTable as audit WHERE audit.folder = :folder AND audit.status = :working");
+			query.setEntity("folder", folder);
+			query.setString("working", FREDConstants.WORKING);
+			return query.list();
+		} catch (Exception e) {
+			throw new StorageAccessException(e);
+		}
+	}
 
 	public FolderTypeDAO getFolderTypeDAO() {
 		return this;
@@ -207,10 +223,14 @@ public class HibernateDAOFactory implements DAOFactory, SampleDAO, FolderDAO, Fo
 	}
 
 	public Audit save(Audit audit) throws StorageAccessException {
-	    try {
+	    return (Audit)save((Object)audit);
+	}
+
+	private Object save(Object object) throws StorageAccessException {
+		try {
 	        Session session = provider.currentSession();
-	        session.save(audit);
-	        return audit;
+	        session.save(object);
+	        return object;
 	    } catch (Exception e) {
 	        throw new StorageAccessException(e);
 	    }
@@ -220,8 +240,75 @@ public class HibernateDAOFactory implements DAOFactory, SampleDAO, FolderDAO, Fo
 		return (Feature)((nz.cri.gns.fred.hibernate.Feature)feature).clone();
 	}
 
+	public FeatureMeta createFeatureMeta() {
+		return new nz.cri.gns.fred.hibernate.FeatureMeta(false);
+	}
+
+	public Feature save(Feature newFeature) throws StorageAccessException {
+	    return (Feature)save((Object)newFeature);
+	}
+
+	public void delete(Feature feature) throws StorageAccessException {
+		delete((Object)feature);
+	}
+	
+	public void update(Feature feature) throws StorageAccessException {
+		update((Object)feature);
+	}
+
+	private void update(Object object) throws StorageAccessException {
+		try {
+	        Session session = provider.currentSession();
+	        session.update(object);
+	    } catch (Exception e) {
+	        throw new StorageAccessException(e);
+	    }
+	}
+
+	public void update(Audit audit) throws StorageAccessException {
+		update((Object)audit);
+	}
+
+	public Feature getFeature(int featureId) throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+			List list = session.find("FROM Feature WHERE featureId = ?", new Integer(featureId), new IntegerType());
+			if (list.size() == 0)
+			    return null;
+			return (Feature)list.get(0);
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+	}
+
 	public SampleDAO getSampleDAO() {
 		return this;
 	}
+
+	//SampleDAO methods
+	public Sample cloneSample(Sample sample) {
+		return (Sample)((nz.cri.gns.fred.hibernate.Sample)sample).clone();
+	}
+
+	public Relationship cloneRelationship(Relationship relationship) {
+		return (Relationship)((nz.cri.gns.fred.hibernate.Relationship)relationship).clone();
+	}
+
+	public SentTo cloneSentTo(SentTo sentTo) {
+		return (SentTo)((nz.cri.gns.fred.hibernate.SentTo)sentTo).clone();
+	}
+
+	public SedimentaryFeature cloneSedimentaryFeature(SedimentaryFeature sedFeature) {
+		return (SedimentaryFeature)((nz.cri.gns.fred.hibernate.SedimentaryFeature)sedFeature).clone();
+	}
+
+	public SampleMeta createSampleMeta() {
+		return new nz.cri.gns.fred.hibernate.SampleMeta(false);
+	}
+
+	public Sample save(Sample newSample) throws StorageAccessException {
+	    return (Sample)save((Object)newSample);
+	}
+
 
 }

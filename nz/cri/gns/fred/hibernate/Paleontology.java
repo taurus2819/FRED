@@ -6,7 +6,7 @@ import java.util.Set;
 
 
 /** @author Hibernate CodeGenerator */
-public class Paleontology implements Serializable {
+public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleontology {
 
     /** identifier field */
     private Integer recordId;
@@ -30,13 +30,13 @@ public class Paleontology implements Serializable {
     private String collectionComments;
 
     /** nullable persistent field */
-    private nz.cri.gns.fred.hibernate.Record record;
+    private nz.cri.gns.fred.model.Record record;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.LabSection labSection;
+    private nz.cri.gns.fred.model.LabSection labSection;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.Stage stage;
+    private nz.cri.gns.fred.model.Stage stage;
 
     /** persistent field */
     private Set palLists;
@@ -129,27 +129,27 @@ public class Paleontology implements Serializable {
         this.collectionComments = collectionComments;
     }
 
-    public nz.cri.gns.fred.hibernate.Record getRecord() {
+    public nz.cri.gns.fred.model.Record getRecord() {
         return this.record;
     }
 
-    public void setRecord(nz.cri.gns.fred.hibernate.Record record) {
+    public void setRecord(nz.cri.gns.fred.model.Record record) {
         this.record = record;
     }
 
-    public nz.cri.gns.fred.hibernate.LabSection getLabSection() {
+    public nz.cri.gns.fred.model.LabSection getLabSection() {
         return this.labSection;
     }
 
-    public void setLabSection(nz.cri.gns.fred.hibernate.LabSection labSection) {
+    public void setLabSection(nz.cri.gns.fred.model.LabSection labSection) {
         this.labSection = labSection;
     }
 
-    public nz.cri.gns.fred.hibernate.Stage getStage() {
+    public nz.cri.gns.fred.model.Stage getStage() {
         return this.stage;
     }
 
-    public void setStage(nz.cri.gns.fred.hibernate.Stage stage) {
+    public void setStage(nz.cri.gns.fred.model.Stage stage) {
         this.stage = stage;
     }
 

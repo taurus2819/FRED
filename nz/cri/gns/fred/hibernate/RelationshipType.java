@@ -3,9 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
-
 /** @author Hibernate CodeGenerator */
-public class RelationshipType implements Serializable {
+public class RelationshipType implements Serializable, nz.cri.gns.fred.model.RelationshipType {
 
     /** identifier field */
     private Integer reltypeId;
@@ -14,7 +13,7 @@ public class RelationshipType implements Serializable {
     private String name;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.RelationshipTypeType relationshipTypeType;
+    private nz.cri.gns.fred.model.RelationshipTypeType relationshipTypeType;
 
     /** persistent field */
     private Set relationships;
@@ -47,11 +46,11 @@ public class RelationshipType implements Serializable {
         this.name = name;
     }
 
-    public nz.cri.gns.fred.hibernate.RelationshipTypeType getRelationshipTypeType() {
+    public nz.cri.gns.fred.model.RelationshipTypeType getRelationshipTypeType() {
         return this.relationshipTypeType;
     }
 
-    public void setRelationshipTypeType(nz.cri.gns.fred.hibernate.RelationshipTypeType relationshipTypeType) {
+    public void setRelationshipTypeType(nz.cri.gns.fred.model.RelationshipTypeType relationshipTypeType) {
         this.relationshipTypeType = relationshipTypeType;
     }
 

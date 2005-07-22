@@ -3,9 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
-
 /** @author Hibernate CodeGenerator */
-public class ColourModifier implements Serializable {
+public class ColourModifier implements Serializable, nz.cri.gns.fred.model.ColourModifier {
 
     /** identifier field */
     private Integer modifierId;

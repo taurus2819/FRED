@@ -3,9 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
-
 /** @author Hibernate CodeGenerator */
-public class Record implements Serializable {
+public class Record implements Serializable, nz.cri.gns.fred.model.Record {
 
     /** identifier field */
     private Integer recordId;
@@ -14,19 +13,19 @@ public class Record implements Serializable {
     private String workingComments;
 
     /** nullable persistent field */
-    private nz.cri.gns.fred.hibernate.Paleontology paleontology;
+    private nz.cri.gns.fred.model.Paleontology paleontology;
 
     /** nullable persistent field */
-    private nz.cri.gns.fred.hibernate.Adoption adoption;
+    private nz.cri.gns.fred.model.Adoption adoption;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.Sample sample;
+    private nz.cri.gns.fred.model.Sample sample;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.Folder folder;
+    private nz.cri.gns.fred.model.Folder folder;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.AuditTable auditTable;
+    private nz.cri.gns.fred.model.Audit auditTable;
 
     /** persistent field */
     private Set recordMetas;
@@ -70,43 +69,43 @@ public class Record implements Serializable {
         this.workingComments = workingComments;
     }
 
-    public nz.cri.gns.fred.hibernate.Paleontology getPaleontology() {
+    public nz.cri.gns.fred.model.Paleontology getPaleontology() {
         return this.paleontology;
     }
 
-    public void setPaleontology(nz.cri.gns.fred.hibernate.Paleontology paleontology) {
+    public void setPaleontology(nz.cri.gns.fred.model.Paleontology paleontology) {
         this.paleontology = paleontology;
     }
 
-    public nz.cri.gns.fred.hibernate.Adoption getAdoption() {
+    public nz.cri.gns.fred.model.Adoption getAdoption() {
         return this.adoption;
     }
 
-    public void setAdoption(nz.cri.gns.fred.hibernate.Adoption adoption) {
+    public void setAdoption(nz.cri.gns.fred.model.Adoption adoption) {
         this.adoption = adoption;
     }
 
-    public nz.cri.gns.fred.hibernate.Sample getSample() {
+    public nz.cri.gns.fred.model.Sample getSample() {
         return this.sample;
     }
 
-    public void setSample(nz.cri.gns.fred.hibernate.Sample sample) {
+    public void setSample(nz.cri.gns.fred.model.Sample sample) {
         this.sample = sample;
     }
 
-    public nz.cri.gns.fred.hibernate.Folder getFolder() {
+    public nz.cri.gns.fred.model.Folder getFolder() {
         return this.folder;
     }
 
-    public void setFolder(nz.cri.gns.fred.hibernate.Folder folder) {
+    public void setFolder(nz.cri.gns.fred.model.Folder folder) {
         this.folder = folder;
     }
 
-    public nz.cri.gns.fred.hibernate.AuditTable getAuditTable() {
+    public nz.cri.gns.fred.model.Audit getAudit() {
         return this.auditTable;
     }
 
-    public void setAuditTable(nz.cri.gns.fred.hibernate.AuditTable auditTable) {
+    public void setAudit(nz.cri.gns.fred.model.Audit auditTable) {
         this.auditTable = auditTable;
     }
 

@@ -69,7 +69,7 @@
     <!-- bi-directional many-to-one association to Sample -->
     <many-to-one
         name="sample"
-        class="nz.cri.gns.fred.hibernate.Sample"
+		class="nz.cri.gns.fred.hibernate.Sample"
         not-null="true"
     >
         <column name="SAMPLE_ID" />

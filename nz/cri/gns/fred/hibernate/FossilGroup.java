@@ -3,9 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
-
 /** @author Hibernate CodeGenerator */
-public class FossilGroup implements Serializable {
+public class FossilGroup implements Serializable, nz.cri.gns.fred.model.FossilGroup {
 
     /** identifier field */
     private Integer groupId;

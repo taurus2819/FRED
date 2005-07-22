@@ -3,9 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
-
 /** @author Hibernate CodeGenerator */
-public class Hardness implements Serializable {
+public class Hardness implements Serializable, nz.cri.gns.fred.model.Hardness {
 
     /** identifier field */
     private Integer hardnessId;

@@ -7,6 +7,8 @@ public interface FREDConstants {
 
 	public static final String WAITING = "waiting";
 	public static final String WORKING = "working";
+	public static final String APPROVED = "approved";
+	public static final String REJECTED = "rejected";
 	
 	public static final String PROVISIONAL = "provisional";
 	
