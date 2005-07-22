@@ -130,8 +130,7 @@ public interface Sample {
 
 	public abstract nz.cri.gns.fred.model.Audit getAudit();
 
-	public abstract void setAudit(
-			nz.cri.gns.fred.model.Audit auditTable);
+	public abstract void setAudit(Audit audit);
 
 	public abstract nz.cri.gns.fred.model.Bedding getBeddingByPrimaryBeddingId();
 

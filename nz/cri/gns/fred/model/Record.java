@@ -34,7 +34,7 @@ public interface Record {
 	public abstract nz.cri.gns.fred.model.Audit getAudit();
 
 	public abstract void setAudit(
-			nz.cri.gns.fred.model.Audit auditTable);
+			nz.cri.gns.fred.model.Audit audit);
 
 	public abstract Set getRecordMetas();
 
