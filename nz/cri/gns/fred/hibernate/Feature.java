@@ -322,6 +322,10 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     }
 
 	public int compareTo(Object arg0) {
-		return getFeatureName().compareTo(((Feature)arg0).getFeatureName());
+		String thisName = (getFeatureName() == null) ? "unnamed" : featureName;
+		String thatName = ((Feature)arg0).getFeatureName();
+		if (thatName == null) 
+			thatName = "unnamed";
+		return thisName.compareTo(thatName);
 	}
 }
