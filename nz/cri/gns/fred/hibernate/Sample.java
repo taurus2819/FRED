@@ -11,10 +11,10 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     private Integer sampleId;
 
     /** nullable persistent field */
-    private double topDepth;
+    private Double topDepth;
 
     /** nullable persistent field */
-    private double bottomDepth;
+    private Double bottomDepth;
 
     /** nullable persistent field */
     private String comments;
@@ -143,7 +143,7 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     private Set relationships;
 
     /** full constructor */
-    public Sample(double topDepth, double bottomDepth, String comments, Integer yardFrId, Date collectionDate, String dateRounding, String stratUnit, String inPlace, String notCollected, String significance, String columnMap, Integer dip, String dipDirection, Integer strike, String facing, String comparatorUsed, String wet, String rockNature, String depositionEnv, String correspondence, String sampleName, nz.cri.gns.fred.hibernate.ColourModifier colourModifier, nz.cri.gns.fred.hibernate.Hardness hardness, nz.cri.gns.fred.hibernate.Weathering weathering, nz.cri.gns.fred.hibernate.Carbonate carbonate, nz.cri.gns.fred.hibernate.RockColour rockColourBySecondaryColourId, nz.cri.gns.fred.hibernate.RockColour rockColourByPrimaryColourId, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.Bedding beddingByPrimaryBeddingId, nz.cri.gns.fred.hibernate.Bedding beddingBySecondaryBeddingId, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.DrillType drillType, nz.cri.gns.fred.hibernate.GrainSize grainSizeByPrimaryGrainsizeId, nz.cri.gns.fred.hibernate.GrainSize grainSizeBySecondaryGrainsizeId, nz.cri.gns.fred.hibernate.BedThickness bedThickness, nz.cri.gns.fred.hibernate.Stage stageByKnownStageId, nz.cri.gns.fred.hibernate.Stage stageByInferredStageId, Set sedimentaryFeatures, Set sampleMetas, Set records, Set sentTos, Set collectors, Set relationships) {
+    public Sample(Double topDepth, Double bottomDepth, String comments, Integer yardFrId, Date collectionDate, String dateRounding, String stratUnit, String inPlace, String notCollected, String significance, String columnMap, Integer dip, String dipDirection, Integer strike, String facing, String comparatorUsed, String wet, String rockNature, String depositionEnv, String correspondence, String sampleName, nz.cri.gns.fred.hibernate.ColourModifier colourModifier, nz.cri.gns.fred.hibernate.Hardness hardness, nz.cri.gns.fred.hibernate.Weathering weathering, nz.cri.gns.fred.hibernate.Carbonate carbonate, nz.cri.gns.fred.hibernate.RockColour rockColourBySecondaryColourId, nz.cri.gns.fred.hibernate.RockColour rockColourByPrimaryColourId, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.Bedding beddingByPrimaryBeddingId, nz.cri.gns.fred.hibernate.Bedding beddingBySecondaryBeddingId, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.DrillType drillType, nz.cri.gns.fred.hibernate.GrainSize grainSizeByPrimaryGrainsizeId, nz.cri.gns.fred.hibernate.GrainSize grainSizeBySecondaryGrainsizeId, nz.cri.gns.fred.hibernate.BedThickness bedThickness, nz.cri.gns.fred.hibernate.Stage stageByKnownStageId, nz.cri.gns.fred.hibernate.Stage stageByInferredStageId, Set sedimentaryFeatures, Set sampleMetas, Set records, Set sentTos, Set collectors, Set relationships) {
         this.topDepth = topDepth;
         this.bottomDepth = bottomDepth;
         this.comments = comments;
@@ -229,19 +229,19 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.sampleId = sampleId;
     }
 
-    public double getTopDepth() {
+    public Double getTopDepth() {
         return this.topDepth;
     }
 
-    public void setTopDepth(double topDepth) {
+    public void setTopDepth(Double topDepth) {
         this.topDepth = topDepth;
     }
 
-    public double getBottomDepth() {
+    public Double getBottomDepth() {
         return this.bottomDepth;
     }
 
-    public void setBottomDepth(double bottomDepth) {
+    public void setBottomDepth(Double bottomDepth) {
         this.bottomDepth = bottomDepth;
     }
 

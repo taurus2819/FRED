@@ -21,17 +21,17 @@ public interface Relationship {
 
 	public abstract void setStratUnit(String stratUnit);
 
-	public abstract double getDistance();
+	public abstract Double getDistance();
 
-	public abstract void setDistance(double distance);
+	public abstract void setDistance(Double distance);
 
 	public abstract String getDistanceMod();
 
 	public abstract void setDistanceMod(String distanceMod);
 
-	public abstract double getDistanceRange();
+	public abstract Double getDistanceRange();
 
-	public abstract void setDistanceRange(double distanceRange);
+	public abstract void setDistanceRange(Double distanceRange);
 
 	public abstract nz.cri.gns.fred.model.Sample getSample();
 

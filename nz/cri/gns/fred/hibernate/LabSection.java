@@ -10,7 +10,7 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
     private Integer labSectionId;
 
     /** nullable persistent field */
-    private double labId;
+    private Double labId;
 
     /** nullable persistent field */
     private String name;
@@ -25,7 +25,7 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
     private Set paleontologies;
 
     /** full constructor */
-    public LabSection(double labId, String name, String code, String closed, Set paleontologies) {
+    public LabSection(Double labId, String name, String code, String closed, Set paleontologies) {
         this.labId = labId;
         this.name = name;
         this.code = code;
@@ -50,11 +50,11 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
         this.labSectionId = labSectionId;
     }
 
-    public double getLabId() {
+    public Double getLabId() {
         return this.labId;
     }
 
-    public void setLabId(double labId) {
+    public void setLabId(Double labId) {
         this.labId = labId;
     }
 

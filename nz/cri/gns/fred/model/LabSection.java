@@ -10,9 +10,9 @@ public interface LabSection {
 
 	public abstract void setLabSectionId(Integer labSectionId);
 
-	public abstract double getLabId();
+	public abstract Double getLabId();
 
-	public abstract void setLabId(double labId);
+	public abstract void setLabId(Double labId);
 
 	public abstract String getName();
 

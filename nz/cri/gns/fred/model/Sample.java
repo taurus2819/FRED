@@ -11,13 +11,13 @@ public interface Sample {
 
 	public abstract void setSampleId(Integer sampleId);
 
-	public abstract double getTopDepth();
+	public abstract Double getTopDepth();
 
-	public abstract void setTopDepth(double topDepth);
+	public abstract void setTopDepth(Double topDepth);
 
-	public abstract double getBottomDepth();
+	public abstract Double getBottomDepth();
 
-	public abstract void setBottomDepth(double bottomDepth);
+	public abstract void setBottomDepth(Double bottomDepth);
 
 	public abstract String getComments();
 

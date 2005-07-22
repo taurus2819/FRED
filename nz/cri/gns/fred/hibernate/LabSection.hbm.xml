@@ -28,7 +28,7 @@
 
     <property
         name="labId"
-        type="double"
+        type="Double"
         column="LAB_ID"
         length="22"
     />

@@ -18,13 +18,13 @@ public class Relationship implements Serializable, nz.cri.gns.fred.model.Relatio
     private String stratUnit;
 
     /** nullable persistent field */
-    private double distance;
+    private Double distance;
 
     /** nullable persistent field */
     private String distanceMod;
 
     /** nullable persistent field */
-    private double distanceRange;
+    private Double distanceRange;
 
     /** persistent field */
     private nz.cri.gns.fred.model.Sample sample;
@@ -36,7 +36,7 @@ public class Relationship implements Serializable, nz.cri.gns.fred.model.Relatio
     private nz.cri.gns.fred.model.RelationshipType relationshipType;
 
     /** full constructor */
-    public Relationship(String relationshipTypeTypeAsString, Integer stratUnitId, String stratUnit, double distance, String distanceMod, double distanceRange, nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.RelationshipType relationshipType) {
+    public Relationship(String relationshipTypeTypeAsString, Integer stratUnitId, String stratUnit, Double distance, String distanceMod, Double distanceRange, nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.RelationshipType relationshipType) {
         this.relationshipTypeTypeAsString = relationshipTypeTypeAsString;
         this.stratUnitId = stratUnitId;
         this.stratUnit = stratUnit;
@@ -92,11 +92,11 @@ public class Relationship implements Serializable, nz.cri.gns.fred.model.Relatio
         this.stratUnit = stratUnit;
     }
 
-    public double getDistance() {
+    public Double getDistance() {
         return this.distance;
     }
 
-    public void setDistance(double distance) {
+    public void setDistance(Double distance) {
         this.distance = distance;
     }
 
@@ -108,11 +108,11 @@ public class Relationship implements Serializable, nz.cri.gns.fred.model.Relatio
         this.distanceMod = distanceMod;
     }
 
-    public double getDistanceRange() {
+    public Double getDistanceRange() {
         return this.distanceRange;
     }
 
-    public void setDistanceRange(double distanceRange) {
+    public void setDistanceRange(Double distanceRange) {
         this.distanceRange = distanceRange;
     }
 
