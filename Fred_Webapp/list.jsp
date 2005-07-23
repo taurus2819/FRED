@@ -68,7 +68,7 @@
 		   		if (folder.get(Folder.FEATURES) != null) {
 					for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
 						Feature feature = new Feature(((Integer)i.next()).intValue(), user, state);
-						out.println("<tr><td>" + feature.getFeatureID() + "</td><td>" + feature.getAsString(Feature.FEATURE_NAME) + "</td></tr>");
+						out.println("<tr><td>" + feature.getAsString(Feature.FEATURE_NAME) + "</td><td>" + feature.getFeatureID() + "</td></tr>");
 					}
 				} else {
 					out.println("<tr><td>No features found</td><td></td></tr>");
