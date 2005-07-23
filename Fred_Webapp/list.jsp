@@ -76,6 +76,8 @@
 			} catch (Exception e) {
 				out.println("<tr><td>Error</td><td></td></tr>");
 			}
+		} else if (listName.equals("blankLocalityList")) {
+			out.println("<tr><td>No features defined</td><td></td></tr>");
 		} else if (listName.equals("folderList")) {
 			User user = null;
 			try {
