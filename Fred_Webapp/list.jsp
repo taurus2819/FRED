@@ -56,6 +56,26 @@
 					out.println("<tr><td>Error: Insufficient privileges</td></tr>");
 				}
 			}
+		} else if (listName.equals("localityList")) {
+			User user = null;
+			try {
+		   		user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
+		   	} catch (Exception e) {
+		   		out.println("<tr><td>Error: Invalid username/password</td></td>");
+		   	}
+		   	try {
+			   	Folder folder = new Folder(Integer.parseInt(request.getParameter("folderID")), user, state);
+		   		if (folder.get(Folder.FEATURES) != null) {
+					for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
+						Feature feature = new Feature(((Integer)i.next()).intValue(), user, state);
+						out.println("<tr><td>" + feature.getFeatureID() + "</td><td>" + feature.getAsString(Feature.FEATURE_NAME) + "</td></tr>");
+					}
+				} else {
+					out.println("<tr><td>No features found</td><td></td></tr>");
+				}
+			} catch (Exception e) {
+				out.println("<tr><td>Error</td><td></td></tr>");
+			}
 		} else if (listName.equals("folderList")) {
 			User user = null;
 			try {
