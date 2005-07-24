@@ -60,7 +60,7 @@
 	    		status = "Submitted OK";
 	    	}
 			message = id;
-		} catch (InvalidCredentialsException e) {
+		} catch (InsufficientPrivelegesException e) {
 			status = "AuthError";
 			message = "User not authorised";
 	    } catch (DataInputException e) {
