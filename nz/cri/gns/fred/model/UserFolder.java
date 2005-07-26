@@ -70,4 +70,12 @@ public class UserFolder implements Comparable {
 	public boolean isAllowedApproveLocalities() {
 		return ((rights & FOLDER_APPROVE_RIGHT) != 0);
 	}
+	
+	public Integer getFolderId() {
+		return folder.getFolderId();
+	}
+	
+	public String getFolderName() {
+		return folder.getName();
+	}
 }

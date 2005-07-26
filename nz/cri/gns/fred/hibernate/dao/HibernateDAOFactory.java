@@ -10,6 +10,7 @@ import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.FolderTypeDAO;
+import nz.cri.gns.fred.dao.RecordDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.dao.TaxonomicGroupDAO;
@@ -32,7 +33,7 @@ import nz.cri.gns.fred.model.UserFolder;
 /**
  * @author iainm
  */
-public class HibernateDAOFactory implements DAOFactory, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO {
+public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO {
 
 	private HibernateProvider provider;
 
@@ -308,6 +309,10 @@ public class HibernateDAOFactory implements DAOFactory, SampleDAO, FolderDAO, Fo
 
 	public Sample save(Sample newSample) throws StorageAccessException {
 	    return (Sample)save((Object)newSample);
+	}
+
+	public RecordDAO getRecordDAO() {
+		return this;
 	}
 
 

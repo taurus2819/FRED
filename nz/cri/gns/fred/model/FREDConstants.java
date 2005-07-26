@@ -16,4 +16,6 @@ public interface FREDConstants {
 	public static final String DRILLHOLE = "Drillhole";
 	public static final String VERTICAL_SECTION = "Vertical Section";
 
+	public static final String DEPTH_NOT_SPECIFIED = "Depth not specified";
+
 }

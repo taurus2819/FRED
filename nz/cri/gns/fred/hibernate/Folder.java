@@ -134,5 +134,9 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
 	public int compareTo(Object arg0) {
 		return name.compareTo(((Folder)arg0).name);
 	}
+	
+	public boolean equals(Object o) {
+		return o instanceof Folder && ((Folder)o).getFolderId().intValue() == getFolderId().intValue();
+	}
 
 }

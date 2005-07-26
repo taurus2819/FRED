@@ -10,11 +10,16 @@ public interface DAOFactory {
 	public TaxonomicGroupDAO getTaxonomicGroupDAO();
 	public FeatureDAO getFeatureDAO();
 	public SampleDAO getSampleDAO();
+	public RecordDAO getRecordDAO();
+	
 	/**
 	 * Closes the current session for this thread
 	 * @throws StorageAccessException
 	 */
 	public void closeSession() throws StorageAccessException;
+	/**
+	 * @return
+	 */
 	/**
 	 * @return
 	 */

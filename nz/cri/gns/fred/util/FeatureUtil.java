@@ -408,4 +408,12 @@ public class FeatureUtil extends ModelUtil {
 		return (masterfileFolder == null) ? false : (masterfileFolder.getRights() & right) > 0;
 	}
 
+	public Sample getOutcropSample(Feature feature) {
+		if (!feature.getFeatureType().equals(FREDConstants.OUTCROP))
+			throw new IllegalArgumentException("Feature is not an outcrop");
+		
+		Set samples = feature.getSamples();
+		Iterator it = samples.iterator();
+		return (Sample)it.next();
+	}
 }

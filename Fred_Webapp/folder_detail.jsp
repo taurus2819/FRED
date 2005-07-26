@@ -50,7 +50,6 @@
 	}
 
 %><%
-try {
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	if (request.getParameter("ID") == null) {
 		factory.closeSession();
@@ -125,7 +124,7 @@ function showHide(toShow, toHide) {
 <li>Click on the locality to add/edit locality records, or use the options to work with the locality itself:
 <ul>
 <li><img src="images/edit.gif" border="0"> to edit the locality
-<li><img src="images/copy.gif" border="0"> to makr a copy of the locality (front of form data only)
+<li><img src="images/copy.gif" border="0"> to make a copy of the locality (front of form data only)
 <li><img src="images/delete.gif" border="0"> to delete the locality
 <li><img src="images/submit.gif" border="0"> to submit the locality for entry to the masterfile
 </ul>
@@ -245,7 +244,4 @@ function showHide(toShow, toHide) {
 	
 	//Close the session
 	folderUtil.closeSession();
-} catch (Throwable t) {
-	t.printStackTrace();
-}
 %>
