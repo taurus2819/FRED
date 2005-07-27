@@ -325,6 +325,7 @@
     <many-to-one
         name="frNumber"
         class="nz.cri.gns.fred.hibernate.FrNumber"
+		cascade="all"
         not-null="true"
     >
         <column name="FR_ID" />

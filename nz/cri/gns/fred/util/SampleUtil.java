@@ -110,5 +110,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants {
 
 		return folder.isAllowedDeleteLocalities();
 	}
-
+	
+	public Sample getSample(int sampleId) throws StorageAccessException {
+		return sampleDAO.getSample(sampleId);
+	}
 }

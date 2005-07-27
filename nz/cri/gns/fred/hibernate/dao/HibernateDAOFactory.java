@@ -22,6 +22,7 @@ import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FolderType;
+import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
@@ -314,6 +315,14 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 
 	public void delete(Sample sample) throws StorageAccessException {
 		delete((Object)sample);
+	}
+	
+	public void update(Sample sample) throws StorageAccessException {
+		update((Object)sample);
+	}
+
+	public FrNumber createFRNumber() {
+		return new nz.cri.gns.fred.hibernate.FrNumber();
 	}
 	
 	public RecordDAO getRecordDAO() {

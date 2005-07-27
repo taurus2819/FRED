@@ -12,6 +12,7 @@ import javax.naming.NamingException;
 
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.UserAccount;
+import nz.cri.gns.fred.FolderUtilException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.dao.FolderDAO;
@@ -23,6 +24,7 @@ import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.Folder;
+import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
@@ -428,4 +430,58 @@ public class FeatureUtil extends ModelUtil {
 		Iterator it = samples.iterator();
 		return (Sample)it.next();
 	}
+	
+	public void approveFeature(Feature feature, String mapSheet, Integer serialNum, String recollectionNum, String comments, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+		if (!hasMasterfileRights(user, feature, UserFolder.FOLDER_APPROVE_RIGHT))
+			throw new InsufficientPrivelegesException();
+		
+		//Make an FR number
+		FrNumber fr = sampleDAO.createFRNumber();
+		fr.setMapSheet(mapSheet);
+		fr.setSerialNumber(serialNum);
+		fr.setRecollectionNumber(recollectionNum);
+		
+		//All samples get the same FR number
+		for (Iterator it = feature.getSamples().iterator(); it.hasNext(); ) {
+			Sample sample = (Sample)it.next();
+			sample.setFrNumber(fr);
+			sampleDAO.update(sample);
+		}
+		
+		//explicitly add to working folder
+		Audit audit = feature.getAudit();
+		try {
+			feature.getFolders().add(audit.getFolder());
+			featureDAO.update(feature);
+		} catch (Exception e) {
+		}
+		
+		//update audit table
+		audit.setStatus(APPROVED);
+		audit.setApprovedById(new Integer(user.getId()));
+		audit.setApprovedDate(new Date());
+		audit.setFolder(null);
+		audit.setWorkingComments(null);
+		audit.setCuratorComments(comments);
+		featureDAO.update(audit);
+	}
+	
+	public void rejectLocality(Feature feature, String comments, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+		if (!hasMasterfileRights(user, feature, UserFolder.FOLDER_APPROVE_RIGHT))
+			throw new InsufficientPrivelegesException();
+		
+		Audit audit = feature.getAudit();
+		audit.setStatus(REJECTED);
+		audit.setCuratorComments(comments);
+		featureDAO.update(audit);
+	}
+	
+	public void addToFolder(Feature feature, int folderId, UserAccount user) throws StorageAccessException, FolderUtilException {
+		if (feature.getAudit().getStatus().equals(APPROVED))
+			throw new FolderUtilException("Cannot add a working locality");
+		
+		//TODO this should check that they have rights to add to this folder...
+		feature.getFolders().add(folderDAO.getFolder(folderId));
+	}
+
 }
