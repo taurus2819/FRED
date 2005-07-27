@@ -22,6 +22,7 @@ import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FolderType;
+import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SampleMeta;
@@ -105,15 +106,7 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
      * Returns the folder with the given id
      */
     public Folder getFolder(int folderId) throws StorageAccessException {
-        try {
-            Session session = provider.currentSession();
-			List list = session.find("FROM Folder WHERE folderId = ?", new Integer(folderId), new IntegerType());
-			if (list.size() == 0)
-			    return null;
-			return (Folder)list.get(0);
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-        }
+		return (Folder)getFirst("FROM Folder WHERE folderId = ?", folderId);
     }
 
 	public int getWaitingMasterfileFeatureCount(Folder folder) throws StorageAccessException {
@@ -271,12 +264,16 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 	}
 
 	public Feature getFeature(int featureId) throws StorageAccessException {
+		return (Feature)getFirst("FROM Feature WHERE featureId = ?", featureId);
+	}
+
+	private Object getFirst(String query, int id) throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
-			List list = session.find("FROM Feature WHERE featureId = ?", new Integer(featureId), new IntegerType());
+			List list = session.find(query, new Integer(id), new IntegerType());
 			if (list.size() == 0)
 			    return null;
-			return (Feature)list.get(0);
+			return list.get(0);
         } catch (Exception e) {
             throw new StorageAccessException(e);
         }
@@ -311,9 +308,26 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 	    return (Sample)save((Object)newSample);
 	}
 
+	public Sample getSample(int sampleId) throws StorageAccessException {
+		return (Sample)getFirst("FROM Sample WHERE sampleId = ?", sampleId);
+	}
+
+	public void delete(Sample sample) throws StorageAccessException {
+		delete((Object)sample);
+	}
+	
 	public RecordDAO getRecordDAO() {
 		return this;
 	}
+
+	public Record getRecord(int recordId) throws StorageAccessException {
+		return (Record)getFirst("FROM Record WHERE recordId = ?", recordId);
+	}
+
+	public void delete(Record record) throws StorageAccessException {
+		delete((Object)record);
+	}
+
 
 
 }

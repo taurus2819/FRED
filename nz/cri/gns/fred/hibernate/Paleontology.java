@@ -169,4 +169,12 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
         this.identifiers = identifiers;
     }
 
+	public Date getDate() {
+		return getIdentificationDate();
+	}
+
+	public Set getPersons() {
+		return getIdentifiers();
+	}
+
 }

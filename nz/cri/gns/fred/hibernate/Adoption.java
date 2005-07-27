@@ -104,4 +104,12 @@ public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption {
     public void setAdopters(Set adopters) {
         this.adopters = adopters;
     }
+
+	public Date getDate() {
+		return getAdoptionDate();
+	}
+
+	public Set getPersons() {
+		return getAdopters();
+	}
 }

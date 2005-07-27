@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -196,4 +199,22 @@ public class FREDUtil {
 			throw e;
 		}
 	}
+	
+	/**
+	 * Returns a string of a date with appropriate formatting 
+	 */
+	public static String formatDateForOutput(Date date, String rounding) {
+		SimpleDateFormat yearFormatter = new SimpleDateFormat("yyyy");
+		SimpleDateFormat monthFormatter = new SimpleDateFormat("MMMM yyyy");
+		if (rounding == null) {
+			return DateFormat.getDateInstance(DateFormat.LONG).format(date);
+		} else if (rounding.equals("Year")) {
+			return yearFormatter.format(date);
+		} else if (rounding.equals("Month")) {
+			return monthFormatter.format(date);
+		} else {
+			return DateFormat.getDateInstance(DateFormat.LONG).format(date);
+		}
+	}
+
 }

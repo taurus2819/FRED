@@ -330,6 +330,15 @@ public class FeatureUtil extends ModelUtil {
 		return featureDAO.getFeature(featureId);
 	}
 	
+	public boolean folderContainsFeature(UserFolder folder, Feature feature) throws StorageAccessException {
+		Feature[] features = getFeaturesInFolder(folder);
+		for (int i=0; i<features.length; i++) {
+			if (features[i].equals(feature))
+				return true;
+		}
+		return false;
+	}
+	
 	public Feature[] getFeaturesInFolder(UserFolder folder) throws StorageAccessException {
 		HashSet features = new HashSet();
 		
@@ -401,7 +410,10 @@ public class FeatureUtil extends ModelUtil {
 	 * @throws 
 	 */
 	public boolean hasMasterfileRights(UserAccount user, Feature feature, int right) throws StorageAccessException {
-
+		return hasMasterfileRights(user, feature, right, folderDAO);
+	}
+	
+	static boolean hasMasterfileRights(UserAccount user, Feature feature, int right, FolderDAO folderDAO) throws NumberFormatException, StorageAccessException {
 		Folder masterfile = feature.getMasterFile();
 		UserFolder masterfileFolder = folderDAO.getUserFolder(masterfile.getFolderId().intValue(), Integer.parseInt(user.getId()));
 		

@@ -1,13 +1,27 @@
 package nz.cri.gns.fred.util;
 
+import java.util.Date;
+
+import nz.cri.gns.auth.InsufficientPrivelegesException;
+import nz.cri.gns.auth.UserAccount;
+import nz.cri.gns.fred.dao.DAOFactory;
+import nz.cri.gns.fred.dao.FolderDAO;
+import nz.cri.gns.fred.dao.SampleDAO;
+import nz.cri.gns.fred.dao.StorageAccessException;
+import nz.cri.gns.fred.dataentry.DataInputException;
+import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Sample;
+import nz.cri.gns.fred.model.UserFolder;
 
 /**
  *
  */
-public class SampleUtil implements FREDConstants {
+public class SampleUtil extends ModelUtil implements FREDConstants {
+
+	private SampleDAO sampleDAO;
+	private FolderDAO folderDAO;
 
 	/**
 	 * Implements
@@ -42,4 +56,59 @@ public class SampleUtil implements FREDConstants {
 	public static boolean hasDepthInformation(Sample sample) {
 		return sample.getTopDepth() != null || sample.getBottomDepth() != null || sample.getDrillType() != null;
 	}
+	
+	public SampleUtil(DAOFactory factory) {
+		super(factory);
+		this.sampleDAO = factory.getSampleDAO();
+		this.folderDAO = factory.getFolderDAO();
+	}
+	
+	public void deleteSample(int sampleId, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+		Sample sample = sampleDAO.getSample(sampleId);
+		
+		if (!isAllowedDeleteSample(sample, folder, user))
+			throw new InsufficientPrivelegesException();
+		
+		sampleDAO.delete(sample);
+		//TODO Ben also checked if the feature was sampleless and added if it was.??	
+	}
+
+	public void submitSample(int sampleId, UserFolder folder, UserAccount user) throws DataInputException, InsufficientPrivelegesException, StorageAccessException {
+		Sample sample = sampleDAO.getSample(sampleId);
+		if (!folder.isAllowedSubmitLocalities() || sample.getAudit().getStatus().equals(WAITING))
+			throw new InsufficientPrivelegesException();
+		if (sample.getCollectors() == null || sample.getCollectors().size() == 0 || sample.getCollectionDate() == null || sample.getInPlace() == null)
+			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
+		
+		//Update the audit log, so long as this isn't an outcrop
+		if (!sample.getFeature().getFeatureType().equals(OUTCROP)) {
+			Audit audit = sample.getAudit();
+			audit.setStatus(WAITING);		//TODO this in the original was APPROVED but sure that is wrong????
+			audit.setSubmittedById(new Integer(user.getId()));
+			audit.setSubmittedDate(new Date());
+			audit.setWorkingComments(null);
+			audit.setFolder(null);
+			sampleDAO.update(audit);
+		}
+	}
+	
+	/**
+	 * @param sample
+	 * @param folder
+	 * @param user
+	 * @return
+	 * @throws StorageAccessException
+	 * @throws NumberFormatException
+	 */
+	private boolean isAllowedDeleteSample(Sample sample, UserFolder folder, UserAccount user) throws StorageAccessException {
+		Audit audit = sample.getAudit();
+		if (audit.getStatus().equals(APPROVED))
+			return false;
+
+		if (audit.getStatus().equals(WAITING))
+			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_DELETE_RIGHT, folderDAO);
+
+		return folder.isAllowedDeleteLocalities();
+	}
+
 }

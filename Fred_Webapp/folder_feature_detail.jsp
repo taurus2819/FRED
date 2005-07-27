@@ -1,20 +1,18 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
-%><%@page import="nz.cri.gns.fred.*"
-%><%@page import="nz.cri.gns.db.*"
-%><%@page import="nz.cri.gns.jsp.*"
-%><%@page import="java.net.*"
-%><%@page import="nz.cri.gns.intranet.*"
-%><%@page import="java.sql.*"
-%><%@page import="java.text.*"
-%><%@page import="java.util.*"
-%><%@page import="nz.cri.gns.auth.*"
+%><%@page import="nz.cri.gns.fred.IconnedLink"
+%><%@page import="java.text.DateFormat"
+%><%@page import="java.util.Iterator"
+%><%@page import="nz.cri.gns.auth.User"
+%><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
 %><%@page import="nz.cri.gns.fred.dao.StorageAccessException"
+%><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.model.Audit"
 %><%@page import="nz.cri.gns.fred.model.Feature"
+%><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.model.Record"
 %><%@page import="nz.cri.gns.fred.model.Sample"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
@@ -49,20 +47,23 @@
 	
 	FolderUtil folderUtil = new FolderUtil(factory);
 	FeatureUtil featureUtil = new FeatureUtil(factory);
+	SampleUtil sampleUtil = new SampleUtil(factory);
+	RecordUtil recordUtil = new RecordUtil(factory);
+	
 	User user = (User)getUser(session);
 	
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
 
 	Feature feature = featureUtil.getFeature(Integer.parseInt(request.getParameter("FeatID")));
-	UserFolder folder = folderUtil.getFolder(Integer.parseInt(request.getParameter("FoldID")), user);
+	UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("FoldID")), user);
 
-	if (!featureUtil.getFeaturesInFolder(folder).contains(feature) || !folder.isAllowedReadLocalities()) {
+	if (!featureUtil.folderContainsFeature(folder, feature) || !folder.isAllowedReadLocalities()) {
 		response.sendError(HttpServletResponse.SC_FORBIDDEN);
 		return;
 	}
 	
-	session.setAttribute("dataEntryRedirect", "folder_feature_detail.jsp?FoldID=" + folder.getFolderID() + "&FeatID=" + featID);
+	session.setAttribute("dataEntryRedirect", "folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId());
 
 	String errorMessage = null;
 	if (request.getParameter("ActionType") != null) { //do something
@@ -78,11 +79,11 @@
 			}
 			//TODO Delete sample
 			else if (actionType.equals("DeleteSamp") && folder.isAllowedDeleteLocalities()) {
-				FolderUtils.deleteSample(request.getParameter("SampID"), user, state);
+				sampleUtil.deleteSample(Integer.parseInt(request.getParameter("SampID")), folder, user);
 			}
 			//TODO Delete record
 			else if (actionType.equals("DeleteRec") && folder.isAllowedDeleteLocalities()) {
-				FolderUtils.deleteRecord(request.getParameter("RecID"), user, state);
+				recordUtil.deleteRecord(Integer.parseInt(request.getParameter("RecID")), folder, user);
 			}
 			// submit working locality
 			else if (actionType.equals("Submit") && folder.isAllowedSubmitLocalities()) {
@@ -90,11 +91,11 @@
 			}
 			//TODO Submit sample
 			else if (actionType.equals("SubmitSamp") && folder.isAllowedSubmitLocalities()) {
-				FolderUtils.submitSample(request.getParameter("SampID"), user, state);
+				sampleUtil.submitSample(Integer.parseInt(request.getParameter("SampID")), folder, user);
 			}
 			//TODO submit working record
 			else if (actionType.equals("SubmitRec") && folder.isAllowedSubmitLocalities()) {
-				FolderUtils.submitRecord(request.getParameter("RecID"), user, state);
+				recordUtil.submitRecord(Integer.parseInt(request.getParameter("RecID")), folder, user);
 			}
 			//Revoke waiting locality
 			else if (actionType.equals("Revoke") && folder.isAllowedSubmitLocalities()) {
@@ -167,14 +168,14 @@ function showHide(toShow, toHide) {
 			%></td><td></td><%
 		}
 		%><td><%
-		boolean editable = audit.getStatus().equals(FREDConstants.WORKING) || audit.getStatus().equals(REJECTED);
+		boolean editable = audit.getStatus().equals(FREDConstants.WORKING) || audit.getStatus().equals(FREDConstants.REJECTED);
 		if (editable && folder.isAllowedEditLocalities()) {
-			%><a href="data_entry.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=Feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
+			%><a href="data_entry.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 		}
 	
 		%></td><td><%
 		//TODO why is this commented out?
-	//			if ((locStatus.equals(Audit.STATUS_WORKING) || locStatus.equals(Audit.STATUS_REJECTED)) && folder.isAllowedDeleteLocalities())
+	//			if ((locStatus.equals(FREDConstants.WORKING) || locStatus.equals(FREDConstants.REJECTED)) && folder.isAllowedDeleteLocalities())
 	//				out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this locality\") == true) {document.FoldForm.ActionType.value=\"DeleteFeat\";document.FoldForm.submit();}'><img src='images/delete.gif' border='0' height='20' width='20' alt='Delete Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 		%></td><td><%
 		if (editable && folder.isAllowedSubmitLocalities()) {
@@ -187,7 +188,7 @@ function showHide(toShow, toHide) {
 		
 		if (folder.isAllowedCreateLocalities()) {
 			if (feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
-				Sample sample = featureUtils.getOutcropSample(feature);
+				Sample sample = featureUtil.getOutcropSample(feature);
 				%><a href="data_entry.jsp?Type=ADO&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/new_ado.gif" border="0" height="20" width="20" alt="Add Adoption Record" /></a><img src="images/blank.gif" height="20" width="2" />
 </td><td>
 <a href="data_entry.jsp?Type=PAL&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/new_pal.gif" border="0" height="20" width="20" alt="Add Paleontology Record" /></a><%
@@ -214,7 +215,7 @@ function showHide(toShow, toHide) {
 						%></td><td><%
 					}
 					%></td><td><%
-					editable = audit.getStatus().equals(FREDConstants.WORKING) || audit.getStatus().equals(REJECTED);
+					editable = audit.getStatus().equals(FREDConstants.WORKING) || audit.getStatus().equals(FREDConstants.REJECTED);
 					if (editable && folder.isAllowedEditLocalities()) {
 						%><a href="data_entry.jsp?Type=Sample&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Sample Details" /></a><img src="images/blank.gif" height="20" width="2" /><%
 					}
@@ -247,43 +248,47 @@ function showHide(toShow, toHide) {
 					boolean badTaxaFlag = (isPaleontology) ? !RecordUtil.isTaxaApproved(record) : true;
 
 					audit = record.getAudit();
-					if (audit.getFolder() != null && audit.getFolder.equals(folder.getFolder())) {
+					if (audit.getFolder() != null && audit.getFolder().equals(folder.getFolder())) {
 						%><tr><td><img src="images/child.gif" width="20" height="20" /><img src="images/<%=(isAdoption) ? "ado" : "pal"%>.gif" width="20" height="20" /></td><td class="smalltext"><%
 						if (badTaxaFlag) {
 							%><span class="heading" style="color: #FF0000">*</span>&nbsp;&nbsp;<%
 						}
 						
-						//TODO up to here
+						%><%=RecordUtil.getRecordName(record)%>&nbsp;&nbsp;</td><td class="smalltext" style="color: #FF0000"><%
 						
-						out.print(FREDUtils.noNulls(record.toString()) + "&nbsp;&nbsp;</td><td class='smalltext' style='color: #FF0000'>");
-						if (record.getAsString(Record.STATUS).equals(Audit.STATUS_WORKING)) {
-							out.print("working&nbsp;&nbsp;</td><td class='smalltext'>");
-							if (record.get(Record.CREATED_DATE) != null)
-								out.print(DateFormat.getDateInstance(DateFormat.LONG).format(record.getAsDate(Record.CREATED_DATE)) + "&nbsp;&nbsp;");
-							out.print("</td>");
+						if (audit.getStatus().equals(FREDConstants.WORKING)) {
+							%>working&nbsp;&nbsp;</td><td class="smalltext"><%
+							if (audit.getCreatedDate() != null) {
+								%><%=DateFormat.getDateInstance(DateFormat.LONG).format(audit.getCreatedDate())%>&nbsp;&nbsp;<%
+							}
+							%></td><%
 						} else {
-							out.print("</td><td></td>");
+							%></td><td></td><%
 						}
-						out.print("<td>");
+						%><td><%
 						//Record Options
-						if (record.getAsString(Record.STATUS).equals(Audit.STATUS_WORKING) && folder.isAllowedEditLocalities())
-							out.println("<a href='data_entry.jsp?Type=" + recType + "&FoldID=" + folder.getFolderID() + "&RecID=" + recID + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Record' /></a><img src='images/blank.gif' height='20' width='2' />");
-						out.println("</td><td>");
-						if (record.getAsString(Record.STATUS).equals(Audit.STATUS_WORKING) && folder.isAllowedDeleteLocalities())
-							out.println("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this record\") == true) {document.FoldForm.ActionType.value=\"DeleteRec\";document.FoldForm.RecID.value=\"" + recID + "\";document.FoldForm.submit();}'><img src='images/delete.gif' border='0' height='20' width='20' alt='Delete Record' /></a><img src='images/blank.gif' height='20' width='2' />");
-						out.println("</td><td>");
-						if (record.getAsString(Record.STATUS).equals(Audit.STATUS_WORKING) && folder.isAllowedSubmitLocalities() && !badTaxaFlag)
-							out.println("<a href='#' onClick='document.FoldForm.ActionType.value=\"SubmitRec\";document.FoldForm.RecID.value=\"" + recID + "\";document.FoldForm.submit();'><img src='images/submit.gif' border='0' height='20' width='20' alt='Submit Record' /></a><img src='images/blank.gif' height='20' width='2' />");
-						out.println("</td></tr>");
+						editable = audit.getStatus().equals(FREDConstants.WORKING);
+						if (editable && folder.isAllowedEditLocalities()) {
+							%><a href="data_entry.jsp?Type=<%=(isAdoption) ? "ado" : "pal"%>&FoldID=<%=folder.getFolderId()%>&RecID=<%=record.getRecordId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
+						}
+						%></td><td><%
+						if (editable && folder.isAllowedDeleteLocalities()) {
+							%><a href="javascript:if (confirm('Are you sure you want to delete this record') == true) {document.FoldForm.ActionType.value='DeleteRec';document.FoldForm.RecID.value='<%=record.getRecordId()%>';document.FoldForm.submit();}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
+						}
+						%></td><td><%
+						if (editable && folder.isAllowedSubmitLocalities() && !badTaxaFlag) {
+							%><a href="javascript:document.FoldForm.ActionType.value='SubmitRec';document.FoldForm.RecID.value='<%=record.getRecordId()%>';document.FoldForm.submit();"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
+						}
+						%></td></tr><%
 					}
 				}
-				out.println("<tr><td colspan='9'><img src='images/line.gif' height='3' width='550' /></td></tr>");
+				%><tr><td colspan='9'><img src='images/line.gif' height='3' width='550' /></td></tr><%
 			}
 		}
-				%>
+		%>
 <input type="hidden" name="ActionType" value="">
-<input type="hidden" name="FoldID" value="<%=folder.getFolderID()%>">
-<input type="hidden" name="FeatID" value="<%=featID%>">
+<input type="hidden" name="FoldID" value="<%=folder.getFolderId()%>">
+<input type="hidden" name="FeatID" value="<%=feature.getFeatureId()%>">
 <input type="hidden" name="SampID" value="">
 <input type="hidden" name="RecID" value="">
 <input type="hidden" name="NewFeatName" value="">
@@ -293,22 +298,6 @@ function showHide(toShow, toHide) {
 </form>
 </td></tr></table>
 <%
-			}
-			else { //no folder found
-				drawEndNavigation(out);
-				out.println("<p><span class='bigheading'>Access Denied</span><br />");
-				out.println("You don't have rights to edit this locality</p>");
-			}
-	/*	} catch (Exception e) {
-			drawEndNavigation(out);
-			out.println("<p><span class='bigheading'>Access Denied</span><br />");
-			out.println("You don't have rights to edit this locality</p>");
-		} */
-	}
-	else {
-		drawTop(out, et, request, response);
-		drawEndNavigation(out);
-	}
-
 	drawBottom(out, et);
+	featureUtil.closeSession();
 %>

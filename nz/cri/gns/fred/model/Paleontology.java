@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  *
  */
-public interface Paleontology {
+public interface Paleontology extends RecordDetails {
 	public abstract Integer getRecordId();
 
 	public abstract void setRecordId(Integer recordId);
