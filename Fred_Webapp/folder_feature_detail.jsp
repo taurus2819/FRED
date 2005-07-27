@@ -298,6 +298,7 @@ function showHide(toShow, toHide) {
 </form>
 </td></tr></table>
 <%
+	endDETable(out);
 	drawBottom(out, et);
 	featureUtil.closeSession();
 %>
