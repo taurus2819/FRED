@@ -146,7 +146,7 @@ function showHide(toShow, toHide) {
 		startDETable(out);
 		%><table border="0" width="550"><tr><td colspan="9" class="deHeading"><%=feature.getFeatureName()%></td></tr>
 <tr>
-<th colspan="2">Name&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Options</th></tr>
+<th colspan="2">Name&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Options</th></tr>
 <tr><td colspan="9"><img src="images/line.gif" height="3" width="550" /></td></tr>
 <form name="FoldForm" method="put" action="folder_feature_detail.jsp">
 <%-- Feature --%>
@@ -299,7 +299,7 @@ function showHide(toShow, toHide) {
 	%></p>
 </form>
 </td></tr></table>
-
+<%
 	drawBottom(out, et);
 	featureUtil.closeSession();
 %>
