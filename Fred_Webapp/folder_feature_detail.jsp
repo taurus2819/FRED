@@ -293,12 +293,13 @@ function showHide(toShow, toHide) {
 <input type="hidden" name="RecID" value="">
 <input type="hidden" name="NewFeatName" value="">
 	
-</table></p>
-	
+</table>
+<%
+	endDETable(out);</p>
+	%>
 </form>
 </td></tr></table>
-<%
-	endDETable(out);
+
 	drawBottom(out, et);
 	featureUtil.closeSession();
 %>
