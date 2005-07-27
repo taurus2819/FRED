@@ -295,8 +295,8 @@ function showHide(toShow, toHide) {
 	
 </table>
 <%
-	endDETable(out);</p>
-	%>
+	endDETable(out);
+	%></p>
 </form>
 </td></tr></table>
 
