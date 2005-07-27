@@ -264,7 +264,7 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 	}
 
 	public Feature getFeature(int featureId) throws StorageAccessException {
-		return (Feature)getFirst("FROM Feature WHERE featureId = ?", featureId);
+		return (Feature)getFirst("FROM Feature as f WHERE f.featureId = ?", featureId);
 	}
 
 	private Object getFirst(String query, int id) throws StorageAccessException {
@@ -309,7 +309,7 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 	}
 
 	public Sample getSample(int sampleId) throws StorageAccessException {
-		return (Sample)getFirst("FROM Sample WHERE sampleId = ?", sampleId);
+		return (Sample)getFirst("FROM Sample as s WHERE s.sampleId = ?", sampleId);
 	}
 
 	public void delete(Sample sample) throws StorageAccessException {
@@ -321,7 +321,7 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 	}
 
 	public Record getRecord(int recordId) throws StorageAccessException {
-		return (Record)getFirst("FROM Record WHERE recordId = ?", recordId);
+		return (Record)getFirst("FROM Record as r WHERE r.recordId = ?", recordId);
 	}
 
 	public void delete(Record record) throws StorageAccessException {
