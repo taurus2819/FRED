@@ -3,9 +3,10 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Date;
 
+import nz.cri.gns.fred.model.Audit;
 
 /** @author Hibernate CodeGenerator */
-public class AuditEdit implements Serializable {
+public class AuditEdit implements Serializable, nz.cri.gns.fred.model.AuditEdit {
 
     /** identifier field */
     private Integer auditEditId;
@@ -20,14 +21,14 @@ public class AuditEdit implements Serializable {
     private String comments;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.AuditTable auditTable;
+    private Audit audit;
 
     /** full constructor */
-    public AuditEdit(Integer editedById, Date editedDate, String comments, nz.cri.gns.fred.hibernate.AuditTable auditTable) {
+    public AuditEdit(Integer editedById, Date editedDate, String comments, Audit auditTable) {
         this.editedById = editedById;
         this.editedDate = editedDate;
         this.comments = comments;
-        this.auditTable = auditTable;
+        this.audit = auditTable;
     }
 
     /** default constructor */
@@ -35,8 +36,8 @@ public class AuditEdit implements Serializable {
     }
 
     /** minimal constructor */
-    public AuditEdit(nz.cri.gns.fred.hibernate.AuditTable auditTable) {
-        this.auditTable = auditTable;
+    public AuditEdit(Audit auditTable) {
+        this.audit = auditTable;
     }
 
     public Integer getAuditEditId() {
@@ -71,12 +72,12 @@ public class AuditEdit implements Serializable {
         this.comments = comments;
     }
 
-    public nz.cri.gns.fred.hibernate.AuditTable getAuditTable() {
-        return this.auditTable;
+    public Audit getAudit() {
+        return this.audit;
     }
 
-    public void setAuditTable(nz.cri.gns.fred.hibernate.AuditTable auditTable) {
-        this.auditTable = auditTable;
+    public void setAudit(Audit audit) {
+        this.audit = audit;
     }
 
 }

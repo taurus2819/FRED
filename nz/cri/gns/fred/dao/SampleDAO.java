@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.dao;
 
 import nz.cri.gns.fred.model.Audit;
+import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
@@ -77,5 +78,12 @@ public interface SampleDAO {
 	 * @return a new FrNumber
 	 */
 	public FrNumber createFRNumber();
+
+	/**
+	 * @param audit
+	 * @return
+	 * @throws StorageAccessException
+	 */
+	public AuditEdit getMostRecenteEdit(Audit audit) throws StorageAccessException;
 
 }

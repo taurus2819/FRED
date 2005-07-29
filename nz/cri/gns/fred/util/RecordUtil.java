@@ -80,7 +80,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants {
 		
 		Record record = recordDAO.getRecord(recordId);
 		Audit audit = record.getAudit();
-		audit.setStatus(WAITING);		//TODO like sample, this was originally APPROVED - why is that?
+		audit.setStatus(APPROVED);		//Records don't need approval
 		audit.setSubmittedById(new Integer(user.getId()));
 		audit.setSubmittedDate(new Date());
 		audit.setWorkingComments(null);

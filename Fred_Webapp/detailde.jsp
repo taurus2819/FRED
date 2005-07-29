@@ -7,14 +7,24 @@
 %><%@page import="nz.cri.gns.util.map.*"
 %><%@page import="java.net.*"
 %><%@page import="java.text.*"
-%><%@page import="java.util.*"
-%><%@page import="nz.cri.gns.auth.*"
+%><%@page import="java.util.List"
+%><%@page import="java.util.Iterator"
+%><%@page import="nz.cri.gns.auth.User"
+%><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
+%><%@page import="nz.cri.gns.fred.model.Audit"
+%><%@page import="nz.cri.gns.fred.model.AuditEdit"
 %><%@page import="nz.cri.gns.fred.model.Feature"
+%><%@page import="nz.cri.gns.fred.model.FrNumber"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
+%><%@page import="nz.cri.gns.fred.model.Record"
 %><%@page import="nz.cri.gns.fred.model.Sample"
+%><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
+%><%@page import="nz.cri.gns.fred.util.FREDUtil"
+%><%@page import="nz.cri.gns.fred.util.FolderUtil"
+%><%@page import="nz.cri.gns.fred.util.RecordUtil"
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
 %><%!	
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { 
@@ -28,8 +38,7 @@
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	FeatureUtil featureUtil = new FeatureUtil(factory);
 	SampleUtil sampleUtil = new SampleUtil(factory);
-	
-	boolean authorChk = false, sCountChk = false, sCoordChk = false, commChk = true;
+	FolderUtil folderUtil = new FolderUtil(factory);
 
 	ExtranetTemplate et = getExtranetTemplate();
 
@@ -72,216 +81,263 @@
 		else if (actionType.equals("AddtoFold") && !request.getParameter("FoldID").equals("-")) {
 			featureUtil.addToFolder(sample.getFeature(), Integer.parseInt(request.getParameter("FoldID")), user);
 			%><script language="JavaScript"><!--
-alert("Locality Added to <%=folder.getFolderName()%>");
-//--</script>");
+alert("Locality added to <%=folderUtil.getUserFolder(Integer.parseInt(request.getParameter("FoldID")), user).getFolder().getName()%>");
+//--</script><%
 		}
 	}
 
 	drawTop(out, et, request, response);
 
-			if (request.getParameter("AuthorChk") != null && request.getParameter("AuthorChk").equals("true")) { authorChk = true; }
-			if (request.getParameter("SCountChk") != null && request.getParameter("SCountChk").equals("true")) { sCountChk = true; }
-			if (request.getParameter("SCoordChk") != null && request.getParameter("SCoordChk").equals("true")) { sCoordChk = true; }
-			if (request.getParameter("CommChk") != null && request.getParameter("CommChk").equals("false")) { commChk = false; }
+	boolean authorChk = "true".equals(request.getParameter("AuthorChk"));
+	boolean sCountChk = "true".equals(request.getParameter("SCountChk"));
+	boolean sCoordChk = "true".equals(request.getParameter("SCoordChk"));
+	boolean commChk = !"false".equals(request.getParameter("CommChk"));
+
+	Feature feature = sample.getFeature();
 	
-			//List data
+	//List data
+	%><table style="margin-left:10px; margin-top:20px; width:180px;" border="0"><%
+	Audit audit = sample.getAudit();
+	if (!audit.getStatus().equals(FREDConstants.APPROVED)) {
+		%><tr><td style="color: red">The locality that you have requested has not yet been approved for masterfile inclusion.  </td></tr><%
+		if (user == null || !folderUtil.getUserFolder(audit.getFolder().getFolderId().intValue(), user).isAllowedReadLocalities()) {
+			%></table><%
+			drawBottom(out, et); 
+			folderUtil.closeSession();
+			return;
+		}
+	}
+	%><tr><td colspan="2" align="center"><img src="images/loc.gif" height="20" width="20" /></td></tr>
+<tr><td colspan="2" align="center" class="bigheading" ><%=sample.getSampleName()%></td></tr>
+<tr><td colspan="2" align="center"><%=feature.getFeatureType()%></td></tr><%
+	if (feature.getMasterFile() != null) {
+		%><tr><td class="smallheading">Masterfile:<img src="images/blank.gif" height="1" width="5" /></td><td class="smalltext"><%=feature.getMasterFile().getName()%></td></tr><%
+	}
+	if (!audit.getStatus().equals(FREDConstants.APPROVED)) {
+		%><tr><td class="smallheading">Status:<img src="images/blank.gif" height="1" width="5" /></td><td class="smalltext"><%=audit.getStatus()%></td></tr><%
+	}
+	if (audit.getCreatedById() != null || audit.getCreatedDate() != null) {
+		%><tr><td class='smallheading'>Created:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'><%
+		if (audit.getCreatedById() != null) { 
+			%><%=FREDUtil.getUserName(audit.getCreatedById().intValue())%><br /><%
+		}
+		if (audit.getCreatedDate() != null) { 
+			%><%=FREDUtil.formatDateForOutput(audit.getCreatedDate(), "Day")%><%
+		}
+		%></td></tr><%
+	}
+	AuditEdit edit = sampleUtil.getMostRecentEdit(audit);
+	if (edit != null && edit.getEditedById() != null || edit.getEditedDate() != null) {
+		%><tr><td class='smallheading'>Last Editted:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'><%
+		if (edit.getEditedById() != null) { 
+			%><%=FREDUtil.getUserName(edit.getEditedById().intValue())%><br /><%
+		}
+		if (edit.getEditedDate() != null) { 
+			%><%=FREDUtil.formatDateForOutput(edit.getEditedDate(), "Day")%><%
+		}
+		%></td></tr><%
+	}
+	if (audit.getSubmittedById() != null || audit.getSubmittedDate() != null) {
+		%><tr><td class='smallheading'>Submitted:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'><%
+		if (audit.getSubmittedById() != null) { 
+			%><%=FREDUtil.getUserName(audit.getSubmittedById().intValue())%><br /><%
+		}
+		if (audit.getSubmittedDate() != null) { 
+			%><%=FREDUtil.formatDateForOutput(audit.getSubmittedDate(), "Day")%><%
+		}
+		%></td></tr><%
+	}
+	if (audit.getApprovedById() != null || audit.getApprovedDate() != null) {
+		%><tr><td class='smallheading'>Approved:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'><%
+		if (audit.getApprovedById() != null) { 
+			%><%=FREDUtil.getUserName(audit.getApprovedById().intValue())%><br /><%
+		}
+		if (audit.getApprovedDate() != null) { 
+			%><%=FREDUtil.formatDateForOutput(audit.getApprovedDate(), "Day")%><%
+		}
+		%></td></tr><%
+	}
+
+	if (user != null) {
+
+		%><tr><td class="smallheading"><a href="audit_detail.jsp?ID=<%=sample.getSampleId()%>" target="audit">More...</a></td></tr>");
+<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr><%
+		
+		out.println("<tr><td colspan='2'><table border='0'>");
+		
+		//Generate list of users folders
+		List folders = folderUtil.getPersonalFolders(user);
+		boolean hasFolderWrite = false;
+		for (Iterator it = folders.iterator(); it.hasNext(); ) {
+			if (((UserFolder)it.next()).isAllowedCreateLocalities()) {
+				hasFolderWrite = true;
+				break;
+			}
+		}
+		if (hasFolderWrite) {
+			%><form name="FolderForm" method="post" action="detail.jsp">
+<tr><td colspan="2"><select name="FoldID"><option value="-">-- Choose --</option>
+<%
+			for (Iterator i = folders.iterator(); i.hasNext(); ) {
+				UserFolder folder = (UserFolder)i.next();
+				if (folder.isAllowedCreateLocalities()) {
+					%><option value="<%=folder.getFolderId()%>"><%=(folder.getFolderName().length() <= 17) ? folder.getFolderName() : folder.getFolderName().substring(0, 17)%></option>
+<%
+				}
+			}
+			%>
+</select></td></tr>
+<tr><td><a href="javascript:FolderForm.submit();"><img src="images/folder.gif" height="20" width="20" border="0" alt="Add to Folder" /></a></td><td><a href="#" onClick="FolderForm.submit();" class="heading">Add to Folder</a></td></tr>
+<input type="hidden" name="ID" value="<%=sample.getSampleId()%>" />
+<input type="hidden" name="ActionType" value="AddtoFold" />
+</form>
+<tr><td>&nbsp;</td></tr>
+<%
+		}
+		
+		%><tr><td><a href="print_front.jsp?ID=<%=sample.getSampleId()%>&FormType=Full" target="print"><img src="images/print.gif" width="20" height="20" border="0" alt="Print" /></a>&nbsp;&nbsp;</td><td><a href="print_front.jsp?ID=<%=sample.getSampleId()%>&FormType=Full" class="heading" target="print">Print Front</a></td></tr><%
+		for (Iterator i = sample.getRecords().iterator(); i.hasNext(); ) {
+			Record record = (Record)i.next();
+			if (record.getPaleontology() != null) {
+				%><tr><td><a href="print_pal.jsp?ID=<%=record.getRecordId()%>" target="print"><img src="images/print.gif" width="20" height="20" border="0" alt="Print" /></a>&nbsp;&nbsp;</td><td><a href="print_pal.jsp?ID=<%=record.getRecordId()%>" class="heading" target="print">Print Pal Record</br ><%=RecordUtil.getRecordName(record)%></a></td></tr><%
+			}
+		}
+		%></table></td></tr><%
+
+		if (featureUtil.isAllowedApproveFeature(user, sample.getFeature())) {
+			FrNumber frNumber = featureUtil.getNextAvailableFrNumber(sample.getFeature());
+			out.println("<tr><td colspan='2'>");
 			out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
-			if (!sample.isApprovedLocality() && !sample.isUserAuthenticated())
-				throw new InvalidCredentialsException();
-			Audit audit = Audit.getAudit(sample.getAsInt(Sample.FEATURE_AUDIT_ID), state);
-			featType = sample.getAsString(Sample.FEATURE_TYPE);
-			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
-			out.println("<tr><td colspan='2' align='center' class='bigheading' >" + sample.getAsString(Sample.SAMPLE_NAME) + "</td></tr>");
-			out.println("<tr><td colspan='2' align='center'>" + featType + "</td></tr>");
-			if (sample.get(Sample.MASTERFILE_NAME) != null) {
-				out.println("<tr><td class='smallheading'>Masterfile:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + sample.getAsString(Sample.MASTERFILE_NAME) + "</td></tr>");
-			}
-			if (!audit.getAsString(Audit.STATUS).equals(Audit.STATUS_APPROVED)) {
-				out.println("<tr><td class='smallheading'>Status:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>" + audit.getAsString(Audit.STATUS) + "</td></tr>");
-			}
-			if (audit.get(Audit.CREATED_BY) != null || audit.get(Audit.CREATED_DATE) != null) {
-				out.println("<tr><td class='smallheading'>Created:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (audit.get(Audit.CREATED_BY) != null) { out.print(audit.getAsString(Audit.CREATED_BY) + "<br />"); }
-				if (audit.get(Audit.CREATED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.CREATED_DATE))); }
-				out.println("</td></tr>");
-			}
-			if (audit.get(Audit.EDITED_BY) != null || audit.get(Audit.EDITED_DATE) != null) {
-				out.println("<tr><td class='smallheading'>Edited:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (audit.get(Audit.EDITED_BY) != null) { out.print(audit.getAsString(Audit.EDITED_BY) + "<br />"); }
-				if (audit.get(Audit.EDITED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.EDITED_DATE))); }
-				out.println("</td></tr>");
-			}
-			if (audit.get(Audit.SUBMITTED_BY) != null || audit.get(Audit.SUBMITTED_DATE) != null) {
-				out.println("<tr><td class='smallheading'>Submitted:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (audit.get(Audit.SUBMITTED_BY) != null) { out.print(audit.getAsString(Audit.SUBMITTED_BY) + "<br />"); }
-				if (audit.get(Audit.SUBMITTED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.SUBMITTED_DATE))); }
-				out.println("</td></tr>");
-			}
-			if (audit.get(Audit.APPROVED_BY) != null || audit.get(Audit.APPROVED_DATE) != null) {
-				out.println("<tr><td class='smallheading'>Approved:<img src='images/blank.gif' height='1' width='5' /></td><td class='smalltext'>");
-				if (audit.get(Audit.APPROVED_BY) != null) { out.print(audit.getAsString(Audit.APPROVED_BY) + "<br />"); }
-				if (audit.get(Audit.APPROVED_DATE) != null) { out.print(FREDUtils.formatDateForOutput(audit.getAsDate(Audit.APPROVED_DATE))); }
-				out.println("</td></tr>");
-			}
-
-			if (user != null) {
-
-				out.println("<tr><td class=\"smallheading\"><a href=\"audit_detail.jsp?ID=" + sample.getSampleID() + "\" target=\"audit\">More...</a></td></tr>");
-				out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
-				
-				out.println("<tr><td colspan='2'><table border='0'>");
-				
-				//Generate list of users folders
-				FolderList folderList = new FolderList(user, state);
-				if (folderList.getPersonalFolderCount() > 0) {
-					out.println("<form name=\"FolderForm\" method=\"post\" action=\"detail.jsp\">");
-					out.println("<tr><td colspan=\"2\"><select name=\"FoldID\"><option value=\"-\">-- Choose --</option>");
-					for (Iterator i = folderList.getPersonalFolders().iterator(); i.hasNext(); ) {
-						KeyValueObject kv = (KeyValueObject) i.next();
-						out.println("<option value=\"" + kv.getKey() + "\">" + ((kv.getValue().length() <= 17) ? kv.getValue() : kv.getValue().substring(0, 17)) + "</option>");
-					}
-					out.println("</select></td></tr>");
-					out.println("<tr><td><a href=\"#\" onClick=\"FolderForm.submit();\"><img src=\"images/folder.gif\" height=\"20\" width=\"20\" border=\"0\" alt=\"Add to Folder\" /></a></td><td><a href=\"#\" onClick=\"FolderForm.submit();\" class=\"heading\">Add to Folder</a></td></tr>");
-					out.println("<input type=\"hidden\" name=\"ID\" value=\"" + sampID + "\" />");
-					out.println("<input type=\"hidden\" name=\"ActionType\" value=\"AddtoFold\" />");
-					out.println("</form>");
-					out.println("<tr><td>&nbsp;</td></tr>");
-				}
-				
-				out.println("<tr><td><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;</td><td><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' class='heading' target='print'>Print Front</a></td></tr>");
-				if (sample.getPaleontologyRecordCount() > 0) {
-					for (Iterator i = sample.getAsVector(Sample.RECORDS).iterator(); i.hasNext(); ) {
-						KeyValueObject rec = (KeyValueObject)i.next();
-						if (rec.getValue().equals(Record.PALEONTOLOGY_RECORD)) {
-							PaleontologyRecord pal = (PaleontologyRecord) PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state);
-							out.println("<tr><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;</td><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' class='heading' target='print'>Print Pal Record</br >" + pal + "</a></td></tr>");
-						}
-					}
-				}
-				out.println("</table></td></tr>");
-				
-				if (FREDUtils.isAllowedApproveLocality(user, sample.getAsString(Sample.FEATURE_ID), sample.getAsString(Sample.FEATURE_STATUS), state)) {
-					FRNumber frNumber = FolderUtils.getNextFRNumber(sample.getAsString(Sample.REG_AREA_CODE), sample.getAsString(Sample.NZMG_SHEET), sample.getAsDouble(Sample.LATITUDE), sample.getAsDouble(Sample.LONGITUDE), state);
-					out.println("<tr><td colspan='2'>");
-					out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
-					out.println("<form name='RevForm' method='post' action='detail.jsp'>");
-					out.println("<input type='hidden' name='ID' value='" + sampID + "'>");
-					out.println("<input type='hidden' name='ActionType' value=''>");
-					out.println("<tr><td colspan='2' class='heading' align='center'>Locality Approval</td></tr>");
-					out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Approve\";document.RevForm.submit();'><img src='images/ok.gif' width='20' height='20' border='0' alt='Approve' /></a></td><td class='heading'>Approve</td></tr>");
-					out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Reject\";document.RevForm.submit();'><img src='images/cancel.gif' width='20' height='20' border='0' alt='reject' /></a></td><td class='heading'>Reject</td></tr>");
-					//if (recoll != null) {
-					//	out.println("<tr><td colspan='2'>The submitter has indicated that this record is a recollection of " + recoll + ".  If you agree then amend the FRNumber below as appropriate</td></tr>");
-					//}
-					out.println("<tr><td colspan='2'><input type='text' name='MapSheet' size='9' value='" + frNumber.getMapSheet() + "' />&nbsp;/f&nbsp;<input type='text' name='SerialNum' size='4' value='" + frNumber.getSerialNumber() + "' />&nbsp;<input type='text' name='RecollNum' size='1' value='' /></td></tr>");
-					out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
-					out.println("<tr><td colspan='2' class='heading'>Comments</td></tr>");
-					out.println("<tr><td colspan='2'><textarea name='CurComm' rows='5' cols='25'>" + FREDUtils.noNulls(audit.getAsString(Audit.CURATOR_COMMENTS)) + "</textarea></td></tr>");
-					out.println("</form>");
-					out.println("</table>");
-					out.println("</td></tr>");
-				}
-				else {
-					out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
-					out.println("<tr><td class='heading' colspan='2' align='center'>Taxonomic List Options</td></tr>");
-					out.println("<form name='TaxaForm' method='post' action='detail.jsp'>");
-					out.println("<input type='hidden' name='ID' value='" + sampID + "'>");
-					out.println("<input type='hidden' name='AuthorChk' value='" + authorChk + "'>");
-					out.println("<input type='hidden' name='SCountChk' value='" + sCountChk + "'>");
-					out.println("<input type='hidden' name='SCoordChk' value='" + sCoordChk + "'>");
-					out.println("<input type='hidden' name='CommChk' value='" + commChk + "'>");
-					out.print("<tr><td colspan='2' class='heading'>");
-					if (authorChk) {
-						out.print("<a href='#' onClick='document.TaxaForm.AuthorChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
-					} else {
-						out.print("<a href='#' onClick='document.TaxaForm.AuthorChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
-					}
-					out.println("</a>&nbsp;&nbsp;Author</td></tr>");
-					out.print("<tr><td colspan='2' class='heading'>");
-					if (sCountChk) {
-						out.print("<a href='#' onClick='document.TaxaForm.SCountChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
-					} else {
-						out.print("<a href='#' onClick='document.TaxaForm.SCountChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
-					}
-					out.println("</a>&nbsp;&nbsp;Specimen Count</td></tr>");
-					out.print("<tr><td colspan='2' class='heading'>");
-					if (sCoordChk) {
-						out.print("<a href='#' onClick='document.TaxaForm.SCoordChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
-					} else {
-						out.print("<a href='#' onClick='document.TaxaForm.SCoordChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
-					}
-					out.println("</a>&nbsp;&nbsp;Specimen Coord</td></tr>");
-					out.print("<tr><td colspan='2' class='heading'>");
-					if (commChk) {
-						out.print("<a href='#' onClick='document.TaxaForm.CommChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
-					} else {
-						out.print("<a href='#' onClick='document.TaxaForm.CommChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
-					}
-					out.println("</a>&nbsp;&nbsp;Comments</td></tr>");
-					out.println("</form>");
-				}
-			}
+			out.println("<form name='RevForm' method='post' action='detail.jsp'>");
+			out.println("<input type='hidden' name='ID' value='" + sample.getSampleId() + "'>");
+			out.println("<input type='hidden' name='ActionType' value=''>");
+			out.println("<tr><td colspan='2' class='heading' align='center'>Locality Approval</td></tr>");
+			out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Approve\";document.RevForm.submit();'><img src='images/ok.gif' width='20' height='20' border='0' alt='Approve' /></a></td><td class='heading'>Approve</td></tr>");
+			out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Reject\";document.RevForm.submit();'><img src='images/cancel.gif' width='20' height='20' border='0' alt='reject' /></a></td><td class='heading'>Reject</td></tr>");
+			//if (recoll != null) {
+			//	out.println("<tr><td colspan='2'>The submitter has indicated that this record is a recollection of " + recoll + ".  If you agree then amend the FRNumber below as appropriate</td></tr>");
+			//}
+			out.println("<tr><td colspan='2'><input type='text' name='MapSheet' size='9' value='" + frNumber.getMapSheet() + "' />&nbsp;/f&nbsp;<input type='text' name='SerialNum' size='4' value='" + frNumber.getSerialNumber() + "' />&nbsp;<input type='text' name='RecollNum' size='1' value='' /></td></tr>");
+			out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
+			out.println("<tr><td colspan='2' class='heading'>Comments</td></tr>");
+			out.println("<tr><td colspan='2'><textarea name='CurComm' rows='5' cols='25'>" + DBUtils.nvl(sample.getAudit().getCuratorComments()) + "</textarea></td></tr>");
+			out.println("</form>");
 			out.println("</table>");
-
-			drawEndNavigation(out);
-			
-			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-			out.println("<tr><td>");
-			
-			//Locality Data
-			out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
-			if (sample.get(Sample.YARD_FR_ID) != null) { out.println("<tr><td class='heading'>Yard FR Number</td><td>" + sample.getAsString(Sample.YARD_FR_NUMBER) + "</td></tr>"); }
-			if (sample.get(Sample.LATITUDE) != null) {
-				SiteRecord sr = SiteRecord.querySite(FREDUtils.getFREDConnection(state), sample.getAsInt(Sample.SITE_ID));			
-				int origID = sr.getOriginalId();
-				if (origID != -1) {
-					Datum datum = sr.getOrigCoordDatum();
-					Datum.Coordinate coord = sr.getOrigCoordAsCoord();	
-					if (!(datum.getName().equals("NZGD49") && !(datum.getName().equals("NZMG")))) {
-						if (coord instanceof Datum.LatLong) {
-							out.print("<tr><td class='heading'>Lat/Long</td>");
-						} else {
-							out.print("<tr><td class='heading'>Grid Ref</td>");
-						}
-						out.println("<td>" + datum.getHumanStringFor(coord).replaceAll("Geographic ", "") + "</td></tr>");
-					}
-					try {
-						Datum nzmgDatum = DatumFactory.createDatum("NZMG");
-						Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
-						out.println("<tr><td class='heading'>Grid Ref</td><td>" + nzmgDatum.getHumanStringFor(nzmgCoord) + "</td></tr>");
-					} catch (Exception e) { System.out.println(e.getMessage()); }
-				}
-				Datum.LatLong ll = sr.getLatLong();
-				if (ll.getNorthSouth() != 999)
-					out.println("<tr><td class='heading'>Lat/Long</td><td>" + ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)</td></tr>");
-			}
-			
-			if (sample.get(Sample.METHOD) != null) { out.println("<tr><td class='heading'>Method</td><td>" + sample.getAsString(Sample.METHOD) + "</td></tr>"); }
-			if (sample.get(Sample.ACCURACY) != null) { out.println("<tr><td class='heading'>Accuracy</td><td>&#177 " + sample.getAsDouble(Sample.ACCURACY) + "m</td></tr>"); }
-			if (featType.equals(Feature.OUTCROP_LOCALITY)) {
-				if (sample.get(Sample.FEATURE_NAME) != null) { out.println("<tr><td class='heading'>Field Number</td><td>" + sample.getAsString(Sample.FEATURE_NAME) + "</td></tr>"); }
+			out.println("</td></tr>");
+		}
+		else {
+			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
+			out.println("<tr><td class='heading' colspan='2' align='center'>Taxonomic List Options</td></tr>");
+			out.println("<form name='TaxaForm' method='post' action='detail.jsp'>");
+			out.println("<input type='hidden' name='ID' value='" + sample.getSampleId() + "'>");
+			out.println("<input type='hidden' name='AuthorChk' value='" + authorChk + "'>");
+			out.println("<input type='hidden' name='SCountChk' value='" + sCountChk + "'>");
+			out.println("<input type='hidden' name='SCoordChk' value='" + sCoordChk + "'>");
+			out.println("<input type='hidden' name='CommChk' value='" + commChk + "'>");
+			out.print("<tr><td colspan='2' class='heading'>");
+			if (authorChk) {
+				out.print("<a href='#' onClick='document.TaxaForm.AuthorChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
 			} else {
-				if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
-					if (sample.get(Sample.FEATURE_NAME) != null) { out.println("<tr><td class='heading'>Drillhole Name</td><td><a href='drillhole_detail.jsp?ID=" + sample.getAsString(Sample.FEATURE_ID) + "'>" + sample.getAsString(Sample.FEATURE_NAME) + "</a></td></tr>"); }
-					if (sample.get(Sample.DRILLHOLE_DEPTH) != null) { out.println("<tr><td class='heading'>Sample Depth</td><td>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td></tr>"); }
-					out.println("<tr><td class='heading'>Other Drillhole Samples</td><td>");
-				} else { //VertSect
-					if (sample.get(Sample.FEATURE_NAME) != null) { out.println("<tr><td class='heading'>Section Name</td><td><a href='drillhole_detail.jsp?ID=" + sample.getAsString(Sample.FEATURE_ID) + "'>" + sample.getAsString(Sample.FEATURE_NAME) + "</a></td></tr>"); }
-					if (sample.get(Sample.DRILLHOLE_DEPTH) != null) { out.println("<tr><td class='heading'>Sample Height</td><td>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td></tr>"); }
-					out.println("<tr><td class='heading'>Other Section Samples</td><td>");
-				}
-				//check for samples above and below current one
-				try {
-					Sample sampleAbove = FREDUtils.getSampleAbove(sample, user, state);
-					out.println("Sample Above: <a href='detail.jsp?ID=" + sampleAbove.getAsString(Sample.SAMPLE_ID) + "'>" + sampleAbove.getAsString(Sample.DRILLHOLE_DEPTH) + "</a><br>");
-				} catch (Exception e) {}
-				try {
-					Sample sampleBelow = FREDUtils.getSampleBelow(sample, user, state);
-					out.println("Sample Below: <a href='detail.jsp?ID=" + sampleBelow.getAsString(Sample.SAMPLE_ID) + "'>" + sampleBelow.getAsString(Sample.DRILLHOLE_DEPTH) + "</a><br>");
-				} catch (Exception e) {}
-				out.println("</td></tr>");
+				out.print("<a href='#' onClick='document.TaxaForm.AuthorChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
 			}
-			if (sample.isUserAuthenticated() && sample.get(Sample.LOCALITY) != null) { out.println("<tr><td class='heading'>Locality</td><td>" + sample.getAsString(Sample.LOCALITY) + "</td></tr>"); }
+			out.println("</a>&nbsp;&nbsp;Author</td></tr>");
+			out.print("<tr><td colspan='2' class='heading'>");
+			if (sCountChk) {
+				out.print("<a href='#' onClick='document.TaxaForm.SCountChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
+			} else {
+				out.print("<a href='#' onClick='document.TaxaForm.SCountChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
+			}
+			out.println("</a>&nbsp;&nbsp;Specimen Count</td></tr>");
+			out.print("<tr><td colspan='2' class='heading'>");
+			if (sCoordChk) {
+				out.print("<a href='#' onClick='document.TaxaForm.SCoordChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
+			} else {
+				out.print("<a href='#' onClick='document.TaxaForm.SCoordChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
+			}
+			out.println("</a>&nbsp;&nbsp;Specimen Coord</td></tr>");
+			out.print("<tr><td colspan='2' class='heading'>");
+			if (commChk) {
+				out.print("<a href='#' onClick='document.TaxaForm.CommChk.value=\"false\";document.TaxaForm.submit();' title='Hide'><img src='images/ok.gif' width='20' height='20' border='0' />");
+			} else {
+				out.print("<a href='#' onClick='document.TaxaForm.CommChk.value=\"true\";document.TaxaForm.submit();' title='Show'><img src='images/cancel.gif' width='20' height='20' border='0' />");
+			}
+			out.println("</a>&nbsp;&nbsp;Comments</td></tr>");
+			out.println("</form>");
+		}
+	}
+	out.println("</table>");
+
+	drawEndNavigation(out);
+	
+	out.println("<table style='margin-left:20px; width:550px;' border='0'>");
+	out.println("<tr><td>");
+	
+	//Locality Data
+	out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
+	if (sample.getYardFrNumber() != null) { 
+		out.println("<tr><td class='heading'>Yard FR Number</td><td>" + sample.getYardFrNumber().getFrNumber() + "</td></tr>"); 
+	}
+	if (sample.getFeature().getSiteId() != null) {
+		SiteRecord sr = FREDUtil.getSite(sample.getFeature());
+		int origID = sr.getOriginalId();
+		if (origID != -1) {
+			Datum datum = sr.getOrigCoordDatum();
+			Datum.Coordinate coord = sr.getOrigCoordAsCoord();	
+			if (!(datum.getName().equals("NZGD49") && !(datum.getName().equals("NZMG")))) {
+				if (coord instanceof Datum.LatLong) {
+					out.print("<tr><td class='heading'>Lat/Long</td>");
+				} else {
+					out.print("<tr><td class='heading'>Grid Ref</td>");
+				}
+				out.println("<td>" + datum.getHumanStringFor(coord).replaceAll("Geographic ", "") + "</td></tr>");
+			}
+			try {
+				Datum nzmgDatum = DatumFactory.createDatum("NZMG");
+				Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
+				out.println("<tr><td class='heading'>Grid Ref</td><td>" + nzmgDatum.getHumanStringFor(nzmgCoord) + "</td></tr>");
+			} catch (Exception e) { System.out.println(e.getMessage()); }
+		}
+		Datum.LatLong ll = sr.getLatLong();
+		if (ll.getNorthSouth() != 999)
+			out.println("<tr><td class='heading'>Lat/Long</td><td>" + ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)</td></tr>");
+		if (sr.getMethod() != null) { 
+			out.println("<tr><td class='heading'>Method</td><td>" + sample.getAsString(Sample.METHOD) + "</td></tr>"); 
+		}
+		if (sample.get(Sample.ACCURACY) != null) { 
+			out.println("<tr><td class='heading'>Accuracy</td><td>&#177 " + sample.getAsDouble(Sample.ACCURACY) + "m</td></tr>"); 
+		}
+	}
+			
+	if (feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
+		if (sample.getFeature().getFeatureName() != null) { 
+			out.println("<tr><td class='heading'>Field Number</td><td>" + sample.getFeature().getFeatureName() + "</td></tr>"); \
+		}
+	} else {
+		if (featType.getFeatureType().equals(FREDConstants.DRILLHOLE)) {
+			if (sample.getFeature().getFeatureName() != null) { 
+				out.println("<tr><td class='heading'>Drillhole Name</td><td><a href='drillhole_detail.jsp?ID=" + sample.getFeature().getFeatureId() + "'>" + sample.getFeature().getFeatureName() + "</a></td></tr>"); 
+			}
+			if (sample.get(Sample.DRILLHOLE_DEPTH) != null) { 
+				out.println("<tr><td class='heading'>Sample Depth</td><td>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td></tr>"); 
+			}
+			out.println("<tr><td class='heading'>Other Drillhole Samples</td><td>");
+		} else { //VertSect
+			if (sample.get(Sample.FEATURE_NAME) != null) { out.println("<tr><td class='heading'>Section Name</td><td><a href='drillhole_detail.jsp?ID=" + sample.getAsString(Sample.FEATURE_ID) + "'>" + sample.getAsString(Sample.FEATURE_NAME) + "</a></td></tr>"); }
+			if (sample.get(Sample.DRILLHOLE_DEPTH) != null) { out.println("<tr><td class='heading'>Sample Height</td><td>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td></tr>"); }
+			out.println("<tr><td class='heading'>Other Section Samples</td><td>");
+		}
+		//check for samples above and below current one
+		try {
+			Sample sampleAbove = FREDUtils.getSampleAbove(sample, user, state);
+			out.println("Sample Above: <a href='detail.jsp?ID=" + sampleAbove.getAsString(Sample.SAMPLE_ID) + "'>" + sampleAbove.getAsString(Sample.DRILLHOLE_DEPTH) + "</a><br>");
+		} catch (Exception e) {}
+		try {
+			Sample sampleBelow = FREDUtils.getSampleBelow(sample, user, state);
+			out.println("Sample Below: <a href='detail.jsp?ID=" + sampleBelow.getAsString(Sample.SAMPLE_ID) + "'>" + sampleBelow.getAsString(Sample.DRILLHOLE_DEPTH) + "</a><br>");
+		} catch (Exception e) {}
+		out.println("</td></tr>");
+	}
+		if (sample.isUserAuthenticated() && sample.get(Sample.LOCALITY) != null) { out.println("<tr><td class='heading'>Locality</td><td>" + sample.getAsString(Sample.LOCALITY) + "</td></tr>"); }
 			if (!featType.equals(Feature.OUTCROP_LOCALITY)) {
 				if (sample.isUserAuthenticated() && sample.get(Sample.PERSON) != null) {
 					out.print("<tr><td class='heading' width='135'>");
@@ -577,4 +633,5 @@ alert("Locality Added to <%=folder.getFolderName()%>");
 	}
 	
 	drawBottom(out, et); 
+	folderUtil.closeSession();
 %>

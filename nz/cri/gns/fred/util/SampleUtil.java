@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.util;
 
 import java.util.Date;
+import java.util.Iterator;
 
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.UserAccount;
@@ -10,8 +11,10 @@ import nz.cri.gns.fred.dao.SampleDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.dataentry.DataInputException;
 import nz.cri.gns.fred.model.Audit;
+import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
+import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.UserFolder;
 
@@ -83,7 +86,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants {
 		//Update the audit log, so long as this isn't an outcrop
 		if (!sample.getFeature().getFeatureType().equals(OUTCROP)) {
 			Audit audit = sample.getAudit();
-			audit.setStatus(WAITING);		//TODO this in the original was APPROVED but sure that is wrong????
+			audit.setStatus(APPROVED);		//Samples don't need approval
 			audit.setSubmittedById(new Integer(user.getId()));
 			audit.setSubmittedDate(new Date());
 			audit.setWorkingComments(null);
@@ -113,5 +116,17 @@ public class SampleUtil extends ModelUtil implements FREDConstants {
 	
 	public Sample getSample(int sampleId) throws StorageAccessException {
 		return sampleDAO.getSample(sampleId);
+	}
+	
+	public AuditEdit getMostRecentEdit(Audit audit) throws StorageAccessException {
+		return sampleDAO.getMostRecenteEdit(audit);
+	}
+	
+	public int getPaleontologyRecordCount(Sample sample) {
+		int count = 0;
+		for (Iterator it = sample.getRecords().iterator(); it.hasNext(); ) {
+			count += (((Record)it.next()).getPaleontology() != null) ? 1 : 0;
+		}
+		return count;
 	}
 }

@@ -44,9 +44,13 @@ public class SampleData {
 			"SELECT Feature_ID, Sample_ID, Feature_Type, Sample_Name, FR_ID, FR_Number, Yard_FR_ID, Yard_FR_Number, Feature_Name, Map_Sheet, Serial_Number, "
 			//12
 			+ "Recollection_Number, Yard_Map_Sheet, Yard_Serial_Number, Yard_Recollection_Number, Drillhole_Depth, Top_Depth, Bottom_Depth, Drill_Type_ID, "
+			// 20
 			+ "Drill_Type, Masterfile_ID, Masterfile_Name, Reg_Area_ID, Reg_Area_Name, Reg_Area_Code, Feature_Audit_ID, Feature_Status, Feature_Created_Date, "
+			//29
 			+ "Feature_Working_Folder_ID, Feature_Working_Comments, Feature_Security_Class_ID, Sample_Audit_ID, Sample_Status, Sample_Created_Date, "
+			//35
 			+ "Sample_Working_Folder_ID, Sample_Working_Comments, Sample_Security_Class_ID, Site_ID, Country_Code, Country_Name, Latitude, Longitude, QMap_Sheet, NZMG_Sheet, NZMG_East, NZMG_North, "
+			//47
 			+ "Method_ID, Method, Accuracy, Orig_System_ID, Coord_System, Orig_Coord, Locality, Drillhole_Licence_Name, Person_ID, Person, Start_Date, "
 			+ "Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth, Collection_Date, "
 			+ "Collection_Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage_ID, Inferred_Stage, "

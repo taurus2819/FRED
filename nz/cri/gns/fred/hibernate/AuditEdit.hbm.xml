@@ -49,7 +49,7 @@
   
     <!-- bi-directional many-to-one association to AuditTable -->
     <many-to-one
-        name="auditTable"
+        name="audit"
         class="nz.cri.gns.fred.hibernate.AuditTable"
         not-null="true"
     >

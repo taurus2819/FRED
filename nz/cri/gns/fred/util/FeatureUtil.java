@@ -407,6 +407,15 @@ public class FeatureUtil extends ModelUtil {
 	}
 
 	/**
+	 * Returns true is the user is allowed to approve the locality
+	 */
+	public boolean isAllowedApproveFeature(UserAccount user, Feature feature) throws StorageAccessException {
+		if (WAITING.equals(feature.getAudit().getStatus()))
+			return folderDAO.getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), Integer.parseInt(user.getId())).isAllowedApproveLocalities();
+		return false;
+	}
+
+	/**
 	 * Returns true if the user has masterfile rights for this locality
 	 * @throws StorageAccessException
 	 * @throws 
@@ -483,5 +492,24 @@ public class FeatureUtil extends ModelUtil {
 		//TODO this should check that they have rights to add to this folder...
 		feature.getFolders().add(folderDAO.getFolder(folderId));
 	}
-
+	
+	/**
+	 * Returns the next available FR number - <b>not</b> saved to the DB
+	 * @param feature
+	 * @return
+	 * @throws NamingException
+	 * @throws SQLException
+	 * @throws StorageAccessException
+	 */
+	public FrNumber getNextAvailableFrNumber(Feature feature) throws SQLException, NamingException, StorageAccessException {
+		String mapSheet = FREDUtil.getFrNumberMapSheet(feature);
+		
+		int nextAvailable = featureDAO.getNextAvailableSerialNumber(mapSheet);
+		
+		FrNumber frNum = sampleDAO.createFRNumber();
+		frNum.setMapSheet(mapSheet);
+		frNum.setSerialNumber(new Integer(nextAvailable));
+		
+		return frNum;		
+	}
 }

@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -18,10 +19,14 @@ import nz.cri.gns.auth.SecurityClass;
 import nz.cri.gns.auth.SecurityClassAccess;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.db.BasicDatabaseApp2;
+import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.model.Feature;
+import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.util.map.Datum;
 import nz.cri.gns.util.map.NZMG;
+import nz.cri.gns.util.map.NZMS260;
 import nz.cri.gns.util.map.NorthingEasting;
+import nz.cri.gns.util.map.TruncNorthingEasting;
 
 /**
  *
@@ -66,45 +71,45 @@ public class FREDUtil {
 
 	public static int getMasterfile(Feature feature) throws SQLException, NamingException {
 		switch (feature.getRegistrationArea().getRegAreaId().intValue()) {
-		case REG_MAINLAND_NZ :
-			NorthingEasting nzmgCoord = getSiteNZMG(feature.getSiteId().intValue());
-			double easting = nzmgCoord.getEastWest();
-			double northing = nzmgCoord.getNorthSouth();
-			if (easting <= 2810000 && northing >= 6250000)
-				return MASTERFILE_NTH_NI;
-			if (northing >= 6160000 || (easting >= 2730000 && northing >= 6070000))
-				return MASTERFILE_CEN_NI;
-			if (easting >= 2650000)
-				return 	MASTERFILE_STH_NI;
-			if (northing >= 5920000)
-				return MASTERFILE_NELSON;
-			if (easting >= 2210000 && northing >= 5620000)
-				return MASTERFILE_CEN_SI;
-			return MASTERFILE_STH_SI;
-		case REG_CHATHAM_ISLANDS :
-		case REG_CAMPBELL_ISLAND :
-		case REG_AUCKLAND_ISLANDS :
-		case REG_ANTIPODES_ISLANDS :
-		case REG_THE_SNARES :
-			return MASTERFILE_NZ_ISLANDS;
-		case REG_ROSS_SEA :
-			return MASTERFILE_ANTARCTICA;
-		case REG_TOKELAU :
-		case REG_FIJI :
-		case REG_SAMOA :
-		case REG_NIUE :
-		case REG_COOK_ISLANDS :
-		case REG_NORFOLK_ISLAND :
-		case REG_TONGA :
-		case REG_LORD_HOWE_ISLAND :
-		case REG_KERMADEC_ISLANDS :
-		case REG_BOUNTY_ISLANDS :
-		case REG_MACQUARIE_ISLAND :
-			return MASTERFILE_PACIFIC_ISLANDS;
-		case REG_NEW_CALEDONIA :
-			return MASTERFILE_NEW_CALEDONIA;
-		case REG_OTHER :
-			return MASTERFILE_OFFSHORE;
+			case REG_MAINLAND_NZ :
+				NorthingEasting nzmgCoord = (NorthingEasting)getSiteCoordinate(new NZMG(), feature.getSiteId().intValue());
+				double easting = nzmgCoord.getEastWest();
+				double northing = nzmgCoord.getNorthSouth();
+				if (easting <= 2810000 && northing >= 6250000)
+					return MASTERFILE_NTH_NI;
+				if (northing >= 6160000 || (easting >= 2730000 && northing >= 6070000))
+					return MASTERFILE_CEN_NI;
+				if (easting >= 2650000)
+					return 	MASTERFILE_STH_NI;
+				if (northing >= 5920000)
+					return MASTERFILE_NELSON;
+				if (easting >= 2210000 && northing >= 5620000)
+					return MASTERFILE_CEN_SI;
+				return MASTERFILE_STH_SI;
+			case REG_CHATHAM_ISLANDS :
+			case REG_CAMPBELL_ISLAND :
+			case REG_AUCKLAND_ISLANDS :
+			case REG_ANTIPODES_ISLANDS :
+			case REG_THE_SNARES :
+				return MASTERFILE_NZ_ISLANDS;
+			case REG_ROSS_SEA :
+				return MASTERFILE_ANTARCTICA;
+			case REG_TOKELAU :
+			case REG_FIJI :
+			case REG_SAMOA :
+			case REG_NIUE :
+			case REG_COOK_ISLANDS :
+			case REG_NORFOLK_ISLAND :
+			case REG_TONGA :
+			case REG_LORD_HOWE_ISLAND :
+			case REG_KERMADEC_ISLANDS :
+			case REG_BOUNTY_ISLANDS :
+			case REG_MACQUARIE_ISLAND :
+				return MASTERFILE_PACIFIC_ISLANDS;
+			case REG_NEW_CALEDONIA :
+				return MASTERFILE_NEW_CALEDONIA;
+			case REG_OTHER :
+				return MASTERFILE_OFFSHORE;
 		}
 		return MASTERFILE_OFFSHORE;
 	}
@@ -115,7 +120,14 @@ public class FREDUtil {
 	 * @throws SQLException
 	 * @throws NamingException
 	 */
-	private static NorthingEasting getSiteNZMG(int siteId) throws SQLException, NamingException {
+	private static Datum.Coordinate getSiteCoordinate(Datum datum, int siteId) throws SQLException, NamingException {
+		Datum.LatLong ll = getSiteLatLong(siteId);
+		if (ll == null)
+			return null;
+		return datum.convertFromNZGD49(ll);
+	}
+	
+	public static Datum.LatLong getSiteLatLong(int siteId) throws SQLException, NamingException {
 		Connection conn = null;
 		try {
 			conn = getConnection();
@@ -131,8 +143,7 @@ public class FREDUtil {
 			rs.close();
 			statement.close();
 			conn.close();
-			NZMG nzmg = new NZMG();
-			return (NorthingEasting)nzmg.convertFromNZGD49(ll);
+			return ll;
 		} catch (SQLException e) {
 			if (conn != null) try {
 				conn.close();
@@ -140,6 +151,7 @@ public class FREDUtil {
 			}
 			throw e;
 		}
+		
 	}
 
 	public static String getUserName(int userId) throws NamingException, SQLException {
@@ -217,4 +229,40 @@ public class FREDUtil {
 		}
 	}
 
+	public static String getFrNumberMapSheet(Feature feature) throws SQLException, NamingException {
+		RegistrationArea area = feature.getRegistrationArea();
+
+		Datum.LatLong ll = getSiteLatLong(feature.getSiteId().intValue());
+		
+		//Try and make this into a NZMS260 coord
+		TruncNorthingEasting tne = null;
+		try {
+			tne = (TruncNorthingEasting)new NZMS260().convertFromNZGD49(ll);
+		} catch (Exception e) {
+		}
+		
+		if (tne != null && NZMS260.isValidMapSheet(tne.getMapSheet())) {
+			return tne.getMapSheet();
+		} else if (!(area.getCode().equals("NZ") || area.getCode().equals("OT"))) {
+			return area.getCode();
+		} else {
+			DecimalFormat format = new DecimalFormat("00");
+			String mapSheet = ((ll.getNorthSouth() > 0) ? "N" : "S") + ((ll.getEastWest() > 0) ? "E" : "W") 
+				+ format.format(Math.floor(Math.abs(ll.getNorthSouth())));
+			format.applyPattern("000");
+			return mapSheet + format.format(Math.floor(Math.abs(ll.getEastWest())));
+		}
+	}
+	
+	public static SiteRecord getSite(Feature feature) throws NamingException, SQLException {
+		Connection conn = getConnection();
+		SiteRecord sr = null;
+		try {
+			sr = SiteRecord.querySite(new BasicDatabaseApp2(getConnection(), ""), feature.getSiteId().intValue());
+		} catch (SQLException e) {
+			conn.close();
+			throw e;
+		}
+		return sr;
+	}
 }

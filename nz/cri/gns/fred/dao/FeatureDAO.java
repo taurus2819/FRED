@@ -53,5 +53,12 @@ public interface FeatureDAO {
 	 * @throws StorageAccessException
 	 */
 	public Feature getFeature(int featureId) throws StorageAccessException;
+
+	/**
+	 * @param mapSheet
+	 * @return
+	 * @throws StorageAccessException
+	 */
+	public int getNextAvailableSerialNumber(String mapSheet) throws StorageAccessException;
 	
 }

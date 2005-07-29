@@ -23,9 +23,9 @@ public interface Sample {
 
 	public abstract void setComments(String comments);
 
-	public abstract Integer getYardFrId();
+	public abstract FrNumber getYardFrNumber();
 
-	public abstract void setYardFrId(Integer yardFrId);
+	public abstract void setYardFrNumber(FrNumber yardFrId);
 
 	public abstract Date getCollectionDate();
 

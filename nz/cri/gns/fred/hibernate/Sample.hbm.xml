@@ -45,12 +45,6 @@
         length="255"
     />
     <property
-        name="yardFrId"
-        type="int"
-        column="YARD_FR_ID"
-        length="7"
-    />
-    <property
         name="collectionDate"
         type="java.sql.Date"
         column="COLLECTION_DATE"
@@ -329,6 +323,15 @@
         not-null="true"
     >
         <column name="FR_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to FrNumber -->
+    <many-to-one
+        name="yardFrNumber"
+        class="nz.cri.gns.fred.hibernate.FrNumber"
+		cascade="all"
+        not-null="true"
+    >
+        <column name="YARD_FR_ID" />
     </many-to-one>
     <!-- bi-directional many-to-one association to DrillType -->
     <many-to-one

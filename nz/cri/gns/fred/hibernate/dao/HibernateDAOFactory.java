@@ -17,6 +17,7 @@ import nz.cri.gns.fred.dao.TaxonomicGroupDAO;
 import nz.cri.gns.fred.hibernate.AuditTable;
 import nz.cri.gns.fred.hibernate.FolderUser;
 import nz.cri.gns.fred.model.Audit;
+import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
@@ -268,6 +269,18 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 		return (Feature)getFirst("FROM Feature as f WHERE f.featureId = ?", featureId);
 	}
 
+	public int getNextAvailableSerialNumber(String mapSheet) throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+			List list = session.find("SELECT max(fr.serialNumber) FROM FrNumber AS fr WHERE AND fr.serialNumber < 6000 AND fr.mapSheet = ?", mapSheet, new StringType());
+			if (list.size() == 0)
+			    return 1;
+			return ((Integer)list.get(0)).intValue() + 1;
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+	}
+
 	private Object getFirst(String query, int id) throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
@@ -325,6 +338,20 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 		return new nz.cri.gns.fred.hibernate.FrNumber();
 	}
 	
+	public AuditEdit getMostRecenteEdit(Audit audit) throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+            Query query = session.createQuery("FROM AuditEdit as edit WHERE edit.editedDate = (SELECT max(editedDate) FROM auditEdit WHERE audit = edit.audit) AND edit.audit = :audit");
+            query.setEntity("audit", audit);
+            List list = query.list();
+			if (list.size() == 0)
+			    return null;
+			return (AuditEdit)list.get(0);
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+	}
+
 	public RecordDAO getRecordDAO() {
 		return this;
 	}
@@ -336,7 +363,4 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 	public void delete(Record record) throws StorageAccessException {
 		delete((Object)record);
 	}
-
-
-
 }
