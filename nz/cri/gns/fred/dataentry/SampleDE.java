@@ -952,7 +952,7 @@ public class SampleDE implements DataEntryForm {
 
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(COLLECTION_DATE)) + "</td>");
-		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(COLLECTORS)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(COLLECTORS)).replaceAll("\n", "#") + "</td>");
 
 		/*out.write("<tr><td class='heading'>Strat Name</td><td></td><td><input type='text' name='StratName' size='40' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(STRAT_NAME))
