@@ -154,8 +154,8 @@ public class DrillholeLocalityDE extends LocalityDE {
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
 		super.makeExcelImportHTML(out);
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(OPERATING_COMPANY)) + "</td>");
-		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(SPUD_DATE)) + "</td>");
-		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(COMPLETION_DATE)) + "</td>");
+		out.write("<td>#" + FREDUtils.noNulls(getFieldForHTML(SPUD_DATE)) + "#</td>");
+		out.write("<td>#" + FREDUtils.noNulls(getFieldForHTML(COMPLETION_DATE)) + "#</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(LICENCE_AREA)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(DATUM_TYPE)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(DATUM_ELEVATION)) + "</td>");

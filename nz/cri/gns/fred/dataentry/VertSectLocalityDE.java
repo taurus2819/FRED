@@ -145,8 +145,8 @@ public class VertSectLocalityDE extends LocalityDE {
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
 		super.makeExcelImportHTML(out);
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(OPERATING_COMPANY)) + "</td>");
-		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(SPUD_DATE)) + "</td>");
-		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(COMPLETION_DATE)) + "</td>");
+		out.write("<td>#" + FREDUtils.noNulls(getFieldForHTML(SPUD_DATE)) + "#</td>");
+		out.write("<td>#" + FREDUtils.noNulls(getFieldForHTML(COMPLETION_DATE)) + "#</td>");
 		out.write("<td></td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(DATUM_TYPE)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(DATUM_ELEVATION)) + "</td>");
