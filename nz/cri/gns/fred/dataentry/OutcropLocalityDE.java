@@ -82,6 +82,14 @@ public class OutcropLocalityDE extends LocalityDE {
 
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
 		super.makeExcelImportHTML(out);
+		out.write("<td></td>");
+		out.write("<td></td>");
+		out.write("<td></td>");
+		out.write("<td></td>");
+		out.write("<td></td>");
+		out.write("<td></td>");
+		out.write("<td></td>");
+		out.write("<td></td>");
 		sampleDE.makeExcelImportHTML(out);
 		out.write("</tr>\n");
 	}

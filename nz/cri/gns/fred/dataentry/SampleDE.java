@@ -650,8 +650,7 @@ public class SampleDE implements DataEntryForm {
 			out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Submit\";form1.submit();'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database' /></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick='form1.SaveType.value=\"Submit\";form1.submit();' class='boldlink'>Submit</a></td></tr>\n");
 	}
 
-	public void makeDataEntryHTML(Writer out)
-		throws IOException, SQLException {
+	public void makeDataEntryHTML(Writer out) throws IOException, SQLException {
 		ComboDescriptor cd;
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 
@@ -952,6 +951,257 @@ public class SampleDE implements DataEntryForm {
 	}
 
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(COLLECTION_DATE)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(COLLECTORS)) + "</td>");
+
+		/*out.write("<tr><td class='heading'>Strat Name</td><td></td><td><input type='text' name='StratName' size='40' value='"
+				+ FREDUtils.noNulls(getFieldForHTML(STRAT_NAME))
+				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=StratName\", \"Supp\", \"width=600,height=300\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
+		out.write("<tr><td class='heading' style=\"color: #FF0000\">Fossils In Place</td><td></td><td><select name='InPlace'><option value='' "
+				+ ((getFieldForHTML(FOSSILS_IN_PLACE) == null) ? " selected" : "")
+				+ ">-- Choose --</option><option value='Yes' "
+				+ ((getFieldForHTML(FOSSILS_IN_PLACE) != null && getFieldForHTML(FOSSILS_IN_PLACE).equals("Yes")) ? " selected" : "")
+				+ ">Yes</option><option value='Almost' "
+				+ ((getFieldForHTML(FOSSILS_IN_PLACE) != null && getFieldForHTML(FOSSILS_IN_PLACE).equals("Almost")) ? " selected" : "")
+				+ ">Almost</option><option value='No' "
+				+ ((getFieldForHTML(FOSSILS_IN_PLACE) != null && getFieldForHTML(FOSSILS_IN_PLACE).equals("No")) ? " selected" : "")
+				+ ">No</option><option value='Unknown' "
+				+ ((getFieldForHTML(FOSSILS_IN_PLACE) != null && getFieldForHTML(FOSSILS_IN_PLACE).equals("Unknown")) ? " selected" : "")
+				+ ">Unknown</option></select></td></tr>\n");
+		out.write("<tr><td class='heading'>Sent To</td><td></td><td><textarea name='SentTo' cols='40' rows='2'>"
+				+ FREDUtils.noNulls(getFieldForHTML(SENT_TO))
+				+ "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=SentTo\", \"Supp\",\"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
+		out.write("<tr><td class='heading'>Not Collected<br><span class='smalltext'>specify fossils seen but not collected</span></td><td></td><td><textarea name='NotColl' cols='40' rows='3'>"
+				+ FREDUtils.noNulls(getFieldForHTML(NOT_COLLECTED))
+				+ "</textarea></td></tr>\n");
+		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+
+		out.write("<tr><td class='heading' colspan='2'>Significance/Comments</td><td><textarea name='Sig' cols='40' rows='3'>"
+				+ FREDUtils.noNulls(getFieldForHTML(SIGNIFICANCE_COMMENTS))
+				+ "</textarea></td></tr>\n");
+		out.write("<tr><td class='heading'>Stage Limits</td><td class='smallheading'>Inferred</td><td>\n");
+		out.write("<table border='0' cellspacing='0'><tr><td>");
+		cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
+		cd.name = "InfStageStart";
+		cd.prompt = "-- Choose --";
+		cd.selected = getFieldForHTML(INF_AGE_START);
+		cd.orderBy = "Ag_Name";
+		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
+		out.write("</td><td><select name='InfStartMod'><option value='-' "
+				+ ((getFieldForHTML(INF_START_MOD) == null) ? " selected" : "")
+				+ "></option><option value='?' "
+				+ ((getFieldForHTML(INF_START_MOD) != null && getFieldForHTML(INF_START_MOD).equals("?")) ? " selected" : "")
+				+ ">?</option></select></td><td class='heading'> to </td></tr>\n");
+		out.write("<tr><td>");
+		cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
+		cd.name = "InfStageStop";
+		cd.prompt = "-- Choose --";
+		cd.selected = getFieldForHTML(INF_AGE_STOP);
+		cd.orderBy = "Ag_Name";
+		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
+		out.write("</td><td class='heading'><select name='InfStopMod'><option value='-' "
+				+ ((getFieldForHTML(INF_STOP_MOD) == null) ? " selected" : "")
+				+ "></option><option value='?' "
+				+ ((getFieldForHTML(INF_STOP_MOD) != null && getFieldForHTML(INF_STOP_MOD).equals("?")) ? " selected" : "")
+				+ ">?</option></select></td></tr>\n");
+		out.write("</table></td></tr>\n");
+		out.write("<tr><td></td><td class='smallheading'>Known</td><td>\n");
+		out.write("<table border='0' cellspacing='0'><tr><td>");
+		cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
+		cd.name = "KnwStageStart";
+		cd.prompt = "-- Choose --";
+		cd.selected = getFieldForHTML(KNW_AGE_START);
+		cd.orderBy = "Ag_Name";
+		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
+		out.write("</td><td><select name='KnwStartMod'><option value='-' "
+				+ ((getFieldForHTML(KNW_START_MOD) == null) ? " selected" : "")
+				+ "></option><option value='?' "
+				+ ((getFieldForHTML(KNW_START_MOD) != null && getFieldForHTML(KNW_START_MOD).equals("?")) ? " selected" : "")
+				+ ">?</option></select></td><td class='heading'> to </td></tr>\n");
+		out.write("<tr><td>");
+		cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
+		cd.name = "KnwStageStop";
+		cd.prompt = "-- Choose --";
+		cd.selected = getFieldForHTML(KNW_AGE_STOP);
+		cd.orderBy = "Ag_Name";
+		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
+		out.write("</td><td class='heading'><select name='KnwStopMod'><option value='-' "
+				+ ((getFieldForHTML(KNW_STOP_MOD) == null) ? " selected" : "")
+				+ "></option><option value='?' "
+				+ ((getFieldForHTML(KNW_STOP_MOD) != null && getFieldForHTML(KNW_STOP_MOD).equals("?")) ? " selected" : "")
+				+ ">?</option></select></td></tr>\n");
+		out.write("</table></td></tr>\n");
+		out.write("<tr><td class='heading'>Samples Nearby</td><td></td><td><input type='text' name='PrevSamp' size='40' value='"
+				+ FREDUtils.noNulls(getFieldForHTML(PREVIOUS_SAMPLE))
+				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=PrevSamp\", \"Supp\", \"width=600,height=350\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
+		out.write("<tr><td class='heading' colspan='2'>Sample Relationships</td><td><textarea name='SampRel' cols='40' rows='3'>"
+				+ FREDUtils.noNulls(getFieldForHTML(SAMPLE_RELATIONSHIP))
+				+ "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=SampRel\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
+		out.write("<tr><td class='heading' colspan='2'>Stratigraphic Relationships</td><td><textarea name='StratRel' cols='40' rows='3'>"
+				+ FREDUtils.noNulls(getFieldForHTML(STRAT_RELATIONSHIP))
+				+ "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=StratRel\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
+		out.write("<tr><td class='heading'>Column/Map</td><td></td><td><input type='text' name='ColMap' size='40' value='"
+				+ FREDUtils.noNulls(getFieldForHTML(COLUMN_MAP))
+				+ "'></td></tr>\n");
+		out.write("<tr><td class='heading'>Attitude</td><td class='smallheading'>Dip</td><td><input type='text' name='Dip' size='3' value='"
+				+ FREDUtils.noNulls(getFieldForHTML(DIP))
+				+ "'></td></tr>\n");
+		out.write("<tr><td></td><td class='smallheading'>Dip Dirn.</td><td><select name='DipDir'>\n<option value='' "
+				+ ((getFieldForHTML(DIP_DIRECTION) == null) ? " selected" : "")
+				+ ">-- Choose --</option>\n<option value='N' "
+				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("N")) ? " selected" : "")
+				+ ">North</option>\n<option value='NE' "
+				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("NE")) ? " selected" : "")
+				+ ">North-East</option>\n<option value='E' "
+				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("E")) ? " selected" : "")
+				+ ">East</option>\n<option value='SE' "
+				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("SE")) ? " selected" : "")
+				+ ">South-East</option><option value='S' "
+				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("S")) ? " selected"	: "")
+				+ ">South</option>\n<option value='SW' "
+				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("SW")) ? " selected" : "")
+				+ ">South-West</option>\n<option value='W' "
+				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("W")) ? " selected" : "")
+				+ ">West</option>\n<option value='NW' "
+				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("NW")) ? " selected" : "")
+				+ ">North-West</option>\n</select></td></tr>\n");
+		out.write("<tr><td></td><td class='smallheading'>Strike</td><td><input type='text' name='Strike' size='4' value='"
+				+ FREDUtils.noNulls(getFieldForHTML(STRIKE))
+				+ "'></td></tr>\n");
+		out.write("<tr><td></td><td class='smallheading'>Facing</td><td><select name='Facing'><option value='' "
+				+ ((getFieldForHTML(FACING) == null) ? " selected" : "")
+				+ ">-- Choose --</option><option value='Normal' "
+				+ ((getFieldForHTML(FACING) != null && getFieldForHTML(FACING).equals("Normal")) ? " selected" : "")
+				+ ">Normal</option><option value='Overturned' "
+				+ ((getFieldForHTML(FACING) != null && getFieldForHTML(FACING).equals("Overturned")) ? " selected" : "")
+				+ ">Overturned</option></select></td></tr>\n");
+		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
+
+		out.write("<tr><td class='heading'>Grain Size</td><td class='smallheading'>Pri.</td><td>");
+		cd = new ComboDescriptor("grain_size", "grain_size_ID", "Code || ': ' || Name");
+		cd.name = "GrainSizeP";
+		cd.prompt = "-- Choose --";
+		cd.selected = getFieldForHTML(GRAIN_SIZE_P);
+		cd.orderBy = "Code";
+		cd.join = "FieldName = 'GrainSize'";
+		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
+		out.write("</td></tr>\n");
+		out.write("<tr><td></td><td class='smallheading'>Sec.</td><td>");
+		cd = new ComboDescriptor("grain_size", "grain_size_ID", "Code || ': ' || Name");
+		cd.name = "GrainSizeS";
+		cd.prompt = "-- Choose --";
+		cd.selected = getFieldForHTML(GRAIN_SIZE_S);
+		cd.orderBy = "Code";
+		cd.join = "FieldName = 'GrainSize'";
+		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
+		out.write("</td></tr>\n");
+		out.write("<tr><td></td><td class='smallheading'>Comp. Used</td><td><select name='GSComp'><option value='' "
+				+ ((getFieldForHTML(GS_COMP) == null) ? " selected" : "") + ">-- Choose --</option><option value='Y' " + ((getFieldForHTML(GS_COMP) != null && getFieldForHTML(GS_COMP).equals("Y")) ? " selected" : "")
+				+ ">Yes</option><option value='N' "
+				+ ((getFieldForHTML(GS_COMP) != null && getFieldForHTML(GS_COMP).equals("N")) ? " selected" : "")
+				+ ">No</option></select></td></tr>\n");
+		out.write("<tr><td class='heading'>Stratification</td><td class='smallheading'>Thickness</td><td>");
+		cd = new ComboDescriptor("bed_thickness", "thickness_id", "Code || ': ' || Name");
+		cd.name = "BedThick";
+		cd.prompt = "-- Choose --";
+		cd.selected = getFieldForHTML(BEDDING_THICKNESS);
+		cd.orderBy = "Code";
+		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
+		out.write("</td></tr>\n");
+		out.write("<tr><td></td><td class='smallheading'>Features</td><td>");
+		cd = new ComboDescriptor("bedding", "bedding_ID", "Code || ': ' || Name");
+		cd.name = "BeddingP";
+		cd.prompt = "-- Choose --";
+		cd.selected = getFieldForHTML(BEDDING_P);
+		cd.orderBy = "Code";
+		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
+		out.write("&nbsp;<span class='heading'>&</span>&nbsp;");
+		cd = new ComboDescriptor("bedding", "bedding_ID", "Code || ': ' || Name");
+		cd.name = "BeddingS";
+		cd.prompt = "-- Choose --";
+		cd.selected = getFieldForHTML(BEDDING_S);
+		cd.orderBy = "Code";
+		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
+		out.write("</td></tr>\n");
+		out.write("<tr><td class='heading'>Weathering</td><td></td><td>");
+		cd = new ComboDescriptor("weathering", "weathering_ID", "Code || ': ' || Name");
+		cd.name = "Weath";
+		cd.prompt = "-- Choose --";
+		cd.selected = getFieldForHTML(WEATHERING);
+		cd.orderBy = "Code";
+		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
+		out.write("</td></tr>\n");
+		out.write("<tr><td class='heading'>Hardness</td><td></td><td>");
+		cd = new ComboDescriptor("hardness", "hardness_ID", "Code || ': ' || Name");
+		cd.name = "Hard";
+		cd.prompt = "-- Choose --";
+		cd.selected = getFieldForHTML(HARDNESS);
+		cd.orderBy = "Code";
+		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
+		out.write("</td></tr>\n");
+		out.write("<tr><td class='heading'>Carbonate</td><td></td><td>");
+		cd = new ComboDescriptor("carbonate", "carbonate_ID", "Code || ': ' || Name");
+		cd.name = "Carb";
+		cd.prompt = "-- Choose --";
+		cd.selected = getFieldForHTML(CARBONATE);
+		cd.orderBy = "Code";
+		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
+		out.write("</td></tr>\n");
+		out.write("<tr><td class='heading'>Colour</td><td class='smallheading'>Shade</td><td>");
+		cd = new ComboDescriptor("colour_modifier", "modifier_ID", "Code || ': ' || Name");
+		cd.name = "ColMod";
+		cd.prompt = "-- Choose --";
+		cd.selected = getFieldForHTML(COLOUR_MOD);
+		cd.orderBy = "Code";
+		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
+		out.write("</td></tr>\n");
+		out.write("<tr><td></td><td class='smallheading'>Colour</td><td>");
+		cd = new ComboDescriptor("rock_colour", "colour_id", "Code || ': ' || Name");
+		cd.name = "ColourP";
+		cd.prompt = "-- Choose --";
+		cd.selected = getFieldForHTML(COLOUR_P);
+		cd.orderBy = "Code";
+		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
+		out.write("&nbsp;<span class='heading'>-</span>&nbsp;");
+		cd = new ComboDescriptor("rock_colour", "colour_id", "Code || ': ' || Name");
+		cd.name = "ColourS";
+		cd.prompt = "-- Choose --";
+		cd.selected = getFieldForHTML(COLOUR_S);
+		cd.orderBy = "Code";
+		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
+		out.write("</td></tr>\n");
+		out.write("<tr><td></td><td class='smallheading'>Wet/Dry</td><td><select name='Wet'><option value='' "
+				+ ((getFieldForHTML(WET) == null) ? " selected" : "") + ">-- Choose --</option><option value='Wet' " + ((getFieldForHTML(WET) != null && getFieldForHTML(WET).equals("Wet")) ? " selected" : "")
+				+ ">Wet</option><option value='Dry' "
+				+ ((getFieldForHTML(WET) != null && getFieldForHTML(WET).equals("Dry")) ? " selected" : "")
+				+ ">Dry</option></select></td></tr>\n");
+		out.write("<tr><td class='heading' colspan='2'>Additional Features</td><td><input type='text' name='SedFeat' size='40' value='"
+				+ FREDUtils.noNulls(getFieldForHTML(SED_FEATURES))
+				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=SedFeat\", \"Supp\", \"width=600,height=350\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
+		out.write("<tr><td class='heading' colspan='2'>Inferred Environment</td><td><select name='DepEnv1'><option value='' "
+				+ ((getFieldForHTML(DEP_ENVIRONMENT_1) == null) ? " selected" : "")
+				+ ">-- Choose --</option><option value='Marine' "
+				+ ((getFieldForHTML(DEP_ENVIRONMENT_1) != null && getFieldForHTML(DEP_ENVIRONMENT_1).equals("Marine")) ? " selected" : "")
+				+ ">Marine</option><option value='Non-marine' "
+				+ ((getFieldForHTML(DEP_ENVIRONMENT_1) != null && getFieldForHTML(DEP_ENVIRONMENT_1).equals("Non-marine")) ? " selected" : "")
+				+ ">Non-marine</option></select></td></tr>\n");
+		out.write("<tr><td></td><td></td><td><textarea name='DepEnv2' cols='40' rows='3'>"
+				+ FREDUtils.noNulls(getFieldForHTML(DEP_ENVIRONMENT_2))
+				+ "</textarea></td></tr>\n");
+		out.write("<tr><td class='heading' colspan='2'>Nature of Rock Unit</td><td><textarea name='RockNat' cols='40' rows='3'>"
+				+ FREDUtils.noNulls(getFieldForHTML(ROCK_NATURE))
+				+ "</textarea></td></tr>\n");
+		out.write("<tr><td class='heading' colspan='2'>Correspondence</td><td><textarea name='Corr' cols='40' rows='3'>"
+				+ FREDUtils.noNulls(getFieldForHTML(CORRESPONDENCE))
+				+ "</textarea></td></tr>\n");
+		if (!outcropSample) {
+			out.write("<table border='0' cellpadding='0' cellspacing='2'>\n");
+			out.write("<tr><td>&nbsp;</td></tr>\n");
+			out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
+			if (isAllowedSubmit)
+				out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Submit\";form1.submit();'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database'/></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick='form1.SaveType.value=\"Submit\";form1.submit();' class='boldlink'>Submit</a></td></tr>\n");
+			out.write("</table>\n");
+		} */
 	}
 	
 	public int save() throws InsufficientPrivelegesException, SQLException, IOException {
