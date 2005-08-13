@@ -953,30 +953,12 @@ public class SampleDE implements DataEntryForm {
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
 		out.write("<td>#" + FREDUtils.noNulls(getFieldForHTML(COLLECTION_DATE)) + "#</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(COLLECTORS)).replaceAll("\n", "#") + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(STRAT_NAME)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(FOSSILS_IN_PLACE)) + "</td>");
+		out.write("<trd>" + FREDUtils.noNulls(getFieldForHTML(SENT_TO)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(NOT_COLLECTED)) + "</td>");
 
-		/*out.write("<tr><td class='heading'>Strat Name</td><td></td><td><input type='text' name='StratName' size='40' value='"
-				+ FREDUtils.noNulls(getFieldForHTML(STRAT_NAME))
-				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=StratName\", \"Supp\", \"width=600,height=300\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write("<tr><td class='heading' style=\"color: #FF0000\">Fossils In Place</td><td></td><td><select name='InPlace'><option value='' "
-				+ ((getFieldForHTML(FOSSILS_IN_PLACE) == null) ? " selected" : "")
-				+ ">-- Choose --</option><option value='Yes' "
-				+ ((getFieldForHTML(FOSSILS_IN_PLACE) != null && getFieldForHTML(FOSSILS_IN_PLACE).equals("Yes")) ? " selected" : "")
-				+ ">Yes</option><option value='Almost' "
-				+ ((getFieldForHTML(FOSSILS_IN_PLACE) != null && getFieldForHTML(FOSSILS_IN_PLACE).equals("Almost")) ? " selected" : "")
-				+ ">Almost</option><option value='No' "
-				+ ((getFieldForHTML(FOSSILS_IN_PLACE) != null && getFieldForHTML(FOSSILS_IN_PLACE).equals("No")) ? " selected" : "")
-				+ ">No</option><option value='Unknown' "
-				+ ((getFieldForHTML(FOSSILS_IN_PLACE) != null && getFieldForHTML(FOSSILS_IN_PLACE).equals("Unknown")) ? " selected" : "")
-				+ ">Unknown</option></select></td></tr>\n");
-		out.write("<tr><td class='heading'>Sent To</td><td></td><td><textarea name='SentTo' cols='40' rows='2'>"
-				+ FREDUtils.noNulls(getFieldForHTML(SENT_TO))
-				+ "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=SentTo\", \"Supp\",\"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write("<tr><td class='heading'>Not Collected<br><span class='smalltext'>specify fossils seen but not collected</span></td><td></td><td><textarea name='NotColl' cols='40' rows='3'>"
-				+ FREDUtils.noNulls(getFieldForHTML(NOT_COLLECTED))
-				+ "</textarea></td></tr>\n");
-		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
-
-		out.write("<tr><td class='heading' colspan='2'>Significance/Comments</td><td><textarea name='Sig' cols='40' rows='3'>"
+		/*out.write("<tr><td class='heading' colspan='2'>Significance/Comments</td><td><textarea name='Sig' cols='40' rows='3'>"
 				+ FREDUtils.noNulls(getFieldForHTML(SIGNIFICANCE_COMMENTS))
 				+ "</textarea></td></tr>\n");
 		out.write("<tr><td class='heading'>Stage Limits</td><td class='smallheading'>Inferred</td><td>\n");
