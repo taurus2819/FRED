@@ -122,6 +122,10 @@
 	    		status = "Saved OK";
 	    	} else {
 	    		id = String.valueOf(dataEntryForm.submit());
+	    		if (request.getParameter("FRNum") != null) {
+	    			FRNumber frNum = FRNumber.parseFRNumber(request.getParameter("FRNum"));
+	    			FolderUtils.approveLocality(id, frNum, null, user, state);
+	    		}
 	    		status = "Submitted OK";
 	    	}
 			message = id;
