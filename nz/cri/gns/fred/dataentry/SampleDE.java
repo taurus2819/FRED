@@ -955,7 +955,7 @@ public class SampleDE implements DataEntryForm {
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(COLLECTORS)).replaceAll("\n", "#") + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(STRAT_NAME)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(FOSSILS_IN_PLACE)) + "</td>");
-		out.write("<trd>" + FREDUtils.noNulls(getFieldForHTML(SENT_TO)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(SENT_TO)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(NOT_COLLECTED)) + "</td>");
 
 		/*out.write("<tr><td class='heading' colspan='2'>Significance/Comments</td><td><textarea name='Sig' cols='40' rows='3'>"
