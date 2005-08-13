@@ -128,10 +128,14 @@
 				rs = statement.executeQuery("SELECT code || ': ' || name FROM colour_modifier ORDER BY code");
 			} else if (listName.equals("country")) {
 				rs = statement.executeQuery("SELECT country_name || '</td><td>' || country_code FROM mis.country ORDER BY country_name");
+			} else if (listName.equals("fossilGroup")) {
+				rs = statement.executeQuery("SELECT name FROM fossil_group ORDER BY name");
 			} else if (listName.equals("grainSize")) {
 				rs = statement.executeQuery("SELECT code || ': ' || name FROM grain_size ORDER BY code");
 			} else if (listName.equals("hardness")) {
 				rs = statement.executeQuery("SELECT code || ': ' || name FROM hardness ORDER BY code");
+			} else if (listName.equals("lab")) {
+				rs = statement.executeQuery("SELECT lab_name FROM sc.lab ORDER BY lab_name");
 			} else if (listName.equals("locMethod")) {
 				rs = statement.executeQuery("SELECT method || '</td><td>' || method_id || '</td><td>' || nom_accuracy_xy FROM sc.method WHERE nom_accuracy_xy IS NOT NULL ORDER BY nom_accuracy_xy");
 			} else if (listName.equals("person")) {
@@ -140,6 +144,8 @@
 				rs = statement.executeQuery("SELECT name || '</td><td>' || reg_area_id  FROM registration_area ORDER BY name");
 			} else if (listName.equals("thickness")) {
 				rs = statement.executeQuery("SELECT code || ': ' || name FROM bed_thickness ORDER BY code");
+			} else if (listName.equals("stratName")) {
+				rs = statement.executeQuery("SELECT su_name FROM sl.strat_unit ORDER BY su_name");
 			} else if (listName.equals("weathering")) {
 				rs = statement.executeQuery("SELECT code || ': ' || name FROM weathering ORDER BY code");
 			}
