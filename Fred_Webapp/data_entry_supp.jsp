@@ -603,7 +603,7 @@ function parseDropDown(val) {
 			cd.name = "MF";
 			cd.prompt = "-- Choose --";
 			cd.tagParams = "onChange='form1.submit();'";
-			cd.join = "folder_type = 'admin'";
+			cd.join = "folder_type = 1";
 			cd.orderBy = "folder_id";
 			if (request.getParameter("MF") != null  && !request.getParameter("MF").equals("-")) {
 				cd.selected = request.getParameter("MF");
@@ -624,7 +624,7 @@ function parseDropDown(val) {
 			cd.name = "WorkFeat";
 			cd.prompt = "-- Choose --";
 			cd.selectDistinct = true;
-			cd.join = "fv.feature_working_folder_id = fd.folder_id AND fv.feature_status <> 'approved' AND fd.user_id = " + user.getPersonId() + " AND fd.folder_type = 'personal'";
+			cd.join = "fv.feature_working_folder_id = fd.folder_id AND fv.feature_status <> 'approved' AND fd.user_id = " + user.getPersonId() + " AND fd.folder_type = 2";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("</td></tr>");
 			out.println("</table>");
@@ -654,7 +654,7 @@ function parseDropDown(val) {
 			cd.name = "MF";
 			cd.prompt = "-- Choose --";
 			cd.tagParams = "onChange='form1.submit();'";
-			cd.join = "folder_type = 'admin'";
+			cd.join = "folder_type = 1";
 			cd.orderBy = "folder_id";
 			if (request.getParameter("MF") != null  && !request.getParameter("MF").equals("-")) {
 				cd.selected = request.getParameter("MF");
@@ -675,7 +675,7 @@ function parseDropDown(val) {
 			cd.name = "WorkFeat";
 			cd.prompt = "-- Choose --";
 			cd.selectDistinct = true;
-			cd.join = "fv.feature_working_folder_id = fd.folder_id AND fv.feature_status <> 'approved' AND fd.user_id = " + user.getPersonId() + " AND fd.folder_type = 'personal'";
+			cd.join = "fv.feature_working_folder_id = fd.folder_id AND fv.feature_status <> 'approved' AND fd.user_id = " + user.getPersonId() + " AND fd.folder_type = 2";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("</td></tr>");
 			out.println("</table>");
