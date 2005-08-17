@@ -353,7 +353,7 @@ public class SampleDE implements DataEntryForm {
 							prevSamp.add(ps);
 						} else {
 							query = "SELECT feature_id FROM feature_view fv, folder_view fd WHERE fv.feature_working_folder_id = fd.folder_id AND fv.feature_status <> ? AND fd.user_id = ? AND fd.folder_type = ? AND UPPER(fv.sample_name) = ?";
-							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.NUMERIC, Types.VARCHAR, Types.VARCHAR}, new Object[] {Audit.STATUS_APPROVED, new Integer(user.getPersonId()), "personal", sampName.toUpperCase()});
+							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.NUMERIC, Types.NUMERIC, Types.VARCHAR}, new Object[] {Audit.STATUS_APPROVED, new Integer(user.getPersonId()), new Integer(2), sampName.toUpperCase()});
 							if (rs.next()) {
 								ps = new Relationship();
 								ps.setRelatedFeatureID(new Integer(rs.getInt(1)));
@@ -405,7 +405,7 @@ public class SampleDE implements DataEntryForm {
 							srFeatID = new Integer(rs.getInt(1));
 						} else {
 							query = "SELECT feature_id FROM feature_view fv, folder_view fd WHERE fv.feature_working_folder_id = fd.folder_id AND fv.feature_status <> ? AND fd.user_id = ? AND fd.folder_type = ? AND UPPER(fv.sample_name) = ?";
-							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.NUMERIC, Types.VARCHAR, Types.VARCHAR}, new Object[] {Audit.STATUS_APPROVED, new Integer(user.getPersonId()), "personal", srFeat.toUpperCase()});
+							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.NUMERIC, Types.NUMERIC, Types.VARCHAR}, new Object[] {Audit.STATUS_APPROVED, new Integer(user.getPersonId()), new Integer(2), srFeat.toUpperCase()});
 							if (rs.next()) {
 								srFeatID = new Integer(rs.getInt(1));
 							} else {
