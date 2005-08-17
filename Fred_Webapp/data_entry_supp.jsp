@@ -642,11 +642,11 @@ function parseDropDown(val) {
 			out.println("<input type='text' name='Distance' />&nbsp;m&nbsp;-&nbsp;");
 			out.println("<input type='text' name='DistRange' />&nbsp;m</td></tr>");
 			out.print("<tr><td class='heading'>Relationship</td><td>");
-			cd = new ComboDescriptor("relationship_type", "Name", "Name");
+			cd = new ComboDescriptor("relationship_type", "name", "name");
 			cd.name = "Rel";
 			cd.prompt = "-- Choose --";
-			cd.orderBy = "Lookup_ID";
-			cd.join = "reltype_type = 1 AND Name != 'nearby'";
+			cd.orderBy = "reltype_id";
+			cd.join = "reltype_type = 1 AND name != 'nearby'";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("</td></tr>");
 			out.print("<tr><td class='heading'>Masterfile Area</td><td>");
@@ -693,10 +693,10 @@ function parseDropDown(val) {
 			out.println("<input type='text' name='Distance' />&nbsp;m&nbsp;-&nbsp;");
 			out.println("<input type='text' name='DistRange' />&nbsp;m</td></tr>");
 			out.print("<tr><td class='heading'>Relationship</td><td>");
-			cd = new ComboDescriptor("relationship_type", "Name", "Name");
+			cd = new ComboDescriptor("relationship_type", "name", "name");
 			cd.name = "Rel";
 			cd.prompt = "-- Choose --";
-			cd.orderBy = "Lookup_ID";
+			cd.orderBy = "reltype_id";
 			cd.join = "reltype_type = 2";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.print("<tr><td class='heading'>NZ StratLex</td><td>");
