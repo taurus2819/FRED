@@ -957,63 +957,17 @@ public class SampleDE implements DataEntryForm {
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(FOSSILS_IN_PLACE)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(SENT_TO)).replaceAll("\n", "#") + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(NOT_COLLECTED)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(SIGNIFICANCE_COMMENTS)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(INF_AGE_START)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(INF_START_MOD)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(INF_AGE_STOP)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(INF_STOP_MOD)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(KNW_AGE_START)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(KNW_START_MOD)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(KNW_AGE_STOP)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(KNW_STOP_MOD)) + "</td>");
 
-		/*out.write("<tr><td class='heading' colspan='2'>Significance/Comments</td><td><textarea name='Sig' cols='40' rows='3'>"
-				+ FREDUtils.noNulls(getFieldForHTML(SIGNIFICANCE_COMMENTS))
-				+ "</textarea></td></tr>\n");
-		out.write("<tr><td class='heading'>Stage Limits</td><td class='smallheading'>Inferred</td><td>\n");
-		out.write("<table border='0' cellspacing='0'><tr><td>");
-		cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
-		cd.name = "InfStageStart";
-		cd.prompt = "-- Choose --";
-		cd.selected = getFieldForHTML(INF_AGE_START);
-		cd.orderBy = "Ag_Name";
-		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
-		out.write("</td><td><select name='InfStartMod'><option value='-' "
-				+ ((getFieldForHTML(INF_START_MOD) == null) ? " selected" : "")
-				+ "></option><option value='?' "
-				+ ((getFieldForHTML(INF_START_MOD) != null && getFieldForHTML(INF_START_MOD).equals("?")) ? " selected" : "")
-				+ ">?</option></select></td><td class='heading'> to </td></tr>\n");
-		out.write("<tr><td>");
-		cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
-		cd.name = "InfStageStop";
-		cd.prompt = "-- Choose --";
-		cd.selected = getFieldForHTML(INF_AGE_STOP);
-		cd.orderBy = "Ag_Name";
-		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
-		out.write("</td><td class='heading'><select name='InfStopMod'><option value='-' "
-				+ ((getFieldForHTML(INF_STOP_MOD) == null) ? " selected" : "")
-				+ "></option><option value='?' "
-				+ ((getFieldForHTML(INF_STOP_MOD) != null && getFieldForHTML(INF_STOP_MOD).equals("?")) ? " selected" : "")
-				+ ">?</option></select></td></tr>\n");
-		out.write("</table></td></tr>\n");
-		out.write("<tr><td></td><td class='smallheading'>Known</td><td>\n");
-		out.write("<table border='0' cellspacing='0'><tr><td>");
-		cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
-		cd.name = "KnwStageStart";
-		cd.prompt = "-- Choose --";
-		cd.selected = getFieldForHTML(KNW_AGE_START);
-		cd.orderBy = "Ag_Name";
-		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
-		out.write("</td><td><select name='KnwStartMod'><option value='-' "
-				+ ((getFieldForHTML(KNW_START_MOD) == null) ? " selected" : "")
-				+ "></option><option value='?' "
-				+ ((getFieldForHTML(KNW_START_MOD) != null && getFieldForHTML(KNW_START_MOD).equals("?")) ? " selected" : "")
-				+ ">?</option></select></td><td class='heading'> to </td></tr>\n");
-		out.write("<tr><td>");
-		cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
-		cd.name = "KnwStageStop";
-		cd.prompt = "-- Choose --";
-		cd.selected = getFieldForHTML(KNW_AGE_STOP);
-		cd.orderBy = "Ag_Name";
-		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
-		out.write("</td><td class='heading'><select name='KnwStopMod'><option value='-' "
-				+ ((getFieldForHTML(KNW_STOP_MOD) == null) ? " selected" : "")
-				+ "></option><option value='?' "
-				+ ((getFieldForHTML(KNW_STOP_MOD) != null && getFieldForHTML(KNW_STOP_MOD).equals("?")) ? " selected" : "")
-				+ ">?</option></select></td></tr>\n");
-		out.write("</table></td></tr>\n");
-		out.write("<tr><td class='heading'>Samples Nearby</td><td></td><td><input type='text' name='PrevSamp' size='40' value='"
+/*		out.write("<tr><td class='heading'>Samples Nearby</td><td></td><td><input type='text' name='PrevSamp' size='40' value='"
 				+ FREDUtils.noNulls(getFieldForHTML(PREVIOUS_SAMPLE))
 				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=PrevSamp\", \"Supp\", \"width=600,height=350\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
 		out.write("<tr><td class='heading' colspan='2'>Sample Relationships</td><td><textarea name='SampRel' cols='40' rows='3'>"
