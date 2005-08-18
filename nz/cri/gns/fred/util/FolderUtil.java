@@ -9,6 +9,9 @@ import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.FolderTypeDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.model.Folder;
+import nz.cri.gns.fred.model.FolderAccessor;
+import nz.cri.gns.fred.model.FolderRight;
+import nz.cri.gns.fred.model.FolderUser;
 import nz.cri.gns.fred.model.UserFolder;
 
 import nz.cri.gns.auth.UserAccount;
@@ -20,7 +23,6 @@ public class FolderUtil extends ModelUtil {
 
 	private FolderDAO folderDAO;
 	private FolderTypeDAO typeDAO;
-	private DAOFactory factory;
 	
 	public FolderUtil(DAOFactory dao) {
 		super(dao);
@@ -31,8 +33,8 @@ public class FolderUtil extends ModelUtil {
 	/**
 	 *@return a <code>List</code> of <code>UserFolder</code>s
 	 */
-	public List getPersonalFolders(UserAccount user) throws StorageAccessException {
-		Vector folders = new Vector();
+	public List<UserFolder> getPersonalFolders(UserAccount user) throws StorageAccessException {
+		Vector<UserFolder> folders = new Vector<UserFolder>();
 		folders.addAll(folderDAO.getPersonalFolders(Integer.parseInt(user.getId())));
 		folders.addAll(folderDAO.getAccessibleFolders(Integer.parseInt(user.getId()), typeDAO.getFolderType("Personal")));
 		
@@ -69,7 +71,38 @@ public class FolderUtil extends ModelUtil {
 		return folderDAO.getWaitingMasterfileFeatureCount(folder);
 	}
 	
-	public UserFolder getUserFolder(int folderId, UserAccount user) throws NumberFormatException, StorageAccessException {
+	public UserFolder getUserFolder(int folderId, UserAccount user) throws StorageAccessException {
 		return folderDAO.getUserFolder(folderId, Integer.parseInt(user.getId()));
+	}
+	
+	/**
+	 * Returns a list of right types in the appropriate order and omitting any
+	 * innappropriate rights for the given folder's type.
+	 * @throws StorageAccessException 
+	 */
+	public List<FolderRight> getRightTypesForDisplay(UserFolder folder) throws StorageAccessException {
+		return (folder.getFolder().getFolderType().getName().equals("Personal")) 
+			? folderDAO.getFolderRightList("code NOT IN ('1', '64')", "code") 
+			: folderDAO.getFolderRightList("code NOT IN ('32', '64')", "code DESC");
+	}
+	
+	/**
+	 * Returns a list of UserFolder objects describing each user that has some access to
+	 * the given folder.  The UserFolders are ordered alphabetically
+	 * @param folder
+	 * @return
+	 * @throws StorageAccessException 
+	 */
+	public List<FolderAccessor> getNonOwningUsers(UserFolder folder) throws StorageAccessException {
+		List<FolderUser> users = folderDAO.getNonOwningUsers(folder.getFolder());
+		List<FolderAccessor> accessors = new Vector<FolderAccessor>(users.size());
+		//Ordering is going to be painful
+		for (FolderUser user : users) try {
+			accessors.add(new FolderAccessor(user, FREDUtil.getUserName(user.getUserId().intValue())));
+		} catch (Exception e) {
+			throw new StorageAccessException(e);
+		}
+		Collections.sort(accessors);
+		return accessors;
 	}
 }

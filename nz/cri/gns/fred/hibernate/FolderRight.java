@@ -4,9 +4,11 @@ import java.io.Serializable;
 
 
 /** @author Hibernate CodeGenerator */
-public class FolderRight implements Serializable {
+public class FolderRight implements Serializable, nz.cri.gns.fred.model.FolderRight {
 
-    /** identifier field */
+	private static final long serialVersionUID = 20050818L;
+	
+   /** identifier field */
     private Integer rightId;
 
     /** persistent field */
@@ -34,11 +36,11 @@ public class FolderRight implements Serializable {
         this.rightId = rightId;
     }
 
-    public String getName() {
+    public String getRightDescription() {
         return this.name;
     }
 
-    public void setName(String name) {
+    public void setRightDescription(String name) {
         this.name = name;
     }
 

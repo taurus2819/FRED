@@ -5,6 +5,8 @@ import java.io.Serializable;
 /** @author Hibernate CodeGenerator */
 public class TaxaPanel implements Serializable, nz.cri.gns.fred.model.TaxaPanel {
 
+	private static final long serialVersionUID = 20050818L;
+	
     /** identifier field */
     private nz.cri.gns.fred.hibernate.TaxaPanelPK comp_id;
 

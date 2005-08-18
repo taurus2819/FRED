@@ -1,86 +1,109 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, nz.cri.gns.auth.*"
+%><%@page import="nz.cri.gns.fred.*"
+%><%@page import="nz.cri.gns.fred.dao.StorageAccessException"
+%><%@page import="nz.cri.gns.fred.model.UserFolder"
+%><%@page import="nz.cri.gns.fred.model.FolderRight"
+%><%@page import="nz.cri.gns.fred.model.FolderAccessor"
+%><%@page import="nz.cri.gns.fred.util.FolderUtil"
+%><%@page import="nz.cri.gns.fred.util.FREDUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.db.*"
+%><%@page import="nz.cri.gns.jsp.*"
+%><%@page import="nz.cri.gns.intranet.*"
+%><%@page import="java.util.List"
+%><%@page import="java.util.Iterator"
+%><%@page import="nz.cri.gns.auth.*"
+%><%!public String getName(HttpServletRequest request) {
+		try {
+			FolderUtil folderUtil = new FolderUtil(HibernateUtil.get()
+					.getDAOFactory());
+			UserFolder folder = folderUtil.getUserFolder(Integer
+					.parseInt(request.getParameter("FoldID")), getUser(request
+					.getSession()));
+			return "FRED :: " + folder.getFolder().getName() + " users";
+		} catch (StorageAccessException e) {
+			return "FRED";
+		}
+	}
+
+	protected IconnedLink[] getButtons(HttpServletRequest request) {
+		return new IconnedLink[] {
+			new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")
+		};
+	}
+
 %><%
-	PageState state = new PageState(request, response, getServletContext());
-	DBConnection connection = FREDUtils.getFREDConnection(state);
-	Statement statement = connection.statement;
-	ResultSet rs;
 	User user = (User)getUser(session);
-	int userID = user.getPersonId(), execUp, i, userRightValue[], maxRights, rightCode = 0;
-	String userRight[];
-	userRightValue = new int[10];
-	userRight = new String[10];
+	int userID = user.getPersonId(), execUp, i, rightCode = 0;
+	
 	ComboDescriptor cd;
 
 	ExtranetTemplate et = getExtranetTemplate();
 
 	if (request.getParameter("FoldID") != null) {
-		String foldID = request.getParameter("FoldID");
+		FolderUtil folderUtil = new FolderUtil(HibernateUtil.get().getDAOFactory());
+		UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("FoldID")), user);
+
+		boolean canEdit = 
+			//User is owner
+			folder.getFolder().getOwnerId().toString().equals(user.getId())	
+			//User has admin rights
+			|| folder.isAllowedAdmin();
 		
-		rs = statement.executeQuery("SELECT Folder_Name, Folder_Owner, User_Rights, Folder_Type FROM Folder_View WHERE User_ID = " + userID + " AND Folder_ID = " + foldID);
-		if (rs.next() && (rs.getInt(3) & 32) == 32) { //to get past this if statement user must either be the owner of the folder or have admin rights
-			String folderName = rs.getString(1);
-			String folderOwner = rs.getString(2);
-			String folderType = rs.getString(4);
-			
-			//build array of rights
-			if (folderType.equals("personal")) {
-				rs = statement.executeQuery("SELECT Name, Code FROM folder_right WHERE FieldName = 'FolderRight' AND Code NOT IN ('1', '64') ORDER BY right_ID");
-			} else {
-				rs = statement.executeQuery("SELECT Name, Code FROM folder_right WHERE FieldName = 'FolderRight' AND Code IN ('32', '64') ORDER BY right_ID DESC");
-			}
-			i = -1;
-			while (rs.next()) {
-				userRight[++i] = rs.getString(1);
-				userRightValue[i] = rs.getInt(2);
-			}
-			maxRights = ++i;
-	
+		if (canEdit) { 
+
 			//process any changes
 			if (request.getParameter("ActionType") != null) {
+				PageState state = getPageState(request, response);
+				DBConnection connection = FREDUtils.getFREDConnection(state);
+				java.sql.Statement statement = connection.statement;
+
 				String actionType = request.getParameter("ActionType");
 				if (actionType.equals("AddUser")) {
-					execUp = statement.executeUpdate("INSERT INTO Folder_User (Folder_ID, User_ID, User_Rights) VALUES (" + foldID + ", " + request.getParameter("UserID") + ", 1)");
+					execUp = statement.executeUpdate("INSERT INTO Folder_User (Folder_ID, User_ID, User_Rights) VALUES (" + folder.getFolderId() + ", " + request.getParameter("UserID") + ", 1)");
 				}
 				if (actionType.equals("DeleteUser")) {
-					execUp = statement.executeUpdate("DELETE FROM Folder_User WHERE User_ID = " + request.getParameter("UserID") + " AND Folder_ID = " + foldID);
+					execUp = statement.executeUpdate("DELETE FROM Folder_User WHERE User_ID = " + request.getParameter("UserID") + " AND Folder_ID = " + folder.getFolderId());
 				}
 				else if (actionType.equals("ChangeRight")) {
-					execUp = statement.executeUpdate("UPDATE Folder_User SET User_Rights = User_Rights + " + request.getParameter("Right") + " WHERE User_ID = " + request.getParameter("UserID") + " AND Folder_ID = " + foldID);
+					execUp = statement.executeUpdate("UPDATE Folder_User SET User_Rights = User_Rights + " + request.getParameter("Right") + " WHERE User_ID = " + request.getParameter("UserID") + " AND Folder_ID = " + folder.getFolderId());
 				}
-				response.sendRedirect("folder_user.jsp?FoldID=" + foldID);
+				response.sendRedirect("folder_user.jsp?FoldID=" + folder.getFolderId());
 				return;
 			}
 	
 			drawTop(out, et, request, response);
-	
-			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
-			out.println("<tr><td><a href='folder_list.jsp' title='Back to Folders'><img src='images/back_arrow.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_list.jsp' class='heading'>Back to Folders</a></td></tr>");
-			out.println("</table>");
-		
-			drawEndNavigation(out);
-		
+
+			List<FolderRight> rightTypes = folderUtil.getRightTypesForDisplay(folder);	
+			boolean isPersonal = folder.getFolder().getFolderType().getName().equals("Personal");
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");
 
-			if (folderType.equals("personal")) {
-				out.println("<p><span class='bigheading'>Folder: " + folderName + "</span><br>");
-				out.println("<span class='heading'>Owner: " + folderOwner + "</span></p>");
+			if (isPersonal) {
+				out.println("<p><span class='bigheading'>Folder: " + folder.getFolderName() + "</span><br>");
+				out.println("<span class='heading'>Owner: " + FREDUtil.getUserName(folder.getFolder().getOwnerId().intValue()) + "</span></p>");
 			} else {
-				out.println("<p><span class='bigheading'>Masterfile: " + folderName + "</span></p>");
+				out.println("<p><span class='bigheading'>Masterfile: " + folder.getFolderName() + "</span></p>");
 			}
 
 			out.println("<p>The users listed below have rights to this folder.<br>Users can be added or deleted from this list and their rights altered by clicking on the <img src='images/ok.gif' width='20' height='20' border='0' /> or <img src='images/cancel.gif' width='20' height='20' border='0' /> icons.</p>");
 
 			out.println("<p><table border='0' cellspacing='0' cellpadding='2'>");
 			out.print("<tr class='heading' align='center'><td align='left'>User&nbsp&nbsp</td><td width='60'>Read</td>");
-			for (int x = 0; x < maxRights; x++) { out.print("<td width='60'>" + userRight[x] + "</td>"); }
-			out.println("<tr><td><img src='images/blank.gif width='1' height='5' /></td></tr>");
+			for (Iterator<FolderRight> it = rightTypes.iterator(); it.hasNext(); ) {
+				%><td width="60"><%=it.next().getRightDescription()%></td><%
+			}
+			%><tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr><%
 
+			List<FolderAccessor> users = folderUtil.getNonOwningUsers(folder);
+			for (FolderAccessor folderUser : users) {
+				%><tr><td><%=folderUser.getUserName()%>&nbsp&nbsp</td>
+<td align="center"><a href="folder_user.jsp?FoldID=<%=folderUser.getFolder().getFolderId()%>&ActionType=DeleteUser&UserID=<%=folderUser.getUserId()%>" title="Delete User"><img src="images/ok.gif" width="20" height="20" border="0" /></a></td>
+<%
+			}
 			rs = statement.executeQuery("SELECT User_ID, Folder_User, User_Rights FROM Folder_View WHERE (Owner_ID IS NULL OR User_ID <> Owner_ID) AND Folder_ID = " + foldID);
 			i = 0;
 			while (rs.next()) {
-				out.print("<tr><td>" + rs.getString(2) + "&nbsp&nbsp</td><td align='center'><a href='folder_user.jsp?FoldID=" + foldID + "&ActionType=DeleteUser&UserID=" + rs.getString(1) + "' title='Delete User'><img src='images/ok.gif' width='20' height='20' border='0' /></a></td>");
 				for (int x = 0; x < maxRights; x++) {
 					out.print("<td align='center'><a href='folder_user.jsp?FoldID=" + foldID + "&ActionType=ChangeRight&UserID=" + rs.getString(1) + "&Right=");
 					if ((rs.getInt(3) & userRightValue[x]) != 0) {

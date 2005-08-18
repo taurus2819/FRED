@@ -16,7 +16,6 @@ import nz.cri.gns.test.TestingPageState;
 import nz.cri.gns.test.TestingServletContext;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
-import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.db.DatabaseApp2;
 import nz.cri.gns.db.DBUtils;
 /**
@@ -29,9 +28,8 @@ public class CredentialsCheck {
 		((TestingServletContext)state.context).setInitParameter("dbConnect", "raptor:1521:gns");
 		
 		//Test as me
-		DBConnection fredConn = FREDUtils.getFREDConnection(state);
 		DatabaseApp2 app = DBUtils.createDatabaseApp2("ip", "gns", "");
-		User meUser = new User("iainm", "murtle", app);
+		User meUser = new User("iainm", "*****", app);
 		
 		PaleontologyRecord rec = new PaleontologyRecord(102012, state);
 		System.out.println("Iain:");
@@ -41,9 +39,9 @@ public class CredentialsCheck {
 
 		User pamUser = new User("pchester@actrix.co.nz", "d3e6c50", app);
 		System.out.println("Pam:");
-		System.out.println("Locality: " + FREDUtils.isAllowedLocality(meUser, rec.getAsString(Record.FEATURE_STATUS), rec.getAsString(Record.FEATURE_ID), state));
-		System.out.println("Sample: " + FREDUtils.isAllowedSample(meUser, rec.getAsString(Record.SAMPLE_SECURITY_CLASS_ID), rec.getAsString(Record.STATUS), rec.getAsString(Record.SAMPLE_ID), state));
-		System.out.println("Record: " + FREDUtils.isAllowedRecord(meUser, rec.getAsString(Record.SECURITY_CLASS_ID), rec.getAsString(Record.STATUS), rec.getAsString(Record.RECORD_ID), state));
+		System.out.println("Locality: " + FREDUtils.isAllowedLocality(pamUser, rec.getAsString(Record.FEATURE_STATUS), rec.getAsString(Record.FEATURE_ID), state));
+		System.out.println("Sample: " + FREDUtils.isAllowedSample(pamUser, rec.getAsString(Record.SAMPLE_SECURITY_CLASS_ID), rec.getAsString(Record.STATUS), rec.getAsString(Record.SAMPLE_ID), state));
+		System.out.println("Record: " + FREDUtils.isAllowedRecord(pamUser, rec.getAsString(Record.SECURITY_CLASS_ID), rec.getAsString(Record.STATUS), rec.getAsString(Record.RECORD_ID), state));
 		
 		
 	}

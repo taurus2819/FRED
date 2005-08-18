@@ -3,7 +3,9 @@ package nz.cri.gns.fred.dao;
 import java.util.List;
 
 import nz.cri.gns.fred.model.Folder;
+import nz.cri.gns.fred.model.FolderRight;
 import nz.cri.gns.fred.model.FolderType;
+import nz.cri.gns.fred.model.FolderUser;
 import nz.cri.gns.fred.model.UserFolder;
 
 /**
@@ -21,14 +23,14 @@ public interface FolderDAO {
 	 * personal folders owned by to the person
 	 * @throws StorageAccessException
 	 */
-	public List getPersonalFolders(int ownerId) throws StorageAccessException;
+	public List<UserFolder> getPersonalFolders(int ownerId) throws StorageAccessException;
 	
 	/**
 	 * Returns a list of <code>UserFolder</code>s of the given type to which the user has access 
 	 * but does not (necessarily?) own.
 	 * @throws StorageAccessException
 	 */
-	public List getAccessibleFolders(int userId, FolderType type) throws StorageAccessException;
+	public List<UserFolder> getAccessibleFolders(int userId, FolderType type) throws StorageAccessException;
 
     /**
      * Saves the given new folder to persistent storage
@@ -66,5 +68,23 @@ public interface FolderDAO {
 	 * @throws StorageAccessException
 	 */
 	public List getWorkingAuditsFor(Folder folder) throws StorageAccessException;
+
+	/**
+	 * Returns the folder rights which satisfy the given join, in the given order.  A query might look like
+	 * WHERE &lt;join&gt; ORDER BY &lt;order&gt;
+	 * @param join
+	 * @param order
+	 * @return
+	 * @throws StorageAccessException
+	 */
+	public List<FolderRight> getFolderRightList(String join, String order) throws StorageAccessException;
+
+	/**
+	 * Returns all users who have access to this folder, but are not it's owner
+	 * @param folder
+	 * @return
+	 * @throws StorageAccessException 
+	 */
+	public List<FolderUser> getNonOwningUsers(Folder folder) throws StorageAccessException;
 	
 }

@@ -4,8 +4,10 @@ import java.io.Serializable;
 
 
 /** @author Hibernate CodeGenerator */
-public class FolderUser implements Serializable {
+public class FolderUser implements Serializable, nz.cri.gns.fred.model.FolderUser {
 
+	private static final long serialVersionUID = 20050818L;
+	
     /** identifier field */
     private nz.cri.gns.fred.hibernate.FolderUserPK comp_id;
 
@@ -66,4 +68,7 @@ public class FolderUser implements Serializable {
 		return comp_id.hashCode();
 	}
 
+	public Integer getUserId() {
+		return comp_id.getUserId();
+	}
 }

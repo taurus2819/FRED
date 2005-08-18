@@ -2,6 +2,8 @@ package nz.cri.gns.fred.hibernate.dao;
 
 import java.util.List;
 
+import sun.security.action.GetLongAction;
+
 import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.type.IntegerType;
@@ -22,6 +24,7 @@ import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.Folder;
+import nz.cri.gns.fred.model.FolderRight;
 import nz.cri.gns.fred.model.FolderType;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Record;
@@ -52,7 +55,7 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 		return new nz.cri.gns.fred.hibernate.Folder();
 	}
 
-	public List getPersonalFolders(int ownerId) throws StorageAccessException {
+	public List<UserFolder> getPersonalFolders(int ownerId) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
 			List list = session.find("from Folder as folder where folder.ownerId = ?", new Integer(ownerId), new IntegerType());
@@ -66,7 +69,7 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 		}
 	}
 
-	public List getAccessibleFolders(int userId, FolderType type) throws StorageAccessException {
+	public List<UserFolder> getAccessibleFolders(int userId, FolderType type) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
 			Query query = session.createQuery("FROM FolderUser as fu INNER JOIN fu.folder AS f WHERE f.folderType = :type AND fu.comp_id.userId = :user");
@@ -172,6 +175,28 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 			throw new StorageAccessException(e);
 		}
 	}
+
+	public List<FolderRight> getFolderRightList(String join, String order) throws StorageAccessException {
+		try {
+			Session session = provider.currentSession();
+			return session.find("FROM FolderRight WHERE " + join + " ORDER BY " + order);
+		} catch (Exception e) {
+			throw new StorageAccessException(e);
+		}
+	}
+	
+
+	public List<nz.cri.gns.fred.model.FolderUser> getNonOwningUsers(Folder folder) throws StorageAccessException {
+		try {
+			Session session = provider.currentSession();
+			Query query = session.createQuery("FROM FolderUser folder = :foldr");
+			query.setEntity("foldr", folder);
+			return query.list();
+		} catch (Exception e) {
+			throw new StorageAccessException(e);
+		}
+	}
+
 
 	public TaxonomicGroupDAO getTaxonomicGroupDAO() {
 		return this;
