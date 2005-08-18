@@ -6,7 +6,9 @@ import java.util.Set;
 /** @author Hibernate CodeGenerator */
 public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption {
 
-    /** identifier field */
+	private static final long serialVersionUID = 20050818L;
+	
+	/** identifier field */
     private Integer recordId;
 
     /** nullable persistent field */

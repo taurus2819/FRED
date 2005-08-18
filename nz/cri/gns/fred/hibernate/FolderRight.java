@@ -17,6 +17,11 @@ public class FolderRight implements Serializable, nz.cri.gns.fred.model.FolderRi
     /** persistent field */
     private String code;
 
+    /**
+     * Extra field to satisfy interface requirements without excessive processing
+     */
+	private int rightCode;
+
     /** full constructor */
     public FolderRight(Integer rightId, String name, String code) {
         this.rightId = rightId;
@@ -50,5 +55,11 @@ public class FolderRight implements Serializable, nz.cri.gns.fred.model.FolderRi
 
     public void setCode(String code) {
         this.code = code;
+        this.rightCode = Integer.parseInt(code);
     }
+
+	public int getRightCode() {
+		return rightCode;
+	}
+    
 }

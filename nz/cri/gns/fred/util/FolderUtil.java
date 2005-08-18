@@ -31,7 +31,9 @@ public class FolderUtil extends ModelUtil {
 	}
 	
 	/**
-	 *@return a <code>List</code> of <code>UserFolder</code>s
+	 * Returns a list of <code>UserFolder</code>s representing
+	 * personal folders belonging to the given user,
+	 * or to which the given user has access but is not the owner
 	 */
 	public List<UserFolder> getPersonalFolders(UserAccount user) throws StorageAccessException {
 		Vector<UserFolder> folders = new Vector<UserFolder>();
@@ -43,7 +45,8 @@ public class FolderUtil extends ModelUtil {
 	}
 	
 	/**
-	 *@return a <code>List</code> of <code>UserFolder</code>s
+	 * Returns a list of <code>UserFolder</code>s representing
+	 * admin folders to which the given user has access
 	 */
 	public List getAdminFolders(UserAccount user) throws StorageAccessException {
 		List folders = folderDAO.getAccessibleFolders(Integer.parseInt(user.getId()), typeDAO.getFolderType("Admin"));
@@ -67,13 +70,16 @@ public class FolderUtil extends ModelUtil {
 	    folderDAO.delete(folder);
 	}
 	
+	public boolean getUserHasAdminRights(UserFolder folder) {
+	    return (folder.getRights() & Folder.FOLDER_ADMIN_RIGHT) > 0;
+	}
 	public int getMasterfileFolderFeatureCount(Folder folder) throws StorageAccessException {
 		return folderDAO.getWaitingMasterfileFeatureCount(folder);
 	}
 	
 	public UserFolder getUserFolder(int folderId, UserAccount user) throws StorageAccessException {
 		return folderDAO.getUserFolder(folderId, Integer.parseInt(user.getId()));
-	}
+}
 	
 	/**
 	 * Returns a list of right types in the appropriate order and omitting any
@@ -85,7 +91,6 @@ public class FolderUtil extends ModelUtil {
 			? folderDAO.getFolderRightList("code NOT IN ('1', '64')", "code") 
 			: folderDAO.getFolderRightList("code NOT IN ('32', '64')", "code DESC");
 	}
-	
 	/**
 	 * Returns a list of UserFolder objects describing each user that has some access to
 	 * the given folder.  The UserFolders are ordered alphabetically

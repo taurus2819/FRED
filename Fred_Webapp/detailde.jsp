@@ -160,10 +160,8 @@ alert("Locality added to <%=folderUtil.getUserFolder(Integer.parseInt(request.ge
 
 	if (user != null) {
 
-		%><tr><td class="smallheading"><a href="audit_detail.jsp?ID=<%=sample.getSampleId()%>" target="audit">More...</a></td></tr>");
-<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr><%
-		
-		out.println("<tr><td colspan='2'><table border='0'>");
+		%><tr><td class="smallheading"><a href="audit_detail.jsp?ID=<%=sample.getSampleId()%>" target="audit">More...</a></td></tr>
+<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr><tr><td colspan='2'><table border='0'><%
 		
 		//Generate list of users folders
 		List folders = folderUtil.getPersonalFolders(user);
@@ -310,7 +308,7 @@ alert("Locality added to <%=folderUtil.getUserFolder(Integer.parseInt(request.ge
 			
 	if (feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
 		if (sample.getFeature().getFeatureName() != null) { 
-			out.println("<tr><td class='heading'>Field Number</td><td>" + sample.getFeature().getFeatureName() + "</td></tr>"); \
+			out.println("<tr><td class='heading'>Field Number</td><td>" + sample.getFeature().getFeatureName() + "</td></tr>");
 		}
 	} else {
 		if (featType.getFeatureType().equals(FREDConstants.DRILLHOLE)) {

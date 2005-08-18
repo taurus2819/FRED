@@ -13,6 +13,7 @@
 %><%@page import="nz.cri.gns.fred.model.Audit"
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
+%><%@page import="nz.cri.gns.fred.model.FrNumber"
 %><%@page import="nz.cri.gns.fred.model.Record"
 %><%@page import="nz.cri.gns.fred.model.Sample"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
@@ -77,11 +78,11 @@
 			else if (actionType.equals("DeleteFeat") && folder.isAllowedDeleteLocalities()) {
 				featureUtil.deleteFeature(feature, folder, user);
 			}
-			//TODO Delete sample
+			//Delete sample
 			else if (actionType.equals("DeleteSamp") && folder.isAllowedDeleteLocalities()) {
 				sampleUtil.deleteSample(Integer.parseInt(request.getParameter("SampID")), folder, user);
 			}
-			//TODO Delete record
+			//Delete record
 			else if (actionType.equals("DeleteRec") && folder.isAllowedDeleteLocalities()) {
 				recordUtil.deleteRecord(Integer.parseInt(request.getParameter("RecID")), folder, user);
 			}
@@ -89,11 +90,11 @@
 			else if (actionType.equals("Submit") && folder.isAllowedSubmitLocalities()) {
 				featureUtil.submitFeature(feature, folder, user);
 			}
-			//TODO Submit sample
+			//Submit sample
 			else if (actionType.equals("SubmitSamp") && folder.isAllowedSubmitLocalities()) {
 				sampleUtil.submitSample(Integer.parseInt(request.getParameter("SampID")), folder, user);
 			}
-			//TODO submit working record
+			//submit working record
 			else if (actionType.equals("SubmitRec") && folder.isAllowedSubmitLocalities()) {
 				recordUtil.submitRecord(Integer.parseInt(request.getParameter("RecID")), folder, user);
 			}
@@ -127,7 +128,7 @@ function showHide(toShow, toHide) {
 <ul>
 <li>Listed below are the working records for this locality - adoption (blue) and paleontology (green).  
 <li>Drillhole and Vertical Section localities will also have individual samples listed.
-<li>Paleontology records marked with a red asterix contain taxonomic entries which have not been approved.  These records can not be submitted.</p>
+<li>Paleontology records marked with a red asterix contain taxonomic entries which have not been approved.  These records can not be submitted.
 <li>Click on the icons to work with the locality's records:
 <ul>
 <li><img src="images/edit.gif" border="0"> to edit the locality
@@ -144,18 +145,31 @@ function showHide(toShow, toHide) {
 <p>
 <%
 		startDETable(out);
-		%><table border="0" width="550"><tr><td colspan="9" class="deHeading"><%=feature.getFeatureName()%></td></tr>
+		%><form name="FoldForm" method="put" action="folder_feature_detail.jsp">
+<table border="0" width="550"><tr><td colspan="9" class="deHeading"><%=feature.getFeatureName()%></td></tr>
 <tr>
 <th colspan="2">Name&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Options</th></tr>
 <tr><td colspan="9"><img src="images/line.gif" height="3" width="550" /></td></tr>
-<form name="FoldForm" method="put" action="folder_feature_detail.jsp">
 <%-- Feature --%>
 <tr><td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a>&nbsp;</td>
-<td class="heading"><%=feature.getFeatureName()%>&nbsp;&nbsp;
-<%
-/*TODO still haven't figure out what the significance of the feature name vs sample name is...
-		if (featName != null && !sampName.equals(featName)) 
-			out.print("<br />(" + featName +")&nbsp;&nbsp;");*/
+<td class="heading"><%
+
+		//The name displayed here is either 1) The FR number if it has one or
+		//									2) The field number if it's an outcrop or		}
+		//									3) The drillhole name if it's a drillhole or	} = feature.feature_name
+		//									4) The section name if it's a vert. sect.		}
+	
+		FrNumber frNum = null;
+		if (feature.getSamples().size() > 0)
+			frNum = ((Sample)feature.getSamples().iterator().next()).getFrNumber();
+		
+		if (frNum != null) {
+			%><%=frNum.getFrNumber()%><%
+		} else {
+			%><%=feature.getFeatureName()%><%
+		}
+		%>&nbsp;&nbsp;<%
+
 		Audit audit = feature.getAudit();
 		%></td><td style="color: #FF0000"><%
 		if (!audit.getStatus().equals(FREDConstants.APPROVED)) {
@@ -244,8 +258,8 @@ function showHide(toShow, toHide) {
 
 					boolean isAdoption = record.getAdoption() != null;
 					boolean isPaleontology = record.getPaleontology() != null;
-					//TODO I've swapped this because it seems to be backwards ie true = all good???
-					boolean badTaxaFlag = (isPaleontology) ? !RecordUtil.isTaxaApproved(record) : true;
+					//TODO check this
+					boolean badTaxaFlag = (isPaleontology) ? !RecordUtil.isTaxaApproved(record) : false;
 
 					audit = record.getAudit();
 					if (audit.getFolder() != null && audit.getFolder().equals(folder.getFolder())) {

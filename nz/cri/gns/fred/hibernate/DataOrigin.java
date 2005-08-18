@@ -7,6 +7,8 @@ import java.util.Set;
 /** @author Hibernate CodeGenerator */
 public class DataOrigin implements Serializable {
 
+	private static final long serialVersionUID = 20050818L;
+	
     /** identifier field */
     private Integer originId;
 

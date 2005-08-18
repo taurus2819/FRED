@@ -1,5 +1,6 @@
 package nz.cri.gns.fred.util;
 
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,6 +20,8 @@ import nz.cri.gns.auth.SecurityClass;
 import nz.cri.gns.auth.SecurityClassAccess;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.db.BasicDatabaseApp2;
+import nz.cri.gns.db.ComboDescriptor;
+import nz.cri.gns.db.HTMLUtils;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.RegistrationArea;
@@ -264,5 +267,18 @@ public class FREDUtil {
 			throw e;
 		}
 		return sr;
+	}
+	
+	public static void makeDropBox(PrintWriter out, ComboDescriptor cd) throws SQLException, NamingException {
+		Connection conn = getConnection();
+		Statement statement = conn.createStatement();
+		try {
+			HTMLUtils.makeDropBox(out, statement, cd);
+			statement.close();
+		} catch (SQLException e) {
+			conn.close();
+			throw e;
+		}
+		conn.close();
 	}
 }

@@ -6,7 +6,9 @@ import java.util.Set;
 /** @author Hibernate CodeGenerator */
 public class Bedding implements Serializable, nz.cri.gns.fred.model.Bedding {
 
-    /** identifier field */
+	private static final long serialVersionUID = 20050818L;
+	
+   /** identifier field */
     private Integer beddingId;
 
     /** persistent field */

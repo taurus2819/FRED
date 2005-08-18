@@ -69,7 +69,7 @@ public class FeatureUtil extends ModelUtil {
 		//Copy feature images
 		Set images = feature.getFeatureMetas();
 		if (images != null && images.size() > 0) {
-			HashSet newImages = new HashSet();
+			HashSet<FeatureMeta> newImages = new HashSet<FeatureMeta>();
 			for (Iterator it = images.iterator(); it.hasNext(); ) {
 				FeatureMeta meta = (FeatureMeta)it.next();
 				FeatureMeta newMeta = featureDAO.createFeatureMeta();
@@ -105,7 +105,7 @@ public class FeatureUtil extends ModelUtil {
 			//Copy relationships
 			Set relationships = sample.getRelationships();
 			if (relationships != null && relationships.size() > 0) {
-				HashSet newRels = new HashSet();
+				HashSet<Relationship> newRels = new HashSet<Relationship>();
 				for (Iterator it = relationships.iterator(); it.hasNext(); ) {
 					Relationship relationship = (Relationship)it.next();
 					Relationship newRel = sampleDAO.cloneRelationship(relationship);
@@ -118,7 +118,7 @@ public class FeatureUtil extends ModelUtil {
 			//Copy sent to
 			Set sentTos = sample.getSentTos();
 			if (sentTos != null && sentTos.size() > 0) {
-				HashSet newSent = new HashSet();
+				HashSet<SentTo> newSent = new HashSet<SentTo>();
 				for (Iterator it = sentTos.iterator(); it.hasNext(); ) {
 					SentTo sentTo = (SentTo)it.next();
 					SentTo newSentTo = sampleDAO.cloneSentTo(sentTo);
@@ -130,7 +130,7 @@ public class FeatureUtil extends ModelUtil {
 			//Copy sedimentary feature
 			Set sedFeatures = sample.getSedimentaryFeatures();
 			if (sedFeatures != null && sedFeatures.size() > 0) {
-				HashSet newSedFeatures = new HashSet();
+				HashSet<SedimentaryFeature> newSedFeatures = new HashSet<SedimentaryFeature>();
 				for (Iterator it = sedFeatures.iterator(); it.hasNext(); ) {
 					SedimentaryFeature sedFeature = (SedimentaryFeature)it.next();
 					SedimentaryFeature newSedFeature = sampleDAO.cloneSedimentaryFeature(sedFeature);
@@ -143,7 +143,7 @@ public class FeatureUtil extends ModelUtil {
 			//Copy sample images
 			images = sample.getSampleMetas();
 			if (images != null && images.size() > 0) {
-				HashSet newImages = new HashSet();
+				HashSet<SampleMeta> newImages = new HashSet<SampleMeta>();
 				for (Iterator it = images.iterator(); it.hasNext(); ) {
 					SampleMeta meta = (SampleMeta)it.next();
 					SampleMeta newMeta = sampleDAO.createSampleMeta();
@@ -342,21 +342,21 @@ public class FeatureUtil extends ModelUtil {
 	}
 	
 	public Feature[] getFeaturesInFolder(UserFolder folder) throws StorageAccessException {
-		HashSet features = new HashSet();
+		HashSet<Feature> features = new HashSet<Feature>();
 		
-		System.out.println(new java.util.Date() + ": Starting");
+		//System.out.println(new java.util.Date() + ": Starting");
 		//Get from feature_content
 		features.addAll(folder.getFolder().getFeatures());
-		System.out.println(new java.util.Date() + ": Got from folder contents");
+		//System.out.println(new java.util.Date() + ": Got from folder contents");
 		
 		//Get from audit
 		List audits = folderDAO.getWorkingAuditsFor(folder.getFolder());
-		System.out.println(new java.util.Date() + ": Got relevant audit records");
+		//System.out.println(new java.util.Date() + ": Got relevant audit records");
 
 		for (Iterator it = audits.iterator(); it.hasNext(); ) {
 			Audit audit = (Audit)it.next();
 			
-			System.out.println(new java.util.Date() + ": Starting audit features");
+			//System.out.println(new java.util.Date() + ": Starting audit features");
 			
 			// - features
 			features.addAll(audit.getFeatures());
@@ -367,7 +367,7 @@ public class FeatureUtil extends ModelUtil {
 					features.add(feature);
 			}*/
 			
-			System.out.println(new java.util.Date() + ": Starting audit samples");
+			//System.out.println(new java.util.Date() + ": Starting audit samples");
 			//- samples
 			Set samples = audit.getSamples();
 			if (samples != null && samples.size() > 0) {
@@ -378,7 +378,7 @@ public class FeatureUtil extends ModelUtil {
 				}
 			}
 
-			System.out.println(new java.util.Date() + ": Starting audit results");
+			//System.out.println(new java.util.Date() + ": Starting audit results");
 			//- results
 			Set records = audit.getRecords();
 			if (records != null && records.size() > 0) {

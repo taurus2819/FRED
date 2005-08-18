@@ -8,7 +8,9 @@ import nz.cri.gns.fred.model.Audit;
 /** @author Hibernate CodeGenerator */
 public class AuditEdit implements Serializable, nz.cri.gns.fred.model.AuditEdit {
 
-    /** identifier field */
+	private static final long serialVersionUID = 20050818L;
+	
+	/** identifier field */
     private Integer auditEditId;
 
     /** nullable persistent field */

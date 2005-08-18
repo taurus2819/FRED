@@ -11,6 +11,8 @@ import nz.cri.gns.fred.model.Folder;
 /** @author Hibernate CodeGenerator */
 public class AuditTable implements Serializable, Audit {
 
+	private static final long serialVersionUID = 20050818L;
+	
     /** identifier field */
     private Integer auditId;
 

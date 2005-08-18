@@ -34,9 +34,6 @@
 
 %><%
 	User user = (User)getUser(session);
-	int userID = user.getPersonId(), execUp, i, rightCode = 0;
-	
-	ComboDescriptor cd;
 
 	ExtranetTemplate et = getExtranetTemplate();
 
@@ -60,13 +57,13 @@
 
 				String actionType = request.getParameter("ActionType");
 				if (actionType.equals("AddUser")) {
-					execUp = statement.executeUpdate("INSERT INTO Folder_User (Folder_ID, User_ID, User_Rights) VALUES (" + folder.getFolderId() + ", " + request.getParameter("UserID") + ", 1)");
+					statement.executeUpdate("INSERT INTO Folder_User (Folder_ID, User_ID, User_Rights) VALUES (" + folder.getFolderId() + ", " + request.getParameter("UserID") + ", 1)");
 				}
 				if (actionType.equals("DeleteUser")) {
-					execUp = statement.executeUpdate("DELETE FROM Folder_User WHERE User_ID = " + request.getParameter("UserID") + " AND Folder_ID = " + folder.getFolderId());
+					statement.executeUpdate("DELETE FROM Folder_User WHERE User_ID = " + request.getParameter("UserID") + " AND Folder_ID = " + folder.getFolderId());
 				}
 				else if (actionType.equals("ChangeRight")) {
-					execUp = statement.executeUpdate("UPDATE Folder_User SET User_Rights = User_Rights + " + request.getParameter("Right") + " WHERE User_ID = " + request.getParameter("UserID") + " AND Folder_ID = " + folder.getFolderId());
+					statement.executeUpdate("UPDATE Folder_User SET User_Rights = User_Rights + " + request.getParameter("Right") + " WHERE User_ID = " + request.getParameter("UserID") + " AND Folder_ID = " + folder.getFolderId());
 				}
 				response.sendRedirect("folder_user.jsp?FoldID=" + folder.getFolderId());
 				return;
@@ -76,8 +73,9 @@
 
 			List<FolderRight> rightTypes = folderUtil.getRightTypesForDisplay(folder);	
 			boolean isPersonal = folder.getFolder().getFolderType().getName().equals("Personal");
-			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-			out.println("<tr><td>");
+			startDETable(out);
+			%><table border="0" width="550"><tr><td colspan="19" class="deHeading"><%=folder.getFolderName()%> users</td></tr>
+<tr><td><%
 
 			if (isPersonal) {
 				out.println("<p><span class='bigheading'>Folder: " + folder.getFolderName() + "</span><br>");
@@ -96,20 +94,17 @@
 			%><tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr><%
 
 			List<FolderAccessor> users = folderUtil.getNonOwningUsers(folder);
+			String foldID = folder.getFolder().getFolderId().toString();
 			for (FolderAccessor folderUser : users) {
-				%><tr><td><%=folderUser.getUserName()%>&nbsp&nbsp</td>
-<td align="center"><a href="folder_user.jsp?FoldID=<%=folderUser.getFolder().getFolderId()%>&ActionType=DeleteUser&UserID=<%=folderUser.getUserId()%>" title="Delete User"><img src="images/ok.gif" width="20" height="20" border="0" /></a></td>
+				%><tr><td><%=folderUser.getUserName()%>&nbsp;&nbsp;</td>
+<td align="center"><a href="folder_user.jsp?FoldID=<%=foldID%>&ActionType=DeleteUser&UserID=<%=folderUser.getUserId()%>" title="Delete User"><img src="images/ok.gif" width="20" height="20" border="0" /></a></td>
 <%
-			}
-			rs = statement.executeQuery("SELECT User_ID, Folder_User, User_Rights FROM Folder_View WHERE (Owner_ID IS NULL OR User_ID <> Owner_ID) AND Folder_ID = " + foldID);
-			i = 0;
-			while (rs.next()) {
-				for (int x = 0; x < maxRights; x++) {
-					out.print("<td align='center'><a href='folder_user.jsp?FoldID=" + foldID + "&ActionType=ChangeRight&UserID=" + rs.getString(1) + "&Right=");
-					if ((rs.getInt(3) & userRightValue[x]) != 0) {
-						out.print((userRightValue[x] * -1) + "' title='Remove Right'><img src='images/ok.gif'");
+				for (FolderRight rightType : rightTypes) {
+					out.print("<td align='center'><a href='folder_user.jsp?FoldID=" + foldID + "&ActionType=ChangeRight&UserID=" + folderUser.getUserId() + "&Right=");
+					if ((folderUser.getUserRights().intValue() & rightType.getRightCode()) != 0) {
+						out.print((rightType.getRightCode() * -1) + "' title='Remove Right'><img src='images/ok.gif'");
 					} else {
-						out.print(userRightValue[x] + "' title='Add Right'><img src='images/cancel.gif'");
+						out.print(rightType.getRightCode() + "' title='Add Right'><img src='images/cancel.gif'");
 					}
 					out.print(" width='20' height='20' border='0' /></a></td>");
 				}
@@ -120,16 +115,17 @@
 			out.println("<input type='hidden' name='FoldID' value='" + foldID + "'>");
 			out.println("<input type='hidden' name='ActionType' value='AddUser'>");
 			out.print("<tr><td>");
-			cd = new ComboDescriptor("FR_User_View", "PE_ID", "Full_Name");
+			ComboDescriptor cd = new ComboDescriptor("FR_User_View", "PE_ID", "Full_Name");
 			cd.name = "UserID";
 			cd.orderBy = "Family_Name";
 			cd.join = "NOT PE_ID IN (SELECT User_ID FROM Folder_View WHERE Folder_ID = " + foldID + ")";
-			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
+			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
 			out.println("&nbsp&nbsp</td><td align='center'><a href='#' onClick='UserForm.submit();' title='Add User'><img src='images/cancel.gif' width='20' height='20' border='0' /></a></td></tr>");
 			out.println("</form>");
 			
 			out.println("</table></p>");
 			out.println("</table>");
+			endDETable(out);
 			out.println("</td></tr></table>");
 		}
 		else { //no rights

@@ -5,4 +5,6 @@ public interface FolderRight {
 	public String getRightDescription();
 	
 	public Integer getRightId();
+	
+	public int getRightCode();
 }

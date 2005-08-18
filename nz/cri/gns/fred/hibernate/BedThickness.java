@@ -6,6 +6,8 @@ import java.util.Set;
 /** @author Hibernate CodeGenerator */
 public class BedThickness implements Serializable, nz.cri.gns.fred.model.BedThickness {
 
+	private static final long serialVersionUID = 20050818L;
+	
     /** identifier field */
     private Integer thicknessId;
 
