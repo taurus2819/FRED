@@ -187,7 +187,7 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 	public List<nz.cri.gns.fred.model.FolderUser> getNonOwningUsers(Folder folder) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-			Query query = session.createQuery("FROM FolderUser WHERE folder = :foldr");
+			Query query = session.createQuery("FROM FolderUser AS fu WHERE fu.folder = :foldr");
 			query.setEntity("foldr", folder);
 			return query.list();
 		} catch (Exception e) {
