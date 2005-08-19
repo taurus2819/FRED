@@ -71,7 +71,7 @@
 	
 			drawTop(out, et, request, response);
 
-			List<FolderRight> rightTypes = folderUtil.getRightTypesForDisplay(folder);	
+			List rightTypes = folderUtil.getRightTypesForDisplay(folder);	
 			boolean isPersonal = folder.getFolder().getFolderType().getName().equals("Personal");
 			startDETable(out);
 			%><table border="0" width="550"><tr><td colspan="19" class="deHeading"><%=folder.getFolderName()%> users</td></tr>
@@ -93,13 +93,15 @@
 			}
 			%><tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr><%
 
-			List<FolderAccessor> users = folderUtil.getNonOwningUsers(folder);
+			List users = folderUtil.getNonOwningUsers(folder);
 			String foldID = folder.getFolder().getFolderId().toString();
-			for (FolderAccessor folderUser : users) {
+			for (Iterator it = users.iterator(); it.hasNext(); ) {
+				FolderAccessor folderUser = (FolderAccessor)it.next();
 				%><tr><td><%=folderUser.getUserName()%>&nbsp;&nbsp;</td>
 <td align="center"><a href="folder_user.jsp?FoldID=<%=foldID%>&ActionType=DeleteUser&UserID=<%=folderUser.getUserId()%>" title="Delete User"><img src="images/ok.gif" width="20" height="20" border="0" /></a></td>
 <%
-				for (FolderRight rightType : rightTypes) {
+				for (Iterator it1 = rightTypes.iterator();  it1.hasNext(); ) {
+					FolderRight rightType = (FolderRight)it1.next();
 					out.print("<td align='center'><a href='folder_user.jsp?FoldID=" + foldID + "&ActionType=ChangeRight&UserID=" + folderUser.getUserId() + "&Right=");
 					if ((folderUser.getUserRights().intValue() & rightType.getRightCode()) != 0) {
 						out.print((rightType.getRightCode() * -1) + "' title='Remove Right'><img src='images/ok.gif'");
