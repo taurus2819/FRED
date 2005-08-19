@@ -25,14 +25,14 @@
     </id>
 
     <property
-        name="name"
+        name="rightDescription"
         type="java.lang.String"
         column="NAME"
         not-null="true"
         length="32"
     />
     <property
-        name="code"
+        name="rightCode"
         type="java.lang.String"
         column="CODE"
         not-null="true"
