@@ -2,8 +2,6 @@ package nz.cri.gns.fred.hibernate.dao;
 
 import java.util.List;
 
-import sun.security.action.GetLongAction;
-
 import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.type.IntegerType;
@@ -189,7 +187,7 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 	public List<nz.cri.gns.fred.model.FolderUser> getNonOwningUsers(Folder folder) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-			Query query = session.createQuery("FROM FolderUser folder = :foldr");
+			Query query = session.createQuery("FROM FolderUser WHERE folder = :foldr");
 			query.setEntity("foldr", folder);
 			return query.list();
 		} catch (Exception e) {
