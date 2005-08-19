@@ -32,7 +32,7 @@
         length="32"
     />
     <property
-        name="rightCode"
+        name="code"
         type="java.lang.String"
         column="CODE"
         not-null="true"
