@@ -88,8 +88,8 @@
 
 			out.println("<p><table border='0' cellspacing='0' cellpadding='2'>");
 			out.print("<tr class='heading' align='center'><td align='left'>User&nbsp&nbsp</td><td width='60'>Read</td>");
-			for (Iterator<FolderRight> it = rightTypes.iterator(); it.hasNext(); ) {
-				%><td width="60"><%=it.next().getRightDescription()%></td><%
+			for (Iterator it = rightTypes.iterator(); it.hasNext(); ) {
+				%><td width="60"><%=((FolderRight)it.next()).getRightDescription()%></td><%
 			}
 			%><tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr><%
 
