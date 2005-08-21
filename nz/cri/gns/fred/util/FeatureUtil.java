@@ -426,6 +426,9 @@ public class FeatureUtil extends ModelUtil {
 	
 	static boolean hasMasterfileRights(UserAccount user, Feature feature, int right, FolderDAO folderDAO) throws NumberFormatException, StorageAccessException {
 		Folder masterfile = feature.getMasterFile();
+		if (masterfile == null)
+			return false;
+		
 		UserFolder masterfileFolder = folderDAO.getUserFolder(masterfile.getFolderId().intValue(), Integer.parseInt(user.getId()));
 		
 		return (masterfileFolder == null) ? false : (masterfileFolder.getRights() & right) > 0;
