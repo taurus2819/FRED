@@ -132,7 +132,10 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 			if (list.size() == 0)
 				return null;
 			
+			System.out.println("Folder ID: " + folderId);
 			Folder folder = (Folder)list.get(0);
+			System.out.println("Folder: " + folder);
+			System.out.println("Owner: " + folder.getOwnerId());
 			if (folder.getOwnerId().intValue() == userId) {
 				return UserFolder.getOwnedUserFolder(folder);
 			}
