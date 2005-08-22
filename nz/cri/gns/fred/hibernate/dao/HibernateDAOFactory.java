@@ -1,5 +1,6 @@
 package nz.cri.gns.fred.hibernate.dao;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
 
@@ -318,11 +319,18 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 	}
 
 	public Collection<? extends Feature> getFeaturesBySample(Audit audit) throws StorageAccessException {
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd HH:mm:ss.SSSS");
 		try {
-            Session session = provider.currentSession();
+			System.out.println(format.format(new java.util.Date()) + ": Get Session");
+			Session session = provider.currentSession();
+			System.out.println(format.format(new java.util.Date()) + ": Create Query");
 			Query query = session.createQuery("SELECT ftre FROM Sample AS smple INNER JOIN smple.feature AS ftre WHERE smple.audit = :adt");
+			System.out.println(format.format(new java.util.Date()) + ": Bind variables");
 			query.setEntity("adt", audit);
-			return query.list();
+			System.out.println(format.format(new java.util.Date()) + ": Execute");
+			List list = query.list();
+			System.out.println(format.format(new java.util.Date()) + ": Return");
+			return list;
         } catch (Exception e) {
             throw new StorageAccessException(e);
         }
