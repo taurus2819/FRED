@@ -119,14 +119,16 @@ public class SampleUtil extends ModelUtil implements FREDConstants {
 	}
 	
 	public AuditEdit getMostRecentEdit(Audit audit) throws StorageAccessException {
-		return sampleDAO.getMostRecenteEdit(audit);
+		return sampleDAO.getMostRecentEdit(audit);
 	}
 	
 	public int getPaleontologyRecordCount(Sample sample) {
+		System.out.println("Start count");
 		int count = 0;
 		for (Iterator it = sample.getRecords().iterator(); it.hasNext(); ) {
 			count += (((Record)it.next()).getPaleontology() != null) ? 1 : 0;
 		}
+		System.out.println("End count");
 		return count;
 	}
 }
