@@ -344,19 +344,19 @@ public class FeatureUtil extends ModelUtil {
 	public Feature[] getFeaturesInFolder(UserFolder folder) throws StorageAccessException {
 		HashSet<Feature> features = new HashSet<Feature>();
 		
-		//System.out.println(new java.util.Date() + ": Starting");
+		System.out.println(new java.util.Date() + ": Starting");
 		//Get from feature_content
 		features.addAll(folder.getFolder().getFeatures());
 		//System.out.println(new java.util.Date() + ": Got from folder contents");
 		
 		//Get from audit
 		List audits = folderDAO.getWorkingAuditsFor(folder.getFolder());
-		//System.out.println(new java.util.Date() + ": Got relevant audit records");
+		System.out.println(new java.util.Date() + ": Got relevant audit records");
 
 		for (Iterator it = audits.iterator(); it.hasNext(); ) {
 			Audit audit = (Audit)it.next();
 			
-			//System.out.println(new java.util.Date() + ": Starting audit features");
+			System.out.println(new java.util.Date() + ": Starting audit features");
 			
 			// - features
 			features.addAll(audit.getFeatures());
@@ -367,7 +367,7 @@ public class FeatureUtil extends ModelUtil {
 					features.add(feature);
 			}*/
 			
-			//System.out.println(new java.util.Date() + ": Starting audit samples");
+			System.out.println(new java.util.Date() + ": Starting audit samples");
 			//- samples
 			Set samples = audit.getSamples();
 			if (samples != null && samples.size() > 0) {
@@ -378,7 +378,7 @@ public class FeatureUtil extends ModelUtil {
 				}
 			}
 
-			//System.out.println(new java.util.Date() + ": Starting audit results");
+			System.out.println(new java.util.Date() + ": Starting audit results");
 			//- results
 			Set records = audit.getRecords();
 			if (records != null && records.size() > 0) {
