@@ -71,7 +71,7 @@ public interface FeatureDAO {
 	 * 			collection.add(sample.getFeature());
 	 * 		}
 	 * </pre>
-	 * but should provide performance enhancements available by bypassing the sample instantiation
+	 * but should provide performance enhancements available by bypassing the Sample instantiation
 	 * where possible.
 	 * @param audit
 	 * @return
@@ -79,4 +79,20 @@ public interface FeatureDAO {
 	 */
 	public Collection<? extends Feature> getFeaturesBySample(Audit audit) throws StorageAccessException;
 	
+	/**
+	 * Returns all the features that have records attached to the given audit.  The returned
+	 * collection will be equivalent to that produced by:
+	 * <pre>
+	 * 		for (Record record : audit.getRecords()) {
+	 * 			collection.add(record.getSample().getFeature());
+	 * 		}
+	 * </pre>
+	 * but should provide performance enhancements available by bypassing the Sample and 
+	 * Record instantiation where possible.
+	 * @param audit
+	 * @return
+	 * @throws StorageAccessException 
+	 */
+	public Collection<? extends Feature> getFeaturesByRecord(Audit audit) throws StorageAccessException;
+
 }

@@ -328,6 +328,17 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
         }
 	}
 	
+	public Collection<? extends Feature> getFeaturesByRecord(Audit audit) throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+			Query query = session.createQuery("SELECT ftre FROM Record AS rec INNER JOIN rec.sample AS smple INNER JOIN smple.feature AS ftre WHERE rec.audit = :adt");
+			query.setEntity("adt", audit);
+			return query.list();
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+	}
+	
 	public SampleDAO getSampleDAO() {
 		return this;
 	}
