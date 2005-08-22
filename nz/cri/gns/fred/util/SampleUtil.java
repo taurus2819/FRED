@@ -123,12 +123,10 @@ public class SampleUtil extends ModelUtil implements FREDConstants {
 	}
 	
 	public int getPaleontologyRecordCount(Sample sample) {
-		System.out.println("Start count");
 		int count = 0;
 		for (Iterator it = sample.getRecords().iterator(); it.hasNext(); ) {
 			count += (((Record)it.next()).getPaleontology() != null) ? 1 : 0;
 		}
-		System.out.println("End count");
 		return count;
 	}
 }
