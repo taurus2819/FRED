@@ -84,6 +84,5 @@ public interface SampleDAO {
 	 * @return
 	 * @throws StorageAccessException
 	 */
-	public AuditEdit getMostRecenteEdit(Audit audit) throws StorageAccessException;
-
+	public AuditEdit getMostRecentEdit(Audit audit) throws StorageAccessException;
 }

@@ -361,7 +361,7 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 		return new nz.cri.gns.fred.hibernate.FrNumber();
 	}
 	
-	public AuditEdit getMostRecenteEdit(Audit audit) throws StorageAccessException {
+	public AuditEdit getMostRecentEdit(Audit audit) throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
             Query query = session.createQuery("FROM AuditEdit as edit WHERE edit.editedDate = (SELECT max(editedDate) FROM auditEdit WHERE audit = edit.audit) AND edit.audit = :audit");
