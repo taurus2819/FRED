@@ -2,6 +2,7 @@ package nz.cri.gns.fred.dao;
 
 import java.util.List;
 
+import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FolderRight;
 import nz.cri.gns.fred.model.FolderType;
@@ -67,7 +68,7 @@ public interface FolderDAO {
 	 * @return
 	 * @throws StorageAccessException
 	 */
-	public List getWorkingAuditsFor(Folder folder) throws StorageAccessException;
+	public List<Audit> getWorkingAuditsFor(Folder folder) throws StorageAccessException;
 
 	/**
 	 * Returns the folder rights which satisfy the given join, in the given order.  A query might look like
