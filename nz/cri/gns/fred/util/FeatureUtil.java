@@ -369,16 +369,18 @@ public class FeatureUtil extends ModelUtil {
 					features.add(feature);
 			}*/
 			
-			System.out.println(format.format(new java.util.Date()) + ": Starting audit samples");
+			
 			//- samples
-			Set samples = audit.getSamples();
+			System.out.println(format.format(new java.util.Date()) + ": Starting audit samples");
+			features.addAll(featureDAO.getFeaturesBySample(audit));
+			/*Set samples = audit.getSamples();
 			if (samples != null && samples.size() > 0) {
 				for (Iterator sampIt = samples.iterator(); sampIt.hasNext(); ) {
 					Sample sample = (Sample)sampIt.next();
 					//if (!features.contains(sample.getFeature()));
 					features.add(sample.getFeature());
 				}
-			}
+			}*/
 
 			System.out.println(format.format(new java.util.Date()) + ": Starting audit results");
 			//- results

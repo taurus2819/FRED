@@ -1,5 +1,6 @@
 package nz.cri.gns.fred.hibernate.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import net.sf.hibernate.Query;
@@ -316,6 +317,17 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
         }
 	}
 
+	public Collection<? extends Feature> getFeaturesBySample(Audit audit) throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+			Query query = session.createQuery("SELECT f FROM feature AS f JOIN sample AS s ON s.feature = f WHERE s.audit = :adt");
+			query.setEntity("adt", audit);
+			return query.list();
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+	}
+	
 	public SampleDAO getSampleDAO() {
 		return this;
 	}
@@ -386,4 +398,5 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 	public void delete(Record record) throws StorageAccessException {
 		delete((Object)record);
 	}
+
 }

@@ -1,5 +1,7 @@
 package nz.cri.gns.fred.dao;
 
+import java.util.Collection;
+
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
@@ -60,5 +62,21 @@ public interface FeatureDAO {
 	 * @throws StorageAccessException
 	 */
 	public int getNextAvailableSerialNumber(String mapSheet) throws StorageAccessException;
+
+	/**
+	 * Returns all the features that have samples attached to the given audit.  The returned
+	 * collection will be equivalent to that produced by:
+	 * <pre>
+	 * 		for (Sample sample : audit.getSamples()) {
+	 * 			collection.add(sample.getFeature());
+	 * 		}
+	 * </pre>
+	 * but should provide performance enhancements available by bypassing the sample instantiation
+	 * where possible.
+	 * @param audit
+	 * @return
+	 * @throws StorageAccessException 
+	 */
+	public Collection<? extends Feature> getFeaturesBySample(Audit audit) throws StorageAccessException;
 	
 }
