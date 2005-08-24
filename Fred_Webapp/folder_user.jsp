@@ -33,12 +33,12 @@
 	}
 
 %><%
+	FolderUtil folderUtil = new FolderUtil(HibernateUtil.get().getDAOFactory());
 	User user = (User)getUser(session);
 
 	ExtranetTemplate et = getExtranetTemplate();
 
 	if (request.getParameter("FoldID") != null) {
-		FolderUtil folderUtil = new FolderUtil(HibernateUtil.get().getDAOFactory());
 		UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("FoldID")), user);
 
 		boolean canEdit = 
@@ -73,6 +73,7 @@
 
 			List rightTypes = folderUtil.getRightTypesForDisplay(folder);	
 			boolean isPersonal = folder.getFolder().getFolderType().getName().equals("Personal");
+			%><center><p>&nbsp;<p/><%
 			startDETable(out);
 			%><table border="0" width="550"><tr><td colspan="19" class="deHeading"><%=folder.getFolderName()%> users</td></tr>
 <tr><td><%
@@ -139,5 +140,5 @@
 	}
 
 	drawBottom(out, et);
-
+	folderUtil.closeSession();
 %>
