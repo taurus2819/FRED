@@ -966,54 +966,16 @@ public class SampleDE implements DataEntryForm {
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(KNW_START_MOD)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(KNW_AGE_STOP)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(KNW_STOP_MOD)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(PREVIOUS_SAMPLE)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(SAMPLE_RELATIONSHIP)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(STRAT_RELATIONSHIP)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(COLUMN_MAP)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(DIP)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(DIP_DIRECTION)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(STRIKE)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(FACING)) + "</td>");
 
-/*		out.write("<tr><td class='heading'>Samples Nearby</td><td></td><td><input type='text' name='PrevSamp' size='40' value='"
-				+ FREDUtils.noNulls(getFieldForHTML(PREVIOUS_SAMPLE))
-				+ "'></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=PrevSamp\", \"Supp\", \"width=600,height=350\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write("<tr><td class='heading' colspan='2'>Sample Relationships</td><td><textarea name='SampRel' cols='40' rows='3'>"
-				+ FREDUtils.noNulls(getFieldForHTML(SAMPLE_RELATIONSHIP))
-				+ "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=SampRel\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write("<tr><td class='heading' colspan='2'>Stratigraphic Relationships</td><td><textarea name='StratRel' cols='40' rows='3'>"
-				+ FREDUtils.noNulls(getFieldForHTML(STRAT_RELATIONSHIP))
-				+ "</textarea></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=StratRel\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td></tr>\n");
-		out.write("<tr><td class='heading'>Column/Map</td><td></td><td><input type='text' name='ColMap' size='40' value='"
-				+ FREDUtils.noNulls(getFieldForHTML(COLUMN_MAP))
-				+ "'></td></tr>\n");
-		out.write("<tr><td class='heading'>Attitude</td><td class='smallheading'>Dip</td><td><input type='text' name='Dip' size='3' value='"
-				+ FREDUtils.noNulls(getFieldForHTML(DIP))
-				+ "'></td></tr>\n");
-		out.write("<tr><td></td><td class='smallheading'>Dip Dirn.</td><td><select name='DipDir'>\n<option value='' "
-				+ ((getFieldForHTML(DIP_DIRECTION) == null) ? " selected" : "")
-				+ ">-- Choose --</option>\n<option value='N' "
-				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("N")) ? " selected" : "")
-				+ ">North</option>\n<option value='NE' "
-				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("NE")) ? " selected" : "")
-				+ ">North-East</option>\n<option value='E' "
-				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("E")) ? " selected" : "")
-				+ ">East</option>\n<option value='SE' "
-				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("SE")) ? " selected" : "")
-				+ ">South-East</option><option value='S' "
-				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("S")) ? " selected"	: "")
-				+ ">South</option>\n<option value='SW' "
-				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("SW")) ? " selected" : "")
-				+ ">South-West</option>\n<option value='W' "
-				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("W")) ? " selected" : "")
-				+ ">West</option>\n<option value='NW' "
-				+ ((getFieldForHTML(DIP_DIRECTION) != null && getFieldForHTML(DIP_DIRECTION).equals("NW")) ? " selected" : "")
-				+ ">North-West</option>\n</select></td></tr>\n");
-		out.write("<tr><td></td><td class='smallheading'>Strike</td><td><input type='text' name='Strike' size='4' value='"
-				+ FREDUtils.noNulls(getFieldForHTML(STRIKE))
-				+ "'></td></tr>\n");
-		out.write("<tr><td></td><td class='smallheading'>Facing</td><td><select name='Facing'><option value='' "
-				+ ((getFieldForHTML(FACING) == null) ? " selected" : "")
-				+ ">-- Choose --</option><option value='Normal' "
-				+ ((getFieldForHTML(FACING) != null && getFieldForHTML(FACING).equals("Normal")) ? " selected" : "")
-				+ ">Normal</option><option value='Overturned' "
-				+ ((getFieldForHTML(FACING) != null && getFieldForHTML(FACING).equals("Overturned")) ? " selected" : "")
-				+ ">Overturned</option></select></td></tr>\n");
-		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
-
-		out.write("<tr><td class='heading'>Grain Size</td><td class='smallheading'>Pri.</td><td>");
+/*		out.write("<tr><td class='heading'>Grain Size</td><td class='smallheading'>Pri.</td><td>");
 		cd = new ComboDescriptor("grain_size", "grain_size_ID", "Code || ': ' || Name");
 		cd.name = "GrainSizeP";
 		cd.prompt = "-- Choose --";
