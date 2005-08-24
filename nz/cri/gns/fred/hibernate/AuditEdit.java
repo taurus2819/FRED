@@ -6,7 +6,7 @@ import java.util.Date;
 import nz.cri.gns.fred.model.Audit;
 
 /** @author Hibernate CodeGenerator */
-public class AuditEdit implements Serializable, nz.cri.gns.fred.model.AuditEdit {
+public class AuditEdit implements Serializable, Comparable, nz.cri.gns.fred.model.AuditEdit {
 
 	private static final long serialVersionUID = 20050818L;
 	
@@ -81,5 +81,12 @@ public class AuditEdit implements Serializable, nz.cri.gns.fred.model.AuditEdit 
     public void setAudit(Audit audit) {
         this.audit = audit;
     }
+
+    /**
+     * Orders in reverse chronological order
+     */
+	public int compareTo(Object o) {
+		return -editedDate.compareTo(((AuditEdit)o).editedDate);
+	}
 
 }

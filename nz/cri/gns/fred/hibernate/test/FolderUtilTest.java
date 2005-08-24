@@ -153,8 +153,6 @@ public class FolderUtilTest extends TestCase implements HibernateProvider {
 	}
 	
 	public void testFolders() throws HibernateException, StorageAccessException, SQLException, InvalidCredentialsException, ClassNotFoundException, NotBoundException, ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
-		Session session = sessions.openSession();
-		
 		DAOFactory factory = new HibernateDAOFactory(this);
 		
 		System.out.println("Personal");
@@ -171,14 +169,28 @@ public class FolderUtilTest extends TestCase implements HibernateProvider {
 	}
 
 	public void testPanels() throws StorageAccessException, HibernateException {
-		Session session = sessions.openSession();
-		
 		DAOFactory factory = new HibernateDAOFactory(this);
 	
 		List list = new TaxonomicUtil(factory).getPanelsIsMemberOf(user);
 		for (Iterator it = list.iterator(); it.hasNext(); ) {
 			System.out.println(((nz.cri.gns.fred.model.TaxonomicGroup)it.next()).getName());
 		}
+	}
+	
+	public void testConcurrency() throws HibernateException, StorageAccessException {
+		DAOFactory factory = new HibernateDAOFactory(this);
+
+		nz.cri.gns.fred.model.Feature feature = factory.getFeatureDAO().getFeature(1);
+		
+		System.out.println("Original: " + feature.getFeatureName());
+		
+		feature.setFeatureName("Bob");
+		
+		nz.cri.gns.fred.model.Feature feature1 = factory.getFeatureDAO().getFeature(1);
+		
+		System.out.println("Changed: " + feature.getFeatureName());
+		System.out.println("Regot:" + feature1.getFeatureName());
+		
 	}
 	
 	public Session currentSession() throws HibernateException {

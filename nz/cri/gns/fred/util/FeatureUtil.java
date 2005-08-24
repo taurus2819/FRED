@@ -1,5 +1,6 @@
 package nz.cri.gns.fred.util;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -12,6 +13,7 @@ import java.util.Set;
 import javax.naming.NamingException;
 
 import nz.cri.gns.auth.InsufficientPrivelegesException;
+import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.fred.FolderUtilException;
 import nz.cri.gns.fred.dao.DAOFactory;
@@ -27,12 +29,14 @@ import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SampleMeta;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.UserFolder;
+import nz.cri.gns.jsp.PageState;
 
 /**
  *
@@ -73,7 +77,7 @@ public class FeatureUtil extends ModelUtil {
 			HashSet<FeatureMeta> newImages = new HashSet<FeatureMeta>();
 			for (Iterator it = images.iterator(); it.hasNext(); ) {
 				FeatureMeta meta = (FeatureMeta)it.next();
-				FeatureMeta newMeta = featureDAO.createFeatureMeta();
+				FeatureMeta newMeta = featureDAO.createNewFeatureMeta();
 				newMeta.setMetaId(meta.getMetaId());
 				newMeta.setFeature(newFeature);
 				newImages.add(newMeta);
@@ -392,7 +396,7 @@ public class FeatureUtil extends ModelUtil {
 					features.add(record.getSample().getFeature());
 				}
 			}*/
-		}
+			}
 		
 		System.out.println(format.format(new java.util.Date()) + ": Finished");
 		Feature[] featuresArray = (Feature[])features.toArray(new Feature[features.size()]); 
@@ -400,7 +404,7 @@ public class FeatureUtil extends ModelUtil {
 		return featuresArray;
 	}
 	
-	public boolean isAllowedEditFeature(UserAccount user, Feature feature, UserFolder folder) throws StorageAccessException, NamingException, SQLException {
+	public boolean isAllowedEditFeature(UserAccount user, Feature feature, UserFolder folder) throws StorageAccessException {
 		String status = feature.getAudit().getStatus();
 		if (status.equals(FREDConstants.APPROVED))
 			return hasMasterfileRights(user, feature, UserFolder.FOLDER_EDIT_RIGHT) || FREDUtil.checkEditSecurityClass(user);
@@ -519,5 +523,35 @@ public class FeatureUtil extends ModelUtil {
 		frNum.setSerialNumber(new Integer(nextAvailable));
 		
 		return frNum;		
+	}
+
+	public boolean isAllowedSubmitFeature(User user, Feature feature, UserFolder folder) {
+		String status = feature.getAudit().getStatus();
+		if (status.equals(FREDConstants.APPROVED) || status.equals(FREDConstants.WAITING))
+			return false;
+		return folder.isAllowedSubmitLocalities();
+	}
+
+	/**
+	 * Creates a blank feature of the given type, in the given folder.  The
+	 * feature and its associated entries are _not_ committed to persistent
+	 * storage.
+	 * @throws StorageAccessException 
+	 */
+	public Feature createFeature(int folderId, String featureType) throws StorageAccessException {
+		if (!(featureType.equals(FREDConstants.OUTCROP) 
+				|| featureType.equals(FREDConstants.DRILLHOLE) || featureType.equals(FREDConstants.VERTICAL_SECTION))) 
+			throw new IllegalArgumentException("Invalid feature type given: " + featureType);
+		Feature feature = featureDAO.createNewFeature();
+		feature.setFeatureType(featureType);
+		Audit audit = featureDAO.createNewAudit();
+		audit.setFolder(folderDAO.getFolder(folderId));
+		audit.setStatus(FREDConstants.WORKING);
+		feature.setAudit(audit);
+		return feature;
+	}
+
+	public RegistrationArea getRegistrationArea(int regAreaId) throws StorageAccessException {
+		return featureDAO.getRegistrationArea(regAreaId);
 	}
 }

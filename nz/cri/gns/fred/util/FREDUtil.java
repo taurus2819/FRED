@@ -9,6 +9,8 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Vector;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -22,8 +24,10 @@ import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.db.BasicDatabaseApp2;
 import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.HTMLUtils;
+import nz.cri.gns.db.site.DatumMethod;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.model.Feature;
+import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.util.map.Datum;
 import nz.cri.gns.util.map.NZMG;
@@ -196,7 +200,7 @@ public class FREDUtil {
 	 * @throws NamingException
 	 * @throws SQLException
 	 */
-	public static boolean checkEditSecurityClass(UserAccount user) throws NamingException, SQLException {
+	public static boolean checkEditSecurityClass(UserAccount user) {
 		Connection conn = null;
 		try {
 			conn = getConnection();
@@ -206,12 +210,12 @@ public class FREDUtil {
 			boolean allowed = sca.isAccessibleTo(user, app);		
 			conn.close();
 			return allowed;
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			if (conn != null) try {
 				conn.close();
 			} catch (Exception _e) {
 			}
-			throw e;
+			return false;
 		}
 	}
 	
@@ -280,5 +284,53 @@ public class FREDUtil {
 			throw e;
 		}
 		conn.close();
+	}
+
+	public static String formatDateForOutput(Date date) {
+		return formatDateForOutput(date, "Day");
+	}
+
+	public static String getMetaTitle(FeatureMeta meta) throws SQLException, NamingException {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT title FROM metacat.public_metacat_view WHERE meta_id = " + meta.getMetaId());
+			String title = (rs.next()) ? rs.getString(1) : "";
+			rs.close();
+			statement.close();
+			conn.close();
+			return title;
+		} catch (SQLException e) {
+			if (conn != null) try {
+				conn.close();
+			} catch (Exception _e) {
+			}
+			throw e;
+		}
+	}
+
+	public static List<DatumMethod> getSiteDatumMethods() throws NamingException, SQLException {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT Method_ID, Method, Nom_Accuracy_XY, Nom_Accuracy_Z FROM SC.Method WHERE Nom_Accuracy_XY IS NOT NULL ORDER BY Method_ID");
+			
+			List<DatumMethod> list = new Vector<DatumMethod>();
+			while (rs.next()) {
+				list.add(new DatumMethod(rs.getString(1), rs.getString(2), rs.getFloat(3), rs.getFloat(4)));
+			}
+			rs.close();
+			statement.close();
+			conn.close();
+			return list;
+		} catch (SQLException e) {
+			if (conn != null) try {
+				conn.close();
+			} catch (Exception _e) {
+			}
+			throw e;
+		}
 	}
 }

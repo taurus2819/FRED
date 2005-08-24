@@ -152,6 +152,7 @@
         lazy="true"
         inverse="true"
 		cascade="none"
+		sort="natural"
     >
         <key>
             <column name="AUDIT_ID" />

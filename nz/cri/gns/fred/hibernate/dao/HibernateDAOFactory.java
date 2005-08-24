@@ -1,6 +1,5 @@
 package nz.cri.gns.fred.hibernate.dao;
 
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
 
@@ -28,6 +27,7 @@ import nz.cri.gns.fred.model.FolderRight;
 import nz.cri.gns.fred.model.FolderType;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SampleMeta;
@@ -261,7 +261,7 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 		return (Feature)((nz.cri.gns.fred.hibernate.Feature)feature).clone();
 	}
 
-	public FeatureMeta createFeatureMeta() {
+	public FeatureMeta createNewFeatureMeta() {
 		return new nz.cri.gns.fred.hibernate.FeatureMeta(false);
 	}
 
@@ -306,6 +306,14 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
         }
 	}
 
+	public Feature createNewFeature() {
+		return new nz.cri.gns.fred.hibernate.Feature();
+	}
+
+	public RegistrationArea getRegistrationArea(int regAreaId) throws StorageAccessException {
+		return (RegistrationArea) getFirst("FROM registrationArea ra WHERE ra.regAreaId = ?", regAreaId);
+	}
+	
 	private Object getFirst(String query, int id) throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
@@ -319,18 +327,11 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 	}
 
 	public Collection<? extends Feature> getFeaturesBySample(Audit audit) throws StorageAccessException {
-		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd HH:mm:ss.SSSS");
 		try {
-			System.out.println(format.format(new java.util.Date()) + ": Get Session");
-			Session session = provider.currentSession();
-			System.out.println(format.format(new java.util.Date()) + ": Create Query");
+            Session session = provider.currentSession();
 			Query query = session.createQuery("SELECT ftre FROM Sample AS smple INNER JOIN smple.feature AS ftre WHERE smple.audit = :adt");
-			System.out.println(format.format(new java.util.Date()) + ": Bind variables");
 			query.setEntity("adt", audit);
-			System.out.println(format.format(new java.util.Date()) + ": Execute");
-			List list = query.list();
-			System.out.println(format.format(new java.util.Date()) + ": Return");
-			return list;
+			return query.list();
         } catch (Exception e) {
             throw new StorageAccessException(e);
         }
@@ -417,5 +418,4 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 	public void delete(Record record) throws StorageAccessException {
 		delete((Object)record);
 	}
-
 }

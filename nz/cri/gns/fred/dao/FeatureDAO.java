@@ -5,6 +5,7 @@ import java.util.Collection;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
+import nz.cri.gns.fred.model.RegistrationArea;
 
 /**
  *
@@ -23,7 +24,7 @@ public interface FeatureDAO {
 	/**
 	 * @return
 	 */
-	public FeatureMeta createFeatureMeta();
+	public FeatureMeta createNewFeatureMeta();
 
 	/**
 	 * @param newFeature
@@ -63,6 +64,16 @@ public interface FeatureDAO {
 	 */
 	public int getNextAvailableSerialNumber(String mapSheet) throws StorageAccessException;
 
+	/**
+	 * Returns a new, empty feature
+	 */
+	public Feature createNewFeature() throws StorageAccessException;
+
+	/**
+	 * Returns the registration area with the given id
+	 */
+	public RegistrationArea getRegistrationArea(int regAreaId) throws StorageAccessException;
+	
 	/**
 	 * Returns all the features that have samples attached to the given audit.  The returned
 	 * collection will be equivalent to that produced by:
