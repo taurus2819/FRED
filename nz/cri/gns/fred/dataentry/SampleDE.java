@@ -966,9 +966,9 @@ public class SampleDE implements DataEntryForm {
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(KNW_START_MOD)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(KNW_AGE_STOP)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(KNW_STOP_MOD)) + "</td>");
-		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(PREVIOUS_SAMPLE)) + "</td>");
-		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(SAMPLE_RELATIONSHIP)) + "</td>");
-		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(STRAT_RELATIONSHIP)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(PREVIOUS_SAMPLE)).replaceAll(";", "#") + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(SAMPLE_RELATIONSHIP)).replaceAll("\n", "#") + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(STRAT_RELATIONSHIP)).replaceAll("\n", "#") + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(COLUMN_MAP)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(DIP)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(DIP_DIRECTION)) + "</td>");
