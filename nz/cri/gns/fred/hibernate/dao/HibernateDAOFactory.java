@@ -256,6 +256,16 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 	        throw new StorageAccessException(e);
 	    }
 	}
+	
+	private Object saveOrUpdate(Object object) throws StorageAccessException {
+		try {
+	        Session session = provider.currentSession();
+	        session.saveOrUpdate(object);
+	        return object;
+	    } catch (Exception e) {
+	        throw new StorageAccessException(e);
+	    }
+	}
 
 	public Feature cloneFeature(Feature feature) {
 		return (Feature)((nz.cri.gns.fred.hibernate.Feature)feature).clone();
@@ -348,6 +358,18 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
         }
 	}
 	
+	public AuditEdit createNewAuditEdit() throws StorageAccessException {
+		return new nz.cri.gns.fred.hibernate.AuditEdit();
+	}
+
+	public void save(AuditEdit edit) throws StorageAccessException {
+		save((Object)edit);
+	}
+
+	public void saveOrUpdate(Feature feature) throws StorageAccessException {
+		saveOrUpdate((Object)feature);
+	}
+
 	public SampleDAO getSampleDAO() {
 		return this;
 	}
@@ -418,4 +440,5 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 	public void delete(Record record) throws StorageAccessException {
 		delete((Object)record);
 	}
+
 }

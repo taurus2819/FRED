@@ -1,5 +1,6 @@
 package nz.cri.gns.fred.util;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -16,6 +17,10 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 import nz.cri.gns.auth.Right;
 import nz.cri.gns.auth.SecurityClass;
@@ -23,6 +28,7 @@ import nz.cri.gns.auth.SecurityClassAccess;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.db.BasicDatabaseApp2;
 import nz.cri.gns.db.ComboDescriptor;
+import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.HTMLUtils;
 import nz.cri.gns.db.site.DatumMethod;
 import nz.cri.gns.db.site.SiteRecord;
@@ -75,6 +81,11 @@ public class FREDUtil {
 	
 	private static final int SECURITY_CLASS_FRED_EDIT = 15;
 	
+	/**
+	 * The database instance that we're working in - doesn't change
+	 * so is stored as a constant once it is determined.
+	 */
+	private static String instance = null;
 
 	public static int getMasterfile(Feature feature) throws SQLException, NamingException {
 		switch (feature.getRegistrationArea().getRegAreaId().intValue()) {
@@ -265,7 +276,7 @@ public class FREDUtil {
 		Connection conn = getConnection();
 		SiteRecord sr = null;
 		try {
-			sr = SiteRecord.querySite(new BasicDatabaseApp2(getConnection(), ""), feature.getSiteId().intValue());
+			sr = SiteRecord.querySite(new BasicDatabaseApp2(conn, ""), feature.getSiteId().intValue());
 		} catch (SQLException e) {
 			conn.close();
 			throw e;
@@ -332,5 +343,28 @@ public class FREDUtil {
 			}
 			throw e;
 		}
+	}
+
+	/**
+	 * Gets an appropriate record from the DB for the given site, 
+	 * inserting if necessary
+	 * @throws IOException 
+	 * @throws SAXException 
+	 * @throws FactoryConfigurationError 
+	 * @throws ParserConfigurationException 
+	 * @throws NamingException 
+	 * @throws SQLException 
+	 */
+	public static SiteRecord getSite(SiteRecord site) throws ParserConfigurationException, FactoryConfigurationError, SAXException, IOException, SQLException, NamingException {
+		return site.insert(getInstance());
+	}
+
+	private static String getInstance() throws SQLException, NamingException {
+		if (instance == null) {
+			Connection conn = getConnection();
+			instance = DBUtils.getInstance(new BasicDatabaseApp2(conn, ""));
+			conn.close();
+		}
+		return instance;
 	}
 }

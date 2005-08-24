@@ -3,6 +3,7 @@ package nz.cri.gns.fred.dao;
 import java.util.Collection;
 
 import nz.cri.gns.fred.model.Audit;
+import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.RegistrationArea;
@@ -105,5 +106,18 @@ public interface FeatureDAO {
 	 * @throws StorageAccessException 
 	 */
 	public Collection<? extends Feature> getFeaturesByRecord(Audit audit) throws StorageAccessException;
+
+	/**
+	 * Returns a new unintialised audit edit
+	 */
+	public AuditEdit createNewAuditEdit() throws StorageAccessException;
+
+	public void save(AuditEdit edit) throws StorageAccessException;
+
+	/**
+	 * Either saves or updates the given feature, depending on whether it is already stored.
+	 * @throws StorageAccessException 
+	 */
+	public void saveOrUpdate(Feature feature) throws StorageAccessException;
 
 }
