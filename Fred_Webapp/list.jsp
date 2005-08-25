@@ -143,13 +143,15 @@
 			} else if (listName.equals("regArea")) {
 				rs = statement.executeQuery("SELECT name || '</td><td>' || reg_area_id FROM registration_area ORDER BY name");
 			} else if (listName.equals("thickness")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name FROM bed_thickness ORDER BY code");
+				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || thickness_id FROM bed_thickness ORDER BY code");
+			} else if (listName.equals("sedFeature")) {
+				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || sedfeature_type_id FROM sedimentary_feature_type ORDER BY code");
 			} else if (listName.equals("stageName")) {
 				rs = statement.executeQuery("SELECT ag_name || '</td><td>' || ag_id FROM age_view ORDER BY ag_name");
 			} else if (listName.equals("stratName")) {
 				rs = statement.executeQuery("SELECT su_name FROM sl.strat_unit ORDER BY su_name");
 			} else if (listName.equals("weathering")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name FROM weathering ORDER BY code");
+				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || weathering_id FROM weathering ORDER BY code");
 			}
 			try {
 				while (rs.next()) {
