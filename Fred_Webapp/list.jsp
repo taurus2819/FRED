@@ -119,21 +119,21 @@
 			out.println("<tr><td>Vertical Section</td></tr>");
 		} else {
 			if (listName.equals("bedding")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name FROM bedding ORDER BY code");
+				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || bedding_id  FROM bedding ORDER BY code");
 			} else if (listName.equals("carbonate")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name FROM carbonate ORDER BY code");
+				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || carbonate_id  FROM carbonate ORDER BY code");
 			} else if (listName.equals("colour")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name FROM rock_colour ORDER BY code");
+				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || colour_id  FROM rock_colour ORDER BY code");
 			} else if (listName.equals("colourMod")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name FROM colour_modifier ORDER BY code");
+				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || modifier_id  FROM colour_modifier ORDER BY code");
 			} else if (listName.equals("country")) {
 				rs = statement.executeQuery("SELECT country_name || '</td><td>' || country_code FROM mis.country ORDER BY country_name");
 			} else if (listName.equals("fossilGroup")) {
 				rs = statement.executeQuery("SELECT name FROM fossil_group ORDER BY name");
 			} else if (listName.equals("grainSize")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name FROM grain_size ORDER BY code");
+				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || grain_size_id  FROM grain_size ORDER BY code");
 			} else if (listName.equals("hardness")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name FROM hardness ORDER BY code");
+				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || hardness_id  FROM hardness ORDER BY code");
 			} else if (listName.equals("lab")) {
 				rs = statement.executeQuery("SELECT lab_name FROM sc.lab ORDER BY lab_name");
 			} else if (listName.equals("locMethod")) {

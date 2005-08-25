@@ -824,21 +824,19 @@ public class SampleDE implements DataEntryForm {
 		out.write("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>\n");
 
 		out.write("<tr><td class='heading'>Grain Size</td><td class='smallheading'>Pri.</td><td>");
-		cd = new ComboDescriptor("grain_size", "grain_size_ID", "Code || ': ' || Name");
+		cd = new ComboDescriptor("grain_size", "grain_size_id", "Code || ': ' || Name");
 		cd.name = "GrainSizeP";
 		cd.prompt = "-- Choose --";
 		cd.selected = getFieldForHTML(GRAIN_SIZE_P);
 		cd.orderBy = "Code";
-		cd.join = "FieldName = 'GrainSize'";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 		out.write("</td></tr>\n");
 		out.write("<tr><td></td><td class='smallheading'>Sec.</td><td>");
-		cd = new ComboDescriptor("grain_size", "grain_size_ID", "Code || ': ' || Name");
+		cd = new ComboDescriptor("grain_size", "grain_size_id", "Code || ': ' || Name");
 		cd.name = "GrainSizeS";
 		cd.prompt = "-- Choose --";
 		cd.selected = getFieldForHTML(GRAIN_SIZE_S);
 		cd.orderBy = "Code";
-		cd.join = "FieldName = 'GrainSize'";
 		HTMLUtils.makeDropBox(new java.io.PrintWriter(out), conn, cd);
 		out.write("</td></tr>\n");
 		out.write("<tr><td></td><td class='smallheading'>Comp. Used</td><td><select name='GSComp'><option value='' "
