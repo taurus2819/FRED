@@ -7,7 +7,9 @@ import java.util.Set;
 /** @author Hibernate CodeGenerator */
 public class Person implements Serializable, nz.cri.gns.fred.model.Person {
 
-    /** identifier field */
+	private static final long serialVersionUID = 20050818L;
+
+	/** identifier field */
     private Integer personId;
 
     /** nullable persistent field */
@@ -131,5 +133,11 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
     public void setCollectedSamples(Set collectedSamples) {
         this.collectedSamples = collectedSamples;
     }
+
+	public String getDisplayName() {
+		return (getGivenName() == null) ? 
+			getFamilyName() :
+			getGivenName() + " " + getFamilyName();
+	}
 
 }

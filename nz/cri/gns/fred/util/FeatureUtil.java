@@ -273,16 +273,20 @@ public class FeatureUtil extends ModelUtil {
 	*/	
 	}
 
-	public void deleteFeature(Feature feature, UserFolder folder, UserAccount user) throws InsufficientPrivelegesException, StorageAccessException {
-		if (!feature.getAudit().getFolder().equals(folder.getFolder()))
-			throw new IllegalArgumentException("Feature was not in the given folder");
-		if (!folder.isAllowedDeleteLocalities())
+	public void deleteFeature(Feature feature, UserAccount user) throws InsufficientPrivelegesException, StorageAccessException {
+		Folder folder = feature.getAudit().getFolder();
+		if (folder == null)
+			folder = feature.getMasterFile();
+		
+		UserFolder userFolder = folderDAO.getUserFolder(folder.getFolderId(), Integer.parseInt(user.getId()));
+		
+		if (!userFolder.isAllowedDeleteLocalities())
 			throw new InsufficientPrivelegesException();
 		
 		featureDAO.delete(feature);
 
 	}
-
+	
 	public void removeFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
 		if (!feature.getAudit().getStatus().equals(FREDConstants.APPROVED))
 			throw new IllegalStateException("Cannot remove a working locality");
@@ -462,6 +466,10 @@ public class FeatureUtil extends ModelUtil {
 		fr.setSerialNumber(serialNum);
 		fr.setRecollectionNumber(recollectionNum);
 		
+		approveFeature(feature, fr, comments, user);
+	}
+	
+	public void approveFeature(Feature feature, FrNumber fr, String comments, UserAccount user) throws StorageAccessException {
 		//All samples get the same FR number
 		for (Iterator it = feature.getSamples().iterator(); it.hasNext(); ) {
 			Sample sample = (Sample)it.next();

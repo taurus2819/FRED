@@ -80,7 +80,7 @@
 					}
 					 //Delete locality
 					else if (actionType.equals("DeleteFeat") && folder.isAllowedDeleteLocalities()) {
-						featureUtil.deleteFeature(feature, folder, user);
+						featureUtil.deleteFeature(feature, user);
 					}
 					//Remove locality
 					else if (actionType.equals("RemoveFeat")) {
@@ -168,7 +168,7 @@ function showHide(toShow, toHide) {
 				%></td><td></td>
 <%
 			}
-			out.print("<td>");
+			%><td><%
 			
 			if (featureUtil.isAllowedEditFeature(user, feature, folder)) {
 				%><a href="data_entry.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a><img src="images/blank.gif" height="20" width="2" />

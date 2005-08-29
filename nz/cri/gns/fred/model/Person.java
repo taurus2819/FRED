@@ -43,4 +43,9 @@ public interface Person {
 	public abstract Set getCollectedSamples();
 
 	public abstract void setCollectedSamples(Set collectedSamples);
+
+	/**
+	 * Displays the full name of the person in a user-friendly format
+	 */
+	public abstract String getDisplayName();
 }
