@@ -1,0 +1,40 @@
+<tr>
+<td class='heading'>Operating Company</td><td></td>
+<td><input type='text' name='Person' value="{@operatingCompany}" size='40'></td>
+<td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=OpComp\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td>
+</tr>
+<tr>
+<td class='heading'>Drilling Dates</td>
+<td class='smallheading'>Spud Date</td>
+<td><input type='text' name='StartDate' value="{@startDate}"></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Date&Field=StartDate\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td>
+</tr>
+<tr>
+<td class='heading'></td>
+<td class='smallheading'>Completion Date</td><td><input type='text' name='FinishDate' value="{@finishDate}"></td>
+<td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Date&Field=FinishDate\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td>
+</tr>
+<tr>
+<td class='heading'>Licence Area</td><td></td>
+<td><input type='text' name='LicArea' value="{@licenseArea}" size='40'></td>
+</tr>
+<tr>
+<td class='heading'>Datum Elevation</td>
+<td></td>
+<td class='smallheading'><select name='DatumType'>
+<option value='-'>-- Choose --</option>
+<option value='RT'{@@isRT: selected@}>RT</option>
+<option value='KB'{@@isKB: selected@}>KB</option>
+<option value='Seafloor'{@@isSeafloor: selected@}>Seafloor</option>
+</select>&nbsp;&nbsp;<input type='text' name='DatumEl' value="{@datumElevation}" size='10'>&nbsp;m&nbsp;asl</td>
+</tr>
+<tr>
+<td class='heading'>Drillhole Depths</td>
+<td class='smallheading'>Kick-off</td>
+<td class='smallheading'><input type='text' name='StartDepth' value="{@startDepth}">&nbsp;m</td>
+</tr>
+<tr>
+<td class='heading'></td>
+<td class='smallheading'>Termination (TD)</td>
+<td class='smallheading'><input type='text' name='FinishDepth' value="{@finishDepth}">&nbsp;m</td>
+</tr>
+</table>
