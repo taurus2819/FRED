@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -247,6 +248,26 @@ public class FREDUtil {
 		}
 	}
 
+	/**
+	 * Returns a string of a date with appropriate formatting 
+	 */
+	public static String formatDateForDE(Date date, String rounding) {
+		if (date == null)
+			return "";
+		SimpleDateFormat yearFormatter = new SimpleDateFormat("yyyy");
+		SimpleDateFormat monthFormatter = new SimpleDateFormat("MM/yyyy");
+		SimpleDateFormat dayFormatter = new SimpleDateFormat("dd/MM/yyyy");
+		if (rounding == null) {
+			return dayFormatter.format(date);
+		} else if (rounding.equals("Year")) {
+			return yearFormatter.format(date);
+		} else if (rounding.equals("Month")) {
+			return monthFormatter.format(date);
+		} else {
+			return dayFormatter.format(date);
+		}
+	}
+
 	public static String getFrNumberMapSheet(Feature feature) throws SQLException, NamingException {
 		RegistrationArea area = feature.getRegistrationArea();
 
@@ -299,6 +320,26 @@ public class FREDUtil {
 
 	public static String formatDateForOutput(Date date) {
 		return formatDateForOutput(date, "Day");
+	}
+
+	public static Date parseDateFromDE(String date) throws ParseException {
+		if (date.length() == 0)
+			return null;
+		if (date.length() == 4)
+			return new SimpleDateFormat("yyyy").parse(date);
+		if (date.length() == 7)
+			return new SimpleDateFormat("MM/yyyy").parse(date);
+		return new SimpleDateFormat("dd/MM/yyyy").parse(date);
+	}
+
+	public static String parseDateRoundingFromDE(String date) {
+		if (date.length() == 0)
+			return null;
+		if (date.length() == 4)
+			return "Year";
+		if (date.length() == 7)
+			return "Month";
+		return "Day";
 	}
 
 	public static String getMetaTitle(FeatureMeta meta) throws SQLException, NamingException {
