@@ -1,0 +1,12 @@
+<script>
+Calendar.setup(
+	{
+		inputField:		"{@inputField}",
+		ifFormat:		"%d/%m/%Y",
+		eventName:		"focus",
+		weekNumbers:	false,
+		showsTime:		false,
+		onClose:		function(cal) {cal.hide(); cal.params.inputField.blur(); }
+	}
+);
+</script>

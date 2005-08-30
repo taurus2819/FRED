@@ -3,3 +3,5 @@ index.main=index_main.html
 locality.de.form=localityde.html
 locality.de.end=localitydeend.html
 drillhole.de.form=drillholede.html
+drillhole.de.excel=drillholeexcel.html
+calendar.script=calendarscript.html

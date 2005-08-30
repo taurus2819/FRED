@@ -1,17 +1,16 @@
 <tr>
 <td class='heading'>Operating Company</td><td></td>
 <td><input type='text' name='Person' value="{@operatingCompany}" size='40'></td>
-<td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=OpComp\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td>
 </tr>
 <tr>
 <td class='heading'>Drilling Dates</td>
 <td class='smallheading'>Spud Date</td>
-<td><input type='text' name='StartDate' value="{@startDate}"></td><td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Date&Field=StartDate\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td>
+<td><input type='text' name="StartDate" id="StartDate" value="{@startDate}"></td>
 </tr>
 <tr>
 <td class='heading'></td>
-<td class='smallheading'>Completion Date</td><td><input type='text' name='FinishDate' value="{@finishDate}"></td>
-<td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Date&Field=FinishDate\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td>
+<td class='smallheading'>Completion Date</td>
+<td><input type='text' name="FinishDate" id="FinishDate" value="{@finishDate}"></td>
 </tr>
 <tr>
 <td class='heading'>Licence Area</td><td></td>
