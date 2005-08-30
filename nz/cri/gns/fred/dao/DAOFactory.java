@@ -11,17 +11,11 @@ public interface DAOFactory {
 	public FeatureDAO getFeatureDAO();
 	public SampleDAO getSampleDAO();
 	public RecordDAO getRecordDAO();
+	public PersonDAO getPersonDAO();
 	
 	/**
 	 * Closes the current session for this thread
 	 * @throws StorageAccessException
 	 */
 	public void closeSession() throws StorageAccessException;
-	/**
-	 * @return
-	 */
-	/**
-	 * @return
-	 */
-	
 }

@@ -11,6 +11,7 @@ import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.FolderTypeDAO;
+import nz.cri.gns.fred.dao.PersonDAO;
 import nz.cri.gns.fred.dao.RecordDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
@@ -26,6 +27,7 @@ import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FolderRight;
 import nz.cri.gns.fred.model.FolderType;
 import nz.cri.gns.fred.model.FrNumber;
+import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.fred.model.Relationship;
@@ -39,7 +41,7 @@ import nz.cri.gns.fred.model.UserFolder;
 /**
  * @author iainm
  */
-public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO {
+public class HibernateDAOFactory implements DAOFactory, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO {
 
 	private HibernateProvider provider;
 
@@ -336,6 +338,18 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
         }
 	}
 
+	private Object getFirst(String query, String value) throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+			List list = session.find(query, value, new StringType());
+			if (list.size() == 0)
+			    return null;
+			return list.get(0);
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+	}
+
 	public Collection<? extends Feature> getFeaturesBySample(Audit audit) throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
@@ -439,6 +453,22 @@ public class HibernateDAOFactory implements DAOFactory, RecordDAO, SampleDAO, Fo
 
 	public void delete(Record record) throws StorageAccessException {
 		delete((Object)record);
+	}
+
+	public PersonDAO getPersonDAO() {
+		return this;
+	}
+
+	public Person getCompany(String name) throws StorageAccessException {
+		return (Person)getFirst("FROM Person as p WHERE p.familyName = ? AND p.givenName IS NULL", name);
+	}
+
+	public Person createNewPerson() {
+		return new nz.cri.gns.fred.hibernate.Person();
+	}
+
+	public void save(Person person) throws StorageAccessException {
+		save((Object)person);
 	}
 
 }
