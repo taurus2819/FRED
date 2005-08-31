@@ -354,17 +354,17 @@ public class FeatureUtil extends ModelUtil {
 		HashSet<Feature> features = new HashSet<Feature>();
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd HH:mm:ss.SSSS");
-		System.out.println(format.format(new java.util.Date()) + ": Starting");
+		//System.out.println(format.format(new java.util.Date()) + ": Starting");
 		//Get from feature_content
 		features.addAll(folder.getFolder().getFeatures());
 		//System.out.println(new java.util.Date() + ": Got from folder contents");
 		
 		//Get from audit
 		List<Audit> audits = folderDAO.getWorkingAuditsFor(folder.getFolder());
-		System.out.println(format.format(new java.util.Date()) + ": Got relevant audit records");
+		//System.out.println(format.format(new java.util.Date()) + ": Got relevant audit records");
 
 		for (Audit audit : audits) {
-			System.out.println(format.format(new java.util.Date()) + ": Starting audit (" + audit.getAuditId() + ") features");
+			//System.out.println(format.format(new java.util.Date()) + ": Starting audit (" + audit.getAuditId() + ") features");
 			
 			
 			// - features
@@ -378,7 +378,7 @@ public class FeatureUtil extends ModelUtil {
 			
 			
 			//- samples
-			System.out.println(format.format(new java.util.Date()) + ": Starting audit (" + audit.getAuditId() + ") samples");
+			//System.out.println(format.format(new java.util.Date()) + ": Starting audit (" + audit.getAuditId() + ") samples");
 			features.addAll(featureDAO.getFeaturesBySample(audit));
 			/*Set samples = audit.getSamples();
 			if (samples != null && samples.size() > 0) {
@@ -390,7 +390,7 @@ public class FeatureUtil extends ModelUtil {
 			}*/
 
 			//- results
-			System.out.println(format.format(new java.util.Date()) + ": Starting audit (" + audit.getAuditId() + ") results");
+			//System.out.println(format.format(new java.util.Date()) + ": Starting audit (" + audit.getAuditId() + ") results");
 			features.addAll(featureDAO.getFeaturesByRecord(audit));
 			/*Set records = audit.getRecords();
 			if (records != null && records.size() > 0) {
@@ -402,7 +402,7 @@ public class FeatureUtil extends ModelUtil {
 			}*/
 			}
 		
-		System.out.println(format.format(new java.util.Date()) + ": Finished");
+		//System.out.println(format.format(new java.util.Date()) + ": Finished");
 		Feature[] featuresArray = (Feature[])features.toArray(new Feature[features.size()]); 
 		Arrays.sort(featuresArray);
 		return featuresArray;
