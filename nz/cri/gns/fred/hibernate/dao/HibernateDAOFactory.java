@@ -443,6 +443,14 @@ public class HibernateDAOFactory implements DAOFactory, PersonDAO, RecordDAO, Sa
         }
 	}
 
+	public Sample createNewSample() {
+		return new nz.cri.gns.fred.hibernate.Sample();
+	}
+
+	public SedimentaryFeature createNewSedimentaryFeature() {
+		return new nz.cri.gns.fred.hibernate.SedimentaryFeature();
+	}
+
 	public RecordDAO getRecordDAO() {
 		return this;
 	}

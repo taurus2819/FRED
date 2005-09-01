@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Iterator;
 
 import nz.cri.gns.auth.InsufficientPrivelegesException;
+import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FolderDAO;
@@ -16,6 +17,7 @@ import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Sample;
+import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.UserFolder;
 
 /**
@@ -114,6 +116,27 @@ public class SampleUtil extends ModelUtil implements FREDConstants {
 		return folder.isAllowedDeleteLocalities();
 	}
 	
+	public boolean isAllowedEditSample(User user, Sample sample, UserFolder userFolder) throws StorageAccessException {
+		Audit audit = sample.getAudit();
+		if (audit.getStatus().equals(APPROVED))
+			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_EDIT_RIGHT, folderDAO) ||
+				FREDUtil.checkEditSecurityClass(user);
+		if (audit.getStatus().equals(WAITING))
+			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_EDIT_RIGHT, folderDAO);
+
+		return userFolder.isAllowedEditLocalities();
+	}
+	
+	public boolean isAllowedSubmitSample(User user, Sample sample, UserFolder userFolder) throws NumberFormatException, StorageAccessException {
+		Audit audit = sample.getAudit();
+		if (audit.getStatus().equals(APPROVED))
+			return false;	
+		if (audit.getStatus().equals(WAITING))
+			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_SUBMIT_RIGHT, folderDAO);
+		
+		return userFolder.isAllowedSubmitLocalities();
+	}
+
 	public Sample getSample(int sampleId) throws StorageAccessException {
 		return sampleDAO.getSample(sampleId);
 	}
@@ -128,5 +151,38 @@ public class SampleUtil extends ModelUtil implements FREDConstants {
 			count += (((Record)it.next()).getPaleontology() != null) ? 1 : 0;
 		}
 		return count;
+	}
+
+	/**
+	 * Return a new sample initialised with the given information
+	 * @param reuseFeatureAudit 
+	 * @throws StorageAccessException 
+	 */
+	public Sample createSample(Feature feature, int folderId, boolean reuseFeatureAudit) throws StorageAccessException {
+		Sample sample = sampleDAO.createNewSample();
+		Audit audit = null;
+		if (reuseFeatureAudit)
+			audit = feature.getAudit();
+		else {
+			audit = sampleDAO.createNewAudit();
+			audit.setFolder(folderDAO.getFolder(folderId));
+			audit.setStatus(FREDConstants.WORKING);
+		}
+		sample.setAudit(audit);
+		sample.setFeature(feature);
+		return sample;
+	}
+
+	/**
+	 * Copies the given SedimentaryFeature but assigns the new one to the 
+	 * given sample instead of the original
+	 * @throws StorageAccessException 
+	 */
+	public SedimentaryFeature copyFor(SedimentaryFeature sedFeature, Sample sample) throws StorageAccessException {
+		SedimentaryFeature feature = sampleDAO.createNewSedimentaryFeature();
+		feature.setAbundant(sedFeature.getAbundant());
+		feature.setSedimentaryFeatureType(sedFeature.getSedimentaryFeatureType());
+		feature.setSample(sample);
+		return feature;
 	}
 }

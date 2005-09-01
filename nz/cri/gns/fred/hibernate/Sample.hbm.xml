@@ -269,7 +269,7 @@
     </many-to-one>
     <!-- bi-directional many-to-one association to RockColour -->
     <many-to-one
-        name="rockColourBySecondaryColourId"
+        name="secondaryColour"
         class="nz.cri.gns.fred.hibernate.RockColour"
         not-null="true"
     >
@@ -277,7 +277,7 @@
     </many-to-one>
     <!-- bi-directional many-to-one association to RockColour -->
     <many-to-one
-        name="rockColourByPrimaryColourId"
+        name="primaryColour"
         class="nz.cri.gns.fred.hibernate.RockColour"
         not-null="true"
     >
@@ -301,7 +301,7 @@
     </many-to-one>
     <!-- bi-directional many-to-one association to Bedding -->
     <many-to-one
-        name="beddingByPrimaryBeddingId"
+        name="primaryBedding"
         class="nz.cri.gns.fred.hibernate.Bedding"
         not-null="true"
     >
@@ -309,7 +309,7 @@
     </many-to-one>
     <!-- bi-directional many-to-one association to Bedding -->
     <many-to-one
-        name="beddingBySecondaryBeddingId"
+        name="secondaryBedding"
         class="nz.cri.gns.fred.hibernate.Bedding"
         not-null="true"
     >
@@ -343,7 +343,7 @@
     </many-to-one>
     <!-- bi-directional many-to-one association to GrainSize -->
     <many-to-one
-        name="grainSizeByPrimaryGrainsizeId"
+        name="primaryGrainSize"
         class="nz.cri.gns.fred.hibernate.GrainSize"
         not-null="true"
     >
@@ -351,7 +351,7 @@
     </many-to-one>
     <!-- bi-directional many-to-one association to GrainSize -->
     <many-to-one
-        name="grainSizeBySecondaryGrainsizeId"
+        name="secondaryGrainSize"
         class="nz.cri.gns.fred.hibernate.GrainSize"
         not-null="true"
     >
@@ -367,7 +367,7 @@
     </many-to-one>
     <!-- bi-directional many-to-one association to Stage -->
     <many-to-one
-        name="stageByKnownStageId"
+        name="knownStage"
         class="nz.cri.gns.fred.hibernate.Stage"
         not-null="true"
     >
@@ -375,7 +375,7 @@
     </many-to-one>
     <!-- bi-directional many-to-one association to Stage -->
     <many-to-one
-        name="stageByInferredStageId"
+        name="inferredStage"
         class="nz.cri.gns.fred.hibernate.Stage"
         not-null="true"
     >

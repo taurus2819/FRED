@@ -85,4 +85,22 @@ public interface SampleDAO {
 	 * @throws StorageAccessException
 	 */
 	public AuditEdit getMostRecentEdit(Audit audit) throws StorageAccessException;
+
+	/**
+	 * Creates a new empty Audit object
+	 * @return
+	 */
+	public Audit createNewAudit();
+
+	/**
+	 * Creates a new empty sample object
+	 * @return
+	 */
+	public Sample createNewSample() throws StorageAccessException;
+
+	/**
+	 * Creates a new empty sedimentary feature object
+	 * @return
+	 */
+	public SedimentaryFeature createNewSedimentaryFeature() throws StorageAccessException;
 }

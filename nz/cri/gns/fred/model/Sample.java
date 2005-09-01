@@ -114,14 +114,14 @@ public interface Sample {
 	public abstract void setCarbonate(
 			nz.cri.gns.fred.model.Carbonate carbonate);
 
-	public abstract nz.cri.gns.fred.model.RockColour getRockColourBySecondaryColourId();
+	public abstract nz.cri.gns.fred.model.RockColour getSecondaryColour();
 
-	public abstract void setRockColourBySecondaryColourId(
+	public abstract void setSecondaryColour(
 			nz.cri.gns.fred.model.RockColour rockColourBySecondaryColourId);
 
-	public abstract nz.cri.gns.fred.model.RockColour getRockColourByPrimaryColourId();
+	public abstract nz.cri.gns.fred.model.RockColour getPrimaryColour();
 
-	public abstract void setRockColourByPrimaryColourId(
+	public abstract void setPrimaryColour(
 			nz.cri.gns.fred.model.RockColour rockColourByPrimaryColourId);
 
 	public abstract nz.cri.gns.fred.model.Feature getFeature();
@@ -132,14 +132,14 @@ public interface Sample {
 
 	public abstract void setAudit(Audit audit);
 
-	public abstract nz.cri.gns.fred.model.Bedding getBeddingByPrimaryBeddingId();
+	public abstract nz.cri.gns.fred.model.Bedding getPrimaryBedding();
 
-	public abstract void setBeddingByPrimaryBeddingId(
+	public abstract void setPrimaryBedding(
 			nz.cri.gns.fred.model.Bedding beddingByPrimaryBeddingId);
 
-	public abstract nz.cri.gns.fred.model.Bedding getBeddingBySecondaryBeddingId();
+	public abstract nz.cri.gns.fred.model.Bedding getSecondaryBedding();
 
-	public abstract void setBeddingBySecondaryBeddingId(
+	public abstract void setSecondaryBedding(
 			nz.cri.gns.fred.model.Bedding beddingBySecondaryBeddingId);
 
 	public abstract nz.cri.gns.fred.model.FrNumber getFrNumber();
@@ -151,29 +151,29 @@ public interface Sample {
 	public abstract void setDrillType(
 			nz.cri.gns.fred.model.DrillType drillType);
 
-	public abstract nz.cri.gns.fred.model.GrainSize getGrainSizeByPrimaryGrainsizeId();
+	public abstract nz.cri.gns.fred.model.GrainSize getPrimaryGrainSize();
 
-	public abstract void setGrainSizeByPrimaryGrainsizeId(
+	public abstract void setPrimaryGrainSize(
 			nz.cri.gns.fred.model.GrainSize grainSizeByPrimaryGrainsizeId);
 
-	public abstract nz.cri.gns.fred.model.GrainSize getGrainSizeBySecondaryGrainsizeId();
+	public abstract nz.cri.gns.fred.model.GrainSize getSecondaryGrainSize();
 
-	public abstract void setGrainSizeBySecondaryGrainsizeId(
-			nz.cri.gns.fred.model.GrainSize grainSizeBySecondaryGrainsizeId);
+	public abstract void setSecondaryGrainSize(
+			nz.cri.gns.fred.model.GrainSize grainSizeBySecondaryGrainSize);
 
 	public abstract nz.cri.gns.fred.model.BedThickness getBedThickness();
 
 	public abstract void setBedThickness(
 			nz.cri.gns.fred.model.BedThickness bedThickness);
 
-	public abstract nz.cri.gns.fred.model.Stage getStageByKnownStageId();
+	public abstract nz.cri.gns.fred.model.Stage getKnownStage();
 
-	public abstract void setStageByKnownStageId(
+	public abstract void setKnownStage(
 			nz.cri.gns.fred.model.Stage stageByKnownStageId);
 
-	public abstract nz.cri.gns.fred.model.Stage getStageByInferredStageId();
+	public abstract nz.cri.gns.fred.model.Stage getInferredStage();
 
-	public abstract void setStageByInferredStageId(
+	public abstract void setInferredStage(
 			nz.cri.gns.fred.model.Stage stageByInferredStageId);
 
 	public abstract Set getSedimentaryFeatures();

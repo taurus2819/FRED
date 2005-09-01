@@ -9,7 +9,9 @@ import nz.cri.gns.fred.model.FrNumber;
 /** @author Hibernate CodeGenerator */
 public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Cloneable {
 
-    /** identifier field */
+    private static final long serialVersionUID = 20050818L;
+
+	/** identifier field */
     private Integer sampleId;
 
     /** nullable persistent field */
@@ -431,19 +433,19 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.carbonate = carbonate;
     }
 
-    public nz.cri.gns.fred.model.RockColour getRockColourBySecondaryColourId() {
+    public nz.cri.gns.fred.model.RockColour getSecondaryColour() {
         return this.rockColourBySecondaryColourId;
     }
 
-    public void setRockColourBySecondaryColourId(nz.cri.gns.fred.model.RockColour rockColourBySecondaryColourId) {
+    public void setSecondaryColour(nz.cri.gns.fred.model.RockColour rockColourBySecondaryColourId) {
         this.rockColourBySecondaryColourId = rockColourBySecondaryColourId;
     }
 
-    public nz.cri.gns.fred.model.RockColour getRockColourByPrimaryColourId() {
+    public nz.cri.gns.fred.model.RockColour getPrimaryColour() {
         return this.rockColourByPrimaryColourId;
     }
 
-    public void setRockColourByPrimaryColourId(nz.cri.gns.fred.model.RockColour rockColourByPrimaryColourId) {
+    public void setPrimaryColour(nz.cri.gns.fred.model.RockColour rockColourByPrimaryColourId) {
         this.rockColourByPrimaryColourId = rockColourByPrimaryColourId;
     }
 
@@ -463,19 +465,19 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.auditTable = auditTable;
     }
 
-    public nz.cri.gns.fred.model.Bedding getBeddingByPrimaryBeddingId() {
+    public nz.cri.gns.fred.model.Bedding getPrimaryBedding() {
         return this.beddingByPrimaryBeddingId;
     }
 
-    public void setBeddingByPrimaryBeddingId(nz.cri.gns.fred.model.Bedding beddingByPrimaryBeddingId) {
+    public void setPrimaryBedding(nz.cri.gns.fred.model.Bedding beddingByPrimaryBeddingId) {
         this.beddingByPrimaryBeddingId = beddingByPrimaryBeddingId;
     }
 
-    public nz.cri.gns.fred.model.Bedding getBeddingBySecondaryBeddingId() {
+    public nz.cri.gns.fred.model.Bedding getSecondaryBedding() {
         return this.beddingBySecondaryBeddingId;
     }
 
-    public void setBeddingBySecondaryBeddingId(nz.cri.gns.fred.model.Bedding beddingBySecondaryBeddingId) {
+    public void setSecondaryBedding(nz.cri.gns.fred.model.Bedding beddingBySecondaryBeddingId) {
         this.beddingBySecondaryBeddingId = beddingBySecondaryBeddingId;
     }
 
@@ -495,19 +497,19 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.drillType = drillType;
     }
 
-    public nz.cri.gns.fred.model.GrainSize getGrainSizeByPrimaryGrainsizeId() {
+    public nz.cri.gns.fred.model.GrainSize getPrimaryGrainSize() {
         return this.grainSizeByPrimaryGrainsizeId;
     }
 
-    public void setGrainSizeByPrimaryGrainsizeId(nz.cri.gns.fred.model.GrainSize grainSizeByPrimaryGrainsizeId) {
+    public void setPrimaryGrainSize(nz.cri.gns.fred.model.GrainSize grainSizeByPrimaryGrainsizeId) {
         this.grainSizeByPrimaryGrainsizeId = grainSizeByPrimaryGrainsizeId;
     }
 
-    public nz.cri.gns.fred.model.GrainSize getGrainSizeBySecondaryGrainsizeId() {
+    public nz.cri.gns.fred.model.GrainSize getSecondaryGrainSize() {
         return this.grainSizeBySecondaryGrainsizeId;
     }
 
-    public void setGrainSizeBySecondaryGrainsizeId(nz.cri.gns.fred.model.GrainSize grainSizeBySecondaryGrainsizeId) {
+    public void setSecondaryGrainSize(nz.cri.gns.fred.model.GrainSize grainSizeBySecondaryGrainsizeId) {
         this.grainSizeBySecondaryGrainsizeId = grainSizeBySecondaryGrainsizeId;
     }
 
@@ -519,19 +521,19 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.bedThickness = bedThickness;
     }
 
-    public nz.cri.gns.fred.model.Stage getStageByKnownStageId() {
+    public nz.cri.gns.fred.model.Stage getKnownStage() {
         return this.stageByKnownStageId;
     }
 
-    public void setStageByKnownStageId(nz.cri.gns.fred.model.Stage stageByKnownStageId) {
+    public void setKnownStage(nz.cri.gns.fred.model.Stage stageByKnownStageId) {
         this.stageByKnownStageId = stageByKnownStageId;
     }
 
-    public nz.cri.gns.fred.model.Stage getStageByInferredStageId() {
+    public nz.cri.gns.fred.model.Stage getInferredStage() {
         return this.stageByInferredStageId;
     }
 
-    public void setStageByInferredStageId(nz.cri.gns.fred.model.Stage stageByInferredStageId) {
+    public void setInferredStage(nz.cri.gns.fred.model.Stage stageByInferredStageId) {
         this.stageByInferredStageId = stageByInferredStageId;
     }
 
