@@ -4,9 +4,7 @@ package nz.cri.gns.fred.model;
 /**
  *
  */
-public interface FeatureMeta {
+public interface FeatureMeta extends Meta {
 	public abstract Feature getFeature();
 	public abstract void setFeature(Feature feature);
-	public Long getMetaId();
-	public void setMetaId(Long id);
 }

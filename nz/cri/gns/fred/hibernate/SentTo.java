@@ -8,6 +8,8 @@ import nz.cri.gns.fred.hibernate.dao.CompositeKeyed;
 /** @author Hibernate CodeGenerator */
 public class SentTo implements Serializable, nz.cri.gns.fred.model.SentTo, Cloneable, CompositeKeyed {
 
+    private static final long serialVersionUID = 20050818L;
+
     /** identifier field */
     private nz.cri.gns.fred.hibernate.SentToPK comp_id;
 
@@ -160,5 +162,9 @@ public class SentTo implements Serializable, nz.cri.gns.fred.model.SentTo, Clone
 	public boolean isUnsaved() {
 		return unsaved;
 	}
+
+    public String getDisplayName() {
+        return getPerson().getDisplayName();
+    }
 
 }

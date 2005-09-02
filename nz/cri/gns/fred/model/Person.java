@@ -5,7 +5,7 @@ import java.util.Set;
 /**
  *
  */
-public interface Person {
+public interface Person extends PersonRelationship {
 	
 	public abstract Integer getPersonId();
 
@@ -43,9 +43,4 @@ public interface Person {
 	public abstract Set getCollectedSamples();
 
 	public abstract void setCollectedSamples(Set collectedSamples);
-
-	/**
-	 * Displays the full name of the person in a user-friendly format
-	 */
-	public abstract String getDisplayName();
 }

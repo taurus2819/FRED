@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  *
  */
-public interface SentTo {
+public interface SentTo extends PersonRelationship {
 
 	public abstract Date getSentDate();
 
