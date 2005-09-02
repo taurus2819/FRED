@@ -34,7 +34,7 @@ import nz.cri.gns.db.HTMLUtils;
 import nz.cri.gns.db.site.DatumMethod;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.model.Feature;
-import nz.cri.gns.fred.model.FeatureMeta;
+import nz.cri.gns.fred.model.Meta;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.util.map.Datum;
 import nz.cri.gns.util.map.NZMG;
@@ -342,7 +342,7 @@ public class FREDUtil {
 		return "Day";
 	}
 
-	public static String getMetaTitle(FeatureMeta meta) throws SQLException, NamingException {
+	public static String getMetaTitle(Meta meta) throws SQLException, NamingException {
 		Connection conn = null;
 		try {
 			conn = getConnection();
