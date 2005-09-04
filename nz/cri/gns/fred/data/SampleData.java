@@ -52,9 +52,13 @@ public class SampleData {
 			+ "Sample_Working_Folder_ID, Sample_Working_Comments, Sample_Security_Class_ID, Site_ID, Country_Code, Country_Name, Latitude, Longitude, QMap_Sheet, NZMG_Sheet, NZMG_East, NZMG_North, "
 			//47
 			+ "Method_ID, Method, Accuracy, Orig_System_ID, Coord_System, Orig_Coord, Locality, Drillhole_Licence_Name, Person_ID, Person, Start_Date, "
+			//58
 			+ "Start_Date_Rounding, Finish_Date, Finish_Date_Rounding, Datum_Type, Datum_Elevation, Start_Depth, Finish_Depth, Collection_Date, "
+			//67
 			+ "Collection_Date_Rounding, Strat_Unit, In_Place, Not_Collected, Significance, Inferred_Stage_ID, Inferred_Stage, "
+			//73
 			+ "Inferred_Stage_Abbrev, Inferred_Stage_Lower_ID, Inferred_Stage_Lower, Inferred_Stage_Lower_Mod, Inferred_Stage_Upper_ID, "
+			//78
 			+ "Inferred_Stage_Upper, Inferred_Stage_Upper_Mod, Inferred_Age_Start, Inferred_Age_Stop, Known_Stage_ID, Known_Stage, Known_Stage_Abbrev, "
 			+ "Known_Stage_Lower_ID, Known_Stage_Lower, Known_Stage_Lower_Mod, Known_Stage_Upper_ID, Known_Stage_Upper, Known_Stage_Upper_Mod, "
 			+ "Known_Age_Start, Known_Age_Stop, Column_Map, Dip, Dip_Direction, Strike, Facing, Grainsize, Primary_Grainsize_ID, Primary_Grainsize, "
