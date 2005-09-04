@@ -8,10 +8,10 @@ public interface Relationship {
 
 	public abstract void setRelationshipId(Integer relationshipId);
 
-	public abstract String getRelationshipTypeTypeAsString();
+	public abstract RelationType getRelationType();
 
-	public abstract void setRelationshipTypeTypeAsString(
-			String relationshipTypeTypeAsString);
+	public abstract void setRelationType(
+			RelationType relationType);
 
 	public abstract Integer getStratUnitId();
 

@@ -6,14 +6,16 @@ import java.util.Set;
 /** @author Hibernate CodeGenerator */
 public class RelationshipType implements Serializable, nz.cri.gns.fred.model.RelationshipType {
 
-    /** identifier field */
+    private static final long serialVersionUID = 20050818L;
+
+	/** identifier field */
     private Integer reltypeId;
 
     /** persistent field */
     private String name;
 
     /** persistent field */
-    private nz.cri.gns.fred.model.RelationshipTypeType relationshipTypeType;
+    private nz.cri.gns.fred.model.RelationType relationshipTypeType;
 
     /** persistent field */
     private Set relationships;
@@ -46,11 +48,11 @@ public class RelationshipType implements Serializable, nz.cri.gns.fred.model.Rel
         this.name = name;
     }
 
-    public nz.cri.gns.fred.model.RelationshipTypeType getRelationshipTypeType() {
+    public nz.cri.gns.fred.model.RelationType getRelationType() {
         return this.relationshipTypeType;
     }
 
-    public void setRelationshipTypeType(nz.cri.gns.fred.model.RelationshipTypeType relationshipTypeType) {
+    public void setRelationType(nz.cri.gns.fred.model.RelationType relationshipTypeType) {
         this.relationshipTypeType = relationshipTypeType;
     }
 

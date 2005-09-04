@@ -24,13 +24,14 @@
         <generator class="assigned" />
     </id>
 
-    <property
+    <id
         name="name"
         type="java.lang.String"
         column="NAME"
-        not-null="true"
-        length="32"
-    />
+        length="16"
+	>
+        <generator class="assigned" />
+    </id>
 
     <!-- Associations -->
   
@@ -50,11 +51,11 @@
     </set>
     <!-- bi-directional many-to-one association to RelationshipTypeType -->
     <many-to-one
-        name="relationshipTypeType"
+        name="relationType"
         class="nz.cri.gns.fred.hibernate.RelationshipTypeType"
         not-null="true"
     >
-        <column name="RELTYPE_TYPE" />
+        <column name="RELATION_TYPE" />
     </many-to-one>
 
 </class>

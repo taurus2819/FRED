@@ -27,13 +27,6 @@
     </id>
 
     <property
-        name="relationshipTypeTypeAsString"
-        type="java.lang.String"
-        column="RELATIONSHIP_TYPE"
-        not-null="true"
-        length="6"
-    />
-    <property
         name="stratUnitId"
         type="int"
         column="STRAT_UNIT_ID"
@@ -66,6 +59,15 @@
 
     <!-- Associations -->
   
+   <!-- bi-directional many-to-one association to RelationshipTypeType -->
+    <many-to-one
+        name="relationType"
+        class="nz.cri.gns.fred.hibernate.RelationshipTypeType"
+        not-null="true"
+    >
+        <column name="RELATIONSHIP_TYPE" />
+    </many-to-one>
+
     <!-- bi-directional many-to-one association to Sample -->
     <many-to-one
         name="sample"
@@ -82,6 +84,16 @@
     >
         <column name="RELATED_FEATURE_ID" />
     </many-to-one>
+
+    <!-- bi-directional many-to-one association to RelationshipTypeType -->
+    <many-to-one
+        name="relationType"
+        class="nz.cri.gns.fred.hibernate.RelationshipTypeType"
+        not-null="true"
+    >
+        <column name="RELATION_TYPE_ID" />
+    </many-to-one>
+
     <!-- bi-directional many-to-one association to RelationshipType -->
     <many-to-one
         name="relationshipType"

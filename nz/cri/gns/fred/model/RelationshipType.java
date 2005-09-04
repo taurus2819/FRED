@@ -14,10 +14,10 @@ public interface RelationshipType {
 
 	public abstract void setName(String name);
 
-	public abstract nz.cri.gns.fred.model.RelationshipTypeType getRelationshipTypeType();
+	public abstract nz.cri.gns.fred.model.RelationType getRelationType();
 
-	public abstract void setRelationshipTypeType(
-			nz.cri.gns.fred.model.RelationshipTypeType relationshipTypeType);
+	public abstract void setRelationType(
+			nz.cri.gns.fred.model.RelationType relationshipTypeType);
 
 	public abstract Set getRelationships();
 

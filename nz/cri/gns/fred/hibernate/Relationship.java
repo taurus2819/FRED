@@ -2,14 +2,18 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 
+import nz.cri.gns.fred.model.RelationType;
+
 /** @author Hibernate CodeGenerator */
 public class Relationship implements Serializable, nz.cri.gns.fred.model.Relationship, Cloneable {
 
-    /** identifier field */
+   private static final long serialVersionUID = 20050818L;
+
+	/** identifier field */
     private Integer relationshipId;
 
     /** persistent field */
-    private String relationshipTypeTypeAsString;
+    private RelationType relationType;
 
     /** nullable persistent field */
     private Integer stratUnitId;
@@ -36,8 +40,8 @@ public class Relationship implements Serializable, nz.cri.gns.fred.model.Relatio
     private nz.cri.gns.fred.model.RelationshipType relationshipType;
 
     /** full constructor */
-    public Relationship(String relationshipTypeTypeAsString, Integer stratUnitId, String stratUnit, Double distance, String distanceMod, Double distanceRange, nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.RelationshipType relationshipType) {
-        this.relationshipTypeTypeAsString = relationshipTypeTypeAsString;
+    public Relationship(RelationType relationType, Integer stratUnitId, String stratUnit, Double distance, String distanceMod, Double distanceRange, nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.RelationshipType relationshipType) {
+        this.relationType = relationType;
         this.stratUnitId = stratUnitId;
         this.stratUnit = stratUnit;
         this.distance = distance;
@@ -53,8 +57,8 @@ public class Relationship implements Serializable, nz.cri.gns.fred.model.Relatio
     }
 
     /** minimal constructor */
-    public Relationship(String relationshipTypeTypeAsString, nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.RelationshipType relationshipType) {
-        this.relationshipTypeTypeAsString = relationshipTypeTypeAsString;
+    public Relationship(RelationType relationType, nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.RelationshipType relationshipType) {
+        this.relationType = relationType;
         this.sample = sample;
         this.feature = feature;
         this.relationshipType = relationshipType;
@@ -68,12 +72,12 @@ public class Relationship implements Serializable, nz.cri.gns.fred.model.Relatio
         this.relationshipId = relationshipId;
     }
 
-    public String getRelationshipTypeTypeAsString() {
-        return this.relationshipTypeTypeAsString;
+    public RelationType getRelationType() {
+        return this.relationType;
     }
 
-    public void setRelationshipTypeTypeAsString(String relationshipTypeTypeAsString) {
-        this.relationshipTypeTypeAsString = relationshipTypeTypeAsString;
+    public void setRelationType(RelationType relationType) {
+        this.relationType = relationType;
     }
 
     public Integer getStratUnitId() {

@@ -5,10 +5,7 @@ import java.util.Set;
 /**
  *
  */
-public interface RelationshipTypeType {
-	public abstract Integer getTypeId();
-
-	public abstract void setTypeId(Integer typeId);
+public interface RelationType {
 
 	public abstract String getName();
 
@@ -17,4 +14,8 @@ public interface RelationshipTypeType {
 	public abstract Set getRelationshipTypes();
 
 	public abstract void setRelationshipTypes(Set relationshipTypes);
+
+	public abstract Set getRelationships();
+
+	public abstract void setRelationships(Set relationships);
 }
