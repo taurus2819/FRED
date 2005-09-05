@@ -219,8 +219,8 @@
     <set
         name="sentTos"
         lazy="true"
-        inverse="true"
-		cascade="none"
+        inverse="false"
+		cascade="all"
     >
         <key>
             <column name="SAMPLE_ID" />
