@@ -38,14 +38,14 @@
 <tr>
 <td class='heading'>Not Collected<br><span class='smalltext'>specify fossils seen but not collected</span></td>
 <td></td>
-<td><textarea name='NotColl' cols='40' rows='3'>{@notCollected}</textarea></td>
+<td><textarea name='NotColl' cols='40' rows='3'>{@NotColl}</textarea></td>
 </tr>
 <tr>
 <td><img src='images/blank.gif' width='1' height='5' /></td>
 </tr>
 <tr>
 <td class='heading' colspan='2'>Significance/Comments</td>
-<td><textarea name='Sig' cols='40' rows='3'>{@significanceComments}</textarea></td>
+<td><textarea name='Sig' cols='40' rows='3'>{@Sig}</textarea></td>
 </tr>
 <tr>
 <td class='heading'>Stage Limits</td>
@@ -96,7 +96,7 @@
 <tr>
 <td class='heading'>Samples Nearby</td>
 <td></td>
-<td><input type='text' name='PrevSamp' size='40' value='{@prevSample}'></td>
+<td><input type='text' name='PrevSamp' size='40' value='{@PrevSamp}'></td>
 <td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=PrevSamp\", \"Supp\", \"width=600,height=350\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a>
 </td>
 </tr>
@@ -170,8 +170,8 @@
 <td class='smallheading'>Comp. Used</td>
 <td><select name='GSComp'>
 <option value=''> -- Choose -- </option>
-<option value='Y'{@@isCompYes: selected@}>Yes</option>
-<option value='N'{@@isCompNo: selected@}>No</option>
+<option value='Y'{@@isCompY: selected@}>Yes</option>
+<option value='N'{@@isCompN: selected@}>No</option>
 </select></td>
 </tr>
 <tr>
