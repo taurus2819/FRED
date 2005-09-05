@@ -26,11 +26,14 @@ import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FolderRight;
 import nz.cri.gns.fred.model.FolderType;
+import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RegistrationArea;
+import nz.cri.gns.fred.model.RelationType;
 import nz.cri.gns.fred.model.Relationship;
+import nz.cri.gns.fred.model.RelationshipType;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SampleMeta;
 import nz.cri.gns.fred.model.SedimentaryFeature;
@@ -227,7 +230,11 @@ public class HibernateDAOFactory implements DAOFactory, PersonDAO, RecordDAO, Sa
             throw new StorageAccessException(e);
 		}
 	}
-	
+
+	public TaxonomicGroup findTaxonomicGroup(String groupName) throws StorageAccessException {
+		return (TaxonomicGroup)getFirst("FROM TaxonomicGroup As g WHERE g.name = ?", groupName);
+	}
+
 	public void closeSession() throws StorageAccessException {
 		try {
 			provider.closeSession();
@@ -451,6 +458,45 @@ public class HibernateDAOFactory implements DAOFactory, PersonDAO, RecordDAO, Sa
 		return new nz.cri.gns.fred.hibernate.SedimentaryFeature();
 	}
 
+	public RelationType getRelationType(String relationTypeName) throws StorageAccessException {
+		return (RelationType)getFirst("FROM RelationType WHERE relation_type = ?", relationTypeName);
+	}
+
+	public RelationshipType getRelationshipType(RelationType relationType, String relationshipTypeName) throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+            Query query = session.createQuery("FROM RelationshipType AS rel WHERE rel.relationType = :reltype AND rel.name = :name");
+            query.setEntity("reltype", relationType);
+            query.setString("name", relationshipTypeName);
+            List list = query.list();
+			if (list.size() == 0)
+			    return null;
+			return (RelationshipType)list.get(0);
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+	}
+
+	public List<? extends Relationship> getRelationships(Sample sample, RelationshipType relationshipType) throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+            Query query = session.createQuery("FROM Relationship AS rel WHERE rel.relationshipType = :reltype AND rel.sample = :samp");
+            query.setEntity("reltype", relationshipType);
+            query.setEntity("samp", sample);
+            return query.list();
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+	}
+
+	public FossilGroup getFossilGroup(String name) throws StorageAccessException {
+		return (FossilGroup)getFirst("FROM FossilGroup AS fg WHERE fg.name = ?", name);
+	}
+
+	public SentTo createNewSentTo() {
+		return new nz.cri.gns.fred.hibernate.SentTo();
+	}
+
 	public RecordDAO getRecordDAO() {
 		return this;
 	}
@@ -479,4 +525,27 @@ public class HibernateDAOFactory implements DAOFactory, PersonDAO, RecordDAO, Sa
 		save((Object)person);
 	}
 
+	public Person getPerson(String givenName, String familyName) throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+			Query query = session.createQuery("FROM Person AS p WHERE p.givenName = :given AND p.familyName = :family");
+			query.setString("given", givenName);
+			query.setString("family", familyName);
+			List list = query.list();
+			if (list.size() == 0)
+				return null;
+			return (Person)list.get(0);
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+	}
+
+	public Person findPerson(String name) throws StorageAccessException {
+		//Try and find a person
+		Person person = (Person)getFirst("FROM Person As p WHERE p.familyName || ', ' || p.givenName = ?", name);
+		if (person != null)
+			return person;
+		//Try and find a company
+		return (Person)getFirst("FROM Person As p WHERE p.familyName = ?", name);
+	}
 }

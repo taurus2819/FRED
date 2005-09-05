@@ -6,7 +6,12 @@ import java.util.Set;
 /** @author Hibernate CodeGenerator */
 public class FossilGroup implements Serializable, nz.cri.gns.fred.model.FossilGroup {
 
-    /** identifier field */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 20050818L;
+
+	/** identifier field */
     private Integer groupId;
 
     /** persistent field */
@@ -54,5 +59,7 @@ public class FossilGroup implements Serializable, nz.cri.gns.fred.model.FossilGr
         return name;
     }
 
-
+    public boolean equals(Object o) {
+    	return o instanceof FossilGroup && groupId != null && groupId.equals(((FossilGroup)o).groupId);
+    }
 }

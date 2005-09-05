@@ -408,4 +408,44 @@ public class FREDUtil {
 		}
 		return instance;
 	}
+
+	public static String getLabName(Integer labId) throws NamingException, SQLException {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT lab_name FROM sc.lab WHERE lab_id = " + labId);
+			String name = (rs.next()) ? rs.getString(1) : "";
+			rs.close();
+			statement.close();
+			conn.close();
+			return name;
+		} catch (SQLException e) {
+			if (conn != null) try {
+				conn.close();
+			} catch (Exception _e) {
+			}
+			throw e;
+		}
+	}
+
+	public static Integer getLabId(String labName) throws NamingException, SQLException {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT lab_id FROM sc.lab WHERE lab_name = " + DBUtils.sqlEscape(labName));
+			Integer id = (rs.next()) ? new Integer(rs.getInt(1)) : null;
+			rs.close();
+			statement.close();
+			conn.close();
+			return id;
+		} catch (SQLException e) {
+			if (conn != null) try {
+				conn.close();
+			} catch (Exception _e) {
+			}
+			throw e;
+		}
+	}
 }

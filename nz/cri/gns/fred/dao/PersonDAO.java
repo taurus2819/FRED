@@ -15,4 +15,12 @@ public interface PersonDAO {
 
 	public void save(Person person) throws StorageAccessException;
 
+	public Person getPerson(String givenName, String familyName) throws StorageAccessException;
+
+	/**
+	 * If one exists in the database a person with the full name given. 
+	 * @throws StorageAccessException 
+	 */
+	public Person findPerson(String name) throws StorageAccessException;
+
 }

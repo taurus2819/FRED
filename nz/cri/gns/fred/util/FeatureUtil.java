@@ -1,6 +1,5 @@
 package nz.cri.gns.fred.util;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -28,7 +27,6 @@ import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FrNumber;
-import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
@@ -36,7 +34,6 @@ import nz.cri.gns.fred.model.SampleMeta;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.UserFolder;
-import nz.cri.gns.jsp.PageState;
 
 /**
  *
@@ -561,5 +558,18 @@ public class FeatureUtil extends ModelUtil {
 
 	public RegistrationArea getRegistrationArea(int regAreaId) throws StorageAccessException {
 		return featureDAO.getRegistrationArea(regAreaId);
+	}
+
+	/**
+	 * Returns the FR number for this feature.  The algorithm for this will
+	 * change dramatically once the DB structure has been betterified, so this
+	 * is kept in a discrete method for now.
+	 */
+	public static FrNumber getFrNumber(Feature feature) {
+		//Use the first sample as the link
+		if (feature.getSamples() == null || feature.getSamples().size() == 0)
+			return null;
+		Sample sample = (Sample)feature.getSamples().iterator().next();
+		return sample.getFrNumber();
 	}
 }

@@ -137,7 +137,10 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
 	public String getDisplayName() {
 		return (getGivenName() == null) ? 
 			getFamilyName() :
-			getGivenName() + " " + getFamilyName();
+			getFamilyName() + ", " + getGivenName();
 	}
 
+	public boolean equals(Object o) {
+		return o instanceof Person && personId != null && personId.equals(((Person)o).getPersonId());
+	}
 }

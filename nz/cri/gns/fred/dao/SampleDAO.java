@@ -1,9 +1,14 @@
 package nz.cri.gns.fred.dao;
 
+import java.util.List;
+
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
+import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
+import nz.cri.gns.fred.model.RelationType;
 import nz.cri.gns.fred.model.Relationship;
+import nz.cri.gns.fred.model.RelationshipType;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SampleMeta;
 import nz.cri.gns.fred.model.SedimentaryFeature;
@@ -103,4 +108,36 @@ public interface SampleDAO {
 	 * @return
 	 */
 	public SedimentaryFeature createNewSedimentaryFeature() throws StorageAccessException;
+
+	/**
+	 * Retrieves the so-named relation type
+	 * @throws StorageAccessException 
+	 */
+	public RelationType getRelationType(String relationTypeName) throws StorageAccessException;
+
+	/**
+	 * Retrieves the so-named relationship type relevant to the given relation type
+	 * @throws StorageAccessException 
+	 */
+	public RelationshipType getRelationshipType(RelationType relationType, String relationshipTypeName) throws StorageAccessException;
+
+	/**
+	 * Returns all relationships of the given sample with the given type.
+	 * @throws StorageAccessException 
+	 */
+	public List<? extends Relationship> getRelationships(Sample sample, RelationshipType relationshipType) throws StorageAccessException;
+
+	public Audit save(Audit audit) throws StorageAccessException;
+
+	/**
+	 * Return the fossil group with the given name or null if one doesn't exist
+	 * @throws StorageAccessException 
+	 */
+	public FossilGroup getFossilGroup(String name) throws StorageAccessException;
+
+	/**
+	 * Creates a new empty sentTo object
+	 * @return
+	 */
+	public SentTo createNewSentTo();
 }

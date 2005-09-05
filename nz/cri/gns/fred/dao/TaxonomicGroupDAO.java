@@ -22,4 +22,10 @@ public interface TaxonomicGroupDAO {
 	 */
 	public int getProvisionalCount(TaxonomicGroup group) throws StorageAccessException;
 
+	/**
+	 * Returns the group with the given name
+	 * @throws StorageAccessException 
+	 */
+	public TaxonomicGroup findTaxonomicGroup(String groupName) throws StorageAccessException;
+
 }

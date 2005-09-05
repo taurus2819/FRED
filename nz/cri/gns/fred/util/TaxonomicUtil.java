@@ -29,4 +29,8 @@ public class TaxonomicUtil {
 	public int getProvisionalCount(TaxonomicGroup group) throws StorageAccessException {
 		return groupDAO.getProvisionalCount(group);
 	}
+
+	public TaxonomicGroup getTaxonomicGroup(String groupName) throws StorageAccessException {
+		return groupDAO.findTaxonomicGroup(groupName);
+	}
 }
