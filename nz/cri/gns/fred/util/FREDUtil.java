@@ -21,8 +21,6 @@ import javax.sql.DataSource;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.xml.sax.SAXException;
-
 import nz.cri.gns.auth.Right;
 import nz.cri.gns.auth.SecurityClass;
 import nz.cri.gns.auth.SecurityClassAccess;
@@ -41,6 +39,8 @@ import nz.cri.gns.util.map.NZMG;
 import nz.cri.gns.util.map.NZMS260;
 import nz.cri.gns.util.map.NorthingEasting;
 import nz.cri.gns.util.map.TruncNorthingEasting;
+
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -436,6 +436,57 @@ public class FREDUtil {
 			Statement statement = conn.createStatement();
 			ResultSet rs = statement.executeQuery("SELECT lab_id FROM sc.lab WHERE lab_name = " + DBUtils.sqlEscape(labName));
 			Integer id = (rs.next()) ? new Integer(rs.getInt(1)) : null;
+			rs.close();
+			statement.close();
+			conn.close();
+			return id;
+		} catch (SQLException e) {
+			if (conn != null) try {
+				conn.close();
+			} catch (Exception _e) {
+			}
+			throw e;
+		}
+	}
+
+	public static double[] getStageAgeRange(String stageId) throws NamingException, SQLException {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT ta_age_start, ta_age_stop FROM sc.timescale_age WHERE ta_id = " + stageId);
+			double[] ages = (rs.next()) ? new double[] {rs.getDouble(1), rs.getDouble(2)} : null;
+			rs.close();
+			statement.close();
+			conn.close();
+			return ages;
+		} catch (SQLException e) {
+			if (conn != null) try {
+				conn.close();
+			} catch (Exception _e) {
+			}
+			throw e;
+		}
+	}
+
+	/**
+	 * Joins the string array, starting from the given index, with a space character as the seperator
+	 */
+	public static String join(String[] parts, int startFrom) {
+		StringBuffer buffer = new StringBuffer();
+		for (int i=startFrom; i<parts.length; i++) {
+			buffer.append(parts[i]).append(" ");
+		}
+		return buffer.substring(0, buffer.length()-1);
+	}
+
+	public static Integer getStratLexIdFor(String name) throws NamingException, SQLException {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT su_id FROM sl.strat_unit WHERE su_name = " + DBUtils.sqlEscape(name));
+			Integer id = (rs.next()) ? new Integer(rs.getInt(1)): null;
 			rs.close();
 			statement.close();
 			conn.close();

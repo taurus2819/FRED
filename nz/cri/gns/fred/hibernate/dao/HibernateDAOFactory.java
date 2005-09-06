@@ -3,6 +3,7 @@ package nz.cri.gns.fred.hibernate.dao;
 import java.util.Collection;
 import java.util.List;
 
+import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.type.IntegerType;
@@ -20,6 +21,10 @@ import nz.cri.gns.fred.hibernate.AuditTable;
 import nz.cri.gns.fred.hibernate.FolderUser;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
+import nz.cri.gns.fred.model.BedThickness;
+import nz.cri.gns.fred.model.Bedding;
+import nz.cri.gns.fred.model.Carbonate;
+import nz.cri.gns.fred.model.ColourModifier;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
@@ -28,18 +33,24 @@ import nz.cri.gns.fred.model.FolderRight;
 import nz.cri.gns.fred.model.FolderType;
 import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
+import nz.cri.gns.fred.model.GrainSize;
+import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.fred.model.RelationType;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.RelationshipType;
+import nz.cri.gns.fred.model.RockColour;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SampleMeta;
 import nz.cri.gns.fred.model.SedimentaryFeature;
+import nz.cri.gns.fred.model.SedimentaryFeatureType;
 import nz.cri.gns.fred.model.SentTo;
+import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.UserFolder;
+import nz.cri.gns.fred.model.Weathering;
 
 /**
  * @author iainm
@@ -391,6 +402,14 @@ public class HibernateDAOFactory implements DAOFactory, PersonDAO, RecordDAO, Sa
 		saveOrUpdate((Object)feature);
 	}
 
+	public FrNumber getFrNumber(String frNum) throws StorageAccessException {
+		return (FrNumber)getFirst("FROM FrNumber AS f WHERE f.frNumber = ?", frNum);
+	}
+
+	public Feature getFeatureWithName(String name) throws StorageAccessException {
+		return (Feature)getFirst("FROM Feature AS f WHERE f.featureName = ?", name);
+	}
+	
 	public SampleDAO getSampleDAO() {
 		return this;
 	}
@@ -495,6 +514,84 @@ public class HibernateDAOFactory implements DAOFactory, PersonDAO, RecordDAO, Sa
 
 	public SentTo createNewSentTo() {
 		return new nz.cri.gns.fred.hibernate.SentTo();
+	}
+
+	public Stage findStage(String startStageId, boolean startUncertain, String stopStageId, boolean stopUncertain) throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+            Query query = session.createQuery("FROM Stage AS s WHERE s.stageLowerId = :lower AND s.stageLowerMod = :lmod AND s.stageUpperId = :upper AND s.stageUpperMod = :umod");
+            query.setInteger("lower", (startStageId == null) ? null : Integer.parseInt(startStageId));
+            query.setString("lmod", (startUncertain) ? "?" : null);
+            query.setInteger("upper", (stopStageId == null) ? null : Integer.parseInt(stopStageId));
+            query.setString("umod", (stopUncertain) ? "?" : null);
+            List list = query.list();
+            if (list.size() == 0)
+            	return null;
+            return (Stage)list.get(0);
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+	}
+
+	public Stage createNewStage() {
+		return new nz.cri.gns.fred.hibernate.Stage();
+	}
+
+	public void save(Stage stage) throws StorageAccessException {
+		save((Object)stage);
+	}
+
+	public Relationship createNewRelationship() {
+		return new nz.cri.gns.fred.hibernate.Relationship();
+	}
+
+	public void save(Relationship rel) throws StorageAccessException {
+		save((Object)rel);
+	}
+
+	public GrainSize getGrainSize(Integer id) throws StorageAccessException {
+		return get(nz.cri.gns.fred.hibernate.GrainSize.class, id);
+	}
+
+	private <T> T get(Class<T> clazz, Integer id) throws StorageAccessException {
+		try {
+			Session session = provider.currentSession();
+			return (T)session.get(clazz, id);
+		} catch (HibernateException e) {
+			throw new StorageAccessException(e);
+		}
+	}
+
+	public Hardness getHardness(Integer id) throws StorageAccessException {
+		return get(nz.cri.gns.fred.hibernate.Hardness.class, id);
+	}
+
+	public Weathering getWeathering(Integer id) throws StorageAccessException {
+		return get(nz.cri.gns.fred.hibernate.Weathering.class, id);
+	}
+
+	public Bedding getBedding(Integer id) throws StorageAccessException {
+		return get(nz.cri.gns.fred.hibernate.Bedding.class, id);
+	}
+
+	public BedThickness getBeddingThickness(Integer id) throws StorageAccessException {
+		return get(nz.cri.gns.fred.hibernate.BedThickness.class, id);
+	}
+
+	public RockColour getRockColour(Integer id) throws StorageAccessException {
+		return get(nz.cri.gns.fred.hibernate.RockColour.class, id);
+	}
+
+	public ColourModifier getColourModifier(Integer id) throws StorageAccessException {
+		return get(nz.cri.gns.fred.hibernate.ColourModifier.class, id);
+	}
+
+	public Carbonate getCarbonate(Integer id) throws StorageAccessException {
+		return get(nz.cri.gns.fred.hibernate.Carbonate.class, id);
+	}
+	
+	public SedimentaryFeatureType getSedimentaryFeatureTypeWithName(String sedFeature) throws StorageAccessException {
+		return (SedimentaryFeatureType)getFirst("FROM SedimentaryFeatureType AS t WHERE t.name = ?", sedFeature);
 	}
 
 	public RecordDAO getRecordDAO() {

@@ -572,4 +572,34 @@ public class FeatureUtil extends ModelUtil {
 		Sample sample = (Sample)feature.getSamples().iterator().next();
 		return sample.getFrNumber();
 	}
+
+	public static String getFeatureIdentifyingName(Feature feature) {
+		FrNumber frNum = FeatureUtil.getFrNumber(feature);
+		if (frNum == null)
+			return feature.getFeatureName();
+		else
+			return frNum.getFrNumber();
+
+	}
+
+	/**
+	 * Performs the inverse of getFeatureIdentifyingName
+	 * @throws StorageAccessException 
+	 */
+	public Feature getFeatureWithIdentifyingName(String ident) throws StorageAccessException {
+		FrNumber frNum = featureDAO.getFrNumber(ident);
+		if (frNum == null) 
+			return featureDAO.getFeatureWithName(ident);
+		else
+			return FeatureUtil.getFeature(frNum);
+	}
+
+	/**
+	 * Returns the feature for this FR number.  The algorithm for this will
+	 * change dramatically once the DB structure has been betterified, so this
+	 * is kept in a discrete method for now.
+	 */
+	public static Feature getFeature(FrNumber frNum) {
+		return ((Sample)frNum.getSamples().iterator().next()).getFeature();
+	}
 }

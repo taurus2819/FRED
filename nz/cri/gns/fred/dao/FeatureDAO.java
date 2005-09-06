@@ -6,6 +6,7 @@ import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
+import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.RegistrationArea;
 
 /**
@@ -119,5 +120,15 @@ public interface FeatureDAO {
 	 * @throws StorageAccessException 
 	 */
 	public void saveOrUpdate(Feature feature) throws StorageAccessException;
+
+	/**
+	 * Returns the frNumber entry with the given numbr
+	 */
+	public FrNumber getFrNumber(String frNum) throws StorageAccessException;
+
+	/**
+	 * Returns the first feature with the given name, or null if none exists.
+	 */
+	public Feature getFeatureWithName(String ident) throws StorageAccessException;
 
 }

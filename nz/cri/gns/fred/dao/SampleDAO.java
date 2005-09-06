@@ -4,15 +4,25 @@ import java.util.List;
 
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
+import nz.cri.gns.fred.model.BedThickness;
+import nz.cri.gns.fred.model.Bedding;
+import nz.cri.gns.fred.model.Carbonate;
+import nz.cri.gns.fred.model.ColourModifier;
 import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
+import nz.cri.gns.fred.model.GrainSize;
+import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.RelationType;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.RelationshipType;
+import nz.cri.gns.fred.model.RockColour;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SampleMeta;
 import nz.cri.gns.fred.model.SedimentaryFeature;
+import nz.cri.gns.fred.model.SedimentaryFeatureType;
 import nz.cri.gns.fred.model.SentTo;
+import nz.cri.gns.fred.model.Stage;
+import nz.cri.gns.fred.model.Weathering;
 
 /**
  *
@@ -140,4 +150,54 @@ public interface SampleDAO {
 	 * @return
 	 */
 	public SentTo createNewSentTo();
+
+	/**
+	 * Locates, if one exists, a Stage entry in persistent storage that uses the given 
+	 * stages (by id) and has uncertainty as specified. 
+	 *@return a Stage object or null if no such object exists
+	 */
+	public Stage findStage(String startStageId, boolean startUncertain, String stopStageId, boolean stopUncertain) throws StorageAccessException;
+
+	/**
+	 * Creates a new, uninitialised Stage object
+	 */
+	public Stage createNewStage();
+
+	/**
+	 * Saves the given stage to persistent storage
+	 */
+	public void save(Stage stage) throws StorageAccessException;
+
+	/**
+	 * Creates a new, uninitialised Relationship object
+	 */
+	public Relationship createNewRelationship();
+
+	/**
+	 * Saves the given relationship to persistent storage
+	 * @throws StorageAccessException 
+	 */
+	public void save(Relationship rel) throws StorageAccessException;
+
+	/**
+	 * Returns the GrainSize with the given id
+	 * @throws StorageAccessException 
+	 */
+	public GrainSize getGrainSize(Integer id) throws StorageAccessException;
+
+	public Hardness getHardness(Integer id) throws StorageAccessException;
+
+	public Weathering getWeathering(Integer id) throws StorageAccessException;
+
+	public Bedding getBedding(Integer id) throws StorageAccessException;
+
+	public BedThickness getBeddingThickness(Integer id) throws StorageAccessException;
+
+	public RockColour getRockColour(Integer id) throws StorageAccessException;
+
+	public ColourModifier getColourModifier(Integer id) throws StorageAccessException;
+
+	public Carbonate getCarbonate(Integer id) throws StorageAccessException;
+
+	public SedimentaryFeatureType getSedimentaryFeatureTypeWithName(String sedFeature) throws StorageAccessException;
 }
