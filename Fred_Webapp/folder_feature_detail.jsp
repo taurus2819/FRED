@@ -76,7 +76,7 @@
 			}
 			 //Delete feature
 			else if (actionType.equals("DeleteFeat") && folder.isAllowedDeleteLocalities()) {
-				featureUtil.deleteFeature(feature, folder, user);
+				featureUtil.deleteFeature(feature, user);
 			}
 			//Delete sample
 			else if (actionType.equals("DeleteSamp") && folder.isAllowedDeleteLocalities()) {
