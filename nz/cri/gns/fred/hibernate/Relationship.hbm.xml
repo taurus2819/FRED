@@ -85,15 +85,6 @@
         <column name="RELATED_FEATURE_ID" />
     </many-to-one>
 
-    <!-- bi-directional many-to-one association to RelationshipTypeType -->
-    <many-to-one
-        name="relationType"
-        class="nz.cri.gns.fred.hibernate.RelationshipTypeType"
-        not-null="true"
-    >
-        <column name="RELATION_TYPE_ID" />
-    </many-to-one>
-
     <!-- bi-directional many-to-one association to RelationshipType -->
     <many-to-one
         name="relationshipType"
