@@ -122,7 +122,7 @@
 			try {
 				while (rs.next()) {
 					out.println("<tr><td>" + rs.getString(1) + ": " + rs.getString(2).replaceAll(" ", "&nbsp;") + "</td><td>" + rs.getString(2) + "</td></tr>");
-					out.println("<tr><td>" + rs.getString(1) + "*: " + rs.getString(2).replaceAll(" ", "&nbsp;") + " abundant</td><td>" + rs.getString(2) + "*</td></tr>");
+					out.println("<tr><td>" + rs.getString(1) + "*: " + rs.getString(2).replaceAll(" ", "&nbsp;") + " abundant</td><td>" + rs.getString(2) + "$</td></tr>");
 				}
 			} catch (Exception e) {}
 		} else {
