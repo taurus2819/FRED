@@ -118,11 +118,11 @@
 			out.println("<tr><td>Drillhole</td></tr>");
 			out.println("<tr><td>Vertical Section</td></tr>");
 		} else if (listName.equals("sedFeature")) {
-			rs = statement.executeQuery("SELECT code, name, sedfeature_type_id FROM sedimentary_feature_type ORDER BY code");
+			rs = statement.executeQuery("SELECT code, name FROM sedimentary_feature_type ORDER BY code");
 			try {
 				while (rs.next()) {
-					out.println("<tr><td>" + rs.getString(1) + ": " + rs.getString(2).replaceAll(" ", "&nbsp;") + "</td><td>" + rs.getString(3) + "</td></tr>");
-					out.println("<tr><td>" + rs.getString(1) + "*: " + rs.getString(2).replaceAll(" ", "&nbsp;") + " abundant</td><td>" + rs.getString(3) + "*</td></tr>");
+					out.println("<tr><td>" + rs.getString(1) + ": " + rs.getString(2).replaceAll(" ", "&nbsp;") + "</td><td>" + rs.getString(2) + "</td></tr>");
+					out.println("<tr><td>" + rs.getString(1) + "*: " + rs.getString(2).replaceAll(" ", "&nbsp;") + " abundant</td><td>" + rs.getString(2) + "*</td></tr>");
 				}
 			} catch (Exception e) {}
 		} else {
