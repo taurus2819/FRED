@@ -553,7 +553,7 @@ public class SampleDE implements DataEntryForm {
 							sedFeatStr = value.substring(0, value.indexOf(";")).trim();
 						}
 						try {
-							rs = conn.executeQuery(query, new int[] {Types.VARCHAR, Types.VARCHAR}, new Object[] {sedFeatStr, "SedFeature"});
+							rs = conn.executeQuery(query, new int[] {Types.VARCHAR}, new Object[] {sedFeatStr});
 							rs.next();
 							sFeat.setSedFeatureId(new Integer(rs.getInt(1)));
 							sedFeat.add(sFeat);
