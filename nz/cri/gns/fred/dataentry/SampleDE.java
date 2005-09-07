@@ -985,7 +985,7 @@ public class SampleDE implements DataEntryForm {
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(COLOUR_P)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(COLOUR_S)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(WET)) + "</td>");
-		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(SED_FEATURES)) + "</td>");
+		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(SED_FEATURES)).replaceAll(";", "#") + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(DEP_ENVIRONMENT_1)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(DEP_ENVIRONMENT_2)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(ROCK_NATURE)) + "</td>");
