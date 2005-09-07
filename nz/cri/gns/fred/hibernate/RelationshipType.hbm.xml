@@ -24,14 +24,13 @@
         <generator class="assigned" />
     </id>
 
-    <id
+    <property
         name="name"
         type="java.lang.String"
         column="NAME"
-        length="16"
-	>
-        <generator class="assigned" />
-    </id>
+        not-null="true"
+        length="32"
+    /> 
 
     <!-- Associations -->
   

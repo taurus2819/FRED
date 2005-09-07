@@ -16,21 +16,15 @@
     table="RELATIONSHIP_TYPE_TYPE"
 >
 
-    <id
-        name="typeId"
-        type="int"
-        column="TYPE_ID"
-    >
+   <id
+        name="name"
+        type="java.lang.String"
+        column="RELATION_TYPE"
+        length="16"
+	>
         <generator class="assigned" />
     </id>
 
-    <property
-        name="name"
-        type="java.lang.String"
-        column="NAME"
-        not-null="true"
-        length="32"
-    />
 
     <!-- Associations -->
   
@@ -42,7 +36,7 @@
 		cascade="none"
     >
         <key>
-            <column name="RELTYPE_TYPE" />
+            <column name="RELATION_TYPE" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.RelationshipType"
