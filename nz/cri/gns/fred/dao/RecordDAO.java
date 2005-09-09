@@ -28,7 +28,7 @@ public interface RecordDAO {
 	 * @param audit
 	 * @throws StorageAccessException
 	 */
-    public void update(Audit audit) throws StorageAccessException;
+    public Audit update(Audit audit) throws StorageAccessException;
 
     /**
      * Creates a new empty Record
@@ -56,5 +56,11 @@ public interface RecordDAO {
      * @throws StorageAccessException 
      */
     public Folder getMasterfileFolder(Record record) throws StorageAccessException;
+
+    public Audit save(Audit audit) throws StorageAccessException;
+
+    public void save(Record record) throws StorageAccessException;
+
+    public void update(Record record) throws StorageAccessException;
 
 }
