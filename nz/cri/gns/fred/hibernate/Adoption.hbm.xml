@@ -57,7 +57,7 @@
         name="adopters"
         table="ADOPTOR"
         lazy="true"
-        inverse="true"
+        inverse="false"
 		cascade="all"
     >
         <key>

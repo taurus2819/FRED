@@ -3,8 +3,12 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.RecordMeta;
+
 /** @author Hibernate CodeGenerator */
 public class Record implements Serializable, nz.cri.gns.fred.model.Record {
+
+    private static final long serialVersionUID = 20050818L;
 
     /** identifier field */
     private Integer recordId;
@@ -28,10 +32,10 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record {
     private nz.cri.gns.fred.model.Audit auditTable;
 
     /** persistent field */
-    private Set recordMetas;
+    private Set<RecordMeta> recordMetas;
 
     /** full constructor */
-    public Record(String workingComments, nz.cri.gns.fred.hibernate.Paleontology paleontology, nz.cri.gns.fred.hibernate.Adoption adoption, nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.Folder folder, nz.cri.gns.fred.hibernate.AuditTable auditTable, Set recordMetas) {
+    public Record(String workingComments, nz.cri.gns.fred.hibernate.Paleontology paleontology, nz.cri.gns.fred.hibernate.Adoption adoption, nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.Folder folder, nz.cri.gns.fred.hibernate.AuditTable auditTable, Set<RecordMeta> recordMetas) {
         this.workingComments = workingComments;
         this.paleontology = paleontology;
         this.adoption = adoption;
@@ -46,7 +50,7 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record {
     }
 
     /** minimal constructor */
-    public Record(nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.Folder folder, nz.cri.gns.fred.hibernate.AuditTable auditTable, Set recordMetas) {
+    public Record(nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.Folder folder, nz.cri.gns.fred.hibernate.AuditTable auditTable, Set<RecordMeta> recordMetas) {
         this.sample = sample;
         this.folder = folder;
         this.auditTable = auditTable;
@@ -109,11 +113,11 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record {
         this.auditTable = auditTable;
     }
 
-    public Set getRecordMetas() {
+    public Set<RecordMeta> getRecordMetas() {
         return this.recordMetas;
     }
 
-    public void setRecordMetas(Set recordMetas) {
+    public void setRecordMetas(Set<RecordMeta> recordMetas) {
         this.recordMetas = recordMetas;
     }
 

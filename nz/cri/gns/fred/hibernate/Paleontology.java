@@ -4,9 +4,14 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.PalList;
+import nz.cri.gns.fred.model.Person;
+
 
 /** @author Hibernate CodeGenerator */
 public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleontology {
+
+    private static final long serialVersionUID = 20050818L;
 
     /** identifier field */
     private Integer recordId;
@@ -39,13 +44,13 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
     private nz.cri.gns.fred.model.Stage stage;
 
     /** persistent field */
-    private Set palLists;
+    private Set<PalList> palLists;
 
     /** persistent field */
-    private Set identifiers;
+    private Set<Person> identifiers;
 
     /** full constructor */
-    public Paleontology(Integer recordId, Integer palId, Date identificationDate, String dateRounding, String stageComments, String labNumber, String collectionComments, nz.cri.gns.fred.hibernate.Record record, nz.cri.gns.fred.hibernate.LabSection labSection, nz.cri.gns.fred.hibernate.Stage stage, Set palLists, Set identifiers) {
+    public Paleontology(Integer recordId, Integer palId, Date identificationDate, String dateRounding, String stageComments, String labNumber, String collectionComments, nz.cri.gns.fred.hibernate.Record record, nz.cri.gns.fred.hibernate.LabSection labSection, nz.cri.gns.fred.hibernate.Stage stage, Set<PalList> palLists, Set<Person> identifiers) {
         this.recordId = recordId;
         this.palId = palId;
         this.identificationDate = identificationDate;
@@ -65,7 +70,7 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
     }
 
     /** minimal constructor */
-    public Paleontology(Integer recordId, nz.cri.gns.fred.hibernate.LabSection labSection, nz.cri.gns.fred.hibernate.Stage stage, Set palLists, Set identifiers) {
+    public Paleontology(Integer recordId, nz.cri.gns.fred.hibernate.LabSection labSection, nz.cri.gns.fred.hibernate.Stage stage, Set<PalList> palLists, Set<Person> identifiers) {
         this.recordId = recordId;
         this.labSection = labSection;
         this.stage = stage;
@@ -153,19 +158,19 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
         this.stage = stage;
     }
 
-    public Set getPalLists() {
+    public Set<PalList> getPalLists() {
         return this.palLists;
     }
 
-    public void setPalLists(Set palLists) {
+    public void setPalLists(Set<PalList> palLists) {
         this.palLists = palLists;
     }
 
-    public Set getIdentifiers() {
+    public Set<Person> getIdentifiers() {
         return this.identifiers;
     }
 
-    public void setIdentifiers(Set identifiers) {
+    public void setIdentifiers(Set<Person> identifiers) {
         this.identifiers = identifiers;
     }
 

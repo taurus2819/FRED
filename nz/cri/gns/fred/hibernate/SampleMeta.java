@@ -7,6 +7,8 @@ import nz.cri.gns.fred.hibernate.dao.CompositeKeyed;
 /** @author Hibernate CodeGenerator */
 public class SampleMeta implements Serializable, nz.cri.gns.fred.model.SampleMeta, CompositeKeyed {
 
+    private static final long serialVersionUID = 20050818L;
+
     /** identifier field */
     private nz.cri.gns.fred.hibernate.SampleMetaPK comp_id;
 
@@ -51,7 +53,7 @@ public class SampleMeta implements Serializable, nz.cri.gns.fred.model.SampleMet
 
     public void setSample(nz.cri.gns.fred.model.Sample sample) {
         this.sample = sample;
-        if (comp_id != null) {
+        if (comp_id == null) {
         	comp_id = new SampleMetaPK();
         }
         comp_id.setSampleId(sample.getSampleId());
@@ -73,7 +75,7 @@ public class SampleMeta implements Serializable, nz.cri.gns.fred.model.SampleMet
 	}
 
 	public void setMetaId(Long id) {
-	    if (comp_id != null) {
+	    if (comp_id == null) {
         	comp_id = new SampleMetaPK();
         }
         comp_id.setMetaId(id);

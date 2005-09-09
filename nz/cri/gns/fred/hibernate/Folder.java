@@ -6,6 +6,8 @@ import java.util.Set;
 /** @author Hibernate CodeGenerator */
 public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
 
+    private static final long serialVersionUID = 20050818L;
+    
     /** identifier field */
     private Integer folderId;
 
@@ -131,12 +133,11 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
         this.folderUsers = folderUsers;
     }
 
-	public int compareTo(Object arg0) {
+	public int compareTo(nz.cri.gns.fred.model.Folder arg0) {
 		return name.compareTo(((Folder)arg0).name);
 	}
 	
 	public boolean equals(Object o) {
 		return o instanceof Folder && ((Folder)o).getFolderId().intValue() == getFolderId().intValue();
 	}
-
 }

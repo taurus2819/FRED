@@ -7,6 +7,8 @@ import nz.cri.gns.fred.hibernate.dao.CompositeKeyed;
 /** @author Hibernate CodeGenerator */
 public class FeatureMeta implements Serializable, nz.cri.gns.fred.model.FeatureMeta, CompositeKeyed {
 
+    private static final long serialVersionUID = 20050818L;
+
     /** identifier field */
     private nz.cri.gns.fred.hibernate.FeatureMetaPK comp_id;
 
@@ -51,7 +53,7 @@ public class FeatureMeta implements Serializable, nz.cri.gns.fred.model.FeatureM
 
     public void setFeature(nz.cri.gns.fred.model.Feature feature) {
         this.feature = feature;
-        if (comp_id != null) {
+        if (comp_id == null) {
         	comp_id = new FeatureMetaPK();
         }
         comp_id.setFeatureId(feature.getFeatureId());
@@ -69,7 +71,7 @@ public class FeatureMeta implements Serializable, nz.cri.gns.fred.model.FeatureM
 	}
 
 	public void setMetaId(Long id) {
-	    if (comp_id != null) {
+	    if (comp_id == null) {
         	comp_id = new FeatureMetaPK();
         }
         comp_id.setMetaId(id);

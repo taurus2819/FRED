@@ -7,6 +7,8 @@ import java.util.Set;
 /** @author Hibernate CodeGenerator */
 public class RegistrationArea implements Serializable, nz.cri.gns.fred.model.RegistrationArea {
 
+    private static final long serialVersionUID = 20050818L;
+
     /** identifier field */
     private Integer regAreaId;
 

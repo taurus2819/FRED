@@ -4,9 +4,13 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.TaxonomicGroup;
+
 
 /** @author Hibernate CodeGenerator */
-public class TaxonomicLookup implements Serializable {
+public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.TaxonomicLookup {
+
+    private static final long serialVersionUID = 20050818L;
 
     /** identifier field */
     private Integer taxaId;
@@ -36,7 +40,7 @@ public class TaxonomicLookup implements Serializable {
     private String sendMessage;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.TaxonomicGroup taxonomicGroup;
+    private TaxonomicGroup taxonomicGroup;
 
     /** persistent field */
     private Set palLists;
@@ -139,11 +143,11 @@ public class TaxonomicLookup implements Serializable {
         this.sendMessage = sendMessage;
     }
 
-    public nz.cri.gns.fred.hibernate.TaxonomicGroup getTaxonomicGroup() {
+    public TaxonomicGroup getTaxonomicGroup() {
         return this.taxonomicGroup;
     }
 
-    public void setTaxonomicGroup(nz.cri.gns.fred.hibernate.TaxonomicGroup taxonomicGroup) {
+    public void setTaxonomicGroup(TaxonomicGroup taxonomicGroup) {
         this.taxonomicGroup = taxonomicGroup;
     }
 
