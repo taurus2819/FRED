@@ -1,0 +1,19 @@
+<table border='0' cellspacing='0' cellpadding='2'>
+<tr>
+<td class='heading'>Sample Name</td>
+<td></td>
+<td class='heading'>{@sampleName}<br>{@featureName}: {@drillholeDepth}</td>
+<td><a href='new_sample.jsp?FeatID={@featureId}&SampID={@sampleId}&FoldID={@folderId}{@@recordId:&RecID=@}{@recordId}&RecType={@recordType}'><img src='images/edit.gif' width='20' height='20' border='0' alt='Edit' /></a></td>
+</tr>
+<tr>
+<td class='heading' colspan='2'>Working Comments<br /><span class='smalltext'>On submission these comments will be deleted</span></td>
+<td><textarea name='WorkComm' rows='3' cols='40'>{@workingComments}</textarea></td>
+</tr>
+<tr>
+<td class='heading' colspan='2'>Attached Files/Images<br /><span class='smalltext'>Click <a href='binary_data_entry.jsp?ID={@recordId}&RecType={@recordType}&FoldID={@folderId}' target='fredBinary'>here</a> to add/edit</span></td><td>
+{@recordMetas}
+</td>
+</tr>
+<tr>
+<td><img src='images/blank.gif' width='1' height='5' /></td>
+</tr>
