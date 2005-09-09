@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Iterator;
 
 import nz.cri.gns.auth.InsufficientPrivelegesException;
+import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FolderDAO;
@@ -12,9 +13,11 @@ import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.hibernate.PalList;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.FREDConstants;
+import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RecordDetails;
+import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.UserFolder;
 
 /**
@@ -108,4 +111,64 @@ public class RecordUtil extends ModelUtil implements FREDConstants {
 
 		return folder.isAllowedDeleteLocalities();
 	}
+
+	/**
+     * Creates a new record entry of the given type and returns it.
+     * @param sample the sample to which the record belongs
+     * @param recordType one of FREDConstants.PALEONTOLOGICAL or FREDConstants.ADOPTION
+     * @return a new <code>Record</code>
+	 */
+    public Record createRecord(Sample sample, String recordType) {
+        Record record = recordDAO.createNewRecord();
+        record.setSample(sample);
+        
+        Audit audit = recordDAO.createNewAudit();
+        audit.setStatus(WORKING);
+        audit.setFolder(sample.getAudit().getFolder());
+        record.setAudit(audit);
+
+        if (recordType.equals(PALEONTOLOGICAL)) {
+            record.setPaleontology(recordDAO.createNewPaleontology());
+        } else if (recordType.equals(ADOPTION)) {
+            record.setAdoption(recordDAO.createNewAdoption());
+        } else 
+            throw new IllegalArgumentException("Invalid record type specified: " + recordType);
+        
+        return record;
+    }
+
+
+    public boolean isAllowedEditRecord(User user, Record record, UserFolder userFolder) throws StorageAccessException {
+       return new SampleUtil(factory).isAllowedEditSample(user, record.getSample(), userFolder);
+    }
+
+
+    public boolean isAllowedSubmitRecord(User user, Record record, UserFolder userFolder) throws StorageAccessException {
+        return new SampleUtil(factory).isAllowedSubmitSample(user, record.getSample(), userFolder);
+    }
+
+
+    public boolean hasMasterfileEditRights(User user, Record record) throws StorageAccessException {
+        return FeatureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, folderDAO);
+    }
+
+
+    public Record getRecord(int recordId) throws StorageAccessException {
+       return recordDAO.getRecord(recordId);
+    }
+
+
+    public boolean isAllowedViewRecord(User user, Record fromRecord) throws StorageAccessException {
+        //TODO this will be upgraded once security is in place 
+        Folder folder = fromRecord.getAudit().getFolder();
+        if (folder == null)
+            folder = recordDAO.getMasterfileFolder(fromRecord);
+        
+        return new FolderUtil(factory).getUserFolder(folder.getFolderId(), user).isAllowedReadLocalities();
+    }
+
+
+    public String getRecordType(Record record) {
+        return (record.getAdoption() != null) ? ADOPTION : PALEONTOLOGICAL;
+    }
 }

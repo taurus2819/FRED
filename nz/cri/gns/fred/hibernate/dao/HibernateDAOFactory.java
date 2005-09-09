@@ -19,6 +19,7 @@ import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.dao.TaxonomicGroupDAO;
 import nz.cri.gns.fred.hibernate.AuditTable;
 import nz.cri.gns.fred.hibernate.FolderUser;
+import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.BedThickness;
@@ -35,6 +36,7 @@ import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
+import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RegistrationArea;
@@ -606,6 +608,22 @@ public class HibernateDAOFactory implements DAOFactory, PersonDAO, RecordDAO, Sa
 		delete((Object)record);
 	}
 
+    public Record createNewRecord() {
+        return new nz.cri.gns.fred.hibernate.Record();
+    }
+
+    public Paleontology createNewPaleontology() {
+        return new nz.cri.gns.fred.hibernate.Paleontology();
+    }
+
+    public Adoption createNewAdoption() {
+        return new nz.cri.gns.fred.hibernate.Adoption();
+    }
+
+    public Folder getMasterfileFolder(Record record) throws StorageAccessException {
+        return (Folder)getFirst("SELECT f FROM Record AS r INNER JOIN r.sample AS s INNER JOIN s.feature AS feat INNER JOIN feat.masterFile AS f WHERE r.recordId = ?", record.getRecordId());
+    }
+    
 	public PersonDAO getPersonDAO() {
 		return this;
 	}
@@ -645,4 +663,5 @@ public class HibernateDAOFactory implements DAOFactory, PersonDAO, RecordDAO, Sa
 		//Try and find a company
 		return (Person)getFirst("FROM Person As p WHERE p.familyName = ?", name);
 	}
+
 }
