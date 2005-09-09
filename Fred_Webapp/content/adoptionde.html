@@ -1,0 +1,37 @@
+<tr>
+<td class='heading'>Adoption Date</td>
+<td></td>
+<td><input type='text' name='AdoDate' value='{@adoptionDate}'></td>
+</tr>
+<tr>
+<td class='heading'>Adoptors</td>
+<td></td>
+<td><textarea name='Adoptor' cols='40' rows='2'>{@Adoptor}</textarea></td>
+<td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Adoptor\", \"Supp\", \"width=600,height=400\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td>
+</tr>
+<tr>
+<td class='heading'>Stage Limits</td>
+<td class='smallheading'>Adopted</td>
+<td>
+<table border='0' cellspacing='0'>
+ <tr>
+ <td>{@StageStart}</td>
+ <td><select name='StartMod'>
+  <option value='-'></option>
+  <option value='?'{@@isStartUnc: selected@}>?</option>
+ </select></td>
+ <td class='heading'> to </td>
+ </tr>
+ <tr>
+ <td>{@StageStop}</td>
+ <td class='heading'><select name='StopMod'>
+  <option value='-'></option>
+  <option value='?'{@@isStopUnc: selected@}>?</option>
+ </select></td>
+ </tr>
+</table></td>
+</tr>
+<tr>
+<td class='heading' colspan='2'>Comments</td>
+<td><textarea name='Comm' cols='40' rows='3'>{@Comm}</textarea></td>
+</tr>
