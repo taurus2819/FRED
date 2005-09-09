@@ -318,8 +318,9 @@ public class HibernateDAOFactory implements DAOFactory, PersonDAO, RecordDAO, Sa
 	    }
 	}
 
-	public void update(Audit audit) throws StorageAccessException {
+	public Audit update(Audit audit) throws StorageAccessException {
 		update((Object)audit);
+        return audit;
 	}
 
 	public Feature getFeature(int featureId) throws StorageAccessException {
@@ -622,6 +623,14 @@ public class HibernateDAOFactory implements DAOFactory, PersonDAO, RecordDAO, Sa
 
     public Folder getMasterfileFolder(Record record) throws StorageAccessException {
         return (Folder)getFirst("SELECT f FROM Record AS r INNER JOIN r.sample AS s INNER JOIN s.feature AS feat INNER JOIN feat.masterFile AS f WHERE r.recordId = ?", record.getRecordId());
+    }
+    
+    public void save(Record record) throws StorageAccessException {
+        save((Object)record);
+    }
+
+    public void update(Record record) throws StorageAccessException {
+        update((Object)record);
     }
     
 	public PersonDAO getPersonDAO() {

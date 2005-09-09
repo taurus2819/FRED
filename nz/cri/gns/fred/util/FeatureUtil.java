@@ -38,7 +38,7 @@ import nz.cri.gns.fred.model.UserFolder;
 /**
  *
  */
-public class FeatureUtil extends ModelUtil {
+public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
 	private FeatureDAO featureDAO;
 	private SampleDAO sampleDAO;
@@ -139,7 +139,7 @@ public class FeatureUtil extends ModelUtil {
 					newSedFeature.setSample(newSample);
 					newSedFeatures.add(newSedFeature);
 				}
-				newSample.setSentTos(newSedFeatures);
+				newSample.setSedimentaryFeatures(newSedFeatures);
 			}
 			
 			//Copy sample images
@@ -295,18 +295,14 @@ public class FeatureUtil extends ModelUtil {
 		featureDAO.update(feature);
 	}
 	
-	public void submitFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
+	public void submitFeature(Feature feature, UserFolder folder, User user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
 		if (!folder.isAllowedSubmitLocalities())
 			throw new InsufficientPrivelegesException();
 
 		if (feature.getFeatureType() == null || feature.getSiteId() == null || feature.getRegistrationArea() == null)
 			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
 
-		Audit audit = feature.getAudit();
-		audit.setStatus(FREDConstants.WAITING);
-		audit.setSubmittedById(new Integer(user.getId()));
-		audit.setSubmittedDate(new Date());
-		featureDAO.update(audit);
+		FREDUtil.submit(feature, user, this, true);
 		
 		int masterfile = -1;
 		try {
@@ -602,4 +598,12 @@ public class FeatureUtil extends ModelUtil {
 	public static Feature getFeature(FrNumber frNum) {
 		return ((Sample)frNum.getSamples().iterator().next()).getFeature();
 	}
+
+    public Audit update(Audit audit) throws StorageAccessException {
+        return featureDAO.update(audit);
+    }
+
+    public Audit save(Audit audit) throws StorageAccessException {
+        return featureDAO.save(audit);
+    }
 }

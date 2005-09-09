@@ -11,12 +11,15 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
@@ -24,16 +27,26 @@ import javax.xml.parsers.ParserConfigurationException;
 import nz.cri.gns.auth.Right;
 import nz.cri.gns.auth.SecurityClass;
 import nz.cri.gns.auth.SecurityClassAccess;
+import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.db.BasicDatabaseApp2;
 import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.db.DataException;
 import nz.cri.gns.db.HTMLUtils;
 import nz.cri.gns.db.site.DatumMethod;
 import nz.cri.gns.db.site.SiteRecord;
+import nz.cri.gns.fred.dao.StorageAccessException;
+import nz.cri.gns.fred.dataentry.DataInputException;
+import nz.cri.gns.fred.model.Audit;
+import nz.cri.gns.fred.model.Audited;
+import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Meta;
+import nz.cri.gns.fred.model.Person;
+import nz.cri.gns.fred.model.PersonRelationship;
 import nz.cri.gns.fred.model.RegistrationArea;
+import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.util.map.Datum;
 import nz.cri.gns.util.map.NZMG;
 import nz.cri.gns.util.map.NZMS260;
@@ -499,4 +512,62 @@ public class FREDUtil {
 			throw e;
 		}
 	}
-}
+
+    /**
+     * Makes the necessary changes to the db to flag this audited as submitted
+     */
+    public static void submit(Audited audited, User user, AuditedUtil util, boolean requiresApproval) throws StorageAccessException {
+        Audit audit = audited.getAudit();
+        audit.setStatus((requiresApproval) ? FREDConstants.WAITING : FREDConstants.APPROVED);
+        audit.setSubmittedById(user.getDatabaseId());
+        audit.setSubmittedDate(new Date());
+        if (!requiresApproval) {
+            audit.setWorkingComments(null);
+            audit.setFolder(null);
+        }
+        util.update(audit);
+    }
+
+    public static String getNames(Set<? extends PersonRelationship> persons, String separator) {
+        StringBuffer names = new StringBuffer();
+        
+        for (PersonRelationship person : persons) {
+            names.append(person.getDisplayName()).append(separator);
+        }
+        
+        
+        return names.toString();
+    }
+
+    public static Set<Person> getPersons(String parameter, PersonUtil personUtil) throws DataInputException {
+        String[] adoptors = parameter.split("\\n");
+        HashSet<Person> personSet = new HashSet<Person>();
+        for (String collector : adoptors) try {
+            Person person = personUtil.findPerson(collector);
+            if (person == null)
+                throw new DataInputException("Adoptors", "Invalid person: " + collector);
+            else
+                personSet.add(personUtil.findPerson(collector));
+        } catch (StorageAccessException e) {
+            throw new DataInputException("Adoptors", "Database error: " + e.getMessage());
+        }
+        return personSet;
+    }
+
+    public static Stage getStage(HttpServletRequest request, String prefix, Stage existingStage, SampleUtil sampleUtil) throws DataInputException {
+        String startId = decodeCombo(request.getParameter(prefix + "StageStart"));
+        String startMod = decodeCombo(request.getParameter(prefix + "StartMod"));
+        String stopId = decodeCombo(request.getParameter(prefix + "StageStop"));
+        String stopMod = decodeCombo(request.getParameter(prefix + "StopMod"));
+        
+        if (sampleUtil.stageDiffers(existingStage, startId, startMod != null, stopId, stopMod != null)) try {
+            return sampleUtil.getStage(startId, startMod != null, stopId, stopMod != null);
+        } catch (Exception e) {
+            throw new DataInputException("Inferred Stage", e.getMessage());
+        } else
+            return existingStage;
+    }
+
+    public static String decodeCombo(String parameter) {
+    	return ("-".equals(parameter)) ? null : parameter;
+    }}

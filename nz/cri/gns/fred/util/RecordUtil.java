@@ -23,7 +23,7 @@ import nz.cri.gns.fred.model.UserFolder;
 /**
  *
  */
-public class RecordUtil extends ModelUtil implements FREDConstants {
+public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 
 	private RecordDAO recordDAO;
 	private FolderDAO folderDAO;
@@ -117,14 +117,16 @@ public class RecordUtil extends ModelUtil implements FREDConstants {
      * @param sample the sample to which the record belongs
      * @param recordType one of FREDConstants.PALEONTOLOGICAL or FREDConstants.ADOPTION
      * @return a new <code>Record</code>
+	 * @throws StorageAccessException 
 	 */
-    public Record createRecord(Sample sample, String recordType) {
+    public Record createRecord(Sample sample, String recordType, int folderId) throws StorageAccessException {
         Record record = recordDAO.createNewRecord();
         record.setSample(sample);
         
         Audit audit = recordDAO.createNewAudit();
         audit.setStatus(WORKING);
         audit.setFolder(sample.getAudit().getFolder());
+        audit.setFolder(folderDAO.getFolder(folderId));
         record.setAudit(audit);
 
         if (recordType.equals(PALEONTOLOGICAL)) {
@@ -170,5 +172,30 @@ public class RecordUtil extends ModelUtil implements FREDConstants {
 
     public String getRecordType(Record record) {
         return (record.getAdoption() != null) ? ADOPTION : PALEONTOLOGICAL;
+    }
+
+
+    public Audit save(Audit audit) throws StorageAccessException {
+        return recordDAO.save(audit);
+    }
+
+
+    public void save(Record record) throws StorageAccessException {
+        recordDAO.save(record);
+    }
+
+
+    public void update(Record record) throws StorageAccessException {
+        recordDAO.update(record);
+    }
+
+
+    public Audit update(Audit audit) throws StorageAccessException {
+        return recordDAO.update(audit);
+    }
+
+
+    public void delete(Record record) throws StorageAccessException {
+        recordDAO.delete(record);
     }
 }

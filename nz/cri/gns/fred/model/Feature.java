@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  *
  */
-public interface Feature {
+public interface Feature extends Audited {
 
 	public Integer getFeatureId();
     public void setFeatureId(Integer featureId);
@@ -42,8 +42,6 @@ public interface Feature {
     public void setPerson(nz.cri.gns.fred.model.Person person);
     public nz.cri.gns.fred.model.Folder getMasterFile();
     public void setMasterFile(nz.cri.gns.fred.model.Folder masterFile);
-    public nz.cri.gns.fred.model.Audit getAudit();
-    public void setAudit(nz.cri.gns.fred.model.Audit audit);
     public nz.cri.gns.fred.model.RegistrationArea getRegistrationArea();
     public void setRegistrationArea(nz.cri.gns.fred.model.RegistrationArea registrationArea);
     public Set getSamples();

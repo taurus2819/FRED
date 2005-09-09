@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  *
  */
-public interface Sample {
+public interface Sample extends Audited {
 	public abstract Integer getSampleId();
 
 	public abstract void setSampleId(Integer sampleId);
@@ -128,10 +128,6 @@ public interface Sample {
 
 	public abstract void setFeature(nz.cri.gns.fred.model.Feature feature);
 
-	public abstract nz.cri.gns.fred.model.Audit getAudit();
-
-	public abstract void setAudit(Audit audit);
-
 	public abstract nz.cri.gns.fred.model.Bedding getPrimaryBedding();
 
 	public abstract void setPrimaryBedding(
@@ -180,17 +176,17 @@ public interface Sample {
 
 	public abstract void setSedimentaryFeatures(Set sedimentaryFeatures);
 
-	public abstract Set getSampleMetas();
+	public abstract Set<SampleMeta> getSampleMetas();
 
-	public abstract void setSampleMetas(Set sampleMetas);
+	public abstract void setSampleMetas(Set<SampleMeta> sampleMetas);
 
 	public abstract Set getRecords();
 
 	public abstract void setRecords(Set records);
 
-	public abstract Set getSentTos();
+	public abstract Set<SentTo> getSentTos();
 
-	public abstract void setSentTos(Set sentTos);
+	public abstract void setSentTos(Set<SentTo> sentTos);
 
 	public abstract Set getCollectors();
 

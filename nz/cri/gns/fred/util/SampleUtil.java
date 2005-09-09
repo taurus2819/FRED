@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.naming.NamingException;
@@ -45,7 +44,7 @@ import nz.cri.gns.fred.model.Weathering;
 /**
  *
  */
-public class SampleUtil extends ModelUtil implements FREDConstants {
+public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 
 	/**
 	 * An implementation of relationship that does a thorough (field by field)
@@ -420,8 +419,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants {
 		
 	}
 
-	public void save(Audit audit) throws StorageAccessException {
-		sampleDAO.save(audit);
+	public Audit save(Audit audit) throws StorageAccessException {
+		return sampleDAO.save(audit);
 	}
 
 	public void save(Sample sample) throws StorageAccessException {
@@ -432,8 +431,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants {
 		sampleDAO.update(sample);
 	}
 
-	public void update(Audit audit) throws StorageAccessException{
-		sampleDAO.update(audit);
+	public Audit update(Audit audit) throws StorageAccessException{
+		return sampleDAO.update(audit);
 	}
 
 	public void delete(Sample sample) throws StorageAccessException {
@@ -441,7 +440,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants {
 	}
 
 	public SentTo findOrCreateSentTo(Sample sample, FossilGroup group, Person person, Integer lab, String comments) {
-		for (SentTo sentTo : (Set<SentTo>)sample.getSentTos()) {
+		for (SentTo sentTo : sample.getSentTos()) {
 			//Check group
 			if (group == null && sentTo.getFossilGroup() != null)
 				continue;

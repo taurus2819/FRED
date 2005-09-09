@@ -5,7 +5,7 @@ import java.util.Set;
 /**
  *
  */
-public interface Record {
+public interface Record extends Audited {
 	public abstract Integer getRecordId();
 
 	public abstract void setRecordId(Integer recordId);
@@ -31,12 +31,7 @@ public interface Record {
 
 	public abstract void setFolder(nz.cri.gns.fred.model.Folder folder);
 
-	public abstract nz.cri.gns.fred.model.Audit getAudit();
-
-	public abstract void setAudit(
-			nz.cri.gns.fred.model.Audit audit);
-
-	public abstract Set<RecordMeta> getRecordMetas();
+    public abstract Set<RecordMeta> getRecordMetas();
 
 	public abstract void setRecordMetas(Set<RecordMeta> recordMetas);
 }
