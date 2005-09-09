@@ -1,7 +1,7 @@
 package nz.cri.gns.fred.model;
 
 
-public class UserFolder implements Comparable {
+public class UserFolder implements Comparable<UserFolder> {
 
 	public static final int FOLDER_READ_RIGHT = 1;
 	public static final int FOLDER_EDIT_RIGHT = 2;
@@ -39,7 +39,7 @@ public class UserFolder implements Comparable {
 		return folder;
 	}
 
-	public int compareTo(Object arg0) {
+	public int compareTo(UserFolder arg0) {
 		return folder.compareTo(((UserFolder)arg0).folder);
 	} 
 	

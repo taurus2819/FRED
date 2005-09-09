@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  * @author iainm
  */
-public interface Folder extends Serializable, Comparable {
+public interface Folder extends Serializable, Comparable<Folder> {
 	
 	public static final int FOLDER_READ_RIGHT = 1;
 	public static final int FOLDER_EDIT_RIGHT = 2;

@@ -36,7 +36,7 @@ public interface Record {
 	public abstract void setAudit(
 			nz.cri.gns.fred.model.Audit audit);
 
-	public abstract Set getRecordMetas();
+	public abstract Set<RecordMeta> getRecordMetas();
 
-	public abstract void setRecordMetas(Set recordMetas);
+	public abstract void setRecordMetas(Set<RecordMeta> recordMetas);
 }
