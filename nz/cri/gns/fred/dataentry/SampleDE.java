@@ -949,8 +949,27 @@ public class SampleDE implements DataEntryForm {
 	}
 
 	public void makeExcelImportHTML(Writer out) throws SQLException, IOException {
-		if (!outcropSample)
+		if (!outcropSample) { //blank columns for where Locality data goes
 			out.write("<tr>");
+			out.write("<td></td>");
+			out.write("<td></td>");
+			out.write("<td></td>");
+			out.write("<td></td>");
+			out.write("<td></td>");
+			out.write("<td></td>");
+			out.write("<td></td>");
+			out.write("<td></td>");
+			out.write("<td></td>");
+			out.write("<td></td>");	
+			out.write("<td></td>");
+			out.write("<td></td>");
+			out.write("<td></td>");
+			out.write("<td></td>");
+			out.write("<td></td>");
+			out.write("<td></td>");
+			out.write("<td></td>");
+			out.write("<td></td>");
+		}
 		out.write("<td>" + sample.getSampleID() + "</td>");
 		out.write("<td>#" + FREDUtils.noNulls(getFieldForHTML(COLLECTION_DATE)) + "#</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(COLLECTORS)).replaceAll("\n", "#") + "</td>");
