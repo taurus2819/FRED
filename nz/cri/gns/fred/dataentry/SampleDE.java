@@ -949,6 +949,9 @@ public class SampleDE implements DataEntryForm {
 	}
 
 	public void makeExcelImportHTML(Writer out) throws SQLException, IOException {
+		if (!outcropSample)
+			out.write("<tr>");
+		out.write("<td>" + sample.getSampleID() + "</td>");
 		out.write("<td>#" + FREDUtils.noNulls(getFieldForHTML(COLLECTION_DATE)) + "#</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(COLLECTORS)).replaceAll("\n", "#") + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(STRAT_NAME)) + "</td>");
@@ -990,6 +993,8 @@ public class SampleDE implements DataEntryForm {
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(DEP_ENVIRONMENT_2)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(ROCK_NATURE)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(CORRESPONDENCE)) + "</td>");
+		if (!outcropSample)
+			out.write("</tr>");
 	}
 	
 	public int save() throws InsufficientPrivelegesException, SQLException, IOException {
