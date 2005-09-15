@@ -12,61 +12,53 @@
 -->
 
 <class 
-    name="nz.cri.gns.fred.hibernate.LabSection" 
-    table="LAB_SECTION"
+    name="nz.cri.gns.fred.hibernate.Lab" 
+    table="SC.LAB"
 >
 
     <id
-        name="labSectionId"
+        name="labId"
         type="int"
-        column="LAB_SECTION_ID"
+        column="LAB_ID"
     >
         <generator class="sequence">
-                <param name="sequence">LAB_SECTION_SEQ</param>
+                <param name="sequence"SC.LAB_SEQ</param>
         </generator>
     </id>
 
-    <property
+   <property
         name="name"
         type="java.lang.String"
-        column="NAME"
-        length="64"
+        column="LAB_NAME"
+        length="50"
     />
     <property
-        name="code"
+        name="address"
         type="java.lang.String"
-        column="CODE"
-        length="8"
+        column="LAB_ADDRESS"
+        length="255"
     />
     <property
-        name="closed"
+        name="country"
         type="java.lang.String"
-        column="CLOSED"
-        length="1"
+        column="LAB_COUNTRY"
+        length="2"
     />
 
     <!-- Associations -->
-    <!-- bi-directional many-to-one association to LabSection -->
-    <many-to-one
-        name="lab"
-        class="nz.cri.gns.fred.hibernate.Lab"
-        not-null="true"
-    >
-        <column name="LAB_ID" />
-    </many-to-one>
-
+  
     <!-- bi-directional one-to-many association to Paleontology -->
     <set
-        name="paleontologies"
+        name="sections"
         lazy="true"
         inverse="true"
 		cascade="none"
     >
         <key>
-            <column name="LAB_SECTION_ID" />
+            <column name="LAB_ID" />
         </key>
         <one-to-many 
-            class="nz.cri.gns.fred.hibernate.Paleontology"
+            class="nz.cri.gns.fred.hibernate.LabSection"
         />
     </set>
 

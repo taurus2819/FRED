@@ -1,0 +1,84 @@
+package nz.cri.gns.fred.hibernate;
+
+import java.io.Serializable;
+import java.util.Set;
+
+/** @author Hibernate CodeGenerator */
+public class Lab implements Serializable, nz.cri.gns.fred.model.Lab {
+
+    private static final long serialVersionUID = 20050818L;
+
+    /** identifier field */
+    private Integer labId;
+
+    /** nullable persistent field */
+    private String name;
+
+    /** nullable persistent field */
+    private String address;
+
+    /** nullable persistent field */
+    private String country;
+
+    /** persistent field */
+    private Set sections;
+
+    /** full constructor */
+    public Lab(Integer labId, String name, String address, String country, Set sections) {
+        this.labId = labId;
+        this.name = name;
+        this.address = address;
+        this.country = country;
+        this.sections = sections;
+    }
+
+    /** default constructor */
+    public Lab() {
+    }
+
+    /** minimal constructor */
+    public Lab(Set sections) {
+        this.sections = sections;
+    }
+
+   public Integer getLabId() {
+        return this.labId;
+    }
+
+    public void setLabId(Integer labId) {
+        this.labId = labId;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAddress() {
+        return this.address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCountry() {
+        return this.country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public Set getSections() {
+        return this.sections;
+    }
+
+    public void setSections(Set sections) {
+        this.sections = sections;
+    }
+
+}

@@ -3,6 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.Lab;
+
 /** @author Hibernate CodeGenerator */
 public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSection {
 
@@ -12,7 +14,7 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
     private Integer labSectionId;
 
     /** nullable persistent field */
-    private Double labId;
+    private Lab lab;
 
     /** nullable persistent field */
     private String name;
@@ -27,8 +29,8 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
     private Set paleontologies;
 
     /** full constructor */
-    public LabSection(Double labId, String name, String code, String closed, Set paleontologies) {
-        this.labId = labId;
+    public LabSection(Lab lab, String name, String code, String closed, Set paleontologies) {
+        this.lab = lab;
         this.name = name;
         this.code = code;
         this.closed = closed;
@@ -52,12 +54,12 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
         this.labSectionId = labSectionId;
     }
 
-    public Double getLabId() {
-        return this.labId;
+    public Lab getLab() {
+        return this.lab;
     }
 
-    public void setLabId(Double labId) {
-        this.labId = labId;
+    public void setLab(Lab lab) {
+        this.lab = lab;
     }
 
     public String getName() {
