@@ -13,7 +13,7 @@
 	<target name="compile">
 		<javac debug="true" srcdir="." destdir=".">
 			<classpath>
-				<fileset dir="/opt/jdk1.4/jre/lib/ext">
+				<fileset dir="/opt/jdk/jre/lib/ext">
 					<include name="*.jar" />
 				</fileset>
 				<fileset dir="/usr/local/build">
