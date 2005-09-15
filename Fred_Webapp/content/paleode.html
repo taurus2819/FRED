@@ -1,0 +1,86 @@
+<tr>
+<td class='heading'>Identification Date</td>
+<td></td>
+<td><input type='text' name='PalDate' value="{@PalDate}"></td>
+</tr>
+<tr>
+<td class='heading'>Identifiers</td>
+<td></td>
+<td><textarea name='Identifier' cols='40' rows='2'>{@Identifier}</textarea></td>
+<td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Identifier\", \"Supp\", \"width=600,height=400\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td>
+</tr>
+<tr>
+<td class='heading' colspan='2'>Stage Limits</td><td>
+<table border='0' cellspacing='0'><tr><td>");
+ <table border='0' cellspacing='0'>
+ <tr>
+ <td>{@stageStart}</td>
+ <td><select name='StageStartMod'>
+ <option value='-'></option>
+ <option value='?'{@@isStageStartUnc: selected@}>?</option>
+ </select>
+ </td>
+ <td class='heading'> to </td>
+ <td>{@stageStop}</td>
+ <td><select name='StageStopMod'>
+ <option value='-'></option>
+ <option value='?'{@@isStageStopUnc: selected@}>?</option>
+ </select>
+ </td>
+ </tr>
+ </table>
+</td>
+</tr>
+<tr>
+<td class='heading' colspan='2'>Stage Comments</td>
+<td><textarea name='StComm' cols='40' rows='2'>{@StComm}</textarea></td>
+</tr>
+<script language='JavaScript'><!--
+{@labArray}
+function swapSection(frm){
+	if (frm.LabID.options[frm.LabID.options.selectedIndex].value != '-') {
+		var aArray = eval("a"+frm.LabID.options[frm.LabID.options.selectedIndex].value);
+		frm.SectID.options.length = aArray.length + 1
+		for(i=0; i<aArray.length; i++) {
+			frm.SectID.options[i+1].value = aArray[i][0];
+			frm.SectID.options[i+1].text = aArray[i][1];
+		}
+	} else {
+		frm.SectID.options.length = 1;
+	}
+	frm.SectID.options.selectedIndex = 0;
+}
+//--></script>
+<tr>
+<td class='heading'>Laboratory</td>
+<td class='smallheading'>Name</td>
+<td>{@lab}</td>
+</tr>
+<tr>
+<td></td>
+<td class='smallheading'>Code</td>
+<td><select name='SectID'><option value='-' selected>-- Choose --</option></select></td>
+</tr>
+<tr>
+<td></td>
+<td class='smallheading'>Number</td>
+<td><input type='text' name='LabNum' size='20' value="{@LabNum}"></td>
+<td></td>
+</tr>
+{@@SectID:<script language='JavaScript'><!--@}
+{@@SectID:swapSection(form1);@}
+{@@SectID:for (i=0; i<form1.SectID.options.length; i++) {@}
+{@@SectID:  if (form1.SectID.options[i].value=='@}{@SectID}{@@SectID:') { form1.SectID.options.selectedIndex = i; }@}
+{@@SectID:}@}
+{@@SectID://--></script>@}
+<tr>
+<td class='heading' colspan='2'>Collection Comments</td>
+<td><textarea name='CollComm' cols='40' rows='2'>"{@CollComm}</textarea></td>
+</tr>
+<tr>
+<td class='heading' colspan='3' style=\"color: #FF0000\">Taxonomic List{@@recordIdForUnapproved:<br /><span class="smallheading" style="color: #FF0000">Some taxonomic entries listed below have not been approved and this record can not be submitted.  Click <a href="record_taxa_list.jsp?RecID=@}{@recordIdForUnapproved}{@@recordIdForUnapproved:" target="taxaList">here</a> for more details</span>@}</td>
+</tr>
+<tr>
+<td colspan='3'><textarea name='Taxa' cols='80' rows='20'>{@Taxa}</textarea></td>
+<td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=Taxa\", \"Supp\", \"width=600,height=500\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td>
+</tr>
