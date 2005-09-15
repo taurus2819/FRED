@@ -146,7 +146,7 @@ public class HibernateUtil implements HibernateProvider {
 		};
 	}
 
-	public static final ThreadLocal session = new ThreadLocal();
+	public static final ThreadLocal<Session> session = new ThreadLocal<Session>();
 
     public Session currentSession() throws HibernateException {
         Session s = (Session) session.get();
