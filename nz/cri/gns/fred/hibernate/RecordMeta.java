@@ -18,6 +18,13 @@ public class RecordMeta implements Serializable, nz.cri.gns.fred.model.RecordMet
     /** nullable persistent field */
     private Record record;
 
+    /**
+     * Here to keep hibernate happy perhaps????
+     */
+    public RecordMeta() {
+        throw new IllegalArgumentException("Do not use this constructor");
+    }
+    
     /** full constructor */
     public RecordMeta(nz.cri.gns.fred.hibernate.RecordMetaPK comp_id, nz.cri.gns.fred.hibernate.Record record) {
         this.comp_id = comp_id;
