@@ -42,8 +42,7 @@ function swapSection(frm){
 		var aArray = eval("a"+frm.LabID.options[frm.LabID.options.selectedIndex].value);
 		frm.SectID.options.length = aArray.length + 1
 		for(i=0; i<aArray.length; i++) {
-			frm.SectID.options[i+1].value = aArray[i][0];
-			frm.SectID.options[i+1].text = aArray[i][1];
+			frm.SectID.options[i+1] = aArray[i];
 		}
 	} else {
 		frm.SectID.options.length = 1;
