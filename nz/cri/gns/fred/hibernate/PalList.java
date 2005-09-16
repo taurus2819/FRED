@@ -2,10 +2,11 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 
-import nz.cri.gns.fred.model.TaxonomicLookup;
+import nz.cri.gns.fred.model.PaleontologyListEntry;
+import nz.cri.gns.fred.model.Taxon;
 
 /** @author Hibernate CodeGenerator */
-public class PalList implements Serializable, nz.cri.gns.fred.model.PalList {
+public class PalList implements Serializable, PaleontologyListEntry {
 
     private static final long serialVersionUID = 20050818L;
 
@@ -31,17 +32,17 @@ public class PalList implements Serializable, nz.cri.gns.fred.model.PalList {
     private nz.cri.gns.fred.model.Paleontology paleontology;
 
     /** persistent field */
-    private TaxonomicLookup taxonomicLookup;
+    private Taxon taxon;
 
     /** full constructor */
-    public PalList(String comments, Integer specimenCount, String specimenCoords, String taxonomicName, nz.cri.gns.fred.model.TaxonomicGroup taxonomicGroup, nz.cri.gns.fred.model.Paleontology paleontology, nz.cri.gns.fred.model.TaxonomicLookup taxonomicLookup) {
+    public PalList(String comments, Integer specimenCount, String specimenCoords, String taxonomicName, nz.cri.gns.fred.model.TaxonomicGroup taxonomicGroup, nz.cri.gns.fred.model.Paleontology paleontology, nz.cri.gns.fred.model.Taxon taxonomicLookup) {
         this.comments = comments;
         this.specimenCount = specimenCount;
         this.specimenCoords = specimenCoords;
         this.taxonomicName = taxonomicName;
         this.taxonomicGroup = taxonomicGroup;
         this.paleontology = paleontology;
-        this.taxonomicLookup = taxonomicLookup;
+        this.taxon = taxonomicLookup;
     }
 
     /** default constructor */
@@ -49,10 +50,10 @@ public class PalList implements Serializable, nz.cri.gns.fred.model.PalList {
     }
 
     /** minimal constructor */
-    public PalList(nz.cri.gns.fred.model.TaxonomicGroup taxonomicGroup, nz.cri.gns.fred.model.Paleontology paleontology, nz.cri.gns.fred.model.TaxonomicLookup taxonomicLookup) {
+    public PalList(nz.cri.gns.fred.model.TaxonomicGroup taxonomicGroup, nz.cri.gns.fred.model.Paleontology paleontology, nz.cri.gns.fred.model.Taxon taxonomicLookup) {
         this.taxonomicGroup = taxonomicGroup;
         this.paleontology = paleontology;
-        this.taxonomicLookup = taxonomicLookup;
+        this.taxon = taxonomicLookup;
     }
 
     public Integer getPalListId() {
@@ -111,12 +112,12 @@ public class PalList implements Serializable, nz.cri.gns.fred.model.PalList {
         this.paleontology = paleontology;
     }
 
-    public TaxonomicLookup getTaxonomicLookup() {
-        return this.taxonomicLookup;
+    public Taxon getTaxon() {
+        return this.taxon;
     }
 
-    public void setTaxonomicLookup(TaxonomicLookup taxonomicLookup) {
-        this.taxonomicLookup = taxonomicLookup;
+    public void setTaxon(Taxon taxon) {
+        this.taxon = taxon;
     }
 
 }

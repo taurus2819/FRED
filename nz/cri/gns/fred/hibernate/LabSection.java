@@ -6,7 +6,7 @@ import java.util.Set;
 import nz.cri.gns.fred.model.Lab;
 
 /** @author Hibernate CodeGenerator */
-public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSection {
+public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSection, Comparable {
 
     private static final long serialVersionUID = 20050818L;
 
@@ -46,7 +46,7 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
         this.paleontologies = paleontologies;
     }
 
-    public Integer getLabSectionId() {
+    public final Integer getLabSectionId() {
         return this.labSectionId;
     }
 
@@ -54,7 +54,7 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
         this.labSectionId = labSectionId;
     }
 
-    public Lab getLab() {
+    public final Lab getLab() {
         return this.lab;
     }
 
@@ -62,7 +62,7 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
         this.lab = lab;
     }
 
-    public String getName() {
+    public final String getName() {
         return this.name;
     }
 
@@ -70,7 +70,7 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
         this.name = name;
     }
 
-    public String getCode() {
+    public final String getCode() {
         return this.code;
     }
 
@@ -78,7 +78,7 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
         this.code = code;
     }
 
-    public String getClosed() {
+    public final String getClosed() {
         return this.closed;
     }
 
@@ -86,12 +86,16 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
         this.closed = closed;
     }
 
-    public Set getPaleontologies() {
+    public final Set getPaleontologies() {
         return this.paleontologies;
     }
 
     public void setPaleontologies(Set paleontologies) {
         this.paleontologies = paleontologies;
     }
+
+	public int compareTo(Object o) {
+		return getCode().compareTo(((LabSection)o).getCode());
+	}
 
 }

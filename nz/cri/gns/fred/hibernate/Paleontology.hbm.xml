@@ -80,7 +80,7 @@
     </many-to-one>
     <!-- bi-directional one-to-many association to PalList -->
     <set
-        name="palLists"
+        name="listEntries"
         lazy="true"
         inverse="true"
 		cascade="none"

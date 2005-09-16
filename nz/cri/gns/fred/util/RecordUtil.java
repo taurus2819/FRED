@@ -2,6 +2,9 @@ package nz.cri.gns.fred.util;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
+import java.util.Vector;
 
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
@@ -10,14 +13,17 @@ import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.RecordDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
-import nz.cri.gns.fred.hibernate.PalList;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Folder;
+import nz.cri.gns.fred.model.Lab;
+import nz.cri.gns.fred.model.Paleontology;
+import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RecordDetails;
 import nz.cri.gns.fred.model.Sample;
+import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.UserFolder;
 
 /**
@@ -37,9 +43,8 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	
 
 	public static boolean isTaxaApproved(Record record) {
-		for (Iterator it = record.getPaleontology().getPalLists().iterator(); it.hasNext(); ) {
-			PalList list = (PalList)it.next();
-			if (!list.getTaxonomicLookup().getStatus().equals(FREDConstants.APPROVED)) 
+		for (PaleontologyListEntry entry : record.getPaleontology().getListEntries()) {
+			if (!entry.getTaxon().getStatus().equals(FREDConstants.APPROVED)) 
 				return false;
 		}
 		return true;
@@ -198,4 +203,30 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     public void delete(Record record) throws StorageAccessException {
         recordDAO.delete(record);
     }
+
+    /**
+     * Returns an (alphabetically ordered) list of all the labs that are relevant to FRED
+     * @throws StorageAccessException 
+     */
+	public List<Lab> getAllLabs() throws StorageAccessException {
+		return recordDAO.getAllLabs();
+	}
+
+	/**
+	 * Returns all the groups that are appropriate for the given pal entry
+	 */
+	public List<TaxonomicGroup> getTaxonomicGroups(Paleontology pal) {
+		TreeSet<TaxonomicGroup> set = new TreeSet<TaxonomicGroup>();
+		for (PaleontologyListEntry entry : pal.getListEntries())
+			set.add(entry.getTaxonomicGroup());
+		return new Vector<TaxonomicGroup>(set);
+	}
+
+	/**
+	 * Returns all the list entries with the given group for the given pal entry
+	 * @throws StorageAccessException 
+	 */
+	public List<PaleontologyListEntry> getListEntries(Paleontology pal, TaxonomicGroup group) throws StorageAccessException {
+		return recordDAO.getListEntries(pal, group);
+	}
 }

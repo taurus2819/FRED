@@ -5,6 +5,8 @@ import java.io.Serializable;
 /** @author Hibernate CodeGenerator */
 public class SedimentaryFeaturePK implements Serializable {
 
+    private static final long serialVersionUID = 20050818L;
+
     /** identifier field */
     private Integer sedFeatureId;
 

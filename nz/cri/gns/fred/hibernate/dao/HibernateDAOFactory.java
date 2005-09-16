@@ -36,7 +36,9 @@ import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
+import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.Paleontology;
+import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RegistrationArea;
@@ -50,6 +52,7 @@ import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SedimentaryFeatureType;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.Stage;
+import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.model.Weathering;
@@ -632,6 +635,27 @@ public class HibernateDAOFactory implements DAOFactory, PersonDAO, RecordDAO, Sa
     public void update(Record record) throws StorageAccessException {
         update((Object)record);
     }
+
+	public List<Lab> getAllLabs() throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+			return session.find("SELECT DISTINCT l FROM LabSection AS ls INNER JOIN ls.lab AS l ORDER BY l.name");
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+	}
+
+	public List<PaleontologyListEntry> getListEntries(Paleontology pal, TaxonomicGroup group) throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+			Query query = session.createQuery("SELECT ple FROM PaleontologyListEntry AS ple INNER JOIN p.paleontology AS pl WHERE ple.taxonomicGroup = :grp AND pl = :pal");
+			query.setEntity("grp", group);
+			query.setEntity("pal", pal);
+			return query.list();
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+	}
     
 	public PersonDAO getPersonDAO() {
 		return this;

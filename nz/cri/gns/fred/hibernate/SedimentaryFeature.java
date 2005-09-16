@@ -7,6 +7,8 @@ import nz.cri.gns.fred.hibernate.dao.CompositeKeyed;
 /** @author Hibernate CodeGenerator */
 public class SedimentaryFeature implements Serializable, nz.cri.gns.fred.model.SedimentaryFeature, Cloneable, CompositeKeyed {
 
+    private static final long serialVersionUID = 20050818L;
+
     /** identifier field */
     private nz.cri.gns.fred.hibernate.SedimentaryFeaturePK comp_id;
 

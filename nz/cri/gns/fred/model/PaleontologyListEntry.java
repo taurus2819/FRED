@@ -1,6 +1,6 @@
 package nz.cri.gns.fred.model;
 
-public interface PalList {
+public interface PaleontologyListEntry {
 
     public Integer getPalListId();
 
@@ -32,9 +32,8 @@ public interface PalList {
     public void setPaleontology(
             Paleontology paleontology);
 
-    public TaxonomicLookup getTaxonomicLookup();
+    public Taxon getTaxon();
 
-    public void setTaxonomicLookup(
-            TaxonomicLookup taxonomicLookup);
+    public void setTaxon(Taxon taxon);
 
 }

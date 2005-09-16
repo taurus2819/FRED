@@ -3,7 +3,7 @@ package nz.cri.gns.fred.model;
 import java.util.Date;
 import java.util.Set;
 
-public interface TaxonomicLookup {
+public interface Taxon {
 
     public Integer getTaxaId();
 
@@ -45,8 +45,8 @@ public interface TaxonomicLookup {
 
     public void setTaxonomicGroup(TaxonomicGroup taxonomicGroup);
 
-    public Set getPalLists();
+    public Set getListEntries();
 
-    public void setPalLists(Set palLists);
+    public void setListEntries(Set palLists);
 
 }

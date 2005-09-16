@@ -5,6 +5,8 @@ import java.io.Serializable;
 /** @author Hibernate CodeGenerator */
 public class SampleMetaPK implements Serializable {
 
+    private static final long serialVersionUID = 20050818L;
+
     /** identifier field */
     private Integer sampleId;
 

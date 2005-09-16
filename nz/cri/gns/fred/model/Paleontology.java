@@ -48,9 +48,9 @@ public interface Paleontology extends RecordDetails {
 
 	public abstract void setStage(nz.cri.gns.fred.model.Stage stage);
 
-	public abstract Set<PalList> getPalLists();
+	public abstract Set<PaleontologyListEntry> getListEntries();
 
-	public abstract void setPalLists(Set<PalList> palLists);
+	public abstract void setListEntries(Set<PaleontologyListEntry> palLists);
 
 	public abstract Set<Person> getIdentifiers();
 

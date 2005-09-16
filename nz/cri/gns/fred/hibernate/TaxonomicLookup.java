@@ -8,7 +8,7 @@ import nz.cri.gns.fred.model.TaxonomicGroup;
 
 
 /** @author Hibernate CodeGenerator */
-public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.TaxonomicLookup {
+public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxon {
 
     private static final long serialVersionUID = 20050818L;
 
@@ -151,11 +151,11 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
         this.taxonomicGroup = taxonomicGroup;
     }
 
-    public Set getPalLists() {
+    public Set getListEntries() {
         return this.palLists;
     }
 
-    public void setPalLists(Set palLists) {
+    public void setListEntries(Set palLists) {
         this.palLists = palLists;
     }
 }
