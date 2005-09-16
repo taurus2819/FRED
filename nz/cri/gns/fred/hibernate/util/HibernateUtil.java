@@ -74,7 +74,7 @@ public class HibernateUtil implements HibernateProvider {
             // Create the SessionFactory
         	Configuration cfg = getConfiguration();
         	cfg.setInterceptor(new FREDInterceptor());
-            sessionFactory = getConfiguration().buildSessionFactory();
+            sessionFactory = cfg.buildSessionFactory();
         } catch (Throwable ex) {
         	ex.printStackTrace();
             throw new ExceptionInInitializerError(ex);
