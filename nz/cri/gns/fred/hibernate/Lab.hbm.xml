@@ -22,7 +22,7 @@
         column="LAB_ID"
     >
         <generator class="sequence">
-                <param name="sequence"SC.LAB_SEQ</param>
+                <param name="sequence">SC.LAB_SEQ</param>
         </generator>
     </id>
 
