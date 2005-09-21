@@ -6,6 +6,7 @@ import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.Lab;
+import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.Record;
@@ -79,5 +80,13 @@ public interface RecordDAO {
 	 * @throws StorageAccessException 
 	 */
 	public List<PaleontologyListEntry> getListEntries(Paleontology pal, TaxonomicGroup group) throws StorageAccessException;
+
+    /**
+     * Returns the lab section with the given lab section id
+     * @param id
+     * @return
+     * @throws StorageAccessException 
+     */
+    public LabSection getLabSection(int id) throws StorageAccessException;
 
 }

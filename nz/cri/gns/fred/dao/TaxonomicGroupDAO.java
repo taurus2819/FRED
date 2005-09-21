@@ -14,7 +14,7 @@ public interface TaxonomicGroupDAO {
 	 * user is a member of the panel
 	 * @throws StorageAccessException
 	 */
-	public List getPanelsIsMemberOf(int userId) throws StorageAccessException;
+	public List<TaxonomicGroup> getPanelsIsMemberOf(int userId) throws StorageAccessException;
 
 	/**
 	 *@return a count of provisional taxa within the given group

@@ -37,6 +37,7 @@ import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.Lab;
+import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
@@ -657,7 +658,15 @@ public class HibernateDAOFactory implements DAOFactory, PersonDAO, RecordDAO, Sa
         }
 	}
     
-	public PersonDAO getPersonDAO() {
+    public LabSection getLabSection(int id) throws StorageAccessException {
+        try {
+            return (LabSection)provider.currentSession().get(LabSection.class, id);
+        } catch (HibernateException e) {
+            throw new StorageAccessException(e);
+        }
+    }
+	
+    public PersonDAO getPersonDAO() {
 		return this;
 	}
 

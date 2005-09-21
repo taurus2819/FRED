@@ -17,6 +17,7 @@ import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.Lab;
+import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
@@ -229,4 +230,9 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	public List<PaleontologyListEntry> getListEntries(Paleontology pal, TaxonomicGroup group) throws StorageAccessException {
 		return recordDAO.getListEntries(pal, group);
 	}
+
+
+    public LabSection getLabSection(int id) throws StorageAccessException {
+        return recordDAO.getLabSection(id);
+    }
 }
