@@ -76,8 +76,8 @@ public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
         this.taxonomicLookups = taxonomicLookups;
     }
 
-	public int compareTo(Object arg0) {
-		return name.compareTo(((TaxonomicGroup)arg0).name);
+	public int compareTo(nz.cri.gns.fred.model.TaxonomicGroup arg0) {
+		return name.compareTo(arg0.getName());
 	}
 
 }

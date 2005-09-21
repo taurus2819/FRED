@@ -59,7 +59,8 @@
         <key>
             <column name="PERSON_ID" />
         </key>
-        <one-to-many 
+        <many-to-many 
+			column="RECORD_ID"
             class="nz.cri.gns.fred.hibernate.Adoption"
         />
     </set>
@@ -75,6 +76,7 @@
             <column name="PERSON_ID" />
         </key>
         <many-to-many 
+			column="RECORD_ID"
             class="nz.cri.gns.fred.hibernate.Paleontology"
         />
     </set>

@@ -104,6 +104,7 @@
             <column name="RECORD_ID" />
         </key>
         <many-to-many 
+			column="PERSON_ID"
             class="nz.cri.gns.fred.hibernate.Person"
         />
     </set>
