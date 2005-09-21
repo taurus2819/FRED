@@ -71,7 +71,7 @@
     </many-to-one>
     <!-- bi-directional many-to-one association to TaxonomicLookup -->
     <many-to-one
-        name="taxonomicLookup"
+        name="taxon"
         class="nz.cri.gns.fred.hibernate.TaxonomicLookup"
         not-null="true"
     >

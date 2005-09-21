@@ -41,6 +41,7 @@ import nz.cri.gns.fred.hibernate.FossilGroup;
 import nz.cri.gns.fred.hibernate.FrNumber;
 import nz.cri.gns.fred.hibernate.GrainSize;
 import nz.cri.gns.fred.hibernate.Hardness;
+import nz.cri.gns.fred.hibernate.Lab;
 import nz.cri.gns.fred.hibernate.LabSection;
 import nz.cri.gns.fred.hibernate.PalList;
 import nz.cri.gns.fred.hibernate.Paleontology;
@@ -127,8 +128,9 @@ public class FolderUtilTest extends TestCase implements HibernateProvider {
 			FrNumber.class,
 			GrainSize.class,
 			Hardness.class,
-			LabSection.class,
-			Paleontology.class,
+            LabSection.class,
+            Lab.class,
+            Paleontology.class,
 			PalList.class,
 			Person.class,
 			Record.class,
