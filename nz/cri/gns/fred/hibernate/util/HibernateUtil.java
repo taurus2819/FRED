@@ -52,6 +52,7 @@ import nz.cri.gns.fred.hibernate.Weathering;
 import nz.cri.gns.fred.hibernate.dao.FREDInterceptor;
 import nz.cri.gns.fred.hibernate.dao.HibernateDAOFactory;
 import nz.cri.gns.fred.hibernate.dao.HibernateProvider;
+import nz.cri.gns.fred.model.Lab;
 
 public class HibernateUtil implements HibernateProvider {
 
@@ -121,7 +122,8 @@ public class HibernateUtil implements HibernateProvider {
 			FrNumber.class,
 			GrainSize.class,
 			Hardness.class,
-			LabSection.class,
+            Lab.class,
+            LabSection.class,
 			Paleontology.class,
 			PalList.class,
 			Person.class,
