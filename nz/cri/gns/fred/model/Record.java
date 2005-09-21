@@ -34,4 +34,8 @@ public interface Record extends Audited {
     public abstract Set<RecordMeta> getRecordMetas();
 
 	public abstract void setRecordMetas(Set<RecordMeta> recordMetas);
+
+    public abstract Set<Person> getPersons();
+
+    public abstract void setPersons(Set<Person> persons);
 }
