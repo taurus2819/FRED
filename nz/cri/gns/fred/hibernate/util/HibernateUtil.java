@@ -27,6 +27,7 @@ import nz.cri.gns.fred.hibernate.FossilGroup;
 import nz.cri.gns.fred.hibernate.FrNumber;
 import nz.cri.gns.fred.hibernate.GrainSize;
 import nz.cri.gns.fred.hibernate.Hardness;
+import nz.cri.gns.fred.hibernate.Lab;
 import nz.cri.gns.fred.hibernate.LabSection;
 import nz.cri.gns.fred.hibernate.PalList;
 import nz.cri.gns.fred.hibernate.Paleontology;
@@ -52,7 +53,6 @@ import nz.cri.gns.fred.hibernate.Weathering;
 import nz.cri.gns.fred.hibernate.dao.FREDInterceptor;
 import nz.cri.gns.fred.hibernate.dao.HibernateDAOFactory;
 import nz.cri.gns.fred.hibernate.dao.HibernateProvider;
-import nz.cri.gns.fred.model.Lab;
 
 public class HibernateUtil implements HibernateProvider {
 
