@@ -60,6 +60,23 @@
 			}
 			if (dataEntryForm != null)
 				dataEntryForm.makeExcelImportHTML(new PrintWriter(out));
+		} else if (listName.equals("sampleList")) {
+			User user = null;
+			try {
+		   		user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
+		   	} catch (Exception e) {
+		   		out.println("<tr><td>Error: Invalid username/password</td></td>");
+		   	}
+		   	try {
+		   		Feature feature = new Feature(Integer.parseInt(request.getParameter("id")), user, state);
+		   		if (feature.getSampleCount() > 0) {
+					for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
+						out.println("<tr><td>" + (Integer) i.next() + "</td></tr>");
+					}
+				}
+		   	} catch (Exception e) {
+		   		out.println("<tr><td>Error: Insufficient privileges - " + e.getMessage() + "</td></tr>");
+		   	}
 		} else if (listName.equals("workingLocalityList")) {
 			User user = null;
 			try {
