@@ -372,6 +372,7 @@ public abstract class LocalityDE implements DataEntryForm {
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		out.write("<tr><td>" + feature.getFeatureID() + "</td>");
+		out.write("<td>Locality</td>");
 		out.write("<td>" + featureType + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(FIELD_NUMBER)) + "</td>");
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(REGISTRATION_AREA)) + "</td>");
