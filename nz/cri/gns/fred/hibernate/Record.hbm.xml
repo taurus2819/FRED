@@ -85,22 +85,7 @@
     >
         <column name="AUDIT_ID" />
     </many-to-one>
-    <!-- bi-directional many-to-many association to Person via Identifier -->
-    <set
-        name="identifiers"
-        table="identifier"
-        lazy="true"
-        inverse="true"
-		cascade="all"
-    >
-        <key>
-            <column name="RECORD_ID" />
-        </key>
-        <many-to-many 
-			column="PERSON_ID"
-            class="nz.cri.gns.fred.hibernate.Person"
-        />
-    </set>
+
 
 </class>
 </hibernate-mapping>

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Set;
 
 import nz.cri.gns.fred.model.RecordMeta;
-import nz.cri.gns.fred.model.Person;
 
 /** @author Hibernate CodeGenerator */
 public class Record implements Serializable, nz.cri.gns.fred.model.Record {
@@ -34,9 +33,6 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record {
 
     /** persistent field */
     private Set<RecordMeta> recordMetas;
-    
-    /** persistent field */
-    private Set<Person> persons;
     
     /** full constructor */
     public Record(String workingComments, nz.cri.gns.fred.hibernate.Paleontology paleontology, nz.cri.gns.fred.hibernate.Adoption adoption, nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.Folder folder, nz.cri.gns.fred.hibernate.AuditTable auditTable, Set<RecordMeta> recordMetas) {
@@ -123,13 +119,5 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record {
 
     public void setRecordMetas(Set<RecordMeta> recordMetas) {
         this.recordMetas = recordMetas;
-    }
-
-    public Set<Person> getPersons() {
-        return persons;
-    }
-    
-    public void setPersons(Set<Person> persons) {
-        this.persons = persons;
     }
 }
