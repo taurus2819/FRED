@@ -16,9 +16,12 @@ import nz.cri.gns.fred.dao.PersonDAO;
 import nz.cri.gns.fred.dao.RecordDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
+import nz.cri.gns.fred.dao.TaxonomicDAO;
 import nz.cri.gns.fred.dao.TaxonomicGroupDAO;
 import nz.cri.gns.fred.hibernate.AuditTable;
 import nz.cri.gns.fred.hibernate.FolderUser;
+import nz.cri.gns.fred.hibernate.PalList;
+import nz.cri.gns.fred.hibernate.TaxonomicLookup;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
@@ -61,7 +64,7 @@ import nz.cri.gns.fred.model.Weathering;
 /**
  * @author iainm
  */
-public class HibernateDAOFactory implements DAOFactory, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO {
+public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO {
 
 	private HibernateProvider provider;
 
@@ -705,5 +708,32 @@ public class HibernateDAOFactory implements DAOFactory, PersonDAO, RecordDAO, Sa
 		//Try and find a company
 		return (Person)getFirst("FROM Person As p WHERE p.familyName = ?", name);
 	}
+
+    public TaxonomicDAO getTaxonomicDAO() {
+        return this;
+    }
+
+    public PaleontologyListEntry createPaleontologyListEntry() {
+        return new PalList();
+    }
+
+    public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException {
+        try {
+            Query query = provider.currentSession().createQuery("FROM TaxonomicLookup AS t WHERE t.taxonomicGroup = :grp AND t.taxonomicName = :name AND t.author = :author");
+            query.setEntity("grp", taxonomicGroup);
+            query.setString("name", name);
+            query.setString("author", author);
+            List list = query.list();
+            if (list == null || list.size() == 0)
+                return null;
+            return (Taxon)list.get(0);
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+    }
+
+    public Taxon createTaxon() {
+        return new TaxonomicLookup();
+    }
 
 }

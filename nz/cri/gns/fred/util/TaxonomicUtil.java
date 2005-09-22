@@ -6,19 +6,25 @@ import java.util.List;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.StorageAccessException;
+import nz.cri.gns.fred.dao.TaxonomicDAO;
 import nz.cri.gns.fred.dao.TaxonomicGroupDAO;
 import nz.cri.gns.fred.dataentry.DataInputException;
+import nz.cri.gns.fred.model.PaleontologyListEntry;
+import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 
 /**
  * @author iainm
  */
-public class TaxonomicUtil {
+public class TaxonomicUtil extends ModelUtil {
 
 	private TaxonomicGroupDAO groupDAO;
+    private TaxonomicDAO taxonomicDAO;
 	
 	public TaxonomicUtil(DAOFactory dao) {
+        super(dao);
 		this.groupDAO = dao.getTaxonomicGroupDAO();
+        this.taxonomicDAO = dao.getTaxonomicDAO();
 	}
 	
 	public List<TaxonomicGroup> getPanelsIsMemberOf(UserAccount user) throws StorageAccessException {
@@ -105,5 +111,50 @@ public class TaxonomicUtil {
     	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "gr.");
     	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "var.");
     	return cleanName;
+    }
+
+    /**
+     * Checks vital comparitive fields and if compatible, then updates others to match
+     * and returns true, otherwise return false;
+     * 
+     * Vital fields are group and name and author
+     * @param entry
+     * @param group
+     * @param name
+     * @param author
+     * @param specimenCount
+     * @param specimenCoords
+     * @param comments
+     * @return
+     */
+    public boolean isMatchingEntry(PaleontologyListEntry entry, String group, String name, String author, Integer specimenCount, String specimenCoords, String comments) {
+        if (entry.getTaxonomicGroup() == null) {
+            if (group != null && group.length() > 0)
+                return false;
+            else if (!entry.getTaxonomicGroup().getName().equals(group))
+                return false;
+        }
+        if (!equalsEmptyEquivNull(entry.getTaxonomicName(), name))
+            return false;
+        if (!equalsEmptyEquivNull(entry.getTaxon().getAuthor(), author))
+            return false;
+        
+        entry.setSpecimenCount(specimenCount);
+        entry.setSpecimenCoords(specimenCoords);
+        entry.setComments(comments);
+        
+        return true;
+    }
+
+    public PaleontologyListEntry createPaleontologyListEntry() {
+       return taxonomicDAO.createPaleontologyListEntry();
+    }
+
+    public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException {
+        return taxonomicDAO.getTaxon(taxonomicGroup, name, author);
+    }
+
+    public Taxon createTaxon() {
+        return taxonomicDAO.createTaxon();
     }
 }

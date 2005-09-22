@@ -11,6 +11,8 @@ public interface FREDConstants {
 	public static final String APPROVED = "approved";
 	public static final String REJECTED = "rejected";
 	
+    //Taxonomic name status extra requirements
+    public static final String OBSOLETE = "OBSOLETE";
 	public static final String PROVISIONAL = "provisional";
 	
     //Locality types
@@ -44,4 +46,6 @@ public interface FREDConstants {
     //Record types
     public static final String PALEONTOLOGICAL = "Paleontological";
     public static final String ADOPTION = "Adoption";
+    
+
 }
