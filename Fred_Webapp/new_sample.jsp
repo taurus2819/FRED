@@ -38,10 +38,10 @@
 						} else {
 							FeatureUtil featureUtil = new FeatureUtil(factory);
 							featureUtil.addSample(featureUtil.getFeature(feature.getFeatureID()), 
-										Double.parseDouble(request.getParameter("TopDepth")),
-										Double.parseDouble(request.getParameter("BottomDepth")),
+										request.getParameter("TopDepth"),
+										request.getParameter("BottomDepth"),
 										request.getParameter("DrillType"),
-										foldID);
+										Integer.parseInt(foldID));
 							//feature.addNewSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"), foldID);
 						}
 					} catch (Exception e) {}
