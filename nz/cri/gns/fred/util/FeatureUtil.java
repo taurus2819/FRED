@@ -1,8 +1,6 @@
 package nz.cri.gns.fred.util;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -16,9 +14,6 @@ import javax.naming.NamingException;
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
-import nz.cri.gns.db.DBUtils;
-import nz.cri.gns.db.QueryDescriptor;
-import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.FolderUtilException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FeatureDAO;
@@ -39,7 +34,6 @@ import nz.cri.gns.fred.model.SampleMeta;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.UserFolder;
-import nz.cri.gns.intranet.DBConnection;
 
 /**
  *
@@ -145,7 +139,7 @@ public class FeatureUtil extends ModelUtil {
 					newSedFeature.setSample(newSample);
 					newSedFeatures.add(newSedFeature);
 				}
-				newSample.setSentTos(newSedFeatures);
+				newSample.setSedimentaryFeatures(newSedFeatures);
 			}
 			
 			//Copy sample images
