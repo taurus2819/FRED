@@ -8,6 +8,7 @@ import nz.cri.gns.fred.model.BedThickness;
 import nz.cri.gns.fred.model.Bedding;
 import nz.cri.gns.fred.model.Carbonate;
 import nz.cri.gns.fred.model.ColourModifier;
+import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.GrainSize;
@@ -200,4 +201,6 @@ public interface SampleDAO {
 	public Carbonate getCarbonate(Integer id) throws StorageAccessException;
 
 	public SedimentaryFeatureType getSedimentaryFeatureTypeWithName(String sedFeature) throws StorageAccessException;
+
+	public DrillType getDrillType(int drillTypeId) throws StorageAccessException;
 }

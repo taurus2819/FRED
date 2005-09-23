@@ -29,6 +29,7 @@ import nz.cri.gns.fred.model.BedThickness;
 import nz.cri.gns.fred.model.Bedding;
 import nz.cri.gns.fred.model.Carbonate;
 import nz.cri.gns.fred.model.ColourModifier;
+import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
@@ -602,6 +603,14 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	
 	public SedimentaryFeatureType getSedimentaryFeatureTypeWithName(String sedFeature) throws StorageAccessException {
 		return (SedimentaryFeatureType)getFirst("FROM SedimentaryFeatureType AS t WHERE t.name = ?", sedFeature);
+	}
+
+	public DrillType getDrillType(int drillTypeId) throws StorageAccessException {
+		try {
+			return (DrillType) provider.currentSession().get(DrillType.class, drillTypeId);
+		} catch (HibernateException e) {
+			throw new StorageAccessException(e);
+		}
 	}
 
 	public RecordDAO getRecordDAO() {

@@ -1,6 +1,8 @@
 package nz.cri.gns.fred.util;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -14,6 +16,9 @@ import javax.naming.NamingException;
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
+import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.db.QueryDescriptor;
+import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.FolderUtilException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FeatureDAO;
@@ -34,11 +39,12 @@ import nz.cri.gns.fred.model.SampleMeta;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.UserFolder;
+import nz.cri.gns.intranet.DBConnection;
 
 /**
  *
  */
-public class FeatureUtil extends ModelUtil implements AuditedUtil {
+public class FeatureUtil extends ModelUtil {
 
 	private FeatureDAO featureDAO;
 	private SampleDAO sampleDAO;
@@ -139,7 +145,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 					newSedFeature.setSample(newSample);
 					newSedFeatures.add(newSedFeature);
 				}
-				newSample.setSedimentaryFeatures(newSedFeatures);
+				newSample.setSentTos(newSedFeatures);
 			}
 			
 			//Copy sample images
@@ -295,14 +301,18 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		featureDAO.update(feature);
 	}
 	
-	public void submitFeature(Feature feature, UserFolder folder, User user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
+	public void submitFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
 		if (!folder.isAllowedSubmitLocalities())
 			throw new InsufficientPrivelegesException();
 
 		if (feature.getFeatureType() == null || feature.getSiteId() == null || feature.getRegistrationArea() == null)
 			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
 
-		FREDUtil.submit(feature, user, this, true);
+		Audit audit = feature.getAudit();
+		audit.setStatus(FREDConstants.WAITING);
+		audit.setSubmittedById(new Integer(user.getId()));
+		audit.setSubmittedDate(new Date());
+		featureDAO.update(audit);
 		
 		int masterfile = -1;
 		try {
@@ -597,6 +607,39 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 */
 	public static Feature getFeature(FrNumber frNum) {
 		return ((Sample)frNum.getSamples().iterator().next()).getFeature();
+	}
+	
+	public void addSample(Feature feature, String topDepthAsString, String bottomDepthAsString, String drillTypeIdAsString, int folderId) throws StorageAccessException, DataInputException {
+		if (feature.getFeatureType().equals(OUTCROP))
+			throw new DataInputException("Sample", "Cannot add samples to an outcrop");
+		
+		Double bottomDepth = null, topDepth = null;
+		Integer drillTypeId = null;
+		if (bottomDepthAsString.length() > 0) try {
+			bottomDepth = Double.parseDouble(bottomDepthAsString);
+		} catch (Exception e) {
+			throw new DataInputException("Sample Depths", "Data Missing or Invalid");
+		}
+
+		if (drillTypeIdAsString.length() > 0) try {
+			drillTypeId = Integer.parseInt(drillTypeIdAsString);
+		} catch (Exception e) {
+			throw new DataInputException("Sample Depths", "Data Missing or Invalid");
+		}
+
+		try {
+			topDepth = Double.parseDouble(topDepthAsString);
+		} catch (Exception e) {
+			throw new DataInputException("Sample Depths", "Data Missing or Invalid");
+		}
+
+		Sample sample = new SampleUtil(factory).createSample(feature, folderId, false);
+		sample.setTopDepth(topDepth);
+		sample.setBottomDepth(bottomDepth);
+		if (drillTypeId != null)
+			sample.setDrillType(sampleDAO.getDrillType(drillTypeId.intValue()));
+		
+		sampleDAO.save(sample);
 	}
 
     public Audit update(Audit audit) throws StorageAccessException {

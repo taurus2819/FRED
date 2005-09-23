@@ -1,9 +1,17 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, nz.cri.gns.auth.*"
+%><%@page import="nz.cri.gns.fred.*"
+%><%@page import="nz.cri.gns.fred.data.*"
+%><%@page import="nz.cri.gns.db.*"
+%><%@page import="nz.cri.gns.jsp.*"
+%><%@page import="nz.cri.gns.auth.*"
+%><%@page import="nz.cri.gns.fred.dao.DAOFactory"
+%><%@page import="nz.cri.gns.fred.util.FeatureUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%
 	PageState state = new PageState(request, response, getServletContext());
 	User user = (User)getUser(session);
 	ComboDescriptor cd;
+	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
@@ -28,7 +36,13 @@
 						if (sample != null) {
 							sample.editSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"));
 						} else {
-							feature.addNewSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"), foldID);
+							FeatureUtil featureUtil = new FeatureUtil(factory);
+							featureUtil.addSample(featureUtil.getFeature(feature.getFeatureID()), 
+										Double.parseDouble(request.getParameter("TopDepth")),
+										Double.parseDouble(request.getParameter("BottomDepth")),
+										request.getParameter("DrillType"),
+										foldID);
+							//feature.addNewSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"), foldID);
 						}
 					} catch (Exception e) {}
 					if (recType != null) {
@@ -142,5 +156,5 @@ function checkDrill() {
 		drawEndNavigation(out);
 	}
 	drawBottom(out, et);
-
+	factory.closeSession();
 %>

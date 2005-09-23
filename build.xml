@@ -2,7 +2,7 @@
 	<target name="package" depends="compile">
 		<jar destfile="fred.jar" basedir="." includes="nz/**/*" excludes="**/*.java" />
 		<ant dir=".." target="db-check">
-			<property name="build.webxml" value="FRED/Fred_Webapp/WEB-INF/web.xml" />
+			<property name="build.webxml" value="FRED/Fred_Webapp/WEB-INF/web.xml FRED/Fred_Webapp/META-INF/context.xml" />
 		</ant>
 		<war warfile="../fred.war" basedir="Fred_Webapp" webxml="Fred_Webapp/WEB-INF/web.xml" excludes="WEB-INF,WEB-INF/**/*">
 			<lib dir=".">
