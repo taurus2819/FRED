@@ -56,7 +56,8 @@
 					} else if (sampID != null) {
 						response.sendRedirect("data_entry.jsp?Type=Sample&FoldID=" + foldID + "&SampID=" + sampID);
 					} else {
-						response.sendRedirect("folder_feature_detail.jsp?FeatID=" + featID + "&FoldID=" + foldID);
+						//Add a random number to stop browser caching
+						response.sendRedirect("folder_feature_detail.jsp?FeatID=" + featID + "&FoldID=" + foldID + "&q=" + Math.random());
 					}
 					return;
 				}

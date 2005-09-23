@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  *
  */
-public interface Sample extends Audited {
+public interface Sample extends Audited, Comparable<Sample> {
 	public abstract Integer getSampleId();
 
 	public abstract void setSampleId(Integer sampleId);

@@ -610,4 +610,14 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     	}
     }
 
+	public int compareTo(nz.cri.gns.fred.model.Sample sample) {
+		if (getTopDepth() != null && sample.getTopDepth() != null)
+			return getTopDepth().compareTo(sample.getTopDepth());
+		else if (getTopDepth() == null && sample.getTopDepth() == null && getSampleName() != null && sample.getSampleName() != null)
+			return getSampleName().compareTo(sample.getSampleName());
+		else 
+			//Anything undepthed goes to the end
+			return (getTopDepth() == null) ? 1 : -1;
+	}
+
 }

@@ -4,11 +4,13 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.naming.NamingException;
 
@@ -624,5 +626,12 @@ public class FeatureUtil extends ModelUtil {
 
     public Audit save(Audit audit) throws StorageAccessException {
         return featureDAO.save(audit);
+    }
+    
+    public Collection<Sample> getSortedSamples(Feature feature) {
+    	Set<Sample> sampleSet = feature.getSamples();
+    	Vector<Sample> v = new Vector<Sample>(sampleSet);
+    	Collections.sort(v);
+    	return v;
     }
 }

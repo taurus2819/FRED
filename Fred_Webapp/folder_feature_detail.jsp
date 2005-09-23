@@ -213,8 +213,8 @@ function showHide(toShow, toHide) {
 		%></td></tr>
 <tr><td colspan='11'><img src='images/line.gif' height='3' width='550' /></td></tr>
 		
-<%
-		for (Iterator i = feature.getSamples().iterator(); i.hasNext(); ) {
+<%		
+		for (Iterator i = featureUtil.getSortedSamples(feature).iterator(); i.hasNext(); ) {
 			Sample sample = (Sample)i.next();
 			audit = sample.getAudit();
 			if (audit.getStatus().equals(FREDConstants.APPROVED) || audit.getFolder() != null && audit.getFolder().equals(folder.getFolder())) {
