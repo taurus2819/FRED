@@ -253,48 +253,50 @@ function showHide(toShow, toHide) {
 				}
 
 				//Records
-				for (Iterator k = sample.getRecords().iterator(); k.hasNext(); ) {
-					Record record = (Record)k.next();
-
-					boolean isAdoption = record.getAdoption() != null;
-					boolean isPaleontology = record.getPaleontology() != null;
-					//TODO check this
-					boolean badTaxaFlag = (isPaleontology) ? !RecordUtil.isTaxaApproved(record) : false;
-
-					audit = record.getAudit();
-					if (audit.getFolder() != null && audit.getFolder().equals(folder.getFolder())) {
-						%><tr><td><img src="images/child.gif" width="20" height="20" /><img src="images/<%=(isAdoption) ? "ado" : "pal"%>.gif" width="20" height="20" /></td><td class="smalltext"><%
-						if (badTaxaFlag) {
-							%><span class="heading" style="color: #FF0000">*</span>&nbsp;&nbsp;<%
-						}
-						
-						%><%=RecordUtil.getRecordName(record)%>&nbsp;&nbsp;</td><td class="smalltext" style="color: #FF0000"><%
-						
-						if (audit.getStatus().equals(FREDConstants.WORKING)) {
-							%>working&nbsp;&nbsp;</td><td class="smalltext"><%
-							if (audit.getCreatedDate() != null) {
-								%><%=DateFormat.getDateInstance(DateFormat.LONG).format(audit.getCreatedDate())%>&nbsp;&nbsp;<%
+				if (sample.getRecords() != null) {
+					for (Iterator k = sample.getRecords().iterator(); k.hasNext(); ) {
+						Record record = (Record)k.next();
+	
+						boolean isAdoption = record.getAdoption() != null;
+						boolean isPaleontology = record.getPaleontology() != null;
+						//TODO check this
+						boolean badTaxaFlag = (isPaleontology) ? !RecordUtil.isTaxaApproved(record) : false;
+	
+						audit = record.getAudit();
+						if (audit.getFolder() != null && audit.getFolder().equals(folder.getFolder())) {
+							%><tr><td><img src="images/child.gif" width="20" height="20" /><img src="images/<%=(isAdoption) ? "ado" : "pal"%>.gif" width="20" height="20" /></td><td class="smalltext"><%
+							if (badTaxaFlag) {
+								%><span class="heading" style="color: #FF0000">*</span>&nbsp;&nbsp;<%
 							}
-							%></td><%
-						} else {
-							%></td><td></td><%
+							
+							%><%=RecordUtil.getRecordName(record)%>&nbsp;&nbsp;</td><td class="smalltext" style="color: #FF0000"><%
+							
+							if (audit.getStatus().equals(FREDConstants.WORKING)) {
+								%>working&nbsp;&nbsp;</td><td class="smalltext"><%
+								if (audit.getCreatedDate() != null) {
+									%><%=DateFormat.getDateInstance(DateFormat.LONG).format(audit.getCreatedDate())%>&nbsp;&nbsp;<%
+								}
+								%></td><%
+							} else {
+								%></td><td></td><%
+							}
+							%><td><%
+							//Record Options
+							editable = audit.getStatus().equals(FREDConstants.WORKING);
+							if (editable && folder.isAllowedEditLocalities()) {
+								%><a href="data_entry.jsp?Type=<%=(isAdoption) ? "ado" : "pal"%>&FoldID=<%=folder.getFolderId()%>&RecID=<%=record.getRecordId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
+							}
+							%></td><td><%
+							if (editable && folder.isAllowedDeleteLocalities()) {
+								%><a href="javascript:if (confirm('Are you sure you want to delete this record') == true) {document.FoldForm.ActionType.value='DeleteRec';document.FoldForm.RecID.value='<%=record.getRecordId()%>';document.FoldForm.submit();}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
+							}
+							%></td><td><%
+							if (editable && folder.isAllowedSubmitLocalities() && !badTaxaFlag) {
+								%><a href="javascript:document.FoldForm.ActionType.value='SubmitRec';document.FoldForm.RecID.value='<%=record.getRecordId()%>';document.FoldForm.submit();"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
+							}
+							%></td></tr>
+	<tr><td colspan='9'><img src='images/line.gif' height='3' width='550' /></td></tr><%
 						}
-						%><td><%
-						//Record Options
-						editable = audit.getStatus().equals(FREDConstants.WORKING);
-						if (editable && folder.isAllowedEditLocalities()) {
-							%><a href="data_entry.jsp?Type=<%=(isAdoption) ? "ado" : "pal"%>&FoldID=<%=folder.getFolderId()%>&RecID=<%=record.getRecordId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
-						}
-						%></td><td><%
-						if (editable && folder.isAllowedDeleteLocalities()) {
-							%><a href="javascript:if (confirm('Are you sure you want to delete this record') == true) {document.FoldForm.ActionType.value='DeleteRec';document.FoldForm.RecID.value='<%=record.getRecordId()%>';document.FoldForm.submit();}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
-						}
-						%></td><td><%
-						if (editable && folder.isAllowedSubmitLocalities() && !badTaxaFlag) {
-							%><a href="javascript:document.FoldForm.ActionType.value='SubmitRec';document.FoldForm.RecID.value='<%=record.getRecordId()%>';document.FoldForm.submit();"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
-						}
-						%></td></tr>
-<tr><td colspan='9'><img src='images/line.gif' height='3' width='550' /></td></tr><%
 					}
 				}
 			}
