@@ -214,12 +214,12 @@ function showHide(toShow, toHide) {
 <tr><td colspan='11'><img src='images/line.gif' height='3' width='550' /></td></tr>
 		
 <%
-		System.out.println("=================" + feature.getSamples().size());
 		for (Iterator i = feature.getSamples().iterator(); i.hasNext(); ) {
 			Sample sample = (Sample)i.next();
 			audit = sample.getAudit();
 			if (audit.getStatus().equals(FREDConstants.APPROVED) || audit.getFolder() != null && audit.getFolder().equals(folder.getFolder())) {
-				if (!feature.getFeatureType().equals(FREDConstants.OUTCROP) && !SampleUtil.hasDepthInformation(sample)) {
+				//Commented out the not-showing if no depth fields cos I don't see why...
+				if (!feature.getFeatureType().equals(FREDConstants.OUTCROP)/* && SampleUtil.hasDepthInformation(sample)*/) {
 					%><tr><td><a href="detail.jsp?ID=<%=sample.getSampleId()%>"><img src="images/drill.gif" height="20" width="20" border="0" alt="View Sample Details" /></a>&nbsp;</td><td><%=SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td>
 <td style="color: #FF0000"><%
 					if (!audit.getStatus().equals(FREDConstants.APPROVED)) {
