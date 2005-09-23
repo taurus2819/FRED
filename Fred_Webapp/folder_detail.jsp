@@ -11,6 +11,7 @@
 %><%@page import="nz.cri.gns.fred.model.Audit"
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
+%><%@page import="nz.cri.gns.fred.model.FrNumber"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
@@ -145,16 +146,20 @@ function showHide(toShow, toHide) {
 
 <form name="FoldForm" method="put" action="folder_detail.jsp">
 <%
+		//Display the features
 		Feature[] features = featureUtil.getFeaturesInFolder(folder);
-		for (int i=0; i<features.length; i++) {
-			Feature feature = features[i];
+		for (Feature feature : features) {
 			Audit audit = feature.getAudit();
 			String status = audit.getStatus();
+			FrNumber frNum = featureUtil.getFrNumber(feature);
 			
 			//View icon and name - TODO this may be wrong as I'm entirely sure on the ins and outs of feature_name vs sample_name.  Fix later if so
+			String name = (frNum == null) ? feature.getFeatureName() : frNum.getFrNumber();
+			if (name == null)
+				name = "Unnamed Locality";
 			%><tr>
 <td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
-<td class="heading" style="text-align: left"><a href="folder_feature_detail.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><%=(feature.getFeatureName() == null) ? "Unnamed Locality" : feature.getFeatureName()%></a>&nbsp;&nbsp;
+<td class="heading" style="text-align: left"><a href="folder_feature_detail.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><%=name%></a>&nbsp;&nbsp;
 <%
 			//TODO ????
 			//if (featName != null && !featName.equals(sampName)) { out.print("<br />(" + featName +")&nbsp;&nbsp;"); }
