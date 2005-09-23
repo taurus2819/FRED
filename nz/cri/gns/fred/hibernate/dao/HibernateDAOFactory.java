@@ -137,7 +137,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
      * Returns the folder with the given id
      */
     public Folder getFolder(int folderId) throws StorageAccessException {
-		return (Folder)getFirst("FROM Folder WHERE folderId = ?", folderId);
+		return (Folder)getFirst("FROM Folder AS f WHERE f.folderId = ?", folderId);
     }
 
 	public int getWaitingMasterfileFeatureCount(Folder folder) throws StorageAccessException {
