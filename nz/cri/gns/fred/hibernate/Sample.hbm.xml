@@ -295,6 +295,7 @@
     <many-to-one
         name="audit"
         class="nz.cri.gns.fred.hibernate.AuditTable"
+		cascade="all"
         not-null="true"
     >
         <column name="AUDIT_ID" />
