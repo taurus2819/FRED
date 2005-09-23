@@ -587,7 +587,7 @@ public class FeatureUtil extends ModelUtil {
 		return ((Sample)frNum.getSamples().iterator().next()).getFeature();
 	}
 	
-	public void addSample(Feature feature, String topDepthAsString, String bottomDepthAsString, String drillTypeIdAsString, int folderId) throws StorageAccessException, DataInputException {
+	public void addSample(Feature feature, String topDepthAsString, String bottomDepthAsString, String drillTypeIdAsString, int folderId, UserAccount user) throws StorageAccessException, DataInputException {
 		if (feature.getFeatureType().equals(OUTCROP))
 			throw new DataInputException("Sample", "Cannot add samples to an outcrop");
 		
@@ -611,7 +611,7 @@ public class FeatureUtil extends ModelUtil {
 			throw new DataInputException("Sample Depths", "Data Missing or Invalid");
 		}
 
-		Sample sample = new SampleUtil(factory).createSample(feature, folderId, false);
+		Sample sample = new SampleUtil(factory).createSample(feature, folderId, false, user);
 		sample.setTopDepth(topDepth);
 		sample.setBottomDepth(bottomDepth);
 		if (drillTypeId != null)

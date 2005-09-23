@@ -41,12 +41,14 @@
 										request.getParameter("TopDepth"),
 										request.getParameter("BottomDepth"),
 										request.getParameter("DrillType"),
-										Integer.parseInt(foldID));
+										Integer.parseInt(foldID),
+										user);
 							//feature.addNewSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"), foldID);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
+					factory.closeSession();
 					if (recType != null) {
 						if (recID != null) {
 							response.sendRedirect("data_entry.jsp?Type=" + recType + "&FoldID=" + foldID + "&RecID=" + recID);
