@@ -607,7 +607,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 
 	public DrillType getDrillType(int drillTypeId) throws StorageAccessException {
 		try {
-			return (DrillType) provider.currentSession().get(DrillType.class, drillTypeId);
+			return (DrillType) provider.currentSession().get(nz.cri.gns.fred.hibernate.DrillType.class, drillTypeId);
 		} catch (HibernateException e) {
 			throw new StorageAccessException(e);
 		}
