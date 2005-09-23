@@ -148,7 +148,8 @@ function showHide(toShow, toHide) {
 <%
 		//Display the features
 		Feature[] features = featureUtil.getFeaturesInFolder(folder);
-		for (Feature feature : features) {
+		for (int i=0; i<features.length; i++) {
+			Feature feature = features[i];
 			Audit audit = feature.getAudit();
 			String status = audit.getStatus();
 			FrNumber frNum = featureUtil.getFrNumber(feature);
