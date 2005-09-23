@@ -163,8 +163,10 @@ public class HibernateUtil implements HibernateProvider {
     public void closeSession() throws HibernateException {
         Session s = (Session) session.get();
         session.set(null);
-        if (s != null)
-            s.close();
+        if (s != null) {
+        	s.flush();
+        	s.close();
+        }
     }
     
     public DAOFactory getDAOFactory() {
