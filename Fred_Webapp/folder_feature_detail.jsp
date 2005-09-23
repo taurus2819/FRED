@@ -214,6 +214,7 @@ function showHide(toShow, toHide) {
 <tr><td colspan='11'><img src='images/line.gif' height='3' width='550' /></td></tr>
 		
 <%		
+		DateFormat format = DateFormat.getDateInstance(DateFormat.LONG);
 		for (Iterator i = featureUtil.getSortedSamples(feature).iterator(); i.hasNext(); ) {
 			Sample sample = (Sample)i.next();
 			audit = sample.getAudit();
@@ -225,7 +226,7 @@ function showHide(toShow, toHide) {
 					if (!audit.getStatus().equals(FREDConstants.APPROVED)) {
 						%><%=audit.getStatus()%>&nbsp;&nbsp;</td><td><%
 						if (audit.getCreatedDate() != null)
-							%><%=DateFormat.getDateInstance(DateFormat.LONG).format(audit.getCreatedDate())%>&nbsp;&nbsp;<%
+							%><%=format.format(audit.getCreatedDate())%>&nbsp;&nbsp;<%
 					} else {
 						%></td><td><%
 					}
