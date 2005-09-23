@@ -3,6 +3,7 @@ package nz.cri.gns.fred.util;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -353,7 +354,9 @@ public class FeatureUtil extends ModelUtil {
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd HH:mm:ss.SSSS");
 		//System.out.println(format.format(new java.util.Date()) + ": Starting");
 		//Get from feature_content
-		features.addAll(folder.getFolder().getFeatures());
+		Collection<? extends Feature> featuresToAdd = folder.getFolder().getFeatures();
+		if (featuresToAdd != null)
+			features.addAll(featuresToAdd);
 		//System.out.println(new java.util.Date() + ": Got from folder contents");
 		
 		//Get from audit
@@ -361,46 +364,25 @@ public class FeatureUtil extends ModelUtil {
 		//System.out.println(format.format(new java.util.Date()) + ": Got relevant audit records");
 
 		for (Audit audit : audits) {
-			//System.out.println(format.format(new java.util.Date()) + ": Starting audit (" + audit.getAuditId() + ") features");
-			
-			
 			// - features
-			features.addAll(audit.getFeatures());
-			/* Need this for list instead of set
-			for (Iterator featIt = audit.getFeatures().iterator(); featIt.hasNext(); ) {
-				Feature feature = (Feature)featIt.next();
-				if (!features.contains(feature))
-					features.add(feature);
-			}*/
-			
+			featuresToAdd = audit.getFeatures();
+			if (featuresToAdd != null)
+				features.addAll(featuresToAdd);
 			
 			//- samples
-			//System.out.println(format.format(new java.util.Date()) + ": Starting audit (" + audit.getAuditId() + ") samples");
-			features.addAll(featureDAO.getFeaturesBySample(audit));
-			/*Set samples = audit.getSamples();
-			if (samples != null && samples.size() > 0) {
-				for (Iterator sampIt = samples.iterator(); sampIt.hasNext(); ) {
-					Sample sample = (Sample)sampIt.next();
-					//if (!features.contains(sample.getFeature()));
-					features.add(sample.getFeature());
-				}
-			}*/
+			featuresToAdd = featureDAO.getFeaturesBySample(audit);
+			if (featuresToAdd != null)
+				features.addAll(featuresToAdd);
 
 			//- results
-			//System.out.println(format.format(new java.util.Date()) + ": Starting audit (" + audit.getAuditId() + ") results");
-			features.addAll(featureDAO.getFeaturesByRecord(audit));
-			/*Set records = audit.getRecords();
-			if (records != null && records.size() > 0) {
-				for (Iterator recIt = records.iterator(); recIt.hasNext(); ) {
-					Record record = (Record)recIt.next();
-					//if (!features.contains(record.getSample().getFeature()));
-					features.add(record.getSample().getFeature());
-				}
-			}*/
-			}
+			featuresToAdd = featureDAO.getFeaturesByRecord(audit);
+			if (featuresToAdd != null)
+				features.addAll(featuresToAdd);
+
+		}
 		
 		//System.out.println(format.format(new java.util.Date()) + ": Finished");
-		Feature[] featuresArray = (Feature[])features.toArray(new Feature[features.size()]); 
+		Feature[] featuresArray = features.toArray(new Feature[features.size()]); 
 		Arrays.sort(featuresArray);
 		return featuresArray;
 	}
