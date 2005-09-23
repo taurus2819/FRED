@@ -460,7 +460,11 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     	if (this.feature != null)
     		this.feature.getSamples().remove(this);
         this.feature = feature;
-        feature.getSamples().add(this);
+        //This can't be right!!!!
+        try {
+        	feature.getSamples().add(this);
+        } catch (Exception e) {
+        }
     }
 
     public nz.cri.gns.fred.model.Audit getAudit() {
@@ -471,7 +475,10 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.auditTable = auditTable;
         if (auditTable.getSamples() == null)
         	auditTable.setSamples(new HashSet<Sample>());
-        auditTable.getSamples().add(this);
+        try {
+        	auditTable.getSamples().add(this);
+        } catch (Exception e) {
+        }
     }
 
     public nz.cri.gns.fred.model.Bedding getPrimaryBedding() {
