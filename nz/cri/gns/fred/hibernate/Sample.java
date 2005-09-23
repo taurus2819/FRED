@@ -463,7 +463,7 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         //This can't be right!!!!
         try {
         	System.out.println("========");
-        	//feature.getSamples().add(this);
+        	feature.getSamples().add(this);
         	System.out.println("========Feature now has " + feature.getSamples().size() + " samples");
         } catch (Exception e) {
         }
