@@ -462,7 +462,9 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.feature = feature;
         //This can't be right!!!!
         try {
+        	System.out.println("========");
         	feature.getSamples().add(this);
+        	System.out.println("========Feature now has " + feature.getSamples().size() + " samples");
         } catch (Exception e) {
         }
     }
@@ -611,9 +613,11 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     }
 
 	public int compareTo(nz.cri.gns.fred.model.Sample sample) {
-		if (getTopDepth() != null && sample.getTopDepth() != null)
+		if (getTopDepth() != null && sample.getTopDepth() != null) {
+			if (getTopDepth().equals(sample.getTopDepth()) && getBottomDepth() != null && sample.getBottomDepth() != null)
+				return getBottomDepth().compareTo(sample.getBottomDepth());
 			return getTopDepth().compareTo(sample.getTopDepth());
-		else if (getTopDepth() == null && sample.getTopDepth() == null && getSampleName() != null && sample.getSampleName() != null)
+		} else if (getTopDepth() == null && sample.getTopDepth() == null && getSampleName() != null && sample.getSampleName() != null)
 			return getSampleName().compareTo(sample.getSampleName());
 		else 
 			//Anything undepthed goes to the end
