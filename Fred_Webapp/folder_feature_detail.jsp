@@ -214,6 +214,7 @@ function showHide(toShow, toHide) {
 <tr><td colspan='11'><img src='images/line.gif' height='3' width='550' /></td></tr>
 		
 <%
+		System.out.println("=================" + feature.getSamples().size());
 		for (Iterator i = feature.getSamples().iterator(); i.hasNext(); ) {
 			Sample sample = (Sample)i.next();
 			audit = sample.getAudit();
