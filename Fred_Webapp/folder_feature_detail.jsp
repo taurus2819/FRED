@@ -297,11 +297,11 @@ function showHide(toShow, toHide) {
 							if (editable && folder.isAllowedSubmitLocalities() && !badTaxaFlag) {
 								%><a href="javascript:document.FoldForm.ActionType.value='SubmitRec';document.FoldForm.RecID.value='<%=record.getRecordId()%>';document.FoldForm.submit();"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
 							}
-							%></td></tr>
-	<tr><td colspan='9'><img src='images/line.gif' height='3' width='550' /></td></tr><%
+							%></td></tr><%
 						}
 					}
 				}
+				%><tr><td colspan='9'><img src='images/line.gif' height='3' width='550' /></td></tr><%
 			}
 		}
 		%>
