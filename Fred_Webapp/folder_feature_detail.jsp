@@ -37,6 +37,7 @@
 %><%
 
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
+try {
 	if (request.getParameter("FeatID") == null || request.getParameter("FoldID") == null) {
 		factory.closeSession();
 		if (request.getParameter("FoldID") == null)
@@ -319,5 +320,10 @@ function showHide(toShow, toHide) {
 </td></tr></table>
 <%
 	drawBottom(out, et);
-	featureUtil.closeSession();
+} catch (Exception e) {
+	e.printStackTrace();
+	e.printStackTrace(new java.io.PrintWriter(out));
+} finally {
+	factory.closeSession();
+}
 %>
