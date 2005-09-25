@@ -69,14 +69,19 @@
 		   	}
 		   	try {
 		   		Feature feature = new Feature(Integer.parseInt(request.getParameter("id")), user, state);
-		   		if (feature.getSampleCount() > 0) {
+		   		if (feature.getFeatureType() != Feature.OUTCROP_LOCALITY && feature.getSampleCount() > 0) {
 					for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
-						out.println("<tr><td>" + (Integer) i.next() + "</td></tr>");
+						Sample sample = new Sample(((Integer)i.next()).intValue(), user, state);
+						out.println("<tr><td>" + sample.getAsString(Sample.SAMPLE_NAME) + "</td><td>" + sample.getSampleID() + "</td></tr>");
 					}
+				} else {
+					out.println("<tr><td>No samples found</td><td></td></tr>");
 				}
 		   	} catch (Exception e) {
 		   		out.println("<tr><td>Error: Insufficient privileges - " + e.getMessage() + "</td></tr>");
 		   	}
+		} else if (listName.equals("sampleList")) {
+			out.println("<tr><td>No samples defined</td><td></td></tr>");
 		} else if (listName.equals("workingLocalityList")) {
 			User user = null;
 			try {
