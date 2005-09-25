@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.dataentry.test;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.rmi.NotBoundException;
 import java.sql.SQLException;
 
@@ -22,7 +23,7 @@ import nz.cri.gns.test.TestingPageState;
 
 public class SampleTest extends TestCase {
 
-	public void testAddDeleteSample() throws NotBoundException, IOException, InsufficientPrivelegesException, DataInputException, TaxonomicListException, SQLException, InvalidCredentialsException {
+	public void _testAddDeleteSample() throws NotBoundException, IOException, InsufficientPrivelegesException, DataInputException, TaxonomicListException, SQLException, InvalidCredentialsException {
 		TestingPageState state = new TestingPageState();
 		DBConnection ipConn = FREDUtils.getIPConnection(state);
 		User user = new User("test", "test", ipConn);
@@ -58,5 +59,13 @@ public class SampleTest extends TestCase {
 		assertNull(sample.get(Sample.COLUMN_MAP));
 		assertNotNull(sample.get(Sample.RELATIONSHIP_NEARBY));
 		FolderUtils.deleteSample(String.valueOf(sampleID), user, state);
+	}
+	
+	public void testExcelExport() throws NotBoundException, IOException, InsufficientPrivelegesException, DataInputException, TaxonomicListException, SQLException, InvalidCredentialsException {
+		TestingPageState state = new TestingPageState();
+		DBConnection ipConn = FREDUtils.getIPConnection(state);
+		User user = new User("pseudo_ben", "santor32", ipConn);
+		DataEntryForm form = DataEntryFormFactory.getSampleDataEntryForm(1709, user, state);
+		form.makeExcelImportHTML(new PrintWriter(System.out));
 	}
 }
