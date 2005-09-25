@@ -68,7 +68,7 @@
 		   		out.println("<tr><td>Error: Invalid username/password</td></td>");
 		   	}
 		   	try {
-		   		Feature feature = new Feature(Integer.parseInt(request.getParameter("id")), user, state);
+		   		Feature feature = new Feature(Integer.parseInt(request.getParameter("featureID")), user, state);
 		   		if (feature.getFeatureType() != Feature.OUTCROP_LOCALITY && feature.getSampleCount() > 0) {
 					for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
 						Sample sample = new Sample(((Integer)i.next()).intValue(), user, state);
