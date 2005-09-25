@@ -79,6 +79,11 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (!isAllowedDeleteRecord(record, folder, user))
 			throw new InsufficientPrivelegesException();
 		
+		//Get the sample
+		Sample sample = record.getSample();
+		//Remove it from the sample
+		sample.getRecords().remove(record);
+		//And delete it
 		recordDAO.delete(record);
 		
 	}
