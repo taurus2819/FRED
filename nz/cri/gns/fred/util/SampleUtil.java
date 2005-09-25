@@ -199,6 +199,11 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (!isAllowedDeleteSample(sample, folder, user))
 			throw new InsufficientPrivelegesException();
 		
+		//Remove from the feature
+		Feature feature = sample.getFeature();
+		feature.getSamples().remove(sample);
+		
+		//And then delete it from DB
 		sampleDAO.delete(sample);
 		//TODO Ben also checked if the feature was sampleless and added if it was.??	
 	}
