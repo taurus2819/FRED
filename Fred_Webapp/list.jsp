@@ -50,7 +50,7 @@
 		   	}
 		   	DataEntryForm dataEntryForm = null;
 		   	//try {
-		   		if (request.getParameter("docType").equals("locality") || request.getParameter("formType").equals("locality")) {
+		   		if ("locality".equals(request.getParameter("docType")) || "locality".equals(request.getParameter("formType"))) {
 					dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(request.getParameter("id")), user, state);
 				} else if (request.getParameter("docType").equals("sample")) {
 					dataEntryForm = DataEntryFormFactory.getSampleDataEntryForm(Integer.parseInt(request.getParameter("id")), user, state);
