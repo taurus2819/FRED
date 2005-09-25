@@ -950,7 +950,7 @@ public class SampleDE implements DataEntryForm {
 
 	public void makeExcelImportHTML(Writer out) throws SQLException, IOException {
 		if (!outcropSample) { //blank columns for where Locality data goes
-			out.write("<tr><td>" + "sample.getFeatureID()" + "</td>");
+			out.write("<tr><td>" + sample.getFeatureID() + "</td>");
 			out.write("<td>Sample</td>");
 			out.write("<td></td>");
 			out.write("<td></td>");
