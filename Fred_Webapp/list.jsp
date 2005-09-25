@@ -72,7 +72,7 @@
 		   		if (feature.getFeatureType() != Feature.OUTCROP_LOCALITY && feature.getSampleCount() > 0) {
 					for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
 						Sample sample = new Sample(((Integer)i.next()).intValue(), user, state);
-						out.println("<tr><td>" + sample.getAsString(Sample.SAMPLE_NAME) + "</td><td>" + sample.getSampleID() + "</td></tr>");
+						out.println("<tr><td>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td><td>" + sample.getSampleID() + "</td></tr>");
 					}
 				} else {
 					out.println("<tr><td>No samples found</td><td></td></tr>");
