@@ -56,7 +56,7 @@
 					dataEntryForm = DataEntryFormFactory.getSampleDataEntryForm(Integer.parseInt(request.getParameter("id")), user, state);
 				}
 			} catch (Exception e) {
-				out.println("<tr><td>Error: Insufficient privileges - " + e.getMessage() + "</td></tr>");
+				out.println("<tr><td>Error: Insufficient privileges - " + e + "</td></tr>");
 			}
 			if (dataEntryForm != null)
 				dataEntryForm.makeExcelImportHTML(new PrintWriter(out));
