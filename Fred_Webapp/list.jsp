@@ -69,7 +69,7 @@
 		   	}
 		   	try {
 		   		Feature feature = new Feature(Integer.parseInt(request.getParameter("featureID")), user, state);
-		   		if (feature.getFeatureType() != Feature.OUTCROP_LOCALITY && feature.getSampleCount() > 0) {
+		   		if (feature.getFeatureType() != Feature.OUTCROP_LOCALITY) {
 					for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
 						Sample sample = new Sample(((Integer)i.next()).intValue(), user, state);
 						out.println("<tr><td>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td><td>" + sample.getSampleID() + "</td></tr>");
@@ -80,7 +80,7 @@
 		   	} catch (Exception e) {
 		   		out.println("<tr><td>Error: Insufficient privileges - " + e.getMessage() + "</td></tr>");
 		   	}
-		} else if (listName.equals("sampleList")) {
+		} else if (listName.equals("blankSampleList")) {
 			out.println("<tr><td>No samples defined</td><td></td></tr>");
 		} else if (listName.equals("workingLocalityList")) {
 			User user = null;
