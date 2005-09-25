@@ -1013,6 +1013,7 @@ public class SampleDE implements DataEntryForm {
 		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(CORRESPONDENCE)) + "</td>");
 		if (!outcropSample)
 			out.write("</tr>");
+		out.flush();
 	}
 	
 	public int save() throws InsufficientPrivelegesException, SQLException, IOException {
