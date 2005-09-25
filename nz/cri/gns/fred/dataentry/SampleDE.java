@@ -949,17 +949,19 @@ public class SampleDE implements DataEntryForm {
 	}
 
 	public void makeExcelImportHTML(Writer out) throws SQLException, IOException {
+		try {
 		if (!outcropSample) { //blank columns for where Locality data goes
 			out.write("<tr><td>" + sample.getFeatureID() + "</td>");
 			out.write("<td>Sample</td>");
-			out.write("<td></td>");
-			out.write("<td></td>");
+			out.write("<td>" + sample.getAsString(Sample.FEATURE_TYPE) + "</td>");
+			out.write("<td>" + sample.getAsString(Sample.SAMPLE_NAME) + "</td>");
 			out.write("<td></td>");
 			out.write("<td></td>");
 			out.write("<td></td>");
 			out.write("<td></td>");
 			out.write("<td></td>");
 			out.write("<td></td>");	
+			out.write("<td></td>");
 			out.write("<td></td>");
 			out.write("<td></td>");
 			out.write("<td></td>");
@@ -1014,6 +1016,7 @@ public class SampleDE implements DataEntryForm {
 		if (!outcropSample)
 			out.write("</tr>");
 		out.flush();
+		} catch (Exception e) {}
 	}
 	
 	public int save() throws InsufficientPrivelegesException, SQLException, IOException {
