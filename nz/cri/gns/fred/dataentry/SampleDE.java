@@ -953,6 +953,7 @@ public class SampleDE implements DataEntryForm {
 		if (!outcropSample) { //blank columns for where Locality data goes
 			out.write("<tr><td>" + sample.getFeatureID() + "</td>");
 			out.write("<td>Sample</td>");
+			out.write("<td>" + sample.getAsString(Sample.SAMPLE_WORKING_FOLDER_ID) + "</td>");
 			out.write("<td>" + sample.getAsString(Sample.FEATURE_TYPE) + "</td>");
 			out.write("<td>" + sample.getAsString(Sample.SAMPLE_NAME) + "</td>");
 			out.write("<td></td>");

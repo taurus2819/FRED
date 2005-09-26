@@ -370,18 +370,21 @@ public abstract class LocalityDE implements DataEntryForm {
 	}
 
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
-		DBConnection conn = FREDUtils.getFREDConnection(state);
-		out.write("<tr><td>" + feature.getFeatureID() + "</td>");
-		out.write("<td>Locality</td>");
-		out.write("<td>" + featureType + "</td>");
-		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(FIELD_NUMBER)) + "</td>");
-		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(REGISTRATION_AREA)) + "</td>");
-		out.write("<td></td>"); //recollection - do later
-		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(WORKING_COMMENTS)) + "</td>");
-		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(GRID_REF)) + "</td>");
-		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(METHOD)) + "</td>");
-		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(LocalityDE.ACCURACY)) + "</td>");
-		out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(LocalityDE.LOCALITY_DESC)) + "</td>");	
+		try {
+			DBConnection conn = FREDUtils.getFREDConnection(state);
+			out.write("<tr><td>" + feature.getFeatureID() + "</td>");
+			out.write("<td>Locality</td>");
+			out.write("<td>" + feature.getAsString(Feature.WORKING_FOLDER_ID) + "</td>");
+			out.write("<td>" + featureType + "</td>");
+			out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(FIELD_NUMBER)) + "</td>");
+			out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(REGISTRATION_AREA)) + "</td>");
+			out.write("<td></td>"); //recollection - do later
+			out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(WORKING_COMMENTS)) + "</td>");
+			out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(GRID_REF)) + "</td>");
+			out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(METHOD)) + "</td>");
+			out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(LocalityDE.ACCURACY)) + "</td>");
+			out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(LocalityDE.LOCALITY_DESC)) + "</td>");
+		} catch (Exception e) {}
 	}
 	
 	private void parseCoord(String coord) throws DataInputException {
