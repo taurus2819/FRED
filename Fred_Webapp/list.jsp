@@ -162,6 +162,8 @@
 				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || modifier_id  FROM colour_modifier ORDER BY code");
 			} else if (listName.equals("country")) {
 				rs = statement.executeQuery("SELECT country_name || '</td><td>' || country_code FROM mis.country ORDER BY country_name");
+			} else if (listName.equals("drillType")) {
+				rs = statement.executeQuery("SELECT name FROM drill_type ORDER BY name");
 			} else if (listName.equals("fossilGroup")) {
 				rs = statement.executeQuery("SELECT name FROM fossil_group ORDER BY name");
 			} else if (listName.equals("grainSize")) {
