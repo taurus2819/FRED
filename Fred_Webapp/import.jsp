@@ -35,7 +35,7 @@
 	    		}
 	    	} else if (docType.equals("Sample")) {
 	    		if (id == null || id.equals("")) {
-	    			Feature feature = new Feature(Integer.parseInt(request.getParameter("featureID")), user, state);
+	    			Feature feature = new Feature(Integer.parseInt(request.getParameter("featID")), user, state);
 	    			id = String.valueOf(feature.addNewSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"), foldID));
 	    		} else {
 	    			Sample sample = new Sample(Integer.parseInt(id), user, state);
