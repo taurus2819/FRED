@@ -49,15 +49,15 @@
 		   		out.println("<tr><td>Error: Invalid username/password</td></td>");
 		   	}
 		   	DataEntryForm dataEntryForm = null;
-		   	//try {
-		   		if ("locality".equals(request.getParameter("docType")) || "locality".equals(request.getParameter("formType"))) {
+		   	try {
+		   		if (request.getParameter("docType").equals("Locality")) {
 					dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(request.getParameter("id")), user, state);
-				} else if (request.getParameter("docType").equals("sample")) {
+				} else if (request.getParameter("docType").equals("Sample")) {
 					dataEntryForm = DataEntryFormFactory.getSampleDataEntryForm(Integer.parseInt(request.getParameter("id")), user, state);
 				}
-			//} catch (Exception e) {
-			//	out.println("<tr><td>Error: Insufficient privileges - " + e + "</td></tr>");
-			//}
+			} catch (Exception e) {
+				out.println("<tr><td>Error: Insufficient privileges - " + e + "</td></tr>");
+			}
 			if (dataEntryForm != null)
 				dataEntryForm.makeExcelImportHTML(new PrintWriter(out));
 		} else if (listName.equals("sampleList")) {
