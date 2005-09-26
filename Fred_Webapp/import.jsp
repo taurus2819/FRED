@@ -27,18 +27,21 @@
 	    	String locType = request.getParameter("loc_type");
 	    	String id = request.getParameter("id");
 	    	DataEntryForm dataEntryForm = null;
-	    	if (id == null || id.equals("")) {
-	    		if (docType.equals("Locality")) {
+	    	if (docType.equals("Locality")) {
+	    		if (id == null || id.equals("")) {
 	    			dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(locType, user, Integer.parseInt(foldID), state);
-	    		} else if (docType.equals("Sample")) {
-	    			dataEntryForm = DataEntryFormFactory.getSampleDataEntryForm(user, Integer.parseInt(request.getParameter("featureID")), Integer.parseInt(foldID), state);
+	    		} else {
+		    		dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(id), user, state);
 	    		}
-	    	} else {
-	    		if (docType.equals("Locality")) {
-	    			dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(id), user, state);
-	    		} else if (docType.equals("Sample")) {
-	    			dataEntryForm = DataEntryFormFactory.getSampleDataEntryForm(Integer.parseInt(id), user, state);
+	    	} else if (docType.equals("Sample")) {
+	    		if (id == null || id.equals("")) {
+	    			Feature feature = new Feature(Integer.parseInt(request.getParameter("featureID")), user, state);
+	    			id = String.valueOf(feature.addNewSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"), foldID));
+	    		} else {
+	    			Sample sample = new Sample(Integer.parseInt(id), user, state);
+	    			sample.editSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"));
 	    		}
+	    		dataEntryForm = DataEntryFormFactory.getSampleDataEntryForm(Integer.parseInt(id), user, state);
 		    }
 
 			dataEntryForm.setTempField(DataEntryForm.FEATURE_NAME, request.getParameter("FeatName"));
