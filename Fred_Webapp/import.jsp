@@ -35,8 +35,20 @@
 	    		}
 	    	} else if (docType.equals("Sample")) {
 	    		if (id == null || id.equals("")) {
-	    			Feature feature = new Feature(Integer.parseInt(request.getParameter("featID")), user, state);
-	    			id = String.valueOf(feature.addNewSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"), foldID));
+	    			Feature feature = null;
+					Folder folder = new Folder(Integer.parseInt(foldID), user, state);
+					if (folder.isAllowedReadLocalities() && folder.get(Folder.FEATURES) != null) {
+						for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
+							feature = new Feature(((Integer) i.next()).intValue(), user, state);
+							if (feature.getAsString(Feature.FEATURE_NAME).equals(request.getParameter("featName")))
+								break;
+						}
+					}
+					if (feature != null) {
+						id = String.valueOf(feature.addNewSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"), foldID));
+					} else {
+						throw new DataInputException("Feature Name", "Feature name not found");
+					}
 	    		} else {
 	    			Sample sample = new Sample(Integer.parseInt(id), user, state);
 	    			sample.editSample(request.getParameter("TopDepth"), request.getParameter("BottomDepth"), request.getParameter("DrillType"));
