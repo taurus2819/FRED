@@ -374,7 +374,8 @@ public abstract class LocalityDE implements DataEntryForm {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
 			out.write("<tr><td>" + feature.getFeatureID() + "</td>");
 			out.write("<td>Locality</td>");
-			out.write("<td>" + feature.getAsString(Feature.WORKING_FOLDER_ID) + "</td>");
+			out.write("<td>" + FREDUtils.noNulls(feature.getAsString(Feature.WORKING_FOLDER_ID)) + "</td>");
+			out.write("<td>" + FREDUtils.noNulls(feature.getAsString(Feature.STATUS)) + "</td>");
 			out.write("<td>" + featureType + "</td>");
 			out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(FIELD_NUMBER)) + "</td>");
 			out.write("<td>" + FREDUtils.noNulls(getFieldForHTML(REGISTRATION_AREA)) + "</td>");
