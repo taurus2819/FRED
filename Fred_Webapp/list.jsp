@@ -75,7 +75,7 @@
 						out.println("<tr><td>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td><td>" + sample.getSampleID() + "</td></tr>");
 					}
 				} else {
-					out.println("<tr><td></td><td></td></tr>");
+					out.println("<tr><td>** Outcrop **</td><td></td></tr>");
 				}
 		   	} catch (Exception e) {
 		   		out.println("<tr><td>Error: Insufficient privileges - " + e.getMessage() + "</td></tr>");
