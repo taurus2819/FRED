@@ -956,7 +956,7 @@ public class SampleDE implements DataEntryForm {
 			out.write("<td>" + FREDUtils.noNulls(sample.getAsString(Sample.SAMPLE_WORKING_FOLDER_ID)) + "</td>");
 			out.write("<td>" + FREDUtils.noNulls(sample.getAsString(Sample.SAMPLE_STATUS)) + "</td>");
 			out.write("<td>" + FREDUtils.noNulls(sample.getAsString(Sample.FEATURE_TYPE)) + "</td>");
-			out.write("<td>" + FREDUtils.noNulls(sample.getAsString(Sample.SAMPLE_NAME)) + "</td>");
+			out.write("<td>" + FREDUtils.noNulls(sample.getAsString(Sample.FEATURE_NAME)) + "</td>");
 			out.write("<td></td>");
 			out.write("<td></td>");
 			out.write("<td></td>");
