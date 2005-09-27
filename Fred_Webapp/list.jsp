@@ -78,11 +78,11 @@
 					out.println("<tr><td>** Outcrop **</td><td></td></tr>");
 				}
 		   	} catch (Exception e) {
-		   		out.println("<tr><td>Error: Insufficient privileges - " + e.getMessage() + "</td></tr>");
+		   		out.println("<tr><td>Error</td><td></td></tr>");
 		   	}
 		} else if (listName.equals("blankSampleList")) {
 			out.println("<tr><td>No samples defined</td><td></td></tr>");
-		} else if (listName.equals("workingLocalityList")) {
+		} else if (listName.equals("localityList")) {
 			User user = null;
 			try {
 		   		user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
@@ -94,16 +94,15 @@
 		   		if (folder.get(Folder.FEATURES) != null) {
 					for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
 						Feature feature = new Feature(((Integer)i.next()).intValue(), user, state);
-						if (feature.getAsString(Feature.STATUS).equals(Audit.STATUS_WORKING) || feature.getAsString(Feature.STATUS).equals(Audit.STATUS_REJECTED))
-							out.println("<tr><td>" + feature.getAsString(Feature.FEATURE_NAME) + "</td><td>" + feature.getFeatureID() + "</td></tr>");
+						out.println("<tr><td>" + feature.getAsString(Feature.FEATURE_NAME) + "</td><td>" + feature.getFeatureID() + "</td></tr>");
 					}
 				} else {
-					out.println("<tr><td>No features found</td><td></td></tr>");
+					out.println("<tr><td>No features found in folder</td><td></td></tr>");
 				}
 			} catch (Exception e) {
 				out.println("<tr><td>Error</td><td></td></tr>");
 			}
-		} else if (listName.equals("blankWorkingLocalityList")) {
+		} else if (listName.equals("blankLocalityList")) {
 			out.println("<tr><td>No features defined</td><td></td></tr>");
 		} else if (listName.equals("folderList")) {
 			User user = null;

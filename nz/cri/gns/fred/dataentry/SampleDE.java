@@ -18,7 +18,6 @@ import nz.cri.gns.db.QueryDescriptor;
 import nz.cri.gns.db.metadata.MetadataRecord;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.data.Audit;
-import nz.cri.gns.fred.data.Feature;
 import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.data.Relationship;
 import nz.cri.gns.fred.data.Sample;
