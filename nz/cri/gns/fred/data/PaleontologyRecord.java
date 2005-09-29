@@ -130,8 +130,8 @@ public class PaleontologyRecord extends Record {
 	 *  Use this to get a new instance of this class. 
 	 * @throws SQLException if there is not a record for given ID, as well as normal SQLExceptions.
 	 */
-	public static Record getData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, InsufficientPrivelegesException {
-		Record rec = (PaleontologyRecord) pool.retrieve(new DataFinder(id));
+	public static PaleontologyRecord getData(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException, InsufficientPrivelegesException {
+		PaleontologyRecord rec = (PaleontologyRecord) pool.retrieve(new DataFinder(id));
 		if (forceRefresh && rec != null) {
 			pool.removeMe(rec); 
 			rec = null;
