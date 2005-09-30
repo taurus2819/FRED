@@ -556,9 +556,25 @@
 		}
 		catch (InsufficientPrivelegesException e) { // no record or not approved
 			drawEndNavigation(out);
-			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-			out.println("<tr><td>Either the sample doesn't exist or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</td></tr>");
-			out.println("</table>");
+			%><table style='margin-left:20px; width:550px;' border='0'>
+<tr><td>Either the sample doesn't exist or you have insufficient rights to view the record.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</td></tr>
+<tr><td>If you believe this to be in error, please <a href="javascript:expand()">click here for instructions</a>
+<script><!--
+function expand() {
+	document.getElementById("oops").style.display = "block";
+}
+//--></script>
+<div id="oops" style="display: none">
+<ul>
+<li>If you believe you have been denied access to this information in error, please copy the following information into an 
+email to itsupport (at) gns (dot) cri (dot) nz:<pre>
+Attn:     Development Team
+Re:       FRED
+Problem:  Innapropriate access denial
+Stack:    <% e.printStackTrace(new java.io.PrintWriter(out)); %></pre>
+</ul>
+</div>
+</table><%
 		} catch (Exception e) {
 			%><pre>There was an error:
 <%
