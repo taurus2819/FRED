@@ -160,7 +160,7 @@ function showHide(toShow, toHide) {
 				name = "Unnamed Locality";
 			%><tr>
 <td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
-<td class="heading" style="text-align: left"><a href="folder_feature_detail.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><%=name%></a>&nbsp;&nbsp;
+<td class="heading" style="text-align: left"><a href="folder_feature_detail.jsp?FoldID=<%=folder.getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><%=name%></a>&nbsp;&nbsp;
 <%
 			//TODO ????
 			//if (featName != null && !featName.equals(sampName)) { out.print("<br />(" + featName +")&nbsp;&nbsp;"); }
@@ -177,7 +177,7 @@ function showHide(toShow, toHide) {
 			%><td><%
 			
 			if (featureUtil.isAllowedEditFeature(user, feature, folder)) {
-				%><a href="data_entry.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a><img src="images/blank.gif" height="20" width="2" />
+				%><a href="data_entry.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a><img src="images/blank.gif" height="20" width="2" />
 <%
 			}
 			%></td><td><%

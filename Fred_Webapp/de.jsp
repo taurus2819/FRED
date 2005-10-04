@@ -73,11 +73,6 @@
 			} catch (Exception e) {
 				e.printStackTrace();
 				return null; //!
-			} finally {
-				try {
-					factory.closeSession();
-				} catch (Exception e) {
-				}
 			}
 		}		
 	}
@@ -135,4 +130,8 @@
 
 	out.println("</td></tr></table>");
 	drawBottom(out, et);
+	try {
+		HibernateUtil.get().getDAOFactory().closeSession();
+	} catch (Exception e) {
+	}
 %>

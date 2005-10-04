@@ -148,4 +148,8 @@
 	}
 	out.println("</td></tr></table>");
 	drawBottom(out, et);
+	try {
+		HibernateUtil.get().getDAOFactory().closeSession();
+	} catch (Exception e) {
+	}
 %>
