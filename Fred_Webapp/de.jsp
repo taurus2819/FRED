@@ -21,7 +21,9 @@
 	protected IconnedLink[] getButtons(HttpServletRequest request) {
 		DataEntryForm form = getDataEntryForm(request);
 		List list = form.getNavigation();
-		return (IconnedLink[])list.toArray(new IconnedLink[list.size()]);
+		IconnedLink[] links = (IconnedLink[])list.toArray(new IconnedLink[list.size()+1]);
+		links[links.length-1] = new IconnedLink((String)request.getSession().getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT), "images/cancel.gif", "Quit");
+		return links;
 	}
 
 	protected DataEntryForm getDataEntryForm(HttpServletRequest request) {
@@ -106,9 +108,6 @@
 		} else {
 			session.setAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT, "de.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID);
 		}
-		/*
-		out.println("<tr><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a>&nbsp;&nbsp;</td><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "' class='heading'>Quit</a></td></tr>");
-		*/
 		%><form name="form1" method="post" action="dp.jsp" />
 <input type="hidden" name="SaveType" value="" />
 <table style="margin-left:20px; width:550px;" border="0">

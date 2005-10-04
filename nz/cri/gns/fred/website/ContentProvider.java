@@ -26,7 +26,7 @@ public class ContentProvider {
 	public Template getContent(String key) {
 		String filename = contentMap.getString(key);
 		try {
-			return new Template(new FileReader(new File(contentPath, filename)));
+			return new Template(new FileReader(new File(contentPath, filename)), Template.BRACE_MODE);
 		} catch (Exception e) {
 			return null;
 		}
