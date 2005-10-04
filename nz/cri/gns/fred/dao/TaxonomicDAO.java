@@ -28,4 +28,11 @@ public interface TaxonomicDAO {
      */
     public Taxon createTaxon();
 
+    /**
+     * Saves the taxon!
+     * @param taxon
+     * @throws StorageAccessException 
+     */
+	public void save(Taxon taxon) throws StorageAccessException;
+
 }

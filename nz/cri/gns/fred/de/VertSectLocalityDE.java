@@ -21,4 +21,9 @@ public class VertSectLocalityDE extends DrillholeLocalityDE {
 	protected String getContentPrefix() {
 		return "vertsect";
 	}
+
+	public String getHeading() {
+		return "Edit vertical section locality";
+	}
+
 }

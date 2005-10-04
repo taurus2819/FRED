@@ -41,4 +41,9 @@ public interface DataEntryForm {
 	 * Returns true if this form requires the javascript calendar functions
 	 */
 	public boolean usesCalendar();
+	
+	/**
+	 * Provides a meaningful heading for the page on which this form is displayed
+	 */
+	public String getHeading();
 }

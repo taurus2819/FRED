@@ -745,4 +745,8 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
         return new TaxonomicLookup();
     }
 
+	public void save(Taxon taxon) throws StorageAccessException {
+		save((Object)taxon);
+	}
+
 }

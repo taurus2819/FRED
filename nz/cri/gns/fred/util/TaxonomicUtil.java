@@ -1,8 +1,10 @@
 package nz.cri.gns.fred.util;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
+import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.StorageAccessException;
@@ -157,4 +159,17 @@ public class TaxonomicUtil extends ModelUtil {
     public Taxon createTaxon() {
         return taxonomicDAO.createTaxon();
     }
+    
+	public void submitProvisional(User user, PaleontologyListEntry entry) throws StorageAccessException {
+		if (user == null || entry == null || entry.getTaxonomicGroup() == null || entry.getTaxonomicName() == null || entry.getTaxonomicName().length() == 0 || entry.getTaxon() == null)
+			return;
+		
+		//Get the taxon
+		Taxon taxon = entry.getTaxon();
+		taxon.setStatus("provisional");
+		taxon.setSubmittedById(new Integer(user.getId()));
+		taxon.setSubmittedDate(new Date());
+		taxonomicDAO.save(taxon);
+	}
+
 }

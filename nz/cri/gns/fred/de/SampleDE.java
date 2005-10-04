@@ -1020,4 +1020,8 @@ public class SampleDE implements DataEntryForm {
 		return workingFolder.getFolderId().intValue();
 	}
 
+	public String getHeading() {
+		return "Edit sample";
+	}
+
 }

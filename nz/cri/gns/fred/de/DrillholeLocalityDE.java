@@ -240,4 +240,9 @@ public class DrillholeLocalityDE extends LocalityDE {
 		template.addSub("inputField", "FinishDate");
 		template.loadAll(out);
 	}
+
+	public String getHeading() {
+		return "Edit drillhole locality";
+	}
+
 }

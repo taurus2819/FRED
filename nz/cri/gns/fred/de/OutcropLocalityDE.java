@@ -114,5 +114,9 @@ public class OutcropLocalityDE extends LocalityDE {
 		sampleDE.submit();
 		return feature.getFeatureId();	
 	}
-	
+
+	public String getHeading() {
+		return "Edit outcrop locality";
+	}
+
 }

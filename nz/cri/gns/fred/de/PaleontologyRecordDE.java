@@ -358,5 +358,9 @@ public class PaleontologyRecordDE extends RecordDE {
     public boolean usesCalendar() {
         return true;
     }
-    
+
+	public String getHeading() {
+		return "Edit paleontological record";
+	}
+
 }

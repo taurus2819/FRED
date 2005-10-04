@@ -122,4 +122,8 @@ public class AdoptionRecordDE extends RecordDE {
     public boolean usesCalendar() {
         return true;
     }
+
+	public String getHeading() {
+		return "Edit adoption record";
+	}
 }
