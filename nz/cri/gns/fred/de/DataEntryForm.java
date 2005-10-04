@@ -1,4 +1,3 @@
-
 package nz.cri.gns.fred.de;
 
 import java.io.IOException;
@@ -32,7 +31,7 @@ public interface DataEntryForm {
 	
 	public int save() throws SQLException, IOException, InsufficientPrivelegesException, StorageAccessException;
 	
-	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException;
+	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException, DataInputException, DataInputException;
 
 	public void delete() throws IOException, SQLException, InsufficientPrivelegesException, StorageAccessException;
 	

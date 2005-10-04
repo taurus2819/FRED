@@ -555,7 +555,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		return feature.getFeatureId();
 	}
 
-	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException {
+	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException, DataInputException {
 		if (feature.getAudit().getStatus().equals(FREDConstants.WAITING) || !isAllowedSubmit)
 			throw new InsufficientPrivelegesException();
 		if (feature.getFeatureType() == null || feature.getSiteId() == null || feature.getRegistrationArea() == null)

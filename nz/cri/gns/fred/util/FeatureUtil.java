@@ -23,7 +23,7 @@ import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
-import nz.cri.gns.fred.dataentry.DataInputException;
+import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;

@@ -50,6 +50,6 @@ public interface Feature extends Audited {
     public void setFolders(Set folders);
     public Set getRelationships();
     public void setRelationships(Set relationships);
-    public Set getFeatureMetas();
-    public void setFeatureMetas(Set featureMetas);
+    public Set<FeatureMeta> getFeatureMetas();
+    public void setFeatureMetas(Set<FeatureMeta> featureMetas);
 }
