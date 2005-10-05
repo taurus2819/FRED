@@ -128,7 +128,9 @@ public class DrillholeLocalityDE extends LocalityDE {
 	public void makeDataEntryHTML(PrintWriter out) throws IOException, SQLException {
 		super.makeDataEntryHTML(out);
 	
-		loadTemplate(provider.getContent(getContentPrefix() + ".de.form"), out);
+        Template template = provider.getContent(getContentPrefix() + ".de.form");
+        prepareTemplate(template, provider);
+		loadTemplate(template, out);
 		
 		super.makeEndBitHTML(out);
 	}
