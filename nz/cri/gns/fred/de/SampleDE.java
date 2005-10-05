@@ -325,12 +325,12 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		}, newLineSeparator));
 
 		template.addSub("ColMap", sample.getColumnMap());
-		template.addSub("Dip", sample.getDip().toString());
+        template.addSub("Dip", FREDUtil.toString(sample.getDip()));
 		//Do direction as both value and select...
 		template.addSub("DipDir", sample.getDipDirection());
 		template.addSub("isDip" + sample.getDipDirection(), "Yes");
 
-		template.addSub("Strike", sample.getStrike().toString());
+		template.addSub("Strike", FREDUtil.toString(sample.getStrike()));
 		//Do facing as both value and select...
 		template.addSub("Facing", sample.getFacing());
 		template.addSub("isFacing" + sample.getFacing(), "Yes");
