@@ -68,6 +68,7 @@ public abstract class LocalityDE implements DataEntryForm {
 	private SiteRecord site;
 	/** This allows for bad coordinates to still be re-editted */
 	private Datum.Coordinate coord;
+	private Datum datum;
 	
 	private boolean isAllowedSubmit;
 	
@@ -364,7 +365,6 @@ public abstract class LocalityDE implements DataEntryForm {
 				template.addSub("isNZMG", "yes");
 				template.addSub("mapSheetInvisible", "yes");
 			} else {
-				Datum datum = site.getOrigCoordDatum();
 				
 				template.addSub("is" + datum.getName(), "yes");
 				if (!datum.isMapSheetSystem())
@@ -486,7 +486,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		feature.getAudit().setWorkingComments(comments);
 		
 		//Site
-		Datum datum = DatumFactory.createDatum(request.getParameter("CoordType"));
+		datum = DatumFactory.createDatum(request.getParameter("CoordType"));
 		coord = null;
 		try {
 			if (datum.isMapSheetSystem()) {
