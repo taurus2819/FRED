@@ -66,6 +66,8 @@ public abstract class LocalityDE implements DataEntryForm {
 	 */
 	protected String editComments;	
 	private SiteRecord site;
+	/** This allows for bad coordinates to still be re-editted */
+	private Datum.Coordinate coord;
 	
 	private boolean isAllowedSubmit;
 	
@@ -79,6 +81,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		initialise(feature, folderID, user, factory, content);
 		try {
 			site = FREDUtil.getSite(feature);
+			coord = site.getOrigCoordAsCoord();
 		} catch (Exception e) {
 			//Site wasn't set
 		}
@@ -362,7 +365,6 @@ public abstract class LocalityDE implements DataEntryForm {
 				template.addSub("mapSheetInvisible", "yes");
 			} else {
 				Datum datum = site.getOrigCoordDatum();
-				Datum.Coordinate coord = site.getOrigCoordAsCoord();
 				
 				template.addSub("is" + datum.getName(), "yes");
 				if (!datum.isMapSheetSystem())
@@ -485,7 +487,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		
 		//Site
 		Datum datum = DatumFactory.createDatum(request.getParameter("CoordType"));
-		Datum.Coordinate coord = null;
+		coord = null;
 		try {
 			if (datum.isMapSheetSystem()) {
 				coord = (Datum.Coordinate)datum.preferredCoordinate().getConstructor(new Class[] {String.class, double.class, double.class}).newInstance(new Object[] {request.getParameter("MapSheet"), new Double(request.getParameter("North")), new Double(request.getParameter("East"))});

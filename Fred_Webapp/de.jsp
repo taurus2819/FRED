@@ -106,11 +106,11 @@
 		//save DataEntryForm in session
 		session.setAttribute(WebsiteConstants.DATA_ENTRY_FORM, dataEntryForm);
 		if (featID != null) {
-			session.setAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT, "de.jsp?Err=Yes&Type=" + formType + "&FeatID=" + featID);
+			session.setAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT, "de.jsp?Err=Yes&Type=" + formType + "&FeatID=" + featID + "&FoldID=" + foldID);
 		} else if (sampID != null) {
-			session.setAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT, "de.jsp?Err=Yes&Type=" + formType + "&SampID=" + sampID);
+			session.setAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT, "de.jsp?Err=Yes&Type=" + formType + "&SampID=" + sampID + "&FoldID=" + foldID);
 		} else if (recID != null) {
-			session.setAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT, "de.jsp?Err=Yes&Type=" + formType + "&RecID=" + recID);
+			session.setAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT, "de.jsp?Err=Yes&Type=" + formType + "&RecID=" + recID + "&FoldID=" + foldID);
 		} else {
 			session.setAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT, "de.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID);
 		}
