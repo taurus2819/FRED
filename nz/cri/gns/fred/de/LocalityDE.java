@@ -274,7 +274,8 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         prepareTemplate(template, provider);
 		try {
 			//Set up some basic substitutes
-			template.addSub("featureId", feature.getFeatureId().toString());
+            if (feature.getFeatureId() != null)
+                template.addSub("featureId", feature.getFeatureId().toString());
 			String featureType = feature.getFeatureType();
 			template.addSub("featureType", URLEncoder.encode(featureType, "ISO-8859-1"));
 			template.addSub("featureName", feature.getFeatureName());

@@ -49,7 +49,7 @@ import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.intranet.Template;
 
-public class SampleDE implements DataEntryForm {
+public class SampleDE extends DETemplate implements DataEntryForm {
 
 	private User user;
 	private Sample sample;
@@ -156,6 +156,7 @@ public class SampleDE implements DataEntryForm {
             template.addSub("sampleId", sample.getSampleId().toString());
             template.addSub("folderId", workingFolder.getFolderId().toString());
             template.addSub("drillholeDepth", SampleUtil.getDrillHoleDepthDescription(sample));
+            prepareTemplate(template, provider);
             
             template.loadUntil(out, "{@sampleMeta}");
             
@@ -186,6 +187,7 @@ public class SampleDE implements DataEntryForm {
 
 		try {
 	        Template template = provider.getContent("sample.de.form");
+            prepareTemplate(template, provider);
 	        
 	        //The basic substitutions....
 	        populateTemplateSubstitutions(template, "\n", ";", "*");
@@ -285,6 +287,7 @@ public class SampleDE implements DataEntryForm {
 		if (!outcropSample) {
             //This section is only relevant if this is _not_ an outcrop sample
             Template template = provider.getContent("sample.no.outcrop.de.buttons");
+            prepareTemplate(template, provider);
             if (isAllowedSubmit)
             	template.addSub("isAllowedSubmit", "Yes");
             

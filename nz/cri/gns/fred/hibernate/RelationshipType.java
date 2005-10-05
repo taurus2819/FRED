@@ -21,7 +21,7 @@ public class RelationshipType implements Serializable, nz.cri.gns.fred.model.Rel
     private Set relationships;
 
     /** full constructor */
-    public RelationshipType(Integer reltypeId, String name, nz.cri.gns.fred.hibernate.RelationshipTypeType relationshipTypeType, Set relationships) {
+    public RelationshipType(Integer reltypeId, String name, nz.cri.gns.fred.hibernate.RelationType relationshipTypeType, Set relationships) {
         this.reltypeId = reltypeId;
         this.name = name;
         this.relationshipTypeType = relationshipTypeType;

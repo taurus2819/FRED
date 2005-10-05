@@ -124,7 +124,7 @@
 <tr><td colspan="3" class="deHeading">Instructions</td></tr><tr><td style="text-align: left">
 <ul>
 <li>Please fill out the following fields.  
-<li>Click the <img src=\"images/build.gif\" height=\"20\" width=\"20\" alt=\"Build...\"> icon to open the field builder for more help.  
+<li>Click the <img src="images/build.gif" height="20" width="20" alt="Build..."> icon to open the field builder for more help.  
 <li><span style="color: #FF0000">Red</span> fields must be completed before submitting this form.
 </ul>
 </td></tr>
