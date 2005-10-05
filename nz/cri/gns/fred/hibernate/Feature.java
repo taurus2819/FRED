@@ -267,12 +267,12 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
         this.auditTable = audit;
         //This can't be right!!!!???
         try {
-            System.out.println("========");
+            System.out.println("====!====");
             if (audit.getFeatures() == null) {
                 audit.setFeatures(new HashSet());
             }
             audit.getFeatures().add(this);
-            System.out.println("========Audit now has " + audit.getFeatures().size() + " features");
+            System.out.println("====!====Audit now has " + audit.getFeatures().size() + " features");
         } catch (Exception e) {
         }
    }
