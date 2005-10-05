@@ -20,10 +20,10 @@
 	if (request.getParameter("SaveType") != null) {
 		DataEntryForm dataEntryForm = (DataEntryForm) session.getAttribute(WebsiteConstants.DATA_ENTRY_FORM);
 		try {
+			DAOFactory factory = HibernateUtil.get().getDAOFactory();
 			if (request.getParameter("Action") != null) {
 				Vector tL = (Vector) session.getAttribute(WebsiteConstants.BAD_TAXA_LIST);
 				if (tL != null) {
-					DAOFactory factory = HibernateUtil.get().getDAOFactory();
 					TaxonomicUtil util = new TaxonomicUtil(factory);
 					for (Iterator i = tL.iterator(); i.hasNext();) {
 						PaleontologyListEntry t = (PaleontologyListEntry) i.next();
@@ -41,7 +41,7 @@
 			} else {
 				dataEntryForm.save();
 			}
-
+			factory.closeSession();
 			response.sendRedirect((String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "&q=" + Math.random());
 			return;
 
