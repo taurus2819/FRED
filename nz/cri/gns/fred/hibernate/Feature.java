@@ -2,6 +2,7 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -260,9 +261,21 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
         return this.auditTable;
     }
 
-    public void setAudit(nz.cri.gns.fred.model.Audit auditTable) {
-        this.auditTable = auditTable;
-    }
+    public void setAudit(nz.cri.gns.fred.model.Audit audit) {
+        if (this.auditTable != null)
+            this.auditTable.getFeatures().remove(this);
+        this.auditTable = audit;
+        //This can't be right!!!!???
+        try {
+            System.out.println("========");
+            if (audit.getFeatures() == null) {
+                audit.setFeatures(new HashSet());
+            }
+            audit.getFeatures().add(this);
+            System.out.println("========Audit now has " + audit.getFeatures().size() + " features");
+        } catch (Exception e) {
+        }
+   }
 
     public nz.cri.gns.fred.model.RegistrationArea getRegistrationArea() {
         return this.registrationArea;
