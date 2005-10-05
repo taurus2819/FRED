@@ -488,9 +488,9 @@ public abstract class LocalityDE implements DataEntryForm {
 		Datum.Coordinate coord = null;
 		try {
 			if (datum.isMapSheetSystem()) {
-				coord = (Datum.Coordinate)datum.preferredCoordinate().getConstructor(new Class[] {String.class, double.class, double.class}).newInstance(new Object[] {request.getParameter("mapSheet"), new Double(request.getParameter("northing")), new Double(request.getParameter("easting"))});
+				coord = (Datum.Coordinate)datum.preferredCoordinate().getConstructor(new Class[] {String.class, double.class, double.class}).newInstance(new Object[] {request.getParameter("MapSheet"), new Double(request.getParameter("North")), new Double(request.getParameter("East"))});
 			} else {
-				coord = (Datum.Coordinate)datum.preferredCoordinate().getConstructor(new Class[] {double.class, double.class}).newInstance(new Object[] {new Double(request.getParameter("northing")), new Double(request.getParameter("easting"))});
+				coord = (Datum.Coordinate)datum.preferredCoordinate().getConstructor(new Class[] {double.class, double.class}).newInstance(new Object[] {new Double(request.getParameter("North")), new Double(request.getParameter("East"))});
 			}
 		} catch (NumberFormatException e) {
 			//No problem, there just isn't a site
