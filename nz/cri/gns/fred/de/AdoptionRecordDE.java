@@ -99,7 +99,7 @@ public class AdoptionRecordDE extends RecordDE {
         
         //Adoptors
         try {
-            adoption.setAdopters(FREDUtil.getPersons(request.getParameter("Adoptor"), new PersonUtil(factory)));
+            adoption.setAdopters(FREDUtil.getPersons(request.getParameter("Adoptor"), new PersonUtil(factory), "Adoptors"));
         } catch (DataInputException e) {
             error = new String[] {e.getField(), e.getMessage()};
         }

@@ -73,7 +73,7 @@ public class PaleontologyRecordDE extends RecordDE {
         
         //Adoptors
         try {
-            pal.setIdentifiers(FREDUtil.getPersons(request.getParameter("Adoptor"), new PersonUtil(factory)));
+            pal.setIdentifiers(FREDUtil.getPersons(request.getParameter("Adoptor"), new PersonUtil(factory), "Adoptors"));
         } catch (DataInputException e) {
             error = new String[] {e.getField(), e.getMessage()};
         }

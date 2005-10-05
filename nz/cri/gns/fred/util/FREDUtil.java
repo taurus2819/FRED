@@ -538,17 +538,19 @@ public class FREDUtil {
         return names.toString();
     }
 
-    public static Set<Person> getPersons(String parameter, PersonUtil personUtil) throws DataInputException {
+    public static Set<Person> getPersons(String parameter, PersonUtil personUtil, String personLabel) throws DataInputException {
+        if (parameter.trim().length() == 0)
+            return new HashSet<Person>();
         String[] adoptors = parameter.split("\\n");
         HashSet<Person> personSet = new HashSet<Person>();
         for (String collector : adoptors) try {
             Person person = personUtil.findPerson(collector);
             if (person == null)
-                throw new DataInputException("Adoptors", "Invalid person: " + collector);
+                throw new DataInputException(personLabel, "Invalid person: " + collector);
             else
                 personSet.add(personUtil.findPerson(collector));
         } catch (StorageAccessException e) {
-            throw new DataInputException("Adoptors", "Database error: " + e.getMessage());
+            throw new DataInputException(personLabel, "Database error: " + e.getMessage());
         }
         return personSet;
     }
