@@ -37,7 +37,7 @@ import nz.cri.gns.fred.hibernate.RecordMeta;
 import nz.cri.gns.fred.hibernate.RegistrationArea;
 import nz.cri.gns.fred.hibernate.Relationship;
 import nz.cri.gns.fred.hibernate.RelationshipType;
-import nz.cri.gns.fred.hibernate.RelationshipTypeType;
+import nz.cri.gns.fred.hibernate.RelationType;
 import nz.cri.gns.fred.hibernate.RockColour;
 import nz.cri.gns.fred.hibernate.Sample;
 import nz.cri.gns.fred.hibernate.SampleMeta;
@@ -132,7 +132,7 @@ public class HibernateUtil implements HibernateProvider {
 			RegistrationArea.class,
 			Relationship.class,
 			RelationshipType.class,
-			RelationshipTypeType.class,
+			RelationType.class,
 			RockColour.class,
 			Sample.class,
 			SampleMeta.class,

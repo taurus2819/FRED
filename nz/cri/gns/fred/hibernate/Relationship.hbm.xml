@@ -59,10 +59,10 @@
 
     <!-- Associations -->
   
-   <!-- bi-directional many-to-one association to RelationshipTypeType -->
+   <!-- bi-directional many-to-one association to RelationType -->
     <many-to-one
         name="relationType"
-        class="nz.cri.gns.fred.hibernate.RelationshipTypeType"
+        class="nz.cri.gns.fred.hibernate.RelationType"
         not-null="true"
     >
         <column name="RELATIONSHIP_TYPE" />

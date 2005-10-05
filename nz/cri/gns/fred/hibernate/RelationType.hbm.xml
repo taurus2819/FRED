@@ -12,7 +12,7 @@
 -->
 
 <class 
-    name="nz.cri.gns.fred.hibernate.RelationshipTypeType" 
+    name="nz.cri.gns.fred.hibernate.RelationType" 
     table="RELATION_TYPE"
 >
 
