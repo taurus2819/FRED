@@ -50,7 +50,7 @@ import nz.cri.gns.util.map.NZGD49;
 import nz.cri.gns.util.map.WGS84;
 import nz.cri.gns.util.map.Datum.MapSheetCoordinate;
 
-public abstract class LocalityDE implements DataEntryForm {
+public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
 	public static final String comboNull = "-";
 	protected DAOFactory factory;
@@ -271,6 +271,7 @@ public abstract class LocalityDE implements DataEntryForm {
 
 	public void makeDataEntryHTML(PrintWriter out) throws IOException, SQLException {
 		Template template = provider.getContent("locality.de.form");
+        prepareTemplate(template, provider);
 		try {
 			//Set up some basic substitutes
 			template.addSub("featureId", feature.getFeatureId().toString());
@@ -418,7 +419,9 @@ public abstract class LocalityDE implements DataEntryForm {
 		String comments = feature.getAudit().getWorkingComments();
 		if (comments == null)
 			return null;
+        System.out.println("########## " + comments);
 		if (comments.startsWith("*Recoll:")) {
+            System.out.println("Yes");
 			return comments.substring(8, comments.indexOf("*", 8));
 		} else
 			return null;

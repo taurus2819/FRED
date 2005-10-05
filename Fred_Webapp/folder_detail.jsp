@@ -115,7 +115,7 @@ function showHide(toShow, toHide) {
 //--></script>
 <center><p>&nbsp;<p/><div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none">
 <%
-		startDETable(out);
+		startDETable(pageContext);
 		%>
 <table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
 <tr><td colspan="3" class="deHeading">Folder Instructions</td></tr><tr><td style="text-align: left">
@@ -133,12 +133,12 @@ function showHide(toShow, toHide) {
 </td></tr>
 <tr><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr></table>
 <%
-		endDETable(out);
+		endDETable(pageContext);
 		%></div>
 <p>
 
 <%
-		startDETable(out);
+		startDETable(pageContext);
 		%><table border="0" width="550"><tr><td colspan="9" class="deHeading">Localities</td></tr>
 <tr>
 <th colspan="2">Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Options</th></tr>
@@ -202,7 +202,7 @@ function showHide(toShow, toHide) {
 <tr><td colspan="9"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 		}
 		%></table><%
-		endDETable(out);
+		endDETable(pageContext);
 
 		%>
 <input type="hidden" name="ActionType" value="">

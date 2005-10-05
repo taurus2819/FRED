@@ -74,7 +74,7 @@
 			List rightTypes = folderUtil.getRightTypesForDisplay(folder);	
 			boolean isPersonal = folder.getFolder().getFolderType().getName().equals("Personal");
 			%><center><p>&nbsp;<p/><%
-			startDETable(out);
+			startDETable(pageContext);
 			%><table border="0" width="550"><tr><td colspan="19" class="deHeading"><%=folder.getFolderName()%> users</td></tr>
 <tr><td><%
 
@@ -128,7 +128,7 @@
 			
 			out.println("</table></p>");
 			out.println("</table>");
-			endDETable(out);
+			endDETable(pageContext);
 			out.println("</td></tr></table>");
 		}
 		else { //no rights

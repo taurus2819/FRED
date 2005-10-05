@@ -15,3 +15,5 @@ record.de.form=recordde.html
 record.de.end=recorddeend.html
 adoption.de.form=adoptionde.html
 paleo.de.form=paleode.html
+start.de.table=detablestart.html
+end.de.table=detableend.html

@@ -55,11 +55,6 @@ function doNewFolder() {
 		document.NewFoldForm.submit();
 	}
 }
-
-function showHide(toShow, toHide) {
-	document.getElementById(toShow).style.display = 'block';
-	document.getElementById(toHide).style.display = 'none';
-}
 //--></script>
 <form name="NewFoldForm" method="post" action="folder_list.jsp">
 <input type="hidden" name="ActionType" value="Add">
@@ -67,7 +62,7 @@ function showHide(toShow, toHide) {
 </form>
 <center><p>&nbsp;<p/><div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none">
 <%
-	startDETable(out);
+	startDETable(pageContext);
 	%>
 <table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
 <tr><td colspan="3" class="deHeading">Instructions</td></tr><tr><td style="text-align: left">
@@ -79,12 +74,12 @@ function showHide(toShow, toHide) {
 </td></tr>
 <tr><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr></table>
 <%
-	endDETable(out);
+	endDETable(pageContext);
 	%></div>
 <p>
 
 <%
-	startDETable(out);
+	startDETable(pageContext);
 	%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Personal Folders</td></tr><%
 	List personalFolders = folderUtil.getPersonalFolders(user);
 
@@ -116,14 +111,14 @@ function showHide(toShow, toHide) {
 	} else {
 		%>You do not currently have any personal folders<%
 	}
-	endDETable(out);
+	endDETable(pageContext);
 
 	List adminFolders = folderUtil.getAdminFolders(user);
 
 	//List Working folders
 	if (adminFolders.size() > 0) {
 		%><p><%
-		startDETable(out);
+		startDETable(pageContext);
 		%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Masterfile Folders</td></tr>
 <tr><th>Masterfile Folder&nbsp;&nbsp;</th><th></th><th>Options</th></tr>
 <tr><td colspan="3"><img src="images/blank.gif" height="5" width="1" /></td></tr><%
@@ -143,7 +138,7 @@ function showHide(toShow, toHide) {
 		}
 		%></table>
 <%
-		endDETable(out);
+		endDETable(pageContext);
 	}
 
 	List panelList = taxaUtil.getPanelsIsMemberOf(user);
@@ -151,7 +146,7 @@ function showHide(toShow, toHide) {
 	//List Taxonomic groups (if any)
 	if (panelList.size() > 0) {
 		%><p><%
-		startDETable(out);
+		startDETable(pageContext);
 		%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Taxonomic Panels</td></tr>
 <tr><th>Taxonomic Groups<img src="images/blank.gif" width="20" height="1" /></th><td></td></th><th>Options</th></tr>
 <tr><td><img src="images/blank.gif" height="5" width="1" /></td></tr><%
@@ -167,7 +162,7 @@ function showHide(toShow, toHide) {
 		}
 		%></table>
 <%
-		endDETable(out);
+		endDETable(pageContext);
 	}
 
 	out.println("</table>");

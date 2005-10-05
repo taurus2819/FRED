@@ -2,8 +2,10 @@ package nz.cri.gns.fred;
 
 import java.io.IOException;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.PageContext;
 
 import nz.cri.gns.auth.Authenticable;
 import nz.cri.gns.auth.IPRight;
@@ -38,6 +40,7 @@ public abstract class FREDDEIPSysJspPage extends FREDIPSysJspPage{
 		et.setUseNavigationColumn(false);
 		et.setImageBase("/fred/images/fredde.gif");
 		et.addStyleSheet("fredde.css");
+        et.addScript("showhide.js");
 		return et;
 	}
 
@@ -75,22 +78,11 @@ public abstract class FREDDEIPSysJspPage extends FREDIPSysJspPage{
 		return new IconnedLink[0];
 	}
 	
-	protected void startDETable(JspWriter out) throws IOException {
-		out.print("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>");
-		out.print("<td width=\"11\" height=\"11\" style=\"width: 11px; height: 11px\"><img border=\"0\" src=\"images/frameLT.gif\"></td>");
-		out.print("<td height=\"11\" style=\"height: 11px; background: #c9c9c9 url(images/frameT.gif) repeat-x\"></td>");
-		out.print("<td width=\"11\" height=\"11\" style=\"width: 11px; height: 11px\"><img border=\"0\" src=\"images/frameRT.gif\"></td>");
-		out.print("</tr><tr>");
-		out.print("<td width=\"11\" style=\"width: 11px; background: white url(images/frameL.gif) repeat-y; vertical-align: top\" valign=\"top\"><img src=\"images/frameLTi.gif\" border=\"0\"></td>");
-		out.println("<td style=\"background: white url(images/frameM.gif) repeat-x\">");
+	protected void startDETable(PageContext context) throws IOException, ServletException {
+        context.include("/content/detablestart.html");
 	}
 	
-	protected void endDETable(JspWriter out) throws IOException {
-		out.print("<td width=\"11\" style=\"width: 11px; background: white url(images/frameR.gif) repeat-y; vertical-align: top\" valign=\"top\"><img src=\"images/frameRTi.gif\" border=\"0\"></td>");
-		out.print("</tr><tr>");
-		out.print("<td width=\"11\" height=\"11\" style=\"width: 11px; height: 11px\"><img border=\"0\" src=\"images/frameLB.gif\"></td>");
-		out.print("<td height=\"11\" style=\"height: 11px; background: #c9c9c9 url(images/frameB.gif) repeat-x\"></td>");
-		out.print("<td width=\"11\" height=\"11\" style=\"width: 11px; height: 11px\"><img border=\"0\" src=\"images/frameRB.gif\"></td>");
-		out.println("</tr></table>");
+	protected void endDETable(PageContext context) throws IOException, ServletException {
+        context.include("/content/detableend.html");
 	}
 }

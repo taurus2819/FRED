@@ -1,3 +1,4 @@
+{@startDETable}
 <table border='0' cellspacing='0' cellpadding='2'>
 {@@approved:<tr><td class="heading" colspan="4" style="color: #FF0000">You are editing an approved locality.  Previous edits are shown below.  Please enter comments on the edits you are making in the <em>Edit Comments</em> box below</td></tr>@}
 {@approvedInformation}
@@ -8,6 +9,11 @@
 <tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
 <tr><td class="heading" colspan="2">Attached Files/Images<br /><span class="smalltext">Click <a href="binary_data_entry.jsp?ID={@featureId}&RecType={@featureType}{@@folderId:&FoldID=@}{@folderId}" target="fredBinary">here</a> to add/edit</span></td>
 <td>{@metadataList}</td></tr>
+</table>
+{@endDETable}
+<p>
+{@startDETable}
+<table border='0' cellspacing='0' cellpadding='2'>
 <tr><td class="heading" style="color: #FF0000">Location</td><td class="smallheading">Coord Type</td>
 <td><select name="CoordType" onchange="updateCoordTypes(this)">
 <option value="NZMG"{@@isNZMG: selected@}>New Zealand Map Grid</option>
@@ -79,3 +85,5 @@ function setAccuracy(datID, form) {
 <tr><td></td><td class='smallheading'>Accuracy</td><td><input type='text' name='Accuracy' value="{@accuracy}">&nbsp;m</td></tr>
 <tr><td></td><td class='smallheading'>Locality<br />Description</td><td><textarea name='Loc' cols='40' rows='5'>{@localityDesc}</textarea></td></tr>
 <tr><td></td><td class='smallheading'>Country</td><td>{@countryCombo}</td></tr>
+</table>
+{@endDETable}

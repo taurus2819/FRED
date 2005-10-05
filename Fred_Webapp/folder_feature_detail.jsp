@@ -122,7 +122,7 @@ function showHide(toShow, toHide) {
 //--></script>
 <center><p>&nbsp;<p/><div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none">
 <%
-		startDETable(out);
+		startDETable(pageContext);
 		%>
 <table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
 <tr><td colspan="3" class="deHeading">Locality Instructions</td></tr><tr><td style="text-align: left">
@@ -141,11 +141,11 @@ function showHide(toShow, toHide) {
 </td></tr>
 <tr><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr></table>
 <%
-		endDETable(out);
+		endDETable(pageContext);
 		%></div>
 <p>
 <%
-		startDETable(out);
+		startDETable(pageContext);
 		%><form name="FoldForm" method="put" action="folder_feature_detail.jsp">
 <table border="0" width="550"><tr><td colspan="9" class="deHeading"><%=feature.getFeatureName()%></td></tr>
 <tr>
@@ -314,7 +314,7 @@ function showHide(toShow, toHide) {
 	
 </table>
 <%
-	endDETable(out);
+	endDETable(pageContext);
 	%></p>
 </form>
 </td></tr></table>
