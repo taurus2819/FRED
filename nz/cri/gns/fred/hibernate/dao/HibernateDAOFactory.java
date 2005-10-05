@@ -306,13 +306,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	}
 
 	public Feature save(Feature newFeature) throws StorageAccessException {
-	    save((Object)newFeature);
-        try {
-            newFeature.getAudit().getFolder().getAudits().add(newFeature.getAudit());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return newFeature;
+	    return (Feature)save((Object)newFeature);
 	}
 
 	public void delete(Feature feature) throws StorageAccessException {

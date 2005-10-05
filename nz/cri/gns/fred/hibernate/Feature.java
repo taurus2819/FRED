@@ -2,12 +2,15 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
+
+import nz.cri.gns.fred.model.FeatureMeta;
 
 
 /** @author Hibernate CodeGenerator */
 public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Cloneable, Comparable {
+
+    private static final long serialVersionUID = 20050818L;
 
     /** identifier field */
     private Integer featureId;
@@ -76,10 +79,10 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     private Set relationships;
 
     /** persistent field */
-    private Set featureMetas;
+    private Set<FeatureMeta> featureMetas;
 
     /** full constructor */
-    public Feature(Integer siteId, String locality, String comments, String featureType, String featureName, String drillholeLicenceName, Date startDate, Date finishDate, Double datumElevation, Double startDepth, String datumType, Double finishDepth, String startDateRounding, String finishDateRounding, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set samples, Set folders, Set relationships, Set featureMetas) {
+    public Feature(Integer siteId, String locality, String comments, String featureType, String featureName, String drillholeLicenceName, Date startDate, Date finishDate, Double datumElevation, Double startDepth, String datumType, Double finishDepth, String startDateRounding, String finishDateRounding, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set samples, Set folders, Set relationships, Set<FeatureMeta> featureMetas) {
         this.siteId = siteId;
         this.locality = locality;
         this.comments = comments;
@@ -109,7 +112,7 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     }
 
     /** minimal constructor */
-    public Feature(String featureType, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set samples, Set folders, Set relationships, Set featureMetas) {
+    public Feature(String featureType, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set samples, Set folders, Set relationships, Set<FeatureMeta> featureMetas) {
         this.featureType = featureType;
         this.person = person;
         this.masterFile = masterFile;
@@ -261,20 +264,8 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
         return this.auditTable;
     }
 
-    public void setAudit(nz.cri.gns.fred.model.Audit audit) {
-        if (this.auditTable != null)
-            this.auditTable.getFeatures().remove(this);
-        this.auditTable = audit;
-        //This can't be right!!!!???
-        try {
-            System.out.println("====!====");
-            if (audit.getFeatures() == null) {
-                audit.setFeatures(new HashSet());
-            }
-            audit.getFeatures().add(this);
-            System.out.println("====!====Audit now has " + audit.getFeatures().size() + " features");
-        } catch (Exception e) {
-        }
+    public void setAudit(nz.cri.gns.fred.model.Audit auditTable) {
+        this.auditTable = auditTable;
    }
 
     public nz.cri.gns.fred.model.RegistrationArea getRegistrationArea() {
@@ -309,11 +300,11 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
         this.relationships = relationships;
     }
 
-    public Set getFeatureMetas() {
+    public Set<FeatureMeta> getFeatureMetas() {
         return this.featureMetas;
     }
 
-    public void setFeatureMetas(Set featureMetas) {
+    public void setFeatureMetas(Set<FeatureMeta> featureMetas) {
         this.featureMetas = featureMetas;
     }
 
