@@ -103,7 +103,7 @@
 
 	if (dataEntryForm != null) {
 		//save DataEntryForm in session
-		session.setAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT, dataEntryForm);
+		session.setAttribute(WebsiteConstants.DATA_ENTRY_FORM, dataEntryForm);
 		if (featID != null) {
 			session.setAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT, "de.jsp?Err=Yes&Type=" + formType + "&FeatID=" + featID);
 		} else if (sampID != null) {

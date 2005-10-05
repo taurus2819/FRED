@@ -1,7 +1,7 @@
 <table border='0' cellspacing='0' cellpadding='2'>
 {@@approved:<tr><td class="heading" colspan="4" style="color: #FF0000">You are editing an approved locality.  Previous edits are shown below.  Please enter comments on the edits you are making in the <em>Edit Comments</em> box below</td></tr>@}
 {@approvedInformation}
-<tr><td class='heading' colspan='2'>{@@isOutcrop:Field Number@}{@@isDrillhole:Drillhole Name@}{@@isVertSect:Section Name@}</td><td><input type='text' name='FeatName' value="{@featureName}"></td></tr>
+<tr><td class='heading' colspan='2'>{@@isOutcrop:Field Number@}{@@isDrillhole:Drillhole Name@}{@@isVertSect:Section Name@}</td><td><input type='text' size="30" name='FeatName' value="{@featureName}"></td></tr>
 <tr><td class='heading' style="color: #FF0000">Registration Area</td><td></td><td>{@regCombo}</td></tr>
 <tr><td class='heading'>{@@isOutcrop:Recollection of@}{@@isDrillhole:Sidetrack of@}{@@isVertSect:Recollection of@}</td><td></td><td><input type='text' name='Recoll' value="{@recollection}" /></td></tr>
 <tr><td class='heading' colspan='2'>Working Comments<br><span class='smalltext'>On submission these comments will be deleted</span></td><td><textarea name='WorkComm' rows='3' cols='40'>{@workingComments}</textarea></td></tr>
