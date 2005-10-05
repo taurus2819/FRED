@@ -351,7 +351,7 @@ public class FREDUtil {
 			return "Year";
 		if (date.length() == 7)
 			return "Month";
-		return "Day";
+		return null;//"Day";
 	}
 
 	public static String getMetaTitle(Meta meta) throws SQLException, NamingException {
