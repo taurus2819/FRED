@@ -697,12 +697,12 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		sample.setInPlace(request.getParameter("InPlace"));
 		
 		//Sent to
-        String sentToParam = request.getParameter("SentTo");
-        if (sentToParam != null) {
+        String sentToParam = request.getParameter("SentTo").trim();
+        if (sentToParam.length() > 0) {
     		String[] sentTos = request.getParameter("SentTo").split("\\n");
     		HashSet<SentTo> sentToSet = new HashSet<SentTo>();
     		for (String sentTo : sentTos) try {
-    			String[] parts = sentTo.split("*");
+    			String[] parts = sentTo.split("\\*");
     			FossilGroup group = (parts[0].length() == 0) ? null : sampleUtil.getFossilGroup(parts[0]);
     			if (parts[0].length() > 0 && group == null)
     				error = new String[] {"Sent To", "Invalid group: " + parts[0]};
