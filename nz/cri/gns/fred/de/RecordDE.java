@@ -3,6 +3,7 @@ package nz.cri.gns.fred.de;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Inherited;
 import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.Date;
@@ -254,7 +255,7 @@ public abstract class RecordDE implements DataEntryForm {
 		return workingFolder.getFolderId();
 	}
 
-    public void updateFromRequest(HttpServletRequest request) throws DataInputException {
+	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
         record.setWorkingComments(request.getParameter("WorkComm"));
     }
 

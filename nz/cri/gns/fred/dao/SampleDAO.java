@@ -207,4 +207,6 @@ public interface SampleDAO {
     public void saveOrUpdate(Audit audit) throws StorageAccessException;
 
     public void saveOrUpdate(Sample sample) throws StorageAccessException;
+
+    public void attach(Sample sample) throws StorageAccessException;
 }

@@ -34,7 +34,7 @@
 				//dataEntryForm.setField(DataEntryForm.TAXA_LIST, (String) session.getAttribute("taxa"));
 			}
 
-			dataEntryForm.updateFromRequest(request);
+			dataEntryForm.updateFromRequest(request, factory);
 			
 			if (request.getParameter("SaveType").equals("Submit")) {
 				dataEntryForm.submit();

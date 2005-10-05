@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.fred.IconnedLink;
+import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.StorageAccessException;
 
 public interface DataEntryForm {
@@ -27,7 +28,7 @@ public interface DataEntryForm {
 	
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException;
 	
-	public void updateFromRequest(HttpServletRequest request) throws DataInputException;
+	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException;
 	
 	public int save() throws SQLException, IOException, InsufficientPrivelegesException, StorageAccessException;
 	

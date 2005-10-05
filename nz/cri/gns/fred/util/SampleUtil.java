@@ -641,4 +641,13 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         sampleDAO.saveOrUpdate(sample);
     }
 
+    /**
+     * Ensures the given sample is attached to the current persistence mechanism
+     * @param sample
+     * @throws StorageAccessException 
+     */
+    public void attach(Sample sample) throws StorageAccessException {
+        sampleDAO.attach(sample);
+    }
+
 }

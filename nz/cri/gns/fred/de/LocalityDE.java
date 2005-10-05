@@ -462,8 +462,8 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		out.write("<td>" + site.getDirections() + "</td>");	
 	}
 
-	public void updateFromRequest(HttpServletRequest request) throws DataInputException {
-		String[] error = null;
+	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
+        String[] error = null;
 		
 		//Feature name
 		feature.setFeatureName(request.getParameter("FeatName"));

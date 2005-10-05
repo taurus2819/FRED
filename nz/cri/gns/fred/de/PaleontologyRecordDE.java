@@ -56,10 +56,10 @@ public class PaleontologyRecordDE extends RecordDE {
         taxonomicUtil = new TaxonomicUtil(factory);
     }
 
-    public void updateFromRequest(HttpServletRequest request) throws DataInputException {
+    public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
         String[] error = null;
 
-       super.updateFromRequest(request);
+       super.updateFromRequest(request, factory);
         
         Paleontology pal = record.getPaleontology();
         //Collection date

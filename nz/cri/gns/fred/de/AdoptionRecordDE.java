@@ -82,10 +82,10 @@ public class AdoptionRecordDE extends RecordDE {
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
 	}
 
-    public void updateFromRequest(HttpServletRequest request) throws DataInputException {
+    public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
         String[] error = null;
         
-        super.updateFromRequest(request);
+        super.updateFromRequest(request, factory);
         
         Adoption adoption = record.getAdoption();
         //Collection date

@@ -58,7 +58,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	private boolean outcropSample = false;
 
 	private SampleUtil sampleUtil;
-	private DAOFactory factory;
 	private ContentProvider provider;
 	private UserFolder workingFolder;
 	
@@ -79,7 +78,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	private void initialise(Sample sample, int folderId, User user, DAOFactory factory, ContentProvider content) throws InsufficientPrivelegesException, StorageAccessException {
 		this.sample = sample;
 		this.user = user;
-		this.factory = factory;
 		this.provider = content;
 		
 		FolderUtil folderUtil = new FolderUtil(factory);
@@ -91,7 +89,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			workingFolder = folderUtil.getUserFolder(sample.getAudit().getFolder().getFolderId().intValue(), user);
 		
 		isAllowedSubmit = sampleUtil.isAllowedSubmitSample(user, sample, workingFolder);
-		
 	}
 
 	public void copyFrom(int sampleId) throws StorageAccessException  {
@@ -671,8 +668,15 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		template.loadAll(out);
 	}
 
-	public void updateFromRequest(HttpServletRequest request) throws DataInputException {
-		String[] error = null;
+	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
+        sampleUtil = new SampleUtil(factory);
+        try {
+            sampleUtil.attach(sample);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String[] error = null;
 		
 		//Collection date
 		try {
