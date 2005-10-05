@@ -353,8 +353,6 @@ public class FeatureUtil extends ModelUtil {
 	public Feature[] getFeaturesInFolder(UserFolder folder) throws StorageAccessException {
 		HashSet<Feature> features = new HashSet<Feature>();
 		
-		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd HH:mm:ss.SSSS");
-		//System.out.println(format.format(new java.util.Date()) + ": Starting");
 		//Get from feature_content
 		Collection<? extends Feature> featuresToAdd = folder.getFolder().getFeatures();
 		if (featuresToAdd != null)
