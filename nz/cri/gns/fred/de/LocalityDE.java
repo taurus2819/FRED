@@ -336,10 +336,10 @@ public abstract class LocalityDE implements DataEntryForm {
 			//Registration area combo box
 			template.loadUntil(out, "{@regCombo}");
 			ComboDescriptor cd = new ComboDescriptor("Registration_Area", "reg_area_ID", "Name");
-			cd.name = "RegAreaID";
+			cd.name = "RegAreaId";
 			if (feature.getRegistrationArea() != null)
 				cd.selected = feature.getRegistrationArea().getRegAreaId().toString();
-			cd.orderBy = "reg_area_ID";
+			cd.orderBy = "reg_area_id";
 			FREDUtil.makeDropBox(out, cd);
 	
 			//Metadata listing

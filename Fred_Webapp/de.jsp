@@ -87,6 +87,7 @@
 		et.addScript("calendar-stripped.js");
 		et.addScript("calendar-en-stripped.js");
 		et.addScript("calendar-setup-stripped.js");
+		et.addStyleSheet("skins/aqua/theme.css");
 	}
 
 	drawTop(out, et, request, response);
