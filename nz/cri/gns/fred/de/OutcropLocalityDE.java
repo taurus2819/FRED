@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.sql.SQLException;
 
+import javax.servlet.http.HttpServletRequest;
+
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.fred.dao.DAOFactory;
@@ -123,6 +125,12 @@ public class OutcropLocalityDE extends LocalityDE {
     @Override
     public boolean usesCalendar() {
         return sampleDE.usesCalendar();
+    }
+
+    @Override
+    public void updateFromRequest(HttpServletRequest request) throws DataInputException {
+        super.updateFromRequest(request);
+        sampleDE.updateFromRequest(request);
     }
 
 }
