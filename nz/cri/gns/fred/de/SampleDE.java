@@ -723,6 +723,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     			error = new String[] {"Sent To", "Database error: " + e.getMessage()};
     		}
     		sample.setSentTos(sentToSet);
+        } else {
+            if (sample.getSentTos() != null)
+                sample.getSentTos().clear();
         }
         
 		//Work out the inferred stage
