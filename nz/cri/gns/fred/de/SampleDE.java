@@ -513,25 +513,21 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			audit.setStatus(FREDConstants.WORKING);
 			audit.setCreatedById(user.getDatabaseId());
 			audit.setCreatedDate(new Date());
-			sampleUtil.save(audit);
-			sampleUtil.save(sample);
-		} else {
-			// edit
-			if (!outcropSample) {
-				//Update AUDIT
-				/* what comments?  what security class?
-						QueryDescriptor qd = new QueryDescriptor("audit_table");
-						qd.addQueryColumn("working_comments", Types.VARCHAR, fields[WORKING_COMMENTS]);
-						qd.addQueryColumn("security_class_id", Types.NUMERIC, ((secClassID != null) ? secClassID : new Integer(4)));
-						qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(auditID));
-						DBUtils.doUpdate(qd, "audit_id = ?", conn);
-				*/
-			}
-				
-			//Update SAMPLE
-			sampleUtil.update(sample);
+		} 
+    	if (!outcropSample) {
+			//Update AUDIT
+			/* what comments?  what security class?
+					QueryDescriptor qd = new QueryDescriptor("audit_table");
+					qd.addQueryColumn("working_comments", Types.VARCHAR, fields[WORKING_COMMENTS]);
+					qd.addQueryColumn("security_class_id", Types.NUMERIC, ((secClassID != null) ? secClassID : new Integer(4)));
+					qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(auditID));
+					DBUtils.doUpdate(qd, "audit_id = ?", conn);
+			*/
 		}
 			
+        System.out.println("Saving sample " + sample.getSampleId());
+        sampleUtil.saveOrUpdate(sample);
+    		
 		return sample.getSampleId().intValue();
 	
 	}

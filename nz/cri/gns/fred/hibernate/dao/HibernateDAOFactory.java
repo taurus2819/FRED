@@ -616,6 +616,10 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 			throw new StorageAccessException(e);
 		}
 	}
+    
+    public void saveOrUpdate(Sample sample) throws StorageAccessException {
+        saveOrUpdate((Object)sample);
+    }
 
 	public RecordDAO getRecordDAO() {
 		return this;

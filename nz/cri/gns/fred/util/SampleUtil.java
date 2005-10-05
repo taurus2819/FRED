@@ -636,4 +636,9 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return feature;
 	}
 
+    public void saveOrUpdate(Sample sample) throws StorageAccessException {
+        sampleDAO.saveOrUpdate(sample.getAudit());
+        sampleDAO.saveOrUpdate(sample);
+    }
+
 }

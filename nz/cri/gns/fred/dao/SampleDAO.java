@@ -203,4 +203,8 @@ public interface SampleDAO {
 	public SedimentaryFeatureType getSedimentaryFeatureTypeWithName(String sedFeature) throws StorageAccessException;
 
 	public DrillType getDrillType(int drillTypeId) throws StorageAccessException;
+
+    public void saveOrUpdate(Audit audit) throws StorageAccessException;
+
+    public void saveOrUpdate(Sample sample) throws StorageAccessException;
 }
