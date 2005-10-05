@@ -7,15 +7,12 @@ import java.sql.SQLException;
 
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
-import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.website.ContentProvider;
-import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.PageState;
 
 public class OutcropLocalityDE extends LocalityDE {
 
@@ -84,7 +81,6 @@ public class OutcropLocalityDE extends LocalityDE {
 	
 	public void makeDataEntryHTML(PrintWriter out) throws IOException, SQLException {
 		super.makeDataEntryHTML(out);
-		out.write("<tr><td><img src=\"images/blank.gif\" width=\"1\" height=\"5\" /></td></tr>\n");
 		sampleDE.makeDataEntryHTML(out);
 		super.makeEndBitHTML(out);
 	}
@@ -122,6 +118,11 @@ public class OutcropLocalityDE extends LocalityDE {
     @Override
     public void makePostFormHTML(PrintWriter out) throws IOException {
         sampleDE.makePostFormHTML(out);
+    }
+
+    @Override
+    public boolean usesCalendar() {
+        return sampleDE.usesCalendar();
     }
 
 }
