@@ -66,7 +66,7 @@
     </set>
     <!-- bi-directional one-to-many association to AuditTable -->
     <set
-        name="auditTables"
+        name="audits"
         lazy="true"
         inverse="true"
 		cascade="none"

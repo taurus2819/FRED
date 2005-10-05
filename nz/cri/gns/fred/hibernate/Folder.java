@@ -101,11 +101,11 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
         this.records = records;
     }
 
-    public Set getAuditTables() {
+    public Set getAudits() {
         return this.auditTables;
     }
 
-    public void setAuditTables(Set auditTables) {
+    public void setAudits(Set auditTables) {
         this.auditTables = auditTables;
     }
 
