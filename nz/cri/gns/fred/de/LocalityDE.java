@@ -509,7 +509,11 @@ public abstract class LocalityDE implements DataEntryForm {
 			if (site == null) 
 				site = new SiteRecord();
 			
-			site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
+			try {
+				site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
+			} catch (Exception e) {
+				error = new String[] {"Coordinate", "Invalid coordinates specified"};
+			}
 			try {
 				site.setMethod(Integer.parseInt(request.getParameter("LocMethodID")));
 			} catch (Exception e) {
