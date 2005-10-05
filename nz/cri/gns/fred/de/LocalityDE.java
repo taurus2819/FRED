@@ -83,6 +83,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		try {
 			site = FREDUtil.getSite(feature);
 			coord = site.getOrigCoordAsCoord();
+			datum = site.getOrigCoordDatum();
 		} catch (Exception e) {
 			//Site wasn't set
 		}
