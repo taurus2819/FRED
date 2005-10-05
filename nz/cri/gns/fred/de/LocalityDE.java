@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -491,29 +492,39 @@ public abstract class LocalityDE implements DataEntryForm {
 			} else {
 				coord = (Datum.Coordinate)datum.preferredCoordinate().getConstructor(new Class[] {double.class, double.class}).newInstance(new Object[] {new Double(request.getParameter("northing")), new Double(request.getParameter("easting"))});
 			}
-		} catch (Exception e) {
-			throw new DataInputException("Configuration", "Error in configuration - see system administrator");
+		} catch (NumberFormatException e) {
+			//No problem, there just isn't a site
+		} catch (IllegalArgumentException e) {
+		} catch (SecurityException e) {
+		} catch (InstantiationException e) {
+		} catch (IllegalAccessException e) {
+		} catch (InvocationTargetException e) {
+		} catch (NoSuchMethodException e) {
 		}
-		if (!datum.coordinateAcceptable(coord))
-			error = new String[] {"Coordinate", "Invalid value"};
 		
-		if (site == null) 
-			site = new SiteRecord();
+		if (coord != null) {
+			if (!datum.coordinateAcceptable(coord))
+				error = new String[] {"Coordinate", "Invalid value"};
 		
-		site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
-		try {
-			site.setMethod(Integer.parseInt(request.getParameter("LocMethodID")));
-		} catch (Exception e) {
-			site.setNull(SiteRecord.H_METHOD_FIELD);
-		}
-		try {
-			site.setAccuracy(Float.parseFloat(request.getParameter("Accuracy")));
-		} catch (Exception e) {
-			error = new String[] {"Accuracy", "Invalid value"};
-			site.setNull(SiteRecord.H_ACCURACY_FIELD);
-		}
-		site.setDirections(request.getParameter("Loc"));
-		site.setCountry(request.getParameter("Country"));
+			if (site == null) 
+				site = new SiteRecord();
+			
+			site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
+			try {
+				site.setMethod(Integer.parseInt(request.getParameter("LocMethodID")));
+			} catch (Exception e) {
+				site.setNull(SiteRecord.H_METHOD_FIELD);
+			}
+			try {
+				site.setAccuracy(Float.parseFloat(request.getParameter("Accuracy")));
+			} catch (Exception e) {
+				error = new String[] {"Accuracy", "Invalid value"};
+				site.setNull(SiteRecord.H_ACCURACY_FIELD);
+			}
+			site.setDirections(request.getParameter("Loc"));
+			site.setCountry(request.getParameter("Country"));
+		} else
+			site = null;
 		
 		editComments = request.getParameter("EditComm");
 		
