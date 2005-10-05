@@ -119,4 +119,9 @@ public class OutcropLocalityDE extends LocalityDE {
 		return "Edit outcrop locality";
 	}
 
+    @Override
+    public void makePostFormHTML(PrintWriter out) throws IOException {
+        sampleDE.makePostFormHTML(out);
+    }
+
 }

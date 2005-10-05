@@ -1,92 +1,97 @@
+{@startDETable}
+<table border="0" style="border: none; width: 550px; text-align: left" width="550" cellspacing="0" cellpadding="2">
+<tr><td colspan="3" class="deHeading">Collection information</td></tr><tr><td style="text-align: left">
 <tr>
-<td><img src='images/blank.gif' width='1' height='5' /></td>
+<td width="250" class="heading" style="color: #FF0000">Collection Date</td>
+<td width="270"><input type="text" name="CollDate" id="CollDate" value="{@CollDate}"></td>
+<td width="30"></td>
 </tr>
 <tr>
-<td class='heading' style="color: #FF0000">Collection Date</td>
-<td></td>
-<td><input type='text' name='CollDate' id="CollDate" value="{@CollDate}"></td>
-<td></td>
+<td class="heading" style="color: #FF0000">Collectors</td>
+<td><textarea name="Coll" cols="40" rows="2">{@Coll}</textarea></td>
+<td><a href="javascipt:newWin=open('data_entry_supp.jsp?Type=Coll', 'Supp', 'width=600,height=400');return false;" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a></td>
 </tr>
 <tr>
-<td class='heading' style="color: #FF0000">Collectors</td>
+<td class="heading">Strat Name</td>
 <td></td>
-<td><textarea name='Coll' cols='40' rows='2'>{@Coll}</textarea></td>
-<td><a href='javascipt:newWin=open(\"data_entry_supp.jsp?Type=Coll\", \"Supp\", \"width=600,height=400\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td>
+<td><input type="text" name="StratName" size="40" value="{@StratName}"></td>
+<td><a href="javascript:newWin=open('data_entry_supp.jsp?Type=StratName', 'Supp', 'width=600,height=300');return false;" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a></td>
 </tr>
-<tr>
-<td class='heading'>Strat Name</td>
+<tr><td class="heading" style="color: #FF0000">Fossils In Place</td>
 <td></td>
-<td><input type='text' name='StratName' size='40' value='{@StratName}'></td>
-<td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=StratName\", \"Supp\", \"width=600,height=300\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td>
-</tr>
-<tr><td class='heading' style="color: #FF0000">Fossils In Place</td>
-<td></td>
-<td><select name='InPlace'>
-<option value=''> -- Choose -- </option>
-<option value='Yes'{@@isYes: selected@}>Yes</option>
-<option value='Almost'{@@isAlmost: selected@}>Almost</option>
-<option value='No'{@@isNo: selected@}>No</option>
-<option value='Unknown'{@@isUnknown: selected@}>Unknown</option>
+<td><select name="InPlace">
+<option value=""> -- Choose -- </option>
+<option value="Yes"{@@isYes: selected@}>Yes</option>
+<option value="Almost"{@@isAlmost: selected@}>Almost</option>
+<option value="No"{@@isNo: selected@}>No</option>
+<option value="Unknown"{@@isUnknown: selected@}>Unknown</option>
 </select></td>
 </tr>
 <tr>
-<td class='heading'>Sent To</td>
+<td class="heading">Sent To</td>
 <td></td>
-<td><textarea name='SentTo' cols='40' rows='2'>{@SentTo}</textarea></td>
-<td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=SentTo\", \"Supp\",\"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a></td>
+<td><textarea name="SentTo" cols="40" rows="2">{@SentTo}</textarea></td>
+<td><a href="javascript:newWin=open('data_entry_supp.jsp?Type=SentTo', 'Supp','width=600,height=450');return false;" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a></td>
 </tr>
 <tr>
-<td class='heading'>Not Collected<br><span class='smalltext'>specify fossils seen but not collected</span></td>
+<td class="heading">Not Collected<br><span class="smalltext">specify fossils seen but not collected</span></td>
 <td></td>
-<td><textarea name='NotColl' cols='40' rows='3'>{@NotColl}</textarea></td>
+<td><textarea name="NotColl" cols="40" rows="3">{@NotColl}</textarea></td>
 </tr>
 <tr>
-<td><img src='images/blank.gif' width='1' height='5' /></td>
+<td><img src="images/blank.gif" width="1" height="5" /></td>
 </tr>
 <tr>
-<td class='heading' colspan='2'>Significance/Comments</td>
-<td><textarea name='Sig' cols='40' rows='3'>{@Sig}</textarea></td>
+<td class="heading" colspan="2">Significance/Comments</td>
+<td><textarea name="Sig" cols="40" rows="3">{@Sig}</textarea></td>
 </tr>
+</table>
+{@endDETable}
+<p>
+{@startDETable}
+<table border="0" style="border: none; width: 550px; text-align: left" width="550" cellspacing="0" cellpadding="2">
+<tr><td colspan="4" class="deHeading">Age information</td></tr><tr><td style="text-align: left">
 <tr>
-<td class='heading'>Stage Limits</td>
-<td class='smallheading'>Inferred</td>
-<td>
- <table border='0' cellspacing='0'>
+<td width="150" class="heading">Stage Limits</td>
+<td width="100" class="smallheading">Inferred</td>
+<td width="270">
+ <table border="0" cellspacing="0">
  <tr>
  <td>{@inferredAgeStart}</td>
- <td><select name='InfStartMod'>
- <option value='-'></option>
- <option value='?'{@@isInferredStartUnc: selected@}>?</option>
+ <td><select name="InfStartMod">
+ <option value="-"></option>
+ <option value="?"{@@isInferredStartUnc: selected@}>?</option>
  </select>
  </td>
- <td class='heading'> to </td>
+ <td class="heading"> to </td>
  <td>{@inferredAgeStop}</td>
- <td class='heading'><select name='InfStopMod'>
- <option value='-'></option>
- <option value='?'{@@isInferredStopUnc: selected@}>?</option>
+ <td class="heading"><select name="InfStopMod">
+ <option value="-"></option>
+ <option value="?"{@@isInferredStopUnc: selected@}>?</option>
  </select>
  </td>
  </tr>
  </table>
 </td>
+<td width="30"></td>
 </tr>
 <tr>
 <td></td>
-<td class='smallheading'>Known</td>
+<td class="smallheading">Known</td>
 <td>
- <table border='0' cellspacing='0'>
+ <table border="0" cellspacing="0">
  <tr>
  <td>{@knownAgeStart}</td>
- <td><select name='KnwStartMod'>
- <option value='-'></option>
- <option value='?'{@@isKnownStartUnc: selected@}>?</option>
+ <td><select name="KnwStartMod">
+ <option value="-"></option>
+ <option value="?"{@@isKnownStartUnc: selected@}>?</option>
  </select>
  </td>
- <td class='heading'> to </td>
+ <td class="heading"> to </td>
  <td>{@knownAgeStop}</td>
- <td class='heading'><select name='KnwStopMod'>
- <option value='-'></option>
- <option value='?'{@@isKnownStopUnc: selected@}>?</option>
+ <td class="heading"><select name="KnwStopMod">
+ <option value="-"></option>
+ <option value="?"{@@isKnownStopUnc: selected@}>?</option>
  </select>
  </td>
  </tr>
@@ -94,153 +99,161 @@
 </td>
 </tr>
 <tr>
-<td class='heading'>Samples Nearby</td>
+<td class="heading">Samples Nearby</td>
 <td></td>
-<td><input type='text' name='PrevSamp' size='40' value='{@PrevSamp}'></td>
-<td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=PrevSamp\", \"Supp\", \"width=600,height=350\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a>
+<td><input type="text" name="PrevSamp" size="40" value="{@PrevSamp}"></td>
+<td><a href="javascript:newWin=open('data_entry_supp.jsp?Type=PrevSamp', 'Supp', 'width=600,height=350');return false;" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a>
 </td>
 </tr>
 <tr>
-<td class='heading' colspan='2'>Sample Relationships</td>
-<td><textarea name='SampRel' cols='40' rows='3'>{@SampRel}</textarea></td>
-<td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=SampRel\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a>
+<td class="heading" colspan="2">Sample Relationships</td>
+<td><textarea name="SampRel" cols="40" rows="3">{@SampRel}</textarea></td>
+<td><a href="javascript:newWin=open('data_entry_supp.jsp?Type=SampRel', 'Supp', 'width=600,height=450');return false;" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a>
 </td>
 </tr>
 <tr>
-<td class='heading' colspan='2'>Stratigraphic Relationships</td>
-<td><textarea name='StratRel' cols='40' rows='3'>{@StratRel}</textarea></td>
-<td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=StratRel\", \"Supp\", \"width=600,height=450\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a>
+<td class="heading" colspan="2">Stratigraphic Relationships</td>
+<td><textarea name="StratRel" cols="40" rows="3">{@StratRel}</textarea></td>
+<td><a href="javascript:newWin=open('data_entry_supp.jsp?Type=StratRel', 'Supp', 'width=600,height=450');return false;" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a>
 </td>
 </tr>
 <tr>
-<td class='heading'>Column/Map</td>
+<td class="heading">Column/Map</td>
 <td></td>
-<td><input type='text' name='ColMap' size='40' value='{@ColMap}'>
+<td><input type="text" name="ColMap" size="40" value="{@ColMap}">
 </td>
 </tr>
+</table>
+{@endDETable}
+<p>
+{@startDETable}
+<table border="0" style="border: none; width: 550px; text-align: left" width="550" cellspacing="0" cellpadding="2">
+<tr><td colspan="4" class="deHeading">Sample information</td></tr><tr><td style="text-align: left">
 <tr>
-<td class='heading'>Attitude</td>
-<td class='smallheading'>Dip</td>
-<td><input type='text' name='Dip' size='3' value='{@Dip}'>
-</td>
+<td width="150" class="heading">Attitude</td>
+<td width="100" class="smallheading">Dip</td>
+<td width="270"><input type="text" name="Dip" size="3" value="{@Dip}"></td>
+<td width="30"></td>
 </tr>
 <tr>
 <td></td>
-<td class='smallheading'>Dip Dirn.</td>
-<td><select name='DipDir'>
-<option value=''> -- Choose -- </option>
-<option value='N'{@@isDipN: selected@}>North</option>
-<option value='NE'{@@isDipNE: selected@}>North-East</option>
-<option value='E'{@@isDipE: selected@}>East</option>
-<option value='SE'{@@isDipSE: selected@}>South-East</option>
-<option value='S'{@@isDipS: selected@}>South</option>
-<option value='SW'{@@isDipSW: selected@}>South-West</option>
-<option value='W'{@@isDipW: selected@}>West</option>
-<option value='NW'{@@isDipNW: selected@}>North-West</option>
+<td class="smallheading">Dip Dirn.</td>
+<td><select name="DipDir">
+<option value=""> -- Choose -- </option>
+<option value="N"{@@isDipN: selected@}>North</option>
+<option value="NE"{@@isDipNE: selected@}>North-East</option>
+<option value="E"{@@isDipE: selected@}>East</option>
+<option value="SE"{@@isDipSE: selected@}>South-East</option>
+<option value="S"{@@isDipS: selected@}>South</option>
+<option value="SW"{@@isDipSW: selected@}>South-West</option>
+<option value="W"{@@isDipW: selected@}>West</option>
+<option value="NW"{@@isDipNW: selected@}>North-West</option>
 </select></td>
 </tr>
 <tr>
 <td></td>
-<td class='smallheading'>Strike</td>
-<td><input type='text' name='Strike' size='4' value='{@Strike}'></td>
+<td class="smallheading">Strike</td>
+<td><input type="text" name="Strike" size="4" value="{@Strike}"></td>
 </tr>
 <tr>
 <td></td>
-<td class='smallheading'>Facing</td><td><select name='Facing'>
-<option value=''> -- Choose -- </option>
-<option value='Normal'{@@isFacingNormal: selecte@}>Normal</option>
-<option value='Overturned'{@@isFacingOverturned: selecte@}>Overturned</option>
+<td class="smallheading">Facing</td><td><select name="Facing">
+<option value=""> -- Choose -- </option>
+<option value="Normal"{@@isFacingNormal: selecte@}>Normal</option>
+<option value="Overturned"{@@isFacingOverturned: selecte@}>Overturned</option>
 </select></td>
 </tr>
 <tr>
-<td><img src='images/blank.gif' width='1' height='5' /></td>
+<td><img src="images/blank.gif" width="1" height="5" /></td>
 </tr>
 <tr>
-<td class='heading'>Grain Size</td>
-<td class='smallheading'>Pri.</td>
+<td class="heading">Grain Size</td>
+<td class="smallheading">Pri.</td>
 <td>{@primaryGrainSize}</td>
 </tr>
 <tr>
 <td></td>
-<td class='smallheading'>Sec.</td>
+<td class="smallheading">Sec.</td>
 <td>{@secondaryGrainSize}</td>
 </tr>
 <tr>
 <td></td>
-<td class='smallheading'>Comp. Used</td>
-<td><select name='GSComp'>
-<option value=''> -- Choose -- </option>
-<option value='Y'{@@isCompY: selected@}>Yes</option>
-<option value='N'{@@isCompN: selected@}>No</option>
+<td class="smallheading">Comp. Used</td>
+<td><select name="GSComp">
+<option value=""> -- Choose -- </option>
+<option value="Y"{@@isCompY: selected@}>Yes</option>
+<option value="N"{@@isCompN: selected@}>No</option>
 </select></td>
 </tr>
 <tr>
-<td class='heading'>Stratification</td>
-<td class='smallheading'>Thickness</td>
+<td class="heading">Stratification</td>
+<td class="smallheading">Thickness</td>
 <td>{@beddingThickness}</td>
 </tr>
 <tr>
 <td></td>
-<td class='smallheading'>Features</td>
-<td>{@primaryBedding}&nbsp;<span class='heading'>&</span>&nbsp;{@secondaryBedding}</td>
+<td class="smallheading">Features</td>
+<td>{@primaryBedding}&nbsp;<span class="heading">&</span>&nbsp;{@secondaryBedding}</td>
 </tr>
 <tr>
-<td class='heading'>Weathering</td>
+<td class="heading">Weathering</td>
 <td></td>
 <td>{@weathering}</td>
 </tr>
 <tr>
-<td class='heading'>Hardness</td>
+<td class="heading">Hardness</td>
 <td></td>
 <td>{@hardness}</td>
 </tr>
 <tr>
-<td class='heading'>Carbonate</td>
+<td class="heading">Carbonate</td>
 <td></td>
 <td>{@carbonate}</td>
 </tr>
 <tr>
-<td class='heading'>Colour</td>
-<td class='smallheading'>Shade</td>
+<td class="heading">Colour</td>
+<td class="smallheading">Shade</td>
 <td>{@ColMod}</td>
 </tr>
 <tr>
 <td></td>
-<td class='smallheading'>Colour</td>
-<td>{@primaryColour}&nbsp;<span class='heading'>-</span>&nbsp;{@secondaryColour}</td>
+<td class="smallheading">Colour</td>
+<td>{@primaryColour}&nbsp;<span class="heading">-</span>&nbsp;{@secondaryColour}</td>
 </tr>
 <tr>
 <td></td>
-<td class='smallheading'>Wet/Dry</td>
-<td><select name='Wet'>
-<option value=''> -- Choose -- </option>
-<option value='Wet'{@@isWetWet: selected@}>Wet</option>
-<option value='Dry'{@@isWetDry: selected@}>Dry</option>
+<td class="smallheading">Wet/Dry</td>
+<td><select name="Wet">
+<option value=""> -- Choose -- </option>
+<option value="Wet"{@@isWetWet: selected@}>Wet</option>
+<option value="Dry"{@@isWetDry: selected@}>Dry</option>
 </select></td>
 </tr>
 <tr>
-<td class='heading' colspan='2'>Additional Features</td>
-<td><input type='text' name='SedFeat' size='40' value='{@SedFeat}'></td>
-<td><a href='#' onClick='newWin=open(\"data_entry_supp.jsp?Type=SedFeat\", \"Supp\", \"width=600,height=350\");return false;' title='Build...'><img src='images/build.gif' width='20' height='20' border='0' /></a>
+<td class="heading" colspan="2">Additional Features</td>
+<td><input type="text" name="SedFeat" size="40" value="{@SedFeat}"></td>
+<td><a href="javascript:newWin=open('data_entry_supp.jsp?Type=SedFeat', 'Supp', 'width=600,height=350');return false;" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a>
 </td>
 </tr>
 <tr>
-<td class='heading' colspan='2'>Inferred Environment</td>
-<td><select name='DepEnv1'><option value=''> -- Choose -- </option>
-<option value='Marine'{@@isMarine: selected@}>Marine</option>
-<option value='Non-marine'{@@isNon-marine: selected@}>Non-marine</option>
+<td class="heading" colspan="2">Inferred Environment</td>
+<td><select name="DepEnv1"><option value=""> -- Choose -- </option>
+<option value="Marine"{@@isMarine: selected@}>Marine</option>
+<option value="Non-marine"{@@isNon-marine: selected@}>Non-marine</option>
 </select></td>
 </tr>
 <tr>
 <td></td>
 <td></td>
-<td><textarea name='DepEnv2' cols='40' rows='3'>{@DepEnv2}</textarea></td>
+<td><textarea name="DepEnv2" cols="40" rows="3">{@DepEnv2}</textarea></td>
 </tr>
 <tr>
-<td class='heading' colspan='2'>Nature of Rock Unit</td>
-<td><textarea name='RockNat' cols='40' rows='3'>{@RockNat}</textarea></td>
+<td class="heading" colspan="2">Nature of Rock Unit</td>
+<td><textarea name="RockNat" cols="40" rows="3">{@RockNat}</textarea></td>
 </tr>
 <tr>
-<td class='heading' colspan='2'>Correspondence</td>
-<td><textarea name='Corr' cols='40' rows='3'>{@Corr}</textarea></td>
+<td class="heading" colspan="2">Correspondence</td>
+<td><textarea name="Corr" cols="40" rows="3">{@Corr}</textarea></td>
 </tr>
+</table>
+{@endDETable}
