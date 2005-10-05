@@ -82,9 +82,14 @@
 	
 	ExtranetTemplate et = getExtranetTemplate();
 
-	drawTop(out, et, request, response);
-	
 	DataEntryForm dataEntryForm = getDataEntryForm(request);
+	if (dataEntryForm.usesCalendar()) {
+		et.addScript("calendar-stripped.js");
+		et.addScript("calendar-en-stripped.js");
+		et.addScript("calendar-setup-stripped.js");
+	}
+
+	drawTop(out, et, request, response);
 	
 	if (request.getParameter("CopyID") != null) {
 		dataEntryForm.copyFrom(Integer.parseInt(request.getParameter("CopyID")));
