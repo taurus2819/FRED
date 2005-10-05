@@ -42,7 +42,7 @@
 				dataEntryForm.save();
 			}
 
-			response.sendRedirect((String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT));
+			response.sendRedirect((String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "&q=" + Math.random());
 			return;
 
 		} catch (TaxonomicListException e) {

@@ -18,10 +18,12 @@ public class VertSectLocalityDE extends DrillholeLocalityDE {
 		super(feature, folderID, user, factory, provider, FREDConstants.VERTICAL_SECTION);
 	}
 
+    @Override
 	protected String getContentPrefix() {
 		return "vertsect";
 	}
 
+    @Override
 	public String getHeading() {
 		return "Edit vertical section locality";
 	}
