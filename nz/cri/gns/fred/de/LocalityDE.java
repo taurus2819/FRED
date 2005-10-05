@@ -535,11 +535,14 @@ public abstract class LocalityDE implements DataEntryForm {
 	
 	public int save() throws SQLException, IOException, StorageAccessException, InsufficientPrivelegesException {
 		//Check the site with the site DB
-		site.key = null;
-		try {
-			site = FREDUtil.getSite(site);
-		} catch (Exception e) {
-			throw new StorageAccessException(e);
+		if (site != null) {
+			site.key = null;
+			try {
+				site = FREDUtil.getSite(site);
+			} catch (Exception e) {
+				throw new StorageAccessException(e);
+			}
+			feature.setSiteId(new Integer(site.key));
 		}
 		
 		FeatureDAO dao = factory.getFeatureDAO();
