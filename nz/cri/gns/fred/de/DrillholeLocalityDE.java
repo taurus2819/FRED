@@ -151,9 +151,9 @@ public class DrillholeLocalityDE extends LocalityDE {
 			template.addSub("datumElevation", feature.getDatumElevation().toString());
 		
 		if (feature.getStartDepth() != null) 
-			template.addSub("startDepth", feature.getStartDate().toString());
+			template.addSub("startDepth", feature.getStartDepth().toString());
 		if (feature.getFinishDepth() != null) 
-			template.addSub("finishDepth", feature.getFinishDate().toString());
+			template.addSub("finishDepth", feature.getFinishDepth().toString());
 		
 		template.loadAll(out);
 	}
