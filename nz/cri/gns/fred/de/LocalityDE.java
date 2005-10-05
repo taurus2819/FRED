@@ -560,8 +560,8 @@ public abstract class LocalityDE implements DataEntryForm {
 			edit.setEditedDate(new Date());
 			edit.setComments(editComments);
 			dao.save(edit);
-		} else {
-			dao.update(audit);
+//		} else {
+//			dao.update(audit);
 		}
 		
 		dao.saveOrUpdate(feature);
