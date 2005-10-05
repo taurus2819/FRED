@@ -493,7 +493,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	}
 
 	public RelationType getRelationType(String relationTypeName) throws StorageAccessException {
-		return (RelationType)getFirst("FROM RelationType WHERE name = ?", relationTypeName);
+		return (RelationType)getFirst("FROM RelationType AS rt WHERE rt.name = ?", relationTypeName);
 	}
 
 	public RelationshipType getRelationshipType(RelationType relationType, String relationshipTypeName) throws StorageAccessException {
