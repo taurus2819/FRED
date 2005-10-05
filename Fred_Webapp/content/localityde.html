@@ -1,6 +1,7 @@
 {@startDETable}
 <table border="0" style="border: none; width: 550px" width="550" cellspacing='0' cellpadding='2'>
-{@@approved:<tr><td class="heading" colspan="4" style="color: #FF0000">You are editing an approved locality.  Previous edits are shown below.  Please enter comments on the edits you are making in the <em>Edit Comments</em> box below</td></tr>@}
+<tr><td colspan="3" class="deHeading">Adminstrative information</td></tr><tr><td style="text-align: left">
+{@@approved:<tr><td class="heading" colspan="3" style="color: #FF0000">You are editing an approved locality.  Previous edits are shown below.  Please enter comments on the edits you are making in the <em>Edit Comments</em> box below</td></tr>@}
 {@approvedInformation}
 <tr><td width="200" class="heading" colspan="2">{@@isOutcrop:Field Number@}{@@isDrillhole:Drillhole Name@}{@@isVertSect:Section Name@}</td><td width="350"><input type="text" size="30" name="FeatName" value="{@featureName}"></td></tr>
 <tr><td class="heading" style="color: #FF0000">Registration Area</td><td></td><td>{@regCombo}</td></tr>
@@ -14,6 +15,7 @@
 <p>
 {@startDETable}
 <table border="0" style="border: none; width: 550px" width="550" cellspacing='0' cellpadding='2'>
+<tr><td colspan="3" class="deHeading">Location information</td></tr><tr><td style="text-align: left">
 <tr><td class="heading" style="color: #FF0000" width="100">Location</td><td class="smallheading" width="100">Coord Type</td>
 <td width="350"><select name="CoordType" onchange="updateCoordTypes(this)">
 <option value="NZMG"{@@isNZMG: selected@}>New Zealand Map Grid</option>
