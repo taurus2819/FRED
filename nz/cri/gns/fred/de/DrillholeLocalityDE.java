@@ -80,8 +80,8 @@ public class DrillholeLocalityDE extends LocalityDE {
 
 		try {
 			String finishDate = request.getParameter("FinishDate");
-			feature.setStartDate(FREDUtil.parseDateFromDE(finishDate));
-			feature.setStartDateRounding(FREDUtil.parseDateRoundingFromDE(finishDate));
+			feature.setFinishDate(FREDUtil.parseDateFromDE(finishDate));
+			feature.setFinishDateRounding(FREDUtil.parseDateRoundingFromDE(finishDate));
 		} catch (ParseException e) {
 			error = new String[] {"Start Date", "Badly formatted date"};
 		}
