@@ -81,7 +81,7 @@
 %><%
 	
 	ExtranetTemplate et = getExtranetTemplate();
-
+	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	DataEntryForm dataEntryForm = getDataEntryForm(request);
 	if (dataEntryForm.usesCalendar()) {
 		et.addScript("calendar-stripped.js");
@@ -134,7 +134,7 @@
 	%></div>
 <p>
 <%
-		dataEntryForm.makeDataEntryHTML(new PrintWriter(out));
+		dataEntryForm.makeDataEntryHTML(new PrintWriter(out), factory);
 		%>
 </form><%
 		dataEntryForm.makePostFormHTML(new PrintWriter(out));
@@ -150,7 +150,7 @@
 	out.println("</td></tr></table>");
 	drawBottom(out, et);
 	try {
-		HibernateUtil.get().getDAOFactory().closeSession();
+		factory.closeSession();
 	} catch (Exception e) {
 	}
 %>

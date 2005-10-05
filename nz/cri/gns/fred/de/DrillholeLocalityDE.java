@@ -125,8 +125,8 @@ public class DrillholeLocalityDE extends LocalityDE {
 			throw new DataInputException(error[0], error[1]);
 	}
 
-	public void makeDataEntryHTML(PrintWriter out) throws IOException, SQLException {
-		super.makeDataEntryHTML(out);
+	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
+		super.makeDataEntryHTML(out, factory);
 	
         Template template = provider.getContent(getContentPrefix() + ".de.form");
         prepareTemplate(template, provider);

@@ -34,8 +34,8 @@ public class AdoptionRecordDE extends RecordDE {
 		super(record, folderId, user, factory, provider);
 	}
 
-	public void makeDataEntryHTML(PrintWriter out) throws IOException, SQLException {
-		super.makeDataEntryHTML(out);
+	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
+		super.makeDataEntryHTML(out, factory);
         
         Template template = provider.getContent("adoption.de.form");
         

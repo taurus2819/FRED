@@ -177,9 +177,9 @@ public class PaleontologyRecordDE extends RecordDE {
     private static final int SPECIMEN_COORD = 4;
     private static final int COMMENTS = 5;
 
-    public void makeDataEntryHTML(PrintWriter out) throws IOException, SQLException {
+    public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
 		try {
-			super.makeDataEntryHTML(out);
+			super.makeDataEntryHTML(out, factory);
             Template template = provider.getContent("paleo.de.form");
             
             Paleontology pal = record.getPaleontology();

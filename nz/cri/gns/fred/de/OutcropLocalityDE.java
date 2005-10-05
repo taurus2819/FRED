@@ -81,9 +81,9 @@ public class OutcropLocalityDE extends LocalityDE {
 	}
 	*/
 	
-	public void makeDataEntryHTML(PrintWriter out) throws IOException, SQLException {
-		super.makeDataEntryHTML(out);
-		sampleDE.makeDataEntryHTML(out);
+	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
+		super.makeDataEntryHTML(out, factory);
+		sampleDE.makeDataEntryHTML(out, factory);
 		super.makeEndBitHTML(out);
 	}
 

@@ -269,7 +269,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		*/
 	}
 
-	public void makeDataEntryHTML(PrintWriter out) throws IOException, SQLException {
+	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
 		Template template = provider.getContent("locality.de.form");
         prepareTemplate(template, provider);
 		try {

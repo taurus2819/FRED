@@ -141,7 +141,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		this.outcropSample = isOutcropSample;
 	}
 
-	public void makeDataEntryHTML(PrintWriter out) throws IOException, SQLException {
+	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
+        reinitialise(factory);
 		ComboDescriptor cd;
 		
 		if (!outcropSample) {
@@ -669,12 +670,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
-        sampleUtil = new SampleUtil(factory);
-        try {
-            sampleUtil.attach(sample);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        reinitialise(factory);
 
         String[] error = null;
 		
@@ -701,30 +697,34 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		sample.setInPlace(request.getParameter("InPlace"));
 		
 		//Sent to
-		String[] sentTos = request.getParameter("SentTo").split("\\n");
-		HashSet<SentTo> sentToSet = new HashSet<SentTo>();
-		for (String sentTo : sentTos) try {
-			String[] parts = sentTo.split("*");
-			FossilGroup group = (parts[0].length() == 0) ? null : sampleUtil.getFossilGroup(parts[0]);
-			if (parts[0].length() > 0 && group == null)
-				error = new String[] {"Sent To", "Invalid group: " + parts[0]};
-
-			Person person = (parts[1].length() == 0) ? null : personUtil.findPerson(parts[1]);
-			if (parts[1].length() > 0 && person == null)
-				error = new String[] {"Sent To", "Invalid person: " + parts[1]};
-			
-			Integer lab = (parts[2].length() == 0) ? null : FREDUtil.getLabId(parts[2]);
-			if (parts[2].length() > 0 && lab == null)
-				error = new String[] {"Sent To", "Invalid lab: " + parts[2]};
-			
-			String comments = parts[3];
-			
-			sentToSet.add(sampleUtil.findOrCreateSentTo(sample, group, person, lab, comments));
-		} catch (Exception e) {
-			error = new String[] {"Sent To", "Database error: " + e.getMessage()};
-		}
-		sample.setSentTos(sentToSet);
-	
+        String sentToParam = request.getParameter("SentTo");
+        if (sentToParam != null) {
+    		String[] sentTos = request.getParameter("SentTo").split("\\n");
+    		HashSet<SentTo> sentToSet = new HashSet<SentTo>();
+    		for (String sentTo : sentTos) try {
+    			String[] parts = sentTo.split("*");
+    			FossilGroup group = (parts[0].length() == 0) ? null : sampleUtil.getFossilGroup(parts[0]);
+    			if (parts[0].length() > 0 && group == null)
+    				error = new String[] {"Sent To", "Invalid group: " + parts[0]};
+    
+    			Person person = (parts[1].length() == 0) ? null : personUtil.findPerson(parts[1]);
+    			if (parts[1].length() > 0 && person == null)
+    				error = new String[] {"Sent To", "Invalid person: " + parts[1]};
+    			
+    			Integer lab = (parts[2].length() == 0) ? null : FREDUtil.getLabId(parts[2]);
+    			if (parts[2].length() > 0 && lab == null)
+    				error = new String[] {"Sent To", "Invalid lab: " + parts[2]};
+    			
+    			String comments = parts[3];
+    			
+    			sentToSet.add(sampleUtil.findOrCreateSentTo(sample, group, person, lab, comments));
+    		} catch (Exception e) {
+                e.printStackTrace();
+    			error = new String[] {"Sent To", "Database error: " + e.getMessage()};
+    		}
+    		sample.setSentTos(sentToSet);
+        }
+        
 		//Work out the inferred stage
         try {
             sample.setInferredStage(FREDUtil.getStage(request, "Inf", sample.getInferredStage(), sampleUtil));
@@ -960,6 +960,18 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			throw new DataInputException(error[0], error[1]);
 		
 	}
+
+    /**
+     * @param factory
+     */
+    private void reinitialise(DAOFactory factory) {
+        sampleUtil = new SampleUtil(factory);
+        try {
+            sampleUtil.attach(sample);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 	private RockColour getColour(String parameter) throws NumberFormatException, StorageAccessException {
 		parameter = FREDUtil.decodeCombo(parameter);

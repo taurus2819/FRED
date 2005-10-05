@@ -35,9 +35,9 @@
 				return new IconnedLink[] {
 					new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders"),
 					new IconnedLink(null, "images/new.gif", "New: "),
-					new IconnedLink("data_entry.jsp?Type=Outcrop&FoldID=" + folder.getFolder().getFolderId(), null, "Outcrop"),
-					new IconnedLink("data_entry.jsp?Type=Drillhole&FoldID=" + folder.getFolder().getFolderId(), null, "Drillhole"),
-					new IconnedLink("data_entry.jsp?Type=Vertical+Section&FoldID=" + folder.getFolder().getFolderId(), null, "Vert. Section"),
+					new IconnedLink("de.jsp?Type=Outcrop&FoldID=" + folder.getFolder().getFolderId(), null, "Outcrop"),
+					new IconnedLink("de.jsp?Type=Drillhole&FoldID=" + folder.getFolder().getFolderId(), null, "Drillhole"),
+					new IconnedLink("de.jsp?Type=Vertical+Section&FoldID=" + folder.getFolder().getFolderId(), null, "Vert. Section"),
 					new IconnedLink("simple_query.jsp?FoldID=" + folder.getFolder().getFolderId(), "images/search.gif", "Search")
 				};
 			} else {
@@ -177,7 +177,7 @@ function showHide(toShow, toHide) {
 			%><td><%
 			
 			if (featureUtil.isAllowedEditFeature(user, feature, folder)) {
-				%><a href="data_entry.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a><img src="images/blank.gif" height="20" width="2" />
+				%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a><img src="images/blank.gif" height="20" width="2" />
 <%
 			}
 			%></td><td><%
