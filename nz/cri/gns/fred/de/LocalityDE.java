@@ -291,7 +291,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			//Recollection
 			String recollection = getRecollectionInfo();
 			if (recollection != null) {
-				template.addSub("recollection", recollection);
+				template.addSub("Recoll", recollection);
 			}
 			
 			if (feature.getAudit().getWorkingComments() != null)
@@ -419,10 +419,8 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		String comments = feature.getAudit().getWorkingComments();
 		if (comments == null)
 			return null;
-        System.out.println("########## " + comments);
-		if (comments.startsWith("*Recoll:")) {
-            System.out.println("Yes");
-			return comments.substring(8, comments.indexOf("*", 8));
+        if (comments.startsWith("*Recoll:")) {
+            return comments.substring(8, comments.indexOf("*", 8));
 		} else
 			return null;
 	}
