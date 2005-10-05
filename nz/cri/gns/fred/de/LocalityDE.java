@@ -559,7 +559,6 @@ public abstract class LocalityDE implements DataEntryForm {
 			//New feature
 			audit.setCreatedById(user.getDatabaseId());
 			audit.setCreatedDate(new Date());
-			dao.save(audit);
 		} else if (audit.getStatus().equals(FREDConstants.APPROVED)) {
 			AuditEdit edit = dao.createNewAuditEdit();
 			edit.setAudit(audit);
@@ -567,11 +566,10 @@ public abstract class LocalityDE implements DataEntryForm {
 			edit.setEditedDate(new Date());
 			edit.setComments(editComments);
 			dao.save(edit);
-//		} else {
-//			dao.update(audit);
 		}
-		
-		dao.saveOrUpdate(feature);
+        
+        dao.saveOrUpdate(audit);
+        dao.saveOrUpdate(feature);
 		
 		return feature.getFeatureId();
 	}

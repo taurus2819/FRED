@@ -131,4 +131,10 @@ public interface FeatureDAO {
 	 */
 	public Feature getFeatureWithName(String ident) throws StorageAccessException;
 
+    /**
+     * Either saves or updates the given audit entry, depending on whether it is already stored.
+     * @throws StorageAccessException 
+     */
+   public void saveOrUpdate(Audit audit) throws StorageAccessException;
+
 }

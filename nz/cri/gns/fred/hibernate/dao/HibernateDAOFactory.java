@@ -420,7 +420,11 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public Feature getFeatureWithName(String name) throws StorageAccessException {
 		return (Feature)getFirst("FROM Feature AS f WHERE f.featureName = ?", name);
 	}
-	
+
+    public void saveOrUpdate(Audit audit) throws StorageAccessException {
+        saveOrUpdate((Object)audit);
+    }
+
 	public SampleDAO getSampleDAO() {
 		return this;
 	}
@@ -748,5 +752,4 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public void save(Taxon taxon) throws StorageAccessException {
 		save((Object)taxon);
 	}
-
 }

@@ -141,7 +141,7 @@ public class DrillholeLocalityDE extends LocalityDE {
 		if (feature.getFinishDate() != null)
 			template.addSub("FinishDate", FREDUtil.formatDateForDE(feature.getFinishDate(), feature.getFinishDateRounding()));
 		if (feature.getDrillholeLicenceName() != null)
-			template.addSub("licenseArea", feature.getDrillholeLicenceName());
+			template.addSub("LicArea", feature.getDrillholeLicenceName());
 		
 		if (feature.getDatumType() != null) {
 			template.addSub("is" + feature.getDatumType(), "yes");
