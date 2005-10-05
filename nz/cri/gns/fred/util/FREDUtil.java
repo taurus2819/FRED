@@ -569,4 +569,11 @@ public class FREDUtil {
 
     public static String decodeCombo(String parameter) {
     	return ("-".equals(parameter)) ? null : parameter;
-    }}
+    }
+    
+    public static String toString(Object o) {
+    	if (o == null)
+    		return "";
+    	return o.toString();
+    }
+}
