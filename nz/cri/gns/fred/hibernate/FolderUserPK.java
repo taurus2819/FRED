@@ -2,6 +2,8 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 
+import nz.cri.gns.fred.util.FREDUtil;
+
 /** @author Hibernate CodeGenerator */
 public class FolderUserPK implements Serializable {
 
@@ -41,7 +43,7 @@ public class FolderUserPK implements Serializable {
         if ( (this == other ) ) return true;
         if ( !(other instanceof FolderUserPK) ) return false;
         FolderUserPK castOther = (FolderUserPK) other;
-        return folderId == castOther.folderId && userId == castOther.userId;
+        return FREDUtil.equals(castOther.userId, userId, false) && FREDUtil.equals(castOther.folderId, folderId, false);
     }
 
  	public int hashCode() {

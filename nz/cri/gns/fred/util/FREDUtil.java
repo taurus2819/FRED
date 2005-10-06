@@ -583,4 +583,18 @@ public class FREDUtil {
     		return "";
     	return o.toString();
     }
+
+    /**
+     * Compares the two objects, handling nulls.  The value of null == null is
+     * given by nullEqulity
+     * @param nullEquality the value to return if both are null
+     * @return
+     */
+    public static boolean equals(Object o1, Object o2, boolean nullEquality) {
+        if (o1 == null && o2 == null)
+            return nullEquality;
+        if (o1 == null ^ o2 == null)
+            return false;
+        return o1.equals(o2);
+    }
 }

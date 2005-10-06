@@ -2,6 +2,8 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 
+import nz.cri.gns.fred.util.FREDUtil;
+
 /** @author Hibernate CodeGenerator */
 public class FeatureMetaPK implements Serializable {
 
@@ -41,7 +43,7 @@ public class FeatureMetaPK implements Serializable {
         if ( (this == other ) ) return true;
         if ( !(other instanceof FeatureMetaPK) ) return false;
         FeatureMetaPK castOther = (FeatureMetaPK) other;
-        return castOther.featureId == featureId && castOther.metaId == metaId;
+        return FREDUtil.equals(castOther.featureId, featureId, false) && FREDUtil.equals(castOther.metaId, metaId, false);
     }
 	public int hashCode() {
 		return (metaId + "_" + featureId).hashCode();

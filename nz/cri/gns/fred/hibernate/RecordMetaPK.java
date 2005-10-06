@@ -2,6 +2,8 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 
+import nz.cri.gns.fred.util.FREDUtil;
+
 /** @author Hibernate CodeGenerator */
 public class RecordMetaPK implements Serializable {
 
@@ -45,7 +47,7 @@ public class RecordMetaPK implements Serializable {
         if ( (this == other ) ) return true;
         if ( !(other instanceof RecordMetaPK) ) return false;
         RecordMetaPK castOther = (RecordMetaPK) other;
-        return castOther.metaId == metaId && castOther.recordId == recordId;
+        return FREDUtil.equals(castOther.recordId, recordId, false) && FREDUtil.equals(castOther.metaId, metaId, false);
     }
 
 	public int hashCode() {

@@ -2,6 +2,8 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 
+import nz.cri.gns.fred.util.FREDUtil;
+
 /** @author Hibernate CodeGenerator */
 public class SedimentaryFeaturePK implements Serializable {
 
@@ -45,7 +47,7 @@ public class SedimentaryFeaturePK implements Serializable {
         if ( (this == other ) ) return true;
         if ( !(other instanceof SedimentaryFeaturePK) ) return false;
         SedimentaryFeaturePK castOther = (SedimentaryFeaturePK) other;
-        return castOther.sampleId == sampleId && castOther.sedFeatureId == sedFeatureId;
+        return FREDUtil.equals(castOther.sampleId, sampleId, false) && FREDUtil.equals(castOther.sedFeatureId, sedFeatureId, false);
     }
 	public int hashCode() {
 		return (sampleId + "_" + sedFeatureId).hashCode();

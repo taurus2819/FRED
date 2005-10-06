@@ -2,6 +2,8 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 
+import nz.cri.gns.fred.util.FREDUtil;
+
 /** @author Hibernate CodeGenerator */
 public class TaxaPanelPK implements Serializable {
 
@@ -45,7 +47,7 @@ public class TaxaPanelPK implements Serializable {
         if ( (this == other ) ) return true;
         if ( !(other instanceof TaxaPanelPK) ) return false;
         TaxaPanelPK castOther = (TaxaPanelPK) other;
-        return castOther.panelistId == panelistId && castOther.groupId == groupId;
+        return FREDUtil.equals(castOther.groupId, groupId, false) && FREDUtil.equals(castOther.panelistId, panelistId, false);
     }
 
 	public int hashCode() {

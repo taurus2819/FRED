@@ -2,6 +2,8 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 
+import nz.cri.gns.fred.util.FREDUtil;
+
 /** @author Hibernate CodeGenerator */
 public class SentToPK implements Serializable {
 
@@ -44,7 +46,7 @@ public class SentToPK implements Serializable {
         if ( (this == other ) ) return true;
         if ( !(other instanceof SentToPK) ) return false;
         SentToPK castOther = (SentToPK) other;
-        return castOther.fossilGroupId.equals(fossilGroupId) && castOther.sampleId.equals(sampleId);
+        return FREDUtil.equals(castOther.fossilGroupId, fossilGroupId, false) && FREDUtil.equals(castOther.sampleId, sampleId, false);
     }
 
 	public int hashCode() {
