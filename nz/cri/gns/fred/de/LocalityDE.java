@@ -463,6 +463,12 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	}
 
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
+        featureUtil = new FeatureUtil(factory);
+        if (feature.getFeatureId() != null) try {
+            feature = featureUtil.getFeature(feature.getFeatureId().intValue());
+        } catch (Exception e) {
+        }
+        
         String[] error = null;
 		
 		//Feature name
