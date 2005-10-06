@@ -270,7 +270,8 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	}
 
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
-		Template template = provider.getContent("locality.de.form");
+        reinitialise(factory);
+        Template template = provider.getContent("locality.de.form");
         prepareTemplate(template, provider);
 		try {
 			//Set up some basic substitutes
@@ -463,13 +464,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	}
 
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
-        featureUtil = new FeatureUtil(factory);
-        if (feature.getFeatureId() != null) try {
-            feature = featureUtil.getFeature(feature.getFeatureId().intValue());
-        } catch (Exception e) {
-        }
+        reinitialise(factory);
         
-        String[] error = null;
+        Vector<String[]> error = new Vector<String[]>();
 		
 		//Feature name
 		feature.setFeatureName(request.getParameter("FeatName"));
@@ -515,7 +512,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		
 		if (coord != null) {
 			if (!datum.coordinateAcceptable(coord))
-				error = new String[] {"Coordinate", "Invalid value"};
+				error.add(new String[] {"Coordinate", "Invalid value"});
 		
 			if (site == null) 
 				site = new SiteRecord();
@@ -523,7 +520,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			try {
 				site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
 			} catch (Exception e) {
-				error = new String[] {"Coordinate", "Invalid coordinates specified"};
+				error.add(new String[] {"Coordinate", "Invalid coordinates specified"});
 			}
 			try {
 				site.setMethod(Integer.parseInt(request.getParameter("LocMethodID")));
@@ -533,7 +530,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			try {
 				site.setAccuracy(Float.parseFloat(request.getParameter("Accuracy")));
 			} catch (Exception e) {
-				error = new String[] {"Accuracy", "Invalid value"};
+				error.add(new String[] {"Accuracy", "Invalid value"});
 				site.setNull(SiteRecord.H_ACCURACY_FIELD);
 			}
 			site.setDirections(request.getParameter("Loc"));
@@ -543,9 +540,20 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		
 		editComments = request.getParameter("EditComm");
 		
-		if (error != null)
-			throw new DataInputException(error[0], error[1]);
+		if (error.size() > 0)
+			throw new DataInputException(error);
 	}
+
+    /**
+     * @param factory
+     */
+    private void reinitialise(DAOFactory factory) {
+        featureUtil = new FeatureUtil(factory);
+        if (feature.getFeatureId() != null) try {
+            feature = featureUtil.getFeature(feature.getFeatureId().intValue());
+        } catch (Exception e) {
+        }
+    }
 	
 	
 	public int save() throws SQLException, IOException, StorageAccessException, InsufficientPrivelegesException {

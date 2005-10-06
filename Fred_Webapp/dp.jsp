@@ -85,8 +85,11 @@
 			out.println("<tr><td>");
 			out.println("<p><span class='bigheading'>Data Error</span></p>");
 			out.println("<table border='0' cellspacing='0'>");
-			out.println("<tr><td class='heading'>Problem Field<img src='images/blank.gif' width='20' height='1' /></td><td>" + e.getField() + "</td></tr>");
-			out.println("<tr><td class='heading'>Error</td><td>"+ e.getMessage() + "</td></tr>");
+			for (Iterator it = e.getError().iterator(); it.hasNext(); ) {
+				String[] error = (String[])it.next();
+			    out.println("<tr><td class='heading'>Problem Field<img src='images/blank.gif' width='20' height='1' /></td><td>" + error[0] + "</td></tr>");
+				out.println("<tr><td class='heading'>Error</td><td>"+ error[1] + "</td></tr>");
+			}
 			out.println("</table>");
 		} catch (InsufficientPrivelegesException e) {
 			drawTop(out, et, request, response);

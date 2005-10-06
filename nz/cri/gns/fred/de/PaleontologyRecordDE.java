@@ -57,8 +57,8 @@ public class PaleontologyRecordDE extends RecordDE {
     }
 
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
-        String[] error = null;
-
+       Vector<String[]> error = new Vector<String[]>();
+        
        super.updateFromRequest(request, factory);
         
         Paleontology pal = record.getPaleontology();
@@ -68,21 +68,21 @@ public class PaleontologyRecordDE extends RecordDE {
             pal.setIdentificationDate(FREDUtil.parseDateFromDE(palDate));
             pal.setDateRounding(FREDUtil.parseDateRoundingFromDE(palDate));
         } catch (ParseException e) {
-            error = new String[] {"Adoption Date", "Badly formatted date"};
+            error.add(new String[] {"Adoption Date", "Badly formatted date"});
         }
         
         //Adoptors
         try {
             pal.setIdentifiers(FREDUtil.getPersons(request.getParameter("Adoptor"), new PersonUtil(factory), "Adoptors"));
         } catch (DataInputException e) {
-            error = new String[] {e.getField(), e.getMessage()};
+            error.addAll(e.getError());
         }
         
         //Stage
         try {
             pal.setStage(FREDUtil.getStage(request, "", pal.getStage(), new SampleUtil(factory)));
         } catch (DataInputException e) {
-            error = new String[] {e.getField(), e.getMessage()};
+            error.addAll(e.getError());
         }
         
         //Stage Comments
@@ -95,7 +95,7 @@ public class PaleontologyRecordDE extends RecordDE {
             if (pal.getLabSection() == null || !pal.getLabSection().getLabSectionId().toString().equals(sectionId)) try {
                 pal.setLabSection(recordUtil.getLabSection(Integer.parseInt(sectionId)));
             } catch (StorageAccessException e) {
-                error = new String[] {"Lab Section", "Error accessing data storage"};
+                error.add(new String[] {"Lab Section", "Error accessing data storage"});
             }
         }
         
@@ -157,14 +157,14 @@ public class PaleontologyRecordDE extends RecordDE {
                     taxaList.add(entry);
                 }
 			} catch (Exception e) {
-				error = new String[] {"Taxanomic List", taxaLine + " not valid"};
+				error.add(new String[] {"Taxanomic List", taxaLine + " not valid"});
 			}
         }
         //Now remove any that remain in the 'removed' pile
         taxaList.removeAll(removedTaxaList);
 
-        if (error != null) 
-            throw new DataInputException(error[0], error[1]);
+        if (error.size() > 0) 
+            throw new DataInputException(error);
         
 		if (badTaxaList.size() > 0)
 			throw new TaxonomicListException(badTaxaList);

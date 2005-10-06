@@ -672,15 +672,15 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
         reinitialise(factory);
 
-        String[] error = null;
-		
+        Vector<String[]> error = new Vector<String[]>();
+
 		//Collection date
 		try {
 			String collectionDate = request.getParameter("CollDate");
 			sample.setCollectionDate(FREDUtil.parseDateFromDE(collectionDate));
 			sample.setDateRounding(FREDUtil.parseDateRoundingFromDE(collectionDate));
 		} catch (ParseException e) {
-			error = new String[] {"Start Date", "Badly formatted date"};
+			error.add(new String[] {"Start Date", "Badly formatted date"});
 		}
 		
 		//Collectors
@@ -688,7 +688,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         try {
             sample.setCollectors(FREDUtil.getPersons(request.getParameter("Coll"), personUtil, "Collectors"));
         } catch (DataInputException e) {
-            error = new String[] {e.getField(), e.getMessage()};
+            error.addAll(e.getError());
         }
 
 		//Strat name
@@ -705,22 +705,22 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     			String[] parts = sentTo.split("\\*");
     			FossilGroup group = (parts[0].length() == 0) ? null : sampleUtil.getFossilGroup(parts[0]);
     			if (parts[0].length() > 0 && group == null)
-    				error = new String[] {"Sent To", "Invalid group: " + parts[0]};
+    				error.add(new String[] {"Sent To", "Invalid group: " + parts[0]});
     
     			Person person = (parts[1].length() == 0) ? null : personUtil.findPerson(parts[1]);
     			if (parts[1].length() > 0 && person == null)
-    				error = new String[] {"Sent To", "Invalid person: " + parts[1]};
+    				error.add(new String[] {"Sent To", "Invalid person: " + parts[1]});
     			
     			Integer lab = (parts[2].length() == 0) ? null : FREDUtil.getLabId(parts[2]);
     			if (parts[2].length() > 0 && lab == null)
-    				error = new String[] {"Sent To", "Invalid lab: " + parts[2]};
+    				error.add(new String[] {"Sent To", "Invalid lab: " + parts[2]});
     			
     			String comments = parts[3];
     			
     			sentToSet.add(sampleUtil.findOrCreateSentTo(sample, group, person, lab, comments));
     		} catch (Exception e) {
                 e.printStackTrace();
-    			error = new String[] {"Sent To", "Database error: " + e.getMessage()};
+    			error.add(new String[] {"Sent To", "Database error: " + e.getMessage()});
     		}
     		sample.setSentTos(sentToSet);
         } else {
@@ -732,14 +732,14 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         try {
             sample.setInferredStage(FREDUtil.getStage(request, "Inf", sample.getInferredStage(), sampleUtil));
         } catch (DataInputException e) {
-            error = new String[] {e.getField(), e.getMessage()};
+            error.addAll(e.getError());
         }
 		
         //Work out the known stage
         try {
             sample.setKnownStage(FREDUtil.getStage(request, "Knw", sample.getKnownStage(), sampleUtil));
         } catch (DataInputException e) {
-            error = new String[] {e.getField(), e.getMessage()};
+            error.addAll(e.getError());
         }
 		
 		//Relationships - previous, sample and strat
@@ -780,7 +780,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 					relationships.add(sampleUtil.createRelationship(sample, feature, FREDConstants.SAMPLE, FREDConstants.NEARBY));
 				}
 			} catch (Exception e) {
-				error = new String[] {"Previous sample", e.getMessage()};
+				error.add(new String[] {"Previous sample", e.getMessage()});
 			}
 		} 
 		//Remove any that are still in the old set
@@ -806,7 +806,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 					relationships.add(sampleUtil.cloneRelationship(newRelationship));
 				}
 			} catch (Exception e) {
-				error = new String[] {"Sample relationships", e.getMessage()};
+				error.add(new String[] {"Sample relationships", e.getMessage()});
 			}
 		}
 		//Remove any that are still in the old set
@@ -832,7 +832,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 					relationships.add(sampleUtil.cloneRelationship(newRelationship));
 				}
 			} catch (Exception e) {
-				error = new String[] {"Stratigraphic relationships", e.getMessage()};
+				error.add(new String[] {"Stratigraphic relationships", e.getMessage()});
 			}
 		}
 		//Remove any that are still in the old set
@@ -846,10 +846,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			sample.setDip(new Integer(dip));
 			int iDip = sample.getDip().intValue();
 			if (iDip > 90 || iDip < 0) {
-				error = new String[] {"Dip", iDip + " is not valid.  Dip must be between 0 and 90"};
+				error.add(new String[] {"Dip", iDip + " is not valid.  Dip must be between 0 and 90"});
 			}
 		} catch (Exception e) {
-			error = new String[] {"Dip", dip + " is not valid.  Dip must be a whole number of degrees"};
+			error.add(new String[] {"Dip", dip + " is not valid.  Dip must be a whole number of degrees"});
 		}
 		
 		String dipDir = request.getParameter("DipDir");
@@ -866,10 +866,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			sample.setStrike(new Integer(strike));
 			int iStrike = sample.getStrike().intValue();
 			if (iStrike > 360 || iStrike < 0) {
-				error = new String[] {"Strike", iStrike + " is not valid.  Strike must be between 0 and 360"};
+				error.add(new String[] {"Strike", iStrike + " is not valid.  Strike must be between 0 and 360"});
 			}
 		} catch (Exception e) {
-			error = new String[] {"Strike", strike + " is not valid.  Strike must be a whole number of degrees"};
+			error.add(new String[] {"Strike", strike + " is not valid.  Strike must be a whole number of degrees"});
 		}
 		
 		String facing = request.getParameter("Facing");
@@ -882,7 +882,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			sample.setPrimaryGrainSize(getGrainSize(request.getParameter("GrainSizeP")));
 			sample.setSecondaryGrainSize(getGrainSize(request.getParameter("GrainSizeS")));
 		} catch (StorageAccessException e) {
-			error = new String[] {"Grain size", "Database problem: " + e.getMessage()};
+			error.add(new String[] {"Grain size", "Database problem: " + e.getMessage()});
 		}
 			
 		String gsComp = request.getParameter("GSComp");
@@ -902,7 +902,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			sample.setPrimaryColour(getColour(request.getParameter("ColourP")));
 			sample.setSecondaryColour(getColour(request.getParameter("ColourS")));
 		} catch (StorageAccessException e) {
-			error = new String[] {"Lookups", "Database problem: " + e.getMessage()};
+			error.add(new String[] {"Lookups", "Database problem: " + e.getMessage()});
 		}
 		String wet = request.getParameter("Wet");
 		if (wet.length() == 0)
@@ -959,8 +959,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		sample.setRockNature(request.getParameter("RockNat"));
 		sample.setCorrespondence(request.getParameter("Corr"));
 		
-		if (error != null)
-			throw new DataInputException(error[0], error[1]);
+        if (error.size() > 0) 
+            throw new DataInputException(error);
 		
 	}
 

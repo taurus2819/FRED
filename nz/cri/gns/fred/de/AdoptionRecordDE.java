@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -83,7 +84,7 @@ public class AdoptionRecordDE extends RecordDE {
 	}
 
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
-        String[] error = null;
+        Vector<String[]> error = new Vector<String[]>();
         
         super.updateFromRequest(request, factory);
         
@@ -94,28 +95,28 @@ public class AdoptionRecordDE extends RecordDE {
             adoption.setAdoptionDate(FREDUtil.parseDateFromDE(adoptionDate));
             adoption.setDateRounding(FREDUtil.parseDateRoundingFromDE(adoptionDate));
         } catch (ParseException e) {
-            error = new String[] {"Adoption Date", "Badly formatted date"};
+            error.add(new String[] {"Adoption Date", "Badly formatted date"});
         }
         
         //Adoptors
         try {
             adoption.setAdopters(FREDUtil.getPersons(request.getParameter("Adoptor"), new PersonUtil(factory), "Adoptors"));
         } catch (DataInputException e) {
-            error = new String[] {e.getField(), e.getMessage()};
+            error.addAll(e.getError());
         }
        
         //Stage
         try {
             adoption.setStage(FREDUtil.getStage(request, "", adoption.getStage(), new SampleUtil(factory)));
         } catch (DataInputException e) {
-            error = new String[] {e.getField(), e.getMessage()};
+            error.addAll(e.getError());
         }
 
         //Comments
         adoption.setComments(request.getParameter("Comm"));
         
-        if (error != null) {
-            throw new DataInputException(error[0], error[1]);
+        if (error.size() > 0) {
+            throw new DataInputException(error);
         }
     }
 

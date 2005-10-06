@@ -528,7 +528,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	}
 
 	public SentTo createNewSentTo() {
-		return new nz.cri.gns.fred.hibernate.SentTo();
+		return new nz.cri.gns.fred.hibernate.SentTo(false);
 	}
 
 	public Stage findStage(String startStageId, boolean startUncertain, String stopStageId, boolean stopUncertain) throws StorageAccessException {
