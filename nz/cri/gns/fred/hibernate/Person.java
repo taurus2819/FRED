@@ -129,4 +129,8 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
 	public boolean equals(Object o) {
 		return o instanceof Person && personId != null && personId.equals(((Person)o).getPersonId());
 	}
+    
+    public int hashCode() {
+        return name.hashCode();
+    }
 }

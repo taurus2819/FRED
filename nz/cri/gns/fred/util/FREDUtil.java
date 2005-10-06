@@ -545,14 +545,19 @@ public class FREDUtil {
         HashSet<Person> personSet = new HashSet<Person>();
         Vector<String[]> error = new Vector<String[]>();
         for (String collector : adoptors) try {
+            System.out.println("Trying: " + collector);
             Person person = personUtil.findPerson(collector.trim());
             if (person == null)
                 error.add(new String[] {personLabel, "Invalid person: " + collector});
-            else
+            else {
+                System.out.println("Trying add!");
                 personSet.add(personUtil.findPerson(collector));
+            }
         } catch (StorageAccessException e) {
+            System.out.println("Trying error");
             error.add(new String[] {personLabel, "Database error: " + e.getMessage()});
         }
+        System.out.println("Trying set size: " + personSet.size());
         if (error.size() > 0)
             throw new DataInputException(error, personSet);
         
