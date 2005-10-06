@@ -31,7 +31,7 @@ public interface Adoption extends RecordDetails {
 
 	public abstract void setStage(nz.cri.gns.fred.model.Stage stage);
 
-	public abstract Set getAdopters();
+	public abstract Set<Person> getAdopters();
 
-	public abstract void setAdopters(Set adopters);
+	public abstract void setAdopters(Set<Person> adopters);
 }
