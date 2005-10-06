@@ -732,6 +732,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                 sample.getSentTos().clear();
         }
         
+        //Not collected?
+        sample.setNotCollected(request.getParameter("NotColl"));
+        sample.setSignificance(request.getParameter("Sig"));
+        
 		//Work out the inferred stage
         try {
             sample.setInferredStage(FREDUtil.getStage(request, "Inf", sample.getInferredStage(), sampleUtil));
