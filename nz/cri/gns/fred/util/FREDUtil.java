@@ -560,7 +560,7 @@ public class FREDUtil {
         return personSet;
     }
 
-    public static Stage getStage(HttpServletRequest request, String prefix, Stage existingStage, SampleUtil sampleUtil) throws DataInputException {
+    public static Stage getStage(HttpServletRequest request, String prefix, Stage existingStage, SampleUtil sampleUtil, String label) throws DataInputException {
         String startId = decodeCombo(request.getParameter(prefix + "StageStart"));
         String startMod = decodeCombo(request.getParameter(prefix + "StartMod"));
         String stopId = decodeCombo(request.getParameter(prefix + "StageStop"));
@@ -569,7 +569,7 @@ public class FREDUtil {
         if (sampleUtil.stageDiffers(existingStage, startId, startMod != null, stopId, stopMod != null)) try {
             return sampleUtil.getStage(startId, startMod != null, stopId, stopMod != null);
         } catch (Exception e) {
-            throw new DataInputException("Inferred Stage", e.getMessage());
+            throw new DataInputException(label, e.getMessage());
         } else
             return existingStage;
     }
