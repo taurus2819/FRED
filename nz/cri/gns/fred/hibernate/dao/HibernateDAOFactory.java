@@ -621,11 +621,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
         saveOrUpdate((Object)sample);
     }
 
-    public void attach(Sample sample) throws StorageAccessException {
-        attach((Object)sample);
-    }
-
-    private void attach(Object object) throws StorageAccessException {
+    public void attach(Object object) throws StorageAccessException {
         try {
             provider.currentSession().refresh(object);
         } catch (HibernateException e) {

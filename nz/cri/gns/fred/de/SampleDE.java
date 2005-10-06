@@ -971,6 +971,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         sampleUtil = new SampleUtil(factory);
         try {
             sampleUtil.attach(sample);
+            sampleUtil.attach(sample.getAudit());
         } catch (Exception e) {
             e.printStackTrace();
         }
