@@ -72,6 +72,7 @@
 			out.println("<p><a href='data_proc.jsp?Action=SubmitTaxa&SaveType=Save'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit Taxa' /></a>&nbsp;<a href='data_proc.jsp?Action=SubmitTaxa&SaveType=Save' class='boldlink'>Submit Taxa and Save Record.</a></p>");
 			out.println("<p>Note: No data has been saved yet.  You must either choose to submit the above taxa or return to the data entry form, edit and re-save</p>");
 		} catch (DataInputException e) {
+			out.println(e.getError().size());
 			drawTop(out, et, request, response);
 			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
 			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
