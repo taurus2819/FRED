@@ -40,11 +40,11 @@ public class SentToPK implements Serializable {
     }
 
 
-    public boolean equals(Object other) {
+    public final boolean equals(Object other) {
         if ( (this == other ) ) return true;
         if ( !(other instanceof SentToPK) ) return false;
         SentToPK castOther = (SentToPK) other;
-        return castOther.fossilGroupId == fossilGroupId && castOther.sampleId == sampleId;
+        return castOther.fossilGroupId.equals(fossilGroupId) && castOther.sampleId.equals(sampleId);
     }
 
 	public int hashCode() {
