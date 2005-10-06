@@ -111,7 +111,7 @@ public class SentTo implements Serializable, nz.cri.gns.fred.model.SentTo, Clone
 
     public void setSample(nz.cri.gns.fred.model.Sample sample) {
         this.sample = sample;
-        if (comp_id != null) {
+        if (comp_id == null) {
         	comp_id = new SentToPK();
         }
         comp_id.setSampleId(sample.getSampleId());
@@ -123,7 +123,7 @@ public class SentTo implements Serializable, nz.cri.gns.fred.model.SentTo, Clone
 
     public void setFossilGroup(nz.cri.gns.fred.model.FossilGroup fossilGroup) {
         this.fossilGroup = fossilGroup;
-        if (comp_id != null) {
+        if (comp_id == null) {
         	comp_id = new SentToPK();
         }
         comp_id.setFossilGroupId(fossilGroup.getGroupId());
