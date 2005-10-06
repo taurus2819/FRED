@@ -51,5 +51,7 @@ public class SentToPK implements Serializable {
 		return (fossilGroupId + "_" + sampleId).hashCode();
 	}
 
-
+    public String toString() {
+        return super.toString() + " {" + sampleId + "," + fossilGroupId + "}";
+    }
 }
