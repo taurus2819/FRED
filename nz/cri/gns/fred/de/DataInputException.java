@@ -6,6 +6,7 @@ public class DataInputException extends Exception {
 	
     private static final long serialVersionUID = 20050818L;
     private Vector<String[]> error;
+    private Object auxData;
 	
 	public DataInputException() {
 	}
@@ -20,7 +21,20 @@ public class DataInputException extends Exception {
         this.error = error;
     }
 
+    public DataInputException(Vector<String[]> error, Object auxiliaryData) {
+        this(error);
+        this.auxData = auxiliaryData;
+    }
+
     public Vector<String[]> getError() {
 		return error;
 	}
+    
+    public boolean hasAuxiliaryData() {
+        return auxData != null;
+    }
+    
+    public Object getAuxiliaryData() {
+        return auxData;
+    }
 }

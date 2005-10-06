@@ -543,16 +543,19 @@ public class FREDUtil {
             return new HashSet<Person>();
         String[] adoptors = parameter.split("[;\\n]");
         HashSet<Person> personSet = new HashSet<Person>();
+        Vector<String[]> error = new Vector<String[]>();
         for (String collector : adoptors) try {
-            System.out.println("Trying '" + collector + "'");
-            Person person = personUtil.findPerson(collector);
+            Person person = personUtil.findPerson(collector.trim());
             if (person == null)
-                throw new DataInputException(personLabel, "Invalid person: " + collector);
+                error.add(new String[] {personLabel, "Invalid person: " + collector});
             else
                 personSet.add(personUtil.findPerson(collector));
         } catch (StorageAccessException e) {
-            throw new DataInputException(personLabel, "Database error: " + e.getMessage());
+            error.add(new String[] {personLabel, "Database error: " + e.getMessage()});
         }
+        if (error.size() > 0)
+            throw new DataInputException(error, personSet);
+        
         return personSet;
     }
 
