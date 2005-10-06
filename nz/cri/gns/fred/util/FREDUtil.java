@@ -552,7 +552,7 @@ public class FREDUtil {
             else {
                 System.out.println("Trying set size: " + personSet.size());
                 System.out.println("Trying add!");
-                personSet.add(personUtil.findPerson(collector));
+                personSet.add(person);
                 System.out.println("Trying set size: " + personSet.size());
            }
         } catch (StorageAccessException e) {
