@@ -550,9 +550,11 @@ public class FREDUtil {
             if (person == null)
                 error.add(new String[] {personLabel, "Invalid person: " + collector});
             else {
+                System.out.println("Trying set size: " + personSet.size());
                 System.out.println("Trying add!");
                 personSet.add(personUtil.findPerson(collector));
-            }
+                System.out.println("Trying set size: " + personSet.size());
+           }
         } catch (StorageAccessException e) {
             System.out.println("Trying error");
             error.add(new String[] {personLabel, "Database error: " + e.getMessage()});
