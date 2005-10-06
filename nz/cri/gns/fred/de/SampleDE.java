@@ -969,9 +969,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
      */
     private void reinitialise(DAOFactory factory) {
         sampleUtil = new SampleUtil(factory);
-        try {
-            sampleUtil.attach(sample);
-            sampleUtil.attach(sample.getAudit());
+        if (sample.getSampleId() != null) try {
+            sample = sampleUtil.getSample(sample.getSampleId().intValue());
         } catch (Exception e) {
             e.printStackTrace();
         }
