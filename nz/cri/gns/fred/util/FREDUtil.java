@@ -541,9 +541,10 @@ public class FREDUtil {
     public static Set<Person> getPersons(String parameter, PersonUtil personUtil, String personLabel) throws DataInputException {
         if (parameter.trim().length() == 0)
             return new HashSet<Person>();
-        String[] adoptors = parameter.split("\\n");
+        String[] adoptors = parameter.split("[;\\n]");
         HashSet<Person> personSet = new HashSet<Person>();
         for (String collector : adoptors) try {
+            System.out.println("Trying '" + collector + "'");
             Person person = personUtil.findPerson(collector);
             if (person == null)
                 throw new DataInputException(personLabel, "Invalid person: " + collector);
