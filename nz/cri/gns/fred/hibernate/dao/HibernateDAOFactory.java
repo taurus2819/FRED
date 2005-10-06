@@ -697,10 +697,6 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		return this;
 	}
 
-	public Person getCompany(String name) throws StorageAccessException {
-		return (Person)getFirst("FROM Person as p WHERE p.familyName = ? AND p.givenName IS NULL", name);
-	}
-
 	public Person createNewPerson() {
 		return new nz.cri.gns.fred.hibernate.Person();
 	}
@@ -709,28 +705,8 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		save((Object)person);
 	}
 
-	public Person getPerson(String givenName, String familyName) throws StorageAccessException {
-		try {
-            Session session = provider.currentSession();
-			Query query = session.createQuery("FROM Person AS p WHERE p.givenName = :given AND p.familyName = :family");
-			query.setString("given", givenName);
-			query.setString("family", familyName);
-			List list = query.list();
-			if (list.size() == 0)
-				return null;
-			return (Person)list.get(0);
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-        }
-	}
-
-	public Person findPerson(String name) throws StorageAccessException {
-		//Try and find a person
-		Person person = (Person)getFirst("FROM Person As p WHERE p.familyName || ', ' || p.givenName = ?", name);
-		if (person != null)
-			return person;
-		//Try and find a company
-		return (Person)getFirst("FROM Person As p WHERE p.familyName = ?", name);
+	public Person getPerson(String name) throws StorageAccessException {
+		return (Person)getFirst("FROM Person As p WHERE p.name = ?", name);
 	}
 
     public TaxonomicDAO getTaxonomicDAO() {

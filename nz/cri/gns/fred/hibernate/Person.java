@@ -12,11 +12,8 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
 	/** identifier field */
     private Integer personId;
 
-    /** nullable persistent field */
-    private String givenName;
-
     /** persistent field */
-    private String familyName;
+    private String name;
 
     /** nullable persistent field */
     private Integer stCode;
@@ -37,9 +34,8 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
     private Set collectedSamples;
 
     /** full constructor */
-    public Person(String givenName, String familyName, Integer stCode, Set adoptions, Set identifiedPaleontologies, Set features, Set sentTos, Set collectedSamples) {
-        this.givenName = givenName;
-        this.familyName = familyName;
+    public Person(String name, Integer stCode, Set adoptions, Set identifiedPaleontologies, Set features, Set sentTos, Set collectedSamples) {
+        this.name = name;
         this.stCode = stCode;
         this.adoptions = adoptions;
         this.identifiedPaleontologies = identifiedPaleontologies;
@@ -53,8 +49,8 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
     }
 
     /** minimal constructor */
-    public Person(String familyName, Set adoptions, Set identifiedPaleontologies, Set features, Set sentTos, Set collectedSamples) {
-        this.familyName = familyName;
+    public Person(String name, Set adoptions, Set identifiedPaleontologies, Set features, Set sentTos, Set collectedSamples) {
+        this.name = name;
         this.adoptions = adoptions;
         this.identifiedPaleontologies = identifiedPaleontologies;
         this.features = features;
@@ -70,20 +66,12 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
         this.personId = personId;
     }
 
-    public String getGivenName() {
-        return this.givenName;
+    public String getName() {
+        return this.name;
     }
 
-    public void setGivenName(String givenName) {
-        this.givenName = givenName;
-    }
-
-    public String getFamilyName() {
-        return this.familyName;
-    }
-
-    public void setFamilyName(String familyName) {
-        this.familyName = familyName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Integer getStCode() {
@@ -135,9 +123,7 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
     }
 
 	public String getDisplayName() {
-		return (getGivenName() == null) ? 
-			getFamilyName() :
-			getFamilyName() + ", " + getGivenName();
+		return getName();
 	}
 
 	public boolean equals(Object o) {

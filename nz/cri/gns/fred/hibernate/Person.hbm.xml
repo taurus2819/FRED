@@ -27,15 +27,9 @@
     </id>
 
     <property
-        name="givenName"
+        name="name"
         type="java.lang.String"
-        column="GIVEN_NAME"
-        length="32"
-    />
-    <property
-        name="familyName"
-        type="java.lang.String"
-        column="FAMILY_NAME"
+        column="NAME"
         not-null="true"
         length="64"
     />

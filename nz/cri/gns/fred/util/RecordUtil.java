@@ -61,7 +61,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			Iterator it = details.getPersons().iterator();
 			if (it.hasNext()) {
 				Person p = (Person)it.next();
-				person = p.getGivenName() + " " + p.getFamilyName();
+				person = p.getName();
 			}
 		}
 		

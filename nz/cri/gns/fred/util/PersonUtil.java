@@ -13,28 +13,27 @@ public class PersonUtil extends ModelUtil {
 		super(factory);
 		this.personDAO = factory.getPersonDAO();
 	}
-	public Person findOrCreateCompany(String companyName) throws StorageAccessException {
-		Person person = personDAO.getCompany(companyName);
+    
+    /**
+     * Returns the person with the given name and will create them if they don't exist
+     * @throws StorageAccessException
+     */
+	public Person findOrCreatePerson(String name) throws StorageAccessException {
+		Person person = personDAO.getPerson(name);
 		if (person == null) {
 			//Insert them
 			person = personDAO.createNewPerson();
-			person.setFamilyName(companyName);
+			person.setName(name);
 			personDAO.save(person);
 		}
 		return person;
 	}
-	public Person findOrCreatePerson(String givenName, String familyName) throws StorageAccessException {
-		Person person = personDAO.getPerson(givenName, familyName);
-		if (person == null) {
-			//Insert them
-			person = personDAO.createNewPerson();
-			person.setFamilyName(familyName);
-			person.setGivenName(givenName);
-			personDAO.save(person);
-		}
-		return person;
-	}
+
+    /**
+     * Returns the person with the given name or null if they don't exist
+     * @throws StorageAccessException
+     */
 	public Person findPerson(String name) throws StorageAccessException {
-		return personDAO.findPerson(name);
+		return personDAO.getPerson(name);
 	}
 }

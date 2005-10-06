@@ -354,7 +354,7 @@ function parseDropDown(val) {
 
 		if (request.getParameter("Add") != null) {  //add data to lookup tables
 			if (request.getParameter("Add").equals("Person")) {
-				execUp = statement.executeUpdate("INSERT INTO Person (Given_Name, Family_Name) VALUES (" + JspUtils.sqlEscape(request.getParameter("GivenName")) + ", " + JspUtils.sqlEscape(request.getParameter("FamilyName")) + ")");
+				execUp = statement.executeUpdate("INSERT INTO Person (Name) VALUES (" + JspUtils.sqlEscape(request.getParameter("GivenName") + ", " + request.getParameter("FamilyName")) + ")");
 				out.println("<script language='JavaScript'>alert(\"Name added to list.  Please now select to add to form\");</script>");
 			}
 		}
@@ -646,7 +646,7 @@ function parseDropDown(val) {
 			cd.name = "Rel";
 			cd.prompt = "-- Choose --";
 			cd.orderBy = "reltype_id";
-			cd.join = "reltype_type = 1 AND name != 'nearby'";
+			cd.join = "relation_type = 'Sample' AND name != 'nearby'";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("</td></tr>");
 			out.print("<tr><td class='heading'>Masterfile Area</td><td>");
@@ -697,7 +697,7 @@ function parseDropDown(val) {
 			cd.name = "Rel";
 			cd.prompt = "-- Choose --";
 			cd.orderBy = "reltype_id";
-			cd.join = "reltype_type = 2";
+			cd.join = "relation_type = 'Stratigraphic'";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.print("<tr><td class='heading'>NZ StratLex</td><td>");
 			cd = new ComboDescriptor("SL.Strat_Unit", "SU_Name", "SU_Name");

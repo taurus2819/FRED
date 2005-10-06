@@ -11,13 +11,9 @@ public interface Person extends PersonRelationship {
 
 	public abstract void setPersonId(Integer personId);
 
-	public abstract String getGivenName();
+	public abstract String getName();
 
-	public abstract void setGivenName(String givenName);
-
-	public abstract String getFamilyName();
-
-	public abstract void setFamilyName(String familyName);
+	public abstract void setName(String name);
 
 	public abstract Integer getStCode();
 

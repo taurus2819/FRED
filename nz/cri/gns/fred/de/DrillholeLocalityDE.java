@@ -64,8 +64,8 @@ public class DrillholeLocalityDE extends LocalityDE {
 		//Will always be a company
 		if (operator.length() == 0)
 			feature.setPerson(null);
-		else if (feature.getPerson() == null || !feature.getPerson().getFamilyName().equals(operator)) try {
-			feature.setPerson(new PersonUtil(factory).findOrCreateCompany(operator));
+		else if (feature.getPerson() == null || !feature.getPerson().getName().equals(operator)) try {
+			feature.setPerson(new PersonUtil(factory).findOrCreatePerson(operator));
 		} catch (StorageAccessException e) {
 			error = new String[] {"Operating Company", "Error storing the operator's name"};
 		}
