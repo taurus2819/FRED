@@ -134,6 +134,7 @@ function showHide(toShow, toHide) {
 <ul>
 <li><img src="images/edit.gif" border="0"> to edit the locality
 <li><img src="images/submit.gif" border="0"> to submit the locality for entry to the masterfile
+<li><img src="images/drill.gif" border="0"> to create a sample this locality
 <li><img src="images/new_ado.gif" border="0"> to create a new adoption for this locality
 <li><img src="images/new_pal.gif" border="0"> to create a new paleontological reocrd for this locality
 </ul>
@@ -185,7 +186,7 @@ function showHide(toShow, toHide) {
 		%><td><%
 		boolean editable = audit.getStatus().equals(FREDConstants.WORKING) || audit.getStatus().equals(FREDConstants.REJECTED);
 		if (editable && folder.isAllowedEditLocalities()) {
-			%><a href="data_entry.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
+			%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 		}
 	
 		%></td><td><%

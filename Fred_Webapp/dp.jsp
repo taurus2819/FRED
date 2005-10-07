@@ -42,7 +42,11 @@
 				dataEntryForm.save();
 			}
 			factory.closeSession();
-			response.sendRedirect((String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "&q=" + Math.random());
+			String whereTo = (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT);
+			if (whereTo == null)
+				response.sendRedirect("folder_list.jsp");
+			else
+				response.sendRedirect(whereTo + "&q=" + Math.random());
 			return;
 
 		} catch (TaxonomicListException e) {

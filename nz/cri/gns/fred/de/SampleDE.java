@@ -148,6 +148,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		if (!outcropSample) {
             //This section is only relevant if this is _not_ an outcrop sample
             Template template = provider.getContent("sample.no.outcrop.de.form");
+            prepareTemplate(template, provider);
             template.addSub("featureName", sample.getFeature().getFeatureName());
             template.addSub("sampleName", sample.getSampleName());
             template.addSub("featureId", sample.getFeature().getFeatureId().toString());
