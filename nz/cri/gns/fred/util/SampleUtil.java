@@ -374,7 +374,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
 	public Relationship decodeStratigraphicRelationshipDescription(String desc) throws StorageAccessException {
 		NoIdRelationship relationship = new NoIdRelationship();
-		String name = getCommonRelationshipPropertiesFromDescription(desc, relationship, sampleDAO.getRelationType("Sample"));
+		String name = getCommonRelationshipPropertiesFromDescription(desc, relationship, sampleDAO.getRelationType("Stratigraphic"));
 		//Set the unit by name
 		relationship.setStratUnit(name);
 		try {
@@ -414,7 +414,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		//Allow one or two word relationships
 		RelationshipType relType = sampleDAO.getRelationshipType(relationType, parts[where++]);
 		if (relType == null) {
-			relType = sampleDAO.getRelationshipType(sampleDAO.getRelationType("Sample"), parts[where-1] + " " + parts[where++]);
+			relType = sampleDAO.getRelationshipType(relationType, parts[where-1] + " " + parts[where++]);
 			if (relType == null)
 				throw new IllegalArgumentException("Relationship description has invalid relationship type: ('" + parts[where-2] + "' nor '" + parts[where-2] + " " + parts[where-1] + "')");
 		}
