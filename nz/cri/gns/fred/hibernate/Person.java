@@ -28,19 +28,15 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
     private Set features;
 
     /** persistent field */
-    private Set sentTos;
-
-    /** persistent field */
     private Set collectedSamples;
 
     /** full constructor */
-    public Person(String name, Integer stCode, Set adoptions, Set identifiedPaleontologies, Set features, Set sentTos, Set collectedSamples) {
+    public Person(String name, Integer stCode, Set adoptions, Set identifiedPaleontologies, Set features, Set collectedSamples) {
         this.name = name;
         this.stCode = stCode;
         this.adoptions = adoptions;
         this.identifiedPaleontologies = identifiedPaleontologies;
         this.features = features;
-        this.sentTos = sentTos;
         this.collectedSamples = collectedSamples;
     }
 
@@ -49,12 +45,11 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
     }
 
     /** minimal constructor */
-    public Person(String name, Set adoptions, Set identifiedPaleontologies, Set features, Set sentTos, Set collectedSamples) {
+    public Person(String name, Set adoptions, Set identifiedPaleontologies, Set features, Set collectedSamples) {
         this.name = name;
         this.adoptions = adoptions;
         this.identifiedPaleontologies = identifiedPaleontologies;
         this.features = features;
-        this.sentTos = sentTos;
         this.collectedSamples = collectedSamples;
     }
 
@@ -106,14 +101,6 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
         this.features = features;
     }
 
-    public Set getSentTos() {
-        return this.sentTos;
-    }
-
-    public void setSentTos(Set sentTos) {
-        this.sentTos = sentTos;
-    }
-
     public Set getCollectedSamples() {
         return this.collectedSamples;
     }
@@ -132,5 +119,9 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
     
     public int hashCode() {
         return name.hashCode();
+    }
+    
+    public String toString() {
+    	return super.toString() + " {" + personId + ": " + name + "}";
     }
 }

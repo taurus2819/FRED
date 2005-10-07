@@ -568,24 +568,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			feature.setSiteId(new Integer(site.key));
 		}
 		
-		FeatureDAO dao = factory.getFeatureDAO();
-		
-		Audit audit = feature.getAudit();
-		if (feature.getFeatureId() == null) {
-			//New feature
-			audit.setCreatedById(user.getDatabaseId());
-			audit.setCreatedDate(new Date());
-		} else if (audit.getStatus().equals(FREDConstants.APPROVED)) {
-			AuditEdit edit = dao.createNewAuditEdit();
-			edit.setAudit(audit);
-			edit.setEditedById(user.getDatabaseId());
-			edit.setEditedDate(new Date());
-			edit.setComments(editComments);
-			dao.save(edit);
-		}
-        
-        dao.saveOrUpdate(audit);
-        dao.saveOrUpdate(feature);
+		featureUtil.saveFeature(feature, user, editComments);
 		
 		return feature.getFeatureId();
 	}

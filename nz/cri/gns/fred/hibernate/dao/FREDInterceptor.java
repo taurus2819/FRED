@@ -12,6 +12,8 @@ import net.sf.hibernate.type.Type;
  */
 public class FREDInterceptor implements Interceptor, Serializable {
 
+	private static final long serialVersionUID = 20050818L;
+
 	public boolean onLoad(Object arg0, Serializable arg1, Object[] arg2, String[] arg3, Type[] arg4) throws CallbackException {
 		return false;
 	}
@@ -20,7 +22,11 @@ public class FREDInterceptor implements Interceptor, Serializable {
 		return false;
 	}
 
-	public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] Types) throws CallbackException {
+	public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException {
+		if (entity instanceof CompositeKeyed) {
+			//Check the key
+			((CompositeKeyed)entity).updateKey();
+		}
 		return false;
 	}
 
@@ -46,6 +52,7 @@ public class FREDInterceptor implements Interceptor, Serializable {
 	public Object instantiate(Class clazz, Serializable arg1) throws CallbackException {
 		//CompositeKeyed classes use the boolean constructor with true for saved
 		if (CompositeKeyed.class.isAssignableFrom(clazz)) try {
+			System.out.println("Creating from interceptor");
 			return clazz.getConstructor(new Class[] {boolean.class}).newInstance(new Object[] {new Boolean(true)});
 		} catch (Exception e) {
 			throw new CallbackException(e);

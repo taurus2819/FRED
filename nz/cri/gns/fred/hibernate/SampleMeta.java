@@ -85,4 +85,8 @@ public class SampleMeta implements Serializable, nz.cri.gns.fred.model.SampleMet
 		return unsaved;
 	}
 
+	public void updateKey() {
+		comp_id.setSampleId(sample.getSampleId());
+	}
+
 }

@@ -80,4 +80,8 @@ public class FeatureMeta implements Serializable, nz.cri.gns.fred.model.FeatureM
 	public boolean isUnsaved() {
 		return unsaved;
 	}
+
+	public void updateKey() {
+		comp_id.setFeatureId(feature.getFeatureId());
+	}
 }

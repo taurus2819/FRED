@@ -1,5 +1,9 @@
 package nz.cri.gns.fred.util;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -59,6 +63,52 @@ import org.xml.sax.SAXException;
  */
 public class FREDUtil {
 	
+	public static class CopyAll implements Instruction {
+		public boolean include(PropertyDescriptor prop) {
+			return true;
+		}
+	}
+
+	public static class ExcludeByName implements Instruction {
+
+		private List<String> names;
+		private Instruction instruction;
+
+		public ExcludeByName(List<String> names) {
+			this(names, null);
+		}
+		public ExcludeByName(List<String> names, Instruction furtherInstruction) {
+			this.names = names;
+			this.instruction = furtherInstruction;
+		}
+
+		public boolean include(PropertyDescriptor prop) {
+			return !names.contains(prop.getName()) && (instruction == null || instruction.include(prop));
+		}
+
+	}
+
+	public static interface Instruction {
+		public boolean include(PropertyDescriptor prop);
+	}
+
+	public static class ExcludeByType implements Instruction {
+		private Class<?> clazz;
+		private Instruction instruction;
+		
+		public ExcludeByType(Class<?> clazz) {
+			this(clazz, null);
+		}
+		public ExcludeByType(Class<?> clazz, Instruction furtherInstruction) {
+			this.clazz = clazz;
+			this.instruction = furtherInstruction;
+		}
+
+		public boolean include(PropertyDescriptor prop) {
+			return !clazz.isAssignableFrom(prop.getPropertyType()) && (instruction == null || instruction.include(prop));
+		}
+	}
+
 	public static final int REG_MAINLAND_NZ = 400;
 	public static final int REG_CHATHAM_ISLANDS = 401;
 	public static final int REG_ROSS_SEA = 402;
@@ -597,4 +647,22 @@ public class FREDUtil {
             return false;
         return o1.equals(o2);
     }
+
+	public static <T> void beanCopy(T from, T to, Instruction instruction) throws IntrospectionException {
+		BeanInfo info = Introspector.getBeanInfo(from.getClass());
+		
+		for (PropertyDescriptor prop : info.getPropertyDescriptors()) {
+			if (instruction.include(prop)) try {
+				prop.getWriteMethod().invoke(to, new Object[] {prop.getReadMethod().invoke(from, (Object[])null)});
+			} catch (Exception e) {
+			}
+		}
+	}
+
+	public static <T> List<T> toVector(T[] array) {
+		List<T> list = new Vector<T>(array.length);
+		for (T t : array)
+			list.add(t);
+		return list;
+	}
 }

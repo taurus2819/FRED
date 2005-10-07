@@ -176,16 +176,32 @@
     <!-- bi-directional one-to-many association to SedimentaryFeature -->
     <set
         name="sedimentaryFeatures"
+ 		table="SEDIMENTARY_FEATURE"
         lazy="true"
-        inverse="true"
-		cascade="none"
-    >
+        inverse="false"
+		cascade="all"
+    >   
         <key>
             <column name="SAMPLE_ID" />
         </key>
-        <one-to-many 
-            class="nz.cri.gns.fred.hibernate.SedimentaryFeature"
-        />
+		<composite-element class="nz.cri.gns.fred.hibernate.SedimentaryFeature">
+
+	    <property
+    	    name="abundant"
+        	type="java.lang.String"
+	        column="ABUNDANT"
+    	    length="1"
+    	/>
+	
+	    <!-- bi-directional many-to-one association to SedimentaryFeatureType -->
+    	<many-to-one
+        	name="sedimentaryFeatureType"
+		    class="nz.cri.gns.fred.hibernate.SedimentaryFeatureType"
+	    	not-null="true"
+		>
+    		<column name="SED_FEATURE_ID" />
+		</many-to-one>   
+    	</composite-element>
     </set>
     <!-- bi-directional one-to-many association to SampleMeta -->
     <set
@@ -216,19 +232,57 @@
         />
     </set>
     <!-- bi-directional one-to-many association to SentTo -->
-    <set
+ 	<set
         name="sentTos"
+		table="SENT_TO"
         lazy="true"
         inverse="false"
 		cascade="all"
-    >
+    >   
         <key>
             <column name="SAMPLE_ID" />
         </key>
-        <one-to-many 
-            class="nz.cri.gns.fred.hibernate.SentTo"
-        />
-    </set>
+		<composite-element class="nz.cri.gns.fred.hibernate.SentTo">
+	    <property
+    	    name="sentDate"
+        	type="java.sql.Date"
+        	column="SENT_DATE"
+    	    length="7"
+	    />
+	    <property
+    	    name="dateRounding"
+        	type="java.lang.String"
+        	column="DATE_ROUNDING"
+    	    length="5"
+	    />
+	    <property
+    	    name="labId"
+        	type="int"
+        	column="LAB_ID"
+    	    length="4"
+	    />
+	    <property
+    	    name="comments"
+        	type="java.lang.String"
+	        column="COMMENTS"
+    	    length="255"
+   		/>
+        <many-to-one         
+			name="person"
+		    class="nz.cri.gns.fred.hibernate.Person"
+		>
+    		<column name="PERSON_ID" />
+		</many-to-one>
+        <many-to-one         
+			name="fossilGroup"
+		    class="nz.cri.gns.fred.hibernate.FossilGroup"
+			not-null="true"
+		>
+    		<column name="FOSSIL_GROUP_ID" />
+		</many-to-one>
+      </composite-element>
+	</set>
+
     <!-- bi-directional many-to-many association to Person via Collector -->
     <set
         name="collectors"

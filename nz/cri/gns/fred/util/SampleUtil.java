@@ -324,7 +324,6 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		SedimentaryFeature feature = sampleDAO.createNewSedimentaryFeature();
 		feature.setAbundant(sedFeature.getAbundant());
 		feature.setSedimentaryFeatureType(sedFeature.getSedimentaryFeatureType());
-		feature.setSample(sample);
 		return feature;
 	}
 
@@ -447,29 +446,30 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 
 	public SentTo findOrCreateSentTo(Sample sample, FossilGroup group, Person person, Integer lab, String comments) {
-		for (SentTo sentTo : sample.getSentTos()) {
-			//Check group
-			if (group == null && sentTo.getFossilGroup() != null)
-				continue;
-			if (group != null && !group.equals(sentTo.getFossilGroup()))
-				continue;
-			if (person == null && sentTo.getPerson() != null)
-				continue;
-			if (person != null && !person.equals(sentTo.getPerson()))
-				continue;
-			if (lab == null && sentTo.getLabId() != null)
-				continue;
-			if (lab != null && !lab.equals(sentTo.getLabId()))
-				continue;
-			if (comments == null && sentTo.getComments() != null)
-				continue;
-			if (comments != null && !comments.equals(sentTo.getComments()))
-				continue;
-			//All tests pass - it's a match
-			return sentTo;
+		if (sample.getSentTos() != null) {
+			for (SentTo sentTo : sample.getSentTos()) {
+				//Check group
+				if (group == null && sentTo.getFossilGroup() != null)
+					continue;
+				if (group != null && !group.equals(sentTo.getFossilGroup()))
+					continue;
+				if (person == null && sentTo.getPerson() != null)
+					continue;
+				if (person != null && !person.equals(sentTo.getPerson()))
+					continue;
+				if (lab == null && sentTo.getLabId() != null)
+					continue;
+				if (lab != null && !lab.equals(sentTo.getLabId()))
+					continue;
+				if (comments == null && sentTo.getComments() != null)
+					continue;
+				if (comments != null && !comments.equals(sentTo.getComments()))
+					continue;
+				//All tests pass - it's a match
+				return sentTo;
+			}
 		}
 		SentTo sentTo = sampleDAO.createNewSentTo();
-		sentTo.setSample(sample);
 		sentTo.setFossilGroup(group);
 		sentTo.setPerson(person);
 		sentTo.setLabId(lab);
@@ -553,7 +553,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * @throws StorageAccessException 
 	 */
 	public Relationship createRelationship(Sample sample, Feature feature, String relationType, String relationshipType) throws StorageAccessException {
-		Relationship rel = sampleDAO.createNewRelationship();
+		Relationship rel = sampleDAO.createRelationship();
 		rel.setSample(sample);
 		rel.setFeature(feature);
 		rel.setRelationType(sampleDAO.getRelationType(relationType));
@@ -568,7 +568,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * @throws StorageAccessException 
 	 */
 	public Relationship cloneRelationship(Relationship newRelationship) throws StorageAccessException {
-		Relationship rel = sampleDAO.createNewRelationship();
+		Relationship rel = sampleDAO.createRelationship();
 		rel.setSample(newRelationship.getSample());
 		rel.setFeature(newRelationship.getFeature());
 		rel.setDistance(newRelationship.getDistance());
@@ -627,7 +627,6 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	public SedimentaryFeature createSedimentaryFeature(Sample sample, String sedFeature, boolean isAbundant) throws StorageAccessException {
 		SedimentaryFeature feature = sampleDAO.createNewSedimentaryFeature();
 		feature.setAbundant((isAbundant) ? "Y" : null);
-		feature.setSample(sample);
 		SedimentaryFeatureType type = sampleDAO.getSedimentaryFeatureTypeWithName(sedFeature);
 		if (type == null)
 			throw new IllegalArgumentException("Invalid sedimentary feature type: " + sedFeature);
@@ -637,6 +636,9 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 
     public void saveOrUpdate(Sample sample) throws StorageAccessException {
+    	if (sample.getAudit() == null) {
+    		throw new IllegalStateException("Cannot save a sample without an audit");
+    	}
         sampleDAO.saveOrUpdate(sample.getAudit());
         sampleDAO.saveOrUpdate(sample);
     }

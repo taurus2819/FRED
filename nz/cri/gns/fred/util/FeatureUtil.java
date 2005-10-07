@@ -1,5 +1,6 @@
 package nz.cri.gns.fred.util;
 
+import java.beans.IntrospectionException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -25,6 +26,7 @@ import nz.cri.gns.fred.dao.SampleDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.model.Audit;
+import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
@@ -54,7 +56,7 @@ public class FeatureUtil extends ModelUtil {
 		this.folderDAO = factory.getFolderDAO();
 	}
 	
-	public Feature copyFeature(Feature feature, String newName, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+	public Feature copyFeature(Feature feature, String newName, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
 		if (!folder.isAllowedCreateLocalities())
 			throw new InsufficientPrivelegesException();
 		Audit audit = featureDAO.createNewAudit();
@@ -101,63 +103,7 @@ public class FeatureUtil extends ModelUtil {
 			}
 			Sample sample = (Sample)samples.iterator().next();
 			//Copy sample - collectors clone is OK as it's many-to-many
-			Sample newSample = sampleDAO.cloneSample(sample);
-			newSample.setSampleId(null);
-			newSample.setFeature(newFeature);
-			//Clear the fr number if it has one
-			newSample.setFrNumber(null);
-			newSample.setRecords(null);
-			//Copy relationships
-			Set relationships = sample.getRelationships();
-			if (relationships != null && relationships.size() > 0) {
-				HashSet<Relationship> newRels = new HashSet<Relationship>();
-				for (Iterator it = relationships.iterator(); it.hasNext(); ) {
-					Relationship relationship = (Relationship)it.next();
-					Relationship newRel = sampleDAO.cloneRelationship(relationship);
-					newRel.setRelationshipId(null);
-					newRel.setSample(newSample);
-					newRels.add(newRel);
-				}
-				newSample.setRelationships(newRels);
-			}
-			//Copy sent to
-			Set sentTos = sample.getSentTos();
-			if (sentTos != null && sentTos.size() > 0) {
-				HashSet<SentTo> newSent = new HashSet<SentTo>();
-				for (Iterator it = sentTos.iterator(); it.hasNext(); ) {
-					SentTo sentTo = (SentTo)it.next();
-					SentTo newSentTo = sampleDAO.cloneSentTo(sentTo);
-					newSentTo.setSample(newSample);
-					newSent.add(newSentTo);
-				}
-				newSample.setSentTos(newSent);
-			}
-			//Copy sedimentary feature
-			Set sedFeatures = sample.getSedimentaryFeatures();
-			if (sedFeatures != null && sedFeatures.size() > 0) {
-				HashSet<SedimentaryFeature> newSedFeatures = new HashSet<SedimentaryFeature>();
-				for (Iterator it = sedFeatures.iterator(); it.hasNext(); ) {
-					SedimentaryFeature sedFeature = (SedimentaryFeature)it.next();
-					SedimentaryFeature newSedFeature = sampleDAO.cloneSedimentaryFeature(sedFeature);
-					newSedFeature.setSample(newSample);
-					newSedFeatures.add(newSedFeature);
-				}
-				newSample.setSedimentaryFeatures(newSedFeatures);
-			}
-			
-			//Copy sample images
-			images = sample.getSampleMetas();
-			if (images != null && images.size() > 0) {
-				HashSet<SampleMeta> newImages = new HashSet<SampleMeta>();
-				for (Iterator it = images.iterator(); it.hasNext(); ) {
-					SampleMeta meta = (SampleMeta)it.next();
-					SampleMeta newMeta = sampleDAO.createSampleMeta();
-					newMeta.setMetaId(meta.getMetaId());
-					newMeta.setSample(newSample);
-					newImages.add(newMeta);
-				}
-				newSample.setSampleMetas(newImages);
-			}
+			Sample newSample = cloneSample(newFeature, sample);
 			
 			//Save the new sample
 			sampleDAO.save(newSample);
@@ -271,6 +217,67 @@ public class FeatureUtil extends ModelUtil {
 		conn.releaseStatement();
 		ps1.close();	
 	*/	
+	}
+
+	public Sample cloneSample(Feature newFeature, Sample sample) throws StorageAccessException, IntrospectionException {
+		Set images;
+		Sample newSample = sampleDAO.createNewSample();
+		FREDUtil.beanCopy(sample, newSample, 
+				new FREDUtil.ExcludeByType(Set.class, 
+				new FREDUtil.ExcludeByName(FREDUtil.toVector(new String[] {"audit", "sampleId", "feature", "frNumber"})))
+		);
+		newSample.setFeature(newFeature);
+		//Clear the fr number if it has one
+		//Copy relationships
+		Set<Relationship> relationships = sample.getRelationships();
+		if (relationships != null && relationships.size() > 0) {
+			HashSet<Relationship> newRels = new HashSet<Relationship>();
+			for (Relationship rel : relationships) {
+				Relationship newRel = sampleDAO.createRelationship();
+				FREDUtil.beanCopy(rel, newRel, new FREDUtil.ExcludeByName(FREDUtil.toVector(new String[] {"relationshipId", "sample"})));
+				newRel.setSample(newSample);
+				newRels.add(newRel);
+			}
+			newSample.setRelationships(newRels);
+		}
+		//Copy sent to
+		Set<SentTo> sentTos = sample.getSentTos();
+		if (sentTos != null && sentTos.size() > 0) {
+			HashSet<SentTo> newSent = new HashSet<SentTo>();
+			for (SentTo sentTo : sentTos) {
+				SentTo newSentTo = sampleDAO.createSentTo();
+				FREDUtil.beanCopy(sentTo, newSentTo, new FREDUtil.CopyAll());
+				newSent.add(newSentTo);
+			}
+			newSample.setSentTos(newSent);
+		}
+		
+		//Copy sedimentary feature
+		Set<SedimentaryFeature> sedFeatures = sample.getSedimentaryFeatures();
+		if (sedFeatures != null && sedFeatures.size() > 0) {
+			HashSet<SedimentaryFeature> newSedFeatures = new HashSet<SedimentaryFeature>();
+			for (SedimentaryFeature sedFeature : sedFeatures) {
+				SedimentaryFeature newSedFeature = sampleDAO.createSedimentaryFeature();
+				FREDUtil.beanCopy(sedFeature, newSedFeature, new FREDUtil.CopyAll());
+				newSedFeatures.add(newSedFeature);
+			}
+			newSample.setSedimentaryFeatures(newSedFeatures);
+		}
+		
+		//Copy sample images
+		images = sample.getSampleMetas();
+		if (images != null && images.size() > 0) {
+			HashSet<SampleMeta> newImages = new HashSet<SampleMeta>();
+			for (Iterator it = images.iterator(); it.hasNext(); ) {
+				SampleMeta meta = (SampleMeta)it.next();
+				SampleMeta newMeta = sampleDAO.createSampleMeta();
+				newMeta.setMetaId(meta.getMetaId());
+				newMeta.setSample(newSample);
+				newImages.add(newMeta);
+			}
+			newSample.setSampleMetas(newImages);
+		}
+		return newSample;
 	}
 
 	public void deleteFeature(Feature feature, UserAccount user) throws InsufficientPrivelegesException, StorageAccessException {
@@ -632,4 +639,24 @@ public class FeatureUtil extends ModelUtil {
     	Collections.sort(v);
     	return v;
     }
+    
+	public void saveFeature(Feature feature, User user, String comments) throws StorageAccessException {
+		Audit audit = feature.getAudit();
+		if (feature.getFeatureId() == null) {
+			//New feature
+			audit.setCreatedById(user.getDatabaseId());
+			audit.setCreatedDate(new Date());
+		} else if (audit.getStatus().equals(FREDConstants.APPROVED)) {
+			AuditEdit edit = featureDAO.createNewAuditEdit();
+			edit.setAudit(audit);
+			edit.setEditedById(user.getDatabaseId());
+			edit.setEditedDate(new Date());
+			edit.setComments(comments);
+			featureDAO.save(edit);
+		}
+        
+		featureDAO.saveOrUpdate(audit);
+		featureDAO.saveOrUpdate(feature);
+	}
+
 }

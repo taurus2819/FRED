@@ -10,10 +10,6 @@ public interface SedimentaryFeature {
 
 	public abstract void setAbundant(String abundant);
 
-	public abstract nz.cri.gns.fred.model.Sample getSample();
-
-	public abstract void setSample(nz.cri.gns.fred.model.Sample sample);
-
 	public abstract nz.cri.gns.fred.model.SedimentaryFeatureType getSedimentaryFeatureType();
 
 	public abstract void setSedimentaryFeatureType(

@@ -31,12 +31,6 @@ import nz.cri.gns.fred.model.Weathering;
 public interface SampleDAO {
 
 	/**
-	 * @param sample
-	 * @return
-	 */
-	public Sample cloneSample(Sample sample);
-
-	/**
 	 * @param relationship
 	 * @return
 	 */
@@ -172,7 +166,17 @@ public interface SampleDAO {
 	/**
 	 * Creates a new, uninitialised Relationship object
 	 */
-	public Relationship createNewRelationship();
+	public Relationship createRelationship();
+
+	/**
+	 * Creates a new, uninitialised SentTo object
+	 */
+	public SentTo createSentTo();
+
+	/**
+	 * Creates a new, uninitialised SedimentaryFeature object
+	 */
+	public SedimentaryFeature createSedimentaryFeature();
 
 	/**
 	 * Saves the given relationship to persistent storage

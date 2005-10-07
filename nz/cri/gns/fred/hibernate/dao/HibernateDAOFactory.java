@@ -430,10 +430,6 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	}
 
 	//SampleDAO methods
-	public Sample cloneSample(Sample sample) {
-		return (Sample)((nz.cri.gns.fred.hibernate.Sample)sample).clone();
-	}
-
 	public Relationship cloneRelationship(Relationship relationship) {
 		return (Relationship)((nz.cri.gns.fred.hibernate.Relationship)relationship).clone();
 	}
@@ -443,7 +439,10 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	}
 
 	public SedimentaryFeature cloneSedimentaryFeature(SedimentaryFeature sedFeature) {
-		return (SedimentaryFeature)((nz.cri.gns.fred.hibernate.SedimentaryFeature)sedFeature).clone();
+		SedimentaryFeature sedF = new nz.cri.gns.fred.hibernate.SedimentaryFeature();
+		sedF.setAbundant(sedFeature.getAbundant());
+		sedF.setSedimentaryFeatureType(sedFeature.getSedimentaryFeatureType());
+		return sedF;
 	}
 
 	public SampleMeta createSampleMeta() {
@@ -528,7 +527,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	}
 
 	public SentTo createNewSentTo() {
-		return new nz.cri.gns.fred.hibernate.SentTo(false);
+		return new nz.cri.gns.fred.hibernate.SentTo();
 	}
 
 	public Stage findStage(String startStageId, boolean startUncertain, String stopStageId, boolean stopUncertain) throws StorageAccessException {
@@ -556,7 +555,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		save((Object)stage);
 	}
 
-	public Relationship createNewRelationship() {
+	public Relationship createRelationship() {
 		return new nz.cri.gns.fred.hibernate.Relationship();
 	}
 
@@ -628,6 +627,15 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
             throw new StorageAccessException(e);
         }
     }
+
+	public SentTo createSentTo() {
+		return new nz.cri.gns.fred.hibernate.SentTo();
+	}
+
+	public SedimentaryFeature createSedimentaryFeature() {
+		return new nz.cri.gns.fred.hibernate.SedimentaryFeature();
+	}
+	
 	public RecordDAO getRecordDAO() {
 		return this;
 	}

@@ -457,14 +457,12 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     }
 
     public void setFeature(nz.cri.gns.fred.model.Feature feature) {
-    	if (this.feature != null)
+    	if (this.feature != null && this.feature.getSamples() != null)
     		this.feature.getSamples().remove(this);
         this.feature = feature;
         //This can't be right!!!!
         try {
-        	System.out.println("========");
         	feature.getSamples().add(this);
-        	System.out.println("========Feature now has " + feature.getSamples().size() + " samples");
         } catch (Exception e) {
         }
     }
@@ -601,15 +599,6 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
 
     public void setRelationships(Set relationships) {
         this.relationships = relationships;
-    }
-
-    public Object clone() { 
-    	try {
-    		return super.clone();
-    	} catch (CloneNotSupportedException e) {
-    		//But it is!
-    		return null;
-    	}
     }
 
 	public int compareTo(nz.cri.gns.fred.model.Sample sample) {

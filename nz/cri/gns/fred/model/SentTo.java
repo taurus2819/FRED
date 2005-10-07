@@ -23,10 +23,6 @@ public interface SentTo extends PersonRelationship {
 
 	public abstract void setComments(String comments);
 
-	public abstract nz.cri.gns.fred.model.Sample getSample();
-
-	public abstract void setSample(nz.cri.gns.fred.model.Sample sample);
-
 	public abstract nz.cri.gns.fred.model.FossilGroup getFossilGroup();
 
 	public abstract void setFossilGroup(

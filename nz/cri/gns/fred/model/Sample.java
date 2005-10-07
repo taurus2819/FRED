@@ -172,9 +172,9 @@ public interface Sample extends Audited, Comparable<Sample> {
 	public abstract void setInferredStage(
 			nz.cri.gns.fred.model.Stage stageByInferredStageId);
 
-	public abstract Set getSedimentaryFeatures();
+	public abstract Set<SedimentaryFeature> getSedimentaryFeatures();
 
-	public abstract void setSedimentaryFeatures(Set sedimentaryFeatures);
+	public abstract void setSedimentaryFeatures(Set<SedimentaryFeature> sedimentaryFeatures);
 
 	public abstract Set<SampleMeta> getSampleMetas();
 
@@ -192,7 +192,7 @@ public interface Sample extends Audited, Comparable<Sample> {
 
 	public abstract void setCollectors(Set collectors);
 
-	public abstract Set getRelationships();
+	public abstract Set<Relationship> getRelationships();
 
-	public abstract void setRelationships(Set relationships);
+	public abstract void setRelationships(Set<Relationship> relationships);
 }

@@ -84,4 +84,8 @@ public class RecordMeta implements Serializable, nz.cri.gns.fred.model.RecordMet
         return unsaved;
     }
 
+	public void updateKey() {
+		comp_id.setRecordId(record.getRecordId());
+	}
+
 }

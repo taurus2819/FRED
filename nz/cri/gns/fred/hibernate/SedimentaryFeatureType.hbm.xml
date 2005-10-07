@@ -39,23 +39,5 @@
         unique="true"
         length="8"
     />
-
-    <!-- Associations -->
-  
-    <!-- bi-directional one-to-many association to SedimentaryFeature -->
-    <set
-        name="sedimentaryFeatures"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <key>
-            <column name="SED_FEATURE_ID" />
-        </key>
-        <one-to-many 
-            class="nz.cri.gns.fred.hibernate.SedimentaryFeature"
-        />
-    </set>
-
 </class>
 </hibernate-mapping>
