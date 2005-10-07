@@ -240,7 +240,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			cd.orderBy = "Code";
 			FREDUtil.makeDropBox(out, cd);
 			
-			template.loadUntil(out, "hardness");
+			template.loadUntil(out, "{@hardness}");
 			cd = new ComboDescriptor("hardness", "hardness_ID", "Code || ': ' || Name");
 			cd.name = "Hard";
 			cd.prompt = " -- Choose -- ";
@@ -248,7 +248,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			cd.orderBy = "Code";
 			FREDUtil.makeDropBox(out, cd);
 			
-			template.loadUntil(out, "carbonate");
+			template.loadUntil(out, "{@carbonate}");
 			cd = new ComboDescriptor("carbonate", "carbonate_ID", "Code || ': ' || Name");
 			cd.name = "Carb";
 			cd.prompt = " -- Choose -- ";
@@ -256,7 +256,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			cd.orderBy = "Code";
 			FREDUtil.makeDropBox(out, cd);
 			
-			template.loadUntil(out, "ColMod");
+			template.loadUntil(out, "{@ColMod}");
 			cd = new ComboDescriptor("colour_modifier", "modifier_ID", "Code || ': ' || Name");
 			cd.name = "ColMod";
 			cd.prompt = " -- Choose -- ";
@@ -264,7 +264,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			cd.orderBy = "Code";
 			FREDUtil.makeDropBox(out, cd);
 			
-			template.loadUntil(out, "primaryColour");
+			template.loadUntil(out, "{@primaryColour}");
 			cd = new ComboDescriptor("rock_colour", "colour_id", "Code || ': ' || Name");
 			cd.name = "ColourP";
 			cd.prompt = " -- Choose -- ";
@@ -272,7 +272,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			cd.orderBy = "Code";
 			FREDUtil.makeDropBox(out, cd);
 			
-			template.loadUntil(out, "secondaryColour");
+			template.loadUntil(out, "{@secondaryColour}");
 			cd.name = "ColourS";
 			cd.selected = (sample.getSecondaryColour() == null) ? null : sample.getSecondaryColour().getColourId().toString();
 			FREDUtil.makeDropBox(out, cd);
@@ -846,6 +846,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		//Remove any that are still in the old set
 		relationships.removeAll(stratRel);
 		
+		//Column map
+		sample.setColumnMap(request.getParameter("ColMap"));
+		
 		//Dip...
 		String dip = request.getParameter("Dip");
 		if (dip.length() == 0)
@@ -901,8 +904,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		
 		try {
 			sample.setBedThickness(getBeddingThickness(request.getParameter("BedThick")));
-			sample.setPrimaryBedding(getBedding(request.getParameter("BedingP")));
-			sample.setSecondaryBedding(getBedding(request.getParameter("BedingS")));
+			sample.setPrimaryBedding(getBedding(request.getParameter("BeddingP")));
+			sample.setSecondaryBedding(getBedding(request.getParameter("BeddingS")));
 			sample.setWeathering(getWeathering(request.getParameter("Weath")));
 			sample.setHardness(getHardness(request.getParameter("Hard")));
 			sample.setCarbonate(getCarbonate(request.getParameter("Carb")));
