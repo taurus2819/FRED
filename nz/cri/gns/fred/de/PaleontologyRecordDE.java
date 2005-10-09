@@ -181,7 +181,7 @@ public class PaleontologyRecordDE extends RecordDE {
 		try {
 			super.makeDataEntryHTML(out, factory);
             Template template = provider.getContent("paleo.de.form");
-            
+            prepareTemplate(template, provider);
             Paleontology pal = record.getPaleontology();
             
             template.addSub("PalDate", FREDUtil.formatDateForDE(pal.getIdentificationDate(), pal.getDateRounding()));

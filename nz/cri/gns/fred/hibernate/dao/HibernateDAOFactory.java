@@ -684,7 +684,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public List<PaleontologyListEntry> getListEntries(Paleontology pal, TaxonomicGroup group) throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
-			Query query = session.createQuery("SELECT ple FROM PaleontologyListEntry AS ple INNER JOIN ple.paleontology AS pl WHERE ple.taxonomicGroup = :grp AND pl = :pal");
+			Query query = session.createQuery("SELECT ple FROM PalList AS ple INNER JOIN ple.paleontology AS p WHERE ple.taxonomicGroup = :grp AND p = :pal");
 			query.setEntity("grp", group);
 			query.setEntity("pal", pal);
 			return query.list();
