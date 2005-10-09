@@ -107,7 +107,7 @@ public class AdoptionRecordDE extends RecordDE {
        
         //Stage
         try {
-            adoption.setStage(FREDUtil.getStage(request, "", adoption.getStage(), new SampleUtil(factory), "Stage"));
+            adoption.setStage(StageDEUtil.getStage(request, "", adoption.getStage(), new SampleUtil(factory), "Stage"));
         } catch (DataInputException e) {
             error.addAll(e.getError());
         }

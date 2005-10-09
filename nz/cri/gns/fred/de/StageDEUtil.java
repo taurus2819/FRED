@@ -4,10 +4,12 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 
 import javax.naming.NamingException;
+import javax.servlet.http.HttpServletRequest;
 
 import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.util.FREDUtil;
+import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.intranet.Template;
 
 public class StageDEUtil {
@@ -35,5 +37,19 @@ public class StageDEUtil {
             template.addSub("is" + label + "StopUnc", "Yes");
     
     }
+
+	public static Stage getStage(HttpServletRequest request, String prefix, Stage existingStage, SampleUtil sampleUtil, String label) throws DataInputException {
+	    String startId = FREDUtil.decodeCombo(request.getParameter(prefix + "StageStart"));
+	    String startMod = FREDUtil.decodeCombo(request.getParameter(prefix + "StartMod"));
+	    String stopId = FREDUtil.decodeCombo(request.getParameter(prefix + "StageStop"));
+	    String stopMod = FREDUtil.decodeCombo(request.getParameter(prefix + "StopMod"));
+	    
+	    if (sampleUtil.stageDiffers(existingStage, startId, startMod != null, stopId, stopMod != null)) try {
+	        return sampleUtil.getStage(startId, startMod != null, stopId, stopMod != null);
+	    } catch (Exception e) {
+	        throw new DataInputException(label, e.getMessage());
+	    } else
+	        return existingStage;
+	}
 
 }

@@ -80,7 +80,7 @@ public class PaleontologyRecordDE extends RecordDE {
         
         //Stage
         try {
-            pal.setStage(FREDUtil.getStage(request, "", pal.getStage(), new SampleUtil(factory), "Stage"));
+            pal.setStage(StageDEUtil.getStage(request, "", pal.getStage(), new SampleUtil(factory), "Stage"));
         } catch (DataInputException e) {
             error.addAll(e.getError());
         }

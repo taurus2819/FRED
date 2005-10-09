@@ -23,7 +23,6 @@ import java.util.Vector;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
@@ -49,7 +48,6 @@ import nz.cri.gns.fred.model.Meta;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.PersonRelationship;
 import nz.cri.gns.fred.model.RegistrationArea;
-import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.util.map.Datum;
 import nz.cri.gns.util.map.NZMG;
 import nz.cri.gns.util.map.NZMS260;
@@ -608,20 +606,6 @@ public class FREDUtil {
             throw new DataInputException(error, personSet);
         
         return personSet;
-    }
-
-    public static Stage getStage(HttpServletRequest request, String prefix, Stage existingStage, SampleUtil sampleUtil, String label) throws DataInputException {
-        String startId = decodeCombo(request.getParameter(prefix + "StageStart"));
-        String startMod = decodeCombo(request.getParameter(prefix + "StartMod"));
-        String stopId = decodeCombo(request.getParameter(prefix + "StageStop"));
-        String stopMod = decodeCombo(request.getParameter(prefix + "StopMod"));
-        
-        if (sampleUtil.stageDiffers(existingStage, startId, startMod != null, stopId, stopMod != null)) try {
-            return sampleUtil.getStage(startId, startMod != null, stopId, stopMod != null);
-        } catch (Exception e) {
-            throw new DataInputException(label, e.getMessage());
-        } else
-            return existingStage;
     }
 
     public static String decodeCombo(String parameter) {
