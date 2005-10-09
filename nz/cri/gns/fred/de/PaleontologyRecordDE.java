@@ -94,6 +94,8 @@ public class PaleontologyRecordDE extends RecordDE {
         } else {
             if (pal.getLabSection() == null || !pal.getLabSection().getLabSectionId().toString().equals(sectionId)) try {
                 pal.setLabSection(recordUtil.getLabSection(Integer.parseInt(sectionId)));
+            } catch (NumberFormatException e) {
+            	pal.setLabSection(null);
             } catch (StorageAccessException e) {
                 error.add(new String[] {"Lab Section", "Error accessing data storage"});
             }
