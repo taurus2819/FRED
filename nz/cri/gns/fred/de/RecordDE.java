@@ -3,7 +3,6 @@ package nz.cri.gns.fred.de;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.lang.annotation.Inherited;
 import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.Date;
@@ -22,8 +21,8 @@ import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.FREDConstants;
-import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Paleontology;
+import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RecordMeta;
@@ -37,7 +36,7 @@ import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.intranet.Template;
 
-public abstract class RecordDE implements DataEntryForm {
+public abstract class RecordDE extends DETemplate implements DataEntryForm {
 
 	protected User user;
 	protected Record record;
@@ -179,6 +178,7 @@ public abstract class RecordDE implements DataEntryForm {
 
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws SQLException, IOException {
         Template template = provider.getContent("record.de.form");
+        prepareTemplate(template, provider);
         if (record.getRecordId() != null) 
             template.addSub("recordId", record.getRecordId().toString());
         template.addSub("sampleId", record.getSample().getSampleId().toString());

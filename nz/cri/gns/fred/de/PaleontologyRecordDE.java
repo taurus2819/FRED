@@ -248,6 +248,7 @@ public class PaleontologyRecordDE extends RecordDE {
 			template.loadAll(out);
 			super.makeEndBitHTML(out);
 		} catch (StorageAccessException e) {
+			e.printStackTrace();
 			throw new IOException("Could not access storage: " + e.getMessage());
 		} catch (NoSuchMethodException e) {
 			//Shouldn't never happen
