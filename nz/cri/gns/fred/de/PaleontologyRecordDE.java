@@ -80,8 +80,9 @@ public class PaleontologyRecordDE extends RecordDE {
         
         //Stage
         try {
-            pal.setStage(StageDEUtil.getStage(request, "", pal.getStage(), new SampleUtil(factory), "Stage"));
+            pal.setStage(StageDEUtil.getStage(request, "Stage", pal.getStage(), new SampleUtil(factory), "Stage"));
         } catch (DataInputException e) {
+			e.printStackTrace();
             error.addAll(e.getError());
         }
         
@@ -159,6 +160,7 @@ public class PaleontologyRecordDE extends RecordDE {
                     taxaList.add(entry);
                 }
 			} catch (Exception e) {
+				e.printStackTrace();
 				error.add(new String[] {"Taxanomic List", taxaLine + " not valid"});
 			}
         }
