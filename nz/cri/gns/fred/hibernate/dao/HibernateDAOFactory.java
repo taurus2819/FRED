@@ -696,7 +696,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
     
     public LabSection getLabSection(int id) throws StorageAccessException {
         try {
-            return (LabSection)provider.currentSession().get(LabSection.class, id);
+            return (LabSection)provider.currentSession().get(nz.cri.gns.fred.hibernate.LabSection.class, id);
         } catch (HibernateException e) {
             throw new StorageAccessException(e);
         }
