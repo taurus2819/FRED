@@ -122,7 +122,7 @@ public class PaleontologyRecordDE extends RecordDE {
 		    taxaLine = taxaLine.trim();
 			try {
                 boolean found = false;
-                String[] bits = taxaLine.split("\\*");
+                String[] bits = taxaLine.split("\\*", -1);
                 Integer specCount = (bits[SPECIMEN_COUNT].length() == 0) ? null : new Integer(bits[SPECIMEN_COUNT]);
                 for (Iterator<PaleontologyListEntry> it = removedTaxaList.iterator(); it.hasNext(); ) {
                     PaleontologyListEntry entry = it.next();
