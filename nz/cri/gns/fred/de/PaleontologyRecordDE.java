@@ -156,7 +156,8 @@ public class PaleontologyRecordDE extends RecordDE {
                         badTaxaList.add(entry);
                     }
                     entry.setTaxon(taxon);
-                    entry.setSpecimenCount(new Integer(bits[SPECIMEN_COUNT]));
+                    if (bits[SPECIMEN_COUNT].length() > 0)
+                    	entry.setSpecimenCount(new Integer(bits[SPECIMEN_COUNT]));
                     entry.setSpecimenCoords(bits[SPECIMEN_COORD]);
                     entry.setComments(bits[COMMENTS]);
                     taxaList.add(entry);
