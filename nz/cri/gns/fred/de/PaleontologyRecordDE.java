@@ -99,6 +99,7 @@ public class PaleontologyRecordDE extends RecordDE {
             } catch (NumberFormatException e) {
             	pal.setLabSection(null);
             } catch (StorageAccessException e) {
+            	e.printStackTrace();
                 error.add(new String[] {"Lab Section", "Error accessing data storage"});
             }
         }

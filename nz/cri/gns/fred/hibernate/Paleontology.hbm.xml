@@ -97,7 +97,7 @@
         name="identifiers"
         table="identifier"
         lazy="true"
-        inverse="true"
+        inverse="false"
 		cascade="all"
     >
         <key>
