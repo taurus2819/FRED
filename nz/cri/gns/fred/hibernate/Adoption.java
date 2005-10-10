@@ -3,6 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
+
+import nz.cri.gns.fred.model.Person;
 /** @author Hibernate CodeGenerator */
 public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption {
 
@@ -27,10 +29,10 @@ public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption {
     private nz.cri.gns.fred.model.Stage stage;
 
     /** persistent field */
-    private Set adopters;
+    private Set<Person> adopters;
 
     /** full constructor */
-    public Adoption(Integer recordId, Date adoptionDate, String dateRounding, String comments, nz.cri.gns.fred.hibernate.Record record, nz.cri.gns.fred.hibernate.Stage stage, Set adopters) {
+    public Adoption(Integer recordId, Date adoptionDate, String dateRounding, String comments, nz.cri.gns.fred.hibernate.Record record, nz.cri.gns.fred.hibernate.Stage stage, Set<Person> adopters) {
         this.recordId = recordId;
         this.adoptionDate = adoptionDate;
         this.dateRounding = dateRounding;
@@ -45,7 +47,7 @@ public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption {
     }
 
     /** minimal constructor */
-    public Adoption(Integer recordId, nz.cri.gns.fred.hibernate.Stage stage, Set adopters) {
+    public Adoption(Integer recordId, nz.cri.gns.fred.hibernate.Stage stage, Set<Person> adopters) {
         this.recordId = recordId;
         this.stage = stage;
         this.adopters = adopters;
@@ -99,11 +101,11 @@ public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption {
         this.stage = stage;
     }
 
-    public Set getAdopters() {
+    public Set<Person> getAdopters() {
         return this.adopters;
     }
 
-    public void setAdopters(Set adopters) {
+    public void setAdopters(Set<Person> adopters) {
         this.adopters = adopters;
     }
 

@@ -240,4 +240,9 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     public LabSection getLabSection(int id) throws StorageAccessException {
         return recordDAO.getLabSection(id);
     }
+
+
+	public void saveOrUpdate(RecordDetails details) throws StorageAccessException {
+		recordDAO.saveOrUpdate(details);
+	}
 }

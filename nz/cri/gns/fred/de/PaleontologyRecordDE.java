@@ -57,6 +57,7 @@ public class PaleontologyRecordDE extends RecordDE {
     }
 
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
+       reinitialise(factory);
        Vector<String[]> error = new Vector<String[]>();
         
        super.updateFromRequest(request, factory);
@@ -367,5 +368,10 @@ public class PaleontologyRecordDE extends RecordDE {
 	public String getHeading() {
 		return "Edit paleontological record";
 	}
-
+	
+	public int save() throws InsufficientPrivelegesException, StorageAccessException {
+		int recordId = super.save();
+		recordUtil.saveOrUpdate(record.getPaleontology());
+		return recordId;
+	}
 }

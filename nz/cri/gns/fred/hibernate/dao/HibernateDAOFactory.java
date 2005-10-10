@@ -46,6 +46,7 @@ import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.RecordDetails;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.fred.model.RelationType;
 import nz.cri.gns.fred.model.Relationship;
@@ -746,5 +747,9 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 
 	public void save(Taxon taxon) throws StorageAccessException {
 		save((Object)taxon);
+	}
+
+	public void saveOrUpdate(RecordDetails details) throws StorageAccessException {
+		saveOrUpdate((Object)details);
 	}
 }

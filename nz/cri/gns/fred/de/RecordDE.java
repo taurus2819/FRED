@@ -258,5 +258,14 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
         record.setWorkingComments(request.getParameter("WorkComm"));
     }
+	
+    protected void reinitialise(DAOFactory factory) {
+        recordUtil = new RecordUtil(factory);
+        if (record.getRecordId() != null) try {
+        	record = recordUtil.getRecord(record.getRecordId().intValue());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }
