@@ -399,7 +399,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 
 	private String getSedimentaryFeatures(String semicolonSeparator, String starSeparator) {
-        //.replaceAll(";", "#").replaceAll("\\*", "\\$")
+        if (sample.getSedimentaryFeatures() == null)
+        	return "";
+		//.replaceAll(";", "#").replaceAll("\\*", "\\$")
 		StringBuffer buffer = new StringBuffer();
 		for (SedimentaryFeature feat : (Set<SedimentaryFeature>)sample.getSedimentaryFeatures()) {
 			buffer.append(feat.getSedimentaryFeatureType().getName());
@@ -411,6 +413,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 
 	private String getRelationshipsBrief(String relationType, String relationshipType, String separator) throws StorageAccessException {
+		if (sample.getRelationships() == null)
+			return "";
 		StringBuffer buffer = new StringBuffer();
 		for (Relationship rel : sampleUtil.getRelationships(sample, relationType, relationshipType))
 			buffer.append(FeatureUtil.getFeatureIdentifyingName(rel.getFeature())).append(separator);
@@ -418,6 +422,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 
 	private String getRelationshipsFull(String relationType, String[] relationshipTypes, String separator) throws StorageAccessException {
+		if (sample.getRelationships() == null)
+			return "";
 		StringBuffer buffer = new StringBuffer();
 		for (Relationship rel : sampleUtil.getRelationships(sample, relationType, relationshipTypes))
 			buffer.append(SampleUtil.getRelationshipDescription(rel)).append(separator);
