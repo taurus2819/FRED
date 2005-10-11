@@ -23,6 +23,7 @@ public class OutcropLocalityDE extends LocalityDE {
 	public OutcropLocalityDE(User user, int folderID, DAOFactory factory, ContentProvider content) throws SQLException, IOException, DataInputException, StorageAccessException, InsufficientPrivelegesException {
 		super(user, folderID, FREDConstants.OUTCROP, factory, content);
 		sampleDE = new SampleDE(user, feature, folderID, factory, content, true);
+		sampleDE.setOutcropSample(true);
 	}
 	
 	/**
