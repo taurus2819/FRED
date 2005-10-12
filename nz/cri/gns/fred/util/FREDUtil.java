@@ -576,6 +576,8 @@ public class FREDUtil {
     }
 
     public static String getNames(Set<? extends PersonRelationship> persons, String separator) {
+    	if (persons == null)
+    		return "";
         StringBuffer names = new StringBuffer();
         
         for (PersonRelationship person : persons) {

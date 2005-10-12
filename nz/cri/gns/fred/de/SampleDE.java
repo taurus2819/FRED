@@ -356,7 +356,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 
     private String getSentTos(Set<SentTo> sentTos, String separator) throws NamingException, SQLException {
-		StringBuffer buffer = new StringBuffer();
+		if (sentTos == null)
+			return "";
+    	StringBuffer buffer = new StringBuffer();
 		
 		for (SentTo sentTo : sentTos) {
 			if (sentTo.getFossilGroup() != null)
