@@ -108,20 +108,26 @@
             class="nz.cri.gns.fred.hibernate.Feature"
         />
     </set>
-    <!-- bi-directional one-to-many association to FolderUser -->
+    <!-- uni-directional one-to-many association to FolderUser -->
     <set
         name="folderUsers"
+        table="FOLDER_USER"
         lazy="true"
-        inverse="true"
-		cascade="none"
-    >
+        inverse="false"
+		cascade="all"
+    >   
         <key>
             <column name="FOLDER_ID" />
         </key>
-        <one-to-many 
-            class="nz.cri.gns.fred.hibernate.FolderUser"
-        />
-    </set>
+		<composite-element class="nz.cri.gns.fred.hibernate.FolderUser">
 
+	    <property
+    	    name="userRights"
+        	type="java.lang.Integer"
+	        column="USER_RIGHTS"
+    	    length="3"
+    	/>
+    	</composite-element>
+    </set>
 </class>
 </hibernate-mapping>

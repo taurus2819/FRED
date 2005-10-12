@@ -117,7 +117,6 @@ public class HibernateUtil implements HibernateProvider {
 			Folder.class,
 			FolderRight.class, 
 			FolderType.class,
-			FolderUser.class,
 			FossilGroup.class,
 			FrNumber.class,
 			GrainSize.class,

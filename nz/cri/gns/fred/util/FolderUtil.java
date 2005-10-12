@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.util;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -98,16 +99,45 @@ public class FolderUtil extends ModelUtil {
 	 * @return
 	 * @throws StorageAccessException 
 	 */
-	public List<FolderAccessor> getNonOwningUsers(UserFolder folder) throws StorageAccessException {
-		List<FolderUser> users = folderDAO.getNonOwningUsers(folder.getFolder());
-		List<FolderAccessor> accessors = new Vector<FolderAccessor>(users.size());
-		//Ordering is going to be painful
-		for (FolderUser user : users) try {
-			accessors.add(new FolderAccessor(user, FREDUtil.getUserName(user.getUserId().intValue())));
+	public List<FolderAccessor> getNonOwningUsers(UserFolder userFolder) throws StorageAccessException {
+		
+		Folder folder = userFolder.getFolder();
+		List<FolderAccessor> accessors = new Vector<FolderAccessor>(folder.getFolderUsers().size());
+		
+		for (FolderUser user : folder.getFolderUsers()) try {
+			accessors.add(new FolderAccessor(folder, user, FREDUtil.getUserName(user.getUserId().intValue())));
 		} catch (Exception e) {
 			throw new StorageAccessException(e);
 		}
 		Collections.sort(accessors);
 		return accessors;
+	}
+	
+	public void addUserToFolder(UserFolder folder, int userId, int permissions) {
+		FolderUser folderUser = folderDAO.createNewFolderUser();
+		folderUser.setUserId(new Integer(userId));
+		folderUser.setUserRights(new Integer(permissions));
+		folder.getFolder().getFolderUsers().add(folderUser);
+	}
+
+	public void removeUserFromFolder(UserFolder folder, int userId) {
+		Integer userAsInteger = new Integer(userId);
+		for (Iterator<FolderUser> it = folder.getFolder().getFolderUsers().iterator(); it.hasNext(); ) {
+			FolderUser user = it.next();
+			if (user.getUserId().equals(userAsInteger)) {
+				it.remove();
+				return;
+			}
+		}
+	}
+
+	public void toggleUserFolderRights(UserFolder folder, int userId, int newRight) {
+		Integer userAsInteger = new Integer(userId);
+		for (FolderUser user : folder.getFolder().getFolderUsers()) {
+			if (user.getUserId().equals(userAsInteger)) {
+				user.setUserRights(new Integer(newRight));
+				return;
+			}
+		}
 	}
 }

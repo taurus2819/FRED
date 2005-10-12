@@ -9,7 +9,6 @@
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.db.*"
 %><%@page import="nz.cri.gns.jsp.*"
-%><%@page import="nz.cri.gns.intranet.*"
 %><%@page import="java.util.List"
 %><%@page import="java.util.Iterator"
 %><%@page import="nz.cri.gns.auth.*"
@@ -43,7 +42,7 @@
 
 		boolean canEdit = 
 			//User is owner
-			folder.getFolder().getOwnerId().toString().equals(user.getId())	
+			(folder.getFolder().getOwnerId() != null && folder.getFolder().getOwnerId().toString().equals(user.getId()))
 			//User has admin rights
 			|| folder.isAllowedAdmin();
 		
@@ -51,22 +50,17 @@
 
 			//process any changes
 			if (request.getParameter("ActionType") != null) {
-				PageState state = getPageState(request, response);
-				DBConnection connection = FREDUtils.getFREDConnection(state);
-				java.sql.Statement statement = connection.statement;
-
 				String actionType = request.getParameter("ActionType");
+				int userId = Integer.parseInt(request.getParameter("UserID"));
 				if (actionType.equals("AddUser")) {
-					statement.executeUpdate("INSERT INTO Folder_User (Folder_ID, User_ID, User_Rights) VALUES (" + folder.getFolderId() + ", " + request.getParameter("UserID") + ", 1)");
+					folderUtil.addUserToFolder(folder, userId, 1);
 				}
 				if (actionType.equals("DeleteUser")) {
-					statement.executeUpdate("DELETE FROM Folder_User WHERE User_ID = " + request.getParameter("UserID") + " AND Folder_ID = " + folder.getFolderId());
+					folderUtil.removeUserFromFolder(folder, userId);
 				}
 				else if (actionType.equals("ChangeRight")) {
-					statement.executeUpdate("UPDATE Folder_User SET User_Rights = User_Rights + " + request.getParameter("Right") + " WHERE User_ID = " + request.getParameter("UserID") + " AND Folder_ID = " + folder.getFolderId());
+					folderUtil.toggleUserFolderRights(folder, userId, Integer.parseInt(request.getParameter("Right")));
 				}
-				response.sendRedirect("folder_user.jsp?FoldID=" + folder.getFolderId());
-				return;
 			}
 	
 			drawTop(out, et, request, response);

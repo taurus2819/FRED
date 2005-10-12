@@ -81,11 +81,8 @@ public interface FolderDAO {
 	public List<FolderRight> getFolderRightList(String join, String order) throws StorageAccessException;
 
 	/**
-	 * Returns all users who have access to this folder, but are not it's owner
-	 * @param folder
-	 * @return
-	 * @throws StorageAccessException 
+	 * Creates a new, unsaved folder user
 	 */
-	public List<FolderUser> getNonOwningUsers(Folder folder) throws StorageAccessException;
+	public FolderUser createNewFolderUser();
 	
 }

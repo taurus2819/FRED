@@ -48,7 +48,7 @@ public interface Folder extends Serializable, Comparable<Folder> {
 
 	public abstract void setFeatures(Set<Feature> features);
 
-	public abstract Set getFolderUsers();
+	public abstract Set<FolderUser> getFolderUsers();
 
-	public abstract void setFolderUsers(Set folderUsers);
+	public abstract void setFolderUsers(Set<FolderUser> folderUsers);
 }

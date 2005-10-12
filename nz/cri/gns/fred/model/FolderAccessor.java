@@ -1,13 +1,15 @@
 package nz.cri.gns.fred.model;
 
-public class FolderAccessor implements Comparable {
+public class FolderAccessor implements Comparable<FolderAccessor> {
 
+	private Folder folder;
 	private FolderUser folderUser;
 	private String user;
 
-	public FolderAccessor(FolderUser folderUser, String userName) {
+	public FolderAccessor(Folder folder, FolderUser folderUser, String userName) {
 		this.folderUser = folderUser;
 		this.user = userName;
+		this.folder = folder;
 	}
 	
 	public String getUserName() {
@@ -15,7 +17,7 @@ public class FolderAccessor implements Comparable {
 	}
 
 	public Folder getFolder() {
-		return folderUser.getFolder();
+		return folder;
 	}
 	
 	public Integer getUserId() {
@@ -26,7 +28,7 @@ public class FolderAccessor implements Comparable {
 		return folderUser.getUserRights();
 	}
 
-	public int compareTo(Object arg0) {
-		return user.compareTo(((FolderAccessor)arg0).user);
+	public int compareTo(FolderAccessor arg0) {
+		return user.compareTo(arg0.user);
 	}
 }

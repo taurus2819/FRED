@@ -211,19 +211,6 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 			throw new StorageAccessException(e);
 		}
 	}
-	
-
-	public List<nz.cri.gns.fred.model.FolderUser> getNonOwningUsers(Folder folder) throws StorageAccessException {
-		try {
-			Session session = provider.currentSession();
-			Query query = session.createQuery("FROM FolderUser AS fu WHERE fu.folder = :foldr");
-			query.setEntity("foldr", folder);
-			return query.list();
-		} catch (Exception e) {
-			throw new StorageAccessException(e);
-		}
-	}
-
 
 	public TaxonomicGroupDAO getTaxonomicGroupDAO() {
 		return this;
@@ -751,5 +738,9 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 
 	public void saveOrUpdate(RecordDetails details) throws StorageAccessException {
 		saveOrUpdate((Object)details);
+	}
+
+	public nz.cri.gns.fred.model.FolderUser createNewFolderUser() {
+		return new FolderUser();
 	}
 }
