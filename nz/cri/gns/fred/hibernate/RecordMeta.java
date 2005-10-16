@@ -2,6 +2,7 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 
+import nz.cri.gns.fred.hibernate.dao.CompositeKey;
 import nz.cri.gns.fred.hibernate.dao.CompositeKeyed;
 import nz.cri.gns.fred.model.Record;
 
@@ -86,6 +87,10 @@ public class RecordMeta implements Serializable, nz.cri.gns.fred.model.RecordMet
 
 	public void updateKey() {
 		comp_id.setRecordId(record.getRecordId());
+	}
+
+	public void setKey(CompositeKey arg1) {
+		comp_id = (RecordMetaPK)arg1;
 	}
 
 }

@@ -92,7 +92,7 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 		factory = new HibernateDAOFactory(this);
 		
 		try {
-			user = new User("iainm", "****", app);
+			user = new User("iainm", "*****", app);
 		} catch (Exception e) {
 			System.out.println("No user created");
 		}
@@ -114,6 +114,7 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 			Folder.class,
 			FolderRight.class, 
 			FolderType.class,
+			FolderUser.class,
 			FossilGroup.class,
 			FrNumber.class,
 			GrainSize.class,

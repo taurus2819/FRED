@@ -99,7 +99,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public List<UserFolder> getAccessibleFolders(int userId, FolderType type) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-			Query query = session.createQuery("FROM FolderUser as fu INNER JOIN fu.folder AS f WHERE f.folderType = :type AND fu.comp_id.userId = :user");
+			Query query = session.createQuery("FROM FolderUser as fu INNER JOIN fu.folder_ AS f WHERE f.folderType = :type AND fu.comp_id.userId = :user");
 			query.setEntity("type", type);
 			query.setInteger("user", userId);
 			List list = query.list();
@@ -107,6 +107,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 				Object[] parts = (Object[])list.get(i);
 				Folder folder = (Folder)parts[1];
 				FolderUser rights = (FolderUser)parts[0];
+				System.out.println("Got " + rights + ": " + rights.getComp_id());
 				list.set(i, UserFolder.getAccessibleUserFolder(folder, rights.getUserRights().intValue()));
 			}
 			return list;
@@ -166,7 +167,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 				return UserFolder.getOwnedUserFolder(folder);
 			}
 			
-			Query query = session.createQuery("FROM FolderUser AS fu WHERE fu.folder = :folder AND fu.comp_id.userId = :user");
+			Query query = session.createQuery("FROM FolderUser AS fu WHERE fu.folder_ = :folder AND fu.comp_id.userId = :user");
 			query.setEntity("folder", folder);
 			query.setInteger("user", userId);
 			list = query.list();

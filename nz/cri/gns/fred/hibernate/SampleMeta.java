@@ -2,6 +2,7 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 
+import nz.cri.gns.fred.hibernate.dao.CompositeKey;
 import nz.cri.gns.fred.hibernate.dao.CompositeKeyed;
 
 /** @author Hibernate CodeGenerator */
@@ -87,6 +88,10 @@ public class SampleMeta implements Serializable, nz.cri.gns.fred.model.SampleMet
 
 	public void updateKey() {
 		comp_id.setSampleId(sample.getSampleId());
+	}
+
+	public void setKey(CompositeKey arg1) {
+		comp_id = (SampleMetaPK)arg1;
 	}
 
 }

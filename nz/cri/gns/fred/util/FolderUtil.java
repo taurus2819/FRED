@@ -105,7 +105,7 @@ public class FolderUtil extends ModelUtil {
 		List<FolderAccessor> accessors = new Vector<FolderAccessor>(folder.getFolderUsers().size());
 		
 		for (FolderUser user : folder.getFolderUsers()) try {
-			accessors.add(new FolderAccessor(folder, user, FREDUtil.getUserName(user.getUserId().intValue())));
+			accessors.add(new FolderAccessor(user, FREDUtil.getUserName(user.getUserId().intValue())));
 		} catch (Exception e) {
 			throw new StorageAccessException(e);
 		}
@@ -117,6 +117,7 @@ public class FolderUtil extends ModelUtil {
 		FolderUser folderUser = folderDAO.createNewFolderUser();
 		folderUser.setUserId(new Integer(userId));
 		folderUser.setUserRights(new Integer(permissions));
+		folderUser.setFolder(folder.getFolder());
 		folder.getFolder().getFolderUsers().add(folderUser);
 	}
 

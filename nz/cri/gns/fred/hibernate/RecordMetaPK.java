@@ -2,10 +2,11 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 
+import nz.cri.gns.fred.hibernate.dao.CompositeKey;
 import nz.cri.gns.fred.util.FREDUtil;
 
 /** @author Hibernate CodeGenerator */
-public class RecordMetaPK implements Serializable {
+public class RecordMetaPK implements Serializable, CompositeKey {
 
     private static final long serialVersionUID = 20050818L;
 

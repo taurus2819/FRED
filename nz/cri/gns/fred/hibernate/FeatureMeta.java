@@ -2,6 +2,7 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 
+import nz.cri.gns.fred.hibernate.dao.CompositeKey;
 import nz.cri.gns.fred.hibernate.dao.CompositeKeyed;
 
 /** @author Hibernate CodeGenerator */
@@ -83,5 +84,9 @@ public class FeatureMeta implements Serializable, nz.cri.gns.fred.model.FeatureM
 
 	public void updateKey() {
 		comp_id.setFeatureId(feature.getFeatureId());
+	}
+
+	public void setKey(CompositeKey arg1) {
+		comp_id = (FeatureMetaPK)arg1;
 	}
 }

@@ -40,8 +40,9 @@ public class FREDInterceptor implements Interceptor, Serializable {
 	}
 
 	public Boolean isUnsaved(Object arg0) {
-		if (arg0 instanceof CompositeKeyed)
+		if (arg0 instanceof CompositeKeyed) {
 			return new Boolean(((CompositeKeyed)arg0).isUnsaved());
+		}
 		return null;
 	}
 
@@ -53,7 +54,9 @@ public class FREDInterceptor implements Interceptor, Serializable {
 		//CompositeKeyed classes use the boolean constructor with true for saved
 		if (CompositeKeyed.class.isAssignableFrom(clazz)) try {
 			System.out.println("Creating from interceptor");
-			return clazz.getConstructor(new Class[] {boolean.class}).newInstance(new Object[] {new Boolean(true)});
+			CompositeKeyed obj = (CompositeKeyed)clazz.getConstructor(new Class[] {boolean.class}).newInstance(new Object[] {new Boolean(true)});
+			obj.setKey((CompositeKey)arg1);
+			return obj;
 		} catch (Exception e) {
 			throw new CallbackException(e);
 		}
