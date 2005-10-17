@@ -53,7 +53,6 @@ public class FREDInterceptor implements Interceptor, Serializable {
 	public Object instantiate(Class clazz, Serializable arg1) throws CallbackException {
 		//CompositeKeyed classes use the boolean constructor with true for saved
 		if (CompositeKeyed.class.isAssignableFrom(clazz)) try {
-			System.out.println("Creating from interceptor");
 			CompositeKeyed obj = (CompositeKeyed)clazz.getConstructor(new Class[] {boolean.class}).newInstance(new Object[] {new Boolean(true)});
 			obj.setKey((CompositeKey)arg1);
 			return obj;

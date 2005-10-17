@@ -364,12 +364,10 @@ public class FeatureUtil extends ModelUtil {
 		Collection<? extends Feature> featuresToAdd = folder.getFolder().getFeatures();
 		if (featuresToAdd != null)
 			features.addAll(featuresToAdd);
-		//System.out.println(new java.util.Date() + ": Got from folder contents");
 		
 		//Get from audit
 		List<Audit> audits = folderDAO.getWorkingAuditsFor(folder.getFolder());
-		//System.out.println(format.format(new java.util.Date()) + ": Got relevant audit records");
-
+		
 		for (Audit audit : audits) {
 			// - features
 			featuresToAdd = audit.getFeatures();

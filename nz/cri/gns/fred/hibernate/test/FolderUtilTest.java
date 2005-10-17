@@ -20,6 +20,7 @@ import nz.cri.gns.fred.util.TaxonomicUtil;
 import org.xml.sax.SAXException;
 
 /**
+ * This is <b>not</b> a unit test
  * @author iainm
  */
 public class FolderUtilTest extends FredHibernateTest implements HibernateProvider {
@@ -57,5 +58,23 @@ public class FolderUtilTest extends FredHibernateTest implements HibernateProvid
 		System.out.println("Changed: " + feature.getFeatureName());
 		System.out.println("Regot:" + feature1.getFeatureName());
 		
+	}
+	
+	/**
+	 * Not a real test...
+	 * @throws StorageAccessException
+	 */
+	public void testUsers() throws StorageAccessException {
+		FolderUtil folderUtil = new FolderUtil(factory);
+		List<UserFolder> list = folderUtil.getPersonalFolders(user);
+		Iterator<UserFolder> it = list.iterator();
+		UserFolder folder = null;
+		do {
+			folder = it.next();
+		} while (folder.getFolder().getOwnerId().intValue() != user.getDatabaseId());
+		
+		folderUtil.addUserToFolder(folder, 1840, UserFolder.FOLDER_READ_RIGHT);
+		folderUtil.toggleUserFolderRights(folder, 1840, UserFolder.FOLDER_CREATE_RIGHT);
+		folderUtil.removeUserFromFolder(folder, 1840);
 	}
 }

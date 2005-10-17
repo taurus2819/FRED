@@ -38,13 +38,6 @@ public class FolderUser implements Serializable, nz.cri.gns.fred.model.FolderUse
 
     public void setComp_id(nz.cri.gns.fred.hibernate.FolderUserPK comp_id) {
         this.comp_id = comp_id;
-		if (true)
-			try {
-				System.err.println(this + "'s changing id to " + comp_id.getUserId());
-				throw new Exception();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
     }
 
     /**
@@ -82,18 +75,11 @@ public class FolderUser implements Serializable, nz.cri.gns.fred.model.FolderUse
     public void setFolder(nz.cri.gns.fred.model.Folder folder) {
     	if (saved)
     		throw new IllegalStateException("Folder cannot be changed once saved");
-		if (true)
-			try {
-				System.err.println(this + "'s changing folder to " + folder);
-				throw new Exception();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-        this.folder = folder;
- /*       if (comp_id == null)
+   		this.folder = folder;
+		if (comp_id == null)
         	comp_id = new FolderUserPK();
         comp_id.setFolderId(folder.getFolderId());
-        saved = false;*/
+        saved = false;
     }
 
     public boolean equals(Object other) {
@@ -114,17 +100,10 @@ public class FolderUser implements Serializable, nz.cri.gns.fred.model.FolderUse
 	public void setUserId(Integer userId) {
 	   	if (saved)
     		throw new IllegalStateException("User cannot be changed once saved");
-		if (true)
-			try {
-				System.err.println(this + "'s changing id to " + userId);
-				throw new Exception();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		/*if (comp_id == null)
+    	if (comp_id == null)
 			comp_id = new FolderUserPK();
 		comp_id.setUserId(userId);
-		saved = false;*/
+		saved = false;
 	}
 
 	public boolean isUnsaved() {
@@ -138,6 +117,5 @@ public class FolderUser implements Serializable, nz.cri.gns.fred.model.FolderUse
 
 	public void setKey(CompositeKey arg1) {
 		comp_id = (FolderUserPK)arg1;
-		
 	}
 }

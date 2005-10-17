@@ -113,12 +113,13 @@ public class FolderUtil extends ModelUtil {
 		return accessors;
 	}
 	
-	public void addUserToFolder(UserFolder folder, int userId, int permissions) {
+	public void addUserToFolder(UserFolder folder, int userId, int permissions) throws StorageAccessException {
 		FolderUser folderUser = folderDAO.createNewFolderUser();
 		folderUser.setUserId(new Integer(userId));
 		folderUser.setUserRights(new Integer(permissions));
 		folderUser.setFolder(folder.getFolder());
 		folder.getFolder().getFolderUsers().add(folderUser);
+		folderDAO.save(folderUser);
 	}
 
 	public void removeUserFromFolder(UserFolder folder, int userId) {

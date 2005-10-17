@@ -107,7 +107,6 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 				Object[] parts = (Object[])list.get(i);
 				Folder folder = (Folder)parts[1];
 				FolderUser rights = (FolderUser)parts[0];
-				System.out.println("Got " + rights + ": " + rights.getComp_id());
 				list.set(i, UserFolder.getAccessibleUserFolder(folder, rights.getUserRights().intValue()));
 			}
 			return list;
@@ -742,6 +741,10 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	}
 
 	public nz.cri.gns.fred.model.FolderUser createNewFolderUser() {
-		return new FolderUser();
+		return new FolderUser(false);
+	}
+
+	public void save(nz.cri.gns.fred.model.FolderUser folderUser) throws StorageAccessException {
+		save((Object)folderUser);
 	}
 }

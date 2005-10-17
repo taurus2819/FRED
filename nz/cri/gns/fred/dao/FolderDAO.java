@@ -84,5 +84,12 @@ public interface FolderDAO {
 	 * Creates a new, unsaved folder user
 	 */
 	public FolderUser createNewFolderUser();
+
+    /**
+     * Saves the given new folderUser to persistent storage
+     * @param folder
+     * @throws StorageAccessException 
+     */
+	public void save(FolderUser folderUser) throws StorageAccessException;
 	
 }

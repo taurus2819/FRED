@@ -20,12 +20,10 @@ public class FolderUserPK implements Serializable, CompositeKey {
     public FolderUserPK(Integer folderId, Integer userId) {
         this.folderId = folderId;
         this.userId = userId;
-    	System.out.println("Created " + this);
     }
 
     /** default constructor */
     public FolderUserPK() {
-    	System.out.println("Created " + this);
     }
 
     public Integer getFolderId() {
@@ -41,15 +39,6 @@ public class FolderUserPK implements Serializable, CompositeKey {
     }
 
     public void setUserId(Integer userId) {
-    	
-    	System.err.println(this + "'s user being changed to " + userId);
-    	if (false)
-			try {
-				throw new Exception();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
         this.userId = userId;
     }
 
