@@ -127,8 +127,8 @@ public class FolderUtil extends ModelUtil {
 		for (Iterator<FolderUser> it = folder.getFolder().getFolderUsers().iterator(); it.hasNext(); ) {
 			FolderUser user = it.next();
 			if (user.getUserId().equals(userAsInteger)) {
-				it.remove();
 				folderDAO.delete(user);
+				it.remove();
 				return;
 			}
 		}
