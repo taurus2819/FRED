@@ -138,7 +138,7 @@ public class FolderUtil extends ModelUtil {
 		Integer userAsInteger = new Integer(userId);
 		for (FolderUser user : folder.getFolder().getFolderUsers()) {
 			if (user.getUserId().equals(userAsInteger)) {
-				user.setUserRights(new Integer(newRight));
+				user.setUserRights(new Integer(newRight ^ user.getUserRights().intValue()));
 				folderDAO.update(user);
 				return;
 			}
