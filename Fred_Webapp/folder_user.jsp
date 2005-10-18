@@ -99,7 +99,7 @@
 					FolderRight rightType = (FolderRight)it1.next();
 					out.print("<td align='center'><a href='folder_user.jsp?FoldID=" + foldID + "&ActionType=ChangeRight&UserID=" + folderUser.getUserId() + "&Right=");
 					if ((folderUser.getUserRights().intValue() & rightType.getRightCode()) != 0) {
-						out.print((rightType.getRightCode() * -1) + "' title='Remove Right'><img src='images/ok.gif'");
+						out.print((rightType.getRightCode()) + "' title='Remove Right'><img src='images/ok.gif'");
 					} else {
 						out.print(rightType.getRightCode() + "' title='Add Right'><img src='images/cancel.gif'");
 					}
