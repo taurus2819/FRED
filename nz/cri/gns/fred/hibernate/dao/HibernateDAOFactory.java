@@ -750,6 +750,13 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 
 	public void delete(nz.cri.gns.fred.model.FolderUser user) throws StorageAccessException {
 		delete((Object)user);
+		//Need to flush straight away
+		try {
+	        Session session = provider.currentSession();
+	        session.flush();
+	    } catch (Exception e) {
+	        throw new StorageAccessException(e);
+	    }
 	}
 
 	public void update(nz.cri.gns.fred.model.FolderUser user) throws StorageAccessException {
