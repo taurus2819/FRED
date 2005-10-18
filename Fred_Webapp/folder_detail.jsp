@@ -152,12 +152,7 @@ function showHide(toShow, toHide) {
 			Feature feature = features[i];
 			Audit audit = feature.getAudit();
 			String status = audit.getStatus();
-			FrNumber frNum = featureUtil.getFrNumber(feature);
-			
-			//View icon and name - TODO this may be wrong as I'm entirely sure on the ins and outs of feature_name vs sample_name.  Fix later if so
-			String name = (frNum == null) ? feature.getFeatureName() : frNum.getFrNumber();
-			if (name == null)
-				name = "Unnamed Locality";
+			String name = FeatureUtil.getFeatureName(feature);
 			%><tr>
 <td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
 <td class="heading" style="text-align: left"><a href="folder_feature_detail.jsp?FoldID=<%=folder.getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><%=name%></a>&nbsp;&nbsp;

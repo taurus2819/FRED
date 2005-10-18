@@ -148,7 +148,7 @@ function showHide(toShow, toHide) {
 <%
 		startDETable(pageContext);
 		%><form name="FoldForm" method="put" action="folder_feature_detail.jsp">
-<table border="0" width="550"><tr><td colspan="9" class="deHeading"><%=feature.getFeatureName()%></td></tr>
+<table border="0" width="550"><tr><td colspan="9" class="deHeading"><%=FeatureUtil.getFeatureName(feature)%></td></tr>
 <tr>
 <th colspan="2">Name&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Options</th></tr>
 <tr><td colspan="9"><img src="images/line.gif" height="3" width="550" /></td></tr>

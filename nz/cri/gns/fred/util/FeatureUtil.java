@@ -656,5 +656,13 @@ public class FeatureUtil extends ModelUtil {
 		featureDAO.saveOrUpdate(audit);
 		featureDAO.saveOrUpdate(feature);
 	}
+	
+	public static String getFeatureName(Feature feature) {
+		FrNumber frNum = FeatureUtil.getFrNumber(feature);
+		String name = (frNum == null) ? feature.getFeatureName() : frNum.getFrNumber();
+		if (name == null)
+			name = "Unnamed Locality";
+		return name;
+	}
 
 }
