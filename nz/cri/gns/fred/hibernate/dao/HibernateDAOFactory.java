@@ -747,4 +747,12 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public void save(nz.cri.gns.fred.model.FolderUser folderUser) throws StorageAccessException {
 		save((Object)folderUser);
 	}
+
+	public void delete(nz.cri.gns.fred.model.FolderUser user) throws StorageAccessException {
+		delete((Object)user);
+	}
+
+	public void update(nz.cri.gns.fred.model.FolderUser user) throws StorageAccessException {
+		update((Object)user);
+	}
 }

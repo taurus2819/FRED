@@ -91,5 +91,17 @@ public interface FolderDAO {
      * @throws StorageAccessException 
      */
 	public void save(FolderUser folderUser) throws StorageAccessException;
+
+	/**
+	 * Deletes the given folderUser from the DB
+	 * @throws StorageAccessException 
+	 */
+	public void delete(FolderUser user) throws StorageAccessException;
+
+	/**
+	 * Updates the given folderUser in the DB
+	 * @throws StorageAccessException 
+	 */
+	public void update(FolderUser user) throws StorageAccessException;
 	
 }

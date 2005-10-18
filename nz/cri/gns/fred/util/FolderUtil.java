@@ -122,22 +122,24 @@ public class FolderUtil extends ModelUtil {
 		folderDAO.save(folderUser);
 	}
 
-	public void removeUserFromFolder(UserFolder folder, int userId) {
+	public void removeUserFromFolder(UserFolder folder, int userId) throws StorageAccessException {
 		Integer userAsInteger = new Integer(userId);
 		for (Iterator<FolderUser> it = folder.getFolder().getFolderUsers().iterator(); it.hasNext(); ) {
 			FolderUser user = it.next();
 			if (user.getUserId().equals(userAsInteger)) {
 				it.remove();
+				folderDAO.delete(user);
 				return;
 			}
 		}
 	}
 
-	public void toggleUserFolderRights(UserFolder folder, int userId, int newRight) {
+	public void toggleUserFolderRights(UserFolder folder, int userId, int newRight) throws StorageAccessException {
 		Integer userAsInteger = new Integer(userId);
 		for (FolderUser user : folder.getFolder().getFolderUsers()) {
 			if (user.getUserId().equals(userAsInteger)) {
 				user.setUserRights(new Integer(newRight));
+				folderDAO.update(user);
 				return;
 			}
 		}
