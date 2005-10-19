@@ -23,14 +23,7 @@ public class FREDInterceptor implements Interceptor, Serializable {
 	}
 
 	public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException {
-		System.out.println("In onSave : " + entity.getClass());
-		try {
-			throw new Exception();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		if (entity instanceof AssignedKeyed) {
-			System.out.println("Modifying");
 			//Check the key
 			((AssignedKeyed)entity).updateKey();
 		}
@@ -47,8 +40,8 @@ public class FREDInterceptor implements Interceptor, Serializable {
 	}
 
 	public Boolean isUnsaved(Object arg0) {
-		if (arg0 instanceof CompositeKeyed) {
-			return new Boolean(((CompositeKeyed)arg0).isUnsaved());
+		if (arg0 instanceof AssignedKeyed) {
+			return new Boolean(((AssignedKeyed)arg0).isUnsaved());
 		}
 		return null;
 	}

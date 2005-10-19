@@ -125,4 +125,9 @@ public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption, A
 	public void updateKey() {
 		this.recordId = this.record.getRecordId();
 	}
+
+	public boolean isUnsaved() {
+		return recordId == null;
+	}
+
 }

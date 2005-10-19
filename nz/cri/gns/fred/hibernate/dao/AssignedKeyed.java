@@ -6,5 +6,7 @@ public interface AssignedKeyed {
 	 */
 	public void updateKey();
 
+	public boolean isUnsaved();
+
 
 }
