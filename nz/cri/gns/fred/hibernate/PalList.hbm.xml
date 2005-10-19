@@ -73,7 +73,6 @@
     <many-to-one
         name="taxon"
         class="nz.cri.gns.fred.hibernate.TaxonomicLookup"
-        not-null="true"
     >
         <column name="TAXA_ID" />
     </many-to-one>

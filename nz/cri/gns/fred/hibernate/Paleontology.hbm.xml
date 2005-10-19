@@ -82,7 +82,7 @@
     <set
         name="listEntries"
         lazy="true"
-        inverse="true"
+        inverse="false"
 		cascade="none"
     >
         <key>
