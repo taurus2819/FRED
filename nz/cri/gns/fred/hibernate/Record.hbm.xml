@@ -39,6 +39,7 @@
     <one-to-one
         name="paleontology"
 		class="nz.cri.gns.fred.hibernate.Paleontology"
+		cascade="all"
 		outer-join="auto"
     />
     <!-- bi-directional one-to-many association to RecordMeta -->
