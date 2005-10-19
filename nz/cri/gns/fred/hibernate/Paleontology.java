@@ -184,7 +184,9 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
 	}
 
 	public void updateKey() {
+		System.out.println("Record id was " + this.recordId);
 		this.recordId = this.record.getRecordId();
+		System.out.println("Record id is " + this.recordId);
 	}
 
 }
