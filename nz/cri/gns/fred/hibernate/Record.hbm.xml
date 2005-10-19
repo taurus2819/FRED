@@ -39,7 +39,6 @@
     <one-to-one
         name="paleontology"
 		class="nz.cri.gns.fred.hibernate.Paleontology"
-		cascade="all"
 		constrained="true"
         outer-join="auto"
     />
@@ -60,7 +59,6 @@
     <one-to-one
         name="adoption"
         class="nz.cri.gns.fred.hibernate.Adoption"
-		cascade="all"
 		constrained="true"
         outer-join="auto"
     />

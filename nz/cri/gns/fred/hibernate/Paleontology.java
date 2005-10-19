@@ -35,7 +35,7 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
     /** nullable persistent field */
     private String collectionComments;
 
-    /** nullable persistent field */
+    /** persistent field */
     private nz.cri.gns.fred.model.Record record;
 
     /** persistent field */
