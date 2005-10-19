@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import nz.cri.gns.fred.model.RelationType;
 import nz.cri.gns.fred.util.FREDUtil;
+import nz.cri.gns.fred.util.SampleUtil;
 
 /** @author Hibernate CodeGenerator */
 public class Relationship implements Serializable, nz.cri.gns.fred.model.Relationship, Cloneable {
@@ -172,5 +173,9 @@ public class Relationship implements Serializable, nz.cri.gns.fred.model.Relatio
     	 && FREDUtil.equals(sample, rel.sample, true)
     	 && FREDUtil.equals(stratUnit, rel.stratUnit, true)
     	 && FREDUtil.equals(stratUnitId, rel.stratUnitId, true);
+    }
+    
+    public String toString() {
+    	return SampleUtil.getRelationshipDescription(this);
     }
 }
