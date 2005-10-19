@@ -4,9 +4,10 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
+import nz.cri.gns.fred.hibernate.dao.AssignedKeyed;
 import nz.cri.gns.fred.model.Person;
 /** @author Hibernate CodeGenerator */
-public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption {
+public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption, AssignedKeyed {
 
 	private static final long serialVersionUID = 20050818L;
 	
@@ -115,5 +116,9 @@ public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption {
 
 	public Set getPersons() {
 		return getAdopters();
+	}
+
+	public void updateKey() {
+		this.recordId = this.record.getRecordId();
 	}
 }

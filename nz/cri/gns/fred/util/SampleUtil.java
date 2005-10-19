@@ -548,7 +548,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * @throws StorageAccessException 
 	 */
 	public Relationship createRelationship(Sample sample, Feature feature, String relationType, String relationshipType) throws StorageAccessException {
-		Relationship rel = sampleDAO.createRelationship();
+		Relationship rel = sampleDAO.createNewRelationship();
 		rel.setSample(sample);
 		rel.setFeature(feature);
 		rel.setRelationType(sampleDAO.getRelationType(relationType));
@@ -563,7 +563,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * @throws StorageAccessException 
 	 */
 	public Relationship cloneRelationship(Relationship newRelationship) throws StorageAccessException {
-		Relationship rel = sampleDAO.createRelationship();
+		Relationship rel = sampleDAO.createNewRelationship();
 		rel.setSample(newRelationship.getSample());
 		rel.setFeature(newRelationship.getFeature());
 		rel.setDistance(newRelationship.getDistance());

@@ -4,12 +4,13 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
+import nz.cri.gns.fred.hibernate.dao.AssignedKeyed;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
 
 
 /** @author Hibernate CodeGenerator */
-public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleontology {
+public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleontology, AssignedKeyed {
 
     private static final long serialVersionUID = 20050818L;
 
@@ -180,6 +181,10 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
 
 	public Set getPersons() {
 		return getIdentifiers();
+	}
+
+	public void updateKey() {
+		this.recordId = this.record.getRecordId();
 	}
 
 }

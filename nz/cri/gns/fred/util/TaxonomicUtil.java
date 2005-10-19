@@ -151,7 +151,7 @@ public class TaxonomicUtil extends ModelUtil {
     }
 
     public PaleontologyListEntry createPaleontologyListEntry() {
-       return taxonomicDAO.createPaleontologyListEntry();
+       return taxonomicDAO.createNewPaleontologyListEntry();
     }
 
     public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException {
@@ -176,7 +176,7 @@ public class TaxonomicUtil extends ModelUtil {
     }
 
     public Taxon createTaxon() {
-        return taxonomicDAO.createTaxon();
+        return taxonomicDAO.createNewTaxon();
     }
     
 	public void submitProvisional(User user, PaleontologyListEntry entry) throws StorageAccessException {
@@ -204,7 +204,7 @@ public class TaxonomicUtil extends ModelUtil {
 	 * @throws IntrospectionException 
 	 */
 	private Taxon ensureCompatibleWithPersistenceLayer(Taxon taxon) throws IntrospectionException {
-		Taxon newTaxon = taxonomicDAO.createTaxon();
+		Taxon newTaxon = taxonomicDAO.createNewTaxon();
 		if (newTaxon.getClass().equals(taxon.getClass()))
 			//Same class, assume they're compatible
 			return taxon;

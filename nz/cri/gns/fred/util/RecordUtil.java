@@ -13,6 +13,7 @@ import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.RecordDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
+import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Folder;
@@ -143,9 +144,13 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         record.setAudit(audit);
 
         if (recordType.equals(PALEONTOLOGICAL)) {
-            record.setPaleontology(recordDAO.createNewPaleontology());
+            Paleontology pal = recordDAO.createNewPaleontology();
+        	record.setPaleontology(pal);
+        	pal.setRecord(record);
         } else if (recordType.equals(ADOPTION)) {
-            record.setAdoption(recordDAO.createNewAdoption());
+            Adoption adoption = recordDAO.createNewAdoption();
+        	record.setAdoption(adoption);
+            adoption.setRecord(record);
         } else 
             throw new IllegalArgumentException("Invalid record type specified: " + recordType);
         

@@ -23,9 +23,9 @@ public class FREDInterceptor implements Interceptor, Serializable {
 	}
 
 	public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException {
-		if (entity instanceof CompositeKeyed) {
+		if (entity instanceof AssignedKeyed) {
 			//Check the key
-			((CompositeKeyed)entity).updateKey();
+			((AssignedKeyed)entity).updateKey();
 		}
 		return false;
 	}

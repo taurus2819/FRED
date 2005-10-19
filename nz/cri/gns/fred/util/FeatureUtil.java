@@ -233,7 +233,7 @@ public class FeatureUtil extends ModelUtil {
 		if (relationships != null && relationships.size() > 0) {
 			HashSet<Relationship> newRels = new HashSet<Relationship>();
 			for (Relationship rel : relationships) {
-				Relationship newRel = sampleDAO.createRelationship();
+				Relationship newRel = sampleDAO.createNewRelationship();
 				FREDUtil.beanCopy(rel, newRel, new FREDUtil.ExcludeByName(FREDUtil.toVector(new String[] {"relationshipId", "sample"})));
 				newRel.setSample(newSample);
 				newRels.add(newRel);
@@ -245,7 +245,7 @@ public class FeatureUtil extends ModelUtil {
 		if (sentTos != null && sentTos.size() > 0) {
 			HashSet<SentTo> newSent = new HashSet<SentTo>();
 			for (SentTo sentTo : sentTos) {
-				SentTo newSentTo = sampleDAO.createSentTo();
+				SentTo newSentTo = sampleDAO.createNewSentTo();
 				FREDUtil.beanCopy(sentTo, newSentTo, new FREDUtil.CopyAll());
 				newSent.add(newSentTo);
 			}
@@ -257,7 +257,7 @@ public class FeatureUtil extends ModelUtil {
 		if (sedFeatures != null && sedFeatures.size() > 0) {
 			HashSet<SedimentaryFeature> newSedFeatures = new HashSet<SedimentaryFeature>();
 			for (SedimentaryFeature sedFeature : sedFeatures) {
-				SedimentaryFeature newSedFeature = sampleDAO.createSedimentaryFeature();
+				SedimentaryFeature newSedFeature = sampleDAO.createNewSedimentaryFeature();
 				FREDUtil.beanCopy(sedFeature, newSedFeature, new FREDUtil.CopyAll());
 				newSedFeatures.add(newSedFeature);
 			}
@@ -270,7 +270,7 @@ public class FeatureUtil extends ModelUtil {
 			HashSet<SampleMeta> newImages = new HashSet<SampleMeta>();
 			for (Iterator it = images.iterator(); it.hasNext(); ) {
 				SampleMeta meta = (SampleMeta)it.next();
-				SampleMeta newMeta = sampleDAO.createSampleMeta();
+				SampleMeta newMeta = sampleDAO.createNewSampleMeta();
 				newMeta.setMetaId(meta.getMetaId());
 				newMeta.setSample(newSample);
 				newImages.add(newMeta);

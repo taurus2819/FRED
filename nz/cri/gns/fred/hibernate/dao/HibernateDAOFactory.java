@@ -433,7 +433,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		return sedF;
 	}
 
-	public SampleMeta createSampleMeta() {
+	public SampleMeta createNewSampleMeta() {
 		return new nz.cri.gns.fred.hibernate.SampleMeta(false);
 	}
 
@@ -543,7 +543,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		save((Object)stage);
 	}
 
-	public Relationship createRelationship() {
+	public Relationship createNewRelationship() {
 		return new nz.cri.gns.fred.hibernate.Relationship();
 	}
 
@@ -616,14 +616,6 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
         }
     }
 
-	public SentTo createSentTo() {
-		return new nz.cri.gns.fred.hibernate.SentTo();
-	}
-
-	public SedimentaryFeature createSedimentaryFeature() {
-		return new nz.cri.gns.fred.hibernate.SedimentaryFeature();
-	}
-	
 	public RecordDAO getRecordDAO() {
 		return this;
 	}
@@ -709,7 +701,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
         return this;
     }
 
-    public PaleontologyListEntry createPaleontologyListEntry() {
+    public PaleontologyListEntry createNewPaleontologyListEntry() {
         return new PalList();
     }
 
@@ -757,7 +749,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
         }
     }
     
-    public Taxon createTaxon() {
+    public Taxon createNewTaxon() {
         return new TaxonomicLookup();
     }
 
@@ -791,4 +783,5 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public void update(nz.cri.gns.fred.model.FolderUser user) throws StorageAccessException {
 		update((Object)user);
 	}
+
 }

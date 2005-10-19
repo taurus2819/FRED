@@ -51,7 +51,7 @@ public interface SampleDAO {
 	/**
 	 * @return
 	 */
-	public SampleMeta createSampleMeta();
+	public SampleMeta createNewSampleMeta();
 
 	/**
 	 * @param newSample
@@ -109,12 +109,6 @@ public interface SampleDAO {
 	public Sample createNewSample() throws StorageAccessException;
 
 	/**
-	 * Creates a new empty sedimentary feature object
-	 * @return
-	 */
-	public SedimentaryFeature createNewSedimentaryFeature() throws StorageAccessException;
-
-	/**
 	 * Retrieves the so-named relation type
 	 * @throws StorageAccessException 
 	 */
@@ -141,12 +135,6 @@ public interface SampleDAO {
 	public FossilGroup getFossilGroup(String name) throws StorageAccessException;
 
 	/**
-	 * Creates a new empty sentTo object
-	 * @return
-	 */
-	public SentTo createNewSentTo();
-
-	/**
 	 * Locates, if one exists, a Stage entry in persistent storage that uses the given 
 	 * stages (by id) and has uncertainty as specified. 
 	 *@return a Stage object or null if no such object exists
@@ -166,17 +154,17 @@ public interface SampleDAO {
 	/**
 	 * Creates a new, uninitialised Relationship object
 	 */
-	public Relationship createRelationship();
+	public Relationship createNewRelationship();
 
 	/**
 	 * Creates a new, uninitialised SentTo object
 	 */
-	public SentTo createSentTo();
+	public SentTo createNewSentTo();
 
 	/**
 	 * Creates a new, uninitialised SedimentaryFeature object
 	 */
-	public SedimentaryFeature createSedimentaryFeature();
+	public SedimentaryFeature createNewSedimentaryFeature();
 
 	/**
 	 * Saves the given relationship to persistent storage

@@ -10,7 +10,7 @@ public interface TaxonomicDAO {
      * Creates a new, unsaved paleontological list entry
      * @return
      */
-    public PaleontologyListEntry createPaleontologyListEntry();
+    public PaleontologyListEntry createNewPaleontologyListEntry();
 
     /**
      * Finds the taxon with the given parameters
@@ -26,7 +26,7 @@ public interface TaxonomicDAO {
      * Creates a new, unsaved taxon
      * @return
      */
-    public Taxon createTaxon();
+    public Taxon createNewTaxon();
 
     /**
      * Saves the taxon!
