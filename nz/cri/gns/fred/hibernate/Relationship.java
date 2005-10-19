@@ -3,6 +3,7 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 
 import nz.cri.gns.fred.model.RelationType;
+import nz.cri.gns.fred.util.FREDUtil;
 
 /** @author Hibernate CodeGenerator */
 public class Relationship implements Serializable, nz.cri.gns.fred.model.Relationship, Cloneable {
@@ -153,4 +154,23 @@ public class Relationship implements Serializable, nz.cri.gns.fred.model.Relatio
     	}
     }
 
+    /**
+     * Equality is determined by comparing all fields _except_ the id
+     */
+    public boolean equals(Object o) {
+    	if (!(o instanceof Relationship))
+    		return false;
+    	Relationship rel = (Relationship)o;
+    	
+    	return 
+    		distance == rel.distance
+    	 && distanceRange == rel.distanceRange
+    	 && FREDUtil.equals(distanceMod, rel.distanceMod, true)
+    	 && FREDUtil.equals(feature, rel.feature, true)
+    	 && FREDUtil.equals(relationshipType, rel.relationshipType, true)
+    	 && FREDUtil.equals(relationType, rel.relationType, true)
+    	 && FREDUtil.equals(sample, rel.sample, true)
+    	 && FREDUtil.equals(stratUnit, rel.stratUnit, true)
+    	 && FREDUtil.equals(stratUnitId, rel.stratUnitId, true);
+    }
 }

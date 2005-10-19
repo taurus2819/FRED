@@ -842,6 +842,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 						//Remove it from the old set
 						it.remove();
 						found = true;
+						break;
 					}
 				}
 				if (!found) {
