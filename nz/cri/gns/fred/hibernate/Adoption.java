@@ -92,6 +92,10 @@ public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption, A
 
     public void setRecord(nz.cri.gns.fred.model.Record record) {
         this.record = record;
+        if (record == null)
+        	this.recordId = null;
+        else
+        	this.recordId = record.getRecordId();
     }
 
     public nz.cri.gns.fred.model.Stage getStage() {

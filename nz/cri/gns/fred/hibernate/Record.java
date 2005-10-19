@@ -63,6 +63,12 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record {
 
     public void setRecordId(Integer recordId) {
         this.recordId = recordId;
+        if (paleontology != null) {
+        	paleontology.setRecordId(recordId);
+        }
+        if (adoption != null) {
+        	adoption.setRecordId(recordId);
+        }
     }
 
     public String getWorkingComments() {
