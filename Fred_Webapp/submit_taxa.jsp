@@ -12,7 +12,7 @@
 
 	PaleontologyRecordDE dataEntryForm = (PaleontologyRecordDE) session.getAttribute(WebsiteConstants.DATA_ENTRY_FORM);
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
-	Vector tL = (Vector) session.getAttribute(WebsiteConstants.BAD_TAXA_LIST);
+	Set tL = (Set) session.getAttribute(WebsiteConstants.BAD_TAXA_LIST);
 	if (tL != null) {
 		TaxonomicUtil util = new TaxonomicUtil(factory);
 		for (Iterator i = tL.iterator(); i.hasNext();) {

@@ -421,7 +421,6 @@ public class PaleontologyRecordDE extends RecordDE {
 			
 			List<TaxonomicGroup> groups = recordUtil.getTaxonomicGroups(pal);
 			List<PaleontologyListEntry> badTaxa = (badTaxaList == null) ? new Vector<PaleontologyListEntry>() : new Vector<PaleontologyListEntry>(badTaxaList);
-			System.out.println("Have " + badTaxa.size() + " bad taxa");
 			if (groups != null && groups.size() > 0) {
 				for (TaxonomicGroup group : groups) {
 					List<PaleontologyListEntry> list = recordUtil.getListEntries(pal, group);
