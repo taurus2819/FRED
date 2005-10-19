@@ -155,24 +155,22 @@ public class Relationship implements Serializable, nz.cri.gns.fred.model.Relatio
     	}
     }
 
-    /**
-     * Equality is determined by comparing all fields _except_ the id
-     */
     public boolean equals(Object o) {
-    	if (!(o instanceof Relationship))
+    	if (!(o instanceof nz.cri.gns.fred.model.Relationship))
     		return false;
-    	Relationship rel = (Relationship)o;
+    	nz.cri.gns.fred.model.Relationship rel = (nz.cri.gns.fred.model.Relationship)o;
     	
     	return 
-    		distance == rel.distance
-    	 && distanceRange == rel.distanceRange
-    	 && FREDUtil.equals(distanceMod, rel.distanceMod, true)
-    	 && FREDUtil.equals(feature, rel.feature, true)
-    	 && FREDUtil.equals(relationshipType, rel.relationshipType, true)
-    	 && FREDUtil.equals(relationType, rel.relationType, true)
-    	 && FREDUtil.equals(sample, rel.sample, true)
-    	 && FREDUtil.equals(stratUnit, rel.stratUnit, true)
-    	 && FREDUtil.equals(stratUnitId, rel.stratUnitId, true);
+		distance == rel.getDistance()
+		 && distanceRange == rel.getDistanceRange()
+		 && FREDUtil.equals(distanceMod, rel.getDistanceMod(), true)
+		 && FREDUtil.equals(feature, rel.getFeature(), true)
+		 && FREDUtil.equals(relationshipType, rel.getRelationshipType(), true)
+		 && FREDUtil.equals(relationType, rel.getRelationType(), true)
+		 && FREDUtil.equals(sample, rel.getSample(), true)
+		 && FREDUtil.equals(stratUnit, rel.getStratUnit(), true)
+		 && FREDUtil.equals(stratUnitId, rel.getStratUnitId(), true)
+		 && FREDUtil.equals(relationshipId, rel.getRelationshipId(), true);
     }
     
     public String toString() {

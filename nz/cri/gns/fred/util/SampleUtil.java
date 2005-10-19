@@ -128,25 +128,20 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 				return false;
 			
 			Relationship rel = (Relationship)o;
-			
-			//Compulsory fields
-			if (!sample.equals(rel.getSample()) || !relationType.equals(rel.getRelationType()) || !relationshipType.equals(rel.getRelationshipType()))
-				return false;
-			
-			//Optional fields
-			if (distance == null ^ rel.getDistance() == null || (distance != null && !distance.equals(rel.getDistance())))
-				return false;
-			if (distanceMod == null ^ rel.getDistanceMod() == null || (distanceMod != null && !distanceMod.equals(rel.getDistanceMod())))
-				return false;
-			if (distanceRange == null ^ rel.getDistanceRange() == null || (distanceRange != null && !distanceRange.equals(rel.getDistanceRange())))
-				return false;
-			if (feature == null ^ rel.getFeature() == null || (feature != null && !feature.equals(rel.getFeature())))
-				return false;
-			if (stratUnit == null ^ rel.getStratUnit() == null || (stratUnit != null && !stratUnit.equals(rel.getStratUnit())))
-				return false;
-			if (stratUnitId == null ^ rel.getStratUnitId() == null || (stratUnitId != null && !stratUnitId.equals(rel.getStratUnitId())))
-				return false;
-			return true;
+				    	
+	    	return 
+	    		distance == rel.getDistance()
+	    	 && distanceRange == rel.getDistanceRange()
+	    	 && FREDUtil.equals(distanceMod, rel.getDistanceMod(), true)
+	    	 && FREDUtil.equals(feature, rel.getFeature(), true)
+	    	 && FREDUtil.equals(relationshipType, rel.getRelationshipType(), true)
+	    	 && FREDUtil.equals(relationType, rel.getRelationType(), true)
+	    	 && FREDUtil.equals(sample, rel.getSample(), true)
+	    	 && FREDUtil.equals(stratUnit, rel.getStratUnit(), true)
+	    	 && FREDUtil.equals(stratUnitId, rel.getStratUnitId(), true);
+	    }
+		public String toString() {
+			return SampleUtil.getRelationshipDescription(this);
 		}
 	}
 
