@@ -91,9 +91,11 @@ public interface RecordDAO {
     public LabSection getLabSection(int id) throws StorageAccessException;
 
     /**
-     * Saves, or updates if it already exists, the given object
+     * Updates the given object
      * @throws StorageAccessException 
      */
-	public void saveOrUpdate(RecordDetails details) throws StorageAccessException;
+	public void update(RecordDetails details) throws StorageAccessException;
+
+	public void save(RecordDetails details) throws StorageAccessException;
 
 }

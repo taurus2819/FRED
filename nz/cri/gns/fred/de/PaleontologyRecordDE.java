@@ -493,7 +493,10 @@ public class PaleontologyRecordDE extends RecordDE {
 	
 	public int save() throws InsufficientPrivelegesException, StorageAccessException {
 		int recordId = super.save();
-		recordUtil.saveOrUpdate(record.getPaleontology());
+		if (record.getPaleontology().getRecordId() == null)
+			recordUtil.save(record.getPaleontology());
+		else
+			recordUtil.update(record.getPaleontology());
 		return recordId;
 	}
 	
