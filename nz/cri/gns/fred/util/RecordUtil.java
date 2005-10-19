@@ -224,6 +224,8 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * Returns all the groups that are appropriate for the given pal entry
 	 */
 	public List<TaxonomicGroup> getTaxonomicGroups(Paleontology pal) {
+		if (pal.getListEntries() == null)
+			return new Vector<TaxonomicGroup>();
 		TreeSet<TaxonomicGroup> set = new TreeSet<TaxonomicGroup>();
 		for (PaleontologyListEntry entry : pal.getListEntries())
 			set.add(entry.getTaxonomicGroup());
