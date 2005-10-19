@@ -833,16 +833,12 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		if (request.getParameter("StratRel").length() > 0) {
 			//Go through each entered relationship
 			for (String relationshipDesc : request.getParameter("StratRel").split("\\n")) try {
-				System.out.println("Using: " + relationshipDesc);
 				Relationship newRelationship = sampleUtil.decodeStratigraphicRelationshipDescription(relationshipDesc);
 				newRelationship.setSample(sample);
-				System.out.println("New: " + newRelationship);
 				boolean found = false;
 				for (Iterator<Relationship> it = stratRel.iterator(); it.hasNext(); ) {
 					Relationship rel = it.next();
-					System.out.println("Compared to: " + rel);
 					if (newRelationship.equals(rel)) {
-						System.out.println("Matches");
 						//Remove it from the old set
 						it.remove();
 						found = true;
@@ -857,7 +853,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 				error.add(new String[] {"Stratigraphic relationships", e.getMessage()});
 			}
 		}
-		System.out.println("Removing " + stratRel);
 		//Remove any that are still in the old set
 		relationships.removeAll(stratRel);
 		

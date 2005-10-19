@@ -370,7 +370,6 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	public Relationship decodeStratigraphicRelationshipDescription(String desc) throws StorageAccessException {
 		NoIdRelationship relationship = new NoIdRelationship();
 		String name = getCommonRelationshipPropertiesFromDescription(desc, relationship, sampleDAO.getRelationType("Stratigraphic"));
-		System.out.println("Here: " + relationship);
 		//Set the unit by name
 		relationship.setStratUnit(name);
 		try {
@@ -388,7 +387,6 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	private String getCommonRelationshipPropertiesFromDescription(String desc, Relationship rel, RelationType relationType) throws StorageAccessException {
 		desc = desc.trim();
 		String[] parts = desc.split("\\s");
-		for (int i=0; i<parts.length; i++) System.out.println(parts[i]);
 		int where = 0;
 		try {
 			rel.setDistance(new Double(parts[where++])); 
@@ -402,9 +400,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			}
 		}
 		if (parts[where].equals("-")) try {
-			rel.setDistanceRange(new Double(++where));
+			rel.setDistanceRange(new Double(parts[++where]));
 			++where;
-			System.out.println("Distance range: " + rel.getDistanceRange());
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Relationship description not properly formatted");
 		}
