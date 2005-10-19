@@ -23,7 +23,9 @@ public class FREDInterceptor implements Interceptor, Serializable {
 	}
 
 	public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException {
+		System.out.println("In onSave");
 		if (entity instanceof AssignedKeyed) {
+			System.out.println("Modifying");
 			//Check the key
 			((AssignedKeyed)entity).updateKey();
 		}
