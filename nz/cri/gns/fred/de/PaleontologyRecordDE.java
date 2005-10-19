@@ -47,7 +47,7 @@ public class PaleontologyRecordDE extends RecordDE {
     private TaxonomicUtil taxonomicUtil;
 
     public PaleontologyRecordDE(User user, Sample sample, int folderID, DAOFactory factory, ContentProvider provider) throws StorageAccessException, InsufficientPrivelegesException {
-        super(user, sample, folderID, FREDConstants.ADOPTION, factory, provider);
+        super(user, sample, folderID, FREDConstants.PALEONTOLOGICAL, factory, provider);
         taxonomicUtil = new TaxonomicUtil(factory);
     }
 
