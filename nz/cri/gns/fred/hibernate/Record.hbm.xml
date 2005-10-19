@@ -39,6 +39,8 @@
     <one-to-one
         name="paleontology"
 		class="nz.cri.gns.fred.hibernate.Paleontology"
+		cascade="all"
+		constrained="true"
         outer-join="auto"
     />
     <!-- bi-directional one-to-many association to RecordMeta -->
@@ -58,6 +60,8 @@
     <one-to-one
         name="adoption"
         class="nz.cri.gns.fred.hibernate.Adoption"
+		cascade="all"
+		constrained="true"
         outer-join="auto"
     />
     <!-- bi-directional many-to-one association to Sample -->
