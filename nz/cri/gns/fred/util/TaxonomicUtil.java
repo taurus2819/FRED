@@ -212,7 +212,7 @@ public class TaxonomicUtil extends ModelUtil {
 			return taxon;
 		
 		//Copy from old to new
-		return FREDUtil.beanCopy(taxon, newTaxon, new FREDUtil.ExcludeByType(Set.class));
+		return FREDUtil.beanCopy(taxon, newTaxon, Taxon.class, new FREDUtil.ExcludeByType(Set.class));
 	}
 
 	public PaleontologyListEntry ensureCompatibleWithPersistenceLayer(PaleontologyListEntry entry) throws IntrospectionException {
@@ -221,7 +221,7 @@ public class TaxonomicUtil extends ModelUtil {
 			return entry;
 		
 		//Copy from the old to the new
-		return FREDUtil.beanCopy(entry, newEntry, new FREDUtil.ExcludeByType(Set.class));
+		return FREDUtil.beanCopy(entry, newEntry, PaleontologyListEntry.class, new FREDUtil.ExcludeByType(Set.class));
 	}
 
 }

@@ -639,9 +639,27 @@ public class FREDUtil {
      *@return to as a convenience.
      */
 	public static <T> T beanCopy(T from, T to, Instruction instruction) throws IntrospectionException {
-		BeanInfo info = Introspector.getBeanInfo(from.getClass());
+		BeanInfo fromInfo = Introspector.getBeanInfo(from.getClass());
 		
-		for (PropertyDescriptor prop : info.getPropertyDescriptors()) {
+		for (PropertyDescriptor prop : fromInfo.getPropertyDescriptors()) {
+			if (instruction.include(prop)) try {
+				prop.getWriteMethod().invoke(to, new Object[] {prop.getReadMethod().invoke(from, (Object[])null)});
+			} catch (Exception e) {
+			}
+		}
+		return to;
+	}
+
+    /**
+     * Uses introspection to copy fields from <code>from</code> to <code>to</code>
+     * but uses the given class (must be a superclass of both from and to) to determine
+     * which properties to copy.
+     *@return to as a convenience.
+     */
+	public static <T> T beanCopy(T from, T to, Class<T> clazz, Instruction instruction) throws IntrospectionException {
+		BeanInfo fromInfo = Introspector.getBeanInfo(clazz);
+		
+		for (PropertyDescriptor prop : fromInfo.getPropertyDescriptors()) {
 			if (instruction.include(prop)) try {
 				prop.getWriteMethod().invoke(to, new Object[] {prop.getReadMethod().invoke(from, (Object[])null)});
 			} catch (Exception e) {
