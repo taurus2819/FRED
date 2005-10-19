@@ -301,6 +301,9 @@ public class PaleontologyRecordDE extends RecordDE {
 			try {
                 boolean found = false;
                 String[] bits = taxaLine.split("\\*", -1);
+                if (bits.length == 0)
+                	continue;
+                
                 Integer specCount = (bits[SPECIMEN_COUNT].length() == 0) ? null : new Integer(bits[SPECIMEN_COUNT]);
                 for (Iterator<PaleontologyListEntry> it = removedTaxaList.iterator(); it.hasNext(); ) {
                     PaleontologyListEntry entry = it.next();
