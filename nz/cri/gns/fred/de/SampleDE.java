@@ -833,6 +833,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		if (request.getParameter("StratRel").length() > 0) {
 			//Go through each entered relationship
 			for (String relationshipDesc : request.getParameter("StratRel").split("\\n")) try {
+				System.out.println("Using: " + relationshipDesc);
 				Relationship newRelationship = sampleUtil.decodeStratigraphicRelationshipDescription(relationshipDesc);
 				newRelationship.setSample(sample);
 				System.out.println("New: " + newRelationship);

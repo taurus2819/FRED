@@ -387,6 +387,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	private String getCommonRelationshipPropertiesFromDescription(String desc, Relationship rel, RelationType relationType) throws StorageAccessException {
 		desc = desc.trim();
 		String[] parts = desc.split("\\s");
+		for (int i=0; i<parts.length; i++) System.out.println(parts[i]);
 		int where = 0;
 		try {
 			rel.setDistance(new Double(parts[where++])); 
