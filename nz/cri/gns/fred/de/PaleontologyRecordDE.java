@@ -419,6 +419,8 @@ public class PaleontologyRecordDE extends RecordDE {
 			template.loadUntil(out, "{@Taxa}");
 			
 			List<TaxonomicGroup> groups = recordUtil.getTaxonomicGroups(pal);
+			List<PaleontologyListEntry> badTaxa = (badTaxaList == null) ? new Vector<PaleontologyListEntry>() : new Vector<PaleontologyListEntry>(badTaxaList);
+			System.out.println("Have " + badTaxa.size() + " bad taxa");
 			if (groups != null && groups.size() > 0) {
 				for (TaxonomicGroup group : groups) {
 					List<PaleontologyListEntry> list = recordUtil.getListEntries(pal, group);
@@ -437,7 +439,8 @@ public class PaleontologyRecordDE extends RecordDE {
 					}
 					//Also check for bad taxa of this group
 					if (badTaxaList != null) {
-						for (PaleontologyListEntry entry : badTaxaList) {
+						for (Iterator<PaleontologyListEntry> it = badTaxa.iterator(); it.hasNext(); ) {
+							PaleontologyListEntry entry = it.next();
 							if (entry.getTaxonomicGroup().equals(group) && entry.getTaxon() != null) {
 								Taxon taxon = entry.getTaxon();
 								out.println(group.getName() + "*" 
@@ -446,12 +449,25 @@ public class PaleontologyRecordDE extends RecordDE {
 										+ DBUtils.nvl(entry.getSpecimenCount()) + "*" 
 										+ DBUtils.nvl(entry.getSpecimenCoords()) + "*" 
 										+ DBUtils.nvl(entry.getComments()));
+								it.remove();
 							}
 						}
 					}
 				}
 			}
-
+			//Finally check for any remaining bad taxa
+			for (PaleontologyListEntry entry : badTaxa) {
+				if (entry.getTaxon() != null) {
+					Taxon taxon = entry.getTaxon();
+					out.println(taxon.getTaxonomicGroup().getName() + "*" 
+							+ taxon.getTaxonomicName() + "*" 
+							+ DBUtils.nvl(taxon.getAuthor()) + "*" 
+							+ DBUtils.nvl(entry.getSpecimenCount()) + "*" 
+							+ DBUtils.nvl(entry.getSpecimenCoords()) + "*" 
+							+ DBUtils.nvl(entry.getComments()));
+				}
+			}
+			
 			template.loadAll(out);
 			super.makeEndBitHTML(out);
 		} catch (StorageAccessException e) {
