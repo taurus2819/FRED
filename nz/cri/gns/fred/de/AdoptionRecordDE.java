@@ -39,6 +39,7 @@ public class AdoptionRecordDE extends RecordDE {
 		super.makeDataEntryHTML(out, factory);
         
         Template template = provider.getContent("adoption.de.form");
+        prepareTemplate(template, provider);
         
         Adoption adoption = record.getAdoption();
         
