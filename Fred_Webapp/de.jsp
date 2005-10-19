@@ -79,7 +79,7 @@
 		}		
 	}
 %><%
-	
+try {
 	ExtranetTemplate et = getExtranetTemplate();
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	DataEntryForm dataEntryForm = getDataEntryForm(request);
@@ -153,4 +153,7 @@
 		factory.closeSession();
 	} catch (Exception e) {
 	}
+} catch (Exception e) {
+	e.printStackTrace();
+}
 %>

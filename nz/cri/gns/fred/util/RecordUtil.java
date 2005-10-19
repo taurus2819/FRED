@@ -44,6 +44,8 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	
 
 	public static boolean isTaxaApproved(Record record) {
+		if (record.getPaleontology().getListEntries() == null)
+			return true;
 		for (PaleontologyListEntry entry : record.getPaleontology().getListEntries()) {
 			if (entry.getTaxon() != null && !entry.getTaxon().getStatus().equals(FREDConstants.APPROVED)) 
 				return false;
