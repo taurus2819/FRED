@@ -85,7 +85,7 @@
         name="listEntries"
         lazy="true"
         inverse="false"
-		cascade="none"
+		cascade="all"
     >
         <key>
             <column name="RECORD_ID" />

@@ -248,7 +248,7 @@ public class PaleontologyRecordDE extends RecordDE {
             error.add(new String[] {"Adoption Date", "Badly formatted date"});
         }
         
-        //Adoptors
+        //Identifiers
         try {
             pal.setIdentifiers(FREDUtil.getPersons(request.getParameter("Identifier"), new PersonUtil(factory), "Adoptors"));
         } catch (DataInputException e) {
@@ -259,8 +259,7 @@ public class PaleontologyRecordDE extends RecordDE {
         try {
             pal.setStage(StageDEUtil.getStage(request, "Stage", pal.getStage(), new SampleUtil(factory), "Stage"));
         } catch (DataInputException e) {
-			e.printStackTrace();
-            error.addAll(e.getError());
+			error.addAll(e.getError());
         }
         
         //Stage Comments
