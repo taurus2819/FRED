@@ -298,11 +298,11 @@ public class PaleontologyRecordDE extends RecordDE {
         nonApprovedTaxaFlag = false;
         for (String taxaLine : taxa.split("\\n")) {
 		    taxaLine = taxaLine.trim();
+            if (taxaLine.length() == 0)
+            	continue;
 			try {
                 boolean found = false;
                 String[] bits = taxaLine.split("\\*", -1);
-                if (bits.length == 0)
-                	continue;
                 
                 Integer specCount = (bits[SPECIMEN_COUNT].length() == 0) ? null : new Integer(bits[SPECIMEN_COUNT]);
                 for (Iterator<PaleontologyListEntry> it = removedTaxaList.iterator(); it.hasNext(); ) {
