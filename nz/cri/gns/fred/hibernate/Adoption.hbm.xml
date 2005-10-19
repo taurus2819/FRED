@@ -21,7 +21,9 @@
         type="int"
         column="RECORD_ID"
     >
-        <generator class="assigned" />
+         <generator class="foreign">
+            <param name="property">record</param>
+        </generator>
     </id>
 
     <property
