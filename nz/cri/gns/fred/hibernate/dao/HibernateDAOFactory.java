@@ -714,19 +714,8 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
             query.setString("author", author);
             List list = query.list();
             if (list == null || list.size() == 0) {
-            	//No match with author, check for no author
-            	Taxon taxonNoAuthor = getTaxon(taxonomicGroup, name, null);
-            	if (taxonNoAuthor == null)
-            		return null;
-            	else {
-            		//If there wasn't a saved author, then add it to the record
-            		String oldAuthor = taxonNoAuthor.getAuthor();
-            		if (oldAuthor == null || oldAuthor.length() == 0) {
-            			taxonNoAuthor.setAuthor(author);
-            			return taxonNoAuthor;
-            		} else 
-            			return null;
-            	}
+           		return null;
+
             }
             return (Taxon)list.get(0);
         } catch (Exception e) {
