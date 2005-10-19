@@ -1,7 +1,6 @@
 <%@page extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.de.PaleontologyRecordDE"
 %><%@page import="nz.cri.gns.fred.model.PaleontologyListEntry"
-%><%@page import="nz.cri.gns.jsp.*"
 %><%@page import="java.util.*"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
@@ -10,8 +9,6 @@
 %><%@page import="nz.cri.gns.auth.*"
 %><%
 	User user = (User)getUser(session);
-
-	ExtranetTemplate et = getExtranetTemplate();
 
 	PaleontologyRecordDE dataEntryForm = (PaleontologyRecordDE) session.getAttribute(WebsiteConstants.DATA_ENTRY_FORM);
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
@@ -30,7 +27,6 @@
 		response.sendRedirect("folder_list.jsp");
 	else
 		response.sendRedirect(whereTo + "&q=" + Math.random());
-	return;
 	try {
 		HibernateUtil.get().getDAOFactory().closeSession();
 	} catch (Exception e) {
