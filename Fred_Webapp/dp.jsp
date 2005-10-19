@@ -34,6 +34,8 @@
 			return;
 
 		} catch (TaxonomicListException e) {
+			//Still save it
+			dataEntryForm.save();
 			drawTop(out, et, request, response);
 			%>
 <table style="margin-left:20px; margin-top:20px; width:150px;" border="0">
