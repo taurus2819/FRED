@@ -218,7 +218,7 @@ public class PaleontologyRecordDE extends RecordDE {
 		}
 	}
 
-	private Vector<PaleontologyListEntry> badTaxaList;
+	private Set<PaleontologyListEntry> badTaxaList;
 	private boolean nonApprovedTaxaFlag = false;
     private TaxonomicUtil taxonomicUtil;
 
@@ -284,7 +284,7 @@ public class PaleontologyRecordDE extends RecordDE {
         
         //Taxa
         String taxa = request.getParameter("Taxa");
-        Set<PaleontologyListEntry> badTaxaList = new HashSet<PaleontologyListEntry>();
+        badTaxaList = new HashSet<PaleontologyListEntry>();
         Set<PaleontologyListEntry> taxaList = pal.getListEntries();
         if (taxaList == null) {
             taxaList = new HashSet<PaleontologyListEntry>();
@@ -362,6 +362,7 @@ public class PaleontologyRecordDE extends RecordDE {
         
 		if (badTaxaList.size() > 0)
 			throw new TaxonomicListException(badTaxaList);
+		
 	}
 	
     private static final int GROUP = 0;
@@ -438,19 +439,17 @@ public class PaleontologyRecordDE extends RecordDE {
 						}
 					}
 					//Also check for bad taxa of this group
-					if (badTaxaList != null) {
-						for (Iterator<PaleontologyListEntry> it = badTaxa.iterator(); it.hasNext(); ) {
-							PaleontologyListEntry entry = it.next();
-							if (entry.getTaxonomicGroup().equals(group) && entry.getTaxon() != null) {
-								Taxon taxon = entry.getTaxon();
-								out.println(group.getName() + "*" 
-										+ taxon.getTaxonomicName() + "*" 
-										+ DBUtils.nvl(taxon.getAuthor()) + "*" 
-										+ DBUtils.nvl(entry.getSpecimenCount()) + "*" 
-										+ DBUtils.nvl(entry.getSpecimenCoords()) + "*" 
-										+ DBUtils.nvl(entry.getComments()));
-								it.remove();
-							}
+					for (Iterator<PaleontologyListEntry> it = badTaxa.iterator(); it.hasNext(); ) {
+						PaleontologyListEntry entry = it.next();
+						if (entry.getTaxonomicGroup().equals(group) && entry.getTaxon() != null) {
+							Taxon taxon = entry.getTaxon();
+							out.println(group.getName() + "*" 
+									+ taxon.getTaxonomicName() + "*" 
+									+ DBUtils.nvl(taxon.getAuthor()) + "*" 
+									+ DBUtils.nvl(entry.getSpecimenCount()) + "*" 
+									+ DBUtils.nvl(entry.getSpecimenCoords()) + "*" 
+									+ DBUtils.nvl(entry.getComments()));
+							it.remove();
 						}
 					}
 				}
