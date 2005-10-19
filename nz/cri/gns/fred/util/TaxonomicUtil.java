@@ -1,8 +1,10 @@
 package nz.cri.gns.fred.util;
 
+import java.beans.IntrospectionException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
@@ -153,7 +155,24 @@ public class TaxonomicUtil extends ModelUtil {
     }
 
     public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException {
-        return taxonomicDAO.getTaxon(taxonomicGroup, name, author);
+    	//No author, don't include it in the search
+    	if (author == null || author.length() == 0)
+    		return taxonomicDAO.getTaxon(taxonomicGroup, name);
+    	
+    	//Get the record with all things defined...
+        Taxon taxon = taxonomicDAO.getTaxon(taxonomicGroup, name, author);
+        if (taxon == null) {
+        	//Try without author
+        	taxon = taxonomicDAO.getTaxon(taxonomicGroup, name);
+        	if (taxon != null && (taxon.getAuthor() == null || taxon.getAuthor().length() == 0)) {
+        		//If no author then fill in the gap.
+        		taxon.setAuthor(author);
+        	} else {
+        		//But if it does have an author, then it's not valid.
+        		return null;
+        	}
+        }
+        return taxon;
     }
 
     public Taxon createTaxon() {
@@ -169,7 +188,38 @@ public class TaxonomicUtil extends ModelUtil {
 		taxon.setStatus("provisional");
 		taxon.setSubmittedById(new Integer(user.getId()));
 		taxon.setSubmittedDate(new Date());
-		taxonomicDAO.save(taxon);
+		try {
+			taxon = ensureCompatibleWithPersistenceLayer(taxon);
+			taxonomicDAO.save(taxon);
+		} catch (StorageAccessException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new StorageAccessException(e);
+		}
+		entry.setTaxon(taxon);
+	}
+
+	/**
+	 * Ensures that the taxon is compatible with the persistence layer
+	 * @throws IntrospectionException 
+	 */
+	private Taxon ensureCompatibleWithPersistenceLayer(Taxon taxon) throws IntrospectionException {
+		Taxon newTaxon = taxonomicDAO.createTaxon();
+		if (newTaxon.getClass().equals(taxon.getClass()))
+			//Same class, assume they're compatible
+			return taxon;
+		
+		//Copy from old to new
+		return FREDUtil.beanCopy(taxon, newTaxon, new FREDUtil.ExcludeByType(Set.class));
+	}
+
+	public PaleontologyListEntry ensureCompatibleWithPersistenceLayer(PaleontologyListEntry entry) throws IntrospectionException {
+		PaleontologyListEntry newEntry = createPaleontologyListEntry();
+		if (newEntry.getClass().equals(entry.getClass()))
+			return entry;
+		
+		//Copy from the old to the new
+		return FREDUtil.beanCopy(entry, newEntry, new FREDUtil.ExcludeByType(Set.class));
 	}
 
 }

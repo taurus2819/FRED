@@ -715,19 +715,48 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 
     public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException {
         try {
+        	//We do have an author
             Query query = provider.currentSession().createQuery("FROM TaxonomicLookup AS t WHERE t.taxonomicGroup = :grp AND t.taxonomicName = :name AND t.author = :author");
             query.setEntity("grp", taxonomicGroup);
             query.setString("name", name);
             query.setString("author", author);
             List list = query.list();
-            if (list == null || list.size() == 0)
-                return null;
+            if (list == null || list.size() == 0) {
+            	//No match with author, check for no author
+            	Taxon taxonNoAuthor = getTaxon(taxonomicGroup, name, null);
+            	if (taxonNoAuthor == null)
+            		return null;
+            	else {
+            		//If there wasn't a saved author, then add it to the record
+            		String oldAuthor = taxonNoAuthor.getAuthor();
+            		if (oldAuthor == null || oldAuthor.length() == 0) {
+            			taxonNoAuthor.setAuthor(author);
+            			return taxonNoAuthor;
+            		} else 
+            			return null;
+            	}
+            }
             return (Taxon)list.get(0);
         } catch (Exception e) {
             throw new StorageAccessException(e);
         }
     }
 
+    public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name) throws StorageAccessException {
+        try {
+            Query query = provider.currentSession().createQuery("FROM TaxonomicLookup AS t WHERE t.taxonomicGroup = :grp AND t.taxonomicName = :name");
+            query.setEntity("grp", taxonomicGroup);
+            query.setString("name", name);
+            List list = query.list();
+            if (list == null || list.size() == 0) {
+	        	return null;
+            }
+            return (Taxon)list.get(0);
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+    }
+    
     public Taxon createTaxon() {
         return new TaxonomicLookup();
     }

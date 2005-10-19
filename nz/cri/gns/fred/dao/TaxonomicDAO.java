@@ -35,4 +35,13 @@ public interface TaxonomicDAO {
      */
 	public void save(Taxon taxon) throws StorageAccessException;
 
+    /**
+     * Finds the taxon with the given parameters
+     * @param taxonomicGroup
+     * @param name
+     * @return the taxon matching the given parameters or null if none exists
+     * @throws StorageAccessException 
+     */
+	public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name) throws StorageAccessException;
+
 }

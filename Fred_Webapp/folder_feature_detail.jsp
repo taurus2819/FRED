@@ -207,7 +207,7 @@ function showHide(toShow, toHide) {
 				Sample sample = featureUtil.getOutcropSample(feature);
 				%><a href="data_entry.jsp?Type=<%=FREDConstants.ADOPTION%>&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/new_ado.gif" border="0" height="20" width="20" alt="Add Adoption Record" /></a><img src="images/blank.gif" height="20" width="2" />
 </td><td>
-<a href="data_entry.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/new_pal.gif" border="0" height="20" width="20" alt="Add Paleontology Record" /></a><%
+<a href="de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/new_pal.gif" border="0" height="20" width="20" alt="Add Paleontology Record" /></a><%
 			} else {
 				%><a href="new_sample.jsp?FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/drill.gif" border="0" height="20" width="20" alt="New Sample" /></a><img src="images/blank.gif" height="20" width="2" /><%
 			}
@@ -251,7 +251,7 @@ function showHide(toShow, toHide) {
 					}
 					%></td><td><%
 					if (folder.isAllowedCreateLocalities()) {
-						%><a href="data_entry.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/new_pal.gif" border="0" height="20" width="20"  /></a><%
+						%><a href="de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/new_pal.gif" border="0" height="20" width="20"  /></a><%
 					}
 					%></td></tr><%
 				}
@@ -288,7 +288,7 @@ function showHide(toShow, toHide) {
 							//Record Options
 							editable = audit.getStatus().equals(FREDConstants.WORKING);
 							if (editable && folder.isAllowedEditLocalities()) {
-								%><a href="data_entry.jsp?Type=<%=(isAdoption) ? FREDConstants.ADOPTION : FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&RecID=<%=record.getRecordId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
+								%><a href="<%=(isAdoption) ? ("data_entry.jsp?Type=" + FREDConstants.ADOPTION) : ("de.jsp?Type=" + FREDConstants.PALEONTOLOGICAL)%>&FoldID=<%=folder.getFolderId()%>&RecID=<%=record.getRecordId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
 							}
 							%></td><td><%
 							if (editable && folder.isAllowedDeleteLocalities()) {

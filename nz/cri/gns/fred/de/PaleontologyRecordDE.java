@@ -41,8 +41,184 @@ import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.intranet.Template;
 
 public class PaleontologyRecordDE extends RecordDE {
+	public class UnsavedTaxon implements Taxon {
 
-	private Vector badTaxaList;
+		public Integer getTaxaId() {
+			return null;
+		}
+
+		public void setTaxaId(Integer taxaId) {
+			throw new IllegalStateException("Not savable");
+		}
+
+
+		private String taxonomicName;
+		private String author;
+		private String status;
+		private Integer submittedById;
+		private Date submittedDate;
+		private Integer approvedById;
+		private Date approvedDate;
+		private String sendMessage;
+		private TaxonomicGroup taxonomicGroup;
+		private Set listEntries;
+		
+		public Integer getApprovedById() {
+			return approvedById;
+		}
+
+		public void setApprovedById(Integer approvedById) {
+			this.approvedById = approvedById;
+		}
+
+		public Date getApprovedDate() {
+			return approvedDate;
+		}
+
+		public void setApprovedDate(Date approvedDate) {
+			this.approvedDate = approvedDate;
+		}
+
+		public String getAuthor() {
+			return author;
+		}
+
+		public void setAuthor(String author) {
+			this.author = author;
+		}
+
+		public Set getListEntries() {
+			return listEntries;
+		}
+
+		public void setListEntries(Set listEntries) {
+			this.listEntries = listEntries;
+		}
+
+		public String getSendMessage() {
+			return sendMessage;
+		}
+
+		public void setSendMessage(String sendMessage) {
+			this.sendMessage = sendMessage;
+		}
+
+		public String getStatus() {
+			return status;
+		}
+
+		public void setStatus(String status) {
+			this.status = status;
+		}
+
+		public Integer getSubmittedById() {
+			return submittedById;
+		}
+
+		public void setSubmittedById(Integer submittedById) {
+			this.submittedById = submittedById;
+		}
+
+		public Date getSubmittedDate() {
+			return submittedDate;
+		}
+
+		public void setSubmittedDate(Date submittedDate) {
+			this.submittedDate = submittedDate;
+		}
+
+		public TaxonomicGroup getTaxonomicGroup() {
+			return taxonomicGroup;
+		}
+
+		public void setTaxonomicGroup(TaxonomicGroup taxonomicGroup) {
+			this.taxonomicGroup = taxonomicGroup;
+		}
+
+		public String getTaxonomicName() {
+			return taxonomicName;
+		}
+
+		public void setTaxonomicName(String taxonomicName) {
+			this.taxonomicName = taxonomicName;
+		}
+
+	}
+	public class UnsavedListEntry implements PaleontologyListEntry {
+
+		private String comments;
+		private Integer specimenCount;
+		private String specimenCoords;
+		private String taxonomicName;
+		private TaxonomicGroup taxonomicGroup;
+		private Paleontology paleontology;
+		private Taxon taxon;
+		public Integer getPalListId() {
+			return null;
+		}
+
+		public void setPalListId(Integer palListId) {
+			throw new IllegalStateException("Not savable");
+		}
+
+		public String getComments() {
+			return this.comments;
+		}
+
+		public void setComments(String comments) {
+			this.comments = comments;
+		}
+
+		public Paleontology getPaleontology() {
+			return paleontology;
+		}
+
+		public void setPaleontology(Paleontology paleontology) {
+			this.paleontology = paleontology;
+		}
+
+		public String getSpecimenCoords() {
+			return specimenCoords;
+		}
+
+		public void setSpecimenCoords(String specimenCoords) {
+			this.specimenCoords = specimenCoords;
+		}
+
+		public Integer getSpecimenCount() {
+			return specimenCount;
+		}
+
+		public void setSpecimenCount(Integer specimenCount) {
+			this.specimenCount = specimenCount;
+		}
+
+		public Taxon getTaxon() {
+			return taxon;
+		}
+
+		public void setTaxon(Taxon taxon) {
+			this.taxon = taxon;
+		}
+
+		public TaxonomicGroup getTaxonomicGroup() {
+			return taxonomicGroup;
+		}
+
+		public void setTaxonomicGroup(TaxonomicGroup taxonomicGroup) {
+			this.taxonomicGroup = taxonomicGroup;
+		}
+
+		public String getTaxonomicName() {
+			return taxonomicName;
+		}
+
+		public void setTaxonomicName(String taxonomicName) {
+			this.taxonomicName = taxonomicName;
+		}
+	}
+
+	private Vector<PaleontologyListEntry> badTaxaList;
 	private boolean nonApprovedTaxaFlag = false;
     private TaxonomicUtil taxonomicUtil;
 
@@ -134,33 +310,42 @@ public class PaleontologyRecordDE extends RecordDE {
                         found = true;
                     }
                 }
+                //Was not already in the list
                 if (!found) {
-                    PaleontologyListEntry entry = taxonomicUtil.createPaleontologyListEntry();
-                    entry.setPaleontology(pal);
-                    entry.setTaxonomicGroup(taxonomicUtil.getTaxonomicGroup(bits[GROUP]));
-                    entry.setTaxonomicName(bits[NAME]);
-                    
-                    //clean TaxaName
+                	//The group
+                	TaxonomicGroup group = taxonomicUtil.getTaxonomicGroup(bits[GROUP]);
+                	//clean TaxaName
                     String cleanName = TaxonomicUtil.getCleanedName(bits[NAME]);
-                    Taxon taxon = taxonomicUtil.getTaxon(entry.getTaxonomicGroup(), cleanName, bits[AUTHOR]);
+                    //Prepare for having an entry
+                    PaleontologyListEntry entry = null;
+                    //Is the taxonomic name valid?
+                    Taxon taxon = taxonomicUtil.getTaxon(group, cleanName, bits[AUTHOR]);
+                    
                     if (taxon == null) {
                         //It's a new taxon - create a record...but don't save it yet!
-                        taxon = taxonomicUtil.createTaxon();
+                    	entry = new UnsavedListEntry(); 
+                    	taxon = new UnsavedTaxon();
                         taxon.setAuthor(bits[AUTHOR]);
                         taxon.setStatus(FREDConstants.PROVISIONAL);
-                        taxon.setTaxonomicGroup(entry.getTaxonomicGroup());
+                        taxon.setTaxonomicGroup(group);
                         taxon.setTaxonomicName(cleanName);
                         taxon.setSubmittedById(new Integer(user.getId()));
                         taxon.setSubmittedDate(new Date());
                         //Also add the entry to the bad list
                         badTaxaList.add(entry);
+                    } else {
+                    	entry = taxonomicUtil.createPaleontologyListEntry();
+                    	taxaList.add(entry);
                     }
+                    
+                    entry.setPaleontology(pal);
+                    entry.setTaxonomicGroup(taxonomicUtil.getTaxonomicGroup(bits[GROUP]));
+                    entry.setTaxonomicName(bits[NAME]);
                     entry.setTaxon(taxon);
                     if (bits[SPECIMEN_COUNT].length() > 0)
                     	entry.setSpecimenCount(new Integer(bits[SPECIMEN_COUNT]));
                     entry.setSpecimenCoords(bits[SPECIMEN_COORD]);
                     entry.setComments(bits[COMMENTS]);
-                    taxaList.add(entry);
                 }
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -232,7 +417,6 @@ public class PaleontologyRecordDE extends RecordDE {
 			template.loadUntil(out, "{@Taxa}");
 			
 			List<TaxonomicGroup> groups = recordUtil.getTaxonomicGroups(pal);
-			
 			if (groups != null && groups.size() > 0) {
 				for (TaxonomicGroup group : groups) {
 					List<PaleontologyListEntry> list = recordUtil.getListEntries(pal, group);
@@ -247,6 +431,20 @@ public class PaleontologyRecordDE extends RecordDE {
 									+ DBUtils.nvl(entry.getSpecimenCount()) + "*" 
 									+ DBUtils.nvl(entry.getSpecimenCoords()) + "*" 
 									+ DBUtils.nvl(entry.getComments()));
+						}
+					}
+					//Also check for bad taxa of this group
+					if (badTaxaList != null) {
+						for (PaleontologyListEntry entry : badTaxaList) {
+							if (entry.getTaxonomicGroup().equals(group) && entry.getTaxon() != null) {
+								Taxon taxon = entry.getTaxon();
+								out.println(group.getName() + "*" 
+										+ taxon.getTaxonomicName() + "*" 
+										+ DBUtils.nvl(taxon.getAuthor()) + "*" 
+										+ DBUtils.nvl(entry.getSpecimenCount()) + "*" 
+										+ DBUtils.nvl(entry.getSpecimenCoords()) + "*" 
+										+ DBUtils.nvl(entry.getComments()));
+							}
 						}
 					}
 				}
@@ -277,87 +475,6 @@ public class PaleontologyRecordDE extends RecordDE {
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
 	}
 	
-    /*
-	public int save()
-		throws InsufficientPrivelegesException, SQLException, IOException {
-		if (!savedFlag) {
-			DBConnection conn = FREDUtils.getFREDConnection(state);
-			conn.getConnection().setAutoCommit(false);
-			try {
-				super.save();
-				//Delete existing PALEONTOLOGY record
-				conn.executeUpdate("DELETE FROM paleontology WHERE record_id = ?", new int[] {Types.NUMERIC}, new Object[] {new Integer(record.getRecordID())});
-				//Create new PALEONTOLOGY record
-				String stageID = DataEntryUtils.getStageID(getField(IDT_AGE_START), getField(IDT_START_MOD), getField(IDT_AGE_STOP), getField(IDT_STOP_MOD), state);
-				String query = "INSERT INTO paleontology (record_id, identification_date, date_rounding, stage_id, stage_comments, lab_section_id, lab_number, collection_comments) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-				conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.DATE, Types.VARCHAR, Types.NUMERIC, Types.VARCHAR, Types.NUMERIC, Types.VARCHAR, Types.VARCHAR},
-					 new Object[] {new Integer(record.getRecordID()), ((identDate != null) ? identDate.getDate() : null), ((identDate != null) ? identDate.getDateRounding() : null),
-					 ((stageID != null) ? new Integer(stageID) : null), getField(STAGE_COMMENTS), ((getField(LAB_SECTION) != null) ? new Integer(getField(LAB_SECTION)) : null), getField(LAB_NUMBER), getField(COLLECTION_COMMENTS)});
-				//Create IDENTIFIERS entries
-				if (identifiers != null) {
-					query = "INSERT INTO identifier (record_id, person_id) VALUES (?, ?)";
-					int[] types = new int[] {Types.NUMERIC, Types.NUMERIC};
-					Object[] values = new Object[2];
-					values[0] = new Integer(record.getRecordID());
-					for (Iterator i = identifiers.iterator(); i.hasNext();) {
-						values[1] = (Integer) i.next();
-						conn.executeUpdate(query, types, values);
-					}
-				}
-				//Create PAL_LIST entry
-				if (taxaList != null) {
-					query = "INSERT INTO pal_list (record_id, group_id, taxa_id, taxonomic_name, specimen_count, specimen_coords, comments) VALUES (?, ?, ?, ?, ?, ?, ?)";
-					int[] types = new int[] {Types.NUMERIC, Types.NUMERIC, Types.NUMERIC, Types.VARCHAR, Types.NUMERIC, Types.VARCHAR, Types.VARCHAR};
-					Object[] values = new Object[7];
-					values[0] = new Integer(record.getRecordID());
-					for (Iterator i = taxaList.iterator(); i.hasNext();) {
-						Taxa taxa = (Taxa) i.next();
-						values[1] = taxa.getGroupID();
-						values[2] = taxa.getTaxaID();
-						values[3] = taxa.getTaxonomicName();
-						values[4] = taxa.getSpecimenCount();
-						values[5] = taxa.getSpecimenCoords();
-						values[6] = taxa.getComments();	
-						conn.executeUpdate(query, types, values);
-					}
-				}
-				
-				conn.getConnection().commit();
-				conn.getConnection().setAutoCommit(true);
-				conn.releaseStatement();
-				savedFlag = true;
-				record = (PaleontologyRecord) PaleontologyRecord.getData(record.getRecordID(), user, state, true);
-				sample = new Sample(sample.getSampleID(), user, state, true);
-			} catch (SQLException e) {
-				conn.getConnection().rollback();
-				conn.getConnection().setAutoCommit(true);
-				conn.releaseStatement();
-				savedFlag = false;
-				throw e;
-			} catch (IOException e) {
-				conn.getConnection().rollback();
-				conn.getConnection().setAutoCommit(true);
-				conn.releaseStatement();
-				savedFlag = false;
-				throw e;
-			} catch (InsufficientPrivelegesException e) {
-				conn.getConnection().rollback();
-				conn.getConnection().setAutoCommit(true);
-				conn.releaseStatement();
-				savedFlag = false;
-				throw e;
-			}
-
-		}
-		return record.getRecordID();
-	}
-	
-	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException {
-		int recordID = super.submit();
-		record = PaleontologyRecord.getData(record.getRecordID(), user, state, true);
-		return recordID;
-	}
-	*/
 	protected void checkMandatoryFields() throws DataInputException {
 		if (badTaxaList.size() > 0 || nonApprovedTaxaFlag)
 			throw new DataInputException("Mandatory Fields", "Not all taxonomic entries are approved");
@@ -375,5 +492,25 @@ public class PaleontologyRecordDE extends RecordDE {
 		int recordId = super.save();
 		recordUtil.saveOrUpdate(record.getPaleontology());
 		return recordId;
+	}
+	
+	public void save(PaleontologyListEntry entry) throws StorageAccessException {
+        Paleontology pal = record.getPaleontology();
+        Set<PaleontologyListEntry> taxaList = pal.getListEntries();
+        if (taxaList == null) {
+            taxaList = new HashSet<PaleontologyListEntry>();
+            pal.setListEntries(taxaList);
+        }
+        entry.setPaleontology(pal);
+        try {
+        	taxaList.add(taxonomicUtil.ensureCompatibleWithPersistenceLayer(entry));
+        } catch (Exception e) {	
+        	throw new StorageAccessException(e);
+        }
+
+	}
+	
+	public void reinitialise(DAOFactory factory) {
+		super.reinitialise(factory);
 	}
 }

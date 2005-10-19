@@ -634,7 +634,11 @@ public class FREDUtil {
         return o1.equals(o2);
     }
 
-	public static <T> void beanCopy(T from, T to, Instruction instruction) throws IntrospectionException {
+    /**
+     * Uses introspection to copy fields from <code>from</code> to <code>to</code>
+     *@return to as a convenience.
+     */
+	public static <T> T beanCopy(T from, T to, Instruction instruction) throws IntrospectionException {
 		BeanInfo info = Introspector.getBeanInfo(from.getClass());
 		
 		for (PropertyDescriptor prop : info.getPropertyDescriptors()) {
@@ -643,6 +647,7 @@ public class FREDUtil {
 			} catch (Exception e) {
 			}
 		}
+		return to;
 	}
 
 	public static <T> List<T> toVector(T[] array) {
