@@ -207,7 +207,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 
 	protected void makeEndBitHTML(PrintWriter out) throws IOException {
         Template template = provider.getContent("record.de.end");
-        if (workingFolder != null && workingFolder.isAllowedSubmitLocalities()) 
+        if (isAllowedSubmit) 
             template.addSub("isAllowedSubmit", "yes");
 
         template.loadAll(out);

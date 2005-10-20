@@ -481,8 +481,8 @@ public class PaleontologyRecordDE extends RecordDE {
 			throw new IOException("Could not access necessary resource: " + e.getMessage());
 		}
 	}
-    
-    public void makePostFormHTML(PrintWriter out) throws IOException {
+
+	public void makePostFormHTML(PrintWriter out) throws IOException {
         Template template = provider.getContent("calendar.script");
         template.addSub("inputField", "PalDate");
         template.loadAll(out);

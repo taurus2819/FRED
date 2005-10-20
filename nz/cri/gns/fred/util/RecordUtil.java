@@ -164,7 +164,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
 
     public boolean isAllowedSubmitRecord(User user, Record record, UserFolder userFolder) throws StorageAccessException {
-        return new SampleUtil(factory).isAllowedSubmitSample(user, record.getSample(), userFolder);
+        return new SampleUtil(factory).isAllowedSubmitSample(user, record.getSample(), userFolder) && RecordUtil.isTaxaApproved(record);
     }
 
 
