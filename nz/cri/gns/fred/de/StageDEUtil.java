@@ -20,13 +20,13 @@ public class StageDEUtil {
         ComboDescriptor cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
         cd.name = parameterPrefix + "StageStart";
         cd.prompt = " -- Choose -- ";
-        cd.selected = (stage != null) ? stage.getStageLowerId().toString() : null;
+        cd.selected = (stage != null && stage.getStageLowerId() != null) ? stage.getStageLowerId().toString() : null;
         cd.orderBy = "Ag_Name";
         FREDUtil.makeDropBox(out, cd);
                     
         template.loadUntil(out, "{@" + comboMarkerPrefix + "Stop}");
         cd.name = parameterPrefix + "StageStop";
-        cd.selected = (stage != null) ? stage.getStageUpperId().toString() : null;
+        cd.selected = (stage != null && stage.getStageUpperId() != null) ? stage.getStageUpperId().toString() : null;
         FREDUtil.makeDropBox(out, cd);
     }
 
