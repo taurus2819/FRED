@@ -92,7 +92,7 @@ function showHide(toShow, toHide) {
 
 <%
 		startDETable(pageContext);
-		%><table border="0" width="550"><tr><td colspan="6" class="deHeading">Localities to Approve</td></tr><% 
+		%><table border="0" width="550"><tr><td colspan="9" class="deHeading">Localities to Approve</td></tr><% 
 		out.println("<tr><th colspan='2'>Locality&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Submitted Date&nbsp;&nbsp;</th><th>Submitted By&nbsp;&nbsp;</th><th colspan='3'>Options</th></tr>");
 
 		//Display the features
@@ -117,18 +117,19 @@ function showHide(toShow, toHide) {
 %><tr><td><img src="images/blank.gif" width="1" height="10" /></td></tr>
 		</table><%
 		endDETable(pageContext);
-		%></center></p><p>
+		%></p><p>
 <%
 		startDETable(pageContext);
-		%><table border="0" width="550"><tr><td colspan="6" class="deHeading">Localities Recently Approved</td></tr><% 
+		%><table border="0" width="550"><tr><td colspan="9" class="deHeading">Localities Recently Approved</td></tr><% 
 		//Recently Approved
 		features = featureUtil.getFeaturesApprovedInTheLastWeek(folder);
-		out.println("<tr><th colspan='2'>Locality&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Approved Date&nbsp;&nbsp;</th><th>Approved By&nbsp;&nbsp;</th><th colspan='3'>Options</th></tr>");
+%><tr><th style="text-align: left" colspan='2'>Locality&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Approved Date&nbsp;&nbsp;</th><th>Approved By&nbsp;&nbsp;</th><th colspan='3'>Options</th></tr>
+<%
 		for (int i=0; i<features.length; i++) {
 			Feature feature = features[i];
 			Audit audit = feature.getAudit();
 
-			out.print("<tr><td><a href='detail.jsp?FeatID=" + feature.getFeatureId() + "'><img src='images/loc.gif' height='20' width='20' border='0' alt='View Locality' /></a></td><td><span class='heading'>" + FeatureUtil.getFeatureName(feature) + "</span>&nbsp;&nbsp;<br />(" + DBUtils.nvl(feature.getFeatureName()) + ")&nbsp;&nbsp;</td><td>" + feature.getFeatureType() + "&nbsp;&nbsp;</td><td>");
+			out.print("<tr><td><a href='detail.jsp?FeatID=" + feature.getFeatureId() + "'><img src='images/loc.gif' height='20' width='20' border='0' alt='View Locality' /></a></td><td style=\"text-align: left\"><span class='heading'>" + FeatureUtil.getFeatureName(feature) + "</span>&nbsp;&nbsp;<br />(" + DBUtils.nvl(feature.getFeatureName()) + ")&nbsp;&nbsp;</td><td>" + feature.getFeatureType() + "&nbsp;&nbsp;</td><td>");
 			if (audit.getApprovedDate() != null) 
 				out.print(DateFormat.getDateInstance(DateFormat.LONG).format(audit.getApprovedDate()));
 			out.print("&nbsp;&nbsp;</td><td>" + FREDUtil.getUserName(audit.getApprovedById().intValue()) + "&nbsp;&nbsp;</td><td>");

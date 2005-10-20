@@ -430,7 +430,7 @@ public class PaleontologyRecordDE extends RecordDE {
 						for (PaleontologyListEntry entry : list) {
 							Taxon taxon = entry.getTaxon();
 							out.println(group.getName() + "*" 
-									+ taxon.getTaxonomicName() + "*" 
+									+ entry.getTaxonomicName() + "*" 
 									+ DBUtils.nvl(taxon.getAuthor()) + "*" 
 									+ DBUtils.nvl(entry.getSpecimenCount()) + "*" 
 									+ DBUtils.nvl(entry.getSpecimenCoords()) + "*" 
@@ -443,7 +443,7 @@ public class PaleontologyRecordDE extends RecordDE {
 						if (entry.getTaxonomicGroup().equals(group) && entry.getTaxon() != null) {
 							Taxon taxon = entry.getTaxon();
 							out.println(group.getName() + "*" 
-									+ taxon.getTaxonomicName() + "*" 
+									+ entry.getTaxonomicName() + "*" 
 									+ DBUtils.nvl(taxon.getAuthor()) + "*" 
 									+ DBUtils.nvl(entry.getSpecimenCount()) + "*" 
 									+ DBUtils.nvl(entry.getSpecimenCoords()) + "*" 
@@ -458,7 +458,7 @@ public class PaleontologyRecordDE extends RecordDE {
 				if (entry.getTaxon() != null) {
 					Taxon taxon = entry.getTaxon();
 					out.println(taxon.getTaxonomicGroup().getName() + "*" 
-							+ taxon.getTaxonomicName() + "*" 
+							+ entry.getTaxonomicName() + "*" 
 							+ DBUtils.nvl(taxon.getAuthor()) + "*" 
 							+ DBUtils.nvl(entry.getSpecimenCount()) + "*" 
 							+ DBUtils.nvl(entry.getSpecimenCoords()) + "*" 

@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.ComboDescriptor;
+import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.IconnedLink;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.StorageAccessException;
@@ -946,7 +947,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 				//Find it
 				boolean found = false;
 				for (SedimentaryFeature thisFeature : sedFeatures) {
-					if (thisFeature.getSedimentaryFeatureType().getName().equals(sedFeature) && !(thisFeature.getAbundant().equals(FREDConstants.Y) ^ isAbundant)) {
+					if (thisFeature.getSedimentaryFeatureType().getName().equals(sedFeature) && !(DBUtils.nvl(thisFeature.getAbundant()).equals(FREDConstants.Y) ^ isAbundant)) {
 						//It's a match
 						newFeatures.add(thisFeature);
 						found = true;
