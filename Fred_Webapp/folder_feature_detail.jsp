@@ -2,6 +2,7 @@
 %><%@page import="nz.cri.gns.fred.IconnedLink"
 %><%@page import="java.text.DateFormat"
 %><%@page import="java.util.Iterator"
+%><%@page import="java.util.Vector"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
@@ -17,6 +18,7 @@
 %><%@page import="nz.cri.gns.fred.model.Record"
 %><%@page import="nz.cri.gns.fred.model.Sample"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
+%><%@page import="nz.cri.gns.fred.model.util.ByCreationDateComparator"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%!
 	public String getName(HttpServletRequest request) {
@@ -258,7 +260,9 @@ function showHide(toShow, toHide) {
 
 				//Records
 				if (sample.getRecords() != null) {
-					for (Iterator k = sample.getRecords().iterator(); k.hasNext(); ) {
+					Vector records = new Vector(sample.getRecords());
+					Collections.sort(records, new ByCreationDateComparator());
+					for (Iterator k = records.iterator(); k.hasNext(); ) {
 						Record record = (Record)k.next();
 	
 						boolean isAdoption = record.getAdoption() != null;
