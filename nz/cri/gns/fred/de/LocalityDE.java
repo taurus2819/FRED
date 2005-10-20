@@ -123,46 +123,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		feature.getAudit().setWorkingComments(fromFeature.getAudit().getWorkingComments());
 		try {
 			site = FREDUtil.getSite(fromFeature);
-			/*
-			switch (site.getOriginalId()) {
-				case 38 :
-					setField(GRID_REF, "NZMG:" + sample.getAsString(Sample.ORIG_COORD).replace('|',	'*'));
-					break;
-				case 16 :
-					setField(GRID_REF, "NZMS260:"	+ sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
-					break;
-				case 29 :
-					setField(GRID_REF, "NZGD49:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|',	'*'));
-					break;
-				case 28 :
-					setField(GRID_REF, "WGS84:" + sample.getAsString(Sample.COUNTRY_CODE) + "*" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
-					break;
-				case 33 :
-					setField(GRID_REF, "NZYS:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
-					break;
-				case 70 :
-					setField(GRID_REF, "NZYN:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
-					break;
-				case 17 :
-					setField(GRID_REF, "NZMS1S:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
-					break;
-				case 69 :
-					setField(GRID_REF, "NZMS1N:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
-					break;
-				case 7: 
-					setField(GRID_REF, "CHAT:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
-					break;				
-				case 67 :
-					setField(GRID_REF, "AUCK:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
-					break;				
-				case 68 :
-					setField(GRID_REF, "CAMP:" + sample.getAsString(Sample.ORIG_COORD).replace('|', '*'));
-					break;				
-			}
-			setField(METHOD, sample.getAsString(Sample.METHOD_ID));
-			setField(ACCURACY, sample.getAsString(Sample.ACCURACY));
-			setField(LOCALITY_DESC, sample.getAsString(Sample.LOCALITY));
-			*/
 		} catch (Exception e) {
 			//Site wasn't set
 		}
@@ -175,44 +135,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	public String getFeatureType() {
 		return feature.getFeatureType();
 	}
-
-/*	public void setField(int field, String value) throws DataInputException {
-		if (value != null && (value.equals("") || value.equals("-") || value.equals("null")))
-			value = null;
-		if (value != null) {
-			parseField(field, value);
-		} else {
-			resetHiddenField(field);
-		}
-		fields[field] = value;
-		savedFlag = false;
-	}
-
-	public String getField(int field) {
-		return fields[field];
-	}
-
-	public void setTempField(int field, String value) {
-		tempFields[field] = value;
-	}
-
-	public String getTempField(int field) {
-		return tempFields[field];
-	}
-
-	protected String getFieldForHTML(int field) {
-		if (getTempField(field) != null)
-			return getTempField(field);
-		return getField(field);
-	}
-
-	public void setFieldsFromTemp() throws DataInputException {
-		for (int i = 0; i < getFieldCount(); i++) {
-			setField(i, getTempField(i));
-			setTempField(i, null);
-		}
-	}
-*/
 	
 	public void setRegistrationArea(String value) throws DataInputException {
 		if (value == null || value.equals(comboNull))
@@ -243,30 +165,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		return links;
 	}
 	
-	public void makeNavPanelHTML(Writer out) throws IOException {
-		/*
-		out.write("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>\n");
-		try {
-			if (feature.getAsString(Feature.STATUS).equals(Audit.STATUS_APPROVED)) {
-				out.write("<tr><td colspan='2' align='center' class='heading'>" + feature.getAsString(Feature.SAMPLE_NAMES) + "</td></tr>\n");
-			} else {
-				out.write("<tr><td colspan='2' align='center' class='heading'>" + featureType + " Locality</td></tr>\n");
-			}
-		} catch (Exception e) {}
-		out.write("<tr><td>&nbsp;</td></tr>\n");
-		if (workingFolder != null) {
-			out.write("<tr><td><a href='load_record.jsp?FoldID=" + workingFolder.getFolderID()
-				+ ((feature != null) ? "&FeatID=" + feature.getFeatureID() : "")
-				+ "&RecType=" + featureType	+ "'><img src='images/load.gif' height='20' width='20' border='0' alt='Copy From' /></a>&nbsp;&nbsp;</td><td><a href='load_record.jsp?FoldID=" + workingFolder.getFolderID()
-				+ ((feature != null) ? "&FeatID=" + feature.getFeatureID() : "")
-				+ "&RecType=" + featureType + "' class='boldlink'>Copy From</a></td></tr>\n");
-		}
-		out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
-		if (isAllowedSubmit)
-			out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Submit\";form1.submit();'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database' /></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick='form1.SaveType.value=\"Submit\";form1.submit();' class='boldlink'>Submit</a></td></tr>\n");
-		*/
-	}
-
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
         reinitialise(factory);
         Template template = provider.getContent("locality.de.form");
