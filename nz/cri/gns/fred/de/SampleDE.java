@@ -153,7 +153,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             template.addSub("sampleName", sample.getSampleName());
             template.addSub("featureId", sample.getFeature().getFeatureId().toString());
             template.addSub("sampleId", sample.getSampleId().toString());
-            template.addSub("folderId", workingFolder.getFolderId().toString());
+            template.addSub("folderId", (workingFolder == null) ? "" : workingFolder.getFolderId().toString());
             template.addSub("drillholeDepth", SampleUtil.getDrillHoleDepthDescription(sample));
             prepareTemplate(template, provider);
             
@@ -438,7 +438,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             populateTemplateSubstitutions(template, "#", "#", "$");
 			if (!outcropSample) {
 			    template.addSub("featureIdIfNotOutcrop", sample.getFeature().getFeatureId().toString());
-			    template.addSub("folderIdIfNotOutcrop", workingFolder.getFolderId().toString());
+			    template.addSub("folderIdIfNotOutcrop", (workingFolder == null) ? "" : workingFolder.getFolderId().toString());
 			    template.addSub("featureTypeIfNotOutcrop", sample.getFeature().getFeatureType());
 			    template.addSub("sampleNameIfNotOutcrop", sample.getSampleName());
 			    template.addSub("sampleStatusIfNotOutcrop", sample.getAudit().getStatus());
@@ -659,7 +659,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
 	public List<IconnedLink> getNavigation() {
 		List<IconnedLink> links = new Vector<IconnedLink>(4);
-		String args = "?FoldID=" + workingFolder.getFolderId() 
+		String args = ((workingFolder == null) ? "?q" : ("?FoldID=" + workingFolder.getFolderId())) 
 			+ ((sample.getSampleId() == null) ? "" : ("&SampID=" + sample.getSampleId()))
 			+ "&RecType=Sample";
 			

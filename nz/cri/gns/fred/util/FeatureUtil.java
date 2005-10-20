@@ -366,7 +366,7 @@ public class FeatureUtil extends ModelUtil {
 			features.addAll(featuresToAdd);
 		
 		//Get from audit
-		List<Audit> audits = folderDAO.getWorkingAuditsFor(folder.getFolder());
+		List<Audit> audits = folderDAO.getAuditsFor(folder.getFolder());
 		
 		for (Audit audit : audits) {
 			// - features

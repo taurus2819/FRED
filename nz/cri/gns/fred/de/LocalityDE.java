@@ -8,7 +8,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -27,7 +26,6 @@ import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.IconnedLink;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.model.Audit;
@@ -230,7 +228,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	public List<IconnedLink> getNavigation() {
 		List<IconnedLink> links = new Vector<IconnedLink>(4);
 		try {
-			String args = "?FoldID=" + workingFolder.getFolderId() 
+			String args = ((workingFolder == null) ? "?q" : ("?FoldID=" + workingFolder.getFolderId())) 
 				+ ((feature.getFeatureId() == null) ? "" : ("&FeatID=" + feature.getFeatureId()))
 				+ "&RecType=" + URLEncoder.encode(feature.getFeatureType(), "ISO-8859-1");
 			
@@ -447,7 +445,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
 		out.write("<tr><td>" + feature.getFeatureId() + "</td>");
         out.write("<td>Locality</td>");
-		out.write("<td>" + workingFolder.getFolderId() + "</td>");
+		out.write("<td>" + ((workingFolder == null) ? "" : workingFolder.getFolderId()) + "</td>");
 		out.write("<td>" + feature.getAudit().getStatus() + "</td>");
 		out.write("<td>" + feature.getFeatureType() + "</td>");
 		out.write("<td>" + feature.getFeatureName() + "</td>");

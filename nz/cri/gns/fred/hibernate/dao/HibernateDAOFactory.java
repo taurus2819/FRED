@@ -178,12 +178,23 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		}
 	}
 
-	public List getWorkingAuditsFor(Folder folder) throws StorageAccessException {
+	public List<Audit> getAuditsFor(Folder folder, String status) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-			Query query = session.createQuery("FROM AuditTable as audit WHERE audit.folder = :folder AND audit.status = :working");
+			Query query = session.createQuery("FROM AuditTable as audit WHERE audit.folder = :folder AND audit.status = :status");
 			query.setEntity("folder", folder);
-			query.setString("working", FREDConstants.WORKING);
+			query.setString("status", status);
+			return query.list();
+		} catch (Exception e) {
+			throw new StorageAccessException(e);
+		}
+	}
+
+	public List<Audit> getAuditsFor(Folder folder) throws StorageAccessException {
+		try {
+			Session session = provider.currentSession();
+			Query query = session.createQuery("FROM AuditTable as audit WHERE audit.folder = :folder");
+			query.setEntity("folder", folder);
 			return query.list();
 		} catch (Exception e) {
 			throw new StorageAccessException(e);

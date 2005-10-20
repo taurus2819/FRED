@@ -64,11 +64,20 @@ public interface FolderDAO {
 	public UserFolder getUserFolder(int folderId, int userId) throws StorageAccessException;
 
 	/**
+	 * Returns all audits with the given folder as their working folder
 	 * @param folder
 	 * @return
 	 * @throws StorageAccessException
 	 */
-	public List<Audit> getWorkingAuditsFor(Folder folder) throws StorageAccessException;
+	public List<Audit> getAuditsFor(Folder folder) throws StorageAccessException;
+
+	/**
+	 * Returns all audits of the given status with the given folder as their working folder
+	 * @param folder
+	 * @return
+	 * @throws StorageAccessException
+	 */
+	public List<Audit> getAuditsFor(Folder folder, String status) throws StorageAccessException;
 
 	/**
 	 * Returns the folder rights which satisfy the given join, in the given order.  A query might look like
