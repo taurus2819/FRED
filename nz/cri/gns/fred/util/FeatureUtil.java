@@ -4,9 +4,11 @@ import java.beans.IntrospectionException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -389,6 +391,16 @@ public class FeatureUtil extends ModelUtil {
 		Feature[] featuresArray = features.toArray(new Feature[features.size()]); 
 		Arrays.sort(featuresArray);
 		return featuresArray;
+	}
+	
+	public Feature[] getFeaturesApprovedInTheLastWeek(UserFolder masterfile) throws StorageAccessException {
+		GregorianCalendar cal = new GregorianCalendar();
+		Date now = cal.getTime();
+		cal.add(Calendar.DATE, -7);
+		Date then = cal.getTime();
+		
+		List<Feature> features = featureDAO.getFeaturesInMasterfile(masterfile.getFolder(), then, now);
+		return features.toArray(new Feature[features.size()]);
 	}
 	
 	public boolean isAllowedEditFeature(UserAccount user, Feature feature, UserFolder folder) throws StorageAccessException {

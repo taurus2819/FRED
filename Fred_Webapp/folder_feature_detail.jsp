@@ -115,7 +115,7 @@ try {
 	drawTop(out, et, request, response);
 	//print error message (if any) from folder_actions
 	if (errorMessage != null) {
-		out.println("<p><span class='heading' style='color: #FF0000'>" + errorMessage + "</span></p>");
+		out.println("<center><p><span class='heading' style='color: #FF0000'>" + errorMessage + "</span></p></center>");
 	}
 	%><script><!--
 function showHide(toShow, toHide) {

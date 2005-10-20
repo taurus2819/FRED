@@ -1,11 +1,14 @@
 package nz.cri.gns.fred.dao;
 
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
+import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.RegistrationArea;
 
@@ -135,6 +138,16 @@ public interface FeatureDAO {
      * Either saves or updates the given audit entry, depending on whether it is already stored.
      * @throws StorageAccessException 
      */
-   public void saveOrUpdate(Audit audit) throws StorageAccessException;
+    public void saveOrUpdate(Audit audit) throws StorageAccessException;
+
+    /**
+     * Returns features in the given masterfile folder, with an approval date between 
+     * startDate and endDate
+     * @param folder
+     * @param then
+     * @param now
+     * @return
+     */
+	public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, Date startDate, Date endDate) throws StorageAccessException;
 
 }

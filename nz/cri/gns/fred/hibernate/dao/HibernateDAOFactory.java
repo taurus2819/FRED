@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.hibernate.dao;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import net.sf.hibernate.HibernateException;
@@ -423,6 +424,20 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
     public void saveOrUpdate(Audit audit) throws StorageAccessException {
         saveOrUpdate((Object)audit);
     }
+
+	public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, Date startDate, Date endDate) throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+            Query query = session.createQuery("SELECT feat FROM Feature as feat INNER JOIN feat.auditTable AS audit WHERE feat.masterfile = :folder AND audit.submittedDate BETWEEN :start AND :end");
+            query.setEntity("folder", masterfileFolder);
+            query.setTimestamp("start", startDate);
+            query.setTimestamp("end", endDate);
+            
+            return query.list();
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+	}
 
 	public SampleDAO getSampleDAO() {
 		return this;

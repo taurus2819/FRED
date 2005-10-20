@@ -1,87 +1,152 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
+%><%@page import="nz.cri.gns.db.DBUtils"
+%><%@page import="nz.cri.gns.fred.IconnedLink"
+%><%@page import="nz.cri.gns.fred.dao.StorageAccessException"
+%><%@page import="nz.cri.gns.fred.dao.DAOFactory"
+%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.model.Audit"
+%><%@page import="nz.cri.gns.fred.model.Feature"
+%><%@page import="nz.cri.gns.fred.model.FREDConstants"
+%><%@page import="nz.cri.gns.fred.model.UserFolder"
+%><%@page import="nz.cri.gns.fred.util.FeatureUtil"
+%><%@page import="nz.cri.gns.fred.util.FolderUtil"
+%><%@page import="nz.cri.gns.fred.util.FREDUtil"
+%><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
+%><%@page import="java.sql.*"
+%><%@page import="java.text.*"
+%><%@page import="java.util.*"
+%><%@page import="nz.cri.gns.auth.*"
+%><%!
+	public String getName(HttpServletRequest request) {
+		try {
+			FolderUtil folderUtil = new FolderUtil(HibernateUtil.get().getDAOFactory());
+			UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), getUser(request.getSession()));
+			return "FRED :: " + folder.getFolder().getName() + " Masterfile";
+		} catch (StorageAccessException e) {
+			return "FRED";
+		}
+	}
+	
+	protected IconnedLink[] getButtons(HttpServletRequest request) {
+		try {
+			/*DAOFactory factory = HibernateUtil.get().getDAOFactory();
+			FolderUtil folderUtil = new FolderUtil(factory);
+			UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), getUser(request.getSession()));*/
+			return new IconnedLink[] {
+				new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders"),
+			};
+		} catch (Exception e) {
+			return new IconnedLink[]{};
+		}
+	}
+
 %><%
-	User user = (User)getUser(session);
-	PageState state = new PageState(request, response, getServletContext());
-	DBConnection connection = FREDUtils.getFREDConnection(state);
+%><%
+	DAOFactory factory = HibernateUtil.get().getDAOFactory();
+	if (request.getParameter("ID") == null) {
+		factory.closeSession();
+		response.sendRedirect("folder_list.jsp");
+		return;
+	}
+
+	FolderUtil folderUtil = new FolderUtil(factory);
+	FeatureUtil featureUtil = new FeatureUtil(factory);
+	User user =(User) getUser(session);
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
 
 	drawTop(out, et, request, response);
 
-	if (request.getParameter("ID") != null) {
-		Folder folder = new Folder(Integer.parseInt(request.getParameter("ID")), user, state, true);
-		String redirect = URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderID(), "UTF-8");
+	UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), user);
+	String redirect = "admin_folder_detail.jsp?ID=" + folder.getFolderId();
 
-		if (folder.isAllowedReadLocalities()) {
-			
-			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
-			out.println("<tr><td colspan='2' align='center'><img src='images/folder.gif' height='20' width='20' /></td></tr>");
-			out.println("<tr><td colspan='2' class='bigheading' align='center'>" + folder.getAsString(Folder.NAME) + " Masterfile</td></tr>");
-			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
-			out.println("<tr><td><a href='folder_list.jsp' title='Back to Folders'><img src='images/back_arrow.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_list.jsp' class='heading'>Back to Folders</a></td></tr>");
-			out.println("</table>");
+	if (folder.isAllowedReadLocalities()) {
+		
+		%><script><!--
+function showHide(toShow, toHide) {
+	document.getElementById(toShow).style.display = 'block';
+	document.getElementById(toHide).style.display = 'none';
+}
+//--></script>
+<center><p>&nbsp;<p/><div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none">
+<%
+		startDETable(pageContext);
+		%><table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
+<tr><td colspan="3" class="deHeading">Masterfile Folder Instructions</td></tr><tr><td style="text-align: left">
+<ul>
+<li>Listed below are the localities currently in this masterfile folder.
+<li>Click on the icons to work with an individual locality record:
+<ul>
+<li><img src="images/print.gif" border="0"> to print the locality
+<li><img src="images/edit.gif" border="0"> to edit the locality
+<li><img src="images/review.gif" border="0"> to accept or reject the locality
+</ul>
+</ul>
+</td></tr>
+<tr><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr></table>
+<%
+		endDETable(pageContext);
+		%></div>
+<p>
 
-			drawEndNavigation(out);
+<%
+		startDETable(pageContext);
+		%><table border="0" width="550"><tr><td colspan="5" class="deHeading">Localities to Approve</td></tr><% 
+		out.println("<tr><th colspan='2'>Locality&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Submitted Date&nbsp;&nbsp;</th><th>Submitted By&nbsp;&nbsp;</th><th colspan='3'>Options</th></tr>");
 
-			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-			out.println("<tr><td>");
+		//Display the features
+		Feature[] features = featureUtil.getFeaturesInFolder(folder);
+		for (int i=0; i<features.length; i++) {
+			Feature feature = features[i];
+			Audit audit = feature.getAudit();
 
-			//List records
-
-			//Table header
-			out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
-			
-			//To Approve
-			out.println("<tr><th colspan='5'>Localities to Approve</th></tr>");
-			out.println("<tr><th colspan='2'>Locality&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Submitted Date&nbsp;&nbsp;</th><th>Submitted By&nbsp;&nbsp;</th><th colspan='3'>Options</th></tr>");
-			for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
-				Feature feature = new Feature(((Integer) i.next()).intValue(), user, state);
-				Audit audit = Audit.getAudit(feature.getAsInt(Feature.AUDIT_ID), state);
-				int featID = feature.getFeatureID();
-				out.print("<tr><td><a href='detail.jsp?FeatID=" + featID + "'><img src='images/loc.gif' height='20' width='20' border='0' alt='View Locality' /></a></td><td class='heading'>" + feature.getAsString(Feature.SAMPLE_NAMES) + "&nbsp;&nbsp;</td><td>" + feature.getAsString(Feature.FEATURE_TYPE) + "&nbsp;&nbsp;</td><td>");
-				if (audit.get(Audit.SUBMITTED_DATE) != null) 
-					out.print(DateFormat.getDateInstance(DateFormat.LONG).format(audit.getAsDate(Audit.SUBMITTED_DATE)));
-				out.print("&nbsp;&nbsp;</td><td>" + audit.getAsString(Audit.SUBMITTED_BY) + "&nbsp;&nbsp;</td><td>");
-				out.print("<a href='print_front.jsp?FeatID=" + featID + (feature.getAsString(Feature.FEATURE_TYPE).equals(Feature.OUTCROP_LOCALITY) ? "" : "&FormType=Short") + "' target='print'><img src='images/print.gif' border='0' height='20' width='20' alt='Print Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
-				out.print("</td><td>");
-				if (folder.isAllowedEditLocalities()) 
-					out.print("<a href='data_entry.jsp?Type=" + feature.getAsString(Feature.FEATURE_TYPE) + "&FoldID=" + folder.getFolderID() + "&FeatID=" + featID + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
-				out.print("</td><td>");
-				if (folder.isAllowedApproveLocalities())
-					out.print("<a href='detail.jsp?FeatID=" + featID + "'><img src='images/review.gif' width='20' height='20' border='0' alt='Review Localities' /></a>");
-				out.println("</td></tr>");
-			}
-			out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
-			
-			//Recently Approved
-			out.println("<tr><th colspan='5'>Localities Recently Approved</th></tr>");
-			out.println("<tr><th colspan='2'>Locality&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Approved Date&nbsp;&nbsp;</th><th>Approved By&nbsp;&nbsp;</th><th colspan='3'>Options</th></tr>");
-			String query = "SELECT DISTINCT f.feature_id, f.fr_number FROM feature_view f, audit_table a WHERE f.audit_id = a.audit_id AND a.status = ? AND f.masterfile_id = ? AND a.approved_date >= (SYSDATE - 7) ORDER BY f.fr_number";
-			int[] types = { Types.VARCHAR, Types.NUMERIC };
-			Object[] data = { "approved", new Integer(folder.getFolderID()) };
-			ResultSet rs = connection.executeQuery(query, types, data);
-			connection.preservePreparedStatement();
-			while (rs.next()) {
-				Feature feature = new Feature(rs.getInt(1), user, state);
-				Audit audit = Audit.getAudit(feature.getAsInt(Feature.AUDIT_ID), state);
-				int featID = feature.getFeatureID();
-				out.print("<tr><td><a href='detail.jsp?FeatID=" + featID + "'><img src='images/loc.gif' height='20' width='20' border='0' alt='View Locality' /></a></td><td><span class='heading'>" + feature.getAsString(Feature.SAMPLE_NAMES) + "</span>&nbsp;&nbsp;<br />(" + FREDUtils.noNulls(feature.getAsString(Feature.FEATURE_NAME)) + ")&nbsp;&nbsp;</td><td>" + feature.getAsString(Feature.FEATURE_TYPE) + "&nbsp;&nbsp;</td><td>");
-				if (audit.get(Audit.APPROVED_DATE) != null) 
-					out.print(DateFormat.getDateInstance(DateFormat.LONG).format(audit.getAsDate(Audit.APPROVED_DATE)));
-				out.print("&nbsp;&nbsp;</td><td>" + audit.getAsString(Audit.APPROVED_BY) + "&nbsp;&nbsp;</td><td>");
-				out.print("<a href='print_front.jsp?FeatID=" + featID + (feature.getAsString(Feature.FEATURE_TYPE).equals(Feature.OUTCROP_LOCALITY) ? "" : "&FormType=Short") + "' target='print'><img src='images/print.gif' border='0' height='20' width='20' alt='Print Locality' /></a>");
-				out.print("</td><td></td></tr>");
-			}
-			connection.releaseStatement();
-			out.println("</table></p>");
+			out.print("<tr><td><a href='detail.jsp?FeatID=" + feature.getFeatureId() + "'><img src='images/loc.gif' height='20' width='20' border='0' alt='View Locality' /></a></td><td class='heading'>" + FeatureUtil.getFeatureName(feature) + "&nbsp;&nbsp;</td><td>" + feature.getFeatureType() + "&nbsp;&nbsp;</td><td>");
+			if (audit.getSubmittedDate() != null)
+				out.print(DateFormat.getDateInstance(DateFormat.LONG).format(audit.getSubmittedDate()));
+			out.print("&nbsp;&nbsp;</td><td>" + FREDUtil.getUserName(audit.getSubmittedById().intValue()) + "&nbsp;&nbsp;</td><td>");
+			out.print("<a href='print_front.jsp?FeatID=" + feature.getFeatureId() + (feature.getFeatureType().equals(FREDConstants.OUTCROP) ? "" : "&FormType=Short") + "' target='print'><img src='images/print.gif' border='0' height='20' width='20' alt='Print Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
+			out.print("</td><td>");
+			if (folder.isAllowedEditLocalities()) 
+				out.print("<a href='data_entry.jsp?Type=" + feature.getFeatureType() + "&FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId() + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
+			out.print("</td><td>");
+			if (folder.isAllowedApproveLocalities())
+				out.print("<a href='detail.jsp?FeatID=" + feature.getFeatureId() + "'><img src='images/review.gif' width='20' height='20' border='0' alt='Review Localities' /></a>");
+			out.println("</td></tr>");
 		}
-		else { //no record found
-			out.println("No folder found");
+%><tr><td><img src="images/blank.gif" width="1" height="10" /></td></tr>
+		</table><%
+		endDETable(pageContext);
+		%></center></p><p>
+<%
+		startDETable(pageContext);
+		%><table border="0" width="550"><tr><td colspan="5" class="deHeading">Localities Recently Approved</td></tr><% 
+		//Recently Approved
+		features = featureUtil.getFeaturesApprovedInTheLastWeek(folder);
+		out.println("<tr><th colspan='2'>Locality&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Approved Date&nbsp;&nbsp;</th><th>Approved By&nbsp;&nbsp;</th><th colspan='3'>Options</th></tr>");
+		for (int i=0; i<features.length; i++) {
+			Feature feature = features[i];
+			Audit audit = feature.getAudit();
+
+			out.print("<tr><td><a href='detail.jsp?FeatID=" + feature.getFeatureId() + "'><img src='images/loc.gif' height='20' width='20' border='0' alt='View Locality' /></a></td><td><span class='heading'>" + FeatureUtil.getFeatureName(feature) + "</span>&nbsp;&nbsp;<br />(" + DBUtils.nvl(feature.getFeatureName()) + ")&nbsp;&nbsp;</td><td>" + feature.getFeatureType() + "&nbsp;&nbsp;</td><td>");
+			if (audit.getApprovedDate() != null) 
+				out.print(DateFormat.getDateInstance(DateFormat.LONG).format(audit.getApprovedDate()));
+			out.print("&nbsp;&nbsp;</td><td>" + FREDUtil.getUserName(audit.getApprovedById().intValue()) + "&nbsp;&nbsp;</td><td>");
+			out.print("<a href='print_front.jsp?FeatID=" + feature.getFeatureId() + (feature.getFeatureType().equals(FREDConstants.OUTCROP) ? "" : "&FormType=Short") + "' target='print'><img src='images/print.gif' border='0' height='20' width='20' alt='Print Locality' /></a>");
+			out.print("</td><td></td></tr>");
 		}
+		out.println("</table>");
+		endDETable(pageContext);
+		%></p><%
+		}
+	else { //no record found
+		out.println("No folder found");
 	}
 
 	out.println("</td></tr></table>");
 	drawBottom(out, et);
+	
+	//Close the session
+	folderUtil.closeSession();
+
 %>

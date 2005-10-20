@@ -288,7 +288,7 @@ public class SampleData {
 						? new Integer(rs.getInt(10))
 						: null));
 				rel.setRelationType(rs.getString(11));
-				if (rel.getRelationshipType().equals("Strat")) {
+				if (rel.getRelationshipType().equals("Stratigraphic")) {
 					stratRelVec.add(rel);
 				} else if (rel.getRelationType().equals("nearby")) {
 					nearRelVec.add(rel);
