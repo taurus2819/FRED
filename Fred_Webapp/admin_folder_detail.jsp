@@ -41,8 +41,8 @@
 	}
 
 %><%
-%><%
-	DAOFactory factory = HibernateUtil.get().getDAOFactory();
+DAOFactory factory = HibernateUtil.get().getDAOFactory();
+try {
 	if (request.getParameter("ID") == null) {
 		factory.closeSession();
 		response.sendRedirect("folder_list.jsp");
@@ -145,8 +145,10 @@ function showHide(toShow, toHide) {
 
 	out.println("</td></tr></table>");
 	drawBottom(out, et);
-	
+} catch (Exception e) {
+	e.printStackTrace();
+} finally {
 	//Close the session
-	folderUtil.closeSession();
-
+	factory.closeSession();
+}
 %>

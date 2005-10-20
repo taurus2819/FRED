@@ -428,7 +428,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, Date startDate, Date endDate, String status) throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
-            Query query = session.createQuery("SELECT feat FROM Feature as feat INNER JOIN feat.audit AS audit WHERE feat.masterfile = :folder AND audit.submittedDate BETWEEN :start AND :end AND audit.status = :status");
+            Query query = session.createQuery("SELECT feat FROM Feature as feat INNER JOIN feat.audit AS audit WHERE feat.masterFile = :folder AND audit.submittedDate BETWEEN :start AND :end AND audit.status = :status");
             query.setEntity("folder", masterfileFolder);
             query.setTimestamp("start", startDate);
             query.setTimestamp("end", endDate);
@@ -442,7 +442,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, String status) throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
-            Query query = session.createQuery("SELECT feat FROM Feature as feat INNER JOIN feat.audit AS audit WHERE feat.masterfile = :folder AND audit.status = :status");
+            Query query = session.createQuery("SELECT feat FROM Feature as feat INNER JOIN feat.audit AS audit WHERE feat.masterFile = :folder AND audit.status = :status");
             query.setEntity("folder", masterfileFolder);
             query.setString("status", status);
             return query.list();
