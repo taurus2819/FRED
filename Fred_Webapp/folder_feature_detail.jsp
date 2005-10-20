@@ -3,6 +3,7 @@
 %><%@page import="java.text.DateFormat"
 %><%@page import="java.util.Iterator"
 %><%@page import="java.util.Vector"
+%><%@page import="java.util.Collections"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
@@ -267,7 +268,6 @@ function showHide(toShow, toHide) {
 	
 						boolean isAdoption = record.getAdoption() != null;
 						boolean isPaleontology = record.getPaleontology() != null;
-						//TODO check this
 						boolean badTaxaFlag = (isPaleontology) ? !RecordUtil.isTaxaApproved(record) : false;
 	
 						audit = record.getAudit();

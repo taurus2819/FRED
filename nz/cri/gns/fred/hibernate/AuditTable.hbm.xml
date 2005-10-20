@@ -41,7 +41,7 @@
     />
     <property
         name="createdDate"
-        type="java.sql.Date"
+        type="java.sql.Timestamp"
         column="CREATED_DATE"
         length="7"
     />
@@ -53,7 +53,7 @@
     />
     <property
         name="submittedDate"
-        type="java.sql.Date"
+        type="java.sql.Timestamp"
         column="SUBMITTED_DATE"
         length="7"
     />
