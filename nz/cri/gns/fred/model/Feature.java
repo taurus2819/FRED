@@ -44,10 +44,10 @@ public interface Feature extends Audited {
     public void setMasterFile(nz.cri.gns.fred.model.Folder masterFile);
     public nz.cri.gns.fred.model.RegistrationArea getRegistrationArea();
     public void setRegistrationArea(nz.cri.gns.fred.model.RegistrationArea registrationArea);
-    public Set getSamples();
-    public void setSamples(Set samples);
-    public Set getFolders();
-    public void setFolders(Set folders);
+    public Set<Sample> getSamples();
+    public void setSamples(Set<Sample> samples);
+    public Set<Folder> getFolders();
+    public void setFolders(Set<Folder> folders);
     public Set getRelationships();
     public void setRelationships(Set relationships);
     public Set<FeatureMeta> getFeatureMetas();

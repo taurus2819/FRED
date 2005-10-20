@@ -33,12 +33,12 @@ public interface Audit {
     public void setSecurityClassId(Integer securityClassId);
     public Folder getFolder();
     public void setFolder(Folder folder);
-    public Set getSamples();
-    public void setSamples(Set samples);
-    public Set getRecords();
-    public void setRecords(Set records);
-    public Set getFeatures();
-    public void setFeatures(Set features);
-    public Set getAuditEdits();
-    public void setAuditEdits(Set auditEdits);
+    public Set<Sample> getSamples();
+    public void setSamples(Set<Sample> samples);
+    public Set<Record> getRecords();
+    public void setRecords(Set<Record> records);
+    public Set<Feature> getFeatures();
+    public void setFeatures(Set<Feature> features);
+    public Set<AuditEdit> getAuditEdits();
+    public void setAuditEdits(Set<AuditEdit> auditEdits);
 }

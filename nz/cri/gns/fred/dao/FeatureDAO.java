@@ -144,10 +144,19 @@ public interface FeatureDAO {
      * Returns features in the given masterfile folder, with an approval date between 
      * startDate and endDate
      * @param folder
-     * @param then
-     * @param now
+     * @param startDate
+     * @param endDate
+     * @param status
      * @return
      */
-	public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, Date startDate, Date endDate) throws StorageAccessException;
+	public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, Date startDate, Date endDate, String status) throws StorageAccessException;
 
+    /**
+     * Returns features in the given masterfile folder, with an approval date between 
+     * startDate and endDate
+     * @param folder
+     * @param status
+     * @return
+     */
+	public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, String status) throws StorageAccessException;
 }

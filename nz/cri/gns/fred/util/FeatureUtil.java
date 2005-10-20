@@ -2,7 +2,6 @@ package nz.cri.gns.fred.util;
 
 import java.beans.IntrospectionException;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -399,7 +398,12 @@ public class FeatureUtil extends ModelUtil {
 		cal.add(Calendar.DATE, -7);
 		Date then = cal.getTime();
 		
-		List<Feature> features = featureDAO.getFeaturesInMasterfile(masterfile.getFolder(), then, now);
+		List<Feature> features = featureDAO.getFeaturesInMasterfile(masterfile.getFolder(), then, now, FREDConstants.APPROVED);
+		return features.toArray(new Feature[features.size()]);
+	}
+	
+	public Feature[] getWaitingFeatures(UserFolder masterfile) throws StorageAccessException {
+		List<Feature> features = featureDAO.getFeaturesInMasterfile(masterfile.getFolder(), FREDConstants.WAITING);
 		return features.toArray(new Feature[features.size()]);
 	}
 	

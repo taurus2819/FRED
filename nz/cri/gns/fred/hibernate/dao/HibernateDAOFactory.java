@@ -425,14 +425,26 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
         saveOrUpdate((Object)audit);
     }
 
-	public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, Date startDate, Date endDate) throws StorageAccessException {
+	public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, Date startDate, Date endDate, String status) throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
-            Query query = session.createQuery("SELECT feat FROM Feature as feat INNER JOIN feat.auditTable AS audit WHERE feat.masterfile = :folder AND audit.submittedDate BETWEEN :start AND :end");
+            Query query = session.createQuery("SELECT feat FROM Feature as feat INNER JOIN feat.audit AS audit WHERE feat.masterfile = :folder AND audit.submittedDate BETWEEN :start AND :end AND audit.status = :status");
             query.setEntity("folder", masterfileFolder);
             query.setTimestamp("start", startDate);
             query.setTimestamp("end", endDate);
-            
+            query.setString("status", status);
+            return query.list();
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+	}
+
+	public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, String status) throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+            Query query = session.createQuery("SELECT feat FROM Feature as feat INNER JOIN feat.audit AS audit WHERE feat.masterfile = :folder AND audit.status = :status");
+            query.setEntity("folder", masterfileFolder);
+            query.setString("status", status);
             return query.list();
         } catch (Exception e) {
             throw new StorageAccessException(e);

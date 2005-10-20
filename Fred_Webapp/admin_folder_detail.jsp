@@ -92,11 +92,11 @@ function showHide(toShow, toHide) {
 
 <%
 		startDETable(pageContext);
-		%><table border="0" width="550"><tr><td colspan="5" class="deHeading">Localities to Approve</td></tr><% 
+		%><table border="0" width="550"><tr><td colspan="6" class="deHeading">Localities to Approve</td></tr><% 
 		out.println("<tr><th colspan='2'>Locality&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Submitted Date&nbsp;&nbsp;</th><th>Submitted By&nbsp;&nbsp;</th><th colspan='3'>Options</th></tr>");
 
 		//Display the features
-		Feature[] features = featureUtil.getFeaturesInFolder(folder);
+		Feature[] features = featureUtil.getWaitingFeatures(folder);
 		for (int i=0; i<features.length; i++) {
 			Feature feature = features[i];
 			Audit audit = feature.getAudit();
@@ -120,7 +120,7 @@ function showHide(toShow, toHide) {
 		%></center></p><p>
 <%
 		startDETable(pageContext);
-		%><table border="0" width="550"><tr><td colspan="5" class="deHeading">Localities Recently Approved</td></tr><% 
+		%><table border="0" width="550"><tr><td colspan="6" class="deHeading">Localities Recently Approved</td></tr><% 
 		//Recently Approved
 		features = featureUtil.getFeaturesApprovedInTheLastWeek(folder);
 		out.println("<tr><th colspan='2'>Locality&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Approved Date&nbsp;&nbsp;</th><th>Approved By&nbsp;&nbsp;</th><th colspan='3'>Options</th></tr>");
