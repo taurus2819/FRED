@@ -407,7 +407,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		StringBuffer buffer = new StringBuffer();
 		for (SedimentaryFeature feat : (Set<SedimentaryFeature>)sample.getSedimentaryFeatures()) {
 			buffer.append(feat.getSedimentaryFeatureType().getName());
-			if (feat.getAbundant().equals(FREDConstants.Y))
+			if (feat.getAbundant() != null && feat.getAbundant().equals(FREDConstants.Y))
 				buffer.append(starSeparator);
 			buffer.append(semicolonSeparator);
 		}
@@ -532,7 +532,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			*/
 		}
 			
-        System.out.println("Saving sample " + sample.getSampleId());
         sampleUtil.saveOrUpdate(sample);
     		
 		return sample.getSampleId().intValue();

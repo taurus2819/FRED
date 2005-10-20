@@ -189,9 +189,7 @@ public class TaxonomicUtil extends ModelUtil {
 		taxon.setSubmittedById(new Integer(user.getId()));
 		taxon.setSubmittedDate(new Date());
 		try {
-			System.out.println("Was " + taxon.getTaxonomicName());
 			taxon = ensureCompatibleWithPersistenceLayer(taxon);
-			System.out.println("Is " + taxon.getTaxonomicName());
 			taxonomicDAO.save(taxon);
 		} catch (StorageAccessException e) {
 			throw e;

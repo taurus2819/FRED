@@ -386,7 +386,6 @@ public class FeatureUtil extends ModelUtil {
 
 		}
 		
-		//System.out.println(format.format(new java.util.Date()) + ": Finished");
 		Feature[] featuresArray = features.toArray(new Feature[features.size()]); 
 		Arrays.sort(featuresArray);
 		return featuresArray;
