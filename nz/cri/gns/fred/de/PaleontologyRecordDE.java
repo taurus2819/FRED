@@ -321,9 +321,13 @@ public class PaleontologyRecordDE extends RecordDE {
                     //Prepare for having an entry
                     PaleontologyListEntry entry = null;
                     //Is the taxonomic name valid?
-                    Taxon taxon = taxonomicUtil.getTaxon(group, cleanName, bits[AUTHOR]);
+                    boolean blankTaxon = cleanName.length() == 0 && bits[NAME].length() > 0;
+                    	
+                    Taxon taxon = (blankTaxon) 
+                    	? null 
+                    	: taxonomicUtil.getTaxon(group, cleanName, bits[AUTHOR]);
                     
-                    if (taxon == null) {
+                    if (taxon == null && !blankTaxon) {
                         //It's a new taxon - create a record...but don't save it yet!
                     	entry = new UnsavedListEntry(); 
                     	taxon = new UnsavedTaxon();

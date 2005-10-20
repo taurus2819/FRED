@@ -423,7 +423,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			} catch (Exception e) {
 				site.setNull(SiteRecord.H_METHOD_FIELD);
 			}
-			try {
+			if (request.getParameter("Accuracy").length() > 0) try {
 				site.setAccuracy(Float.parseFloat(request.getParameter("Accuracy")));
 			} catch (Exception e) {
 				error.add(new String[] {"Accuracy", "Invalid value"});
