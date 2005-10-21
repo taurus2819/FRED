@@ -190,7 +190,7 @@ public interface Sample extends Audited, Comparable<Sample> {
 
 	public abstract Set<PersonRelationship> getCollectors();
 
-	public abstract void setCollectors(Set collectors);
+	public abstract void setCollectors(Set<PersonRelationship> collectors);
 
 	public abstract Set<Relationship> getRelationships();
 
