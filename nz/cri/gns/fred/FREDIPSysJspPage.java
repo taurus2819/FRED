@@ -16,6 +16,8 @@ import nz.cri.gns.jsp.PageState;
 
 public abstract class FREDIPSysJspPage extends IPSysJspPage {
 
+	private static Authenticable[] fredRights;
+
 	public String getName(HttpServletRequest request) {
 		return "FRED :: The Fossil Record Electronic Database";
 	}
@@ -25,8 +27,8 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 	}
 
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
-		try {
-			return new Authenticable[] {
+		if (fredRights == null) try {
+			fredRights = new Authenticable[] {
 				 new IPRightAccess(
 					new IPRight(
 						"FRED website access",
@@ -41,6 +43,7 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 					IPRight.BLOCKED_IP_RIGHT,
 					Right.BLOCKED_RIGHT)};
 		}
+		return fredRights;
 	}
 
 	protected ExtranetTemplate getExtranetTemplate() {

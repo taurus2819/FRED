@@ -15,16 +15,17 @@ import nz.cri.gns.jsp.ExtranetTemplate;
 
 public abstract class FREDDEIPSysJspPage extends FREDIPSysJspPage{
 
+	private static Authenticable[] deRights;
+
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
-		try {
-			return new Authenticable[] {
-				 new IPRightAccess(
+		if (deRights == null) try {
+			deRights = new Authenticable[] { 
+				new IPRightAccess(
 					new IPRight(
 						"FRED data entry",
-						getIPApp(
-							request.getSession(),
-							getServletConfig().getServletContext())),
-					Right.ANY_RIGHT)};
+						getIPApp(request.getSession(), getServletConfig().getServletContext())),
+						Right.ANY_RIGHT)
+			};
 		} catch (Exception e) {
 			e.printStackTrace();
 			//Database error, so just block them
@@ -33,6 +34,7 @@ public abstract class FREDDEIPSysJspPage extends FREDIPSysJspPage{
 					IPRight.BLOCKED_IP_RIGHT,
 					Right.BLOCKED_RIGHT)};
 		}
+		return deRights;
 	}
 	
 	protected ExtranetTemplate getExtranetTemplate() {
