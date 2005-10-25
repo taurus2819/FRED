@@ -698,7 +698,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             sample.setCollectors(FREDUtil.getPersons(request.getParameter("Coll"), personUtil, "Collectors"));
         } catch (DataInputException e) {
             if (e.hasAuxiliaryData()) {
-                System.out.println("Trying: " + ((Set)e.getAuxiliaryData()).size());
                 sample.setCollectors((Set)e.getAuxiliaryData());
             }
             error.addAll(e.getError());
