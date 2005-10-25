@@ -358,9 +358,8 @@ public class FREDUtil {
 		SiteRecord sr = null;
 		try {
 			sr = SiteRecord.querySite(new BasicDatabaseApp2(conn, ""), feature.getSiteId().intValue());
-		} catch (SQLException e) {
+		} finally {
 			conn.close();
-			throw e;
 		}
 		return sr;
 	}
@@ -371,11 +370,9 @@ public class FREDUtil {
 		try {
 			HTMLUtils.makeDropBox(out, statement, cd);
 			statement.close();
-		} catch (SQLException e) {
+		} finally {
 			conn.close();
-			throw e;
 		}
-		conn.close();
 	}
 
 	public static String formatDateForOutput(Date date) {
