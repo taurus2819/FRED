@@ -140,7 +140,9 @@ public class TaxonomicUtil extends ModelUtil {
         }
         if (!equalsEmptyEquivNull(entry.getTaxonomicName(), name))
             return false;
-        if (!equalsEmptyEquivNull(entry.getTaxon().getAuthor(), author))
+        if (entry.getTaxon() == null && author != null && author.length() > 0)
+        	return false;
+        if (entry.getTaxon() != null && !equalsEmptyEquivNull(entry.getTaxon().getAuthor(), author))
             return false;
         
         entry.setSpecimenCount(specimenCount);
