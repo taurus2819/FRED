@@ -188,9 +188,9 @@ public interface Sample extends Audited, Comparable<Sample> {
 
 	public abstract void setSentTos(Set<SentTo> sentTos);
 
-	public abstract Set<PersonRelationship> getCollectors();
+	public abstract Set<? extends PersonRelationship> getCollectors();
 
-	public abstract void setCollectors(Set<PersonRelationship> collectors);
+	public abstract void setCollectors(Set<? extends PersonRelationship> collectors);
 
 	public abstract Set<Relationship> getRelationships();
 

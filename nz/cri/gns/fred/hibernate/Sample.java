@@ -147,7 +147,7 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     private Set<SentTo> sentTos;
 
     /** persistent field */
-    private Set<PersonRelationship> collectors;
+    private Set<? extends PersonRelationship> collectors;
 
     /** persistent field */
     private Set<Relationship> relationships;
@@ -588,11 +588,11 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.sentTos = sentTos;
     }
 
-    public Set<PersonRelationship> getCollectors() {
+    public Set<? extends PersonRelationship> getCollectors() {
         return this.collectors;
     }
 
-    public void setCollectors(Set<PersonRelationship> collectors) {
+    public void setCollectors(Set<? extends PersonRelationship> collectors) {
         this.collectors = collectors;
     }
 
