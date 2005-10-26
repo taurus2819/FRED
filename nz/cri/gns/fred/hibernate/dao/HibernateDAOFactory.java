@@ -453,8 +453,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 
 	public List<FrNumber> getFrNumbers(String mapSheet, int start, int end) throws StorageAccessException {
 		try {
-			System.out.println("\n\n\n\n\n*********************");
-            Session session = provider.currentSession();
+			Session session = provider.currentSession();
             Query query = session.createQuery("FROM FrNumber as num WHERE num.mapSheet = :map AND num.serialNumber BETWEEN :start AND :end");
             query.setString("map", mapSheet);
             query.setInteger("start", start);
