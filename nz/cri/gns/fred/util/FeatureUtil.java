@@ -716,10 +716,12 @@ public class FeatureUtil extends ModelUtil {
 		System.out.println("\n\n\n\n###############");
 		List<FrNumber> numbers = featureDAO.getFrNumbers(mapSheet, start, end);
 		Folder folder = folderToAddTo.getFolder();
+		Folder masterFileFolder = masterFile.getFolder();
 		for (FrNumber num : numbers) {
 			Feature feature = FeatureUtil.getFeature(num);
 			System.out.println("Got feature: " + getFrNumber(feature));
-			if (!feature.getMasterFile().equals(masterFile))
+			System.out.println(masterFileFolder+":" + feature.getMasterFile());
+			if (!feature.getMasterFile().equals(masterFileFolder))
 				continue;
 			System.out.println("Still here");
 			Audit audit = FeatureUtil.getFeature(num).getAudit();
