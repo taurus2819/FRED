@@ -34,6 +34,7 @@
 			UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), getUser(request.getSession()));*/
 			return new IconnedLink[] {
 				new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders"),
+				new IconnedLink("backlog_setup.jsp?ID=" + request.getParameter("ID"), "images/revoke.gif", "Backlog setup")
 			};
 		} catch (Exception e) {
 			return new IconnedLink[]{};

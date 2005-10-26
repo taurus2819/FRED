@@ -705,4 +705,31 @@ public class FeatureUtil extends ModelUtil {
 		return name;
 	}
 
+	/**
+	 * Backlog method
+	 * @throws StorageAccessException 
+	 */
+	public void addToBacklog(UserFolder folderToAddTo, String mapSheet, int start, int end, UserFolder masterFile, UserAccount user) throws StorageAccessException {
+		if (!masterFile.isAllowedApproveLocalities())
+			return;
+		System.out.println("\n\n\n\n###############");
+		List<FrNumber> numbers = featureDAO.getFrNumbers(mapSheet, start, end);
+		Folder folder = folderToAddTo.getFolder();
+		for (FrNumber num : numbers) {
+			Feature feature = FeatureUtil.getFeature(num);
+			System.out.println("Got feature: " + getFrNumber(feature));
+			if (!feature.getMasterFile().equals(masterFile))
+				continue;
+			System.out.println("Still here");
+			Audit audit = FeatureUtil.getFeature(num).getAudit();
+			audit.setFolder(folder);
+			audit.setStatus(WORKING);
+			if (audit.getApprovedById() == null)
+				audit.setApprovedById(new Integer(user.getId()));
+			if (audit.getApprovedDate() == null)
+				audit.setApprovedDate(new Date());
+			featureDAO.update(audit);
+		}
+	}
+
 }

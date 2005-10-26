@@ -159,4 +159,11 @@ public interface FeatureDAO {
      * @return
      */
 	public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, String status) throws StorageAccessException;
+	
+	/**
+	 * Returns a list of fr numbers between the given start and end (inclusive)
+	 * @throws StorageAccessException 
+	 * 
+	 */
+	public List<FrNumber> getFrNumbers(String mapSheet, int start, int end) throws StorageAccessException;
 }
