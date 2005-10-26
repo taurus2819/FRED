@@ -710,6 +710,7 @@ public class FeatureUtil extends ModelUtil {
 	 * @throws StorageAccessException 
 	 */
 	public void addToBacklog(UserFolder folderToAddTo, String mapSheet, int start, int end, UserFolder masterFile, UserAccount user) throws StorageAccessException {
+		System.out.println("Hallo");
 		if (!masterFile.isAllowedApproveLocalities())
 			return;
 		System.out.println("\n\n\n\n###############");
