@@ -25,7 +25,7 @@
 	public String getName(HttpServletRequest request) {
 		try {
 			FeatureUtil featureUtil = new FeatureUtil(HibernateUtil.get().getDAOFactory());
-			return "FRED :: " + featureUtil.getFeature(Integer.parseInt(request.getParameter("FeatID"))).getFeatureName();
+			return "FRED :: " + FeatureUtil.getFeatureName(featureUtil.getFeature(Integer.parseInt(request.getParameter("FeatID"))));
 		} catch (StorageAccessException e) {
 			return "FRED";
 		}

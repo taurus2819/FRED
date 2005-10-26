@@ -47,7 +47,14 @@ try {
 		factory.closeSession();
 		response.sendRedirect("folder_list.jsp");
 		return;
-	}
+	} 
+	//	This is for backlog entry...
+	else if (request.getParameter("ID").equals(String.valueOf(FREDUtil.MASTERFILE_BACKLOG))) {
+		factory.closeSession();
+		response.sendRedirect("backlog_folder_detail.jsp?ID=" + FREDUtil.MASTERFILE_BACKLOG);
+		return;
+	}		
+		
 
 	FolderUtil folderUtil = new FolderUtil(factory);
 	FeatureUtil featureUtil = new FeatureUtil(factory);

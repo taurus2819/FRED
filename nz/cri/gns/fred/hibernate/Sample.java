@@ -464,10 +464,10 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     		this.feature.getSamples().remove(this);
         this.feature = feature;
         //This can't be right!!!!
-        try {
+/*        try {
         	feature.getSamples().add(this);
-        } catch (Exception e) {
-        }
+        } catch (Throwable e) {
+        }*/
     }
 
     public nz.cri.gns.fred.model.Audit getAudit() {

@@ -468,6 +468,31 @@ public class FeatureUtil extends ModelUtil {
 		approveFeature(feature, fr, comments, user);
 	}
 	
+	/**
+	 * 'Approves' a backlog entered feature
+	 * @param feature
+	 * @param user
+	 * @throws InsufficientPrivelegesException
+	 * @throws StorageAccessException
+	 * @throws NamingException 
+	 * @throws SQLException 
+	 */
+	public void approveBacklogFeature(Feature feature, UserAccount user) throws InsufficientPrivelegesException, StorageAccessException, SQLException, NamingException {
+		//Put it back in the correct folder
+		if (!hasMasterfileRights(user, feature, UserFolder.FOLDER_APPROVE_RIGHT))
+			throw new InsufficientPrivelegesException();
+		
+		Audit audit = feature.getAudit();
+		audit.setFolder(null);
+		audit.setWorkingComments(null);
+		audit.setStatus(APPROVED);
+		
+		feature.setMasterFile(folderDAO.getFolder(FREDUtil.getMasterfile(feature, false)));
+		
+		featureDAO.update(audit);
+		featureDAO.update(feature);
+	}
+	
 	public void approveFeature(Feature feature, FrNumber fr, String comments, UserAccount user) throws StorageAccessException {
 		//All samples get the same FR number
 		for (Iterator it = feature.getSamples().iterator(); it.hasNext(); ) {
