@@ -618,7 +618,6 @@ Stack:    <% e.printStackTrace(new java.io.PrintWriter(out)); %></pre>
 			e.printStackTrace(new java.io.PrintWriter(out));
 			%></pre><%
 		} finally {
-			System.out.println("Closing");
 			factory.closeSession();
 		}
 	} 
