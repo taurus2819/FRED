@@ -516,7 +516,7 @@
 						if (rec.getValue().equals(Record.PALEONTOLOGY_RECORD)) {
 							try {
 								PaleontologyRecord pal = (PaleontologyRecord) PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state, false);
-								if (!"working".equals(pal.getAsString(Record.STATUS)) {
+								if (!"working".equals(pal.getAsString(Record.STATUS))) {
 									out.println("<tr><td colspan='2' class='bigheading'>Paleontology Data</td></tr>");
 									//identifiers (repeating)
 									if (pal.get(PaleontologyRecord.IDENTIFIER) != null) {
