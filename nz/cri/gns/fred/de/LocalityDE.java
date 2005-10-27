@@ -282,7 +282,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 				
 				//Accuracy etc
 				template.addSub("accuracy", (site.isNull(SiteRecord.H_ACCURACY_FIELD) ? "" : String.valueOf(site.getAccuracy())));
-				template.addSub("localityDesc", DBUtils.nvl(site.getDirections()));
+				template.addSub("localityDesc", DBUtils.nvl(feature.getLocality()));
 			}
 			template.addSub("northingLabel", northingLabel);
 			template.addSub("eastingLabel", eastingLabel);
@@ -369,12 +369,14 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		
 		//Registration area
 		String registrationAreaId = request.getParameter("RegAreaId");
+		System.out.println(registrationAreaId);
 		if (feature.getRegistrationArea() == null || !feature.getRegistrationArea().getRegAreaId().toString().equals(registrationAreaId)) {
 			if (registrationAreaId.equals("-"))
 				feature.setRegistrationArea(null);
 			else try {
 				feature.setRegistrationArea(factory.getFeatureDAO().getRegistrationArea(Integer.parseInt(registrationAreaId)));
 			} catch (StorageAccessException e) {
+				e.printStackTrace();
 				//Should never happen
 			}
 		}
@@ -434,6 +436,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		} else
 			site = null;
 		
+		//Also set the feature locality to "Loc"
+		feature.setLocality(request.getParameter("Loc"));
+		
 		editComments = request.getParameter("EditComm");
 		
 		if (error.size() > 0)
@@ -473,7 +478,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		if (feature.getAudit().getStatus().equals(FREDConstants.WAITING) || !isAllowedSubmit)
 			throw new InsufficientPrivelegesException();
 		if (feature.getFeatureType() == null || feature.getSiteId() == null || feature.getRegistrationArea() == null)
-			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
+			throw new MandatoryFieldsMissingException();
 
 		save();
 		
