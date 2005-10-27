@@ -400,11 +400,13 @@ public class FeatureUtil extends ModelUtil {
 		Date then = cal.getTime();
 		
 		List<Feature> features = featureDAO.getFeaturesInMasterfile(masterfile.getFolder(), then, now, FREDConstants.APPROVED);
+		Collections.sort(features);
 		return features.toArray(new Feature[features.size()]);
 	}
 	
 	public Feature[] getWaitingFeatures(UserFolder masterfile) throws StorageAccessException {
 		List<Feature> features = featureDAO.getFeaturesInMasterfile(masterfile.getFolder(), FREDConstants.WAITING);
+		Collections.sort(features);
 		return features.toArray(new Feature[features.size()]);
 	}
 	
