@@ -352,7 +352,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	}
 
 	public RegistrationArea getRegistrationArea(int regAreaId) throws StorageAccessException {
-		return (RegistrationArea) getFirst("FROM registrationArea ra WHERE ra.regAreaId = ?", regAreaId);
+		return get(nz.cri.gns.fred.hibernate.RegistrationArea.class, regAreaId);
 	}
 	
 	private Object getFirst(String query, int id) throws StorageAccessException {
