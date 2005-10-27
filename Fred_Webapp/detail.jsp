@@ -516,67 +516,69 @@
 						if (rec.getValue().equals(Record.PALEONTOLOGY_RECORD)) {
 							try {
 								PaleontologyRecord pal = (PaleontologyRecord) PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state, false);
-								out.println("<tr><td colspan='2' class='bigheading'>Paleontology Data</td></tr>");
-								//identifiers (repeating)
-								if (pal.get(PaleontologyRecord.IDENTIFIER) != null) {
-									out.print("<tr><td class='heading'>Identifiers</td><td>");
-									for (Iterator i2 = pal.getAsVector(PaleontologyRecord.IDENTIFIER).iterator(); i2.hasNext(); ) {
-										KeyValueObject coll = (KeyValueObject)i2.next();
-										out.print(coll.getValue() + "<br />");
+								if (!"working".equals(pal.getAsString(Record.STATUS)) {
+									out.println("<tr><td colspan='2' class='bigheading'>Paleontology Data</td></tr>");
+									//identifiers (repeating)
+									if (pal.get(PaleontologyRecord.IDENTIFIER) != null) {
+										out.print("<tr><td class='heading'>Identifiers</td><td>");
+										for (Iterator i2 = pal.getAsVector(PaleontologyRecord.IDENTIFIER).iterator(); i2.hasNext(); ) {
+											KeyValueObject coll = (KeyValueObject)i2.next();
+											out.print(coll.getValue() + "<br />");
+										}
+										out.print("</td></tr>");
 									}
-									out.print("</td></tr>");
-								}
-								if (pal.get(PaleontologyRecord.IDENTIFICATION_DATE) != null) { out.print("<tr><td class='heading'>Identification Date</td><td>" + FREDUtils.formatDateForOutput(pal.getAsDate(PaleontologyRecord.IDENTIFICATION_DATE), pal.getAsString(PaleontologyRecord.IDENTIFICATION_DATE_ROUNDING)) + "</td></tr>"); }
-								if (pal.get(PaleontologyRecord.STAGE) != null) { out.println("<tr><td class='heading'>Stage</td><td>" + pal.getAsString(PaleontologyRecord.STAGE) + "</td></tr>"); }
-								if (pal.get(PaleontologyRecord.STAGE_COMMENTS) != null) { out.println("<tr><td class='heading'>Stage Comments</td><td>" + pal.getAsString(PaleontologyRecord.STAGE_COMMENTS) + "</td></tr>"); }
-								if (pal.get(PaleontologyRecord.LAB) != null) { out.println("<tr><td class='heading'>Lab</td><td>" + pal.getAsString(PaleontologyRecord.LAB) + "</td></tr>"); }
-								if (pal.get(PaleontologyRecord.LAB_NUMBER) != null) { out.println("<tr><td class='heading'>Lab Number</td><td>" + pal.getAsString(PaleontologyRecord.LAB_NUMBER) + "</td></tr>"); }
-								if (pal.get(PaleontologyRecord.COLLECTION_COMMENTS) != null) { out.println("<tr><td class='heading'>Collection Comments</td><td>" + pal.getAsString(PaleontologyRecord.COLLECTION_COMMENTS) + "</td></tr>"); }
-		
-								//taxa (double repeating)
-								if (pal.get(PaleontologyRecord.TAXONOMIC_LIST) != null) {
-									out.println("<tr><td colspan='2'><table border='0' cellspacing='0' cellpadding='2'>");
-									for (Iterator i2 = pal.getAsVector(PaleontologyRecord.TAXONOMIC_LIST).iterator(); i2.hasNext(); ) {
-										TaxaGroup taxaGroup = (TaxaGroup)i2.next();
-										out.println("<tr><td colspan='4' class='heading'>" + taxaGroup.getGroupName() + "</td></tr>");
-										if (taxaGroup.getTaxaList() != null) {
-											out.print("<tr class='heading'><td>Taxonomic Name&nbsp;&nbsp;</td>");
-											if (authorChk) { out.print("<td>Author&nbsp;&nbsp;</td>"); }
-											if (sCountChk) { out.print("<td>Spec Count&nbsp;&nbsp;</td>"); }
-											if (sCoordChk) { out.print("<td>Spec Coord&nbsp;&nbsp;</td>"); }
-											if (commChk) { out.print("<td>Comments&nbsp;&nbsp;</td>"); }
-											out.println("</tr>");
-											for (Iterator i3 = taxaGroup.getTaxaList().iterator(); i3.hasNext(); ) {
-												Taxa taxa = (Taxa)i3.next();
-												out.print("<tr><td><i>" + taxa.getTaxonomicName() + "</i>&nbsp;&nbsp;</td>");
-												if (authorChk) { out.print("<td>" +FREDUtils.noNulls(taxa.getAuthor()) + "&nbsp;&nbsp;</td>"); }
-												if (sCountChk) { out.print("<td>" +FREDUtils.noNulls(String.valueOf(taxa.getSpecimenCount())) + "&nbsp;&nbsp;</td>"); }
-												if (sCoordChk) { out.print("<td>" +FREDUtils.noNulls(taxa.getSpecimenCoords()) + "&nbsp;&nbsp;</td>"); }
-												if (commChk) { out.print("<td>" +FREDUtils.noNulls(taxa.getComments()) + "&nbsp;&nbsp;</td>"); }
+									if (pal.get(PaleontologyRecord.IDENTIFICATION_DATE) != null) { out.print("<tr><td class='heading'>Identification Date</td><td>" + FREDUtils.formatDateForOutput(pal.getAsDate(PaleontologyRecord.IDENTIFICATION_DATE), pal.getAsString(PaleontologyRecord.IDENTIFICATION_DATE_ROUNDING)) + "</td></tr>"); }
+									if (pal.get(PaleontologyRecord.STAGE) != null) { out.println("<tr><td class='heading'>Stage</td><td>" + pal.getAsString(PaleontologyRecord.STAGE) + "</td></tr>"); }
+									if (pal.get(PaleontologyRecord.STAGE_COMMENTS) != null) { out.println("<tr><td class='heading'>Stage Comments</td><td>" + pal.getAsString(PaleontologyRecord.STAGE_COMMENTS) + "</td></tr>"); }
+									if (pal.get(PaleontologyRecord.LAB) != null) { out.println("<tr><td class='heading'>Lab</td><td>" + pal.getAsString(PaleontologyRecord.LAB) + "</td></tr>"); }
+									if (pal.get(PaleontologyRecord.LAB_NUMBER) != null) { out.println("<tr><td class='heading'>Lab Number</td><td>" + pal.getAsString(PaleontologyRecord.LAB_NUMBER) + "</td></tr>"); }
+									if (pal.get(PaleontologyRecord.COLLECTION_COMMENTS) != null) { out.println("<tr><td class='heading'>Collection Comments</td><td>" + pal.getAsString(PaleontologyRecord.COLLECTION_COMMENTS) + "</td></tr>"); }
+			
+									//taxa (double repeating)
+									if (pal.get(PaleontologyRecord.TAXONOMIC_LIST) != null) {
+										out.println("<tr><td colspan='2'><table border='0' cellspacing='0' cellpadding='2'>");
+										for (Iterator i2 = pal.getAsVector(PaleontologyRecord.TAXONOMIC_LIST).iterator(); i2.hasNext(); ) {
+											TaxaGroup taxaGroup = (TaxaGroup)i2.next();
+											out.println("<tr><td colspan='4' class='heading'>" + taxaGroup.getGroupName() + "</td></tr>");
+											if (taxaGroup.getTaxaList() != null) {
+												out.print("<tr class='heading'><td>Taxonomic Name&nbsp;&nbsp;</td>");
+												if (authorChk) { out.print("<td>Author&nbsp;&nbsp;</td>"); }
+												if (sCountChk) { out.print("<td>Spec Count&nbsp;&nbsp;</td>"); }
+												if (sCoordChk) { out.print("<td>Spec Coord&nbsp;&nbsp;</td>"); }
+												if (commChk) { out.print("<td>Comments&nbsp;&nbsp;</td>"); }
 												out.println("</tr>");
+												for (Iterator i3 = taxaGroup.getTaxaList().iterator(); i3.hasNext(); ) {
+													Taxa taxa = (Taxa)i3.next();
+													out.print("<tr><td><i>" + taxa.getTaxonomicName() + "</i>&nbsp;&nbsp;</td>");
+													if (authorChk) { out.print("<td>" +FREDUtils.noNulls(taxa.getAuthor()) + "&nbsp;&nbsp;</td>"); }
+													if (sCountChk) { out.print("<td>" +FREDUtils.noNulls(String.valueOf(taxa.getSpecimenCount())) + "&nbsp;&nbsp;</td>"); }
+													if (sCoordChk) { out.print("<td>" +FREDUtils.noNulls(taxa.getSpecimenCoords()) + "&nbsp;&nbsp;</td>"); }
+													if (commChk) { out.print("<td>" +FREDUtils.noNulls(taxa.getComments()) + "&nbsp;&nbsp;</td>"); }
+													out.println("</tr>");
+												}
+											} else {
+												out.println("<tr><td colspan='4'>No fossils listed</td></tr>");
 											}
-										} else {
-											out.println("<tr><td colspan='4'>No fossils listed</td></tr>");
+											out.println("<tr><td><img src='images/blank.gif' height='10' width='1' /></td></tr>");
 										}
-										out.println("<tr><td><img src='images/blank.gif' height='10' width='1' /></td></tr>");
+										out.println("</td></tr></table></td></tr>");
 									}
-									out.println("</td></tr></table></td></tr>");
-								}
-								//Image/Files
-								if (pal.getMetadataRecordsCount() > 0) {
-									out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
-									MetadataRecord[] mr = pal.getMetadataRecords();
-									out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
-									int y = 1;
-									out.print("<tr>");
-									for (int x = 0; x < mr.length; x++) {
-										if (y++ == 5) {
-											out.println("</tr><tr>");
-											y = 2;
+									//Image/Files
+									if (pal.getMetadataRecordsCount() > 0) {
+										out.println("<tr><td colspan='2' class='heading'>Images/Files</td></tr>");
+										MetadataRecord[] mr = pal.getMetadataRecords();
+										out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
+										int y = 1;
+										out.print("<tr>");
+										for (int x = 0; x < mr.length; x++) {
+											if (y++ == 5) {
+												out.println("</tr><tr>");
+												y = 2;
+											}
+											out.print("<td width='150' align='center' class='smalltext'><a href='/online/DigitalDocument?src=" + mr[x].getCode() + "'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "' alt='FRED Digital Document' /><br />" + mr[x].getTitle() + "</a></td>");
 										}
-										out.print("<td width='150' align='center' class='smalltext'><a href='/online/DigitalDocument?src=" + mr[x].getCode() + "'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "' alt='FRED Digital Document' /><br />" + mr[x].getTitle() + "</a></td>");
+										out.println("</td></tr></table></td></tr>");
 									}
-									out.println("</td></tr></table></td></tr>");
 								}
 							} catch (Exception e) {
 								e.printStackTrace();
