@@ -618,7 +618,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 */
 	public int submit() throws InsufficientPrivelegesException, DataInputException, StorageAccessException {
-		if (!isAllowedSubmit || sample.getAudit().getStatus().equals(FREDConstants.WAITING))
+		if (!outcropSample && (!isAllowedSubmit || sample.getAudit().getStatus().equals(FREDConstants.WAITING)))
 			throw new InsufficientPrivelegesException();
 		if (sample.getCollectors() == null || sample.getCollectors().size() == 0
 				|| sample.getCollectionDate() == null 
