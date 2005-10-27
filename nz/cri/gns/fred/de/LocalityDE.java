@@ -102,7 +102,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			workingFolder = folderUtil.getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), user);
 		
 		isAllowedSubmit = featureUtil.isAllowedSubmitFeature(user, feature, workingFolder);
-		System.out.println("*************" + isAllowedSubmit);
 	}
 
 	public void copyFrom(int featureID) throws InsufficientPrivelegesException, StorageAccessException {
