@@ -62,6 +62,7 @@ function doNewFolder() {
 		%>
 alert("<%=error%>");<%
 	}
+	%>
 //--></script>
 <form name="NewFoldForm" method="post" action="folder_list.jsp">
 <input type="hidden" name="ActionType" value="Add">
