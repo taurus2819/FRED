@@ -89,7 +89,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		if (sample.getAudit().getFolder() != null)
 			workingFolder = folderUtil.getUserFolder(sample.getAudit().getFolder().getFolderId().intValue(), user);
 		
-		isAllowedSubmit = sampleUtil.isAllowedEditSample(user, sample, workingFolder);
+		isAllowedSubmit = sampleUtil.isAllowedSubmitSample(user, sample, workingFolder);
 	}
 
 	public void copyFrom(int sampleId) throws StorageAccessException  {
