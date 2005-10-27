@@ -623,7 +623,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		if (sample.getCollectors() == null || sample.getCollectors().size() == 0
 				|| sample.getCollectionDate() == null 
 				|| sample.getInPlace() == null)
-			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
+			throw new MandatoryFieldsMissingException();
 		save();
 		if (!outcropSample) {
 			FREDUtil.submit(sample, user, sampleUtil, false);

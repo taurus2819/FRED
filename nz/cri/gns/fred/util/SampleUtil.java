@@ -15,7 +15,8 @@ import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
-import nz.cri.gns.fred.dataentry.DataInputException;
+import nz.cri.gns.fred.de.DataInputException;
+import nz.cri.gns.fred.de.MandatoryFieldsMissingException;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.BedThickness;
@@ -208,7 +209,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (!folder.isAllowedSubmitLocalities() || sample.getAudit().getStatus().equals(WAITING))
 			throw new InsufficientPrivelegesException();
 		if (sample.getCollectors() == null || sample.getCollectors().size() == 0 || sample.getCollectionDate() == null || sample.getInPlace() == null)
-			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
+			throw new MandatoryFieldsMissingException();
 		
 		//Update the audit log, so long as this isn't an outcrop
 		if (!sample.getFeature().getFeatureType().equals(OUTCROP)) {

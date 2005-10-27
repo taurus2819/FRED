@@ -7,6 +7,7 @@
 %><%@page import="nz.cri.gns.auth.*"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.dao.StorageAccessException"
+%><%@page import="nz.cri.gns.fred.de.MandatoryFieldsMissingException"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.model.Audit"
 %><%@page import="nz.cri.gns.fred.model.Feature"
@@ -96,6 +97,10 @@
 						featureUtil.revokeFeature(feature, folder, user);
 					}
 				}
+			} catch (MandatoryFieldsMissingException e) {
+				%><script><!--
+alert("<%=e.getMessage()%>");
+//--></script><%
 			} catch (Exception e) {
 				errorMessage = "An Error has occured: " + e.getMessage();
 			}

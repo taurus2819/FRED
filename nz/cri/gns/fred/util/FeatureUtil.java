@@ -26,6 +26,7 @@ import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.de.DataInputException;
+import nz.cri.gns.fred.de.MandatoryFieldsMissingException;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.FREDConstants;
@@ -311,7 +312,7 @@ public class FeatureUtil extends ModelUtil {
 			throw new InsufficientPrivelegesException();
 
 		if (feature.getFeatureType() == null || feature.getSiteId() == null || feature.getRegistrationArea() == null)
-			throw new DataInputException("Mandatory Fields", "Not all mandatory fields completed");
+			throw new MandatoryFieldsMissingException();
 
 		Audit audit = feature.getAudit();
 		audit.setStatus(FREDConstants.WAITING);
