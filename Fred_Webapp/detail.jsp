@@ -1,5 +1,31 @@
 <%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
-%><%@page import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, nz.cri.gns.db.metadata.*, nz.cri.gns.db.site.*, nz.cri.gns.util.map.*, java.net.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
+%><%@page import="nz.cri.gns.fred.*"
+%><%@page import="nz.cri.gns.fred.data.AdoptionRecord"
+%><%@page import="nz.cri.gns.fred.data.Audit"
+%><%@page import="nz.cri.gns.fred.data.Feature"
+%><%@page import="nz.cri.gns.fred.data.Folder"
+%><%@page import="nz.cri.gns.fred.data.FolderList"
+%><%@page import="nz.cri.gns.fred.data.FRNumber"
+%><%@page import="nz.cri.gns.fred.data.Relationship"
+%><%@page import="nz.cri.gns.fred.data.PaleontologyRecord"
+%><%@page import="nz.cri.gns.fred.data.Record"
+%><%@page import="nz.cri.gns.fred.data.Sample"
+%><%@page import="nz.cri.gns.fred.data.SedFeature"
+%><%@page import="nz.cri.gns.fred.data.SentTo"
+%><%@page import="nz.cri.gns.fred.data.Taxa"
+%><%@page import="nz.cri.gns.fred.data.TaxaGroup"
+%><%@page import="nz.cri.gns.db.*"
+%><%@page import="nz.cri.gns.jsp.*"
+%><%@page import="nz.cri.gns.db.metadata.*"
+%><%@page import="nz.cri.gns.db.site.*"
+%><%@page import="nz.cri.gns.util.map.*"
+%><%@page import="java.net.*"
+%><%@page import="java.text.*"
+%><%@page import="java.util.*"
+%><%@page import="nz.cri.gns.auth.*"
+%><%@page import="nz.cri.gns.fred.dao.DAOFactory"
+%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%!	
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { 
 		return new Authenticable[0]; 
@@ -45,20 +71,26 @@
 	}
 
 	if (sampID != null) {
+		DAOFactory factory = HibernateUtil.get().getDAOFactory();
 		try {
 			Sample sample = new Sample(Integer.parseInt(sampID), user, state);
 			
 			if (request.getParameter("ActionType") != null) { //do something
 				String actionType = request.getParameter("ActionType");
+				FeatureUtil util = new FeatureUtil(factory);
+				
 				if (actionType.equals("Approve")) {
-					FRNumber frNum = new FRNumber(request.getParameter("MapSheet"), new Integer(request.getParameter("SerialNum")), request.getParameter("RecollNum"));
-					FolderUtils.approveLocality(sample.getAsString(Sample.FEATURE_ID), frNum, request.getParameter("CurComm"), user, state);
+					nz.cri.gns.fred.model.Feature feature = util.getFeature(Integer.parseInt(sample.getAsString(Sample.FEATURE_ID)));
+					util.approveFeature(feature, request.getParameter("MapSheet"), new Integer(request.getParameter("SerialNum")), request.getParameter("RecollNum"), request.getParameter("CurComm"), user);
+					//Still needed for refreshing of old screens
 					sample = new Sample(sample.getSampleID(), user, state, true);
 					response.sendRedirect("admin_folder_detail.jsp?ID=" + sample.getAsString(Sample.MASTERFILE_ID));
 					return;
 				}
 				else if (actionType.equals("Reject")) {
-					FolderUtils.rejectLocality(sample.getAsString(Sample.FEATURE_ID), request.getParameter("CurComm"), user, state);
+					nz.cri.gns.fred.model.Feature feature = util.getFeature(Integer.parseInt(sample.getAsString(Sample.FEATURE_ID)));
+					util.rejectLocality(feature, request.getParameter("CurComm"), user);
+					//Still needed for refreshing of old screens
 					sample = new Sample(sample.getSampleID(), user, state, true);
 					response.sendRedirect("admin_folder_detail.jsp?ID=" + sample.getAsString(Sample.MASTERFILE_ID));
 					return;
@@ -147,7 +179,9 @@
 						KeyValueObject rec = (KeyValueObject)i.next();
 						if (rec.getValue().equals(Record.PALEONTOLOGY_RECORD)) {
 							Record pal = PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state);
-							out.println("<tr><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;</td><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' class='heading' target='print'>Print Pal Record</br >" + pal + "</a></td></tr>");
+							//?? I'm thinking we shouldn't be showing records that are working
+							if (!"working".equals(pal.getAsString(Record.STATUS)))
+								out.println("<tr><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;</td><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' class='heading' target='print'>Print Pal Record</br >" + pal + "</a></td></tr>");
 						}
 					}
 				}
@@ -251,10 +285,10 @@
 			
 			if (sample.get(Sample.METHOD) != null) { out.println("<tr><td class='heading'>Method</td><td>" + sample.getAsString(Sample.METHOD) + "</td></tr>"); }
 			if (sample.get(Sample.ACCURACY) != null) { out.println("<tr><td class='heading'>Accuracy</td><td>&#177 " + sample.getAsDouble(Sample.ACCURACY) + "m</td></tr>"); }
-			if (featType.equals(Feature.OUTCROP_LOCALITY)) {
+			if (featType.equals(nz.cri.gns.fred.data.Feature.OUTCROP_LOCALITY)) {
 				if (sample.get(Sample.FEATURE_NAME) != null) { out.println("<tr><td class='heading'>Field Number</td><td>" + sample.getAsString(Sample.FEATURE_NAME) + "</td></tr>"); }
 			} else {
-				if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
+				if (featType.equals(nz.cri.gns.fred.data.Feature.DRILLHOLE_LOCALITY)) {
 					if (sample.get(Sample.FEATURE_NAME) != null) { out.println("<tr><td class='heading'>Drillhole Name</td><td><a href='drillhole_detail.jsp?ID=" + sample.getAsString(Sample.FEATURE_ID) + "'>" + sample.getAsString(Sample.FEATURE_NAME) + "</a></td></tr>"); }
 					if (sample.get(Sample.DRILLHOLE_DEPTH) != null) { out.println("<tr><td class='heading'>Sample Depth</td><td>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td></tr>"); }
 					out.println("<tr><td class='heading'>Other Drillhole Samples</td><td>");
@@ -481,7 +515,7 @@
 						KeyValueObject rec = (KeyValueObject)i.next();
 						if (rec.getValue().equals(Record.PALEONTOLOGY_RECORD)) {
 							try {
-								PaleontologyRecord pal = (PaleontologyRecord) PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state);
+								PaleontologyRecord pal = (PaleontologyRecord) PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state, false);
 								out.println("<tr><td colspan='2' class='bigheading'>Paleontology Data</td></tr>");
 								//identifiers (repeating)
 								if (pal.get(PaleontologyRecord.IDENTIFIER) != null) {
@@ -545,6 +579,7 @@
 									out.println("</td></tr></table></td></tr>");
 								}
 							} catch (Exception e) {
+								e.printStackTrace();
 							}
 						}
 					}
@@ -580,6 +615,9 @@ Stack:    <% e.printStackTrace(new java.io.PrintWriter(out)); %></pre>
 <%
 			e.printStackTrace(new java.io.PrintWriter(out));
 			%></pre><%
+		} finally {
+			System.out.println("Closing");
+			factory.closeSession();
 		}
 	} 
 	else { //no sampleID
