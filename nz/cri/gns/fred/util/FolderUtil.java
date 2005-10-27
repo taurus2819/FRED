@@ -68,6 +68,9 @@ public class FolderUtil extends ModelUtil {
 	
 	public void deleteFolder(int folderId, UserAccount user)  throws StorageAccessException {
 	    Folder folder = folderDAO.getFolder(folderId);
+	    if ((folder.getAudits() != null && folder.getAudits().size() > 0)
+	    		|| (folder.getFeatures() != null && folder.getFeatures().size() > 0))
+	    	throw new IllegalStateException("Cannot delete folder as it is not empty");
 	    folderDAO.delete(folder);
 	}
 	

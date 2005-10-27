@@ -33,6 +33,7 @@ try {
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
 
+	String error = null;
 	if (request.getParameter("ActionType") != null) { //do something
 		String actionType = request.getParameter("ActionType");
 		if (actionType.equals("Add")) { //add folder
@@ -41,7 +42,9 @@ try {
 		else if (actionType.equals("Delete")) { //Delete folder
 			try {
 				folderUtil.deleteFolder(Integer.parseInt(request.getParameter("FoldID")), user);
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				error = e.getMessage();
+			}
 		}
 	}
 
@@ -54,7 +57,11 @@ function doNewFolder() {
 		document.NewFoldForm.FoldName.value = newName;
 		document.NewFoldForm.submit();
 	}
-}
+}<%
+	if (error != null) {
+		%>
+alert("<%=error%>");<%
+	}
 //--></script>
 <form name="NewFoldForm" method="post" action="folder_list.jsp">
 <input type="hidden" name="ActionType" value="Add">
