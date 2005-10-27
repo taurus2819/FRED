@@ -5,10 +5,11 @@ import java.util.Date;
 import java.util.Set;
 
 import nz.cri.gns.fred.model.FeatureMeta;
+import nz.cri.gns.fred.util.FeatureUtil;
 
 
 /** @author Hibernate CodeGenerator */
-public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Cloneable, Comparable {
+public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Cloneable, Comparable<nz.cri.gns.fred.model.Feature> {
 
     private static final long serialVersionUID = 20050818L;
 
@@ -325,11 +326,9 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     	return featureId.equals(((Feature)o).featureId);
     }
 
-	public int compareTo(Object arg0) {
-		String thisName = (getFeatureName() == null) ? "Unnamed Locality" : featureName;
-		String thatName = ((Feature)arg0).getFeatureName();
-		if (thatName == null) 
-			thatName = "Unnamed Locality";
+	public int compareTo(nz.cri.gns.fred.model.Feature arg0) {
+		String thisName = FeatureUtil.getFeatureName(this);
+		String thatName = FeatureUtil.getFeatureName(arg0);
 		return thisName.compareTo(thatName);
 	}
 }
