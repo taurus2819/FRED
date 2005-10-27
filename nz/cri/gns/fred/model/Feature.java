@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  *
  */
-public interface Feature extends Audited {
+public interface Feature extends Audited, Comparable<Feature> {
 
 	public Integer getFeatureId();
     public void setFeatureId(Integer featureId);
