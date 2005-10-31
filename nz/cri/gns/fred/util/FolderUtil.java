@@ -90,10 +90,13 @@ public class FolderUtil extends ModelUtil {
 	 * innappropriate rights for the given folder's type.
 	 * @throws StorageAccessException 
 	 */
+	/** TODO need to query code field being VARCHAR with Iain. Should change to NUMBER and then can get rid of TO_NUMBER() in code below
+	 * 
+	 */
 	public List<FolderRight> getRightTypesForDisplay(UserFolder folder) throws StorageAccessException {
 		return (folder.getFolder().getFolderType().getName().equals("Personal")) 
-			? folderDAO.getFolderRightList("code NOT IN ('1', '64')", "code") 
-			: folderDAO.getFolderRightList("code <> '1'", "code");
+			? folderDAO.getFolderRightList("code NOT IN ('1', '64')", "TO_NUMBER(code)") 
+			: folderDAO.getFolderRightList("code <> '1'", "TO_NUMBER(code)");
 	}
 	/**
 	 * Returns a list of UserFolder objects describing each user that has some access to
