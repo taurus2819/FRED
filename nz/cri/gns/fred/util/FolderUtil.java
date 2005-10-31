@@ -93,7 +93,7 @@ public class FolderUtil extends ModelUtil {
 	public List<FolderRight> getRightTypesForDisplay(UserFolder folder) throws StorageAccessException {
 		return (folder.getFolder().getFolderType().getName().equals("Personal")) 
 			? folderDAO.getFolderRightList("code NOT IN ('1', '64')", "code") 
-			: folderDAO.getFolderRightList("code NOT IN ('32', '64')", "code DESC");
+			: folderDAO.getFolderRightList("code <> '1'", "code");
 	}
 	/**
 	 * Returns a list of UserFolder objects describing each user that has some access to
