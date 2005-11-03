@@ -511,6 +511,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * Returns true if the given stage differs from that described by the arguments
 	 */
 	public boolean stageDiffers(Stage stage, String startId, boolean startUncertain, String stopId, boolean stopUncertain) {
+		System.out.println("Checking Stage Differs");
 		if (stage == null) {
 			return (startId != null || stopId != null);
 		}
@@ -531,6 +532,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (startUncertain ^ "?".equals(stage.getStageLowerMod()))
 			return true;
 			
+		System.out.println("Finished stage Differs");
 		return stopUncertain ^ "?".equals(stage.getStageUpperMod());
 	}
 
