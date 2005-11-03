@@ -571,6 +571,8 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 
 	public Stage findStage(String startStageId, boolean startUncertain, String stopStageId, boolean stopUncertain) throws StorageAccessException {
 		try {
+			System.out.println("stopStageID in HibDAO.findStage = " + stopStageId);
+			System.out.println("stopStageID in HibDAO.findStage = null" + (stopStageId == null));
             Session session = provider.currentSession();
             Query query = session.createQuery("FROM Stage AS s WHERE s.stageLowerId = :lower AND s.stageLowerMod = :lmod AND s.stageUpperId = :upper AND s.stageUpperMod = :umod");
             query.setInteger("lower", (startStageId == null) ? null : Integer.parseInt(startStageId));
