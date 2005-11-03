@@ -745,11 +745,13 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         sample.setSignificance(request.getParameter("Sig"));
         
 		//Work out the inferred stage
+        System.out.println("Checking Inf Stage");
         try {
             sample.setInferredStage(StageDEUtil.getStage(request, "Inf", sample.getInferredStage(), sampleUtil, "Inferred stage"));
         } catch (DataInputException e) {
             error.addAll(e.getError());
         }
+        System.out.println("Inf Stage passed");
 		
         //Work out the known stage
         try {
