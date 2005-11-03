@@ -749,9 +749,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         try {
             sample.setInferredStage(StageDEUtil.getStage(request, "Inf", sample.getInferredStage(), sampleUtil, "Inferred stage"));
         } catch (DataInputException e) {
+        	System.out.println("Inf Stage error");
             error.addAll(e.getError());
         }
-        System.out.println("Inf Stage passed");
 		
         //Work out the known stage
         try {
