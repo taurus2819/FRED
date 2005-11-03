@@ -532,7 +532,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 					DBUtils.doUpdate(qd, "audit_id = ?", conn);
 			*/
 		}
-			
+		System.out.println("Inf Stage: " + sample.getInferredStage());	
         sampleUtil.saveOrUpdate(sample);
     		
 		return sample.getSampleId().intValue();
