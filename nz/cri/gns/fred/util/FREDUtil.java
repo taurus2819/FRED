@@ -522,7 +522,7 @@ public class FREDUtil {
 		try {
 			conn = getConnection();
 			Statement statement = conn.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT ta_age_start, ta_age_stop FROM sc.timescale_age WHERE ta_id = " + stageId);
+			ResultSet rs = statement.executeQuery("SELECT ta_age_start, ta_age_stop FROM age_view WHERE ag_id = " + stageId);
 			double[] ages = (rs.next()) ? new double[] {rs.getDouble(1), rs.getDouble(2)} : null;
 			rs.close();
 			statement.close();
