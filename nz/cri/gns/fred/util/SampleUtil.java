@@ -491,12 +491,6 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		}
 		
 		if (startRange != null && stopRange != null) {
-			System.out.println("StartID: " + startStageId);
-			System.out.println("Start Start: " + startRange[0]);
-			System.out.println("Start Stop: " + startRange[1]);
-			System.out.println("StopID: " + stopStageId);
-			System.out.println("Stop Start: " + stopRange[0]);
-			System.out.println("Stop Stop: " + stopRange[1]);
 			if (startRange[0] < stopRange[0] || startRange[1] < stopRange[1])
 				throw new IllegalArgumentException("Stop age is older than start age");
 		}
