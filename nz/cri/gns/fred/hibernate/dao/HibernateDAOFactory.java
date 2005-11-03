@@ -571,21 +571,13 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 
 	public Stage findStage(String startStageId, boolean startUncertain, String stopStageId, boolean stopUncertain) throws StorageAccessException {
 		try {
-			System.out.println("stopStageID in HibDAO.findStage = " + stopStageId);
-			System.out.println("stopStageID in HibDAO.findStage is null : " + (stopStageId == null));
             Session session = provider.currentSession();
             Query query = session.createQuery("FROM Stage AS s WHERE s.stageLowerId = :lower AND s.stageLowerMod = :lmod AND s.stageUpperId = :upper AND s.stageUpperMod = :umod");
-            query.setInteger("lower", (startStageId == null) ? null : Integer.parseInt(startStageId));
+            query.setInteger("lower", (startStageId == null) ? -1 : Integer.parseInt(startStageId));
             query.setString("lmod", (startUncertain) ? "?" : null);
             System.out.println("About to set stopStageID");
-            //query.setInteger("upper", (stopStageId == null) ? null : Integer.parseInt(stopStageId));
-            if (stopStageId == null) {
-            	query.setInteger("upper", -1);
-            } else {
-            	query.setInteger("upper", Integer.parseInt(stopStageId));
-            }
+            query.setInteger("upper", (stopStageId == null) ? -1 : Integer.parseInt(stopStageId));
             query.setString("umod", (stopUncertain) ? "?" : null);
-            System.out.println("Finished setting HibDAO values");
             List list = query.list();
             if (list.size() == 0)
             	return null;
