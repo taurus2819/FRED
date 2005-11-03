@@ -1,18 +1,23 @@
-<%@		page extends="nz.cri.gns.fred.FREDIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, nz.cri.gns.db.metadata.*, java.net.*, nz.cri.gns.intranet.*, java.sql.*, java.text.*, java.util.*, nz.cri.gns.auth.*"
+<%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
+%><%@page import="nz.cri.gns.fred.*"
+%><%@page import="nz.cri.gns.fred.data.*"
+%><%@page import="nz.cri.gns.db.*"
+%><%@page import="nz.cri.gns.jsp.*"
+%><%@page import="java.util.*"
+%><%@page import="nz.cri.gns.auth.Authenticable"
+%><%@page import="nz.cri.gns.auth.User"
+%><%@page import="nz.cri.gns.db.site.SiteRecord"
+%><%@page import="nz.cri.gns.util.map.*"
 %><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 	User user = (User)getUser(session);
 	PageState state = new PageState(request, response, getServletContext());
-	DecimalFormat nzmg = new DecimalFormat("######0");
-	DecimalFormat latlong = new DecimalFormat("#00.0000");
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
 
 	//if FeatureID given then get SampleID
 	if (request.getParameter("FeatID") != null) {
-		String featID = request.getParameter("FeatID");
 		try {
 			Feature feature = new Feature(Integer.parseInt(request.getParameter("FeatID")), user, state);
 			if (feature.get(Feature.SAMPLES) != null)
@@ -83,24 +88,50 @@
 				out.println("<tr><td class='heading'>Section Name</td><td>" + sample.getAsString(Sample.FEATURE_NAME) + "</td></tr>");
 			}
 		}
+//		if (sample.get(Sample.LATITUDE) != null) {
+//			if (sample.get(Sample.NZMG_SHEET) != null) {
+//				out.print("<tr><td class='heading'>Grid Ref</td><td>" + sample.getAsString(Sample.NZMG_SHEET) + ":" + nzmg.format(sample.getAsDouble(Sample.NZMG_EAST)) + "|" + nzmg.format(sample.getAsDouble(Sample.NZMG_NORTH)) + " (NZMG)");
+//			} else if (sample.getAsInt(Sample.ORIG_SYSTEM_ID) == 29) {
+//			} else if (sample.getAsInt(Sample.ORIG_SYSTEM_ID) == 28 || sample.getAsInt(Sample.ORIG_SYSTEM_ID) == 30) {
+//				String str = sample.getAsString(Sample.ORIG_COORD);
+//				int index = str.indexOf("|");
+//				double lat = Double.parseDouble(str.substring(0, index));
+//				double lon = Double.parseDouble(str.substring(index+1));
+//				out.print("<tr><td class='heading'>Lat/Long</td><td>" + FREDUtils.formatLatLongForOutput(lat, lon) + " (" + sample.getAsString(Sample.COORD_SYSTEM).replaceAll("Lat/long ", "") + ")");
+//			} else {
+//				out.print("<tr><td class='heading'>Grid Ref</td><td>" + sample.getAsString(Sample.ORIG_COORD) + " (" + sample.getAsString(Sample.COORD_SYSTEM) + ")");
+//			}
+//			out.println("</td></tr>");
+//			out.print("<tr><td class='heading'>Lat/Long</td><td>");
+//			out.print(FREDUtils.formatLatLongForOutput(sample.getAsDouble(Sample.LATITUDE), sample.getAsDouble(Sample.LONGITUDE)));
+//			out.println(" (NZGD49 Datum)</td></tr>");
+//		}
+		
 		if (sample.get(Sample.LATITUDE) != null) {
-			if (sample.get(Sample.NZMG_SHEET) != null) {
-				out.print("<tr><td class='heading'>Grid Ref</td><td>" + sample.getAsString(Sample.NZMG_SHEET) + ":" + nzmg.format(sample.getAsDouble(Sample.NZMG_EAST)) + "|" + nzmg.format(sample.getAsDouble(Sample.NZMG_NORTH)) + " (NZMG)");
-			} else if (sample.getAsInt(Sample.ORIG_SYSTEM_ID) == 29) {
-			} else if (sample.getAsInt(Sample.ORIG_SYSTEM_ID) == 28 || sample.getAsInt(Sample.ORIG_SYSTEM_ID) == 30) {
-				String str = sample.getAsString(Sample.ORIG_COORD);
-				int index = str.indexOf("|");
-				double lat = Double.parseDouble(str.substring(0, index));
-				double lon = Double.parseDouble(str.substring(index+1));
-				out.print("<tr><td class='heading'>Lat/Long</td><td>" + FREDUtils.formatLatLongForOutput(lat, lon) + " (" + sample.getAsString(Sample.COORD_SYSTEM).replaceAll("Lat/long ", "") + ")");
-			} else {
-				out.print("<tr><td class='heading'>Grid Ref</td><td>" + sample.getAsString(Sample.ORIG_COORD) + " (" + sample.getAsString(Sample.COORD_SYSTEM) + ")");
+			SiteRecord sr = SiteRecord.querySite(FREDUtils.getFREDConnection(state), sample.getAsInt(Sample.SITE_ID));			
+			int origID = sr.getOriginalId();
+			if (origID != -1) {
+				Datum datum = sr.getOrigCoordDatum();
+				Datum.Coordinate coord = sr.getOrigCoordAsCoord();	
+				if (!(datum.getName().equals("NZGD49") && !(datum.getName().equals("NZMG")))) {
+					if (coord instanceof Datum.LatLong) {
+						out.print("<tr><td class='heading'>Lat/Long</td>");
+					} else {
+						out.print("<tr><td class='heading'>Grid Ref</td>");
+					}
+					out.println("<td>" + datum.getHumanStringFor(coord).replaceAll("Geographic ", "") + "</td></tr>");
+				}
+				try {
+					Datum nzmgDatum = DatumFactory.createDatum("NZMG");
+					Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
+					out.println("<tr><td class='heading'>Grid Ref</td><td>" + nzmgDatum.getHumanStringFor(nzmgCoord) + "</td></tr>");
+				} catch (Exception e) { System.out.println(e.getMessage()); }
 			}
-			out.println("</td></tr>");
-			out.print("<tr><td class='heading'>Lat/Long</td><td>");
-			out.print(FREDUtils.formatLatLongForOutput(sample.getAsDouble(Sample.LATITUDE), sample.getAsDouble(Sample.LONGITUDE)));
-			out.println(" (NZGD49 Datum)</td></tr>");
-		}
+			Datum.LatLong ll = sr.getLatLong();
+			if (ll.getNorthSouth() != 999)
+				out.println("<tr><td class='heading'>Lat/Long</td><td>" + ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)</td></tr>");
+		}		
+		
 		if (sample.get(Sample.METHOD) != null) { out.println("<tr><td class='heading'>Method</td><td>" + sample.getAsString(Sample.METHOD) + "</td></tr>"); }
 		if (sample.get(Sample.ACCURACY) != null) { out.println("<tr><td class='heading'>Accuracy</td><td>&#177 " + sample.getAsDouble(Sample.ACCURACY) + "m</td></tr>"); }
 		if (sample.isUserAuthenticated() && sample.get(Sample.LOCALITY) != null) { out.println("<tr><td class='heading'>Locality</td><td>" + sample.getAsString(Sample.LOCALITY) + "</td></tr>"); }
