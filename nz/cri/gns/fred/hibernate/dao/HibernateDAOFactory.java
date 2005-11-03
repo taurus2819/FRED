@@ -578,7 +578,12 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
             query.setInteger("lower", (startStageId == null) ? null : Integer.parseInt(startStageId));
             query.setString("lmod", (startUncertain) ? "?" : null);
             System.out.println("About to set stopStageID");
-            query.setInteger("upper", (stopStageId == null) ? null : Integer.parseInt(stopStageId));
+            //query.setInteger("upper", (stopStageId == null) ? null : Integer.parseInt(stopStageId));
+            if (stopStageId != null) {
+            	query.setInteger("upper", -1);
+            } else {
+            	query.setInteger("upper", Integer.parseInt(stopStageId));
+            }
             query.setString("umod", (stopUncertain) ? "?" : null);
             System.out.println("Finished setting HibDAO values");
             List list = query.list();
