@@ -482,6 +482,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 
 	public Stage getStage(String startStageId, boolean startUncertain, String stopStageId, boolean stopUncertain) throws StorageAccessException, NamingException, SQLException {
+		try {
 		double[] startRange = null, stopRange = null;
 		if (startStageId != null) {
 			startRange = FREDUtil.getStageAgeRange(startStageId);
@@ -505,6 +506,10 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			sampleDAO.save(stage);
 		}
 		return stage;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**
