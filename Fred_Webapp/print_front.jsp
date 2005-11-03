@@ -88,24 +88,6 @@
 				out.println("<tr><td class='heading'>Section Name</td><td>" + sample.getAsString(Sample.FEATURE_NAME) + "</td></tr>");
 			}
 		}
-//		if (sample.get(Sample.LATITUDE) != null) {
-//			if (sample.get(Sample.NZMG_SHEET) != null) {
-//				out.print("<tr><td class='heading'>Grid Ref</td><td>" + sample.getAsString(Sample.NZMG_SHEET) + ":" + nzmg.format(sample.getAsDouble(Sample.NZMG_EAST)) + "|" + nzmg.format(sample.getAsDouble(Sample.NZMG_NORTH)) + " (NZMG)");
-//			} else if (sample.getAsInt(Sample.ORIG_SYSTEM_ID) == 29) {
-//			} else if (sample.getAsInt(Sample.ORIG_SYSTEM_ID) == 28 || sample.getAsInt(Sample.ORIG_SYSTEM_ID) == 30) {
-//				String str = sample.getAsString(Sample.ORIG_COORD);
-//				int index = str.indexOf("|");
-//				double lat = Double.parseDouble(str.substring(0, index));
-//				double lon = Double.parseDouble(str.substring(index+1));
-//				out.print("<tr><td class='heading'>Lat/Long</td><td>" + FREDUtils.formatLatLongForOutput(lat, lon) + " (" + sample.getAsString(Sample.COORD_SYSTEM).replaceAll("Lat/long ", "") + ")");
-//			} else {
-//				out.print("<tr><td class='heading'>Grid Ref</td><td>" + sample.getAsString(Sample.ORIG_COORD) + " (" + sample.getAsString(Sample.COORD_SYSTEM) + ")");
-//			}
-//			out.println("</td></tr>");
-//			out.print("<tr><td class='heading'>Lat/Long</td><td>");
-//			out.print(FREDUtils.formatLatLongForOutput(sample.getAsDouble(Sample.LATITUDE), sample.getAsDouble(Sample.LONGITUDE)));
-//			out.println(" (NZGD49 Datum)</td></tr>");
-//		}
 		
 		if (sample.get(Sample.LATITUDE) != null) {
 			SiteRecord sr = SiteRecord.querySite(FREDUtils.getFREDConnection(state), sample.getAsInt(Sample.SITE_ID));			
