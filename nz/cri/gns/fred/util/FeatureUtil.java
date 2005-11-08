@@ -681,12 +681,26 @@ public class FeatureUtil extends ModelUtil {
     	return v;
     }
     
-	public void saveFeature(Feature feature, User user, String comments) throws StorageAccessException {
+    public void saveFeature(Feature feature, User user, String comments) {
+    	saveFeature(feature, user, comments, true);
+    }
+    
+	public void saveFeature(Feature feature, User user, String comments, boolean includeBacklogLogic) throws StorageAccessException {
+		
 		Audit audit = feature.getAudit();
+
 		if (feature.getFeatureId() == null) {
 			//New feature
 			audit.setCreatedById(user.getDatabaseId());
 			audit.setCreatedDate(new Date());
+		} else if (FeatureUtil.getFrNumber(feature) != null && includeBacklogLogic) {
+//			This is a special alteration for backlog data entry
+			AuditEdit edit = featureDAO.createNewAuditEdit();
+			edit.setAudit(audit);
+			edit.setEditedById(user.getDatabaseId());
+			edit.setEditedDate(new Date());
+			edit.setComments("New data entered from paper record");
+			featureDAO.save(edit);
 		} else if (audit.getStatus().equals(FREDConstants.APPROVED)) {
 			AuditEdit edit = featureDAO.createNewAuditEdit();
 			edit.setAudit(audit);
@@ -725,10 +739,17 @@ public class FeatureUtil extends ModelUtil {
 			Audit audit = FeatureUtil.getFeature(num).getAudit();
 			audit.setFolder(folder);
 			audit.setStatus(WORKING);
-			if (audit.getApprovedById() == null)
+/*			if (audit.getApprovedById() == null)
 				audit.setApprovedById(new Integer(user.getId()));
 			if (audit.getApprovedDate() == null)
 				audit.setApprovedDate(new Date());
+*/			
+			AuditEdit edit = featureDAO.createNewAuditEdit();
+			edit.setAudit(audit);
+			edit.setEditedById(new Integer(user.getId()));
+			edit.setEditedDate(new Date());
+			edit.setComments("Withdrawn from database in preparation for entering further data from paper record sheet");
+			featureDAO.save(edit);
 			featureDAO.update(audit);
 		}
 	}
