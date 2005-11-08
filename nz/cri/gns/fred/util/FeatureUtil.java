@@ -681,7 +681,7 @@ public class FeatureUtil extends ModelUtil {
     	return v;
     }
     
-    public void saveFeature(Feature feature, User user, String comments) {
+    public void saveFeature(Feature feature, User user, String comments) throws StorageAccessException {
     	saveFeature(feature, user, comments, true);
     }
     
