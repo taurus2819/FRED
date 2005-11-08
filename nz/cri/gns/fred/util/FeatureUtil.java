@@ -737,8 +737,10 @@ public class FeatureUtil extends ModelUtil {
 		Folder masterFileFolder = masterFile.getFolder();
 		for (FrNumber num : numbers) {
 			Feature feature = FeatureUtil.getFeature(num);
+			System.out.println("Selecting featture " + feature.getFeatureId());
 			if (!feature.getMasterFile().equals(masterFileFolder))
 				continue;
+			System.out.println("Backlogging featture " + feature.getFeatureId());
 			Audit audit = FeatureUtil.getFeature(num).getAudit();
 			audit.setFolder(folder);
 			audit.setStatus(WORKING);
