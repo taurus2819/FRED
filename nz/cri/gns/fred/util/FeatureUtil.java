@@ -489,6 +489,9 @@ public class FeatureUtil extends ModelUtil {
 		audit.setFolder(null);
 		audit.setWorkingComments(null);
 		audit.setStatus(APPROVED);
+		audit.setApprovedById(new Integer(user.getId()));
+		audit.setApprovedDate(new Date());
+		audit.setCuratorComments((audit.getCuratorComments() != null ? audit.getCuratorComments() + "\n" : "") + "Re-approved after edits from paper records");
 		
 		feature.setMasterFile(folderDAO.getFolder(FREDUtil.getMasterfile(feature, false)));
 		
