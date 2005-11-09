@@ -118,6 +118,8 @@ public interface FeatureDAO {
 
 	public void save(AuditEdit edit) throws StorageAccessException;
 
+	public void delete(AuditEdit edit) throws StorageAccessException;
+	
 	/**
 	 * Either saves or updates the given feature, depending on whether it is already stored.
 	 * @throws StorageAccessException 

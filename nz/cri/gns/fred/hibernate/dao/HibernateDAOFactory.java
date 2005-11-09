@@ -409,6 +409,10 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		save((Object)edit);
 	}
 
+	public void delete(AuditEdit edit) throws StorageAccessException {
+		delete((Object)edit);
+	}
+	
 	public void saveOrUpdate(Feature feature) throws StorageAccessException {
 		saveOrUpdate((Object)feature);
 	}
