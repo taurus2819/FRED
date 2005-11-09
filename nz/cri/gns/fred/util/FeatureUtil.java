@@ -715,7 +715,7 @@ public class FeatureUtil extends ModelUtil {
 			edit.setAudit(audit);
 			edit.setEditedById(user.getDatabaseId());
 			edit.setEditedDate(new Date());
-			edit.setComments("New data entered from paper record");
+			edit.setComments("Backlog data editing");
 			featureDAO.save(edit);
 		} else if (audit.getStatus().equals(FREDConstants.APPROVED)) {
 			AuditEdit edit = featureDAO.createNewAuditEdit();
