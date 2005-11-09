@@ -485,22 +485,23 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 
 	public Stage getStage(String startStageId, boolean startUncertain, String stopStageId, boolean stopUncertain) throws StorageAccessException, NamingException, SQLException {
-		//check start/stop ages unless "not determined" or "no fossils"
-		if (!(startStageId.equals(NOT_DETERMINED_STAGE)
+		if (startStageId == null)
+			throw new IllegalArgumentException("Start age is null");		
+		
+		//check start/stop ages if both entered unless "not determined" or "no fossils"
+		if (stopStageId != null
+				&& !(startStageId.equals(NOT_DETERMINED_STAGE)
 				|| startStageId.equals(NO_FOSSILS_STAGE)
 				|| stopStageId.equals(NOT_DETERMINED_STAGE)
 				|| stopStageId.equals(NO_FOSSILS_STAGE))) {
 			double[] startRange = null, stopRange = null;
-			if (startStageId != null) {
-				startRange = FREDUtil.getStageAgeRange(startStageId);
-			}
-			if (stopStageId != null) {
-				stopRange = FREDUtil.getStageAgeRange(stopStageId);
-			}
-			
+			startRange = FREDUtil.getStageAgeRange(startStageId);
+			stopRange = FREDUtil.getStageAgeRange(stopStageId);
 			if (startRange != null && stopRange != null) {
 				if (startRange[0] < stopRange[0] || startRange[1] < stopRange[1])
 					throw new IllegalArgumentException("Stop age is older than start age");
+			} else {
+				throw new IllegalArgumentException("Invalid stage(s)");
 			}
 		}
 		
