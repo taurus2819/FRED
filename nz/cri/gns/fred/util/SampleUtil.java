@@ -47,6 +47,9 @@ import nz.cri.gns.fred.model.Weathering;
  */
 public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 
+	private static String NOT_DETERMINED_STAGE = "166";
+	private static String NO_FOSSILS_STAGE = "167";
+	
 	/**
 	 * An implementation of relationship that does a thorough (field by field)
 	 * comparison when checking equality, <b>but</b> ignores the id field
@@ -482,17 +485,23 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 
 	public Stage getStage(String startStageId, boolean startUncertain, String stopStageId, boolean stopUncertain) throws StorageAccessException, NamingException, SQLException {
-		double[] startRange = null, stopRange = null;
-		if (startStageId != null) {
-			startRange = FREDUtil.getStageAgeRange(startStageId);
-		}
-		if (stopStageId != null) {
-			stopRange = FREDUtil.getStageAgeRange(stopStageId);
-		}
-		
-		if (startRange != null && stopRange != null) {
-			if (startRange[0] < stopRange[0] || startRange[1] < stopRange[1])
-				throw new IllegalArgumentException("Stop age is older than start age");
+		//check start/stop ages unless "not determined" or "no fossils"
+		if (!(startStageId.equals(NOT_DETERMINED_STAGE)
+				|| startStageId.equals(NO_FOSSILS_STAGE)
+				|| stopStageId.equals(NOT_DETERMINED_STAGE)
+				|| stopStageId.equals(NO_FOSSILS_STAGE))) {
+			double[] startRange = null, stopRange = null;
+			if (startStageId != null) {
+				startRange = FREDUtil.getStageAgeRange(startStageId);
+			}
+			if (stopStageId != null) {
+				stopRange = FREDUtil.getStageAgeRange(stopStageId);
+			}
+			
+			if (startRange != null && stopRange != null) {
+				if (startRange[0] < stopRange[0] || startRange[1] < stopRange[1])
+					throw new IllegalArgumentException("Stop age is older than start age");
+			}
 		}
 		
 		Stage stage = sampleDAO.findStage(startStageId, startUncertain, stopStageId, stopUncertain);
