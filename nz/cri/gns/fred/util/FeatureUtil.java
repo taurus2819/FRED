@@ -51,6 +51,8 @@ public class FeatureUtil extends ModelUtil {
 	private SampleDAO sampleDAO;
 	private FolderDAO folderDAO;
 	
+	private static String BACKLOG_PREPARE_COMMENTS = "Locality prepared for backlog editing";
+	
 	public FeatureUtil(DAOFactory factory) {
 		super(factory);
 		this.featureDAO = factory.getFeatureDAO();
@@ -491,7 +493,18 @@ public class FeatureUtil extends ModelUtil {
 		audit.setStatus(APPROVED);
 		audit.setApprovedById(new Integer(user.getId()));
 		audit.setApprovedDate(new Date());
-		audit.setCuratorComments((audit.getCuratorComments() != null ? audit.getCuratorComments() + "\n" : "") + "Re-approved after edits from paper records");
+		audit.setSubmittedById(null);
+		audit.setSubmittedDate(null);
+		audit.setCuratorComments((audit.getCuratorComments() != null ? audit.getCuratorComments() + "\n" : "") + "Approved after backlog editing");
+		
+		//delete initial backlog edit comments
+		Set<AuditEdit> edits = audit.getAuditEdits();
+		for (AuditEdit edit : edits) {
+			if (edit.getComments().equals(BACKLOG_PREPARE_COMMENTS)) {
+				featureDAO.delete(edit);
+				break;
+			}
+		}
 		
 		feature.setMasterFile(folderDAO.getFolder(FREDUtil.getMasterfile(feature, false)));
 		
@@ -742,16 +755,11 @@ public class FeatureUtil extends ModelUtil {
 			Audit audit = FeatureUtil.getFeature(num).getAudit();
 			audit.setFolder(folder);
 			audit.setStatus(WORKING);
-/*			if (audit.getApprovedById() == null)
-				audit.setApprovedById(new Integer(user.getId()));
-			if (audit.getApprovedDate() == null)
-				audit.setApprovedDate(new Date());
-*/			
 			AuditEdit edit = featureDAO.createNewAuditEdit();
 			edit.setAudit(audit);
 			edit.setEditedById(new Integer(user.getId()));
 			edit.setEditedDate(new Date());
-			edit.setComments("Withdrawn from database in preparation for entering further data from paper record sheet");
+			edit.setComments(BACKLOG_PREPARE_COMMENTS);
 			featureDAO.save(edit);
 			featureDAO.update(audit);
 		}
