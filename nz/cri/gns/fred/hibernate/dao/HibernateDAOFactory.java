@@ -579,7 +579,6 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
             Query query = session.createQuery("FROM Stage AS s WHERE s.stageLowerId = :lower AND s.stageLowerMod = :lmod AND s.stageUpperId = :upper AND s.stageUpperMod = :umod");
             query.setInteger("lower", (startStageId == null) ? -1 : Integer.parseInt(startStageId));
             query.setString("lmod", (startUncertain) ? "?" : null);
-            System.out.println("About to set stopStageID");
             query.setInteger("upper", (stopStageId == null) ? -1 : Integer.parseInt(stopStageId));
             query.setString("umod", (stopUncertain) ? "?" : null);
             List list = query.list();
