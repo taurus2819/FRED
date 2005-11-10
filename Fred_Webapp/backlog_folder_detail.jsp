@@ -11,6 +11,7 @@
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
+%><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
 %><%@page import="java.text.*"
 %><%@page import="nz.cri.gns.auth.*"
 %><%!
@@ -63,8 +64,7 @@ try {
 	}
 
 	UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), user);
-	String redirect = "backlog_folder_detail.jsp?ID=" + folder.getFolderId();
-
+	session.setAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT, "backlog_folder_detail.jsp?ID=" + folder.getFolderId());
 	if (folder.isAllowedReadLocalities()) {
 		
 		%><script><!--
@@ -114,7 +114,7 @@ function showHide(toShow, toHide) {
 			out.print("<a href='print_front.jsp?FeatID=" + feature.getFeatureId() + (feature.getFeatureType().equals(FREDConstants.OUTCROP) ? "" : "&FormType=Short") + "' target='print'><img src='images/print.gif' border='0' height='20' width='20' alt='Print Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 			out.print("</td><td>");
 			if (folder.isAllowedEditLocalities()) 
-				out.print("<a href='de.jsp?Type=" + feature.getFeatureType() + "&FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId() + "&Redirect=" + redirect + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
+				out.print("<a href='de.jsp?Type=" + feature.getFeatureType() + "&FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId() + "'><img src='images/edit.gif' border='0' height='20' width='20' alt='Edit Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 			out.print("</td><td>");
 			if (folder.isAllowedApproveLocalities())
 				%><input type="checkbox" name="approve" value="<%=feature.getFeatureId()%>"><%

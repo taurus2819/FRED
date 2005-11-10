@@ -9,6 +9,7 @@
 %><%@page import="nz.cri.gns.fred.dao.StorageAccessException"
 %><%@page import="nz.cri.gns.fred.de.MandatoryFieldsMissingException"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
 %><%@page import="nz.cri.gns.fred.model.Audit"
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
@@ -68,7 +69,7 @@
 	
 	UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), user);
 	if (folder != null || folder.isAllowedReadLocalities()) {
-		session.setAttribute("dataEntryRedirect", "folder_detail.jsp?ID=" + folder.getFolder().getFolderId());
+		session.setAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT, "folder_detail.jsp?ID=" + folder.getFolder().getFolderId());
 		String errorMessage = null;
 		if (request.getParameter("ActionType") != null) { //do something
 			String actionType = request.getParameter("ActionType");
