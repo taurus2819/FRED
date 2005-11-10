@@ -498,12 +498,16 @@ public class FeatureUtil extends ModelUtil {
 		audit.setCuratorComments((audit.getCuratorComments() != null ? audit.getCuratorComments() + "\n" : "") + "Approved after backlog editing");
 		
 		//delete initial backlog edit comments
-		Set<AuditEdit> edits = audit.getAuditEdits();
-		for (AuditEdit edit : edits) {
-			if (edit.getComments().equals(BACKLOG_PREPARE_COMMENTS)) {
-				featureDAO.delete(edit);
-				break;
+		try {
+			Set<AuditEdit> edits = audit.getAuditEdits();
+			for (AuditEdit edit : edits) {
+				if (edit.getComments().equals(BACKLOG_PREPARE_COMMENTS)) {
+					featureDAO.delete(edit);
+					break;
+				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		feature.setMasterFile(folderDAO.getFolder(FREDUtil.getMasterfile(feature, false)));
