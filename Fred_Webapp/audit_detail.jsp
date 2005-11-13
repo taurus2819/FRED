@@ -109,9 +109,9 @@
 				Record record;
 				try {
 					if (rec.getValue().equals(Record.ADOPTION_RECORD)) {
-						record = AdoptionRecord.getData(Integer.parseInt(rec.getKey()), user, state);
+						record = (AdoptionRecord) AdoptionRecord.getData(Integer.parseInt(rec.getKey()), user, state, false);
 					} else {
-						record = PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state);
+						record = (PaleontologyRecord) PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state, false);
 					}
 					audit = Audit.getAudit(record.getAsInt(Record.AUDIT_ID), state);
 					out.println("<tr><td class=\"bigheading\" colspan=\"4\">"
