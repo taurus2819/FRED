@@ -1,19 +1,11 @@
 <%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.*"
-%><%@page import="nz.cri.gns.fred.data.AdoptionRecord"
 %><%@page import="nz.cri.gns.fred.data.Audit"
 %><%@page import="nz.cri.gns.fred.data.Feature"
 %><%@page import="nz.cri.gns.fred.data.Folder"
 %><%@page import="nz.cri.gns.fred.data.FolderList"
 %><%@page import="nz.cri.gns.fred.data.FRNumber"
-%><%@page import="nz.cri.gns.fred.data.Relationship"
-%><%@page import="nz.cri.gns.fred.data.PaleontologyRecord"
-%><%@page import="nz.cri.gns.fred.data.Record"
 %><%@page import="nz.cri.gns.fred.data.Sample"
-%><%@page import="nz.cri.gns.fred.data.SedFeature"
-%><%@page import="nz.cri.gns.fred.data.SentTo"
-%><%@page import="nz.cri.gns.fred.data.Taxa"
-%><%@page import="nz.cri.gns.fred.data.TaxaGroup"
 %><%@page import="nz.cri.gns.db.*"
 %><%@page import="nz.cri.gns.jsp.*"
 %><%@page import="nz.cri.gns.db.metadata.*"
@@ -23,9 +15,6 @@
 %><%@page import="java.text.*"
 %><%@page import="java.util.*"
 %><%@page import="nz.cri.gns.auth.*"
-%><%@page import="nz.cri.gns.fred.dao.DAOFactory"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
-%><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%!	
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { 
 		return new Authenticable[0]; 
@@ -33,8 +22,6 @@
 %><%
 	User user = (User)getUser(session);
 	PageState state = new PageState(request, response, getServletContext());
-	DecimalFormat nzmg = new DecimalFormat("######0");
-	DecimalFormat latlong = new DecimalFormat("#00.0000");
 	String featType, featID;
 
 	ExtranetTemplate et = getExtranetTemplate();
@@ -302,6 +289,7 @@
 			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 			out.println("<tr><td>");
 			out.println("<p>No matching locality found.  Click <a href='index.jsp' class='heading'>here</a> to return to the FRED home page.</p>");
+			e.printStackTrace();
 		}
 	} else { //ID not specified
 		drawEndNavigation(out);
