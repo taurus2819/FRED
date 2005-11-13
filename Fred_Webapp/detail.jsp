@@ -179,10 +179,8 @@
 						KeyValueObject rec = (KeyValueObject)i.next();
 						if (rec.getValue().equals(Record.PALEONTOLOGY_RECORD)) {
 							try {
-								Record pal = PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state);
-								//?? I'm thinking we shouldn't be showing records that are working
-								//if (!"working".equals(pal.getAsString(Record.STATUS)))
-								out.println("<tr><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;</td><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' class='heading' target='print'>Print Pal Record</br >" + pal + "</a></td></tr>");
+								PaleontologyRecord pal = (PaleontologyRecord) PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state, false);
+								out.println("<tr><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;</td><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' class='heading' target='print'>Print Pal Record</br >" + pal.getRecordName() + "</a></td></tr>");
 							} catch (Exception e) {}
 						}
 					}
