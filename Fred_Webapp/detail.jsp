@@ -180,7 +180,7 @@
 						if (rec.getValue().equals(Record.PALEONTOLOGY_RECORD)) {
 							Record pal = PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state);
 							//?? I'm thinking we shouldn't be showing records that are working
-							if (!"working".equals(pal.getAsString(Record.STATUS)))
+							//if (!"working".equals(pal.getAsString(Record.STATUS)))
 								out.println("<tr><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;</td><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' class='heading' target='print'>Print Pal Record</br >" + pal + "</a></td></tr>");
 						}
 					}
@@ -516,7 +516,7 @@
 						if (rec.getValue().equals(Record.PALEONTOLOGY_RECORD)) {
 							try {
 								PaleontologyRecord pal = (PaleontologyRecord) PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state, false);
-								if (!"working".equals(pal.getAsString(Record.STATUS))) {
+								//if (!"working".equals(pal.getAsString(Record.STATUS))) {
 									out.println("<tr><td colspan='2' class='bigheading'>Paleontology Data</td></tr>");
 									//identifiers (repeating)
 									if (pal.get(PaleontologyRecord.IDENTIFIER) != null) {
@@ -579,7 +579,7 @@
 										}
 										out.println("</td></tr></table></td></tr>");
 									}
-								}
+								//}
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
