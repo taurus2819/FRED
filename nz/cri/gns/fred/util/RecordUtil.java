@@ -80,6 +80,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		System.out.println("Deleting record: " + recordId);
 		
 		Record record = recordDAO.getRecord(recordId);
+		System.out.println(record.getRecordId() + ": " + record);
 		
 		if (!isAllowedDeleteRecord(record, folder, user))
 			throw new InsufficientPrivelegesException();
@@ -87,6 +88,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		//Get the sample
 		System.out.println("Getting sample");
 		Sample sample = record.getSample();
+		System.out.println(sample.getSampleId() + ": " + sample);
 		//Remove it from the sample
 		System.out.println("Removing record");
 		sample.getRecords().remove(record);
