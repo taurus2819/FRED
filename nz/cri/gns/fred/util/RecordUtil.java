@@ -3,6 +3,7 @@ package nz.cri.gns.fred.util;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -91,7 +92,10 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		System.out.println(sample.getSampleId() + ": " + sample);
 		//Remove it from the sample
 		System.out.println("Removing record");
-		sample.getRecords().remove(record);
+		Set records = sample.getRecords();
+		System.out.println("Num records before remove: " + records.size());
+		records.remove(record);
+		System.out.println("Num records after remove: " + records.size());
 		//And delete it
 		System.out.println("Deleting record");
 		recordDAO.delete(record);
