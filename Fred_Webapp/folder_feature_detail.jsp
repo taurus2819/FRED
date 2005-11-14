@@ -6,6 +6,7 @@
 %><%@page import="java.util.Collections"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
+%><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"
@@ -68,7 +69,7 @@ try {
 		return;
 	}
 	
-	session.setAttribute("dataEntryRedirect", "folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId());
+	session.setAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT, "folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId());
 
 	String errorMessage = null;
 	if (request.getParameter("ActionType") != null) { //do something
@@ -107,6 +108,7 @@ try {
 				featureUtil.revokeFeature(feature, folder, user);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			errorMessage = "An Error has occured: " + e.getMessage();
 		}
 	}
