@@ -271,7 +271,7 @@ function showHide(toShow, toHide) {
 						boolean badTaxaFlag = (isPaleontology) ? !RecordUtil.isTaxaApproved(record) : false;
 	
 						audit = record.getAudit();
-						if (audit.getFolder() != null && audit.getFolder().equals(folder.getFolder())) {
+						if (audit.getStatus().equals(FREDConstants.APPROVED) || audit.getFolder() != null && audit.getFolder().equals(folder.getFolder())) {
 							%><tr><td><img src="images/child.gif" width="20" height="20" /><img src="images/<%=(isAdoption) ? "ado" : "pal"%>.gif" width="20" height="20" /></td><td class="smalltext"><%
 							if (badTaxaFlag) {
 								%><span class="heading" style="color: #FF0000">*</span>&nbsp;&nbsp;<%
