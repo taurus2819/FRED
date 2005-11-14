@@ -174,17 +174,17 @@
 				}
 				
 				out.println("<tr><td><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;</td><td><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' class='heading' target='print'>Print Front</a></td></tr>");
-				if (sample.getPaleontologyRecordCount() > 0) {
-					for (Iterator i = sample.getAsVector(Sample.RECORDS).iterator(); i.hasNext(); ) {
-						KeyValueObject rec = (KeyValueObject)i.next();
-						if (rec.getValue().equals(Record.PALEONTOLOGY_RECORD)) {
-							try {
+				try {
+					if (sample.getPaleontologyRecordCount() > 0) {
+						for (Iterator i = sample.getAsVector(Sample.RECORDS).iterator(); i.hasNext(); ) {
+							KeyValueObject rec = (KeyValueObject)i.next();
+							if (rec.getValue().equals(Record.PALEONTOLOGY_RECORD)) {
 								PaleontologyRecord pal = (PaleontologyRecord) PaleontologyRecord.getData(Integer.parseInt(rec.getKey()), user, state, false);
 								out.println("<tr><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;</td><td><a href='print_pal.jsp?ID=" + pal.getRecordID() + "' class='heading' target='print'>Print Pal Record</br >" + pal.getRecordName() + "</a></td></tr>");
-							} catch (Exception e) {}
+							} 
 						}
 					}
-				}
+				} catch (Exception e) {}
 				out.println("</table></td></tr>");
 				
 				if (FREDUtils.isAllowedApproveLocality(user, sample.getAsString(Sample.FEATURE_ID), sample.getAsString(Sample.FEATURE_STATUS), state)) {
