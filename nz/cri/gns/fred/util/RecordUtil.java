@@ -96,9 +96,13 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		System.out.println("Num records before remove: " + records.size());
 		records.remove(record);
 		System.out.println("Num records after remove: " + records.size());
+		records = sample.getRecords();
+		System.out.println("Re-test - num records: " + records.size());
 		//And delete it
 		System.out.println("Deleting record");
 		recordDAO.delete(record);
+		records = sample.getRecords();
+		System.out.println("Re-test - num records: " + records.size());
 		System.out.println("Returning");
 		
 	}
