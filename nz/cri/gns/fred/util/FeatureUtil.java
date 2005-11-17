@@ -711,20 +711,20 @@ public class FeatureUtil extends ModelUtil {
 
 		if (feature.getFeatureId() == null) {
 			//New feature
-			audit.setCreatedById(user.getDatabaseId());
+			audit.setCreatedById(user.getPersonId());
 			audit.setCreatedDate(new Date());
 		} else if (FeatureUtil.getFrNumber(feature) != null && includeBacklogLogic) {
 //			This is a special alteration for backlog data entry
 			AuditEdit edit = featureDAO.createNewAuditEdit();
 			edit.setAudit(audit);
-			edit.setEditedById(user.getDatabaseId());
+			edit.setEditedById(user.getPersonId());
 			edit.setEditedDate(new Date());
 			edit.setComments("Backlog data editing");
 			featureDAO.save(edit);
 		} else if (audit.getStatus().equals(FREDConstants.APPROVED)) {
 			AuditEdit edit = featureDAO.createNewAuditEdit();
 			edit.setAudit(audit);
-			edit.setEditedById(user.getDatabaseId());
+			edit.setEditedById(user.getPersonId());
 			edit.setEditedDate(new Date());
 			edit.setComments(comments);
 			featureDAO.save(edit);

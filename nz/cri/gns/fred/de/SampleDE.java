@@ -519,7 +519,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			//It's an insert
 			Audit audit = sample.getAudit();
 			audit.setStatus(FREDConstants.WORKING);
-			audit.setCreatedById(user.getDatabaseId());
+			audit.setCreatedById(user.getPersonId());
 			audit.setCreatedDate(new Date());
 		} 
     	if (!outcropSample) {

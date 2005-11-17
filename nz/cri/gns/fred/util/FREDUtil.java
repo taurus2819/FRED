@@ -574,7 +574,7 @@ public class FREDUtil {
     public static void submit(Audited audited, User user, AuditedUtil util, boolean requiresApproval) throws StorageAccessException {
         Audit audit = audited.getAudit();
         audit.setStatus((requiresApproval) ? FREDConstants.WAITING : FREDConstants.APPROVED);
-        audit.setSubmittedById(user.getDatabaseId());
+        audit.setSubmittedById(user.getPersonId());
         audit.setSubmittedDate(new Date());
         if (!requiresApproval) {
             audit.setWorkingComments(null);
