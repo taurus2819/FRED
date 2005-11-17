@@ -37,7 +37,7 @@
         name="createdById"
         type="int"
         column="CREATED_BY_ID"
-        length="5"
+        length="7"
     />
     <property
         name="createdDate"
@@ -49,7 +49,7 @@
         name="submittedById"
         type="int"
         column="SUBMITTED_BY_ID"
-        length="5"
+        length="7"
     />
     <property
         name="submittedDate"
@@ -61,7 +61,7 @@
         name="approvedById"
         type="int"
         column="APPROVED_BY_ID"
-        length="5"
+        length="7"
     />
     <property
         name="approvedDate"

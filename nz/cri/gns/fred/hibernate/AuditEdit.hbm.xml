@@ -30,7 +30,7 @@
         name="editedById"
         type="int"
         column="EDITED_BY_ID"
-        length="5"
+        length="7"
     />
     <property
         name="editedDate"
