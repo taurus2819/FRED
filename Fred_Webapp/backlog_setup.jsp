@@ -95,7 +95,7 @@ function showHide(toShow, toHide) {
 
 <%
 		startDETable(pageContext);
-		List personalFolders = folderUtil.getPersonalFolders(user);
+		List personalFolders = folderUtil.getBacklogFolders(user);
 
 		%><form name="addForm" action="backlog_setup.jsp" method="post">
 <input type="hidden" name="ID" value="<%=folder.getFolderId()%>">
