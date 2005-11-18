@@ -152,8 +152,7 @@ public class FREDUtil {
 	private static String instance = null;
 	
 	public static int getMasterfile(Feature feature) throws SQLException, NamingException {
-		System.out.println("FRED Feature " + feature.getFeatureId() + " working folderID = " + feature.getAudit().getFolder().getFolderId());
-		if (feature.getAudit().getFolder().getFolderType().equals("Backlog"))
+		if (feature.getAudit().getFolder().getFolderType().getName().equals("Backlog"))
 			return MASTERFILE_BACKLOG;
 		switch (feature.getRegistrationArea().getRegAreaId().intValue()) {
 			case REG_MAINLAND_NZ :
