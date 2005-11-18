@@ -748,7 +748,7 @@ public class FeatureUtil extends ModelUtil {
 	public void addToBacklog(UserFolder folderToAddTo, String mapSheet, int start, int end, UserFolder masterFile, UserAccount user) throws StorageAccessException {
 		if (!masterFile.isAllowedReadLocalities())
 			return;
-		List<FrNumber> numbers = featureDAO.getFrNumbers(mapSheet, start, end);
+		List<FrNumber> numbers = featureDAO.getFrNumbers(mapSheet.toUpperCase(), start, end);
 		Folder folder = folderToAddTo.getFolder();
 		Folder masterFileFolder = masterFile.getFolder();
 		for (FrNumber num : numbers) {
