@@ -651,7 +651,11 @@ public class FeatureUtil extends ModelUtil {
 	 * is kept in a discrete method for now.
 	 */
 	public static Feature getFeature(FrNumber frNum) {
-		return ((Sample)frNum.getSamples().iterator().next()).getFeature();
+		try {
+			return ((Sample)frNum.getSamples().iterator().next()).getFeature();
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	
 	public void addSample(Feature feature, String topDepthAsString, String bottomDepthAsString, String drillTypeIdAsString, int folderId, UserAccount user) throws StorageAccessException, DataInputException {
@@ -751,9 +755,9 @@ public class FeatureUtil extends ModelUtil {
 		Folder masterFileFolder = masterFile.getFolder();
 		for (FrNumber num : numbers) {
 			Feature feature = FeatureUtil.getFeature(num);
-			if (!feature.getMasterFile().equals(masterFileFolder))
+			if (feature != null && !feature.getMasterFile().equals(masterFileFolder))
 				continue;
-			Audit audit = FeatureUtil.getFeature(num).getAudit();
+			Audit audit = feature.getAudit();
 			audit.setFolder(folder);
 			audit.setStatus(WORKING);
 			AuditEdit edit = featureDAO.createNewAuditEdit();
