@@ -86,7 +86,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public List<UserFolder> getPersonalFolders(int ownerId) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-			List list = session.find("from Folder as folder where folder.ownerId = ?", new Integer(ownerId), new IntegerType());
+			List list = session.find("from Folder as folder where folder.ownerId = ? and folder.folderType = 'Personal'", new Integer(ownerId), new IntegerType());
 			for (int i=0; i<list.size(); i++) {
 				Folder folder = (Folder)list.get(i);
 				list.set(i, UserFolder.getOwnedUserFolder(folder));
@@ -97,6 +97,20 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		}
 	}
 
+	public List<UserFolder> getBacklogFolders(int ownerId) throws StorageAccessException {
+		try {
+			Session session = provider.currentSession();
+			List list = session.find("from Folder as folder where folder.ownerId = ? and folder.folderType = 'Backlog'", new Integer(ownerId), new IntegerType());
+			for (int i=0; i<list.size(); i++) {
+				Folder folder = (Folder)list.get(i);
+				list.set(i, UserFolder.getOwnedUserFolder(folder));
+			}
+			return list;
+		} catch (Exception e) {
+			throw new StorageAccessException(e);
+		}
+	}
+	
 	public List<UserFolder> getAccessibleFolders(int userId, FolderType type) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
