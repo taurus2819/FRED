@@ -38,7 +38,7 @@ public class FolderUtil extends ModelUtil {
 	 */
 	public List<UserFolder> getPersonalFolders(UserAccount user) throws StorageAccessException {
 		Vector<UserFolder> folders = new Vector<UserFolder>();
-		folders.addAll(folderDAO.getPersonalFolders(Integer.parseInt(user.getId())));
+		folders.addAll(folderDAO.getOwnedFolders(Integer.parseInt(user.getId()), typeDAO.getFolderType("Personal")));
 		folders.addAll(folderDAO.getAccessibleFolders(Integer.parseInt(user.getId()), typeDAO.getFolderType("Personal")));
 		
 		Collections.sort(folders);
@@ -63,7 +63,7 @@ public class FolderUtil extends ModelUtil {
 	 */
 	public List<UserFolder> getBacklogFolders(UserAccount user) throws StorageAccessException {
 		Vector<UserFolder> folders = new Vector<UserFolder>();
-		folders.addAll(folderDAO.getBacklogFolders(Integer.parseInt(user.getId())));
+		folders.addAll(folderDAO.getOwnedFolders(Integer.parseInt(user.getId()), typeDAO.getFolderType("Backlog")));
 		folders.addAll(folderDAO.getAccessibleFolders(Integer.parseInt(user.getId()), typeDAO.getFolderType("Backlog")));
 		
 		Collections.sort(folders);

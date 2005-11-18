@@ -20,18 +20,11 @@ public interface FolderDAO {
 	public Folder createNewFolder();
 	
 	/**
-	 * Returns a list of all <code>UserFolder</code>s representing the 
-	 * personal folders owned by to the person
+	 * Returns a list of all <code>UserFolder</code>s of the given type representing the 
+	 * folders owned by the person
 	 * @throws StorageAccessException
 	 */
-	public List<UserFolder> getPersonalFolders(int ownerId) throws StorageAccessException;
-
-	/**
-	 * Returns a list of all <code>UserFolder</code>s representing the 
-	 * backlog folders owned by to the person
-	 * @throws StorageAccessException
-	 */
-	public List<UserFolder> getBacklogFolders(int ownerId) throws StorageAccessException;
+	public List<UserFolder> getOwnedFolders(int ownerId, FolderType type) throws StorageAccessException;
 	
 	/**
 	 * Returns a list of <code>UserFolder</code>s of the given type to which the user has access 

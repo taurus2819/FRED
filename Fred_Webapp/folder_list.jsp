@@ -18,8 +18,8 @@
 	
 	protected IconnedLink[] getButtons(HttpServletRequest request) {
 		return new IconnedLink[] {
-			new IconnedLink("javascript:doNewFolder();", "images/folder.gif", "New Folder")
-			new IconnedLink("javascript:doNewBacklogFolder();", "images/folder.gif", "New Backlog Folder");
+			new IconnedLink("javascript:doNewFolder();", "images/folder.gif", "New Folder"),
+			new IconnedLink("javascript:doNewBacklogFolder();", "images/folder.gif", "New Backlog Folder")
 		};
 	}
 	
@@ -32,13 +32,13 @@ try {
 	TaxonomicUtil taxaUtil = new TaxonomicUtil(factory);
 	
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	String error = null;
 	if (request.getParameter("ActionType") != null) { //do something
 		String actionType = request.getParameter("ActionType");
 		if (actionType.equals("Add")) { //add folder
-			if (request.getParameter(FoldType) != null && request.getParameter(FoldType).equals("Backlog")) {
+			if (request.getParameter("FoldType") != null && request.getParameter("FoldType").equals("Backlog")) {
 				folderUtil.addBacklogFolder(request.getParameter("FoldName"), user);
 			} else {
 				folderUtil.addFolder(request.getParameter("FoldName"), user);
