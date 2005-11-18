@@ -150,16 +150,10 @@ public class FREDUtil {
 	 * so is stored as a constant once it is determined.
 	 */
 	private static String instance = null;
-
-	public static int getMasterfile(Feature feature) throws SQLException, NamingException {
-		return getMasterfile(feature, true);
-	}
 	
-	public static int getMasterfile(Feature feature, boolean includeBacklogLogic) throws SQLException, NamingException {
-		//This is a special alteration for backlog data entry
-		if (FeatureUtil.getFrNumber(feature) != null && includeBacklogLogic) {
+	public static int getMasterfile(Feature feature) throws SQLException, NamingException {
+		if (feature.getAudit().getFolder().getFolderType().equals("Backlog"))
 			return MASTERFILE_BACKLOG;
-		}
 		switch (feature.getRegistrationArea().getRegAreaId().intValue()) {
 			case REG_MAINLAND_NZ :
 				NorthingEasting nzmgCoord = (NorthingEasting)getSiteCoordinate(new NZMG(), feature.getSiteId().intValue());

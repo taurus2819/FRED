@@ -701,11 +701,7 @@ public class FeatureUtil extends ModelUtil {
     	return v;
     }
     
-    public void saveFeature(Feature feature, User user, String comments) throws StorageAccessException {
-    	saveFeature(feature, user, comments, true);
-    }
-    
-	public void saveFeature(Feature feature, User user, String comments, boolean includeBacklogLogic) throws StorageAccessException {
+	public void saveFeature(Feature feature, User user, String comments) throws StorageAccessException {
 		
 		Audit audit = feature.getAudit();
 
@@ -713,8 +709,8 @@ public class FeatureUtil extends ModelUtil {
 			//New feature
 			audit.setCreatedById(user.getPersonId());
 			audit.setCreatedDate(new Date());
-		} else if (FeatureUtil.getFrNumber(feature) != null && includeBacklogLogic) {
-//			This is a special alteration for backlog data entry
+		} else if (audit.getFolder().getFolderType().getName().equals("Backlog")) {
+			//Backlog editing feature
 			AuditEdit edit = featureDAO.createNewAuditEdit();
 			edit.setAudit(audit);
 			edit.setEditedById(user.getPersonId());
