@@ -510,9 +510,10 @@ public class FeatureUtil extends ModelUtil {
 			e.printStackTrace();
 		}
 		
-		feature.setMasterFile(folderDAO.getFolder(FREDUtil.getMasterfile(feature, false)));
-		
 		featureDAO.update(audit);
+		
+		feature.setMasterFile(folderDAO.getFolder(FREDUtil.getMasterfile(feature)));
+		
 		featureDAO.update(feature);
 	}
 	
