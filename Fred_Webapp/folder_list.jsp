@@ -19,7 +19,7 @@
 	protected IconnedLink[] getButtons(HttpServletRequest request) {
 		return new IconnedLink[] {
 			new IconnedLink("javascript:doNewFolder();", "images/folder.gif", "New Folder"),
-			new IconnedLink("javascript:doNewBacklogFolder();", "images/folder.gif", "New Backlog Folder")
+			new IconnedLink("javascript:doNewBacklogFolder();", "images/folder.gif", "New Backlog Edit Folder")
 		};
 	}
 	
@@ -144,8 +144,8 @@ alert("<%=error%>");<%
 	if (backlogFolders.size() > 0) {
 		%><p><%
 		startDETable(pageContext);
-		%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Backlog Folders</td></tr>
-		<tr><th style="text-align: left">BacklogFolder&nbsp;&nbsp;</th><th>Owner&nbsp;&nbsp;</th><th>Options</th></tr>
+		%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Backlog Edit Folders</td></tr>
+		<tr><th style="text-align: left">Backlog Edit Folder&nbsp;&nbsp;</th><th>Owner&nbsp;&nbsp;</th><th>Options</th></tr>
 		<tr><td><img src="images/blank.gif" height="5" width="1" /></td></tr>
 		<form name="BackForm" method="post" action="folder_list.jsp">
 <%
