@@ -152,8 +152,6 @@ public class FREDUtil {
 	private static String instance = null;
 	
 	public static int getMasterfile(Feature feature) throws SQLException, NamingException {
-		if (feature.getAudit().getFolder().getFolderType().getName().equals("Backlog"))
-			return MASTERFILE_BACKLOG;
 		switch (feature.getRegistrationArea().getRegAreaId().intValue()) {
 			case REG_MAINLAND_NZ :
 				NorthingEasting nzmgCoord = (NorthingEasting)getSiteCoordinate(new NZMG(), feature.getSiteId().intValue());

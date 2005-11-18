@@ -320,16 +320,16 @@ public class FeatureUtil extends ModelUtil {
 		audit.setStatus(FREDConstants.WAITING);
 		audit.setSubmittedById(new Integer(user.getId()));
 		audit.setSubmittedDate(new Date());
-		featureDAO.update(audit);
-		
+
 		int masterfile = -1;
 		try {
-			masterfile = FREDUtil.getMasterfile(feature);
+			masterfile = (audit.getFolder().getFolderType().getName().equals("Backlog") ? FREDUtil.MASTERFILE_BACKLOG : FREDUtil.getMasterfile(feature));
 		} catch (Exception e) {
 			throw new StorageAccessException(e);
 		}
 		
 		feature.setMasterFile(folderDAO.getFolder(masterfile));
+		featureDAO.update(audit);
 		featureDAO.update(feature);		
 	}
 
@@ -510,10 +510,8 @@ public class FeatureUtil extends ModelUtil {
 			e.printStackTrace();
 		}
 		
-		featureDAO.update(audit);
-		
 		feature.setMasterFile(folderDAO.getFolder(FREDUtil.getMasterfile(feature)));
-		
+		featureDAO.update(audit);
 		featureDAO.update(feature);
 	}
 	
