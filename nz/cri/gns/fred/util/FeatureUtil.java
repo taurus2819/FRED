@@ -755,7 +755,7 @@ public class FeatureUtil extends ModelUtil {
 		Folder masterFileFolder = masterFile.getFolder();
 		for (FrNumber num : numbers) {
 			Feature feature = FeatureUtil.getFeature(num);
-			if (feature != null && !feature.getMasterFile().equals(masterFileFolder))
+			if (feature == null || !feature.getMasterFile().equals(masterFileFolder))
 				continue;
 			Audit audit = feature.getAudit();
 			audit.setFolder(folder);
