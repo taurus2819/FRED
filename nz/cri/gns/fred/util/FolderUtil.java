@@ -56,11 +56,35 @@ public class FolderUtil extends ModelUtil {
 		return folders;
 	}
 	
+	/**
+	 * Returns a list of <code>UserFolder</code>s representing
+	 * backlog folders belonging to the given user,
+	 * or to which the given user has access but is not the owner
+	 */
+	public List<UserFolder> getBacklogFolders(UserAccount user) throws StorageAccessException {
+		Vector<UserFolder> folders = new Vector<UserFolder>();
+		folders.addAll(folderDAO.getBacklogFolders(Integer.parseInt(user.getId())));
+		folders.addAll(folderDAO.getAccessibleFolders(Integer.parseInt(user.getId()), typeDAO.getFolderType("Backlog")));
+		
+		Collections.sort(folders);
+		return folders;
+	}	
+	
 	public Folder addFolder(String name, UserAccount user)  throws StorageAccessException {
 	    Folder folder = folderDAO.createNewFolder();
 	    folder.setName(name);
 	    folder.setOwnerId(new Integer(user.getId()));
 	    folder.setFolderType(typeDAO.getFolderType("Personal"));
+	    
+	    folderDAO.save(folder);
+	    return folder;
+	}
+	
+	public Folder addBacklogFolder(String name, UserAccount user)  throws StorageAccessException {
+	    Folder folder = folderDAO.createNewFolder();
+	    folder.setName(name);
+	    folder.setOwnerId(new Integer(user.getId()));
+	    folder.setFolderType(typeDAO.getFolderType("Backlog"));
 	    
 	    folderDAO.save(folder);
 	    return folder;
@@ -94,7 +118,8 @@ public class FolderUtil extends ModelUtil {
 	 * 
 	 */
 	public List<FolderRight> getRightTypesForDisplay(UserFolder folder) throws StorageAccessException {
-		return (folder.getFolder().getFolderType().getName().equals("Personal")) 
+		return (folder.getFolder().getFolderType().getName().equals("Personal")
+			|| folder.getFolder().getFolderType().getName().equals("Backlog")) 
 			? folderDAO.getFolderRightList("code NOT IN ('1', '64')", "TO_NUMBER(code)") 
 			: folderDAO.getFolderRightList("code NOT IN ('1', '4', '8', '16')", "TO_NUMBER(code)");
 	}

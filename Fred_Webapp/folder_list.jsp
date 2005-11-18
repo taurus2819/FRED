@@ -19,6 +19,7 @@
 	protected IconnedLink[] getButtons(HttpServletRequest request) {
 		return new IconnedLink[] {
 			new IconnedLink("javascript:doNewFolder();", "images/folder.gif", "New Folder")
+			new IconnedLink("javascript:doNewBacklogFolder();", "images/folder.gif", "New Backlog Folder");
 		};
 	}
 	
@@ -37,7 +38,11 @@ try {
 	if (request.getParameter("ActionType") != null) { //do something
 		String actionType = request.getParameter("ActionType");
 		if (actionType.equals("Add")) { //add folder
-			folderUtil.addFolder(request.getParameter("FoldName"), user);
+			if (request.getParameter(FoldType) != null && request.getParameter(FoldType).equals("Backlog")) {
+				folderUtil.addBacklogFolder(request.getParameter("FoldName"), user);
+			} else {
+				folderUtil.addFolder(request.getParameter("FoldName"), user);
+			}
 		}
 		else if (actionType.equals("Delete")) { //Delete folder
 			try {
@@ -55,9 +60,20 @@ function doNewFolder() {
 	var newName = prompt('Please enter the folder name', 'New Working Folder');
 	if (newName) {
 		document.NewFoldForm.FoldName.value = newName;
+		document.NewFoldForm.FoldType.value = "Personal";
 		document.NewFoldForm.submit();
 	}
-}<%
+}
+
+function doNewBacklogFolder() {
+	var newName = prompt('Please enter the folder name', 'New Backlog Folder');
+	if (newName) {
+		document.NewFoldForm.FoldName.value = newName;
+		document.NewFoldForm.FoldType.value = "Backlog";
+		document.NewFoldForm.submit();
+	}
+}
+<%
 	if (error != null) {
 		%>
 alert("<%=error%>");<%
@@ -67,6 +83,7 @@ alert("<%=error%>");<%
 <form name="NewFoldForm" method="post" action="folder_list.jsp">
 <input type="hidden" name="ActionType" value="Add">
 <input type="hidden" name="FoldName" value="">
+<input type="hidden" name="FoldType" value="">
 </form>
 <center><p>&nbsp;<p/><div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none">
 <%
@@ -121,9 +138,41 @@ alert("<%=error%>");<%
 	}
 	endDETable(pageContext);
 
+
+	List backlogFolders = folderUtil.getBacklogFolders(user);
+	//List Backlog folders
+	if (backlogFolders.size() > 0) {
+		%><p><%
+		startDETable(pageContext);
+		%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Backlog Folders</td></tr>
+		<tr><th style="text-align: left">BacklogFolder&nbsp;&nbsp;</th><th>Owner&nbsp;&nbsp;</th><th>Options</th></tr>
+		<tr><td><img src="images/blank.gif" height="5" width="1" /></td></tr>
+		<form name="BackForm" method="post" action="folder_list.jsp">
+<%
+		for (Iterator i = backlogFolders.iterator(); i.hasNext(); ) {
+			UserFolder folder = (UserFolder) i.next();
+			%><tr><td style="text-align: left"><a href="folder_detail.jsp?ID=<%=folder.getFolder().getFolderId()%>" class="heading"><%=folder.getFolder().getName()%></a>&nbsp;&nbsp;</td><td style="text-align: left"><%=FREDUtil.getUserName(folder.getFolder().getOwnerId().intValue())%>&nbsp;&nbsp;</td><td style="text-align: left">
+<%
+			if (folder.isAllowedAdmin()) {
+				%><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a>&nbsp;&nbsp;&nbsp;<a href="javascript:if (confirm('Are you sure you want to delete this folder') == true) {document.BackForm.FoldID.value='<%=folder.getFolder().getFolderId()%>';document.BackForm.submit();}" title="Delete Folder"><img src="images/delete.gif" border="0" height="20" width="20" /></a>
+<img src="images/blank.gif" width="1" height="20" /><%
+			}
+			%></td></tr>
+<%
+		}
+		%>
+<input type="hidden" name="ActionType" value="Delete">
+<input type="hidden" name="FoldID" value="">
+</form>
+<tr><td>&nbsp;</td></tr>
+</table>
+<%
+		endDETable(pageContext);
+	}
+
 	List adminFolders = folderUtil.getAdminFolders(user);
 
-	//List Working folders
+	//List Admin folders
 	if (adminFolders.size() > 0) {
 		%><p><%
 		startDETable(pageContext);
