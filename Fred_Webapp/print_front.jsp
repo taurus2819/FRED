@@ -103,11 +103,13 @@
 					}
 					out.println("<td>" + datum.getHumanStringFor(coord).replaceAll("Geographic ", "") + "</td></tr>");
 				}
-				try {
-					Datum nzmgDatum = DatumFactory.createDatum("NZMG");
-					Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
-					out.println("<tr><td class='heading'>Grid Ref</td><td>" + nzmgDatum.getHumanStringFor(nzmgCoord) + "</td></tr>");
-				} catch (Exception e) { System.out.println(e.getMessage()); }
+				if (!datum.getName().equals("NZMG")) {
+					try {
+						Datum nzmgDatum = DatumFactory.createDatum("NZMG");
+						Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
+						out.println("<tr><td class='heading'>Grid Ref</td><td>" + nzmgDatum.getHumanStringFor(nzmgCoord) + "</td></tr>");
+					} catch (Exception e) { System.out.println(e.getMessage()); }
+				}
 			}
 			Datum.LatLong ll = sr.getLatLong();
 			if (ll.getNorthSouth() != 999)

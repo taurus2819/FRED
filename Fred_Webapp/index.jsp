@@ -12,7 +12,7 @@
 	ContentProvider contentProvider = getContentProvider(getPageState(request, response));
 	drawTop(out, et, request, response);
 
-	contentProvider.getContent("index.top").loadAll(new PrintWriter(out));
+	contentProvider.getContent("index.nav").loadAll(new PrintWriter(out));
 	
 	drawEndNavigation(out);
 
