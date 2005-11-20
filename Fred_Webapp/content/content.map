@@ -1,5 +1,6 @@
 index.nav=index_nav.html
 index.main=index_main.html
+about.main=about.html
 locality.de.form=localityde.html
 locality.de.end=localitydeend.html
 drillhole.de.form=drillholede.html
