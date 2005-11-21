@@ -5,6 +5,7 @@ contacts.main=contacts.html
 masterfile.main=masterfile.html
 faq.main=faq.html
 whats_new.main=whats_new.html
+conditons.main=conditions.html
 locality.de.form=localityde.html
 locality.de.end=localitydeend.html
 drillhole.de.form=drillholede.html
