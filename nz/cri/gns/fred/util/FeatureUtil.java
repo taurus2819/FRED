@@ -231,6 +231,7 @@ public class FeatureUtil extends ModelUtil {
 				new FREDUtil.ExcludeByName(FREDUtil.toVector(new String[] {"audit", "sampleId", "feature", "frNumber"})))
 		);
 		newSample.setFeature(newFeature);
+		newSample.setAudit(newFeature.getAudit());
 		//Clear the fr number if it has one
 		//Copy relationships
 		Set<Relationship> relationships = sample.getRelationships();
