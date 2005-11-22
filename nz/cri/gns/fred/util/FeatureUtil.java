@@ -108,6 +108,8 @@ public class FeatureUtil extends ModelUtil {
 			Sample sample = (Sample)samples.iterator().next();
 			//Copy sample - collectors clone is OK as it's many-to-many
 			Sample newSample = cloneSample(newFeature, sample);
+			//set newSample's audit to be same as newFeature
+			newSample.setAudit(newFeature.getAudit());
 			
 			//Save the new sample
 			sampleDAO.save(newSample);
@@ -231,7 +233,6 @@ public class FeatureUtil extends ModelUtil {
 				new FREDUtil.ExcludeByName(FREDUtil.toVector(new String[] {"audit", "sampleId", "feature", "frNumber"})))
 		);
 		newSample.setFeature(newFeature);
-		newSample.setAudit(newFeature.getAudit());
 		//Clear the fr number if it has one
 		//Copy relationships
 		Set<Relationship> relationships = sample.getRelationships();
