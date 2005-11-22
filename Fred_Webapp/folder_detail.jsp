@@ -103,6 +103,7 @@
 alert("<%=e.getMessage()%>");
 //--></script><%
 			} catch (Exception e) {
+				e.printStackTrace();
 				errorMessage = "An Error has occured: " + e.getMessage();
 			}
 		}
