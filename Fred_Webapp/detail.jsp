@@ -20,7 +20,6 @@
 %><%@page import="nz.cri.gns.db.site.*"
 %><%@page import="nz.cri.gns.util.map.*"
 %><%@page import="java.net.*"
-%><%@page import="java.text.*"
 %><%@page import="java.util.*"
 %><%@page import="nz.cri.gns.auth.*"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
@@ -33,9 +32,7 @@
 %><%
 	User user = (User)getUser(session);
 	PageState state = new PageState(request, response, getServletContext());
-	DecimalFormat nzmg = new DecimalFormat("######0");
-	DecimalFormat latlong = new DecimalFormat("#00.0000");
-	String sampID, recID, featType;
+	String sampID, featType;
 	boolean authorChk = false, sCountChk = false, sCoordChk = false, commChk = true;
 
 	ExtranetTemplate et = getExtranetTemplate();
