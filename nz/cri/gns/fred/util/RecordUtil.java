@@ -25,6 +25,7 @@ import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RecordDetails;
 import nz.cri.gns.fred.model.Sample;
+import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.UserFolder;
 
@@ -251,6 +252,20 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return recordDAO.getListEntries(pal, group);
 	}
 
+	/**
+	 * Returns all the taxon for a given pal record with the given status
+	 */
+	public List<Taxon> getTaxon(Paleontology pal, String status) {
+		if (pal.getListEntries() == null)
+			return new Vector<Taxon>();
+		TreeSet<Taxon> set = new TreeSet<Taxon>();
+		for (PaleontologyListEntry entry : pal.getListEntries()) {
+			if (entry.getTaxon().getStatus().equals(status))
+				set.add(entry.getTaxon());
+		}
+		return new Vector<Taxon>(set);		
+	}
+	
 
     public LabSection getLabSection(int id) throws StorageAccessException {
         return recordDAO.getLabSection(id);

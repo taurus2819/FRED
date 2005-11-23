@@ -5,6 +5,11 @@ import java.util.Set;
 
 public interface Taxon {
 
+	public static final String APPROVED_STATUS = "approved";
+	public static final String PROVISIONAL_STATUS = "provisional";
+	public static final String REJECTED_STATUS = "rejected";
+	public static final String OBSOLETE_STATUS = "obsolete";
+	
     public Integer getTaxaId();
 
     public void setTaxaId(Integer taxaId);
