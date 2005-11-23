@@ -433,6 +433,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			}
 			site.setDirections(request.getParameter("Loc"));
 			site.setCountry(request.getParameter("Country"));
+			site.setOwner(user.getPersonId());
 		} else
 			site = null;
 		
