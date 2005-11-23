@@ -624,7 +624,7 @@ function parseDropDown(val) {
 			cd.name = "WorkFeat";
 			cd.prompt = "-- Choose --";
 			cd.selectDistinct = true;
-			cd.join = "fv.feature_working_folder_id = fd.folder_id AND fv.feature_status <> 'approved' AND fd.user_id = " + user.getPersonId() + " AND fd.folder_type = 2";
+			cd.join = "fv.feature_working_folder_id = fd.folder_id AND fv.feature_status <> 'approved' AND fd.user_id = " + user.getPersonId() + " AND fd.folder_type IN (2, 3)";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("</td></tr>");
 			out.println("</table>");
@@ -675,7 +675,7 @@ function parseDropDown(val) {
 			cd.name = "WorkFeat";
 			cd.prompt = "-- Choose --";
 			cd.selectDistinct = true;
-			cd.join = "fv.feature_working_folder_id = fd.folder_id AND fv.feature_status <> 'approved' AND fd.user_id = " + user.getPersonId() + " AND fd.folder_type = 2";
+			cd.join = "fv.feature_working_folder_id = fd.folder_id AND fv.feature_status <> 'approved' AND fd.user_id = " + user.getPersonId() + " AND fd.folder_type IN (2, 3)";
 			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.println("</td></tr>");
 			out.println("</table>");
