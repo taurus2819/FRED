@@ -335,6 +335,10 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
         return audit;
 	}
 
+	public void delete(Audit audit) throws StorageAccessException {
+		delete((Object)audit);
+	}	
+	
 	public Feature getFeature(int featureId) throws StorageAccessException {
 		return (Feature)getFirst("FROM Feature as f WHERE f.featureId = ?", featureId);
 	}

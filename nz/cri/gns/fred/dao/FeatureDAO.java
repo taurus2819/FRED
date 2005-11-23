@@ -55,6 +55,8 @@ public interface FeatureDAO {
 	 */
 	public Audit update(Audit audit) throws StorageAccessException;
 
+	public void delete(Audit audit) throws StorageAccessException;
+	
 	/**
 	 * @param featureId
 	 * @return

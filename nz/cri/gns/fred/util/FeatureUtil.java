@@ -296,8 +296,10 @@ public class FeatureUtil extends ModelUtil {
 		if (!userFolder.isAllowedDeleteLocalities())
 			throw new InsufficientPrivelegesException();
 		
-		featureDAO.delete(feature);
+		Audit audit = feature.getAudit();
 
+		featureDAO.delete(feature);
+		featureDAO.delete(audit);
 	}
 	
 	public void removeFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {

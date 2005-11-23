@@ -202,9 +202,16 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		Feature feature = sample.getFeature();
 		feature.getSamples().remove(sample);
 		
+		Audit audit = sample.getAudit();
+		
 		//And then delete it from DB
 		sampleDAO.delete(sample);
-		//TODO Ben also checked if the feature was sampleless and added if it was.??	
+		//TODO Ben also checked if the feature was sampleless and added if it was.??
+		
+		//try and delete audit record (if can't then probably also used by feature) so just ignore error
+		try {
+			sampleDAO.delete(audit);
+		} catch (Exception e) {}
 	}
 
 	public void submitSample(int sampleId, UserFolder folder, UserAccount user) throws DataInputException, InsufficientPrivelegesException, StorageAccessException {

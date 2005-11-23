@@ -37,6 +37,8 @@ public interface RecordDAO {
 	 */
     public Audit update(Audit audit) throws StorageAccessException;
 
+	public void delete(Audit audit) throws StorageAccessException;	    
+    
     /**
      * Creates a new empty Record
      */

@@ -3,7 +3,6 @@ package nz.cri.gns.fred.util;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -216,7 +215,12 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
 
     public void delete(Record record) throws StorageAccessException {
+    	Audit audit = record.getAudit();
         recordDAO.delete(record);
+		//try and delete audit record (if can't then probably also used by feature) so just ignore error
+		try {
+			recordDAO.delete(audit);
+		} catch (Exception e) {}         
     }
 
     /**

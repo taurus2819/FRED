@@ -128,6 +128,8 @@ public interface SampleDAO {
 
 	public Audit save(Audit audit) throws StorageAccessException;
 
+	public void delete(Audit audit) throws StorageAccessException;	
+	
 	/**
 	 * Return the fossil group with the given name or null if one doesn't exist
 	 * @throws StorageAccessException 
