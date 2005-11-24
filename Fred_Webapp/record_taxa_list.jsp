@@ -1,22 +1,13 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.FREDUtils"
 %><%@page import="nz.cri.gns.jsp.*"
-%><%@page import="nz.cri.gns.intranet.*
 %><%@page import="java.util.*"
-%><%@page import="nz.cri.gns.auth.*"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.dao.StorageAccessException"
-%><%@page import="nz.cri.gns.fred.de.MandatoryFieldsMissingException"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
-%><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
-%><%@page import="nz.cri.gns.fred.model.Audit"
 %><%@page import="nz.cri.gns.fred.model.Record"
 %><%@page import="nz.cri.gns.fred.model.Paleontology"
-%><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.model.Taxon"
-%><%@page import="nz.cri.gns.fred.model.UserFolder"
-%><%@page import="nz.cri.gns.fred.util.FolderUtil"
-%><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="java.text.*"
@@ -36,106 +27,134 @@
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	
 	RecordUtil recordUtil = new RecordUtil(factory);
-	User user =(User) getUser(session);
 	
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	Paleontology pal = null;
 	try {
 		pal = recordUtil.getRecord(Integer.parseInt(request.getParameter("RecID"))).getPaleontology();
-	} catch (Exception e) {}
+	} catch (Exception e) {e.printStackTrace(new PrintWriter(out));}
 
 	if (pal != null) {
 		try {
 		drawTop(out, et, request, response);
 
 		drawEndNavigation(out);
-		out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-		out.println("<tr><td>");
+		//out.println("<table style='margin-left:20px; width:550px;' border='0'>");
+		//out.println("<tr><td>");
 
-		List<Taxon> appTaxa = recordUtil.getTaxon(pal, Taxon.APPROVED_STATUS);
-		List<Taxon> provTaxa = recordUtil.getTaxon(pal, Taxon.PROVISIONAL_STATUS);
-		List<Taxon> rejTaxa = recordUtil.getTaxon(pal, Taxon.REJECTED_STATUS);
-		List<Taxon> obTaxa = recordUtil.getTaxon(pal, Taxon.OBSOLETE_STATUS);
-
-		out.println("<p>Listed below are the taxonomic entries for the selected Paleontology Record grouped by status. This list will update as the status of an entry is changed by the database curators.<p>");
-
-		out.println("<table border='0' cellspacing='0' cellpadding='2' width='550'>");
+		List appTaxa = recordUtil.getTaxon(pal, Taxon.APPROVED_STATUS);
+		List provTaxa = recordUtil.getTaxon(pal, Taxon.PROVISIONAL_STATUS);
+		List rejTaxa = recordUtil.getTaxon(pal, Taxon.REJECTED_STATUS);
+		List obTaxa = recordUtil.getTaxon(pal, Taxon.OBSOLETE_STATUS);
+%>
+	<center>
+<%		
 		//List provisional taxa
 		if (provTaxa.size() > 0) {
-			out.println("<tr><th colspan=\"5\">Provisional Entries</th></tr>");
-			out.println("<tr><td colspan=\"5\" style=\"color: #FF0000\">This record contains provisional taxonomic entries. You must wait until these entries are approved before submitting the record</td></tr>"); 
-			out.println("<tr><th>Taxonomic Name&nbsp;&nbsp;</th><th>Group&nbsp;&nbsp;</th><th>Author&nbsp;&nbsp;</th><th colspan=\"2\">Submitted By</th></tr>");
+			startDETable(pageContext);
+%>
+	<table border="0" cellspacing="0" cellpadding="2" width="550">
+	<tr><td colspan=5 class=deHeading>Provisional Entries</td></tr>
+	<tr><td colspan="5" style="text-align: left; color: #FF0000">This record contains provisional taxonomic entries. You must wait until these entries are approved before submitting the record</td></tr>
+	<tr><th style="text-align: left">Taxonomic Name&nbsp;&nbsp;</th><th style="text-align: left">Group&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th colspan="2" style="text-align: left">Submitted By</th></tr>
+<%
 			for (Iterator i = provTaxa.iterator(); i.hasNext(); ) {
 				Taxon taxon = (Taxon)i.next();
-				out.println("<tr><td>" + taxon.getTaxonomicName() + "&nbsp;&nbsp;</td>");
-				out.println("<td>" + taxon.getTaxonomicGroup().getName() + "&nbsp;&nbsp;</td>");
-				out.println("<td>" + FREDUtils.noNulls(taxon.getAuthor()) + "&nbsp;&nbsp;</td>");
-				out.println("<td>" + FREDUtils.noNulls(FREDUtil.getUserName(taxon.getSubmittedById())) + "&nbsp;&nbsp;</td>");
-				out.println("<td>" + ((taxon.getSubmittedDate() != null) ? DateFormat.getDateInstance(DateFormat.LONG).format(taxon.getSubmittedDate()) : "") + "&nbsp;&nbsp;</td>");
-				out.println("<tr><td>&nbsp;</td></tr>");
+%>
+	<tr><td style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
+	<td style="text-align: left"><%=taxon.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td>
+	<td style="text-align: left"><%=FREDUtils.noNulls(taxon.getAuthor())%>&nbsp;&nbsp;</td>
+	<td style="text-align: left"><%=FREDUtils.noNulls(FREDUtil.getUserName(taxon.getSubmittedById().intValue()))%>&nbsp;&nbsp;</td>
+	<td style="text-align: left"><%=((taxon.getSubmittedDate() != null) ? DateFormat.getDateInstance(DateFormat.LONG).format(taxon.getSubmittedDate()) : "")%>&nbsp;&nbsp;</td>
+<%
 			}
+%>
+</table>
+<%
+			endDETable(pageContext);
 		}
 
 		//List rejected taxa
 		if (rejTaxa.size() > 0) {
-			out.println("<tr><th colspan=\"5\">Rejected Entries</th></tr>");
-			out.println("<tr><td colspan=\"5\" style=\"color: #FF0000\">This record contains rejected taxonomic entries. You must remove these entries before submitting the record</td></tr>");
-			out.println("<tr><th>Taxonomic Name&nbsp;&nbsp;</th><th>Group&nbsp;&nbsp;</th><th>Author&nbsp;&nbsp;</th><th colspan=\"2\">Rejected By</th></tr>");
+			startDETable(pageContext);
+%>
+	<table border="0" cellspacing="0" cellpadding="2" width="550">
+	<tr><th colspan="5" class="deHeading">Rejected Entries</th></tr>
+	<tr><td colspan="5" style="text-align: left; color: #FF0000">This record contains rejected taxonomic entries. You must remove these entries before submitting the record</td></tr>
+	<tr><th style="text-align: left">Taxonomic Name&nbsp;&nbsp;</th><th style="text-align: left">Group&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th colspan="2" style="text-align: left">Rejected By</th></tr>
+<%
 			for (Iterator i = rejTaxa.iterator(); i.hasNext(); ) {
 				Taxon taxon = (Taxon)i.next();
-				out.println("<tr><td>" + taxon.getTaxonomicName() + "&nbsp;&nbsp;</td>");
-				out.println("<td>" + taxon.getTaxonomicGroup().getName() + "&nbsp;&nbsp;</td>");
-				out.println("<td>" + FREDUtils.noNulls(taxon.getAuthor()) + "&nbsp;&nbsp;</td>");
-				out.println("<td>" + FREDUtils.noNulls(FREDUtil.getUserName(taxon.getApprovedById())) + "&nbsp;&nbsp;</td>");
-				out.println("<td>" + ((taxon.getApprovedDate() != null) ? DateFormat.getDateInstance(DateFormat.LONG).format(taxon.getApprovedDate()) : "") + "&nbsp;&nbsp;</td>");
-				out.println("<tr><td>&nbsp;</td></tr>");
+%>
+	<tr><td style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
+	<td style="text-align: left"><%=taxon.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td>
+	<td style="text-align: left"><%=FREDUtils.noNulls(taxon.getAuthor())%>&nbsp;&nbsp;</td>
+	<td style="text-align: left"><%=FREDUtils.noNulls(FREDUtil.getUserName(taxon.getApprovedById().intValue()))%>&nbsp;&nbsp;</td>
+	<td style="text-align: left"><%=((taxon.getApprovedDate() != null) ? DateFormat.getDateInstance(DateFormat.LONG).format(taxon.getApprovedDate()) : "")%>&nbsp;&nbsp;</td>
+<%
 			}
+%>
+</table>
+<%
+			endDETable(pageContext);
 		}
 
 		//List obsoloete taxa
 		if (obTaxa.size() > 0) {
-			out.println("<tr><th colspan=\"5\">Obsolete Entries</th></tr>");
-			out.println("<tr><td colspan=\"5\" style=\"color: #FF0000\">This record contains obsolete taxonomic entries. You must remove these entries before submitting the record</td></tr>");
-			out.println("<tr><th>Taxonomic Name&nbsp;&nbsp;</th><th>Group&nbsp;&nbsp;</th><th>Author</th></tr>");
+			startDETable(pageContext);
+%>
+	<table border="0" cellspacing="0" cellpadding="2" width="550">
+	<tr><th colspan="3" class="deHeading">Obsolete Entries</th></tr>
+	<tr><td colspan="3" style="text-align: left; color: #FF0000">This record contains obsolete taxonomic entries. You must remove these entries before submitting the record</td></tr>
+	<tr><th style="text-align: left">Taxonomic Name&nbsp;&nbsp;</th><th style="text-align: left">Group&nbsp;&nbsp;</th><th style="text-align: left">Author</th></tr>
+<%
 			for (Iterator i = obTaxa.iterator(); i.hasNext(); ) {
 				Taxon taxon = (Taxon)i.next();
-				out.println("<tr><td>" + taxon.getTaxonomicName() + "&nbsp;&nbsp;</td>");
-				out.println("<td>" + taxon.getTaxonomicGroup().getName() + "&nbsp;&nbsp;</td>");
-				out.println("<td>" + FREDUtils.noNulls(taxon.getAuthor()) + "&nbsp;&nbsp;</td>");
-				out.println("<tr><td>&nbsp;</td></tr>");
+%>
+	<tr><td style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
+	<td style="text-align: left"><%=taxon.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td>
+	<td style="text-align: left"><%=FREDUtils.noNulls(taxon.getAuthor())%>&nbsp;&nbsp;</td>
+<%
 			}
+%>
+</table>
+<%
+			endDETable(pageContext);
 		}
 
 		//List approved taxa
 		if (appTaxa.size() > 0) {
-			out.println("<tr><th colspan=\"5\">Approved Entries</th></tr>");
-			out.println("<tr><th>Taxonomic Name&nbsp;&nbsp;</th><th>Group&nbsp;&nbsp;</th><th>Author&nbsp;&nbsp;</th><th colspan=\"2\">Approved By</th></tr>");
+			startDETable(pageContext);
+%>
+	<table border="0" cellspacing="0" cellpadding="2" width="550">
+	<tr><th colspan="5" class="deHeading">Approved Entries</th></tr>
+	<tr><th style="text-align: left">Taxonomic Name&nbsp;&nbsp;</th><th style="text-align: left">Group&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th colspan="2" style="text-align: left">Approved By</th></tr>
+<%
 			for (Iterator i = appTaxa.iterator(); i.hasNext(); ) {
 				Taxon taxon = (Taxon)i.next();
-				out.println("<tr><td>" + taxon.getTaxonomicName() + "&nbsp;&nbsp;</td>");
-				out.println("<td>" + taxon.getTaxonomicGroup().getName() + "&nbsp;&nbsp;</td>");
-				out.println("<td>" + FREDUtils.noNulls(taxon.getAuthor()) + "&nbsp;&nbsp;</td>");
-				out.println("<td>" + FREDUtils.noNulls(FREDUtil.getUserName(taxon.getApprovedById())) + "&nbsp;&nbsp;</td>");
-				out.println("<td>" + ((taxon.getApprovedDate() != null) ? DateFormat.getDateInstance(DateFormat.LONG).format(taxon.getApprovedDate()) : "") + "&nbsp;&nbsp;</td>");
-				out.println("<tr><td>&nbsp;</td></tr>");
+%>
+	<tr><td style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
+	<td style="text-align: left"><%=taxon.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td>
+	<td style="text-align: left"><%=FREDUtils.noNulls(taxon.getAuthor())%>&nbsp;&nbsp;</td>
+	<td style="text-align: left"><%=FREDUtils.noNulls(FREDUtil.getUserName(taxon.getApprovedById().intValue()))%>&nbsp;&nbsp;</td>
+	<td style="text-align: left"><%=((taxon.getApprovedDate() != null) ? DateFormat.getDateInstance(DateFormat.LONG).format(taxon.getApprovedDate()) : "")%>&nbsp;&nbsp;</td>
+<%
 			}
-		}
-		
-		out.println("</table>");
+%>
+</table>
+<%
+			endDETable(pageContext);
+		}	
 
-		out.println("</td></tr></table>");
+		out.println("</center>");
 		} catch (Exception e) {
 			e.printStackTrace(new PrintWriter(out));
 		}
 		drawBottom(out, et);
 	
 	}
-
-
-
-
 
 %>
 
