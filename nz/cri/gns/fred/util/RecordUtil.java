@@ -260,9 +260,10 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			return new Vector<Taxon>();
 		TreeSet<Taxon> set = new TreeSet<Taxon>();
 		for (PaleontologyListEntry entry : pal.getListEntries()) {
-			if (entry.getTaxon().getStatus().equals(status))
+			if (entry.getTaxon().getStatus().equals(status)) {
 				System.out.println("Taxa: " + entry.getTaxon().getTaxonomicName() + ", status = " + status);
 				set.add(entry.getTaxon());
+			}
 		}
 		return new Vector<Taxon>(set);		
 	}
