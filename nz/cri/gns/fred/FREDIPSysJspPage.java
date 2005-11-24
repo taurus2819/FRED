@@ -61,7 +61,7 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 		links[3] = new KeyValueObject("/fred/folder_list.jsp", "Data Entry");
 		et.setLinks(links);
 		et.setImageBase("/fred/images/fred.gif");
-		et.setNewHeaderStyle(true);
+		//et.setNewHeaderStyle(true);
 		return et;
 	}
 
