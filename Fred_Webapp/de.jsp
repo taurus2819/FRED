@@ -17,14 +17,6 @@
 		DataEntryForm form = getDataEntryForm(request);
 		return "FRED :: " + form.getHeading();
 	}
-	
-	protected IconnedLink[] getButtons(HttpServletRequest request) {
-		DataEntryForm form = getDataEntryForm(request);
-		List list = form.getNavigation();
-		IconnedLink[] links = (IconnedLink[])list.toArray(new IconnedLink[list.size()+1]);
-		links[links.length-1] = new IconnedLink((String)request.getSession().getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT), "images/cancel.gif", "Quit");
-		return links;
-	}
 
 	protected DataEntryForm getDataEntryForm(HttpServletRequest request) {
 		DataEntryForm form = getDataEntryFormImpl(request);
@@ -89,6 +81,10 @@ try {
 		et.addScript("calendar-setup-stripped.js");
 		et.addStyleSheet("skins/aqua/theme.css");
 	}
+	List list = dataEntryForm.getNavigation();
+	IconnedLink[] links = (IconnedLink[])list.toArray(new IconnedLink[list.size()+1]);
+	links[links.length-1] = new IconnedLink((String)request.getSession().getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT), "images/cancel.gif", "Quit");
+	et.setButtons(links);
 
 	drawTop(out, et, request, response);
 	

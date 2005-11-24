@@ -31,12 +31,6 @@
 			return "FRED";
 		}
 	}
-	
-	protected IconnedLink[] getButtons(HttpServletRequest request) {
-		return new IconnedLink[] {
-			new IconnedLink("folder_detail.jsp?ID=" + request.getParameter("FoldID"), "images/back_arrow.gif", "Back to folder contents")
-		};
-	}
 
 %><%
 
@@ -60,6 +54,9 @@ try {
 	
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
+	et.setButtons(new IconnedLink[] {
+			new IconnedLink("folder_detail.jsp?ID=" + request.getParameter("FoldID"), "images/back_arrow.gif", "Back to folder contents")
+		});
 
 	Feature feature = featureUtil.getFeature(Integer.parseInt(request.getParameter("FeatID")));
 	UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("FoldID")), user);

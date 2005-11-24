@@ -16,13 +16,6 @@
 		return "FRED :: " + ((User)getUser(request.getSession())).getFullName() + "'s Folders";
 	}
 	
-	protected IconnedLink[] getButtons(HttpServletRequest request) {
-		return new IconnedLink[] {
-			new IconnedLink("javascript:doNewFolder();", "images/folder.gif", "New Folder"),
-			new IconnedLink("javascript:doNewBacklogFolder();", "images/folder.gif", "New Backlog Edit Folder")
-		};
-	}
-	
 %><%
 try {
 	User user = (User)getUser(session);
@@ -32,7 +25,11 @@ try {
 	TaxonomicUtil taxaUtil = new TaxonomicUtil(factory);
 	
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
+	et.setButtons(new IconnedLink[] {
+			new IconnedLink("javascript:doNewFolder();", "images/folder.gif", "New Folder"),
+			new IconnedLink("javascript:doNewBacklogFolder();", "images/folder.gif", "New Backlog Edit Folder")
+		});
 
 	String error = null;
 	if (request.getParameter("ActionType") != null) { //do something

@@ -25,17 +25,14 @@
 		}
 	}
 
-	protected IconnedLink[] getButtons(HttpServletRequest request) {
-		return new IconnedLink[] {
-			new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")
-		};
-	}
-
 %><%
 	FolderUtil folderUtil = new FolderUtil(HibernateUtil.get().getDAOFactory());
 	User user = (User)getUser(session);
 
 	ExtranetTemplate et = getExtranetTemplate();
+	et.setButtons(new IconnedLink[] {
+			new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")
+		});
 
 	if (request.getParameter("FoldID") != null) {
 		UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("FoldID")), user);

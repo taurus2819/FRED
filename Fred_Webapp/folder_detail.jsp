@@ -28,30 +28,6 @@
 		}
 	}
 	
-	protected IconnedLink[] getButtons(HttpServletRequest request) {
-		try {
-			DAOFactory factory = HibernateUtil.get().getDAOFactory();
-			FolderUtil folderUtil = new FolderUtil(factory);
-			UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), getUser(request.getSession()));
-			if (folder.isAllowedCreateLocalities()) {
-				return new IconnedLink[] {
-					new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders"),
-					new IconnedLink(null, "images/new.gif", "New: "),
-					new IconnedLink("de.jsp?Type=Outcrop&FoldID=" + folder.getFolder().getFolderId(), null, "Outcrop"),
-					new IconnedLink("de.jsp?Type=Drillhole&FoldID=" + folder.getFolder().getFolderId(), null, "Drillhole"),
-					new IconnedLink("de.jsp?Type=Vertical+Section&FoldID=" + folder.getFolder().getFolderId(), null, "Vert. Section"),
-					new IconnedLink("simple_query.jsp?FoldID=" + folder.getFolder().getFolderId(), "images/search.gif", "Search")
-				};
-			} else {
-				return new IconnedLink[] {
-					new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")
-				};
-			}
-		} catch (Exception e) {
-			return new IconnedLink[]{};
-		}
-	}
-
 %><%
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	if (request.getParameter("ID") == null) {
@@ -63,11 +39,27 @@
 	FolderUtil folderUtil = new FolderUtil(factory);
 	FeatureUtil featureUtil = new FeatureUtil(factory);
 	User user =(User) getUser(session);
+	UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), user);
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
+	if (folder.isAllowedCreateLocalities()) {
+		et.setButtons(new IconnedLink[] {
+			new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders"),
+			new IconnedLink(null, "images/new.gif", "New: "),
+			new IconnedLink("de.jsp?Type=Outcrop&FoldID=" + folder.getFolder().getFolderId(), null, "Outcrop"),
+			new IconnedLink("de.jsp?Type=Drillhole&FoldID=" + folder.getFolder().getFolderId(), null, "Drillhole"),
+			new IconnedLink("de.jsp?Type=Vertical+Section&FoldID=" + folder.getFolder().getFolderId(), null, "Vert. Section"),
+			new IconnedLink("simple_query.jsp?FoldID=" + folder.getFolder().getFolderId(), "images/search.gif", "Search")
+		});
+	} else {
+		et.setButtons(new IconnedLink[] {
+			new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")
+		});
+	}	
 	
-	UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), user);
+	
+	
 	if (folder != null || folder.isAllowedReadLocalities()) {
 		session.setAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT, "folder_detail.jsp?ID=" + folder.getFolder().getFolderId());
 		String errorMessage = null;

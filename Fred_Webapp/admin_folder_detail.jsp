@@ -26,20 +26,6 @@
 		}
 	}
 	
-	protected IconnedLink[] getButtons(HttpServletRequest request) {
-		try {
-			/*DAOFactory factory = HibernateUtil.get().getDAOFactory();
-			FolderUtil folderUtil = new FolderUtil(factory);
-			UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), getUser(request.getSession()));*/
-			return new IconnedLink[] {
-				new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders"),
-				new IconnedLink("backlog_setup.jsp?ID=" + request.getParameter("ID"), "images/revoke.gif", "Backlog setup")
-			};
-		} catch (Exception e) {
-			return new IconnedLink[]{};
-		}
-	}
-
 %><%
 DAOFactory factory = HibernateUtil.get().getDAOFactory();
 try {
@@ -62,6 +48,9 @@ try {
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
+	et.setButtons(new IconnedLink[] {
+			new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders"),
+			new IconnedLink("backlog_setup.jsp?ID=" + request.getParameter("ID"), "images/revoke.gif", "Backlog setup")});
 
 	drawTop(out, et, request, response);
 
