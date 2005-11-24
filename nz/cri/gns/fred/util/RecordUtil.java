@@ -256,14 +256,12 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * Returns all the taxon for a given pal record with the given status
 	 */
 	public List<Taxon> getTaxon(Paleontology pal, String status) {
-		if (pal.getListEntries() == null)
-			return new Vector<Taxon>();
 		Vector<Taxon> set = new Vector<Taxon>();
-		for (PaleontologyListEntry entry : pal.getListEntries()) {
-			Taxon taxon = entry.getTaxon();
-			if (taxon.getStatus().equals(status)) {
-				System.out.println("Taxa: " + taxon.getTaxonomicName() + "*" + taxon + ", status = " + status);
-				set.add(taxon);
+		if (pal.getListEntries() != null) {
+			for (PaleontologyListEntry entry : pal.getListEntries()) {
+				Taxon taxon = entry.getTaxon();
+				if (taxon.getStatus().equals(status))
+					set.add(taxon);
 			}
 		}
 		return set;
