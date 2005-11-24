@@ -29,7 +29,7 @@
 	RecordUtil recordUtil = new RecordUtil(factory);
 	
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 
 	Paleontology pal = null;
 	try {
