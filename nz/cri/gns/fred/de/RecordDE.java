@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
-import nz.cri.gns.fred.IconnedLink;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.model.Adoption;
@@ -35,6 +34,7 @@ import nz.cri.gns.fred.util.RecordUtil;
 import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.intranet.Template;
+import nz.cri.gns.jsp.IconnedLink;
 
 public abstract class RecordDE extends DETemplate implements DataEntryForm {
 

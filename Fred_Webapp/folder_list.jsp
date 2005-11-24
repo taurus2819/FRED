@@ -2,7 +2,7 @@
 %><%@page import="java.util.Iterator"
 %><%@page import="java.util.List"
 %><%@page import="nz.cri.gns.auth.User"
-%><%@page import="nz.cri.gns.fred.IconnedLink"
+%><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"

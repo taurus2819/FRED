@@ -9,9 +9,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.cri.gns.auth.InsufficientPrivelegesException;
-import nz.cri.gns.fred.IconnedLink;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.StorageAccessException;
+import nz.cri.gns.jsp.IconnedLink;
 
 public interface DataEntryForm {
 	

@@ -1,5 +1,5 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
-%><%@page import="nz.cri.gns.fred.IconnedLink"
+%><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.fred.dao.StorageAccessException"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"

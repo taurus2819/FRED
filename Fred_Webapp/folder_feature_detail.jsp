@@ -1,5 +1,5 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
-%><%@page import="nz.cri.gns.fred.IconnedLink"
+%><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="java.text.DateFormat"
 %><%@page import="java.util.Iterator"
 %><%@page import="java.util.Vector"

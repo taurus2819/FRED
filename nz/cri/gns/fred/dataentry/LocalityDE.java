@@ -41,7 +41,7 @@ public abstract class LocalityDE implements DataEntryForm {
 	protected String featureType;
 	protected String[] fields = new String[120];
 	protected String[] tempFields = new String[120];
-	private String origSystemID, countryCode, recoll;
+	private String countryCode, recoll;
 	private Datum origSystem;
 	private Datum.Coordinate origCoord;
 	protected boolean savedFlag = false;
@@ -371,7 +371,6 @@ public abstract class LocalityDE implements DataEntryForm {
 
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
 		try {
-			DBConnection conn = FREDUtils.getFREDConnection(state);
 			out.write("<tr><td>" + feature.getFeatureID() + "</td>");
 			out.write("<td>Locality</td>");
 			out.write("<td>" + FREDUtils.noNulls(feature.getAsString(Feature.WORKING_FOLDER_ID)) + "</td>");
@@ -524,7 +523,6 @@ public abstract class LocalityDE implements DataEntryForm {
 	public int save() throws SQLException, IOException, InsufficientPrivelegesException {
 		if (!savedFlag) {
 			DBConnection conn = FREDUtils.getFREDConnection(state);
-			ResultSet rs;
 			String siteID = null;
 			if (fields[GRID_REF] != null)
 				siteID = String.valueOf(getSite().getId());
@@ -575,7 +573,7 @@ public abstract class LocalityDE implements DataEntryForm {
 				feature = new Feature(feature.getFeatureID(), user, state, true);
 			}
 			if (workingFolder != null) {
-				Folder folder = new Folder(workingFolder.getFolderID(), user, state, true);
+				new Folder(workingFolder.getFolderID(), user, state, true);
 			}
 			savedFlag = true;
 		}
@@ -603,7 +601,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		DBUtils.doUpdate(qd, "feature_id = ?", conn);
 		feature = new Feature(feature.getFeatureID(), user, state, true);
 		refreshSamples(feature, user, state);
-		Folder folder = new Folder(mfID, user, state, true);
+		new Folder(mfID, user, state, true);
 		return feature.getFeatureID();
 	}
 
@@ -620,7 +618,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		conn.releaseStatement();
 		feature = new Feature(feature.getFeatureID(), user, state, true);
 		refreshSamples(feature, user, state);
-		Folder folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
+		new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
 	}
 
 	public void approve(FRNumber frNum, String comments) throws SQLException, IOException, InsufficientPrivelegesException {
@@ -653,7 +651,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		conn.releaseStatement();
 		feature = new Feature(feature.getFeatureID(), user, state, true);
 		refreshSamples(feature, user, state);
-		Folder folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
+		new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
 	}
 	
 	public void reject(String comments) throws SQLException, IOException, InsufficientPrivelegesException {
@@ -665,7 +663,7 @@ public abstract class LocalityDE implements DataEntryForm {
 		DBUtils.doUpdate(qd, "audit_id = ?", conn);
 		feature = new Feature(feature.getFeatureID(), user, state, true);
 		refreshSamples(feature, user, state);
-		Folder folder = new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
+		new Folder(feature.getAsInt(Feature.MASTERFILE_ID), user, state, true);
 	}
 
 	public void delete() throws IOException, SQLException, InsufficientPrivelegesException {
@@ -680,7 +678,7 @@ public abstract class LocalityDE implements DataEntryForm {
 	private static void refreshSamples(Feature feature, User user, PageState state) throws InsufficientPrivelegesException, SQLException, IOException {
 		if (feature.getSampleCount() > 0) {
 			for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
-				Sample sample = new Sample(((Integer) i.next()).intValue(), user, state, true);
+				new Sample(((Integer) i.next()).intValue(), user, state, true);
 			}
 		}
 	}
@@ -699,7 +697,7 @@ public abstract class LocalityDE implements DataEntryForm {
 				if (fields[ACCURACY] != null)
 					horzDM.setHorizontalAccuracy(Float.parseFloat(fields[ACCURACY]));
 			}
-			return SiteRecord.insertSite(fields[FIELD_NUMBER], origSystem, origCoord, null, horzDM, null, null, fields[LOCALITY_DESC], countryCode, String.valueOf(user.getPersonId()), 0, JspUtils.getInstance(state.getContext()));
+			return SiteRecord.insertSite(fields[FIELD_NUMBER], origSystem, origCoord, null, horzDM, null, fields[LOCALITY_DESC], countryCode, String.valueOf(user.getPersonId()), 0, JspUtils.getInstance(state.getContext()));
 		} catch (Exception e) {
 			throw new SQLException("Problem creating SITE: " + e.getMessage());
 		}

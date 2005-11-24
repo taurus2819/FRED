@@ -1,5 +1,5 @@
 <%@page extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
-%><%@page import="nz.cri.gns.fred.IconnedLink"
+%><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.fred.de.DataEntryForm"
 %><%@page import="nz.cri.gns.fred.de.DataEntryFormFactory"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
