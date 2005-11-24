@@ -58,8 +58,6 @@
 		});
 	}	
 	
-	
-	
 	if (folder != null || folder.isAllowedReadLocalities()) {
 		session.setAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT, "folder_detail.jsp?ID=" + folder.getFolder().getFolderId());
 		String errorMessage = null;
