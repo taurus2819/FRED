@@ -1,10 +1,9 @@
 <%@page extends="nz.cri.gns.jsp.IPSysLoginPage"
-	import="nz.cri.gns.jsp.*,java.net.URL,nz.cri.gns.db.*"
+%><%@ page import="nz.cri.gns.jsp.ExtranetTemplate"
+%><%@ page import="nz.cri.gns.db.*"
 %><%
 
-	ExtranetTemplate et = new ExtranetTemplate();
-	et.setImageBase("/fred/images/fred.gif");
-	et.setShowGnsLogo(true);
+	ExtranetTemplate et = getExtranetTemplate();
 	KeyValueObject links[] = new KeyValueObject[1];
 	links[0] = new KeyValueObject("/fred/index.jsp", "FRED Home");
 	et.setLinks(links);
