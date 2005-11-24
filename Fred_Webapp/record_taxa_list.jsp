@@ -40,7 +40,7 @@
 		try {
 		drawTop(out, et, request, response);
 
-		drawEndNavigation(out);
+		//drawEndNavigation(out);
 		//out.println("<table style='margin-left:20px; width:550px;' border='0'>");
 		//out.println("<tr><td>");
 
@@ -49,10 +49,12 @@
 		List rejTaxa = recordUtil.getTaxon(pal, Taxon.REJECTED_STATUS);
 		List obTaxa = recordUtil.getTaxon(pal, Taxon.OBSOLETE_STATUS);
 %>
-	<center>
+	<center><p>&nbsp;</p>
+	
 <%		
 		//List provisional taxa
 		if (provTaxa.size() > 0) {
+			out.println("<p>");
 			startDETable(pageContext);
 %>
 	<table border="0" cellspacing="0" cellpadding="2" width="550">
@@ -66,18 +68,20 @@
 	<tr><td style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 	<td style="text-align: left"><%=taxon.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td>
 	<td style="text-align: left"><%=FREDUtils.noNulls(taxon.getAuthor())%>&nbsp;&nbsp;</td>
-	<td style="text-align: left"><%=FREDUtils.noNulls(FREDUtil.getUserName(taxon.getSubmittedById().intValue()))%>&nbsp;&nbsp;</td>
+	<td style="text-align: left"><%=((taxon.getSubmittedById() != null) ? FREDUtil.getUserName(taxon.getSubmittedById().intValue()) : "")%>&nbsp;&nbsp;</td>
 	<td style="text-align: left"><%=((taxon.getSubmittedDate() != null) ? DateFormat.getDateInstance(DateFormat.LONG).format(taxon.getSubmittedDate()) : "")%>&nbsp;&nbsp;</td>
 <%
 			}
 %>
-</table>
+	</table>
 <%
 			endDETable(pageContext);
+			out.println("</p>");
 		}
 
 		//List rejected taxa
 		if (rejTaxa.size() > 0) {
+			out.println("<p>");
 			startDETable(pageContext);
 %>
 	<table border="0" cellspacing="0" cellpadding="2" width="550">
@@ -91,18 +95,20 @@
 	<tr><td style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 	<td style="text-align: left"><%=taxon.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td>
 	<td style="text-align: left"><%=FREDUtils.noNulls(taxon.getAuthor())%>&nbsp;&nbsp;</td>
-	<td style="text-align: left"><%=FREDUtils.noNulls(FREDUtil.getUserName(taxon.getApprovedById().intValue()))%>&nbsp;&nbsp;</td>
+	<td style="text-align: left"><%=((taxon.getApprovedById() != null) ? FREDUtil.getUserName(taxon.getApprovedById().intValue()) : "")%>&nbsp;&nbsp;</td>
 	<td style="text-align: left"><%=((taxon.getApprovedDate() != null) ? DateFormat.getDateInstance(DateFormat.LONG).format(taxon.getApprovedDate()) : "")%>&nbsp;&nbsp;</td>
 <%
 			}
 %>
-</table>
+	</table>
 <%
 			endDETable(pageContext);
+			out.println("</p>");
 		}
 
 		//List obsoloete taxa
 		if (obTaxa.size() > 0) {
+			out.println("<p>");
 			startDETable(pageContext);
 %>
 	<table border="0" cellspacing="0" cellpadding="2" width="550">
@@ -119,13 +125,15 @@
 <%
 			}
 %>
-</table>
+	</table>
 <%
 			endDETable(pageContext);
+			out.println("</p>");
 		}
 
 		//List approved taxa
 		if (appTaxa.size() > 0) {
+			out.println("<p>");
 			startDETable(pageContext);
 %>
 	<table border="0" cellspacing="0" cellpadding="2" width="550">
@@ -138,14 +146,15 @@
 	<tr><td style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 	<td style="text-align: left"><%=taxon.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td>
 	<td style="text-align: left"><%=FREDUtils.noNulls(taxon.getAuthor())%>&nbsp;&nbsp;</td>
-	<td style="text-align: left"><%=FREDUtils.noNulls(FREDUtil.getUserName(taxon.getApprovedById().intValue()))%>&nbsp;&nbsp;</td>
+	<td style="text-align: left"><%=((taxon.getApprovedById() != null) ? FREDUtil.getUserName(taxon.getApprovedById().intValue()) : "")%>&nbsp;&nbsp;</td>
 	<td style="text-align: left"><%=((taxon.getApprovedDate() != null) ? DateFormat.getDateInstance(DateFormat.LONG).format(taxon.getApprovedDate()) : "")%>&nbsp;&nbsp;</td>
 <%
 			}
 %>
-</table>
+	</table>
 <%
 			endDETable(pageContext);
+			out.println("</p>");
 		}	
 
 		out.println("</center>");
