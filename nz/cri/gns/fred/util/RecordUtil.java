@@ -263,9 +263,9 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			Taxon taxon = entry.getTaxon();
 			if (taxon.getStatus().equals(status)) {
 				try {
-				System.out.println("Taxa: " + taxon.getTaxonomicName() + ", status = " + status);
+				System.out.println("Taxa: " + taxon.getTaxonomicName() + "*" + taxon + ", status = " + status);
 				set.add(taxon);
-				} catch (Exception e) {}
+				} catch (Exception e) {System.out.println("Taxa insert failed: " + taxon.getTaxonomicName() + ", status = " + status);}
 			}
 		}
 		return new Vector<Taxon>(set);		
