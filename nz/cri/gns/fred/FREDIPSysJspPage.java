@@ -62,6 +62,10 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 		et.setLinks(links);
 		et.setImageBase("/fred/images/fred.gif");
 		//et.setNewHeaderStyle(true);
+		et.setAppLogo("/fred/images/gsnz_logo.png");
+		KeyValueObject logos[] = new KeyValueObject[1];
+		logos[0] = new KeyValueObject("http://www.gsnz.org.nz", "/fred/images/gsnz_logo.gif");
+		et.setHeaderLogos(logos);
 		return et;
 	}
 
