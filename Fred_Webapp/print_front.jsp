@@ -49,7 +49,7 @@
 		out.println("<tr><td>");
 
 		out.println("<table border='0' cellspacing='0' cellpadding='0' width='600'>");
-		out.println("<tr><td rowspan='2'><img src='images/gslogo.gif' width='42' height='50' /></td><td class='smallheading'>GEOLOGICAL SOCIETY OF NEW ZEALAND</td><td class='hugeheading' align='right'>");
+		out.println("<tr><td rowspan='2'><img src='images/gsnz_logo.gif' width='42' height='50' /></td><td class='smallheading'>GEOLOGICAL SOCIETY OF NEW ZEALAND</td><td class='hugeheading' align='right'>");
 		if (sample.get(Sample.FR_NUMBER) != null) {
 			out.print(sample.getAsString(Sample.FR_NUMBER));
 		} else {
