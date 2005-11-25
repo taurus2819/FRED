@@ -49,15 +49,15 @@
 		out.println("<tr><td>");
 
 		out.println("<table border='0' cellspacing='0' cellpadding='0' width='600'>");
-		out.println("<tr><td rowspan='2'><img src='images/gsnz_logo.gif' width='42' height='50' /></td><td class='smallheading'>GEOLOGICAL SOCIETY OF NEW ZEALAND</td><td class='hugeheading' align='right'>");
+		out.println("<tr><td rowspan='2'><img src='images/gsnz_logo.gif' width='61' height='60' /></td><td class='smallheading'>GEOLOGICAL SOCIETY OF NEW ZEALAND</td><td class='bigheading' align='right'>");
 		if (sample.get(Sample.FR_NUMBER) != null) {
 			out.print(sample.getAsString(Sample.FR_NUMBER));
 		} else {
 			out.print("_______/f_____");
 		}
 		out.println("</td></tr>");
-		out.print("<tr><td class='hugeheading'>FOSSIL RECORD FORM</td><td align='right' class='heading'>" + FREDUtils.noNulls(sample.getAsString(Sample.FEATURE_TYPE)) + "</td></tr>");		
-		out.println("<tr><td><img src='images/blank.gif' width='1' height='5' /></td></tr>");
+		out.print("<tr><td class='bigheading'>FOSSIL RECORD FORM</td><td align='right' class='heading'>" + FREDUtils.noNulls(sample.getAsString(Sample.FEATURE_TYPE)) + "</td></tr>");		
+		out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 		out.println("</table>");
 
 		out.println("<table border='0' cellspacing='0' cellpadding='0' width='600'>");
