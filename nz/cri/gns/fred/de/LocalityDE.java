@@ -261,7 +261,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			String eastingLabel = "Easting";
 			String northingLabel = "Northing";
 			
-			if (site == null) {
+			if (site == null || coord == null || datum == null) {
 				template.addSub("isNZMG", "yes");
 				template.addSub("mapSheetInvisible", "yes");
 			} else {
