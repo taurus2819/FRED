@@ -32,7 +32,9 @@ import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
+import nz.cri.gns.fred.model.FolderUser;
 import nz.cri.gns.fred.model.FrNumber;
+import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
@@ -367,6 +369,21 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         
         Vector<String[]> error = new Vector<String[]>();
 		
+        //FRNum (if backlog - only update if null)
+        if (FeatureUtil.isBacklogFeature(feature)) {
+        	FrNumber frNumber = FeatureUtil.getFrNumber(feature);
+        	if (frNumber ==  null) {
+        		try {
+        			frNumber = FeatureUtil.parseFRNumber(request.getParameter("FRNumber"));
+        			for (Sample sample : feature.getSamples()) {
+        				sample.setFrNumber(frNumber);
+        			}	
+        		} catch (DataInputException e) {
+        			error.add(new String[] {"FR Number", e.getMessage()});
+        		}
+        	}
+        }
+        
 		//Feature name
 		feature.setFeatureName(request.getParameter("FeatName"));
 		

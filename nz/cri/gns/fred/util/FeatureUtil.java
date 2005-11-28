@@ -25,6 +25,7 @@ import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
+import nz.cri.gns.fred.data.FRNumber;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.de.MandatoryFieldsMissingException;
 import nz.cri.gns.fred.model.Audit;
@@ -626,6 +627,37 @@ public class FeatureUtil extends ModelUtil {
 		return sample.getFrNumber();
 	}
 
+	/**
+	 * Parses FR Number as string and returns FrNumber object
+	 */
+	public static FrNumber parseFRNumber(String frNumStr) throws DataInputException {
+		String recollectionNumber;
+		Integer serialNumber;
+		if (frNumStr.indexOf("/f") > 0) {
+			String mapSheet = frNumStr.substring(0, frNumStr.indexOf("/f"));
+			String num = frNumStr.substring(frNumStr.indexOf("/f") + 2);
+			try {
+				serialNumber = new Integer(num);
+				recollectionNumber = null;
+			} catch (Exception e) {
+				try {
+					serialNumber = new Integer(num.substring(0, num.length() - 1));
+					recollectionNumber = num.substring(num.length() - 1);
+				} catch (Exception e1) {
+					throw new DataInputException("FR Number", "Badly formed FR Number");
+				}
+			}
+			FrNumber frNumber = new nz.cri.gns.fred.hibernate.FrNumber();
+			frNumber.setMapSheet(mapSheet);
+			frNumber.setSerialNumber(serialNumber);
+			frNumber.setRecollectionNumber(recollectionNumber);
+			return frNumber;
+		} else {
+			throw new DataInputException("FR Number", "Badly formed FR Number");
+		}
+	}
+	
+	
 	public static String getFeatureIdentifyingName(Feature feature) {
 		FrNumber frNum = FeatureUtil.getFrNumber(feature);
 		if (frNum == null)
