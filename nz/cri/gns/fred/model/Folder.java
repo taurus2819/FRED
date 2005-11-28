@@ -15,6 +15,10 @@ public interface Folder extends Serializable, Comparable<Folder> {
 	public static final int FOLDER_SUBMIT_RIGHT = 16;
 	public static final int FOLDER_ADMIN_RIGHT = 32;
 	public static final int FOLDER_APPROVE_RIGHT = 64;
+	
+	public static final String FOLDER_TYPE_ADMIN = "Admin";
+	public static final String FOLDER_TYPE_PERSONAL = "Personal";
+	public static final String FOLDER_TYPE_BACKLOG = "Backlog";
 
 	public abstract Integer getFolderId();
 

@@ -63,7 +63,7 @@
 			drawTop(out, et, request, response);
 
 			List rightTypes = folderUtil.getRightTypesForDisplay(folder);	
-			boolean isPersonal = folder.getFolder().getFolderType().getName().equals("Personal") || folder.getFolder().getFolderType().getName().equals("Backlog");
+			boolean isPersonal = folder.getFolder().getFolderType().getName().equals(UserFolder.FOLDER_TYPE_PERSONAL) || folder.getFolder().getFolderType().getName().equals(UserFolder.FOLDER_TYPE_BACKLOG);
 			%><center><p>&nbsp;<p/><%
 			startDETable(pageContext);
 			%><table border="0" width="550"><tr><td colspan="19" class="deHeading"><%=folder.getFolderName()%> users</td></tr>

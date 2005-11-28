@@ -35,7 +35,7 @@ try {
 	if (request.getParameter("ActionType") != null) { //do something
 		String actionType = request.getParameter("ActionType");
 		if (actionType.equals("Add")) { //add folder
-			if (request.getParameter("FoldType") != null && request.getParameter("FoldType").equals("Backlog")) {
+			if (request.getParameter("FoldType") != null && request.getParameter("FoldType").equals(UserFolder.FOLDER_TYPE_BACKLOG)) {
 				folderUtil.addBacklogFolder(request.getParameter("FoldName"), user);
 			} else {
 				folderUtil.addFolder(request.getParameter("FoldName"), user);
@@ -57,7 +57,7 @@ function doNewFolder() {
 	var newName = prompt('Please enter the folder name', 'New Working Folder');
 	if (newName) {
 		document.NewFoldForm.FoldName.value = newName;
-		document.NewFoldForm.FoldType.value = "Personal";
+		document.NewFoldForm.FoldType.value = UserFolder.FOLDER_TYPE_PERSONAL;
 		document.NewFoldForm.submit();
 	}
 }
@@ -66,7 +66,7 @@ function doNewBacklogFolder() {
 	var newName = prompt('Please enter the folder name', 'New Backlog Folder');
 	if (newName) {
 		document.NewFoldForm.FoldName.value = newName;
-		document.NewFoldForm.FoldType.value = "Backlog";
+		document.NewFoldForm.FoldType.value = UserFolder.FOLDER_TYPE_BACKLOG;
 		document.NewFoldForm.submit();
 	}
 }

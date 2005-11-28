@@ -11,6 +11,10 @@ public class UserFolder implements Comparable<UserFolder> {
 	public static final int FOLDER_ADMIN_RIGHT = 32;
 	public static final int FOLDER_APPROVE_RIGHT = 64;
 
+	public static final String FOLDER_TYPE_ADMIN = "Admin";
+	public static final String FOLDER_TYPE_PERSONAL = "Personal";
+	public static final String FOLDER_TYPE_BACKLOG = "Backlog";
+	
 	private Folder folder;
     private int rights;
 
