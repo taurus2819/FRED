@@ -465,8 +465,11 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
 		//set Map Year
 		try {
-			if (request.getParameter("MapYear") != null && !request.getParameter("MapYear").equals(""))
+			if (request.getParameter("MapYear") != null && !request.getParameter("MapYear").equals("")) {
 				feature.setMapYear(Integer.parseInt(request.getParameter("MapYear")));
+			} else {
+				feature.setMapYear(null);
+			}
 		} catch (Exception e) {
 			error.add(new String[] {"Map Year", "Map Year not numeric"});
 		}
