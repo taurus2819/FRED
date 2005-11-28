@@ -256,25 +256,20 @@
 			out.println("<p><table border='0' cellspacing='0' cellpadding='2' width='550'>");
 			if (sample.get(Sample.YARD_FR_ID) != null) { out.println("<tr><td class='heading'>Yard FR Number</td><td>" + sample.getAsString(Sample.YARD_FR_NUMBER) + "</td></tr>"); }
 			if (sample.get(Sample.LATITUDE) != null) {
-				SiteRecord sr = SiteRecord.querySite(FREDUtils.getFREDConnection(state), sample.getAsInt(Sample.SITE_ID));			
-				int origID = sr.getOriginalId();
-				if (origID != -1) {
-					Datum datum = sr.getOrigCoordDatum();
-					Datum.Coordinate coord = sr.getOrigCoordAsCoord();	
-					if (!(datum.getName().equals("NZGD49") && !(datum.getName().equals("NZMG")))) {
-						if (coord instanceof Datum.LatLong) {
-							out.print("<tr><td class='heading'>Lat/Long</td>");
-						} else {
-							out.print("<tr><td class='heading'>Grid Ref</td>");
-						}
-						out.println("<td>" + datum.getHumanStringFor(coord).replaceAll("Geographic ", "") + "</td></tr>");
-					}
+				SiteRecord sr = SiteRecord.querySite(FREDUtils.getFREDConnection(state), sample.getAsInt(Sample.SITE_ID));
+				if (sample.get(Sample.ORIG_SYSTEM_ID) != null && sample.get(Sample.ORIG_COORD) != null) {
+					Datum datum = DatumFactory.createDatum(sample.getAsInt(Sample.ORIG_SYSTEM_ID));
+					Datum.Coordinate coord = datum.parseCoordinate(sample.getAsString(Sample.ORIG_COORD));
+					if (coord instanceof Datum.LatLong) {
+						out.print("<tr><td class='heading'>"
+								+ ((coord instanceof Datum.LatLong) ? "Lat/Long" : "Grid Ref")
+								+ "</td><td>" + datum.getHumanStringFor(coord).replaceAll("Geographic ", "") + "</td></tr>");
 					if (!datum.getName().equals("NZMG")) {
 						try {
 							Datum nzmgDatum = DatumFactory.createDatum("NZMG");
 							Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
 							out.println("<tr><td class='heading'>Grid Ref</td><td>" + nzmgDatum.getHumanStringFor(nzmgCoord) + "</td></tr>");
-						} catch (Exception e) { System.out.println(e.getMessage()); }
+						} catch (Exception e) { }
 					}
 				}
 				Datum.LatLong ll = sr.getLatLong();
