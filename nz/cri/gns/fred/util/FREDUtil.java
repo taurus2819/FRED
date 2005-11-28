@@ -49,10 +49,12 @@ import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.PersonRelationship;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.util.map.Datum;
+import nz.cri.gns.util.map.DatumFactory;
 import nz.cri.gns.util.map.NZMG;
 import nz.cri.gns.util.map.NZMS260;
 import nz.cri.gns.util.map.NorthingEasting;
 import nz.cri.gns.util.map.TruncNorthingEasting;
+import nz.cri.gns.util.map.Datum.Coordinate;
 
 import org.xml.sax.SAXException;
 
@@ -365,6 +367,21 @@ public class FREDUtil {
 			conn.close();
 		}
 		return sr;
+	}
+	
+	public static Datum getFREDDatum(Feature feature) {
+		if (feature.getOrigSystemId() == null)
+			return null;
+		Datum datum = DatumFactory.createDatum(feature.getOrigSystemId().intValue());
+		return datum;
+	}
+	
+	public static Coordinate getFREDCoordinate(Feature feature) {
+		if (feature.getOrigCoord() == null || feature.getOrigSystemId() == null)
+			return null;
+		Datum datum = getFREDDatum(feature);
+		Coordinate coord = datum.parseCoordinate(feature.getOrigCoord());
+		return coord;
 	}
 	
 	public static void makeDropBox(PrintWriter out, ComboDescriptor cd) throws SQLException, NamingException {

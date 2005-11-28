@@ -23,6 +23,15 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     private String locality;
 
     /** nullable persistent field */
+    private Integer origSystemId;
+    
+    /** nullable persistent field */
+    private String origCoord;
+    
+    /** nullable persistent field */
+    private Integer mapYear;
+    
+    /** nullable persistent field */
     private String comments;
 
     /** persistent field */
@@ -83,9 +92,12 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     private Set<FeatureMeta> featureMetas;
 
     /** full constructor */
-    public Feature(Integer siteId, String locality, String comments, String featureType, String featureName, String drillholeLicenceName, Date startDate, Date finishDate, Double datumElevation, Double startDepth, String datumType, Double finishDepth, String startDateRounding, String finishDateRounding, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set samples, Set folders, Set relationships, Set<FeatureMeta> featureMetas) {
+    public Feature(Integer siteId, String locality, Integer origSystemId, String origCoord, Integer mapYear, String comments, String featureType, String featureName, String drillholeLicenceName, Date startDate, Date finishDate, Double datumElevation, Double startDepth, String datumType, Double finishDepth, String startDateRounding, String finishDateRounding, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set samples, Set folders, Set relationships, Set<FeatureMeta> featureMetas) {
         this.siteId = siteId;
         this.locality = locality;
+        this.origSystemId = origSystemId;
+        this.origCoord = origCoord;
+        this.mapYear = mapYear;
         this.comments = comments;
         this.featureType = featureType;
         this.featureName = featureName;
@@ -149,6 +161,30 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
         this.locality = locality;
     }
 
+    public Integer getOrigSystemId() {
+        return this.origSystemId;
+    }
+
+    public void setOrigSystemId(Integer origSystemId) {
+        this.origSystemId = origSystemId;
+    }
+    
+    public String getOrigCoord() {
+        return this.origCoord;
+    }
+
+    public void setOrigCoord(String origCoord) {
+        this.origCoord = origCoord;
+    }
+    
+    public Integer getMapYear() {
+        return this.mapYear;
+    }
+
+    public void setMapYear(Integer mapYear) {
+        this.mapYear = mapYear;
+    }
+    
     public String getComments() {
         return this.comments;
     }

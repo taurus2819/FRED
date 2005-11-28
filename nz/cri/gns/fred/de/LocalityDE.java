@@ -80,8 +80,8 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		initialise(feature, folderID, user, factory, content);
 		try {
 			site = FREDUtil.getSite(feature);
-			coord = site.getOrigCoordAsCoord();
-			datum = site.getOrigCoordDatum();
+			coord = FREDUtil.getFREDCoordinate(feature);
+			datum = FREDUtil.getFREDDatum(feature);
 		} catch (Exception e) {
 			//Site wasn't set
 		}
@@ -281,6 +281,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 				template.addSub("northing", String.valueOf(coord.getNorthSouth()));
 				
 				//Accuracy etc
+				template.addSub("mapYear", DBUtils.nvl(feature.getMapYear()));
 				template.addSub("accuracy", (site.isNull(SiteRecord.H_ACCURACY_FIELD) ? "" : String.valueOf(site.getAccuracy())));
 				template.addSub("localityDesc", DBUtils.nvl(feature.getLocality()));
 			}
@@ -350,8 +351,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		out.write("<td>" + feature.getRegistrationArea().getRegAreaId() + "</td>");
 		out.write("<td></td>"); //recollection - do later
 		out.write("<td>" + feature.getAudit().getWorkingComments() + "</td>");
-		Datum datum = site.getOrigCoordDatum();
-		Datum.Coordinate coord = site.getOrigCoordAsCoord();
 		out.write("<td>" + datum.getName() + ":" + ((datum.isMapSheetSystem()) ? (((MapSheetCoordinate)coord).getMapSheet() + "*") : "")
 				+ coord.getEastWest() + "*" + coord.getNorthSouth() + "</td>");
 		out.write("<td>" + site.getMethod() + "</td>");
@@ -417,6 +416,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			
 			try {
 				site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
+				//Also set the FRED copied SITE fields
+				feature.setOrigSystemId(datum.getDatabaseId());
+				feature.setOrigCoord(datum.getStringFor(coord));
 			} catch (Exception e) {
 				error.add(new String[] {"Coordinate", "Invalid coordinates specified"});
 			}
@@ -437,8 +439,15 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		} else
 			site = null;
 		
-		//Also set the feature locality to "Loc"
+		//Also set the FRED locality
 		feature.setLocality(request.getParameter("Loc"));
+
+		//set Map Year
+		try {
+			feature.setMapYear(Integer.parseInt(request.getParameter("MapYear")));
+		} catch (Exception e) {
+			error.add(new String[] {"Map Year", "Map Year not numeric"});
+		}
 		
 		editComments = request.getParameter("EditComm");
 		

@@ -14,6 +14,12 @@ public interface Feature extends Audited, Comparable<Feature> {
     public void setSiteId(Integer siteId);
     public String getLocality();
     public void setLocality(String locality);
+    public Integer getOrigSystemId();
+    public void setOrigSystemId(Integer origSystemId);
+    public String getOrigCoord();
+    public void setOrigCoord(String origCoord);
+    public Integer getMapYear();
+    public void setMapYear(Integer mapYear);
     public String getComments();
     public void setComments(String comments);
     public String getFeatureType();

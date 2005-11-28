@@ -39,6 +39,24 @@
         length="1024"
     />
     <property
+        name="origSystemId"
+        type="int"
+        column="ORIG_SYSTEM_ID"
+        length="3"
+    />
+    <property
+        name="origCoord"
+        type="java.lang.String"
+        column="ORIG_COORD"
+        length="32"
+    />
+    <property
+        name="mapYear"
+        type="int"
+        column="MAP_YEAR"
+        length="4"
+    />
+    <property
         name="comments"
         type="java.lang.String"
         column="COMMENTS"
