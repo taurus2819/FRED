@@ -315,6 +315,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			FREDUtil.makeDropBox(out, cd);
 			
 		} catch (NamingException e) {
+			e.printStackTrace();
 			//Should never happen!
 		}
 		template.loadAll(out);
