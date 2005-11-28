@@ -90,32 +90,27 @@
 		}
 		
 		if (sample.get(Sample.LATITUDE) != null) {
-			SiteRecord sr = SiteRecord.querySite(FREDUtils.getFREDConnection(state), sample.getAsInt(Sample.SITE_ID));			
-			int origID = sr.getOriginalId();
-			if (origID != -1) {
-				Datum datum = sr.getOrigCoordDatum();
-				Datum.Coordinate coord = sr.getOrigCoordAsCoord();	
-				if (!(datum.getName().equals("NZGD49") && !(datum.getName().equals("NZMG")))) {
-					if (coord instanceof Datum.LatLong) {
-						out.print("<tr><td class='heading'>Lat/Long</td>");
-					} else {
-						out.print("<tr><td class='heading'>Grid Ref</td>");
-					}
-					out.println("<td>" + datum.getHumanStringFor(coord).replaceAll("Geographic ", "") + "</td></tr>");
-				}
+			SiteRecord sr = SiteRecord.querySite(FREDUtils.getFREDConnection(state), sample.getAsInt(Sample.SITE_ID));
+			if (sample.get(Sample.ORIG_SYSTEM_ID) != null && sample.get(Sample.ORIG_COORD) != null) {
+				Datum datum = DatumFactory.createDatum(sample.getAsInt(Sample.ORIG_SYSTEM_ID));
+				Datum.Coordinate coord = datum.parseCoordinate(sample.getAsString(Sample.ORIG_COORD));
+				out.print("<tr><td class='heading'>"
+						+ ((coord instanceof Datum.LatLong) ? "Lat/Long" : "Grid Ref")
+						+ "</td><td>" + datum.getHumanStringFor(coord).replaceAll("Geographic ", "") + "</td></tr>");
 				if (!datum.getName().equals("NZMG")) {
 					try {
 						Datum nzmgDatum = DatumFactory.createDatum("NZMG");
 						Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
 						out.println("<tr><td class='heading'>Grid Ref</td><td>" + nzmgDatum.getHumanStringFor(nzmgCoord) + "</td></tr>");
-					} catch (Exception e) { System.out.println(e.getMessage()); }
+					} catch (Exception e) { }
 				}
 			}
 			Datum.LatLong ll = sr.getLatLong();
 			if (ll.getNorthSouth() != 999)
 				out.println("<tr><td class='heading'>Lat/Long</td><td>" + ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)</td></tr>");
-		}		
+		}
 		
+		if (sample.get(Sample.MAP_YEAR) != null) { out.println("<tr><td class='heading'>Map Year</td><td>" + sample.getAsString(Sample.MAP_YEAR) + "</td></tr>"); }
 		if (sample.get(Sample.METHOD) != null) { out.println("<tr><td class='heading'>Method</td><td>" + sample.getAsString(Sample.METHOD) + "</td></tr>"); }
 		if (sample.get(Sample.ACCURACY) != null) { out.println("<tr><td class='heading'>Accuracy</td><td>&#177 " + sample.getAsDouble(Sample.ACCURACY) + "m</td></tr>"); }
 		if (sample.isUserAuthenticated() && sample.get(Sample.LOCALITY) != null) { out.println("<tr><td class='heading'>Locality</td><td>" + sample.getAsString(Sample.LOCALITY) + "</td></tr>"); }

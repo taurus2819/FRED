@@ -312,6 +312,7 @@ public class Sample {
 			case ORIG_SYSTEM_ID:
 			case COORD_SYSTEM:
 			case ORIG_COORD:
+			case MAP_YEAR :
 			return true;
 		}
 		return false;
