@@ -21,6 +21,12 @@ public interface FeatureConstants {
 	public static final int MASTERFILE_NAME = 4;
 
 	public static final int LOCALITY = 5;
+	
+	public static final int ORIG_SYSTEM_ID = 27;
+	
+	public static final int ORIG_COORD = 28;
+	
+	public static final int MAP_YEAR = 29;
 
 	public static final int REG_AREA_ID = 6;
 

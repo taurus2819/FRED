@@ -25,7 +25,7 @@ public class FeatureData implements FeatureConstants {
 	private int id;
 	private int[] types = { Types.NUMERIC };
 	private Object[] data = new Object[1];
-	private Object[] values = new Object[27];
+	private Object[] values = new Object[30];
 	protected MetadataRecord[] mr;
 
 	/**
@@ -41,7 +41,7 @@ public class FeatureData implements FeatureConstants {
 			"SELECT f.feature_id, f.site_id, f.audit_id, f.masterfile_id, fd.name, f.locality, f.reg_area_id, f.comments, "
 				+ "f.feature_type, f.feature_name, f.drillhole_licence_name, f.start_date, f.start_date_rounding, f.finish_date, "
 				+ "f.finish_date_rounding, f.person_id, f.datum_type, f.datum_elevation, f.start_depth, f.finish_depth, "
-				+ "a.security_class_id, a.status, a.working_folder_id, a.created_date "
+				+ "a.security_class_id, a.status, a.working_folder_id, a.created_date, f.orig_system_id, f.orig_coord, f.map_year "
 				+ "FROM feature f, audit_table a, folder fd "
 				+ "WHERE f.audit_id = a.audit_id AND f.masterfile_id = fd.folder_id(+) AND feature_id = ?";
 		System.out.println(query);
@@ -77,6 +77,9 @@ public class FeatureData implements FeatureConstants {
 			values[STATUS] = rs.getString(22);
 			values[WORKING_FOLDER_ID] = ((rs.getString(23) != null) ? new Integer(rs.getInt(23)) : null);
 			values[CREATED_DATE] = rs.getDate(24);
+			values[ORIG_SYSTEM_ID] = ((rs.getString(25) != null) ? new Integer(rs.getInt(25)) : null);
+			values[ORIG_COORD] = rs.getString(26);
+			values[MAP_YEAR] = ((rs.getString(27) != null) ? new Integer(rs.getInt(27)) : null);
 			rs.close();
 			query = "SELECT sample_id FROM sample WHERE feature_id = ? ORDER BY top_depth";
 			data[0] = values[FEATURE_ID];

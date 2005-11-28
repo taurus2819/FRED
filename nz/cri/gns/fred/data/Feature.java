@@ -93,6 +93,8 @@ public class Feature implements FeatureConstants {
 				case SECURITY_CLASS_ID :
 				case STATUS :
 				case SITE_ID :
+				case ORIG_SYSTEM_ID :
+				case ORIG_COORD :
 				case SAMPLES :
 				case PETWELL_LINK :
 				return true;
