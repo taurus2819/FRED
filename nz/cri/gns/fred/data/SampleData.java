@@ -25,7 +25,7 @@ public class SampleData {
 
 	private static Pool pool = new Pool();
 	private int id;
-	private Object[] values = new Object[135];
+	private Object[] values = new Object[136];
 	private int[] types = { Types.NUMERIC };
 	private Object[] data = new Object[1];
 	protected MetadataRecord[] featMR;
@@ -64,7 +64,7 @@ public class SampleData {
 			+ "Known_Age_Start, Known_Age_Stop, Column_Map, Dip, Dip_Direction, Strike, Facing, Grainsize, Primary_Grainsize_ID, Primary_Grainsize, "
 			+ "Secondary_Grainsize_ID, Secondary_Grainsize, Comparator_Used, Bed_Thick_ID, Bed_Thickness, Bedding, Primary_Bedding_ID, Primary_Bedding, "
 			+ "Secondary_Bedding_ID, Secondary_Bedding, Weathering_ID, Weathering, Hardness_ID, Hardness, Carbonate_ID, Carbonate, Colour, "
-			+ "Colour_Modifier_ID, Colour_Modifier, Primary_Colour_ID, Primary_Colour, Secondary_Colour_ID, Secondary_Colour, Wet, Rock_Nature, Deposition_Env, Correspondence "
+			+ "Colour_Modifier_ID, Colour_Modifier, Primary_Colour_ID, Primary_Colour, Secondary_Colour_ID, Secondary_Colour, Wet, Rock_Nature, Deposition_Env, Correspondence, Map_Year "
 			+ "FROM Sample_All_View WHERE Sample_ID = ?";
 		data[0] = new Integer(this.id);
 		try {
@@ -198,6 +198,7 @@ public class SampleData {
 			values[Sample.ROCK_NATURE] = rs.getString(125);
 			values[Sample.DEPOSITION_ENV] = rs.getString(126);
 			values[Sample.CORRESPONDENCE] = rs.getString(127);
+			values[Sample.MAP_YEAR] = ((rs.getString(128) != null) ? new Integer(rs.getInt(128)) : null);
 			rs.close();
 			
 			query =

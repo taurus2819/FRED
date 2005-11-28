@@ -75,6 +75,7 @@ public class Sample {
 	public static final int ORIG_SYSTEM_ID = 43;
 	public static final int COORD_SYSTEM = 44;
 	public static final int ORIG_COORD = 45;
+	public static final int MAP_YEAR = 135;
 	public static final int LOCALITY = 46;
 	public static final int DRILLHOLE_LICENCE_NAME = 47;
 	public static final int PERSON_ID = 48;

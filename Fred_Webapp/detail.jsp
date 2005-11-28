@@ -260,10 +260,9 @@
 				if (sample.get(Sample.ORIG_SYSTEM_ID) != null && sample.get(Sample.ORIG_COORD) != null) {
 					Datum datum = DatumFactory.createDatum(sample.getAsInt(Sample.ORIG_SYSTEM_ID));
 					Datum.Coordinate coord = datum.parseCoordinate(sample.getAsString(Sample.ORIG_COORD));
-					if (coord instanceof Datum.LatLong) {
-						out.print("<tr><td class='heading'>"
-								+ ((coord instanceof Datum.LatLong) ? "Lat/Long" : "Grid Ref")
-								+ "</td><td>" + datum.getHumanStringFor(coord).replaceAll("Geographic ", "") + "</td></tr>");
+					out.print("<tr><td class='heading'>"
+							+ ((coord instanceof Datum.LatLong) ? "Lat/Long" : "Grid Ref")
+							+ "</td><td>" + datum.getHumanStringFor(coord).replaceAll("Geographic ", "") + "</td></tr>");
 					if (!datum.getName().equals("NZMG")) {
 						try {
 							Datum nzmgDatum = DatumFactory.createDatum("NZMG");
