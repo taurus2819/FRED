@@ -327,7 +327,7 @@ public class FeatureUtil extends ModelUtil {
 
 		int masterfile = -1;
 		try {
-			masterfile = (audit.getFolder().getFolderType().getName().equals("Backlog") ? FREDUtil.MASTERFILE_BACKLOG : FREDUtil.getMasterfile(feature));
+			masterfile = (FeatureUtil.isBacklogFeature(feature) ? FREDUtil.MASTERFILE_BACKLOG : FREDUtil.getMasterfile(feature));
 		} catch (Exception e) {
 			throw new StorageAccessException(e);
 		}
@@ -716,7 +716,7 @@ public class FeatureUtil extends ModelUtil {
 			//New feature
 			audit.setCreatedById(user.getPersonId());
 			audit.setCreatedDate(new Date());
-		} else if (audit.getFolder().getFolderType().getName().equals("Backlog")) {
+		} else if (FeatureUtil.isBacklogFeature(feature)) {
 			//Backlog editing feature
 			AuditEdit edit = featureDAO.createNewAuditEdit();
 			edit.setAudit(audit);
@@ -772,6 +772,11 @@ public class FeatureUtil extends ModelUtil {
 			featureDAO.save(edit);
 			featureDAO.update(audit);
 		}
+	}
+	
+	public static boolean isBacklogFeature(Feature feature) {
+		Folder folder = feature.getAudit().getFolder();
+		return (folder != null && folder.getFolderType().getName().equals(Folder.FOLDER_TYPE_BACKLOG));
 	}
 
 }
