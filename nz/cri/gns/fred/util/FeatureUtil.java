@@ -750,13 +750,6 @@ public class FeatureUtil extends ModelUtil {
 			//New feature
 			audit.setCreatedById(user.getPersonId());
 			audit.setCreatedDate(new Date());
-			if (feature.getFeatureType().equals(FREDConstants.DRILLHOLE) || feature.getFeatureType().equals(FREDConstants.VERTICAL_SECTION)) {
-				System.out.println("Creating blank sample");
-				SampleUtil sampleUtil = new SampleUtil(factory);
-				Sample sample = sampleUtil.createSample(feature, audit.getFolder().getFolderId(), true, user);
-				sampleUtil.save(sample);
-				System.out.println("Blank sample_id: " + sample.getSampleId());				
-			}
 		} else if (FeatureUtil.isBacklogFeature(feature)) {
 			//Backlog editing feature
 			AuditEdit edit = featureDAO.createNewAuditEdit();
@@ -776,6 +769,18 @@ public class FeatureUtil extends ModelUtil {
         
 		featureDAO.saveOrUpdate(audit);
 		featureDAO.saveOrUpdate(feature);
+		
+		//add blank sample if one drillhole or vert section and one doesn't exist 
+		Set<Sample> samples = feature.getSamples();
+		if (!feature.getFeatureType().equals(FREDConstants.OUTCROP) && samples == null) {
+			System.out.println("Creating blank sample");
+			SampleUtil sampleUtil = new SampleUtil(factory);
+			Sample sample = sampleUtil.createSample(feature, audit.getFolder().getFolderId(), true, user);
+			sampleUtil.save(sample);
+			System.out.println("Blank sample_id: " + sample.getSampleId());				
+		}		
+		
+		
 	}
 	
 	public static String getFeatureName(Feature feature) {
