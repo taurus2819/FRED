@@ -724,6 +724,9 @@ public class FeatureUtil extends ModelUtil {
 		if (drillTypeId != null)
 			sample.setDrillType(sampleDAO.getDrillType(drillTypeId.intValue()));
 		
+		//add first FRNumber (if one defined)
+		sample.setFrNumber(FeatureUtil.getFrNumber(feature));
+		
 		sampleDAO.save(sample);
 	}
 
@@ -779,7 +782,6 @@ public class FeatureUtil extends ModelUtil {
 			sampleUtil.save(sample);
 			System.out.println("Blank sample_id: " + sample.getSampleId());				
 		}		
-		
 		
 	}
 	
