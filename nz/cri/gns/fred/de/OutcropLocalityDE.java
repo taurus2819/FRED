@@ -14,7 +14,6 @@ import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Sample;
-import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 
 public class OutcropLocalityDE extends LocalityDE {
@@ -146,18 +145,6 @@ public class OutcropLocalityDE extends LocalityDE {
                 e = _e;
             else
                 e.getError().addAll(_e.getError());
-        }
-        //Try updating FRNumber again (after creating a sample) - will change when FRNumber moves to feature
-        if (FeatureUtil.isBacklogFeature(feature)) {
-        	System.out.println("Trying to update FRNumber for feature " + feature.getFeatureId() + " from OutcropLocalityDE");
-        	try {
-        		super.updateFRNumber(feature, request.getParameter("FRNumber"));
-			} catch (DataInputException _e) {
-	            if (e == null)
-	                e = _e;
-	            else
-	                e.getError().addAll(_e.getError());
-			}        	
         }
         if (e != null)
             throw e;
