@@ -29,6 +29,7 @@ import nz.cri.gns.fred.model.ColourModifier;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FossilGroup;
+import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.Person;
@@ -682,6 +683,27 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
         Vector<String[]> error = new Vector<String[]>();
 
+        //FRNumber update - only if backlog locality and FRNumber is null. Remove once FRNumber moved to Feature
+        if (FeatureUtil.isBacklogFeature(sample.getFeature())) {
+        	System.out.println("******************************");
+        	System.out.println("Setting FRNumber from SampleDE");
+        	try {
+        		String frNumberStr = request.getParameter("FRNumber");
+        		System.out.println("Input FRNumber: " + frNumberStr);
+        		FrNumber frNumber = sample.getFrNumber();
+        		System.out.println("Current FRNumber null: " + (frNumber == null));
+        		if (frNumber == null) {
+        			frNumber = FeatureUtil.parseFRNumber(frNumberStr);
+        			System.out.println("Parsed FRNumber: " + frNumber.getFrNumber());
+        			System.out.println("Setting FRNumber for sample " + sample.getSampleId());
+        			sample.setFrNumber(frNumber);
+        		}
+        	} catch (DataInputException e) {
+        		error.add(new String[] {"FR Number", e.getMessage()});
+        	}
+        	System.out.println("******************************");
+    	}
+        
 		//Collection date
 		try {
 			String collectionDate = request.getParameter("CollDate");

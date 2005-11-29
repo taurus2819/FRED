@@ -32,7 +32,6 @@ import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
-import nz.cri.gns.fred.model.FolderUser;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.UserFolder;
@@ -373,11 +372,27 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		
         //FRNum (if backlog - but only update if null)
         if (FeatureUtil.isBacklogFeature(feature)) {
+        	System.out.println("******************************");
+        	System.out.println("Setting FRNumber from LocalityDE");
         	try {
-        		updateFRNumber(feature, request.getParameter("FRNumber"));
-			} catch (DataInputException e) {
+        		String frNumberStr = request.getParameter("FRNumber");
+        		System.out.println("Input FRNumber: " + frNumberStr);
+        	   	FrNumber frNumber = FeatureUtil.getFrNumber(feature);
+        	   	System.out.println("Current FRNumber null: " + (frNumber == null));
+        	   	Set<Sample> samples = feature.getSamples();
+        	   	System.out.println("Sample List null " + (samples == null));
+        	   	if (frNumber == null && samples != null) {
+        	   		frNumber = FeatureUtil.parseFRNumber(frNumberStr);
+        	   		System.out.println("Parsed FRNumber: " + frNumber.getFrNumber());
+        	   		for (Sample sample : feature.getSamples()) {
+        	   			System.out.println("Setting FRNumber for sample " + sample.getSampleId());
+        	   			sample.setFrNumber(frNumber);
+        	   		}
+        	   	}
+   			} catch (DataInputException e) {
 				error.add(new String[] {"FR Number", e.getMessage()});
 			}
+   			System.out.println("******************************");
         }
         
 		//Feature name
@@ -476,22 +491,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			throw new DataInputException(error);
 	}
 
-	protected void updateFRNumber(Feature feature, String frNumberStr) throws DataInputException {
-		System.out.println("Input FRNumber: " + frNumberStr);
-    	FrNumber frNumber = FeatureUtil.getFrNumber(feature);
-    	System.out.println("Current FRNumber null: " + (frNumber == null));
-    	Set<Sample> samples = feature.getSamples();
-    	System.out.println("Sample List null " + (samples == null));
-    	if (frNumber == null && samples != null) {
-    		frNumber = FeatureUtil.parseFRNumber(frNumberStr);
-    		System.out.println("Parsed FRNumber: " + frNumber.getFrNumber());
-    		for (Sample sample : feature.getSamples()) {
-    			System.out.println("Setting FRNumber for sample " + sample.getSampleId());
-    			sample.setFrNumber(frNumber);
-    		}
-    	}
-	}
-	
     /**
      * @param factory
      */
