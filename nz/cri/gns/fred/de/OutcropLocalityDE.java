@@ -149,6 +149,7 @@ public class OutcropLocalityDE extends LocalityDE {
         }
         //Try updating FRNumber again (after creating a sample) - will change when FRNumber moves to feature
         if (FeatureUtil.isBacklogFeature(feature)) {
+        	System.out.println("Trying to update FRNumber for feature " + feature.getFeatureId() + " from OutcropLocalityDE");
         	try {
         		super.updateFRNumber(feature, request.getParameter("FRNumber"));
 			} catch (DataInputException _e) {
