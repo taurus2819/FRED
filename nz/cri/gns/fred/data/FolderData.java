@@ -28,7 +28,6 @@ public class FolderData {
 	 * Cannot be called directly. use static getFolder method instead.
 	 */
 	private FolderData(int id, PageState state) throws SQLException, IOException {
-		System.out.println("FolderData " + id + ":" + new java.util.Date() + ": Starting");
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		this.id = id;
 		String query =
@@ -47,19 +46,16 @@ public class FolderData {
 			values[Folder.OWNER_ID] = ((rs.getString(4) != null) ? new Integer(rs.getInt(4)) : null);
 			values[Folder.OWNER] = rs.getString(5);
 			rs.close();
-			System.out.println("FolderData " + id + ":" + new java.util.Date() + ": Got first stuff");
 			query = "SELECT DISTINCT feature_id, sample_name FROM folder_content_view WHERE folder_id = ? ORDER BY UPPER(sample_name)";
 			rs = conn.executeQuery(query, types, data);
 			Vector feats = new Vector();
 			while (rs.next()) {
 				Integer featureId = new Integer(rs.getInt(1));
-				System.out.println(featureId + ": " + rs.getString(2));
 				if (!feats.contains(featureId))
 					feats.add(featureId);
 			}
 			values[Folder.FEATURES] = feats;
 			rs.close();
-			System.out.println("FolderData " + id + ":" + new java.util.Date() + ": Finished");
 			conn.releaseStatement();
 		} catch (SQLException _e) {
 			throw DBUtils.fixSQLException(_e, query, conn);

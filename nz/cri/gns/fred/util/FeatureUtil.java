@@ -776,11 +776,9 @@ public class FeatureUtil extends ModelUtil {
 		//add blank sample if one drillhole or vert section and one doesn't exist 
 		Set<Sample> samples = feature.getSamples();
 		if (!feature.getFeatureType().equals(FREDConstants.OUTCROP) && samples == null) {
-			System.out.println("Creating blank sample");
 			SampleUtil sampleUtil = new SampleUtil(factory);
 			Sample sample = sampleUtil.createSample(feature, audit.getFolder().getFolderId(), true, user);
-			sampleUtil.save(sample);
-			System.out.println("Blank sample_id: " + sample.getSampleId());				
+			sampleUtil.save(sample);		
 		}		
 		
 	}

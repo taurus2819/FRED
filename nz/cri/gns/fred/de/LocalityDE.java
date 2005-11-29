@@ -372,27 +372,18 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		
         //FRNum (if backlog - but only update if null)
         if (FeatureUtil.isBacklogFeature(feature)) {
-        	System.out.println("******************************");
-        	System.out.println("Setting FRNumber from LocalityDE");
         	try {
         		String frNumberStr = request.getParameter("FRNumber");
-        		System.out.println("Input FRNumber: " + frNumberStr);
         	   	FrNumber frNumber = FeatureUtil.getFrNumber(feature);
-        	   	System.out.println("Current FRNumber null: " + (frNumber == null));
         	   	Set<Sample> samples = feature.getSamples();
-        	   	System.out.println("Sample List null " + (samples == null));
         	   	if (frNumber == null && samples != null) {
         	   		frNumber = FeatureUtil.parseFRNumber(frNumberStr);
-        	   		System.out.println("Parsed FRNumber: " + frNumber.getFrNumber());
-        	   		for (Sample sample : feature.getSamples()) {
-        	   			System.out.println("Setting FRNumber for sample " + sample.getSampleId());
+        	   		for (Sample sample : feature.getSamples())
         	   			sample.setFrNumber(frNumber);
-        	   		}
         	   	}
    			} catch (DataInputException e) {
 				error.add(new String[] {"FR Number", e.getMessage()});
 			}
-   			System.out.println("******************************");
         }
         
 		//Feature name
@@ -400,7 +391,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		
 		//Registration area
 		String registrationAreaId = request.getParameter("RegAreaId");
-		System.out.println(registrationAreaId);
 		if (feature.getRegistrationArea() == null || !feature.getRegistrationArea().getRegAreaId().toString().equals(registrationAreaId)) {
 			if (registrationAreaId.equals("-"))
 				feature.setRegistrationArea(null);

@@ -78,8 +78,6 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public void deleteRecord(int recordId, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
-		System.out.println("Deleting record: " + recordId);
-		
 		Record record = recordDAO.getRecord(recordId);
 				
 		if (!isAllowedDeleteRecord(record, folder, user))
