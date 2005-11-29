@@ -194,10 +194,11 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	/**
+	 * @throws DataInputException 
 	 *  
 	 */
 	
-	public void deleteSample(int sampleId, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+	public void deleteSample(int sampleId, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
 		Sample sample = sampleDAO.getSample(sampleId);
 		
 		if (!isAllowedDeleteSample(sample, folder, user))
@@ -209,7 +210,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		
 		//throw exception if only one sample (ie stop user deleting all samples. Can remove once database restructured
 		if (sampleCount == 1)
-			throw new StorageAccessException(new DataInputException("Samples", "Cannot delete the last sample. Please add new one first"));
+			throw new DataInputException("Samples", "Cannot delete the last sample. Please add new one first");
 		
 		feature.getSamples().remove(sample);
 		
