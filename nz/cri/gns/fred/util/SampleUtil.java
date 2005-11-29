@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.naming.NamingException;
@@ -200,13 +201,21 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		
 		//Remove from the feature
 		Feature feature = sample.getFeature();
+		int sampleCount = feature.getSamples().size();
 		feature.getSamples().remove(sample);
 		
 		Audit audit = sample.getAudit();
 		
 		//And then delete it from DB
 		sampleDAO.delete(sample);
-		//TODO Ben also checked if the feature was sampleless and added if it was.??
+		
+		//add new blank sample if now sampleless
+		if (!feature.getFeatureType().equals(FREDConstants.OUTCROP) && sampleCount == 1) {
+			System.out.println("Creating blank sample after a delete");
+			Sample blankSample = createSample(feature, audit.getFolder().getFolderId(), true, user);
+			save(sample);
+			System.out.println("Blank sample_id: " + blankSample.getSampleId());				
+		}	
 		
 		//try and delete audit record (if can't then probably also used by feature) so just ignore error
 		try {
