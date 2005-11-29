@@ -595,7 +595,6 @@ public class FeatureUtil extends ModelUtil {
 	 * Creates a blank feature of the given type, in the given folder.  The
 	 * feature and its associated entries are _not_ committed to persistent
 	 * storage.
-	 * Also creates blank Sample for drillhole and vert sect features
 	 * @throws StorageAccessException 
 	 */
 	public Feature createFeature(int folderId, String featureType, UserAccount user) throws StorageAccessException {
@@ -610,11 +609,6 @@ public class FeatureUtil extends ModelUtil {
 		audit.setCreatedDate(new Date());
 		audit.setCreatedById(new Integer(user.getId()));
 		feature.setAudit(audit);
-		if (featureType.equals(FREDConstants.DRILLHOLE) || featureType.equals(FREDConstants.VERTICAL_SECTION)) {
-			System.out.println("Creating blank sample");
-			Sample sample = new SampleUtil(factory).createSample(feature, folderId, false, user);
-			System.out.println("Blank sample_id: " + sample.getSampleId());
-		}
 		return feature;
 	}
 
@@ -756,6 +750,13 @@ public class FeatureUtil extends ModelUtil {
 			//New feature
 			audit.setCreatedById(user.getPersonId());
 			audit.setCreatedDate(new Date());
+			if (feature.getFeatureType().equals(FREDConstants.DRILLHOLE) || feature.getFeatureType().equals(FREDConstants.VERTICAL_SECTION)) {
+				System.out.println("Creating blank sample");
+				SampleUtil sampleUtil = new SampleUtil(factory);
+				Sample sample = sampleUtil.createSample(feature, audit.getFolder().getFolderId(), true, user);
+				sampleUtil.save(sample);
+				System.out.println("Blank sample_id: " + sample.getSampleId());				
+			}
 		} else if (FeatureUtil.isBacklogFeature(feature)) {
 			//Backlog editing feature
 			AuditEdit edit = featureDAO.createNewAuditEdit();
