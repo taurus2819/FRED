@@ -610,8 +610,11 @@ public class FeatureUtil extends ModelUtil {
 		audit.setCreatedDate(new Date());
 		audit.setCreatedById(new Integer(user.getId()));
 		feature.setAudit(audit);
-		if (featureType.equals(FREDConstants.DRILLHOLE) || featureType.equals(FREDConstants.VERTICAL_SECTION))
-			new SampleUtil(factory).createSample(feature, folderId, false, user);
+		if (featureType.equals(FREDConstants.DRILLHOLE) || featureType.equals(FREDConstants.VERTICAL_SECTION)) {
+			System.out.println("Creating blank sample");
+			Sample sample = new SampleUtil(factory).createSample(feature, folderId, false, user);
+			System.out.println("Blank sample_id: " + sample.getSampleId());
+		}
 		return feature;
 	}
 
