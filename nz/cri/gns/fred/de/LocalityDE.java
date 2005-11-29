@@ -371,19 +371,13 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         
         Vector<String[]> error = new Vector<String[]>();
 		
-        //FRNum (if backlog - only update if null)
+        //FRNum (if backlog - but only update if null)
         if (FeatureUtil.isBacklogFeature(feature)) {
-        	FrNumber frNumber = FeatureUtil.getFrNumber(feature);
-        	if (frNumber ==  null) {
-        		try {
-        			frNumber = FeatureUtil.parseFRNumber(request.getParameter("FRNumber"));
-        			for (Sample sample : feature.getSamples()) {
-        				sample.setFrNumber(frNumber);
-        			}	
-        		} catch (DataInputException e) {
-        			error.add(new String[] {"FR Number", e.getMessage()});
-        		}
-        	}
+        	try {
+        		updateFRNumber(feature, request.getParameter("FRNumber"));
+			} catch (DataInputException e) {
+				error.add(new String[] {"FR Number", e.getMessage()});
+			}
         }
         
 		//Feature name
@@ -482,6 +476,16 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			throw new DataInputException(error);
 	}
 
+	protected void updateFRNumber(Feature feature, String frNumberStr) throws DataInputException {
+    	FrNumber frNumber = FeatureUtil.getFrNumber(feature);
+    	Set<Sample> samples = feature.getSamples();
+    	if (frNumber == null && samples.size() > 0) {
+    		frNumber = FeatureUtil.parseFRNumber(frNumberStr);
+    		for (Sample sample : feature.getSamples())
+    			sample.setFrNumber(frNumber);
+    	}
+	}
+	
     /**
      * @param factory
      */
