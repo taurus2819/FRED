@@ -193,6 +193,10 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		this.folderDAO = factory.getFolderDAO();
 	}
 	
+	/**
+	 *  
+	 */
+	
 	public void deleteSample(int sampleId, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
 		Sample sample = sampleDAO.getSample(sampleId);
 		
@@ -202,20 +206,17 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		//Remove from the feature
 		Feature feature = sample.getFeature();
 		int sampleCount = feature.getSamples().size();
+		
+		//throw exception if only one sample (ie stop user deleting all samples. Can remove once database restructured
+		if (sampleCount == 1)
+			throw new StorageAccessException(new DataInputException("Samples", "Cannot delete the last sample. Please add new one first"));
+		
 		feature.getSamples().remove(sample);
 		
 		Audit audit = sample.getAudit();
 		
 		//And then delete it from DB
 		sampleDAO.delete(sample);
-		
-		//add new blank sample if now sampleless
-		if (!feature.getFeatureType().equals(FREDConstants.OUTCROP) && sampleCount == 1) {
-			System.out.println("Creating blank sample after a delete");
-			Sample blankSample = createSample(feature, audit.getFolder().getFolderId(), true, user);
-			save(sample);
-			System.out.println("Blank sample_id: " + blankSample.getSampleId());				
-		}	
 		
 		//try and delete audit record (if can't then probably also used by feature) so just ignore error
 		try {
