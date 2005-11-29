@@ -36,7 +36,6 @@ public class FeatureData implements FeatureConstants {
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		this.id = id;
 		//pool.add(this);
-		System.out.println("FeatureData: " + new java.util.Date() + ": About to execute query");
 		String query =
 			"SELECT f.feature_id, f.site_id, f.audit_id, f.masterfile_id, fd.name, f.locality, f.reg_area_id, f.comments, "
 				+ "f.feature_type, f.feature_name, f.drillhole_licence_name, f.start_date, f.start_date_rounding, f.finish_date, "
@@ -44,7 +43,6 @@ public class FeatureData implements FeatureConstants {
 				+ "a.security_class_id, a.status, a.working_folder_id, a.created_date, f.orig_system_id, f.orig_coord, f.map_year "
 				+ "FROM feature f, audit_table a, folder fd "
 				+ "WHERE f.audit_id = a.audit_id AND f.masterfile_id = fd.folder_id(+) AND feature_id = ?";
-		System.out.println(query);
 		data[0] = new Integer(this.id);
 		try {
 			ResultSet rs = conn.executeQuery(query, types, data);
@@ -52,7 +50,6 @@ public class FeatureData implements FeatureConstants {
 				throw new SQLException(
 					"Cannot find record in database with this id: " + this.id);
 			}
-			System.out.println("FeatureData: " + new java.util.Date() + ": Executed query");
 			values[FEATURE_ID] = new Integer(rs.getInt(1));
 			values[SITE_ID] = ((rs.getString(2) != null) ? new Integer(rs.getInt(2)) : null);
 			values[AUDIT_ID] = ((rs.getString(3) != null) ? new Integer(rs.getInt(3)) : null);
