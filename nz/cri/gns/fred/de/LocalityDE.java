@@ -479,7 +479,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	protected void updateFRNumber(Feature feature, String frNumberStr) throws DataInputException {
     	FrNumber frNumber = FeatureUtil.getFrNumber(feature);
     	Set<Sample> samples = feature.getSamples();
-    	if (frNumber == null && samples.size() > 0) {
+    	if (frNumber == null && samples != null) {
     		frNumber = FeatureUtil.parseFRNumber(frNumberStr);
     		for (Sample sample : feature.getSamples())
     			sample.setFrNumber(frNumber);
