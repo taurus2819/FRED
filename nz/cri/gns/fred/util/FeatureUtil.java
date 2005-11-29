@@ -595,9 +595,10 @@ public class FeatureUtil extends ModelUtil {
 	 * Creates a blank feature of the given type, in the given folder.  The
 	 * feature and its associated entries are _not_ committed to persistent
 	 * storage.
+	 * Also creates blank Sample for drillhole and vert sect features
 	 * @throws StorageAccessException 
 	 */
-	public Feature createFeature(int folderId, String featureType) throws StorageAccessException {
+	public Feature createFeature(int folderId, String featureType, UserAccount user) throws StorageAccessException {
 		if (!(featureType.equals(FREDConstants.OUTCROP) 
 				|| featureType.equals(FREDConstants.DRILLHOLE) || featureType.equals(FREDConstants.VERTICAL_SECTION))) 
 			throw new IllegalArgumentException("Invalid feature type given: " + featureType);
@@ -606,7 +607,11 @@ public class FeatureUtil extends ModelUtil {
 		Audit audit = featureDAO.createNewAudit();
 		audit.setFolder(folderDAO.getFolder(folderId));
 		audit.setStatus(FREDConstants.WORKING);
+		audit.setCreatedDate(new Date());
+		audit.setCreatedById(new Integer(user.getId()));
 		feature.setAudit(audit);
+		if (featureType.equals(FREDConstants.DRILLHOLE) || featureType.equals(FREDConstants.VERTICAL_SECTION))
+			new SampleUtil(factory).createSample(feature, folderId, false, user);
 		return feature;
 	}
 

@@ -73,7 +73,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	
 	
 	public LocalityDE(User user, int folderID, String featureType, DAOFactory factory, ContentProvider content)	throws StorageAccessException, InsufficientPrivelegesException {
-		initialise((featureUtil = new FeatureUtil(factory)).createFeature(folderID, featureType), folderID, user, factory, content);
+		initialise((featureUtil = new FeatureUtil(factory)).createFeature(folderID, featureType, user), folderID, user, factory, content);
 	}
 
 	public LocalityDE(Feature feature, int folderID, User user, DAOFactory factory, ContentProvider content) throws InsufficientPrivelegesException, StorageAccessException {

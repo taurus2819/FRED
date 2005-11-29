@@ -30,7 +30,7 @@ public class SampleTest extends FredHibernateTest {
 		UserFolder folder = list.get(0);
 
 		FeatureUtil featureUtil = new FeatureUtil(factory);
-		feature = featureUtil.createFeature(folder.getFolderId().intValue(), FREDConstants.OUTCROP);
+		feature = featureUtil.createFeature(folder.getFolderId().intValue(), FREDConstants.OUTCROP, user);
 		featureUtil.saveFeature(feature, user, null);
 		
 		SampleUtil sampleUtil = new SampleUtil(factory);
