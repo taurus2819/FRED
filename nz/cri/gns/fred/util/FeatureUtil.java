@@ -405,6 +405,7 @@ public class FeatureUtil extends ModelUtil {
 			throw new IllegalStateException("Cannot merge localities as one of both");
 		
 		FrNumber parentFRNumber = FeatureUtil.getFrNumber(parentFeature);
+		//put in array as feature.getSamples() changes as you change sample's feature
 		Object[] samples = feature.getSamples().toArray();
 		
 		//move all samples from merge feature to parent feature
