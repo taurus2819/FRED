@@ -22,6 +22,15 @@
 	<param-value>mis</param-value>
     </context-param>
 
+	<servlet>
+		<servlet-name>frf</servlet-name>
+		<servlet-class>nz.cri.gns.fred.servlet.FRFormServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>frf</servlet-name>
+		<url-pattern>/frf/*</url-pattern>
+	</servlet-mapping>
+
     <session-config>
 	<session-timeout>30</session-timeout>
     </session-config>
