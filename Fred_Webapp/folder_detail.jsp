@@ -103,6 +103,7 @@
 alert("<%=e.getMessage()%>");
 //--></script><%
 			} catch (Exception e) {
+				System.out.println("*********** FRED folder_detail.jsp error **********");
 				e.printStackTrace();
 				errorMessage = "An Error has occured: " + e.getMessage();
 			}
