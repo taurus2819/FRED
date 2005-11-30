@@ -405,28 +405,29 @@ public class FeatureUtil extends ModelUtil {
 			throw new IllegalStateException("Cannot merge localities as one of both");
 		
 		FrNumber parentFRNumber = FeatureUtil.getFrNumber(parentFeature);
-		Sample[] samples = feature.getSamples().toArray();
+		Object[] samples = feature.getSamples().toArray();
 		
 		//move all samples from merge feature to parent feature
 		for (int i = 0; i < samples.length; i++) {
+			Sample sample = (Sample) samples[i];
 			//check audits - temp fix, should really handle this more cleanly
-			if (samples[i].getAudit().equals(feature.getAudit()))
+			if (sample.getAudit().equals(feature.getAudit()))
 				throw new IllegalStateException("Cannot merge localities as problem with sample audit trail");
 
 			//set sample FRNumber if currently null
-			if (samples[i].getFrNumber() == null)
-				samples[i].setFrNumber(parentFRNumber);
-			samples[i].setFeature(parentFeature);
+			if (sample.getFrNumber() == null)
+				sample.setFrNumber(parentFRNumber);
+			sample.setFeature(parentFeature);
 
 			//add comments
 			AuditEdit edit = featureDAO.createNewAuditEdit();
-			edit.setAudit(samples[i].getAudit());
+			edit.setAudit(sample.getAudit());
 			edit.setEditedById(new Integer(user.getId()));
 			edit.setEditedDate(new Date());
 			edit.setComments("Sample into " + getFeatureName(parentFeature) + " from " + getFeatureName(feature));
 			featureDAO.save(edit);
 			
-			sampleDAO.update(samples[i]);
+			sampleDAO.update(sample);
 		}
 		//featureDAO.update(parentFeature);
 		
