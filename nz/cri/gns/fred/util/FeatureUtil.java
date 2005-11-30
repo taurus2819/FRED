@@ -356,11 +356,43 @@ public class FeatureUtil extends ModelUtil {
 	public void alterFeatureType(Feature feature, String newFeatureType, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
 		if (!folder.isAllowedEditLocalities() || !isBacklogFeature(feature))
 			throw new InsufficientPrivelegesException();
+		String oldFeatureType = feature.getFeatureType();
+		Set<Sample> samples = feature.getSamples();
 		if (newFeatureType.equals(FREDConstants.OUTCROP)) {
-			Set<Sample> samples = feature.getSamples();
 			if (!samples.isEmpty() && samples.size() > 1)
 				throw new IllegalStateException("Cannot change to Outcrop as locality has more than one sample"); 
+			feature.setDatumElevation(null);
+			feature.setDatumType(null);
+			feature.setDrillholeLicenceName(null);
+			feature.setFinishDate(null);
+			feature.setFinishDateRounding(null);
+			feature.setFinishDepth(null);
+			feature.setPerson(null);
+			feature.setStartDate(null);
+			feature.setStartDateRounding(null);
+			feature.setStartDepth(null);
+			for (Iterator i = samples.iterator(); i.hasNext(); ) {
+				Sample sample = (Sample) i.next();
+				sample.setBottomDepth(null);
+				sample.setTopDepth(null);
+				sample.setDrillType(null);
+				sampleDAO.update(sample);
+			}
+		} else if (newFeatureType.equals(FREDConstants.VERTICAL_SECTION)) {
+			feature.setDrillholeLicenceName(null);
+			for (Iterator i = samples.iterator(); i.hasNext(); ) {
+				Sample sample = (Sample) i.next();
+				sample.setDrillType(null);
+				sampleDAO.update(sample);
+			}			
 		}
+		AuditEdit edit = featureDAO.createNewAuditEdit();
+		edit.setAudit(feature.getAudit());
+		edit.setEditedById(Integer.parseInt(user.getId()));
+		edit.setEditedDate(new Date());
+		edit.setComments("Locality type changed from " + oldFeatureType + " to " + newFeatureType);
+		featureDAO.save(edit);
+		
 		feature.setFeatureType(newFeatureType);
 		featureDAO.update(feature);
 	}	
