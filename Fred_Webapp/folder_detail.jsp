@@ -165,14 +165,14 @@ function showHide(toShow, toHide) {
 				%><br />(<%=featName%>)&nbsp;&nbsp;<%
 			}
 			%></td><%
-			
-			%><td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td><%
 
 			if (folder.isBacklogFolder()) {
-				%><td><a href="javascript:prmpt=prompt('Please enter the new type. Choose Outcrop, Drillhole or Vertical Section', '');if(prmpt!=null && (prmpt == 'Outcrop' || prmpt == 'Drillhole' || prmpt == 'Vertical Section')){document.FoldForm.NewFeatType.value=prmpt;document.FoldForm.ActionType.value='AlterType';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/edit.gif" border="0" height="20" width="20" alt="Alter Locality Type" /></a><img src="images/blank.gif" height="20" width="2" /></td><%
+				%><td><a href="javascript:prmpt=prompt('Please enter the new type. Choose Outcrop, Drillhole or Vertical Section.\nPlease be aware that changing locality type may cause some information to be lost.', '');if(prmpt!=null && (prmpt == 'Outcrop' || prmpt == 'Drillhole' || prmpt == 'Vertical Section')){document.FoldForm.NewFeatType.value=prmpt;document.FoldForm.ActionType.value='AlterType';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}else{return false;}"><img src="images/edit.gif" border="0" height="20" width="20" alt="Alter Locality Type" /></a><img src="images/blank.gif" height="20" width="2" /></td><%
 			} else {
 				%><td></td><%	
-			}			
+			}	
+			
+			%><td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td><%
 
 			%><td style="color: #FF0000; text-align: left"><%
 			if (!status.equals(FREDConstants.APPROVED)) {
