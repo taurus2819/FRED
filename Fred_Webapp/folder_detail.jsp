@@ -40,7 +40,7 @@
 	FeatureUtil featureUtil = new FeatureUtil(factory);
 	User user =(User) getUser(session);
 	UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), user);
-
+	
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
 	if (folder.isAllowedCreateLocalities()) {
@@ -86,6 +86,10 @@
 					//Revoke waiting records
 					else if (actionType.equals("Revoke") && folder.isAllowedSubmitLocalities()) {
 						featureUtil.revokeFeature(feature, folder, user);
+					}
+					//Alter locality type
+					else if (actionType.equals("AlterType") && folder.isAllowedEditLocalities()) {
+						featureUtil.alterFeatureType(feature, request.getParameter("NewFeatType"), folder, user);
 					}
 				}
 			} catch (MandatoryFieldsMissingException e) {
@@ -136,9 +140,9 @@ function showHide(toShow, toHide) {
 
 <%
 		startDETable(pageContext);
-		%><table border="0" width="550"><tr><td colspan="9" class="deHeading">Localities</td></tr>
+		%><table border="1" width="550"><tr><td colspan="10" class="deHeading">Localities</td></tr>
 <tr>
-<th colspan="2">Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Options</th></tr>
+<th colspan="2">Name&nbsp;&nbsp;</th><th colspan="2">Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Options</th></tr>
 <tr><td colspan="9"><img src="images/line.gif" height="3" width="550" /></td></tr>
 
 <form name="FoldForm" method="put" action="folder_detail.jsp">
@@ -156,8 +160,14 @@ function showHide(toShow, toHide) {
 <%
 			//TODO ????
 			//if (featName != null && !featName.equals(sampName)) { out.print("<br />(" + featName +")&nbsp;&nbsp;"); }
-			%></td><td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
-<td style='color: #FF0000'><%
+			%></td><td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td><%
+			
+			if (folder.isBacklogFolder()) {
+				%><td><a href="javascript:prmpt=prompt('Please enter the new type. Choose Outcrop, Drillhole or Vertical Section', '');if(prmpt!=null && (prmpt == 'Outcrop' || prmpt == 'Drillhole' || prmpt == 'Vertical Section')){document.FoldForm.NewFeatType.value=prmpt;document.FoldForm.ActionType.value='AlterType';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/edit.gif" border="0" height="20" width="20" alt="Alter Locality Type" /></a><img src="images/blank.gif" height="20" width="2" /></td><%
+			} else {
+				%><td></td><%	
+			}
+			%><td style='color: #FF0000'><%
 
 			if (!status.equals(FREDConstants.APPROVED)) {
 				%><%=status%> &nbsp;&nbsp;</td><td><%=(audit.getCreatedDate() == null) ? "" : DateFormat.getDateInstance(DateFormat.LONG).format(audit.getCreatedDate())%></td>
@@ -202,6 +212,7 @@ function showHide(toShow, toHide) {
 <input type="hidden" name="FeatID" value="">
 <input type="hidden" name="NewFoldID" value="">
 <input type="hidden" name="NewFeatName" value="">
+<input type="hidden" name="NewFeatType" value="">
 </table></p>
 <%
 /*		//folder options

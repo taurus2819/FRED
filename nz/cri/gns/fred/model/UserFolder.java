@@ -82,4 +82,8 @@ public class UserFolder implements Comparable<UserFolder> {
 	public String getFolderName() {
 		return folder.getName();
 	}
+	
+	public boolean isBacklogFolder() {
+		return folder.getFolderType().getName().equals(FOLDER_TYPE_BACKLOG);
+	}
 }

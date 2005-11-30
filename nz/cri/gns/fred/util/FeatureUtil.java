@@ -352,6 +352,18 @@ public class FeatureUtil extends ModelUtil {
 		feature.setMasterFile(null);
 		featureDAO.update(feature);		
 	}
+
+	public void alterFeatureType(Feature feature, String newFeatureType, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+		if (!folder.isAllowedEditLocalities() || !isBacklogFeature(feature))
+			throw new InsufficientPrivelegesException();
+		if (newFeatureType.equals(FREDConstants.OUTCROP)) {
+			Set<Sample> samples = feature.getSamples();
+			if (!samples.isEmpty() && samples.size() > 1)
+				throw new IllegalStateException("Cannot change to Outcrop as locality has more than one sample"); 
+		}
+		feature.setFeatureType(newFeatureType);
+		featureDAO.update(feature);
+	}	
 	
 	public Feature getFeature(int featureId) throws StorageAccessException {
 		return featureDAO.getFeature(featureId);
