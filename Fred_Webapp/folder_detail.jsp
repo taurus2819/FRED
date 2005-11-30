@@ -81,7 +81,11 @@
 					else if (actionType.equals("RemoveFeat")) {
 						featureUtil.removeFeature(feature, folder, user);
 					}
-					// submit working locality
+					//Merge locality
+					else if (actionType.equals("MergeFeat")) {
+						featureUtil.mergeFeature(feature, request.getParameter("SelFeatID"), folder, user);
+					}
+					//submit working locality
 					else if (actionType.equals("Submit") && folder.isAllowedSubmitLocalities()) {
 						featureUtil.submitFeature(feature, folder, user);
 					}
@@ -142,23 +146,30 @@ function showHide(toShow, toHide) {
 
 <%
 		startDETable(pageContext);
-		%><table border="0" width="550"><tr><td colspan="10" class="deHeading">Localities</td></tr>
+		%><table border="0" width="550"><tr><td colspan="12" class="deHeading">Localities</td></tr>
 <tr>
-<th colspan="2">Name&nbsp;&nbsp;</th><th colspan="2">Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Options</th></tr>
-<tr><td colspan="10"><img src="images/line.gif" height="3" width="550" /></td></tr>
+<th colspan="3">Name&nbsp;&nbsp;</th><th colspan="2">Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Options</th></tr>
+<tr><td colspan="12"><img src="images/line.gif" height="3" width="550" /></td></tr>
 
-<form name="FoldForm" method="put" action="folder_detail.jsp">
+<form name="FoldForm" method="get" action="folder_detail.jsp">
 <%
 		//Display the features
 		Feature[] features = featureUtil.getFeaturesInFolder(folder);
-		for (int i=0; i<features.length; i++) {
+		for (int i = 0; i < features.length; i++) {
 			Feature feature = features[i];
 			Audit audit = feature.getAudit();
 			String status = audit.getStatus();
 			String name = FeatureUtil.getFeatureName(feature);
 			String featName = feature.getFeatureName();
-			%><tr>
-			<td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
+			%><tr><%
+			
+			if (folder.isBacklogFolder() && !feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
+				%><td><input type="radio" name="SelFeatID" value="<%=feature.getFeatureId()%>" /></td><%
+			} else {
+				%><td></td><%	
+			}			
+			
+			%><td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
 			
 			<td class="heading" style="text-align: left"><a href="folder_feature_detail.jsp?FoldID=<%=folder.getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><%=name%></a>&nbsp;&nbsp;<%
 			if (featName != null && !featName.equals(name)) {
@@ -191,6 +202,10 @@ function showHide(toShow, toHide) {
 				%><a href="javascript:prmpt=prompt('Please enter the new name', 'New <%=feature.getFeatureType()%>');if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value='CopyFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/copy.gif" border="0" height="20" width="20" alt="Copy Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 			}
 			%></td><td><%
+			if (folder.isBacklogFolder() && folder.isAllowedEditLocalities() && !feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
+				%><a href="javascript:if (confirm('Are you sure you want to merge this locality') == true) {document.FoldForm.ActionType.value='MergeFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/drill.gif" border="0" height="20" width="20" alt="Delete Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
+			}
+			%></td><td><%
 			if ((status.equals(FREDConstants.WORKING) || status.equals(FREDConstants.REJECTED)) && folder.isAllowedDeleteLocalities()) {
 				%><a href="javascript:if (confirm('Are you sure you want to delete this locality') == true) {document.FoldForm.ActionType.value='DeleteFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 			} else if (status.equals(FREDConstants.APPROVED)) {
@@ -203,18 +218,18 @@ function showHide(toShow, toHide) {
 				%><a href="javascript:if (confirm('Are you sure you want to revoke this locality') == true) {document.FoldForm.ActionType.value='Revoke';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 			}
 			%></td></tr>
-<tr><td colspan="10"><img src="images/line.gif" height="3" width="550" /></td></tr><%
+<tr><td colspan="12"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 		}
 		%></table><%
 		endDETable(pageContext);
 
 		%>
-<input type="hidden" name="ActionType" value="">
-<input type="hidden" name="ID" value="<%=folder.getFolder().getFolderId()%>">
-<input type="hidden" name="FeatID" value="">
-<input type="hidden" name="NewFoldID" value="">
-<input type="hidden" name="NewFeatName" value="">
-<input type="hidden" name="NewFeatType" value="">
+<input type="hidden" name="ActionType" value="" />
+<input type="hidden" name="ID" value="<%=folder.getFolder().getFolderId()%>" />
+<input type="hidden" name="FeatID" value="" />
+<input type="hidden" name="NewFoldID" value="" />
+<input type="hidden" name="NewFeatName" value="" />
+<input type="hidden" name="NewFeatType" value="" />
 </table></p>
 <%
 /*		//folder options

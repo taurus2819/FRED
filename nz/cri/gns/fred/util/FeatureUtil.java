@@ -396,6 +396,32 @@ public class FeatureUtil extends ModelUtil {
 		feature.setFeatureType(newFeatureType);
 		featureDAO.update(feature);
 	}	
+
+	public void mergeFeature(Feature feature, String parentFeatureID, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+		if (!folder.isAllowedEditLocalities() || !isBacklogFeature(feature))
+			throw new InsufficientPrivelegesException();
+		Feature parentFeature = getFeature(Integer.parseInt(parentFeatureID));
+		if (feature.getFeatureType().equals(FREDConstants.OUTCROP) || parentFeature.getFeatureType().equals(FREDConstants.OUTCROP))
+			throw new IllegalStateException("Cannot merge localities as one of both are outcrops");
+		
+		FrNumber parentFRNumber = FeatureUtil.getFrNumber(parentFeature);
+		Set<Sample> samples = feature.getSamples();
+		Set<Sample> parentSamples = parentFeature.getSamples();
+		
+		//move all samples from merge feature to parent feature
+		for (Sample sample : samples) {
+			//set sample FRNumber if currently null
+			if (sample.getFrNumber() == null)
+				sample.setFrNumber(parentFRNumber);
+			sampleDAO.update(sample);
+			samples.remove(sample);
+			parentSamples.add(sample);
+		}
+		featureDAO.update(parentFeature);
+		
+		//delete merge feature
+		deleteFeature(feature, user);
+	}	
 	
 	public Feature getFeature(int featureId) throws StorageAccessException {
 		return featureDAO.getFeature(featureId);
