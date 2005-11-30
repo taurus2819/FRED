@@ -425,7 +425,7 @@ public class FeatureUtil extends ModelUtil {
 			edit.setAudit(sample.getAudit());
 			edit.setEditedById(new Integer(user.getId()));
 			edit.setEditedDate(new Date());
-			edit.setComments("Sample into " + getFeatureName(parentFeature) + " from " + getFeatureName(feature));
+			edit.setComments("Sample merged into " + getFeatureName(parentFeature) + " from " + getFeatureName(feature));
 			featureDAO.save(edit);
 			
 			sampleDAO.update(sample);
