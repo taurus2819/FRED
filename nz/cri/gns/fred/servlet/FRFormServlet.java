@@ -2,6 +2,7 @@ package nz.cri.gns.fred.servlet;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -78,7 +79,7 @@ public class FRFormServlet extends HttpServlet {
 			PdfPTable table = new PdfPTable(new float[] {560});
 			table.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
 			
-			Image image = Image.getInstance(getClass().getResource("/fred/images/gsnz_logo.gif"));
+			Image image = Image.getInstance("/fred/images/gsnz_logo.gif");
 			image.scaleToFit(61, 60);
 			//image.setAbsolutePosition(460, 18);
 			document.add(image);
