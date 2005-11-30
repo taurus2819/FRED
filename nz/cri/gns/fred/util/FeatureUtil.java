@@ -402,7 +402,7 @@ public class FeatureUtil extends ModelUtil {
 			throw new InsufficientPrivelegesException();
 		Feature parentFeature = getFeature(Integer.parseInt(parentFeatureID));
 		if (feature.getFeatureType().equals(FREDConstants.OUTCROP) || parentFeature.getFeatureType().equals(FREDConstants.OUTCROP))
-			throw new IllegalStateException("Cannot merge localities as one of both are outcrops");
+			throw new IllegalStateException("Cannot merge localities as one of both");
 		
 		FrNumber parentFRNumber = FeatureUtil.getFrNumber(parentFeature);
 		Set<Sample> samples = feature.getSamples();
@@ -413,9 +413,9 @@ public class FeatureUtil extends ModelUtil {
 			//set sample FRNumber if currently null
 			if (sample.getFrNumber() == null)
 				sample.setFrNumber(parentFRNumber);
-			sampleDAO.update(sample);
 			samples.remove(sample);
 			parentSamples.add(sample);
+			sampleDAO.update(sample);
 		}
 		featureDAO.update(parentFeature);
 		
