@@ -15,6 +15,7 @@ import nz.cri.gns.fred.util.FeatureUtil;
 import com.lowagie.text.Cell;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import com.lowagie.text.Image;
@@ -40,7 +41,8 @@ public class FRFormServlet extends HttpServlet {
 		this.factory = HibernateUtil.get().getDAOFactory();
 		this.featureUtil = new FeatureUtil(factory);
 		Feature feature = featureUtil.getFeature(Integer.parseInt(request.getParameter("FeatID")));
-		makePDF(feature);
+		Feature feature2 = featureUtil.getFeature(Integer.parseInt(request.getParameter("Feat2ID")));
+		makePDF(new Feature[] {feature, feature2});
 		} catch (Exception e) {
 			e.printStackTrace();
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -48,21 +50,35 @@ public class FRFormServlet extends HttpServlet {
 		}
 	}
 		
-	private void makePDF(Feature feature) {
-		try {
-			Document document = new Document(PageSize.A4, 0, 0, 50, 50);
+	private void makePDF(Feature[] features) throws DocumentException, IOException {
+		Document document = new Document(PageSize.A4, 0, 0, 50, 50);
 			
-			PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
-			writer.setEncryption(true, null, null, PdfWriter.AllowPrinting | PdfWriter.AllowScreenReaders);
+		PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
+		writer.setEncryption(true, null, null, PdfWriter.AllowPrinting | PdfWriter.AllowScreenReaders);
 			
-			document.open();
+		document.open();
+		
+		Font[] fonts = new Font[1];
+		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 16, Font.BOLD);
+		
+		for (int i = 0; i < features.length; i++) {
+			writeLocality(features[i], document, fonts);
+			if (i < features.length - 1)
+				document.newPage();
+			//out.flush();
+		}
+		
+		document.close();
+
+	}
+	
+	private void writeLocality(Feature feature, Document document, Font[] fonts) throws DocumentException {
 			
 			PdfPTable table = new PdfPTable(new float[] {560});
 			table.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
 			
-			Font largeFont = FontFactory.getFont(FontFactory.HELVETICA, 16, Font.BOLD);
 			
-			PdfPCell cell = new PdfPCell(new Phrase(new Chunk("FRF Form Test: " + FeatureUtil.getFeatureName(feature), largeFont)));
+			PdfPCell cell = new PdfPCell(new Phrase(new Chunk("FRF Form Test: " + FeatureUtil.getFeatureName(feature), fonts[0])));
 			cell.setVerticalAlignment(PdfPCell.ALIGN_RIGHT);
 			cell.setBorder(PdfPCell.BOTTOM);
 			table.addCell(cell);
@@ -219,11 +235,8 @@ public class FRFormServlet extends HttpServlet {
 			image.scaleToFit(100, 100);
 			image.setAbsolutePosition(460, 18);
 			document.add(image);
-	*/		document.close();
+	*/		
 			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 }
