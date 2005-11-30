@@ -406,18 +406,16 @@ public class FeatureUtil extends ModelUtil {
 		
 		FrNumber parentFRNumber = FeatureUtil.getFrNumber(parentFeature);
 		Set<Sample> samples = feature.getSamples();
-		Set<Sample> parentSamples = parentFeature.getSamples();
 		
 		//move all samples from merge feature to parent feature
 		for (Sample sample : samples) {
 			//set sample FRNumber if currently null
 			if (sample.getFrNumber() == null)
 				sample.setFrNumber(parentFRNumber);
-			samples.remove(sample);
-			parentSamples.add(sample);
+			sample.setFeature(parentFeature);
 			sampleDAO.update(sample);
 		}
-		featureDAO.update(parentFeature);
+		//featureDAO.update(parentFeature);
 		
 		//delete merge feature
 		deleteFeature(feature, user);
