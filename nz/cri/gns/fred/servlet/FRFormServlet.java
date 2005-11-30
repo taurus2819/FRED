@@ -61,8 +61,9 @@ public class FRFormServlet extends HttpServlet {
 			
 		document.open();
 		
-		Font[] fonts = new Font[1];
-		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 16, Font.BOLD);
+		Font[] fonts = new Font[2];
+		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 14, Font.BOLD);
+		fonts[1] = FontFactory.getFont(FontFactory.HELVETICA, 24, Font.BOLD);
 		
 		for (int i = 0; i < features.length; i++) {
 			writeLocality(features[i], document, fonts);
@@ -77,17 +78,20 @@ public class FRFormServlet extends HttpServlet {
 	
 	private void writeLocality(Feature feature, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException {
 			
-			PdfPTable table = new PdfPTable(new float[] {560});
-			table.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
+			PdfPTable table = new PdfPTable(2);
+			table.setWidthPercentage(100);
 			
-			Image image = Image.getInstance(new URL("http://data.gns.cri.nz/fred/images/gsnz_logo.gif"));
-			image.scaleToFit(61, 60);
-			//image.setAbsolutePosition(460, 18);
-			document.add(image);
+			PdfPCell defaultCell = table.getDefaultCell();
+			defaultCell.setBorder(PdfPCell.NO_BORDER);
+			defaultCell.setVerticalAlignment(PdfPCell.ALIGN_RIGHT);
 			
-			PdfPCell cell = new PdfPCell(new Phrase(new Chunk("FRF Form Test: " + FeatureUtil.getFeatureName(feature), fonts[0])));
-			cell.setVerticalAlignment(PdfPCell.ALIGN_RIGHT);
-			cell.setBorder(PdfPCell.BOTTOM);
+			//Image image = Image.getInstance(new URL("http://data.gns.cri.nz/fred/images/gsnz_logo.gif"));
+			//image.scaleToFit(61, 60);
+			//table.addCell(image);
+			
+			PdfPCell cell = new PdfPCell(new Phrase("Geological Society of New Zealand", fonts[0]));
+			table.addCell(cell);
+			cell = new PdfPCell(new Phrase(FeatureUtil.getFeatureName(feature), fonts[1]));
 			table.addCell(cell);
 
 			document.add(table);
