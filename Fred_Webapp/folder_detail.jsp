@@ -151,7 +151,7 @@ function showHide(toShow, toHide) {
 <th colspan="3">Name&nbsp;&nbsp;</th><th colspan="2">Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Options</th></tr>
 <tr><td colspan="12"><img src="images/line.gif" height="3" width="550" /></td></tr>
 
-<form name="FoldForm" method="get" action="folder_detail.jsp">
+<form name="FoldForm" method="post" action="folder_detail.jsp">
 <%
 		//Display the features
 		Feature[] features = featureUtil.getFeaturesInFolder(folder);
@@ -203,7 +203,7 @@ function showHide(toShow, toHide) {
 			}
 			%></td><td><%
 			if (folder.isBacklogFolder() && folder.isAllowedEditLocalities() && !feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
-				%><a href="javascript:if (confirm('Are you sure you want to merge this locality') == true) {document.FoldForm.ActionType.value='MergeFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/drill.gif" border="0" height="20" width="20" alt="Delete Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
+				%><a href="javascript:if (confirm('Are you sure you want to merge this locality') == true) {document.FoldForm.ActionType.value='MergeFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/drill.gif" border="0" height="20" width="20" alt="Merge Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 			}
 			%></td><td><%
 			if ((status.equals(FREDConstants.WORKING) || status.equals(FREDConstants.REJECTED)) && folder.isAllowedDeleteLocalities()) {
