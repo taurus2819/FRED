@@ -22,7 +22,9 @@
 		try {
 			FolderUtil folderUtil = new FolderUtil(HibernateUtil.get().getDAOFactory());
 			UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), getUser(request.getSession()));
-			return "FRED :: " + ((User)getUser(request.getSession())).getFullName() + "'s Folders: " + folder.getFolder().getName();
+			return "FRED :: " + ((User)getUser(request.getSession())).getFullName() + "'s "
+					+ ((folder.isBacklogFolder()) ? "Backlog " : "")
+					+ "Folders: " + folder.getFolder().getName();
 		} catch (StorageAccessException e) {
 			return "FRED";
 		}
@@ -140,7 +142,7 @@ function showHide(toShow, toHide) {
 
 <%
 		startDETable(pageContext);
-		%><table border="0" width="550"><tr><td colspan="10" class="deHeading">Localities</td></tr>
+		%><table border="1" width="550"><tr><td colspan="10" class="deHeading">Localities</td></tr>
 <tr>
 <th colspan="2">Name&nbsp;&nbsp;</th><th colspan="2">Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Options</th></tr>
 <tr><td colspan="9"><img src="images/line.gif" height="3" width="550" /></td></tr>
@@ -154,44 +156,41 @@ function showHide(toShow, toHide) {
 			Audit audit = feature.getAudit();
 			String status = audit.getStatus();
 			String name = FeatureUtil.getFeatureName(feature);
+			String featName = feature.getFeatureName();
 			%><tr>
-<td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
-<td class="heading" style="text-align: left"><a href="folder_feature_detail.jsp?FoldID=<%=folder.getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><%=name%></a>&nbsp;&nbsp;
-<%
-			//TODO ????
-			//if (featName != null && !featName.equals(sampName)) { out.print("<br />(" + featName +")&nbsp;&nbsp;"); }
+			<td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
+			
+			<td class="heading" style="text-align: left"><a href="folder_feature_detail.jsp?FoldID=<%=folder.getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><%=name%></a>&nbsp;&nbsp;<%
+			if (featName != null && !featName.equals(name)) {
+				%><br />(<%=featName%>&nbsp;&nbsp;<%
+			}
 			%></td><%
 			
+			%><td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td><%
+
 			if (folder.isBacklogFolder()) {
 				%><td><a href="javascript:prmpt=prompt('Please enter the new type. Choose Outcrop, Drillhole or Vertical Section', '');if(prmpt!=null && (prmpt == 'Outcrop' || prmpt == 'Drillhole' || prmpt == 'Vertical Section')){document.FoldForm.NewFeatType.value=prmpt;document.FoldForm.ActionType.value='AlterType';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/edit.gif" border="0" height="20" width="20" alt="Alter Locality Type" /></a><img src="images/blank.gif" height="20" width="2" /></td><%
 			} else {
 				%><td></td><%	
-			}
-			
-			%><td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
-			
+			}			
 
-			<td style='color: #FF0000'><%
-			if (!status.equals(FREDConstants.APPROVED)) {
-				%><%=status%> &nbsp;&nbsp;</td><td><%=(audit.getCreatedDate() == null) ? "" : DateFormat.getDateInstance(DateFormat.LONG).format(audit.getCreatedDate())%></td>
-<%
-			} else {
-				%></td><td></td>
-<%
-			}
-			%><td><%
+			%><td style='color: #FF0000'><%
 			
+			if (!status.equals(FREDConstants.APPROVED)) {
+				%><%=status%> &nbsp;&nbsp;</td><td><%=(audit.getCreatedDate() == null) ? "" : DateFormat.getDateInstance(DateFormat.LONG).format(audit.getCreatedDate())%></td><%
+			} else {
+				%></td><td></td><%
+			}
+			
+			%><td><%
 			if (featureUtil.isAllowedEditFeature(user, feature, folder)) {
-				%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a><img src="images/blank.gif" height="20" width="2" />
-<%
+				%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 			}
 			%></td><td><%
-
 			if (folder.isAllowedCreateLocalities()) {
 				%><a href="javascript:prmpt=prompt('Please enter the new name', 'New <%=feature.getFeatureType()%>');if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value='CopyFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/copy.gif" border="0" height="20" width="20" alt="Copy Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 			}
 			%></td><td><%
-				
 			if ((status.equals(FREDConstants.WORKING) || status.equals(FREDConstants.REJECTED)) && folder.isAllowedDeleteLocalities()) {
 				%><a href="javascript:if (confirm('Are you sure you want to delete this locality') == true) {document.FoldForm.ActionType.value='DeleteFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 			} else if (status.equals(FREDConstants.APPROVED)) {
