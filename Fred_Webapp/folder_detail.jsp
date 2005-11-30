@@ -142,10 +142,10 @@ function showHide(toShow, toHide) {
 
 <%
 		startDETable(pageContext);
-		%><table border="1" width="550"><tr><td colspan="10" class="deHeading">Localities</td></tr>
+		%><table border="0" width="550"><tr><td colspan="10" class="deHeading">Localities</td></tr>
 <tr>
 <th colspan="2">Name&nbsp;&nbsp;</th><th colspan="2">Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Options</th></tr>
-<tr><td colspan="9"><img src="images/line.gif" height="3" width="550" /></td></tr>
+<tr><td colspan="10"><img src="images/line.gif" height="3" width="550" /></td></tr>
 
 <form name="FoldForm" method="put" action="folder_detail.jsp">
 <%
@@ -162,7 +162,7 @@ function showHide(toShow, toHide) {
 			
 			<td class="heading" style="text-align: left"><a href="folder_feature_detail.jsp?FoldID=<%=folder.getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><%=name%></a>&nbsp;&nbsp;<%
 			if (featName != null && !featName.equals(name)) {
-				%><br />(<%=featName%>&nbsp;&nbsp;<%
+				%><br />(<%=featName%>)&nbsp;&nbsp;<%
 			}
 			%></td><%
 			
@@ -174,10 +174,10 @@ function showHide(toShow, toHide) {
 				%><td></td><%	
 			}			
 
-			%><td style='color: #FF0000'><%
-			
+			%><td style="color: #FF0000; text-align: left"><%
 			if (!status.equals(FREDConstants.APPROVED)) {
-				%><%=status%> &nbsp;&nbsp;</td><td><%=(audit.getCreatedDate() == null) ? "" : DateFormat.getDateInstance(DateFormat.LONG).format(audit.getCreatedDate())%></td><%
+				%><%=status%>&nbsp;&nbsp;</td>
+				<td style="text-align: left"><%=(audit.getCreatedDate() == null) ? "" : DateFormat.getDateInstance(DateFormat.LONG).format(audit.getCreatedDate())%></td><%
 			} else {
 				%></td><td></td><%
 			}
