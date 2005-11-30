@@ -46,6 +46,7 @@ public class FRFormServlet extends HttpServlet {
 		//Feature feature2 = featureUtil.getFeature(Integer.parseInt(request.getParameter("Feat2ID")));
 		makePDF(new Feature[] {feature});
 		} catch (Exception e) {
+			System.out.println("************************************");
 			e.printStackTrace();
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			return;
@@ -79,7 +80,7 @@ public class FRFormServlet extends HttpServlet {
 			PdfPTable table = new PdfPTable(new float[] {560});
 			table.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
 			
-			Image image = Image.getInstance("/fred/images/gsnz_logo.gif");
+			Image image = Image.getInstance(new URL("http://data.gns.cri.nz/fred/images/gsnz_logo.gif"));
 			image.scaleToFit(61, 60);
 			//image.setAbsolutePosition(460, 18);
 			document.add(image);
