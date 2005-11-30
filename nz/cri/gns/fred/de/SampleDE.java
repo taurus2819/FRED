@@ -684,7 +684,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         Vector<String[]> error = new Vector<String[]>();
 
         //FRNumber update - only if backlog locality and FRNumber is null. Remove once FRNumber moved to Feature
-        if (FeatureUtil.isBacklogFeature(sample.getFeature())) {
+        if (FeatureUtil.isBacklogFeature(sample.getFeature()) && request.getParameter("FRNumber") != null) {
         	try {
         		String frNumberStr = request.getParameter("FRNumber");
         		FrNumber frNumber = sample.getFrNumber();
