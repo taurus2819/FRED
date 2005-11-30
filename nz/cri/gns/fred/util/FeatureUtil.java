@@ -412,6 +412,9 @@ public class FeatureUtil extends ModelUtil {
 			//set sample FRNumber if currently null
 			if (sample.getFrNumber() == null)
 				sample.setFrNumber(parentFRNumber);
+			//check audits
+			if (sample.getAudit().equals(feature.getAudit()))
+				throw new IllegalStateException("Cannot merge localities as problem with sample audit trail");
 			sample.setFeature(parentFeature);
 			sampleDAO.update(sample);
 		}
@@ -845,7 +848,7 @@ public class FeatureUtil extends ModelUtil {
 		Set<Sample> samples = feature.getSamples();
 		if (!feature.getFeatureType().equals(FREDConstants.OUTCROP) && samples == null) {
 			SampleUtil sampleUtil = new SampleUtil(factory);
-			Sample sample = sampleUtil.createSample(feature, audit.getFolder().getFolderId(), true, user);
+			Sample sample = sampleUtil.createSample(feature, audit.getFolder().getFolderId(), false, user);
 			sampleUtil.save(sample);		
 		}		
 		
