@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.servlet;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -41,8 +42,8 @@ public class FRFormServlet extends HttpServlet {
 		this.factory = HibernateUtil.get().getDAOFactory();
 		this.featureUtil = new FeatureUtil(factory);
 		Feature feature = featureUtil.getFeature(Integer.parseInt(request.getParameter("FeatID")));
-		Feature feature2 = featureUtil.getFeature(Integer.parseInt(request.getParameter("Feat2ID")));
-		makePDF(new Feature[] {feature, feature2});
+		//Feature feature2 = featureUtil.getFeature(Integer.parseInt(request.getParameter("Feat2ID")));
+		makePDF(new Feature[] {feature});
 		} catch (Exception e) {
 			e.printStackTrace();
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -72,11 +73,15 @@ public class FRFormServlet extends HttpServlet {
 
 	}
 	
-	private void writeLocality(Feature feature, Document document, Font[] fonts) throws DocumentException {
+	private void writeLocality(Feature feature, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException {
 			
 			PdfPTable table = new PdfPTable(new float[] {560});
 			table.getDefaultCell().setBorder(PdfPCell.NO_BORDER);
 			
+			Image image = Image.getInstance(getClass().getResource("/fred/images/gsnz_logo.gif"));
+			image.scaleToFit(61, 60);
+			//image.setAbsolutePosition(460, 18);
+			document.add(image);
 			
 			PdfPCell cell = new PdfPCell(new Phrase(new Chunk("FRF Form Test: " + FeatureUtil.getFeatureName(feature), fonts[0])));
 			cell.setVerticalAlignment(PdfPCell.ALIGN_RIGHT);
