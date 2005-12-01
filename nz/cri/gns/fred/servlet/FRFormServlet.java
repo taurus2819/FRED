@@ -97,7 +97,7 @@ public class FRFormServlet extends HttpServlet {
 		table.setSpacingAfter(7 * MM_TO_PT);
 				
 		//Logos
-		String url = "http://" + request.getContextPath() + "/fred/images/gsnz_logo.gif";
+		String url = request.getContextPath() + "/images/gsnz_logo.gif";
 		System.out.println("URL: " + "http://" + url);
 		Image image = Image.getInstance(new URL(url));
 		image.scaleToFit(61, 60);
