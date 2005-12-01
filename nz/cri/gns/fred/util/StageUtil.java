@@ -33,12 +33,12 @@ public class StageUtil extends ModelUtil {
 	
 	private static String getStageDesc(Stage stage, int nameType) throws NamingException, SQLException {
 		StringBuffer desc = new StringBuffer();
-		String[] lowerAge = FREDUtil.getStageAgeName(String.valueOf(stage.getStageLowerId()));
-		if (lowerAge != null) {
+		if (stage.getStageLowerId() != null) {
+			String[] lowerAge = FREDUtil.getStageAgeName(String.valueOf(stage.getStageLowerId()));
 			desc.append(lowerAge[nameType]);
 			desc.append(stage.getStageLowerMod());
-			String[] upperAge = FREDUtil.getStageAgeName(String.valueOf(stage.getStageUpperId()));
-			if (upperAge != null) {
+			if (stage.getStageUpperId() != null) {
+				String[] upperAge = FREDUtil.getStageAgeName(String.valueOf(stage.getStageUpperId()));
 				desc.append(" - ");
 				desc.append(upperAge[nameType]);
 				desc.append(stage.getStageUpperMod());
