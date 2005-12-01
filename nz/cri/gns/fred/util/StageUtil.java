@@ -21,17 +21,16 @@ public class StageUtil extends ModelUtil {
 	public static String getStageDescription(Stage stage) throws NamingException, SQLException {
 		StringBuffer desc = new StringBuffer();
 		String[] lowerAge = FREDUtil.getStageAgeName(String.valueOf(stage.getStageLowerId()));
-		String[] upperAge = FREDUtil.getStageAgeName(String.valueOf(stage.getStageUpperId()));
-		
-		desc.append(lowerAge[0]);
-		desc.append(stage.getStageLowerMod());
-		if (lowerAge != null && upperAge != null)
-			desc.append(" - ");
-		desc.append(upperAge[0]);
-		desc.append(stage.getStageUpperMod());
-		if (lowerAge != null && upperAge != null)
-			desc.append(" - ");
-		
+		if (lowerAge != null) {
+			desc.append(lowerAge[0]);
+			desc.append(stage.getStageLowerMod());
+			String[] upperAge = FREDUtil.getStageAgeName(String.valueOf(stage.getStageUpperId()));
+			if (upperAge != null) {
+				desc.append(" - ");
+				desc.append(upperAge[0]);
+				desc.append(stage.getStageUpperMod());
+			}	
+		}
 		return desc.toString();
 	}
 
@@ -43,17 +42,16 @@ public class StageUtil extends ModelUtil {
 	public static String getStageDescriptionAbbrev(Stage stage) throws NamingException, SQLException {
 		StringBuffer desc = new StringBuffer();
 		String[] lowerAge = FREDUtil.getStageAgeName(String.valueOf(stage.getStageLowerId()));
-		String[] upperAge = FREDUtil.getStageAgeName(String.valueOf(stage.getStageUpperId()));
-		
-		desc.append(lowerAge[1]);
-		desc.append(stage.getStageLowerMod());
-		if (lowerAge != null && upperAge != null)
-			desc.append(" - ");
-		desc.append(upperAge[1]);
-		desc.append(stage.getStageUpperMod());
-		if (lowerAge != null && upperAge != null)
-			desc.append(" - ");
-		
+		if (lowerAge != null) {
+			desc.append(lowerAge[1]);
+			desc.append(stage.getStageLowerMod());
+			String[] upperAge = FREDUtil.getStageAgeName(String.valueOf(stage.getStageUpperId()));
+			if (upperAge != null) {
+				desc.append(" - ");
+				desc.append(upperAge[1]);
+				desc.append(stage.getStageUpperMod());
+			}	
+		}
 		return desc.toString();
 	}
 	
