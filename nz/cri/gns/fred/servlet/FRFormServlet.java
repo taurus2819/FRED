@@ -13,9 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
+import nz.cri.gns.auth.User;
+import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.dao.DAOFactory;
+import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
@@ -49,6 +52,8 @@ public class FRFormServlet extends HttpServlet {
 	private HttpServletResponse response;
 	private DAOFactory factory;
 	private SampleUtil sampleUtil;
+	private FeatureUtil featureUtil;
+	private UserAccount user;
 	
 	private static final float MM_TO_PT = 2.8346f;
 	
@@ -58,8 +63,10 @@ public class FRFormServlet extends HttpServlet {
 		this.response = response;
 		this.factory = HibernateUtil.get().getDAOFactory();
 		this.sampleUtil = new SampleUtil(factory);
+		this.featureUtil = new FeatureUtil(factory);
+		this.user = (UserAccount)request.getSession().getAttribute(User.USER_ATTRIBUTE);
 		Sample sample = sampleUtil.getSample(Integer.parseInt(request.getParameter("ID")));
-		//Feature feature2 = featureUtil.getFeature(Integer.parseInt(request.getParameter("Feat2ID")));
+		
 		makePDF(new Sample[] {sample});
 		} catch (Exception e) {
 			System.out.println("************************************");
@@ -102,9 +109,10 @@ public class FRFormServlet extends HttpServlet {
 
 	}
 	
-	private void writeSample(Sample sample, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException {
-
+	private void writeSample(Sample sample, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, StorageAccessException {
 		Feature feature = sample.getFeature();
+		boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
+		boolean isAllowedReadSample = sampleUtil.isAllowedReadSample(user, sample);
 		
 		PdfPTable table = new PdfPTable(2);
 		table.setTotalWidth(175 * MM_TO_PT);
@@ -198,8 +206,7 @@ public class FRFormServlet extends HttpServlet {
 		} else {
 			featTypeLbl = "Section Name";
 		}
-		addCell(table, featTypeLbl, fonts[1]);
-		addCell(table, feature.getFeatureName(), fonts[0]);
+		addCells(table, new String[] {featTypeLbl, feature.getFeatureName()}, new Font[] {fonts[1], fonts[0]});
 		
 		addCell(table, "Original Grid Reference", fonts[1]);
 		if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
@@ -210,8 +217,7 @@ public class FRFormServlet extends HttpServlet {
 				try {
 					Datum nzmgDatum = DatumFactory.createDatum("NZMG");
 					Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
-					addCell(table, "Converted Grid Reference", fonts[1]);
-					addCell(table, nzmgDatum.getHumanStringFor(nzmgCoord), fonts[0]);
+					addCells(table, new String[] {"Converted Grid Reference", nzmgDatum.getHumanStringFor(nzmgCoord)}, new Font[] {fonts[1], fonts[0]});
 				} catch (Exception e) { }
 			}
 		} else {
@@ -221,8 +227,7 @@ public class FRFormServlet extends HttpServlet {
 		SiteRecord sr = FREDUtil.getSite(feature);
 		if (sr != null) {
 			LatLong ll = sr.getLatLong();
-			addCell(table, "Converted Decimal Lat/Long", fonts[1]);
-			addCell(table, ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)", fonts[0]);
+			addCells(table, new String[] {"Converted Decimal Lat/Long", ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"}, new Font[] {fonts[1], fonts[0]});
 		}
 		
 		addCell(table, "Map Year", fonts[1]);
@@ -232,33 +237,37 @@ public class FRFormServlet extends HttpServlet {
 		addCell(table, FREDUtil.getSiteMethod(sr), fonts[0]);
 		
 		addCell(table, "Accuracy", fonts[1]);
-		addCell(table, sr.getAccuracy(), fonts[0]);
+		addCell(table, ((sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? null : sr.getAccuracy()), fonts[0]);
 		
-/*
+		addCell(table, "Locality", fonts[1]);
+		addCell(table, ((sr.isNull(SiteRecord.DIRECTIONS_FIELD)) ? null : sr.getDirections()), fonts[0]);
 		
-		if (sample.isUserAuthenticated() && sample.get(Sample.LOCALITY) != null) { out.println("<tr><td class='heading'>Locality</td><td>" + sample.getAsString(Sample.LOCALITY) + "</td></tr>"); }
-		if (!featType.equals(Feature.OUTCROP_LOCALITY)) {
-			if (sample.isUserAuthenticated() && sample.get(Sample.PERSON) != null) {
-				out.print("<tr><td class='heading' width='135'>");
-				if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
-					out.print("Operating Company");
-				} else {
-					out.print("Section Collector");
+		if (isAllowedReadFeature) {
+			addCell(table, "Locality", fonts[1]);
+			addCell(table, feature.getLocality(), fonts[0]);
+		}
+
+		if (!featType.equals(FREDConstants.OUTCROP)) {
+			if (isAllowedReadFeature) {
+				addCell(table, ((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector"), fonts[1]);
+				addCell(table, feature.getPerson(), fonts[0]);
+				
+				addCell(table, ((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date"), fonts[1]);
+				addCell(table, FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding()), fonts[0]);
+				
+				addCell(table, "Completion Date", fonts[1]);
+				addCell(table, FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding()), fonts[0]);
+				
+				if (featType.equals(FREDConstants.DRILLHOLE)) {
+					addCell(table, "Licence Area", fonts[1]);
+					addCell(table, feature.getDrillholeLicenceName(), fonts[0]);
 				}
-				out.println("</td><td>" + sample.getAsString(Sample.PERSON) + "</td></tr>");
+				
+				addCell(table, "Datum Type", fonts[1]);
+				addCell(table, feature.getDatumType(), fonts[0]);
+				
 			}
-			if (sample.isUserAuthenticated() && sample.get(Sample.START_DATE) != null) {
-				out.print("<tr><td class='heading'>");
-				if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
-					out.print("Spud Date");
-				} else {
-					out.print("Sampling Start Date");
-				}
-				out.print("</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.START_DATE), sample.getAsString(Sample.START_DATE_ROUNDING)) + "</td></tr>");
-			}
-			if (sample.isUserAuthenticated() && sample.get(Sample.FINISH_DATE) != null) {
-				out.print("<tr><td class='heading'>Completion Date</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.FINISH_DATE), sample.getAsString(Sample.FINISH_DATE_ROUNDING)) + "</td></tr>");
-			}
+	/*		
 			if (featType.equals(Feature.DRILLHOLE_LOCALITY) && sample.isUserAuthenticated() && sample.get(Sample.DRILLHOLE_LICENCE_NAME) != null) { out.println("<tr><td class='heading' width='135'>Licence Area</td><td>" + sample.getAsString(Sample.DRILLHOLE_LICENCE_NAME) + "</td></tr>"); }
 			if (sample.isUserAuthenticated() && sample.get(Sample.DATUM_TYPE) != null) { out.println("<tr><td class='heading' width='135'>Datum Type</td><td>" + sample.getAsString(Sample.DATUM_TYPE) + "</td></tr>"); }
 			if (sample.isUserAuthenticated() && sample.get(Sample.DATUM_ELEVATION) != null) { out.println("<tr><td class='heading' width='135'>Datum Elevation</td><td>" + sample.getAsString(Sample.DATUM_ELEVATION) + " m asl</td></tr>"); }
@@ -279,11 +288,8 @@ public class FRFormServlet extends HttpServlet {
 					out.print("Base Horizon");
 				}
 				out.println("</td><td>" + sample.getAsString(Sample.FINISH_DEPTH) + " m</td></tr>");
-			}
+			} */
 		}
-		
-		
-	*/
 		
 		document.add(table);
 			
@@ -291,6 +297,11 @@ public class FRFormServlet extends HttpServlet {
 	
 	private void addCell(PdfPTable table, Object text, Font font) {
 		table.addCell(new Phrase(DBUtils.nvl(text), font));
+	}
+	
+	private void addCells(PdfPTable table, Object[] text, Font[] fonts) {
+		for (int i = 0; i < text.length; i++)
+			addCell(table, text[i], fonts[i]);
 	}
 
 }
