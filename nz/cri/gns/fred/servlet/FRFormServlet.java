@@ -36,6 +36,7 @@ import com.lowagie.text.pdf.PdfWriter;
 
 public class FRFormServlet extends HttpServlet {
 
+	private HttpServletRequest request;
 	private HttpServletResponse response;
 	private DAOFactory factory;
 	private FeatureUtil featureUtil;
@@ -44,6 +45,7 @@ public class FRFormServlet extends HttpServlet {
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
+		this.request = request;
 		this.response = response;
 		this.factory = HibernateUtil.get().getDAOFactory();
 		this.featureUtil = new FeatureUtil(factory);
@@ -95,7 +97,9 @@ public class FRFormServlet extends HttpServlet {
 		table.setSpacingAfter(7 * MM_TO_PT);
 				
 		//Logos
-		Image image = Image.getInstance("../images/gsnz_logo.gif");
+		String url = "http://" + request.getContextPath() + "/fred/images/gsnz_logo.gif";
+		System.out.println("URL: " + "http://" + url);
+		Image image = Image.getInstance(new URL(url));
 		image.scaleToFit(61, 60);
 		table.addCell(image);
 		//PdfPCell cell = new PdfPCell(new Phrase("GSNZ\nLogo", fonts[2]));
