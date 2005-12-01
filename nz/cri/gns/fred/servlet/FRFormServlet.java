@@ -96,9 +96,10 @@ public class FRFormServlet extends HttpServlet {
 		
 		for (int i = 0; i < samples.length; i++) {
 			try {
-			writeSample(samples[i], document, fonts);
-			if (i < samples.length - 1)
-				document.newPage();
+				System.out.println("Generating sample " + samples[i].getSampleId());
+				writeSample(samples[i], document, fonts);
+				if (i < samples.length - 1)
+					document.newPage();
 			} catch (Exception e) {
 				System.out.println("************************************");
 				e.printStackTrace();				
@@ -128,6 +129,8 @@ public class FRFormServlet extends HttpServlet {
 		image.scaleToFit(20 * MM_TO_PT, 20 * MM_TO_PT);
 		table.addCell(image);
 			
+		System.out.println("Finished logo");
+		
 		//Header Text
 		PdfPTable headerTable = new PdfPTable(2);
 		headerTable.setTotalWidth(150 * MM_TO_PT);
