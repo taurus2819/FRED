@@ -177,7 +177,7 @@ public class FRFormServlet extends HttpServlet {
 		table = new PdfPTable(2);
 		table.setTotalWidth(175 * MM_TO_PT);
 		table.setLockedWidth(true);
-		table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
+		table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
 		table.setSpacingAfter(5 * MM_TO_PT);
 
 		defaultCell = table.getDefaultCell();
@@ -217,19 +217,25 @@ public class FRFormServlet extends HttpServlet {
 		} else {
 			addCell(table, "", fonts[0]);
 		}
-		if (feature.getSiteId() != null) {
-			SiteRecord sr = FREDUtil.getSite(feature);
+		
+		SiteRecord sr = FREDUtil.getSite(feature);
+		if (sr != null) {
 			LatLong ll = sr.getLatLong();
 			addCell(table, "Converted Decimal Lat/Long", fonts[1]);
 			addCell(table, ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)", fonts[0]);
 		}
 		
+		addCell(table, "Map Year", fonts[1]);
+		addCell(table, feature.getMapYear(), fonts[0]);
+		
+		addCell(table, "Method", fonts[1]);
+		addCell(table, FREDUtil.getSiteMethod(sr), fonts[0]);
+		
+		addCell(table, "Accuracy", fonts[1]);
+		addCell(table, sr.getAccuracy(), fonts[0]);
 		
 /*
 		
-		if (sample.get(Sample.MAP_YEAR) != null) { out.println("<tr><td class='heading'>Map Year</td><td>" + sample.getAsString(Sample.MAP_YEAR) + "</td></tr>"); }
-		if (sample.get(Sample.METHOD) != null) { out.println("<tr><td class='heading'>Method</td><td>" + sample.getAsString(Sample.METHOD) + "</td></tr>"); }
-		if (sample.get(Sample.ACCURACY) != null) { out.println("<tr><td class='heading'>Accuracy</td><td>&#177 " + sample.getAsDouble(Sample.ACCURACY) + "m</td></tr>"); }
 		if (sample.isUserAuthenticated() && sample.get(Sample.LOCALITY) != null) { out.println("<tr><td class='heading'>Locality</td><td>" + sample.getAsString(Sample.LOCALITY) + "</td></tr>"); }
 		if (!featType.equals(Feature.OUTCROP_LOCALITY)) {
 			if (sample.isUserAuthenticated() && sample.get(Sample.PERSON) != null) {
@@ -283,7 +289,7 @@ public class FRFormServlet extends HttpServlet {
 			
 	}
 	
-	private void addCell(PdfPTable table, String text, Font font) {
+	private void addCell(PdfPTable table, Object text, Font font) {
 		table.addCell(new Phrase(DBUtils.nvl(text), font));
 	}
 
