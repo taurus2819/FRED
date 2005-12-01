@@ -3,7 +3,9 @@ package nz.cri.gns.fred.servlet;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.SQLException;
 
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.Feature;
+import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 
 import com.lowagie.text.Cell;
@@ -37,6 +40,8 @@ public class FRFormServlet extends HttpServlet {
 	private DAOFactory factory;
 	private FeatureUtil featureUtil;
 	
+	private static final float MM_TO_PT = 2.8346f;
+	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
 		this.response = response;
@@ -53,17 +58,22 @@ public class FRFormServlet extends HttpServlet {
 		}
 	}
 		
-	private void makePDF(Feature[] features) throws DocumentException, IOException {
-		Document document = new Document(PageSize.A4, 0, 0, 50, 50);
+	private void makePDF(Feature[] features) throws DocumentException, IOException, NamingException, SQLException {
+		Document document = new Document(PageSize.A4, 20 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT);
 			
 		PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
 		writer.setEncryption(true, null, null, PdfWriter.AllowPrinting | PdfWriter.AllowScreenReaders);
 			
 		document.open();
 		
-		Font[] fonts = new Font[2];
-		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 14, Font.BOLD);
-		fonts[1] = FontFactory.getFont(FontFactory.HELVETICA, 24, Font.BOLD);
+		Font[] fonts = new Font[7];
+		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.NORMAL);
+		fonts[1] = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD);
+		fonts[2] = FontFactory.getFont(FontFactory.HELVETICA, 14, Font.BOLD);
+		fonts[3] = FontFactory.getFont(FontFactory.HELVETICA, 24, Font.BOLD);
+		fonts[4] = FontFactory.getFont(FontFactory.HELVETICA, 18, Font.BOLD);
+		fonts[5] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.NORMAL);
+		fonts[6] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
 		
 		for (int i = 0; i < features.length; i++) {
 			writeLocality(features[i], document, fonts);
@@ -76,26 +86,56 @@ public class FRFormServlet extends HttpServlet {
 
 	}
 	
-	private void writeLocality(Feature feature, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException {
+	private void writeLocality(Feature feature, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException {
 			
 			PdfPTable table = new PdfPTable(2);
 			table.setWidthPercentage(100);
 			
 			PdfPCell defaultCell = table.getDefaultCell();
 			defaultCell.setBorder(PdfPCell.NO_BORDER);
-			defaultCell.setVerticalAlignment(PdfPCell.ALIGN_RIGHT);
+			defaultCell.setVerticalAlignment(PdfPCell.ALIGN_BOTTOM);
+			defaultCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
 			
 			//Image image = Image.getInstance(new URL("http://data.gns.cri.nz/fred/images/gsnz_logo.gif"));
 			//image.scaleToFit(61, 60);
 			//table.addCell(image);
 			
-			PdfPCell cell = new PdfPCell(new Phrase("Geological Society of New Zealand", fonts[0]));
+			PdfPCell cell = new PdfPCell(new Phrase("Geological Society of New Zealand", fonts[2]));
 			table.addCell(cell);
-			cell = new PdfPCell(new Phrase(FeatureUtil.getFeatureName(feature), fonts[1]));
+			cell = new PdfPCell(new Phrase(FeatureUtil.getFeatureName(feature), fonts[3]));
+			cell.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
 			table.addCell(cell);
-
+			
+			cell = new PdfPCell(new Phrase("Fossil Record Form", fonts[4]));
+			table.addCell(cell);
+			cell = new PdfPCell(new Phrase(feature.getFeatureType(), fonts[2]));
+			cell.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
+			table.addCell(cell);			
+			
 			document.add(table);
 
+			table = new PdfPTable(2);
+			table.setWidthPercentage(100);
+			
+			defaultCell = table.getDefaultCell();
+			defaultCell.setBorder(PdfPCell.NO_BORDER);
+			defaultCell.setVerticalAlignment(PdfPCell.ALIGN_BOTTOM);
+			defaultCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
+			
+			cell = new PdfPCell(new Phrase("Masterfile", fonts[6]));
+			table.addCell(cell);
+			cell = new PdfPCell(new Phrase(feature.getMasterFile().getName(), fonts[5]));
+			table.addCell(cell);
+			
+			cell = new PdfPCell(new Phrase("Masterfile Curator Approved", fonts[6]));
+			table.addCell(cell);
+			cell = new PdfPCell(new Phrase(FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue())
+					+ " " + FREDUtil.formatDateForOutput(feature.getAudit().getApprovedDate()), fonts[2]));
+			cell.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
+			table.addCell(cell);			
+			
+			document.add(table);			
+			
 			
 /*			Table dataTable = new Table(2);
 			dataTable.setAbsWidth("100");
