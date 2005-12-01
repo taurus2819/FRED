@@ -245,7 +245,6 @@ public class FRFormServlet extends HttpServlet {
 			addCells(table, new String[] {"Not Collected", sample.getNotCollected()}, bodyFonts);
 			addCells(table, new String[] {"Significance/Comments", sample.getSignificance()}, bodyFonts);
 		
-			}
 			document.add(table);
 			
 		}
