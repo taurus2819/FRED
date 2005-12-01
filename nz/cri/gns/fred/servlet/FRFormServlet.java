@@ -96,7 +96,7 @@ public class FRFormServlet extends HttpServlet {
 		
 		for (int i = 0; i < samples.length; i++) {
 			try {
-				System.out.println("Generating sample " + samples[i].getSampleId());
+				System.out.println("Generating PDF for sample " + samples[i].getSampleId());
 				writeSample(samples[i], document, fonts);
 				if (i < samples.length - 1)
 					document.newPage();
@@ -128,31 +128,17 @@ public class FRFormServlet extends HttpServlet {
 		Image image = Image.getInstance(new URL(url));
 		image.scaleToFit(20 * MM_TO_PT, 20 * MM_TO_PT);
 		table.addCell(image);
-			
-		System.out.println("Finished logo");
 		
 		//Header Text
 		PdfPTable headerTable = new PdfPTable(2);
 		headerTable.setTotalWidth(150 * MM_TO_PT);
 		headerTable.setLockedWidth(true);
 		headerTable.setWidths(new float[] {80 * MM_TO_PT, 70 * MM_TO_PT});
-		
-		PdfPCell defaultCell = headerTable.getDefaultCell();
-		defaultCell.setBorder(PdfPCell.NO_BORDER);
-		defaultCell.setVerticalAlignment(PdfPCell.ALIGN_BOTTOM);
-		defaultCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
-						
-		addCell(headerTable, "Geological Society of New Zealand", fonts[2]);
+	
 		FrNumber frNumber = FeatureUtil.getFrNumber(feature);
-		PdfPCell cell = new PdfPCell(new Phrase(((frNumber != null) ? frNumber.getFrNumber() : "____/f_____"), fonts[3]));
-		cell.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
-		headerTable.addCell(cell);
-			
-		addCell(headerTable, "Fossil Record Form", fonts[4]);
-		cell = new PdfPCell(new Phrase(feature.getFeatureType(), fonts[2]));
-		cell.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
-		headerTable.addCell(cell);			
-			
+		addCells(headerTable, new String[] {"Geological Society of New Zealand", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
+			, new Font[] {fonts[2], fonts[3]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
+		addCells(headerTable, new String[] {"Fossil Record Form", feature.getFeatureType()}, new Font[] {fonts[4], fonts[2]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});			
 		table.addCell(headerTable);
 		
 		document.add(table);
@@ -164,11 +150,6 @@ public class FRFormServlet extends HttpServlet {
 		table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
 		table.setSpacingAfter(5 * MM_TO_PT);
 			
-		defaultCell = table.getDefaultCell();
-		defaultCell.setBorder(PdfPCell.NO_BORDER);
-		defaultCell.setVerticalAlignment(PdfPCell.ALIGN_BOTTOM);
-		defaultCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
-		
 		addCells(table, new String[] {"Masterfile", feature.getMasterFile().getName()}, new Font[] {fonts[6], fonts[5]});
 		addCells(table, new String[] {"Masterfile Curator Approved", FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue())
 				+ " " + FREDUtil.formatDateForOutput(feature.getAudit().getApprovedDate())}, new Font[] {fonts[6], fonts[5]});	
@@ -181,15 +162,8 @@ public class FRFormServlet extends HttpServlet {
 		table.setLockedWidth(true);
 		table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
 		table.setSpacingAfter(5 * MM_TO_PT);
-
-		defaultCell = table.getDefaultCell();
-		defaultCell.setBorder(PdfPCell.NO_BORDER);
-		defaultCell.setVerticalAlignment(PdfPCell.ALIGN_BOTTOM);
-		defaultCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
 		
-		cell = new PdfPCell(new Phrase("Mandatory Data", fonts[2]));
-		cell.setColspan(2);
-		table.addCell(cell);
+		addCell(table, "Mandatory Data", fonts[2], PdfPCell.ALIGN_LEFT, 2);
 		String featType = feature.getFeatureType();
 		String featTypeLbl;
 		if (featType.equals(FREDConstants.OUTCROP)) {
@@ -223,19 +197,18 @@ public class FRFormServlet extends HttpServlet {
 		addCells(table, new Object[] {"Map Year", feature.getMapYear()}, new Font[] {fonts[1], fonts[0]});
 		addCells(table, new String[] {"Method", FREDUtil.getSiteMethod(sr)}, new Font[] {fonts[1], fonts[0]});
 		addCells(table, new Object[] {"Accuracy", ((sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? null : sr.getAccuracy())}, new Font[] {fonts[1], fonts[0]});
-		addCells(table, new String[] {"Locality", ((sr.isNull(SiteRecord.DIRECTIONS_FIELD)) ? null : sr.getDirections())}, new Font[] {fonts[1], fonts[0]});
 		if (isAllowedReadFeature) {
 			addCells(table, new String[] {"Locality", feature.getLocality()}, new Font[] {fonts[1], fonts[0]});
 			if (!featType.equals(FREDConstants.OUTCROP)) {
-				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector"), feature.getPerson()}, new Font[] {fonts[1], fonts[0]});
+				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector"), feature.getPerson().getName()}, new Font[] {fonts[1], fonts[0]});
 				addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date"), FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding())}, new Font[] {fonts[1], fonts[0]});		
 				addCells(table, new String[] {"Completion Date", FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding())}, new Font[] {fonts[1], fonts[0]});
 				if (featType.equals(FREDConstants.DRILLHOLE))
 					addCells(table, new String[] {"Licence Area", feature.getDrillholeLicenceName()}, new Font[] {fonts[1], fonts[0]});	
 				addCells(table, new String[] {"Datum Type", feature.getDatumType()}, new Font[] {fonts[1], fonts[0]});
-				addCells(table, new Object[] {"Datum Elevation", feature.getDatumElevation()}, new Font[] {fonts[1], fonts[0]});
-				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon"), feature.getStartDepth()}, new Font[] {fonts[1], fonts[0]});
-				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon"), feature.getFinishDepth()}, new Font[] {fonts[1], fonts[0]});
+				addCells(table, new Object[] {"Datum Elevation", ((feature.getDatumElevation() != null) ? feature.getDatumElevation() + " m asl" : null)}, new Font[] {fonts[1], fonts[0]});
+				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon"), ((feature.getStartDepth() != null) ? feature.getStartDepth() + " m" : null)}, new Font[] {fonts[1], fonts[0]});
+				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon"), ((feature.getFinishDepth() != null) ? feature.getFinishDepth() + " m" : null)}, new Font[] {fonts[1], fonts[0]});
 			}
 		}
 		document.add(table);
@@ -243,12 +216,27 @@ public class FRFormServlet extends HttpServlet {
 	}
 	
 	private void addCell(PdfPTable table, Object text, Font font) {
-		table.addCell(new Phrase(DBUtils.nvl(text), font));
+		addCell(table, text, font, PdfPCell.ALIGN_LEFT, 1);
+	}
+	
+	private void addCell(PdfPTable table, Object text, Font font, int align, int colSpan) {
+		PdfPCell cell = new PdfPCell(new Phrase(DBUtils.nvl(text), font));
+		cell.setHorizontalAlignment(align);
+		cell.setBorder(PdfPCell.NO_BORDER);
+		cell.setVerticalAlignment(PdfPCell.ALIGN_BOTTOM);
+		if (colSpan > 1)
+			cell.setColspan(colSpan);
+		table.addCell(cell);
 	}
 	
 	private void addCells(PdfPTable table, Object[] text, Font[] fonts) {
 		for (int i = 0; i < text.length; i++)
-			addCell(table, text[i], fonts[i]);
+			addCell(table, text[i], fonts[i], PdfPCell.ALIGN_LEFT, 1);
+	}
+	
+	private void addCells(PdfPTable table, Object[] text, Font[] fonts, int[] align) {
+		for (int i = 0; i < text.length; i++)
+			addCell(table, text[i], fonts[i], align[i], 1);
 	}
 
 }
