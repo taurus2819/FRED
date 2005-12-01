@@ -10,7 +10,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.xml.sax.SAXException;
+
+import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.Feature;
@@ -78,9 +83,14 @@ public class FRFormServlet extends HttpServlet {
 		fonts[6] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
 		
 		for (int i = 0; i < features.length; i++) {
+			try {
 			writeLocality(features[i], document, fonts);
 			if (i < features.length - 1)
 				document.newPage();
+			} catch (Exception e) {
+				System.out.println("************************************");
+				e.printStackTrace();				
+			}
 			//out.flush();
 		}
 		
@@ -88,7 +98,7 @@ public class FRFormServlet extends HttpServlet {
 
 	}
 	
-	private void writeLocality(Feature feature, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException {
+	private void writeLocality(Feature feature, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException {
 
 		PdfPTable table = new PdfPTable(2);
 		table.setTotalWidth(175 * MM_TO_PT);
@@ -97,7 +107,8 @@ public class FRFormServlet extends HttpServlet {
 		table.setSpacingAfter(7 * MM_TO_PT);
 				
 		//Logos
-		String url = "http://" + request.getServerName() + request.getContextPath() + "/images/gsnz_logo.gif";
+		//String url = "http://" + request.getServerName() + request.getContextPath() + "/images/gsnz_logo.gif";
+		String url = DBUtils.getOnlineURL("dev", false);
 		System.out.println("URL: " + url);
 		Image image = Image.getInstance(new URL(url));
 		image.scaleToFit(61, 60);
