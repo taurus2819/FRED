@@ -127,8 +127,6 @@ public class FRFormServlet extends HttpServlet {
 		Image image = Image.getInstance(new URL(url));
 		image.scaleToFit(20 * MM_TO_PT, 20 * MM_TO_PT);
 		table.addCell(image);
-		//PdfPCell cell = new PdfPCell(new Phrase("GSNZ\nLogo", fonts[2]));
-		//table.addCell(cell);
 			
 		//Header Text
 		PdfPTable headerTable = new PdfPTable(2);
@@ -141,15 +139,13 @@ public class FRFormServlet extends HttpServlet {
 		defaultCell.setVerticalAlignment(PdfPCell.ALIGN_BOTTOM);
 		defaultCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
 						
-		PdfPCell cell = new PdfPCell(new Phrase("Geological Society of New Zealand", fonts[2]));
-		headerTable.addCell(cell);
+		addCell(headerTable, "Geological Society of New Zealand", fonts[2]);
 		FrNumber frNumber = FeatureUtil.getFrNumber(feature);
-		cell = new PdfPCell(new Phrase(((frNumber != null) ? frNumber.getFrNumber() : "____/f_____"), fonts[3]));
+		PdfPCell cell = new PdfPCell(new Phrase(((frNumber != null) ? frNumber.getFrNumber() : "____/f_____"), fonts[3]));
 		cell.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
 		headerTable.addCell(cell);
 			
-		cell = new PdfPCell(new Phrase("Fossil Record Form", fonts[4]));
-		headerTable.addCell(cell);
+		addCell(headerTable, "Fossil Record Form", fonts[4]);
 		cell = new PdfPCell(new Phrase(feature.getFeatureType(), fonts[2]));
 		cell.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
 		headerTable.addCell(cell);			
