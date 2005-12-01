@@ -580,7 +580,7 @@ public class FREDUtil {
 		try {
 			conn = getConnection();
 			Statement statement = conn.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT age_name, ag_abrev FROM age_view WHERE ag_id = " + ageId);
+			ResultSet rs = statement.executeQuery("SELECT age_name, ag_abbrev FROM age_view WHERE ag_id = " + ageId);
 			String[] name = (rs.next()) ? new String[] {rs.getString(1), rs.getString(2)} : null;
 			rs.close();
 			statement.close();
