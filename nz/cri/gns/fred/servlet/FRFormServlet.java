@@ -30,6 +30,7 @@ import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.SampleUtil;
+import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 import nz.cri.gns.util.map.Datum;
@@ -247,23 +248,25 @@ public class FRFormServlet extends HttpServlet {
 		
 			document.add(table);
 			
+			//Stratigraphy
+			table = new PdfPTable(2);
+			table.setTotalWidth(175 * MM_TO_PT);
+			table.setLockedWidth(true);
+			table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
+			table.setSpacingAfter(5 * MM_TO_PT);
+			
+			addCell(table, "Stratigraphy", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
+			addCells(table, new String[] {"Inferred Stage", StageUtil.getStageDescription(sample.getInferredStage())}, bodyFonts);
+			addCells(table, new String[] {"Known Stage", StageUtil.getStageDescription(sample.getKnownStage())}, bodyFonts);
+			
+			
+
+		
+			document.add(table);
+			
 		}
 	/*	if (formType.equals("Full") && sample.isUserAuthenticated()) {
 
-			//sent to (repeating)
-			if (sample.get(Sample.SENT_TO) != null) {
-				out.print("<tr><td class='heading'>Sent To</td><td>");
-				for (Iterator i2 = sample.getAsVector(Sample.SENT_TO).iterator(); i2.hasNext(); ) {
-					SentTo sentTo = (SentTo)i2.next();
-					out.print(sentTo.getSentTo() + "<br />");
-				}
-			out.print("</td></tr>");
-			}
-			if (sample.get(Sample.NOT_COLLECTED) != null) { out.println("<tr><td class='heading'>Not Collected</td><td>" + sample.getAsString(Sample.NOT_COLLECTED) + "</td></tr>"); }
-			
-			out.println("<tr><td class='bigheading' colspan='2'>Stratigraphy</td></tr>");
-			
-			if (sample.get(Sample.SIGNIFICANCE) != null) { out.println("<tr><td class='heading'>Significance</td><td>" + sample.getAsString(Sample.SIGNIFICANCE) + "</td></tr>"); }
 			if (sample.get(Sample.INFERRED_STAGE) != null) { out.println("<tr><td class='heading'>Inferred Stage</td><td>" + sample.getAsString(Sample.INFERRED_STAGE) + "</td></tr>"); }
 			if (sample.get(Sample.KNOWN_STAGE) != null) { out.println("<tr><td class='heading'>Known Stage</td><td>" + sample.getAsString(Sample.KNOWN_STAGE) + "</td></tr>"); }
 			//Nearby samples (repeating)
