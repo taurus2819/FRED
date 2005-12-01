@@ -741,7 +741,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     			if (parts[2].length() > 0 && lab == null)
     				error.add(new String[] {"Sent To", "Invalid lab: " + parts[2]});
     			
-    			System.out.println("Comments has slash-n " + (parts[3].indexOf("\n") > 0));
     			String comments = parts[3].replaceAll(String.valueOf((char)13), "");
     			
     			sentToSet.add(sampleUtil.findOrCreateSentTo(sample, group, person, lab, comments));
