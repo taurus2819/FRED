@@ -462,6 +462,27 @@ public class FREDUtil {
 			throw e;
 		}
 	}
+	
+	public static String getSiteMethod(SiteRecord sr) throws NamingException, SQLException {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT method FROM sc.method WHERE method_id = " + sr.getMethod());
+			rs.next();
+			String method = rs.getString(1);
+			rs.close();
+			statement.close();
+			conn.close();
+			return method;
+		} catch (SQLException e) {
+			if (conn != null) try {
+				conn.close();
+			} catch (Exception _e) {
+			}
+			throw e;
+		}		
+	}
 
 	/**
 	 * Gets an appropriate record from the DB for the given site, 
