@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
+import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.FREDConstants;
@@ -23,6 +24,9 @@ import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
+import nz.cri.gns.util.map.Datum;
+import nz.cri.gns.util.map.DatumFactory;
+import nz.cri.gns.util.map.Datum.Coordinate;
 
 import org.xml.sax.SAXException;
 
@@ -72,13 +76,13 @@ public class FRFormServlet extends HttpServlet {
 		document.open();
 		
 		Font[] fonts = new Font[7];
-		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.NORMAL);
-		fonts[1] = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD);
-		fonts[2] = FontFactory.getFont(FontFactory.HELVETICA, 14, Font.BOLD);
+		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.NORMAL);
+		fonts[1] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
+		fonts[2] = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD);
 		fonts[3] = FontFactory.getFont(FontFactory.HELVETICA, 24, Font.BOLD);
-		fonts[4] = FontFactory.getFont(FontFactory.HELVETICA, 18, Font.BOLD);
-		fonts[5] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.NORMAL);
-		fonts[6] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
+		fonts[4] = FontFactory.getFont(FontFactory.HELVETICA, 16, Font.BOLD);
+		fonts[5] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.NORMAL);
+		fonts[6] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.BOLD);
 		
 		for (int i = 0; i < samples.length; i++) {
 			try {
@@ -117,7 +121,9 @@ public class FRFormServlet extends HttpServlet {
 			
 		//Header Text
 		PdfPTable headerTable = new PdfPTable(2);
-		//headerTable.setWidthPercentage(100);
+		headerTable.setTotalWidth(150 * MM_TO_PT);
+		headerTable.setLockedWidth(true);
+		headerTable.setWidths(new float[] {90 * MM_TO_PT, 60 * MM_TO_PT});
 		
 		PdfPCell defaultCell = headerTable.getDefaultCell();
 		defaultCell.setBorder(PdfPCell.NO_BORDER);
@@ -190,10 +196,18 @@ public class FRFormServlet extends HttpServlet {
 		} else {
 			featTypeLbl = "Section Name";
 		}
-		cell = new PdfPCell(new Phrase(featTypeLbl, fonts[1]));
-		table.addCell(cell);
-		cell = new PdfPCell(new Phrase(sample.getSampleName(), fonts[0]));
-		table.addCell(cell);		
+		addCell(table, featTypeLbl, fonts[1]);
+		addCell(table, feature.getFeatureName(), fonts[0]);
+		
+		addCell(table, "Original Grid Ref", fonts[1]);
+		if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
+			Datum datum = DatumFactory.createDatum(feature.getOrigSystemId().intValue());
+			Coordinate coord = datum.parseCoordinate(feature.getOrigCoord());
+			addCell(table, datum.getHumanStringFor(coord).replaceAll("Geographic ", ""), fonts[0]);
+		} else {
+			addCell(table, "", fonts[0]);
+		}
+	
 		
 /*
 		
@@ -272,6 +286,10 @@ public class FRFormServlet extends HttpServlet {
 		
 		document.add(table);
 			
+	}
+	
+	private void addCell(PdfPTable table, String text, Font font) {
+		table.addCell(new Phrase(DBUtils.nvl(text), font));
 	}
 
 }
