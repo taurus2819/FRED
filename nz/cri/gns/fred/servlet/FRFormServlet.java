@@ -87,56 +87,69 @@ public class FRFormServlet extends HttpServlet {
 	}
 	
 	private void writeLocality(Feature feature, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException {
-			
-			PdfPTable table = new PdfPTable(2);
-			table.setWidthPercentage(100);
-			
-			PdfPCell defaultCell = table.getDefaultCell();
-			defaultCell.setBorder(PdfPCell.NO_BORDER);
-			defaultCell.setVerticalAlignment(PdfPCell.ALIGN_BOTTOM);
-			defaultCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
-			
-			//Image image = Image.getInstance(new URL("http://data.gns.cri.nz/fred/images/gsnz_logo.gif"));
-			//image.scaleToFit(61, 60);
-			//table.addCell(image);
-			
-			PdfPCell cell = new PdfPCell(new Phrase("Geological Society of New Zealand", fonts[2]));
-			table.addCell(cell);
-			cell = new PdfPCell(new Phrase(FeatureUtil.getFeatureName(feature), fonts[3]));
-			cell.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
-			table.addCell(cell);
-			
-			cell = new PdfPCell(new Phrase("Fossil Record Form", fonts[4]));
-			table.addCell(cell);
-			cell = new PdfPCell(new Phrase(feature.getFeatureType(), fonts[2]));
-			cell.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
-			table.addCell(cell);			
-			
-			document.add(table);
 
-			table = new PdfPTable(2);
-			table.setWidthPercentage(100);
+		PdfPTable table = new PdfPTable(2);
+		table.setWidthPercentage(100);
+		table.setSpacingAfter(10 * MM_TO_PT);
+				
+		//Logos
+		//Image image = Image.getInstance("../images/gsnz_logo.gif");
+		//image.scaleToFit(61, 60);
+		//table.addCell(image);
+		PdfPCell cell = new PdfPCell(new Phrase("GSNZ\nLogo", fonts[2]));
+		table.addCell(cell);
 			
-			defaultCell = table.getDefaultCell();
-			defaultCell.setBorder(PdfPCell.NO_BORDER);
-			defaultCell.setVerticalAlignment(PdfPCell.ALIGN_BOTTOM);
-			defaultCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
+		//Header Text
+		PdfPTable headerTable = new PdfPTable(2);
+		table.setWidthPercentage(100);
+		
+		PdfPCell defaultCell = table.getDefaultCell();
+		defaultCell.setBorder(PdfPCell.NO_BORDER);
+		defaultCell.setVerticalAlignment(PdfPCell.ALIGN_BOTTOM);
+		defaultCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
+						
+		cell = new PdfPCell(new Phrase("Geological Society of New Zealand", fonts[2]));
+		table.addCell(cell);
+		cell = new PdfPCell(new Phrase(FeatureUtil.getFeatureName(feature), fonts[3]));
+		cell.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
+		table.addCell(cell);
 			
-			cell = new PdfPCell(new Phrase("Masterfile", fonts[6]));
-			table.addCell(cell);
-			cell = new PdfPCell(new Phrase(feature.getMasterFile().getName(), fonts[5]));
-			table.addCell(cell);
+		cell = new PdfPCell(new Phrase("Fossil Record Form", fonts[4]));
+		table.addCell(cell);
+		cell = new PdfPCell(new Phrase(feature.getFeatureType(), fonts[2]));
+		cell.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
+		table.addCell(cell);			
 			
-			cell = new PdfPCell(new Phrase("Masterfile Curator Approved", fonts[6]));
-			table.addCell(cell);
-			cell = new PdfPCell(new Phrase(FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue())
-					+ " " + FREDUtil.formatDateForOutput(feature.getAudit().getApprovedDate()), fonts[2]));
-			cell.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
-			table.addCell(cell);			
+		headerTable.addCell(table);
+		table.addCell(headerTable);
+		document.add(table);
+		
+		//Masterfile text
+		table = new PdfPTable(2);
+		table.setWidthPercentage(100);
+		table.setSpacingAfter(10 * MM_TO_PT);
 			
-			document.add(table);			
+		defaultCell = table.getDefaultCell();
+		defaultCell.setBorder(PdfPCell.NO_BORDER);
+		defaultCell.setVerticalAlignment(PdfPCell.ALIGN_BOTTOM);
+		defaultCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
+		
+		cell = new PdfPCell(new Phrase("Masterfile", fonts[6]));
+		table.addCell(cell);
+		cell = new PdfPCell(new Phrase(feature.getMasterFile().getName(), fonts[5]));
+		table.addCell(cell);
 			
+		cell = new PdfPCell(new Phrase("Masterfile Curator Approved", fonts[6]));
+		table.addCell(cell);
+		cell = new PdfPCell(new Phrase(FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue())
+				+ " " + FREDUtil.formatDateForOutput(feature.getAudit().getApprovedDate()), fonts[5]));
+		
+		table.addCell(cell);
+		
 			
+		document.add(table);
+			
+					
 /*			Table dataTable = new Table(2);
 			dataTable.setAbsWidth("100");
 			dataTable.setWidths(new float[] {230, 330});
