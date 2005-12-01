@@ -110,7 +110,7 @@ public class FRFormServlet extends HttpServlet {
 				
 		//Logos
 		//String url = "http://" + request.getServerName() + request.getContextPath() + "/images/gsnz_logo.gif";
-		String url = JspUtils.getServerName(new PageState(request, response, getServletContext())) + "/fred/images/gsnz_logo.gif";
+		String url = "http://" + JspUtils.getServerName(new PageState(request, response, getServletContext())) + "/fred/images/gsnz_logo.gif";
 		System.out.println("URL: " + url);
 		Image image = Image.getInstance(new URL(url));
 		image.scaleToFit(61, 60);
