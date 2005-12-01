@@ -380,7 +380,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return sampleDAO.getRelationships(sample, relationshipType);
 	}
 
-	public List<? extends Relationship>  getRelationships(Sample sample, String relationTypeName, String[] relationshipTypes) throws StorageAccessException {
+	public List<? extends Relationship> getRelationships(Sample sample, String relationTypeName, String[] relationshipTypes) throws StorageAccessException {
 		List<Relationship> relationships = new Vector<Relationship>();
 		RelationType relationType = sampleDAO.getRelationType(relationTypeName);
 		
@@ -467,6 +467,24 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		
 	}
 
+	public static String getSentToDescription(SentTo sentTo) {
+		StringBuffer desc = new StringBuffer();
+		desc.append(sentTo.getFossilGroup().getName()).append(": ");
+		if (sentTo.getPerson() != null) {
+			desc.append(sentTo.getPerson().getDisplayName());
+			if (sentTo.getLabId() != null)
+				desc.append("/");
+		}
+		if (sentTo.getLabId() != null) {
+			try {
+				desc.append(FREDUtil.getLabName(sentTo.getLabId()));
+			} catch (Exception e) {}
+		}
+		if (sentTo.getComments() != null)
+			desc.append(" (").append(sentTo.getComments()).append(")");
+		return desc.toString();
+	}
+	
 	public Audit save(Audit audit) throws StorageAccessException {
 		return sampleDAO.save(audit);
 	}
