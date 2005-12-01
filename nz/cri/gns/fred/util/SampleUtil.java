@@ -245,6 +245,31 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	/**
+	 * Returns true if a user is allowed to view the locality
+	 */
+	public boolean isAllowedReadSample(UserAccount user, Sample sample) throws StorageAccessException {
+		if (user == null)
+			return false;
+		
+		//first check allowed to read feature if not then return false
+		Feature feature = sample.getFeature();
+		if (!(new FeatureUtil(factory).isAllowedReadFeature(user, feature)))
+			return false;
+		
+		//then check feature type - if outcrop then return as already allowed to view feature
+		if (feature.getFeatureType().equals(FREDConstants.OUTCROP))
+			return true;
+		
+		//now check sample
+		String status = sample.getAudit().getStatus();
+		if (!status.equals(FREDConstants.APPROVED)) {
+			UserFolder folder = new FolderUtil(factory).getUserFolder(sample.getAudit().getFolder().getFolderId().intValue(), user);
+			return (folder != null && folder.isAllowedReadLocalities());
+		}
+		return true;
+	}	
+	
+	/**
 	 * @param sample
 	 * @param folder
 	 * @param user

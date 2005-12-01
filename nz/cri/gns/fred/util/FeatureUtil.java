@@ -500,6 +500,20 @@ public class FeatureUtil extends ModelUtil {
 		return features.toArray(new Feature[features.size()]);
 	}
 	
+	/**
+	 * Returns true if a user is allowed to view the locality
+	 */
+	public boolean isAllowedReadFeature(UserAccount user, Feature feature) throws StorageAccessException {
+		String status = feature.getAudit().getStatus();
+		if (user == null)
+			return false;
+		if (!status.equals(FREDConstants.APPROVED)) {
+			UserFolder folder = new FolderUtil(factory).getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), user);
+			return (folder != null && folder.isAllowedReadLocalities());
+		}
+		return true;
+	}
+	
 	public boolean isAllowedEditFeature(UserAccount user, Feature feature, UserFolder folder) throws StorageAccessException {
 		String status = feature.getAudit().getStatus();
 		if (status.equals(FREDConstants.APPROVED))
