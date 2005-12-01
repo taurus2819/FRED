@@ -22,6 +22,7 @@ import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
+import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
@@ -142,7 +143,8 @@ public class FRFormServlet extends HttpServlet {
 						
 		PdfPCell cell = new PdfPCell(new Phrase("Geological Society of New Zealand", fonts[2]));
 		headerTable.addCell(cell);
-		cell = new PdfPCell(new Phrase(FeatureUtil.getFeatureName(feature), fonts[3]));
+		FrNumber frNumber = FeatureUtil.getFrNumber(feature);
+		cell = new PdfPCell(new Phrase(((frNumber != null) ? frNumber.getFrNumber() : "____/f_____"), fonts[3]));
 		cell.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
 		headerTable.addCell(cell);
 			
@@ -168,16 +170,9 @@ public class FRFormServlet extends HttpServlet {
 		defaultCell.setVerticalAlignment(PdfPCell.ALIGN_BOTTOM);
 		defaultCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
 		
-		cell = new PdfPCell(new Phrase("Masterfile", fonts[6]));
-		table.addCell(cell);
-		cell = new PdfPCell(new Phrase(feature.getMasterFile().getName(), fonts[5]));
-		table.addCell(cell);
-			
-		cell = new PdfPCell(new Phrase("Masterfile Curator Approved", fonts[6]));
-		table.addCell(cell);
-		cell = new PdfPCell(new Phrase(FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue())
-				+ " " + FREDUtil.formatDateForOutput(feature.getAudit().getApprovedDate()), fonts[5]));
-		table.addCell(cell);
+		addCells(table, new String[] {"Masterfile", feature.getMasterFile().getName()}, new Font[] {fonts[6], fonts[5]});
+		addCells(table, new String[] {"Masterfile Curator Approved", FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue())
+				+ " " + FREDUtil.formatDateForOutput(feature.getAudit().getApprovedDate())}, new Font[] {fonts[6], fonts[5]});	
 		
 		document.add(table);
 			
@@ -196,7 +191,6 @@ public class FRFormServlet extends HttpServlet {
 		cell = new PdfPCell(new Phrase("Mandatory Data", fonts[2]));
 		cell.setColspan(2);
 		table.addCell(cell);
-
 		String featType = feature.getFeatureType();
 		String featTypeLbl;
 		if (featType.equals(FREDConstants.OUTCROP)) {
@@ -207,7 +201,6 @@ public class FRFormServlet extends HttpServlet {
 			featTypeLbl = "Section Name";
 		}
 		addCells(table, new String[] {featTypeLbl, feature.getFeatureName()}, new Font[] {fonts[1], fonts[0]});
-		
 		addCell(table, "Original Grid Reference", fonts[1]);
 		if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
 			Datum datum = FREDUtil.getFREDDatum(feature);
@@ -223,74 +216,29 @@ public class FRFormServlet extends HttpServlet {
 		} else {
 			addCell(table, "", fonts[0]);
 		}
-		
 		SiteRecord sr = FREDUtil.getSite(feature);
 		if (sr != null) {
 			LatLong ll = sr.getLatLong();
 			addCells(table, new String[] {"Converted Decimal Lat/Long", ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"}, new Font[] {fonts[1], fonts[0]});
 		}
-		
-		addCell(table, "Map Year", fonts[1]);
-		addCell(table, feature.getMapYear(), fonts[0]);
-		
-		addCell(table, "Method", fonts[1]);
-		addCell(table, FREDUtil.getSiteMethod(sr), fonts[0]);
-		
-		addCell(table, "Accuracy", fonts[1]);
-		addCell(table, ((sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? null : sr.getAccuracy()), fonts[0]);
-		
-		addCell(table, "Locality", fonts[1]);
-		addCell(table, ((sr.isNull(SiteRecord.DIRECTIONS_FIELD)) ? null : sr.getDirections()), fonts[0]);
-		
+		addCells(table, new Object[] {"Map Year", feature.getMapYear()}, new Font[] {fonts[1], fonts[0]});
+		addCells(table, new String[] {"Method", FREDUtil.getSiteMethod(sr)}, new Font[] {fonts[1], fonts[0]});
+		addCells(table, new Object[] {"Accuracy", ((sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? null : sr.getAccuracy())}, new Font[] {fonts[1], fonts[0]});
+		addCells(table, new String[] {"Locality", ((sr.isNull(SiteRecord.DIRECTIONS_FIELD)) ? null : sr.getDirections())}, new Font[] {fonts[1], fonts[0]});
 		if (isAllowedReadFeature) {
-			addCell(table, "Locality", fonts[1]);
-			addCell(table, feature.getLocality(), fonts[0]);
-		}
-
-		if (!featType.equals(FREDConstants.OUTCROP)) {
-			if (isAllowedReadFeature) {
-				addCell(table, ((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector"), fonts[1]);
-				addCell(table, feature.getPerson(), fonts[0]);
-				
-				addCell(table, ((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date"), fonts[1]);
-				addCell(table, FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding()), fonts[0]);
-				
-				addCell(table, "Completion Date", fonts[1]);
-				addCell(table, FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding()), fonts[0]);
-				
-				if (featType.equals(FREDConstants.DRILLHOLE)) {
-					addCell(table, "Licence Area", fonts[1]);
-					addCell(table, feature.getDrillholeLicenceName(), fonts[0]);
-				}
-				
-				addCell(table, "Datum Type", fonts[1]);
-				addCell(table, feature.getDatumType(), fonts[0]);
-				
+			addCells(table, new String[] {"Locality", feature.getLocality()}, new Font[] {fonts[1], fonts[0]});
+			if (!featType.equals(FREDConstants.OUTCROP)) {
+				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector"), feature.getPerson()}, new Font[] {fonts[1], fonts[0]});
+				addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date"), FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding())}, new Font[] {fonts[1], fonts[0]});		
+				addCells(table, new String[] {"Completion Date", FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding())}, new Font[] {fonts[1], fonts[0]});
+				if (featType.equals(FREDConstants.DRILLHOLE))
+					addCells(table, new String[] {"Licence Area", feature.getDrillholeLicenceName()}, new Font[] {fonts[1], fonts[0]});	
+				addCells(table, new String[] {"Datum Type", feature.getDatumType()}, new Font[] {fonts[1], fonts[0]});
+				addCells(table, new Object[] {"Datum Elevation", feature.getDatumElevation()}, new Font[] {fonts[1], fonts[0]});
+				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon"), feature.getStartDepth()}, new Font[] {fonts[1], fonts[0]});
+				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon"), feature.getFinishDepth()}, new Font[] {fonts[1], fonts[0]});
 			}
-	/*		
-			if (featType.equals(Feature.DRILLHOLE_LOCALITY) && sample.isUserAuthenticated() && sample.get(Sample.DRILLHOLE_LICENCE_NAME) != null) { out.println("<tr><td class='heading' width='135'>Licence Area</td><td>" + sample.getAsString(Sample.DRILLHOLE_LICENCE_NAME) + "</td></tr>"); }
-			if (sample.isUserAuthenticated() && sample.get(Sample.DATUM_TYPE) != null) { out.println("<tr><td class='heading' width='135'>Datum Type</td><td>" + sample.getAsString(Sample.DATUM_TYPE) + "</td></tr>"); }
-			if (sample.isUserAuthenticated() && sample.get(Sample.DATUM_ELEVATION) != null) { out.println("<tr><td class='heading' width='135'>Datum Elevation</td><td>" + sample.getAsString(Sample.DATUM_ELEVATION) + " m asl</td></tr>"); }
-			if (sample.isUserAuthenticated() && sample.get(Sample.START_DEPTH) != null) {
-				out.print("<tr><td class='heading' width='135'>");
-				if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
-					out.print("Kick-off Depth");
-				} else {
-					out.print("Top Horizon");
-				}
-				out.println("</td><td>" + sample.getAsString(Sample.START_DEPTH) + " m</td></tr>");
-			}
-			if (sample.isUserAuthenticated() && sample.get(Sample.FINISH_DEPTH) != null) {
-				out.print("<tr><td class='heading' width='135'>");
-				if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
-					out.print("Termination Depth");
-				} else {
-					out.print("Base Horizon");
-				}
-				out.println("</td><td>" + sample.getAsString(Sample.FINISH_DEPTH) + " m</td></tr>");
-			} */
 		}
-		
 		document.add(table);
 			
 	}
