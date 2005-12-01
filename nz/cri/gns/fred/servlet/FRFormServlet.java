@@ -234,6 +234,8 @@ public class FRFormServlet extends HttpServlet {
 			}
 			addRepeatingCells(table, "Collectors", collectorStr, fonts[1], fonts[0]);
 			
+			document.add(table);
+			
 		}
 	/*	if (formType.equals("Full") && sample.isUserAuthenticated()) {
 
