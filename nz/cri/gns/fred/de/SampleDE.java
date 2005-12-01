@@ -741,7 +741,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     			if (parts[2].length() > 0 && lab == null)
     				error.add(new String[] {"Sent To", "Invalid lab: " + parts[2]});
     			
-    			String comments = parts[3];
+    			String comments = parts[3].replaceAll("\\n", null);
     			
     			sentToSet.add(sampleUtil.findOrCreateSentTo(sample, group, person, lab, comments));
     		} catch (Exception e) {
