@@ -568,6 +568,32 @@ public class FREDUtil {
 			throw e;
 		}
 	}
+	
+	/**
+	 * Returns an array of Strings representing the name of the given ageId.
+	 * First item is the full name and the second item is the age code
+	 */
+	public static String[] getStageAgeName(String ageId) throws NamingException, SQLException {
+		if (ageId == null)
+			return null;
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT age_name, ag_abrev FROM age_view WHERE ag_id = " + ageId);
+			String[] name = (rs.next()) ? new String[] {rs.getString(1), rs.getString(2)} : null;
+			rs.close();
+			statement.close();
+			conn.close();
+			return name;
+		} catch (SQLException e) {
+			if (conn != null) try {
+				conn.close();
+			} catch (Exception _e) {
+			}
+			throw e;
+		}		
+	}
 
 	/**
 	 * Joins the string array, starting from the given index, with a space character as the seperator
