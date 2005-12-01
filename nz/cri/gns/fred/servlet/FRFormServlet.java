@@ -110,7 +110,7 @@ public class FRFormServlet extends HttpServlet {
 		defaultCell.setVerticalAlignment(PdfPCell.ALIGN_BOTTOM);
 		defaultCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
 						
-		cell = new PdfPCell(new Phrase("Geological Society of New Zealand", fonts[2]));
+		PdfPCell cell = new PdfPCell(new Phrase("Geological Society of New Zealand", fonts[2]));
 		headerTable.addCell(cell);
 		cell = new PdfPCell(new Phrase(FeatureUtil.getFeatureName(feature), fonts[3]));
 		cell.setHorizontalAlignment(PdfPCell.ALIGN_RIGHT);
