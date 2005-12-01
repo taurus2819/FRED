@@ -19,19 +19,7 @@ public class StageUtil extends ModelUtil {
 	 * @throws NamingException 
 	 */
 	public static String getStageDescription(Stage stage) throws NamingException, SQLException {
-		StringBuffer desc = new StringBuffer();
-		String[] lowerAge = FREDUtil.getStageAgeName(String.valueOf(stage.getStageLowerId()));
-		if (lowerAge != null) {
-			desc.append(lowerAge[0]);
-			desc.append(stage.getStageLowerMod());
-			String[] upperAge = FREDUtil.getStageAgeName(String.valueOf(stage.getStageUpperId()));
-			if (upperAge != null) {
-				desc.append(" - ");
-				desc.append(upperAge[0]);
-				desc.append(stage.getStageUpperMod());
-			}	
-		}
-		return desc.toString();
+		return getStageDesc(stage, 0);
 	}
 
 	/**
@@ -40,19 +28,23 @@ public class StageUtil extends ModelUtil {
 	 * @throws NamingException 
 	 */
 	public static String getStageDescriptionAbbrev(Stage stage) throws NamingException, SQLException {
+		return getStageDesc(stage, 1);
+	}
+	
+	private static String getStageDesc(Stage stage, int nameType) throws NamingException, SQLException {
 		StringBuffer desc = new StringBuffer();
 		String[] lowerAge = FREDUtil.getStageAgeName(String.valueOf(stage.getStageLowerId()));
 		if (lowerAge != null) {
-			desc.append(lowerAge[1]);
+			desc.append(lowerAge[nameType]);
 			desc.append(stage.getStageLowerMod());
 			String[] upperAge = FREDUtil.getStageAgeName(String.valueOf(stage.getStageUpperId()));
 			if (upperAge != null) {
 				desc.append(" - ");
-				desc.append(upperAge[1]);
+				desc.append(upperAge[nameType]);
 				desc.append(stage.getStageUpperMod());
 			}	
 		}
-		return desc.toString();
+		return desc.toString();		
 	}
 	
 
