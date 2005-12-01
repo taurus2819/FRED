@@ -26,6 +26,7 @@ import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.PersonRelationship;
 import nz.cri.gns.fred.model.Sample;
+import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.SampleUtil;
@@ -119,6 +120,7 @@ public class FRFormServlet extends HttpServlet {
 		Feature feature = sample.getFeature();
 		boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
 		boolean isAllowedReadSample = sampleUtil.isAllowedReadSample(user, sample);
+		Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
 		
 		PdfPTable table = new PdfPTable(2);
 		table.setTotalWidth(175 * MM_TO_PT);
@@ -177,7 +179,7 @@ public class FRFormServlet extends HttpServlet {
 		} else {
 			featTypeLbl = "Section Name";
 		}
-		addCells(table, new String[] {featTypeLbl, feature.getFeatureName()}, new Font[] {fonts[1], fonts[0]});
+		addCells(table, new String[] {featTypeLbl, feature.getFeatureName()}, bodyFonts);
 		addCell(table, "Original Grid Reference", fonts[1]);
 		if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
 			Datum datum = FREDUtil.getFREDDatum(feature);
@@ -187,7 +189,7 @@ public class FRFormServlet extends HttpServlet {
 				try {
 					Datum nzmgDatum = DatumFactory.createDatum("NZMG");
 					Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
-					addCells(table, new String[] {"Converted Grid Reference", nzmgDatum.getHumanStringFor(nzmgCoord)}, new Font[] {fonts[1], fonts[0]});
+					addCells(table, new String[] {"Converted Grid Reference", nzmgDatum.getHumanStringFor(nzmgCoord)}, bodyFonts);
 				} catch (Exception e) { }
 			}
 		} else {
@@ -196,23 +198,23 @@ public class FRFormServlet extends HttpServlet {
 		SiteRecord sr = FREDUtil.getSite(feature);
 		if (sr != null) {
 			LatLong ll = sr.getLatLong();
-			addCells(table, new String[] {"Converted Decimal Lat/Long", ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"}, new Font[] {fonts[1], fonts[0]});
+			addCells(table, new String[] {"Converted Decimal Lat/Long", ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"}, bodyFonts);
 		}
-		addCells(table, new Object[] {"Map Year", feature.getMapYear()}, new Font[] {fonts[1], fonts[0]});
-		addCells(table, new String[] {"Method", FREDUtil.getSiteMethod(sr)}, new Font[] {fonts[1], fonts[0]});
-		addCells(table, new Object[] {"Accuracy", ((sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? null : sr.getAccuracy())}, new Font[] {fonts[1], fonts[0]});
+		addCells(table, new Object[] {"Map Year", feature.getMapYear()}, bodyFonts);
+		addCells(table, new String[] {"Method", FREDUtil.getSiteMethod(sr)}, bodyFonts);
+		addCells(table, new Object[] {"Accuracy", ((sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? null : sr.getAccuracy())}, bodyFonts);
 		if (isAllowedReadFeature) {
-			addCells(table, new String[] {"Locality", feature.getLocality()}, new Font[] {fonts[1], fonts[0]});
+			addCells(table, new String[] {"Locality", feature.getLocality()}, bodyFonts);
 			if (!featType.equals(FREDConstants.OUTCROP)) {
-				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector"), feature.getPerson().getName()}, new Font[] {fonts[1], fonts[0]});
-				addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date"), FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding())}, new Font[] {fonts[1], fonts[0]});		
-				addCells(table, new String[] {"Completion Date", FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding())}, new Font[] {fonts[1], fonts[0]});
+				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector"), feature.getPerson().getName()}, bodyFonts);
+				addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date"), FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding())}, bodyFonts);		
+				addCells(table, new String[] {"Completion Date", FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding())}, bodyFonts);
 				if (featType.equals(FREDConstants.DRILLHOLE))
-					addCells(table, new String[] {"Licence Area", feature.getDrillholeLicenceName()}, new Font[] {fonts[1], fonts[0]});	
-				addCells(table, new String[] {"Datum Type", feature.getDatumType()}, new Font[] {fonts[1], fonts[0]});
-				addCells(table, new Object[] {"Datum Elevation", ((feature.getDatumElevation() != null) ? feature.getDatumElevation() + " m asl" : null)}, new Font[] {fonts[1], fonts[0]});
-				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon"), ((feature.getStartDepth() != null) ? feature.getStartDepth() + " m" : null)}, new Font[] {fonts[1], fonts[0]});
-				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon"), ((feature.getFinishDepth() != null) ? feature.getFinishDepth() + " m" : null)}, new Font[] {fonts[1], fonts[0]});
+					addCells(table, new String[] {"Licence Area", feature.getDrillholeLicenceName()}, bodyFonts);	
+				addCells(table, new String[] {"Datum Type", feature.getDatumType()}, bodyFonts);
+				addCells(table, new Object[] {"Datum Elevation", ((feature.getDatumElevation() != null) ? feature.getDatumElevation() + " m asl" : null)}, bodyFonts);
+				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon"), ((feature.getStartDepth() != null) ? feature.getStartDepth() + " m" : null)}, bodyFonts);
+				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon"), ((feature.getFinishDepth() != null) ? feature.getFinishDepth() + " m" : null)}, bodyFonts);
 			}
 		}
 		document.add(table);
@@ -227,31 +229,28 @@ public class FRFormServlet extends HttpServlet {
 			
 			addCell(table, "Collection Information", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
 
+			addCells(table, new String[] {"Collection Date", FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding())}, bodyFonts);
 			Object[] collectors = sample.getCollectors().toArray();
 			String[] collectorStr = new String[collectors.length];
-			for (int i = 0; i < collectors.length; i++) {
+			for (int i = 0; i < collectors.length; i++)
 				collectorStr[i] = ((PersonRelationship) collectors[i]).getDisplayName();
+			addRepeatingCells(table, "Collectors", collectorStr, bodyFonts);
+			addCells(table, new String[] {"Stratigraphic Name", sample.getStratUnit()}, bodyFonts);
+			addCells(table, new String[] {"Fossils in Place", sample.getInPlace()}, bodyFonts);
+			Object[] sentTos = sample.getSentTos().toArray();
+			String[] sentToStr = new String[sentTos.length];
+			for (int i = 0; i < sentTos.length; i++)
+				sentToStr[i] = SampleUtil.getSentToDescription((SentTo) sentTos[i]);
+			addRepeatingCells(table, "Sent To", sentToStr, bodyFonts);
+			addCells(table, new String[] {"Not Collected", sample.getNotCollected()}, bodyFonts);
+			addCells(table, new String[] {"Significance/Comments", sample.getSignificance()}, bodyFonts);
+		
 			}
-			addRepeatingCells(table, "Collectors", collectorStr, fonts[1], fonts[0]);
-			
 			document.add(table);
 			
 		}
 	/*	if (formType.equals("Full") && sample.isUserAuthenticated()) {
 
-			//Sample Property Data
-			//collectors (repeating)
-			if (sample.get(Sample.COLLECTOR) != null) {
-				out.print("<tr><td class='heading'>Collectors</td><td>");
-				for (Iterator i2 = sample.getAsVector(Sample.COLLECTOR).iterator(); i2.hasNext(); ) {
-					KeyValueObject coll = (KeyValueObject)i2.next();
-					out.print(coll.getValue() + "<br />");
-				}
-				out.print("</td></tr>");
-			}
-			if (sample.get(Sample.COLLECTION_DATE) != null) { out.print("<tr><td class='heading'>Collection Date</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.COLLECTION_DATE), sample.getAsString(Sample.COLLECTION_DATE_ROUNDING)) + "</td></tr>"); }
-			if (sample.get(Sample.STRAT_UNIT) != null) { out.println("<tr><td class='heading'>Strat Name</td><td>" + sample.getAsString(Sample.STRAT_UNIT) + "</td></tr>"); }
-			if (sample.get(Sample.IN_PLACE) != null) { out.println("<tr><td class='heading'>In Place</td><td>" + sample.getAsString(Sample.IN_PLACE) + "</td></tr>"); }
 			//sent to (repeating)
 			if (sample.get(Sample.SENT_TO) != null) {
 				out.print("<tr><td class='heading'>Sent To</td><td>");
@@ -354,8 +353,7 @@ public class FRFormServlet extends HttpServlet {
 			addCell(table, text[i], fonts[i], align[i], 1);
 	}
 	
-	private void addRepeatingCells(PdfPTable table, String heading, String[] text, Font headFont, Font textFont) {
-		Font[] fonts = new Font[] {headFont, textFont};
+	private void addRepeatingCells(PdfPTable table, String heading, String[] text, Font[] fonts) {
 		addCells(table, new String[] {heading, text[0]}, fonts);
 		for (int i = 1; i < text.length; i++)
 			addCells(table, new String[] {null, text[i]}, fonts);
