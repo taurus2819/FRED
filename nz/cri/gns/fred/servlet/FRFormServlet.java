@@ -90,7 +90,7 @@ public class FRFormServlet extends HttpServlet {
 
 		PdfPTable table = new PdfPTable(2);
 		table.setWidthPercentage(100);
-		//table.setWidths(new float[] {100, table.getTotalWidth() - 100});
+		table.setWidths(new float[] {100, table.getTotalWidth() - 100});
 		table.setSpacingAfter(7 * MM_TO_PT);
 				
 		//Logos
