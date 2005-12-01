@@ -13,30 +13,26 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.xml.sax.SAXException;
-
-import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
+import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
+import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
+import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
-import com.lowagie.text.Cell;
-import com.lowagie.text.Chunk;
+import org.xml.sax.SAXException;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import com.lowagie.text.Image;
-import com.lowagie.text.List;
-import com.lowagie.text.ListItem;
 import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
-import com.lowagie.text.Table;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
@@ -46,7 +42,7 @@ public class FRFormServlet extends HttpServlet {
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 	private DAOFactory factory;
-	private FeatureUtil featureUtil;
+	private SampleUtil sampleUtil;
 	
 	private static final float MM_TO_PT = 2.8346f;
 	
@@ -55,10 +51,10 @@ public class FRFormServlet extends HttpServlet {
 		this.request = request;
 		this.response = response;
 		this.factory = HibernateUtil.get().getDAOFactory();
-		this.featureUtil = new FeatureUtil(factory);
-		Feature feature = featureUtil.getFeature(Integer.parseInt(request.getParameter("FeatID")));
+		this.sampleUtil = new SampleUtil(factory);
+		Sample sample = sampleUtil.getSample(Integer.parseInt(request.getParameter("ID")));
 		//Feature feature2 = featureUtil.getFeature(Integer.parseInt(request.getParameter("Feat2ID")));
-		makePDF(new Feature[] {feature});
+		makePDF(new Sample[] {sample});
 		} catch (Exception e) {
 			System.out.println("************************************");
 			e.printStackTrace();
@@ -67,7 +63,7 @@ public class FRFormServlet extends HttpServlet {
 		}
 	}
 		
-	private void makePDF(Feature[] features) throws DocumentException, IOException, NamingException, SQLException {
+	private void makePDF(Sample[] samples) throws DocumentException, IOException, NamingException, SQLException {
 		Document document = new Document(PageSize.A4, 20 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT);
 			
 		PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
@@ -84,10 +80,10 @@ public class FRFormServlet extends HttpServlet {
 		fonts[5] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.NORMAL);
 		fonts[6] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
 		
-		for (int i = 0; i < features.length; i++) {
+		for (int i = 0; i < samples.length; i++) {
 			try {
-			writeLocality(features[i], document, fonts);
-			if (i < features.length - 1)
+			writeSample(samples[i], document, fonts);
+			if (i < samples.length - 1)
 				document.newPage();
 			} catch (Exception e) {
 				System.out.println("************************************");
@@ -100,20 +96,21 @@ public class FRFormServlet extends HttpServlet {
 
 	}
 	
-	private void writeLocality(Feature feature, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException {
+	private void writeSample(Sample sample, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException {
 
+		Feature feature = sample.getFeature();
+		
 		PdfPTable table = new PdfPTable(2);
 		table.setTotalWidth(175 * MM_TO_PT);
 		table.setLockedWidth(true);
-		table.setWidths(new float[] {30 * MM_TO_PT, 145 * MM_TO_PT});
-		table.setSpacingAfter(7 * MM_TO_PT);
+		table.setWidths(new float[] {25 * MM_TO_PT, 150 * MM_TO_PT});
+		table.setSpacingAfter(5 * MM_TO_PT);
 				
 		//Logos
-		//String url = "http://" + request.getServerName() + request.getContextPath() + "/images/gsnz_logo.gif";
-		String url = "http://" + JspUtils.getServerName(new PageState(request, response, getServletContext())) + "/fred/images/gsnz_logo.gif";
-		System.out.println("URL: " + url);
+		String url = "http://" + JspUtils.getServerName(new PageState(request, response, getServletContext()))
+				+ "/fred/images/gsnz_logo.gif";
 		Image image = Image.getInstance(new URL(url));
-		image.scaleToFit(61, 60);
+		image.scaleToFit(20 * MM_TO_PT, 20 * MM_TO_PT);
 		table.addCell(image);
 		//PdfPCell cell = new PdfPCell(new Phrase("GSNZ\nLogo", fonts[2]));
 		//table.addCell(cell);
@@ -145,8 +142,10 @@ public class FRFormServlet extends HttpServlet {
 		
 		//Masterfile text
 		table = new PdfPTable(2);
-		table.setWidthPercentage(100);
-		table.setSpacingAfter(10 * MM_TO_PT);
+		table.setTotalWidth(175 * MM_TO_PT);
+		table.setLockedWidth(true);
+		table.setWidths(new float[] {60 * MM_TO_PT, 115 * MM_TO_PT});
+		table.setSpacingAfter(5 * MM_TO_PT);
 			
 		defaultCell = table.getDefaultCell();
 		defaultCell.setBorder(PdfPCell.NO_BORDER);
@@ -166,157 +165,112 @@ public class FRFormServlet extends HttpServlet {
 		
 		document.add(table);
 			
-					
-/*			Table dataTable = new Table(2);
-			dataTable.setAbsWidth("100");
-			dataTable.setWidths(new float[] {230, 330});
-			dataTable.setBorder(Table.NO_BORDER);
-			dataTable.setPadding(10);
-			//dataTable.setBorderWidth(1);
-			//dataTable.setBorderColor(java.awt.Color.red);
+		//Mandatory Data
+		table = new PdfPTable(2);
+		table.setTotalWidth(175 * MM_TO_PT);
+		table.setLockedWidth(true);
+		table.setWidths(new float[] {60 * MM_TO_PT, 115 * MM_TO_PT});
+		table.setSpacingAfter(5 * MM_TO_PT);
 
-			Cell dataCell = new Cell();
-			dataCell.setBorder(Cell.NO_BORDER);
-			Font font = FontFactory.getFont(FontFactory.TIMES_ROMAN, 10, Font.NORMAL);
-			Font boldFont = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD);
-			
-			Paragraph breakParagraph = new Paragraph(new Chunk(new String(new char[] {0xA0, 0xA0}), font));
-			try {
-				//Get the photo
-				StringBuffer url = request.getRequestURL();
-				//This is located at .../nathaz/cv.pdf
-				url.delete(url.indexOf("cv/cv.pdf"), url.length());
-				//and we want .../nathaz/images/dynamic/??.jpg
-				url.append("images/dynamic/").append(person.getPhotoId(state)).append(".jpg");
-				
-				Image image = Image.getInstance(new URL(url.toString())); 
-				image.scaleToFit(100, 100);
-				image.setAlignment(Image.ALIGN_CENTER);
-				dataCell.add(image);
-				dataCell.add(breakParagraph);
-			} catch (Exception e) {
-			}
-			Paragraph paragraph = new Paragraph(new Phrase("Areas of Specialisation", boldFont));
-			paragraph.setSpacingAfter(10);
-			dataCell.addElement(paragraph);
-			
-			Expertise[] expertise = person.getExpertiseAreas(state);
-			for (int i=0; i<expertise.length; i++) {
-				paragraph = new Paragraph(new Phrase(expertise[i].getExpertiseString(), font));
-				paragraph.setIndentationLeft(27);
-				paragraph.setFirstLineIndent(18);
-				
-				dataCell.addElement(paragraph);
-			}
-			dataCell.addElement(breakParagraph);
-			paragraph = new Paragraph(new Phrase("Qualifications", boldFont));
-			paragraph.setSpacingAfter(10);
-			paragraph.setSpacingBefore(18);
-			dataCell.addElement(paragraph);
-			
-			
-			Qualification[] quals = person.getEducationalQualifications(state);
-			
-			for (int i=0; i<quals.length; i++) {
-				paragraph = new Paragraph(new Phrase(quals[i].getDescription(), font));
-				paragraph.setIndentationLeft(27);
-				paragraph.setFirstLineIndent(18);
-				
-				dataCell.addElement(paragraph);
-			}
-			dataCell.addElement(breakParagraph);
-			paragraph = new Paragraph(new Phrase("Contact", boldFont));
-			dataCell.addElement(paragraph);
+		defaultCell = table.getDefaultCell();
+		defaultCell.setBorder(PdfPCell.NO_BORDER);
+		defaultCell.setVerticalAlignment(PdfPCell.ALIGN_BOTTOM);
+		defaultCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
+		
+		cell = new PdfPCell(new Phrase("Mandatory Data", fonts[2]));
+		cell.setColspan(2);
+		table.addCell(cell);
 
-			Company company = NatHazUtils.getCompany(person.getCompanyId(), state);
-			
-			String address = company.getName() + "\n" + company.getPostAddressText() + "\n" + NatHazUtils.getCountryText(company.getPostAddressCountry(), state).toUpperCase();
-			paragraph = new Paragraph(new Phrase(address, font));
-			paragraph.setIndentationLeft(27);
-			dataCell.add(paragraph);
-			dataCell.add(breakParagraph);
-			
-			String phone = person.getPhone();
-			if (phone == null || phone.trim().length() == 0)
-				phone = company.getPhone();
-			
-			if (phone != null && phone.length() > 0) {
-				paragraph = new Paragraph(new Phrase("Phone: " + phone, font));	
-				paragraph.setIndentationLeft(27);
-				dataCell.add(paragraph);		
-			}
-			String fax = person.getFax();
-			if (fax == null || fax.trim().length() == 0)
-				fax = company.getFax();
-
-			if (fax != null && phone.length() > 0) {
-				paragraph = new Paragraph(new Phrase("Fax: " + fax, font));	
-				paragraph.setIndentationLeft(27);
-				dataCell.add(paragraph);		
-			}
-			
-			paragraph = new Paragraph(new Phrase("Email: " + person.getEmail(), font));
-			paragraph.setIndentationLeft(27);
-			dataCell.add(paragraph);
-			
-			
-			Language[] languages = person.getLanguages(state);
-			String langs = "";
-			for (int i=0; i<languages.length; i++) {
-				langs += ", " + languages[i].getLanguageString();
-			}
-			
-			if (langs.length() > 0) {
-				dataCell.add(breakParagraph);
-				paragraph = new Paragraph(new Phrase("Languages", boldFont));
-				dataCell.addElement(paragraph);
-				paragraph = new Paragraph(langs.substring(2), font);
-				paragraph.setIndentationLeft(27);
-				dataCell.addElement(paragraph);
-			}
-			
-			dataCell.add(breakParagraph);
-			paragraph = new Paragraph(new Phrase("Countries of work experience", boldFont));
-			dataCell.addElement(paragraph);
-			
-			PublicCV cv = person.getPublicCV(state);
-			paragraph = new Paragraph(new Phrase(cv.getCountries(""), font));
-			paragraph.setIndentationLeft(27);
-			dataCell.add(paragraph);
-			
-			dataTable.addCell(dataCell);
-			
-			dataCell = new Cell();
-			dataCell.setBorder(Cell.LEFT);
-			if (cv.getExperience() != null) {
-				dataCell.add(new Paragraph(new Phrase("Experience", boldFont)));
-				paragraph = new Paragraph(new Phrase(cv.getExperience(), font));
-				paragraph.setAlignment(Paragraph.ALIGN_JUSTIFIED_ALL);
-				paragraph.setLeading(12f);
-				paragraph.setIndentationLeft(27);
-				dataCell.add(paragraph);
-				dataCell.add(breakParagraph);
-			}
-			
-			dataCell.add(new Paragraph(new Phrase("Track Record", boldFont)));
-			Experience[] experience = person.getPublicExperience(state);
-			if (experience.length > 0){
-				List list = new List(false, 10);
-				for (int i=0; i<experience.length; i++) {
-					list.add(new ListItem(new Phrase(experience[i].getPublicDescription(), font)));
+		String featType = feature.getFeatureType();
+		String featTypeLbl;
+		if (featType.equals(FREDConstants.OUTCROP)) {
+			featTypeLbl = "Field Number";
+		} else if (featType.equals(FREDConstants.DRILLHOLE)) {
+			featTypeLbl = "Drillhole Name";
+		} else {
+			featTypeLbl = "Section Name";
+		}
+		cell = new PdfPCell(new Phrase(featTypeLbl, fonts[1]));
+		table.addCell(cell);
+		cell = new PdfPCell(new Phrase(sample.getSampleName(), fonts[0]));
+		table.addCell(cell);		
+		
+/*
+		
+		if (sample.get(Sample.LATITUDE) != null) {
+			SiteRecord sr = SiteRecord.querySite(FREDUtils.getFREDConnection(state), sample.getAsInt(Sample.SITE_ID));
+			if (sample.get(Sample.ORIG_SYSTEM_ID) != null && sample.get(Sample.ORIG_COORD) != null) {
+				Datum datum = DatumFactory.createDatum(sample.getAsInt(Sample.ORIG_SYSTEM_ID));
+				Datum.Coordinate coord = datum.parseCoordinate(sample.getAsString(Sample.ORIG_COORD));
+				out.print("<tr><td class='heading'>"
+						+ ((coord instanceof Datum.LatLong) ? "Lat/Long" : "Grid Ref")
+						+ "</td><td>" + datum.getHumanStringFor(coord).replaceAll("Geographic ", "") + "</td></tr>");
+				if (!datum.getName().equals("NZMG")) {
+					try {
+						Datum nzmgDatum = DatumFactory.createDatum("NZMG");
+						Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
+						out.println("<tr><td class='heading'>Grid Ref</td><td>" + nzmgDatum.getHumanStringFor(nzmgCoord) + "</td></tr>");
+					} catch (Exception e) { }
 				}
-				dataCell.add(list);
 			}
-			
-			dataTable.addCell(dataCell);
-			document.add(new Phrase("\n"));
-			document.add(dataTable);
-			
-			Image image = Image.getInstance(getClass().getResource("nhnzlogo.gif"));		
-			image.scaleToFit(100, 100);
-			image.setAbsolutePosition(460, 18);
-			document.add(image);
-	*/		
+			Datum.LatLong ll = sr.getLatLong();
+			if (ll.getNorthSouth() != 999)
+				out.println("<tr><td class='heading'>Lat/Long</td><td>" + ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)</td></tr>");
+		}
+		
+		if (sample.get(Sample.MAP_YEAR) != null) { out.println("<tr><td class='heading'>Map Year</td><td>" + sample.getAsString(Sample.MAP_YEAR) + "</td></tr>"); }
+		if (sample.get(Sample.METHOD) != null) { out.println("<tr><td class='heading'>Method</td><td>" + sample.getAsString(Sample.METHOD) + "</td></tr>"); }
+		if (sample.get(Sample.ACCURACY) != null) { out.println("<tr><td class='heading'>Accuracy</td><td>&#177 " + sample.getAsDouble(Sample.ACCURACY) + "m</td></tr>"); }
+		if (sample.isUserAuthenticated() && sample.get(Sample.LOCALITY) != null) { out.println("<tr><td class='heading'>Locality</td><td>" + sample.getAsString(Sample.LOCALITY) + "</td></tr>"); }
+		if (!featType.equals(Feature.OUTCROP_LOCALITY)) {
+			if (sample.isUserAuthenticated() && sample.get(Sample.PERSON) != null) {
+				out.print("<tr><td class='heading' width='135'>");
+				if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
+					out.print("Operating Company");
+				} else {
+					out.print("Section Collector");
+				}
+				out.println("</td><td>" + sample.getAsString(Sample.PERSON) + "</td></tr>");
+			}
+			if (sample.isUserAuthenticated() && sample.get(Sample.START_DATE) != null) {
+				out.print("<tr><td class='heading'>");
+				if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
+					out.print("Spud Date");
+				} else {
+					out.print("Sampling Start Date");
+				}
+				out.print("</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.START_DATE), sample.getAsString(Sample.START_DATE_ROUNDING)) + "</td></tr>");
+			}
+			if (sample.isUserAuthenticated() && sample.get(Sample.FINISH_DATE) != null) {
+				out.print("<tr><td class='heading'>Completion Date</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.FINISH_DATE), sample.getAsString(Sample.FINISH_DATE_ROUNDING)) + "</td></tr>");
+			}
+			if (featType.equals(Feature.DRILLHOLE_LOCALITY) && sample.isUserAuthenticated() && sample.get(Sample.DRILLHOLE_LICENCE_NAME) != null) { out.println("<tr><td class='heading' width='135'>Licence Area</td><td>" + sample.getAsString(Sample.DRILLHOLE_LICENCE_NAME) + "</td></tr>"); }
+			if (sample.isUserAuthenticated() && sample.get(Sample.DATUM_TYPE) != null) { out.println("<tr><td class='heading' width='135'>Datum Type</td><td>" + sample.getAsString(Sample.DATUM_TYPE) + "</td></tr>"); }
+			if (sample.isUserAuthenticated() && sample.get(Sample.DATUM_ELEVATION) != null) { out.println("<tr><td class='heading' width='135'>Datum Elevation</td><td>" + sample.getAsString(Sample.DATUM_ELEVATION) + " m asl</td></tr>"); }
+			if (sample.isUserAuthenticated() && sample.get(Sample.START_DEPTH) != null) {
+				out.print("<tr><td class='heading' width='135'>");
+				if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
+					out.print("Kick-off Depth");
+				} else {
+					out.print("Top Horizon");
+				}
+				out.println("</td><td>" + sample.getAsString(Sample.START_DEPTH) + " m</td></tr>");
+			}
+			if (sample.isUserAuthenticated() && sample.get(Sample.FINISH_DEPTH) != null) {
+				out.print("<tr><td class='heading' width='135'>");
+				if (featType.equals(Feature.DRILLHOLE_LOCALITY)) {
+					out.print("Termination Depth");
+				} else {
+					out.print("Base Horizon");
+				}
+				out.println("</td><td>" + sample.getAsString(Sample.FINISH_DEPTH) + " m</td></tr>");
+			}
+		}
+		
+		
+	*/
+		
+		document.add(table);
 			
 	}
 
