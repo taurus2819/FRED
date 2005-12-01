@@ -102,9 +102,9 @@ public class FRFormServlet extends HttpServlet {
 			
 		//Header Text
 		PdfPTable headerTable = new PdfPTable(2);
-		headerTable.setWidthPercentage(100);
+		//headerTable.setWidthPercentage(100);
 		
-		PdfPCell defaultCell = table.getDefaultCell();
+		PdfPCell defaultCell = headerTable.getDefaultCell();
 		defaultCell.setBorder(PdfPCell.NO_BORDER);
 		defaultCell.setVerticalAlignment(PdfPCell.ALIGN_BOTTOM);
 		defaultCell.setHorizontalAlignment(PdfPCell.ALIGN_LEFT);
@@ -144,7 +144,6 @@ public class FRFormServlet extends HttpServlet {
 		table.addCell(cell);
 		cell = new PdfPCell(new Phrase(FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue())
 				+ " " + FREDUtil.formatDateForOutput(feature.getAudit().getApprovedDate()), fonts[5]));
-		
 		table.addCell(cell);
 		
 		document.add(table);
