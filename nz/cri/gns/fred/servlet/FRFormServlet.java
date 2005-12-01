@@ -95,11 +95,11 @@ public class FRFormServlet extends HttpServlet {
 		table.setSpacingAfter(7 * MM_TO_PT);
 				
 		//Logos
-		//Image image = Image.getInstance("../images/gsnz_logo.gif");
-		//image.scaleToFit(61, 60);
-		//table.addCell(image);
-		PdfPCell cell = new PdfPCell(new Phrase("GSNZ\nLogo", fonts[2]));
-		table.addCell(cell);
+		Image image = Image.getInstance("../images/gsnz_logo.gif");
+		image.scaleToFit(61, 60);
+		table.addCell(image);
+		//PdfPCell cell = new PdfPCell(new Phrase("GSNZ\nLogo", fonts[2]));
+		//table.addCell(cell);
 			
 		//Header Text
 		PdfPTable headerTable = new PdfPTable(2);
