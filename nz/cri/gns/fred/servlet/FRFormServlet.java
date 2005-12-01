@@ -21,6 +21,8 @@ import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
+import nz.cri.gns.jsp.JspUtils;
+import nz.cri.gns.jsp.PageState;
 
 import com.lowagie.text.Cell;
 import com.lowagie.text.Chunk;
@@ -108,7 +110,7 @@ public class FRFormServlet extends HttpServlet {
 				
 		//Logos
 		//String url = "http://" + request.getServerName() + request.getContextPath() + "/images/gsnz_logo.gif";
-		String url = DBUtils.getOnlineURL("dev", false);
+		String url = JspUtils.getServerName(new PageState(request, response, getServletContext())) + "/fred/images/gsnz_logo.gif";
 		System.out.println("URL: " + url);
 		Image image = Image.getInstance(new URL(url));
 		image.scaleToFit(61, 60);
