@@ -14,6 +14,7 @@ import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
 import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.FREDConstants;
@@ -27,6 +28,7 @@ import nz.cri.gns.jsp.PageState;
 import nz.cri.gns.util.map.Datum;
 import nz.cri.gns.util.map.DatumFactory;
 import nz.cri.gns.util.map.Datum.Coordinate;
+import nz.cri.gns.util.map.Datum.LatLong;
 
 import org.xml.sax.SAXException;
 
@@ -123,7 +125,7 @@ public class FRFormServlet extends HttpServlet {
 		PdfPTable headerTable = new PdfPTable(2);
 		headerTable.setTotalWidth(150 * MM_TO_PT);
 		headerTable.setLockedWidth(true);
-		headerTable.setWidths(new float[] {90 * MM_TO_PT, 60 * MM_TO_PT});
+		headerTable.setWidths(new float[] {80 * MM_TO_PT, 70 * MM_TO_PT});
 		
 		PdfPCell defaultCell = headerTable.getDefaultCell();
 		defaultCell.setBorder(PdfPCell.NO_BORDER);
@@ -150,7 +152,7 @@ public class FRFormServlet extends HttpServlet {
 		table = new PdfPTable(2);
 		table.setTotalWidth(175 * MM_TO_PT);
 		table.setLockedWidth(true);
-		table.setWidths(new float[] {60 * MM_TO_PT, 115 * MM_TO_PT});
+		table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
 		table.setSpacingAfter(5 * MM_TO_PT);
 			
 		defaultCell = table.getDefaultCell();
@@ -175,7 +177,7 @@ public class FRFormServlet extends HttpServlet {
 		table = new PdfPTable(2);
 		table.setTotalWidth(175 * MM_TO_PT);
 		table.setLockedWidth(true);
-		table.setWidths(new float[] {60 * MM_TO_PT, 115 * MM_TO_PT});
+		table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
 		table.setSpacingAfter(5 * MM_TO_PT);
 
 		defaultCell = table.getDefaultCell();
@@ -199,38 +201,31 @@ public class FRFormServlet extends HttpServlet {
 		addCell(table, featTypeLbl, fonts[1]);
 		addCell(table, feature.getFeatureName(), fonts[0]);
 		
-		addCell(table, "Original Grid Ref", fonts[1]);
+		addCell(table, "Original Grid Reference", fonts[1]);
 		if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
-			Datum datum = DatumFactory.createDatum(feature.getOrigSystemId().intValue());
-			Coordinate coord = datum.parseCoordinate(feature.getOrigCoord());
+			Datum datum = FREDUtil.getFREDDatum(feature);
+			Coordinate coord = FREDUtil.getFREDCoordinate(feature);
 			addCell(table, datum.getHumanStringFor(coord).replaceAll("Geographic ", ""), fonts[0]);
+			if (!datum.getName().equals("NZMG")) {
+				try {
+					Datum nzmgDatum = DatumFactory.createDatum("NZMG");
+					Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
+					addCell(table, "Converted Grid Reference", fonts[1]);
+					addCell(table, nzmgDatum.getHumanStringFor(nzmgCoord), fonts[0]);
+				} catch (Exception e) { }
+			}
 		} else {
 			addCell(table, "", fonts[0]);
 		}
-	
+		if (feature.getSiteId() != null) {
+			SiteRecord sr = FREDUtil.getSite(feature);
+			LatLong ll = sr.getLatLong();
+			addCell(table, "Converted Decimal Lat/Long", fonts[1]);
+			addCell(table, ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)", fonts[0]);
+		}
+		
 		
 /*
-		
-		if (sample.get(Sample.LATITUDE) != null) {
-			SiteRecord sr = SiteRecord.querySite(FREDUtils.getFREDConnection(state), sample.getAsInt(Sample.SITE_ID));
-			if (sample.get(Sample.ORIG_SYSTEM_ID) != null && sample.get(Sample.ORIG_COORD) != null) {
-				Datum datum = DatumFactory.createDatum(sample.getAsInt(Sample.ORIG_SYSTEM_ID));
-				Datum.Coordinate coord = datum.parseCoordinate(sample.getAsString(Sample.ORIG_COORD));
-				out.print("<tr><td class='heading'>"
-						+ ((coord instanceof Datum.LatLong) ? "Lat/Long" : "Grid Ref")
-						+ "</td><td>" + datum.getHumanStringFor(coord).replaceAll("Geographic ", "") + "</td></tr>");
-				if (!datum.getName().equals("NZMG")) {
-					try {
-						Datum nzmgDatum = DatumFactory.createDatum("NZMG");
-						Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
-						out.println("<tr><td class='heading'>Grid Ref</td><td>" + nzmgDatum.getHumanStringFor(nzmgCoord) + "</td></tr>");
-					} catch (Exception e) { }
-				}
-			}
-			Datum.LatLong ll = sr.getLatLong();
-			if (ll.getNorthSouth() != 999)
-				out.println("<tr><td class='heading'>Lat/Long</td><td>" + ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)</td></tr>");
-		}
 		
 		if (sample.get(Sample.MAP_YEAR) != null) { out.println("<tr><td class='heading'>Map Year</td><td>" + sample.getAsString(Sample.MAP_YEAR) + "</td></tr>"); }
 		if (sample.get(Sample.METHOD) != null) { out.println("<tr><td class='heading'>Method</td><td>" + sample.getAsString(Sample.METHOD) + "</td></tr>"); }
