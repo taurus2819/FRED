@@ -256,8 +256,8 @@ public class FRFormServlet extends HttpServlet {
 			table.setSpacingAfter(5 * MM_TO_PT);
 			
 			addCell(table, "Stratigraphy", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
-			addCells(table, new String[] {"Inferred Stage", StageUtil.getStageDescription(sample.getInferredStage())}, bodyFonts);
-			addCells(table, new String[] {"Known Stage", StageUtil.getStageDescription(sample.getKnownStage())}, bodyFonts);
+			addCells(table, new String[] {"Inferred Stage", ((sample.getInferredStage() != null) ? StageUtil.getStageDescription(sample.getInferredStage()) : null)}, bodyFonts);
+			addCells(table, new String[] {"Known Stage", ((sample.getKnownStage() != null) ? StageUtil.getStageDescription(sample.getKnownStage()) : null)}, bodyFonts);
 			
 			
 
