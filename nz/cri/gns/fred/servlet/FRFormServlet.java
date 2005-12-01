@@ -89,8 +89,9 @@ public class FRFormServlet extends HttpServlet {
 	private void writeLocality(Feature feature, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException {
 
 		PdfPTable table = new PdfPTable(2);
-		table.setWidthPercentage(100);
-		table.setWidths(new float[] {100, table.getTotalWidth() - 100});
+		table.setTotalWidth(175 * MM_TO_PT);
+		table.setLockedWidth(true);
+		table.setWidths(new float[] {30 * MM_TO_PT, 145 * MM_TO_PT});
 		table.setSpacingAfter(7 * MM_TO_PT);
 				
 		//Logos
