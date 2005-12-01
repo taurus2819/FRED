@@ -36,12 +36,14 @@ public class StageUtil extends ModelUtil {
 		if (stage.getStageLowerId() != null) {
 			String[] lowerAge = FREDUtil.getStageAgeName(String.valueOf(stage.getStageLowerId()));
 			desc.append(lowerAge[nameType]);
-			desc.append(stage.getStageLowerMod());
+			if (stage.getStageLowerMod() != null)
+				desc.append(stage.getStageLowerMod());
 			if (stage.getStageUpperId() != null) {
 				String[] upperAge = FREDUtil.getStageAgeName(String.valueOf(stage.getStageUpperId()));
 				desc.append(" - ");
 				desc.append(upperAge[nameType]);
-				desc.append(stage.getStageUpperMod());
+				if (stage.getStageUpperMod() != null)
+					desc.append(stage.getStageUpperMod());
 			}	
 		}
 		return desc.toString();		
