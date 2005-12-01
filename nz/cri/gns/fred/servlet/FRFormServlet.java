@@ -25,6 +25,7 @@ import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.PersonRelationship;
+import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.util.FREDUtil;
@@ -258,8 +259,21 @@ public class FRFormServlet extends HttpServlet {
 			addCell(table, "Stratigraphy", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
 			addCells(table, new String[] {"Inferred Stage", ((sample.getInferredStage() != null) ? StageUtil.getStageDescription(sample.getInferredStage()) : null)}, bodyFonts);
 			addCells(table, new String[] {"Known Stage", ((sample.getKnownStage() != null) ? StageUtil.getStageDescription(sample.getKnownStage()) : null)}, bodyFonts);
-			
-			
+			Object[] relationships = sampleUtil.getRelationships(sample, "Sample", "nearby").toArray();
+			String[] relationshipStr = new String[relationships.length];
+			for (int i = 0; i < relationships.length; i++)
+				relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
+			addRepeatingCells(table, "Samples Nearby", relationshipStr, bodyFonts);			
+			relationships = sampleUtil.getRelationships(sample, "Sample", new String[] {"above", "below"}).toArray();
+			relationshipStr = new String[relationships.length];
+			for (int i = 0; i < relationships.length; i++)
+				relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
+			addRepeatingCells(table, "Sample Relationships", relationshipStr, bodyFonts);			
+			relationships = sampleUtil.getRelationships(sample, "Stratigraphic", new String[] {"above top", "above base", "below top", "below base"}).toArray();
+			relationshipStr = new String[relationships.length];
+			for (int i = 0; i < relationships.length; i++)
+				relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
+			addRepeatingCells(table, "Stratigraphic Relationships", relationshipStr, bodyFonts);			
 
 		
 			document.add(table);
