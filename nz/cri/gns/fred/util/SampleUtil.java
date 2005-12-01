@@ -467,6 +467,9 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		
 	}
 
+	/**
+	 * Returns string representing a single SentTo
+	 */
 	public static String getSentToDescription(SentTo sentTo) {
 		StringBuffer desc = new StringBuffer();
 		desc.append(sentTo.getFossilGroup().getName()).append(": ");
