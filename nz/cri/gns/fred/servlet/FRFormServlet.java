@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.Set;
 
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
@@ -23,6 +24,7 @@ import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FrNumber;
+import nz.cri.gns.fred.model.PersonRelationship;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
@@ -88,11 +90,13 @@ public class FRFormServlet extends HttpServlet {
 		Font[] fonts = new Font[7];
 		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.NORMAL);
 		fonts[1] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
+		fonts[1].setColor(110, 110, 110);
 		fonts[2] = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD);
 		fonts[3] = FontFactory.getFont(FontFactory.HELVETICA, 24, Font.BOLD);
 		fonts[4] = FontFactory.getFont(FontFactory.HELVETICA, 16, Font.BOLD);
 		fonts[5] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.NORMAL);
 		fonts[6] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.BOLD);
+		fonts[6].setColor(110, 110, 110);
 		
 		for (int i = 0; i < samples.length; i++) {
 			try {
@@ -156,14 +160,14 @@ public class FRFormServlet extends HttpServlet {
 		
 		document.add(table);
 			
-		//Mandatory Data
+		//Location Information
 		table = new PdfPTable(2);
 		table.setTotalWidth(175 * MM_TO_PT);
 		table.setLockedWidth(true);
 		table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
 		table.setSpacingAfter(5 * MM_TO_PT);
 		
-		addCell(table, "Mandatory Data", fonts[2], PdfPCell.ALIGN_LEFT, 2);
+		addCell(table, "Location Information", fonts[2], PdfPCell.ALIGN_LEFT, 2);
 		String featType = feature.getFeatureType();
 		String featTypeLbl;
 		if (featType.equals(FREDConstants.OUTCROP)) {
@@ -212,7 +216,116 @@ public class FRFormServlet extends HttpServlet {
 			}
 		}
 		document.add(table);
+	
+		if (isAllowedReadSample) {
+			//Collection Information
+			table = new PdfPTable(2);
+			table.setTotalWidth(175 * MM_TO_PT);
+			table.setLockedWidth(true);
+			table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
+			table.setSpacingAfter(5 * MM_TO_PT);
 			
+			addCell(table, "Collection Information", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
+
+			Object[] collectors = sample.getCollectors().toArray();
+			String[] collectorStr = new String[collectors.length];
+			for (int i = 0; i < collectors.length; i++) {
+				collectorStr[i] = ((PersonRelationship) collectors[i]).getDisplayName();
+			}
+			addRepeatingCells(table, "Collectors", collectorStr, fonts[1], fonts[0]);
+			
+		}
+	/*	if (formType.equals("Full") && sample.isUserAuthenticated()) {
+
+			//Sample Property Data
+			//collectors (repeating)
+			if (sample.get(Sample.COLLECTOR) != null) {
+				out.print("<tr><td class='heading'>Collectors</td><td>");
+				for (Iterator i2 = sample.getAsVector(Sample.COLLECTOR).iterator(); i2.hasNext(); ) {
+					KeyValueObject coll = (KeyValueObject)i2.next();
+					out.print(coll.getValue() + "<br />");
+				}
+				out.print("</td></tr>");
+			}
+			if (sample.get(Sample.COLLECTION_DATE) != null) { out.print("<tr><td class='heading'>Collection Date</td><td>" + FREDUtils.formatDateForOutput(sample.getAsDate(Sample.COLLECTION_DATE), sample.getAsString(Sample.COLLECTION_DATE_ROUNDING)) + "</td></tr>"); }
+			if (sample.get(Sample.STRAT_UNIT) != null) { out.println("<tr><td class='heading'>Strat Name</td><td>" + sample.getAsString(Sample.STRAT_UNIT) + "</td></tr>"); }
+			if (sample.get(Sample.IN_PLACE) != null) { out.println("<tr><td class='heading'>In Place</td><td>" + sample.getAsString(Sample.IN_PLACE) + "</td></tr>"); }
+			//sent to (repeating)
+			if (sample.get(Sample.SENT_TO) != null) {
+				out.print("<tr><td class='heading'>Sent To</td><td>");
+				for (Iterator i2 = sample.getAsVector(Sample.SENT_TO).iterator(); i2.hasNext(); ) {
+					SentTo sentTo = (SentTo)i2.next();
+					out.print(sentTo.getSentTo() + "<br />");
+				}
+			out.print("</td></tr>");
+			}
+			if (sample.get(Sample.NOT_COLLECTED) != null) { out.println("<tr><td class='heading'>Not Collected</td><td>" + sample.getAsString(Sample.NOT_COLLECTED) + "</td></tr>"); }
+			
+			out.println("<tr><td class='bigheading' colspan='2'>Stratigraphy</td></tr>");
+			
+			if (sample.get(Sample.SIGNIFICANCE) != null) { out.println("<tr><td class='heading'>Significance</td><td>" + sample.getAsString(Sample.SIGNIFICANCE) + "</td></tr>"); }
+			if (sample.get(Sample.INFERRED_STAGE) != null) { out.println("<tr><td class='heading'>Inferred Stage</td><td>" + sample.getAsString(Sample.INFERRED_STAGE) + "</td></tr>"); }
+			if (sample.get(Sample.KNOWN_STAGE) != null) { out.println("<tr><td class='heading'>Known Stage</td><td>" + sample.getAsString(Sample.KNOWN_STAGE) + "</td></tr>"); }
+			//Nearby samples (repeating)
+			if (sample.get(Sample.RELATIONSHIP_NEARBY) != null) {
+				out.print("<tr><td class='heading'>Samples Nearby</td><td>");
+				for (Iterator i2 = sample.getAsVector(Sample.RELATIONSHIP_NEARBY).iterator(); i2.hasNext(); ) {
+					Relationship nearRel = (Relationship)i2.next();
+					out.print(nearRel.getDistanceRelation() + " " + nearRel.getRelatedSampleName() +"<br />");
+				}
+			out.print("</td></tr>");
+			}
+			//Sample relationships (repeating)
+			if (sample.get(Sample.RELATIONSHIP_SAMPLE) != null) {
+				out.print("<tr><td class='heading'>Sample Relationships</td><td>");
+				for (Iterator i2 = sample.getAsVector(Sample.RELATIONSHIP_SAMPLE).iterator(); i2.hasNext(); ) {
+					Relationship sampRel = (Relationship)i2.next();
+					out.print(sampRel.getDistanceRelation() + " " + sampRel.getRelatedSampleName() + "<br />");
+				}
+			out.print("</td></tr>");
+			}
+			//Strat relationships (repeating)
+			if (sample.get(Sample.RELATIONSHIP_STRAT) != null) {
+				out.print("<tr><td class='heading'>Stratigraphic Relationships</td><td>");
+				for (Iterator i2 = sample.getAsVector(Sample.RELATIONSHIP_STRAT).iterator(); i2.hasNext(); ) {
+					Relationship stratRel = (Relationship)i2.next();
+					out.print(stratRel.getRelationship() + "<br />");
+				}
+			out.print("</td></tr>");
+			}
+			if (sample.get(Sample.COLUMN_MAP) != null) { out.println("<tr><td class='heading'>Column/Map</td><td>" + sample.getAsString(Sample.COLUMN_MAP) + "</td></tr>"); }
+			if (sample.get(Sample.DIP) != null) { out.println("<tr><td class='heading'>Dip</td><td>" + sample.getAsString(Sample.DIP) + "</td></tr>"); }
+			if (sample.get(Sample.DIP_DIRECTION) != null) { out.println("<tr><td class='heading'>Dip Direction</td><td>" + sample.getAsString(Sample.DIP_DIRECTION) + "</td></tr>"); }
+			if (sample.get(Sample.STRIKE) != null) { out.println("<tr><td class='heading'>Strike</td><td>" + sample.getAsString(Sample.STRIKE) + "</td></tr>"); }
+			if (sample.get(Sample.FACING) != null) { out.println("<tr><td class='heading'>Facing</td><td>" + sample.getAsString(Sample.FACING) + "</td></tr>"); }
+			
+			out.println("<tr><td class='bigheading' colspan='2'>Sedimentary Features</td></tr>");
+			if (sample.get(Sample.GRAINSIZE) != null) { out.println("<tr><td class='heading'>Grain Size</td><td>" + sample.getAsString(Sample.GRAINSIZE) + "</td></tr>"); }
+			if (sample.get(Sample.COMPARATOR_USED) != null) { out.println("<tr><td class='heading'>Comparator Used</td><td>" + sample.getAsString(Sample.COMPARATOR_USED) + "</td></tr>"); }
+			if (sample.get(Sample.BED_THICKNESS) != null) { out.println("<tr><td class='heading'>Bed Thickness</td><td>" + sample.getAsString(Sample.BED_THICKNESS) + "</td></tr>"); }
+			if (sample.get(Sample.BEDDING) != null) { out.println("<tr><td class='heading'>Bedding</td><td>" + sample.getAsString(Sample.BEDDING) + "</td></tr>"); }
+			if (sample.get(Sample.WEATHERING) != null) { out.println("<tr><td class='heading'>Weathering</td><td>" + sample.getAsString(Sample.WEATHERING) + "</td></tr>"); }
+			if (sample.get(Sample.HARDNESS) != null) { out.println("<tr><td class='heading'>Hardness</td><td>" + sample.getAsString(Sample.HARDNESS) + "</td></tr>"); }
+			if (sample.get(Sample.CARBONATE) != null) { out.println("<tr><td class='heading'>Carbonate</td><td>" + sample.getAsString(Sample.CARBONATE) + "</td></tr>"); }
+			if (sample.get(Sample.COLOUR) != null) { out.println("<tr><td class='heading'>Colour</td><td>" + sample.getAsString(Sample.COLOUR) + "</td></tr>"); }
+			//sed features (repeating)
+			if (sample.get(Sample.SED_FEATURE) != null) {
+				out.print("<tr><td class='heading'>Additional Features</td><td>");
+				for (Iterator i2 = sample.getAsVector(Sample.SED_FEATURE).iterator(); i2.hasNext(); ) {
+					SedFeature sf = (SedFeature)i2.next();
+					out.print(sf.getSedFeature() + "<br />");
+				}
+				out.print("</td></tr>");
+			}
+			if (sample.get(Sample.DEPOSITION_ENV) != null) { out.println("<tr><td class='heading'>Inferred Environment</td><td>" + sample.getAsString(Sample.DEPOSITION_ENV) + "</td></tr>"); }
+			if (sample.get(Sample.ROCK_NATURE) != null) { out.println("<tr><td class='heading'>Nature of Rock Unit</td><td>" + sample.getAsString(Sample.ROCK_NATURE) + "</td></tr>"); }
+			if (sample.get(Sample.CORRESPONDENCE) != null) { out.println("<tr><td class='heading'>Correspondence</td><td>" + sample.getAsString(Sample.CORRESPONDENCE) + "</td></tr>"); }
+			out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
+		}
+	
+		
+		*/
+		
 	}
 	
 	private void addCell(PdfPTable table, Object text, Font font) {
@@ -237,6 +350,13 @@ public class FRFormServlet extends HttpServlet {
 	private void addCells(PdfPTable table, Object[] text, Font[] fonts, int[] align) {
 		for (int i = 0; i < text.length; i++)
 			addCell(table, text[i], fonts[i], align[i], 1);
+	}
+	
+	private void addRepeatingCells(PdfPTable table, String heading, String[] text, Font headFont, Font textFont) {
+		Font[] fonts = new Font[] {headFont, textFont};
+		addCells(table, new String[] {heading, text[0]}, fonts);
+		for (int i = 1; i < text.length; i++)
+			addCells(table, new String[] {null, text[i]}, fonts);
 	}
 
 }
