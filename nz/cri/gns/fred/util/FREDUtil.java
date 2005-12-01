@@ -464,6 +464,8 @@ public class FREDUtil {
 	}
 	
 	public static String getSiteMethod(SiteRecord sr) throws NamingException, SQLException {
+		if (sr.getMethod() == -1)
+			return null;
 		Connection conn = null;
 		try {
 			conn = getConnection();
