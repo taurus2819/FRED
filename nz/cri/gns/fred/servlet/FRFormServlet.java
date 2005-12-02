@@ -114,11 +114,12 @@ public class FRFormServlet extends HttpServlet {
 		writer.setEncryption(true, null, null, PdfWriter.AllowPrinting | PdfWriter.AllowScreenReaders);
 		document.open();
 		
-		Font[] fonts = new Font[3];
+		Font[] fonts = new Font[4];
 		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.NORMAL);
 		fonts[1] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
 		fonts[1].setColor(110, 110, 110);
 		fonts[2] = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD);
+		fonts[3] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
 		
 		if (samples != null) {
 			for (int i = 0; i < samples.length; i++) {
@@ -200,9 +201,10 @@ public class FRFormServlet extends HttpServlet {
 		table.setWidths(new float[] {15 * MM_TO_PT, 40 * MM_TO_PT, 40 * MM_TO_PT, 80 * MM_TO_PT});
 		table.setSpacingAfter(5 * MM_TO_PT);
 			
-		addCells(table, new String[] {"Masterfile", feature.getMasterFile().getName()}, new Font[] {fonts[1], fonts[0]});
-		addCells(table, new String[] {"Masterfile Curator Approved", FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue())
-				+ " " + FREDUtil.formatDateForOutput(feature.getAudit().getApprovedDate())}, new Font[] {fonts[1], fonts[0]});	
+		addCells(table, new String[] {"Masterfile", ((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : null)}, new Font[] {fonts[1], fonts[0]});
+		String app = ((feature.getAudit().getApprovedById() != null) ? FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue()) : "")
+				+ ((feature.getAudit().getApprovedDate() != null) ? " " + FREDUtil.formatDateForOutput(feature.getAudit().getApprovedDate()) : "");
+		addCells(table, new String[] {"Masterfile Curator Approved", app}, new Font[] {fonts[1], fonts[0]});	
 		
 		document.add(table);		
 	}
@@ -297,7 +299,7 @@ public class FRFormServlet extends HttpServlet {
 				table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
 				table.setSpacingAfter(3 * MM_TO_PT);
 				
-				addCells(table, new String[] {"Sample Information", SampleUtil.getDrillHoleDepthDescription(sample)}, new Font[] {fonts[2], fonts[1]});
+				addCells(table, new String[] {"Sample Information", SampleUtil.getDrillHoleDepthDescription(sample)}, new Font[] {fonts[2], fonts[3]});
 				
 				document.add(table);
 			}
@@ -337,8 +339,8 @@ public class FRFormServlet extends HttpServlet {
 			table.setSpacingAfter(3 * MM_TO_PT);
 			
 			addCell(table, "Stratigraphy", fonts[2], PdfPCell.ALIGN_LEFT, 2);
-			String infStage = ((sample.getInferredStage() != null) ? StageUtil.getStageDescription(sample.getInferredStage()) : null);
-			String knwStage = ((sample.getKnownStage() != null) ? StageUtil.getStageDescription(sample.getKnownStage()) : null);
+			String infStage = ((sample.getInferredStage() != null) ? StageUtil.getStageDescription(sample.getInferredStage()) : "");
+			String knwStage = ((sample.getKnownStage() != null) ? StageUtil.getStageDescription(sample.getKnownStage()) : "");
 			addCells(table, new String[] {"Stages", "Inferred: " + infStage + "    Known: " + knwStage}, bodyFonts);
 			Object[] relationships = sampleUtil.getRelationships(sample, "Sample", "nearby").toArray();
 			String[] relationshipStr = new String[relationships.length];
