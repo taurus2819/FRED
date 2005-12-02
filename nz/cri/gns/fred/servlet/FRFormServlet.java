@@ -314,7 +314,7 @@ public class FRFormServlet extends HttpServlet {
 			
 			addCell(table, "Collection Information", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
 
-			addCells(table, new String[] {"Collection Date", FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding())}, bodyFonts);
+			addCells(table, new String[] {"Collection Date", ((sample.getCollectionDate() != null) ? FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding()) : null)}, bodyFonts);
 			Object[] collectors = sample.getCollectors().toArray();
 			String[] collectorStr = new String[collectors.length];
 			for (int i = 0; i < collectors.length; i++)
