@@ -128,7 +128,8 @@ public class FRFormServlet extends HttpServlet {
 		table.setTotalWidth(175 * MM_TO_PT);
 		table.setLockedWidth(true);
 		table.setWidths(new float[] {25 * MM_TO_PT, 150 * MM_TO_PT});
-		table.setSpacingAfter(5 * MM_TO_PT);
+		table.setSpacingAfter(2 * MM_TO_PT);
+		
 				
 		//Logos
 		String url = "http://" + JspUtils.getServerName(new PageState(request, response, getServletContext()))
@@ -147,16 +148,16 @@ public class FRFormServlet extends HttpServlet {
 		FrNumber frNumber = FeatureUtil.getFrNumber(feature);
 		addCells(headerTable, new String[] {"Geological Society of New Zealand", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
 			, new Font[] {fonts[2], fonts[3]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
-		addCells(headerTable, new String[] {"Fossil Record Form", feature.getFeatureType()}, new Font[] {fonts[4], fonts[2]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
+		addCells(headerTable, new String[] {"Fossil Record Form", "Locality Type: " + feature.getFeatureType()}, new Font[] {fonts[4], fonts[2]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
 		table.addCell(headerTable);
 		
 		document.add(table);
 		
 		//Masterfile text
-		table = new PdfPTable(2);
+		table = new PdfPTable(4);
 		table.setTotalWidth(175 * MM_TO_PT);
 		table.setLockedWidth(true);
-		table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
+		table.setWidths(new float[] {20 * MM_TO_PT, 40 * MM_TO_PT, 40 * MM_TO_PT, 75 * MM_TO_PT});
 		table.setSpacingAfter(5 * MM_TO_PT);
 			
 		addCells(table, new String[] {"Masterfile", feature.getMasterFile().getName()}, new Font[] {fonts[6], fonts[5]});
@@ -170,7 +171,7 @@ public class FRFormServlet extends HttpServlet {
 		table.setTotalWidth(175 * MM_TO_PT);
 		table.setLockedWidth(true);
 		table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
-		table.setSpacingAfter(5 * MM_TO_PT);
+		table.setSpacingAfter(3 * MM_TO_PT);
 		
 		addCell(table, "Location Information", fonts[2], PdfPCell.ALIGN_LEFT, 2);
 		String featType = feature.getFeatureType();
@@ -228,7 +229,7 @@ public class FRFormServlet extends HttpServlet {
 			table.setTotalWidth(175 * MM_TO_PT);
 			table.setLockedWidth(true);
 			table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
-			table.setSpacingAfter(5 * MM_TO_PT);
+			table.setSpacingAfter(3 * MM_TO_PT);
 			
 			addCell(table, "Collection Information", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
 
@@ -255,11 +256,12 @@ public class FRFormServlet extends HttpServlet {
 			table.setTotalWidth(175 * MM_TO_PT);
 			table.setLockedWidth(true);
 			table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
-			table.setSpacingAfter(5 * MM_TO_PT);
+			table.setSpacingAfter(3 * MM_TO_PT);
 			
-			addCell(table, "Stratigraphy", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
-			addCells(table, new String[] {"Inferred Stage", ((sample.getInferredStage() != null) ? StageUtil.getStageDescription(sample.getInferredStage()) : null)}, bodyFonts);
-			addCells(table, new String[] {"Known Stage", ((sample.getKnownStage() != null) ? StageUtil.getStageDescription(sample.getKnownStage()) : null)}, bodyFonts);
+			addCell(table, "Stratigraphy", fonts[2], PdfPCell.ALIGN_LEFT, 2);
+			String infStage = ((sample.getInferredStage() != null) ? StageUtil.getStageDescription(sample.getInferredStage()) : null);
+			String knwStage = ((sample.getKnownStage() != null) ? StageUtil.getStageDescription(sample.getKnownStage()) : null);
+			addCells(table, new String[] {"Stages", "Inferred: " + infStage + "    Known: " + knwStage}, bodyFonts);
 			Object[] relationships = sampleUtil.getRelationships(sample, "Sample", "nearby").toArray();
 			String[] relationshipStr = new String[relationships.length];
 			for (int i = 0; i < relationships.length; i++)
@@ -288,7 +290,6 @@ public class FRFormServlet extends HttpServlet {
 			table.setTotalWidth(175 * MM_TO_PT);
 			table.setLockedWidth(true);
 			table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
-			table.setSpacingAfter(5 * MM_TO_PT);
 			
 			addCell(table, "Sedimentary Features", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
 			addCells(table, new String[] {"Grain Size", SampleUtil.getGrainSizeDescription(sample)}, bodyFonts);
@@ -344,7 +345,7 @@ public class FRFormServlet extends HttpServlet {
 		PdfPCell cell = new PdfPCell(new Phrase(DBUtils.nvl(text), font));
 		cell.setHorizontalAlignment(align);
 		cell.setBorder(PdfPCell.NO_BORDER);
-		cell.setVerticalAlignment(PdfPCell.ALIGN_BOTTOM);
+		cell.setVerticalAlignment(PdfPCell.ALIGN_TOP);
 		if (colSpan > 1)
 			cell.setColspan(colSpan);
 		table.addCell(cell);
