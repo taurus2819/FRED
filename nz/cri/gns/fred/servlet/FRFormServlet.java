@@ -182,17 +182,19 @@ public class FRFormServlet extends HttpServlet {
 		
 		PdfPCell cell = new PdfPCell(image);
 		cell.setBorder(PdfPCell.NO_BORDER);
-		table.addCell(image);
+		table.addCell(cell);
 		
 		//Header Text
-		PdfPTable headerTable = new PdfPTable(2);
+		PdfPTable headerTable = new PdfPTable(3);
 		headerTable.setTotalWidth(150 * MM_TO_PT);
 		headerTable.setLockedWidth(true);
-		headerTable.setWidths(new float[] {80 * MM_TO_PT, 70 * MM_TO_PT});
+		headerTable.setWidths(new float[] {10 * MM_TO_PT, 70 * MM_TO_PT, 70 * MM_TO_PT});
 	
 		FrNumber frNumber = FeatureUtil.getFrNumber(feature);
-		addCells(headerTable, new String[] {"Fossil Record Form", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
-			, new Font[] {fonts[4], fonts[3]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
+		addCells(headerTable, new String[] {null, "Fossil Record Form", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
+			, new Font[] {fonts[0], fonts[4], fonts[3]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
+		
+		addCell(headerTable, null, fonts[0]);
 		
 		//Masterfile text
 		PdfPTable mfTable = new PdfPTable(2);
