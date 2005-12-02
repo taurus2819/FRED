@@ -71,9 +71,33 @@ public class FRFormServlet extends HttpServlet {
 		this.sampleUtil = new SampleUtil(factory);
 		this.featureUtil = new FeatureUtil(factory);
 		this.user = (UserAccount)request.getSession().getAttribute(User.USER_ATTRIBUTE);
-		Sample sample = sampleUtil.getSample(Integer.parseInt(request.getParameter("ID")));
 		
-		makePDF(new Sample[] {sample});
+		Sample[] samples = null;
+		Feature[] features = null;
+		if (request.getParameter("SampIDs") != null) {
+			String[] sampIDs = request.getParameterValues("SampIDs");
+			samples = new Sample[sampIDs.length];
+			for (int i = 0; i < sampIDs.length; i++) {
+				try {
+					Sample sample = sampleUtil.getSample(Integer.parseInt(sampIDs[i]));
+					samples[i] = sample;
+				}
+				catch (Exception _e) {}
+			}			
+		}
+		if (request.getParameter("FeatIDs") != null) {
+			String[] featIDs = request.getParameterValues("FeatIDs");
+			features = new Feature[featIDs.length];
+			for (int i = 0; i < featIDs.length; i++) {
+				try {
+					Feature feature = featureUtil.getFeature(Integer.parseInt(featIDs[i]));
+					features[i] = feature;
+				}
+				catch (Exception _e) {}
+			}			
+		}
+
+		makePDF(samples, features);
 		} catch (Exception e) {
 			System.out.println("************************************");
 			e.printStackTrace();
@@ -82,56 +106,70 @@ public class FRFormServlet extends HttpServlet {
 		}
 	}
 		
-	private void makePDF(Sample[] samples) throws DocumentException, IOException, NamingException, SQLException {
+	private void makePDF(Sample[] samples, Feature[] features) throws DocumentException, IOException, NamingException, SQLException {
 		Document document = new Document(PageSize.A4, 20 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT);
-			
 		PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
 		writer.setEncryption(true, null, null, PdfWriter.AllowPrinting | PdfWriter.AllowScreenReaders);
-			
 		document.open();
 		
-		Font[] fonts = new Font[7];
+		Font[] fonts = new Font[3];
 		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.NORMAL);
 		fonts[1] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
 		fonts[1].setColor(110, 110, 110);
 		fonts[2] = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD);
-		fonts[3] = FontFactory.getFont(FontFactory.HELVETICA, 24, Font.BOLD);
-		fonts[4] = FontFactory.getFont(FontFactory.HELVETICA, 16, Font.BOLD);
-		fonts[5] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.NORMAL);
-		fonts[6] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.BOLD);
-		fonts[6].setColor(110, 110, 110);
 		
-		for (int i = 0; i < samples.length; i++) {
-			try {
-				System.out.println("Generating PDF for sample " + samples[i].getSampleId());
-				writeSample(samples[i], document, fonts);
-				if (i < samples.length - 1)
-					document.newPage();
-			} catch (Exception e) {
-				System.out.println("************************************");
-				e.printStackTrace();				
+		if (samples != null) {
+			for (int i = 0; i < samples.length; i++) {
+				try {
+					writeHeader(samples[i], document);
+					writeLocality(samples[i], document, fonts);
+					writeSample(samples[i], document, fonts);
+					if (i < samples.length - 1)
+						document.newPage();
+				} catch (Exception e) {
+					System.out.println("************************************");
+					e.printStackTrace();				
+				}
+				//out.flush();
 			}
-			//out.flush();
+		}
+		if (features != null) {
+			for (int i = 0; i < features.length; i++) {
+				try {
+					writeHeader(features[i], document);
+					writeLocality(features[i], document, fonts);
+					if (features[i].getFeatureType().equals(FREDConstants.OUTCROP))
+						writeSample(features[i], document, fonts);
+					if (i < features.length - 1)
+						document.newPage();
+				} catch (Exception e) {
+					System.out.println("************************************");
+					e.printStackTrace();				
+				}
+				//out.flush();
+			}			
 		}
 		
 		document.close();
-
 	}
 	
-	private void writeSample(Sample sample, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, StorageAccessException {
-		Feature feature = sample.getFeature();
-		boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
-		boolean isAllowedReadSample = sampleUtil.isAllowedReadSample(user, sample);
-		Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
+	private void writeHeader(Feature feature, Document document) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException {
+		Font[] fonts = new Font[6];
+		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.NORMAL);
+		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.BOLD);
+		fonts[1].setColor(110, 110, 110);
+		fonts[2] = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD);
+		fonts[3] = FontFactory.getFont(FontFactory.HELVETICA, 24, Font.BOLD);
+		fonts[4] = FontFactory.getFont(FontFactory.HELVETICA, 16, Font.BOLD);
+		fonts[5] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
 		
 		PdfPTable table = new PdfPTable(2);
 		table.setTotalWidth(175 * MM_TO_PT);
 		table.setLockedWidth(true);
 		table.setWidths(new float[] {25 * MM_TO_PT, 150 * MM_TO_PT});
 		table.setSpacingAfter(2 * MM_TO_PT);
-		
-				
-		//Logos
+			
+		//Logo
 		String url = "http://" + JspUtils.getServerName(new PageState(request, response, getServletContext()))
 				+ "/fred/images/gsnz_logo.gif";
 		Image image = Image.getInstance(new URL(url));
@@ -148,7 +186,7 @@ public class FRFormServlet extends HttpServlet {
 		FrNumber frNumber = FeatureUtil.getFrNumber(feature);
 		addCells(headerTable, new String[] {"Geological Society of New Zealand", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
 			, new Font[] {fonts[2], fonts[3]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
-		addCells(headerTable, new String[] {"Fossil Record Form", "Locality Type: " + feature.getFeatureType()}, new Font[] {fonts[4], fonts[2]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
+		addCells(headerTable, new String[] {"Fossil Record Form", "Locality Type: " + feature.getFeatureType()}, new Font[] {fonts[4], fonts[5]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
 		table.addCell(headerTable);
 		
 		document.add(table);
@@ -157,17 +195,26 @@ public class FRFormServlet extends HttpServlet {
 		table = new PdfPTable(4);
 		table.setTotalWidth(175 * MM_TO_PT);
 		table.setLockedWidth(true);
-		table.setWidths(new float[] {20 * MM_TO_PT, 40 * MM_TO_PT, 40 * MM_TO_PT, 75 * MM_TO_PT});
+		table.setWidths(new float[] {15 * MM_TO_PT, 40 * MM_TO_PT, 40 * MM_TO_PT, 80 * MM_TO_PT});
 		table.setSpacingAfter(5 * MM_TO_PT);
 			
-		addCells(table, new String[] {"Masterfile", feature.getMasterFile().getName()}, new Font[] {fonts[6], fonts[5]});
+		addCells(table, new String[] {"Masterfile", feature.getMasterFile().getName()}, new Font[] {fonts[1], fonts[0]});
 		addCells(table, new String[] {"Masterfile Curator Approved", FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue())
-				+ " " + FREDUtil.formatDateForOutput(feature.getAudit().getApprovedDate())}, new Font[] {fonts[6], fonts[5]});	
+				+ " " + FREDUtil.formatDateForOutput(feature.getAudit().getApprovedDate())}, new Font[] {fonts[1], fonts[0]});	
 		
-		document.add(table);
-			
+		document.add(table);		
+	}
+	
+	private void writeHeader(Sample sample, Document document) throws MalformedURLException, DocumentException, IOException, NamingException, SQLException {
+		writeHeader(sample.getFeature(), document);
+	}
+	
+	private void writeLocality(Feature feature, Document document, Font[] fonts) throws StorageAccessException, DocumentException, NamingException, SQLException {
+		boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
+		Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
+		
 		//Location Information
-		table = new PdfPTable(2);
+		PdfPTable table = new PdfPTable(2);
 		table.setTotalWidth(175 * MM_TO_PT);
 		table.setLockedWidth(true);
 		table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
@@ -221,11 +268,26 @@ public class FRFormServlet extends HttpServlet {
 				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon"), ((feature.getFinishDepth() != null) ? feature.getFinishDepth() + " m" : null)}, bodyFonts);
 			}
 		}
-		document.add(table);
+		document.add(table);		
+	}
 	
+	private void writeLocality(Sample sample, Document document, Font[] fonts) throws StorageAccessException, DocumentException, NamingException, SQLException {
+		writeLocality(sample.getFeature(), document, fonts);
+	}
+	
+	private void writeSample(Feature feature, Document document, Font[] fonts) throws MalformedURLException, DocumentException, IOException, NamingException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, StorageAccessException {
+		Set<Sample> samples = feature.getSamples();
+		for (Sample sample : samples)
+			writeSample(sample, document, fonts);
+	}
+	
+	private void writeSample(Sample sample, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, StorageAccessException {
+		boolean isAllowedReadSample = sampleUtil.isAllowedReadSample(user, sample);
+		Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
+		
 		if (isAllowedReadSample) {
 			//Collection Information
-			table = new PdfPTable(2);
+			PdfPTable table = new PdfPTable(2);
 			table.setTotalWidth(175 * MM_TO_PT);
 			table.setLockedWidth(true);
 			table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
@@ -306,35 +368,6 @@ public class FRFormServlet extends HttpServlet {
 			
 			document.add(table);
 		}
-	/*	if (formType.equals("Full") && sample.isUserAuthenticated()) {
-
-			out.println("<tr><td class='bigheading' colspan='2'>Sedimentary Features</td></tr>");
-			if (sample.get(Sample.GRAINSIZE) != null) { out.println("<tr><td class='heading'>Grain Size</td><td>" + sample.getAsString(Sample.GRAINSIZE) + "</td></tr>"); }
-			if (sample.get(Sample.COMPARATOR_USED) != null) { out.println("<tr><td class='heading'>Comparator Used</td><td>" + sample.getAsString(Sample.COMPARATOR_USED) + "</td></tr>"); }
-			if (sample.get(Sample.BED_THICKNESS) != null) { out.println("<tr><td class='heading'>Bed Thickness</td><td>" + sample.getAsString(Sample.BED_THICKNESS) + "</td></tr>"); }
-			if (sample.get(Sample.BEDDING) != null) { out.println("<tr><td class='heading'>Bedding</td><td>" + sample.getAsString(Sample.BEDDING) + "</td></tr>"); }
-			if (sample.get(Sample.WEATHERING) != null) { out.println("<tr><td class='heading'>Weathering</td><td>" + sample.getAsString(Sample.WEATHERING) + "</td></tr>"); }
-			if (sample.get(Sample.HARDNESS) != null) { out.println("<tr><td class='heading'>Hardness</td><td>" + sample.getAsString(Sample.HARDNESS) + "</td></tr>"); }
-			if (sample.get(Sample.CARBONATE) != null) { out.println("<tr><td class='heading'>Carbonate</td><td>" + sample.getAsString(Sample.CARBONATE) + "</td></tr>"); }
-			if (sample.get(Sample.COLOUR) != null) { out.println("<tr><td class='heading'>Colour</td><td>" + sample.getAsString(Sample.COLOUR) + "</td></tr>"); }
-			//sed features (repeating)
-			if (sample.get(Sample.SED_FEATURE) != null) {
-				out.print("<tr><td class='heading'>Additional Features</td><td>");
-				for (Iterator i2 = sample.getAsVector(Sample.SED_FEATURE).iterator(); i2.hasNext(); ) {
-					SedFeature sf = (SedFeature)i2.next();
-					out.print(sf.getSedFeature() + "<br />");
-				}
-				out.print("</td></tr>");
-			}
-			if (sample.get(Sample.DEPOSITION_ENV) != null) { out.println("<tr><td class='heading'>Inferred Environment</td><td>" + sample.getAsString(Sample.DEPOSITION_ENV) + "</td></tr>"); }
-			if (sample.get(Sample.ROCK_NATURE) != null) { out.println("<tr><td class='heading'>Nature of Rock Unit</td><td>" + sample.getAsString(Sample.ROCK_NATURE) + "</td></tr>"); }
-			if (sample.get(Sample.CORRESPONDENCE) != null) { out.println("<tr><td class='heading'>Correspondence</td><td>" + sample.getAsString(Sample.CORRESPONDENCE) + "</td></tr>"); }
-			out.println("<tr><td><img src='images/blank.gif' height='30' width='1' /></td></tr>");
-		}
-	
-		
-		*/
-		
 	}
 	
 	private void addCell(PdfPTable table, Object text, Font font) {
