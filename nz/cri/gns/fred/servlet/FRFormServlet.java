@@ -135,6 +135,7 @@ public class FRFormServlet extends HttpServlet {
 				+ "/fred/images/gsnz_logo.gif";
 		Image image = Image.getInstance(new URL(url));
 		image.scaleToFit(20 * MM_TO_PT, 20 * MM_TO_PT);
+		image.setBorder(Image.NO_BORDER);
 		table.addCell(image);
 		
 		//Header Text
@@ -146,7 +147,7 @@ public class FRFormServlet extends HttpServlet {
 		FrNumber frNumber = FeatureUtil.getFrNumber(feature);
 		addCells(headerTable, new String[] {"Geological Society of New Zealand", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
 			, new Font[] {fonts[2], fonts[3]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
-		addCells(headerTable, new String[] {"Fossil Record Form", feature.getFeatureType()}, new Font[] {fonts[4], fonts[2]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});			
+		addCells(headerTable, new String[] {"Fossil Record Form", feature.getFeatureType()}, new Font[] {fonts[4], fonts[2]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
 		table.addCell(headerTable);
 		
 		document.add(table);
@@ -262,7 +263,7 @@ public class FRFormServlet extends HttpServlet {
 			Object[] relationships = sampleUtil.getRelationships(sample, "Sample", "nearby").toArray();
 			String[] relationshipStr = new String[relationships.length];
 			for (int i = 0; i < relationships.length; i++)
-				relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
+				relationshipStr[i] = FeatureUtil.getFeatureIdentifyingName(((Relationship) relationships[i]).getFeature());
 			addRepeatingCells(table, "Samples Nearby", relationshipStr, bodyFonts);			
 			relationships = sampleUtil.getRelationships(sample, "Sample", new String[] {"above", "below"}).toArray();
 			relationshipStr = new String[relationships.length];
@@ -274,48 +275,38 @@ public class FRFormServlet extends HttpServlet {
 			for (int i = 0; i < relationships.length; i++)
 				relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
 			addRepeatingCells(table, "Stratigraphic Relationships", relationshipStr, bodyFonts);			
-
+			addCells(table, new String[] {"Column/Map", sample.getColumnMap()}, bodyFonts);
+			addCells(table, new Object[] {"Dip", sample.getDip()}, bodyFonts);
+			addCells(table, new String[] {"Dip Direction", sample.getDipDirection()}, bodyFonts);
+			addCells(table, new Object[] {"Strike", sample.getStrike()}, bodyFonts);
+			addCells(table, new String[] {"Facing", sample.getFacing()}, bodyFonts);
 		
 			document.add(table);
+
+			//Sedimentary Features
+			table = new PdfPTable(2);
+			table.setTotalWidth(175 * MM_TO_PT);
+			table.setLockedWidth(true);
+			table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
+			table.setSpacingAfter(5 * MM_TO_PT);
 			
+			addCell(table, "Sedimentary Features", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
+			addCells(table, new String[] {"Grain Size", SampleUtil.getGrainSizeDescription(sample)}, bodyFonts);
+			addCells(table, new String[] {"Comparator Used", sample.getComparatorUsed()}, bodyFonts);
+			addCells(table, new String[] {"Bedding Thickness", ((sample.getBedThickness() != null) ? sample.getBedThickness().getName() : null)}, bodyFonts);
+			addCells(table, new String[] {"Bedding Features", SampleUtil.getBeddingDescription(sample)}, bodyFonts);
+			addCells(table, new String[] {"Weathering", ((sample.getWeathering() != null) ? sample.getWeathering().getName() : null)}, bodyFonts);
+			addCells(table, new String[] {"Hardness", ((sample.getHardness() != null) ? sample.getHardness().getName() : null)}, bodyFonts);
+			addCells(table, new String[] {"Carbonate", ((sample.getCarbonate() != null) ? sample.getCarbonate().getName() : null)}, bodyFonts);
+			addCells(table, new String[] {"Colour", SampleUtil.getColourDescription(sample)}, bodyFonts);
+			addCells(table, new String[] {"Inferred Environment", sample.getDepositionEnv()}, bodyFonts);
+			addCells(table, new String[] {"Nature of Rock Unit", sample.getRockNature()}, bodyFonts);
+			addCells(table, new String[] {"Correspondence", sample.getCorrespondence()}, bodyFonts);
+			
+			document.add(table);
 		}
 	/*	if (formType.equals("Full") && sample.isUserAuthenticated()) {
 
-			if (sample.get(Sample.INFERRED_STAGE) != null) { out.println("<tr><td class='heading'>Inferred Stage</td><td>" + sample.getAsString(Sample.INFERRED_STAGE) + "</td></tr>"); }
-			if (sample.get(Sample.KNOWN_STAGE) != null) { out.println("<tr><td class='heading'>Known Stage</td><td>" + sample.getAsString(Sample.KNOWN_STAGE) + "</td></tr>"); }
-			//Nearby samples (repeating)
-			if (sample.get(Sample.RELATIONSHIP_NEARBY) != null) {
-				out.print("<tr><td class='heading'>Samples Nearby</td><td>");
-				for (Iterator i2 = sample.getAsVector(Sample.RELATIONSHIP_NEARBY).iterator(); i2.hasNext(); ) {
-					Relationship nearRel = (Relationship)i2.next();
-					out.print(nearRel.getDistanceRelation() + " " + nearRel.getRelatedSampleName() +"<br />");
-				}
-			out.print("</td></tr>");
-			}
-			//Sample relationships (repeating)
-			if (sample.get(Sample.RELATIONSHIP_SAMPLE) != null) {
-				out.print("<tr><td class='heading'>Sample Relationships</td><td>");
-				for (Iterator i2 = sample.getAsVector(Sample.RELATIONSHIP_SAMPLE).iterator(); i2.hasNext(); ) {
-					Relationship sampRel = (Relationship)i2.next();
-					out.print(sampRel.getDistanceRelation() + " " + sampRel.getRelatedSampleName() + "<br />");
-				}
-			out.print("</td></tr>");
-			}
-			//Strat relationships (repeating)
-			if (sample.get(Sample.RELATIONSHIP_STRAT) != null) {
-				out.print("<tr><td class='heading'>Stratigraphic Relationships</td><td>");
-				for (Iterator i2 = sample.getAsVector(Sample.RELATIONSHIP_STRAT).iterator(); i2.hasNext(); ) {
-					Relationship stratRel = (Relationship)i2.next();
-					out.print(stratRel.getRelationship() + "<br />");
-				}
-			out.print("</td></tr>");
-			}
-			if (sample.get(Sample.COLUMN_MAP) != null) { out.println("<tr><td class='heading'>Column/Map</td><td>" + sample.getAsString(Sample.COLUMN_MAP) + "</td></tr>"); }
-			if (sample.get(Sample.DIP) != null) { out.println("<tr><td class='heading'>Dip</td><td>" + sample.getAsString(Sample.DIP) + "</td></tr>"); }
-			if (sample.get(Sample.DIP_DIRECTION) != null) { out.println("<tr><td class='heading'>Dip Direction</td><td>" + sample.getAsString(Sample.DIP_DIRECTION) + "</td></tr>"); }
-			if (sample.get(Sample.STRIKE) != null) { out.println("<tr><td class='heading'>Strike</td><td>" + sample.getAsString(Sample.STRIKE) + "</td></tr>"); }
-			if (sample.get(Sample.FACING) != null) { out.println("<tr><td class='heading'>Facing</td><td>" + sample.getAsString(Sample.FACING) + "</td></tr>"); }
-			
 			out.println("<tr><td class='bigheading' colspan='2'>Sedimentary Features</td></tr>");
 			if (sample.get(Sample.GRAINSIZE) != null) { out.println("<tr><td class='heading'>Grain Size</td><td>" + sample.getAsString(Sample.GRAINSIZE) + "</td></tr>"); }
 			if (sample.get(Sample.COMPARATOR_USED) != null) { out.println("<tr><td class='heading'>Comparator Used</td><td>" + sample.getAsString(Sample.COMPARATOR_USED) + "</td></tr>"); }
