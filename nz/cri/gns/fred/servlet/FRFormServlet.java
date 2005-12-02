@@ -158,7 +158,7 @@ public class FRFormServlet extends HttpServlet {
 	private void writeHeader(Feature feature, Document document) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException {
 		Font[] fonts = new Font[6];
 		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.NORMAL);
-		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.BOLD);
+		fonts[1] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.BOLD);
 		fonts[1].setColor(110, 110, 110);
 		fonts[2] = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD);
 		fonts[3] = FontFactory.getFont(FontFactory.HELVETICA, 24, Font.BOLD);
