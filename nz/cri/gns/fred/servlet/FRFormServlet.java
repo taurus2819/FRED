@@ -65,39 +65,41 @@ public class FRFormServlet extends HttpServlet {
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
-		this.request = request;
-		this.response = response;
-		this.factory = HibernateUtil.get().getDAOFactory();
-		this.sampleUtil = new SampleUtil(factory);
-		this.featureUtil = new FeatureUtil(factory);
-		this.user = (UserAccount)request.getSession().getAttribute(User.USER_ATTRIBUTE);
-		
-		Sample[] samples = null;
-		Feature[] features = null;
-		if (request.getParameter("SampIDs") != null) {
-			String[] sampIDs = request.getParameterValues("SampIDs");
-			samples = new Sample[sampIDs.length];
-			for (int i = 0; i < sampIDs.length; i++) {
-				try {
-					Sample sample = sampleUtil.getSample(Integer.parseInt(sampIDs[i]));
-					samples[i] = sample;
-				}
-				catch (Exception _e) {}
-			}			
-		}
-		if (request.getParameter("FeatIDs") != null) {
-			String[] featIDs = request.getParameterValues("FeatIDs");
-			features = new Feature[featIDs.length];
-			for (int i = 0; i < featIDs.length; i++) {
-				try {
-					Feature feature = featureUtil.getFeature(Integer.parseInt(featIDs[i]));
-					features[i] = feature;
-				}
-				catch (Exception _e) {}
-			}			
-		}
-
-		makePDF(samples, features);
+			this.request = request;
+			this.response = response;
+			this.factory = HibernateUtil.get().getDAOFactory();
+			this.sampleUtil = new SampleUtil(factory);
+			this.featureUtil = new FeatureUtil(factory);
+			this.user = (UserAccount)request.getSession().getAttribute(User.USER_ATTRIBUTE);
+			
+			Sample[] samples = null;
+			Feature[] features = null;
+			if (request.getParameter("SampIDs") != null) {
+				String[] sampIDs = request.getParameterValues("SampIDs");
+				samples = new Sample[sampIDs.length];
+				for (int i = 0; i < sampIDs.length; i++) {
+					try {
+						Sample sample = sampleUtil.getSample(Integer.parseInt(sampIDs[i]));
+						samples[i] = sample;
+						System.out.println("Sample " + sample.getSampleId());
+					}
+					catch (Exception _e) {}
+				}			
+			}
+			if (request.getParameter("FeatIDs") != null) {
+				String[] featIDs = request.getParameterValues("FeatIDs");
+				features = new Feature[featIDs.length];
+				for (int i = 0; i < featIDs.length; i++) {
+					try {
+						Feature feature = featureUtil.getFeature(Integer.parseInt(featIDs[i]));
+						features[i] = feature;
+						System.out.println("Feature " + feature.getFeatureId());
+					}
+					catch (Exception _e) {}
+				}			
+			}
+	
+			makePDF(samples, features);
 		} catch (Exception e) {
 			System.out.println("************************************");
 			e.printStackTrace();
