@@ -193,27 +193,28 @@ public class FRFormServlet extends HttpServlet {
 		FrNumber frNumber = FeatureUtil.getFrNumber(feature);
 		addCells(headerTable, new String[] {"Fossil Record Form", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
 			, new Font[] {fonts[4], fonts[3]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
-		addCells(headerTable, new String[] {null, "Locality Type: " + feature.getFeatureType()}, new Font[] {fonts[4], fonts[5]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
+		
+		//Masterfile text
+		PdfPTable mfTable = new PdfPTable(2);
+		mfTable.setTotalWidth(80 * MM_TO_PT);
+		mfTable.setLockedWidth(true);
+		mfTable.setWidths(new float[] {20 * MM_TO_PT, 60 * MM_TO_PT});
+			
+		addCells(mfTable, new String[] {"Masterfile", ((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : null)}, new Font[] {fonts[1], fonts[0]});
+		String app = ((feature.getAudit().getApprovedById() != null) ? FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue()) : "")
+				+ ((feature.getAudit().getApprovedDate() != null) ? " " + FREDUtil.formatDateForOutput(feature.getAudit().getApprovedDate()) : "");
+		addCells(mfTable, new String[] {"Approved", app}, new Font[] {fonts[1], fonts[0]});	
+		cell = new PdfPCell(mfTable);
+		cell.setBorder(PdfPCell.NO_BORDER);
+		headerTable.addCell(cell);
+		
+		addCell(headerTable, "Locality Type: " + feature.getFeatureType(), fonts[5], PdfPCell.ALIGN_RIGHT, 1);
 		
 		cell = new PdfPCell(headerTable);
 		cell.setBorder(PdfPCell.NO_BORDER);
 		table.addCell(cell);
 		
 		document.add(table);
-		
-		//Masterfile text
-		table = new PdfPTable(4);
-		table.setTotalWidth(175 * MM_TO_PT);
-		table.setLockedWidth(true);
-		table.setWidths(new float[] {15 * MM_TO_PT, 40 * MM_TO_PT, 40 * MM_TO_PT, 80 * MM_TO_PT});
-		table.setSpacingAfter(5 * MM_TO_PT);
-			
-		addCells(table, new String[] {"Masterfile", ((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : null)}, new Font[] {fonts[1], fonts[0]});
-		String app = ((feature.getAudit().getApprovedById() != null) ? FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue()) : "")
-				+ ((feature.getAudit().getApprovedDate() != null) ? " " + FREDUtil.formatDateForOutput(feature.getAudit().getApprovedDate()) : "");
-		addCells(table, new String[] {"Masterfile Curator Approved", app}, new Font[] {fonts[1], fonts[0]});	
-		
-		document.add(table);		
 	}
 	
 	private void writeHeader(Sample sample, Document document) throws MalformedURLException, DocumentException, IOException, NamingException, SQLException {
