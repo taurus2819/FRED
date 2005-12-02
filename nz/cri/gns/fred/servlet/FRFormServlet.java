@@ -178,7 +178,6 @@ public class FRFormServlet extends HttpServlet {
 				+ "/fred/images/gsnz_logo_big.png";
 		Image image = Image.getInstance(new URL(url));
 		image.scaleToFit(20 * MM_TO_PT, 20 * MM_TO_PT);
-		//image.setBorder(Image.NO_BORDER);
 		
 		PdfPCell cell = new PdfPCell(image);
 		cell.setBorder(PdfPCell.NO_BORDER);
@@ -188,7 +187,7 @@ public class FRFormServlet extends HttpServlet {
 		PdfPTable headerTable = new PdfPTable(3);
 		headerTable.setTotalWidth(150 * MM_TO_PT);
 		headerTable.setLockedWidth(true);
-		headerTable.setWidths(new float[] {10 * MM_TO_PT, 70 * MM_TO_PT, 70 * MM_TO_PT});
+		headerTable.setWidths(new float[] {5 * MM_TO_PT, 70 * MM_TO_PT, 75 * MM_TO_PT});
 	
 		FrNumber frNumber = FeatureUtil.getFrNumber(feature);
 		addCells(headerTable, new String[] {null, "Fossil Record Form", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
@@ -198,9 +197,9 @@ public class FRFormServlet extends HttpServlet {
 		
 		//Masterfile text
 		PdfPTable mfTable = new PdfPTable(2);
-		mfTable.setTotalWidth(80 * MM_TO_PT);
+		mfTable.setTotalWidth(70 * MM_TO_PT);
 		mfTable.setLockedWidth(true);
-		mfTable.setWidths(new float[] {20 * MM_TO_PT, 60 * MM_TO_PT});
+		mfTable.setWidths(new float[] {15 * MM_TO_PT, 55 * MM_TO_PT});
 			
 		addCells(mfTable, new String[] {"Masterfile", ((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : null)}, new Font[] {fonts[1], fonts[0]});
 		String app = ((feature.getAudit().getApprovedById() != null) ? FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue()) : "")
@@ -213,7 +212,7 @@ public class FRFormServlet extends HttpServlet {
 		addCell(headerTable, "Locality Type: " + feature.getFeatureType(), fonts[5], PdfPCell.ALIGN_RIGHT, 1);
 		
 		cell = new PdfPCell(headerTable);
-		//cell.setBorder(PdfPCell.NO_BORDER);
+		cell.setBorder(PdfPCell.NO_BORDER);
 		table.addCell(cell);
 		
 		document.add(table);
@@ -406,7 +405,7 @@ public class FRFormServlet extends HttpServlet {
 	private void addCell(PdfPTable table, Object text, Font font, int align, int colSpan) {
 		PdfPCell cell = new PdfPCell(new Phrase(DBUtils.nvl(text), font));
 		cell.setHorizontalAlignment(align);
-		//cell.setBorder(PdfPCell.NO_BORDER);
+		cell.setBorder(PdfPCell.NO_BORDER);
 		cell.setVerticalAlignment(PdfPCell.ALIGN_TOP);
 		if (colSpan > 1)
 			cell.setColspan(colSpan);
