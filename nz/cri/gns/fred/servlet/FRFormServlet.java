@@ -288,6 +288,20 @@ public class FRFormServlet extends HttpServlet {
 		Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
 		
 		if (isAllowedReadSample) {
+			
+			//if not OUTCROP then add sample depth data
+			if (!sample.getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
+				PdfPTable table = new PdfPTable(2);
+				table.setTotalWidth(175 * MM_TO_PT);
+				table.setLockedWidth(true);
+				table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
+				table.setSpacingAfter(3 * MM_TO_PT);
+				
+				addCells(table, new String[] {"Sample Information", SampleUtil.getDrillHoleDepthDescription(sample)}, new Font[] {fonts[2], fonts[1]});
+				
+				document.add(table);
+			}
+			
 			//Collection Information
 			PdfPTable table = new PdfPTable(2);
 			table.setTotalWidth(175 * MM_TO_PT);
@@ -397,9 +411,13 @@ public class FRFormServlet extends HttpServlet {
 	}
 	
 	private void addRepeatingCells(PdfPTable table, String heading, String[] text, Font[] fonts) {
-		addCells(table, new String[] {heading, text[0]}, fonts);
-		for (int i = 1; i < text.length; i++)
-			addCells(table, new String[] {null, text[i]}, fonts);
+		if (text.length > 0) {
+			addCells(table, new String[] {heading, text[0]}, fonts);
+			for (int i = 1; i < text.length; i++)
+				addCells(table, new String[] {null, text[i]}, fonts);
+		} else {
+			addCells(table, new String[] {heading, null}, fonts);
+		}
 	}
 
 }
