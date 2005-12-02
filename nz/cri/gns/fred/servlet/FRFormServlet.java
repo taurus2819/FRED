@@ -178,6 +178,7 @@ public class FRFormServlet extends HttpServlet {
 				+ "/fred/images/gsnz_logo_big.png";
 		Image image = Image.getInstance(new URL(url));
 		image.scaleToFit(20 * MM_TO_PT, 20 * MM_TO_PT);
+		image.setBorder(Image.NO_BORDER);
 		
 		PdfPCell cell = new PdfPCell(image);
 		cell.setBorder(PdfPCell.NO_BORDER);
