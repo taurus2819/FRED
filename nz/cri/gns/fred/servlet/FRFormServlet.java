@@ -162,7 +162,6 @@ public class FRFormServlet extends HttpServlet {
 		Font[] fonts = new Font[6];
 		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.NORMAL);
 		fonts[1] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.BOLD);
-		fonts[1].setColor(110, 110, 110);
 		fonts[2] = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD);
 		fonts[3] = FontFactory.getFont(FontFactory.HELVETICA, 24, Font.BOLD);
 		fonts[4] = FontFactory.getFont(FontFactory.HELVETICA, 16, Font.BOLD);
@@ -179,7 +178,9 @@ public class FRFormServlet extends HttpServlet {
 				+ "/fred/images/gsnz_logo_big.png";
 		Image image = Image.getInstance(new URL(url));
 		image.scaleToFit(20 * MM_TO_PT, 20 * MM_TO_PT);
-		image.setBorder(Image.NO_BORDER);
+		
+		PdfPCell cell = new PdfPCell(image);
+		cell.setBorder(PdfPCell.NO_BORDER);
 		table.addCell(image);
 		
 		//Header Text
@@ -189,10 +190,13 @@ public class FRFormServlet extends HttpServlet {
 		headerTable.setWidths(new float[] {80 * MM_TO_PT, 70 * MM_TO_PT});
 	
 		FrNumber frNumber = FeatureUtil.getFrNumber(feature);
-		addCells(headerTable, new String[] {"Geological Society of New Zealand", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
-			, new Font[] {fonts[2], fonts[3]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
-		addCells(headerTable, new String[] {"Fossil Record Form", "Locality Type: " + feature.getFeatureType()}, new Font[] {fonts[4], fonts[5]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
-		table.addCell(headerTable);
+		addCells(headerTable, new String[] {"Fossil Record Form", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
+			, new Font[] {fonts[4], fonts[3]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
+		addCells(headerTable, new String[] {null, "Locality Type: " + feature.getFeatureType()}, new Font[] {fonts[4], fonts[5]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
+		
+		cell = new PdfPCell(headerTable);
+		cell.setBorder(PdfPCell.NO_BORDER);
+		table.addCell(cell);
 		
 		document.add(table);
 		
