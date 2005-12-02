@@ -135,6 +135,8 @@ public class FRFormServlet extends HttpServlet {
 				}
 				//out.flush();
 			}
+			if (features != null)
+				document.newPage();
 		}
 		if (features != null) {
 			for (int i = 0; i < features.length; i++) {
@@ -174,7 +176,7 @@ public class FRFormServlet extends HttpServlet {
 			
 		//Logo
 		String url = "http://" + JspUtils.getServerName(new PageState(request, response, getServletContext()))
-				+ "/fred/images/gsnz_logo.gif";
+				+ "/fred/images/gsnz_logo_big.png";
 		Image image = Image.getInstance(new URL(url));
 		image.scaleToFit(20 * MM_TO_PT, 20 * MM_TO_PT);
 		image.setBorder(Image.NO_BORDER);
@@ -300,7 +302,7 @@ public class FRFormServlet extends HttpServlet {
 				table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
 				table.setSpacingAfter(3 * MM_TO_PT);
 				
-				addCells(table, new String[] {"Sample Information", SampleUtil.getDrillHoleDepthDescription(sample)}, new Font[] {fonts[2], fonts[3]});
+				addCells(table, new String[] {"Sample", SampleUtil.getDrillHoleDepthDescription(sample)}, new Font[] {fonts[2], fonts[3]});
 				
 				document.add(table);
 			}
