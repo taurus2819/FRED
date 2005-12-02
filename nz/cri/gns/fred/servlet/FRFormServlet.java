@@ -178,7 +178,7 @@ public class FRFormServlet extends HttpServlet {
 				+ "/fred/images/gsnz_logo_big.png";
 		Image image = Image.getInstance(new URL(url));
 		image.scaleToFit(20 * MM_TO_PT, 20 * MM_TO_PT);
-		image.setBorder(Image.NO_BORDER);
+		//image.setBorder(Image.NO_BORDER);
 		
 		PdfPCell cell = new PdfPCell(image);
 		cell.setBorder(PdfPCell.NO_BORDER);
@@ -213,7 +213,7 @@ public class FRFormServlet extends HttpServlet {
 		addCell(headerTable, "Locality Type: " + feature.getFeatureType(), fonts[5], PdfPCell.ALIGN_RIGHT, 1);
 		
 		cell = new PdfPCell(headerTable);
-		cell.setBorder(PdfPCell.NO_BORDER);
+		//cell.setBorder(PdfPCell.NO_BORDER);
 		table.addCell(cell);
 		
 		document.add(table);
@@ -406,7 +406,7 @@ public class FRFormServlet extends HttpServlet {
 	private void addCell(PdfPTable table, Object text, Font font, int align, int colSpan) {
 		PdfPCell cell = new PdfPCell(new Phrase(DBUtils.nvl(text), font));
 		cell.setHorizontalAlignment(align);
-		cell.setBorder(PdfPCell.NO_BORDER);
+		//cell.setBorder(PdfPCell.NO_BORDER);
 		cell.setVerticalAlignment(PdfPCell.ALIGN_TOP);
 		if (colSpan > 1)
 			cell.setColspan(colSpan);
