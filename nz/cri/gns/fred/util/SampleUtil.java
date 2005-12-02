@@ -488,6 +488,46 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return desc.toString();
 	}
 	
+	public static String getGrainSizeDescription(Sample sample) {
+		StringBuffer desc = new StringBuffer();
+		if (sample.getPrimaryGrainSize() != null) {
+			desc.append(sample.getPrimaryGrainSize().getName()).append(" (pri)");
+			if (sample.getSecondaryGrainSize() != null)
+				desc.append(", ");
+		}
+		if (sample.getSecondaryGrainSize() != null)
+			desc.append(sample.getSecondaryGrainSize().getName()).append(" (sec)");
+		return desc.toString();
+	}
+
+	public static String getBeddingDescription(Sample sample) {
+		StringBuffer desc = new StringBuffer();
+		if (sample.getPrimaryBedding() != null) {
+			desc.append(sample.getPrimaryBedding().getName());
+			if (sample.getSecondaryBedding() != null)
+				desc.append(", ");
+		}
+		if (sample.getSecondaryBedding() != null)
+			desc.append(sample.getSecondaryBedding().getName());
+		return desc.toString();
+	}
+
+	public static String getColourDescription(Sample sample) {
+		StringBuffer desc = new StringBuffer();
+		if (sample.getColourModifier() != null)
+			desc.append(sample.getColourModifier().getName()).append(" ");
+		if (sample.getPrimaryColour() != null) {
+			desc.append(sample.getPrimaryColour().getName());
+			if (sample.getSecondaryColour() != null)
+				desc.append("-");
+		}
+		if (sample.getSecondaryColour() != null)
+			desc.append(sample.getSecondaryColour().getName());
+		if (sample.getWet() != null)
+			desc.append(" (").append(sample.getWet()).append(")");
+		return desc.toString();
+	}
+	
 	public Audit save(Audit audit) throws StorageAccessException {
 		return sampleDAO.save(audit);
 	}
