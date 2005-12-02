@@ -250,14 +250,15 @@ public class FRFormServlet extends HttpServlet {
 		} else {
 			addCell(table, "", fonts[0]);
 		}
-		SiteRecord sr = FREDUtil.getSite(feature);
-		if (sr != null) {
+		SiteRecord sr = null;
+		if (feature.getSiteId() != null) {
+			sr = FREDUtil.getSite(feature);
 			LatLong ll = sr.getLatLong();
 			addCells(table, new String[] {"Converted Decimal Lat/Long", ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"}, bodyFonts);
 		}
 		addCells(table, new Object[] {"Map Year", feature.getMapYear()}, bodyFonts);
-		addCells(table, new String[] {"Method", FREDUtil.getSiteMethod(sr)}, bodyFonts);
-		addCells(table, new Object[] {"Accuracy", ((sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? null : sr.getAccuracy())}, bodyFonts);
+		addCells(table, new String[] {"Method", ((sr != null) ? FREDUtil.getSiteMethod(sr) : null)}, bodyFonts);
+		addCells(table, new String[] {"Accuracy", ((sr != null && !sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(sr.getAccuracy()) : null)}, bodyFonts);
 		if (isAllowedReadFeature) {
 			addCells(table, new String[] {"Locality", feature.getLocality()}, bodyFonts);
 			if (!featType.equals(FREDConstants.OUTCROP)) {
