@@ -57,7 +57,7 @@ function doNewFolder() {
 	var newName = prompt('Please enter the folder name', 'New Working Folder');
 	if (newName) {
 		document.NewFoldForm.FoldName.value = newName;
-		document.NewFoldForm.FoldType.value = UserFolder.FOLDER_TYPE_PERSONAL;
+		document.NewFoldForm.FoldType.value = "<%=UserFolder.FOLDER_TYPE_PERSONAL%>";
 		document.NewFoldForm.submit();
 	}
 }
@@ -66,7 +66,7 @@ function doNewBacklogFolder() {
 	var newName = prompt('Please enter the folder name', 'New Backlog Folder');
 	if (newName) {
 		document.NewFoldForm.FoldName.value = newName;
-		document.NewFoldForm.FoldType.value = UserFolder.FOLDER_TYPE_BACKLOG;
+		document.NewFoldForm.FoldType.value = "<%=UserFolder.FOLDER_TYPE_BACKLOG%>";
 		document.NewFoldForm.submit();
 	}
 }
