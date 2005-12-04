@@ -27,6 +27,7 @@ import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.PersonRelationship;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
+import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
@@ -268,8 +269,10 @@ public class FRFormServlet extends HttpServlet {
 		addCells(table, new Object[] {"Map Year", feature.getMapYear()}, bodyFonts);
 		addCells(table, new String[] {"Method", ((sr != null) ? FREDUtil.getSiteMethod(sr) : null)}, bodyFonts);
 		addCells(table, new String[] {"Accuracy", ((sr != null && !sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(sr.getAccuracy()) : null)}, bodyFonts);
-		if (isAllowedReadFeature) {
+		if (isAllowedReadFeature)
 			addCells(table, new String[] {"Locality", feature.getLocality()}, bodyFonts);
+		addCells(table, new String[] {"Country", ((sr != null) ? sr.getCountry() : null)}, bodyFonts);
+		if (isAllowedReadFeature) {
 			if (!featType.equals(FREDConstants.OUTCROP)) {
 				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector"), ((feature.getPerson() != null) ? feature.getPerson().getName() : null)}, bodyFonts);
 				addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date"), ((feature.getStartDate() != null) ? FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding()) : null)}, bodyFonts);		
@@ -328,14 +331,14 @@ public class FRFormServlet extends HttpServlet {
 			String[] collectorStr = new String[collectors.length];
 			for (int i = 0; i < collectors.length; i++)
 				collectorStr[i] = ((PersonRelationship) collectors[i]).getDisplayName();
-			addRepeatingCells(table, "Collectors", collectorStr, bodyFonts);
+			addRepeatingCells(table, "Collectors", collectorStr, bodyFonts, false);
 			addCells(table, new String[] {"Stratigraphic Name", sample.getStratUnit()}, bodyFonts);
 			addCells(table, new String[] {"Fossils in Place", sample.getInPlace()}, bodyFonts);
 			Object[] sentTos = sample.getSentTos().toArray();
 			String[] sentToStr = new String[sentTos.length];
 			for (int i = 0; i < sentTos.length; i++)
 				sentToStr[i] = SampleUtil.getSentToDescription((SentTo) sentTos[i]);
-			addRepeatingCells(table, "Sent To", sentToStr, bodyFonts);
+			addRepeatingCells(table, "Sent To", sentToStr, bodyFonts, true);
 			addCells(table, new String[] {"Not Collected", sample.getNotCollected()}, bodyFonts);
 			addCells(table, new String[] {"Significance/Comments", sample.getSignificance()}, bodyFonts);
 		
@@ -356,22 +359,20 @@ public class FRFormServlet extends HttpServlet {
 			String[] relationshipStr = new String[relationships.length];
 			for (int i = 0; i < relationships.length; i++)
 				relationshipStr[i] = FeatureUtil.getFeatureIdentifyingName(((Relationship) relationships[i]).getFeature());
-			addRepeatingCells(table, "Samples Nearby", relationshipStr, bodyFonts);			
+			addRepeatingCells(table, "Samples Nearby", relationshipStr, bodyFonts, false);			
 			relationships = sampleUtil.getRelationships(sample, "Sample", new String[] {"above", "below"}).toArray();
 			relationshipStr = new String[relationships.length];
 			for (int i = 0; i < relationships.length; i++)
 				relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
-			addRepeatingCells(table, "Sample Relationships", relationshipStr, bodyFonts);			
+			addRepeatingCells(table, "Sample Relationships", relationshipStr, bodyFonts.clone(), false);			
 			relationships = sampleUtil.getRelationships(sample, "Stratigraphic", new String[] {"above top", "above base", "below top", "below base"}).toArray();
 			relationshipStr = new String[relationships.length];
 			for (int i = 0; i < relationships.length; i++)
 				relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
-			addRepeatingCells(table, "Stratigraphic Relationships", relationshipStr, bodyFonts);			
+			addRepeatingCells(table, "Stratigraphic Relationships", relationshipStr, bodyFonts, true);			
 			addCells(table, new String[] {"Column/Map", sample.getColumnMap()}, bodyFonts);
-			addCells(table, new Object[] {"Dip", sample.getDip()}, bodyFonts);
-			addCells(table, new String[] {"Dip Direction", sample.getDipDirection()}, bodyFonts);
-			addCells(table, new Object[] {"Strike", sample.getStrike()}, bodyFonts);
-			addCells(table, new String[] {"Facing", sample.getFacing()}, bodyFonts);
+			addCells(table, new String[] {"Dip/Dip Direction", ((sample.getDip() != null) ? String.valueOf(sample.getDip()) + ((sample.getDipDirection() != null) ? "/" : null) : null) + sample.getDipDirection()}, bodyFonts);			addCells(table, new String[] {"Dip Direction", sample.getDipDirection()}, bodyFonts);
+			addCells(table, new String[] {"Strike/Facing", ((sample.getStrike() != null) ? String.valueOf(sample.getStrike()) + ((sample.getFacing() != null) ? "/" : null) : null) + sample.getFacing()}, bodyFonts);
 		
 			document.add(table);
 
@@ -383,13 +384,17 @@ public class FRFormServlet extends HttpServlet {
 			
 			addCell(table, "Sedimentary Features", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
 			addCells(table, new String[] {"Grain Size", SampleUtil.getGrainSizeDescription(sample)}, bodyFonts);
-			addCells(table, new String[] {"Comparator Used", sample.getComparatorUsed()}, bodyFonts);
 			addCells(table, new String[] {"Bedding Thickness", ((sample.getBedThickness() != null) ? sample.getBedThickness().getName() : null)}, bodyFonts);
 			addCells(table, new String[] {"Bedding Features", SampleUtil.getBeddingDescription(sample)}, bodyFonts);
 			addCells(table, new String[] {"Weathering", ((sample.getWeathering() != null) ? sample.getWeathering().getName() : null)}, bodyFonts);
 			addCells(table, new String[] {"Hardness", ((sample.getHardness() != null) ? sample.getHardness().getName() : null)}, bodyFonts);
 			addCells(table, new String[] {"Carbonate", ((sample.getCarbonate() != null) ? sample.getCarbonate().getName() : null)}, bodyFonts);
 			addCells(table, new String[] {"Colour", SampleUtil.getColourDescription(sample)}, bodyFonts);
+			Object[] sedFeatures = sample.getSedimentaryFeatures().toArray();
+			String[] sedFeaturesStr = new String[sedFeatures.length];
+			for (int i = 0; i < sedFeatures.length; i++)
+				sedFeaturesStr[i] = SampleUtil.getSedFeatureDescription((SedimentaryFeature) sedFeatures[i]);
+			addRepeatingCells(table, "Additional Features", sedFeaturesStr, bodyFonts, false);	
 			addCells(table, new String[] {"Inferred Environment", sample.getDepositionEnv()}, bodyFonts);
 			addCells(table, new String[] {"Nature of Rock Unit", sample.getRockNature()}, bodyFonts);
 			addCells(table, new String[] {"Correspondence", sample.getCorrespondence()}, bodyFonts);
@@ -422,11 +427,21 @@ public class FRFormServlet extends HttpServlet {
 			addCell(table, text[i], fonts[i], align[i], 1);
 	}
 	
-	private void addRepeatingCells(PdfPTable table, String heading, String[] text, Font[] fonts) {
+	private void addRepeatingCells(PdfPTable table, String heading, String[] text, Font[] fonts, boolean newLines) {
 		if (text.length > 0) {
-			addCells(table, new String[] {heading, text[0]}, fonts);
-			for (int i = 1; i < text.length; i++)
-				addCells(table, new String[] {null, text[i]}, fonts);
+			if (newLines) {
+				addCells(table, new String[] {heading, text[0]}, fonts);
+				for (int i = 1; i < text.length; i++)
+					addCells(table, new String[] {null, text[i]}, fonts);
+			} else {
+				StringBuffer textLine = new StringBuffer();
+				for (int i = 1; i < text.length; i++) {
+					textLine.append(text[i]);
+					if (i < text.length - 1)
+						textLine.append("; ");
+				}
+				addCells(table, new String[] {heading, textLine.toString()}, fonts);
+			}
 		} else {
 			addCells(table, new String[] {heading, null}, fonts);
 		}
