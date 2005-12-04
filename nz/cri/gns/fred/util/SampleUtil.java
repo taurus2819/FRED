@@ -497,6 +497,12 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		}
 		if (sample.getSecondaryGrainSize() != null)
 			desc.append(sample.getSecondaryGrainSize().getName()).append(" (sec)");
+		if (sample.getComparatorUsed() != null) {
+			if (sample.getComparatorUsed().equals("Y"))
+				desc.append(" (Comparator used)");
+			else
+				desc.append(" (Comparator not used)");
+		}
 		return desc.toString();
 	}
 
@@ -525,6 +531,14 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			desc.append(sample.getSecondaryColour().getName());
 		if (sample.getWet() != null)
 			desc.append(" (").append(sample.getWet()).append(")");
+		return desc.toString();
+	}
+	
+	public static String getSedFeatureDescription(SedimentaryFeature sedFeat) {
+		StringBuffer desc = new StringBuffer();
+		desc.append(sedFeat.getSedimentaryFeatureType().getName());
+		if (sedFeat.getAbundant() != null && sedFeat.getAbundant().equals("Y"))
+			desc.append(" (abundant)");
 		return desc.toString();
 	}
 	
