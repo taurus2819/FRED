@@ -279,10 +279,9 @@ public class FRFormServlet extends HttpServlet {
 				addCells(table, new String[] {"Completion Date", ((feature.getFinishDate() != null) ? FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding()) : null)}, bodyFonts);
 				if (featType.equals(FREDConstants.DRILLHOLE))
 					addCells(table, new String[] {"Licence Area", feature.getDrillholeLicenceName()}, bodyFonts);	
-				addCells(table, new String[] {"Datum Type", feature.getDatumType()}, bodyFonts);
-				addCells(table, new Object[] {"Datum Elevation", ((feature.getDatumElevation() != null) ? feature.getDatumElevation() + " m asl" : null)}, bodyFonts);
-				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon"), ((feature.getStartDepth() != null) ? feature.getStartDepth() + " m" : null)}, bodyFonts);
-				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon"), ((feature.getFinishDepth() != null) ? feature.getFinishDepth() + " m" : null)}, bodyFonts);
+				addCells(table, new String[] {"Datum Elevation/Type", ((feature.getDatumElevation() != null) ? String.valueOf(feature.getDatumElevation()) + ((feature.getDatumType() != null) ? " " : null) : null) + feature.getDatumType()}, bodyFonts);
+				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Depths" : "Horizon"), ((feature.getStartDepth() != null) ? String.valueOf(feature.getStartDepth()) + " m" + ((feature.getFinishDepth() != null) ? " - " : null) : null)
+						+ ((feature.getFinishDepth() != null) ? feature.getFinishDepth() + " m" : null)}, bodyFonts);
 			}
 		}
 		document.add(table);		
@@ -371,7 +370,7 @@ public class FRFormServlet extends HttpServlet {
 				relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
 			addRepeatingCells(table, "Stratigraphic Relationships", relationshipStr, bodyFonts, true);			
 			addCells(table, new String[] {"Column/Map", sample.getColumnMap()}, bodyFonts);
-			addCells(table, new String[] {"Dip/Dip Direction", ((sample.getDip() != null) ? String.valueOf(sample.getDip()) + ((sample.getDipDirection() != null) ? "/" : null) : null) + sample.getDipDirection()}, bodyFonts);			addCells(table, new String[] {"Dip Direction", sample.getDipDirection()}, bodyFonts);
+			addCells(table, new String[] {"Dip/Dip Direction", ((sample.getDip() != null) ? String.valueOf(sample.getDip()) + ((sample.getDipDirection() != null) ? "/" : null) : null) + sample.getDipDirection()}, bodyFonts);
 			addCells(table, new String[] {"Strike/Facing", ((sample.getStrike() != null) ? String.valueOf(sample.getStrike()) + ((sample.getFacing() != null) ? "/" : null) : null) + sample.getFacing()}, bodyFonts);
 		
 			document.add(table);
@@ -435,7 +434,7 @@ public class FRFormServlet extends HttpServlet {
 					addCells(table, new String[] {null, text[i]}, fonts);
 			} else {
 				StringBuffer textLine = new StringBuffer();
-				for (int i = 1; i < text.length; i++) {
+				for (int i = 0; i < text.length; i++) {
 					textLine.append(text[i]);
 					if (i < text.length - 1)
 						textLine.append("; ");
