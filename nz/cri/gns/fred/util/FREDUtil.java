@@ -493,7 +493,7 @@ public class FREDUtil {
 		try {
 			conn = getConnection();
 			Statement statement = conn.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT country_name FROM mis.country WHERE country_code = " + sr.getCountry());
+			ResultSet rs = statement.executeQuery("SELECT country_name FROM mis.country WHERE country_code = '" + sr.getCountry() + "'");
 			rs.next();
 			String country = rs.getString(1);
 			rs.close();
