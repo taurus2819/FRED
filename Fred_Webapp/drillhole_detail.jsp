@@ -129,7 +129,7 @@
 							}
 
 							out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
-							out.println("<tr><td colspan='2'><a href='print_front.jsp?ID=" + minSampID + "&FormType=Short' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;<a href='print_front.jsp?ID=" + minSampID + "&FormType=Short' class='heading' target='print'>Print Front</a></td></tr>");
+							out.println("<tr><td colspan='2'><a href='frf/frf.pdf?FeatIDs=" + featID + "' target='_blank'><img src='images/pdf_icon.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;<a href='frf/frf.pdf?FeatIDs=" + featID + "' class='heading' target='_blank'>Print Front</a></td></tr>");
 							out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
 							out.println("</table></td></tr>");
 							

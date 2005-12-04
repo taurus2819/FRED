@@ -66,7 +66,7 @@
 		if (request.getParameter("ActionType") != null) { //do something
 			String actionType = request.getParameter("ActionType");
 			try {
-				if (request.getParameter("FeatID") != null) {
+				if (request.getParameter("FeatID") != null && !request.getParameter("FeatID").equals("")) {
 					//Get the feature
 					Feature feature = featureUtil.getFeature(Integer.parseInt(request.getParameter("FeatID")));
 					//Copy locality
@@ -97,6 +97,21 @@
 					else if (actionType.equals("AlterType") && folder.isAllowedEditLocalities()) {
 						featureUtil.alterFeatureType(feature, request.getParameter("NewFeatType"), folder, user);
 					}
+				} else if (request.getParameter("FeatIDs") != null) {
+					if (actionType.equals("PrintFeatures")) {
+						System.out.println("Preparing to print");
+						String[] featIDs = request.getParameterValues("FeatIDs");
+						StringBuffer queryStr = new StringBuffer();
+						for (int i = 0; i < featIDs.length; i++) {
+							System.out.println("Received FeatID: " + featIDs[i]);
+							queryStr.append("FeatIDs=").append(featIDs[i]);
+							if (i < featIDs.length - 1)
+								queryStr.append("&");
+						}
+						System.out.println("Generated PDF queryString: " + queryStr);
+						response.sendRedirect("frf/frf.pdf?" + queryStr.toString());
+						return;
+					}
 				}
 			} catch (MandatoryFieldsMissingException e) {
 				%><script><!--
@@ -124,7 +139,7 @@ function showHide(toShow, toHide) {
 <center><p>&nbsp;<p/><div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none">
 <%
 		startDETable(pageContext);
-		%>
+%>
 <table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
 <tr><td colspan="3" class="deHeading">Folder Instructions</td></tr><tr><td style="text-align: left">
 <ul>
@@ -152,7 +167,7 @@ function showHide(toShow, toHide) {
 <th colspan="3">Name&nbsp;&nbsp;</th><th colspan="2">Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Options</th></tr>
 <tr><td colspan="12"><img src="images/line.gif" height="3" width="550" /></td></tr>
 
-<form name="FoldForm" method="post" action="folder_detail.jsp">
+<form name="FoldForm" method="get" action="folder_detail.jsp">
 <%
 		//Display the features
 		Feature[] features = featureUtil.getFeaturesInFolder(folder);
@@ -164,11 +179,14 @@ function showHide(toShow, toHide) {
 			String featName = feature.getFeatureName();
 			%><tr><%
 			
-			if (folder.isBacklogFolder() && !feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
+	/*		if (folder.isBacklogFolder() && !feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
 				%><td><input type="radio" name="SelFeatID" value="<%=feature.getFeatureId()%>" /></td><%
 			} else {
 				%><td></td><%	
-			}			
+			}		 */	
+			
+			//starting work on checkboxes
+			%><td><input type="checkbox" name="FeatIDs" value="<%=feature.getFeatureId()%>" /></td><%
 			
 			%><td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
 			
@@ -224,7 +242,20 @@ function showHide(toShow, toHide) {
 		%></table><%
 		endDETable(pageContext);
 
+		%></p><p><%
+		
+		startDETable(pageContext);
+		%><table border="0" width="550">
+		<tr><td colspan="12" class="deHeading">Folder Options</td></tr>
+		<tr><td>&nbsp;</td></tr>
+		<tr><td class="heading">
+		<a href="javascript:document.FoldForm.ActionType.value='PrintFeatures';document.FoldForm.target='_blank';document.FoldForm.submit();"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print Selected" />&nbsp;Print Selected</a>
+		</td></tr>
+		</table>
+		<%		
+		endDETable(pageContext);
 		%>
+		</p>
 <input type="hidden" name="ActionType" value="" />
 <input type="hidden" name="ID" value="<%=folder.getFolder().getFolderId()%>" />
 <input type="hidden" name="FeatID" value="" />

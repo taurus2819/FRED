@@ -170,7 +170,7 @@
 					out.println("<tr><td>&nbsp;</td></tr>");
 				}
 				
-				out.println("<tr><td><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' target='print'><img src='images/print.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;</td><td><a href='print_front.jsp?ID=" + sampID + "&FormType=Full' class='heading' target='print'>Print Front</a></td></tr>");
+				out.println("<tr><td><a href='frf/frf.pdf?SampIDs=" + sampID + "' target='_blank'><img src='images/pdf_icon.gif' width='20' height='20' border='0' alt='Print' /></a>&nbsp;&nbsp;</td><td><a href='frf/frf.pdf?SampIDs=" + sampID + "' class='heading' target='_blank'>Print Front</a></td></tr>");
 				try {
 					if (sample.getPaleontologyRecordCount() > 0) {
 						for (Iterator i = sample.getAsVector(Sample.RECORDS).iterator(); i.hasNext(); ) {
