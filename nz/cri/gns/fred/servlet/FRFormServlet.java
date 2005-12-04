@@ -271,7 +271,7 @@ public class FRFormServlet extends HttpServlet {
 		addCells(table, new String[] {"Accuracy", ((sr != null && !sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(sr.getAccuracy()) : null)}, bodyFonts);
 		if (isAllowedReadFeature)
 			addCells(table, new String[] {"Locality", feature.getLocality()}, bodyFonts);
-		addCells(table, new String[] {"Country", ((sr != null) ? sr.getCountry() : null)}, bodyFonts);
+		addCells(table, new String[] {"Country", ((sr != null) ? FREDUtil.getSiteCountry(sr) : null)}, bodyFonts);
 		if (isAllowedReadFeature) {
 			if (!featType.equals(FREDConstants.OUTCROP)) {
 				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector"), ((feature.getPerson() != null) ? feature.getPerson().getName() : null)}, bodyFonts);
