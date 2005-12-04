@@ -486,6 +486,29 @@ public class FREDUtil {
 		}		
 	}
 
+	public static String getSiteCountry(SiteRecord sr) throws NamingException, SQLException {
+		if (sr.isNull(SiteRecord.COUNTRY_FIELD))
+			return null;
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT country_name FROM mis.country WHERE country_code = " + sr.getCountry());
+			rs.next();
+			String country = rs.getString(1);
+			rs.close();
+			statement.close();
+			conn.close();
+			return country;
+		} catch (SQLException e) {
+			if (conn != null) try {
+				conn.close();
+			} catch (Exception _e) {
+			}
+			throw e;
+		}		
+	}	
+	
 	/**
 	 * Gets an appropriate record from the DB for the given site, 
 	 * inserting if necessary
