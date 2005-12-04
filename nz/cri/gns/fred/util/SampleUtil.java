@@ -395,9 +395,9 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		StringBuffer desc = new StringBuffer();
 		if (rel.getDistanceMod() != null)
 			desc.append(rel.getDistanceMod()).append(" ");
-		desc.append(rel.getDistance()).append(" ");
+		desc.append(rel.getDistance()).append(" m ");
 		if (rel.getDistanceRange() != null)
-			desc.append("- ").append(rel.getDistanceRange()).append(" ");
+			desc.append("- ").append(rel.getDistanceRange()).append(" m ");
 		desc.append(rel.getRelationshipType().getName()).append(" ");
 		if (rel.getRelationType().getName().equals(FREDConstants.SAMPLE))
 			desc.append(FeatureUtil.getFeatureIdentifyingName(rel.getFeature()));
