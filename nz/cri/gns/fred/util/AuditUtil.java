@@ -40,13 +40,13 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
     
     public Audit cloneAudit(Audit audit) throws IntrospectionException, StorageAccessException {
     	Audit newAudit = auditDAO.createNewAudit();
-   		FREDUtil.beanCopy(audit, newAudit, 
-    				new FREDUtil.ExcludeByType(Set.class, 
-    				new FREDUtil.ExcludeByName(FREDUtil.toVector(new String[] {"auditId", "features", "samples", "records", "auditEdits"})))
-    		);
+   		FREDUtil.beanCopy(audit, newAudit, new FREDUtil.ExcludeByName(FREDUtil.toVector(new String[] {"auditId", "features", "samples", "records", "auditEdits"}))    		);
 
+   		System.out.println("Cloned audit comparison. Old ID = " + audit.getAuditId() + ", new ID = " + newAudit.getAuditId());
+   		System.out.println("Cloned audit comparison. Old Created_By_ID = " + audit.getCreatedById() + ", new Created_By_ID = " + newAudit.getCreatedById());
+   		
     		//Copy the audit edits
-    		Set<AuditEdit> auditEdits = audit.getAuditEdits();
+   /* 		Set<AuditEdit> auditEdits = audit.getAuditEdits();
     		if (auditEdits != null && auditEdits.size() > 0) {
     			HashSet<AuditEdit> newAuditEdits = new HashSet<AuditEdit>();
     			for (AuditEdit auditEdit : auditEdits) {
@@ -56,7 +56,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
     				newAuditEdits.add(newAuditEdit);
     			}
     			newAudit.setAuditEdits(newAuditEdits);
-    		}
+    		} */
     		return newAudit;
     }
     
