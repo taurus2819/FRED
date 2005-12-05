@@ -270,8 +270,7 @@ public class FRFormServlet extends HttpServlet {
 			addCells(table, new String[] {"Converted Decimal Lat/Long", ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"}, bodyFonts);
 		}
 		addCells(table, new Object[] {"Map Year", feature.getMapYear()}, bodyFonts);
-		addCells(table, new String[] {"Method", ((sr != null) ? FREDUtil.getSiteMethod(sr) : null)}, bodyFonts);
-		addCells(table, new String[] {"Accuracy", ((sr != null && !sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(sr.getAccuracy()) : null)}, bodyFonts);
+		addTable(table, new String[] {"Method", ((sr != null) ? FREDUtil.getSiteMethod(sr) : null), null, "Accuracy", ((sr != null && !sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(sr.getAccuracy()) : null)}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
 		if (isAllowedReadFeature)
 			addCells(table, new String[] {"Locality", feature.getLocality()}, bodyFonts);
 		addCells(table, new String[] {"Country", ((sr != null) ? FREDUtil.getSiteCountry(sr) : null)}, bodyFonts);
@@ -331,7 +330,7 @@ public class FRFormServlet extends HttpServlet {
 			table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
 			table.setSpacingAfter(3 * MM_TO_PT);
 			
-			addCell(table, "Collection Information", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
+			addCell(table, "Collection Information", fonts[2], PdfPCell.ALIGN_LEFT, 2);
 
 			addCells(table, new String[] {"Collection Date", ((sample.getCollectionDate() != null) ? FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding()) : null)}, bodyFonts);
 			Object[] collectors = sample.getCollectors().toArray();
@@ -357,6 +356,8 @@ public class FRFormServlet extends HttpServlet {
 			table.setLockedWidth(true);
 			table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
 			table.setSpacingAfter(3 * MM_TO_PT);
+			
+			addCell(table, "Collection Information", fonts[2], PdfPCell.ALIGN_LEFT, 2);
 			
 			addTable(table, new String[] {"Inferred Stage",
 					((sample.getInferredStage() != null) ? StageUtil.getStageDescription(sample.getInferredStage()) : null),
