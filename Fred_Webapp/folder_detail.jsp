@@ -81,10 +81,6 @@
 					else if (actionType.equals("RemoveFeat")) {
 						featureUtil.removeFeature(feature, folder, user);
 					}
-					//Merge locality
-					else if (actionType.equals("MergeFeat")) {
-						featureUtil.mergeFeature(feature, request.getParameter("SelFeatID"), folder, user);
-					}
 					//submit working locality
 					else if (actionType.equals("Submit") && folder.isAllowedSubmitLocalities()) {
 						featureUtil.submitFeature(feature, folder, user);
@@ -108,6 +104,9 @@
 						}
 						response.sendRedirect("frf/frf.pdf?" + queryStr.toString());
 						return;
+					} else if (actionType.equals("MergeFeatures")) {
+						Feature mergeToFeature = featureUtil.getFeature(Integer.parseInt(request.getParameter("MergeToFeatID")));
+						featureUtil.mergeFeatures(mergeToFeature, request.getParameterValues("FeatIDs"), folder, user);
 					}
 				}
 			} catch (MandatoryFieldsMissingException e) {
@@ -218,10 +217,6 @@ function showHide(toShow, toHide) {
 				%><a href="javascript:prmpt=prompt('Please enter the new name', 'New <%=feature.getFeatureType()%>');if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value='CopyFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/copy.gif" border="0" height="20" width="20" alt="Copy Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 			}
 			%></td><td><%
-			if (folder.isBacklogFolder() && folder.isAllowedEditLocalities() && !feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
-				%><a href="javascript:if (confirm('Are you sure you want to merge this locality') == true) {document.FoldForm.ActionType.value='MergeFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/drill.gif" border="0" height="20" width="20" alt="Merge Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
-			}
-			%></td><td><%
 			if ((status.equals(FREDConstants.WORKING) || status.equals(FREDConstants.REJECTED)) && folder.isAllowedDeleteLocalities()) {
 				%><a href="javascript:if (confirm('Are you sure you want to delete this locality') == true) {document.FoldForm.ActionType.value='DeleteFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 			} else if (status.equals(FREDConstants.APPROVED)) {
@@ -245,9 +240,21 @@ function showHide(toShow, toHide) {
 		%><table border="0" width="550">
 		<tr><td colspan="12" class="deHeading">Folder Options</td></tr>
 		<tr><td>&nbsp;</td></tr>
-		<tr><td class="heading">
+		<tr>
+		<td class="heading">
 		<a href="javascript:document.FoldForm.ActionType.value='PrintFeatures';document.FoldForm.target='_blank';document.FoldForm.submit();"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print Selected" />&nbsp;Print Selected</a>
-		</td></tr>
+		</td>
+		<td class="heading">
+		<a href="javascript:document.FoldForm.ActionType.value='MergeFeatures';document.FoldForm.submit();"><img src="images/drill.gif" border="0" height="20" width="20" alt="Merge Selected" />&nbsp;Merge Selected To</a>&nbsp;
+		<select name="MergeToFeatID"><option value="-">-- Choose --</option><%
+		Feature[] mergeToFeatures = featureUtil.getFeaturesInFolder(folder);
+		for (int i = 0; i < features.length; i++) {
+			if (!mergeToFeatures[i].getFeatureType().equals(FREDConstants.OUTCROP)) {
+				%><option value="<%=mergeToFeatures[i].getFeatureId()%>"><%=FeatureUtil.getFeatureName(mergeToFeatures[i])%></option><%		
+			}
+		}
+		%></select></td>
+		</tr>
 		</table>
 		<%		
 		endDETable(pageContext);
