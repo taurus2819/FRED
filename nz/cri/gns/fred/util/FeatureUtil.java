@@ -422,22 +422,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		//move all samples from merge feature to parent feature
 		for (int i = 0; i < samples.length; i++) {
 			Sample sample = (Sample) samples[i];
-			//check audits - temp fix, should really handle this more cleanly
+			//check audits - if same as feature then create new onw
 			if (sample.getAudit().equals(mergeFromFeature.getAudit())) {
-				System.out.println("Cloning auditID: " + sample.getAudit().getAuditId());
-				//throw new IllegalStateException("Cannot merge localities as problem with sample audit trail");
 				Audit newAudit = new AuditUtil(factory).cloneAudit(sample.getAudit());
 				featureDAO.save(newAudit);
-				System.out.println("New Audit saved - ID: " + newAudit.getAuditId());
 				sample.setAudit(newAudit);
 				sampleDAO.update(sample);
-				System.out.println("New sample auditID: " + sample.getAudit().getAuditId());
 			}
-
-			//set sample FRNumber if currently null
-			if (sample.getFrNumber() == null)
-				sample.setFrNumber(mergeToFRNumber);
-			sample.setFeature(mergeToFeature);
 
 			//add comments
 			AuditEdit edit = featureDAO.createNewAuditEdit();
@@ -446,10 +437,14 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			edit.setEditedDate(new Date());
 			edit.setComments("Sample merged into " + getFeatureName(mergeToFeature) + " from " + getFeatureName(mergeFromFeature));
 			featureDAO.save(edit);
+
+			//set sample FRNumber if currently null
+			if (sample.getFrNumber() == null)
+				sample.setFrNumber(mergeToFRNumber);
+			sample.setFeature(mergeToFeature);			
 			
 			sampleDAO.update(sample);
 		}
-		//featureDAO.update(parentFeature);
 		
 		//delete merge feature
 		deleteFeature(mergeFromFeature, user);
