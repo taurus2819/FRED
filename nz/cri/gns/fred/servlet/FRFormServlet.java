@@ -226,12 +226,15 @@ public class FRFormServlet extends HttpServlet {
 	private void writeLocality(Feature feature, Document document, Font[] fonts) throws StorageAccessException, DocumentException, NamingException, SQLException {
 		boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
 		Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
+		Font[] insertBodyFonts = new Font[] {fonts[1], fonts[0], fonts[0], fonts[1], fonts[0]};
+		float insertTableWidth = 175 * MM_TO_PT;
+		float[] insertTableColWidths = new float[] {50 * MM_TO_PT, 30 * MM_TO_PT, 15 * MM_TO_PT, 50 * MM_TO_PT, 30 * MM_TO_PT};
 		
 		//Location Information
 		PdfPTable table = new PdfPTable(2);
 		table.setTotalWidth(175 * MM_TO_PT);
 		table.setLockedWidth(true);
-		table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
+		table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
 		table.setSpacingAfter(3 * MM_TO_PT);
 		
 		addCell(table, "Location Information", fonts[2], PdfPCell.ALIGN_LEFT, 2);
@@ -272,17 +275,16 @@ public class FRFormServlet extends HttpServlet {
 		if (isAllowedReadFeature)
 			addCells(table, new String[] {"Locality", feature.getLocality()}, bodyFonts);
 		addCells(table, new String[] {"Country", ((sr != null) ? FREDUtil.getSiteCountry(sr) : null)}, bodyFonts);
-		if (isAllowedReadFeature) {
-			if (!featType.equals(FREDConstants.OUTCROP)) {
-				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector"), ((feature.getPerson() != null) ? feature.getPerson().getName() : null)}, bodyFonts);
-				addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date"), ((feature.getStartDate() != null) ? FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding()) : null)}, bodyFonts);		
-				addCells(table, new String[] {"Completion Date", ((feature.getFinishDate() != null) ? FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding()) : null)}, bodyFonts);
-				if (featType.equals(FREDConstants.DRILLHOLE))
-					addCells(table, new String[] {"Licence Area", feature.getDrillholeLicenceName()}, bodyFonts);	
-				addCells(table, new String[] {"Datum Elevation/Type", ((feature.getDatumElevation() != null) ? String.valueOf(feature.getDatumElevation()) + ((feature.getDatumType() != null) ? " " : null) : null) + feature.getDatumType()}, bodyFonts);
-				addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Depths" : "Horizon"), ((feature.getStartDepth() != null) ? String.valueOf(feature.getStartDepth()) + " m" + ((feature.getFinishDepth() != null) ? " - " : null) : null)
-						+ ((feature.getFinishDepth() != null) ? feature.getFinishDepth() + " m" : null)}, bodyFonts);
-			}
+		if (isAllowedReadFeature && !featType.equals(FREDConstants.OUTCROP)) {
+			addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector"), ((feature.getPerson() != null) ? feature.getPerson().getName() : null)}, bodyFonts);
+			addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date"), ((feature.getStartDate() != null) ? FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding()) : null)}, bodyFonts);		
+			addCells(table, new String[] {"Completion Date", ((feature.getFinishDate() != null) ? FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding()) : null)}, bodyFonts);
+			if (featType.equals(FREDConstants.DRILLHOLE))
+				addCells(table, new String[] {"Licence Area", feature.getDrillholeLicenceName()}, bodyFonts);
+			addTable(table, new String[] {"Datum Type", feature.getDatumType(), null, "Datum Elevation", ((feature.getDatumElevation() != null) ? String.valueOf(feature.getDatumElevation()) + " m asl" : null)}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
+			//addCells(table, new String[] {"Datum Elevation/Type", ((feature.getDatumElevation() != null) ? String.valueOf(feature.getDatumElevation()) + " m asl" + ((feature.getDatumType() != null) ? " " : null) : null) + feature.getDatumType()}, bodyFonts);
+			addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Depths" : "Horizon"), ((feature.getStartDepth() != null) ? String.valueOf(feature.getStartDepth()) + " m" + ((feature.getFinishDepth() != null) ? " - " : null) : null)
+					+ ((feature.getFinishDepth() != null) ? feature.getFinishDepth() + " m" : null)}, bodyFonts);
 		}
 		document.add(table);		
 	}
@@ -308,7 +310,7 @@ public class FRFormServlet extends HttpServlet {
 				PdfPTable table = new PdfPTable(2);
 				table.setTotalWidth(175 * MM_TO_PT);
 				table.setLockedWidth(true);
-				table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
+				table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
 				table.setSpacingAfter(3 * MM_TO_PT);
 				
 				addCells(table, new String[] {"Sample", SampleUtil.getDrillHoleDepthDescription(sample)}, new Font[] {fonts[2], fonts[3]});
@@ -320,7 +322,7 @@ public class FRFormServlet extends HttpServlet {
 			PdfPTable table = new PdfPTable(2);
 			table.setTotalWidth(175 * MM_TO_PT);
 			table.setLockedWidth(true);
-			table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
+			table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
 			table.setSpacingAfter(3 * MM_TO_PT);
 			
 			addCell(table, "Collection Information", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
@@ -347,7 +349,7 @@ public class FRFormServlet extends HttpServlet {
 			table = new PdfPTable(2);
 			table.setTotalWidth(175 * MM_TO_PT);
 			table.setLockedWidth(true);
-			table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
+			table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
 			table.setSpacingAfter(3 * MM_TO_PT);
 			
 			addCell(table, "Stratigraphy", fonts[2], PdfPCell.ALIGN_LEFT, 2);
@@ -379,7 +381,7 @@ public class FRFormServlet extends HttpServlet {
 			table = new PdfPTable(2);
 			table.setTotalWidth(175 * MM_TO_PT);
 			table.setLockedWidth(true);
-			table.setWidths(new float[] {55 * MM_TO_PT, 120 * MM_TO_PT});
+			table.setWidths(new float[] {505 * MM_TO_PT, 125 * MM_TO_PT});
 			
 			addCell(table, "Sedimentary Features", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
 			addCells(table, new String[] {"Grain Size", SampleUtil.getGrainSizeDescription(sample)}, bodyFonts);
@@ -446,4 +448,17 @@ public class FRFormServlet extends HttpServlet {
 		}
 	}
 
+	private void addTable(PdfPTable table, String[] text, Font[] fonts, int colspan, float width, float[] colWidths) throws DocumentException {
+		PdfPTable insertTable = new PdfPTable(text.length);
+		insertTable.setTotalWidth(width);
+		insertTable.setLockedWidth(true);
+		insertTable.setWidths(colWidths);
+		for (int i = 0; i < text.length; i++)
+			addCell(insertTable, text[i], fonts[i]);
+		PdfPCell cell = new PdfPCell(insertTable);
+		cell.setBorder(PdfPCell.NO_BORDER);
+		cell.setColspan(colspan);
+		table.addCell(cell);
+	}
+	
 }
