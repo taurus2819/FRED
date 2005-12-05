@@ -397,35 +397,43 @@ public class FeatureUtil extends ModelUtil {
 		featureDAO.update(feature);
 	}	
 
-	public void mergeFeature(Feature feature, String parentFeatureID, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
-		if (!folder.isAllowedEditLocalities() || !isBacklogFeature(feature))
+	public void mergeFeatures(Feature mergeToFeature, String[] mergeFeatIDs, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+		if (!folder.isAllowedEditLocalities() || !isBacklogFeature(mergeToFeature))
 			throw new InsufficientPrivelegesException();
-		Feature parentFeature = getFeature(Integer.parseInt(parentFeatureID));
-		if (feature.getFeatureType().equals(FREDConstants.OUTCROP) || parentFeature.getFeatureType().equals(FREDConstants.OUTCROP))
-			throw new IllegalStateException("Cannot merge localities as one of both");
+		for (int i = 0; i < mergeFeatIDs.length; i++) {
+			if (!mergeFeatIDs.equals(String.valueOf(mergeToFeature.getFeatureId())))
+				mergeFeature(mergeToFeature, mergeFeatIDs[i], folder, user);
+		}
+	}
 		
-		FrNumber parentFRNumber = FeatureUtil.getFrNumber(parentFeature);
+		
+	public void mergeFeature(Feature mergeToFeature, String mergeFromFeatID, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException {
+		Feature mergeFromFeature = getFeature(Integer.parseInt(mergeFromFeatID));
+		if (mergeToFeature.getFeatureType().equals(FREDConstants.OUTCROP) || mergeFromFeature.getFeatureType().equals(FREDConstants.OUTCROP))
+			throw new IllegalStateException("Cannot merge outcrop localities");
+		
+		FrNumber mergeToFRNumber = FeatureUtil.getFrNumber(mergeToFeature);
 		//put in array as feature.getSamples() changes as you change sample's feature
-		Object[] samples = feature.getSamples().toArray();
+		Object[] samples = mergeFromFeature.getSamples().toArray();
 		
 		//move all samples from merge feature to parent feature
 		for (int i = 0; i < samples.length; i++) {
 			Sample sample = (Sample) samples[i];
 			//check audits - temp fix, should really handle this more cleanly
-			if (sample.getAudit().equals(feature.getAudit()))
+			if (sample.getAudit().equals(mergeFromFeature.getAudit()))
 				throw new IllegalStateException("Cannot merge localities as problem with sample audit trail");
 
 			//set sample FRNumber if currently null
 			if (sample.getFrNumber() == null)
-				sample.setFrNumber(parentFRNumber);
-			sample.setFeature(parentFeature);
+				sample.setFrNumber(mergeToFRNumber);
+			sample.setFeature(mergeToFeature);
 
 			//add comments
 			AuditEdit edit = featureDAO.createNewAuditEdit();
 			edit.setAudit(sample.getAudit());
 			edit.setEditedById(new Integer(user.getId()));
 			edit.setEditedDate(new Date());
-			edit.setComments("Sample merged into " + getFeatureName(parentFeature) + " from " + getFeatureName(feature));
+			edit.setComments("Sample merged into " + getFeatureName(mergeToFeature) + " from " + getFeatureName(mergeFromFeature));
 			featureDAO.save(edit);
 			
 			sampleDAO.update(sample);
@@ -433,7 +441,7 @@ public class FeatureUtil extends ModelUtil {
 		//featureDAO.update(parentFeature);
 		
 		//delete merge feature
-		deleteFeature(feature, user);
+		deleteFeature(mergeFromFeature, user);
 	}	
 	
 	public Feature getFeature(int featureId) throws StorageAccessException {
