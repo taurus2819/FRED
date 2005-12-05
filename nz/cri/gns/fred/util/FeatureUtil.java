@@ -400,7 +400,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		featureDAO.update(feature);
 	}	
 
-	public void mergeFeatures(Feature mergeToFeature, String[] mergeFeatIDs, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+	public void mergeFeatures(Feature mergeToFeature, String[] mergeFeatIDs, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, NumberFormatException, IntrospectionException {
 		if (!folder.isAllowedEditLocalities() || !isBacklogFeature(mergeToFeature))
 			throw new InsufficientPrivelegesException();
 		for (int i = 0; i < mergeFeatIDs.length; i++) {
@@ -410,7 +410,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 		
 		
-	public void mergeFeature(Feature mergeToFeature, String mergeFromFeatID, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException {
+	public void mergeFeature(Feature mergeToFeature, String mergeFromFeatID, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
 		Feature mergeFromFeature = getFeature(Integer.parseInt(mergeFromFeatID));
 		if (mergeToFeature.getFeatureType().equals(FREDConstants.OUTCROP) || mergeFromFeature.getFeatureType().equals(FREDConstants.OUTCROP))
 			throw new IllegalStateException("Cannot merge outcrop localities");
@@ -423,8 +423,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		for (int i = 0; i < samples.length; i++) {
 			Sample sample = (Sample) samples[i];
 			//check audits - temp fix, should really handle this more cleanly
-			if (sample.getAudit().equals(mergeFromFeature.getAudit()))
-				throw new IllegalStateException("Cannot merge localities as problem with sample audit trail");
+			if (sample.getAudit().equals(mergeFromFeature.getAudit())) {
+				System.out.println("Cloning auditID: " + sample.getAudit().getAuditId());
+				//throw new IllegalStateException("Cannot merge localities as problem with sample audit trail");
+				sample.setAudit(new AuditUtil(factory).cloneAudit(sample.getAudit()));
+				sampleDAO.update(sample);
+				System.out.println("New sample auditID: " + sample.getAudit().getAuditId());
+			}
 
 			//set sample FRNumber if currently null
 			if (sample.getFrNumber() == null)
