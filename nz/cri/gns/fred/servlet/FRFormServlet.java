@@ -175,27 +175,32 @@ public class FRFormServlet extends HttpServlet {
 		fonts[4] = FontFactory.getFont(FontFactory.HELVETICA, 16, Font.BOLD);
 		fonts[5] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
 		
-		PdfPTable table = new PdfPTable(2);
+		PdfPTable table = new PdfPTable(3);
 		table.setTotalWidth(bodyTableWidth);
 		table.setLockedWidth(true);
-		table.setWidths(new float[] {25 * MM_TO_PT, 150 * MM_TO_PT});
+		table.setWidths(new float[] {23 * MM_TO_PT, 17 * MM_TO_PT, 135 * MM_TO_PT});
 		table.setSpacingAfter(2 * MM_TO_PT);
 			
 		//Logo
-		String url = "http://" + JspUtils.getServerName(new PageState(request, response, getServletContext()))
-				+ "/fred/images/gsnz_logo_big.png";
-		Image image = Image.getInstance(new URL(url));
+		String baseURL = "http://" + JspUtils.getServerName(new PageState(request, response, getServletContext()))
+				+ "/fred/images/";
+		Image image = Image.getInstance(new URL(baseURL + "gsnz_logo_big.png"));
 		image.scaleToFit(20 * MM_TO_PT, 20 * MM_TO_PT);
-		
 		PdfPCell cell = new PdfPCell(image);
+		cell.setBorder(PdfPCell.NO_BORDER);
+		table.addCell(cell);
+		
+		image = Image.getInstance(new URL(baseURL + "gns_red_big.png"));
+		image.scaleToFit(12 * MM_TO_PT, 20 * MM_TO_PT);
+		cell = new PdfPCell(image);
 		cell.setBorder(PdfPCell.NO_BORDER);
 		table.addCell(cell);
 		
 		//Header Text
 		PdfPTable headerTable = new PdfPTable(3);
-		headerTable.setTotalWidth(150 * MM_TO_PT);
+		headerTable.setTotalWidth(125 * MM_TO_PT);
 		headerTable.setLockedWidth(true);
-		headerTable.setWidths(new float[] {5 * MM_TO_PT, 70 * MM_TO_PT, 75 * MM_TO_PT});
+		headerTable.setWidths(new float[] {5 * MM_TO_PT, 65 * MM_TO_PT, 65 * MM_TO_PT});
 	
 		FrNumber frNumber = FeatureUtil.getFrNumber(feature);
 		PDFUtil.addCells(headerTable, new String[] {null, "Fossil Record Form", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
@@ -205,9 +210,9 @@ public class FRFormServlet extends HttpServlet {
 		
 		//Masterfile text
 		PdfPTable mfTable = new PdfPTable(2);
-		mfTable.setTotalWidth(70 * MM_TO_PT);
+		mfTable.setTotalWidth(65 * MM_TO_PT);
 		mfTable.setLockedWidth(true);
-		mfTable.setWidths(new float[] {15 * MM_TO_PT, 55 * MM_TO_PT});
+		mfTable.setWidths(new float[] {15 * MM_TO_PT, 50 * MM_TO_PT});
 			
 		PDFUtil.addCells(mfTable, new String[] {"Masterfile", ((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : null)}, new Font[] {fonts[1], fonts[0]});
 		String app = ((feature.getAudit().getApprovedById() != null) ? FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue()) : "")
