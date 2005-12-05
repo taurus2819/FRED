@@ -116,7 +116,7 @@ public class FRFormServlet extends HttpServlet {
 	}
 		
 	private void makePDF(Sample[] samples, Feature[] features) throws DocumentException, IOException, NamingException, SQLException {
-		Document document = new Document(PageSize.A4, 20 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT);
+		Document document = new Document(PageSize.A4, 20 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT, 20 * MM_TO_PT);
 		PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
 		writer.setEncryption(true, null, null, PdfWriter.AllowPrinting | PdfWriter.AllowScreenReaders);
 		writer.setPageEvent(new EndPage());
@@ -125,8 +125,9 @@ public class FRFormServlet extends HttpServlet {
 		Font[] fonts = new Font[4];
 		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.NORMAL);
 		fonts[1] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
-		fonts[1].setColor(110, 110, 110);
+		fonts[1].setColor(40, 22, 111);
 		fonts[2] = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD);
+		fonts[2].setColor(40, 22, 111);
 		fonts[3] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
 		
 		if (samples != null) {
@@ -198,7 +199,7 @@ public class FRFormServlet extends HttpServlet {
 		
 		//Header Text
 		PdfPTable headerTable = new PdfPTable(3);
-		headerTable.setTotalWidth(125 * MM_TO_PT);
+		headerTable.setTotalWidth(135 * MM_TO_PT);
 		headerTable.setLockedWidth(true);
 		headerTable.setWidths(new float[] {5 * MM_TO_PT, 65 * MM_TO_PT, 65 * MM_TO_PT});
 	
@@ -280,7 +281,7 @@ public class FRFormServlet extends HttpServlet {
 			PDFUtil.addCells(table, new String[] {"Converted Dec. Lat/Long", ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"}, bodyFonts);
 		}
 		PDFUtil.addCells(table, new Object[] {"Map Year", feature.getMapYear()}, bodyFonts);
-		PDFUtil.addTable(table, new String[] {"Method", ((sr != null) ? FREDUtil.getSiteMethod(sr) : null), null, "Accuracy", ((sr != null && !sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(sr.getAccuracy()) : null)}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
+		PDFUtil.addTable(table, new String[] {"Method", ((sr != null) ? FREDUtil.getSiteMethod(sr) : null), null, "Accuracy", ((sr != null && !sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(sr.getAccuracy()) + " m" : null)}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
 		if (isAllowedReadFeature)
 			PDFUtil.addCells(table, new String[] {"Locality", feature.getLocality()}, bodyFonts);
 		PDFUtil.addCells(table, new String[] {"Country", ((sr != null) ? FREDUtil.getSiteCountry(sr) : null)}, bodyFonts);
