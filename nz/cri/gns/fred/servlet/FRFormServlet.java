@@ -119,6 +119,7 @@ public class FRFormServlet extends HttpServlet {
 		Document document = new Document(PageSize.A4, 20 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT);
 		PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
 		writer.setEncryption(true, null, null, PdfWriter.AllowPrinting | PdfWriter.AllowScreenReaders);
+		writer.setPageEvent(new EndPage());
 		document.open();
 		
 		Font[] fonts = new Font[4];
