@@ -29,7 +29,7 @@ public class EndPage extends PdfPageEventHelper {
 		cb.saveState();
 		cb.setRGBColorStroke(110, 110, 110);
 		cb.setLineWidth(2);
-		cb.rectangle(15 * MM_TO_PT, 10 * MM_TO_PT, 185 * MM_TO_PT, 272 * MM_TO_PT);
+		cb.rectangle(15 * MM_TO_PT, 15 * MM_TO_PT, 185 * MM_TO_PT, 272 * MM_TO_PT);
 		cb.stroke();
 		cb.restoreState();
     }
