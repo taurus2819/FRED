@@ -13,6 +13,7 @@ public interface DAOFactory {
 	public RecordDAO getRecordDAO();
 	public PersonDAO getPersonDAO();
     public TaxonomicDAO getTaxonomicDAO();
+    public AuditDAO getAuditDAO();
 	
 	/**
 	 * Closes the current session for this thread

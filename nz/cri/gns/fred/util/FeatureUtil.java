@@ -46,7 +46,7 @@ import nz.cri.gns.fred.model.UserFolder;
 /**
  *
  */
-public class FeatureUtil extends ModelUtil {
+public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
 	private FeatureDAO featureDAO;
 	private SampleDAO sampleDAO;
@@ -371,20 +371,23 @@ public class FeatureUtil extends ModelUtil {
 			feature.setStartDate(null);
 			feature.setStartDateRounding(null);
 			feature.setStartDepth(null);
-			for (Iterator i = samples.iterator(); i.hasNext(); ) {
-				Sample sample = (Sample) i.next();
+			for (Sample sample : samples) {
+				sample.setAudit(feature.getAudit());
 				sample.setBottomDepth(null);
 				sample.setTopDepth(null);
 				sample.setDrillType(null);
 				sampleDAO.update(sample);
 			}
+		} else if (newFeatureType.equals(FREDConstants.DRILLHOLE)) {
+			for (Sample sample : samples) {
+				
+			}
 		} else if (newFeatureType.equals(FREDConstants.VERTICAL_SECTION)) {
 			feature.setDrillholeLicenceName(null);
-			for (Iterator i = samples.iterator(); i.hasNext(); ) {
-				Sample sample = (Sample) i.next();
+			for (Sample sample : samples) {
 				sample.setDrillType(null);
 				sampleDAO.update(sample);
-			}			
+			}
 		}
 		AuditEdit edit = featureDAO.createNewAuditEdit();
 		edit.setAudit(feature.getAudit());

@@ -9,6 +9,7 @@ import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.type.IntegerType;
 import net.sf.hibernate.type.StringType;
+import nz.cri.gns.fred.dao.AuditDAO;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.dao.FolderDAO;
@@ -67,7 +68,7 @@ import nz.cri.gns.fred.model.Weathering;
 /**
  * @author iainm
  */
-public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO {
+public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO, AuditDAO {
 
 	private HibernateProvider provider;
 
@@ -840,6 +841,10 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 
 	public void update(nz.cri.gns.fred.model.FolderUser user) throws StorageAccessException {
 		update((Object)user);
+	}
+	
+	public AuditDAO getAuditDAO() {
+		return this;
 	}
 
 }
