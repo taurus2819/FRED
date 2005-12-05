@@ -45,19 +45,22 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
    		System.out.println("Cloned audit comparison. Old ID = " + audit.getAuditId() + ", new ID = " + newAudit.getAuditId());
    		System.out.println("Cloned audit comparison. Old Created_By_ID = " + audit.getCreatedById() + ", new Created_By_ID = " + newAudit.getCreatedById());
    		
-    		//Copy the audit edits
-   /* 		Set<AuditEdit> auditEdits = audit.getAuditEdits();
-    		if (auditEdits != null && auditEdits.size() > 0) {
-    			HashSet<AuditEdit> newAuditEdits = new HashSet<AuditEdit>();
-    			for (AuditEdit auditEdit : auditEdits) {
-    				AuditEdit newAuditEdit = auditDAO.createNewAuditEdit();
-    				FREDUtil.beanCopy(auditEdit, newAuditEdit, new FREDUtil.ExcludeByName(FREDUtil.toVector(new String[] {"auditEditId", "audit"})));
-    				newAuditEdit.setAudit(newAudit);
-    				newAuditEdits.add(newAuditEdit);
-    			}
-    			newAudit.setAuditEdits(newAuditEdits);
-    		} */
-    		return newAudit;
+    	//Copy the audit edits
+    	Set<AuditEdit> auditEdits = audit.getAuditEdits();
+    	if (auditEdits != null && auditEdits.size() > 0) {
+    		HashSet<AuditEdit> newAuditEdits = new HashSet<AuditEdit>();
+    		for (AuditEdit auditEdit : auditEdits) {
+    			AuditEdit newAuditEdit = auditDAO.createNewAuditEdit();
+    			FREDUtil.beanCopy(auditEdit, newAuditEdit, new FREDUtil.ExcludeByName(FREDUtil.toVector(new String[] {"auditEditId", "audit"})));
+    			newAuditEdit.setAudit(newAudit);
+    			newAuditEdits.add(newAuditEdit);
+    		}
+    		newAudit.setAuditEdits(newAuditEdits);
+    	}
+    	
+    	System.out.println("Cloned audit comparison. AuditEdit count = " + ((audit.getAuditEdits() != null) ? audit.getAuditEdits().size() : 0) + ", new AuditEdit count = " + ((newAudit.getAuditEdits() != null) ? newAudit.getAuditEdits().size() : 0));
+    	
+    	return newAudit;
     }
     
 }
