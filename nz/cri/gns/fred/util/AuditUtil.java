@@ -53,8 +53,8 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
     			FREDUtil.beanCopy(auditEdit, newAuditEdit, new FREDUtil.ExcludeByName(FREDUtil.toVector(new String[] {"auditEditId", "audit"})));
     			newAuditEdit.setAudit(newAudit);
     			//newAuditEdits.add(newAuditEdit);
-    			System.out.println("AuditEdit comparison. AE.Audit_ID: " + ((auditEdit.getAudit() != null) ? auditEdit.getAudit().getAuditId() : -1));
-    			System.out.println("new AE.Audit_ID = " + ((newAuditEdit.getAudit() != null) ? newAuditEdit.getAudit().getAuditId() : -1));
+    			//System.out.println("AuditEdit comparison. AE.Audit_ID: " + ((auditEdit.getAudit() != null) ? auditEdit.getAudit().getAuditId() : -1));
+    			//System.out.println("new AE.Audit_ID = " + ((newAuditEdit.getAudit() != null) ? newAuditEdit.getAudit().getAuditId() : -1));
     			System.out.println("AuditEdit comparison. AE.Comments: " + auditEdit.getComments() + ", new AE.Comments = " + newAuditEdit.getComments());
     			
     			//auditDAO.save(newAuditEdit);
