@@ -64,6 +64,12 @@ public class FRFormServlet extends HttpServlet {
 	
 	private static final float MM_TO_PT = 2.8346f;
 	
+	private static final float bodyTableWidth = 175 * MM_TO_PT;
+	private static final float[] bodyTableColWidths = new float[] {45 * MM_TO_PT, 130 * MM_TO_PT};
+	private static final float insertTableWidth = 175 * MM_TO_PT;
+	private static final float[] insertTableColWidths = new float[] {45 * MM_TO_PT, 38 * MM_TO_PT, 9 * MM_TO_PT, 45 * MM_TO_PT, 38 * MM_TO_PT};
+
+	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
 			this.request = request;
@@ -169,7 +175,7 @@ public class FRFormServlet extends HttpServlet {
 		fonts[5] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
 		
 		PdfPTable table = new PdfPTable(2);
-		table.setTotalWidth(175 * MM_TO_PT);
+		table.setTotalWidth(bodyTableWidth);
 		table.setLockedWidth(true);
 		table.setWidths(new float[] {25 * MM_TO_PT, 150 * MM_TO_PT});
 		table.setSpacingAfter(2 * MM_TO_PT);
@@ -227,14 +233,12 @@ public class FRFormServlet extends HttpServlet {
 		boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
 		Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
 		Font[] insertBodyFonts = new Font[] {fonts[1], fonts[0], fonts[0], fonts[1], fonts[0]};
-		float insertTableWidth = 175 * MM_TO_PT;
-		float[] insertTableColWidths = new float[] {50 * MM_TO_PT, 30 * MM_TO_PT, 15 * MM_TO_PT, 50 * MM_TO_PT, 30 * MM_TO_PT};
 		
 		//Location Information
 		PdfPTable table = new PdfPTable(2);
-		table.setTotalWidth(175 * MM_TO_PT);
+		table.setTotalWidth(bodyTableWidth);
 		table.setLockedWidth(true);
-		table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
+		table.setWidths(bodyTableColWidths);
 		table.setSpacingAfter(3 * MM_TO_PT);
 		
 		addCell(table, "Location Information", fonts[2], PdfPCell.ALIGN_LEFT, 2);
@@ -267,7 +271,7 @@ public class FRFormServlet extends HttpServlet {
 		if (feature.getSiteId() != null) {
 			sr = FREDUtil.getSite(feature);
 			LatLong ll = sr.getLatLong();
-			addCells(table, new String[] {"Converted Decimal Lat/Long", ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"}, bodyFonts);
+			addCells(table, new String[] {"Converted Dec. Lat/Long", ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"}, bodyFonts);
 		}
 		addCells(table, new Object[] {"Map Year", feature.getMapYear()}, bodyFonts);
 		addTable(table, new String[] {"Method", ((sr != null) ? FREDUtil.getSiteMethod(sr) : null), null, "Accuracy", ((sr != null && !sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(sr.getAccuracy()) : null)}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
@@ -307,17 +311,15 @@ public class FRFormServlet extends HttpServlet {
 		boolean isAllowedReadSample = sampleUtil.isAllowedReadSample(user, sample);
 		Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
 		Font[] insertBodyFonts = new Font[] {fonts[1], fonts[0], fonts[0], fonts[1], fonts[0]};
-		float insertTableWidth = 175 * MM_TO_PT;
-		float[] insertTableColWidths = new float[] {50 * MM_TO_PT, 30 * MM_TO_PT, 15 * MM_TO_PT, 50 * MM_TO_PT, 30 * MM_TO_PT};
 		
 		if (isAllowedReadSample) {
 			
 			//if not OUTCROP then add sample depth data
 			if (!sample.getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
 				PdfPTable table = new PdfPTable(2);
-				table.setTotalWidth(175 * MM_TO_PT);
+				table.setTotalWidth(bodyTableWidth);
 				table.setLockedWidth(true);
-				table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
+				table.setWidths(bodyTableColWidths);
 				table.setSpacingAfter(3 * MM_TO_PT);
 				addCells(table, new String[] {"Sample", SampleUtil.getDrillHoleDepthDescription(sample)}, new Font[] {fonts[2], fonts[3]});
 				document.add(table);
@@ -325,9 +327,9 @@ public class FRFormServlet extends HttpServlet {
 			
 			//Collection Information
 			PdfPTable table = new PdfPTable(2);
-			table.setTotalWidth(175 * MM_TO_PT);
+			table.setTotalWidth(bodyTableWidth);
 			table.setLockedWidth(true);
-			table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
+			table.setWidths(bodyTableColWidths);
 			table.setSpacingAfter(3 * MM_TO_PT);
 			
 			addCell(table, "Collection Information", fonts[2], PdfPCell.ALIGN_LEFT, 2);
@@ -352,12 +354,12 @@ public class FRFormServlet extends HttpServlet {
 			
 			//Stratigraphy
 			table = new PdfPTable(2);
-			table.setTotalWidth(175 * MM_TO_PT);
+			table.setTotalWidth(bodyTableWidth);
 			table.setLockedWidth(true);
-			table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
+			table.setWidths(bodyTableColWidths);
 			table.setSpacingAfter(3 * MM_TO_PT);
 			
-			addCell(table, "Collection Information", fonts[2], PdfPCell.ALIGN_LEFT, 2);
+			addCell(table, "Stratigraphy", fonts[2], PdfPCell.ALIGN_LEFT, 2);
 			
 			addTable(table, new String[] {"Inferred Stage",
 					((sample.getInferredStage() != null) ? StageUtil.getStageDescription(sample.getInferredStage()) : null),
@@ -378,7 +380,7 @@ public class FRFormServlet extends HttpServlet {
 			relationshipStr = new String[relationships.length];
 			for (int i = 0; i < relationships.length; i++)
 				relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
-			addRepeatingCells(table, "Stratigraphic Relationships", relationshipStr, bodyFonts, true);			
+			addRepeatingCells(table, "Strat. Relationships", relationshipStr, bodyFonts, true);			
 			addCells(table, new String[] {"Column/Map", sample.getColumnMap()}, bodyFonts);
 			addTable(table, new Object[] {"Dip", sample.getDip(), null, "Dip Direction", sample.getDipDirection()}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
 			addTable(table, new Object[] {"Strike", sample.getStrike(), null, "Facing", sample.getFacing()}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
@@ -387,9 +389,9 @@ public class FRFormServlet extends HttpServlet {
 
 			//Sedimentary Features
 			table = new PdfPTable(2);
-			table.setTotalWidth(175 * MM_TO_PT);
+			table.setTotalWidth(bodyTableWidth);
 			table.setLockedWidth(true);
-			table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
+			table.setWidths(bodyTableColWidths);
 			
 			addCell(table, "Sedimentary Features", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
 			addCells(table, new String[] {"Grain Size", SampleUtil.getGrainSizeDescription(sample)}, bodyFonts);
