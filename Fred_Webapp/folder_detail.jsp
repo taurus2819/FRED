@@ -99,16 +99,13 @@
 					}
 				} else if (request.getParameter("FeatIDs") != null) {
 					if (actionType.equals("PrintFeatures")) {
-						System.out.println("Preparing to print");
 						String[] featIDs = request.getParameterValues("FeatIDs");
 						StringBuffer queryStr = new StringBuffer();
 						for (int i = 0; i < featIDs.length; i++) {
-							System.out.println("Received FeatID: " + featIDs[i]);
 							queryStr.append("FeatIDs=").append(featIDs[i]);
 							if (i < featIDs.length - 1)
 								queryStr.append("&");
 						}
-						System.out.println("Generated PDF queryString: " + queryStr);
 						response.sendRedirect("frf/frf.pdf?" + queryStr.toString());
 						return;
 					}
