@@ -47,13 +47,14 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
     	//Copy the audit edits
     	Set<AuditEdit> auditEdits = audit.getAuditEdits();
     	if (auditEdits != null && auditEdits.size() > 0) {
-    		Set<AuditEdit> newAuditEdits = new HashSet<AuditEdit>();
+    		//Set<AuditEdit> newAuditEdits = new HashSet<AuditEdit>();
     		for (AuditEdit auditEdit : auditEdits) {
     			AuditEdit newAuditEdit = auditDAO.createNewAuditEdit();
     			FREDUtil.beanCopy(auditEdit, newAuditEdit, new FREDUtil.ExcludeByName(FREDUtil.toVector(new String[] {"auditEditId", "audit"})));
     			newAuditEdit.setAudit(newAudit);
-    			newAuditEdits.add(newAuditEdit);
-    			System.out.println("AuditEdit comparison. AE.Audit_ID: " + auditEdit.getAudit().getAuditId() + ", new AE.Audit_ID = " + ((newAuditEdit.getAudit() != null) ? newAuditEdit.getAudit().getAuditId() : -1));
+    			//newAuditEdits.add(newAuditEdit);
+    			System.out.println("AuditEdit comparison. AE.Audit_ID: " + ((auditEdit.getAudit() != null) ? auditEdit.getAudit().getAuditId() : -1));
+    			System.out.println("new AE.Audit_ID = " + ((newAuditEdit.getAudit() != null) ? newAuditEdit.getAudit().getAuditId() : -1));
     			System.out.println("AuditEdit comparison. AE.Comments: " + auditEdit.getComments() + ", new AE.Comments = " + newAuditEdit.getComments());
     			
     			//auditDAO.save(newAuditEdit);
