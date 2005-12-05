@@ -277,14 +277,19 @@ public class FRFormServlet extends HttpServlet {
 		addCells(table, new String[] {"Country", ((sr != null) ? FREDUtil.getSiteCountry(sr) : null)}, bodyFonts);
 		if (isAllowedReadFeature && !featType.equals(FREDConstants.OUTCROP)) {
 			addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector"), ((feature.getPerson() != null) ? feature.getPerson().getName() : null)}, bodyFonts);
-			addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date"), ((feature.getStartDate() != null) ? FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding()) : null)}, bodyFonts);		
-			addCells(table, new String[] {"Completion Date", ((feature.getFinishDate() != null) ? FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding()) : null)}, bodyFonts);
+			addTable(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date"),
+					((feature.getStartDate() != null) ? FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding()) : null),
+					null, "Completion Date",
+					((feature.getFinishDate() != null) ? FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding()) : null)},
+					insertBodyFonts, 2, insertTableWidth, insertTableColWidths);		
 			if (featType.equals(FREDConstants.DRILLHOLE))
 				addCells(table, new String[] {"Licence Area", feature.getDrillholeLicenceName()}, bodyFonts);
 			addTable(table, new String[] {"Datum Type", feature.getDatumType(), null, "Datum Elevation", ((feature.getDatumElevation() != null) ? String.valueOf(feature.getDatumElevation()) + " m asl" : null)}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
-			//addCells(table, new String[] {"Datum Elevation/Type", ((feature.getDatumElevation() != null) ? String.valueOf(feature.getDatumElevation()) + " m asl" + ((feature.getDatumType() != null) ? " " : null) : null) + feature.getDatumType()}, bodyFonts);
-			addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Depths" : "Horizon"), ((feature.getStartDepth() != null) ? String.valueOf(feature.getStartDepth()) + " m" + ((feature.getFinishDepth() != null) ? " - " : null) : null)
-					+ ((feature.getFinishDepth() != null) ? feature.getFinishDepth() + " m" : null)}, bodyFonts);
+			addTable(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon"),
+					((feature.getStartDepth() != null) ? String.valueOf(feature.getStartDepth()) + " m" : null), null,
+					((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon"),
+					((feature.getFinishDepth() != null) ? String.valueOf(feature.getFinishDepth()) + " m" : null)},
+					insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
 		}
 		document.add(table);		
 	}
@@ -302,6 +307,9 @@ public class FRFormServlet extends HttpServlet {
 	private void writeSample(Sample sample, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, StorageAccessException {
 		boolean isAllowedReadSample = sampleUtil.isAllowedReadSample(user, sample);
 		Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
+		Font[] insertBodyFonts = new Font[] {fonts[1], fonts[0], fonts[0], fonts[1], fonts[0]};
+		float insertTableWidth = 175 * MM_TO_PT;
+		float[] insertTableColWidths = new float[] {50 * MM_TO_PT, 30 * MM_TO_PT, 15 * MM_TO_PT, 50 * MM_TO_PT, 30 * MM_TO_PT};
 		
 		if (isAllowedReadSample) {
 			
@@ -312,9 +320,7 @@ public class FRFormServlet extends HttpServlet {
 				table.setLockedWidth(true);
 				table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
 				table.setSpacingAfter(3 * MM_TO_PT);
-				
 				addCells(table, new String[] {"Sample", SampleUtil.getDrillHoleDepthDescription(sample)}, new Font[] {fonts[2], fonts[3]});
-				
 				document.add(table);
 			}
 			
@@ -352,10 +358,11 @@ public class FRFormServlet extends HttpServlet {
 			table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
 			table.setSpacingAfter(3 * MM_TO_PT);
 			
-			addCell(table, "Stratigraphy", fonts[2], PdfPCell.ALIGN_LEFT, 2);
-			String infStage = ((sample.getInferredStage() != null) ? StageUtil.getStageDescription(sample.getInferredStage()) : "");
-			String knwStage = ((sample.getKnownStage() != null) ? StageUtil.getStageDescription(sample.getKnownStage()) : "");
-			addCells(table, new String[] {"Stages", "Inferred: " + infStage + "    Known: " + knwStage}, bodyFonts);
+			addTable(table, new String[] {"Inferred Stage",
+					((sample.getInferredStage() != null) ? StageUtil.getStageDescription(sample.getInferredStage()) : null),
+					"", "Known Stage",
+					((sample.getKnownStage() != null) ? StageUtil.getStageDescription(sample.getKnownStage()) : null)},
+					insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
 			Object[] relationships = sampleUtil.getRelationships(sample, "Sample", "nearby").toArray();
 			String[] relationshipStr = new String[relationships.length];
 			for (int i = 0; i < relationships.length; i++)
@@ -372,8 +379,8 @@ public class FRFormServlet extends HttpServlet {
 				relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
 			addRepeatingCells(table, "Stratigraphic Relationships", relationshipStr, bodyFonts, true);			
 			addCells(table, new String[] {"Column/Map", sample.getColumnMap()}, bodyFonts);
-			addCells(table, new String[] {"Dip/Dip Direction", ((sample.getDip() != null) ? String.valueOf(sample.getDip()) + ((sample.getDipDirection() != null) ? "/" : null) : null) + sample.getDipDirection()}, bodyFonts);
-			addCells(table, new String[] {"Strike/Facing", ((sample.getStrike() != null) ? String.valueOf(sample.getStrike()) + ((sample.getFacing() != null) ? "/" : null) : null) + sample.getFacing()}, bodyFonts);
+			addTable(table, new Object[] {"Dip", sample.getDip(), null, "Dip Direction", sample.getDipDirection()}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
+			addTable(table, new Object[] {"Strike", sample.getStrike(), null, "Facing", sample.getFacing()}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
 		
 			document.add(table);
 
@@ -381,16 +388,13 @@ public class FRFormServlet extends HttpServlet {
 			table = new PdfPTable(2);
 			table.setTotalWidth(175 * MM_TO_PT);
 			table.setLockedWidth(true);
-			table.setWidths(new float[] {505 * MM_TO_PT, 125 * MM_TO_PT});
+			table.setWidths(new float[] {50 * MM_TO_PT, 125 * MM_TO_PT});
 			
 			addCell(table, "Sedimentary Features", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
 			addCells(table, new String[] {"Grain Size", SampleUtil.getGrainSizeDescription(sample)}, bodyFonts);
-			addCells(table, new String[] {"Bedding Thickness", ((sample.getBedThickness() != null) ? sample.getBedThickness().getName() : null)}, bodyFonts);
-			addCells(table, new String[] {"Bedding Features", SampleUtil.getBeddingDescription(sample)}, bodyFonts);
-			addCells(table, new String[] {"Weathering", ((sample.getWeathering() != null) ? sample.getWeathering().getName() : null)}, bodyFonts);
-			addCells(table, new String[] {"Hardness", ((sample.getHardness() != null) ? sample.getHardness().getName() : null)}, bodyFonts);
-			addCells(table, new String[] {"Carbonate", ((sample.getCarbonate() != null) ? sample.getCarbonate().getName() : null)}, bodyFonts);
-			addCells(table, new String[] {"Colour", SampleUtil.getColourDescription(sample)}, bodyFonts);
+			addTable(table, new String[] {"Bedding Thickness", ((sample.getBedThickness() != null) ? sample.getBedThickness().getName() : null), null, "Bedding Features", SampleUtil.getBeddingDescription(sample)}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
+			addTable(table, new String[] {"Weathering", ((sample.getWeathering() != null) ? sample.getWeathering().getName() : null), null, "Hardness", ((sample.getHardness() != null) ? sample.getHardness().getName() : null)}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
+			addTable(table, new String[] {"Carbonate", ((sample.getCarbonate() != null) ? sample.getCarbonate().getName() : null), null, "Colour", SampleUtil.getColourDescription(sample)}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
 			Object[] sedFeatures = sample.getSedimentaryFeatures().toArray();
 			String[] sedFeaturesStr = new String[sedFeatures.length];
 			for (int i = 0; i < sedFeatures.length; i++)
@@ -428,12 +432,12 @@ public class FRFormServlet extends HttpServlet {
 			addCell(table, text[i], fonts[i], align[i], 1);
 	}
 	
-	private void addRepeatingCells(PdfPTable table, String heading, String[] text, Font[] fonts, boolean newLines) {
+	private void addRepeatingCells(PdfPTable table, String heading, Object[] text, Font[] fonts, boolean newLines) {
 		if (text.length > 0) {
 			if (newLines) {
-				addCells(table, new String[] {heading, text[0]}, fonts);
+				addCells(table, new Object[] {heading, text[0]}, fonts);
 				for (int i = 1; i < text.length; i++)
-					addCells(table, new String[] {null, text[i]}, fonts);
+					addCells(table, new Object[] {null, text[i]}, fonts);
 			} else {
 				StringBuffer textLine = new StringBuffer();
 				for (int i = 0; i < text.length; i++) {
@@ -448,7 +452,7 @@ public class FRFormServlet extends HttpServlet {
 		}
 	}
 
-	private void addTable(PdfPTable table, String[] text, Font[] fonts, int colspan, float width, float[] colWidths) throws DocumentException {
+	private void addTable(PdfPTable table, Object[] text, Font[] fonts, int colspan, float width, float[] colWidths) throws DocumentException {
 		PdfPTable insertTable = new PdfPTable(text.length);
 		insertTable.setTotalWidth(width);
 		insertTable.setLockedWidth(true);
