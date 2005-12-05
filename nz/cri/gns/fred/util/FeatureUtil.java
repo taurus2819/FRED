@@ -426,7 +426,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			if (sample.getAudit().equals(mergeFromFeature.getAudit())) {
 				System.out.println("Cloning auditID: " + sample.getAudit().getAuditId());
 				//throw new IllegalStateException("Cannot merge localities as problem with sample audit trail");
-				sample.setAudit(new AuditUtil(factory).cloneAudit(sample.getAudit()));
+				Audit newAudit = new AuditUtil(factory).cloneAudit(sample.getAudit());
+				featureDAO.save(newAudit);
+				System.out.println("New Audit saved - ID: " + newAudit.getAuditId());
+				sample.setAudit(newAudit);
 				sampleDAO.update(sample);
 				System.out.println("New sample auditID: " + sample.getAudit().getAuditId());
 			}
