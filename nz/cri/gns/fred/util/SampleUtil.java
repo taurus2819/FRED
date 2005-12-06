@@ -209,10 +209,11 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			return null;
 		
 		Sample aboveSample = null;
-		double sampleTop = sample.getTopDepth();
+		double sampleTop = sample.getTopDepth().doubleValue();
 		double testTop = 0;
 		for (Sample testSample : samples) {
-			if (!sample.equals(testSample) && testSample.getTopDepth() > testTop && testSample.getTopDepth() <= sampleTop)
+			if (!sample.equals(testSample) && testSample.getTopDepth() != null
+					&& testSample.getTopDepth().doubleValue() > testTop && testSample.getTopDepth().doubleValue() <= sampleTop)
 			aboveSample = testSample;
 		}
 		return aboveSample;
@@ -227,10 +228,11 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			return null;
 		
 		Sample belowSample = null;
-		double sampleTop = sample.getTopDepth();
-		double testTop = 0;
+		double sampleTop = sample.getTopDepth().doubleValue();
+		double testTop = 9999999; //very big number
 		for (Sample testSample : samples) {
-			if (!sample.equals(testSample) && testSample.getTopDepth() < testTop && testSample.getTopDepth() >= sampleTop)
+			if (!sample.equals(testSample) && testSample.getTopDepth() != null
+					&& testSample.getTopDepth().doubleValue() < testTop && testSample.getTopDepth().doubleValue() >= sampleTop)
 			belowSample = testSample;
 		}
 		return belowSample;
