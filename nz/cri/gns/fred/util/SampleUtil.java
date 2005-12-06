@@ -1,6 +1,9 @@
 package nz.cri.gns.fred.util;
 
+import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -12,6 +15,7 @@ import javax.naming.NamingException;
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
+import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
@@ -42,6 +46,8 @@ import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.model.Weathering;
+import nz.cri.gns.intranet.DBConnection;
+import nz.cri.gns.jsp.PageState;
 
 /**
  *
@@ -153,6 +159,13 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	private SampleDAO sampleDAO;
 	private FolderDAO folderDAO;
 
+	
+	public SampleUtil(DAOFactory factory) {
+		super(factory);
+		this.sampleDAO = factory.getSampleDAO();
+		this.folderDAO = factory.getFolderDAO();
+	}	
+	
 	/**
 	 * Implements
 	 * 	DECODE(F.Feature_Type, 'Outcrop', NULL, DECODE(S.Top_Depth || S.Bottom_Depth || L2.Name, NULL, 'Depth Not Specified',
@@ -169,7 +182,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (feature.getFeatureType().equals(OUTCROP))
 			return null;
 		
-		if (sample.getTopDepth() == null && sample.getBottomDepth() == null && sample.getDrillType() == null)
+		if (!hasDepthInformation(sample))
 			return DEPTH_NOT_SPECIFIED;
 		
 		String desc = (sample.getTopDepth() != null) ? sample.getTopDepth() + "m" : "";
@@ -187,17 +200,46 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return sample.getTopDepth() != null || sample.getBottomDepth() != null || sample.getDrillType() != null;
 	}
 	
-	public SampleUtil(DAOFactory factory) {
-		super(factory);
-		this.sampleDAO = factory.getSampleDAO();
-		this.folderDAO = factory.getFolderDAO();
+	/**
+	 * Returns the Sample immediately above the given Sample in a drillhole or vertical section
+	 */
+	public static Sample getSampleAbove(Sample sample) {
+		Set<Sample> samples = sample.getFeature().getSamples();
+		if (samples == null || samples.size() == 1)
+			return null;
+		
+		Sample aboveSample = null;
+		double sampleTop = sample.getTopDepth();
+		double testTop = 0;
+		for (Sample testSample : samples) {
+			if (!sample.equals(testSample) && testSample.getTopDepth() > testTop && testSample.getTopDepth() <= sampleTop)
+			aboveSample = testSample;
+		}
+		return aboveSample;
+	}
+
+	/**
+	 * Returns the Sample immediately below the given Sample in a drillhole or vertical section
+	 */
+	public static Sample getSampleBelow(Sample sample) {
+		Set<Sample> samples = sample.getFeature().getSamples();
+		if (samples == null || samples.size() == 1)
+			return null;
+		
+		Sample belowSample = null;
+		double sampleTop = sample.getTopDepth();
+		double testTop = 0;
+		for (Sample testSample : samples) {
+			if (!sample.equals(testSample) && testSample.getTopDepth() < testTop && testSample.getTopDepth() >= sampleTop)
+			belowSample = testSample;
+		}
+		return belowSample;
 	}
 	
 	/**
 	 * @throws DataInputException 
 	 *  
 	 */
-	
 	public void deleteSample(int sampleId, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
 		Sample sample = sampleDAO.getSample(sampleId);
 		
@@ -261,11 +303,14 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			return true;
 		
 		//now check sample
-		String status = sample.getAudit().getStatus();
-		if (!status.equals(FREDConstants.APPROVED)) {
+		if (!sample.getAudit().getStatus().equals(FREDConstants.APPROVED)) {
 			UserFolder folder = new FolderUtil(factory).getUserFolder(sample.getAudit().getFolder().getFolderId().intValue(), user);
 			return (folder != null && folder.isAllowedReadLocalities());
 		}
+		
+		/**
+		 * @TODO last stage is to check sample security code assume OK for moment
+		 */
 		return true;
 	}	
 	
