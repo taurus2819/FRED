@@ -528,6 +528,20 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return true;
 	}
 	
+	/**
+	 * Returns true if a user is allowed to view the locality site information
+	 */
+	public boolean isAllowedReadFeatureSite(UserAccount user, Feature feature) throws StorageAccessException {
+		String status = feature.getAudit().getStatus();
+		if (!status.equals(FREDConstants.APPROVED)) {
+			if (user == null)
+				return false;
+			UserFolder folder = new FolderUtil(factory).getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), user);
+			return (folder != null && folder.isAllowedReadLocalities());
+		}
+		return true;
+	}
+	
 	public boolean isAllowedEditFeature(UserAccount user, Feature feature, UserFolder folder) throws StorageAccessException {
 		String status = feature.getAudit().getStatus();
 		if (status.equals(FREDConstants.APPROVED))
