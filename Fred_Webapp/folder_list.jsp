@@ -117,22 +117,27 @@ alert("<%=error%>");<%
 			%><tr><td style="text-align: left"><a href="folder_detail.jsp?ID=<%=folder.getFolder().getFolderId()%>" class="heading"><%=folder.getFolder().getName()%></a>&nbsp;&nbsp;</td><td style="text-align: left"><%=FREDUtil.getUserName(folder.getFolder().getOwnerId().intValue())%>&nbsp;&nbsp;</td><td style="text-align: left">
 <%
 			if (folder.isAllowedAdmin()) {
-				%><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a>&nbsp;&nbsp;&nbsp;<a href="javascript:if (confirm('Are you sure you want to delete this folder') == true) {document.PersForm.FoldID.value='<%=folder.getFolder().getFolderId()%>';document.PersForm.submit();}" title="Delete Folder"><img src="images/delete.gif" border="0" height="20" width="20" /></a>
-<img src="images/blank.gif" width="1" height="20" /><%
+				%><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a>&nbsp;&nbsp;&nbsp;<%
+				//if (FolderUtil.isFolderEmpty(folder.getFolder())) {
+				if (folder.getFolder().getFeatures() == null && folder.getFolder().getAudits() == null) {
+					%><a href="javascript:if (confirm('Are you sure you want to delete this folder') == true) {document.PersForm.FoldID.value='<%=folder.getFolder().getFolderId()%>';document.PersForm.submit();}" title="Delete Folder"><img src="images/delete.gif" border="0" height="20" width="20" /></a><%
+				}
+			} else {
+				%><img src="images/blank.gif" height="20" width="1" alt="" /><%
 			}
-			%></td></tr>
-<%
+			%></td></tr><%
 		}
 		%>
 <input type="hidden" name="ActionType" value="Delete">
 <input type="hidden" name="FoldID" value="">
 </form>
-<tr><td>&nbsp;</td></tr>
-</table>
+
 <%
 	} else {
-		%>You do not currently have any personal folders<%
+		%><tr><td>&nbsp;</td></tr><tr><td class="heading">You do not currently have any personal folders</td></tr><%
 	}
+	%><tr><td>&nbsp;</td></tr>
+	</table><%
 	endDETable(pageContext);
 
 
@@ -151,11 +156,15 @@ alert("<%=error%>");<%
 			%><tr><td style="text-align: left"><a href="folder_detail.jsp?ID=<%=folder.getFolder().getFolderId()%>" class="heading"><%=folder.getFolder().getName()%></a>&nbsp;&nbsp;</td><td style="text-align: left"><%=FREDUtil.getUserName(folder.getFolder().getOwnerId().intValue())%>&nbsp;&nbsp;</td><td style="text-align: left">
 <%
 			if (folder.isAllowedAdmin()) {
-				%><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a>&nbsp;&nbsp;&nbsp;<a href="javascript:if (confirm('Are you sure you want to delete this folder') == true) {document.BackForm.FoldID.value='<%=folder.getFolder().getFolderId()%>';document.BackForm.submit();}" title="Delete Folder"><img src="images/delete.gif" border="0" height="20" width="20" /></a>
-<img src="images/blank.gif" width="1" height="20" /><%
+				%><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a>&nbsp;&nbsp;&nbsp;<%
+				//if (FolderUtil.isFolderEmpty(folder.getFolder())) {
+				if (folder.getFolder().getFeatures() == null && folder.getFolder().getAudits() == null) {
+					%><a href="javascript:if (confirm('Are you sure you want to delete this folder') == true) {document.PersForm.FoldID.value='<%=folder.getFolder().getFolderId()%>';document.PersForm.submit();}" title="Delete Folder"><img src="images/delete.gif" border="0" height="20" width="20" /></a><%
+				}
+			} else {
+				%><img src="images/blank.gif" height="20" width="1" alt="" /><%
 			}
-			%></td></tr>
-<%
+			%></td></tr><%
 		}
 		%>
 <input type="hidden" name="ActionType" value="Delete">
