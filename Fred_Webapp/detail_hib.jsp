@@ -556,7 +556,7 @@
 		drawTop(out, et, request, response);
 		drawEndNavigation(out);
 		out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-		out.println("<tr><td>No SampleID received.  Click <a href='index.jsp' class="heading">here</a> to return to the FRED home page.</td></tr>");
+		out.println("<tr><td>No SampleID received.  Click <a href='index.jsp' class=\"heading\">here</a> to return to the FRED home page.</td></tr>");
 		out.println("</table>");
 	}
 	
