@@ -16,7 +16,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
-import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.StorageAccessException;
