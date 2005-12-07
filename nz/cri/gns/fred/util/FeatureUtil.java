@@ -755,6 +755,17 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 
 	/**
+	 * Returns the Yard FR number for this feature.  As above this will change
+	 */
+	public static FrNumber getYardFrNumber(Feature feature) {
+		//Use the first sample as the link
+		if (feature.getSamples() == null || feature.getSamples().size() == 0)
+			return null;
+		Sample sample = (Sample)feature.getSamples().iterator().next();
+		return sample.getYardFrNumber();
+	}	
+	
+	/**
 	 * Parses FR Number as string and returns FrNumber object
 	 */
 	public static FrNumber parseFRNumber(String frNumStr) throws DataInputException {
