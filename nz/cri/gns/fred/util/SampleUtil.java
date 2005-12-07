@@ -2,6 +2,7 @@ package nz.cri.gns.fred.util;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +19,7 @@ import nz.cri.gns.fred.dao.SampleDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.de.MandatoryFieldsMissingException;
+import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.BedThickness;
@@ -29,6 +31,7 @@ import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
+import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RelationType;
@@ -372,7 +375,35 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		}
 		return count;
 	}
+	
+	public int getAdoptionRecordCount(Sample sample) {
+		int count = 0;
+		for (Iterator it = sample.getRecords().iterator(); it.hasNext(); ) {
+			count += (((Record)it.next()).getAdoption() != null) ? 1 : 0;
+		}
+		return count;
+	}
+	
+	public Set<Paleontology> getPaleontologyRecords(Sample sample) {
+		Set<Paleontology> palRecords = new HashSet<Paleontology>();
+		for (Iterator it = sample.getRecords().iterator(); it.hasNext(); ) {
+			Record record = (Record) it.next();
+			if (record.getPaleontology() != null)
+				palRecords.add(record.getPaleontology());
+		}		
+		return palRecords;
+	}
 
+	public Set<Adoption> getAdoptionRecords(Sample sample) {
+		Set<Adoption> adoRecords = new HashSet<Adoption>();
+		for (Iterator it = sample.getRecords().iterator(); it.hasNext(); ) {
+			Record record = (Record) it.next();
+			if (record.getAdoption() != null)
+				adoRecords.add(record.getAdoption());
+		}		
+		return adoRecords;
+	}	
+	
 	/**
 	 * Return a new sample initialised with the given information
 	 * @param reuseFeatureAudit 
