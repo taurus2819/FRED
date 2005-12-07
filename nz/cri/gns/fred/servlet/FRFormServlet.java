@@ -222,7 +222,16 @@ public class FRFormServlet extends HttpServlet {
 		cell.setBorder(PdfPCell.NO_BORDER);
 		headerTable.addCell(cell);
 		
+		PdfPTable localityTable = new PdfPTable(1);
+		localityTable.setTotalWidth(65 * MM_TO_PT);
+		localityTable.setLockedWidth(true);
+		localityTable.setWidths(new float[] {65 * MM_TO_PT});		
+		if (FeatureUtil.getYardFrNumber(feature) != null)
+			PDFUtil.addCell(localityTable, "(" + FeatureUtil.getYardFrNumber(feature) + ")", fonts[5], PdfPCell.ALIGN_RIGHT, 1);
 		PDFUtil.addCell(headerTable, "Locality Type: " + feature.getFeatureType(), fonts[5], PdfPCell.ALIGN_RIGHT, 1);
+		cell = new PdfPCell(localityTable);
+		cell.setBorder(PdfPCell.NO_BORDER);
+		headerTable.addCell(cell);
 		
 		cell = new PdfPCell(headerTable);
 		cell.setBorder(PdfPCell.NO_BORDER);
@@ -381,7 +390,7 @@ public class FRFormServlet extends HttpServlet {
 			relationshipStr = new String[relationships.length];
 			for (int i = 0; i < relationships.length; i++)
 				relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
-			PDFUtil.addRepeatingCells(table, "Sample Relationships", relationshipStr, bodyFonts.clone(), false);			
+			PDFUtil.addRepeatingCells(table, "Sample Relationships", relationshipStr, bodyFonts, false);			
 			relationships = sampleUtil.getRelationships(sample, "Stratigraphic", new String[] {"above top", "above base", "below top", "below base"}).toArray();
 			relationshipStr = new String[relationships.length];
 			for (int i = 0; i < relationships.length; i++)
