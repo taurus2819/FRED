@@ -22,7 +22,6 @@
 %><%@page import="nz.cri.gns.util.map.DatumFactory"
 %><%@page import="java.net.URLEncoder"
 %><%@page import="java.io.PrintWriter"
-%><%@page import="java.util.Set"
 %><%@page import="java.util.Iterator"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.auth.Authenticable"
@@ -197,10 +196,10 @@
 				
 				%><tr><td><a href="frf/frf.pdf?SampIDs=<%=sample.getSampleId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a>&nbsp;&nbsp;</td><td><a href="frf/frf.pdf?SampIDs=<%=sample.getSampleId()%>" class="heading" target="_blank">Print Front</a></td></tr><%
 				
-				Set<Paleontology> palRecords = sampleUtil.getPaleontologyRecords(sample);
-				if (palRecords.size() > 0) {
-					for (Paleontology palRecord : palRecords) {
-						if (recordUtil.isAllowedViewRecord(user, palRecord.getRecord())) {
+				if (sampleUtil.getPaleontologyRecordCount(sample) > 0) {
+					for (Iterator i = sampleUtil.getPaleontologyRecords(sample).iterator(); i.hasNext();) {
+						Paleontology palRecord = (Paleontology) i.next();
+						if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {
 							%><tr><td><a href="print_pal.jsp?ID=<%=palRecord.getRecordId()%>" target="_blank"><img src="images/print.gif" width="20" height="20" border="0" alt="Print" /></a>&nbsp;&nbsp;</td><td><a href="print_pal.jsp?ID=<%=palRecord.getRecordId()%>" class="heading" target="_blank">Print Pal Record<br /><%=RecordUtil.getRecordName(palRecord.getRecord())%></a></td></tr><%
 						} 
 					}
@@ -245,7 +244,7 @@
 				} else {
 					%><a href="#" onClick="document.TaxaForm.AuthorChk.value='true';document.TaxaForm.submit();" title="Show"><img src="images/cancel.gif" width="20" height="20" border="0" /><%
 				}
-				%></a></td><td>Author</td></tr>
+				%></a>&nbsp;&nbsp;Author</td></tr>
 				<tr><td colspan="2" class="heading"><%
 				if (sCountChk) {
 					%><a href="#" onClick="document.TaxaForm.SCountChk.value='false';document.TaxaForm.submit();" title="Hide"><img src="images/ok.gif" width="20" height="20" border="0" /><%
@@ -460,15 +459,15 @@
 				%><tr><td>&nbsp;</td></tr><%
 				
 				//Adoption
-				Set<Adoption> adoRecords = sampleUtil.getAdoptionRecords(sample);
-				if (adoRecords.size() > 0) {
-					for (Adoption adoRecord : adoRecords) {
-						if (recordUtil.isAllowedViewRecord(user, adoRecord.getRecord())) {
+				if (sampleUtil.getAdoptionRecordCount(sample) > 0) {
+					for (Iterator i = sampleUtil.getAdoptionRecords(sample).iterator(); i.hasNext();) {
+						Adoption adoRecord = (Adoption) i.next();
+						if (recordUtil.isAllowedReadRecord(user, adoRecord.getRecord())) {
 							%><tr><td colspan="2" class="bigheading">Adoption Data</td></tr><%
-							Object[] adoptors = adoRecord.getAdoptors().toArray();
+							Object[] adoptors = adoRecord.getAdopters().toArray();
 							String[] adoptorsStr = new String[adoptors.length];
-							for (int i = 0; i < adoptors.length; i++)
-								adoptorsStr[i] = ((PersonRelationship) adoptors[i]).getDisplayName();
+							for (int j = 0; j < adoptors.length; j++)
+								adoptorsStr[j] = ((PersonRelationship) adoptors[j]).getDisplayName();
 							addRepeatingCells(new PrintWriter(out), "Adoptors", adoptorsStr, false);
 							%><tr><td class="heading">Adoption Date</td><td><%=((adoRecord.getAdoptionDate() != null) ? FREDUtil.formatDateForOutput(adoRecord.getAdoptionDate(), adoRecord.getDateRounding()) : "&nbsp;")%></td></tr>
 							<tr><td class="heading">Adopted Stage</td><td><%=((adoRecord.getStage() != null) ? StageUtil.getStageDescription(adoRecord.getStage()) : "&nbsp;")%></td></tr>
