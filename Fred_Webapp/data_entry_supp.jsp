@@ -7,7 +7,7 @@
 	ResultSet rs;
 	ComboDescriptor cd;
 	User user = (User)getUser(session);
-	int userID = user.getPersonId(), execUp;
+	int userID = user.getPersonId();
 	String mfID = "0", field = "x";
 
 
@@ -118,9 +118,9 @@ function saveData(type) {
 		}
 		else if (type == "SampRel") {
 			if (checkRel("Samp") == 1) {
-				window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + parseDropDown(DistMod.value) + Distance.value;
+				window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + parseDropDown(DistMod.value) + Distance.value + " m";
 				if (DistRange.value != "") {
-					window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + " - " + DistRange.value;
+					window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + " - " + DistRange.value + " m";
 				}
 				window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + " " + parseDropDown(Rel.value) + " ";
 				if (SubFeat.value == "-" && WorkFeat.value == "-") {
@@ -136,9 +136,9 @@ function saveData(type) {
 		}
 		else if (type == "StratRel") {
 			if (checkRel("Strat") == 1) {
-				window.opener.form1.StratRel.value = window.opener.form1.StratRel.value + parseDropDown(DistMod.value) + Distance.value;
+				window.opener.form1.StratRel.value = window.opener.form1.StratRel.value + parseDropDown(DistMod.value) + Distance.value + " m";
 				if (DistRange.value != "") {
-					window.opener.form1.StratRel.value = window.opener.form1.StratRel.value + " - " + DistRange.value;
+					window.opener.form1.StratRel.value = window.opener.form1.StratRel.value + " - " + DistRange.value + " m";
 				}
 				window.opener.form1.StratRel.value = window.opener.form1.StratRel.value + " " + parseDropDown(Rel.value) + " " + StratName.value + "\n";
 			}
