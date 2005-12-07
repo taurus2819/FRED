@@ -500,9 +500,17 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 				throw new IllegalArgumentException("Relationship description not properly formatted");
 			}
 		}
+		
+		//skip "m" if present
+		if (parts[where].equals("m"))
+			where++;
+		
 		if (parts[where].equals("-")) try {
 			rel.setDistanceRange(new Double(parts[++where]));
 			++where;
+			//skip "m" if present
+			if (parts[where].equals("m"))
+				where++;
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Relationship description not properly formatted");
 		}
