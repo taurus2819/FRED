@@ -353,7 +353,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		featureDAO.update(feature);		
 	}
 
-	public void alterFeatureType(Feature feature, String newFeatureType, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+	public void alterFeatureType(Feature feature, String newFeatureType, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
 		if (!folder.isAllowedEditLocalities() || !isBacklogFeature(feature))
 			throw new InsufficientPrivelegesException();
 		String oldFeatureType = feature.getFeatureType();
@@ -380,11 +380,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			}
 		} else if (newFeatureType.equals(FREDConstants.DRILLHOLE)) {
 			for (Sample sample : samples) {
-				
+				breakApartSampleAudit(sample);
+				sampleDAO.update(sample);
 			}
 		} else if (newFeatureType.equals(FREDConstants.VERTICAL_SECTION)) {
 			feature.setDrillholeLicenceName(null);
 			for (Sample sample : samples) {
+				breakApartSampleAudit(sample);
 				sample.setDrillType(null);
 				sampleDAO.update(sample);
 			}
@@ -400,6 +402,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		featureDAO.update(feature);
 	}	
 
+	private void breakApartSampleAudit(Sample sample) throws IntrospectionException, StorageAccessException {
+		if (sample.getAudit().equals(sample.getFeature().getAudit())) {
+			sample.setAudit(new AuditUtil(factory).cloneAudit(sample.getAudit()));
+		}
+	}
+	
 	public void mergeFeatures(Feature mergeToFeature, String[] mergeFeatIDs, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, NumberFormatException, IntrospectionException {
 		if (!folder.isAllowedEditLocalities() || !isBacklogFeature(mergeToFeature))
 			throw new InsufficientPrivelegesException();
@@ -685,7 +693,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (feature.getAudit().getStatus().equals(APPROVED))
 			throw new FolderUtilException("Cannot add a working locality");
 		
-		//TODO this should check that they have rights to add to this folder...
+		UserFolder userFolder = new FolderUtil(factory).getUserFolder(folderId, user);
+		if (!userFolder.isAllowedCreateLocalities())
+			throw new FolderUtilException("Do not have appropriate rights to add to this folder");
+				
 		feature.getFolders().add(folderDAO.getFolder(folderId));
 	}
 	
