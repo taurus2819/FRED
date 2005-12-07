@@ -354,7 +354,7 @@ function parseDropDown(val) {
 
 		if (request.getParameter("Add") != null) {  //add data to lookup tables
 			if (request.getParameter("Add").equals("Person")) {
-				execUp = statement.executeUpdate("INSERT INTO Person (Name) VALUES (" + JspUtils.sqlEscape(request.getParameter("FamilyName") + ", " + request.getParameter("GivenName")) + ")");
+				statement.executeUpdate("INSERT INTO Person (Name) VALUES (" + JspUtils.sqlEscape(request.getParameter("FamilyName") + ", " + request.getParameter("GivenName")) + ")");
 				out.println("<script language='JavaScript'>alert(\"Name added to list.  Please now select to add to form\");</script>");
 			}
 		}
