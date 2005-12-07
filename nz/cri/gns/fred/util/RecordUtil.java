@@ -16,6 +16,7 @@ import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.FREDConstants;
+import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.LabSection;
@@ -177,17 +178,41 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
        return recordDAO.getRecord(recordId);
     }
 
-
+    /**
+     * @deprecated use isAllowedReadRecord
+     */
     public boolean isAllowedViewRecord(User user, Record fromRecord) throws StorageAccessException {
-        //TODO this will be upgraded once security is in place 
-        Folder folder = fromRecord.getAudit().getFolder();
-        if (folder == null)
-            folder = recordDAO.getMasterfileFolder(fromRecord);
-        
-        return new FolderUtil(factory).getUserFolder(folder.getFolderId(), user).isAllowedReadLocalities();
+    	return isAllowedReadRecord(user, fromRecord);
     }
 
-
+    public boolean isAllowedReadRecord(UserAccount user, Record record) throws StorageAccessException {
+		if (user == null)
+			return false;
+		
+		//first check allowed to read sample if not then return false (also checks feature)
+		Sample sample = record.getSample();
+		if (!(new SampleUtil(factory).isAllowedReadSample(user, sample)))
+			return false;
+		
+		//now check record
+		if (!record.getAudit().getStatus().equals(FREDConstants.APPROVED)) {
+			UserFolder folder = new FolderUtil(factory).getUserFolder(record.getAudit().getFolder().getFolderId().intValue(), user);
+			return (folder != null && folder.isAllowedReadLocalities());
+		}
+		
+		/**
+		 * @TODO last stage is to check sample security code assume OK for moment
+		 */
+		return true;
+    }
+    
+    public boolean isAllowedReadPalList(UserAccount user, Paleontology palRecord) throws StorageAccessException {
+    	/**
+    	 // @TODO will need to flesh this out to check pallist security code when implemented. Now just check record
+    	 */
+    	return isAllowedReadRecord(user, palRecord.getRecord());
+    }
+    
     public String getRecordType(Record record) {
         return (record.getAdoption() != null) ? ADOPTION : PALEONTOLOGICAL;
     }
