@@ -1,9 +1,6 @@
 package nz.cri.gns.fred.util;
 
-import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -15,7 +12,6 @@ import javax.naming.NamingException;
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
-import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
@@ -46,12 +42,7 @@ import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.model.Weathering;
-import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.PageState;
 
-/**
- *
- */
 public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 
 	private static String NOT_DETERMINED_STAGE = "166";
@@ -442,10 +433,13 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		StringBuffer desc = new StringBuffer();
 		if (rel.getDistanceMod() != null)
 			desc.append(rel.getDistanceMod()).append(" ");
-		desc.append(rel.getDistance()).append(" m ");
-		if (rel.getDistanceRange() != null)
-			desc.append("- ").append(rel.getDistanceRange()).append(" m ");
-		desc.append(rel.getRelationshipType().getName()).append(" ");
+		if (rel.getDistance() != null) {
+			desc.append(rel.getDistance()).append(" m ");
+			if (rel.getDistanceRange() != null)
+				desc.append("- ").append(rel.getDistanceRange()).append(" m ");
+		}
+		if (!rel.getRelationshipType().getName().equals(FREDConstants.NEARBY))
+			desc.append(rel.getRelationshipType().getName()).append(" ");
 		if (rel.getRelationType().getName().equals(FREDConstants.SAMPLE))
 			desc.append(FeatureUtil.getFeatureIdentifyingName(rel.getFeature()));
 		else
@@ -453,7 +447,20 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return desc.toString();
 	}
 
-
+	public static String getRelationshipDescriptionWithLink(Relationship rel, String path, String target) {
+		if (!rel.getRelationType().getName().equals(FREDConstants.SAMPLE))
+			return getRelationshipDescription(rel);
+		
+		StringBuffer desc = new StringBuffer();
+		desc.append("<a href=\"").append(path).append(rel.getFeature().getFeatureId()).append("\"");
+		if (target != null)
+			desc.append(" target=\"").append(target).append("\"");
+		desc.append(">");
+		desc.append(getRelationshipDescription(rel));
+		desc.append("</a>");
+		return desc.toString();
+	}
+	
 	public Relationship decodeSampleRelationshipDescription(String desc) throws StorageAccessException {
 		NoIdRelationship relationship = new NoIdRelationship();
 		String name = getCommonRelationshipPropertiesFromDescription(desc, relationship, sampleDAO.getRelationType("Sample"));
