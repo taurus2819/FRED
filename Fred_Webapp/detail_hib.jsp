@@ -6,11 +6,13 @@
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.model.Record"
 %><%@page import="nz.cri.gns.fred.model.Paleontology"
+%><%@page import="nz.cri.gns.fred.model.PaleontologyListEntry"
 %><%@page import="nz.cri.gns.fred.model.Sample"
 %><%@page import="nz.cri.gns.fred.model.Relationship"
 %><%@page import="nz.cri.gns.fred.model.PersonRelationship"
 %><%@page import="nz.cri.gns.fred.model.SentTo"
 %><%@page import="nz.cri.gns.fred.model.SedimentaryFeature"
+%><%@page import="nz.cri.gns.fred.model.TaxonomicGroup"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="nz.cri.gns.db.metadata.*"
@@ -331,7 +333,7 @@
 			}			
 			
 			%><tr><td class="heading">Map Year</td><td><%=DBUtils.nvl(feature.getMapYear())%></td></tr>
-			<tr><td class="heading">Method</td><td><%=((sr != null) && !sr.isNull(SiteRecord.H_METHOD_FIELD)) ? FREDUtil.getSiteMethod(sr) : "&nbsp;")%></td></tr>
+			<tr><td class="heading">Method</td><td><%=((sr != null && !sr.isNull(SiteRecord.H_METHOD_FIELD)) ? FREDUtil.getSiteMethod(sr) : "&nbsp;")%></td></tr>
 			<tr><td class="heading">Accuracy</td><td><%=((sr != null && !sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? "&#177;" + String.valueOf(sr.getAccuracy()) + " m" : "&nbsp;")%></td></tr><%
 
 			if (isAllowedReadFeature) {
@@ -511,35 +513,51 @@
 							<tr><td class="heading">Lab Number</td><td><%=DBUtils.nvl(palRecord.getLabNumber())%></td></tr>
 							<tr><td class="heading">Collection Comments</td><td><%=DBUtils.nvl(palRecord.getCollectionComments())%></td></tr><%
 			
-					/*		//taxa (double repeating)
-							if (pal.get(PaleontologyRecord.TAXONOMIC_LIST) != null) {
-								out.println("<tr><td colspan='2'><table border='0' cellspacing='0' cellpadding='2'>");
-								for (Iterator i2 = pal.getAsVector(PaleontologyRecord.TAXONOMIC_LIST).iterator(); i2.hasNext(); ) {
-									TaxaGroup taxaGroup = (TaxaGroup)i2.next();
-									out.println("<tr><td colspan='4' class="heading">" + taxaGroup.getGroupName() + "</td></tr>");
-									if (taxaGroup.getTaxaList() != null) {
-										out.print("<tr class="heading"><td>Taxonomic Name&nbsp;&nbsp;</td>");
-										if (authorChk) { out.print("<td>Author&nbsp;&nbsp;</td>"); }
-										if (sCountChk) { out.print("<td>Spec Count&nbsp;&nbsp;</td>"); }
-										if (sCoordChk) { out.print("<td>Spec Coord&nbsp;&nbsp;</td>"); }
-										if (commChk) { out.print("<td>Comments&nbsp;&nbsp;</td>"); }
-										out.println("</tr>");
-										for (Iterator i3 = taxaGroup.getTaxaList().iterator(); i3.hasNext(); ) {
-											Taxa taxa = (Taxa)i3.next();
-											out.print("<tr><td><i>" + taxa.getTaxonomicName() + "</i>&nbsp;&nbsp;</td>");
-											if (authorChk) { out.print("<td>" +FREDUtils.noNulls(taxa.getAuthor()) + "&nbsp;&nbsp;</td>"); }
-											if (sCountChk) { out.print("<td>" +FREDUtils.noNulls(String.valueOf(taxa.getSpecimenCount())) + "&nbsp;&nbsp;</td>"); }
-											if (sCoordChk) { out.print("<td>" +FREDUtils.noNulls(taxa.getSpecimenCoords()) + "&nbsp;&nbsp;</td>"); }
-											if (commChk) { out.print("<td>" +FREDUtils.noNulls(taxa.getComments()) + "&nbsp;&nbsp;</td>"); }
-											out.println("</tr>");
+							//taxa (Pal list)
+							if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
+								%><tr><td colspan="2"><table border="0" cellspacing="0" cellpadding="2"><%
+								for (Iterator k = recordUtil.getTaxonomicGroups(palRecord).iterator(); k.hasNext(); ) {
+									TaxonomicGroup taxaGroup = (TaxonomicGroup) k.next();
+									%><tr><td colspan="4" class="heading"><%=taxaGroup.getName()%></td></tr><%
+									if (recordUtil.getListEntries(palRecord, taxaGroup).size() > 0) {
+										%><tr class="heading"><td>Taxonomic Name&nbsp;&nbsp;</td><%
+										if (authorChk) {
+											%><td>Author&nbsp;&nbsp;</td><%
+										}
+										if (sCountChk) {
+											%><td>Spec Count&nbsp;&nbsp;</td><%
+										}
+										if (sCoordChk) {
+											%><td>Spec Coord&nbsp;&nbsp;</td><%
+										}
+										if (commChk) {
+											%><td>Comments&nbsp;&nbsp;</td><%
+										}
+										%></tr><%
+										for (Iterator l = recordUtil.getListEntries(palRecord, taxaGroup).iterator(); l.hasNext(); ) {
+											PaleontologyListEntry taxa = (PaleontologyListEntry) l.next();
+											%><tr><td><i><%=taxa.getTaxonomicName()%></i>&nbsp;&nbsp;</td><%
+											if (authorChk) {
+												%><td><%=DBUtils.nvl(taxa.getTaxon().getAuthor())%>&nbsp;&nbsp;</td><%
+											}
+											if (sCountChk) {
+												%><td><%=DBUtils.nvl(taxa.getSpecimenCount())%>&nbsp;&nbsp;</td><%
+											}
+											if (sCoordChk) {
+												%><td><%=DBUtils.nvl(taxa.getSpecimenCoords())%>&nbsp;&nbsp;</td><%
+											}
+											if (commChk) {
+												%><td><%=DBUtils.nvl(taxa.getComments())%>&nbsp;&nbsp;</td><%
+											}
+											%></tr><%
 										}
 									} else {
-										out.println("<tr><td colspan='4'>No fossils listed</td></tr>");
+										%><tr><td colspan="4">No fossils listed</td></tr><%
 									}
-									out.println("<tr><td><img src='images/blank.gif' height='10' width='1' /></td></tr>");
+									%><tr><td>&nbsp;</td></tr><%
 								}
-								out.println("</td></tr></table></td></tr>");
-							}	*/
+								%></td></tr></table></td></tr><%
+							}
 							
 							/*
 							//Image/Files
