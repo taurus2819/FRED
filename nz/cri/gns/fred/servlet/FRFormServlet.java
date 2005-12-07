@@ -227,7 +227,7 @@ public class FRFormServlet extends HttpServlet {
 		localityTable.setLockedWidth(true);
 		localityTable.setWidths(new float[] {65 * MM_TO_PT});		
 		if (FeatureUtil.getYardFrNumber(feature) != null)
-			PDFUtil.addCell(localityTable, "(" + FeatureUtil.getYardFrNumber(feature) + ")", fonts[5], PdfPCell.ALIGN_RIGHT, 1);
+			PDFUtil.addCell(localityTable, "(" + FeatureUtil.getYardFrNumber(feature).getFrNumber() + ")", fonts[5], PdfPCell.ALIGN_RIGHT, 1);
 		PDFUtil.addCell(localityTable, "Locality Type: " + feature.getFeatureType(), fonts[5], PdfPCell.ALIGN_RIGHT, 1);
 		cell = new PdfPCell(localityTable);
 		cell.setBorder(PdfPCell.NO_BORDER);
