@@ -3,8 +3,10 @@ package nz.cri.gns.fred;
 import java.io.File;
 import java.io.IOException;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.PageContext;
 
 import nz.cri.gns.auth.Authenticable;
 import nz.cri.gns.auth.IPRight;
@@ -79,5 +81,13 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 	
 	protected IconnedLink[] getButtons(HttpServletRequest request) {
 		return new IconnedLink[0];
-	}	
+	}
+	
+	protected void startDETable(PageContext context) throws IOException, ServletException {
+        context.include("/content/detablestart.html");
+	}
+	
+	protected void endDETable(PageContext context) throws IOException, ServletException {
+        context.include("/content/detableend.html");
+	}
 }

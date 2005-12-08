@@ -9,6 +9,7 @@ import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.FolderTypeDAO;
 import nz.cri.gns.fred.dao.StorageAccessException;
+import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FolderAccessor;
 import nz.cri.gns.fred.model.FolderRight;
@@ -29,6 +30,10 @@ public class FolderUtil extends ModelUtil {
 		super(dao);
 		this.folderDAO = dao.getFolderDAO();
 		this.typeDAO = dao.getFolderTypeDAO();
+	}
+	
+	public Folder folder(int folderId) throws StorageAccessException {
+		return folderDAO.getFolder(folderId);
 	}
 	
 	/**

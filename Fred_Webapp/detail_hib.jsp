@@ -125,11 +125,10 @@
 					response.sendRedirect("admin_folder_detail.jsp?ID=" + feature.getMasterFile().getFolderId());
 					return;
 				}
-		/*		else if (actionType.equals("AddtoFold") && !request.getParameter("FoldID").equals("-")) {
-					FolderUtils.addLocality(sample.getAsString(Sample.FEATURE_ID), request.getParameter("FoldID"), user, state);
-					Folder folder = new Folder(Integer.parseInt(request.getParameter("FoldID")), user, state, true);
-					out.println("<script language=\"JavaScript\">alert(\"Locality Added to " + folder.getAsString(Folder.NAME) + " folder\");</script>");
-				} */
+				else if (actionType.equals("AddtoFold") && !request.getParameter("FoldID").equals("-")) {
+					featureUtil.addToFolder(feature, Integer.parseInt(request.getParameter("FoldID")), user);
+					%><script language="JavaScript">alert("Locality Added to folder");</script><%
+				}
 			}
 
 			drawTop(out, et, request, response);
@@ -275,12 +274,12 @@
 
 			drawEndNavigation(out);
 			
-			%><table style="margin-left:20px; width:550px;" border="0">
-			<tr><td><%
-	
-			//Locality Data
-			%><p><table border="0" cellspacing="0" cellpadding="2" width="550">
-			<tr><td class="bigheading" colspan="2">Location Information</td></tr>
+			
+			%><center><%
+			
+//			Locality Data
+			startDETable(pageContext);
+			%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Locality Information</td></tr>
 			<tr><td class="heading">FR Number</td><td class="heading"><%=sample.getFrNumber().getFrNumber()%></td></tr><%
 			if (sample.getYardFrNumber() != null) {
 				%><tr><td class="heading">Yard FR Number</td><td><%=sample.getYardFrNumber().getFrNumber()%></td></tr><%
@@ -373,12 +372,15 @@
 					}
 					%></td></tr></table></td></tr><%
 				}
-			
-				%><tr><td>&nbsp;</td></tr><%
+
+				%></table><%
+				endDETable(pageContext);
 	
 				if (isAllowedReadSample) {
 					//Sample Property Data
-					%><tr><td class="bigheading" colspan="2">Collection Information</td></tr><%
+					startDETable(pageContext);
+					%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Sample Information</td></tr>
+					<tr><td class="bigheading" colspan="2">Collection Information</td></tr><%
 					Object[] collectors = sample.getCollectors().toArray();
 					String[] collectorStr = new String[collectors.length];
 					for (int i = 0; i < collectors.length; i++)
@@ -423,9 +425,7 @@
 	
 					<tr><td>&nbsp;</td></tr>
 	
-					<tr><td class="bigheading" colspan="2">Sedimentary Features</td></tr>
-									
-									
+					<tr><td class="bigheading" colspan="2">Sedimentary Features</td></tr>		
 					<tr><td class="heading">Grain Size</td><td><%=SampleUtil.getGrainSizeDescription(sample)%></td></tr>
 					<tr><td class="heading">Bedding Thickness</td><td><%=((sample.getBedThickness() != null) ? sample.getBedThickness().getName() : "&nbsp;")%></td></tr>
 					<tr><td class="heading">Bedding Features</td><td><%=SampleUtil.getBeddingDescription(sample)%></td></tr>
@@ -459,14 +459,16 @@
 						%></td></tr></table></td></tr><%
 					}
 	
-					%><tr><td>&nbsp;</td></tr><%
+					%></table><%
+					endDETable(pageContext);
 					
 					//Adoption
 					if (sampleUtil.getAdoptionRecordCount(sample) > 0) {
 						for (Iterator i = sampleUtil.getAdoptionRecords(sample).iterator(); i.hasNext();) {
 							Adoption adoRecord = (Adoption) i.next();
 							if (recordUtil.isAllowedReadRecord(user, adoRecord.getRecord())) {
-								%><tr><td colspan="2" class="bigheading">Adoption Data</td></tr><%
+								startDETable(pageContext);
+								%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Adoption Information</td></tr><%
 								Object[] adoptors = adoRecord.getAdopters().toArray();
 								String[] adoptorsStr = new String[adoptors.length];
 								for (int j = 0; j < adoptors.length; j++)
@@ -492,7 +494,8 @@
 									}
 									%></td></tr></table></td></tr><%
 								}
-								%><tr><td>&nbsp;</td></tr><%
+								%></table><%
+								endDETable(pageContext);
 							}
 						}
 					}
@@ -502,7 +505,8 @@
 						for (Iterator i = sampleUtil.getPaleontologyRecords(sample).iterator(); i.hasNext();) {
 							Paleontology palRecord = (Paleontology) i.next();
 							if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {
-								%><tr><td colspan="2" class="bigheading">Paleontology Data</td></tr><%									//identifiers (repeating)
+								startDETable(pageContext);
+								%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Paleontology Information</td></tr><%
 								Object[] identifiers = palRecord.getIdentifiers().toArray();
 								String[] identifiersStr = new String[identifiers.length];
 								for (int j = 0; j < identifiers.length; j++)
@@ -576,7 +580,8 @@
 									}
 									%></td></tr></table></td></tr><%
 								}
-								%><tr><td>&nbsp;</td></tr><%
+								%></table><%
+								endDETable(pageContext);
 							}
 						}
 					}			
