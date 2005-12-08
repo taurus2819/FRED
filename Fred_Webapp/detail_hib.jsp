@@ -4,7 +4,6 @@
 %><%@page import="nz.cri.gns.fred.model.AuditEdit"
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
-%><%@page import="nz.cri.gns.fred.model.Record"
 %><%@page import="nz.cri.gns.fred.model.Paleontology"
 %><%@page import="nz.cri.gns.fred.model.PaleontologyListEntry"
 %><%@page import="nz.cri.gns.fred.model.Sample"
@@ -16,7 +15,6 @@
 %><%@page import="nz.cri.gns.fred.model.Meta"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.db.DBUtils"
-%><%@page import="nz.cri.gns.db.metadata.*"
 %><%@page import="nz.cri.gns.db.site.SiteRecord"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.util.map.Datum"
@@ -39,6 +37,20 @@
 %><%!	
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { 
 		return new Authenticable[0]; 
+	}
+%><%!
+	public String getName(HttpServletRequest request) {
+		try {
+			SampleUtil sampleUtil = new SampleUtil(HibernateUtil.get().getDAOFactory());
+			Sample sample = sampleUtil.getSample(Integer.parseInt(request.getParameter("ID")));
+			if (sample.getFrNumber() != null) {
+				return "FRED :: Sample Detail for " + sample.getFrNumber().getFrNumber();
+			} else {
+				return "FRED :: Sample Detail for " + FeatureUtil.getFeatureName(sample.getFeature());
+			}
+		} catch (Exception e) {
+			return "FRED :: The Fossil Record Electronic Database";
+		}
 	}
 %><%!
 	public static void addRepeatingCells(PrintWriter out, String heading, Object[] text, boolean newLines) {
@@ -67,10 +79,9 @@
 	FeatureUtil featureUtil = new FeatureUtil(factory);
 	RecordUtil recordUtil = new RecordUtil(factory);
 
-	boolean authorChk = false, sCountChk = false, sCoordChk = false, commChk = true;
-
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
+	et.setUseNavigationColumn(false);
+	et.setDisplayLoadingMessage(true);
 
 	//if FeatureID given then get SampleID or transer to drillhole
 	if (request.getParameter("FeatID") != null) {
@@ -105,13 +116,16 @@
 	if (sampID != null) {
 		Sample sample = sampleUtil.getSample(Integer.parseInt(sampID));
 		Feature feature = sample.getFeature();
+		Audit audit = feature.getAudit();
 		boolean isAllowedReadSample = sampleUtil.isAllowedReadSample(user, sample);
 		boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
 		
-		if (!featureUtil.isAllowedReadFeatureSite(user, feature)) {
-			drawTop(out, et, request, response);
-			%>Not allowed to read this sample<%
-		} else {
+		boolean authorChk = (request.getParameter("AuthorChk") != null && request.getParameter("AuthorChk").equals("true"));
+		boolean sCountChk = (request.getParameter("SCountChk") != null && request.getParameter("SCountChk").equals("true"));
+		boolean sCoordChk = (request.getParameter("SCoordChk") != null && request.getParameter("SCoordChk").equals("true"));
+		boolean commChk = (request.getParameter("CommChk") != null && request.getParameter("CommChk").equals("true"));		
+		
+		if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
 			if (request.getParameter("ActionType") != null) { //do something
 				String actionType = request.getParameter("ActionType");
 				
@@ -133,20 +147,14 @@
 
 			drawTop(out, et, request, response);
 
-			if (request.getParameter("AuthorChk") != null && request.getParameter("AuthorChk").equals("true")) { authorChk = true; }
-			if (request.getParameter("SCountChk") != null && request.getParameter("SCountChk").equals("true")) { sCountChk = true; }
-			if (request.getParameter("SCoordChk") != null && request.getParameter("SCoordChk").equals("true")) { sCoordChk = true; }
-			if (request.getParameter("CommChk") != null && request.getParameter("CommChk").equals("false")) { commChk = false; }
-	
 			//List data
-			%><table style="margin-left:10px; margin-top:20px; width:180px;" border="0"><%
-
-			Audit audit = feature.getAudit();
-			String featType = feature.getFeatureType();
-			%><tr><td colspan="2" align="center"><img src="images/loc.gif" height="20" width="20" /></td></tr>
-			<tr><td colspan="2" align="center" class="bigheading"><%=sample.getSampleName()%></td></tr>
-			<tr><td colspan="2" align="center"><%=featType%></td></tr>
-			<tr><td class="smallheading">Masterfile:&nbsp;</td><td class="smalltext"><%=((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : "undefined")%></td></tr><%
+			%><table border="1"><tr><td><img src="images/blank.gif" width="10" height="10" /></td></tr>
+			<tr><td></td><td><%
+			
+			%><p><%
+			startDETable(pageContext);
+			%><table border="0" width="160">
+			<tr><td colspan="2" class="deHeading">Audit Details</td></tr><%
 			if (!audit.getStatus().equals(FREDConstants.APPROVED)) {
 				%><tr><td class="smallheading">Status:&nbsp;</td><td class="smalltext"><%=audit.getStatus()%></td></tr><%
 			}
@@ -164,18 +172,23 @@
 				<%=((audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : "")%></td></tr>
 			<tr><td class="smallheading">Approved:&nbsp;</td>
 			<td class="smalltext"><%=((audit.getApprovedById() != null) ? FREDUtil.getUserName(audit.getApprovedById().intValue()) + "<br />" : "")%>
-				<%=((audit.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(audit.getApprovedDate()) : "")%></td></tr><%
+				<%=((audit.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(audit.getApprovedDate()) : "")%></td></tr>
 
-			if (isAllowedReadFeature) {
-
-				%><tr><td class="smallheading"><a href="audit_detail.jsp?ID=<%=sample.getSampleId()%>" target="audit">More...</a></td></tr>
-				<tr><td>&nbsp;</td></tr>
+			<tr><td class="smallheading"><a href="audit_detail.jsp?ID=<%=sample.getSampleId()%>" target="audit">More...</a></td></tr>
+			</table><%
+			endDETable(pageContext);
+			%></p><%
+			
+			if (isAllowedReadFeature) {	
 				
-				<tr><td colspan="2"><table border="0"><%
-				
-				//Generate list of users folders
 				if ((new FolderUtil(factory)).getPersonalFolders(user).size() > 0) {
-					%><form name="FolderForm" method="post" action="detail_hib.jsp">
+					//Generate list of users folders
+					%><p><%
+					startDETable(pageContext);
+					%><table border="0" width="160">
+					<tr><td colspan="2" class="deHeading">Folder Options</td></tr>
+					<form name="FolderForm" method="post" action="detail_hib.jsp">
+					<tr><td><a href="#" onClick="FolderForm.submit();"><img src="images/folder.gif" height="20" width="20" border="0" alt="Add to Folder" /></a></td><td><a href="#" onClick="FolderForm.submit();" class="heading">Add to Folder</a></td></tr>
 					<tr><td colspan="2">
 					<select name="FoldID">
 					<option value="-">-- Choose --</option><%
@@ -188,26 +201,14 @@
 					}
 					%></select>
 					</td></tr>
-					<tr><td><a href="#" onClick="FolderForm.submit();"><img src="images/folder.gif" height="20" width="20" border="0" alt="Add to Folder" /></a></td><td><a href="#" onClick="FolderForm.submit();" class="heading">Add to Folder</a></td></tr>
 					<input type="hidden" name="ID" value="<%=sampID%>" />
 					<input type="hidden" name="ActionType" value="AddtoFold" />
 					</form>
-					<tr><td>&nbsp;</td></tr><%
-				}
+					</table><%
+					endDETable(pageContext);
+					%></p><%
+				}		
 				
-				
-				%><tr><td><a href="frf/frf.pdf?SampIDs=<%=sample.getSampleId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a>&nbsp;&nbsp;</td><td><a href="frf/frf.pdf?SampIDs=<%=sample.getSampleId()%>" class="heading" target="_blank">Print Front</a></td></tr><%
-				
-				if (sampleUtil.getPaleontologyRecordCount(sample) > 0) {
-					for (Iterator i = sampleUtil.getPaleontologyRecords(sample).iterator(); i.hasNext();) {
-						Paleontology palRecord = (Paleontology) i.next();
-						if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {
-							%><tr><td><a href="print_pal.jsp?ID=<%=palRecord.getRecordId()%>" target="_blank"><img src="images/print.gif" width="20" height="20" border="0" alt="Print" /></a>&nbsp;&nbsp;</td><td><a href="print_pal.jsp?ID=<%=palRecord.getRecordId()%>" class="heading" target="_blank">Print Pal Record<br /><%=RecordUtil.getRecordName(palRecord.getRecord())%></a></td></tr><%
-						} 
-					}
-				}
-				
-				%></table></td></tr><%
 				
 				/*
 				if (FREDUtils.isAllowedApproveLocality(user, sample.getAsString(Sample.FEATURE_ID), sample.getAsString(Sample.FEATURE_STATUS), state)) {
@@ -232,58 +233,65 @@
 					out.println("</td></tr>");
 				} */
 				
-				%><tr><td><img src="images/blank.gif" width="1" height="10" /></td></tr>
-				<tr><td class="heading" colspan="2" align="center">Taxonomic List Options</td></tr>
-				<form name="TaxaForm" method="post" action="detail_hib.jsp">
-				<input type="hidden" name="ID" value="<%=sampID%>" />
-				<input type="hidden" name="AuthorChk" value="<%=authorChk%>" />
-				<input type="hidden" name="SCountChk" value="<%=sCountChk%>" />
-				<input type="hidden" name="SCoordChk" value="<%=sCoordChk%>" />
-				<input type="hidden" name="CommChk" value="<%=commChk%>" />
-				<tr><td colspan="2" class="heading"><%
-				if (authorChk) {
-					%><a href="#" onClick="document.TaxaForm.AuthorChk.value='false';document.TaxaForm.submit();" title="Hide"><img src="images/ok.gif" width="20" height="20" border="0" /><%
-				} else {
-					%><a href="#" onClick="document.TaxaForm.AuthorChk.value='true';document.TaxaForm.submit();" title="Show"><img src="images/cancel.gif" width="20" height="20" border="0" /><%
+				if (sampleUtil.getPaleontologyRecordCount(sample) > 0) {
+					%><p><%
+					startDETable(pageContext);
+					%><table border="0" width="160">
+					<tr><td class="deHeading">Taxonomic List Options</td></tr>
+					<form name="TaxaForm" method="post" action="detail_hib.jsp">
+					<input type="hidden" name="ID" value="<%=sampID%>" />
+					<input type="hidden" name="AuthorChk" value="<%=authorChk%>" />
+					<input type="hidden" name="SCountChk" value="<%=sCountChk%>" />
+					<input type="hidden" name="SCoordChk" value="<%=sCoordChk%>" />
+					<input type="hidden" name="CommChk" value="<%=commChk%>" />
+					<tr><td class="heading"><%
+					if (authorChk) {
+						%><a href="#" onClick="document.TaxaForm.AuthorChk.value='false';document.TaxaForm.submit();" title="Hide"><img src="images/ok.gif" width="20" height="20" border="0" /><%
+					} else {
+						%><a href="#" onClick="document.TaxaForm.AuthorChk.value='true';document.TaxaForm.submit();" title="Show"><img src="images/cancel.gif" width="20" height="20" border="0" /><%
+					}
+					%></a>&nbsp;&nbsp;Author</td></tr>
+					<tr><td class="heading"><%
+					if (sCountChk) {
+						%><a href="#" onClick="document.TaxaForm.SCountChk.value='false';document.TaxaForm.submit();" title="Hide"><img src="images/ok.gif" width="20" height="20" border="0" /><%
+					} else {
+						%><a href="#" onClick="document.TaxaForm.SCountChk.value='true';document.TaxaForm.submit();" title="Show"><img src="images/cancel.gif" width="20" height="20" border="0" /><%
+					}
+					%></a>&nbsp;&nbsp;Specimen Count</td></tr>
+					<tr><td class="heading"><%
+					if (sCoordChk) {
+						%><a href="#" onClick="document.TaxaForm.SCoordChk.value='false';document.TaxaForm.submit();" title="Hide"><img src="images/ok.gif" width="20" height="20" border="0" /><%
+					} else {
+						%><a href="#" onClick="document.TaxaForm.SCoordChk.value='true';document.TaxaForm.submit();" title="Show"><img src="images/cancel.gif" width="20" height="20" border="0" /><%
+					}
+					%></a>&nbsp;&nbsp;Specimen Coord</td></tr>
+					<tr><td class="heading"><%
+					if (commChk) {
+						%><a href="#" onClick="document.TaxaForm.CommChk.value='false';document.TaxaForm.submit();" title="Hide"><img src="images/ok.gif" width="20" height="20" border="0" /><%
+					} else {
+						%><a href="#" onClick="document.TaxaForm.CommChk.value='true';document.TaxaForm.submit();" title="Show"><img src="images/cancel.gif" width="20" height="20" border="0" /><%
+					}
+					%></a>&nbsp;&nbsp;Comments</td></tr>
+					</form></table><%
+					endDETable(pageContext);
+					%></p><%
 				}
-				%></a>&nbsp;&nbsp;Author</td></tr>
-				<tr><td colspan="2" class="heading"><%
-				if (sCountChk) {
-					%><a href="#" onClick="document.TaxaForm.SCountChk.value='false';document.TaxaForm.submit();" title="Hide"><img src="images/ok.gif" width="20" height="20" border="0" /><%
-				} else {
-					%><a href="#" onClick="document.TaxaForm.SCountChk.value='true';document.TaxaForm.submit();" title="Show"><img src="images/cancel.gif" width="20" height="20" border="0" /><%
-				}
-				%></a>&nbsp;&nbsp;Specimen Count</td></tr>
-				<tr><td colspan="2" class="heading"><%
-				if (sCoordChk) {
-					%><a href="#" onClick="document.TaxaForm.SCoordChk.value='false';document.TaxaForm.submit();" title="Hide"><img src="images/ok.gif" width="20" height="20" border="0" /><%
-				} else {
-					%><a href="#" onClick="document.TaxaForm.SCoordChk.value='true';document.TaxaForm.submit();" title="Show"><img src="images/cancel.gif" width="20" height="20" border="0" /><%
-				}
-				%></a>&nbsp;&nbsp;Specimen Coord</td></tr>
-				<tr><td colspan="2" class="heading"><%
-				if (commChk) {
-					%><a href="#" onClick="document.TaxaForm.CommChk.value='false';document.TaxaForm.submit();" title="Hide"><img src="images/ok.gif" width="20" height="20" border="0" /><%
-				} else {
-					%><a href="#" onClick="document.TaxaForm.CommChk.value='true';document.TaxaForm.submit();" title="Show"><img src="images/cancel.gif" width="20" height="20" border="0" /><%
-				}
-				%></a>&nbsp;&nbsp;Comments</td></tr>
-				</form><%
 			}	
-			%></table><%
-
-			drawEndNavigation(out);
 			
+			//start data column
+			%></td><td><img src="images/blank.gif" width="20" height="1" /></td><td style="text-align: left"><%
 			
-			%><center><%
-			
-//			Locality Data
+			//Locality Data
+			%><p><%
 			startDETable(pageContext);
-			%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Locality Information</td></tr>
+			%><table border="0" width="550"><tr><td colspan="2" class="deHeading">Locality Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?FeatIDs=<%=sample.getFeature().getFeatureId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr>
 			<tr><td class="heading">FR Number</td><td class="heading"><%=sample.getFrNumber().getFrNumber()%></td></tr><%
 			if (sample.getYardFrNumber() != null) {
 				%><tr><td class="heading">Yard FR Number</td><td><%=sample.getYardFrNumber().getFrNumber()%></td></tr><%
 			}
+			%><tr><td class="heading">Masterfile</td><td><%=((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : "undefined")%></td></tr><%
+			String featType = feature.getFeatureType();
+			%><tr><td class="heading">Locality Type</td><td><%=featType%></td></tr><%
 			String featTypeLbl, linkStart = "", linkStop = "";
 			if (featType.equals(FREDConstants.OUTCROP)) {
 				featTypeLbl = "Field Number";
@@ -375,11 +383,13 @@
 
 				%></table><%
 				endDETable(pageContext);
+				%></p><%
 	
 				if (isAllowedReadSample) {
 					//Sample Property Data
+					%><p><%
 					startDETable(pageContext);
-					%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Sample Information</td></tr>
+					%><table border="0" width="550"><tr><td colspan="2" class="deHeading">Sample Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?SampIDs=<%=sample.getSampleId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr>
 					<tr><td class="bigheading" colspan="2">Collection Information</td></tr><%
 					Object[] collectors = sample.getCollectors().toArray();
 					String[] collectorStr = new String[collectors.length];
@@ -461,12 +471,14 @@
 	
 					%></table><%
 					endDETable(pageContext);
+					%></p><%
 					
 					//Adoption
 					if (sampleUtil.getAdoptionRecordCount(sample) > 0) {
 						for (Iterator i = sampleUtil.getAdoptionRecords(sample).iterator(); i.hasNext();) {
 							Adoption adoRecord = (Adoption) i.next();
 							if (recordUtil.isAllowedReadRecord(user, adoRecord.getRecord())) {
+								%><p><%
 								startDETable(pageContext);
 								%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Adoption Information</td></tr><%
 								Object[] adoptors = adoRecord.getAdopters().toArray();
@@ -496,6 +508,7 @@
 								}
 								%></table><%
 								endDETable(pageContext);
+								%></p><%
 							}
 						}
 					}
@@ -505,8 +518,9 @@
 						for (Iterator i = sampleUtil.getPaleontologyRecords(sample).iterator(); i.hasNext();) {
 							Paleontology palRecord = (Paleontology) i.next();
 							if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {
+								%><p><%
 								startDETable(pageContext);
-								%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Paleontology Information</td></tr><%
+								%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Paleontology Information&nbsp;&nbsp;&nbsp;<a href="print_pal.jsp?ID=<%=palRecord.getRecordId()%>" target="_blank"><img src="images/print.gif" width="20" height="20" border="0" alt="Print" /></td></tr><%
 								Object[] identifiers = palRecord.getIdentifiers().toArray();
 								String[] identifiersStr = new String[identifiers.length];
 								for (int j = 0; j < identifiers.length; j++)
@@ -582,22 +596,38 @@
 								}
 								%></table><%
 								endDETable(pageContext);
+								%></p><%
 							}
 						}
 					}			
 				}
+			} else {
+				//didn't pass isAllowedReadFeature()
+				if (user ==  null) {
+					%><tr><td>&nbsp;</td></tr><tr><td colspan="2">More data may be available for this locality for <a href="login.jsp?loginpage=<%=URLEncoder.encode("/fred/detail_hib.jsp")%>" class="boldlink">logged</a> in users</td></tr><%
+				}
+				%></table><%
+				endDETable(pageContext);
+				%></p><%
 			}
-			if (user ==  null)
-				out.println("<tr><td colspan='2'>More data may be available for this locality for <a href='login.jsp?loginpage=" + URLEncoder.encode("/fred/detail_hib.jsp") + "' class='boldlink'>logged</a> in users</td></tr>");
-			out.println("</table></td></tr></table>");
+			%></td></tr></table><%
+		} else {
+			//didn't pass isAllowedReadFeatureSite()
+			drawTop(out, et, request, response);
+			%><table style="margin-left:20px; width:550px;" border="0">
+			<tr><td>You do not have rights to view this sample</td></tr><%
+			if (user == null) {
+				%><tr><td colspan="2">You may be able to view it if you <a href="login.jsp?loginpage=<%=URLEncoder.encode("/fred/detail_hib.jsp")%>" class="boldlink">login</a></td></tr><%
+			}
+			%></table><%
 		}
 	} 
-	else { //no sampleID
+	else {
+		 //no sampleID
 		drawTop(out, et, request, response);
-		drawEndNavigation(out);
-		out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-		out.println("<tr><td>No SampleID received.  Click <a href='index.jsp' class=\"heading\">here</a> to return to the FRED home page.</td></tr>");
-		out.println("</table>");
+		%><table style="margin-left:20px; width:550px;" border="0">
+		<tr><td>No SampleID entered.</td></tr>
+		</table><%
 	}
 	
 	drawBottom(out, et); 
