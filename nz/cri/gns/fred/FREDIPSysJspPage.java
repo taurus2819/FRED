@@ -56,6 +56,8 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 		et.setDisplayLogin(true);
 		et.setShowGnsLogo(true);
 		et.setUseNavigationColumn(true);
+		et.addStyleSheet("fredde.css");
+        et.addScript("showhide.js");
 		KeyValueObject links[] = new KeyValueObject[4];
 		links[0] = new KeyValueObject("/fred/index.jsp", "FRED Home");
 		links[1] = new KeyValueObject("/fred/simple_query.jsp", "Query");

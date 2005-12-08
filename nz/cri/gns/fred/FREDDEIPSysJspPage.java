@@ -39,16 +39,7 @@ public abstract class FREDDEIPSysJspPage extends FREDIPSysJspPage{
 	protected ExtranetTemplate getExtranetTemplate() {
 		ExtranetTemplate et = super.getExtranetTemplate();
 		et.setUseNavigationColumn(false);
-		et.addStyleSheet("fredde.css");
-        et.addScript("showhide.js");
 		return et;
 	}
 
-	protected void startDETable(PageContext context) throws IOException, ServletException {
-        context.include("/content/detablestart.html");
-	}
-	
-	protected void endDETable(PageContext context) throws IOException, ServletException {
-        context.include("/content/detableend.html");
-	}
 }
