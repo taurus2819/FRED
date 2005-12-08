@@ -13,6 +13,7 @@
 %><%@page import="nz.cri.gns.fred.model.SentTo"
 %><%@page import="nz.cri.gns.fred.model.SedimentaryFeature"
 %><%@page import="nz.cri.gns.fred.model.TaxonomicGroup"
+%><%@page import="nz.cri.gns.fred.model.Meta"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="nz.cri.gns.db.metadata.*"
@@ -80,7 +81,7 @@
 				if (feature.getSamples().size() > 1) {
 					response.sendRedirect("drillhole_detail.jsp?ID=" + featID);
 				} else {
-					response.sendRedirect("detail.jsp?ID=" + ((Sample)feature.getSamples().iterator().next()).getSampleId());
+					response.sendRedirect("detail_hib.jsp?ID=" + ((Sample)feature.getSamples().iterator().next()).getSampleId());
 				}
 			} else {
 				response.sendRedirect("drillhole_detail.jsp?ID=" + featID);
@@ -341,251 +342,248 @@
 			}
 			%><tr><td class="heading">Country</td><td><%=((sr != null && !sr.isNull(SiteRecord.COUNTRY_FIELD)) ? FREDUtil.getSiteCountry(sr) : "&nbsp;")%></td></tr><%
 			
-			if (isAllowedReadFeature && !featType.equals(FREDConstants.OUTCROP)) {
-				%><tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector")%></td><td><%=((feature.getPerson() != null) ? feature.getPerson().getName() : "&nbsp;")%></td></tr>
-				<tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date")%></td><td><%=((feature.getStartDate() != null) ? FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding()) : "&nbsp;")%></td></tr>
-				<tr><td class="heading">Completion Date</td><td><%=((feature.getFinishDate() != null) ? FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding()) : "&nbsp;")%></td></tr><%
-				if (featType.equals(FREDConstants.DRILLHOLE)) {
-					%><tr><td class="heading">Licence Area</td><td><%=DBUtils.nvl(feature.getDrillholeLicenceName())%></td></tr><%
-				}
-				%><tr><td class="heading">Datum Type</td><td><%=DBUtils.nvl(feature.getDatumType())%></td></tr>
-				<tr><td class="heading">Datum Elevation</td><td><%=((feature.getDatumElevation() != null) ? String.valueOf(feature.getDatumElevation()) + " m asl" : "&nbsp;")%></td></tr>
-				<tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon")%></td><td><%=((feature.getStartDepth() != null) ? String.valueOf(feature.getStartDepth()) + " m" : "&nbsp;")%></td></tr>
-				<tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon")%></td><td><%=((feature.getFinishDepth() != null) ? String.valueOf(feature.getFinishDepth()) + " m" : "&nbsp;")%></td></tr><%
-			}
-					
-				/*
-
-			//Image/Files
-			if (sample.isUserAuthenticated() && sample.getFeatureMetadataRecordsCount() > 0) {
-				out.println("<tr><td colspan='2' class="heading">Images/Files</td></tr>");
-				MetadataRecord[] mr = sample.getFeatureMetadataRecords();
-				out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
-				int y = 1;
-				out.print("<tr>");
-				for (int x = 0; x < mr.length; x++) {
-					if (y++ == 5) {
-						out.println("</tr><tr>");
-						y = 2;
+			if (isAllowedReadFeature) {
+				//Drillhole/Vert Sect fields
+				if (!featType.equals(FREDConstants.OUTCROP)) {
+					%><tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector")%></td><td><%=((feature.getPerson() != null) ? feature.getPerson().getName() : "&nbsp;")%></td></tr>
+					<tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date")%></td><td><%=((feature.getStartDate() != null) ? FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding()) : "&nbsp;")%></td></tr>
+					<tr><td class="heading">Completion Date</td><td><%=((feature.getFinishDate() != null) ? FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding()) : "&nbsp;")%></td></tr><%
+					if (featType.equals(FREDConstants.DRILLHOLE)) {
+						%><tr><td class="heading">Licence Area</td><td><%=DBUtils.nvl(feature.getDrillholeLicenceName())%></td></tr><%
 					}
-					out.print("<td width='150' align='center' class='smalltext'><a href='/online/DigitalDocument?src=" + mr[x].getCode() + "'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "' alt='FRED Digital Document' /><br />" + mr[x].getTitle() + "</a></td>");
+					%><tr><td class="heading">Datum Type</td><td><%=DBUtils.nvl(feature.getDatumType())%></td></tr>
+					<tr><td class="heading">Datum Elevation</td><td><%=((feature.getDatumElevation() != null) ? String.valueOf(feature.getDatumElevation()) + " m asl" : "&nbsp;")%></td></tr>
+					<tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon")%></td><td><%=((feature.getStartDepth() != null) ? String.valueOf(feature.getStartDepth()) + " m" : "&nbsp;")%></td></tr>
+					<tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon")%></td><td><%=((feature.getFinishDepth() != null) ? String.valueOf(feature.getFinishDepth()) + " m" : "&nbsp;")%></td></tr><%
 				}
-				out.println("</td></tr></table></td></tr>");
-			} */
 			
-			%><tr><td>&nbsp;</td></tr><%
-
-			if (isAllowedReadSample) {
-				//Sample Property Data
-				%><tr><td class="bigheading" colspan="2">Collection Information</td></tr><%
-				Object[] collectors = sample.getCollectors().toArray();
-				String[] collectorStr = new String[collectors.length];
-				for (int i = 0; i < collectors.length; i++)
-					collectorStr[i] = ((PersonRelationship) collectors[i]).getDisplayName();
-				addRepeatingCells(new PrintWriter(out), "Collectors", collectorStr, false);
-				%><tr><td class="heading">Collection Date</td><td><%=((sample.getCollectionDate() != null) ? FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding()) : "&nbsp;")%></td></tr>
-				<tr><td class="heading">Stratigraphic Name</td><td><%=DBUtils.nvl(sample.getStratUnit())%></td></tr>
-				<tr><td class="heading">Fossils in Place</td><td><%=DBUtils.nvl(sample.getInPlace())%></td></tr><%
-				Object[] sentTos = sample.getSentTos().toArray();
-				String[] sentToStr = new String[sentTos.length];
-				for (int i = 0; i < sentTos.length; i++)
-					sentToStr[i] = SampleUtil.getSentToDescription((SentTo) sentTos[i]);
-				addRepeatingCells(new PrintWriter(out), "Sent To", sentToStr, true);
-				%><tr><td class="heading">Not Collected</td><td><%=DBUtils.nvl(sample.getNotCollected())%></td></tr>
-				<tr><td class="heading">Significance/Comments</td><td><%=DBUtils.nvl(sample.getSignificance())%></td></tr>
-
-				<tr><td>&nbsp;</td></tr>
-
-				<tr><td class="bigheading" colspan="2">Stratigraphy</td></tr>
-				<tr><td class="heading">Inferred Stage</td><td><%=((sample.getInferredStage() != null) ? StageUtil.getStageDescription(sample.getInferredStage()) : "&nbsp;")%></td></tr>
-				<tr><td class="heading">Known Stage</td><td><%=((sample.getKnownStage() != null) ? StageUtil.getStageDescription(sample.getKnownStage()) : "&nbsp;")%></td></tr><%
-				Object[] relationships = sampleUtil.getRelationships(sample, "Sample", "nearby").toArray();
-				String[] relationshipStr = new String[relationships.length];
-				for (int i = 0; i < relationships.length; i++)
-					relationshipStr[i] = SampleUtil.getRelationshipDescriptionWithLink((Relationship) relationships[i], "detail.jsp?FeatID=", null);
-				addRepeatingCells(new PrintWriter(out), "Samples Nearby", relationshipStr, false);			
-				relationships = sampleUtil.getRelationships(sample, "Sample", new String[] {"above", "below"}).toArray();
-				relationshipStr = new String[relationships.length];
-				for (int i = 0; i < relationships.length; i++)
-					relationshipStr[i] = SampleUtil.getRelationshipDescriptionWithLink((Relationship) relationships[i], "detail.jsp?FeatID=", null);
-				addRepeatingCells(new PrintWriter(out), "Sample Relationships", relationshipStr, false);			
-				relationships = sampleUtil.getRelationships(sample, "Stratigraphic", new String[] {"above top", "above base", "below top", "below base"}).toArray();
-				relationshipStr = new String[relationships.length];
-				for (int i = 0; i < relationships.length; i++)
-					relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
-				addRepeatingCells(new PrintWriter(out), "Strat. Relationships", relationshipStr, true);	
-				%><tr><td class="heading">Column/Map</td><td><%=DBUtils.nvl(sample.getColumnMap())%></td></tr>
-				<tr><td class="heading">Dip</td><td><%=DBUtils.nvl(sample.getDip())%></td></tr>
-				<tr><td class="heading">Dip Direction</td><td><%=DBUtils.nvl(sample.getDipDirection())%></td></tr>
-				<tr><td class="heading">Strike</td><td><%=DBUtils.nvl(sample.getStrike())%></td></tr>
-				<tr><td class="heading">Facing</td><td><%=DBUtils.nvl(sample.getFacing())%></td></tr>
-
-				<tr><td>&nbsp;</td></tr>
-
-				<tr><td class="bigheading" colspan="2">Sedimentary Features</td></tr>
-								
-								
-				<tr><td class="heading">Grain Size</td><td><%=SampleUtil.getGrainSizeDescription(sample)%></td></tr>
-				<tr><td class="heading">Bedding Thickness</td><td><%=((sample.getBedThickness() != null) ? sample.getBedThickness().getName() : "&nbsp;")%></td></tr>
-				<tr><td class="heading">Bedding Features</td><td><%=SampleUtil.getBeddingDescription(sample)%></td></tr>
-				<tr><td class="heading">Weathering</td><td><%=((sample.getWeathering() != null) ? sample.getWeathering().getName() : "&nbsp;")%></td></tr>
-				<tr><td class="heading">Hardness</td><td><%=((sample.getHardness() != null) ? sample.getHardness().getName() : "&nbsp;")%></td></tr>
-				<tr><td class="heading">Carbonate</td><td><%=((sample.getCarbonate() != null) ? sample.getCarbonate().getName() : "&nbsp;")%></td></tr>
-				<tr><td class="heading">Colour</td><td><%=SampleUtil.getColourDescription(sample)%></td></tr><%
-				Object[] sedFeatures = sample.getSedimentaryFeatures().toArray();
-				String[] sedFeaturesStr = new String[sedFeatures.length];
-				for (int i = 0; i < sedFeatures.length; i++)
-					sedFeaturesStr[i] = SampleUtil.getSedFeatureDescription((SedimentaryFeature) sedFeatures[i]);
-				addRepeatingCells(new PrintWriter(out), "Additional Features", sedFeaturesStr, false);
-				%><tr><td class="heading">Inferred Environment</td><td><%=DBUtils.nvl(sample.getDepositionEnv())%></td></tr>
-				<tr><td class="heading">Nature of Rock Unit</td><td><%=DBUtils.nvl(sample.getRockNature())%></td></tr>
-				<tr><td class="heading">Correspondence</td><td><%=DBUtils.nvl(sample.getCorrespondence())%></td></tr><%
-				/*
 				//Image/Files
-				if (sample.getSampleMetadataRecordsCount() > 0) {
-					out.println("<tr><td colspan='2' class="heading">Images/Files</td></tr>");
-					MetadataRecord[] mr = sample.getSampleMetadataRecords();
-					out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
+				if (feature.getFeatureMetas().size() > 0) {
+					%><tr><td colspan="2" class="heading">Images/Files</td></tr>
+					<tr><td colspan="2"><table border="0" cellspacing="0" width="600"><%
 					int y = 1;
-					out.print("<tr>");
-					for (int x = 0; x < mr.length; x++) {
+					%><tr><%
+					for (Iterator i = feature.getFeatureMetas().iterator(); i.hasNext();) {
+						Meta meta = (Meta) i.next();
 						if (y++ == 5) {
-							out.println("</tr><tr>");
+							%></tr><tr><%
 							y = 2;
 						}
-						out.print("<td width='150' align='center' class='smalltext'><a href='/online/DigitalDocument?src=" + mr[x].getCode() + "'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "' alt='FRED Digital Document' /><br />" + mr[x].getTitle() + "</a></td>");
+						%><td width="150" align="center" class="smalltext"><a href="/online/DigitalDocument?src=<%=meta.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=meta.getMetaId()%>" alt="FRED Digital Document" /><br /><%=FREDUtil.getMetaTitle(meta)%></a></td><%
 					}
-					out.println("</td></tr></table></td></tr>");
-				}*/
-
+					%></td></tr></table></td></tr><%
+				}
+			
 				%><tr><td>&nbsp;</td></tr><%
-				
-				//Adoption
-				if (sampleUtil.getAdoptionRecordCount(sample) > 0) {
-					for (Iterator i = sampleUtil.getAdoptionRecords(sample).iterator(); i.hasNext();) {
-						Adoption adoRecord = (Adoption) i.next();
-						if (recordUtil.isAllowedReadRecord(user, adoRecord.getRecord())) {
-							%><tr><td colspan="2" class="bigheading">Adoption Data</td></tr><%
-							Object[] adoptors = adoRecord.getAdopters().toArray();
-							String[] adoptorsStr = new String[adoptors.length];
-							for (int j = 0; j < adoptors.length; j++)
-								adoptorsStr[j] = ((PersonRelationship) adoptors[j]).getDisplayName();
-							addRepeatingCells(new PrintWriter(out), "Adoptors", adoptorsStr, false);
-							%><tr><td class="heading">Adoption Date</td><td><%=((adoRecord.getAdoptionDate() != null) ? FREDUtil.formatDateForOutput(adoRecord.getAdoptionDate(), adoRecord.getDateRounding()) : "&nbsp;")%></td></tr>
-							<tr><td class="heading">Adopted Stage</td><td><%=((adoRecord.getStage() != null) ? StageUtil.getStageDescription(adoRecord.getStage()) : "&nbsp;")%></td></tr>
-							<tr><td class="heading">Comments</td><td><%=DBUtils.nvl(adoRecord.getComments())%></td></tr><%
-					/*		//Image/Files
-							if (ado.getMetadataRecordsCount() > 0) {
-								out.println("<tr><td colspan='2' class="heading">Images/Files</td></tr>");
-								MetadataRecord[] mr = ado.getMetadataRecords();
-								out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
-								int y = 1;
-								out.print("<tr>");
-								for (int x = 0; x < mr.length; x++) {
-									if (y++ == 5) {
-										out.println("</tr><tr>");
-										y = 2;
+	
+				if (isAllowedReadSample) {
+					//Sample Property Data
+					%><tr><td class="bigheading" colspan="2">Collection Information</td></tr><%
+					Object[] collectors = sample.getCollectors().toArray();
+					String[] collectorStr = new String[collectors.length];
+					for (int i = 0; i < collectors.length; i++)
+						collectorStr[i] = ((PersonRelationship) collectors[i]).getDisplayName();
+					addRepeatingCells(new PrintWriter(out), "Collectors", collectorStr, false);
+					%><tr><td class="heading">Collection Date</td><td><%=((sample.getCollectionDate() != null) ? FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding()) : "&nbsp;")%></td></tr>
+					<tr><td class="heading">Stratigraphic Name</td><td><%=DBUtils.nvl(sample.getStratUnit())%></td></tr>
+					<tr><td class="heading">Fossils in Place</td><td><%=DBUtils.nvl(sample.getInPlace())%></td></tr><%
+					Object[] sentTos = sample.getSentTos().toArray();
+					String[] sentToStr = new String[sentTos.length];
+					for (int i = 0; i < sentTos.length; i++)
+						sentToStr[i] = SampleUtil.getSentToDescription((SentTo) sentTos[i]);
+					addRepeatingCells(new PrintWriter(out), "Sent To", sentToStr, true);
+					%><tr><td class="heading">Not Collected</td><td><%=DBUtils.nvl(sample.getNotCollected())%></td></tr>
+					<tr><td class="heading">Significance/Comments</td><td><%=DBUtils.nvl(sample.getSignificance())%></td></tr>
+	
+					<tr><td>&nbsp;</td></tr>
+	
+					<tr><td class="bigheading" colspan="2">Stratigraphy</td></tr>
+					<tr><td class="heading">Inferred Stage</td><td><%=((sample.getInferredStage() != null) ? StageUtil.getStageDescription(sample.getInferredStage()) : "&nbsp;")%></td></tr>
+					<tr><td class="heading">Known Stage</td><td><%=((sample.getKnownStage() != null) ? StageUtil.getStageDescription(sample.getKnownStage()) : "&nbsp;")%></td></tr><%
+					Object[] relationships = sampleUtil.getRelationships(sample, "Sample", "nearby").toArray();
+					String[] relationshipStr = new String[relationships.length];
+					for (int i = 0; i < relationships.length; i++)
+						relationshipStr[i] = SampleUtil.getRelationshipDescriptionWithLink((Relationship) relationships[i], "detail.jsp?FeatID=", null);
+					addRepeatingCells(new PrintWriter(out), "Samples Nearby", relationshipStr, false);			
+					relationships = sampleUtil.getRelationships(sample, "Sample", new String[] {"above", "below"}).toArray();
+					relationshipStr = new String[relationships.length];
+					for (int i = 0; i < relationships.length; i++)
+						relationshipStr[i] = SampleUtil.getRelationshipDescriptionWithLink((Relationship) relationships[i], "detail.jsp?FeatID=", null);
+					addRepeatingCells(new PrintWriter(out), "Sample Relationships", relationshipStr, false);			
+					relationships = sampleUtil.getRelationships(sample, "Stratigraphic", new String[] {"above top", "above base", "below top", "below base"}).toArray();
+					relationshipStr = new String[relationships.length];
+					for (int i = 0; i < relationships.length; i++)
+						relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
+					addRepeatingCells(new PrintWriter(out), "Strat. Relationships", relationshipStr, true);	
+					%><tr><td class="heading">Column/Map</td><td><%=DBUtils.nvl(sample.getColumnMap())%></td></tr>
+					<tr><td class="heading">Dip</td><td><%=DBUtils.nvl(sample.getDip())%></td></tr>
+					<tr><td class="heading">Dip Direction</td><td><%=DBUtils.nvl(sample.getDipDirection())%></td></tr>
+					<tr><td class="heading">Strike</td><td><%=DBUtils.nvl(sample.getStrike())%></td></tr>
+					<tr><td class="heading">Facing</td><td><%=DBUtils.nvl(sample.getFacing())%></td></tr>
+	
+					<tr><td>&nbsp;</td></tr>
+	
+					<tr><td class="bigheading" colspan="2">Sedimentary Features</td></tr>
+									
+									
+					<tr><td class="heading">Grain Size</td><td><%=SampleUtil.getGrainSizeDescription(sample)%></td></tr>
+					<tr><td class="heading">Bedding Thickness</td><td><%=((sample.getBedThickness() != null) ? sample.getBedThickness().getName() : "&nbsp;")%></td></tr>
+					<tr><td class="heading">Bedding Features</td><td><%=SampleUtil.getBeddingDescription(sample)%></td></tr>
+					<tr><td class="heading">Weathering</td><td><%=((sample.getWeathering() != null) ? sample.getWeathering().getName() : "&nbsp;")%></td></tr>
+					<tr><td class="heading">Hardness</td><td><%=((sample.getHardness() != null) ? sample.getHardness().getName() : "&nbsp;")%></td></tr>
+					<tr><td class="heading">Carbonate</td><td><%=((sample.getCarbonate() != null) ? sample.getCarbonate().getName() : "&nbsp;")%></td></tr>
+					<tr><td class="heading">Colour</td><td><%=SampleUtil.getColourDescription(sample)%></td></tr><%
+					Object[] sedFeatures = sample.getSedimentaryFeatures().toArray();
+					String[] sedFeaturesStr = new String[sedFeatures.length];
+					for (int i = 0; i < sedFeatures.length; i++)
+						sedFeaturesStr[i] = SampleUtil.getSedFeatureDescription((SedimentaryFeature) sedFeatures[i]);
+					addRepeatingCells(new PrintWriter(out), "Additional Features", sedFeaturesStr, false);
+					%><tr><td class="heading">Inferred Environment</td><td><%=DBUtils.nvl(sample.getDepositionEnv())%></td></tr>
+					<tr><td class="heading">Nature of Rock Unit</td><td><%=DBUtils.nvl(sample.getRockNature())%></td></tr>
+					<tr><td class="heading">Correspondence</td><td><%=DBUtils.nvl(sample.getCorrespondence())%></td></tr><%
+					
+					//Image/Files
+					if (sample.getSampleMetas().size() > 0) {
+						%><tr><td colspan="2" class="heading">Images/Files</td></tr>
+						<tr><td colspan="2"><table border="0" cellspacing="0" width="600"><%
+						int y = 1;
+						%><tr><%
+						for (Iterator i = feature.getFeatureMetas().iterator(); i.hasNext();) {
+							Meta meta = (Meta) i.next();
+							if (y++ == 5) {
+								%></tr><tr><%
+								y = 2;
+							}
+							%><td width="150" align="center" class="smalltext"><a href="/online/DigitalDocument?src=<%=meta.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=meta.getMetaId()%>" alt="FRED Digital Document" /><br /><%=FREDUtil.getMetaTitle(meta)%></a></td><%
+						}
+						%></td></tr></table></td></tr><%
+					}
+	
+					%><tr><td>&nbsp;</td></tr><%
+					
+					//Adoption
+					if (sampleUtil.getAdoptionRecordCount(sample) > 0) {
+						for (Iterator i = sampleUtil.getAdoptionRecords(sample).iterator(); i.hasNext();) {
+							Adoption adoRecord = (Adoption) i.next();
+							if (recordUtil.isAllowedReadRecord(user, adoRecord.getRecord())) {
+								%><tr><td colspan="2" class="bigheading">Adoption Data</td></tr><%
+								Object[] adoptors = adoRecord.getAdopters().toArray();
+								String[] adoptorsStr = new String[adoptors.length];
+								for (int j = 0; j < adoptors.length; j++)
+									adoptorsStr[j] = ((PersonRelationship) adoptors[j]).getDisplayName();
+								addRepeatingCells(new PrintWriter(out), "Adoptors", adoptorsStr, false);
+								%><tr><td class="heading">Adoption Date</td><td><%=((adoRecord.getAdoptionDate() != null) ? FREDUtil.formatDateForOutput(adoRecord.getAdoptionDate(), adoRecord.getDateRounding()) : "&nbsp;")%></td></tr>
+								<tr><td class="heading">Adopted Stage</td><td><%=((adoRecord.getStage() != null) ? StageUtil.getStageDescription(adoRecord.getStage()) : "&nbsp;")%></td></tr>
+								<tr><td class="heading">Comments</td><td><%=DBUtils.nvl(adoRecord.getComments())%></td></tr><%
+								
+								//Image/Files
+								if (adoRecord.getRecord().getRecordMetas().size() > 0) {
+									%><tr><td colspan="2" class="heading">Images/Files</td></tr>
+									<tr><td colspan="2"><table border="0" cellspacing="0" width="600"><%
+									int y = 1;
+									%><tr><%
+									for (Iterator j = feature.getFeatureMetas().iterator(); j.hasNext();) {
+										Meta meta = (Meta) j.next();
+										if (y++ == 5) {
+											%></tr><tr><%
+											y = 2;
+										}
+										%><td width="150" align="center" class="smalltext"><a href="/online/DigitalDocument?src=<%=meta.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=meta.getMetaId()%>" alt="FRED Digital Document" /><br /><%=FREDUtil.getMetaTitle(meta)%></a></td><%
 									}
-									out.print("<td width='150' align='center' class='smalltext'><a href='/online/DigitalDocument?src=" + mr[x].getCode() + "'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "' alt='FRED Digital Document' /><br />" + mr[x].getTitle() + "</a></td>");
+									%></td></tr></table></td></tr><%
 								}
-								out.println("</td></tr></table></td></tr>");
-							} */
-							%><tr><td>&nbsp;</td></tr><%
+								%><tr><td>&nbsp;</td></tr><%
+							}
 						}
 					}
-				}
-	
-				//Paleontology
-				if (sampleUtil.getPaleontologyRecordCount(sample) > 0) {
-					for (Iterator i = sampleUtil.getPaleontologyRecords(sample).iterator(); i.hasNext();) {
-						Paleontology palRecord = (Paleontology) i.next();
-						if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {
-							%><tr><td colspan="2" class="bigheading">Paleontology Data</td></tr><%									//identifiers (repeating)
-							Object[] identifiers = palRecord.getIdentifiers().toArray();
-							String[] identifiersStr = new String[identifiers.length];
-							for (int j = 0; j < identifiers.length; j++)
-								identifiersStr[j] = ((PersonRelationship) identifiers[j]).getDisplayName();
-							addRepeatingCells(new PrintWriter(out), "Identifiers", identifiersStr, false);
-							%><tr><td class="heading">Identification Date</td><td><%=((palRecord.getIdentificationDate() != null) ? FREDUtil.formatDateForOutput(palRecord.getIdentificationDate(), palRecord.getDateRounding()) : "&nbsp;")%></td></tr>
-							<tr><td class="heading">Stage</td><td><%=((palRecord.getStage() != null) ? StageUtil.getStageDescription(palRecord.getStage()) : "&nbsp;")%></td></tr>
-							<tr><td class="heading">Stage Comments</td><td><%=DBUtils.nvl(palRecord.getStageComments())%></td></tr>
-							<tr><td class="heading">Lab</td><td><%=((palRecord.getLabSection() != null) ? RecordUtil.getLabDescription(palRecord.getLabSection()) : "&nbsp;")%></td></tr>
-							<tr><td class="heading">Lab Number</td><td><%=DBUtils.nvl(palRecord.getLabNumber())%></td></tr>
-							<tr><td class="heading">Collection Comments</td><td><%=DBUtils.nvl(palRecord.getCollectionComments())%></td></tr><%
-			
-							//taxa (Pal list)
-							if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
-								%><tr><td colspan="2"><table border="0" cellspacing="0" cellpadding="2"><%
-								for (Iterator k = recordUtil.getTaxonomicGroups(palRecord).iterator(); k.hasNext(); ) {
-									TaxonomicGroup taxaGroup = (TaxonomicGroup) k.next();
-									%><tr><td colspan="4" class="heading"><%=taxaGroup.getName()%></td></tr><%
-									if (recordUtil.getListEntries(palRecord, taxaGroup).size() > 0) {
-										%><tr class="heading"><td>Taxonomic Name&nbsp;&nbsp;</td><%
-										if (authorChk) {
-											%><td>Author&nbsp;&nbsp;</td><%
-										}
-										if (sCountChk) {
-											%><td>Spec Count&nbsp;&nbsp;</td><%
-										}
-										if (sCoordChk) {
-											%><td>Spec Coord&nbsp;&nbsp;</td><%
-										}
-										if (commChk) {
-											%><td>Comments&nbsp;&nbsp;</td><%
-										}
-										%></tr><%
-										for (Iterator l = recordUtil.getListEntries(palRecord, taxaGroup).iterator(); l.hasNext(); ) {
-											PaleontologyListEntry taxa = (PaleontologyListEntry) l.next();
-											%><tr><td><i><%=taxa.getTaxonomicName()%></i>&nbsp;&nbsp;</td><%
+		
+					//Paleontology
+					if (sampleUtil.getPaleontologyRecordCount(sample) > 0) {
+						for (Iterator i = sampleUtil.getPaleontologyRecords(sample).iterator(); i.hasNext();) {
+							Paleontology palRecord = (Paleontology) i.next();
+							if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {
+								%><tr><td colspan="2" class="bigheading">Paleontology Data</td></tr><%									//identifiers (repeating)
+								Object[] identifiers = palRecord.getIdentifiers().toArray();
+								String[] identifiersStr = new String[identifiers.length];
+								for (int j = 0; j < identifiers.length; j++)
+									identifiersStr[j] = ((PersonRelationship) identifiers[j]).getDisplayName();
+								addRepeatingCells(new PrintWriter(out), "Identifiers", identifiersStr, false);
+								%><tr><td class="heading">Identification Date</td><td><%=((palRecord.getIdentificationDate() != null) ? FREDUtil.formatDateForOutput(palRecord.getIdentificationDate(), palRecord.getDateRounding()) : "&nbsp;")%></td></tr>
+								<tr><td class="heading">Stage</td><td><%=((palRecord.getStage() != null) ? StageUtil.getStageDescription(palRecord.getStage()) : "&nbsp;")%></td></tr>
+								<tr><td class="heading">Stage Comments</td><td><%=DBUtils.nvl(palRecord.getStageComments())%></td></tr>
+								<tr><td class="heading">Lab</td><td><%=((palRecord.getLabSection() != null) ? RecordUtil.getLabDescription(palRecord.getLabSection()) : "&nbsp;")%></td></tr>
+								<tr><td class="heading">Lab Number</td><td><%=DBUtils.nvl(palRecord.getLabNumber())%></td></tr>
+								<tr><td class="heading">Collection Comments</td><td><%=DBUtils.nvl(palRecord.getCollectionComments())%></td></tr><%
+				
+								//taxa (Pal list)
+								if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
+									%><tr><td colspan="2"><table border="0" cellspacing="0" cellpadding="2"><%
+									for (Iterator k = recordUtil.getTaxonomicGroups(palRecord).iterator(); k.hasNext(); ) {
+										TaxonomicGroup taxaGroup = (TaxonomicGroup) k.next();
+										%><tr><td colspan="4" class="heading"><%=taxaGroup.getName()%></td></tr><%
+										if (recordUtil.getListEntries(palRecord, taxaGroup).size() > 0) {
+											%><tr class="heading"><td>Taxonomic Name&nbsp;&nbsp;</td><%
 											if (authorChk) {
-												%><td><%=DBUtils.nvl(taxa.getTaxon().getAuthor())%>&nbsp;&nbsp;</td><%
+												%><td>Author&nbsp;&nbsp;</td><%
 											}
 											if (sCountChk) {
-												%><td><%=DBUtils.nvl(taxa.getSpecimenCount())%>&nbsp;&nbsp;</td><%
+												%><td>Spec Count&nbsp;&nbsp;</td><%
 											}
 											if (sCoordChk) {
-												%><td><%=DBUtils.nvl(taxa.getSpecimenCoords())%>&nbsp;&nbsp;</td><%
+												%><td>Spec Coord&nbsp;&nbsp;</td><%
 											}
 											if (commChk) {
-												%><td><%=DBUtils.nvl(taxa.getComments())%>&nbsp;&nbsp;</td><%
+												%><td>Comments&nbsp;&nbsp;</td><%
 											}
 											%></tr><%
+											for (Iterator l = recordUtil.getListEntries(palRecord, taxaGroup).iterator(); l.hasNext(); ) {
+												PaleontologyListEntry taxa = (PaleontologyListEntry) l.next();
+												%><tr><td><i><%=taxa.getTaxonomicName()%></i>&nbsp;&nbsp;</td><%
+												if (authorChk) {
+													%><td><%=DBUtils.nvl(taxa.getTaxon().getAuthor())%>&nbsp;&nbsp;</td><%
+												}
+												if (sCountChk) {
+													%><td><%=DBUtils.nvl(taxa.getSpecimenCount())%>&nbsp;&nbsp;</td><%
+												}
+												if (sCoordChk) {
+													%><td><%=DBUtils.nvl(taxa.getSpecimenCoords())%>&nbsp;&nbsp;</td><%
+												}
+												if (commChk) {
+													%><td><%=DBUtils.nvl(taxa.getComments())%>&nbsp;&nbsp;</td><%
+												}
+												%></tr><%
+											}
+										} else {
+											%><tr><td colspan="4">No fossils listed</td></tr><%
 										}
-									} else {
-										%><tr><td colspan="4">No fossils listed</td></tr><%
+										%><tr><td>&nbsp;</td></tr><%
 									}
-									%><tr><td>&nbsp;</td></tr><%
+									%></td></tr></table></td></tr><%
 								}
-								%></td></tr></table></td></tr><%
+								//Image/Files
+								if (palRecord.getRecord().getRecordMetas().size() > 0) {
+									%><tr><td colspan="2" class="heading">Images/Files</td></tr>
+									<tr><td colspan="2"><table border="0" cellspacing="0" width="600"><%
+									int y = 1;
+									%><tr><%
+									for (Iterator j = feature.getFeatureMetas().iterator(); j.hasNext();) {
+										Meta meta = (Meta) j.next();
+										if (y++ == 5) {
+											%></tr><tr><%
+											y = 2;
+										}
+										%><td width="150" align="center" class="smalltext"><a href="/online/DigitalDocument?src=<%=meta.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=meta.getMetaId()%>" alt="FRED Digital Document" /><br /><%=FREDUtil.getMetaTitle(meta)%></a></td><%
+									}
+									%></td></tr></table></td></tr><%
+								}
+								%><tr><td>&nbsp;</td></tr><%
 							}
-							
-							/*
-							//Image/Files
-							if (pal.getMetadataRecordsCount() > 0) {
-								out.println("<tr><td colspan='2' class="heading">Images/Files</td></tr>");
-								MetadataRecord[] mr = pal.getMetadataRecords();
-								out.println("<tr><td colspan='2'><table border='0' cellspacing='0' width='600'>");
-								int y = 1;
-								out.print("<tr>");
-								for (int x = 0; x < mr.length; x++) {
-									if (y++ == 5) {
-										out.println("</tr><tr>");
-										y = 2;
-									}
-									out.print("<td width='150' align='center' class='smalltext'><a href='/online/DigitalDocument?src=" + mr[x].getCode() + "'><img border='0' src='/online/Thumbnail?src=" + mr[x].getCode() + "' alt='FRED Digital Document' /><br />" + mr[x].getTitle() + "</a></td>");
-								}
-								out.println("</td></tr></table></td></tr>");
-							}  */
-							%><tr><td>&nbsp;</td></tr><%
 						}
-					}
-				}			
-				
-
+					}			
+				}
 			}
-	
 			if (user ==  null)
-				out.println("<tr><td colspan='2'>More data may be available for this locality for <a href='login.jsp?loginpage=" + URLEncoder.encode("/fred/detail.jsp") + "' class='boldlink'>logged</a> in users</td></tr>");
+				out.println("<tr><td colspan='2'>More data may be available for this locality for <a href='login.jsp?loginpage=" + URLEncoder.encode("/fred/detail_hib.jsp") + "' class='boldlink'>logged</a> in users</td></tr>");
 			out.println("</table></td></tr></table>");
 		}
 	} 
