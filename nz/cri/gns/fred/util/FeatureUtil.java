@@ -572,6 +572,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			System.out.println("Folder ID = " + folder.getFolderName());
 			boolean rights = folder.isAllowedApproveLocalities();
 			System.out.println("Folder approve rights = " + rights);
+			System.out.println("Folder rights = " + folder.getRights());
 			return rights;
 		}
 		return false;
