@@ -189,7 +189,7 @@
 					startDETable(pageContext);
 					%><table border="0" width="160">
 					<tr><td class="deHeading">Add to Folder</td></tr>
-					<tr><td>You can add this locality to one of your personal folders by selecting it from the list and clicking <i>Add</i>.  You may wish to do this if you refer to this to allow you to add <%=((featType.equals(FREDConstants.OUTCROP)) ? "" : "samples, ")%>adoption or paleontology records.</td></tr>
+					<tr><td>You can add this locality to one of your personal folders by selecting it from the list and clicking <i>Add</i>.  You may wish to do this to allow you to add <%=((featType.equals(FREDConstants.OUTCROP)) ? "" : "samples, ")%>adoption or paleontology records.</td></tr>
 					<form name="FolderForm" method="post" action="detail_hib.jsp">
 					<tr><td>
 					<select name="FoldID">
