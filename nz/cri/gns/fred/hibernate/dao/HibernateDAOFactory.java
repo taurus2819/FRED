@@ -347,7 +347,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public int getNextAvailableSerialNumber(String mapSheet) throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
-			List list = session.find("SELECT max(fr.serialNumber) FROM FrNumber AS fr WHERE AND fr.serialNumber < 6000 AND fr.mapSheet = ?", mapSheet, new StringType());
+			List list = session.find("SELECT max(fr.serialNumber) FROM FrNumber AS fr WHERE fr.serialNumber < 6000 AND fr.mapSheet = ?", mapSheet, new StringType());
 			if (list.size() == 0)
 			    return 1;
 			return ((Integer)list.get(0)).intValue() + 1;
