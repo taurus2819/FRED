@@ -3,6 +3,7 @@
 %><%@page import="nz.cri.gns.fred.model.Audit"
 %><%@page import="nz.cri.gns.fred.model.AuditEdit"
 %><%@page import="nz.cri.gns.fred.model.Feature"
+%><%@page import="nz.cri.gns.fred.model.FrNumber"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.model.Paleontology"
 %><%@page import="nz.cri.gns.fred.model.PaleontologyListEntry"
@@ -81,7 +82,7 @@
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setUseNavigationColumn(false);
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	//if FeatureID given then get SampleID or transer to drillhole
 	if (request.getParameter("FeatID") != null) {
@@ -117,6 +118,7 @@
 		Sample sample = sampleUtil.getSample(Integer.parseInt(sampID));
 		Feature feature = sample.getFeature();
 		Audit audit = feature.getAudit();
+		String featType = feature.getFeatureType();
 		boolean isAllowedReadSample = sampleUtil.isAllowedReadSample(user, sample);
 		boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
 		
@@ -186,10 +188,10 @@
 					%><p><%
 					startDETable(pageContext);
 					%><table border="0" width="160">
-					<tr><td colspan="2" class="deHeading">Folder Options</td></tr>
+					<tr><td class="deHeading">Add to Folder</td></tr>
+					<tr><td>You can add this locality to one of your personal folders by selecting it from the list and clicking <i>Add</i>.  You may wish to do this if you refer to this to allow you to add <%=((featType.equals(FREDConstants.OUTCROP)) ? "" : "samples, ")%>adoption or paleontology records.</td></tr>
 					<form name="FolderForm" method="post" action="detail_hib.jsp">
-					<tr><td><a href="#" onClick="FolderForm.submit();"><img src="images/folder.gif" height="20" width="20" border="0" alt="Add to Folder" /></a></td><td><a href="#" onClick="FolderForm.submit();" class="heading">Add to Folder</a></td></tr>
-					<tr><td colspan="2">
+					<tr><td>
 					<select name="FoldID">
 					<option value="-">-- Choose --</option><%
 					for (Iterator i = (new FolderUtil(factory)).getPersonalFolders(user).iterator(); i.hasNext();) {
@@ -201,6 +203,7 @@
 					}
 					%></select>
 					</td></tr>
+					<tr><td style="text-align: right" class="heading"><a href="#" onClick="FolderForm.submit();">Add</a></td></tr>
 					<input type="hidden" name="ID" value="<%=sampID%>" />
 					<input type="hidden" name="ActionType" value="AddtoFold" />
 					</form>
@@ -209,35 +212,40 @@
 					%></p><%
 				}		
 				
-				
-				/*
-				if (FREDUtils.isAllowedApproveLocality(user, sample.getAsString(Sample.FEATURE_ID), sample.getAsString(Sample.FEATURE_STATUS), state)) {
-					FRNumber frNumber = FolderUtils.getNextFRNumber(sample.getAsString(Sample.REG_AREA_CODE), sample.getAsString(Sample.NZMG_SHEET), sample.getAsDouble(Sample.LATITUDE), sample.getAsDouble(Sample.LONGITUDE), state);
-					out.println("<tr><td colspan='2'>");
-					out.println("<table style='margin-left:10px; margin-top:20px; width:180px;' border='0'>");
-					out.println("<form name='RevForm' method='post' action='detail.jsp'>");
-					out.println("<input type='hidden' name='ID' value='" + sampID + "'>");
-					out.println("<input type='hidden' name='ActionType' value=''>");
-					out.println("<tr><td colspan='2' class='heading' align='center'>Locality Approval</td></tr>");
-					out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Approve\";document.RevForm.submit();'><img src='images/ok.gif' width='20' height='20' border='0' alt='Approve' /></a></td><td class='heading'>Approve</td></tr>");
-					out.println("<tr><td><a href='#' onClick='document.RevForm.ActionType.value=\"Reject\";document.RevForm.submit();'><img src='images/cancel.gif' width='20' height='20' border='0' alt='reject' /></a></td><td class='heading'>Reject</td></tr>");
+				if (featureUtil.isAllowedApproveFeature(user, feature)) {
+					System.out.println("Approving");
+					FrNumber frNumber = featureUtil.getNextAvailableFrNumber(feature);
+					%><p><%
+					startDETable(pageContext);
+					%><table border="0" width="160">
+					<tr><td colspan="2" class="deHeading">Approve/Reject</td></tr>
+					<form name="RevForm" method="post" action="detail.jsp">
+					<input type="hidden" name="ID" value="<%=sampID%>" />
+					<input type="hidden" name="ActionType" value="" />
+					<tr><td><a href="#" onClick="document.RevForm.ActionType.value='Approve';document.RevForm.submit();"><img src="images/ok.gif" width="20" height="20" border="0" alt="Approve" /></a></td><td class="heading">Approve</td></tr>
+					<tr><td><a href="#" onClick="document.RevForm.ActionType.value='Reject';document.RevForm.submit();"><img src="images/cancel.gif" width="20" height="20" border="0" alt="reject" /></a></td><td class="heading">Reject</td></tr><%
 					//if (recoll != null) {
 					//	out.println("<tr><td colspan='2'>The submitter has indicated that this record is a recollection of " + recoll + ".  If you agree then amend the FRNumber below as appropriate</td></tr>");
 					//}
-					out.println("<tr><td colspan='2'><input type='text' name='MapSheet' size='9' value='" + frNumber.getMapSheet() + "' />&nbsp;/f&nbsp;<input type='text' name='SerialNum' size='4' value='" + frNumber.getSerialNumber() + "' />&nbsp;<input type='text' name='RecollNum' size='1' value='' /></td></tr>");
-					out.println("<tr><td><img src='images/blank.gif' height='5' width='1' /></td></tr>");
-					out.println("<tr><td colspan='2' class='heading'>Comments</td></tr>");
-					out.println("<tr><td colspan='2'><textarea name='CurComm' rows='5' cols='25'>" + FREDUtils.noNulls(audit.getAsString(Audit.CURATOR_COMMENTS)) + "</textarea></td></tr>");
-					out.println("</form>");
-					out.println("</table>");
-					out.println("</td></tr>");
-				} */
+					%><tr><td colspan="2">
+						<input type="text" name="MapSheet" size="9" value="<%=frNumber.getMapSheet()%>" />&nbsp;
+						/f&nbsp;<input type="text" name="SerialNum" size="4" value="<%=frNumber.getSerialNumber()%>" />&nbsp;
+						<input type="text" name="RecollNum" size="1" value="" />
+					</td></tr>
+					<tr><td><img src="images/blank.gif" height="5" width="1" /></td></tr>
+					<tr><td colspan="2" class="heading">Comments</td></tr>
+					<tr><td colspan="2"><textarea name="CurComm" rows="5" cols="25"><%=DBUtils.nvl(audit.getCuratorComments())%></textarea></td></tr>
+					</form>
+					</table><%
+					endDETable(pageContext);
+					%></p><%
+				}
 				
 				if (sampleUtil.getPaleontologyRecordCount(sample) > 0) {
 					%><p><%
 					startDETable(pageContext);
 					%><table border="0" width="160">
-					<tr><td class="deHeading">Taxonomic List Options</td></tr>
+					<tr><td class="deHeading">Taxonomic Display Options</td></tr>
 					<form name="TaxaForm" method="post" action="detail_hib.jsp">
 					<input type="hidden" name="ID" value="<%=sampID%>" />
 					<input type="hidden" name="AuthorChk" value="<%=authorChk%>" />
@@ -290,7 +298,6 @@
 				%><tr><td class="heading">Yard FR Number</td><td><%=sample.getYardFrNumber().getFrNumber()%></td></tr><%
 			}
 			%><tr><td class="heading">Masterfile</td><td><%=((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : "undefined")%></td></tr><%
-			String featType = feature.getFeatureType();
 			%><tr><td class="heading">Locality Type</td><td><%=featType%></td></tr><%
 			String featTypeLbl, linkStart = "", linkStop = "";
 			if (featType.equals(FREDConstants.OUTCROP)) {
