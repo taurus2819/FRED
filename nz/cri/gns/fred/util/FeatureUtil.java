@@ -568,12 +568,18 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		System.out.println("checking approval for feature " + feature.getFeatureId());
 		System.out.println("Feature status = " + feature.getAudit().getStatus());
 		if (WAITING.equals(feature.getAudit().getStatus())) {
-			UserFolder folder = folderDAO.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
-			System.out.println("Folder ID = " + folder.getFolderName());
-			boolean rights = folder.isAllowedApproveLocalities();
-			System.out.println("Folder approve rights = " + rights);
-			System.out.println("Folder rights = " + folder.getRights());
-			return rights;
+			Folder folder = feature.getMasterFile();
+			System.out.println("Folder name = " + folder.getName());
+			UserFolder uFolder = folderDAO.getUserFolder(folder.getFolderId().intValue(), Integer.parseInt(user.getId()));
+			if (uFolder != null) {
+				System.out.println("User Folder name = " + uFolder.getFolderName());
+				boolean rights = uFolder.isAllowedApproveLocalities();
+				System.out.println("Folder approve rights = " + rights);
+				System.out.println("Folder rights = " + uFolder.getRights());
+				return rights;
+			} else {
+				System.out.println("userfolder null");
+			}
 		}
 		return false;
 	}
