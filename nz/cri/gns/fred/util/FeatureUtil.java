@@ -565,21 +565,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 * Returns true is the user is allowed to approve the locality
 	 */
 	public boolean isAllowedApproveFeature(UserAccount user, Feature feature) throws StorageAccessException {
-		System.out.println("checking approval for feature " + feature.getFeatureId());
-		System.out.println("Feature status = " + feature.getAudit().getStatus());
 		if (WAITING.equals(feature.getAudit().getStatus())) {
-			Folder folder = feature.getMasterFile();
-			System.out.println("Folder name = " + folder.getName());
-			UserFolder uFolder = folderDAO.getUserFolder(folder.getFolderId().intValue(), Integer.parseInt(user.getId()));
-			if (uFolder != null) {
-				System.out.println("User Folder name = " + uFolder.getFolderName());
-				boolean rights = uFolder.isAllowedApproveLocalities();
-				System.out.println("Folder approve rights = " + rights);
-				System.out.println("Folder rights = " + uFolder.getRights());
-				return rights;
-			} else {
-				System.out.println("userfolder null");
-			}
+			UserFolder folder = folderDAO.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
+			if (folder != null)
+				return folder.isAllowedApproveLocalities();
 		}
 		return false;
 	}
