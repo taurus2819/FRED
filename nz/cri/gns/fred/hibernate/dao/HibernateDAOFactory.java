@@ -352,6 +352,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 			    return 1;
 			return ((Integer)list.get(0)).intValue() + 1;
         } catch (Exception e) {
+        	e.printStackTrace();
             throw new StorageAccessException(e);
         }
 	}
