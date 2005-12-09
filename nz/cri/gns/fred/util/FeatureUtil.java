@@ -567,8 +567,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	public boolean isAllowedApproveFeature(UserAccount user, Feature feature) throws StorageAccessException {
 		System.out.println("checking approval for feature " + feature.getFeatureId());
 		System.out.println("Feature status = " + feature.getAudit().getStatus());
-		if (WAITING.equals(feature.getAudit().getStatus()))
-			return folderDAO.getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), Integer.parseInt(user.getId())).isAllowedApproveLocalities();
+		if (WAITING.equals(feature.getAudit().getStatus())) {
+			UserFolder folder = folderDAO.getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), Integer.parseInt(user.getId()));
+			System.out.println("Folder ID = " + folder.getFolderName());
+			boolean rights = folder.isAllowedApproveLocalities();
+			System.out.println("Folder approve rights = " + rights);
+			return rights;
+		}
 		return false;
 	}
 
