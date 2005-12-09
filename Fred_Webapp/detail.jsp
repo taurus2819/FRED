@@ -282,41 +282,23 @@
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" width="550"><tr><td colspan="2" class="deHeading">Locality Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr>
-			<tr><td class="heading">FR Number</td><td class="heading"><%=((FeatureUtil.getFrNumber(feature) != null) ? FeatureUtil.getFrNumber(feature).getFrNumber() : "not yet allocated")%></td></tr><%
-			if (sample != null && sample.getFrNumber() != null && !sample.getFrNumber().equals(FeatureUtil.getFrNumber(feature))) {
-				%><tr><td class="heading">Sample FR Number</td><td class="heading"><%=sample.getFrNumber().getFrNumber()%></td></tr><%
-			}
-			if (sample != null && sample.getYardFrNumber() != null) {
-				%><tr><td class="heading">Sample Yard FR Number</td><td><%=sample.getYardFrNumber().getFrNumber()%></td></tr><%
-			}
-			%><tr><td class="heading">Masterfile</td><td><%=((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : "undefined")%></td></tr><%
-			%><tr><td class="heading">Locality Type</td><td><%=featType%></td></tr><%
+			<tr><td class="heading">FR Number</td><td class="heading"><%=((FeatureUtil.getFrNumber(feature) != null) ? FeatureUtil.getFrNumber(feature).getFrNumber() : "not yet allocated")%></td></tr>
+			<tr><td class="heading">Masterfile</td><td><%=((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : "undefined")%></td></tr>
+			<tr><td class="heading">Locality Type</td><td><%=featType%></td></tr><%
 			String featTypeLbl, linkStart = "", linkStop = "";
 			if (featType.equals(FREDConstants.OUTCROP)) {
 				featTypeLbl = "Field Number";
 			} else if (featType.equals(FREDConstants.DRILLHOLE)) {
 				featTypeLbl = "Drillhole Name";
-				linkStart = "<a href=\"drillhole_detail.jsp?ID=" + feature.getFeatureId() + "\">";
+				linkStart = "<a href=\"detail.jsp?FeatID=" + feature.getFeatureId() + "\">";
 				linkStop = "</a>";
 			} else {
 				featTypeLbl = "Section Name";
-				linkStart = "<a href=\"drillhole_detail.jsp?ID=" + feature.getFeatureId() + "\">";
+				linkStart = "<a href=\"detail.jsp?FeatID=" + feature.getFeatureId() + "\">";
 				linkStop = "</a>";
 			}
-			%><tr><td class="heading"><%=featTypeLbl%></td><td><%=linkStart + DBUtils.nvl(feature.getFeatureName()) + linkStop%></td></tr><%
-			if (!featType.equals(FREDConstants.OUTCROP) && sample != null) {
-				%><tr><td class="heading">Sample Depth</td><td><%=DBUtils.nvl(SampleUtil.getDrillHoleDepthDescription(sample))%></td></tr><%
-				//check for samples above and below current one
-				Sample sampleAbove = SampleUtil.getSampleAbove(sample);
-				if (sampleAbove != null && sampleUtil.isAllowedReadSample(user, sampleAbove)) {
-					%><tr><td class="heading">Sample Above</td><td><a href="detail.jsp?ID=<%=sampleAbove.getSampleId()%>"><%=SampleUtil.getDrillHoleDepthDescription(sampleAbove)%></a></td></tr><%
-				}
-				Sample sampleBelow = SampleUtil.getSampleBelow(sample);
-				if (sampleBelow != null && sampleUtil.isAllowedReadSample(user, sampleBelow)) {
-					%><tr><td class="heading">Sample Below</td><td><a href="detail.jsp?ID=<%=sampleBelow.getSampleId()%>"><%=SampleUtil.getDrillHoleDepthDescription(sampleBelow)%></a></td></tr><%
-				}
-			}			
-			%><tr><td class="heading">Original Grid Reference</td><%
+			%><tr><td class="heading"><%=featTypeLbl%></td><td><%=linkStart + DBUtils.nvl(feature.getFeatureName()) + linkStop%></td></tr>			
+			<tr><td class="heading">Original Grid Reference</td><%
 			if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
 				Datum datum = FREDUtil.getFREDDatum(feature);
 				Coordinate coord = FREDUtil.getFREDCoordinate(feature);
@@ -384,15 +366,34 @@
 				endDETable(pageContext);
 				%></p><%
 
-
 				//Sample
 				if (sample != null) {
-					boolean isAllowedReadSample = sampleUtil.isAllowedReadSample(user, sample);
-					if (isAllowedReadSample) {
+					if (sampleUtil.isAllowedReadSample(user, sample)) {
 						//Sample Property Data
 						%><p><%
 						startDETable(pageContext);
-						%><table border="0" width="550"><tr><td colspan="2" class="deHeading">Sample Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?SampIDs=<%=sample.getSampleId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr>
+						%><table border="0" width="550">
+						<tr><td colspan="2" class="deHeading">Sample Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?SampIDs=<%=sample.getSampleId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr><%
+						if (sample.getFrNumber() != null && !sample.getFrNumber().equals(FeatureUtil.getFrNumber(feature))) {
+							%><tr><td class="heading">Sample FR Number</td><td class="heading"><%=sample.getFrNumber().getFrNumber()%></td></tr><%
+						}
+						if (sample.getYardFrNumber() != null) {
+							%><tr><td class="heading">Sample Yard FR Number</td><td><%=sample.getYardFrNumber().getFrNumber()%></td></tr><%
+						}
+						if (!featType.equals(FREDConstants.OUTCROP)) {
+							%><tr><td class="heading">Sample Depth</td><td><%=DBUtils.nvl(SampleUtil.getDrillHoleDepthDescription(sample))%></td></tr><%
+							//check for samples above and below current one
+							Sample sampleAbove = SampleUtil.getSampleAbove(sample);
+							if (sampleAbove != null && sampleUtil.isAllowedReadSample(user, sampleAbove)) {
+								%><tr><td class="heading">Sample Above</td><td><a href="detail.jsp?ID=<%=sampleAbove.getSampleId()%>"><%=SampleUtil.getDrillHoleDepthDescription(sampleAbove)%></a></td></tr><%
+							}
+							Sample sampleBelow = SampleUtil.getSampleBelow(sample);
+							if (sampleBelow != null && sampleUtil.isAllowedReadSample(user, sampleBelow)) {
+								%><tr><td class="heading">Sample Below</td><td><a href="detail.jsp?ID=<%=sampleBelow.getSampleId()%>"><%=SampleUtil.getDrillHoleDepthDescription(sampleBelow)%></a></td></tr><%
+							}
+						}
+						%><tr><td>&nbsp;</td></tr>
+						
 						<tr><td class="bigheading" colspan="2">Collection Information</td></tr><%
 						Object[] collectors = sample.getCollectors().toArray();
 						String[] collectorStr = new String[collectors.length];
@@ -605,8 +606,21 @@
 						}			
 					}
 				} else  {
-					//no sample - so do feature listing
-					%>Locality page<%
+					//Sample Property Data
+					%><p><%
+					startDETable(pageContext);
+					%><table border="0" width="550">
+					<tr><td colspan="3" class="deHeading"><%=featType%> Samples</td></tr>
+					<tr class="heading"><td>Locality Name&nbsp;&nbsp;</td><td><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Sample Depth" : "Section Height")%></td></tr><%
+					for (Iterator i = feature.getSamples().iterator(); i.hasNext(); ) {
+						Sample locSample = (Sample) i.next();
+						%><tr><td><a href="detail.jsp?ID=<%=locSample.getSampleId()%>"><%=((locSample.getFrNumber() != null) ? locSample.getFrNumber().getFrNumber() : "not yet allocated")%></a>&nbsp;&nbsp;</td>
+						<td><a href="detail.jsp?ID=<%=locSample.getSampleId()%>"><%=SampleUtil.getDrillHoleDepthDescription(locSample)%></a></td>
+						<td><a href="frf/frf.pdf?SampIDs=<%=locSample.getSampleId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr><%
+					}
+					%></table><%
+					endDETable(pageContext);
+					%></p><%
 				}
 			} else {
 				//didn't pass isAllowedReadFeature()
