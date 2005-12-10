@@ -299,7 +299,7 @@
 				linkStop = "</a>";
 			}
 			%><tr><td class="heading"><%=featTypeLbl%></td><td><%=linkStart + DBUtils.nvl(feature.getFeatureName()) + linkStop%>
-			<%=((petWellLink != null) ? "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"" + petWellLink + "\" target=\"_blank\" class=\"boldlink\">GNS Petroleum Wells Database</a> : "")%></td></tr>			
+			<%=((petWellLink != null) ? "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"" + petWellLink + "\" target=\"_blank\" class=\"boldlink\">GNS Petroleum Wells Database</a>" : "")%></td></tr>			
 			<tr><td class="heading">Original Grid Reference</td><%
 			if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
 				Datum datum = FREDUtil.getFREDDatum(feature);
