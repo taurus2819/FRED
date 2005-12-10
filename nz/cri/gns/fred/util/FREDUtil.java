@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -618,6 +619,26 @@ public class FREDUtil {
 		}		
 	}
 
+	public static String getPetWellLink(Feature feature) throws NamingException, SQLException {
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT well_name FROM petroleum.petroleum_well WHERE UPPER(well_name) = '" + feature.getFeatureName() + "'");
+			rs.next();
+			String link = "/seismic/petwell.jsp?wellname=" + rs.getString(1);
+			statement.close();
+			conn.close();
+			return link;
+		} catch (SQLException e) {
+			if (conn != null) try {
+				conn.close();
+			} catch (Exception _e) {
+			}
+			return null;
+		}
+	}
+	
 	/**
 	 * Joins the string array, starting from the given index, with a space character as the seperator
 	 */
