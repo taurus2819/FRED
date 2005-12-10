@@ -23,7 +23,11 @@ import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FrNumber;
+import nz.cri.gns.fred.model.Paleontology;
+import nz.cri.gns.fred.model.PaleontologyListEntry;
+import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.PersonRelationship;
+import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SedimentaryFeature;
@@ -31,6 +35,7 @@ import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.PDFUtil;
+import nz.cri.gns.fred.util.RecordUtil;
 import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.jsp.JspUtils;
@@ -57,6 +62,7 @@ public class FRFormServlet extends HttpServlet {
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 	private DAOFactory factory;
+	private RecordUtil recordUtil;
 	private SampleUtil sampleUtil;
 	private FeatureUtil featureUtil;
 	private UserAccount user;
@@ -74,12 +80,26 @@ public class FRFormServlet extends HttpServlet {
 			this.request = request;
 			this.response = response;
 			this.factory = HibernateUtil.get().getDAOFactory();
+			this.recordUtil = new RecordUtil(factory);
 			this.sampleUtil = new SampleUtil(factory);
 			this.featureUtil = new FeatureUtil(factory);
 			this.user = (UserAccount)request.getSession().getAttribute(User.USER_ATTRIBUTE);
 			
+			Record[] records = null;
 			Sample[] samples = null;
 			Feature[] features = null;
+			
+			if (request.getParameter("RecIDs") != null) {
+				String[] recIDs = request.getParameterValues("RecIDs");
+				records = new Record[recIDs.length];
+				for (int i = 0; i < recIDs.length; i++) {
+					try {
+						Record record = recordUtil.getRecord(Integer.parseInt(recIDs[i]));
+						records[i] = record;
+					}
+					catch (Exception _e) {}
+				}
+			}
 			if (request.getParameter("SampIDs") != null) {
 				String[] sampIDs = request.getParameterValues("SampIDs");
 				samples = new Sample[sampIDs.length];
@@ -87,7 +107,6 @@ public class FRFormServlet extends HttpServlet {
 					try {
 						Sample sample = sampleUtil.getSample(Integer.parseInt(sampIDs[i]));
 						samples[i] = sample;
-						System.out.println("Sample " + sample.getSampleId());
 					}
 					catch (Exception _e) {}
 				}			
@@ -99,13 +118,11 @@ public class FRFormServlet extends HttpServlet {
 					try {
 						Feature feature = featureUtil.getFeature(Integer.parseInt(featIDs[i]));
 						features[i] = feature;
-						System.out.println("Feature " + feature.getFeatureId());
 					}
 					catch (Exception _e) {}
 				}			
 			}
-	
-			makePDF(samples, features);
+			makePDF(records, samples, features);
 		} catch (Exception e) {
 			System.out.println("************************************");
 			e.printStackTrace();
@@ -114,7 +131,7 @@ public class FRFormServlet extends HttpServlet {
 		}
 	}
 		
-	private void makePDF(Sample[] samples, Feature[] features) throws DocumentException, IOException, NamingException, SQLException {
+	private void makePDF(Record[] records, Sample[] samples, Feature[] features) throws DocumentException, IOException, NamingException, SQLException {
 		Document document = new Document(PageSize.A4, 20 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT, 20 * MM_TO_PT);
 		PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
 		writer.setEncryption(true, null, null, PdfWriter.AllowPrinting | PdfWriter.AllowScreenReaders);
@@ -129,6 +146,20 @@ public class FRFormServlet extends HttpServlet {
 		fonts[2].setColor(40, 22, 111);
 		fonts[3] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
 		
+		if (records != null) {
+			for (int i =0; i < records.length; i++) {
+				try {
+					writeHeader(records[i], document);
+					writeRecord(records[i], document, fonts);
+					if (i < records.length - 1)
+						document.newPage();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			if (samples != null || features != null)
+				document.newPage();
+		}
 		if (samples != null) {
 			for (int i = 0; i < samples.length; i++) {
 				try {
@@ -138,8 +169,7 @@ public class FRFormServlet extends HttpServlet {
 					if (i < samples.length - 1)
 						document.newPage();
 				} catch (Exception e) {
-					System.out.println("************************************");
-					e.printStackTrace();				
+					e.printStackTrace();
 				}
 				//out.flush();
 			}
@@ -156,7 +186,6 @@ public class FRFormServlet extends HttpServlet {
 					if (i < features.length - 1)
 						document.newPage();
 				} catch (Exception e) {
-					System.out.println("************************************");
 					e.printStackTrace();				
 				}
 				//out.flush();
@@ -244,6 +273,10 @@ public class FRFormServlet extends HttpServlet {
 		writeHeader(sample.getFeature(), document);
 	}
 	
+	private void writeHeader(Record record, Document document) throws MalformedURLException, DocumentException, IOException, NamingException, SQLException {
+		writeHeader(record.getSample().getFeature(), document);
+	}
+	
 	private void writeLocality(Feature feature, Document document, Font[] fonts) throws StorageAccessException, DocumentException, NamingException, SQLException {
 		boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
 		Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
@@ -323,11 +356,9 @@ public class FRFormServlet extends HttpServlet {
 	}
 	
 	private void writeSample(Sample sample, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, StorageAccessException {
-		boolean isAllowedReadSample = sampleUtil.isAllowedReadSample(user, sample);
-		Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
-		Font[] insertBodyFonts = new Font[] {fonts[1], fonts[0], fonts[0], fonts[1], fonts[0]};
-		
-		if (isAllowedReadSample) {
+		if(sampleUtil.isAllowedReadSample(user, sample)) {
+			Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
+			Font[] insertBodyFonts = new Font[] {fonts[1], fonts[0], fonts[0], fonts[1], fonts[0]};
 			
 			//if not OUTCROP then add sample depth data
 			if (!sample.getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
@@ -348,13 +379,12 @@ public class FRFormServlet extends HttpServlet {
 			table.setSpacingAfter(3 * MM_TO_PT);
 			
 			PDFUtil.addCell(table, "Collection Information", fonts[2], PdfPCell.ALIGN_LEFT, 2);
-
-			PDFUtil.addCells(table, new String[] {"Collection Date", ((sample.getCollectionDate() != null) ? FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding()) : null)}, bodyFonts);
 			Object[] collectors = sample.getCollectors().toArray();
 			String[] collectorStr = new String[collectors.length];
 			for (int i = 0; i < collectors.length; i++)
 				collectorStr[i] = ((PersonRelationship) collectors[i]).getDisplayName();
 			PDFUtil.addRepeatingCells(table, "Collectors", collectorStr, bodyFonts, false);
+			PDFUtil.addCells(table, new String[] {"Collection Date", ((sample.getCollectionDate() != null) ? FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding()) : null)}, bodyFonts);
 			PDFUtil.addCells(table, new String[] {"Stratigraphic Name", sample.getStratUnit()}, bodyFonts);
 			PDFUtil.addCells(table, new String[] {"Fossils in Place", sample.getInPlace()}, bodyFonts);
 			Object[] sentTos = sample.getSentTos().toArray();
@@ -426,6 +456,56 @@ public class FRFormServlet extends HttpServlet {
 		}
 	}
 	
+	private void writeRecord(Record record, Document document, Font[] fonts) throws StorageAccessException, DocumentException {
+		if(recordUtil.isAllowedReadRecord(user, record) && recordUtil.getRecordType(record).equals(FREDConstants.PALEONTOLOGICAL)) {
+			Paleontology palRecord = record.getPaleontology();
+			Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
+			Font taxonomicNameFont = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.ITALIC);
 
+			PdfPTable table = new PdfPTable(2);
+			table.setTotalWidth(bodyTableWidth);
+			table.setLockedWidth(true);
+			table.setWidths(bodyTableColWidths);
+			table.setSpacingAfter(3 * MM_TO_PT);
+			
+			PDFUtil.addCell(table, "Paleontology Inforamtion", fonts[2], PdfPCell.ALIGN_LEFT, 2);
+			Object[] identifiers = palRecord.getIdentifiers().toArray();
+			String[] identifiersStr = new String[identifiers.length];
+			for (int i = 0; i < identifiers.length; i++)
+				identifiersStr[i] = ((PersonRelationship) identifiers[i]).getDisplayName();
+			PDFUtil.addRepeatingCells(table, "Identifiers", identifiersStr, bodyFonts, false);
+			PDFUtil.addCells(table, new String[] {"Identification Date", ((palRecord.getIdentificationDate() != null) ? FREDUtil.formatDateForOutput(palRecord.getIdentificationDate(), palRecord.getDateRounding()) : null)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Identification Date", ((palRecord.getIdentificationDate() != null) ? FREDUtil.formatDateForOutput(palRecord.getIdentificationDate(), palRecord.getDateRounding()) : null)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Stage", ((palRecord.getStage() != null) ? StageUtil.getStageDescription(palRecord.getStage()) : null)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Stage Comments", palRecord.getStageComments()}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Lab", ((palRecord.getLabSection() != null) ? RecordUtil.getLabDescription(palRecord.getLabSection()) : null)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Lab Number", palRecord.getLabNumber()}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Collection Comments", palRecord.getCollectionComments()}, bodyFonts);
+			
+			//taxa (Pal list)
+			if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
+				PdfPTable taxaTable = new PdfPTable(5);
+				taxaTable.setTotalWidth(bodyTableWidth);
+				taxaTable.setLockedWidth(true);
+				taxaTable.setWidths(new float[]{35 * MM_TO_PT, 35 * MM_TO_PT, 35 * MM_TO_PT, 35 * MM_TO_PT, 35 * MM_TO_PT});
+				taxaTable.setSpacingAfter(3 * MM_TO_PT);
+
+				for (Iterator j = recordUtil.getTaxonomicGroups(palRecord).iterator(); j.hasNext(); ) {
+					TaxonomicGroup taxaGroup = (TaxonomicGroup) j.next();
+					PDFUtil.addCell(taxaTable, taxaGroup.getName(), fonts[5], PdfPCell.ALIGN_LEFT, 5);
+					if (recordUtil.getListEntries(palRecord, taxaGroup).size() > 0) {
+					PDFUtil.addCells(taxaTable, new String[] {"Taxonomic Name", "Author", "Spec Count", "Spec Coord", "Comments"}, new Font[] {fonts[5], fonts[5], fonts[5], fonts[5], fonts[5]});
+						for (Iterator k = recordUtil.getListEntries(palRecord, taxaGroup).iterator(); k.hasNext(); ) {
+							PaleontologyListEntry taxa = (PaleontologyListEntry) k.next();
+							PDFUtil.addCells(taxaTable, new String[] {taxa.getTaxonomicName(), taxa.getTaxon().getAuthor(), taxa.getSpecimenCount(), taxa.getSpecimenCoords(), taxa.getComments()},
+									new Font[] {taxonomicNameFont, fonts[0], fonts[0], fonts[0], fonts[0]});
+						}
+					} else {
+						PDFUtil.addCell(taxaTable, "No fossils listed", fonts[0], PdfPCell.ALIGN_LEFT, 5);
+					}			
+			
+			
+		}
+	}
 	
 }
