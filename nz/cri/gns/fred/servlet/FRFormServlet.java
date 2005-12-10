@@ -476,7 +476,6 @@ public class FRFormServlet extends HttpServlet {
 				identifiersStr[i] = ((PersonRelationship) identifiers[i]).getDisplayName();
 			PDFUtil.addRepeatingCells(table, "Identifiers", identifiersStr, bodyFonts, false);
 			PDFUtil.addCells(table, new String[] {"Identification Date", ((palRecord.getIdentificationDate() != null) ? FREDUtil.formatDateForOutput(palRecord.getIdentificationDate(), palRecord.getDateRounding()) : null)}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {"Identification Date", ((palRecord.getIdentificationDate() != null) ? FREDUtil.formatDateForOutput(palRecord.getIdentificationDate(), palRecord.getDateRounding()) : null)}, bodyFonts);
 			PDFUtil.addCells(table, new String[] {"Stage", ((palRecord.getStage() != null) ? StageUtil.getStageDescription(palRecord.getStage()) : null)}, bodyFonts);
 			PDFUtil.addCells(table, new String[] {"Stage Comments", palRecord.getStageComments()}, bodyFonts);
 			PDFUtil.addCells(table, new String[] {"Lab", ((palRecord.getLabSection() != null) ? RecordUtil.getLabDescription(palRecord.getLabSection()) : null)}, bodyFonts);
@@ -485,6 +484,7 @@ public class FRFormServlet extends HttpServlet {
 			
 			//taxa (Pal list)
 			if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
+				System.out.println("Printing taxa list for record: " + palRecord.getRecordId());
 				PdfPTable taxaTable = new PdfPTable(5);
 				taxaTable.setTotalWidth(bodyTableWidth);
 				taxaTable.setLockedWidth(true);
@@ -507,6 +507,7 @@ public class FRFormServlet extends HttpServlet {
 				}
 				PdfPCell cell = new PdfPCell(taxaTable);
 				cell.setBorder(PdfPCell.NO_BORDER);
+				cell.setColspan(2);
 				table.addCell(cell);
 			}
 			document.add(table);
