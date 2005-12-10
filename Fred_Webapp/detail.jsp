@@ -285,19 +285,21 @@
 			<tr><td class="heading">FR Number</td><td class="heading"><%=((FeatureUtil.getFrNumber(feature) != null) ? FeatureUtil.getFrNumber(feature).getFrNumber() : "not yet allocated")%></td></tr>
 			<tr><td class="heading">Masterfile</td><td><%=((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : "undefined")%></td></tr>
 			<tr><td class="heading">Locality Type</td><td><%=featType%></td></tr><%
-			String featTypeLbl, linkStart = "", linkStop = "";
+			String featTypeLbl, linkStart = "", linkStop = "", petWellLink = null;
 			if (featType.equals(FREDConstants.OUTCROP)) {
 				featTypeLbl = "Field Number";
 			} else if (featType.equals(FREDConstants.DRILLHOLE)) {
 				featTypeLbl = "Drillhole Name";
 				linkStart = "<a href=\"detail.jsp?FeatID=" + feature.getFeatureId() + "\">";
 				linkStop = "</a>";
+				petWellLink = FREDutil.getPetWellLink(feature);
 			} else {
 				featTypeLbl = "Section Name";
 				linkStart = "<a href=\"detail.jsp?FeatID=" + feature.getFeatureId() + "\">";
 				linkStop = "</a>";
 			}
-			%><tr><td class="heading"><%=featTypeLbl%></td><td><%=linkStart + DBUtils.nvl(feature.getFeatureName()) + linkStop%></td></tr>			
+			%><tr><td class="heading"><%=featTypeLbl%></td><td><%=linkStart + DBUtils.nvl(feature.getFeatureName()) + linkStop%>
+			<%=((petWellLink != null) ? "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"" + petWellLink + "\" target=\"_blank\" class=\"boldlink\">GNS Petroleum Wells Database</a> : "")%></td></tr>			
 			<tr><td class="heading">Original Grid Reference</td><%
 			if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
 				Datum datum = FREDUtil.getFREDDatum(feature);
