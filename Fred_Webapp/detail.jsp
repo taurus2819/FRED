@@ -627,7 +627,8 @@
 			} else {
 				//didn't pass isAllowedReadFeature()
 				if (user ==  null) {
-					%><tr><td>&nbsp;</td></tr><tr><td colspan="2">More data may be available for this locality for <a href="login.jsp?loginpage=<%=URLEncoder.encode("/fred/detail.jsp")%>" class="boldlink">logged</a> in users</td></tr><%
+					%><tr><td>&nbsp;</td></tr>
+					<tr><td colspan="2">More data may be available for this locality for <a href="login.jsp?loginpage=<%=URLEncoder.encode("/fred/detail.jsp" + ((sample != null) ? "ID=" + sampID : "FeatID=" + featID))%>" class="boldlink">logged</a> in users</td></tr><%
 				}
 				%></table><%
 				endDETable(pageContext);
@@ -640,7 +641,7 @@
 			%><table style="margin-left:20px; margin-top:20px; width:550px;" border="0">
 			<tr><td>You do not have rights to view this sample</td></tr><%
 			if (user == null) {
-				%><tr><td colspan="2">You may be able to view it if you <a href="login.jsp?loginpage=<%=URLEncoder.encode("/fred/detail.jsp")%>" class="boldlink">login</a></td></tr><%
+				%><tr><td colspan="2">You may be able to view it if you <a href="login.jsp?loginpage=<%=URLEncoder.encode("/fred/detail.jsp" + ((sample != null) ? "ID=" + sampID : "FeatID=" + featID))%>" class="boldlink">login</a></td></tr><%
 			}
 			%></table><%
 		}
