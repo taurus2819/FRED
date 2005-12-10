@@ -469,7 +469,7 @@ public class FRFormServlet extends HttpServlet {
 			table.setWidths(bodyTableColWidths);
 			table.setSpacingAfter(3 * MM_TO_PT);
 			
-			PDFUtil.addCell(table, "Paleontology Inforamtion", fonts[2], PdfPCell.ALIGN_LEFT, 2);
+			PDFUtil.addCell(table, "Paleontology Information", fonts[2], PdfPCell.ALIGN_LEFT, 2);
 			Object[] identifiers = palRecord.getIdentifiers().toArray();
 			String[] identifiersStr = new String[identifiers.length];
 			for (int i = 0; i < identifiers.length; i++)
@@ -484,7 +484,6 @@ public class FRFormServlet extends HttpServlet {
 			
 			//taxa (Pal list)
 			if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
-				System.out.println("Printing taxa list for record: " + palRecord.getRecordId());
 				PdfPTable taxaTable = new PdfPTable(5);
 				taxaTable.setTotalWidth(bodyTableWidth);
 				taxaTable.setLockedWidth(true);
