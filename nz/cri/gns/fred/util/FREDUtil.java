@@ -624,7 +624,7 @@ public class FREDUtil {
 		try {
 			conn = getConnection();
 			Statement statement = conn.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT well_name FROM petroleum.petroleum_well WHERE UPPER(well_name) = '" + feature.getFeatureName() + "'");
+			ResultSet rs = statement.executeQuery("SELECT well_name FROM petroleum.petroleum_well WHERE UPPER(well_name) = '" + feature.getFeatureName().toUpperCase() + "'");
 			rs.next();
 			String link = "/seismic/petwell.jsp?wellname=" + rs.getString(1);
 			statement.close();

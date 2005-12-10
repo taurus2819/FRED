@@ -292,7 +292,7 @@
 				featTypeLbl = "Drillhole Name";
 				linkStart = "<a href=\"detail.jsp?FeatID=" + feature.getFeatureId() + "\">";
 				linkStop = "</a>";
-				petWellLink = FREDutil.getPetWellLink(feature);
+				petWellLink = FREDUtil.getPetWellLink(feature);
 			} else {
 				featTypeLbl = "Section Name";
 				linkStart = "<a href=\"detail.jsp?FeatID=" + feature.getFeatureId() + "\">";
