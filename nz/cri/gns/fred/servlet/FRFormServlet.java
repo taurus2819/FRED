@@ -493,7 +493,7 @@ public class FRFormServlet extends HttpServlet {
 
 				for (Iterator j = recordUtil.getTaxonomicGroups(palRecord).iterator(); j.hasNext(); ) {
 					TaxonomicGroup taxaGroup = (TaxonomicGroup) j.next();
-					PDFUtil.addCell(taxaTable, taxaGroup.getName(), fonts[5], PdfPCell.ALIGN_LEFT, 5);
+					PDFUtil.addCell(taxaTable, taxaGroup.getName(), fonts[1], PdfPCell.ALIGN_LEFT, 5);
 					if (recordUtil.getListEntries(palRecord, taxaGroup).size() > 0) {
 					PDFUtil.addCells(taxaTable, new String[] {"Taxonomic Name", "Author", "Spec Count", "Spec Coord", "Comments"}, new Font[] {fonts[5], fonts[5], fonts[5], fonts[5], fonts[5]});
 						for (Iterator k = recordUtil.getListEntries(palRecord, taxaGroup).iterator(); k.hasNext(); ) {
