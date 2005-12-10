@@ -457,7 +457,7 @@ public class FRFormServlet extends HttpServlet {
 		}
 	}
 	
-	private void writeRecord(Record record, Document document, Font[] fonts) throws StorageAccessException, DocumentException, NamingException {
+	private void writeRecord(Record record, Document document, Font[] fonts) throws StorageAccessException, DocumentException, NamingException, SQLException {
 		if(recordUtil.isAllowedReadRecord(user, record) && recordUtil.getRecordType(record).equals(FREDConstants.PALEONTOLOGICAL)) {
 			Paleontology palRecord = record.getPaleontology();
 			Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
