@@ -457,7 +457,7 @@ public class FRFormServlet extends HttpServlet {
 		}
 	}
 	
-	private void writeRecord(Record record, Document document, Font[] fonts) throws StorageAccessException, DocumentException {
+	private void writeRecord(Record record, Document document, Font[] fonts) throws StorageAccessException, DocumentException, NamingException {
 		if(recordUtil.isAllowedReadRecord(user, record) && recordUtil.getRecordType(record).equals(FREDConstants.PALEONTOLOGICAL)) {
 			Paleontology palRecord = record.getPaleontology();
 			Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
@@ -488,7 +488,7 @@ public class FRFormServlet extends HttpServlet {
 				PdfPTable taxaTable = new PdfPTable(5);
 				taxaTable.setTotalWidth(bodyTableWidth);
 				taxaTable.setLockedWidth(true);
-				taxaTable.setWidths(new float[]{35 * MM_TO_PT, 35 * MM_TO_PT, 35 * MM_TO_PT, 35 * MM_TO_PT, 35 * MM_TO_PT});
+				taxaTable.setWidths(new float[] {35 * MM_TO_PT, 35 * MM_TO_PT, 35 * MM_TO_PT, 35 * MM_TO_PT, 35 * MM_TO_PT});
 				taxaTable.setSpacingAfter(3 * MM_TO_PT);
 
 				for (Iterator j = recordUtil.getTaxonomicGroups(palRecord).iterator(); j.hasNext(); ) {
