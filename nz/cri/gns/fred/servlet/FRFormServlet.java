@@ -498,7 +498,7 @@ public class FRFormServlet extends HttpServlet {
 					PDFUtil.addCells(taxaTable, new String[] {"Taxonomic Name", "Author", "Spec Count", "Spec Coord", "Comments"}, new Font[] {fonts[5], fonts[5], fonts[5], fonts[5], fonts[5]});
 						for (Iterator k = recordUtil.getListEntries(palRecord, taxaGroup).iterator(); k.hasNext(); ) {
 							PaleontologyListEntry taxa = (PaleontologyListEntry) k.next();
-							PDFUtil.addCells(taxaTable, new String[] {taxa.getTaxonomicName(), taxa.getTaxon().getAuthor(), taxa.getSpecimenCount(), taxa.getSpecimenCoords(), taxa.getComments()},
+							PDFUtil.addCells(taxaTable, new Object[] {taxa.getTaxonomicName(), taxa.getTaxon().getAuthor(), taxa.getSpecimenCount(), taxa.getSpecimenCoords(), taxa.getComments()},
 									new Font[] {taxonomicNameFont, fonts[0], fonts[0], fonts[0], fonts[0]});
 						}
 					} else {
