@@ -505,8 +505,11 @@ public class FRFormServlet extends HttpServlet {
 						PDFUtil.addCell(taxaTable, "No fossils listed", fonts[0], PdfPCell.ALIGN_LEFT, 5);
 					}
 				}
+				PdfPCell cell = new PdfPCell(taxaTable);
+				cell.setBorder(PdfPCell.NO_BORDER);
+				table.addCell(cell);
 			}
-			
+			document.add(table);
 		}
 	}
 	
