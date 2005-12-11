@@ -534,7 +534,7 @@
 								if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {
 									%><p><%
 									startDETable(pageContext);
-									%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Paleontology Information&nbsp;&nbsp;&nbsp;<a href="print_pal.jsp?ID=<%=palRecord.getRecordId()%>" target="_blank"><img src="images/print.gif" width="20" height="20" border="0" alt="Print" /></td></tr><%
+									%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Paleontology Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?RecIDs=<%=palRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></td></tr><%
 									Object[] identifiers = palRecord.getIdentifiers().toArray();
 									String[] identifiersStr = new String[identifiers.length];
 									for (int j = 0; j < identifiers.length; j++)

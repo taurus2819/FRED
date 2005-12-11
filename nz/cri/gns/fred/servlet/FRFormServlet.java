@@ -481,16 +481,18 @@ public class FRFormServlet extends HttpServlet {
 			PDFUtil.addCells(table, new String[] {"Lab", ((palRecord.getLabSection() != null) ? RecordUtil.getLabDescription(palRecord.getLabSection()) : null)}, bodyFonts);
 			PDFUtil.addCells(table, new String[] {"Lab Number", palRecord.getLabNumber()}, bodyFonts);
 			PDFUtil.addCells(table, new String[] {"Collection Comments", palRecord.getCollectionComments()}, bodyFonts);
+			document.add(table);
 			
 			//taxa (Pal list)
 			if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
-				PdfPTable taxaTable = new PdfPTable(5);
-				taxaTable.setTotalWidth(bodyTableWidth);
-				taxaTable.setLockedWidth(true);
-				taxaTable.setWidths(new float[] {35 * MM_TO_PT, 35 * MM_TO_PT, 35 * MM_TO_PT, 35 * MM_TO_PT, 35 * MM_TO_PT});
-				taxaTable.setSpacingAfter(3 * MM_TO_PT);
 
 				for (Iterator j = recordUtil.getTaxonomicGroups(palRecord).iterator(); j.hasNext(); ) {
+					PdfPTable taxaTable = new PdfPTable(5);
+					taxaTable.setTotalWidth(bodyTableWidth);
+					taxaTable.setLockedWidth(true);
+					taxaTable.setWidths(new float[] {50 * MM_TO_PT, 20 * MM_TO_PT, 20 * MM_TO_PT, 20 * MM_TO_PT, 65 * MM_TO_PT});
+					taxaTable.setSpacingAfter(3 * MM_TO_PT);
+
 					TaxonomicGroup taxaGroup = (TaxonomicGroup) j.next();
 					PDFUtil.addCell(taxaTable, taxaGroup.getName(), fonts[1], PdfPCell.ALIGN_LEFT, 5);
 					if (recordUtil.getListEntries(palRecord, taxaGroup).size() > 0) {
@@ -503,13 +505,11 @@ public class FRFormServlet extends HttpServlet {
 					} else {
 						PDFUtil.addCell(taxaTable, "No fossils listed", fonts[0], PdfPCell.ALIGN_LEFT, 5);
 					}
+					document.add(taxaTable);
 				}
-				PdfPCell cell = new PdfPCell(taxaTable);
-				cell.setBorder(PdfPCell.NO_BORDER);
-				cell.setColspan(2);
-				table.addCell(cell);
+				
 			}
-			document.add(table);
+			
 		}
 	}
 	
