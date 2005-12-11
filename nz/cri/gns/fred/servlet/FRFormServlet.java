@@ -490,7 +490,7 @@ public class FRFormServlet extends HttpServlet {
 					PdfPTable taxaTable = new PdfPTable(5);
 					taxaTable.setTotalWidth(bodyTableWidth);
 					taxaTable.setLockedWidth(true);
-					taxaTable.setWidths(new float[] {50 * MM_TO_PT, 20 * MM_TO_PT, 25 * MM_TO_PT, 25 * MM_TO_PT, 55 * MM_TO_PT});
+					taxaTable.setWidths(new float[] {40 * MM_TO_PT, 30 * MM_TO_PT, 25 * MM_TO_PT, 25 * MM_TO_PT, 55 * MM_TO_PT});
 					taxaTable.setSpacingAfter(3 * MM_TO_PT);
 
 					TaxonomicGroup taxaGroup = (TaxonomicGroup) j.next();
