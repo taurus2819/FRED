@@ -3,6 +3,7 @@ package nz.cri.gns.fred.util;
 import java.beans.IntrospectionException;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -13,9 +14,12 @@ import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.dao.TaxonomicDAO;
 import nz.cri.gns.fred.dao.TaxonomicGroupDAO;
 import nz.cri.gns.fred.dataentry.DataInputException;
+import nz.cri.gns.fred.model.FolderUser;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
+import nz.cri.gns.fred.model.TaxaPanel;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
+import nz.cri.gns.fred.model.UserFolder;
 
 /**
  * @author iainm
@@ -31,10 +35,42 @@ public class TaxonomicUtil extends ModelUtil {
         this.taxonomicDAO = dao.getTaxonomicDAO();
 	}
 	
+	public TaxonomicGroup getTaxonomicGroup(int groupId) throws StorageAccessException {
+		return groupDAO.getTaxonomicGroup(groupId);
+	}
+	
 	public List<TaxonomicGroup> getPanelsIsMemberOf(UserAccount user) throws StorageAccessException {
 		List<TaxonomicGroup> panels = groupDAO.getPanelsIsMemberOf(Integer.parseInt(user.getId()));
 		Collections.sort(panels);
 		return panels;
+	}
+	
+	public boolean isUserMemberOf(TaxonomicGroup group, UserAccount user) throws StorageAccessException {
+		for (Iterator<TaxonomicGroup> it = getPanelsIsMemberOf(user).iterator(); it.hasNext(); ) {
+			if (group.equals(it.next()))
+				return true;
+		}
+		return false;
+	}
+	
+	public void addUserToPanel(TaxonomicGroup group, int userId) throws StorageAccessException {
+		TaxaPanel panel = groupDAO.createNewTaxaPanel();
+		panel.setTaxonomicGroup(group);
+		panel.setUserId(userId);
+		groupDAO.save(panel);
+	}
+
+	public void removeUserFromPanel(TaxonomicGroup group, int userId) throws StorageAccessException {
+		Set panels = group.getTaxaPanels();
+		for (Iterator it = panels.iterator(); it.hasNext(); ) {
+			TaxaPanel panel  = (TaxaPanel) it.next();
+			if (panel.getUserId().intValue() == userId) {
+				panels.remove(panel);
+				break;
+			}
+		}
+		group.setTaxaPanels(panels);
+		groupDAO.save(group);
 	}
 	
 	public int getProvisionalCount(TaxonomicGroup group) throws StorageAccessException {

@@ -9,6 +9,7 @@ import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.type.IntegerType;
 import net.sf.hibernate.type.StringType;
+import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.fred.dao.AuditDAO;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FeatureDAO;
@@ -60,6 +61,7 @@ import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SedimentaryFeatureType;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.Stage;
+import nz.cri.gns.fred.model.TaxaPanel;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.UserFolder;
@@ -234,6 +236,10 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	}
 
 	//TaxonomicDAO methods
+	public TaxonomicGroup getTaxonomicGroup(int groupId) throws StorageAccessException {
+		return (TaxonomicGroup)getFirst("FROM TaxonomicGroup as tg WHERE tg.groupId = ?", groupId);
+	}
+	
 	public List getPanelsIsMemberOf(int userId) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
@@ -242,7 +248,6 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 			throw new StorageAccessException(e);
 		}
 	}
-
 
 	public int getProvisionalCount(TaxonomicGroup group) throws StorageAccessException {
 		try {
@@ -260,7 +265,19 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public TaxonomicGroup findTaxonomicGroup(String groupName) throws StorageAccessException {
 		return (TaxonomicGroup)getFirst("FROM TaxonomicGroup As g WHERE g.name = ?", groupName);
 	}
+	
+	public TaxaPanel createNewTaxaPanel() {
+		return new nz.cri.gns.fred.hibernate.TaxaPanel();
+	}
+	
+	public TaxaPanel save(TaxaPanel panel) throws StorageAccessException {
+	    return (TaxaPanel)save((Object)panel);
+	}
 
+	public TaxonomicGroup save(TaxonomicGroup group) throws StorageAccessException {
+	    return (TaxonomicGroup)save((Object)group);
+	}
+	
 	public void closeSession() throws StorageAccessException {
 		try {
 			provider.closeSession();
