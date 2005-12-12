@@ -12,8 +12,7 @@
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
-%><%@page import="java.text.*"
-%><%@page import="nz.cri.gns.auth.*"
+%><%@page import="nz.cri.gns.auth.User"
 %><%!
 	public String getName(HttpServletRequest request) {
 		try {
@@ -98,7 +97,7 @@ function showHide(toShow, toHide) {
 
 			out.print("<tr><td><a href='detail.jsp?FeatID=" + feature.getFeatureId() + "'><img src='images/loc.gif' height='20' width='20' border='0' alt='View Locality' /></a></td><td class='heading'>" + FeatureUtil.getFeatureName(feature) + "&nbsp;&nbsp;</td><td>" + feature.getFeatureType() + "&nbsp;&nbsp;</td><td>");
 			if (audit.getSubmittedDate() != null)
-				out.print(DateFormat.getDateInstance(DateFormat.LONG).format(audit.getSubmittedDate()));
+				out.print(FREDUtil.formatDateForOutput(audit.getSubmittedDate()));
 			out.print("&nbsp;&nbsp;</td><td>" + FREDUtil.getUserName(audit.getSubmittedById().intValue()) + "&nbsp;&nbsp;</td><td>");
 			out.print("<a href='print_front.jsp?FeatID=" + feature.getFeatureId() + (feature.getFeatureType().equals(FREDConstants.OUTCROP) ? "" : "&FormType=Short") + "' target='print'><img src='images/print.gif' border='0' height='20' width='20' alt='Print Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 			out.print("</td><td>");

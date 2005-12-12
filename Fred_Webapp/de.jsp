@@ -11,7 +11,7 @@
 %><%@page import="java.io.File"
 %><%@page import="java.io.PrintWriter"
 %><%@page import="java.util.List"
-%><%@page import="nz.cri.gns.auth.*"
+%><%@page import="nz.cri.gns.auth.User"
 %><%!
 	public String getName(HttpServletRequest request) {
 		DataEntryForm form = getDataEntryForm(request);

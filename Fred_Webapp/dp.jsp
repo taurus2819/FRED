@@ -3,14 +3,14 @@
 %><%@page import="nz.cri.gns.fred.de.DataInputException"
 %><%@page import="nz.cri.gns.fred.de.TaxonomicListException"
 %><%@page import="nz.cri.gns.fred.model.PaleontologyListEntry"
-%><%@page import="nz.cri.gns.jsp.*"
-%><%@page import="java.util.*"
+%><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
+%><%@page import="java.util.Iterator"
 %><%@page import="java.io.IOException"
 %><%@page import="java.sql.SQLException"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
-%><%@page import="nz.cri.gns.auth.*"
+%><%@page import="nz.cri.gns.auth.InsufficientPrivelegesException"
 %><%
 	ExtranetTemplate et = getExtranetTemplate();
 

@@ -1,5 +1,4 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
-%><%@page import="nz.cri.gns.fred.*"
 %><%@page import="nz.cri.gns.fred.dao.StorageAccessException"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.model.FolderRight"
@@ -7,11 +6,12 @@
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
-%><%@page import="nz.cri.gns.db.*"
-%><%@page import="nz.cri.gns.jsp.*"
+%><%@page import="nz.cri.gns.db.ComboDescriptor"
+%><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
+%><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="java.util.List"
 %><%@page import="java.util.Iterator"
-%><%@page import="nz.cri.gns.auth.*"
+%><%@page import="nz.cri.gns.auth.User"
 %><%!public String getName(HttpServletRequest request) {
 		try {
 			FolderUtil folderUtil = new FolderUtil(HibernateUtil.get()

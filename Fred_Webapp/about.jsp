@@ -1,7 +1,7 @@
 <%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
 %><%@page import="java.io.PrintWriter"
-%><%@page import="nz.cri.gns.jsp.*"
-%><%@page import="nz.cri.gns.auth.*"
+%><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
+%><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.fred.website.ContentProvider"
 %><%!	
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {

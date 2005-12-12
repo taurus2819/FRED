@@ -1,6 +1,6 @@
 <%@page extends="nz.cri.gns.jsp.IPSysLoginPage"
 %><%@ page import="nz.cri.gns.jsp.ExtranetTemplate"
-%><%@ page import="nz.cri.gns.db.*"
+%><%@ page import="nz.cri.gns.db.KeyValueObject"
 %><%
 
 	ExtranetTemplate et = getExtranetTemplate();

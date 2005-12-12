@@ -1,10 +1,9 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
-%><%@page import="nz.cri.gns.fred.*"
-%><%@page import="nz.cri.gns.jsp.*"
-%><%@page import="java.text.*"
+%><%@page import="nz.cri.gns.jsp.IconnedLink"
+%><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="java.util.List"
 %><%@page import="java.util.Iterator"
-%><%@page import="nz.cri.gns.auth.*"
+%><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.dao.StorageAccessException"
 %><%@page import="nz.cri.gns.fred.de.MandatoryFieldsMissingException"
@@ -17,6 +16,7 @@
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
+%><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%!
 	public String getName(HttpServletRequest request) {
 		try {
@@ -203,7 +203,7 @@ function showHide(toShow, toHide) {
 			%><td style="color: #FF0000; text-align: left"><%
 			if (!status.equals(FREDConstants.APPROVED)) {
 				%><%=status%>&nbsp;&nbsp;</td>
-				<td style="text-align: left"><%=(audit.getCreatedDate() == null) ? "" : DateFormat.getDateInstance(DateFormat.LONG).format(audit.getCreatedDate())%></td><%
+				<td style="text-align: left"><%=(audit.getCreatedDate() == null) ? "" : FREDUtil.formatDateForOutput(audit.getCreatedDate())%></td><%
 			} else {
 				%></td><td></td><%
 			}
