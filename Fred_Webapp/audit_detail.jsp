@@ -47,7 +47,6 @@
 	RecordUtil recordUtil = new RecordUtil(factory);
 	
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setUseNavigationColumn(false);
 	et.setDisplayLoadingMessage(true);
 	
 	String sampID = request.getParameter("ID");
@@ -72,6 +71,8 @@
 	}
 	
 	drawTop(out, et, request, response);
+	drawEndNavigation(out);
+	%><p>&nbsp;<p/><%
 	
 	if (feature != null && featureUtil.isAllowedReadFeatureSite(user, feature)) {
 		Audit audit = feature.getAudit();
