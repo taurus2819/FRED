@@ -51,12 +51,23 @@
 				int userId = Integer.parseInt(request.getParameter("UserID"));
 				if (actionType.equals("AddUser")) {
 					folderUtil.addUserToFolder(folder, userId, 1);
-				}
-				if (actionType.equals("DeleteUser")) {
+				} else if (actionType.equals("DeleteUser")) {
 					folderUtil.removeUserFromFolder(folder, userId);
+					//if user deleted themselves then redirect to folder list
+					folder = folderUtil.getUserFolder(folder.getFolderId().intValue(), user);
+					if (folder == null) {
+						response.sendRedirect("folder_list.jsp");
+						return;
+					}
 				}
 				else if (actionType.equals("ChangeRight")) {
 					folderUtil.toggleUserFolderRights(folder, userId, Integer.parseInt(request.getParameter("Right")));
+					//if user removed admin rights then redirect to folder list
+					folder = folderUtil.getUserFolder(folder.getFolderId().intValue(), user);
+					if (!folder.isAllowedAdmin()) {
+						response.sendRedirect("folder_list.jsp");
+						return;
+					}
 				}
 			}
 	
