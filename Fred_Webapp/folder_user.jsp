@@ -12,7 +12,8 @@
 %><%@page import="java.util.List"
 %><%@page import="java.util.Iterator"
 %><%@page import="nz.cri.gns.auth.User"
-%><%!public String getName(HttpServletRequest request) {
+%><%!
+	public String getName(HttpServletRequest request) {
 		try {
 			FolderUtil folderUtil = new FolderUtil(HibernateUtil.get()
 					.getDAOFactory());
