@@ -37,5 +37,7 @@ public interface TaxonomicGroupDAO {
 	 * @throws StorageAccessException 
 	 */
 	public TaxonomicGroup findTaxonomicGroup(String groupName) throws StorageAccessException;
+
+	public List<Integer> getPanelsIsMemberOf(TaxonomicGroup group) throws StorageAccessException;
 	
 }

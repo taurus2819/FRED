@@ -8,7 +8,9 @@ import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.type.IntegerType;
+import net.sf.hibernate.type.ManyToOneType;
 import net.sf.hibernate.type.StringType;
+import net.sf.hibernate.type.Type;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.fred.dao.AuditDAO;
 import nz.cri.gns.fred.dao.DAOFactory;
@@ -244,6 +246,16 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		try {
 			Session session = provider.currentSession();
 			return session.find("SELECT g FROM TaxaPanel tp INNER JOIN tp.taxonomicGroup g WHERE tp.comp_id.panelistId = ?", new Integer(userId), new IntegerType());
+		} catch (Exception e) {
+			throw new StorageAccessException(e);
+		}
+	}
+	
+
+	public List<Integer> getPanelsIsMemberOf(TaxonomicGroup group) throws StorageAccessException {
+		try {
+			Session session = provider.currentSession();
+			return session.find("SELECT tp.comp_id.panelistId FROM TaxaPanel tp WHERE tp.taxonomicGroup = ?", group, new ManyToOneType(nz.cri.gns.fred.hibernate.TaxonomicGroup.class));
 		} catch (Exception e) {
 			throw new StorageAccessException(e);
 		}
@@ -864,5 +876,4 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public AuditDAO getAuditDAO() {
 		return this;
 	}
-
 }

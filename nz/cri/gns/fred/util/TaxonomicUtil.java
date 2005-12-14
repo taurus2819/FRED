@@ -45,6 +45,12 @@ public class TaxonomicUtil extends ModelUtil {
 		return panels;
 	}
 	
+	public List<Integer> getMembersOfPanel(TaxonomicGroup group) throws StorageAccessException {
+		List<Integer> members = groupDAO.getPanelsIsMemberOf(group);
+		
+		return members;
+	}
+	
 	public boolean isUserMemberOf(TaxonomicGroup group, UserAccount user) throws StorageAccessException {
 		for (Iterator<TaxonomicGroup> it = getPanelsIsMemberOf(user).iterator(); it.hasNext(); ) {
 			if (group.equals(it.next()))
