@@ -2,7 +2,9 @@ package nz.cri.gns.fred.hibernate.dao;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
 
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
@@ -616,13 +618,43 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 
 	public Stage findStage(String startStageId, boolean startUncertain, String stopStageId, boolean stopUncertain) throws StorageAccessException {
 		try {
+			StringBuffer query = new StringBuffer("FROM Stage AS s WHERE ");
+			HashMap<String, Integer> intData = new  HashMap<String, Integer>(2);
+			Vector<String> strData = new Vector<String>(2);
+			if (startStageId == null) {
+				query.append("s.stageLowerId IS NULL ");
+			} else {
+				query.append("s.stageLowerId = :lower ");
+				intData.put("lower", new Integer(startStageId));
+			}
+			if (startUncertain) {
+				query.append("s.stageLowerMod = :lmod ");
+				strData.add("lmod");
+			} else {
+				query.append("s.stageLowerMod IS NULL ");
+			}
+			if (stopStageId == null) {
+				query.append("s.stageUpperId IS NULL ");
+			} else {
+				query.append("s.stageUpperId = :upper ");
+				intData.put("upper", new Integer(stopStageId));
+			}
+			if (stopUncertain) {
+				query.append("s.stageUpperMod = :umod");
+				strData.add("umod");
+			} else {
+				query.append("s.stageUpperMod IS NULL");
+			}
+			
             Session session = provider.currentSession();
-            Query query = session.createQuery("FROM Stage AS s WHERE s.stageLowerId = :lower AND s.stageLowerMod = :lmod AND s.stageUpperId = :upper AND s.stageUpperMod = :umod");
-            query.setInteger("lower", (startStageId == null) ? -1 : Integer.parseInt(startStageId));
-            query.setString("lmod", (startUncertain) ? "?" : null);
-            query.setInteger("upper", (stopStageId == null) ? -1 : Integer.parseInt(stopStageId));
-            query.setString("umod", (stopUncertain) ? "?" : null);
-            List list = query.list();
+            Query hquery = session.createQuery(query.toString());
+            for (String str : strData) {
+            	hquery.setString(str, "?");
+            }
+            for (String str : intData.keySet()) {
+            	hquery.setInteger(str, intData.get(str));
+            }
+            List list = hquery.list();
             if (list.size() == 0)
             	return null;
             return (Stage)list.get(0);
