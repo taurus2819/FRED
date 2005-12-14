@@ -118,8 +118,7 @@ alert("<%=error%>");<%
 <%
 			if (folder.isAllowedAdmin()) {
 				%><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a>&nbsp;&nbsp;&nbsp;<%
-				//if (FolderUtil.isFolderEmpty(folder.getFolder())) {
-				if (folder.getFolder().getFeatures() == null && folder.getFolder().getAudits() == null) {
+				if (FolderUtil.isFolderEmpty(folder.getFolder())) {
 					%><a href="javascript:if (confirm('Are you sure you want to delete this folder') == true) {document.PersForm.FoldID.value='<%=folder.getFolder().getFolderId()%>';document.PersForm.submit();}" title="Delete Folder"><img src="images/delete.gif" border="0" height="20" width="20" /></a><%
 				}
 			} else {
@@ -157,8 +156,7 @@ alert("<%=error%>");<%
 <%
 			if (folder.isAllowedAdmin()) {
 				%><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a>&nbsp;&nbsp;&nbsp;<%
-				//if (FolderUtil.isFolderEmpty(folder.getFolder())) {
-				if (FREDUtil.isEmpty(folder.getFolder().getFeatures()) && FREDUtil.isEmpty(folder.getFolder().getAudits())) {
+				if (FolderUtil.isFolderEmpty(folder.getFolder())) {
 					%><a href="javascript:if (confirm('Are you sure you want to delete this folder') == true) {document.PersForm.FoldID.value='<%=folder.getFolder().getFolderId()%>';document.PersForm.submit();}" title="Delete Folder"><img src="images/delete.gif" border="0" height="20" width="20" /></a><%
 				}
 			} else {
