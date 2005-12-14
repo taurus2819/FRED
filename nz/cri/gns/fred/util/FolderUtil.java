@@ -99,6 +99,10 @@ public class FolderUtil extends ModelUtil {
 	    Folder folder = folderDAO.getFolder(folderId);
 	    if (FolderUtil.isFolderEmpty(folder))
 	    	throw new IllegalStateException("Cannot delete folder as it is not empty");
+	    if (!FREDUtil.isEmpty(folder.getFolderUsers())) {
+	    	for (FolderUser folderUser : folder.getFolderUsers())
+	    		folderDAO.delete(folderUser);
+	    }
 	    folderDAO.delete(folder);
 	}
 	
@@ -181,7 +185,7 @@ public class FolderUtil extends ModelUtil {
 	}
 	
 	public static boolean isFolderEmpty(Folder folder) {
-	    return (folder.getAudits() == null && folder.getFeatures() == null);
+	    return (FREDUtil.isEmpty(folder.getAudits()) && FREDUtil.isEmpty(folder.getFeatures()));
 	}
 	
 }
