@@ -96,7 +96,7 @@ public class FolderUtil extends ModelUtil {
 	}
 	
 	public void deleteFolder(int folderId, UserAccount user)  throws StorageAccessException {
-		UserFolder userFolder = getUserFolder(folderId, Integer.parseInt(user.getId()));
+		UserFolder userFolder = getUserFolder(folderId, user);
 		if (!userFolder.isAllowedAdmin())
 			throw new IllegalStateException("Cannot delete folder as no admin rights");
 	    Folder folder = folderDAO.getFolder(folderId);
