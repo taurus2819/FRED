@@ -784,4 +784,8 @@ public class FREDUtil {
 			list.add(t);
 		return list;
 	}
+	
+	public static <T> boolean isEmpty(Set<T> set) {
+		return set == null || set.size() == 0;
+	}
 }
