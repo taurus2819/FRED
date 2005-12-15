@@ -418,14 +418,10 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 				int precision = request.getParameter("East").length();
 				if (request.getParameter("North").length() != precision) {
 					error.add(new String[] {"Coordinate", "Truncated coordinates different lengths"});
-				} else if (precision < 3 || precision < 4) {
+				} else if ((precision > 0 && precision < 3) || precision > 4) {
 					error.add(new String[] {"Coordinate", "Length of truncated coordinates must be 3 or 4"});
 				} else {
-					try {
 					coord = (Datum.Coordinate)datum.preferredCoordinate().getConstructor(new Class[] {double.class, double.class, String.class, int.class}).newInstance(new Object[] {new Double(request.getParameter("North")), new Double(request.getParameter("East")), request.getParameter("MapSheet"), precision});
-					} catch (Exception e){
-						e.printStackTrace();
-					}
 				}
 			} else {
 				coord = (Datum.Coordinate)datum.preferredCoordinate().getConstructor(new Class[] {double.class, double.class}).newInstance(new Object[] {new Double(request.getParameter("North")), new Double(request.getParameter("East"))});
@@ -441,7 +437,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		}
 		
 		if (coord != null) {
-			System.out.println("Coord: " + coord.getEastWestString() + "/" + coord.getNorthSouthString());
 			if (!datum.coordinateAcceptable(coord))
 				error.add(new String[] {"Coordinate", "Invalid value"});
 		
