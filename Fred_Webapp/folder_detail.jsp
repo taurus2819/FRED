@@ -175,14 +175,10 @@ function showHide(toShow, toHide) {
 			String featName = feature.getFeatureName();
 			%><tr><%
 			
-	/*		if (folder.isBacklogFolder() && !feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
-				%><td><input type="radio" name="SelFeatID" value="<%=feature.getFeatureId()%>" /></td><%
-			} else {
-				%><td></td><%	
-			}		 */	
-			
-			//starting work on checkboxes
+			/*
+			//starting work on checkboxes - can put back once PDF reports are OK
 			%><td><input type="checkbox" name="FeatIDs" value="<%=feature.getFeatureId()%>" /></td><%
+			*/
 			
 			%><td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
 			
@@ -233,7 +229,7 @@ function showHide(toShow, toHide) {
 		}
 		%></table><%
 		endDETable(pageContext);
-
+/*
 		%></p><p><%
 		
 		startDETable(pageContext);
@@ -255,11 +251,11 @@ function showHide(toShow, toHide) {
 		}
 		%></select></td>
 		</tr>
-		</table>
-		<%		
+		</table><%		
+		
 		endDETable(pageContext);
-		%>
-		</p>
+*/
+		%></p>
 <input type="hidden" name="ActionType" value="" />
 <input type="hidden" name="ID" value="<%=folder.getFolder().getFolderId()%>" />
 <input type="hidden" name="FeatID" value="" />

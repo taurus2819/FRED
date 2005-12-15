@@ -289,7 +289,7 @@
 			//Locality Data
 			%><p><%
 			startDETable(pageContext);
-			%><table border="0" width="550"><tr><td colspan="2" class="deHeading">Locality Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr>
+			%><table border="0" width="550"><tr><td colspan="2" class="deHeading">Locality Information&nbsp;&nbsp;&nbsp;<a href="print_front.jsp?FeatID=<%=feature.getFeatureId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr>
 			<tr><td class="heading">FR Number</td><td class="heading"><%=((FeatureUtil.getFrNumber(feature) != null) ? FeatureUtil.getFrNumber(feature).getFrNumber() : "not yet allocated")%></td></tr>
 			<tr><td class="heading">Masterfile</td><td><%=((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : "undefined")%></td></tr>
 			<tr><td class="heading">Locality Type</td><td><%=featType%></td></tr><%
@@ -383,7 +383,7 @@
 						%><p><%
 						startDETable(pageContext);
 						%><table border="0" width="550">
-						<tr><td colspan="2" class="deHeading">Sample Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?SampIDs=<%=sample.getSampleId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr><%
+						<tr><td colspan="2" class="deHeading">Sample Information&nbsp;&nbsp;&nbsp;<a href="print_front.jsp?ID=<%=sample.getSampleId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr><%
 						if (sample.getFrNumber() != null && !sample.getFrNumber().equals(FeatureUtil.getFrNumber(feature))) {
 							%><tr><td class="heading">Sample FR Number</td><td class="heading"><%=sample.getFrNumber().getFrNumber()%></td></tr><%
 						}
@@ -534,7 +534,7 @@
 								if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {
 									%><p><%
 									startDETable(pageContext);
-									%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Paleontology Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?RecIDs=<%=palRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></td></tr><%
+									%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Paleontology Information&nbsp;&nbsp;&nbsp;<a href="print_pal.jsp?ID=<%=palRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></td></tr><%
 									Object[] identifiers = palRecord.getIdentifiers().toArray();
 									String[] identifiersStr = new String[identifiers.length];
 									for (int j = 0; j < identifiers.length; j++)
@@ -626,7 +626,7 @@
 						Sample locSample = (Sample) i.next();
 						%><tr><td><a href="detail.jsp?ID=<%=locSample.getSampleId()%>"><%=((locSample.getFrNumber() != null) ? locSample.getFrNumber().getFrNumber() : "not yet allocated")%></a>&nbsp;&nbsp;</td>
 						<td><a href="detail.jsp?ID=<%=locSample.getSampleId()%>"><%=SampleUtil.getDrillHoleDepthDescription(locSample)%></a></td>
-						<td><a href="frf/frf.pdf?SampIDs=<%=locSample.getSampleId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr><%
+						<td><a href="print_front.jsp?ID=<%=locSample.getSampleId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr><%
 					}
 					%></table><%
 					endDETable(pageContext);
