@@ -427,7 +427,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 				coord = (Datum.Coordinate)datum.preferredCoordinate().getConstructor(new Class[] {double.class, double.class}).newInstance(new Object[] {new Double(request.getParameter("North")), new Double(request.getParameter("East"))});
 			}
 		} catch (NumberFormatException e) {
-			//No problem, there just isn't a site
+			error.add(new String[] {"Coordinate", "Non numeric coordinate entered"});
 		} catch (IllegalArgumentException e) {
 		} catch (SecurityException e) {
 		} catch (InstantiationException e) {
