@@ -413,27 +413,31 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		//Site
 		datum = DatumFactory.createDatum(request.getParameter("CoordType"));
 		coord = null;
-		try {
-			if (datum.isMapSheetSystem()) {
-				int precision = request.getParameter("East").length();
-				if (request.getParameter("North").length() != precision) {
-					error.add(new String[] {"Coordinate", "Truncated coordinates different lengths"});
-				} else if ((precision > 0 && precision < 3) || precision > 4) {
-					error.add(new String[] {"Coordinate", "Length of truncated coordinates must be 3 or 4"});
+		String east = request.getParameter("East");
+		String north = request.getParameter("North");
+		if (east != null && !east.equals("") && north != null && !north.equals("")) {
+			try {
+				if (datum.isMapSheetSystem()) {
+					int precision = east.length();
+					if (north.length() != precision) {
+						error.add(new String[] {"Coordinate", "Truncated coordinates different lengths"});
+					} else if ((precision > 0 && precision < 3) || precision > 4) {
+						error.add(new String[] {"Coordinate", "Length of truncated coordinates must be 3 or 4"});
+					} else {
+						coord = (Datum.Coordinate)datum.preferredCoordinate().getConstructor(new Class[] {double.class, double.class, String.class, int.class}).newInstance(new Object[] {new Double(north), new Double(east), request.getParameter("MapSheet"), precision});
+					}
 				} else {
-					coord = (Datum.Coordinate)datum.preferredCoordinate().getConstructor(new Class[] {double.class, double.class, String.class, int.class}).newInstance(new Object[] {new Double(request.getParameter("North")), new Double(request.getParameter("East")), request.getParameter("MapSheet"), precision});
+					coord = (Datum.Coordinate)datum.preferredCoordinate().getConstructor(new Class[] {double.class, double.class}).newInstance(new Object[] {new Double(north), new Double(east)});
 				}
-			} else {
-				coord = (Datum.Coordinate)datum.preferredCoordinate().getConstructor(new Class[] {double.class, double.class}).newInstance(new Object[] {new Double(request.getParameter("North")), new Double(request.getParameter("East"))});
+			} catch (NumberFormatException e) {
+				error.add(new String[] {"Coordinate", "Non numeric coordinate entered"});
+			} catch (IllegalArgumentException e) {
+			} catch (SecurityException e) {
+			} catch (InstantiationException e) {
+			} catch (IllegalAccessException e) {
+			} catch (InvocationTargetException e) {
+			} catch (NoSuchMethodException e) {
 			}
-		} catch (NumberFormatException e) {
-			error.add(new String[] {"Coordinate", "Non numeric coordinate entered"});
-		} catch (IllegalArgumentException e) {
-		} catch (SecurityException e) {
-		} catch (InstantiationException e) {
-		} catch (IllegalAccessException e) {
-		} catch (InvocationTargetException e) {
-		} catch (NoSuchMethodException e) {
 		}
 		
 		if (coord != null) {
