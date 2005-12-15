@@ -283,8 +283,8 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 					northingLabel = "Latitude";
 				}
 				
-				template.addSub("easting", String.valueOf(coord.getEastWest()));
-				template.addSub("northing", String.valueOf(coord.getNorthSouth()));
+				template.addSub("easting", coord.getEastWestString());
+				template.addSub("northing", coord.getNorthSouthString());
 				
 				//Accuracy etc
 				template.addSub("mapYear", DBUtils.nvl(feature.getMapYear()));
@@ -415,7 +415,12 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		coord = null;
 		try {
 			if (datum.isMapSheetSystem()) {
-				coord = (Datum.Coordinate)datum.preferredCoordinate().getConstructor(new Class[] {String.class, double.class, double.class}).newInstance(new Object[] {request.getParameter("MapSheet"), new Double(request.getParameter("North")), new Double(request.getParameter("East"))});
+				int precision = request.getParameter("East").length();
+				if (request.getParameter("North").length() != precision) {
+					error.add(new String[] {"Coordinate", "Truncated coordinates different lengths"});
+				} else {
+					coord = (Datum.Coordinate)datum.preferredCoordinate().getConstructor(new Class[] {String.class, double.class, double.class, int.class}).newInstance(new Object[] {request.getParameter("MapSheet"), new Double(request.getParameter("North")), new Double(request.getParameter("East")), precision});
+				}
 			} else {
 				coord = (Datum.Coordinate)datum.preferredCoordinate().getConstructor(new Class[] {double.class, double.class}).newInstance(new Object[] {new Double(request.getParameter("North")), new Double(request.getParameter("East"))});
 			}
