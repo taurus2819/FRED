@@ -422,7 +422,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 					error.add(new String[] {"Coordinate", "Length of truncated coordinates must be 3 or 4"});
 				} else {
 					try {
-					coord = (Datum.Coordinate)datum.preferredCoordinate().getConstructor(new Class[] {String.class, double.class, double.class, int.class}).newInstance(new Object[] {request.getParameter("MapSheet"), new Double(request.getParameter("North")), new Double(request.getParameter("East")), precision});
+					coord = (Datum.Coordinate)datum.preferredCoordinate().getConstructor(new Class[] {double.class, double.class, String.class, int.class}).newInstance(new Object[] {new Double(request.getParameter("North")), new Double(request.getParameter("East")), request.getParameter("MapSheet"), precision});
 					} catch (Exception e){
 						e.printStackTrace();
 					}
