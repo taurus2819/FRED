@@ -67,6 +67,7 @@ public class TaxonomicUtil extends ModelUtil {
 
 	public void removeUserFromPanel(TaxonomicGroup group, int userId) throws StorageAccessException {
 		Set<TaxaPanel> panels = group.getTaxaPanels();
+		System.out.println("Panel numbers: " + panels.size());
 		for (TaxaPanel panel : panels) {
 			if (panel.getUserId().intValue() == userId) {
 				panels.remove(panel);
