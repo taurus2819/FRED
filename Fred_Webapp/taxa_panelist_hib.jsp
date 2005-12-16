@@ -31,13 +31,13 @@
 			if (request.getParameter("ActionType") != null) {
 				String actionType = request.getParameter("ActionType");
 				if (actionType.equals("Add")) {
-					taxaUtil.addUserToPanel(group, user);
+					taxaUtil.addUserToPanel(group, Integer.parseInt(request.getParameter("UserID")));
 				}
 				else if (actionType.equals("Delete")) {
-					taxaUtil.removeUserFromPanel(group, user);
+					taxaUtil.removeUserFromPanel(group, Integer.parseInt(request.getParameter("UserID")));
 				}
 			}
-
+			
 			%><p>The users listed below are on the panel for this taxonomic group and may accept or reject new entries to the thesaurus.<br />Users can be added or deleted from this list by clicking on the <img src='images/ok.gif' width='20' height='20' border='0' /> or <img src='images/cancel.gif' width='20' height='20' border='0' /> icons.</p>
 			<p><table border="0" cellspacing="0" cellpadding="2">
 			<tr class='heading'><td>User&nbsp;&nbsp;</td><td width='60' align='center'>Member</td></tr>
