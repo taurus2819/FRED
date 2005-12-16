@@ -30,21 +30,22 @@
 			
 			if (request.getParameter("ActionType") != null) {
 				String actionType = request.getParameter("ActionType");
+				int userId = Integer.parseInt(request.getParameter("UserID"));
 				if (actionType.equals("Add")) {
-					taxaUtil.addUserToPanel(group, Integer.parseInt(request.getParameter("UserID")));
+					taxaUtil.addUserToPanel(group, userId);
 				}
 				else if (actionType.equals("Delete")) {
-					taxaUtil.removeUserFromPanel(group, Integer.parseInt(request.getParameter("UserID")));
+					taxaUtil.removeUserFromPanel(group, userId);
 				}
 			}
 			
 			%><p>The users listed below are on the panel for this taxonomic group and may accept or reject new entries to the thesaurus.<br />Users can be added or deleted from this list by clicking on the <img src='images/ok.gif' width='20' height='20' border='0' /> or <img src='images/cancel.gif' width='20' height='20' border='0' /> icons.</p>
 			<p><table border="0" cellspacing="0" cellpadding="2">
-			<tr class='heading'><td>User&nbsp;&nbsp;</td><td width='60' align='center'>Member</td></tr>
-			<tr><td><img src='images/blank.gif width='1' height='5' /></td></tr>
-			<form name='AddForm' method='post' action='taxa_panelist.jsp'>
-			<input type='hidden' name='GroupID' value='" + group.getGroupId() + "'>
-			<input type='hidden' name='ActionType' value='Add'><%
+			<tr class="heading"><td>User&nbsp;&nbsp;</td><td width="60" style="text-align: center">Member</td></tr>
+
+			<form name="AddForm" method="get" action="taxa_panelist_hib.jsp">
+			<input type="hidden" name="GroupID" value="<%=group.getGroupId()%>" />
+			<input type="hidden" name="ActionType" value="Add" /><%
 
 			for (Iterator i = taxaUtil.getMembersOfPanel(group).iterator(); i.hasNext();) {
 				int memberId = ((Integer) i.next()).intValue();
