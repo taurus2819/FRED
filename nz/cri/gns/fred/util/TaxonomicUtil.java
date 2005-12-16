@@ -58,15 +58,14 @@ public class TaxonomicUtil extends ModelUtil {
 		return false;
 	}
 	
-	public void addUserToPanel(TaxonomicGroup group, UserAccount user) throws StorageAccessException {
+	public void addUserToPanel(TaxonomicGroup group, int userId) throws StorageAccessException {
 		TaxaPanel panel = groupDAO.createNewTaxaPanel();
 		panel.setTaxonomicGroup(group);
-		panel.setUserId(Integer.parseInt(user.getId()));
+		panel.setUserId(new Integer(userId));
 		groupDAO.save(panel);
 	}
 
-	public void removeUserFromPanel(TaxonomicGroup group, UserAccount user) throws StorageAccessException {
-		int userId = Integer.parseInt(user.getId());
+	public void removeUserFromPanel(TaxonomicGroup group, int userId) throws StorageAccessException {
 		Set panels = group.getTaxaPanels();
 		for (Iterator it = panels.iterator(); it.hasNext(); ) {
 			TaxaPanel panel  = (TaxaPanel) it.next();
