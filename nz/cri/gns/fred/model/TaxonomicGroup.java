@@ -12,7 +12,7 @@ public interface TaxonomicGroup extends Serializable, Comparable<TaxonomicGroup>
 
 	public Integer getGroupId();
 	
-    public Set getTaxaPanels();
+    public Set<TaxaPanel> getTaxaPanels();
 
-    public void setTaxaPanels(Set taxaPanels);
+    public void setTaxaPanels(Set<TaxaPanel> taxaPanels);
 }

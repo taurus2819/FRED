@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.hibernate;
 
 import java.util.Set;
+import nz.cri.gns.fred.model.TaxaPanel;
 
 
 /** @author Hibernate CodeGenerator */
@@ -18,13 +19,13 @@ public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
     private Set palLists;
 
     /** persistent field */
-    private Set taxaPanels;
+    private Set<TaxaPanel> taxaPanels;
 
     /** persistent field */
     private Set taxonomicLookups;
 
     /** full constructor */
-    public TaxonomicGroup(Integer groupId, String name, Set palLists, Set taxaPanels, Set taxonomicLookups) {
+    public TaxonomicGroup(Integer groupId, String name, Set palLists, Set<TaxaPanel> taxaPanels, Set taxonomicLookups) {
         this.groupId = groupId;
         this.name = name;
         this.palLists = palLists;
@@ -60,11 +61,11 @@ public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
         this.palLists = palLists;
     }
 
-    public Set getTaxaPanels() {
+    public Set<TaxaPanel> getTaxaPanels() {
         return this.taxaPanels;
     }
 
-    public void setTaxaPanels(Set taxaPanels) {
+    public void setTaxaPanels(Set<TaxaPanel> taxaPanels) {
         this.taxaPanels = taxaPanels;
     }
 
