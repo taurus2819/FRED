@@ -49,7 +49,7 @@
 
 			for (Iterator i = taxaUtil.getMembersOfPanel(group).iterator(); i.hasNext();) {
 				int memberId = ((Integer) i.next()).intValue();
-				%><tr><td><%=FREDUtil.getUserName(memberId)%>&nbsp;&nbsp;</td><td style="text-align: center"><a href="taxa_panelist_hib.jsp?GroupID=<%=group.getGroupId()%>&Action=Delete&UserID=<%=memberId%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="Delete User" /></a></td></tr><%
+				%><tr><td><%=FREDUtil.getUserName(memberId)%>&nbsp;&nbsp;</td><td style="text-align: center"><a href="taxa_panelist_hib.jsp?GroupID=<%=group.getGroupId()%>&ActionType=Delete&UserID=<%=memberId%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="Delete User" /></a></td></tr><%
 			}
 			
 			%><tr><td><%
