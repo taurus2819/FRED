@@ -281,7 +281,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	}
 	
 	public TaxaPanel createNewTaxaPanel() {
-		return new nz.cri.gns.fred.hibernate.TaxaPanel();
+		return new nz.cri.gns.fred.hibernate.TaxaPanel(false);
 	}
 	
 	public TaxaPanel save(TaxaPanel panel) throws StorageAccessException {
