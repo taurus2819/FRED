@@ -59,10 +59,9 @@ public class TaxonomicUtil extends ModelUtil {
 	}
 	
 	public void addUserToPanel(TaxonomicGroup group, int userId) throws StorageAccessException {
-		System.out.println("GroupID: " + group.getGroupId());
-		System.out.println("UserID: " + userId);
 		TaxaPanel panel = groupDAO.createNewTaxaPanel();
 		panel.setTaxonomicGroup(group);
+		System.out.println(panel.getTaxonomicGroup().getName());
 		panel.setUserId(userId);
 		groupDAO.save(panel);
 	}
