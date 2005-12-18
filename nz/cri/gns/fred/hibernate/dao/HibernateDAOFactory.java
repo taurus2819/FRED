@@ -628,22 +628,22 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 				intData.put("lower", new Integer(startStageId));
 			}
 			if (startUncertain) {
-				query.append("s.stageLowerMod = :lmod ");
+				query.append("AND s.stageLowerMod = :lmod ");
 				strData.add("lmod");
 			} else {
-				query.append("s.stageLowerMod IS NULL ");
+				query.append("AND s.stageLowerMod IS NULL ");
 			}
 			if (stopStageId == null) {
-				query.append("s.stageUpperId IS NULL ");
+				query.append("AND s.stageUpperId IS NULL ");
 			} else {
-				query.append("s.stageUpperId = :upper ");
+				query.append("AND AND s.stageUpperId = :upper ");
 				intData.put("upper", new Integer(stopStageId));
 			}
 			if (stopUncertain) {
-				query.append("s.stageUpperMod = :umod");
+				query.append("AND s.stageUpperMod = :umod");
 				strData.add("umod");
 			} else {
-				query.append("s.stageUpperMod IS NULL");
+				query.append("AND s.stageUpperMod IS NULL");
 			}
 			
             Session session = provider.currentSession();
