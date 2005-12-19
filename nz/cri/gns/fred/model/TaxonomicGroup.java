@@ -15,4 +15,8 @@ public interface TaxonomicGroup extends Serializable, Comparable<TaxonomicGroup>
     public Set<TaxaPanel> getTaxaPanels();
 
     public void setTaxaPanels(Set<TaxaPanel> taxaPanels);
+    
+    public Set<Taxon> getTaxonomicLookups();
+
+    public void setTaxonomicLookups(Set<Taxon> taxonomicLookups);
 }

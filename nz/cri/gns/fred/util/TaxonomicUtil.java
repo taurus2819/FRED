@@ -14,12 +14,11 @@ import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.dao.TaxonomicDAO;
 import nz.cri.gns.fred.dao.TaxonomicGroupDAO;
 import nz.cri.gns.fred.dataentry.DataInputException;
-import nz.cri.gns.fred.model.FolderUser;
+import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.TaxaPanel;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
-import nz.cri.gns.fred.model.UserFolder;
 
 /**
  * @author iainm
@@ -76,10 +75,21 @@ public class TaxonomicUtil extends ModelUtil {
 		groupDAO.save(group);
 	}
 	
+	/**
+	 * @deprectaed use getTaxaCount
+	 */
 	public int getProvisionalCount(TaxonomicGroup group) throws StorageAccessException {
-		return groupDAO.getProvisionalCount(group);
+		return groupDAO.getTaxaCount(group, FREDConstants.PROVISIONAL);
+	}
+	
+	public int getTaxaCount(TaxonomicGroup group, String status) throws StorageAccessException {
+		return groupDAO.getTaxaCount(group, status);
 	}
 
+	public List<Taxon> getTaxa(TaxonomicGroup group, String status) throws StorageAccessException {
+		return groupDAO.getTaxa(group, status);
+	}
+	
 	public TaxonomicGroup getTaxonomicGroup(String groupName) throws StorageAccessException {
 		return groupDAO.findTaxonomicGroup(groupName);
 	}

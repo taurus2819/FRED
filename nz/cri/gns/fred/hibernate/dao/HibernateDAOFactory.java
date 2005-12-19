@@ -263,6 +263,9 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		}
 	}
 
+	/**
+	 * @deprectaed use getTaxaCount
+	 */
 	public int getProvisionalCount(TaxonomicGroup group) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
@@ -276,6 +279,31 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		}
 	}
 
+	public int getTaxaCount(TaxonomicGroup group, String status) throws StorageAccessException {
+		try {
+			Session session = provider.currentSession();
+			Query query = session.createQuery("SELECT count(taxon) FROM TaxonomicLookup AS taxon WHERE taxon.taxonomicGroup = :group AND taxon.status = :prov AND taxon.taxonomicName IS NOT NULL");
+			query.setEntity("group", group);
+			query.setString("prov", status);
+			List list = query.list();
+			return ((Integer)list.get(0)).intValue();
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+		}
+	}	
+	
+	public List<Taxon> getTaxa(TaxonomicGroup group, String status) throws StorageAccessException {
+		try {
+			Session session = provider.currentSession();
+			Query query = session.createQuery("SELECT taxon FROM TaxonomicLookup AS taxon WHERE taxon.taxonomicGroup = :group AND taxon.status = :prov AND taxon.taxonomicName IS NOT NULL");
+			query.setEntity("group", group);
+			query.setString("prov", status);
+			return query.list();
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+		}		
+	}
+	
 	public TaxonomicGroup findTaxonomicGroup(String groupName) throws StorageAccessException {
 		return (TaxonomicGroup)getFirst("FROM TaxonomicGroup As g WHERE g.name = ?", groupName);
 	}

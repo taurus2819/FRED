@@ -2,6 +2,7 @@ package nz.cri.gns.fred.hibernate;
 
 import java.util.Set;
 import nz.cri.gns.fred.model.TaxaPanel;
+import nz.cri.gns.fred.model.Taxon;
 
 
 /** @author Hibernate CodeGenerator */
@@ -22,10 +23,10 @@ public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
     private Set<TaxaPanel> taxaPanels;
 
     /** persistent field */
-    private Set taxonomicLookups;
+    private Set<Taxon> taxonomicLookups;
 
     /** full constructor */
-    public TaxonomicGroup(Integer groupId, String name, Set palLists, Set<TaxaPanel> taxaPanels, Set taxonomicLookups) {
+    public TaxonomicGroup(Integer groupId, String name, Set palLists, Set<TaxaPanel> taxaPanels, Set<Taxon> taxonomicLookups) {
         this.groupId = groupId;
         this.name = name;
         this.palLists = palLists;
@@ -69,11 +70,11 @@ public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
         this.taxaPanels = taxaPanels;
     }
 
-    public Set getTaxonomicLookups() {
+    public Set<Taxon> getTaxonomicLookups() {
         return this.taxonomicLookups;
     }
 
-    public void setTaxonomicLookups(Set taxonomicLookups) {
+    public void setTaxonomicLookups(Set<Taxon> taxonomicLookups) {
         this.taxonomicLookups = taxonomicLookups;
     }
 
