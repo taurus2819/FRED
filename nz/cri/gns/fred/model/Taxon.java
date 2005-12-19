@@ -3,7 +3,7 @@ package nz.cri.gns.fred.model;
 import java.util.Date;
 import java.util.Set;
 
-public interface Taxon {
+public interface Taxon extends Comparable<Taxon>{
 
 	public static final String APPROVED_STATUS = "approved";
 	public static final String PROVISIONAL_STATUS = "provisional";

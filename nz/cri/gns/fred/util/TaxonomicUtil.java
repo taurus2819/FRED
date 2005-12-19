@@ -123,7 +123,9 @@ public class TaxonomicUtil extends ModelUtil {
 	}
 
 	public List<Taxon> getTaxa(TaxonomicGroup group, String status) throws StorageAccessException {
-		return groupDAO.getTaxa(group, status);
+		List<Taxon> taxa = groupDAO.getTaxa(group, status);
+		Collections.sort(taxa);
+		return taxa;
 	}
 	
 	public TaxonomicGroup getTaxonomicGroup(String groupName) throws StorageAccessException {

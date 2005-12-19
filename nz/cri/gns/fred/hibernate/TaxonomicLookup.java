@@ -170,4 +170,8 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
     public void setListEntries(Set palLists) {
         this.palLists = palLists;
     }
+    
+	public int compareTo(nz.cri.gns.fred.model.Taxon arg0) {
+		return taxonomicName.compareTo(arg0.getTaxonomicName());
+	}
 }
