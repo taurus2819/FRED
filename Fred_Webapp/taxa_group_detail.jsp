@@ -14,7 +14,7 @@
 	public String getName(HttpServletRequest request) {
 		try {
 			TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
-			TaxonomicGroup group = taxaUtil.getTaxonomicGroup(Integer.parseInt(request.getParameter("GroupID")));
+			TaxonomicGroup group = taxaUtil.getTaxonomicGroup(Integer.parseInt(request.getParameter("ID")));
 			return "FRED :: " + group.getName() + " Thesaurus";
 		} catch (Exception e) {
 			return "FRED :: The Fossil Record Electronic Database";
@@ -30,8 +30,8 @@
 			new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")
 		});
 	
-	if (request.getParameter("GroupID") != null) {
-		TaxonomicGroup group = taxaUtil.getTaxonomicGroup(Integer.parseInt(request.getParameter("GroupID")));
+	if (request.getParameter("ID") != null) {
+		TaxonomicGroup group = taxaUtil.getTaxonomicGroup(Integer.parseInt(request.getParameter("ID")));
 
 		drawTop(out, et, request, response);
 		
@@ -57,14 +57,14 @@
 				for (Iterator i = taxaUtil.getTaxa(group, FREDConstants.PROVISIONAL).iterator(); i.hasNext(); ) {
 					Taxon taxon = (Taxon) i.next();
 					%><form name="taxonForm<%=taxon.getTaxaId()%>" method="post" action="taxa_group_detail.jsp">
-					<input type="hidden" name="GroupID" value="<%=group.getGroupId()%>" />
+					<input type="hidden" name="ID" value="<%=group.getGroupId()%>" />
 					<input type="hidden" name="TaxonID" value="<%=taxon.getTaxaId()%>" />
 					<input type="hidden" name="ActionType" value="Reject" />
 					<tr><td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getSubmittedById() != null) ? FREDUtil.getUserName(taxon.getSubmittedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getSubmittedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><a href="taxa_group_detail.jsp?GroupID=<%=group.getGroupId()%>&ActionType=Approve&TaxonID=<%=taxon.getTaxaId()%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="approve" /></a><br />
+					<td style="text-align: left"><a href="taxa_group_detail.jsp?ID=<%=group.getGroupId()%>&ActionType=Approve&TaxonID=<%=taxon.getTaxaId()%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="approve" /></a><br />
 						<textarea name="RejComments" cols="20" rows="3"></textarea>&nbsp;&nbsp;
 						<a href="#" onClick="taxonForm<%=taxon.getTaxaId()%>.submit();"><img src="images/cancel.gif" border="0" height="20" width="20" alt="Reject" /></a></td></tr>
 					</form><%
@@ -104,7 +104,7 @@
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getApprovedById() != null) ? FREDUtil.getUserName(taxon.getApprovedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getApprovedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><a href="taxa_group_detail.jsp?GroupID=<%=group.getGroupId()%>&TaxonID=<%=taxon.getTaxaId()%>&ActionType=Obsolete"><img src="images/delete.gif" height="20" width="20" border="0" alt="Make Obsolete" /></a><%
+					<td style="text-align: left"><a href="taxa_group_detail.jsp?ID=<%=group.getGroupId()%>&TaxonID=<%=taxon.getTaxaId()%>&ActionType=Obsolete"><img src="images/delete.gif" height="20" width="20" border="0" alt="Make Obsolete" /></a><%
 				}
 				%></table><%
 				endDETable(pageContext);

@@ -214,7 +214,7 @@ alert("<%=error%>");<%
 		for (Iterator i = panelList.iterator(); i.hasNext(); ) {
 			TaxonomicGroup group = (TaxonomicGroup)i.next();
 
-			%><tr><td style="text-align: left"><a href="taxa_group_detail.jsp?ID=<%=group.getGroupId()%>" class="heading"><%=group.getName()%></a><img src="images/blank.gif" width="20" height="1" /></td><td style="font-size: 10pt; font-weight: bold; color: #FF0000; text-align: left">
+			%><tr><td style="text-align: left"><a href="taxa_group_detail.jsp?GroupID=<%=group.getGroupId()%>" class="heading"><%=group.getName()%></a><img src="images/blank.gif" width="20" height="1" /></td><td style="font-size: 10pt; font-weight: bold; color: #FF0000; text-align: left">
 <%
 			if (taxaUtil.getProvisionalCount(group) > 0)
 				out.print("new data");
