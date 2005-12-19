@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.fred.dao.DAOFactory;
@@ -36,6 +37,10 @@ public class TaxonomicUtil extends ModelUtil {
 	
 	public TaxonomicGroup getTaxonomicGroup(int groupId) throws StorageAccessException {
 		return groupDAO.getTaxonomicGroup(groupId);
+	}
+	
+	public Taxon getTaxon(int taxonId) throws StorageAccessException {
+		return taxonomicDAO.getTaxon(taxonId);
 	}
 	
 	public List<TaxonomicGroup> getPanelsIsMemberOf(UserAccount user) throws StorageAccessException {
@@ -73,6 +78,37 @@ public class TaxonomicUtil extends ModelUtil {
 			}
 		}
 		groupDAO.save(group);
+	}
+	
+	public Taxon approveTaxon(Taxon taxon, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+		if (!isUserMemberOf(taxon.getTaxonomicGroup(), user))
+			throw new InsufficientPrivelegesException();
+		taxon.setStatus(FREDConstants.APPROVED);
+		taxon.setApprovedById(new Integer(user.getId()));
+		taxon.setApprovedDate(new Date());
+		groupDAO.save(taxon);
+		return taxon;
+	}
+
+	public Taxon rejectTaxon(Taxon taxon, UserAccount user, String comments) throws StorageAccessException, InsufficientPrivelegesException {
+		if (!isUserMemberOf(taxon.getTaxonomicGroup(), user))
+			throw new InsufficientPrivelegesException();
+		taxon.setStatus(FREDConstants.REJECTED);
+		taxon.setApprovedById(new Integer(user.getId()));
+		taxon.setApprovedDate(new Date());
+		taxon.setPanelistComments(comments);
+		groupDAO.save(taxon);
+		return taxon;
+	}
+	
+	public Taxon obsoleteTaxon(Taxon taxon, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+		if (!isUserMemberOf(taxon.getTaxonomicGroup(), user))
+			throw new InsufficientPrivelegesException();
+		taxon.setStatus(FREDConstants.OBSOLETE);
+		taxon.setApprovedById(new Integer(user.getId()));
+		taxon.setApprovedDate(new Date());
+		groupDAO.save(taxon);
+		return taxon;
 	}
 	
 	/**
@@ -236,7 +272,7 @@ public class TaxonomicUtil extends ModelUtil {
 		
 		//Get the taxon
 		Taxon taxon = entry.getTaxon();
-		taxon.setStatus("provisional");
+		taxon.setStatus(FREDConstants.PROVISIONAL);
 		taxon.setSubmittedById(new Integer(user.getId()));
 		taxon.setSubmittedDate(new Date());
 		try {

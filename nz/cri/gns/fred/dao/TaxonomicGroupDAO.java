@@ -21,6 +21,8 @@ public interface TaxonomicGroupDAO {
 	
 	public TaxonomicGroup save(TaxonomicGroup group) throws StorageAccessException;
 	
+	public Taxon save(Taxon taxon) throws StorageAccessException;
+	
 	/**
 	 * Returns a list of Taxonomic groups for which the given
 	 * user is a member of the panel

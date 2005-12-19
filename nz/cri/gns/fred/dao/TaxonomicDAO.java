@@ -6,6 +6,8 @@ import nz.cri.gns.fred.model.TaxonomicGroup;
 
 public interface TaxonomicDAO {
 
+	public Taxon getTaxon(int taxonId) throws StorageAccessException;
+	
     /**
      * Creates a new, unsaved paleontological list entry
      * @return
@@ -33,7 +35,7 @@ public interface TaxonomicDAO {
      * @param taxon
      * @throws StorageAccessException 
      */
-	public void save(Taxon taxon) throws StorageAccessException;
+	public Taxon save(Taxon taxon) throws StorageAccessException;
 
     /**
      * Finds the taxon with the given parameters

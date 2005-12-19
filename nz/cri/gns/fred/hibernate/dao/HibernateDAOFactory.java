@@ -861,6 +861,10 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
         return new PalList();
     }
 
+	public Taxon getTaxon(int taxonId) throws StorageAccessException {
+		return (Taxon)getFirst("FROM TaxonomicLookup as tl WHERE tl.taxaId = ?", taxonId);
+	}
+    
     public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException {
         try {
         	//We do have an author
@@ -898,8 +902,8 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
         return new TaxonomicLookup();
     }
 
-	public void save(Taxon taxon) throws StorageAccessException {
-		save((Object)taxon);
+	public Taxon save(Taxon taxon) throws StorageAccessException {
+		return (Taxon)save((Object)taxon);
 	}
 
 	public void save(RecordDetails details) throws StorageAccessException {
