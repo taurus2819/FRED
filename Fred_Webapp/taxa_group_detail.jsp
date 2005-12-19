@@ -1,114 +1,134 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, java.util.*, java.text.*, nz.cri.gns.auth.*"
+%><%@page import="nz.cri.gns.fred.model.Taxon"
+%><%@page import="nz.cri.gns.fred.model.TaxonomicGroup"
+%><%@page import="nz.cri.gns.fred.model.FREDConstants"
+%><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
+%><%@page import="nz.cri.gns.fred.util.FREDUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.db.DBUtils"
+%><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
+%><%@page import="nz.cri.gns.jsp.IconnedLink"
+%><%@page import="nz.cri.gns.auth.User"
+%><%@page import="java.util.Iterator"
+%><%!
+	public String getName(HttpServletRequest request) {
+		try {
+			TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
+			TaxonomicGroup group = taxaUtil.getTaxonomicGroup(Integer.parseInt(request.getParameter("GroupID")));
+			return "FRED :: " + group.getName() + " Thesaurus";
+		} catch (Exception e) {
+			return "FRED :: The Fossil Record Electronic Database";
+		}
+	}
 %><%
+	TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
 	User user = (User)getUser(session);
-	PageState state = new PageState(request, response, getServletContext());
-
+	
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	et.setUseNavigationColumn(false);
+	et.setButtons(new IconnedLink[] {
+			new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")
+		});
+	
+	if (request.getParameter("GroupID") != null) {
+		TaxonomicGroup group = taxaUtil.getTaxonomicGroup(Integer.parseInt(request.getParameter("GroupID")));
 
-	drawTop(out, et, request, response);
+		drawTop(out, et, request, response);
+		
+		if (taxaUtil.isUserMemberOf(group, user)) {
 
-	if (request.getParameter("ID") != null) {
-		TaxaPanel panel = new TaxaPanel(Integer.parseInt(request.getParameter("ID")), user, state);
-
-		out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
-		out.println("<tr><td colspan='2' align='center' class='bigheading'>" + panel.getAsString(TaxaPanel.NAME) + "</td></tr>");
-		out.println("<tr><td><img src='images/blank.gif' width='1' height='10' /></td></tr>");
-		out.println("<tr><td><a href='folder_list.jsp' title='Back to Folders'><img src='images/back_arrow.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_list.jsp' class='heading'>Back to Folders</a></td></tr>");
-		out.println("</table>");
-
-		drawEndNavigation(out);
-
-		out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-		out.println("<tr><td>");
-
-		if (panel.isPanelMember()) {
-			if (request.getParameter("ActionType") != null && request.getParameter("TaxaID") != null) { //do something
+			if (request.getParameter("ActionType") != null && request.getParameter("TaxonID") != null) { //do something
 				String actionType = request.getParameter("ActionType");
-				if (actionType.equals("Approve")) { //approve taxa
-					FolderUtils.approveTaxa(request.getParameter("TaxaID"), String.valueOf(panel.getPanelID()), user, state);
-				}
-				else if (actionType.equals("Reject")) { //reject taxa
-					FolderUtils.rejectTaxa(request.getParameter("TaxaID"), String.valueOf(panel.getPanelID()), user, state);
-				}
-				response.sendRedirect("taxa_group_detail.jsp?ID=" + panel.getPanelID());
-				return;
-			}
-
-			Vector tls = new Vector();
-
-			out.println("<p>Listed below are the Taxonomic names in the above group.  Any provisional entries are listed first and need to be either approved or rejected</p>");
-
-			//List theasurus - provisional entries at top
-			out.println("<table border='0' cellspacing='0' cellpadding='2' width='550'>");
-
-			if (panel.getProvisionalCount() > 0) {
-				out.println("<tr><th colspan='6'>Provisional Entries</th></tr>");
-				out.println("<tr><th>Name&nbsp;&nbsp;</th><th>Author&nbsp;&nbsp;</th><th>Submitted By&nbsp;&nbsp;</th><th>Submitted Date&nbsp;&nbsp;</th><th colspan=\"2\">Options</th></tr>");
-				for (Iterator i = panel.getAsVector(TaxaPanel.PROVISIONAL_TAXA).iterator(); i.hasNext(); ) {
-					KeyValueObject kv = (KeyValueObject) i.next();
-					TaxonomicLookup tl = new TaxonomicLookup(Integer.parseInt(kv.getKey()), user, state);
-					tls.add(tl);
-					out.println("<tr><td class='heading'>" + tl.getAsString(TaxonomicLookup.TAXONOMIC_NAME) + "&nbsp;&nbsp;</td>");
-					out.println("<td>" + FREDUtils.noNulls(tl.getAsString(TaxonomicLookup.AUTHOR)) + "&nbsp;&nbsp;</td>");
-					out.println("<td>" + tl.getAsString(TaxonomicLookup.SUBMITTED_BY) + "&nbsp;&nbsp;</td>");
-					out.println("<td>" + ((tl.get(TaxonomicLookup.SUBMITTED_DATE) != null) ? DateFormat.getDateInstance(DateFormat.LONG).format(tl.getAsDate(TaxonomicLookup.SUBMITTED_DATE)) : "") + "&nbsp;&nbsp;</td>");
-					out.println("<td><a href='taxa_group_detail.jsp?ID=" + panel.getPanelID() + "&ActionType=Approve&TaxaID=" + tl.getTaxaID() + "'><img src='images/ok.gif' border='0' height='20' width='20' alt='approve' />&nbsp;</td><td><a href='taxa_group_detail.jsp?ID=" + panel.getPanelID() + "&ActionType=Reject&TaxaID=" + tl.getTaxaID() + "'><img src='images/cancel.gif' border='0' height='20' width='20' alt='Reject' /></a></td></tr>");
+				Taxon taxon = taxaUtil.getTaxon(Integer.parseInt(request.getParameter("TaxonID")));
+				if (actionType.equals("Approve")) { //approve taxon
+					taxaUtil.approveTaxon(taxon, user);
+				} else if (actionType.equals("Reject")) { //reject taxon
+					taxaUtil.rejectTaxon(taxon, user, request.getParameter("RejComments"));
+				} else if (actionType.equals("Obsolete")) {  //obsolete taxon
+					taxaUtil.obsoleteTaxon(taxon, user);
 				}
 			}
-			out.println("<tr><td>&nbsp;</td></tr>");
 
-			if (panel.getRejectedCount() > 0) {
-				out.println("<tr><th colspan='6'>Rejected Entries</th></tr>");
-				out.println("<tr><th>Name&nbsp;&nbsp;</th><th>Author&nbsp;&nbsp;</th><th>Rejected By&nbsp;&nbsp;</th><th>Rejected Date</th></tr>");
-				for (Iterator i = panel.getAsVector(TaxaPanel.REJECTED_TAXA).iterator(); i.hasNext(); ) {
-					KeyValueObject kv = (KeyValueObject) i.next();
-					TaxonomicLookup tl = new TaxonomicLookup(Integer.parseInt(kv.getKey()), user, state);
-					tls.add(tl);
-					out.println("<tr><td class='heading'>" + tl.getAsString(TaxonomicLookup.TAXONOMIC_NAME) + "&nbsp;&nbsp;</td>");
-					out.println("<td>" + FREDUtils.noNulls(tl.getAsString(TaxonomicLookup.AUTHOR)) + "&nbsp;&nbsp;</td>");
-					out.println("<td>" + tl.getAsString(TaxonomicLookup.APPROVED_BY) + "&nbsp;&nbsp;</td>");
-					out.println("<td>" + ((tl.get(TaxonomicLookup.APPROVED_DATE) != null) ? DateFormat.getDateInstance(DateFormat.LONG).format(tl.getAsDate(TaxonomicLookup.APPROVED_DATE)) : "") + "&nbsp;&nbsp;</td></tr>");
+			if (taxaUtil.getTaxaCount(group, FREDConstants.PROVISIONAL) > 0) {
+				%><p>&nbsp;</p><center><p><%
+				startDETable(pageContext);
+				%><table border="0" width="550"><tr><td colspan="19" class="deHeading">Provisional Entries</td></tr>
+				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Submitted By&nbsp;&nbsp;</th><th style="text-align: left">Submitted Date&nbsp;&nbsp;</th><th style="text-align: left">Options</th></tr><%
+				for (Iterator i = taxaUtil.getTaxa(group, FREDConstants.PROVISIONAL).iterator(); i.hasNext(); ) {
+					Taxon taxon = (Taxon) i.next();
+					%><form name="taxonForm<%=taxon.getTaxaId()%>" method="post" action="taxa_group_detail.jsp">
+					<input type="hidden" name="GroupID" value="<%=group.getGroupId()%>" />
+					<input type="hidden" name="TaxonID" value="<%=taxon.getTaxaId()%>" />
+					<input type="hidden" name="ActionType" value="Reject" />
+					<tr><td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=((taxon.getSubmittedById() != null) ? FREDUtil.getUserName(taxon.getSubmittedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=((taxon.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getSubmittedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><a href="taxa_group_detail.jsp?GroupID=<%=group.getGroupId()%>&ActionType=Approve&TaxonID=<%=taxon.getTaxaId()%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="approve" /></a><br />
+						<textarea name="RejComments" cols="20" rows="3"></textarea>&nbsp;&nbsp;
+						<a href="#" onClick="taxonForm<%=taxon.getTaxaId()%>.submit();"><img src="images/cancel.gif" border="0" height="20" width="20" alt="Reject" /></a></td></tr>
+					</form><%
+
 				}
+				%></table><%
+				endDETable(pageContext);
+				%></p></center><%
 			}
-			out.println("<tr><td>&nbsp;</td></tr>");
-
-			if (panel.getApprovedCount() > 0) {
-				out.println("<tr><th colspan='6'>Approved Entries</th></tr>");
-				out.println("<tr><th>Name&nbsp;&nbsp;</th><th>Author&nbsp;&nbsp;</th><th>Approved By</th><th>Approved Date</th></tr>");
-				for (Iterator i = panel.getAsVector(TaxaPanel.APPROVED_TAXA).iterator(); i.hasNext(); ) {
-					KeyValueObject kv = (KeyValueObject) i.next();
-					TaxonomicLookup tl = new TaxonomicLookup(Integer.parseInt(kv.getKey()), user, state);
-					tls.add(tl);
-					out.println("<tr><td class='heading'>" + tl.getAsString(TaxonomicLookup.TAXONOMIC_NAME) + "&nbsp;&nbsp;</td>");
-					out.println("<td>" + FREDUtils.noNulls(tl.getAsString(TaxonomicLookup.AUTHOR)) + "&nbsp;&nbsp;</td>");
-					out.println("<td>" + FREDUtils.noNulls(tl.getAsString(TaxonomicLookup.APPROVED_BY)) + "&nbsp;&nbsp;</td>");
-					out.println("<td>" + ((tl.get(TaxonomicLookup.APPROVED_DATE) != null) ? DateFormat.getDateInstance(DateFormat.LONG).format(tl.getAsDate(TaxonomicLookup.APPROVED_DATE)) : "") + "&nbsp;&nbsp;</td></tr>");
-				}
-			}
-			out.println("<tr><td>&nbsp;</td></tr>");
-
-			if (panel.getObsoleteCount() > 0) {
-				out.println("<tr><th colspan='6'>Obsolete Entries</th></tr>");
-				out.println("<tr><th>Name&nbsp;&nbsp;</th><th>Author</th></tr>");
-				for (Iterator i = panel.getAsVector(TaxaPanel.OBSOLETE_TAXA).iterator(); i.hasNext(); ) {
-					KeyValueObject kv = (KeyValueObject) i.next();
-					TaxonomicLookup tl = new TaxonomicLookup(Integer.parseInt(kv.getKey()), user, state);
-					tls.add(tl);
-					out.println("<tr><td class='heading'>" + tl.getAsString(TaxonomicLookup.TAXONOMIC_NAME) + "&nbsp;&nbsp;</td>");
-					out.println("<td>" + FREDUtils.noNulls(tl.getAsString(TaxonomicLookup.AUTHOR)) + "&nbsp;&nbsp;</td></tr>");
-				}
-			}
-			out.println("<tr><td>&nbsp;</td></tr>");
-
-			out.println("</table>");
 			
-			session.setAttribute("tls", tls);
+			if (taxaUtil.getTaxaCount(group, FREDConstants.REJECTED) > 0) {
+				%><p>&nbsp;</p><center><p><%
+				startDETable(pageContext);
+				%><table border="0" width="550"><tr><td colspan="19" class="deHeading">Rejected Entries</td></tr>
+				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Rejected By&nbsp;&nbsp;</th><th style="text-align: left">Rejected Date&nbsp;&nbsp;</th><th style="text-align: left">Comments</th></tr><%
+				for (Iterator i = taxaUtil.getTaxa(group, FREDConstants.REJECTED).iterator(); i.hasNext(); ) {
+					Taxon taxon = (Taxon) i.next();
+					%><tr><td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=((taxon.getApprovedById() != null) ? FREDUtil.getUserName(taxon.getApprovedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=((taxon.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getApprovedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=DBUtils.nvl(taxon.getPanelistComments())%>&nbsp;&nbsp;</td><%
+				}
+				%></table><%
+				endDETable(pageContext);
+				%></p></center><%
+			}
+			
+			if (taxaUtil.getTaxaCount(group, FREDConstants.APPROVED) > 0) {
+				%><p>&nbsp;</p><center><p><%
+				startDETable(pageContext);
+				%><table border="0" width="550"><tr><td colspan="19" class="deHeading">Approved Entries</td></tr>
+				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Approved By&nbsp;&nbsp;</th><th style="text-align: left">Approved Date&nbsp;&nbsp;</th><th style="text-align: left">Options</th></tr><%
+				for (Iterator i = taxaUtil.getTaxa(group, FREDConstants.APPROVED).iterator(); i.hasNext(); ) {
+					Taxon taxon = (Taxon) i.next();
+					%><tr><td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=((taxon.getApprovedById() != null) ? FREDUtil.getUserName(taxon.getApprovedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=((taxon.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getApprovedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><a href="taxa_group_detail.jsp?GroupID=<%=group.getGroupId()%>&TaxonID=<%=taxon.getTaxaId()%>&ActionType=Obsolete"><img src="images/delete.gif" height="20" width="20" border="0" alt="Make Obsolete" /></a><%
+				}
+				%></table><%
+				endDETable(pageContext);
+				%></p></center><%
+			}
+
+			if (taxaUtil.getTaxaCount(group, FREDConstants.OBSOLETE) > 0) {
+				%><p>&nbsp;</p><center><p><%
+				startDETable(pageContext);
+				%><table border="0" width="550"><tr><td colspan="19" class="deHeading">Obsolete Entries</td></tr>
+				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author</th></tr><%
+				for (Iterator i = taxaUtil.getTaxa(group, FREDConstants.OBSOLETE).iterator(); i.hasNext(); ) {
+					Taxon taxon = (Taxon) i.next();
+					%><tr><td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td><%
+				}
+				%></table><%
+				endDETable(pageContext);
+				%></p></center><%
+			}
+
 		}
 	}
 
-	out.println("</td></tr></table>");
 	drawBottom(out, et);
 
 %>
