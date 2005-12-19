@@ -12,7 +12,7 @@ public interface FREDConstants {
 	public static final String REJECTED = "rejected";
 	
     //Taxonomic name status extra requirements
-    public static final String OBSOLETE = "OBSOLETE";
+    public static final String OBSOLETE = "obsolete";
 	public static final String PROVISIONAL = "provisional";
 	
     //Locality types
