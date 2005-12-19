@@ -44,6 +44,8 @@
 					taxaUtil.approveTaxon(taxon, user);
 				} else if (actionType.equals("Reject")) { //reject taxon
 					taxaUtil.rejectTaxon(taxon, user, request.getParameter("RejComments"));
+				} else if (actionType.equals("Delete")) {
+					taxaUtil.deleteTaxon(taxon, user);
 				} else if (actionType.equals("Obsolete")) {  //obsolete taxon
 					taxaUtil.obsoleteTaxon(taxon, user);
 				}
@@ -79,7 +81,7 @@
 				%><p>&nbsp;</p><center><p><%
 				startDETable(pageContext);
 				%><table border="0" width="550"><tr><td colspan="19" class="deHeading">Rejected Entries</td></tr>
-				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Rejected By&nbsp;&nbsp;</th><th style="text-align: left">Rejected Date&nbsp;&nbsp;</th><th style="text-align: left">Comments</th></tr><%
+				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Rejected By&nbsp;&nbsp;</th><th style="text-align: left">Rejected Date&nbsp;&nbsp;</th><th style="text-align: left">Comments&nbsp;&nbsp;</th><th style="text-align: left">Options</th></tr><%
 				for (Iterator i = taxaUtil.getTaxa(group, FREDConstants.REJECTED).iterator(); i.hasNext(); ) {
 					Taxon taxon = (Taxon) i.next();
 					%><tr><td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
@@ -87,6 +89,9 @@
 					<td style="text-align: left"><%=((taxon.getApprovedById() != null) ? FREDUtil.getUserName(taxon.getApprovedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getApprovedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getPanelistComments())%>&nbsp;&nbsp;</td><%
+					if (FREDUtil.isEmpty(taxon.getListEntries())) {
+						%><td style="text-align: left"><a href="taxa_group_detail.jsp?ID=<%=group.getGroupId()%>&TaxonID=<%=taxon.getTaxaId()%>&ActionType=Delete"><img src="images/delete.gif" height="20" width="20" border="0" alt="Delete" /></a><%
+				}
 				}
 				%></table><%
 				endDETable(pageContext);

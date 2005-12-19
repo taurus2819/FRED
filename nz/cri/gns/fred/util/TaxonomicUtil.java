@@ -86,7 +86,7 @@ public class TaxonomicUtil extends ModelUtil {
 		taxon.setStatus(FREDConstants.APPROVED);
 		taxon.setApprovedById(new Integer(user.getId()));
 		taxon.setApprovedDate(new Date());
-		groupDAO.save(taxon);
+		taxonomicDAO.save(taxon);
 		return taxon;
 	}
 
@@ -97,7 +97,7 @@ public class TaxonomicUtil extends ModelUtil {
 		taxon.setApprovedById(new Integer(user.getId()));
 		taxon.setApprovedDate(new Date());
 		taxon.setPanelistComments(comments);
-		groupDAO.save(taxon);
+		taxonomicDAO.save(taxon);
 		return taxon;
 	}
 	
@@ -107,8 +107,16 @@ public class TaxonomicUtil extends ModelUtil {
 		taxon.setStatus(FREDConstants.OBSOLETE);
 		taxon.setApprovedById(new Integer(user.getId()));
 		taxon.setApprovedDate(new Date());
-		groupDAO.save(taxon);
+		taxonomicDAO.save(taxon);
 		return taxon;
+	}
+	
+	public void deleteTaxon(Taxon taxon, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+		if (!isUserMemberOf(taxon.getTaxonomicGroup(), user))
+			throw new InsufficientPrivelegesException();
+		if (!FREDUtil.isEmpty(taxon.getListEntries()))
+			throw new IllegalStateException("Cannot delete as referenced in a Paleontology list");
+		taxonomicDAO.delete(taxon);
 	}
 	
 	/**

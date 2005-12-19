@@ -37,6 +37,8 @@ public interface TaxonomicDAO {
      */
 	public Taxon save(Taxon taxon) throws StorageAccessException;
 
+	public void delete(Taxon taxon) throws StorageAccessException;
+	
     /**
      * Finds the taxon with the given parameters
      * @param taxonomicGroup

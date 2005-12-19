@@ -906,6 +906,10 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		return (Taxon)save((Object)taxon);
 	}
 
+	public void delete(Taxon taxon) throws StorageAccessException {
+		delete((Object)taxon);
+	}
+	
 	public void save(RecordDetails details) throws StorageAccessException {
 		save((Object)details);
 	}
