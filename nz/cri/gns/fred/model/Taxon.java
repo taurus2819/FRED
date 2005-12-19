@@ -42,10 +42,14 @@ public interface Taxon {
 
     public void setApprovedDate(Date approvedDate);
 
+    public String getPanelistComments();
+
+    public void setPanelistComments(String panelistComments);
+
     public String getSendMessage();
 
     public void setSendMessage(String sendMessage);
-
+    
     public TaxonomicGroup getTaxonomicGroup();
 
     public void setTaxonomicGroup(TaxonomicGroup taxonomicGroup);

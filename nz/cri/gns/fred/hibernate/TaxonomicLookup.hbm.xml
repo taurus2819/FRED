@@ -71,6 +71,12 @@
         length="7"
     />
     <property
+        name="panelistComments"
+        type="java.lang.String"
+        column="PANELIST_COMMENTS"
+        length="255"
+    />
+    <property
         name="sendMessage"
         type="java.lang.String"
         column="SEND_MESSAGE"

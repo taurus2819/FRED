@@ -37,6 +37,9 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
     private Date approvedDate;
 
     /** nullable persistent field */
+    private String panelistComments;
+    
+    /** nullable persistent field */
     private String sendMessage;
 
     /** persistent field */
@@ -46,7 +49,7 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
     private Set palLists;
 
     /** full constructor */
-    public TaxonomicLookup(String taxonomicName, String author, String status, Integer submittedById, Date submittedDate, Integer approvedById, Date approvedDate, String sendMessage, nz.cri.gns.fred.hibernate.TaxonomicGroup taxonomicGroup, Set palLists) {
+    public TaxonomicLookup(String taxonomicName, String author, String status, Integer submittedById, Date submittedDate, Integer approvedById, Date approvedDate, String panelistComments, String sendMessage, nz.cri.gns.fred.hibernate.TaxonomicGroup taxonomicGroup, Set palLists) {
         this.taxonomicName = taxonomicName;
         this.author = author;
         this.status = status;
@@ -54,6 +57,7 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
         this.submittedDate = submittedDate;
         this.approvedById = approvedById;
         this.approvedDate = approvedDate;
+        this.panelistComments = panelistComments;
         this.sendMessage = sendMessage;
         this.taxonomicGroup = taxonomicGroup;
         this.palLists = palLists;
@@ -135,6 +139,14 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
         this.approvedDate = approvedDate;
     }
 
+    public String getPanelistComments() {
+        return this.panelistComments;
+    }
+
+    public void setPanelistComments(String panelistComments) {
+        this.panelistComments = panelistComments;
+    }
+    
     public String getSendMessage() {
         return this.sendMessage;
     }

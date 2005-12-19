@@ -59,6 +59,7 @@ public class PaleontologyRecordDE extends RecordDE {
 		private Date submittedDate;
 		private Integer approvedById;
 		private Date approvedDate;
+		private String panelistComments;
 		private String sendMessage;
 		private TaxonomicGroup taxonomicGroup;
 		private Set listEntries;
@@ -95,6 +96,14 @@ public class PaleontologyRecordDE extends RecordDE {
 			this.listEntries = listEntries;
 		}
 
+		public String getPanelistComments() {
+			return this.panelistComments;
+		}
+
+		public void setPanelistComments(String panelistComments) {
+			this.panelistComments = panelistComments;
+		}
+		
 		public String getSendMessage() {
 			return sendMessage;
 		}
