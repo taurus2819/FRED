@@ -531,7 +531,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			return false;
 		if (!status.equals(FREDConstants.APPROVED)) {
 			UserFolder folder = new FolderUtil(factory).getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), user);
-			return (folder != null && folder.isAllowedReadLocalities());
+			UserFolder mfFolder = null;
+			if (feature.getMasterFile() != null)
+				mfFolder = folderDAO.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
+			return ((folder != null && folder.isAllowedReadLocalities()) || (mfFolder != null && mfFolder.isAllowedReadLocalities()));
+
 		}
 		return true;
 	}
@@ -544,8 +548,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (!status.equals(FREDConstants.APPROVED)) {
 			if (user == null)
 				return false;
-			UserFolder folder = new FolderUtil(factory).getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), user);
-			return (folder != null && folder.isAllowedReadLocalities());
+			UserFolder folder = folderDAO.getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), Integer.parseInt(user.getId()));
+			UserFolder mfFolder = null;
+			if (feature.getMasterFile() != null)
+				mfFolder = folderDAO.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
+			return ((folder != null && folder.isAllowedReadLocalities()) || (mfFolder != null && mfFolder.isAllowedReadLocalities()));
 		}
 		return true;
 	}
