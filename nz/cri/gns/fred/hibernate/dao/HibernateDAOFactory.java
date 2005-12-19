@@ -636,7 +636,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 			if (stopStageId == null) {
 				query.append("AND s.stageUpperId IS NULL ");
 			} else {
-				query.append("AND AND s.stageUpperId = :upper ");
+				query.append("AND s.stageUpperId = :upper ");
 				intData.put("upper", new Integer(stopStageId));
 			}
 			if (stopUncertain) {
