@@ -1,11 +1,38 @@
 <%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.fred.data.*, nz.cri.gns.fred.dataentry.*, nz.cri.gns.jsp.*, nz.cri.gns.util.map.*, nz.cri.gns.db.*, nz.cri.gns.intranet.*, nz.cri.gns.db.site.*, java.sql.*, java.text.*, java.net.*, nz.cri.gns.auth.*, java.lang.*, java.util.*, java.io.*"
-%><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
+%><%@page import="nz.cri.gns.fred.FREDUtils"
+%><%@page import="nz.cri.gns.fred.model.Feature"
+%><%@page import="nz.cri.gns.fred.model.Folder"
+%><%@page import="nz.cri.gns.fred.model.UserFolder"
+%><%@page import="nz.cri.gns.fred.model.FREDConstants"
+%><%@page import="nz.cri.gns.fred.model.Sample"
+%><%@page import="nz.cri.gns.fred.de.DataEntryForm"
+%><%@page import="nz.cri.gns.fred.de.DataEntryFormFactory"
+%><%@page import="nz.cri.gns.fred.util.FolderUtil"
+%><%@page import="nz.cri.gns.fred.util.FeatureUtil"
+%><%@page import="nz.cri.gns.fred.util.SampleUtil"
+%><%@page import="nz.cri.gns.fred.util.FREDUtil"
+%><%@page import="nz.cri.gns.fred.dao.DAOFactory"
+%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.jsp.JspUtils"
+%><%@page import="nz.cri.gns.jsp.PageState"
+%><%@page import="nz.cri.gns.intranet.DBConnection"
+%><%@page import="java.sql.ResultSet"
+%><%@page import="java.sql.Statement"
+%><%@page import="nz.cri.gns.auth.Authenticable"
+%><%@page import="nz.cri.gns.auth.User"
+%><%@page import="nz.cri.gns.fred.website.ContentProvider"
+%><%@page import="java.util.Iterator"
+%><%@page import="java.io.PrintWriter"
+%><%@page import="java.io.File"
+%><%!	
+	public Authenticable[] getRequiredRights(HttpServletRequest request) {
+		return new Authenticable[0];
+	}
 %><%
 
 	String listName = request.getParameter("listName");
 	
-	out.println("<html>\n<head>\n</head>\n<body>");
+	%><html><head></head><body><%
 	
 	if (listName != null) {
 	
@@ -15,48 +42,60 @@
 		
 		ResultSet rs = null;
 	
-		out.println("<table>");
+		DAOFactory factory = HibernateUtil.get().getDAOFactory();
+		FolderUtil folderUtil = new FolderUtil(factory);
+		FeatureUtil featureUtil = new FeatureUtil(factory);
+		SampleUtil sampleUtil = new SampleUtil(factory);
+		
+		%><table><%
 		
 		if (listName.equals("folderContent")) {
 			User user = null;
 			try {
 		   		user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
 		   	} catch (Exception e) {
-		   		out.println("<tr><td>Error: Invalid username/password</td></td>");
+		   		%><tr><td>Error: Invalid username/password</td></td><%
 		   	}
-		   	Folder folder = new Folder(Integer.parseInt(request.getParameter("folderID")), user, state);
-		   	if (folder.isAllowedReadLocalities()) {
+		   	UserFolder userFolder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("folderID")), user);
+		   	if (userFolder.isAllowedReadLocalities()) {
 			   	if (request.getParameter("formType").equals("locality")) {
 				   	try {
-						for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
+				   		ContentProvider provider = new ContentProvider(new File(request.getSession().getServletContext().getRealPath("/content")));
+						for (Iterator i = userFolder.getFolder().getFeatures().iterator(); i.hasNext(); ) {
+							Feature feature = (Feature) i.next();
 							try {
-								DataEntryForm dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(((Integer) i.next()).intValue(), user, state);
+								DataEntryForm dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(feature.getFeatureId().intValue(), userFolder.getFolderId().intValue(), user, factory, provider);
 								dataEntryForm.makeExcelImportHTML(new PrintWriter(out));
 							} catch (Exception e) {}
 						}
 					} catch (Exception e) {
-						out.println("<tr><td>No localities</td><td></td></tr>");
+						%><tr><td>No localities</td><td></td></tr><%
 					}
 				}
 			} else {
-				out.println("<tr><td>Error: Insufficient privileges</td></tr>");
+				%><tr><td>Error: Insufficient privileges</td></tr><%
 			}
 		} else if (listName.equals("document")) {
 			User user = null;
 			try {
 		   		user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
 		   	} catch (Exception e) {
-		   		out.println("<tr><td>Error: Invalid username/password</td></td>");
+		   		%><tr><td>Error: Invalid username/password</td></td><%
 		   	}
+		   	ContentProvider provider = new ContentProvider(new File(request.getSession().getServletContext().getRealPath("/content")));
 		   	DataEntryForm dataEntryForm = null;
 		   	try {
+		   		int folderID = Integer.parseInt(request.getParameter("folderID"));
 		   		if (request.getParameter("docType").equals("Locality")) {
-					dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(request.getParameter("id")), user, state);
+		   			Feature feature = featureUtil.getFeature(Integer.parseInt(request.getParameter("id")));
+		   			dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(feature.getFeatureId().intValue(), folderID, user, factory, provider);
 				} else if (request.getParameter("docType").equals("Sample")) {
-					dataEntryForm = DataEntryFormFactory.getSampleDataEntryForm(Integer.parseInt(request.getParameter("id")), user, state);
+					Sample sample = sampleUtil.getSample(Integer.parseInt(request.getParameter("id")));
+					dataEntryForm = DataEntryFormFactory.getSampleDataEntryForm(sample.getSampleId().intValue(), folderID, user, factory, provider);
 				}
 			} catch (Exception e) {
-				out.println("<tr><td>Error: Insufficient privileges - " + e + "</td></tr>");
+				e.printStackTrace();
+				%><tr><td>Error: <%=e%></td></tr><%
 			}
 			if (dataEntryForm != null)
 				dataEntryForm.makeExcelImportHTML(new PrintWriter(out));
@@ -65,89 +104,97 @@
 			try {
 		   		user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
 		   	} catch (Exception e) {
-		   		out.println("<tr><td>Error: Invalid username/password</td></td>");
+		   		%><tr><td>Error: Invalid username/password</td></td><%
 		   	}
 		   	try {
-		   		Feature feature = new Feature(Integer.parseInt(request.getParameter("featureID")), user, state);
-		   		if (!feature.getFeatureType().equals(Feature.OUTCROP_LOCALITY)) {
-					for (Iterator i = feature.getAsVector(Feature.SAMPLES).iterator(); i.hasNext(); ) {
-						Sample sample = new Sample(((Integer)i.next()).intValue(), user, state);
-						out.println("<tr><td>" + sample.getAsString(Sample.DRILLHOLE_DEPTH) + "</td><td>" + sample.getSampleID() + "</td></tr>");
+		   		Feature feature = featureUtil.getFeature(Integer.parseInt(request.getParameter("featureID")));
+		   		if (!feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
+					for (Iterator i = feature.getSamples().iterator(); i.hasNext(); ) {
+						Sample sample = (Sample) i.next();
+						if (sampleUtil.isAllowedReadSample(user, sample)) {
+							%><tr><td><%=SampleUtil.getDrillHoleDepthDescription(sample)%></td><td><%=sample.getSampleId()%></td></tr><%
+						}
 					}
 				} else {
-					out.println("<tr><td>** Outcrop **</td><td></td></tr>");
+					%><tr><td>** Outcrop **</td><td></td></tr><%
 				}
 		   	} catch (Exception e) {
-		   		out.println("<tr><td>Error</td><td></td></tr>");
+		   		%><tr><td>Error</td><td></td></tr><%
 		   	}
 		} else if (listName.equals("blankSampleList")) {
-			out.println("<tr><td>No samples defined</td><td></td></tr>");
+			%><tr><td>No samples defined</td><td></td></tr><%
 		} else if (listName.equals("localityList")) {
 			User user = null;
 			try {
 		   		user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
 		   	} catch (Exception e) {
-		   		out.println("<tr><td>Error: Invalid username/password</td></td>");
+		   		%><tr><td>Error: Invalid username/password</td></td><%
 		   	}
 		   	try {
-			   	Folder folder = new Folder(Integer.parseInt(request.getParameter("folderID")), user, state);
-		   		if (folder.get(Folder.FEATURES) != null) {
-					for (Iterator i = folder.getAsVector(Folder.FEATURES).iterator(); i.hasNext(); ) {
-						Feature feature = new Feature(((Integer)i.next()).intValue(), user, state);
-						out.println("<tr><td>" + feature.getAsString(Feature.FEATURE_NAME) + "</td><td>" + feature.getFeatureID() + "</td></tr>");
+			   	UserFolder userFolder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("folderID")), user);
+		   		Feature[] features = featureUtil.getFeaturesInFolder(userFolder);
+		   		if (features.length > 0) {
+					for (int i = 0; i < features.length; i++) {
+						if (featureUtil.isAllowedReadFeature(user, features[i])) {
+							%><tr><td><%=FeatureUtil.getFeatureName(features[i])%></td><td><%=features[i].getFeatureId()%></td></tr><%
+						}
 					}
 				} else {
-					out.println("<tr><td>No features found in folder</td><td></td></tr>");
+					%><tr><td>No features found in folder</td><td></td></tr><%
 				}
 			} catch (Exception e) {
-				out.println("<tr><td>Error</td><td></td></tr>");
+				%><tr><td>Error</td><td></td></tr><%
 			}
 		} else if (listName.equals("blankLocalityList")) {
-			out.println("<tr><td>No features defined</td><td></td></tr>");
+			%><tr><td>No features defined</td><td></td></tr><%
 		} else if (listName.equals("folderList")) {
 			User user = null;
 			try {
 		   		user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
 		   	} catch (Exception e) {
-		   		out.println("<tr><td>Error: Invalid username/password</td></td>");
+		   		%><tr><td>Error: Invalid username/password</td></td><%
 		   	}
 		   	try {
-			   	FolderList folderList = new FolderList(user, state);
-		   		if (folderList.getPersonalFolderCount() > 0) {
-					for (Iterator i = folderList.getPersonalFolders().iterator(); i.hasNext(); ) {
-						KeyValueObject kv = (KeyValueObject) i.next();
-						out.println("<tr><td>" + kv.getValue() + "</td><td>" + kv.getKey() + "</td></tr>");
+			   	if (folderUtil.getPersonalFolders(user).size() > 0 || folderUtil.getBacklogFolders(user).size() > 0) {
+					for (Iterator i = folderUtil.getPersonalFolders(user).iterator(); i.hasNext(); ) {
+						UserFolder folder = (UserFolder) i.next();
+						%><tr><td><%=folder.getFolderName()%></td><td><%=folder.getFolderId()%></td></tr><%
+					}
+					for (Iterator i = folderUtil.getBacklogFolders(user).iterator(); i.hasNext(); ) {
+						UserFolder folder = (UserFolder) i.next();
+						%><tr><td><%=folder.getFolderName()%></td><td><%=folder.getFolderId()%></td></tr><%
 					}
 				} else {
-					out.println("<tr><td>No folders found</td><td></td></tr>");
+					%><tr><td>No folders found</td><td></td></tr><%
 				}
 			} catch (Exception e) {
-				out.println("<tr><td>No folders defined</td><td></td></tr>");
+				e.printStackTrace();
+				%><tr><td>No folders defined</td><td></td></tr><%
 			}
 		} else if (listName.equals("blankFolderList")) {
-			out.println("<tr><td>No folders defined</td><td></td></tr>");
+			%><tr><td>No folders defined</td><td></td></tr><%
 		} else if (listName.equals("datum")) {
-			out.println("<tr><td>New Zealand Map Grid</td><td>NZMG</td></tr>");
-			out.println("<tr><td>NZMS260</td><td>NZMS260</td></tr>");
-			out.println("<tr><td>NZ Yard Grid (Sth Isl)</td><td>NZYS</td></tr>");
-			out.println("<tr><td>NZ Yard Grid (Nth Isl)</td><td>NZYN</td></tr>");
-			out.println("<tr><td>NZMS1 (Sth Isl)</td><td>NZMS1S</td></tr>");
-			out.println("<tr><td>NZMS1 (Nth Isl)</td><td>NZMS1N</td></tr>");
-			out.println("<tr><td>Chatham Island Grid</td><td>CHAT</td></tr>");
-			out.println("<tr><td>Auckland Island Grid</td><td>AUCK</td></tr>");
-			out.println("<tr><td>Campbell Island Grid</td><td>CAMP</td></tr>");
-			out.println("<tr><td>Lat/Long NZGD49</td><td>NZGD49</td></tr>");
-			out.println("<tr><td>Lat/Long WGS84/NZGD2000</td><td>WGS84</td></tr>");
+			%><tr><td>New Zealand Map Grid</td><td>NZMG</td></tr>
+			<tr><td>NZMS260</td><td>NZMS260</td></tr>
+			<tr><td>NZ Yard Grid (Sth Isl)</td><td>NZ Yard SthIsl</td></tr>
+			<tr><td>NZ Yard Grid (Nth Isl)</td><td>NZ Yard NthIsl</td></tr>
+			<tr><td>NZMS1 (Sth Isl)</td><td>NZMS1 SthIsl</td></tr>
+			<tr><td>NZMS1 (Nth Isl)</td><td>NZMS1 NthIsl</td></tr>
+			<tr><td>Chatham Island Grid</td><td>Chatham Island Grid</td></tr>
+			<tr><td>Auckland Island Grid</td><td>Auckland Island Transverse Mercator</td></tr>
+			<tr><td>Campbell Island Grid</td><td>Campbell Island Transverse Mercator</td></tr>
+			<tr><td>Lat/Long NZGD49</td><td>NZGD49</td></tr>
+			<tr><td>Lat/Long WGS84/NZGD2000</td><td>WGS84</td></tr><%
 		} else if (listName.equals("localityType")) {
-			out.println("<tr><td>Outcrop</td></tr>");
-			out.println("<tr><td>Drillhole</td></tr>");
-			out.println("<tr><td>Vertical Section</td></tr>");
+			%><tr><td>Outcrop</td></tr>
+			<tr><td>Drillhole</td></tr>
+			<tr><td>Vertical Section</td></tr><%
 		} else if (listName.equals("sedFeature")) {
 			rs = statement.executeQuery("SELECT code, name FROM sedimentary_feature_type ORDER BY code");
 			try {
 				while (rs.next()) {
-					out.println("<tr><td>" + rs.getString(1) + ": " + rs.getString(2).replaceAll(" ", "&nbsp;") + "</td><td>" + rs.getString(2) + "</td></tr>");
-					out.println("<tr><td>" + rs.getString(1) + "*: " + rs.getString(2).replaceAll(" ", "&nbsp;") + " abundant</td><td>" + rs.getString(2) + "$</td></tr>");
+					%><tr><td><%=rs.getString(1) + ": " + rs.getString(2).replaceAll(" ", "&nbsp;")%></td><td><%=rs.getString(2)%></td></tr><%
+					%><tr><td><%=rs.getString(1) + "*: " + rs.getString(2).replaceAll(" ", "&nbsp;")%> abundant</td><td><%=rs.getString(2)%>$</td></tr><%
 				}
 			} catch (Exception e) {}
 		} else {
@@ -188,13 +235,13 @@
 			}
 			try {
 				while (rs.next()) {
-					out.println("<tr><td>" + rs.getString(1).replaceAll(" ", "&nbsp;") + "</td></tr>");
+					%><tr><td><%=rs.getString(1).replaceAll(" ", "&nbsp;")%></td></tr><%
 				}
 			} catch (Exception e) {}
 		}
 		
-		out.println("</table>");
+		%></table><%
 	}
 	
-	out.println("</body>\n</html>");
+	%></body></html><%
 %>
