@@ -721,7 +721,7 @@ public class FREDUtil {
     }
 
     public static String decodeCombo(String parameter) {
-    	return ("-".equals(parameter)) ? null : parameter;
+    	return ("-".equals(parameter) || "".equals(parameter)) ? null : parameter;
     }
     
     public static String toString(Object o) {
