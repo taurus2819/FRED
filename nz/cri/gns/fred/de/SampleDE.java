@@ -704,7 +704,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			sample.setCollectionDate(FREDUtil.parseDateFromDE(collectionDate));
 			sample.setDateRounding(FREDUtil.parseDateRoundingFromDE(collectionDate));
 		} catch (ParseException e) {
-			error.add(new String[] {"Start Date", "Badly formatted date"});
+			error.add(new String[] {"Collection Date", "Badly formatted date"});
 		}
 		
 		//Collectors
@@ -734,15 +734,15 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     			if (parts[0].length() > 0 && group == null)
     				error.add(new String[] {"Sent To", "Invalid group: " + parts[0]});
     
-    			Person person = (parts[1].length() == 0) ? null : personUtil.findPerson(parts[1]);
-    			if (parts[1].length() > 0 && person == null)
+    			Person person = (parts.length >= 2 && parts[1].length() != 0) ? personUtil.findPerson(parts[1]) : null;
+    			if (parts.length >= 2 && parts[1].length() > 0 && person == null)
     				error.add(new String[] {"Sent To", "Invalid person: " + parts[1]});
     			
-    			Integer lab = (parts[2].length() == 0) ? null : FREDUtil.getLabId(parts[2]);
-    			if (parts[2].length() > 0 && lab == null)
+    			Integer lab = (parts.length >= 3 && parts[2].length() != 0) ? FREDUtil.getLabId(parts[2]) : null;
+    			if (parts.length >= 3 && parts[2].length() > 0 && lab == null)
     				error.add(new String[] {"Sent To", "Invalid lab: " + parts[2]});
     			
-    			String comments = parts[3].replaceAll(String.valueOf((char)13), "");
+    			String comments = ((parts.length >= 4) ? parts[3].replaceAll(String.valueOf((char)13), "") : null);
     			
     			sentToSet.add(sampleUtil.findOrCreateSentTo(sample, group, person, lab, comments));
     		} catch (Exception e) {
