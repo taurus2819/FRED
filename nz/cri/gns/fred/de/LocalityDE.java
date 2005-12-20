@@ -351,18 +351,22 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
 		out.write("<tr><td>" + feature.getFeatureId() + "</td>");
         out.write("<td>Locality</td>");
-		out.write("<td>" + ((workingFolder == null) ? "" : workingFolder.getFolderId()) + "</td>");
+		out.write("<td>" + ((workingFolder != null) ? workingFolder.getFolderId() : "") + "</td>");
 		out.write("<td>" + feature.getAudit().getStatus() + "</td>");
 		out.write("<td>" + feature.getFeatureType() + "</td>");
 		out.write("<td>" + feature.getFeatureName() + "</td>");
 		out.write("<td>" + feature.getRegistrationArea().getRegAreaId() + "</td>");
 		out.write("<td></td>"); //recollection - do later
 		out.write("<td>" + feature.getAudit().getWorkingComments() + "</td>");
-		out.write("<td>" + datum.getName() + ":" + ((datum.isMapSheetSystem()) ? (((MapSheetCoordinate)coord).getMapSheet() + "*") : "")
-				+ coord.getEastWest() + "*" + coord.getNorthSouth() + "</td>");
+		out.write("<td>" + datum.getName() + "</td>");
+		out.write("<td>" + ((datum.isMapSheetSystem()) ? (((MapSheetCoordinate)coord).getMapSheet()) : "") + "</td>");
+		out.write("<td>" + coord.getEastWestString() + "</td>");
+		out.write("<td>" + coord.getNorthSouth() + "</td>");
+		out.write("<td>" + feature.getMapYear() + "</td>");
 		out.write("<td>" + site.getMethod() + "</td>");
 		out.write("<td>" + site.getAccuracy() + "</td>");
-		out.write("<td>" + site.getDirections() + "</td>");	
+		out.write("<td>" + site.getDirections() + "</td>");
+		out.write("<td>" + site.getCountry() + "</td>");
 	}
 
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
