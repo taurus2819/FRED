@@ -508,6 +508,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                 out.write("</tr>");
             
     	} catch (Exception e) {
+    		e.printStackTrace();
     		throw new RuntimeException(e);
     	}
 	}
