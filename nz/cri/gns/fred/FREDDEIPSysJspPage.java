@@ -36,10 +36,15 @@ public abstract class FREDDEIPSysJspPage extends FREDIPSysJspPage{
 		return deRights;
 	}
 	
-	protected ExtranetTemplate getExtranetTemplate() {
-		ExtranetTemplate et = super.getExtranetTemplate();
+	public ExtranetTemplate getExtranetTemplate() {
+		return FREDDEIPSysJspPage.getFREDTemplate();
+	}
+	
+	public static ExtranetTemplate getFREDTemplate() {
+		ExtranetTemplate et = FREDIPSysJspPage.getFREDTemplate();
 		et.setUseNavigationColumn(false);
-		return et;
+	    return et;
 	}
 
-}
+			}
+

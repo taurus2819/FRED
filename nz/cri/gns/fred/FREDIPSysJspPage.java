@@ -52,6 +52,10 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 	}
 
 	protected ExtranetTemplate getExtranetTemplate() {
+		return FREDIPSysJspPage.getFREDTemplate();
+	}
+
+	public static ExtranetTemplate getFREDTemplate() {
 		ExtranetTemplate et = new ExtranetTemplate();
 		et.setDisplayLogin(true);
 		et.setShowGnsLogo(true);
