@@ -354,19 +354,19 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		out.write("<td>" + ((workingFolder != null) ? workingFolder.getFolderId() : "") + "</td>");
 		out.write("<td>" + feature.getAudit().getStatus() + "</td>");
 		out.write("<td>" + feature.getFeatureType() + "</td>");
-		out.write("<td>" + feature.getFeatureName() + "</td>");
+		out.write("<td>" + FeatureUtil.getFeatureName(feature) + "</td>");
 		out.write("<td>" + feature.getRegistrationArea().getRegAreaId() + "</td>");
 		out.write("<td></td>"); //recollection - do later
-		out.write("<td>" + feature.getAudit().getWorkingComments() + "</td>");
-		out.write("<td>" + datum.getName() + "</td>");
-		out.write("<td>" + ((datum.isMapSheetSystem()) ? (((MapSheetCoordinate)coord).getMapSheet()) : "") + "</td>");
-		out.write("<td>" + coord.getEastWestString() + "</td>");
-		out.write("<td>" + coord.getNorthSouth() + "</td>");
-		out.write("<td>" + feature.getMapYear() + "</td>");
-		out.write("<td>" + site.getMethod() + "</td>");
-		out.write("<td>" + site.getAccuracy() + "</td>");
-		out.write("<td>" + site.getDirections() + "</td>");
-		out.write("<td>" + site.getCountry() + "</td>");
+		out.write("<td>" + DBUtils.nvl(feature.getAudit().getWorkingComments()) + "</td>");
+		out.write("<td>" + ((datum != null) ? datum.getName() : "") + "</td>");
+		out.write("<td>" + ((datum != null && datum.isMapSheetSystem()) ? (((MapSheetCoordinate)coord).getMapSheet()) : "") + "</td>");
+		out.write("<td>" + ((coord != null) ? coord.getEastWestString() : "") + "</td>");
+		out.write("<td>" + ((coord != null) ? coord.getNorthSouthString() : "") + "</td>");
+		out.write("<td>" + DBUtils.nvl(feature.getMapYear()) + "</td>");
+		out.write("<td>" + ((site != null) ? String.valueOf(site.getMethod()) : "") + "</td>");
+		out.write("<td>" + ((site != null) ? String.valueOf(site.getAccuracy()) : "") + "</td>");
+		out.write("<td>" + ((site != null) ? site.getDirections() : "") + "</td>");
+		out.write("<td>" + ((site != null) ? site.getCountry() : "") + "</td>");
 	}
 
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
