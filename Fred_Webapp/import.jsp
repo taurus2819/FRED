@@ -60,7 +60,7 @@
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				return null; //!
+				return null;
 			}
 		}		
 %><%
@@ -87,21 +87,26 @@
 	    try {
 	    	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	    	DataEntryForm dataEntryForm = getDataEntryFormImpl(request, user);
-	    	dataEntryForm.updateFromRequest(request, factory);
-	    	String id;
-	    	if (button.equals("save")) {
-	    		id = String.valueOf(dataEntryForm.save());
-	    		status = "Saved OK";
+	    	if (dataEntryForm != null) {
+		    	dataEntryForm.updateFromRequest(request, factory);
+		    	String id;
+		    	if (button.equals("save")) {
+		    		id = String.valueOf(dataEntryForm.save());
+		    		status = "Saved OK";
+		    	} else {
+		    		id = String.valueOf(dataEntryForm.submit());
+		    		/*
+		    		if (request.getParameter("FRNum") != null) {
+		    			FRNumber frNum = FRNumber.parseFRNumber(request.getParameter("FRNum"));
+		    			FolderUtils.approveLocality(id, frNum, null, user, state);
+		    		} */
+		    		status = "Submitted OK";
+		    	}
+				message = id;
 	    	} else {
-	    		id = String.valueOf(dataEntryForm.submit());
-	    		/*
-	    		if (request.getParameter("FRNum") != null) {
-	    			FRNumber frNum = FRNumber.parseFRNumber(request.getParameter("FRNum"));
-	    			FolderUtils.approveLocality(id, frNum, null, user, state);
-	    		} */
-	    		status = "Submitted OK";
+	    		status = "Error";
+	    		message = "Not able to create data entry form";
 	    	}
-			message = id;
 		} catch (InsufficientPrivelegesException e) {
 			status = "AuthError";
 			message = "User not authorised";
