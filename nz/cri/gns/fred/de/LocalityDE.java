@@ -363,10 +363,10 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		out.write("<td>" + ((coord != null) ? coord.getEastWestString() : "") + "</td>");
 		out.write("<td>" + ((coord != null) ? coord.getNorthSouthString() : "") + "</td>");
 		out.write("<td>" + DBUtils.nvl(feature.getMapYear()) + "</td>");
-		out.write("<td>" + ((site != null && site.isNull(SiteRecord.H_METHOD_FIELD)) ? String.valueOf(site.getMethod()) : "") + "</td>");
-		out.write("<td>" + ((site != null && site.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(site.getAccuracy()) : "") + "</td>");
-		out.write("<td>" + ((site != null && site.isNull(SiteRecord.DIRECTIONS_FIELD)) ? site.getDirections() : "") + "</td>");
-		out.write("<td>" + ((site != null && site.isNull(SiteRecord.COUNTRY_FIELD)) ? site.getCountry() : "") + "</td>");
+		out.write("<td>" + ((site != null && !site.isNull(SiteRecord.H_METHOD_FIELD)) ? String.valueOf(site.getMethod()) : "") + "</td>");
+		out.write("<td>" + ((site != null && !site.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(site.getAccuracy()) : "") + "</td>");
+		out.write("<td>" + ((site != null && !site.isNull(SiteRecord.DIRECTIONS_FIELD)) ? site.getDirections() : "") + "</td>");
+		out.write("<td>" + ((site != null && !site.isNull(SiteRecord.COUNTRY_FIELD)) ? site.getCountry() : "") + "</td>");
 	}
 
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
