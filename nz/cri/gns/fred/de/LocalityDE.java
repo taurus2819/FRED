@@ -349,24 +349,24 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	}
 
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
-		out.write("<tr><td>" + feature.getFeatureId() + "</td>");
-        out.write("<td>Locality</td>");
-		out.write("<td>" + ((workingFolder != null) ? workingFolder.getFolderId() : "") + "</td>");
-		out.write("<td>" + feature.getAudit().getStatus() + "</td>");
-		out.write("<td>" + feature.getFeatureType() + "</td>");
-		out.write("<td>" + FeatureUtil.getFeatureName(feature) + "</td>");
-		out.write("<td>" + feature.getRegistrationArea().getRegAreaId() + "</td>");
-		out.write("<td></td>"); //recollection - do later
-		out.write("<td>" + DBUtils.nvl(feature.getAudit().getWorkingComments()) + "</td>");
-		out.write("<td>" + ((datum != null) ? datum.getName() : "") + "</td>");
-		out.write("<td>" + ((datum != null && datum.isMapSheetSystem()) ? (((MapSheetCoordinate)coord).getMapSheet()) : "") + "</td>");
-		out.write("<td>" + ((coord != null) ? coord.getEastWestString() : "") + "</td>");
-		out.write("<td>" + ((coord != null) ? coord.getNorthSouthString() : "") + "</td>");
-		out.write("<td>" + DBUtils.nvl(feature.getMapYear()) + "</td>");
-		out.write("<td>" + ((site != null && !site.isNull(SiteRecord.H_METHOD_FIELD)) ? String.valueOf(site.getMethod()) : "") + "</td>");
-		out.write("<td>" + ((site != null && !site.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(site.getAccuracy()) : "") + "</td>");
-		out.write("<td>" + ((site != null && !site.isNull(SiteRecord.DIRECTIONS_FIELD)) ? site.getDirections() : "") + "</td>");
-		out.write("<td>" + ((site != null && !site.isNull(SiteRecord.COUNTRY_FIELD)) ? site.getCountry() : "") + "</td>");
+		out.write("<tr><td>" + feature.getFeatureId() + "</td>\n");
+        out.write("<td>Locality</td>\n");
+		out.write("<td>" + ((workingFolder != null) ? workingFolder.getFolderId() : "") + "</td>\n");
+		out.write("<td>" + feature.getAudit().getStatus() + "</td>\n");
+		out.write("<td>" + feature.getFeatureType() + "</td>\n");
+		out.write("<td>" + FeatureUtil.getFeatureName(feature) + "</td>\n");
+		out.write("<td>" + feature.getRegistrationArea().getRegAreaId() + "</td>\n");
+		out.write("<td></td>\n"); //recollection - do later
+		out.write("<td>" + DBUtils.nvl(feature.getAudit().getWorkingComments()) + "</td>\n");
+		out.write("<td>" + ((datum != null) ? datum.getName() : "") + "</td>\n");
+		out.write("<td>" + ((datum != null && datum.isMapSheetSystem()) ? (((MapSheetCoordinate)coord).getMapSheet()) : "") + "</td>\n");
+		out.write("<td>" + ((coord != null) ? coord.getEastWestString() : "") + "</td>\n");
+		out.write("<td>" + ((coord != null) ? coord.getNorthSouthString() : "") + "</td>\n");
+		out.write("<td>" + DBUtils.nvl(feature.getMapYear()) + "</td>\n");
+		out.write("<td>" + ((site != null && !site.isNull(SiteRecord.H_METHOD_FIELD)) ? String.valueOf(site.getMethod()) : "") + "</td>\n");
+		out.write("<td>" + ((site != null && !site.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(site.getAccuracy()) : "") + "</td>\n");
+		out.write("<td>" + ((site != null && !site.isNull(SiteRecord.DIRECTIONS_FIELD)) ? site.getDirections() : "") + "</td>\n");
+		out.write("<td>" + ((site != null && !site.isNull(SiteRecord.COUNTRY_FIELD)) ? site.getCountry() : "") + "</td>\n");
 	}
 
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
