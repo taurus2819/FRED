@@ -121,6 +121,10 @@
 	    }
 	}
 
+	try {
+		HibernateUtil.get().getDAOFactory().closeSession();
+	} catch (Exception e) {
+	}
 %>
 <html>
 <head></head>
