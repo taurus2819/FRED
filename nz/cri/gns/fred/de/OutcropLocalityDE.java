@@ -14,6 +14,7 @@ import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Sample;
+import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 
 public class OutcropLocalityDE extends LocalityDE {
@@ -34,7 +35,8 @@ public class OutcropLocalityDE extends LocalityDE {
 		super(feature, folderId, user, factory, content);
 		if (!feature.getFeatureType().equals(FREDConstants.OUTCROP))
 			throw new DataInputException("Feature Type", "Invalid");
-		
+		if (FREDUtil.isEmpty(feature.getSamples()))
+			throw new DataInputException("Outcrop Locality", "Sample data has become corrupted");
 		sampleDE = new SampleDE((Sample)feature.getSamples().iterator().next(), folderId, user, factory, provider);
 		sampleDE.setOutcropSample(true);
 	}
