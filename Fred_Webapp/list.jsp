@@ -243,5 +243,9 @@
 		%></table><%
 	}
 	
-	%></body></html><%
-%>
+	try {
+		HibernateUtil.get().getDAOFactory().closeSession();
+	} catch (Exception e) {
+	}
+	
+	%></body></html>
