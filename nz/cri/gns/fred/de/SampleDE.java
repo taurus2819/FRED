@@ -436,7 +436,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException  {
         try {
-	    	Template template = provider.getContent("sample.excel");
+	    	Template template = provider.getContent("sample.de.excel");
             populateTemplateSubstitutions(template, "#", "#", "$");
 			if (!outcropSample) {
 			    template.addSub("featureIdIfNotOutcrop", sample.getFeature().getFeatureId().toString());
