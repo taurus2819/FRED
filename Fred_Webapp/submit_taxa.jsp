@@ -1,12 +1,13 @@
 <%@page extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.de.PaleontologyRecordDE"
 %><%@page import="nz.cri.gns.fred.model.PaleontologyListEntry"
+%><%@page import="java.util.Set"
 %><%@page import="java.util.Iterator"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
 %><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
-%><%@page import="nz.cri.gns.auth.*"
+%><%@page import="nz.cri.gns.auth.User"
 %><%
 	User user = (User)getUser(session);
 
