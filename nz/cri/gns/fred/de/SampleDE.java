@@ -740,7 +740,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		        }
         	}
     		String drillType = request.getParameter("DrillType");
-    		if (drillType == null || drillType.length() == 0) {
+    		if (drillType != null) { //catch no drilltype for vert sects
     			try {
     				sample.setDrillType(getDrillType(request.getParameter("DrillType")));
     			} catch (Exception e) {
