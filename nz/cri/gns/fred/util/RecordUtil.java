@@ -169,12 +169,25 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
 
     public boolean isAllowedEditRecord(User user, Record record, UserFolder userFolder) throws StorageAccessException {
-       return new SampleUtil(factory).isAllowedEditSample(user, record.getSample(), userFolder);
+		Audit audit = record.getAudit();
+		if (audit.getStatus().equals(APPROVED))
+			return FeatureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, folderDAO) ||
+				FREDUtil.checkEditSecurityClass(user);
+
+		return userFolder.isAllowedEditLocalities();
     }
 
 
     public boolean isAllowedSubmitRecord(User user, Record record, UserFolder userFolder) throws StorageAccessException {
-        return new SampleUtil(factory).isAllowedSubmitSample(user, record.getSample(), userFolder) && (record.getPaleontology() == null || RecordUtil.isTaxaApproved(record));
+    	//check if pal record has non-approved taxa
+        if (record.getPaleontology() != null && !RecordUtil.isTaxaApproved(record))
+        	return false;
+        
+		Audit audit = record.getAudit();
+		if (audit.getStatus().equals(APPROVED))
+			return false;	
+
+		return userFolder.isAllowedSubmitLocalities();
     }
 
 
