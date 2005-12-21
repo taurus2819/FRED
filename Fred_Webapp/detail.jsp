@@ -128,12 +128,12 @@
 				String actionType = request.getParameter("ActionType");
 				if (actionType.equals("Approve")) {
 					featureUtil.approveFeature(feature, request.getParameter("MapSheet"), new Integer(request.getParameter("SerialNum")), request.getParameter("RecollNum"), request.getParameter("CurComm"), user);
-					response.sendRedirect("admin_folder_detail.jsp?ID=" + feature.getMasterFile().getFolderId());
+					response.sendRedirect("admin_folder_detail.jsp?ID=" + feature.getMasterFile().getFolderId() + "&q=" + Math.random());
 					return;
 				}
 				else if (actionType.equals("Reject")) {
 					featureUtil.rejectLocality(feature, request.getParameter("CurComm"), user);
-					response.sendRedirect("admin_folder_detail.jsp?ID=" + feature.getMasterFile().getFolderId());
+					response.sendRedirect("admin_folder_detail.jsp?ID=" + feature.getMasterFile().getFolderId() + "&q=" + Math.random());
 					return;
 				}
 				else if (actionType.equals("AddtoFold") && !request.getParameter("FoldID").equals("-")) {
@@ -187,7 +187,7 @@
 					%><table border="0" width="160">
 					<tr><td colspan="2" class="deHeading">Masterfile Curator</td></tr>
 					<form name="RevForm" method="post" action="detail.jsp">
-					<input type="hidden" name="ID" value="<%=sampID%>" />
+					<input type="hidden" name="FeatID" value="<%=feature.getFeatureId()%>" />
 					<input type="hidden" name="ActionType" value="" />
 					<tr><td><a href="#" onClick="document.RevForm.ActionType.value='Approve';document.RevForm.submit();"><img src="images/ok.gif" width="20" height="20" border="0" alt="Approve" /></a></td><td class="heading">Approve</td></tr>
 					<tr><td><a href="#" onClick="document.RevForm.ActionType.value='Reject';document.RevForm.submit();"><img src="images/cancel.gif" width="20" height="20" border="0" alt="reject" /></a></td><td class="heading">Reject</td></tr><%
@@ -307,7 +307,7 @@
 				linkStop = "</a>";
 			}
 			%><tr><td class="heading"><%=featTypeLbl%></td><td><%=linkStart + DBUtils.nvl(feature.getFeatureName()) + linkStop%>
-			<%=((petWellLink != null) ? "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"" + petWellLink + "\" target=\"_blank\" class=\"boldlink\">GNS Petroleum Wells Database</a>" : "")%></td></tr>			
+			<%=((petWellLink != null) ? "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"" + petWellLink + "\" target=\"_blank\" class=\"boldlink\">Open GNS Petroleum Wells Database</a>" : "")%></td></tr>			
 			<tr><td class="heading">Original Grid Reference</td><%
 			if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
 				Datum datum = FREDUtil.getFREDDatum(feature);
