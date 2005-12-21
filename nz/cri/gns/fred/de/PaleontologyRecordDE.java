@@ -51,7 +51,6 @@ public class PaleontologyRecordDE extends RecordDE {
 			throw new IllegalStateException("Not savable");
 		}
 
-
 		private String taxonomicName;
 		private String author;
 		private String status;
@@ -150,6 +149,10 @@ public class PaleontologyRecordDE extends RecordDE {
 
 		public void setTaxonomicName(String taxonomicName) {
 			this.taxonomicName = taxonomicName;
+		}
+		
+		public int compareTo(nz.cri.gns.fred.model.Taxon arg0) {
+			return taxonomicName.compareTo(arg0.getTaxonomicName());
 		}
 
 	}
