@@ -152,11 +152,24 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             Template template = provider.getContent("sample.no.outcrop.de.form");
             prepareTemplate(template, provider);
             template.addSub("featureName", sample.getFeature().getFeatureName());
-            template.addSub("sampleName", sample.getSampleName());
+            template.addSub("topDepth", String.valueOf(sample.getTopDepth()));
+            template.addSub("bottomDepth", String.valueOf(sample.getBottomDepth()));
+			if (sample.getFeature().getFeatureType().equals(FREDConstants.DRILLHOLE)) {
+				template.addSub("isDrillhole", "yes");
+				try {
+					//drill type combo box
+					template.loadUntil(out, "{@drillTypeCombo}");
+					cd = new ComboDescriptor("drill_type", "drill_type_id", "Name");
+					cd.name = "DrillType";
+					cd.orderBy = "drill_type_id";
+					cd.prompt = " -- Choose -- ";
+					cd.selected = (sample.getDrillType() == null) ? null : String.valueOf(sample.getDrillType().getDrillTypeId());
+					FREDUtil.makeDropBox(out, cd);
+				} catch (Exception e) {}
+			}
             template.addSub("featureId", sample.getFeature().getFeatureId().toString());
             template.addSub("sampleId", sample.getSampleId().toString());
             template.addSub("folderId", (workingFolder == null) ? "" : workingFolder.getFolderId().toString());
-            template.addSub("drillholeDepth", SampleUtil.getDrillHoleDepthDescription(sample));
             prepareTemplate(template, provider);
             
             template.loadUntil(out, "{@sampleMeta}");

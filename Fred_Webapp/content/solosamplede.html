@@ -2,13 +2,23 @@
 <table border="0" style="border: none; width: 550px; text-align: left" width="550" cellspacing="0" cellpadding="2">
 <tr><td colspan="4" class="deHeading">Sample details</td></tr><tr><td style="text-align: left">
 <tr>
-<td colspan="2" width="250" class='heading'>Sample Name</td>
+<td class="heading">Locality Name</td>
 <td></td>
-<td width="270" class='heading'>{@sampleName}<br>{@featureName}: {@drillholeDepth}</td>
-<td widht="30"><a href='new_sample.jsp?FeatID={@featureId}&SampID={@sampleId}&FoldID={@folderId}'><img src='images/edit.gif' width='20' height='20' border='0' alt='Edit' /></a></td>
+<td class="heading">{@featureName}</td>
 </tr>
 <tr>
-<td class='heading' colspan='2'>Attached Files/Images<br /><span class='smalltext'>Click <a href='binary_data_entry.jsp?ID={@sampleId}&RecType=SMP&FoldID={@folderId}' target='fredBinary'>here</a> to add/edit</span></td>
+<td></td>
+<td class="heading">Top Depth</td>
+<td><input type="text" name="TopDepth" value="{@topDepth}"></td>
+</tr>
+<tr>
+<td></td>
+<td class="heading">Bottom Depth</td>
+<td><input type="text" name="BottomDepth" value="{@bottomDepth}"></td>
+</tr>
+{@@isDrillhole:<tr><td></td><td class="heading">Drill Type</td><td>@}{@drillTypeCombo}{@@isDrillhole:</td></tr>@}
+<tr>
+<td class="heading" colspan="2">Attached Files/Images<br /><span class="smalltext">Click <a href="binary_data_entry.jsp?ID={@sampleId}&RecType=SMP&FoldID={@folderId}" target="fredBinary">here</a> to add/edit</span></td>
 <td>{@sampleMeta}</td>
 </tr>
 </table>
