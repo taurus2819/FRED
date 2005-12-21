@@ -7,16 +7,14 @@
 <td class="heading">{@featureName}</td>
 </tr>
 <tr>
-<td></td>
 <td class="heading">Top Depth</td>
 <td><input type="text" name="TopDepth" value="{@topDepth}"></td>
 </tr>
 <tr>
-<td></td>
 <td class="heading">Bottom Depth</td>
 <td><input type="text" name="BottomDepth" value="{@bottomDepth}"></td>
 </tr>
-{@@isDrillhole:<tr><td></td><td class="heading">Drill Type</td><td>@}{@drillTypeCombo}{@@isDrillhole:</td></tr>@}
+{@@isDrillhole:<tr><td class="heading">Drill Type</td><td>@}{@drillTypeCombo}{@@isDrillhole:</td></tr>@}
 <tr>
 <td class="heading" colspan="2">Attached Files/Images<br /><span class="smalltext">Click <a href="binary_data_entry.jsp?ID={@sampleId}&RecType=SMP&FoldID={@folderId}" target="fredBinary">here</a> to add/edit</span></td>
 <td>{@sampleMeta}</td>

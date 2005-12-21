@@ -26,6 +26,7 @@ import nz.cri.gns.fred.model.BedThickness;
 import nz.cri.gns.fred.model.Bedding;
 import nz.cri.gns.fred.model.Carbonate;
 import nz.cri.gns.fred.model.ColourModifier;
+import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FossilGroup;
@@ -152,8 +153,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             Template template = provider.getContent("sample.no.outcrop.de.form");
             prepareTemplate(template, provider);
             template.addSub("featureName", sample.getFeature().getFeatureName());
-            template.addSub("topDepth", String.valueOf(sample.getTopDepth()));
-            template.addSub("bottomDepth", String.valueOf(sample.getBottomDepth()));
+            template.addSub("topDepth", ((sample.getTopDepth() != null) ? String.valueOf(sample.getTopDepth()) : ""));
+            template.addSub("bottomDepth", ((sample.getBottomDepth() != null) ? String.valueOf(sample.getBottomDepth()) : ""));
 			if (sample.getFeature().getFeatureType().equals(FREDConstants.DRILLHOLE)) {
 				template.addSub("isDrillhole", "yes");
 				try {
@@ -711,6 +712,43 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         	}
     	}
         
+        //Drillhole/Vert Section depths
+        if (!sample.getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
+        	Double topDepth = null;
+        	if (request.getParameter("TopDepth").length() != 0) {
+        		sample.setTopDepth(null);
+        	} else {
+		        try {
+		        	topDepth = new Double(request.getParameter("TopDepth"));
+		        	sample.setTopDepth(topDepth);
+		        } catch (Exception e) {
+		        	error.add(new String[] {"Top Depth", "Non-numeric value"});
+		        }
+        	}
+        	if (request.getParameter("BottomDepth").length() != 0) {
+        		sample.setBottomDepth(null);
+        	} else {
+		        try {
+		        	Double bottomDepth = new Double(request.getParameter("BottomDepth"));
+		        	if (topDepth != null && topDepth > bottomDepth) {
+		        		error.add(new String[] {"Depths", "Top Depth greater than Bottom Depth"});
+		        	} else {
+		        		sample.setBottomDepth(bottomDepth);
+		        	}
+		        } catch (Exception e) {
+		        	error.add(new String[] {"Bottom Depth", "Non-numeric value"});
+		        }
+        	}
+    		String drillType = request.getParameter("DrillType");
+    		if (drillType == null || drillType.length() == 0) {
+    			try {
+    				sample.setDrillType(getDrillType(request.getParameter("DrillType")));
+    			} catch (Exception e) {
+    				error.add(new String[] {"Drill Type", "Invalid Drill Type"});
+    			}
+    		}
+		}
+        
 		//Collection date
 		try {
 			String collectionDate = request.getParameter("CollDate");
@@ -1025,6 +1063,13 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         }
     }
 
+	private DrillType getDrillType(String parameter) throws NumberFormatException, StorageAccessException {
+		parameter = FREDUtil.decodeCombo(parameter);
+		if (parameter == null)
+			return null;
+		return sampleUtil.getDrillType(new Integer(parameter));
+	}
+    
 	private RockColour getColour(String parameter) throws NumberFormatException, StorageAccessException {
 		parameter = FREDUtil.decodeCombo(parameter);
 		if (parameter == null)
