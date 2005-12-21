@@ -122,7 +122,7 @@
 		   		%><tr><td>Error</td><td></td></tr><%
 		   	}
 		} else if (listName.equals("blankSampleList")) {
-			%><tr><td>No samples defined</td><td></td></tr><%
+			%><tr><td>No samples defined</td><td>-1</td></tr><%
 		} else if (listName.equals("localityList")) {
 			User user = null;
 			try {
@@ -146,7 +146,7 @@
 				%><tr><td>Error</td><td></td></tr><%
 			}
 		} else if (listName.equals("blankLocalityList")) {
-			%><tr><td>No features defined</td><td></td></tr><%
+			%><tr><td>No features defined</td><td>-1</td></tr><%
 		} else if (listName.equals("folderList")) {
 			User user = null;
 			try {
@@ -172,7 +172,7 @@
 				%><tr><td>No folders defined</td><td></td></tr><%
 			}
 		} else if (listName.equals("blankFolderList")) {
-			%><tr><td>No folders defined</td><td></td></tr><%
+			%><tr><td>No folders defined</td><td>-1</td></tr><%
 		} else if (listName.equals("datum")) {
 			%><tr><td>New Zealand Map Grid</td><td>NZMG</td></tr>
 			<tr><td>NZMS260</td><td>NZMS260</td></tr>
