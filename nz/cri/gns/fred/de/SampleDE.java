@@ -715,7 +715,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         //Drillhole/Vert Section depths
         if (!sample.getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
         	Double topDepth = null;
-        	if (request.getParameter("TopDepth").length() != 0) {
+        	if (request.getParameter("TopDepth").length() == 0) {
         		sample.setTopDepth(null);
         	} else {
 		        try {
@@ -725,7 +725,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		        	error.add(new String[] {"Top Depth", "Non-numeric value"});
 		        }
         	}
-        	if (request.getParameter("BottomDepth").length() != 0) {
+        	if (request.getParameter("BottomDepth").length() == 0) {
         		sample.setBottomDepth(null);
         	} else {
 		        try {
