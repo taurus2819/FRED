@@ -570,13 +570,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
 	public boolean isAllowedSubmitFeature(User user, Feature feature, UserFolder folder) {
 		String status = feature.getAudit().getStatus();
-		if (status.equals(FREDConstants.REJECTED) || status.equals(FREDConstants.WORKING))
+		if (status.equals(FREDConstants.WAITING) || status.equals(FREDConstants.APPROVED))
 			return false;
 		return folder.isAllowedSubmitLocalities();
 	}
 	
 	public boolean isAllowedRevokeFeature(User user, Feature feature, UserFolder folder) {
-		if (feature.getAudit().getStatus().equals(FREDConstants.WAITING))
+		if (!feature.getAudit().getStatus().equals(FREDConstants.WAITING))
 			return false;
 		return folder.isAllowedSubmitLocalities();		
 	}
