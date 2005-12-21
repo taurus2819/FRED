@@ -186,8 +186,8 @@ function showHide(toShow, toHide) {
 			%></td><td></td><%
 		}
 		%><td><%
-		boolean editable = audit.getStatus().equals(FREDConstants.WORKING) || audit.getStatus().equals(FREDConstants.REJECTED);
-		if (editable && folder.isAllowedEditLocalities()) {
+
+		if (featureUtil.isAllowedEditFeature(user, feature, folder)) {
 			%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 		}
 	
@@ -196,10 +196,10 @@ function showHide(toShow, toHide) {
 	//			if ((locStatus.equals(FREDConstants.WORKING) || locStatus.equals(FREDConstants.REJECTED)) && folder.isAllowedDeleteLocalities())
 	//				out.print("<a href='#' onClick='if (confirm(\"Are you sure you want to delete this locality\") == true) {document.FoldForm.ActionType.value=\"DeleteFeat\";document.FoldForm.submit();}'><img src='images/delete.gif' border='0' height='20' width='20' alt='Delete Locality' /></a><img src='images/blank.gif' height='20' width='2' />");
 		%></td><td><%
-		if (editable && folder.isAllowedSubmitLocalities()) {
+		if (featureUtil.isAllowedSubmitFeature(user, feature, folder)) {
 			%><a href="javascript:if (confirm('Are you sure you want to submit this locality') == true) {document.FoldForm.ActionType.value='Submit';document.FoldForm.submit();}"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 		}
-		if (audit.getStatus().equals(FREDConstants.WAITING) && folder.isAllowedSubmitLocalities()) {
+		if (featureUtil.isAllowedRevokeFeature(user, feature, folder)) {
 			%><a href="javascript:if (confirm('Are you sure you want to revoke this locality') == true) {document.FoldForm.ActionType.value='Revoke';document.FoldForm.submit();}"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 		}
 		%></td><td><%
@@ -235,16 +235,15 @@ function showHide(toShow, toHide) {
 						%></td><td><%
 					}
 					%></td><td><%
-					editable = audit.getStatus().equals(FREDConstants.WORKING) || audit.getStatus().equals(FREDConstants.REJECTED);
-					if (editable && folder.isAllowedEditLocalities()) {
+					if (sampleUtil.isAllowedEditSample(user, sample, folder)) {
 						%><a href="de.jsp?Type=Sample&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Sample Details" /></a><img src="images/blank.gif" height="20" width="2" /><%
 					}
 					%></td><td><%
-					if (editable && folder.isAllowedDeleteLocalities()) {
+					if (sampleUtil.isAllowedDeleteSample(user, sample, folder)) {
 						%><a href="javascript:if (confirm('Are you sure you want to delete this sample') == true) {document.FoldForm.ActionType.value='DeleteSamp';document.FoldForm.SampID.value='<%=sample.getSampleId()%>';document.FoldForm.submit();}" title="Delete Sample"><img src="images/delete.gif" border="0" height="20" width="20"></a><img src="images/blank.gif" height="20" width="2" /><%
 					}
 					%></td><td><%
-					if (audit.getStatus().equals(FREDConstants.WORKING) && folder.isAllowedSubmitLocalities()) {
+					if (sampleUtil.isAllowedSubmitSample(user, sample, folder)) {
 						%><a href="javascript:document.FoldForm.ActionType.value='SubmitSamp';document.FoldForm.SampID.value='<%=sample.getSampleId()%>';document.FoldForm.submit();"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Sample" /></a><img src="images/blank.gif" height="20" width="2" /><%
 					}
 					%></td><td><%
@@ -267,12 +266,11 @@ function showHide(toShow, toHide) {
 	
 						boolean isAdoption = record.getAdoption() != null;
 						boolean isPaleontology = record.getPaleontology() != null;
-						boolean badTaxaFlag = (isPaleontology) ? !RecordUtil.isTaxaApproved(record) : false;
 	
 						audit = record.getAudit();
 						if (audit.getStatus().equals(FREDConstants.APPROVED) || audit.getFolder() != null && audit.getFolder().equals(folder.getFolder())) {
 							%><tr><td><img src="images/child.gif" width="20" height="20" /><img src="images/<%=(isAdoption) ? "ado" : "pal"%>.gif" width="20" height="20" /></td><td class="smalltext"><%
-							if (badTaxaFlag) {
+							if (isPaleontology && !RecordUtil.isTaxaApproved(record)) {
 								%><span class="heading" style="color: #FF0000">*</span>&nbsp;&nbsp;<%
 							}
 							
@@ -289,16 +287,15 @@ function showHide(toShow, toHide) {
 							}
 							%><td><%
 							//Record Options
-							editable = audit.getStatus().equals(FREDConstants.WORKING);
-							if (editable && folder.isAllowedEditLocalities()) {
+							if (recordUtil.isAllowedEditRecord(user, record, folder)) {
 								%><a href="de.jsp?Type=<%=(isAdoption) ? FREDConstants.ADOPTION : FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&RecID=<%=record.getRecordId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
 							}
 							%></td><td><%
-							if (editable && folder.isAllowedDeleteLocalities()) {
+							if (recordUtil.isAllowedDeleteRecord(user, record, folder)) {
 								%><a href="javascript:if (confirm('Are you sure you want to delete this record') == true) {document.FoldForm.ActionType.value='DeleteRec';document.FoldForm.RecID.value='<%=record.getRecordId()%>';document.FoldForm.submit();}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
 							}
 							%></td><td><%
-							if (editable && folder.isAllowedSubmitLocalities() && !badTaxaFlag) {
+							if (recordUtil.isAllowedSubmitRecord(user, record, folder)) {
 								%><a href="javascript:document.FoldForm.ActionType.value='SubmitRec';document.FoldForm.RecID.value='<%=record.getRecordId()%>';document.FoldForm.submit();"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
 							}
 							%></td></tr><%

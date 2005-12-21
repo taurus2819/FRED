@@ -213,15 +213,15 @@ function showHide(toShow, toHide) {
 				%><a href="javascript:prmpt=prompt('Please enter the new name', 'New <%=feature.getFeatureType()%>');if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value='CopyFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/copy.gif" border="0" height="20" width="20" alt="Copy Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 			}
 			%></td><td><%
-			if ((status.equals(FREDConstants.WORKING) || status.equals(FREDConstants.REJECTED)) && folder.isAllowedDeleteLocalities()) {
+			if (!status.equals(FREDConstants.APPROVED) && featureUtil.isAllowedDeleteFeature(user, feature, folder)) {
 				%><a href="javascript:if (confirm('Are you sure you want to delete this locality') == true) {document.FoldForm.ActionType.value='DeleteFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 			} else if (status.equals(FREDConstants.APPROVED)) {
 				%><a href="javascript:if (confirm('Are you sure you want to remove this locality from your folder') == true) {document.FoldForm.ActionType.value='RemoveFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Remove Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 			}
 			%></td><td><%
-			if ((status.equals(FREDConstants.WORKING) || status.equals(FREDConstants.REJECTED)) && folder.isAllowedSubmitLocalities()) {
+			if (featureUtil.isAllowedSubmitFeature(user, feature, folder)) {
 				%><a href="javascript:if (confirm('Are you sure you want to submit this locality') == true) {document.FoldForm.ActionType.value='Submit';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
-			} else if (status.equals(FREDConstants.WAITING) && folder.isAllowedSubmitLocalities()) {
+			} else if (featureUtil.isAllowedRevokeFeature(user, feature, folder)) {
 				%><a href="javascript:if (confirm('Are you sure you want to revoke this locality') == true) {document.FoldForm.ActionType.value='Revoke';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 			}
 			%></td></tr>
