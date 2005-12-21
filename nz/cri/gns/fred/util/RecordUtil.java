@@ -177,6 +177,13 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return userFolder.isAllowedEditLocalities();
     }
 
+	public boolean isAllowedDeleteRecord(User user, Record record, UserFolder userFolder) throws StorageAccessException {
+		Audit audit = record.getAudit();
+		if (audit.getStatus().equals(APPROVED))
+			return false;
+
+		return userFolder.isAllowedDeleteLocalities();
+	}
 
     public boolean isAllowedSubmitRecord(User user, Record record, UserFolder userFolder) throws StorageAccessException {
     	//check if pal record has non-approved taxa

@@ -568,6 +568,29 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return folder.isAllowedEditLocalities();
 	}
 
+	public boolean isAllowedSubmitFeature(User user, Feature feature, UserFolder folder) {
+		String status = feature.getAudit().getStatus();
+		if (status.equals(FREDConstants.REJECTED) || status.equals(FREDConstants.WORKING))
+			return false;
+		return folder.isAllowedSubmitLocalities();
+	}
+	
+	public boolean isAllowedRevokeFeature(User user, Feature feature, UserFolder folder) {
+		if (feature.getAudit().getStatus().equals(FREDConstants.WAITING))
+			return false;
+		return folder.isAllowedSubmitLocalities();		
+	}
+	
+	public boolean isAllowedDeleteFeature(User user, Feature feature, UserFolder userFolder) throws StorageAccessException {
+		Audit audit = feature.getAudit();
+		if (audit.getStatus().equals(APPROVED))
+			return false;
+		if (audit.getStatus().equals(WAITING))
+			return FeatureUtil.hasMasterfileRights(user, feature, UserFolder.FOLDER_DELETE_RIGHT, folderDAO);
+
+		return userFolder.isAllowedDeleteLocalities();
+	}
+	
 	/**
 	 * Returns true is the user is allowed to approve the locality
 	 */
@@ -726,13 +749,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		frNum.setSerialNumber(new Integer(nextAvailable));
 		
 		return frNum;		
-	}
-
-	public boolean isAllowedSubmitFeature(User user, Feature feature, UserFolder folder) {
-		String status = feature.getAudit().getStatus();
-		if (status.equals(FREDConstants.APPROVED) || status.equals(FREDConstants.WAITING))
-			return false;
-		return folder.isAllowedSubmitLocalities();
 	}
 
 	/**
