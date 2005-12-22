@@ -168,7 +168,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 					FREDUtil.makeDropBox(out, cd);
 				} catch (Exception e) {}
 			}
-            template.addSub("featureId", sample.getFeature().getFeatureId().toString());
             template.addSub("sampleId", sample.getSampleId().toString());
             template.addSub("folderId", (workingFolder == null) ? "" : workingFolder.getFolderId().toString());
             prepareTemplate(template, provider);
