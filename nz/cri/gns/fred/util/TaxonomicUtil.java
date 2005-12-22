@@ -120,7 +120,7 @@ public class TaxonomicUtil extends ModelUtil {
 	}
 	
 	/**
-	 * @deprectaed use getTaxaCount
+	 * @deprecated use getTaxaCount
 	 */
 	public int getProvisionalCount(TaxonomicGroup group) throws StorageAccessException {
 		return groupDAO.getTaxaCount(group, FREDConstants.PROVISIONAL);
@@ -230,7 +230,7 @@ public class TaxonomicUtil extends ModelUtil {
         if (entry.getTaxonomicGroup() == null) {
             if (group != null && group.length() > 0)
                 return false;
-            else if (!entry.getTaxonomicGroup().getName().equals(group))
+        } else if (!entry.getTaxonomicGroup().getName().equals(group)) {
                 return false;
         }
         if (!equalsEmptyEquivNull(entry.getTaxonomicName(), name))
