@@ -183,7 +183,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         if (record.getRecordId() != null) 
             template.addSub("recordId", record.getRecordId().toString());
         template.addSub("featureName", FeatureUtil.getFeatureName(record.getSample().getFeature()));
-		if (!record.getSample().getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
+		if (!record.getSample().getFeature().getFeatureType().equals(FREDConstants.OUTCROP))
 			template.addSub("isDrillVert", "yes");
         template.addSub("drillholeDepth", SampleUtil.getDrillHoleDepthDescription(record.getSample()));
         template.addSub("recordType", recordUtil.getRecordType(record));
