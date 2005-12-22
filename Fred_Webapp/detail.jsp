@@ -209,7 +209,7 @@
 				}				
 				
 				//Add to Folder
-				if ((new FolderUtil(factory)).getPersonalFolders(user).size() > 0) {		
+				if (feature.getAudit().getStatus().equals(FREDConstants.APPROVED) && (new FolderUtil(factory)).getPersonalFolders(user).size() > 0) {		
 					%><p><%
 					startDETable(pageContext);
 					%><table border="0" width="160">
