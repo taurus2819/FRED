@@ -723,7 +723,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	public void addToFolder(Feature feature, int folderId, UserAccount user) throws StorageAccessException, FolderUtilException {
-		if (feature.getAudit().getStatus().equals(APPROVED))
+		if (!feature.getAudit().getStatus().equals(APPROVED))
 			throw new FolderUtilException("Cannot add a working locality");
 		
 		UserFolder userFolder = new FolderUtil(factory).getUserFolder(folderId, user);
