@@ -92,7 +92,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 
 	public void copyFrom(int recordId) throws InsufficientPrivelegesException, StorageAccessException {
         Record fromRecord = recordUtil.getRecord(recordId);
-        if (!recordUtil.isAllowedViewRecord(user, fromRecord))
+        if (!recordUtil.isAllowedReadRecord(user, fromRecord))
             throw new InsufficientPrivelegesException("You do not have access to that record");
         
         getFromDatabase(fromRecord);
@@ -182,10 +182,9 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         prepareTemplate(template, provider);
         if (record.getRecordId() != null) 
             template.addSub("recordId", record.getRecordId().toString());
-        template.addSub("sampleId", record.getSample().getSampleId().toString());
-        template.addSub("featureId", record.getSample().getFeature().getFeatureId().toString());
-        template.addSub("featureName", FeatureUtil.getFeatureIdentifyingName(record.getSample().getFeature()));
-        template.addSub("sampleName", record.getSample().getSampleName());
+        template.addSub("featureName", FeatureUtil.getFeatureName(record.getSample().getFeature()));
+		if (!record.getSample().getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
+			template.addSub("isDrillVert", "yes");
         template.addSub("drillholeDepth", SampleUtil.getDrillHoleDepthDescription(record.getSample()));
         template.addSub("recordType", recordUtil.getRecordType(record));
         if (workingFolder != null)
