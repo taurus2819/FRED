@@ -45,6 +45,7 @@ public abstract class FREDDEIPSysJspPage extends FREDIPSysJspPage{
 		et.setUseNavigationColumn(false);
 	    return et;
 	}
-
-			}
+	
+	public static boolean hasUserApproveAccess()
+}
 

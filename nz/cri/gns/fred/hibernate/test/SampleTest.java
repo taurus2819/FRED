@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Vector;
 
 import net.sf.hibernate.HibernateException;
-import nz.cri.gns.fred.dao.StorageAccessException;
+import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FossilGroup;

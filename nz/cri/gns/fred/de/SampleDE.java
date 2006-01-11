@@ -17,10 +17,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.BedThickness;
 import nz.cri.gns.fred.model.Bedding;

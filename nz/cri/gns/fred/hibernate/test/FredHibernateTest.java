@@ -11,6 +11,7 @@ import net.sf.hibernate.SessionFactory;
 import net.sf.hibernate.cfg.Configuration;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.dataaccess.HibernateProvider;
 import nz.cri.gns.db.BasicDatabaseApp2;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.Adoption;
@@ -57,7 +58,6 @@ import nz.cri.gns.fred.hibernate.TaxonomicLookup;
 import nz.cri.gns.fred.hibernate.Weathering;
 import nz.cri.gns.fred.hibernate.dao.FREDInterceptor;
 import nz.cri.gns.fred.hibernate.dao.HibernateDAOFactory;
-import nz.cri.gns.fred.hibernate.dao.HibernateProvider;
 import junit.framework.TestCase;
 
 public class FredHibernateTest extends TestCase implements HibernateProvider {

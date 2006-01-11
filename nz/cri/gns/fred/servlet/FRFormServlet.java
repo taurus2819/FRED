@@ -17,9 +17,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
+import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;

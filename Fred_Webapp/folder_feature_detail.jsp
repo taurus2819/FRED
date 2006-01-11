@@ -11,7 +11,7 @@
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
-%><%@page import="nz.cri.gns.fred.dao.StorageAccessException"
+%><%@page import="nz.cri.gns.dataaccess.StorageAccessException"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.model.Audit"
 %><%@page import="nz.cri.gns.fred.model.Feature"

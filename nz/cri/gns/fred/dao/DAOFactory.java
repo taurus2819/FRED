@@ -1,5 +1,7 @@
 package nz.cri.gns.fred.dao;
 
+import nz.cri.gns.dataaccess.StorageAccessException;
+
 /**
  * @author iainm
  */

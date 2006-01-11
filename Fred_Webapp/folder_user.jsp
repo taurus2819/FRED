@@ -1,5 +1,5 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
-%><%@page import="nz.cri.gns.fred.dao.StorageAccessException"
+%><%@page import="nz.cri.gns.dataaccess.StorageAccessException"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.model.FolderRight"
 %><%@page import="nz.cri.gns.fred.model.FolderAccessor"

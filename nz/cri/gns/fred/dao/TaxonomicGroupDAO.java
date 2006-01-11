@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import nz.cri.gns.auth.UserAccount;
+import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.model.TaxaPanel;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;

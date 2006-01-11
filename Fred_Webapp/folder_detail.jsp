@@ -5,7 +5,7 @@
 %><%@page import="java.util.Iterator"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
-%><%@page import="nz.cri.gns.fred.dao.StorageAccessException"
+%><%@page import="nz.cri.gns.dataaccess.StorageAccessException"
 %><%@page import="nz.cri.gns.fred.de.MandatoryFieldsMissingException"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.website.WebsiteConstants"

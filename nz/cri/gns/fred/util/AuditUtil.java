@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.AuditDAO;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.FREDConstants;

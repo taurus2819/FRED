@@ -11,8 +11,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.hibernate.HibernateException;
 import nz.cri.gns.auth.InvalidCredentialsException;
-import nz.cri.gns.fred.dao.StorageAccessException;
-import nz.cri.gns.fred.hibernate.dao.HibernateProvider;
+import nz.cri.gns.dataaccess.HibernateProvider;
+import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.util.FolderUtil;
 import nz.cri.gns.fred.util.TaxonomicUtil;

@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
+import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.QueryDescriptor;
@@ -25,7 +26,6 @@ import nz.cri.gns.db.site.DatumMethod;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.dao.StorageAccessException;
 import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;

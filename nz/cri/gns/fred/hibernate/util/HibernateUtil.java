@@ -7,6 +7,7 @@ import net.sf.hibernate.MappingException;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.SessionFactory;
 import net.sf.hibernate.cfg.Configuration;
+import nz.cri.gns.dataaccess.HibernateProvider;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.Adoption;
 import nz.cri.gns.fred.hibernate.AuditEdit;
@@ -52,7 +53,6 @@ import nz.cri.gns.fred.hibernate.TaxonomicLookup;
 import nz.cri.gns.fred.hibernate.Weathering;
 import nz.cri.gns.fred.hibernate.dao.FREDInterceptor;
 import nz.cri.gns.fred.hibernate.dao.HibernateDAOFactory;
-import nz.cri.gns.fred.hibernate.dao.HibernateProvider;
 
 public class HibernateUtil implements HibernateProvider {
 
