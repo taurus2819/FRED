@@ -18,6 +18,7 @@
 				</fileset>
 				<fileset dir="/usr/local/build">
 					<include name="gol.jar" />
+					<include name="gol.dataaccess" />
 					<include name="gol-test.jar" />
 				</fileset>
 			</classpath>
