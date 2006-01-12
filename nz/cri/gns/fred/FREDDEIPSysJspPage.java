@@ -4,12 +4,15 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.PageContext;
 
 import nz.cri.gns.auth.Authenticable;
 import nz.cri.gns.auth.IPRight;
 import nz.cri.gns.auth.IPRightAccess;
 import nz.cri.gns.auth.Right;
+import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.jsp.ExtranetTemplate;
 
 public abstract class FREDDEIPSysJspPage extends FREDIPSysJspPage{
@@ -44,8 +47,7 @@ public abstract class FREDDEIPSysJspPage extends FREDIPSysJspPage{
 		ExtranetTemplate et = FREDIPSysJspPage.getFREDTemplate();
 		et.setUseNavigationColumn(false);
 	    return et;
-	}
+	}	
 	
-	public static boolean hasUserApproveAccess()
 }
 
