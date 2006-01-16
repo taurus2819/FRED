@@ -12,6 +12,7 @@ import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.Adoption;
 import nz.cri.gns.fred.hibernate.AuditEdit;
 import nz.cri.gns.fred.hibernate.AuditTable;
+import nz.cri.gns.fred.hibernate.BacklogStatus;
 import nz.cri.gns.fred.hibernate.BedThickness;
 import nz.cri.gns.fred.hibernate.Bedding;
 import nz.cri.gns.fred.hibernate.Carbonate;
@@ -106,6 +107,7 @@ public class HibernateUtil implements HibernateProvider {
 			Adoption.class,
 			AuditEdit.class,
 			AuditTable.class,
+			BacklogStatus.class,
 			Bedding.class,
 			BedThickness.class,
 			Carbonate.class,

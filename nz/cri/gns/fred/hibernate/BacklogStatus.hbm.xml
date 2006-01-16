@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="nz.cri.gns.fred.hibernate.BacklogStatus" 
+    table="BACKLOG_STATUS"
+>
+
+    <id
+        name="objectId"
+        type="int"
+        column="OBJECT_ID"
+    >
+        <generator class="assigned" />
+    </id>
+
+    <property
+        name="mapNumber"
+        type="java.lang.String"
+        column="MAP_NO"
+        not-null="true"
+        length="3"
+    />
+    <property
+        name="mapName"
+        type="java.lang.String"
+        column="MAP_NAME"
+        not-null="true"
+        length="32"
+    />
+    <property
+        name="status"
+        type="java.lang.String"
+        column="STATUS"
+        not-null="true"
+        length="50"
+    />
+    <property
+        name="masterfileId"
+        type="int"
+        column="MASTERFILE_ID"
+        not-null="true"
+    />
+    <property
+        name="localityCount"
+        type="int"
+        column="LOCALITY_COUNT"
+        not-null="true"
+    />
+    <property
+        name="processingCount"
+        type="int"
+        column="PROCESSING_COUNT"
+        not-null="true"
+    />
+    <property
+        name="completedCount"
+        type="int"
+        column="COMPLETED_COUNT"
+        not-null="true"
+    />
+
+</class>
+</hibernate-mapping>
