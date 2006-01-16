@@ -18,6 +18,7 @@ import nz.cri.gns.dataaccess.HibernateProvider;
 import nz.cri.gns.dataaccess.HibernateUtils;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.AuditDAO;
+import nz.cri.gns.fred.dao.BacklogStatusDAO;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.dao.FolderDAO;
@@ -34,6 +35,7 @@ import nz.cri.gns.fred.hibernate.TaxonomicLookup;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
+import nz.cri.gns.fred.model.BacklogStatus;
 import nz.cri.gns.fred.model.BedThickness;
 import nz.cri.gns.fred.model.Bedding;
 import nz.cri.gns.fred.model.Carbonate;
@@ -76,7 +78,7 @@ import nz.cri.gns.fred.model.Weathering;
 /**
  * @author iainm
  */
-public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO, AuditDAO {
+public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO, AuditDAO, BacklogStatusDAO {
 
 	private HibernateProvider provider;
 
@@ -875,4 +877,25 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public AuditDAO getAuditDAO() {
 		return this;
 	}
+
+	public BacklogStatusDAO getBacklogStatusDAO() {
+		return this;
+	}
+	
+	public BacklogStatus getBacklogStatus(String mapNumber) throws StorageAccessException {
+		return HibernateUtils.getFirst(provider, "FROM BacklogStatus AS b WHERE b.mapNumber = ?", mapNumber, BacklogStatus.class);
+	}
+
+	public List<BacklogStatus> getBacklogStatusInMasterfile(int masterfileId) throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+            Query query = session.createQuery("FROM BacklogStatus AS b WHERE b.masterfileId = :mfId");
+            query.setInteger("mfId", masterfileId);
+            return query.list();
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+	}
+
+
 }

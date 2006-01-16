@@ -16,10 +16,12 @@ public interface DAOFactory {
 	public PersonDAO getPersonDAO();
     public TaxonomicDAO getTaxonomicDAO();
     public AuditDAO getAuditDAO();
+    public BacklogStatusDAO getBacklogStatusDAO();
 	
 	/**
 	 * Closes the current session for this thread
 	 * @throws StorageAccessException
 	 */
 	public void closeSession() throws StorageAccessException;
+	
 }
