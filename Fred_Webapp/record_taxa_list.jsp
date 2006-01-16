@@ -3,7 +3,7 @@
 %><%@page import="nz.cri.gns.jsp.*"
 %><%@page import="java.util.*"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
-%><%@page import="nz.cri.gns.fred.dao.StorageAccessException"
+%><%@page import="nz.cri.gns.dataaccess.StorageAccessException"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.model.Record"
 %><%@page import="nz.cri.gns.fred.model.Paleontology"
