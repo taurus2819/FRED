@@ -55,6 +55,7 @@
 	<tr><td>&nbsp;</td></tr>
 	<tr><td style="background-color: #FF0000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;</td><td class="heading">Processing</td></tr>
 	<tr><td style="background-color: #00FF00"></td><td></td><td class="heading">Complete</td></tr>
+	<tr><td style="background-color: #999999"></td><td></td><td class="heading">No localities</td></tr>
 	</table><%
 	endDETable(pageContext);
 	%></p><%
@@ -142,7 +143,12 @@
 			BacklogStatus bs = (BacklogStatus) i.next();
 			%><tr><td class="heading"><%=bs.getMapNumber()%>&nbsp;&nbsp;</td><%
 			if (bs.getStatus() != null) {
-				%><td style="color: <%=(bs.getStatus().equals(FREDConstants.BACKLOG_PROCESSING) ? "#FF0000" : "#00FF00")%>"><%=bs.getStatus()%>&nbsp;&nbsp;</td><%
+				String statusColour = "#FF0000";
+				if (bs.getStatus().equals(FREDConstants.BACKLOG_COMPLETE))
+					statusColour = "#00FF00";
+				else if (bs.getStatus().equals(FREDConstants.BACKLOG_EMPTY))
+					statusColour = "#999999";
+				%><td style="color: <%=statusColour%>"><%=bs.getStatus()%>&nbsp;&nbsp;</td><%
 			} else {
 				%><td>not started&nbsp;&nbsp;</td><%
 			}
