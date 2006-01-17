@@ -47,5 +47,8 @@ public interface FREDConstants {
     public static final String PALEONTOLOGICAL = "Paleontological";
     public static final String ADOPTION = "Adoption";
     
+    //BacklogStatus
+    public static final String BACKLOG_PROCESSING = "processing";
+    public static final String BACKLOG_COMPLETE = "complete";
 
 }
