@@ -23,7 +23,7 @@
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setUseNavigationColumn(false);
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	drawTop(out, et, request, response);
 
@@ -117,14 +117,16 @@
 		%><table border="0" width="480">
 		<tr><td class="deHeading" colspan="5">Summary</td></tr>
 		<tr><th>Map</th><th>Status&nbsp;&nbsp;</th><th>Number of Localities&nbsp;&nbsp;</th><th>Number Proccessing&nbsp;&nbsp;</th><th>Number Complete</th></tr><%
-		for (Iterator i = bsUtil.getBacklogStatusInMasterfile(masterfileId).iterator(); i.hasNext();) {
-			BacklogStatus bs = (BacklogStatus) i.next();
-			%><tr><td class="heading"><%=bs.getMapNumber()%>&nbsp;&nbsp;</td>
+		//for (Iterator i = bsUtil.getBacklogStatusInMasterfile(masterfileId).iterator(); i.hasNext();) {
+		//	BacklogStatus bs = (BacklogStatus) i.next();
+		System.out.println("Trying to get a BS");
+		BacklogStatus bs = bsUtil.getBacklogStatus("I44");
+		/*	%><tr><td class="heading"><%=bs.getMapNumber()%>&nbsp;&nbsp;</td>
 			<td><%=bs.getStatus()%>&nbsp;&nbsp;</td>
 			<td><%=bs.getLocalityCount()%></td>
 			<td><%=bs.getProcessingCount()%></td>
-			<td><%=bs.getCompletedCount()%></td></tr><%
-		}
+			<td><%=bs.getCompletedCount()%></td></tr><% */
+		//}
 		
 		%></table><%
 		endDETable(pageContext);
