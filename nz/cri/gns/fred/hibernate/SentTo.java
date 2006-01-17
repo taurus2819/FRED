@@ -130,6 +130,6 @@ public class SentTo implements nz.cri.gns.fred.model.SentTo, Serializable {
 	}
 	
 	public int hashCode() {
-		return fossilGroup.hashCode();
+		return (fossilGroup == null) ? 0 : fossilGroup.hashCode();
 	}
 }
