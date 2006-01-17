@@ -4,7 +4,8 @@ package nz.cri.gns.fred.model;
 /**
  *
  */
-public interface BacklogStatus {
+public interface BacklogStatus extends Comparable<BacklogStatus> {
+	
 	public abstract Integer getObjectId();
 
 	public abstract void setObjectId(Integer objectId);

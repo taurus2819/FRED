@@ -1,5 +1,6 @@
 package nz.cri.gns.fred.util;
 
+import java.util.Collections;
 import java.util.List;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
@@ -21,7 +22,9 @@ public class BacklogStatusUtil extends ModelUtil {
 	}
 
 	public List<BacklogStatus> getBacklogStatusInMasterfile(int masterfileId) throws StorageAccessException {
-		return backlogStatusDAO.getBacklogStatusInMasterfile(masterfileId);
+		List<BacklogStatus> bss = backlogStatusDAO.getBacklogStatusInMasterfile(masterfileId);
+		Collections.sort(bss);
+		return bss;
 	}
 
 	
