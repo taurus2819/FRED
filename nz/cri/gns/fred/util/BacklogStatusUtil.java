@@ -17,7 +17,6 @@ public class BacklogStatusUtil extends ModelUtil {
 	}
 
 	public BacklogStatus getBacklogStatus(String mapNumber) throws StorageAccessException {
-		System.out.println("Getting BS");
 		return backlogStatusDAO.getBacklogStatus(mapNumber);
 	}
 
