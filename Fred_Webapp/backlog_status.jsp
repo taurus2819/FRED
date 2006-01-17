@@ -6,6 +6,7 @@
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.model.BacklogStatus"
+%><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.util.BacklogStatusUtil"
 %><%@page import="nz.cri.gns.gis.ims.IMSMap"
 %><%@page import="com.esri.aims.mtier.model.envelope.Envelope"
@@ -119,9 +120,13 @@
 		<tr><th>Map</th><th>Status&nbsp;&nbsp;</th><th>Number of Localities&nbsp;&nbsp;</th><th>Number Proccessing&nbsp;&nbsp;</th><th>Number Complete</th></tr><%
 		for (Iterator i = bsUtil.getBacklogStatusInMasterfile(masterfileId).iterator(); i.hasNext();) {
 			BacklogStatus bs = (BacklogStatus) i.next();
-			%><tr><td class="heading"><%=bs.getMapNumber()%>&nbsp;&nbsp;</td>
-			<td><%=bs.getStatus()%>&nbsp;&nbsp;</td>
-			<td><%=bs.getLocalityCount()%></td>
+			%><tr><td class="heading"><%=bs.getMapNumber()%>&nbsp;&nbsp;</td><%
+			if (bs.getStatus() != null) {
+				%><td style="text-color: <%=(bs.getStatus().equals(FREDConstants.BACKLOG_PROCESSING) ? "#FF0000" : "#00FF00")%>">bs.getStatus()&nbsp;&nbsp;</td><%
+			} else {
+				%><td></td><%
+			}
+			%><td><%=bs.getLocalityCount()%></td>
 			<td><%=bs.getProcessingCount()%></td>
 			<td><%=bs.getCompletedCount()%></td></tr><%
 		}
