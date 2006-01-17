@@ -13,7 +13,7 @@
     <id
         name="objectId"
         type="int"
-        column="OBJECT_ID"
+        column="OBJECTID"
     >
         <generator class="assigned" />
     </id>
@@ -36,32 +36,31 @@
         name="status"
         type="java.lang.String"
         column="STATUS"
-        not-null="true"
         length="50"
     />
     <property
         name="masterfileId"
         type="int"
         column="MASTERFILE_ID"
-        not-null="true"
+        length="4"
     />
     <property
         name="localityCount"
         type="int"
         column="LOCALITY_COUNT"
-        not-null="true"
+        length="4"
     />
     <property
         name="processingCount"
         type="int"
         column="PROCESSING_COUNT"
-        not-null="true"
+        length="4"
     />
     <property
         name="completedCount"
         type="int"
         column="COMPLETED_COUNT"
-        not-null="true"
+        length="4"
     />
 
 </class>
