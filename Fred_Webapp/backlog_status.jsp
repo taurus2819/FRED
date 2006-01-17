@@ -16,7 +16,7 @@
 	}
 %><%!
 	public String getName(HttpServletRequest request) {
-		return "FRED :: Backlog Status";
+		return "FRED :: Backlog Processing Status";
 	}
 %><%
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
@@ -47,10 +47,24 @@
 	</table><%
 	endDETable(pageContext);
 	%></p><%	
+
+	%><p><%
+	startDETable(pageContext);
+	%><table border="0" width="160">
+	<tr><td class="deHeading" colspan="3">Legend</td></tr>
+	<tr><td>&nbsp;</td></tr>
+	<tr><td style="background-color: #FF0000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;</td><td class="heading">Processing</td></tr>
+	<tr><td style="background-color: #00FF00"></td><td></td><td class="heading">Complete</td></tr>
+	</table><%
+	endDETable(pageContext);
+	%></p><%
 	
 	%></td><td><img src="images/blank.gif" width="30" height="1" /></td><td style="text-align: left"><%
 	
-	int masterfileId = Integer.parseInt(request.getParameter("ID"));
+	int masterfileId = -1;
+	try {
+		masterfileId = Integer.parseInt(request.getParameter("ID"));
+	} catch (Exception e) {	}
 	
 	%><p><%
 	try {
@@ -68,36 +82,42 @@
 				extent.setMaxY(6820000);
 				break;
 			case 1:
+				map.setLayerVisible(3, true);
 				extent.setMinX(2370000);
 				extent.setMinY(6230000);
 				extent.setMaxX(2850000);
 				extent.setMaxY(6810000);
 				break;
 			case 2:
+				map.setLayerVisible(4, true);
 				extent.setMinX(2550000);
 				extent.setMinY(5960000);
 				extent.setMaxX(3030000);
 				extent.setMaxY(6540000);
 				break;
 			case 3:
+				map.setLayerVisible(5, true);
 				extent.setMinX(2470000);
 				extent.setMinY(5765000);
 				extent.setMaxX(2950000);
 				extent.setMaxY(6345000);
 				break;
 			case 4:
+				map.setLayerVisible(6, true);
 				extent.setMinX(2270000);
 				extent.setMinY(5760000);
 				extent.setMaxX(2750000);
 				extent.setMaxY(6300000);
 				break;
 			case 5:
+				map.setLayerVisible(7, true);
 				extent.setMinX(2170000);
 				extent.setMinY(5480000);
 				extent.setMaxX(2650000);
 				extent.setMaxY(6060000);
 				break;
 			case 6:
+				map.setLayerVisible(8, true);
 				extent.setMinX(1930000);
 				extent.setMinY(5225000);
 				extent.setMaxX(2410000);
@@ -115,20 +135,44 @@
 	if (masterfileId > 0) {
 		%><p><%
 		startDETable(pageContext);
-		%><table border="0" width="480">
-		<tr><td class="deHeading" colspan="5">Summary</td></tr>
-		<tr><th>Map</th><th>Status&nbsp;&nbsp;</th><th>Number of Localities&nbsp;&nbsp;</th><th>Number Proccessing&nbsp;&nbsp;</th><th>Number Complete</th></tr><%
+		%><table border="0" width="460">
+		<tr><td class="deHeading" colspan="5">Summary by Map Sheet</td></tr>
+		<tr><th>Map</th><th>Status&nbsp;&nbsp;</th><th>Localities&nbsp;&nbsp;</th><th colspan="2">Percent Complete</th></tr><%
 		for (Iterator i = bsUtil.getBacklogStatusInMasterfile(masterfileId).iterator(); i.hasNext();) {
 			BacklogStatus bs = (BacklogStatus) i.next();
 			%><tr><td class="heading"><%=bs.getMapNumber()%>&nbsp;&nbsp;</td><%
 			if (bs.getStatus() != null) {
-				%><td style="text-color: <%=(bs.getStatus().equals(FREDConstants.BACKLOG_PROCESSING) ? "#FF0000" : "#00FF00")%>">bs.getStatus()&nbsp;&nbsp;</td><%
+				%><td style="color: <%=(bs.getStatus().equals(FREDConstants.BACKLOG_PROCESSING) ? "#FF0000" : "#00FF00")%>"><%=bs.getStatus()%>&nbsp;&nbsp;</td><%
 			} else {
-				%><td></td><%
+				%><td>not started&nbsp;&nbsp;</td><%
 			}
-			%><td><%=bs.getLocalityCount()%></td>
-			<td><%=bs.getProcessingCount()%></td>
-			<td><%=bs.getCompletedCount()%></td></tr><%
+			%><td><%=bs.getLocalityCount()%></td><%
+			if (bs.getStatus() != null) {
+				if (bs.getStatus().equals(FREDConstants.BACKLOG_COMPLETE)) {
+					%><td width="200">
+					<table border="0" width="100%">
+					<tr><td width="100%" style="background-color: #00FF00"><img src="images/blank.gif" height="5" width="200" alt="" /></td></tr>
+					</table>
+					</td>
+					<td>100%</td><%
+				} else {
+					int totalCount = bs.getProcessingCount().intValue() + bs.getCompletedCount().intValue();
+					int procPct = (bs.getProcessingCount().intValue() * 100) / totalCount;
+					int procWidth = 2 * procPct;
+					int comPct = (bs.getCompletedCount().intValue() * 100) / totalCount;
+					int comWidth = 2 * comPct;
+					%><td width="200">
+					<table border="0" width="100%">
+					<tr><td width="<%=comPct%>%" style="background-color: #00FF00"><img src="images/blank.gif" height="5" width="<%=comWidth%>" alt="" /></td>
+					<td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="5" width="<%=procWidth%>" alt="" /></td></tr>
+					</table>
+					</td>
+					<td><%=comPct%>%</td><%					
+				}
+			} else {
+				%><td></td><td></td><%
+			}
+			%></tr><%
 		}
 		
 		%></table><%
