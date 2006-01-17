@@ -24,7 +24,7 @@
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setUseNavigationColumn(false);
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	drawTop(out, et, request, response);
 
@@ -55,7 +55,7 @@
 	<tr><td>&nbsp;</td></tr>
 	<tr><td style="background-color: #FF0000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;</td><td class="heading">Processing</td></tr>
 	<tr><td style="background-color: #00FF00"></td><td></td><td class="heading">Complete</td></tr>
-	<tr><td style="background-color: #999999"></td><td></td><td class="heading">No localities</td></tr>
+	<tr><td style="background-color: #DDDDDD"></td><td></td><td class="heading">No locality</td></tr>
 	</table><%
 	endDETable(pageContext);
 	%></p><%
@@ -147,13 +147,13 @@
 				if (bs.getStatus().equals(FREDConstants.BACKLOG_COMPLETE))
 					statusColour = "#00FF00";
 				else if (bs.getStatus().equals(FREDConstants.BACKLOG_EMPTY))
-					statusColour = "#999999";
+					statusColour = "#DDDDDD";
 				%><td style="color: <%=statusColour%>"><%=bs.getStatus()%>&nbsp;&nbsp;</td><%
 			} else {
 				%><td>not started&nbsp;&nbsp;</td><%
 			}
 			%><td><%=bs.getLocalityCount()%></td><%
-			if (bs.getStatus() != null) {
+			if (bs.getStatus() != null && !bs.getStatus().equals(FREDConstants.BACKLOG_EMPTY)) {
 				if (bs.getStatus().equals(FREDConstants.BACKLOG_COMPLETE)) {
 					%><td width="200">
 					<table border="0" width="100%">
