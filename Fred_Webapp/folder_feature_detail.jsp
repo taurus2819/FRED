@@ -211,7 +211,7 @@ function showHide(toShow, toHide) {
 </td><td>
 <a href="de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/new_pal.gif" border="0" height="20" width="20" alt="Add Paleontology Record" /></a><%
 			} else {
-				%><a href="new_sample.jsp?FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/drill.gif" border="0" height="20" width="20" alt="New Sample" /></a><img src="images/blank.gif" height="20" width="2" /><%
+				%><a href="de.jsp?Type=Sample&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/drill.gif" border="0" height="20" width="20" alt="New Sample" /></a><img src="images/blank.gif" height="20" width="2" /><%
 			}
 		}
 		%></td></tr>
