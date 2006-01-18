@@ -142,7 +142,10 @@
 			%></td></tr></table><%
 		}
 		catch (Exception e) {
+			System.out.println("************************************************************");
+			System.out.println("FRED data entry form error : " + new java.util.Date());
 			e.printStackTrace();
+			System.out.println("************************************************************");
 			drawEndNavigation(out);
 			%><table style="margin-left:20px; width:550px;" border="0">
 			<tr><td>
