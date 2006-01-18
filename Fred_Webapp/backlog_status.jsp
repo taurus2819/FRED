@@ -36,7 +36,7 @@
 	%><p><%
 	startDETable(pageContext);
 	%><table border="0" width="160">
-	<tr><td class="deHeading">View</td></tr>
+	<tr><td class="deHeading">Select a Map</td></tr>
 	<tr><td class="heading"><a href="backlog_status.jsp?ID=-1">Overview</a></td></tr>
 	<tr><td class="heading"><a href="backlog_status.jsp?ID=1">Northern North Island</a></td></tr>
 	<tr><td class="heading"><a href="backlog_status.jsp?ID=2">Central North Island</a></td></tr>
@@ -61,6 +61,14 @@
 	%></p><%
 	
 	%></td><td><img src="images/blank.gif" width="30" height="1" /></td><td style="text-align: left"><%
+	
+	%><p><%
+	startDETable(pageContext);
+	%><table border="0" width="460">
+	<tr><td>The summary of map sheets completed in the backlog edit process is shown on the following map.  This map is dynamic, and is updated daily to show the current stage of completion, including those map sheets that are currently undergoing the backlog edit process. It is possible that over time map sheets will be shown as complete and then revert to processing, as they are worked through. However, ultimately each map sheet will become and remain green, as they reach final completion.</td></tr>
+	</table><%
+	endDETable(pageContext);
+	%></p><%	
 	
 	int masterfileId = -1;
 	try {
