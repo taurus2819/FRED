@@ -46,14 +46,16 @@
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
 	if (folder.isAllowedCreateLocalities()) {
-		et.setButtons(new IconnedLink[] {
-			new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders"),
-			new IconnedLink(null, "images/new.gif", "New: "),
-			new IconnedLink("de.jsp?Type=Outcrop&FoldID=" + folder.getFolder().getFolderId(), null, "Outcrop"),
-			new IconnedLink("de.jsp?Type=Drillhole&FoldID=" + folder.getFolder().getFolderId(), null, "Drillhole"),
-			new IconnedLink("de.jsp?Type=Vertical+Section&FoldID=" + folder.getFolder().getFolderId(), null, "Vert. Section"),
-			new IconnedLink("simple_query.jsp?FoldID=" + folder.getFolder().getFolderId(), "images/search.gif", "Search")
-		});
+		IconnedLink[] iLink = new IconnedLink[((folder.isBacklogFolder()) ? 7 : 6)];
+		iLink[0] = new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders");
+		iLink[1] = new IconnedLink(null, "images/new.gif", "New: ");
+		iLink[2] = new IconnedLink("de.jsp?Type=Outcrop&FoldID=" + folder.getFolder().getFolderId(), null, "Outcrop");
+		iLink[3] = new IconnedLink("de.jsp?Type=Drillhole&FoldID=" + folder.getFolder().getFolderId(), null, "Drillhole");
+		iLink[4] = new IconnedLink("de.jsp?Type=Vertical+Section&FoldID=" + folder.getFolder().getFolderId(), null, "V. Section");
+		iLink[5] = new IconnedLink("simple_query.jsp?FoldID=" + folder.getFolder().getFolderId(), "images/search.gif", "Search");
+		if (folder.isBacklogFolder())
+			iLink[6] = new IconnedLink("backlog_status.jsp", "images/map.gif", "Status");
+		et.setButtons(iLink);
 	} else {
 		et.setButtons(new IconnedLink[] {
 			new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")
