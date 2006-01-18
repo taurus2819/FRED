@@ -604,6 +604,8 @@ public class FREDUtil {
 	}
 
 	public static String getPetWellLink(Feature feature) throws NamingException, SQLException {
+		if (feature.getFeatureName() == null)
+			return null;
 		Connection conn = null;
 		try {
 			conn = getConnection();
