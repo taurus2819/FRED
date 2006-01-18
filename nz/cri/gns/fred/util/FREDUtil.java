@@ -227,14 +227,12 @@ public class FREDUtil {
 			Datum.LatLong ll = new Datum.LatLong(rs.getDouble(1), rs.getDouble(2));
 			rs.close();
 			statement.close();
-			conn.close();
 			return ll;
-		} catch (SQLException e) {
+		} finally {
 			if (conn != null) try {
 				conn.close();
 			} catch (Exception _e) {
 			}
-			throw e;
 		}
 		
 	}
@@ -248,14 +246,12 @@ public class FREDUtil {
 			String name = (rs.next()) ? rs.getString(1) : "";
 			rs.close();
 			statement.close();
-			conn.close();
 			return name;
-		} catch (SQLException e) {
+		} finally {
 			if (conn != null) try {
 				conn.close();
 			} catch (Exception _e) {
 			}
-			throw e;
 		}
 	}
 	
@@ -289,11 +285,12 @@ public class FREDUtil {
 			conn.close();
 			return allowed;
 		} catch (Exception e) {
+			return false;
+		} finally {
 			if (conn != null) try {
 				conn.close();
 			} catch (Exception _e) {
 			}
-			return false;
 		}
 	}
 	
@@ -431,12 +428,11 @@ public class FREDUtil {
 			statement.close();
 			conn.close();
 			return title;
-		} catch (SQLException e) {
+		} finally {
 			if (conn != null) try {
 				conn.close();
 			} catch (Exception _e) {
 			}
-			throw e;
 		}
 	}
 
@@ -453,14 +449,12 @@ public class FREDUtil {
 			}
 			rs.close();
 			statement.close();
-			conn.close();
 			return list;
-		} catch (SQLException e) {
+		} finally {
 			if (conn != null) try {
 				conn.close();
 			} catch (Exception _e) {
 			}
-			throw e;
 		}
 	}
 	
@@ -476,14 +470,12 @@ public class FREDUtil {
 			String method = rs.getString(1);
 			rs.close();
 			statement.close();
-			conn.close();
 			return method;
-		} catch (SQLException e) {
+		} finally {
 			if (conn != null) try {
 				conn.close();
 			} catch (Exception _e) {
 			}
-			throw e;
 		}		
 	}
 
@@ -499,14 +491,12 @@ public class FREDUtil {
 			String country = rs.getString(1);
 			rs.close();
 			statement.close();
-			conn.close();
 			return country;
-		} catch (SQLException e) {
+		} finally {
 			if (conn != null) try {
 				conn.close();
 			} catch (Exception _e) {
 			}
-			throw e;
 		}		
 	}	
 	
@@ -544,12 +534,11 @@ public class FREDUtil {
 			statement.close();
 			conn.close();
 			return name;
-		} catch (SQLException e) {
+		} finally {
 			if (conn != null) try {
 				conn.close();
 			} catch (Exception _e) {
 			}
-			throw e;
 		}
 	}
 
@@ -564,12 +553,11 @@ public class FREDUtil {
 			statement.close();
 			conn.close();
 			return id;
-		} catch (SQLException e) {
+		} finally {
 			if (conn != null) try {
 				conn.close();
 			} catch (Exception _e) {
 			}
-			throw e;
 		}
 	}
 
@@ -582,14 +570,12 @@ public class FREDUtil {
 			double[] ages = (rs.next()) ? new double[] {rs.getDouble(1), rs.getDouble(2)} : null;
 			rs.close();
 			statement.close();
-			conn.close();
 			return ages;
-		} catch (SQLException e) {
+		} finally {
 			if (conn != null) try {
 				conn.close();
 			} catch (Exception _e) {
 			}
-			throw e;
 		}
 	}
 	
@@ -608,14 +594,12 @@ public class FREDUtil {
 			String[] name = (rs.next()) ? new String[] {rs.getString(1), rs.getString(2)} : null;
 			rs.close();
 			statement.close();
-			conn.close();
 			return name;
-		} catch (SQLException e) {
+		} finally {
 			if (conn != null) try {
 				conn.close();
 			} catch (Exception _e) {
 			}
-			throw e;
 		}		
 	}
 
@@ -631,11 +615,12 @@ public class FREDUtil {
 			conn.close();
 			return link;
 		} catch (SQLException e) {
+			return null;
+		} finally {
 			if (conn != null) try {
 				conn.close();
 			} catch (Exception _e) {
 			}
-			return null;
 		}
 	}
 	
@@ -659,14 +644,12 @@ public class FREDUtil {
 			Integer id = (rs.next()) ? new Integer(rs.getInt(1)): null;
 			rs.close();
 			statement.close();
-			conn.close();
 			return id;
-		} catch (SQLException e) {
+		} finally {
 			if (conn != null) try {
 				conn.close();
 			} catch (Exception _e) {
 			}
-			throw e;
 		}
 	}
 
