@@ -1,44 +1,6 @@
 <Context path="/fred" docBase="fred" debug="1" reloadable="true">
-<Resource name="jdbc/fr" auth="Container" type="javax.sql.DataSource" 
-	factory="nz.cri.gns.dbcp.GOLDataSourceFactory" driverClassName="oracle.jdbc.OracleDriver"
-	url="jdbc:oracle:thin:@raptor.gns.cri.nz:1521:dev" username="fr"
-	rmiServer="condor" rmiBinding="OnlineUtils" maxActive="30" maxIdle="10" maxWait="1000" /> 
-<ResourceParams name="jdbc/fr">
-	<parameter>
-		<name>factory</name>
-		<value>nz.cri.gns.dbcp.GOLDataSourceFactory</value>
-	</parameter>
-	<parameter>
-		<name>driverClassName</name>
-		<value>oracle.jdbc.OracleDriver</value>
-	</parameter>
-	<parameter>
-		<name>url</name>
-		<value>jdbc:oracle:thin:@raptor4.gns.cri.nz:1521:dev</value>
-	</parameter>
-	<parameter>
-		<name>username</name>
-		<value>fr</value>
-	</parameter>
-	<parameter>
-		<name>rmiServer</name>
-		<value>condor</value>
-	</parameter>
-	<parameter>
-		<name>rmiBinding</name>
-		<value>OnlineUtils</value>
-	</parameter>
-	<parameter>
-		<name>maxActive</name>
-		<value>30</value>
-	</parameter>
-	<parameter>
-		<name>maxIdle</name>
-		<value>10</value>
-	</parameter>
-	<parameter>
-		<name>maxWait</name>
-		<value>1000</value>
-	</parameter>
-</ResourceParams>
+	<Resource name="jdbc/fr" auth="Container" type="javax.sql.DataSource" 
+		factory="nz.cri.gns.dbcp.GOLReportingDataSourceFactory" driverClassName="oracle.jdbc.OracleDriver"
+		url="jdbc:oracle:thin:@raptor.gns.cri.nz:1521:dev" username="fr"
+		rmiServer="condor" rmiBinding="OnlineUtils" maxActive="30" maxIdle="10" maxWait="1000" /> 
 </Context>
