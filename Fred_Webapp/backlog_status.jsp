@@ -77,7 +77,6 @@
 	
 	%><p><%
 	try {
-		
 		URL imsService = new URL("http://maps.gns.cri.nz");
 		String service = "fred_backlog";
 		//URL imsService = new URL("http://" + DBUtils.getIMSServerFor(JspUtils.getInstance(application)));
@@ -89,6 +88,14 @@
 				extent.setMinY(5250000);
 				extent.setMaxX(3050000);
 				extent.setMaxY(6820000);
+				%><map name="FPMap0">
+				<area href="backlog_status.jsp?ID=1" shape="polygon" coords="208, 11, 209, 23, 222, 21, 223, 34, 241, 35, 239, 66, 252, 67, 253, 86, 267, 88, 267, 109, 282, 110, 285, 143, 298, 144, 297, 199, 282, 199, 282, 209, 357, 208, 356, 109, 342, 109, 341, 88, 328, 89, 327, 77, 313, 76, 313, 65, 298, 67, 298, 45, 268, 46, 268, 35, 253, 34, 254, 24, 229, 23, 229, 12">
+				<area href="backlog_status.jsp?ID=2" shape="polygon" coords="371, 277, 327, 277, 326, 244, 268, 243, 268, 212, 358, 211, 359, 155, 370, 155, 370, 144, 387, 144, 387, 156, 430, 156, 430, 200, 415, 199, 416, 232, 385, 232, 385, 254, 372, 254">
+				<area href="backlog_status.jsp?ID=3" shape="polygon" coords="341, 321, 300, 321, 298, 277, 312, 278, 313, 265, 298, 265, 297, 256, 283, 255, 283, 245, 326, 245, 327, 277, 358, 277, 356, 300, 342, 300">
+				<area href="backlog_status.jsp?ID=4" shape="polygon" coords="296, 333, 195, 333, 194, 321, 209, 321, 209, 278, 223, 279, 223, 265, 254, 266, 252, 289, 268, 288, 268, 277, 283, 277, 284, 289, 300, 289">
+				<area href="backlog_status.jsp?ID=5" shape="polygon" coords="209, 442, 135, 442, 135, 385, 148, 387, 150, 376, 164, 376, 165, 366, 181, 365, 181, 342, 194, 342, 196, 331, 282, 334, 284, 354, 267, 355, 268, 375, 254, 375, 252, 387, 239, 386, 239, 399, 253, 398, 253, 422, 209, 422">
+				<area href="backlog_status.jsp?ID=6" shape="polygon" coords="105, 566, 76, 565, 77, 544, 90, 543, 91, 520, 62, 519, 61, 509, 47, 509, 47, 487, 60, 487, 60, 453, 76, 454, 76, 444, 91, 443, 92, 422, 106, 421, 106, 411, 120, 411, 120, 398, 136, 399, 136, 443, 195, 441, 195, 499, 181, 498, 180, 510, 163, 511, 165, 532, 137, 531, 134, 544, 121, 544, 120, 556, 107, 555">
+				</map><%
 				break;
 			case 1:
 				map.setLayerVisible(3, true);
@@ -135,7 +142,7 @@
 		}
 		map.setExtent(extent);
 		String imageURL = map.getURL();
-		%><p><img src="<%=imageURL%>" width="480" height="580" alt="Backlog Status Map" border="0" /></p><%
+		%><p><img src="<%=imageURL%>" width="480" height="580" alt="Backlog Status Map" border="0" <%=((masterfileId == -1) ? "usemap=\"#FPMap0\"" : "")%>/></p><%
 	} catch (Exception e) {
 		%><p>An error has occured while generating the map. Please try again</p><%
 	}
