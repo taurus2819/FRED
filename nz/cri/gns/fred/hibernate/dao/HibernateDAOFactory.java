@@ -489,9 +489,10 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
             query.setString("map", mapSheet);
             query.setInteger("start", start);
             query.setInteger("end", end);
-            List<FrNumber> frNums = query.list();
-            Collections.sort(frNums);
-            return frNums;
+            return query.list();
+            //List<FrNumber> frNums = query.list();
+            //Collections.sort(frNums);
+            //return frNums;
         } catch (Exception e) {
             throw new StorageAccessException(e);
         }
