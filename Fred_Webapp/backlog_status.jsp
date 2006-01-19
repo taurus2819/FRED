@@ -156,7 +156,7 @@
 		<tr><th>Map</th><th>Status&nbsp;&nbsp;</th><th>Localities&nbsp;&nbsp;</th><th colspan="2">Percent Complete</th></tr><%
 		for (Iterator i = bsUtil.getBacklogStatusInMasterfile(masterfileId).iterator(); i.hasNext();) {
 			BacklogStatus bs = (BacklogStatus) i.next();
-			%><tr><td class="heading"><%=bs.getMapNumber()%>&nbsp;&nbsp;</td><%
+			%><tr><td class="heading"><a href="backlog_status_sheet.jsp?Sheet=<%=bs.getMapNumber()%>"><%=bs.getMapNumber()%></a>&nbsp;&nbsp;</td><%
 			if (bs.getStatus() != null) {
 				String statusColour = "#FF0000";
 				if (bs.getStatus().equals(FREDConstants.BACKLOG_COMPLETE))
