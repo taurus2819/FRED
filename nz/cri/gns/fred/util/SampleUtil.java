@@ -199,38 +199,32 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * Returns the Sample immediately above the given Sample in a drillhole or vertical section
 	 */
 	public static Sample getSampleAbove(Sample sample) {
-		Set<Sample> samples = sample.getFeature().getSamples();
+		if (!hasDepthInformation(sample))
+			return null;
+		Vector<Sample> samples = new Vector(FeatureUtil.getSortedSamples(sample.getFeature()));
 		if (samples == null || samples.size() == 1)
 			return null;
-		
-		Sample aboveSample = null;
-		double sampleTop = sample.getTopDepth().doubleValue();
-		double testTop = 0;
-		for (Sample testSample : samples) {
-			if (!sample.equals(testSample) && testSample.getTopDepth() != null
-					&& testSample.getTopDepth().doubleValue() > testTop && testSample.getTopDepth().doubleValue() <= sampleTop)
-			aboveSample = testSample;
-		}
-		return aboveSample;
+		int sampleIdx = samples.indexOf(sample);
+		if (sampleIdx == 0)
+			return null;
+		Sample aboveSample = samples.elementAt(sampleIdx - 1);
+		return (hasDepthInformation(aboveSample) ? aboveSample : null);
 	}
 
 	/**
 	 * Returns the Sample immediately below the given Sample in a drillhole or vertical section
 	 */
 	public static Sample getSampleBelow(Sample sample) {
-		Set<Sample> samples = sample.getFeature().getSamples();
+		if (!hasDepthInformation(sample))
+			return null;
+		Vector<Sample> samples = new Vector(FeatureUtil.getSortedSamples(sample.getFeature()));
 		if (samples == null || samples.size() == 1)
 			return null;
-		
-		Sample belowSample = null;
-		double sampleTop = sample.getTopDepth().doubleValue();
-		double testTop = 9999999; //very big number
-		for (Sample testSample : samples) {
-			if (!sample.equals(testSample) && testSample.getTopDepth() != null
-					&& testSample.getTopDepth().doubleValue() < testTop && testSample.getTopDepth().doubleValue() >= sampleTop)
-			belowSample = testSample;
-		}
-		return belowSample;
+		int sampleIdx = samples.indexOf(sample);
+		if (sampleIdx == samples.size() - 1)
+			return null;
+		Sample belowSample = samples.elementAt(sampleIdx + 1);
+		return (hasDepthInformation(belowSample) ? belowSample : null);
 	}
 	
 	/**
