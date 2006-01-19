@@ -219,7 +219,7 @@ function showHide(toShow, toHide) {
 		
 <%		
 		DateFormat format = DateFormat.getDateInstance(DateFormat.LONG);
-		for (Iterator i = featureUtil.getSortedSamples(feature).iterator(); i.hasNext(); ) {
+		for (Iterator i = FeatureUtil.getSortedSamples(feature).iterator(); i.hasNext(); ) {
 			Sample sample = (Sample)i.next();
 			audit = sample.getAudit();
 			if (audit.getStatus().equals(FREDConstants.APPROVED) || audit.getFolder() != null && audit.getFolder().equals(folder.getFolder())) {

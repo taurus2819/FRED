@@ -418,7 +418,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 		
 		
-	public void mergeFeature(Feature mergeToFeature, String mergeFromFeatID, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
+	private void mergeFeature(Feature mergeToFeature, String mergeFromFeatID, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
 		Feature mergeFromFeature = getFeature(Integer.parseInt(mergeFromFeatID));
 		if (mergeToFeature.getFeatureType().equals(FREDConstants.OUTCROP) || mergeFromFeature.getFeatureType().equals(FREDConstants.OUTCROP))
 			throw new IllegalStateException("Cannot merge outcrop localities");
@@ -909,7 +909,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         return featureDAO.save(audit);
     }
     
-    public Collection<Sample> getSortedSamples(Feature feature) {
+    public static Collection<Sample> getSortedSamples(Feature feature) {
     	Set<Sample> sampleSet = feature.getSamples();
     	Vector<Sample> v = new Vector<Sample>(sampleSet);
     	Collections.sort(v);
