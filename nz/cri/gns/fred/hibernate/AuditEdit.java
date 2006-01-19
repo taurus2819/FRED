@@ -86,7 +86,12 @@ public class AuditEdit implements Serializable, Comparable, nz.cri.gns.fred.mode
      * Orders in reverse chronological order
      */
 	public int compareTo(Object o) {
-		return -editedDate.compareTo(((AuditEdit)o).editedDate);
+		if (editedDate == null)
+			return ((AuditEdit)o).editedDate == null ? 0 : -1;
+		else if (((AuditEdit)o).editedDate == null)
+			return 1;
+		else
+			return -editedDate.compareTo(((AuditEdit)o).editedDate);
 	}
 
 }
