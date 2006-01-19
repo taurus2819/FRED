@@ -54,8 +54,6 @@
 	Feature feature =  null;
 	Sample sample = null;
 
-
-	
 	//if FeatureID given then check if outcrop and if redirect to display sample details
 	if (featID != null) {
 		session.setAttribute("FRED.FeatureID", featID);
@@ -181,7 +179,7 @@
 			}
 			
 			//Paleontology
-			if (sampleUtil.getAdoptionRecordCount(sample) > 0) {
+			if (sampleUtil.getPaleontologyRecordCount(sample) > 0) {
 				for (Iterator i = sampleUtil.getPaleontologyRecords(sample).iterator(); i.hasNext();) {
 					Paleontology palRecord = (Paleontology) i.next();
 					if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {				
