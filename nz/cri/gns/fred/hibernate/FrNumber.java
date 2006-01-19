@@ -103,4 +103,9 @@ public class FrNumber implements Serializable, nz.cri.gns.fred.model.FrNumber {
     public void setSamples(Set samples) {
         this.samples = samples;
     }
+    
+	public int compareTo(nz.cri.gns.fred.model.FrNumber frNumber) {
+		return this.frNumber.compareTo(frNumber.getFrNumber());
+	}
+	
 }

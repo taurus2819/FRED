@@ -5,7 +5,7 @@ import java.util.Set;
 /**
  *
  */
-public interface FrNumber {
+public interface FrNumber extends Comparable<FrNumber> {
 	public abstract Integer getFrId();
 
 	public abstract void setFrId(Integer frId);
