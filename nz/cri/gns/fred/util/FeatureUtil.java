@@ -864,7 +864,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			return null;
 		}
 	}
-	
+
 	public void addSample(Feature feature, String topDepthAsString, String bottomDepthAsString, String drillTypeIdAsString, int folderId, UserAccount user) throws StorageAccessException, DataInputException {
 		if (feature.getFeatureType().equals(OUTCROP))
 			throw new DataInputException("Sample", "Cannot add samples to an outcrop");
@@ -996,4 +996,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return (folder != null && folder.getFolderType().getName().equals(Folder.FOLDER_TYPE_BACKLOG));
 	}
 
+	public List<FrNumber> getFrNumbers(String mapSheet) throws StorageAccessException {
+		return featureDAO.getFrNumbers(mapSheet);
+	}
+	
+	public List<FrNumber> getFrNumbers(String mapSheet, int start, int end) throws StorageAccessException {
+		return featureDAO.getFrNumbers(mapSheet, start, end);
+	}
+	
 }

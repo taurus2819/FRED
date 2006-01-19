@@ -166,6 +166,13 @@ public interface FeatureDAO {
 	public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, String status) throws StorageAccessException;
 	
 	/**
+	 * Returns a list of fr numbers with a given map sheet
+	 * @throws StorageAccessException 
+	 * 
+	 */
+	public List<FrNumber> getFrNumbers(String mapSheet) throws StorageAccessException;
+	
+	/**
 	 * Returns a list of fr numbers between the given start and end (inclusive)
 	 * @throws StorageAccessException 
 	 * 

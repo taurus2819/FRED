@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.hibernate.dao;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -468,6 +469,19 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
         }
 	}
 
+	public List<FrNumber> getFrNumbers(String mapSheet) throws StorageAccessException {
+		try {
+			Session session = provider.currentSession();
+            Query query = session.createQuery("FROM FrNumber as num WHERE num.mapSheet = :map");
+            query.setString("map", mapSheet);
+            List<FrNumber> frNums = query.list();
+            Collections.sort(frNums);
+            return frNums;
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
+	}
+	
 	public List<FrNumber> getFrNumbers(String mapSheet, int start, int end) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
@@ -475,7 +489,9 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
             query.setString("map", mapSheet);
             query.setInteger("start", start);
             query.setInteger("end", end);
-            return query.list();
+            List<FrNumber> frNums = query.list();
+            Collections.sort(frNums);
+            return frNums;
         } catch (Exception e) {
             throw new StorageAccessException(e);
         }
