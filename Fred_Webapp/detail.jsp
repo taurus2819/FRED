@@ -622,7 +622,7 @@
 					%><table border="0" width="550">
 					<tr><td colspan="3" class="deHeading"><%=featType%> Samples</td></tr>
 					<tr class="heading"><td>Locality Name&nbsp;&nbsp;</td><td><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Sample Depth" : "Section Height")%></td></tr><%
-					for (Iterator i = feature.getSamples().iterator(); i.hasNext(); ) {
+					for (Iterator i = FeatureUtil.getSortedSamples(feature).iterator(); i.hasNext(); ) {
 						Sample locSample = (Sample) i.next();
 						%><tr><td><a href="detail.jsp?ID=<%=locSample.getSampleId()%>"><%=((locSample.getFrNumber() != null) ? locSample.getFrNumber().getFrNumber() : "not yet allocated")%></a>&nbsp;&nbsp;</td>
 						<td><a href="detail.jsp?ID=<%=locSample.getSampleId()%>"><%=SampleUtil.getDrillHoleDepthDescription(locSample)%></a></td>
