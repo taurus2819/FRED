@@ -8,6 +8,8 @@
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.fred.model.Audit"
 %><%@page import="nz.cri.gns.fred.model.AuditEdit"
+%><%@page import="nz.cri.gns.fred.model.Folder"
+%><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%!
@@ -20,7 +22,7 @@
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setUseNavigationColumn(false);
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 
 	drawTop(out, et, request, response);
 
@@ -37,13 +39,15 @@
 		startDETable(pageContext);
 		%><table border="0" width="460">
 		<tr><td class="deHeading" colspan="5">Localities</td></tr>
-		<tr><th>Locality</th><th>Status&nbsp;&nbsp;</th></tr><%
+		<tr><th>Locality</th><th>Backlog Status&nbsp;&nbsp;</th><th>FRED Status&nbsp;&nbsp;</th><th>Working Folder&nbsp;&nbsp;</th></tr><%
 		for (Iterator i = featureUtil.getFrNumbers(mapSheet).iterator(); i.hasNext();) {
 			FrNumber frNumber = (FrNumber) i.next();
 			try {
 				Feature feature = FeatureUtil.getFeature(frNumber);
 				String status = null;
 				Audit audit = feature.getAudit();
+				Folder workingFolder = audit.getFolder();
+				String auditStatus = audit.getStatus();
 				if (audit.getStatus().equals(FREDConstants.APPROVED) && audit.getCuratorComments() != null && audit.getCuratorComments().indexOf("backlog") > 0) {
 					status = FREDConstants.BACKLOG_COMPLETE;
 				} else {
@@ -62,7 +66,9 @@
 				} else {
 					%><td>not started&nbsp;&nbsp;</td><%
 				}
-				%></tr><%
+				%><td><%=(auditStatus != null) ? auditStatus : ""%></td>
+				<td><%=(workingFolder != null) ? "<a href=\"folder_detail.jsp?ID=" + workingFolder.getFolderId() + "\">" + workingFolder.getName() + "</a>" : ""%></td>
+				</tr><%
 			} catch (Exception e) {}
 		}
 		%></table><%
