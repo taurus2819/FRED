@@ -8,6 +8,7 @@ import net.sf.hibernate.Session;
 import net.sf.hibernate.SessionFactory;
 import net.sf.hibernate.cfg.Configuration;
 import nz.cri.gns.dataaccess.HibernateProvider;
+import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.Adoption;
 import nz.cri.gns.fred.hibernate.AuditEdit;
@@ -152,22 +153,26 @@ public class HibernateUtil implements HibernateProvider {
 
 	public static final ThreadLocal<Session> session = new ThreadLocal<Session>();
 
-    public Session currentSession() throws HibernateException {
+    public Session currentSession() throws StorageAccessException {
         Session s = (Session) session.get();
         // Open a new Session, if this Thread has none yet
-        if (s == null) {
+        if (s == null) try {
             s = sessionFactory.openSession();
             session.set(s);
+        } catch (HibernateException e) {
+            throw new StorageAccessException(e);
         }
         return s;
     }
 
-    public void closeSession() throws HibernateException {
+    public void closeSession() throws StorageAccessException {
         Session s = (Session) session.get();
         session.set(null);
-        if (s != null) {
+        if (s != null) try {
         	s.flush();
         	s.close();
+        } catch (HibernateException e) {
+            throw new StorageAccessException(e);
         }
     }
     

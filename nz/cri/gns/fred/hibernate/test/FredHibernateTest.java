@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import junit.framework.TestCase;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Session;
 import net.sf.hibernate.SessionFactory;
@@ -12,6 +13,7 @@ import net.sf.hibernate.cfg.Configuration;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.dataaccess.HibernateProvider;
+import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.BasicDatabaseApp2;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.Adoption;
@@ -48,9 +50,7 @@ import nz.cri.gns.fred.hibernate.RockColour;
 import nz.cri.gns.fred.hibernate.Sample;
 import nz.cri.gns.fred.hibernate.SampleMeta;
 import nz.cri.gns.fred.hibernate.SecurityClass;
-import nz.cri.gns.fred.hibernate.SedimentaryFeature;
 import nz.cri.gns.fred.hibernate.SedimentaryFeatureType;
-import nz.cri.gns.fred.hibernate.SentTo;
 import nz.cri.gns.fred.hibernate.Stage;
 import nz.cri.gns.fred.hibernate.TaxaPanel;
 import nz.cri.gns.fred.hibernate.TaxonomicGroup;
@@ -58,7 +58,6 @@ import nz.cri.gns.fred.hibernate.TaxonomicLookup;
 import nz.cri.gns.fred.hibernate.Weathering;
 import nz.cri.gns.fred.hibernate.dao.FREDInterceptor;
 import nz.cri.gns.fred.hibernate.dao.HibernateDAOFactory;
-import junit.framework.TestCase;
 
 public class FredHibernateTest extends TestCase implements HibernateProvider {
 
@@ -145,19 +144,24 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 		};
 	}
 
-	public Session currentSession() throws HibernateException {
+	public Session currentSession() throws StorageAccessException {
 		//Single threaded - do it the easy way
-		if (session == null) {
+		if (session == null) try {
 			session = sessions.openSession();
-		}
+		} catch (Exception e) {
+		    throw new StorageAccessException(e);
+        }
 		return session;
 	}
 
-	public void closeSession() throws HibernateException {
-		session.flush();
-		session.close();
-		session = null;
-		
+	public void closeSession() throws StorageAccessException {
+        try {
+    		session.flush();
+    		session.close();
+    		session = null;
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+        }
 	}
 
 	public void tearDown() throws HibernateException {
