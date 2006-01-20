@@ -37,7 +37,7 @@
 	if (mapSheet != null) {
 		%><p><%
 		startDETable(pageContext);
-		%><table border="0" width="460">
+		%><table border="0">
 		<tr><td class="deHeading" colspan="5">Localities</td></tr>
 		<tr><th>Locality</th><th>Backlog Status&nbsp;&nbsp;</th><th>FRED Status&nbsp;&nbsp;</th><th>Working Folder&nbsp;&nbsp;</th></tr><%
 		for (Iterator i = featureUtil.getFrNumbers(mapSheet).iterator(); i.hasNext();) {
@@ -66,9 +66,13 @@
 				} else {
 					%><td>not started&nbsp;&nbsp;</td><%
 				}
-				%><td><%=(auditStatus != null) ? auditStatus : ""%></td>
-				<td><%=(workingFolder != null) ? "<a href=\"folder_detail.jsp?ID=" + workingFolder.getFolderId() + "\">" + workingFolder.getName() + "</a>" : ""%></td>
-				</tr><%
+				if (status.equals(FREDConstants.BACKLOG_PROCESSING)) {
+					%><td><%=(auditStatus != null) ? auditStatus : ""%></td>
+					<td><%=(workingFolder != null) ? "<a href=\"folder_detail.jsp?ID=" + workingFolder.getFolderId() + "\">" + workingFolder.getName() + "</a>" : ""%></td><%
+				} else {
+					%><td></td><td></td><%
+				}
+				%></tr><%
 			} catch (Exception e) {}
 		}
 		%></table><%
