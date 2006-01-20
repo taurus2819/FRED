@@ -26,7 +26,7 @@
 					+ ((folder.isBacklogFolder()) ? "Backlog " : "")
 					+ "Folders: " + folder.getFolder().getName();
 		} catch (Exception e) {
-			return getTitle();
+			return "FRED :: The Fossil Record Electronic Database";
 		}
 	}
 	
