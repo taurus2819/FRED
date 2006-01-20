@@ -46,8 +46,6 @@
 				Feature feature = FeatureUtil.getFeature(frNumber);
 				String status = null;
 				Audit audit = feature.getAudit();
-				Folder workingFolder = audit.getFolder();
-				String auditStatus = audit.getStatus();
 				if (audit.getStatus().equals(FREDConstants.APPROVED) && audit.getCuratorComments() != null && audit.getCuratorComments().indexOf("backlog") > 0) {
 					status = FREDConstants.BACKLOG_COMPLETE;
 				} else {
@@ -67,6 +65,8 @@
 					%><td>not started&nbsp;&nbsp;</td><%
 				}
 				if (status.equals(FREDConstants.BACKLOG_PROCESSING)) {
+					Folder workingFolder = audit.getFolder();
+					String auditStatus = audit.getStatus();
 					%><td><%=(auditStatus != null) ? auditStatus : ""%></td>
 					<td><%=(workingFolder != null) ? "<a href=\"folder_detail.jsp?ID=" + workingFolder.getFolderId() + "\">" + workingFolder.getName() + "</a>" : ""%></td><%
 				} else {
