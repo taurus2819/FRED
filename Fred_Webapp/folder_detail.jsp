@@ -45,7 +45,7 @@
 	
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
-	if (folder.isAllowedCreateLocalities()) {
+	if (folder != null && folder.isAllowedCreateLocalities()) {
 		IconnedLink[] iLink = new IconnedLink[((folder.isBacklogFolder()) ? 6 : 5)];
 		iLink[0] = new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders");
 		iLink[1] = new IconnedLink(null, "images/new.gif", "New: ");
@@ -61,7 +61,7 @@
 		});
 	}	
 	
-	if (folder != null || folder.isAllowedReadLocalities()) {
+	if (folder != null && folder.isAllowedReadLocalities()) {
 		session.setAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT, "folder_detail.jsp?ID=" + folder.getFolder().getFolderId());
 		String errorMessage = null;
 		if (request.getParameter("ActionType") != null) { //do something
