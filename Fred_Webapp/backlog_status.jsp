@@ -172,20 +172,22 @@
 				if (bs.getStatus().equals(FREDConstants.BACKLOG_COMPLETE)) {
 					%><td width="200">
 					<table border="0" width="100%">
-					<tr><td width="100%" style="background-color: #00FF00"><img src="images/blank.gif" height="5" width="200" alt="" /></td></tr>
+					<tr><td width="100%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="204" alt="" /></td></tr>
 					</table>
 					</td>
 					<td>100%</td><%
 				} else {
 					int totalCount = bs.getProcessingCount().intValue() + bs.getCompletedCount().intValue();
 					int procPct = (bs.getProcessingCount().intValue() * 100) / totalCount;
+					if (procPct == 0)
+						procPct = 1;
 					int procWidth = 2 * procPct;
-					int comPct = (bs.getCompletedCount().intValue() * 100) / totalCount;
+					int comPct = 100 - procPct;
 					int comWidth = 2 * comPct;
 					%><td width="200">
 					<table border="0" width="100%">
-					<tr><td width="<%=comPct%>%" style="background-color: #00FF00"><img src="images/blank.gif" height="5" width="<%=comWidth%>" alt="" /></td>
-					<td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="5" width="<%=procWidth%>" alt="" /></td></tr>
+					<tr><td width="<%=comPct%>%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="<%=comWidth%>" alt="" /></td>
+					<td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth%>" alt="" /></td></tr>
 					</table>
 					</td>
 					<td><%=comPct%>%</td><%					
