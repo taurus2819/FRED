@@ -25,8 +25,8 @@
 			return "FRED :: " + ((User)getUser(request.getSession())).getFullName() + "'s "
 					+ ((folder.isBacklogFolder()) ? "Backlog " : "")
 					+ "Folders: " + folder.getFolder().getName();
-		} catch (StorageAccessException e) {
-			return "FRED";
+		} catch (Exception e) {
+			return getTitle();
 		}
 	}
 	
