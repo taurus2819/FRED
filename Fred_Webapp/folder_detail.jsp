@@ -45,6 +45,7 @@
 	
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
+	
 	if (folder != null && folder.isAllowedCreateLocalities()) {
 		IconnedLink[] iLink = new IconnedLink[((folder.isBacklogFolder()) ? 6 : 5)];
 		iLink[0] = new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders");
@@ -60,6 +61,8 @@
 			new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")
 		});
 	}	
+	
+	drawTop(out, et, request, response);
 	
 	if (folder != null && folder.isAllowedReadLocalities()) {
 		session.setAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT, "folder_detail.jsp?ID=" + folder.getFolder().getFolderId());
@@ -120,8 +123,6 @@ alert("<%=e.getMessage()%>");
 				errorMessage = "An Error has occured: " + e.getMessage();
 			}
 		}
-	
-		drawTop(out, et, request, response);
 	
 		//print error message (if any) from folder_actions
 		if (errorMessage != null) {
@@ -293,13 +294,13 @@ function showHide(toShow, toHide) {
 		%></form>
 </td></tr></table>
 <%
-		drawBottom(out, et);
+		
 
 	} else { //no folder found
-		drawEndNavigation(out);
-		out.println("<p><span class='heading'>No folder found</span></p>");
-		out.println("<p>An incorrect parameter has been recieved by this page.  Please press the Back button and try again</p>");
+		%><p><span class="heading">You do not have sufficient rights to view this folder</span></p><%
 	}
+	
+	drawBottom(out, et);
 	
 	//Close the session
 	folderUtil.closeSession();
