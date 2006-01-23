@@ -45,7 +45,6 @@ public class FolderUtil extends ModelUtil {
 		Vector<UserFolder> folders = new Vector<UserFolder>();
 		folders.addAll(folderDAO.getOwnedFolders(Integer.parseInt(user.getId()), typeDAO.getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
 		folders.addAll(folderDAO.getAccessibleFolders(Integer.parseInt(user.getId()), typeDAO.getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
-		
 		Collections.sort(folders);
 		return folders;
 	}
@@ -57,7 +56,16 @@ public class FolderUtil extends ModelUtil {
 	public List getAdminFolders(UserAccount user) throws StorageAccessException {
 		List folders = folderDAO.getAccessibleFolders(Integer.parseInt(user.getId()), typeDAO.getFolderType(Folder.FOLDER_TYPE_ADMIN));
 		Collections.sort(folders);
-		
+		return folders;
+	}
+
+	/**
+	 * Returns a list of <code>UserFolder</code>s representing
+	 * backlog admin folders to which the given user has access
+	 */
+	public List getBacklogAdminFolders(UserAccount user) throws StorageAccessException {
+		List folders = folderDAO.getAccessibleFolders(Integer.parseInt(user.getId()), typeDAO.getFolderType(Folder.FOLDER_TYPE_BACKLOG_ADMIN));
+		Collections.sort(folders);
 		return folders;
 	}
 	
@@ -70,7 +78,6 @@ public class FolderUtil extends ModelUtil {
 		Vector<UserFolder> folders = new Vector<UserFolder>();
 		folders.addAll(folderDAO.getOwnedFolders(Integer.parseInt(user.getId()), typeDAO.getFolderType(Folder.FOLDER_TYPE_BACKLOG)));
 		folders.addAll(folderDAO.getAccessibleFolders(Integer.parseInt(user.getId()), typeDAO.getFolderType(Folder.FOLDER_TYPE_BACKLOG)));
-		
 		Collections.sort(folders);
 		return folders;
 	}	
@@ -80,7 +87,6 @@ public class FolderUtil extends ModelUtil {
 	    folder.setName(name);
 	    folder.setOwnerId(new Integer(user.getId()));
 	    folder.setFolderType(typeDAO.getFolderType(Folder.FOLDER_TYPE_PERSONAL));
-	    
 	    folderDAO.save(folder);
 	    return folder;
 	}
@@ -90,7 +96,6 @@ public class FolderUtil extends ModelUtil {
 	    folder.setName(name);
 	    folder.setOwnerId(new Integer(user.getId()));
 	    folder.setFolderType(typeDAO.getFolderType(Folder.FOLDER_TYPE_BACKLOG));
-	    
 	    folderDAO.save(folder);
 	    return folder;
 	}

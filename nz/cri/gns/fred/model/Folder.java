@@ -17,6 +17,7 @@ public interface Folder extends Serializable, Comparable<Folder> {
 	public static final int FOLDER_APPROVE_RIGHT = 64;
 	
 	public static final String FOLDER_TYPE_ADMIN = "Admin";
+	public static final String FOLDER_TYPE_BACKLOG_ADMIN = "Backlog Admin";
 	public static final String FOLDER_TYPE_PERSONAL = "Personal";
 	public static final String FOLDER_TYPE_BACKLOG = "Backlog";
 
