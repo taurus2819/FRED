@@ -409,53 +409,54 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	public void mergeFeatures(Feature mergeToFeature, String[] mergeFeatIDs, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, NumberFormatException, IntrospectionException {
-		if (!folder.isAllowedEditLocalities() || !isBacklogFeature(mergeToFeature))
-			throw new InsufficientPrivelegesException();
 		for (int i = 0; i < mergeFeatIDs.length; i++) {
-			if (!mergeFeatIDs.equals(String.valueOf(mergeToFeature.getFeatureId())))
-				mergeFeature(mergeToFeature, mergeFeatIDs[i], folder, user);
+			mergeFeature(mergeToFeature, mergeFeatIDs[i], folder, user);
 		}
 	}
 		
 		
 	private void mergeFeature(Feature mergeToFeature, String mergeFromFeatID, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
+		if (!folder.isAllowedEditLocalities())
+			throw new InsufficientPrivelegesException();
 		Feature mergeFromFeature = getFeature(Integer.parseInt(mergeFromFeatID));
-		if (mergeToFeature.getFeatureType().equals(FREDConstants.OUTCROP) || mergeFromFeature.getFeatureType().equals(FREDConstants.OUTCROP))
-			throw new IllegalStateException("Cannot merge outcrop localities");
-		
-		FrNumber mergeToFRNumber = FeatureUtil.getFrNumber(mergeToFeature);
-		//put in array as feature.getSamples() changes as you change sample's feature
-		Object[] samples = mergeFromFeature.getSamples().toArray();
-		
-		//move all samples from merge feature to parent feature
-		for (int i = 0; i < samples.length; i++) {
-			Sample sample = (Sample) samples[i];
-			//check audits - if same as feature then create new onw
-			if (sample.getAudit().equals(mergeFromFeature.getAudit())) {
-				Audit newAudit = new AuditUtil(factory).cloneAudit(sample.getAudit());
-				featureDAO.save(newAudit);
-				sample.setAudit(newAudit);
+		if (!mergeFromFeatID.equals(String.valueOf(mergeToFeature.getFeatureId()))) {
+			if (mergeToFeature.getFeatureType().equals(FREDConstants.OUTCROP) || mergeFromFeature.getFeatureType().equals(FREDConstants.OUTCROP))
+				throw new IllegalStateException("Cannot merge outcrop localities");
+			
+			FrNumber mergeToFRNumber = FeatureUtil.getFrNumber(mergeToFeature);
+			//put in array as feature.getSamples() changes as you change sample's feature
+			Object[] samples = mergeFromFeature.getSamples().toArray();
+			
+			//move all samples from merge feature to parent feature
+			for (int i = 0; i < samples.length; i++) {
+				Sample sample = (Sample) samples[i];
+				//check audits - if same as feature then create new onw
+				if (sample.getAudit().equals(mergeFromFeature.getAudit())) {
+					Audit newAudit = new AuditUtil(factory).cloneAudit(sample.getAudit());
+					featureDAO.save(newAudit);
+					sample.setAudit(newAudit);
+					sampleDAO.update(sample);
+				}
+	
+				//add comments
+				AuditEdit edit = featureDAO.createNewAuditEdit();
+				edit.setAudit(sample.getAudit());
+				edit.setEditedById(new Integer(user.getId()));
+				edit.setEditedDate(new Date());
+				edit.setComments("Sample merged into " + getFeatureName(mergeToFeature) + " from " + getFeatureName(mergeFromFeature));
+				featureDAO.save(edit);
+	
+				//set sample FRNumber if currently null
+				if (sample.getFrNumber() == null)
+					sample.setFrNumber(mergeToFRNumber);
+				sample.setFeature(mergeToFeature);			
+				
 				sampleDAO.update(sample);
 			}
-
-			//add comments
-			AuditEdit edit = featureDAO.createNewAuditEdit();
-			edit.setAudit(sample.getAudit());
-			edit.setEditedById(new Integer(user.getId()));
-			edit.setEditedDate(new Date());
-			edit.setComments("Sample merged into " + getFeatureName(mergeToFeature) + " from " + getFeatureName(mergeFromFeature));
-			featureDAO.save(edit);
-
-			//set sample FRNumber if currently null
-			if (sample.getFrNumber() == null)
-				sample.setFrNumber(mergeToFRNumber);
-			sample.setFeature(mergeToFeature);			
 			
-			sampleDAO.update(sample);
+			//delete merge feature
+			deleteFeature(mergeFromFeature, user);
 		}
-		
-		//delete merge feature
-		deleteFeature(mergeFromFeature, user);
 	}	
 	
 	public Feature getFeature(int featureId) throws StorageAccessException {
