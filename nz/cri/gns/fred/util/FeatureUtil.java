@@ -328,7 +328,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
 		int masterfile = -1;
 		try {
-			masterfile = (FeatureUtil.isBacklogFeature(feature) ? FREDUtil.MASTERFILE_BACKLOG : FREDUtil.getMasterfile(feature));
+			masterfile = FREDUtil.getMasterfile(feature));
 		} catch (Exception e) {
 			throw new StorageAccessException(e);
 		}

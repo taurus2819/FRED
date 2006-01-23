@@ -144,7 +144,17 @@ public class FREDUtil {
 	public static final int MASTERFILE_OFFSHORE = 11;
 	
 	//This is a special backlog masterfile folder
-	public static final int MASTERFILE_BACKLOG = 12;
+	public static final int MASTERFILE_NTH_NI_BACKLOG = 12;
+	public static final int MASTERFILE_CEN_NI_BACKLOG = 12;
+	public static final int MASTERFILE_STH_NI_BACKLOG = 12;
+	public static final int MASTERFILE_NELSON_BACKLOG = 12;
+	public static final int MASTERFILE_CEN_SI_BACKLOG = 12;
+	public static final int MASTERFILE_STH_SI_BACKLOG = 12;
+	public static final int MASTERFILE_NZ_ISLANDS_BACKLOG = 7;
+	public static final int MASTERFILE_ANTARCTICA_BACKLOG = 8;
+	public static final int MASTERFILE_PACIFIC_ISLANDS_BACKLOG = 9;
+	public static final int MASTERFILE_NEW_CALEDONIA_BACKLOG = 10;
+	public static final int MASTERFILE_OFFSHORE_BACKLOG = 11;
 	
 	private static final int SECURITY_CLASS_FRED_EDIT = 15;
 	
@@ -155,30 +165,33 @@ public class FREDUtil {
 	private static String instance = null;
 	
 	public static int getMasterfile(Feature feature) throws SQLException, NamingException {
+		boolean isBacklog = FeatureUtil.isBacklogFeature(feature);
 		switch (feature.getRegistrationArea().getRegAreaId().intValue()) {
 			case REG_MAINLAND_NZ :
 				NorthingEasting nzmgCoord = (NorthingEasting)getSiteCoordinate(new NZMG(), feature.getSiteId().intValue());
 				double easting = nzmgCoord.getEastWest();
 				double northing = nzmgCoord.getNorthSouth();
 				if (easting <= 2810000 && northing >= 6250000)
-					return MASTERFILE_NTH_NI;
+					return (isBacklog) ? MASTERFILE_NTH_NI_BACKLOG : MASTERFILE_NTH_NI;
 				if (northing >= 6160000 || (easting >= 2730000 && northing >= 6070000))
-					return MASTERFILE_CEN_NI;
+					return (isBacklog) ? MASTERFILE_CEN_NI_BACKLOG : MASTERFILE_CEN_NI;
 				if (easting >= 2650000)
-					return 	MASTERFILE_STH_NI;
+					return 	(isBacklog) ? MASTERFILE_STH_NI_BACKLOG : MASTERFILE_STH_NI;
 				if (northing >= 5920000)
-					return MASTERFILE_NELSON;
+					return (isBacklog) ? MASTERFILE_NELSON_BACKLOG : MASTERFILE_NELSON;
 				if (easting >= 2210000 && northing >= 5620000)
-					return MASTERFILE_CEN_SI;
-				return MASTERFILE_STH_SI;
+					return (isBacklog) ? MASTERFILE_CEN_SI_BACKLOG : MASTERFILE_CEN_SI;
+				if ((northing >= 5290000))
+					return (isBacklog) ? MASTERFILE_STH_SI_BACKLOG : MASTERFILE_STH_SI;
+				return (isBacklog) ? MASTERFILE_OFFSHORE_BACKLOG : MASTERFILE_OFFSHORE;
 			case REG_CHATHAM_ISLANDS :
 			case REG_CAMPBELL_ISLAND :
 			case REG_AUCKLAND_ISLANDS :
 			case REG_ANTIPODES_ISLANDS :
 			case REG_THE_SNARES :
-				return MASTERFILE_NZ_ISLANDS;
+				return (isBacklog) ? MASTERFILE_NZ_ISLANDS_BACKLOG : MASTERFILE_NZ_ISLANDS;
 			case REG_ROSS_SEA :
-				return MASTERFILE_ANTARCTICA;
+				return (isBacklog) ? MASTERFILE_ANTARCTICA_BACKLOG : MASTERFILE_ANTARCTICA;
 			case REG_TOKELAU :
 			case REG_FIJI :
 			case REG_SAMOA :
@@ -190,13 +203,13 @@ public class FREDUtil {
 			case REG_KERMADEC_ISLANDS :
 			case REG_BOUNTY_ISLANDS :
 			case REG_MACQUARIE_ISLAND :
-				return MASTERFILE_PACIFIC_ISLANDS;
+				return (isBacklog) ? MASTERFILE_PACIFIC_ISLANDS_BACKLOG : MASTERFILE_PACIFIC_ISLANDS;
 			case REG_NEW_CALEDONIA :
-				return MASTERFILE_NEW_CALEDONIA;
+				return (isBacklog) ? MASTERFILE_NEW_CALEDONIA_BACKLOG : MASTERFILE_NEW_CALEDONIA;
 			case REG_OTHER :
-				return MASTERFILE_OFFSHORE;
+				return (isBacklog) ? MASTERFILE_OFFSHORE_BACKLOG : MASTERFILE_OFFSHORE;
 		}
-		return MASTERFILE_OFFSHORE;
+		return (isBacklog) ? MASTERFILE_OFFSHORE_BACKLOG : MASTERFILE_OFFSHORE;
 	}
 	
 	/**
