@@ -35,7 +35,7 @@
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to SentTo -->
-    <!--set
+    <set
         name="sentTos"
         lazy="true"
         inverse="true"
@@ -47,7 +47,7 @@
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.SentTo"
         />
-    </set-->
+    </set>
 
 </class>
 </hibernate-mapping>

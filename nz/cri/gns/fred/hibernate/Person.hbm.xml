@@ -88,7 +88,8 @@
             class="nz.cri.gns.fred.hibernate.Feature"
         />
     </set>
-    <!-- bi-directional one-to-many association to SentTo 
+    
+    <!-- bi-directional one-to-many association to SentTo -->
     <set
         name="sentTos"
         lazy="true"
@@ -101,7 +102,8 @@
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.SentTo"
         />
-    </set-->
+    </set>
+    
     <!-- bi-directional many-to-many association to Sample via Collector -->
     <set
         name="collectedSamples"

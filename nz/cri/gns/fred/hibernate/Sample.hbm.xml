@@ -232,56 +232,19 @@
         />
     </set>
     <!-- bi-directional one-to-many association to SentTo -->
- 	<set
+    <set
         name="sentTos"
-		table="SENT_TO"
         lazy="true"
-        inverse="false"
-		cascade="all"
-    >   
+        inverse="true"
+		cascade="none"
+    >
         <key>
             <column name="SAMPLE_ID" />
         </key>
-		<composite-element class="nz.cri.gns.fred.hibernate.SentTo">
-	    <property
-    	    name="sentDate"
-        	type="java.sql.Date"
-        	column="SENT_DATE"
-    	    length="7"
-	    />
-	    <property
-    	    name="dateRounding"
-        	type="java.lang.String"
-        	column="DATE_ROUNDING"
-    	    length="5"
-	    />
-	    <property
-    	    name="labId"
-        	type="int"
-        	column="LAB_ID"
-    	    length="4"
-	    />
-	    <property
-    	    name="comments"
-        	type="java.lang.String"
-	        column="COMMENTS"
-    	    length="255"
-   		/>
-        <many-to-one         
-			name="person"
-		    class="nz.cri.gns.fred.hibernate.Person"
-		>
-    		<column name="PERSON_ID" />
-		</many-to-one>
-        <many-to-one         
-			name="fossilGroup"
-		    class="nz.cri.gns.fred.hibernate.FossilGroup"
-			not-null="true"
-		>
-    		<column name="FOSSIL_GROUP_ID" />
-		</many-to-one>
-      </composite-element>
-	</set>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.SentTo"
+        />
+    </set>
 
     <!-- bi-directional many-to-many association to Person via Collector -->
     <set

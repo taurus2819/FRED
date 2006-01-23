@@ -11,6 +11,9 @@ public class SentTo implements nz.cri.gns.fred.model.SentTo, Serializable {
 
     private static final long serialVersionUID = 20050818L;
 
+	/** identifier field */
+    private Integer sentToId;
+    
 	/** nullable persistent field */
     private Date sentDate;
 
@@ -24,17 +27,21 @@ public class SentTo implements nz.cri.gns.fred.model.SentTo, Serializable {
     private String comments;
 
     /** persistent field */
+    private nz.cri.gns.fred.model.Sample sample;
+    
+    /** nullable persistent field */
     private nz.cri.gns.fred.model.FossilGroup fossilGroup;
 
     /** nullable persistent field */
     private nz.cri.gns.fred.model.Person person;
 
     /** full constructor */
-    public SentTo(Date sentDate, String dateRounding, Integer labId, String comments, nz.cri.gns.fred.hibernate.FossilGroup fossilGroup, nz.cri.gns.fred.model.Person person) {
+    public SentTo(Date sentDate, String dateRounding, Integer labId, String comments, nz.cri.gns.fred.model.Sample sample, nz.cri.gns.fred.model.FossilGroup fossilGroup, nz.cri.gns.fred.model.Person person) {
         this.sentDate = sentDate;
         this.dateRounding = dateRounding;
         this.labId = labId;
         this.comments = comments;
+        this.sample = sample;
         this.fossilGroup = fossilGroup;
         this.person = person;
     }
@@ -44,10 +51,18 @@ public class SentTo implements nz.cri.gns.fred.model.SentTo, Serializable {
     }
 
     /** minimal constructor */
-    public SentTo(nz.cri.gns.fred.model.FossilGroup fossilGroup) {
-        this.fossilGroup = fossilGroup;
+    public SentTo(nz.cri.gns.fred.model.Sample sample) {
+    	this.sample = sample;
     }
 
+    public Integer getSentToId() {
+        return this.sentToId;
+    }
+
+    public void setSentToId(Integer sentToId) {
+        this.sentToId = sentToId;
+    }
+    
     public Date getSentDate() {
         return this.sentDate;
     }
@@ -80,6 +95,14 @@ public class SentTo implements nz.cri.gns.fred.model.SentTo, Serializable {
         this.comments = comments;
     }
 
+    public nz.cri.gns.fred.model.Sample getSample() {
+        return this.sample;
+    }
+
+    public void setSample(nz.cri.gns.fred.model.Sample sample) {
+        this.sample = sample;
+    }
+    
     public nz.cri.gns.fred.model.FossilGroup getFossilGroup() {
         return this.fossilGroup;
     }

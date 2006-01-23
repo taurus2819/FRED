@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.SentTo" 
+    table="SENT_TO"
+>
+
+    <id
+        name="sentToId"
+        type="int"
+        column="SENT_TO_ID"
+    >
+        <generator class="sequence">
+                <param name="sequence">SENT_TO_SEQ</param>
+        </generator>
+    </id>
+
+	    <property
+    	    name="sentDate"
+        	type="java.sql.Date"
+        	column="SENT_DATE"
+    	    length="7"
+	    />
+	    <property
+    	    name="dateRounding"
+        	type="java.lang.String"
+        	column="DATE_ROUNDING"
+    	    length="5"
+	    />
+	    <property
+    	    name="labId"
+        	type="int"
+        	column="LAB_ID"
+    	    length="4"
+	    />
+	    <property
+    	    name="comments"
+        	type="java.lang.String"
+	        column="COMMENTS"
+    	    length="255"
+   		/>
+   		
+    <!-- Associations -->
+  
+   <!-- bi-directional many-to-one association to Person -->
+        <many-to-one         
+			name="person"
+		    class="nz.cri.gns.fred.hibernate.Person"
+		>
+    		<column name="PERSON_ID" />
+		</many-to-one>
+		
+		<!-- bi-directional many-to-one association to Fossil_Group -->
+        <many-to-one         
+			name="fossilGroup"
+		    class="nz.cri.gns.fred.hibernate.FossilGroup"
+		>
+    		<column name="FOSSIL_GROUP_ID" />
+		</many-to-one>
+
+    <!-- bi-directional many-to-one association to Sample -->
+    <many-to-one
+        name="sample"
+		class="nz.cri.gns.fred.hibernate.Sample"
+        not-null="true"
+    >
+        <column name="SAMPLE_ID" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

@@ -7,6 +7,10 @@ import java.util.Date;
  */
 public interface SentTo extends PersonRelationship {
 
+    public abstract Integer getSentToId();
+
+    public abstract void setSentToId(Integer sentToId);
+    
 	public abstract Date getSentDate();
 
 	public abstract void setSentDate(Date sentDate);
@@ -23,6 +27,10 @@ public interface SentTo extends PersonRelationship {
 
 	public abstract void setComments(String comments);
 
+    public abstract nz.cri.gns.fred.model.Sample getSample();
+
+    public abstract void setSample(nz.cri.gns.fred.model.Sample sample);
+    
 	public abstract nz.cri.gns.fred.model.FossilGroup getFossilGroup();
 
 	public abstract void setFossilGroup(
