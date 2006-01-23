@@ -93,10 +93,6 @@
 					else if (actionType.equals("Revoke") && folder.isAllowedSubmitLocalities()) {
 						featureUtil.revokeFeature(feature, folder, user);
 					}
-					//Alter locality type
-					else if (actionType.equals("AlterType") && folder.isAllowedEditLocalities()) {
-						featureUtil.alterFeatureType(feature, request.getParameter("NewFeatType"), folder, user);
-					}
 				} else if (request.getParameter("FeatIDs") != null) {
 					if (actionType.equals("PrintFeatures")) {
 						String[] featIDs = request.getParameterValues("FeatIDs");
@@ -109,17 +105,16 @@
 						response.sendRedirect("frf/frf.pdf?" + queryStr.toString());
 						return;
 					} else if (actionType.equals("MergeFeatures")) {
-						System.out.println("Merging");
 						Feature mergeToFeature = featureUtil.getFeature(Integer.parseInt(request.getParameter("MergeToFeatID")));
-						System.out.println("MergeToFeature: " + FeatureUtil.getFeatureName(mergeToFeature));
 						featureUtil.mergeFeatures(mergeToFeature, request.getParameterValues("FeatIDs"), folder, user);
-						System.out.println("Done");
+					} else if (actionType.equals("AlterType")) {
+						featureUtil.alterFeatureTypes(request.getParameterValues("FeatIDs"), request.getParameter("NewFeatType"), folder, user);
 					}
 				}
 			} catch (MandatoryFieldsMissingException e) {
 				%><script><!--
-alert("<%=e.getMessage()%>");
-//--></script><%
+				alert("<%=e.getMessage()%>");
+				//--></script><%
 			} catch (Exception e) {
 				System.out.println("*********** FRED folder_detail.jsp error **********");
 				e.printStackTrace();
@@ -132,44 +127,38 @@ alert("<%=e.getMessage()%>");
 			out.println("<p><span class='heading' style='color: #FF0000'>" + errorMessage + "</span></p>");
 		}
 		%><script><!--
-function showHide(toShow, toHide) {
-	document.getElementById(toShow).style.display = 'block';
-	document.getElementById(toHide).style.display = 'none';
-}
-//--></script>
-<center><p>&nbsp;<p/><div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none">
-<%
+		function showHide(toShow, toHide) {
+			document.getElementById(toShow).style.display = 'block';
+			document.getElementById(toHide).style.display = 'none';
+		}
+		//--></script>
+		<center><p>&nbsp;<p/><div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-al`ign: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none"><%
 		startDETable(pageContext);
-%>
-<table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
-<tr><td colspan="3" class="deHeading">Folder Instructions</td></tr><tr><td style="text-align: left">
-<ul>
-<li>Listed below are the localities you have added to this folder.
-<li>Working localities are named with their field number or drillhole name until they are allocated a Fossil Record Number.
-<li>Click on the locality to add/edit locality records, or use the options to work with the locality itself:
-<ul>
-<li><img src="images/edit.gif" border="0"> to edit the locality
-<li><img src="images/copy.gif" border="0"> to make a copy of the locality (front of form data only)
-<li><img src="images/delete.gif" border="0"> to delete the locality
-<li><img src="images/submit.gif" border="0"> to submit the locality for entry to the masterfile
-</ul>
-</ul>
-</td></tr>
-<tr><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr></table>
-<%
+		%><table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
+		<tr><td colspan="3" class="deHeading">Folder Instructions</td></tr><tr><td style="text-align: left">
+		<ul>
+		<li>Listed below are the localities you have added to this folder.
+		<li>Working localities are named with their field number or drillhole name until they are allocated a Fossil Record Number.
+		<li>Click on the locality to add/edit locality records, or use the options to work with the locality itself:
+		<ul>
+		<li><img src="images/edit.gif" border="0"> to edit the locality
+		<li><img src="images/copy.gif" border="0"> to make a copy of the locality (front of form data only)
+		<li><img src="images/delete.gif" border="0"> to delete the locality
+		<li><img src="images/submit.gif" border="0"> to submit the locality for entry to the masterfile
+		</ul>
+		</ul>
+		</td></tr>
+		<tr><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr></table><%
 		endDETable(pageContext);
 		%></div>
-<p>
-
-<%
+		<p><%
 		startDETable(pageContext);
-		%><table border="0" width="550"><tr><td colspan="12" class="deHeading">Localities</td></tr>
-<tr>
-<th colspan="3">Name&nbsp;&nbsp;</th><th colspan="2">Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Options</th></tr>
-<tr><td colspan="12"><img src="images/line.gif" height="3" width="550" /></td></tr>
+		%><table border="0" width="550"><tr><td colspan="11" class="deHeading">Localities</td></tr>
+		<tr>
+		<th colspan="3">Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Options</th></tr>
+		<tr><td colspan="11"><img src="images/line.gif" height="3" width="550" /></td></tr>
 
-<form name="FoldForm" method="get" action="folder_detail.jsp">
-<%
+		<form name="FoldForm" method="post" action="folder_detail.jsp"><%
 		//Display the features
 		Feature[] features = featureUtil.getFeaturesInFolder(folder);
 		for (int i = 0; i < features.length; i++) {
@@ -178,37 +167,22 @@ function showHide(toShow, toHide) {
 			String status = audit.getStatus();
 			String name = FeatureUtil.getFeatureName(feature);
 			String featName = feature.getFeatureName();
-			%><tr><%
-			
-			
-			//starting work on checkboxes - can put back once PDF reports are OK
-			%><td><input type="checkbox" name="FeatIDs" value="<%=feature.getFeatureId()%>" /></td><%
-			
-			
-			%><td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
-			
+			%><tr>
+			<td><input type="checkbox" name="FeatIDs" value="<%=feature.getFeatureId()%>" /></td>	
+			<td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
 			<td class="heading" style="text-align: left"><a href="folder_feature_detail.jsp?FoldID=<%=folder.getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><%=name%></a>&nbsp;&nbsp;<%
 			if (featName != null && !featName.equals(name)) {
 				%><br />(<%=featName%>)&nbsp;&nbsp;<%
 			}
-			%></td><%
-
-			if (folder.isBacklogFolder()) {
-				%><td><a href="javascript:prmpt=prompt('Please enter the new type. Choose Outcrop, Drillhole or Vertical Section.\nPlease be aware that some information to be lost.', '');if(prmpt!=null && (prmpt == 'Outcrop' || prmpt == 'Drillhole' || prmpt == 'Vertical Section')){document.FoldForm.NewFeatType.value=prmpt;document.FoldForm.ActionType.value='AlterType';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/edit.gif" border="0" height="20" width="20" alt="Alter Locality Type" /></a><img src="images/blank.gif" height="20" width="2" /></td><%
-			} else {
-				%><td></td><%	
-			}	
-			
-			%><td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td><%
-
-			%><td style="color: #FF0000; text-align: left"><%
+			%></td>
+			<td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
+			<td style="color: #FF0000; text-align: left"><%
 			if (!status.equals(FREDConstants.APPROVED)) {
 				%><%=status%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=(audit.getCreatedDate() == null) ? "" : FREDUtil.formatDateForOutput(audit.getCreatedDate())%></td><%
 			} else {
 				%></td><td></td><%
 			}
-			
 			%><td><%
 			if (featureUtil.isAllowedEditFeature(user, feature, folder)) {
 				%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
@@ -230,7 +204,7 @@ function showHide(toShow, toHide) {
 				%><a href="javascript:if (confirm('Are you sure you want to revoke this locality') == true) {document.FoldForm.ActionType.value='Revoke';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 			}
 			%></td></tr>
-<tr><td colspan="12"><img src="images/line.gif" height="3" width="550" /></td></tr><%
+			<tr><td colspan="11"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 		}
 		%></table><%
 		endDETable(pageContext);
@@ -239,14 +213,15 @@ function showHide(toShow, toHide) {
 		
 		startDETable(pageContext);
 		%><table border="0" width="550">
-		<tr><td colspan="12" class="deHeading">Folder Options</td></tr>
+		<tr><td colspan="11" class="deHeading">Selected Locality Options</td></tr>
 		<tr><td>&nbsp;</td></tr>
-		<tr><%
-		//<td class="heading">
+		<%
+		//<tr><td class="heading" style="text-align: left">
 		//<a href="javascript:document.FoldForm.ActionType.value='PrintFeatures';document.FoldForm.target='_blank';document.FoldForm.submit();"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print Selected" />&nbsp;Print Selected</a>
-		//</td>
-		%><td class="heading">
-		<a href="javascript:document.FoldForm.ActionType.value='MergeFeatures';document.FoldForm.submit();"><img src="images/drill.gif" border="0" height="20" width="20" alt="Merge Selected" />&nbsp;Merge Selected To</a>&nbsp;
+		//</td></tr>
+		%>
+		<tr><td class="heading" style="text-align: left">
+		<a href="javascript:document.FoldForm.ActionType.value='MergeFeatures';document.FoldForm.submit();">Merge To:</a>&nbsp;
 		<select name="MergeToFeatID"><option value="-">-- Choose --</option><%
 		Feature[] mergeToFeatures = featureUtil.getFeaturesInFolder(folder);
 		for (int i = 0; i < features.length; i++) {
@@ -254,21 +229,26 @@ function showHide(toShow, toHide) {
 				%><option value="<%=mergeToFeatures[i].getFeatureId()%>"><%=FeatureUtil.getFeatureName(mergeToFeatures[i])%></option><%		
 			}
 		}
-		%></select></td>
-		</tr>
+		%></select></td></tr>
+		<tr><td class="heading" style="text-align: left">
+		<a href="javascript:document.FoldForm.ActionType.value='AlterType';document.FoldForm.submit();">Alter Locality Type To:</a>&nbsp;
+		<select name="NewFeatType"><option value="-">-- Choose --</option>
+			<option value="Outcrop">Outcrop</option>
+			<option value="Drillhole">Drillhole</option>
+			<option value="Vertical Section">Vertical Section</option>
+		</select></td></tr>		
 		</table><%		
 		
 		endDETable(pageContext);
 
 		%></p>
-<input type="hidden" name="ActionType" value="" />
-<input type="hidden" name="ID" value="<%=folder.getFolder().getFolderId()%>" />
-<input type="hidden" name="FeatID" value="" />
-<input type="hidden" name="NewFoldID" value="" />
-<input type="hidden" name="NewFeatName" value="" />
-<input type="hidden" name="NewFeatType" value="" />
-</table></p>
-<%
+		<input type="hidden" name="ActionType" value="" />
+		<input type="hidden" name="ID" value="<%=folder.getFolder().getFolderId()%>" />
+		<input type="hidden" name="FeatID" value="" />
+		<input type="hidden" name="NewFoldID" value="" />
+		<input type="hidden" name="NewFeatName" value="" />
+		</table></p><%
+		
 /*		//folder options
 		out.println("<table border='0' cellspacing='0' cellpadding = '2' width='600'><tr><td height='5'></td></tr><tr class='shadegreytr'><td>");
 		//Copy
@@ -295,9 +275,7 @@ function showHide(toShow, toHide) {
 */
 
 		%></form>
-</td></tr></table>
-<%
-		
+		</td></tr></table><%
 
 	} else { //no folder found
 		%><p><span class="heading">You do not have sufficient rights to view this folder</span></p><%

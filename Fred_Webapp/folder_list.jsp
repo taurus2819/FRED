@@ -175,14 +175,29 @@ alert("<%=error%>");<%
 	}
 
 	List adminFolders = folderUtil.getAdminFolders(user);
+	List backlogAdminFolders = folderUtil.getAdminBacklogFolders(user);
 
 	//List Admin folders
-	if (adminFolders.size() > 0) {
+	if (adminFolders.size() + backlogAdminFolders.size() > 0) {
 		%><p><%
 		startDETable(pageContext);
 		%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Masterfile Folders</td></tr>
 <tr><th>Masterfile Folder&nbsp;&nbsp;</th><th></th><th>Options</th></tr>
 <tr><td colspan="3"><img src="images/blank.gif" height="5" width="1" /></td></tr><%
+		for (Iterator i = backlogAdminFolders.iterator(); i.hasNext(); ) {
+			UserFolder folder = (UserFolder) i.next();
+			%><tr><td style="text-align: left"><a href="backlog_folder_detail.jsp?ID=<%=folder.getFolder().getFolderId()%>" class="heading"><%=folder.getFolder().getName()%></a>&nbsp;&nbsp;</td>
+		<td style="text-align: left; font-size: 10pt; font-weight: bold; color: #FF0000"><%
+			if (folderUtil.getMasterfileFolderFeatureCount(folder.getFolder()) > 0)
+				out.print("new data");
+			out.print("&nbsp;</td><td style=\"text-align: left;\">");
+			if (folder.isAllowedAdmin()) {
+				%><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a>
+		<img src="images/blank.gif" width="1" height="20" /><%
+			}
+			%></td></tr>
+		<%
+		}
 		for (Iterator i = adminFolders.iterator(); i.hasNext(); ) {
 			UserFolder folder = (UserFolder) i.next();
 			%><tr><td style="text-align: left"><a href="admin_folder_detail.jsp?ID=<%=folder.getFolder().getFolderId()%>" class="heading"><%=folder.getFolder().getName()%></a>&nbsp;&nbsp;</td>
