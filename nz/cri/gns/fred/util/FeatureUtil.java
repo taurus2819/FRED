@@ -353,53 +353,61 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		featureDAO.update(feature);		
 	}
 
+	public void alterFeatureTypes(String[] featIDs, String newFeatureType, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
+		for (int i = 0; i < featIDs.length; i++) {
+			alterFeatureType(getFeature(Integer.parseInt(featIDs[i])), newFeatureType, folder, user);
+		}
+	}
+	
 	public void alterFeatureType(Feature feature, String newFeatureType, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
-		if (!folder.isAllowedEditLocalities() || !isBacklogFeature(feature))
+		if (!folder.isAllowedEditLocalities())
 			throw new InsufficientPrivelegesException();
 		String oldFeatureType = feature.getFeatureType();
-		Set<Sample> samples = feature.getSamples();
-		if (newFeatureType.equals(FREDConstants.OUTCROP)) {
-			if (!samples.isEmpty() && samples.size() > 1)
-				throw new IllegalStateException("Cannot change to Outcrop as locality has more than one sample"); 
-			feature.setDatumElevation(null);
-			feature.setDatumType(null);
-			feature.setDrillholeLicenceName(null);
-			feature.setFinishDate(null);
-			feature.setFinishDateRounding(null);
-			feature.setFinishDepth(null);
-			feature.setPerson(null);
-			feature.setStartDate(null);
-			feature.setStartDateRounding(null);
-			feature.setStartDepth(null);
-			for (Sample sample : samples) {
-				sample.setAudit(feature.getAudit());
-				sample.setBottomDepth(null);
-				sample.setTopDepth(null);
-				sample.setDrillType(null);
-				sampleDAO.update(sample);
+		if (!oldFeatureType.equals(newFeatureType)) {
+			Set<Sample> samples = feature.getSamples();
+			if (newFeatureType.equals(FREDConstants.OUTCROP)) {
+				if (!samples.isEmpty() && samples.size() > 1)
+					throw new IllegalStateException("Cannot change to Outcrop as locality has more than one sample"); 
+				feature.setDatumElevation(null);
+				feature.setDatumType(null);
+				feature.setDrillholeLicenceName(null);
+				feature.setFinishDate(null);
+				feature.setFinishDateRounding(null);
+				feature.setFinishDepth(null);
+				feature.setPerson(null);
+				feature.setStartDate(null);
+				feature.setStartDateRounding(null);
+				feature.setStartDepth(null);
+				for (Sample sample : samples) {
+					sample.setAudit(feature.getAudit());
+					sample.setBottomDepth(null);
+					sample.setTopDepth(null);
+					sample.setDrillType(null);
+					sampleDAO.update(sample);
+				}
+			} else if (newFeatureType.equals(FREDConstants.DRILLHOLE)) {
+				for (Sample sample : samples) {
+					breakApartSampleAudit(sample);
+					sampleDAO.update(sample);
+				}
+			} else if (newFeatureType.equals(FREDConstants.VERTICAL_SECTION)) {
+				feature.setDrillholeLicenceName(null);
+				for (Sample sample : samples) {
+					breakApartSampleAudit(sample);
+					sample.setDrillType(null);
+					sampleDAO.update(sample);
+				}
 			}
-		} else if (newFeatureType.equals(FREDConstants.DRILLHOLE)) {
-			for (Sample sample : samples) {
-				breakApartSampleAudit(sample);
-				sampleDAO.update(sample);
-			}
-		} else if (newFeatureType.equals(FREDConstants.VERTICAL_SECTION)) {
-			feature.setDrillholeLicenceName(null);
-			for (Sample sample : samples) {
-				breakApartSampleAudit(sample);
-				sample.setDrillType(null);
-				sampleDAO.update(sample);
-			}
+			AuditEdit edit = featureDAO.createNewAuditEdit();
+			edit.setAudit(feature.getAudit());
+			edit.setEditedById(Integer.parseInt(user.getId()));
+			edit.setEditedDate(new Date());
+			edit.setComments("Locality type changed from " + oldFeatureType + " to " + newFeatureType);
+			featureDAO.save(edit);
+			
+			feature.setFeatureType(newFeatureType);
+			featureDAO.update(feature);
 		}
-		AuditEdit edit = featureDAO.createNewAuditEdit();
-		edit.setAudit(feature.getAudit());
-		edit.setEditedById(Integer.parseInt(user.getId()));
-		edit.setEditedDate(new Date());
-		edit.setComments("Locality type changed from " + oldFeatureType + " to " + newFeatureType);
-		featureDAO.save(edit);
-		
-		feature.setFeatureType(newFeatureType);
-		featureDAO.update(feature);
 	}	
 
 	private void breakApartSampleAudit(Sample sample) throws IntrospectionException, StorageAccessException {
@@ -410,16 +418,15 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	
 	public void mergeFeatures(Feature mergeToFeature, String[] mergeFeatIDs, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, NumberFormatException, IntrospectionException {
 		for (int i = 0; i < mergeFeatIDs.length; i++) {
-			mergeFeature(mergeToFeature, mergeFeatIDs[i], folder, user);
+			mergeFeature(mergeToFeature, getFeature(Integer.parseInt(mergeFeatIDs[i])), folder, user);
 		}
 	}
 		
 		
-	private void mergeFeature(Feature mergeToFeature, String mergeFromFeatID, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
+	private void mergeFeature(Feature mergeToFeature, Feature mergeFromFeature, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
 		if (!folder.isAllowedEditLocalities())
 			throw new InsufficientPrivelegesException();
-		Feature mergeFromFeature = getFeature(Integer.parseInt(mergeFromFeatID));
-		if (!mergeFromFeatID.equals(String.valueOf(mergeToFeature.getFeatureId()))) {
+		if (!mergeFromFeature.equals(mergeToFeature.getFeatureId())) {
 			if (mergeToFeature.getFeatureType().equals(FREDConstants.OUTCROP) || mergeFromFeature.getFeatureType().equals(FREDConstants.OUTCROP))
 				throw new IllegalStateException("Cannot merge outcrop localities");
 			
