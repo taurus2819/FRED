@@ -177,10 +177,10 @@ function showHide(toShow, toHide) {
 			String featName = feature.getFeatureName();
 			%><tr><%
 			
-			/*
+			
 			//starting work on checkboxes - can put back once PDF reports are OK
 			%><td><input type="checkbox" name="FeatIDs" value="<%=feature.getFeatureId()%>" /></td><%
-			*/
+			
 			
 			%><td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
 			
@@ -231,18 +231,18 @@ function showHide(toShow, toHide) {
 		}
 		%></table><%
 		endDETable(pageContext);
-/*
+
 		%></p><p><%
 		
 		startDETable(pageContext);
 		%><table border="0" width="550">
 		<tr><td colspan="12" class="deHeading">Folder Options</td></tr>
 		<tr><td>&nbsp;</td></tr>
-		<tr>
-		<td class="heading">
-		<a href="javascript:document.FoldForm.ActionType.value='PrintFeatures';document.FoldForm.target='_blank';document.FoldForm.submit();"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print Selected" />&nbsp;Print Selected</a>
-		</td>
-		<td class="heading">
+		<tr><%
+		//<td class="heading">
+		//<a href="javascript:document.FoldForm.ActionType.value='PrintFeatures';document.FoldForm.target='_blank';document.FoldForm.submit();"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print Selected" />&nbsp;Print Selected</a>
+		//</td>
+		%><td class="heading">
 		<a href="javascript:document.FoldForm.ActionType.value='MergeFeatures';document.FoldForm.submit();"><img src="images/drill.gif" border="0" height="20" width="20" alt="Merge Selected" />&nbsp;Merge Selected To</a>&nbsp;
 		<select name="MergeToFeatID"><option value="-">-- Choose --</option><%
 		Feature[] mergeToFeatures = featureUtil.getFeaturesInFolder(folder);
@@ -256,7 +256,7 @@ function showHide(toShow, toHide) {
 		</table><%		
 		
 		endDETable(pageContext);
-*/
+
 		%></p>
 <input type="hidden" name="ActionType" value="" />
 <input type="hidden" name="ID" value="<%=folder.getFolder().getFolderId()%>" />
