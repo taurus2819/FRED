@@ -109,8 +109,11 @@
 						response.sendRedirect("frf/frf.pdf?" + queryStr.toString());
 						return;
 					} else if (actionType.equals("MergeFeatures")) {
+						System.out.println("Merging");
 						Feature mergeToFeature = featureUtil.getFeature(Integer.parseInt(request.getParameter("MergeToFeatID")));
+						System.out.println("MergeToFeature: " + FeatureUtil.getFeatureName(mergeToFeature));
 						featureUtil.mergeFeatures(mergeToFeature, request.getParameterValues("FeatIDs"), folder, user);
+						System.out.println("Done");
 					}
 				}
 			} catch (MandatoryFieldsMissingException e) {
