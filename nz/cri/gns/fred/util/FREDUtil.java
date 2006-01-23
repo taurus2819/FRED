@@ -144,17 +144,17 @@ public class FREDUtil {
 	public static final int MASTERFILE_OFFSHORE = 11;
 	
 	//This is a special backlog masterfile folder
-	public static final int MASTERFILE_NTH_NI_BACKLOG = 12;
-	public static final int MASTERFILE_CEN_NI_BACKLOG = 12;
-	public static final int MASTERFILE_STH_NI_BACKLOG = 12;
+	public static final int MASTERFILE_NTH_NI_BACKLOG = 14;
+	public static final int MASTERFILE_CEN_NI_BACKLOG = 17;
+	public static final int MASTERFILE_STH_NI_BACKLOG = 19;
 	public static final int MASTERFILE_NELSON_BACKLOG = 12;
-	public static final int MASTERFILE_CEN_SI_BACKLOG = 12;
-	public static final int MASTERFILE_STH_SI_BACKLOG = 12;
-	public static final int MASTERFILE_NZ_ISLANDS_BACKLOG = 7;
-	public static final int MASTERFILE_ANTARCTICA_BACKLOG = 8;
-	public static final int MASTERFILE_PACIFIC_ISLANDS_BACKLOG = 9;
-	public static final int MASTERFILE_NEW_CALEDONIA_BACKLOG = 10;
-	public static final int MASTERFILE_OFFSHORE_BACKLOG = 11;
+	public static final int MASTERFILE_CEN_SI_BACKLOG = 20;
+	public static final int MASTERFILE_STH_SI_BACKLOG = 22;
+	public static final int MASTERFILE_NZ_ISLANDS_BACKLOG = 23;
+	public static final int MASTERFILE_ANTARCTICA_BACKLOG = 24;
+	public static final int MASTERFILE_PACIFIC_ISLANDS_BACKLOG = 25;
+	public static final int MASTERFILE_NEW_CALEDONIA_BACKLOG = 26;
+	public static final int MASTERFILE_OFFSHORE_BACKLOG = 27;
 	
 	private static final int SECURITY_CLASS_FRED_EDIT = 15;
 	
