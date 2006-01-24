@@ -235,7 +235,7 @@
     <set
         name="sentTos"
         lazy="true"
-        inverse="true"
+        inverse="false"
 		cascade="none"
     >
         <key>
