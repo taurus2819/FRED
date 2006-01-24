@@ -802,8 +802,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     			error.add(new String[] {"Sent To", "Database error: " + e.getMessage()});
     		}
     		sample.setSentTos(sentToSet);
-    		System.out.println("Size of sentTo array: " + sentToSet.size());
-    		System.out.println("Count of sentTos = " + sample.getSentTos().size());
         } else {
             if (sample.getSentTos() != null)
                 sample.getSentTos().clear();
