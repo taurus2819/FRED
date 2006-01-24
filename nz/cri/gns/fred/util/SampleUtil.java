@@ -651,29 +651,57 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 
 	public SentTo findOrCreateSentTo(Sample sample, FossilGroup group, Person person, Integer lab, String comments) throws StorageAccessException {
+		System.out.println("****  findCreateSentTo ****");
 		if (sample.getSentTos() != null) {
+			System.out.println("Checking existing");
 			for (SentTo sentTo : sample.getSentTos()) {
+				System.out.println("Checking sentToID: " + sentTo.getSentToId());
 				//Check group
-				if (group == null && sentTo.getFossilGroup() != null)
+				System.out.println("Group: " + ((group != null) ? group.getName() : "null"));
+				System.out.println("SentTo Group: " + ((sentTo.getFossilGroup() != null) ? sentTo.getFossilGroup().getName() : "null"));
+				System.out.println("Person: " + ((person != null) ? person.getDisplayName() : "null"));
+				System.out.println("SentTo Person: " + ((sentTo.getPerson() != null) ? sentTo.getPerson().getDisplayName() : "null"));
+				System.out.println("Lab: " + ((lab != null) ? lab.toString() : "null"));
+				System.out.println("SentTo Lab: " + ((sentTo.getLabId() != null) ? sentTo.getLabId().toString() : "null"));
+				System.out.println("Comments: " + ((comments != null) ? comments : "null"));
+				System.out.println("SentTo Comments: " + ((sentTo.getComments() != null) ? comments : "null"));
+				if (group == null && sentTo.getFossilGroup() != null) {
+					System.out.println("Passed 1");
 					continue;
-				if (group != null && !group.equals(sentTo.getFossilGroup()))
+				}
+				if (group != null && !group.equals(sentTo.getFossilGroup())) {
+					System.out.println("Passed 2");
 					continue;
-				if (person == null && sentTo.getPerson() != null)
+				}
+				if (person == null && sentTo.getPerson() != null) {
+					System.out.println("Passed 3");
 					continue;
-				if (person != null && !person.equals(sentTo.getPerson()))
+				}
+				if (person != null && !person.equals(sentTo.getPerson())) {
+					System.out.println("Passed 4");
 					continue;
-				if (lab == null && sentTo.getLabId() != null)
+				}
+				if (lab == null && sentTo.getLabId() != null) {
+					System.out.println("Passed 5");
 					continue;
-				if (lab != null && !lab.equals(sentTo.getLabId()))
+				}
+				if (lab != null && !lab.equals(sentTo.getLabId())) {
+					System.out.println("Passed 6");
 					continue;
-				if (comments == null && sentTo.getComments() != null)
+				}
+				if (comments == null && sentTo.getComments() != null) {
+					System.out.println("Passed 7");
 					continue;
-				if (comments != null && !comments.equals(sentTo.getComments()))
+				}
+				if (comments != null && !comments.equals(sentTo.getComments())) {
+					System.out.println("Passed 8");
 					continue;
+				}
 				//All tests pass - it's a match
 				return sentTo;
 			}
 		}
+		System.out.println("Making new one");
 		SentTo sentTo = sampleDAO.createNewSentTo();
 		sentTo.setSample(sample);
 		sentTo.setFossilGroup(group);
