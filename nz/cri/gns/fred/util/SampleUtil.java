@@ -650,7 +650,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		sampleDAO.delete(sample);
 	}
 
-	public SentTo findOrCreateSentTo(Sample sample, FossilGroup group, Person person, Integer lab, String comments) {
+	public SentTo findOrCreateSentTo(Sample sample, FossilGroup group, Person person, Integer lab, String comments) throws StorageAccessException {
 		System.out.println("********************");
 		System.out.println("Finding SentTos");
 		if (sample.getSentTos() != null) {
@@ -684,6 +684,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		sentTo.setPerson(person);
 		sentTo.setLabId(lab);
 		sentTo.setComments(comments);
+		sampleDAO.save(sentTo);
 		System.out.println("Created one: " + sentTo);
 		return sentTo;
 	}

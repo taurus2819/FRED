@@ -165,6 +165,11 @@ public interface SampleDAO {
 	public SentTo createNewSentTo();
 
 	/**
+	 * Saves the given sentTo to persistent storage
+	 */
+	public void save(SentTo sentTo) throws StorageAccessException;
+	
+	/**
 	 * Creates a new, uninitialised SedimentaryFeature object
 	 */
 	public SedimentaryFeature createNewSedimentaryFeature();

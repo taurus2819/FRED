@@ -653,6 +653,10 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		return new nz.cri.gns.fred.hibernate.Stage();
 	}
 
+	public void save(SentTo sentTo) throws StorageAccessException {
+		HibernateUtils.save(provider, sentTo);
+	}
+	
 	public void save(Stage stage) throws StorageAccessException {
 		HibernateUtils.save(provider, stage);
 	}
