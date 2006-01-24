@@ -703,12 +703,15 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			}
 		}
 		System.out.println("Making new one");
+		System.out.println("Setting sample");
 		SentTo sentTo = sampleDAO.createNewSentTo();
+		System.out.println("Setting sample");
 		sentTo.setSample(sample);
 		sentTo.setFossilGroup(group);
 		sentTo.setPerson(person);
 		sentTo.setLabId(lab);
 		sentTo.setComments(comments);
+		System.out.println("Saving new sentTo");
 		sampleDAO.save(sentTo);
 		return sentTo;
 	}
