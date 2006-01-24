@@ -3,6 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.SentTo;
+
 
 /** @author Hibernate CodeGenerator */
 public class Person implements Serializable, nz.cri.gns.fred.model.Person {
@@ -30,14 +32,18 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
     /** persistent field */
     private Set collectedSamples;
 
+    /** persistent field */
+    private Set<SentTo> sentTos;
+    
     /** full constructor */
-    public Person(String name, Integer stCode, Set adoptions, Set identifiedPaleontologies, Set features, Set collectedSamples) {
+    public Person(String name, Integer stCode, Set adoptions, Set identifiedPaleontologies, Set features, Set collectedSamples, Set<SentTo> sentTos) {
         this.name = name;
         this.stCode = stCode;
         this.adoptions = adoptions;
         this.identifiedPaleontologies = identifiedPaleontologies;
         this.features = features;
         this.collectedSamples = collectedSamples;
+        this.sentTos = sentTos;
     }
 
     /** default constructor */
@@ -109,6 +115,14 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
         this.collectedSamples = collectedSamples;
     }
 
+    public Set<SentTo> getSentTos() {
+        return this.sentTos;
+    }
+
+    public void setSentTos(Set<SentTo> sentTos) {
+        this.sentTos = sentTos;
+    }
+    
 	public String getDisplayName() {
 		return getName();
 	}

@@ -1,6 +1,9 @@
 package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
+import java.util.Set;
+
+import nz.cri.gns.fred.model.SentTo;
 
 /** @author Hibernate CodeGenerator */
 public class FossilGroup implements Serializable, nz.cri.gns.fred.model.FossilGroup {
@@ -16,10 +19,14 @@ public class FossilGroup implements Serializable, nz.cri.gns.fred.model.FossilGr
     /** persistent field */
     private String name;
 
+    /** persistent field */
+    private Set<SentTo> sentTos;
+    
     /** full constructor */
-    public FossilGroup(Integer groupId, String name) {
+    public FossilGroup(Integer groupId, String name, Set<SentTo> sentTos) {
         this.groupId = groupId;
         this.name = name;
+        this.sentTos = sentTos;
     }
 
     /** default constructor */
@@ -42,6 +49,14 @@ public class FossilGroup implements Serializable, nz.cri.gns.fred.model.FossilGr
         this.name = name;
     }
 
+    public Set<SentTo> getSentTos() {
+        return this.sentTos;
+    }
+
+    public void setSentTos(Set<SentTo> sentTos) {
+        this.sentTos = sentTos;
+    }
+    
     public String toString() {
         return name;
     }

@@ -35,4 +35,9 @@ public interface Person extends PersonRelationship {
 	public abstract Set getCollectedSamples();
 
 	public abstract void setCollectedSamples(Set collectedSamples);
+	
+	public abstract Set<SentTo> getSentTos();
+
+	public abstract void setSentTos(Set<SentTo> sentTos);
+	
 }

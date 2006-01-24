@@ -142,7 +142,7 @@ public class HibernateUtil implements HibernateProvider {
 			SecurityClass.class,
 			//SedimentaryFeature.class,
 			SedimentaryFeatureType.class,
-			//SentTo.class,
+			SentTo.class,
 			Stage.class,
 			TaxaPanel.class,
 			TaxonomicGroup.class,
