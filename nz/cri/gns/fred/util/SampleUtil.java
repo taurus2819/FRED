@@ -703,7 +703,6 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			}
 		}
 		System.out.println("Making new one");
-		System.out.println("Setting sample");
 		SentTo sentTo = sampleDAO.createNewSentTo();
 		System.out.println("Setting sample");
 		sentTo.setSample(sample);
@@ -713,6 +712,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		sentTo.setComments(comments);
 		System.out.println("Saving new sentTo");
 		sampleDAO.save(sentTo);
+		System.out.println("Saved new sentTo");
 		return sentTo;
 	}
 
