@@ -666,38 +666,39 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 				System.out.println("Comments: " + ((comments != null) ? comments : "null"));
 				System.out.println("SentTo Comments: " + ((sentTo.getComments() != null) ? comments : "null"));
 				if (group == null && sentTo.getFossilGroup() != null) {
-					System.out.println("Passed 1");
+					System.out.println("Failed 1");
 					continue;
 				}
 				if (group != null && !group.equals(sentTo.getFossilGroup())) {
-					System.out.println("Passed 2");
+					System.out.println("Failed 2");
 					continue;
 				}
 				if (person == null && sentTo.getPerson() != null) {
-					System.out.println("Passed 3");
+					System.out.println("Failed 3");
 					continue;
 				}
 				if (person != null && !person.equals(sentTo.getPerson())) {
-					System.out.println("Passed 4");
+					System.out.println("Failed 4");
 					continue;
 				}
 				if (lab == null && sentTo.getLabId() != null) {
-					System.out.println("Passed 5");
+					System.out.println("Failed 5");
 					continue;
 				}
 				if (lab != null && !lab.equals(sentTo.getLabId())) {
-					System.out.println("Passed 6");
+					System.out.println("Failed 6");
 					continue;
 				}
 				if (comments == null && sentTo.getComments() != null) {
-					System.out.println("Passed 7");
+					System.out.println("Failed 7");
 					continue;
 				}
 				if (comments != null && !comments.equals(sentTo.getComments())) {
-					System.out.println("Passed 8");
+					System.out.println("Failed 8");
 					continue;
 				}
 				//All tests pass - it's a match
+				System.out.println("Returning SentTo ID=" + sentTo.getSentToId());
 				return sentTo;
 			}
 		}
