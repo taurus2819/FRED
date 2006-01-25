@@ -238,7 +238,7 @@
         inverse="false"
 		cascade="all"
     >
-        <key>
+        <key not-null="true">
             <column name="SAMPLE_ID" />
         </key>
         <one-to-many 
