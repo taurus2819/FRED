@@ -236,7 +236,7 @@
         name="sentTos"
         lazy="true"
         inverse="false"
-		cascade="none"
+		cascade="insert"
     >
         <key>
             <column name="SAMPLE_ID" />

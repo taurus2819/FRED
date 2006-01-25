@@ -92,7 +92,7 @@ public class HibernateUtil implements HibernateProvider {
 		Properties props = new Properties();
         props.put("hibernate.connection.datasource", "java:comp/env/jdbc/fr");
 		props.put("hibernate.dialect", "net.sf.hibernate.dialect.Oracle9Dialect");
-		//props.put("hibernate.show_sql", "true");
+		props.put("hibernate.show_sql", "true");
 
     	Configuration cfg = new Configuration().setProperties(props);
     	
