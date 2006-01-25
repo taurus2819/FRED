@@ -1,6 +1,9 @@
 package nz.cri.gns.fred.util;
 
 import java.beans.IntrospectionException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -60,6 +63,23 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
     	}
     	*/
     	return newAudit;
+    }
+    
+    public static String getAuditBacklogStatus(Audit audit) {
+		if (audit.getStatus().equals(FREDConstants.APPROVED)) {
+			if (audit.getCuratorComments() != null && audit.getCuratorComments().indexOf("backlog") > 0)
+				return FREDConstants.BACKLOG_COMPLETE;
+			try {
+				if (audit.getCreatedDate() != null && audit.getCreatedDate().after(new SimpleDateFormat("dd/MM/yyyy").parse("01/10/2005")));
+				return FREDConstants.BACKLOG_NEW;
+			} catch (ParseException e) { //shouldn't happen}
+		}
+		for (Iterator j = audit.getAuditEdits().iterator(); j.hasNext();) {
+			AuditEdit edit = (AuditEdit) j.next();
+			if (edit.getComments() != null && edit.getComments().indexOf("backlog") > 0)
+				return FREDConstants.BACKLOG_PROCESSING;
+		}
+		return FREDConstants.BACKLOG_EMPTY;
     }
     
 }

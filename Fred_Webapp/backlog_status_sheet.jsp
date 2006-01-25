@@ -12,6 +12,7 @@
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
+%><%@page import="nz.cri.gns.fred.util.AuditUtil"
 %><%!
 	public String getName(HttpServletRequest request) {
 		return "FRED :: Backlog Processing Status for Sheet " + DBUtils.nvl(request.getParameter("Sheet"));
@@ -19,6 +20,7 @@
 %><%
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	FeatureUtil featureUtil = new FeatureUtil(factory);
+	AuditUtil auditUtil = new AuditUtil(factory);
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setUseNavigationColumn(false);
@@ -46,17 +48,7 @@
 				Feature feature = FeatureUtil.getFeature(frNumber);
 				String status = null;
 				Audit audit = feature.getAudit();
-				if (audit.getStatus().equals(FREDConstants.APPROVED) && audit.getCuratorComments() != null && audit.getCuratorComments().indexOf("backlog") > 0) {
-					status = FREDConstants.BACKLOG_COMPLETE;
-				} else {
-					for (Iterator j = audit.getAuditEdits().iterator(); j.hasNext();) {
-						AuditEdit edit = (AuditEdit) j.next();
-						if (edit.getComments() != null && edit.getComments().indexOf("backlog") > 0) {
-							status = FREDConstants.BACKLOG_PROCESSING;
-							break;
-						}
-					}
-				}
+				status = AuditUtil.getAuditBacklogStatus(audit);
 				%><tr><td class="heading"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><%=frNumber.getFrNumber()%></a>&nbsp;&nbsp;</td>
 				<td><%=feature.getFeatureType()%>&nbsp;&nbsp;<%
 				if (status != null) {
