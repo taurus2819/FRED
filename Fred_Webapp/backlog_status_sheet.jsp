@@ -52,7 +52,7 @@
 				%><tr><td class="heading"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><%=frNumber.getFrNumber()%></a>&nbsp;&nbsp;</td>
 				<td><%=feature.getFeatureType()%>&nbsp;&nbsp;<%
 				if (status != null) {
-					String statusColour = ((status.equals(FREDConstants.BACKLOG_PROCESSING)) ? "#FF0000" : "00#F00");
+					String statusColour = ((status.equals(FREDConstants.BACKLOG_PROCESSING)) ? "#FF0000" : "#00FF00");
 					%><td style="color: <%=statusColour%>"><%=status%>&nbsp;&nbsp;</td><%
 				} else {
 					%><td>not started&nbsp;&nbsp;</td><%
