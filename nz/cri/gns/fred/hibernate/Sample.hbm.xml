@@ -238,8 +238,8 @@
         inverse="false"
 		cascade="all"
     >
-        <key not-null="true">
-            <column name="SAMPLE_ID" />
+        <key>
+            <column not-null="true" name="SAMPLE_ID" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.SentTo"

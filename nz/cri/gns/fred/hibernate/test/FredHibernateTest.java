@@ -51,6 +51,7 @@ import nz.cri.gns.fred.hibernate.Sample;
 import nz.cri.gns.fred.hibernate.SampleMeta;
 import nz.cri.gns.fred.hibernate.SecurityClass;
 import nz.cri.gns.fred.hibernate.SedimentaryFeatureType;
+import nz.cri.gns.fred.hibernate.SentTo;
 import nz.cri.gns.fred.hibernate.Stage;
 import nz.cri.gns.fred.hibernate.TaxaPanel;
 import nz.cri.gns.fred.hibernate.TaxonomicGroup;
@@ -135,7 +136,7 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 			SecurityClass.class,
 			//SedimentaryFeature.class,
 			SedimentaryFeatureType.class,
-			//SentTo.class,
+			SentTo.class,
 			Stage.class,
 			TaxaPanel.class,
 			TaxonomicGroup.class,
