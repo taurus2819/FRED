@@ -807,9 +807,11 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     		Set<SentTo> oldSentTos = sample.getSentTos();
     		oldSentTos.removeAll(sentToSet);
     		sample.setSentTos(sentToSet);
-    		for (SentTo sentTo : oldSentTos) {
-    			sampleUtil.delete(sentTo);
-    		}
+    		for (SentTo sentTo : oldSentTos) try {
+				sampleUtil.delete(sentTo);
+			} catch (StorageAccessException e) {
+				e.printStackTrace();
+			}
         } else {
             if (sample.getSentTos() != null)
                 sample.getSentTos().clear();
