@@ -912,4 +912,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         sampleDAO.attach(audit);
     }
 
+	public void delete(SentTo sentTo) throws StorageAccessException {
+		sampleDAO.delete(sentTo);
+	}
+
 }

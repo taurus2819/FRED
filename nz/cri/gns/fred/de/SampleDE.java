@@ -796,7 +796,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     				error.add(new String[] {"Sent To", "Invalid lab: " + parts[2]});
     			
     			String comments = ((parts.length >= 4) ? parts[3].replaceAll(String.valueOf((char)13), "") : null);
-    			if (comments.length() == 0)
+    			if (comments != null && comments.length() == 0)
     				comments = null;
     			
     			sentToSet.add(sampleUtil.findOrCreateSentTo(sample, group, person, lab, comments));
@@ -804,7 +804,12 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                 e.printStackTrace();
     			error.add(new String[] {"Sent To", "Database error: " + e.getMessage()});
     		}
+    		Set<SentTo> oldSentTos = sample.getSentTos();
+    		oldSentTos.removeAll(sentToSet);
     		sample.setSentTos(sentToSet);
+    		for (SentTo sentTo : oldSentTos) {
+    			sampleUtil.delete(sentTo);
+    		}
         } else {
             if (sample.getSentTos() != null)
                 sample.getSentTos().clear();

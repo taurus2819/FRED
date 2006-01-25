@@ -209,4 +209,6 @@ public interface SampleDAO {
     public void saveOrUpdate(Sample sample) throws StorageAccessException;
 
     public void attach(Object o) throws StorageAccessException;
+
+	public void delete(SentTo sentTo) throws StorageAccessException;
 }

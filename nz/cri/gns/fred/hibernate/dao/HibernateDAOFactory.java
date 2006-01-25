@@ -724,6 +724,10 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
             throw new StorageAccessException(e);
         }
     }
+    
+	public void delete(SentTo sentTo) throws StorageAccessException {
+		HibernateUtils.delete(provider, sentTo);
+	}
 
 	public RecordDAO getRecordDAO() {
 		return this;
