@@ -460,14 +460,7 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     }
 
     public void setFeature(nz.cri.gns.fred.model.Feature feature) {
-    	if (this.feature != null && this.feature.getSamples() != null)
-    		this.feature.getSamples().remove(this);
-        this.feature = feature;
-        //This can't be right!!!!
-/*        try {
-        	feature.getSamples().add(this);
-        } catch (Throwable e) {
-        }*/
+    	this.feature = feature;
     }
 
     public nz.cri.gns.fred.model.Audit getAudit() {
