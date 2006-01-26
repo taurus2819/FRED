@@ -388,12 +388,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		}
 		
 		//Recollection and working comments
-		String recoll = request.getParameter("Recoll");
-		String comments = request.getParameter("WorkComm");
-		if (recoll.length() > 0) {
-			comments = FeatureUtil.RECOLL_COMMENTS + recoll + "*" + comments;
-		}
-		feature.getAudit().setWorkingComments(comments);
+		feature.getAudit().setWorkingComments(FeatureUtil.combineWorkingComments(request.getParameter("Recoll"), request.getParameter("WorkComm")));
 		
 		//Site
 		datum = DatumFactory.createDatum(request.getParameter("CoordType"));

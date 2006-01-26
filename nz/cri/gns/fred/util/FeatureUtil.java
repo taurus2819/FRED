@@ -54,8 +54,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	
 	private static String BACKLOG_PREPARE_COMMENTS = "Locality prepared for backlog editing";
 	
-	public static String RECOLL_COMMENTS = "*Recoll:";
-	
 	public FeatureUtil(DAOFactory factory) {
 		super(factory);
 		this.featureDAO = factory.getFeatureDAO();
@@ -1014,20 +1012,28 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return featureDAO.getFrNumbers(mapSheet, start, end);
 	}
 	
+	private static String RECOLL_COMMENTS = "*Recoll:";
+	
+	public static String combineWorkingComments(String recoll, String workComm) {
+		if (recoll != null && recoll.length() > 0)
+			return RECOLL_COMMENTS + recoll + "*" + workComm;
+		return workComm;
+	}
+	
 	/**
 	 * Splits the recollection data from AUDIT.WORKING_COMMENTS.
 	 * Returns a String array with two values. First value contains
 	 * Working Comments and second value contains Recollection (if present) or NULL 
 	 */
-	public static String[] splitWorkingComments(String workComm) {
-		if (workComm == null)
+	public static String[] splitWorkingComments(String comments) {
+		if (comments == null)
 			return new String[] {null, null};
-		if (workComm.startsWith(RECOLL_COMMENTS)) {
-			String recoll = workComm.substring(8, workComm.indexOf("*", 8));
-			String comm = workComm.substring(workComm.indexOf("*", 8) + 1);
-			return new String[] {comm, recoll};
+		if (comments.startsWith(RECOLL_COMMENTS)) {
+			String recoll = comments.substring(8, comments.indexOf("*", 8));
+			String workComm = comments.substring(comments.indexOf("*", 8) + 1);
+			return new String[] {workComm, recoll};
 		} else {
-			return new String[] {workComm, null};
+			return new String[] {comments, null};
 		}
 	}
 	
