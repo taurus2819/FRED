@@ -560,7 +560,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 */
 	public static String getSentToDescription(SentTo sentTo) {
 		StringBuffer desc = new StringBuffer();
-		desc.append(sentTo.getFossilGroup().getName()).append(": ");
+		if (sentTo.getFossilGroup() != null)
+			desc.append(sentTo.getFossilGroup().getName()).append(": ");
 		if (sentTo.getPerson() != null) {
 			desc.append(sentTo.getPerson().getDisplayName());
 			if (sentTo.getLabId() != null)
