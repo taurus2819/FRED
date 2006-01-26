@@ -54,6 +54,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	
 	private static String BACKLOG_PREPARE_COMMENTS = "Locality prepared for backlog editing";
 	
+	public static String RECOLL_COMMENTS = "*Recoll:";
+	
 	public FeatureUtil(DAOFactory factory) {
 		super(factory);
 		this.featureDAO = factory.getFeatureDAO();
@@ -1018,11 +1020,15 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 * Working Comments and second value contains Recollection (if present) or NULL 
 	 */
 	public static String[] splitWorkingComments(String workComm) {
-		if (workComm.indexOf("*Recoll:") > 0) {
-			String[] bits = workComm.split("*");
-			return new String[] {bits[2], bits[1].substring(7)};
+		if (workComm == null)
+			return new String[] {null, null};
+		if (workComm.indexOf(RECOLL_COMMENTS) > 0) {
+			String recoll = workComm.substring(8, workComm.indexOf("*", 8));
+			String comm = workComm.substring(workComm.indexOf("*", 8) + 1);
+			return new String[] {comm, recoll};
 		} else {
 			return new String[] {workComm, null};
 		}
 	}
+	
 }
