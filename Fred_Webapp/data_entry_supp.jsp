@@ -570,7 +570,10 @@ function parseDropDown(val) {
 			out.println("<tr><td colspan='2'>Please select a fossil group and then one or both of a person and lab.<br />You may add enter multiple rows by clicking the Add To Main Form icon between each row and then Close to end.</td></tr>");
 			out.println("<tr><td>&nbsp;</td></tr>");
 			out.print("<tr><td class='heading'>Fossil Group</td><td>");
-			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, "Group", null, null, null, "fossil_group", "Name", "Name", null, null);
+			cd = new ComboDescriptor("fossil_group", "name", "name");
+			cd.name = "Group";
+			cd.prompt = "-- Choose --";
+			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
 			out.print("</td></tr>");
 			out.print("<tr><td class='heading'>Person</td><td>");
 			cd = new ComboDescriptor("Person_View", "Name", "Name");
