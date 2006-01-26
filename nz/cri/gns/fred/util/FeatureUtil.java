@@ -1022,7 +1022,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	public static String[] splitWorkingComments(String workComm) {
 		if (workComm == null)
 			return new String[] {null, null};
-		if (workComm.indexOf(RECOLL_COMMENTS) > 0) {
+		if (workComm.startsWith(RECOLL_COMMENTS)) {
 			String recoll = workComm.substring(8, workComm.indexOf("*", 8));
 			String comm = workComm.substring(workComm.indexOf("*", 8) + 1);
 			return new String[] {comm, recoll};
