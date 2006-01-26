@@ -42,7 +42,7 @@
 		et.setDisplayLoadingMessage(true);
 		et.setButtons(new IconnedLink[] {
 				new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders"),
-				new IconnedLink("backlog_setup.jsp?ID=" + request.getParameter("ID"), "images/revoke.gif", "Backlog setup")
+				new IconnedLink("backlog_setup.jsp?ID=" + request.getParameter("ID"), "images/revoke.gif", "Backlog setup"),
 				new IconnedLink("javascript:doNewBacklogFolder();", "images/folder.gif", "New Backlog Edit Folder")});
 	
 		if (request.getParameter("ActionType") != null && request.getParameter("ActionType").equals("Add")) { //do something

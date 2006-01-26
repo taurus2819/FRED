@@ -26,20 +26,13 @@ try {
 	
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
-	et.setButtons(new IconnedLink[] {
-			new IconnedLink("javascript:doNewFolder();", "images/folder.gif", "New Folder"),
-			new IconnedLink("javascript:doNewBacklogFolder();", "images/folder.gif", "New Backlog Edit Folder")
-		});
+	et.setButtons(new IconnedLink[] {new IconnedLink("javascript:doNewFolder();", "images/folder.gif", "New Folder")});
 
 	String error = null;
 	if (request.getParameter("ActionType") != null) { //do something
 		String actionType = request.getParameter("ActionType");
 		if (actionType.equals("Add")) { //add folder
-			if (request.getParameter("FoldType") != null && request.getParameter("FoldType").equals(UserFolder.FOLDER_TYPE_BACKLOG)) {
-				folderUtil.addBacklogFolder(request.getParameter("FoldName"), user);
-			} else {
-				folderUtil.addFolder(request.getParameter("FoldName"), user);
-			}
+			folderUtil.addFolder(request.getParameter("FoldName"), user);
 		}
 		else if (actionType.equals("Delete")) { //Delete folder
 			try {
@@ -57,16 +50,6 @@ try {
 		var newName = prompt('Please enter the folder name', 'New Working Folder');
 		if (newName) {
 			document.NewFoldForm.FoldName.value = newName;
-			document.NewFoldForm.FoldType.value = "<%=UserFolder.FOLDER_TYPE_PERSONAL%>";
-			document.NewFoldForm.submit();
-		}
-	}
-	
-	function doNewBacklogFolder() {
-		var newName = prompt('Please enter the folder name', 'New Backlog Folder');
-		if (newName) {
-			document.NewFoldForm.FoldName.value = newName;
-			document.NewFoldForm.FoldType.value = "<%=UserFolder.FOLDER_TYPE_BACKLOG%>";
 			document.NewFoldForm.submit();
 		}
 	}<%
@@ -77,7 +60,6 @@ try {
 	<form name="NewFoldForm" method="post" action="folder_list.jsp">
 	<input type="hidden" name="ActionType" value="Add">
 	<input type="hidden" name="FoldName" value="">
-	<input type="hidden" name="FoldType" value="">
 	</form>
 	<center><p>&nbsp;<p/><div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none"><%
 	
