@@ -1012,4 +1012,17 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return featureDAO.getFrNumbers(mapSheet, start, end);
 	}
 	
+	/**
+	 * Splits the recollection data from AUDIT.WORKING_COMMENTS.
+	 * Returns a String array with two values. First value contains
+	 * Working Comments and second value contains Recollection (if present) or NULL 
+	 */
+	public static String[] splitWorkingComments(String workComm) {
+		if (workComm.indexOf("*Recoll:") > 0) {
+			String[] bits = workComm.split("*");
+			return new String[] {bits[2], bits[1].substring(7)};
+		} else {
+			return new String[] {workComm, null};
+		}
+	}
 }

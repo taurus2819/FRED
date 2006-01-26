@@ -182,6 +182,9 @@
 				//Approve/Reject
 				if (featureUtil.isAllowedApproveFeature(user, feature)) {
 					FrNumber frNumber = featureUtil.getNextAvailableFrNumber(feature);
+					String[] comms = FeatureUtil.splitWorkingComments(feature.getAudit().getWorkingComments());
+					String workComm = comms[0];
+					String recoll = comms[1];
 					%><p><%
 					startDETable(pageContext);
 					%><table border="0" width="160">
@@ -189,19 +192,23 @@
 					<form name="RevForm" method="post" action="detail.jsp">
 					<input type="hidden" name="FeatID" value="<%=feature.getFeatureId()%>" />
 					<input type="hidden" name="ActionType" value="" />
-					<tr><td><a href="#" onClick="document.RevForm.ActionType.value='Approve';document.RevForm.submit();"><img src="images/ok.gif" width="20" height="20" border="0" alt="Approve" /></a></td><td class="heading">Approve</td></tr>
-					<tr><td><a href="#" onClick="document.RevForm.ActionType.value='Reject';document.RevForm.submit();"><img src="images/cancel.gif" width="20" height="20" border="0" alt="reject" /></a></td><td class="heading">Reject</td></tr><%
-					//if (recoll != null) {
-					//	out.println("<tr><td colspan='2'>The submitter has indicated that this record is a recollection of " + recoll + ".  If you agree then amend the FRNumber below as appropriate</td></tr>");
-					//}
-					%><tr><td colspan="2">
+					<tr><td colspan="2" class="heading">User Comments</td></tr>
+					<tr><td colspan="2"><%=workComm%></td></tr><%
+					if (recoll != null) {
+						%><tr><td colspan="2">The submitter has indicated that this record is a recollection of <%=recoll%>.</td></tr><%
+					}
+					%><tr><td><img src="images/blank.gif" height="5" width="1" /></td></tr>
+					<tr><td colspan="2" class="heading">FR Number</td></tr>
+					<tr><td colspan="2">
 						<input type="text" name="MapSheet" size="8" value="<%=frNumber.getMapSheet()%>" />&nbsp;
 						/f&nbsp;<input type="text" name="SerialNum" size="3" value="<%=frNumber.getSerialNumber()%>" />&nbsp;
 						<input type="text" name="RecollNum" size="1" value="" />
 					</td></tr>
-					<tr><td><img src="images/blank.gif" height="5" width="1" /></td></tr>
-					<tr><td colspan="2" class="heading">Comments</td></tr>
+
+					<tr><td colspan="2" class="heading">Curator Comments</td></tr>
 					<tr><td colspan="2"><textarea name="CurComm" rows="5" cols="22"><%=DBUtils.nvl(audit.getCuratorComments())%></textarea></td></tr>
+					<tr><td><a href="#" onClick="document.RevForm.ActionType.value='Approve';document.RevForm.submit();"><img src="images/ok.gif" width="20" height="20" border="0" alt="Approve" /></a></td><td class="heading" style="text-align: left">Approve</td></tr>
+					<tr><td><a href="#" onClick="document.RevForm.ActionType.value='Reject';document.RevForm.submit();"><img src="images/cancel.gif" width="20" height="20" border="0" alt="reject" /></a></td><td class="heading" style="text-align: left">Reject</td></tr>
 					</form>
 					</table><%
 					endDETable(pageContext);
