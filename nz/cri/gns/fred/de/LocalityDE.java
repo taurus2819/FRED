@@ -192,14 +192,15 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			if (workingFolder != null)
 				template.addSub("folderId", workingFolder.getFolderId().toString());
 			
+			String[] comms = FeatureUtil.splitWorkingComments(feature.getAudit().getWorkingComments());
 			//Recollection
-			String recollection = getRecollectionInfo();
+			String recollection = comms[1];
 			if (recollection != null) {
 				template.addSub("Recoll", recollection);
 			}
-			
-			if (feature.getAudit().getWorkingComments() != null)
-				template.addSub("workingComments", DBUtils.nvl(getComments()));
+			String workComm = comms[0];
+			if (workComm != null)
+				template.addSub("workingComments", workComm);
 			
 			//Approved?
 			Audit audit = feature.getAudit();
@@ -321,26 +322,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		template.loadAll(out);
 	}
 
-	private String getRecollectionInfo() {
-		String comments = feature.getAudit().getWorkingComments();
-		if (comments == null)
-			return null;
-        if (comments.startsWith("*Recoll:")) {
-            return comments.substring(8, comments.indexOf("*", 8));
-		} else
-			return null;
-	}
-	
-	private String getComments() {
-		String comments = feature.getAudit().getWorkingComments();
-		if (comments == null)
-			return null;
-		if (comments.startsWith("*Recoll:")) {
-			return comments.substring(comments.indexOf("*", 8)+1);
-		} else
-			return comments;
-	}
-
 	protected void makeEndBitHTML(PrintWriter out) throws IOException {
 		Template template = provider.getContent("locality.de.end");
 		if (isAllowedSubmit)
@@ -410,7 +391,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		String recoll = request.getParameter("Recoll");
 		String comments = request.getParameter("WorkComm");
 		if (recoll.length() > 0) {
-			comments = "*Recoll:" + recoll + "*" + comments;
+			comments = FeatureUtil.RECOLL_COMMENTS + recoll + "*" + comments;
 		}
 		feature.getAudit().setWorkingComments(comments);
 		
