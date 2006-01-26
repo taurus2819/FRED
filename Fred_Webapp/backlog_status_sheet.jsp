@@ -58,10 +58,8 @@
 					%><td>not started&nbsp;&nbsp;</td><%
 				}
 				if (status.equals(FREDConstants.BACKLOG_PROCESSING)) {
-					Folder workingFolder = audit.getFolder();
-					String auditStatus = audit.getStatus();
-					%><td><%=(auditStatus != null) ? auditStatus : ""%></td>
-					<td><%=(workingFolder != null) ? "<a href=\"folder_detail.jsp?ID=" + workingFolder.getFolderId() + "\">" + workingFolder.getName() + "</a>" : ""%></td><%
+					%><td><%=(audit.getStatus() != null) ? audit.getStatus() : ""%></td>
+					<td><%=(audit.getFolder() != null) ? "<a href=\"folder_detail.jsp?ID=" + audit.getFolder().getFolderId() + "\">" + audit.getFolder().getName() + "</a>" : ""%></td><%
 				} else {
 					%><td></td><td></td><%
 				}

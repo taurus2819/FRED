@@ -71,7 +71,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 				return FREDConstants.BACKLOG_COMPLETE;
 			try {
 				if (audit.getCreatedDate() != null && audit.getCreatedDate().after(new SimpleDateFormat("dd/MM/yyyy").parse("01/10/2005")));
-				return FREDConstants.BACKLOG_NEW;
+					return FREDConstants.BACKLOG_NEW;
 			} catch (ParseException e) {
 				//shouldn't happen
 			}
@@ -81,7 +81,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 			if (edit.getComments() != null && edit.getComments().indexOf("backlog") > 0)
 				return FREDConstants.BACKLOG_PROCESSING;
 		}
-		return FREDConstants.BACKLOG_EMPTY;
+		return null;
     }
     
 }
