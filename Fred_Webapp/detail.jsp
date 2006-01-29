@@ -193,7 +193,7 @@
 					<input type="hidden" name="FeatID" value="<%=feature.getFeatureId()%>" />
 					<input type="hidden" name="ActionType" value="" />
 					<tr><td colspan="2" class="heading">User Comments</td></tr>
-					<tr><td colspan="2"><%=workComm%></td></tr><%
+					<tr><td colspan="2"><%=DBUtils.nvl(workComm)%></td></tr><%
 					if (recoll != null) {
 						%><tr><td colspan="2">The submitter has indicated that this record is a recollection of <%=recoll%>.</td></tr><%
 					}
