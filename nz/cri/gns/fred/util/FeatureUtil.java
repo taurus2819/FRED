@@ -253,7 +253,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			HashSet<SentTo> newSent = new HashSet<SentTo>();
 			for (SentTo sentTo : sentTos) {
 				SentTo newSentTo = sampleDAO.createNewSentTo();
-				FREDUtil.beanCopy(sentTo, newSentTo, new FREDUtil.CopyAll());
+				FREDUtil.beanCopy(sentTo, newSentTo, new FREDUtil.ExcludeByName(FREDUtil.toVector(new String[] {"sentToId", "sample"})));
 				newSent.add(newSentTo);
 			}
 			newSample.setSentTos(newSent);
