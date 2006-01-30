@@ -806,14 +806,15 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     			error.add(new String[] {"Sent To", "Database error: " + e.getMessage()});
     		}
     		Set<SentTo> oldSentTos = sample.getSentTos();
-    		if (oldSentTos != null)
-    			oldSentTos.removeAll(sentToSet);
-    		sample.setSentTos(sentToSet);
-    		for (SentTo sentTo : oldSentTos) try {
-				sampleUtil.delete(sentTo);
-			} catch (StorageAccessException e) {
-				e.printStackTrace();
-			}
+    		if (oldSentTos != null) {
+    			oldSentTos.removeAll(sentToSet);	
+	    		for (SentTo sentTo : oldSentTos) try {
+					sampleUtil.delete(sentTo);
+				} catch (StorageAccessException e) {
+					e.printStackTrace();
+				}
+        	}
+			sample.setSentTos(sentToSet);
         } else {
             if (sample.getSentTos() != null)
                 sample.getSentTos().clear();
