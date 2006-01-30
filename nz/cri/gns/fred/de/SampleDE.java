@@ -806,7 +806,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     			error.add(new String[] {"Sent To", "Database error: " + e.getMessage()});
     		}
     		Set<SentTo> oldSentTos = sample.getSentTos();
-    		oldSentTos.removeAll(sentToSet);
+    		if (oldSentTos != null)
+    			oldSentTos.removeAll(sentToSet);
     		sample.setSentTos(sentToSet);
     		for (SentTo sentTo : oldSentTos) try {
 				sampleUtil.delete(sentTo);
