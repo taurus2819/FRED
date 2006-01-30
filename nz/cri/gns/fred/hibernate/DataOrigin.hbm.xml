@@ -42,21 +42,7 @@
   
     <!-- bi-directional one-to-many association to AuditTable -->
     <set
-        name="auditTablesByDataHistoryId"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <key>
-            <column name="DATA_HISTORY_ID" />
-        </key>
-        <one-to-many 
-            class="nz.cri.gns.fred.hibernate.AuditTable"
-        />
-    </set>
-    <!-- bi-directional one-to-many association to AuditTable -->
-    <set
-        name="auditTablesByDataOriginId"
+        name="audits"
         lazy="true"
         inverse="true"
 		cascade="none"

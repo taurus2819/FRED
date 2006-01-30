@@ -53,25 +53,22 @@ public class AuditTable implements Serializable, Audit {
     private nz.cri.gns.fred.model.Folder folder;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.DataOrigin dataOriginByDataHistoryId;
+    private nz.cri.gns.fred.model.DataOrigin dataOrigin;
 
     /** persistent field */
-    private nz.cri.gns.fred.hibernate.DataOrigin dataOriginByDataOriginId;
+    private Set<nz.cri.gns.fred.model.Sample> samples;
 
     /** persistent field */
-    private Set samples;
+    private Set<nz.cri.gns.fred.model.Record> records;
 
     /** persistent field */
-    private Set records;
+    private Set<nz.cri.gns.fred.model.Feature> features;
 
     /** persistent field */
-    private Set features;
-
-    /** persistent field */
-    private Set auditEdits;
+    private Set<nz.cri.gns.fred.model.AuditEdit> auditEdits;
 
     /** full constructor */
-    public AuditTable(String status, Integer createdById, Date createdDate, Integer submittedById, Date submittedDate, Integer approvedById, Date approvedDate, String workingComments, String curatorComments, String sendMessage, Integer securityClassId, nz.cri.gns.fred.hibernate.Folder folder, nz.cri.gns.fred.hibernate.DataOrigin dataOriginByDataHistoryId, nz.cri.gns.fred.hibernate.DataOrigin dataOriginByDataOriginId, Set samples, Set records, Set features, Set auditEdits) {
+    public AuditTable(String status, Integer createdById, Date createdDate, Integer submittedById, Date submittedDate, Integer approvedById, Date approvedDate, String workingComments, String curatorComments, String sendMessage, Integer securityClassId, nz.cri.gns.fred.hibernate.Folder folder, nz.cri.gns.fred.hibernate.DataOrigin dataOrigin, Set<nz.cri.gns.fred.model.Sample> samples, Set<nz.cri.gns.fred.model.Record> records, Set<nz.cri.gns.fred.model.Feature> features, Set<nz.cri.gns.fred.model.AuditEdit> auditEdits) {
         this.status = status;
         this.createdById = createdById;
         this.createdDate = createdDate;
@@ -84,8 +81,7 @@ public class AuditTable implements Serializable, Audit {
         this.sendMessage = sendMessage;
         this.securityClassId = securityClassId;
         this.folder = folder;
-        this.dataOriginByDataHistoryId = dataOriginByDataHistoryId;
-        this.dataOriginByDataOriginId = dataOriginByDataOriginId;
+        this.dataOrigin = dataOrigin;
         this.samples = samples;
         this.records = records;
         this.features = features;
@@ -97,11 +93,10 @@ public class AuditTable implements Serializable, Audit {
     }
 
     /** minimal constructor */
-    public AuditTable(String status, nz.cri.gns.fred.hibernate.Folder folder, nz.cri.gns.fred.hibernate.DataOrigin dataOriginByDataHistoryId, nz.cri.gns.fred.hibernate.DataOrigin dataOriginByDataOriginId, Set samples, Set records, Set features, Set auditEdits) {
+    public AuditTable(String status, nz.cri.gns.fred.hibernate.Folder folder, nz.cri.gns.fred.hibernate.DataOrigin dataOrigin, Set<nz.cri.gns.fred.model.Sample> samples, Set<nz.cri.gns.fred.model.Record> records, Set<nz.cri.gns.fred.model.Feature> features, Set<nz.cri.gns.fred.model.AuditEdit> auditEdits) {
         this.status = status;
         this.folder = folder;
-        this.dataOriginByDataHistoryId = dataOriginByDataHistoryId;
-        this.dataOriginByDataOriginId = dataOriginByDataOriginId;
+        this.dataOrigin = dataOrigin;
         this.samples = samples;
         this.records = records;
         this.features = features;
@@ -212,51 +207,43 @@ public class AuditTable implements Serializable, Audit {
         this.folder = folder;
     }
 
-    public nz.cri.gns.fred.hibernate.DataOrigin getDataOriginByDataHistoryId() {
-        return this.dataOriginByDataHistoryId;
+    public nz.cri.gns.fred.model.DataOrigin getDataOrigin() {
+        return this.dataOrigin;
     }
 
-    public void setDataOriginByDataHistoryId(nz.cri.gns.fred.hibernate.DataOrigin dataOriginByDataHistoryId) {
-        this.dataOriginByDataHistoryId = dataOriginByDataHistoryId;
+    public void setDataOrigin(nz.cri.gns.fred.model.DataOrigin dataOrigin) {
+        this.dataOrigin = dataOrigin;
     }
 
-    public nz.cri.gns.fred.hibernate.DataOrigin getDataOriginByDataOriginId() {
-        return this.dataOriginByDataOriginId;
-    }
-
-    public void setDataOriginByDataOriginId(nz.cri.gns.fred.hibernate.DataOrigin dataOriginByDataOriginId) {
-        this.dataOriginByDataOriginId = dataOriginByDataOriginId;
-    }
-
-    public Set getSamples() {
+    public Set<nz.cri.gns.fred.model.Sample> getSamples() {
         return this.samples;
     }
 
-    public void setSamples(Set samples) {
+    public void setSamples(Set<nz.cri.gns.fred.model.Sample> samples) {
         this.samples = samples;
     }
 
-    public Set getRecords() {
+    public Set<nz.cri.gns.fred.model.Record> getRecords() {
         return this.records;
     }
 
-    public void setRecords(Set records) {
+    public void setRecords(Set<nz.cri.gns.fred.model.Record> records) {
         this.records = records;
     }
 
-    public Set getFeatures() {
+    public Set<nz.cri.gns.fred.model.Feature> getFeatures() {
         return this.features;
     }
 
-    public void setFeatures(Set features) {
+    public void setFeatures(Set<nz.cri.gns.fred.model.Feature> features) {
         this.features = features;
     }
 
-    public Set getAuditEdits() {
+    public Set<nz.cri.gns.fred.model.AuditEdit> getAuditEdits() {
         return this.auditEdits;
     }
 
-    public void setAuditEdits(Set auditEdits) {
+    public void setAuditEdits(Set<nz.cri.gns.fred.model.AuditEdit> auditEdits) {
         this.auditEdits = auditEdits;
     }
 

@@ -31,6 +31,8 @@ public interface Audit {
     public void setSendMessage(String sendMessage);
     public Integer getSecurityClassId();
     public void setSecurityClassId(Integer securityClassId);
+    public DataOrigin getDataOrigin();
+    public void setDataOrigin(DataOrigin dataOrigin);
     public Folder getFolder();
     public void setFolder(Folder folder);
     public Set<Sample> getSamples();

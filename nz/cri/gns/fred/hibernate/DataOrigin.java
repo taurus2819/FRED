@@ -3,9 +3,10 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.Audit;
 
 /** @author Hibernate CodeGenerator */
-public class DataOrigin implements Serializable {
+public class DataOrigin implements nz.cri.gns.fred.model.DataOrigin, Serializable {
 
 	private static final long serialVersionUID = 20050818L;
 	
@@ -19,18 +20,14 @@ public class DataOrigin implements Serializable {
     private String description;
 
     /** persistent field */
-    private Set auditTablesByDataHistoryId;
-
-    /** persistent field */
-    private Set auditTablesByDataOriginId;
+    private Set<Audit> audits;
 
     /** full constructor */
-    public DataOrigin(Integer originId, String name, String description, Set auditTablesByDataHistoryId, Set auditTablesByDataOriginId) {
+    public DataOrigin(Integer originId, String name, String description, Set<Audit> audits) {
         this.originId = originId;
         this.name = name;
         this.description = description;
-        this.auditTablesByDataHistoryId = auditTablesByDataHistoryId;
-        this.auditTablesByDataOriginId = auditTablesByDataOriginId;
+        this.audits = audits;
     }
 
     /** default constructor */
@@ -38,11 +35,10 @@ public class DataOrigin implements Serializable {
     }
 
     /** minimal constructor */
-    public DataOrigin(Integer originId, String name, Set auditTablesByDataHistoryId, Set auditTablesByDataOriginId) {
+    public DataOrigin(Integer originId, String name, Set<Audit> audits) {
         this.originId = originId;
         this.name = name;
-        this.auditTablesByDataHistoryId = auditTablesByDataHistoryId;
-        this.auditTablesByDataOriginId = auditTablesByDataOriginId;
+        this.audits = audits;
     }
 
     public Integer getOriginId() {
@@ -69,20 +65,12 @@ public class DataOrigin implements Serializable {
         this.description = description;
     }
 
-    public Set getAuditTablesByDataHistoryId() {
-        return this.auditTablesByDataHistoryId;
+    public Set<Audit> getAudits() {
+        return this.audits;
     }
 
-    public void setAuditTablesByDataHistoryId(Set auditTablesByDataHistoryId) {
-        this.auditTablesByDataHistoryId = auditTablesByDataHistoryId;
-    }
-
-    public Set getAuditTablesByDataOriginId() {
-        return this.auditTablesByDataOriginId;
-    }
-
-    public void setAuditTablesByDataOriginId(Set auditTablesByDataOriginId) {
-        this.auditTablesByDataOriginId = auditTablesByDataOriginId;
+    public void setAudits(Set<Audit> audits) {
+        this.audits = audits;
     }
 
     public String toString() {

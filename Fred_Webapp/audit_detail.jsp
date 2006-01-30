@@ -83,7 +83,8 @@
 		}
 		%><tr><td class="heading">Created:&nbsp;&nbsp;</td>
 		<td><%=((audit.getCreatedById() != null) ? FREDUtil.getUserName(audit.getCreatedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-		<td><%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
+		<td><%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr>
+		<tr><td class="heading">Origin:&nbsp;&nbsp;</td><td colspan="2"><%=(audit.getDataOrigin() != null) ? audit.getDataOrigin().getName() + " (" + audit.getDataOrigin().getDescription() + ")" : ""%></td></tr><%
 		if (audit.getAuditEdits() != null && audit.getAuditEdits().size() > 0) {
 			for (Iterator i = audit.getAuditEdits().iterator(); i.hasNext();) {
 				AuditEdit edit = (AuditEdit) i.next();
@@ -120,7 +121,8 @@
 				}
 				%><tr><td class="heading">Created:&nbsp;&nbsp;</td>
 				<td><%=((audit.getCreatedById() != null) ? FREDUtil.getUserName(audit.getCreatedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-				<td><%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
+				<td><%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr>
+				<tr><td class="heading">Origin:&nbsp;&nbsp;</td><td colspan="2"><%=(audit.getDataOrigin() != null) ? audit.getDataOrigin().getName() + " (" + audit.getDataOrigin().getDescription() + ")" : ""%></td></tr><%
 				if (audit.getAuditEdits() != null && audit.getAuditEdits().size() > 0) {
 					for (Iterator i = audit.getAuditEdits().iterator(); i.hasNext();) {
 						AuditEdit edit = (AuditEdit) i.next();
@@ -158,7 +160,8 @@
 						}
 						%><tr><td class="heading">Created:&nbsp;&nbsp;</td>
 						<td><%=((audit.getCreatedById() != null) ? FREDUtil.getUserName(audit.getCreatedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-						<td><%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
+						<td><%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr>
+						<tr><td class="heading">Origin:&nbsp;&nbsp;</td><td colspan="2"><%=(audit.getDataOrigin() != null) ? audit.getDataOrigin().getName() + " (" + audit.getDataOrigin().getDescription() + ")" : ""%></td></tr><%
 						if (audit.getAuditEdits() != null && audit.getAuditEdits().size() > 0) {
 							for (Iterator j = audit.getAuditEdits().iterator(); j.hasNext();) {
 								AuditEdit edit = (AuditEdit) j.next();
@@ -194,7 +197,8 @@
 						}
 						%><tr><td class="heading">Created:&nbsp;&nbsp;</td>
 						<td><%=((audit.getCreatedById() != null) ? FREDUtil.getUserName(audit.getCreatedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-						<td><%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
+						<td><%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr>
+						<tr><td class="heading">Origin:&nbsp;&nbsp;</td><td colspan="2"><%=(audit.getDataOrigin() != null) ? audit.getDataOrigin().getName() + " (" + audit.getDataOrigin().getDescription() + ")" : ""%></td></tr><%
 						if (audit.getAuditEdits() != null && audit.getAuditEdits().size() > 0) {
 							for (Iterator j = audit.getAuditEdits().iterator(); j.hasNext();) {
 								AuditEdit edit = (AuditEdit) j.next();

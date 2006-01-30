@@ -163,15 +163,7 @@
     </set>
     <!-- bi-directional many-to-one association to DataOrigin -->
     <many-to-one
-        name="dataOriginByDataHistoryId"
-        class="nz.cri.gns.fred.hibernate.DataOrigin"
-        not-null="true"
-    >
-        <column name="DATA_HISTORY_ID" />
-    </many-to-one>
-    <!-- bi-directional many-to-one association to DataOrigin -->
-    <many-to-one
-        name="dataOriginByDataOriginId"
+        name="dataOrigin"
         class="nz.cri.gns.fred.hibernate.DataOrigin"
         not-null="true"
     >
