@@ -781,7 +781,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     		String[] sentTos = request.getParameter("SentTo").split("\\n");
     		HashSet<SentTo> sentToSet = new HashSet<SentTo>();
     		for (String sentTo : sentTos) try {
-    			System.out.println("Creating SentTo from: " + sentTo);
     			String[] parts = sentTo.split("\\*");
     			FossilGroup group = (parts[0].length() == 0) ? null : sampleUtil.getFossilGroup(parts[0]);
     			if (parts[0].length() > 0 && group == null)
@@ -808,7 +807,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     		oldSentTos.removeAll(sentToSet);
     		sample.setSentTos(sentToSet);
     		for (SentTo sentTo : oldSentTos) try {
-    			System.out.println("*** DELETING sent to: " + sentTo.getSentToId() + " ***");
 				sampleUtil.delete(sentTo);
 			} catch (StorageAccessException e) {
 				e.printStackTrace();
