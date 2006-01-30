@@ -44,7 +44,7 @@
 	UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), user);
 	
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 	
 	if (folder != null && folder.isAllowedCreateLocalities()) {
 		IconnedLink[] iLink = new IconnedLink[((folder.isBacklogFolder()) ? 6 : 5)];
