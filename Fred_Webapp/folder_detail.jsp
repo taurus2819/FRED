@@ -44,7 +44,7 @@
 	UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), user);
 	
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 	
 	if (folder != null && folder.isAllowedCreateLocalities()) {
 		IconnedLink[] iLink = new IconnedLink[((folder.isBacklogFolder()) ? 6 : 5)];
@@ -188,9 +188,9 @@
 				%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
 			}
 			%></td><td><%
-			if (folder.isAllowedCreateLocalities()) {
-				%><a href="javascript:prmpt=prompt('Please enter the new name', 'New <%=feature.getFeatureType()%>');if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value='CopyFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/copy.gif" border="0" height="20" width="20" alt="Copy Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
-			}
+			//if (folder.isAllowedCreateLocalities()) {
+			//	%><a href="javascript:prmpt=prompt('Please enter the new name', 'New <%=feature.getFeatureType()%>');if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value='CopyFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/copy.gif" border="0" height="20" width="20" alt="Copy Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
+			//}
 			%></td><td><%
 			if (!status.equals(FREDConstants.APPROVED) && featureUtil.isAllowedDeleteFeature(user, feature, folder)) {
 				%><a href="javascript:if (confirm('Are you sure you want to delete this locality') == true) {document.FoldForm.ActionType.value='DeleteFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
