@@ -345,7 +345,7 @@
 			if (isAllowedReadFeature) {
 				%><tr><td class="heading">Locality</td><td><%=DBUtils.nvl(feature.getLocality())%></td></tr>
 				<tr><td class="heading">Country</td><td><%=((sr != null && !sr.isNull(SiteRecord.COUNTRY_FIELD)) ? FREDUtil.getSiteCountry(sr) : "&nbsp;")%></td></tr>
-				<tr><td class="heading">Location Comments</td><td><%=DBUtils.nvl(feature.getCoordComments())%></td></tr><%
+				<tr><td class="heading">Coordinate Comments</td><td><%=DBUtils.nvl(feature.getCoordComments())%></td></tr><%
 
 				//Drillhole/Vert Sect fields
 				if (!featType.equals(FREDConstants.OUTCROP)) {
@@ -361,7 +361,7 @@
 					<tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon")%></td><td><%=((feature.getFinishDepth() != null) ? String.valueOf(feature.getFinishDepth()) + " m" : "&nbsp;")%></td></tr><%
 				}
 				
-				%><tr><td class="heading">Feature Comments</td><td><%=DBUtils.nvl(feature.getComments())%></td></tr><%
+				%><tr><td class="heading">Locality Comments</td><td><%=DBUtils.nvl(feature.getComments())%></td></tr><%
 			
 				//Image/Files
 				if (feature.getFeatureMetas().size() > 0) {
