@@ -54,7 +54,7 @@
         name="labNumber"
         type="java.lang.String"
         column="LAB_NUMBER"
-        length="16"
+        length="64"
     />
     <property
         name="collectionComments"
