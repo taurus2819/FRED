@@ -32,7 +32,7 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     private Integer mapYear;
     
     /** nullable persistent field */
-    private String comments;
+    private String coordComments;
 
     /** persistent field */
     private String featureType;
@@ -67,6 +67,9 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     /** nullable persistent field */
     private String finishDateRounding;
 
+    /** nullable persistent field */
+    private String comments;
+    
     /** persistent field */
     private nz.cri.gns.fred.model.Person person;
 
@@ -92,13 +95,13 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     private Set<FeatureMeta> featureMetas;
 
     /** full constructor */
-    public Feature(Integer siteId, String locality, Integer origSystemId, String origCoord, Integer mapYear, String comments, String featureType, String featureName, String drillholeLicenceName, Date startDate, Date finishDate, Double datumElevation, Double startDepth, String datumType, Double finishDepth, String startDateRounding, String finishDateRounding, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set samples, Set folders, Set relationships, Set<FeatureMeta> featureMetas) {
+    public Feature(Integer siteId, String locality, Integer origSystemId, String origCoord, Integer mapYear, String coordComments, String featureType, String featureName, String drillholeLicenceName, Date startDate, Date finishDate, String comments, Double datumElevation, Double startDepth, String datumType, Double finishDepth, String startDateRounding, String finishDateRounding, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set samples, Set folders, Set relationships, Set<FeatureMeta> featureMetas) {
         this.siteId = siteId;
         this.locality = locality;
         this.origSystemId = origSystemId;
         this.origCoord = origCoord;
         this.mapYear = mapYear;
-        this.comments = comments;
+        this.coordComments = coordComments;
         this.featureType = featureType;
         this.featureName = featureName;
         this.drillholeLicenceName = drillholeLicenceName;
@@ -110,6 +113,7 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
         this.finishDepth = finishDepth;
         this.startDateRounding = startDateRounding;
         this.finishDateRounding = finishDateRounding;
+        this.comments = comments;
         this.person = person;
         this.masterFile = masterFile;
         this.auditTable = auditTable;
@@ -185,12 +189,12 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
         this.mapYear = mapYear;
     }
     
-    public String getComments() {
-        return this.comments;
+    public String getCoordComments() {
+        return this.coordComments;
     }
 
-    public void setComments(String comments) {
-        this.comments = comments;
+    public void setCoordComments(String coordComments) {
+        this.coordComments = coordComments;
     }
 
     public String getFeatureType() {
@@ -232,7 +236,15 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     public void setFinishDate(Date finishDate) {
         this.finishDate = finishDate;
     }
+    
+    public String getComments() {
+        return this.comments;
+    }
 
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+    
     public Double getDatumElevation() {
         return this.datumElevation;
     }

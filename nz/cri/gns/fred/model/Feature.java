@@ -20,8 +20,8 @@ public interface Feature extends Audited, Comparable<Feature> {
     public void setOrigCoord(String origCoord);
     public Integer getMapYear();
     public void setMapYear(Integer mapYear);
-    public String getComments();
-    public void setComments(String comments);
+    public String getCoordComments();
+    public void setCoordComments(String coordComments);
     public String getFeatureType();
     public void setFeatureType(String featureType);
     public String getFeatureName();
@@ -32,6 +32,8 @@ public interface Feature extends Audited, Comparable<Feature> {
     public void setStartDate(Date startDate);
     public Date getFinishDate();
     public void setFinishDate(Date finishDate);
+    public String getComments();
+    public void setComments(String comments);
     public Double getDatumElevation();
     public void setDatumElevation(Double datumElevation);
     public Double getStartDepth();

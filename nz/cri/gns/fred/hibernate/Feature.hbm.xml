@@ -57,9 +57,9 @@
         length="4"
     />
     <property
-        name="comments"
+        name="coordComments"
         type="java.lang.String"
-        column="COMMENTS"
+        column="COORD_COMMENTS"
         length="255"
     />
     <property
@@ -128,6 +128,12 @@
         type="java.lang.String"
         column="FINISH_DATE_ROUNDING"
         length="5"
+    />
+        <property
+        name="comments"
+        type="java.lang.String"
+        column="COMMENTS"
+        length="255"
     />
 
     <!-- Associations -->
