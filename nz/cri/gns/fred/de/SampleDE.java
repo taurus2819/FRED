@@ -675,12 +675,14 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
 	public List<IconnedLink> getNavigation() {
 		List<IconnedLink> links = new Vector<IconnedLink>(4);
+		//need to hibernate load_record.jsp and then re-add link
+		/*
 		String args = ((workingFolder == null) ? "?q" : ("?FoldID=" + workingFolder.getFolderId())) 
 			+ ((sample.getSampleId() == null) ? "" : ("&SampID=" + sample.getSampleId()))
 			+ "&RecType=Sample";
 			
 		links.add(new IconnedLink("load_record.jsp" + args, "images/load.gif", "Copy From"));
-		
+		*/
 		links.add(new IconnedLink("javascript:document.form1.SaveType.value='Save';document.form1.submit();", "images/save.gif", "Save"));
 		if (isAllowedSubmit)
 			links.add(new IconnedLink("javascript:document.form1.SaveType.value='Submit';document.form1.submit();", "images/submit.gif", "Submit"));

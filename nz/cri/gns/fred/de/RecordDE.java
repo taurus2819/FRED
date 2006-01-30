@@ -160,6 +160,8 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 
 	public List<IconnedLink> getNavigation() {
         List<IconnedLink> links = new Vector<IconnedLink>(4);
+		//need to hibernate load_record.jsp and then re-add link
+		/*
         try {
             String args = "?FoldID=" + workingFolder.getFolderId() 
                 + ((record.getRecordId() == null) ? "" : ("&RecID=" + record.getRecordId()))
@@ -169,6 +171,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         } catch (UnsupportedEncodingException e) {
             //Aint' gonna happen
         }
+        */
         links.add(new IconnedLink("javascript:document.form1.SaveType.value='Save';document.form1.submit();", "images/save.gif", "Save"));
         if (isAllowedSubmit)
             links.add(new IconnedLink("javascript:document.form1.SaveType.value='Submit';document.form1.submit();", "images/submit.gif", "Submit"));
