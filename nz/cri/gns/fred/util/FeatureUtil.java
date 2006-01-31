@@ -121,6 +121,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			System.out.println("Saved");
 		} else {
 			//Anything that's not actually a feature attribute doesn't get saved
 		}
