@@ -163,6 +163,7 @@
 		try {
 		//Display the features
 		Feature[] features = featureUtil.getFeaturesInFolder(folder);
+		System.out.println("Features count: " + features.length);
 		for (int i = 0; i < features.length; i++) {
 			Feature feature = features[i];
 			Audit audit = feature.getAudit();
@@ -210,9 +211,7 @@
 		}
 		%></table><%
 		endDETable(pageContext);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+
 
 		%></p><p><%
 		
@@ -253,6 +252,9 @@
 		<input type="hidden" name="NewFoldID" value="" />
 		<input type="hidden" name="NewFeatName" value="" />
 		</table></p><%
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 /*		//folder options
 		out.println("<table border='0' cellspacing='0' cellpadding = '2' width='600'><tr><td height='5'></td></tr><tr class='shadegreytr'><td>");

@@ -205,6 +205,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 			query.setEntity("folder", folder);
 			return query.list();
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new StorageAccessException(e);
 		}
 	}
