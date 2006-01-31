@@ -45,6 +45,7 @@ import nz.cri.gns.jsp.IconnedLink;
 import nz.cri.gns.jsp.PageState;
 import nz.cri.gns.util.map.Datum;
 import nz.cri.gns.util.map.DatumFactory;
+import nz.cri.gns.util.map.NZGD2000;
 import nz.cri.gns.util.map.NZGD49;
 import nz.cri.gns.util.map.WGS84;
 import nz.cri.gns.util.map.Datum.MapSheetCoordinate;
@@ -281,7 +282,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 				else
 					template.addSub("mapSheet", ((Datum.MapSheetCoordinate)coord).getMapSheet());
 				
-				if (datum instanceof NZGD49 || datum instanceof WGS84) {
+				if (datum instanceof NZGD49 || datum instanceof WGS84 || datum instanceof NZGD2000) {
 					eastingLabel = "Longitude";
 					northingLabel = "Latitude";
 				}
