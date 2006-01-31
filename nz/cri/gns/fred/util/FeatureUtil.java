@@ -116,7 +116,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			
 			//Save the new sample
 			System.out.println("About to save sample");
+			try {
 			sampleDAO.save(newSample);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		} else {
 			//Anything that's not actually a feature attribute doesn't get saved
 		}
