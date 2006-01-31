@@ -190,7 +190,7 @@
 					%><table border="0" width="160">
 					<tr><td colspan="2" class="deHeading">Masterfile Curator</td></tr>
 					<form name="RevForm" method="post" action="detail.jsp">
-					<input type="hidden" name="FeatID" value="<%=feature.getFeatureId()%>" />
+					<input type="hidden" name="ID" value="<%=sampID%>" />
 					<input type="hidden" name="ActionType" value="" />
 					<tr><td colspan="2" class="heading">User Comments</td></tr>
 					<tr><td colspan="2"><%=DBUtils.nvl(workComm)%></td></tr><%
