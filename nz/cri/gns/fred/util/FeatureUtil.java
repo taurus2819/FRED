@@ -62,6 +62,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	public Feature copyFeature(Feature feature, String newName, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
+		System.out.println("****Copying Feature " + getFeatureName(feature) + " to " + newName + "****");
 		if (!folder.isAllowedCreateLocalities())
 			throw new InsufficientPrivelegesException();
 		Audit audit = featureDAO.createNewAudit();
@@ -106,6 +107,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			if (samples.size() != 1) {
 				throw new IllegalStateException("Outcrop does not have a singleton sample"); 
 			}
+			System.out.println("Copying sample");
 			Sample sample = (Sample)samples.iterator().next();
 			//Copy sample - collectors clone is OK as it's many-to-many
 			Sample newSample = cloneSample(newFeature, sample);
@@ -113,6 +115,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			newSample.setAudit(newFeature.getAudit());
 			
 			//Save the new sample
+			System.out.println("About to save sample");
 			sampleDAO.save(newSample);
 		} else {
 			//Anything that's not actually a feature attribute doesn't get saved
