@@ -163,7 +163,6 @@
 			
 			//Display the features
 			Feature[] features = featureUtil.getFeaturesInFolder(folder);
-			System.out.println("Features count: " + features.length);
 			for (int i = 0; i < features.length; i++) {
 				Feature feature = features[i];
 				Audit audit = feature.getAudit();

@@ -913,7 +913,6 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	}
 	
 	public BacklogStatus getBacklogStatus(String mapNumber) throws StorageAccessException {
-		System.out.println("Getting BS for map: " + mapNumber);
 		BacklogStatus bs;
 		try {
 			 bs = HibernateUtils.getFirst(provider, "FROM BacklogStatus AS b WHERE b.mapNumber = ?", mapNumber, BacklogStatus.class);

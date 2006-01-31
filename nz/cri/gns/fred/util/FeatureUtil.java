@@ -62,7 +62,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	public Feature copyFeature(Feature feature, String newName, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
-		System.out.println("****Copying Feature " + getFeatureName(feature) + " to " + newName + "****");
 		if (!folder.isAllowedCreateLocalities())
 			throw new InsufficientPrivelegesException();
 		Audit audit = featureDAO.createNewAudit();
@@ -82,7 +81,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		//Copy feature images
 		Set images = feature.getFeatureMetas();
 		if (images != null && images.size() > 0) {
-			System.out.println("Copying metas");
 			HashSet<FeatureMeta> newImages = new HashSet<FeatureMeta>();
 			for (Iterator it = images.iterator(); it.hasNext(); ) {
 				FeatureMeta meta = (FeatureMeta)it.next();
@@ -93,7 +91,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			}
 			newFeature.setFeatureMetas(newImages);
 		} else {
-			System.out.println("No metas");
 			newFeature.setFeatureMetas(null);
 		}
 		//Clear out relationships pointing _to_ it
@@ -111,7 +108,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			if (samples.size() != 1) {
 				throw new IllegalStateException("Outcrop does not have a singleton sample"); 
 			}
-			System.out.println("Copying sample");
 			Sample sample = (Sample)samples.iterator().next();
 			//Copy sample - collectors clone is OK as it's many-to-many
 			Sample newSample = cloneSample(newFeature, sample);
@@ -119,13 +115,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			newSample.setAudit(newFeature.getAudit());
 			
 			//Save the new sample
-			System.out.println("About to save sample");
 			try {
 			sampleDAO.save(newSample);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			System.out.println("Saved");
 		} else {
 			//Anything that's not actually a feature attribute doesn't get saved
 		}
