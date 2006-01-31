@@ -92,6 +92,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				newImages.add(newMeta);
 			}
 			newFeature.setFeatureMetas(newImages);
+		} else {
+			System.out.println("No metas");
+			newFeature.setFeatureMetas(null);
 		}
 		//Clear out relationships pointing _to_ it
 		newFeature.setRelationships(null);
