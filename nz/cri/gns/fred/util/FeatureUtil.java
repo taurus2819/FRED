@@ -82,6 +82,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		//Copy feature images
 		Set images = feature.getFeatureMetas();
 		if (images != null && images.size() > 0) {
+			System.out.println("Copying metas");
 			HashSet<FeatureMeta> newImages = new HashSet<FeatureMeta>();
 			for (Iterator it = images.iterator(); it.hasNext(); ) {
 				FeatureMeta meta = (FeatureMeta)it.next();
