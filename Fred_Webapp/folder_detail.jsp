@@ -160,6 +160,7 @@
 		<tr><td colspan="11"><img src="images/line.gif" height="3" width="550" /></td></tr>
 
 		<form name="FoldForm" method="post" action="folder_detail.jsp"><%
+		try {
 		//Display the features
 		Feature[] features = featureUtil.getFeaturesInFolder(folder);
 		for (int i = 0; i < features.length; i++) {
@@ -209,6 +210,9 @@
 		}
 		%></table><%
 		endDETable(pageContext);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		%></p><p><%
 		
