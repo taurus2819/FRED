@@ -177,7 +177,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 	}
 
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws SQLException, IOException {
-        reinitialise(factory);
+        //reinitialise(factory);
 		Template template = provider.getContent("record.de.form");
         prepareTemplate(template, provider);
         if (record.getRecordId() != null) 

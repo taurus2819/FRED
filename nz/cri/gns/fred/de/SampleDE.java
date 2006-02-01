@@ -145,7 +145,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
-        reinitialise(factory);
+        //reinitialise(factory);
 		ComboDescriptor cd;
 		
 		if (!outcropSample) {

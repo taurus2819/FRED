@@ -2,7 +2,6 @@
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.fred.de.DataEntryForm"
 %><%@page import="nz.cri.gns.fred.de.DataEntryFormFactory"
-%><%@page import="nz.cri.gns.fred.de.LocalityDE"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
@@ -75,8 +74,6 @@
 	DataEntryForm dataEntryForm = null;
 	try {
 		dataEntryForm = getDataEntryForm(request);
-		System.out.println("DataEntryForm generated");
-		System.out.println(dataEntryForm);
 	} catch (Exception e) {
 		e.printStackTrace();
 		drawTop(out, et, request, response);
@@ -102,13 +99,8 @@
 			drawTop(out, et, request, response);
 			
 			
-			if (request.getParameter("CopyID") != null) {
-				System.out.println("Feature Name (DE before copy) : " + ((LocalityDE)dataEntryForm).getFeatureName());
-				System.out.println("About to copy");
+			if (request.getParameter("CopyID") != null)
 				dataEntryForm.copyFrom(Integer.parseInt(request.getParameter("CopyID")));
-				System.out.println("Completed copy");
-				System.out.println("Feature Name (DE after copy) : " + ((LocalityDE)dataEntryForm).getFeatureName());
-			}
 		
 			String formType = request.getParameter("Type");
 			String featID = request.getParameter("FeatID");
@@ -143,7 +135,6 @@
 			endDETable(pageContext);
 			%></div>
 			<p><%
-			System.out.println("Feature Name (before makeDataEntryHTML) : " + ((LocalityDE)dataEntryForm).getFeatureName());
 			dataEntryForm.makeDataEntryHTML(new PrintWriter(out), factory);
 			%></form><%
 			dataEntryForm.makePostFormHTML(new PrintWriter(out));

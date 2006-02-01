@@ -43,47 +43,11 @@ public class OutcropLocalityDE extends LocalityDE {
 
 	public void copyFrom(int featureId) throws InsufficientPrivelegesException, StorageAccessException {
 		super.copyFrom(featureId);
-		Feature feature = featureUtil.getFeature(featureId);
-		Sample sample = (Sample)feature.getSamples().iterator().next();
-		sampleDE.copyFrom(sample.getSampleId());
+		Feature copyFeature = featureUtil.getFeature(featureId);
+		Sample copySample = (Sample)copyFeature.getSamples().iterator().next();
+		sampleDE.copyFrom(copySample.getSampleId());
 	}
 
-/*	public void setField(int field, String value) throws DataInputException {
-		if (field < 30) {
-			super.setField(field, value);
-		} else {
-			try {
-				sampleDE.setField(field, value);
-			} catch (TaxonomicListException e) {}
-		}
-		savedFlag = false;
-	}
-
-	public String getField(int field) {
-		if (field < 30) {
-			return super.getField(field);
-		} else {
-			return sampleDE.getField(field); 
-		}
-	}
-
-	public void setTempField(int field, String value) {
-		if (field < 30) {
-			super.setTempField(field, value);
-		} else {
-			sampleDE.setTempField(field, value);
-		}
-	}
-
-	public String getTempField(int field) {
-		if (field < 30) {
-			return super.getTempField(field);
-		} else {
-			return sampleDE.getTempField(field);
-		}
-	}
-	*/
-	
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
 		super.makeDataEntryHTML(out, factory);
 		sampleDE.makeDataEntryHTML(out, factory);
