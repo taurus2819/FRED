@@ -95,7 +95,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         Record fromRecord = recordUtil.getRecord(recordId);
         if (!recordUtil.isAllowedReadRecord(user, fromRecord))
             throw new InsufficientPrivelegesException("You do not have access to that record");
-		if (recordUtil.getRecordType(record).equals(recordUtil.getRecordType(fromRecord)))
+		if (!recordUtil.getRecordType(record).equals(recordUtil.getRecordType(fromRecord)))
 			throw new IllegalArgumentException("Incompatible Record Types for copy operation");
 
         
