@@ -56,6 +56,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
 	private User user;
 	private Sample sample;
+	private Sample copySample;
 	private boolean isAllowedSubmit = false;
 
 	private boolean outcropSample = false;
@@ -95,9 +96,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 
 	public void copyFrom(int sampleId) throws StorageAccessException  {
-		Sample copySample = sampleUtil.getSample(sampleId);
+		Sample fromSample = sampleUtil.getSample(sampleId);
 		
-		getFromDatabase(copySample);
+		this.copySample = fromSample;
 	}
 
 	private void getFromDatabase(Sample fromSample) throws StorageAccessException {
@@ -145,7 +146,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
-        //reinitialise(factory);
+        reinitialise(factory);
 		ComboDescriptor cd;
 		
 		if (!outcropSample) {
@@ -1069,6 +1070,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         sampleUtil = new SampleUtil(factory);
         if (sample.getSampleId() != null) try {
             sample = sampleUtil.getSample(sample.getSampleId().intValue());
+            if (copySample != null) {
+            	getFromDatabase(copySample);
+            	copySample = null;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

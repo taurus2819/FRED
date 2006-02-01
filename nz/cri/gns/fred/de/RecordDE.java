@@ -40,6 +40,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 
 	protected User user;
 	protected Record record;
+	private Record copyRecord;
 	
     protected RecordUtil recordUtil;
     protected ContentProvider provider;
@@ -94,15 +95,14 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         Record fromRecord = recordUtil.getRecord(recordId);
         if (!recordUtil.isAllowedReadRecord(user, fromRecord))
             throw new InsufficientPrivelegesException("You do not have access to that record");
+		if (recordUtil.getRecordType(record).equals(recordUtil.getRecordType(fromRecord)))
+			throw new IllegalArgumentException("Incompatible Record Types for copy operation");
+
         
-        getFromDatabase(fromRecord);
+        this.copyRecord = fromRecord;
     }
 
 	protected void getFromDatabase(Record fromRecord) {
-        
-        if (fromRecord.getAdoption() == null ^ record.getAdoption() == null) {
-            throw new IllegalArgumentException("From record was of a different type");
-        }
         if (fromRecord.getAdoption() != null) {
             Adoption fromAdoption = fromRecord.getAdoption();
             Adoption adoption = record.getAdoption();
@@ -177,7 +177,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 	}
 
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws SQLException, IOException {
-        //reinitialise(factory);
+        reinitialise(factory);
 		Template template = provider.getContent("record.de.form");
         prepareTemplate(template, provider);
         if (record.getRecordId() != null) 
@@ -263,6 +263,10 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         recordUtil = new RecordUtil(factory);
         if (record.getRecordId() != null) try {
         	record = recordUtil.getRecord(record.getRecordId().intValue());
+            if (copyRecord != null) {
+            	getFromDatabase(copyRecord);
+            	copyRecord = null;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
