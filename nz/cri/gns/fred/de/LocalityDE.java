@@ -176,7 +176,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	}
 	
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
-        reinitialise(factory);
+        //reinitialise(factory);
         Template template = provider.getContent("locality.de.form");
         prepareTemplate(template, provider);
 		try {
@@ -361,7 +361,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	}
 
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
-        //reinitialise(factory);
+        reinitialise(factory);
         
         Vector<String[]> error = new Vector<String[]>();
 		
