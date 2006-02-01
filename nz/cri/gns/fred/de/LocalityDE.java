@@ -361,7 +361,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	}
 
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
-        reinitialise(factory);
+        //reinitialise(factory);
         
         Vector<String[]> error = new Vector<String[]>();
 		
