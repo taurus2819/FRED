@@ -186,6 +186,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 template.addSub("featureId", feature.getFeatureId().toString());
 			String featureType = feature.getFeatureType();
 			template.addSub("featureType", URLEncoder.encode(featureType, "ISO-8859-1"));
+			System.out.println("FeatureName: " + feature.getFeatureName());
 			template.addSub("featureName", feature.getFeatureName());
 			if (featureType.equals(FREDConstants.OUTCROP))
 				template.addSub("isOutcrop", "yes");

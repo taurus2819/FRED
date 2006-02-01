@@ -45,9 +45,6 @@
 					} else {
 						return DataEntryFormFactory.getLocalityDataEntryForm(formType, user, Integer.parseInt(foldID), factory, provider);
 					}
-					//if (request.getParameter("CopyID") != null) //copying
-					//	dataEntryForm.copyFrom(Integer.parseInt(request.getParameter("CopyID")));
-					//return dataEntryForm;
 				} else if (formType.equals("Sample")) {
 					String sampID = request.getParameter("SampID");
 					if (sampID != null) { //editing
