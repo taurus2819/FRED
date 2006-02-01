@@ -29,7 +29,7 @@
 		if (request.getAttribute(WebsiteConstants.DATA_ENTRY_FORM) != null)
 			return (DataEntryForm) request.getAttribute(WebsiteConstants.DATA_ENTRY_FORM);
 		HttpSession session = request.getSession();
-		if (request.getParameter("Err") != null || request.getParameter("CopyID") != null) {
+		if (request.getParameter("Err") != null) {
 			return (DataEntryForm) session.getAttribute(WebsiteConstants.DATA_ENTRY_FORM);
 		} else {
 			DAOFactory factory = HibernateUtil.get().getDAOFactory();
@@ -40,13 +40,15 @@
 				ContentProvider provider = new ContentProvider(new File(request.getSession().getServletContext().getRealPath("/content")));
 				if (formType.equals(FREDConstants.OUTCROP) || formType.equals(FREDConstants.DRILLHOLE) || formType.equals(FREDConstants.VERTICAL_SECTION)) {
 					String featID = request.getParameter("FeatID");
+					DataEntryForm dataEntryForm;
 					if (featID != null) { //editing
-						return DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), Integer.parseInt(foldID), user, factory, provider);
+						dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), Integer.parseInt(foldID), user, factory, provider);
 					} else {
-						return DataEntryFormFactory.getLocalityDataEntryForm(formType, user, Integer.parseInt(foldID), factory, provider);
+						dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(formType, user, Integer.parseInt(foldID), factory, provider);
 					}
-					//if (request.getParameter("LoadFeatID") != null) //copying
-					//	dataEntryForm.copyFrom(Integer.parseInt(request.getParameter("LoadFeatID")));
+					if (request.getParameter("CopyID") != null) //copying
+						dataEntryForm.copyFrom(Integer.parseInt(request.getParameter("CopyID")));
+					return dataEntryForm;
 				} else if (formType.equals("Sample")) {
 					String sampID = request.getParameter("SampID");
 					if (sampID != null) { //editing

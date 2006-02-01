@@ -39,33 +39,41 @@
 		String sampID = request.getParameter("SampID");
 		String featID = request.getParameter("FeatID");
 		String recType = request.getParameter("RecType");
-
+		
+		%><table border="0">
+		<tr><td><img src="images/blank.gif" width="200" height="10" alt="" /></td></tr>
+		<tr><td></td>
+		<td>
+		
+		
+		<p><%
+		startDETable(pageContext);
+		%><table border="0">
+		<tr><td colspan="4" class="deHeading">Copy From</td></tr><%
+		
+		
 		if (recType.equals(FREDConstants.OUTCROP) || recType.equals(FREDConstants.DRILLHOLE) || recType.equals(FREDConstants.VERTICAL_SECTION)) {
-			%><p>Choose the locality to copy from the list below by clicking on the <img src="images/load.gif" width="20" height="20" alt="Copy Icon" /> icon</p><%
 			//List localities
 			Feature[] features = featureUtil.getFeaturesInFolder(folder);
 			if (folder.isAllowedReadLocalities() && features.length > 0) {
-				%><table border="0" cellspacing="0" cellpadding="2">
-				<tr class="heading"><td></td><td>Locality</td></tr><%		
+				%><tr class="heading"><td></td><td>Locality</td></tr><%		
 				for (int i = 0; i < features.length; i++) {
-					if (features[i].getFeatureType().equals(recType) && (featID == null || features[i].getFeatureId() != Integer.parseInt(featID))) {
+					if (features[i].getFeatureType().equals(recType) && (featID == null || features[i].getFeatureId() != new Integer(featID))) {
 						%><tr><td><a href="de.jsp?Type=<%=recType%>&FoldID=<%=folder.getFolderId() + ((featID != null) ? "&FeatID=" + featID : "")%>&CopyID=<%=features[i].getFeatureId()%>"><img src="images/load.gif" width="20" height="20" border="0" alt="Copy Locality" /></a>&nbsp;&nbsp;</td>
 						<td><%=FeatureUtil.getFeatureName(features[i])%></td></tr><%
 					}
 				}
 			}
 		} else if (recType.equals("Sample")) {
-			%><p>Choose the sample to copy from the list below by clicking on the <img src="images/load.gif" width="20" height="20" alt="Copy Icon" /> icon</p><%
-			//List localities
+			//List samples
 			Feature[] features = featureUtil.getFeaturesInFolder(folder);
 			if (folder.isAllowedReadLocalities() && features.length > 0) {
-				%><table border="0" cellspacing="0" cellpadding="2">
-				<tr class="heading"><td></td><td>Locality</td><td>Sample</td></tr><%		
+				%><tr class="heading"><td></td><td>Locality</td><td>Sample</td></tr><%		
 				for (int i = 0; i < features.length; i++) {
 					if (!features[i].getFeatureType().equals(FREDConstants.OUTCROP) && features[i].getSamples().size() > 0) {
 						for (Iterator j = features[i].getSamples().iterator(); j.hasNext(); ) {
 							Sample sample = (Sample) j.next();
-							if (sampID == null || sample.getSampleId() != Integer.parseInt(sampID)) {
+							if (sampID == null || sample.getSampleId() != new Integer(sampID)) {
 								%><tr><td><a href="data_entry.jsp?Type=<%=recType%>&FoldID=<%=folder.getFolderId() + ((sampID != null) ? "&SampID=" + sampID : "")%>&CopyID=<%=sample.getSampleId()%>"><img src="images/load.gif" width="20" height="20" border="0" alt="Copy Sample" /></a>&nbsp;&nbsp;</td>
 								<td><%=FeatureUtil.getFeatureName(features[i])%>&nbsp;&nbsp;</td><td><%=SampleUtil.getDrillHoleDepthDescription(sample)%></td></tr><%
 							}
@@ -74,12 +82,10 @@
 				}
 			}
 		} else { //Records
-			%><p>Choose the record to copy from the list below by clicking on the <img src="images/load.gif" width="20" height="20" alt="Copy Icon" /> icon</p><%
-			//List localities
+			//List records
 			Feature[] features = featureUtil.getFeaturesInFolder(folder);
 			if (folder.isAllowedReadLocalities() && features.length > 0) {
-				%><table border="0" cellspacing="0" cellpadding="2">
-				<tr class="heading"><td></td><td>Locality</td><td>Sample</td><td>Record</td></tr><%
+				%><tr class="heading"><td></td><td>Locality</td><td>Sample</td><td>Record</td></tr><%
 				for (int i = 0; i < features.length; i++) {
 					if (features[i].getSamples().size() > 0) {
 						for (Iterator j = features[i].getSamples().iterator(); j.hasNext(); ) {
@@ -87,7 +93,7 @@
 							if (sample.getRecords().size() > 0) {
 								for (Iterator k = sample.getRecords().iterator(); k.hasNext(); ) {
 									Record record = (Record) k.next();
-									if (record != null && (recID == null || record.getRecordId() != Integer.parseInt(recID))) {
+									if (record != null && (recID == null || record.getRecordId() != new Integer(recID))) {
 										%><tr><td><a href="data_entry.jsp?Type=<%=recordUtil.getRecordType(record)%>&FoldID=<%=folder.getFolderId() + ((recID != null) ? "&RecID=" + recID : "")%>&CopyID=<%=record.getRecordId()%>"><img src="images/load.gif" width="20" height="20" border="0" alt="Copy Record" /></a>&nbsp;&nbsp;</td>
 										<td><%=FeatureUtil.getFeatureName(features[i])%>&nbsp;&nbsp;</td><td><%=SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td><td><%=recordUtil.getRecordName(record)%></td></tr><%
 									}
@@ -99,7 +105,10 @@
 			}
 		}
 
-		out.println("</table>");
+		%></table><%
+		endDETable(pageContext);
+		%></p>
+		</td></tr></table><%
 	}
 
 	out.println("</td></tr></table>");
