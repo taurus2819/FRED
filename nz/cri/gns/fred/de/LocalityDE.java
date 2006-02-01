@@ -122,6 +122,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		try {
 			site = FREDUtil.getSite(fromFeature);
 		} catch (Exception e) {
+			e.printStackTrace();
 			//Site wasn't set
 		}
 	}
