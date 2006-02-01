@@ -61,6 +61,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	private UserFolder workingFolder;
 	
 	protected Feature feature;
+	private Feature copyFeature;
 	/**
 	 * Temporary storage for working comments
 	 */
@@ -106,17 +107,16 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	}
 
 	public void copyFrom(int featureID) throws InsufficientPrivelegesException, StorageAccessException {
-		Feature copyFeature = featureUtil.getFeature(featureID);
+		Feature fromFeature = featureUtil.getFeature(featureID);
 		
-		if (!feature.getFeatureType().equals(copyFeature.getFeatureType()))
+		if (!feature.getFeatureType().equals(fromFeature.getFeatureType()))
 			throw new IllegalArgumentException("Incompatible Locality Types for copy operation");
 		
-		getFromDatabase(copyFeature);
+		this.copyFeature = fromFeature;
 	}
 
 	protected void getFromDatabase(Feature fromFeature) throws InsufficientPrivelegesException {
 		//set fields
-		//feature.setFeatureName(fromFeature.getFeatureName());
 		feature.setRegistrationArea(fromFeature.getRegistrationArea());
 		feature.getAudit().setWorkingComments(fromFeature.getAudit().getWorkingComments());
 		try {
@@ -169,7 +169,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	}
 	
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
-        //reinitialise(factory);
+        reinitialise(factory);
         Template template = provider.getContent("locality.de.form");
         prepareTemplate(template, provider);
 		try {
@@ -485,8 +485,13 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         featureUtil = new FeatureUtil(factory);
         if (feature.getFeatureId() != null) try {
             feature = featureUtil.getFeature(feature.getFeatureId().intValue());
+            if (copyFeature != null) {
+            	getFromDatabase(copyFeature);
+            	copyFeature = null;
+            }
         } catch (Exception e) {
         }
+
     }
 	
 	
