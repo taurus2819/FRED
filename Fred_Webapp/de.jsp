@@ -29,7 +29,7 @@
 		if (request.getAttribute(WebsiteConstants.DATA_ENTRY_FORM) != null)
 			return (DataEntryForm) request.getAttribute(WebsiteConstants.DATA_ENTRY_FORM);
 		HttpSession session = request.getSession();
-		if (request.getParameter("Err") != null) {
+		if (request.getParameter("Err") != null || request.getParameter("CopyID") != null) {
 			return (DataEntryForm) session.getAttribute(WebsiteConstants.DATA_ENTRY_FORM);
 		} else {
 			DAOFactory factory = HibernateUtil.get().getDAOFactory();
@@ -40,15 +40,14 @@
 				ContentProvider provider = new ContentProvider(new File(request.getSession().getServletContext().getRealPath("/content")));
 				if (formType.equals(FREDConstants.OUTCROP) || formType.equals(FREDConstants.DRILLHOLE) || formType.equals(FREDConstants.VERTICAL_SECTION)) {
 					String featID = request.getParameter("FeatID");
-					DataEntryForm dataEntryForm;
 					if (featID != null) { //editing
-						dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), Integer.parseInt(foldID), user, factory, provider);
+						return DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), Integer.parseInt(foldID), user, factory, provider);
 					} else {
-						dataEntryForm = DataEntryFormFactory.getLocalityDataEntryForm(formType, user, Integer.parseInt(foldID), factory, provider);
+						return DataEntryFormFactory.getLocalityDataEntryForm(formType, user, Integer.parseInt(foldID), factory, provider);
 					}
-					if (request.getParameter("CopyID") != null) //copying
-						dataEntryForm.copyFrom(Integer.parseInt(request.getParameter("CopyID")));
-					return dataEntryForm;
+					//if (request.getParameter("CopyID") != null) //copying
+					//	dataEntryForm.copyFrom(Integer.parseInt(request.getParameter("CopyID")));
+					//return dataEntryForm;
 				} else if (formType.equals("Sample")) {
 					String sampID = request.getParameter("SampID");
 					if (sampID != null) { //editing
@@ -78,6 +77,8 @@
 	DataEntryForm dataEntryForm = null;
 	try {
 		dataEntryForm = getDataEntryForm(request);
+		System.out.println("DataEntryForm generated");
+		System.out.println(dataEntryForm);
 	} catch (Exception e) {
 		e.printStackTrace();
 		drawTop(out, et, request, response);
@@ -102,8 +103,12 @@
 		
 			drawTop(out, et, request, response);
 			
-			if (request.getParameter("CopyID") != null)
+			
+			if (request.getParameter("CopyID") != null) {
+				System.out.println("About to copy");
 				dataEntryForm.copyFrom(Integer.parseInt(request.getParameter("CopyID")));
+				System.out.println("Completed copy");
+			}
 		
 			String formType = request.getParameter("Type");
 			String featID = request.getParameter("FeatID");

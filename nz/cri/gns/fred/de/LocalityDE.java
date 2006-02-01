@@ -120,7 +120,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
 	protected void getFromDatabase(Feature fromFeature) throws InsufficientPrivelegesException {
 		//set fields
+		System.out.println("Existing feature name: " + feature.getFeatureName());
 		feature.setFeatureName(fromFeature.getFeatureName());
+		System.out.println("New feature name: " + feature.getFeatureName());
 		feature.setRegistrationArea(fromFeature.getRegistrationArea());
 		feature.getAudit().setWorkingComments(fromFeature.getAudit().getWorkingComments());
 		try {
