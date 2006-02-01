@@ -72,6 +72,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	
 	private boolean isAllowedSubmit;
 	
+	public String getFeatureName() {
+		return feature.getFeatureName();
+	}
 	
 	public LocalityDE(User user, int folderID, String featureType, DAOFactory factory, ContentProvider content)	throws StorageAccessException, InsufficientPrivelegesException {
 		initialise((featureUtil = new FeatureUtil(factory)).createFeature(folderID, featureType, user), folderID, user, factory, content);
@@ -116,13 +119,13 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		/*
 		Sample copySample = (Sample)copyFeature.getSamples().iterator().next();
 		getFromDatabase(copySample);*/
+		System.out.println("Feature name (copyFrom): " + getFeatureName());
 	}
 
 	protected void getFromDatabase(Feature fromFeature) throws InsufficientPrivelegesException {
 		//set fields
-		System.out.println("Existing feature name: " + feature.getFeatureName());
+		System.out.println("Existing feature name (getFromDatabase): " + getFeatureName());
 		feature.setFeatureName(fromFeature.getFeatureName());
-		System.out.println("New feature name: " + feature.getFeatureName());
 		feature.setRegistrationArea(fromFeature.getRegistrationArea());
 		feature.getAudit().setWorkingComments(fromFeature.getAudit().getWorkingComments());
 		try {
@@ -130,6 +133,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		} catch (Exception e) {
 			//Site wasn't set
 		}
+		System.out.println("New feature name (getFromDatabase): " + getFeatureName());
 	}
 
 	public Integer getFeatureID() {
@@ -186,7 +190,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 template.addSub("featureId", feature.getFeatureId().toString());
 			String featureType = feature.getFeatureType();
 			template.addSub("featureType", URLEncoder.encode(featureType, "ISO-8859-1"));
-			System.out.println("FeatureName: " + feature.getFeatureName());
+			System.out.println("FeatureName (makeDataEntryHTML): " + getFeatureName());
 			template.addSub("featureName", feature.getFeatureName());
 			if (featureType.equals(FREDConstants.OUTCROP))
 				template.addSub("isOutcrop", "yes");

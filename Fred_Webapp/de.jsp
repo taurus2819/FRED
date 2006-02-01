@@ -2,6 +2,7 @@
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.fred.de.DataEntryForm"
 %><%@page import="nz.cri.gns.fred.de.DataEntryFormFactory"
+%><%@page import="nz.cri.gns.fred.de.LocalityDE"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
@@ -102,9 +103,11 @@
 			
 			
 			if (request.getParameter("CopyID") != null) {
+				System.out.println("Feature Name (DE before copy) : " + ((LocalityDE)dataEntryForm).getFeatureName());
 				System.out.println("About to copy");
 				dataEntryForm.copyFrom(Integer.parseInt(request.getParameter("CopyID")));
 				System.out.println("Completed copy");
+				System.out.println("Feature Name (DE after copy) : " + ((LocalityDE)dataEntryForm).getFeatureName());
 			}
 		
 			String formType = request.getParameter("Type");
@@ -140,6 +143,7 @@
 			endDETable(pageContext);
 			%></div>
 			<p><%
+			System.out.println("Feature Name (before makeDataEntryHTML) : " + ((LocalityDE)dataEntryForm).getFeatureName());
 			dataEntryForm.makeDataEntryHTML(new PrintWriter(out), factory);
 			%></form><%
 			dataEntryForm.makePostFormHTML(new PrintWriter(out));
