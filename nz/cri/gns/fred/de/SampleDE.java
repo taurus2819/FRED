@@ -121,7 +121,16 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		sample.setInPlace(fromSample.getInPlace());
 		
 		//Sent to
-        HashSet<SentTo> fromSentToSet = new HashSet<SentTo>();
+        Set<SentTo> sentTos = sample.getSentTos(); 
+        if (sentTos == null) {
+            sentTos = new HashSet<SentTo>();
+            sample.setSentTos(sentTos);
+        } else {
+            sentTos.clear();
+        }
+        if (fromSample.getSentTos() != null)
+            sentTos.addAll(fromSample.getSentTos());
+        /*HashSet<SentTo> fromSentToSet = new HashSet<SentTo>();
         if (fromSample.getSentTos().size() > 0) {
     		for (SentTo fromSentTo : fromSample.getSentTos())
     			fromSentToSet.add(sampleUtil.findOrCreateSentTo(sample, fromSentTo.getFossilGroup(), fromSentTo.getPerson(), fromSentTo.getLabId(), fromSentTo.getComments()));
@@ -135,7 +144,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			} catch (StorageAccessException e) {
 				e.printStackTrace();
 			}
-    	}
+    	} */
 		//sample.setSentTos(fromSample.getSentTos());
 		
 		sample.setNotCollected(fromSample.getNotCollected());
