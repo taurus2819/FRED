@@ -130,28 +130,25 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         }
         if (fromSample.getSentTos() != null)
             sentTos.addAll(fromSample.getSentTos());
-        /*HashSet<SentTo> fromSentToSet = new HashSet<SentTo>();
-        if (fromSample.getSentTos().size() > 0) {
-    		for (SentTo fromSentTo : fromSample.getSentTos())
-    			fromSentToSet.add(sampleUtil.findOrCreateSentTo(sample, fromSentTo.getFossilGroup(), fromSentTo.getPerson(), fromSentTo.getLabId(), fromSentTo.getComments()));
-        }
-		Set<SentTo> oldSentTos = sample.getSentTos();
-		sample.setSentTos(fromSentToSet);
-		if (oldSentTos != null) {
-			oldSentTos.removeAll(fromSentToSet);	
-    		for (SentTo sentTo : oldSentTos) try {
-				sampleUtil.delete(sentTo);
-			} catch (StorageAccessException e) {
-				e.printStackTrace();
-			}
-    	} */
 		//sample.setSentTos(fromSample.getSentTos());
 		
 		sample.setNotCollected(fromSample.getNotCollected());
 		sample.setSignificance(fromSample.getSignificance());
 		sample.setInferredStage(fromSample.getInferredStage());
 		sample.setKnownStage(fromSample.getKnownStage());
+		
+		//Relationships
+        Set<Relationship> relationships = sample.getRelationships(); 
+        if (relationships == null) {
+        	relationships = new HashSet<Relationship>();
+            sample.setRelationships(relationships);
+        } else {
+        	relationships.clear();
+        }
+        if (fromSample.getRelationships() != null)
+        	relationships.addAll(fromSample.getRelationships());
 		//sample.setRelationships(fromSample.getRelationships());
+        
 		sample.setColumnMap(fromSample.getColumnMap());
 		sample.setDip(fromSample.getDip());
 		sample.setDipDirection(fromSample.getDipDirection());
