@@ -34,6 +34,7 @@ import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.Person;
+import nz.cri.gns.fred.model.PersonRelationship;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.RockColour;
 import nz.cri.gns.fred.model.Sample;
@@ -103,7 +104,19 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
 	private void getFromDatabase(Sample fromSample) throws StorageAccessException {
 		sample.setCollectionDate(fromSample.getCollectionDate());
-		sample.setCollectors(fromSample.getCollectors());
+		
+        //Collectors
+        Set<Person> collectors = sample.getCollectors(); 
+        if (collectors == null) {
+            collectors = new HashSet<Person>();
+            sample.setCollectors(collectors);
+        } else {
+            collectors.clear();
+        }
+        if (fromSample.getCollectors() != null)
+            collectors.addAll(fromSample.getCollectors());
+		//sample.setCollectors(fromSample.getCollectors());
+        
 		sample.setStratUnit(fromSample.getStratUnit());
 		sample.setInPlace(fromSample.getInPlace());
 		
@@ -123,11 +136,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 				e.printStackTrace();
 			}
     	}
-		
-		
 		//sample.setSentTos(fromSample.getSentTos());
-		
-		
 		
 		sample.setNotCollected(fromSample.getNotCollected());
 		sample.setSignificance(fromSample.getSignificance());
