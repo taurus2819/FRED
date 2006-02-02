@@ -202,7 +202,7 @@
     <set
         name="featureMetas"
         lazy="true"
-        inverse="false"
+        inverse="true"
 		cascade="all"
     >
         <key>
