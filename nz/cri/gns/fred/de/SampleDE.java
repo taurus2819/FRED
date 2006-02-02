@@ -142,7 +142,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		sample.setSignificance(fromSample.getSignificance());
 		sample.setInferredStage(fromSample.getInferredStage());
 		sample.setKnownStage(fromSample.getKnownStage());
-		sample.setRelationships(fromSample.getRelationships());
+		//sample.setRelationships(fromSample.getRelationships());
 		sample.setColumnMap(fromSample.getColumnMap());
 		sample.setDip(fromSample.getDip());
 		sample.setDipDirection(fromSample.getDipDirection());
