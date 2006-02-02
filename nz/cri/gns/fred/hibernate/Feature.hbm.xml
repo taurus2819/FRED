@@ -203,7 +203,7 @@
         name="featureMetas"
         lazy="true"
         inverse="false"
-		cascade="none"
+		cascade="all"
     >
         <key>
             <column name="FEATURE_ID" />
