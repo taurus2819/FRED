@@ -777,9 +777,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		
 		//Sent to
         String sentToParam = request.getParameter("SentTo").trim();
+        HashSet<SentTo> sentToSet = new HashSet<SentTo>();
         if (sentToParam.length() > 0) {
     		String[] sentTos = request.getParameter("SentTo").split("\\n");
-    		HashSet<SentTo> sentToSet = new HashSet<SentTo>();
     		for (String sentTo : sentTos) try {
     			String[] parts = sentTo.split("\\*");
     			FossilGroup group = (parts[0].length() == 0) ? null : sampleUtil.getFossilGroup(parts[0]);
@@ -803,22 +803,18 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                 e.printStackTrace();
     			error.add(new String[] {"Sent To", "Database error: " + e.getMessage()});
     		}
-    		Set<SentTo> oldSentTos = sample.getSentTos();
-    		if (oldSentTos != null) {
-    			oldSentTos.removeAll(sentToSet);	
-	    		for (SentTo sentTo : oldSentTos) try {
-					sampleUtil.delete(sentTo);
-				} catch (StorageAccessException e) {
-					e.printStackTrace();
-				}
-        	}
+
 			sample.setSentTos(sentToSet);
-        } else {
-            if (sample.getSentTos() != null) {
-            	System.out.println("Clearing SentTo for SampleID: " + sample.getSampleId());
-                sample.getSentTos().clear();
-            }
         }
+		Set<SentTo> oldSentTos = sample.getSentTos();
+		if (oldSentTos != null) {
+			oldSentTos.removeAll(sentToSet);	
+    		for (SentTo sentTo : oldSentTos) try {
+				sampleUtil.delete(sentTo);
+			} catch (StorageAccessException e) {
+				e.printStackTrace();
+			}
+    	}
         
         //Not collected?
         sample.setNotCollected(request.getParameter("NotColl"));
