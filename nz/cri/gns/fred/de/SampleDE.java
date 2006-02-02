@@ -106,7 +106,29 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		sample.setCollectors(fromSample.getCollectors());
 		sample.setStratUnit(fromSample.getStratUnit());
 		sample.setInPlace(fromSample.getInPlace());
-		sample.setSentTos(fromSample.getSentTos());
+		
+		//Sent to
+        HashSet<SentTo> fromSentToSet = new HashSet<SentTo>();
+        if (fromSample.getSentTos().size() > 0) {
+    		for (SentTo fromSentTo : fromSample.getSentTos())
+    			fromSentToSet.add(sampleUtil.findOrCreateSentTo(sample, fromSentTo.getFossilGroup(), fromSentTo.getPerson(), fromSentTo.getLabId(), fromSentTo.getComments()));
+        }
+		Set<SentTo> oldSentTos = sample.getSentTos();
+		sample.setSentTos(fromSentToSet);
+		if (oldSentTos != null) {
+			oldSentTos.removeAll(fromSentToSet);	
+    		for (SentTo sentTo : oldSentTos) try {
+				sampleUtil.delete(sentTo);
+			} catch (StorageAccessException e) {
+				e.printStackTrace();
+			}
+    	}
+		
+		
+		//sample.setSentTos(fromSample.getSentTos());
+		
+		
+		
 		sample.setNotCollected(fromSample.getNotCollected());
 		sample.setSignificance(fromSample.getSignificance());
 		sample.setInferredStage(fromSample.getInferredStage());
@@ -806,12 +828,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         }
 		Set<SentTo> oldSentTos = sample.getSentTos();
 		sample.setSentTos(sentToSet);
-		System.out.println("New SentTo size: " + sentToSet.size());
-		System.out.println("Old SentTo size: " + oldSentTos.size());
 		if (oldSentTos != null) {
 			oldSentTos.removeAll(sentToSet);	
     		for (SentTo sentTo : oldSentTos) try {
-    			System.out.println("Deleting SentTo: " + SampleUtil.getSentToDescription(sentTo));
 				sampleUtil.delete(sentTo);
 			} catch (StorageAccessException e) {
 				e.printStackTrace();
