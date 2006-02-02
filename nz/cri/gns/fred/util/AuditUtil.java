@@ -66,21 +66,30 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
     }
     
     public static String getAuditBacklogStatus(Audit audit) {
+    	System.out.println("** Checking Backlog Audit Status for auditID: " + audit.getAuditId());
 		if (audit.getStatus().equals(FREDConstants.APPROVED)) {
-			if (audit.getCuratorComments() != null && audit.getCuratorComments().indexOf("backlog") > 0)
+			if (audit.getCuratorComments() != null && audit.getCuratorComments().indexOf("backlog") > 0) {
+				System.out.println("BACKLOG_COMPLETE");
 				return FREDConstants.BACKLOG_COMPLETE;
+			}
 			try {
-				if (audit.getCreatedDate() != null && audit.getCreatedDate().after(new SimpleDateFormat("dd/MM/yyyy").parse("01/10/2005")));
+				if (audit.getCreatedDate() != null && audit.getCreatedDate().after(new SimpleDateFormat("dd/MM/yyyy").parse("01/10/2005"))); {
+					System.out.println("BACKLOG_NEW");
 					return FREDConstants.BACKLOG_NEW;
+				}
+					
 			} catch (ParseException e) {
 				//shouldn't happen
 			}
 		}
 		for (Iterator j = audit.getAuditEdits().iterator(); j.hasNext();) {
 			AuditEdit edit = (AuditEdit) j.next();
-			if (edit.getComments() != null && edit.getComments().indexOf("backlog") > 0)
+			if (edit.getComments() != null && edit.getComments().indexOf("backlog") > 0) {
+				System.out.println("BACKLOG_PROCESSING");
 				return FREDConstants.BACKLOG_PROCESSING;
+			}
 		}
+		System.out.println("NULL");
 		return null;
     }
     
