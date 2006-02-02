@@ -119,6 +119,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		//set fields
 		feature.setRegistrationArea(fromFeature.getRegistrationArea());
 		feature.getAudit().setWorkingComments(fromFeature.getAudit().getWorkingComments());
+		feature.setLocality(fromFeature.getLocality());
 		try {
 			site = FREDUtil.getSite(fromFeature);
 			coord = FREDUtil.getFREDCoordinate(fromFeature);
