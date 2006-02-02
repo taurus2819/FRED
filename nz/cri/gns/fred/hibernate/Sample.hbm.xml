@@ -267,7 +267,7 @@
         name="relationships"
         lazy="true"
         inverse="false"
-		cascade="none"
+		cascade="all"
     >
         <key>
             <column name="SAMPLE_ID" />
