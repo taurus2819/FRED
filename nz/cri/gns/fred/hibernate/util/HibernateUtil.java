@@ -45,7 +45,6 @@ import nz.cri.gns.fred.hibernate.RockColour;
 import nz.cri.gns.fred.hibernate.Sample;
 import nz.cri.gns.fred.hibernate.SampleMeta;
 import nz.cri.gns.fred.hibernate.SecurityClass;
-import nz.cri.gns.fred.hibernate.SedimentaryFeature;
 import nz.cri.gns.fred.hibernate.SedimentaryFeatureType;
 import nz.cri.gns.fred.hibernate.SentTo;
 import nz.cri.gns.fred.hibernate.Stage;
