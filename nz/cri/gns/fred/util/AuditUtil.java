@@ -74,6 +74,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 			}
 			try {
 				if (audit.getCreatedDate() != null && audit.getCreatedDate().after(new SimpleDateFormat("dd/MM/yyyy").parse("01/10/2005"))); {
+					System.out.println("Audit Created Date: " + audit.getCreatedDate());
 					System.out.println("BACKLOG_NEW");
 					return FREDConstants.BACKLOG_NEW;
 				}

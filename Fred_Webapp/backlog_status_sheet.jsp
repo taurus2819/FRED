@@ -48,7 +48,9 @@
 				Feature feature = FeatureUtil.getFeature(frNumber);
 				String status = null;
 				Audit audit = feature.getAudit();
+				System.out.println("Checking backlog status");
 				status = AuditUtil.getAuditBacklogStatus(audit);
+				System.out.println("Status = " + status);
 				%><tr><td class="heading"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><%=frNumber.getFrNumber()%></a>&nbsp;&nbsp;</td>
 				<td><%=feature.getFeatureType()%>&nbsp;&nbsp;<%
 				if (status != null) {
