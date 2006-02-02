@@ -4,6 +4,7 @@ import java.beans.IntrospectionException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -69,16 +70,14 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
     	System.out.println("** Checking Backlog Audit Status for auditID: " + audit.getAuditId());
     	System.out.println("Audit Created Date: " + audit.getCreatedDate());
 		if (audit.getStatus().equals(FREDConstants.APPROVED)) {
-			if (audit.getCuratorComments() != null && audit.getCuratorComments().indexOf("backlog") > 0) {
-				System.out.println("BACKLOG_COMPLETE");
+			if (audit.getCuratorComments() != null && audit.getCuratorComments().indexOf("backlog") > 0)
 				return FREDConstants.BACKLOG_COMPLETE;
-			}
 			try {
 				if (audit.getCreatedDate() != null) {
-					if (audit.getCreatedDate().after(new SimpleDateFormat("dd/MM/yyyy").parse("01/10/2005"))); {
-						System.out.println("BACKLOG_NEW");
+					Date oct05 = new SimpleDateFormat("dd/MM/yyyy").parse("01/10/2005");
+					System.out.println(oct05);
+					if (audit.getCreatedDate().after(oct05));
 						return FREDConstants.BACKLOG_NEW;
-					}
 				}
 					
 			} catch (ParseException e) {
@@ -87,12 +86,9 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		}
 		for (Iterator j = audit.getAuditEdits().iterator(); j.hasNext();) {
 			AuditEdit edit = (AuditEdit) j.next();
-			if (edit.getComments() != null && edit.getComments().indexOf("backlog") > 0) {
-				System.out.println("BACKLOG_PROCESSING");
+			if (edit.getComments() != null && edit.getComments().indexOf("backlog") > 0)
 				return FREDConstants.BACKLOG_PROCESSING;
-			}
 		}
-		System.out.println("NULL");
 		return null;
     }
     
