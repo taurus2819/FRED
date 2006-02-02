@@ -814,8 +814,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         	}
 			sample.setSentTos(sentToSet);
         } else {
-            if (sample.getSentTos() != null)
+            if (sample.getSentTos() != null) {
+            	System.out.println("Clearing SentTo for SampleID: " + sample.getSampleId());
                 sample.getSentTos().clear();
+            }
         }
         
         //Not collected?
