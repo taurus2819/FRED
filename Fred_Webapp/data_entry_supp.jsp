@@ -213,7 +213,7 @@
 			<tr><td colspan="2">Select a person/company from the drop-down list.  New companies can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button.</td></tr>
 			<tr><td>&nbsp;</td></tr>
 			<tr><td class="heading">Person/Company</td><td><%
-			cd = new ComboDescriptor("Person_View", "Name", "Name");
+			cd = new ComboDescriptor("Person", "Name", "Name");
 			cd.name = "Person";
 			cd.prompt = "-- Choose --";
 			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
@@ -232,7 +232,7 @@
 			<tr><td colspan="2">Select a person/company from the drop-down list.  New collectors can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button.</td></tr>
 			<tr><td>&nbsp;</td></tr>
 			<tr><td class="heading">Person/Company</td><td><%
-			cd = new ComboDescriptor("Person_View", "Name", "Name");
+			cd = new ComboDescriptor("Person", "Name", "Name");
 			cd.name = "Person";
 			cd.prompt = "-- Choose --";
 			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
@@ -251,7 +251,7 @@
 			<tr><td colspan="2">Select a person/company from the drop-down list.  New collectors can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button<br />You may add multiple collectors by clicking the Add To Main Form icon between each collector and then Close to end.</td></tr>
 			<tr><td>&nbsp;</td></tr>
 			<tr><td class="heading">Person/Company</td><td><%
-			cd = new ComboDescriptor("Person_View", "Name", "Name");
+			cd = new ComboDescriptor("Person", "Name", "Name");
 			cd.name = "Person";
 			cd.prompt = "-- Choose --";
 			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
@@ -270,7 +270,7 @@
 			<tr><td colspan="2">Select a person/company from the drop-down list.  New adoptors can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button<br />You may add multiple adoptors by clicking the Add To Main Form icon between each collector and then Close to end.</td></tr>
 			<tr><td>&nbsp;</td></tr>
 			<tr><td class="heading">Person</td><td><%
-			cd = new ComboDescriptor("Person_View", "Name", "Name");
+			cd = new ComboDescriptor("Person", "Name", "Name");
 			cd.name = "Person";
 			cd.prompt = "-- Choose --";
 			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
@@ -289,7 +289,7 @@
 			<tr><td colspan="2">Select a person/company from the drop-down list.  New identifiers can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button<br />You may add multiple identifiers by clicking the Add To Main Form icon between each collector and then Close to end.</td></tr>
 			<tr><td>&nbsp;</td></tr>
 			<tr><td class="heading">Person</td><td><%
-			cd = new ComboDescriptor("Person_View", "Name", "Name");
+			cd = new ComboDescriptor("Person", "Name", "Name");
 			cd.name = "Person";
 			cd.prompt = "-- Choose --";
 			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
@@ -334,7 +334,7 @@
 			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
 			%></td></tr>
 			<tr><td class="heading">Person</td><td><%
-			cd = new ComboDescriptor("Person_View", "Name", "Name");
+			cd = new ComboDescriptor("Person", "Name", "Name");
 			cd.name = "Person";
 			cd.prompt = "-- Choose --";
 			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
