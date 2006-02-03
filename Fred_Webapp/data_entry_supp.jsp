@@ -220,11 +220,11 @@
 			%></td></tr>
 			<tr><td class="heading" colspan="2">Add to Person List</td></tr>
 			<tr><td class="smallheading">Name</td><td><input type="text" name="PersonName" />&nbsp;&nbsp;
-			<input type="submit" value="Add" onClick="return addData(\"Person\");" /></td></tr>
+			<input type="submit" value="Add" onClick="return addData('Person');" /></td></tr>
 			</table>
 			<table border="0" cellspacing="2" cellpadding="0">
 			<tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
-			<tr><td><a href="#" onClick="saveData(\"FeatPer\");return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData(\"FeatPer\");return false;" class="heading">Add to Main Form</a></td></tr><%
+			<tr><td><a href="#" onClick="saveData('FeatPer');return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData('FeatPer');return false;" class="heading">Add to Main Form</a></td></tr><%
 		}
 
 		else if (request.getParameter("Type").equals("VertPerson")) {
@@ -239,11 +239,11 @@
 			%></td></tr>
 			<tr><td class="heading" colspan="2">Add to Person List</td></tr>
 			<tr><td class="smallheading">Name</td><td><input type="text" name="PersonName" />&nbsp;&nbsp;
-			<input type="submit" value="Add" onClick="return addData(\"Person\");" /></td></tr>
+			<input type="submit" value="Add" onClick="return addData('Person');" /></td></tr>
 			</table>
 			<table border="0" cellspacing="2" cellpadding="0">
 			<tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
-			<tr><td><a href="#" onClick="saveData(\"FeatPer\");return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData(\"FeatPer\");return false;" class="heading">Add to Main Form</a></td></tr><%
+			<tr><td><a href="#" onClick="saveData('FeatPer');return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData('FeatPer');return false;" class="heading">Add to Main Form</a></td></tr><%
 		}
 		
 		else if (request.getParameter("Type").equals("Coll")) {
@@ -258,11 +258,11 @@
 			%></td></tr>
 			<tr><td class="heading" colspan="2">Add to Person List</td></tr>
 			<tr><td class="smallheading">Name</td><td><input type="text" name="PersonName" />&nbsp;&nbsp;
-			<input type="submit" value="Add" onClick="return addData(\"Person\");" /></td></tr>
+			<input type="submit" value="Add" onClick="return addData('Person');" /></td></tr>
 			</table>
 			<table border="0" cellspacing="2" cellpadding="0">
 			<tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
-			<tr><td><a href="#" onClick="saveData(\"Coll\");return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData(\"Coll\");return false;" class="heading">Add to Main Form</a></td></tr><%
+			<tr><td><a href="#" onClick="saveData('Coll');return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData('Coll');return false;" class="heading">Add to Main Form</a></td></tr><%
 		}
 
 		else if (request.getParameter("Type").equals("Adoptor")) {
@@ -277,11 +277,11 @@
 			%></td></tr>
 			<tr><td class="heading" colspan="2">Add to Person List</td></tr>
 			<tr><td class="smallheading">Name</td><td><input type="text" name="PersonName" />&nbsp;&nbsp;
-			<input type="submit" value="Add" onClick="return addData(\"Person\");" /></td></tr>
+			<input type="submit" value="Add" onClick="return addData('Person');" /></td></tr>
 			</table>
 			<table border="0" cellspacing="2" cellpadding="0">
 			<tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
-			<tr><td><a href="#" onClick="saveData(\"Adoptor\");return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData(\"Adoptor\");return false;" class="heading">Add to Main Form</a></td></tr><%
+			<tr><td><a href="#" onClick="saveData('Adoptor');return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData('Adoptor');return false;" class="heading">Add to Main Form</a></td></tr><%
 		}
 
 		else if (request.getParameter("Type").equals("Identifier")) {
@@ -296,11 +296,11 @@
 			%></td></tr>
 			<tr><td class="heading" colspan="2">Add to Person List</td></tr>
 			<tr><td class="smallheading">Name</td><td><input type="text" name="PersonName" />&nbsp;&nbsp;
-			<input type="submit" value="Add" onClick="return addData(\"Person\");" /></td></tr>
+			<input type="submit" value="Add" onClick="return addData('Person');" /></td></tr>
 			</table>
 			<table border="0" cellspacing="2" cellpadding="0">
 			<tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
-			<tr><td><a href="#" onClick="saveData(\"Identifier\");return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData(\"Identifier\");return false;" class="heading">Add to Main Form</a></td></tr><%
+			<tr><td><a href="#" onClick="saveData('Identifier');return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData('Identifier');return false;" class="heading">Add to Main Form</a></td></tr><%
 		}
 
 		else if (request.getParameter("Type").equals("StratName")) {
@@ -320,7 +320,7 @@
 			</table>
 			<table border="0" cellspacing="2" cellpadding="0">
 			<tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
-			<tr><td><a href="#" onClick="saveData(\"StratName\");return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData(\"StratName\");return false;" class="heading">Add to Main Form</a></td></tr><%
+			<tr><td><a href="#" onClick="saveData('StratName');return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData('StratName');return false;" class="heading">Add to Main Form</a></td></tr><%
 		}
 
 		else if (request.getParameter("Type").equals("SentTo")) {
@@ -347,11 +347,11 @@
 			%><tr><td class="heading">Comments</td><td><textarea name="Comm" rows="3" cols="40"></textarea></td></tr>
 			<tr><td class="heading" colspan="2">Add to Person List</td></tr>
 			<tr><td class="smallheading">Name</td><td><input type="text" name="PersonName" />&nbsp;&nbsp;
-			<input type="submit" value="Add" onClick="return addData(\"Person\");" /></td></tr>
+			<input type="submit" value="Add" onClick="return addData('Person');" /></td></tr>
 			</table>
 			<table border="0" cellspacing="2" cellpadding="0">
 			<tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
-			<tr><td><a href="#" onClick="saveData(\"SentTo\");return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData(\"SentTo\");return false;" class="heading">Add to Main Form</a></td></tr><%
+			<tr><td><a href="#" onClick="saveData('SentTo');return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData('SentTo');return false;" class="heading">Add to Main Form</a></td></tr><%
 		}
 
 		else if (request.getParameter("Type").equals("PrevSamp")) {
@@ -390,7 +390,7 @@
 			</table>
 			<table border="0" cellspacing="2" cellpadding="0">
 			<tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
-			<tr><td><a href="#" onClick="saveData(\"PrevSamp\");return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData(\"PrevSamp\");return false;" class="heading">Add to Main Form</a></td></tr><%
+			<tr><td><a href="#" onClick="saveData('PrevSamp');return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData('PrevSamp');return false;" class="heading">Add to Main Form</a></td></tr><%
 		}
 
 		else if (request.getParameter("Type").equals("SampRel")) {
@@ -441,7 +441,7 @@
 			</table>
 			<table border="0" cellspacing="2" cellpadding="0">
 			<tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
-			<tr><td><a href="#" onClick="saveData(\"SampRel\");return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData(\"SampRel\");return false;" class="heading">Add to Main Form</a></td></tr><%
+			<tr><td><a href="#" onClick="saveData('SampRel');return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData('SampRel');return false;" class="heading">Add to Main Form</a></td></tr><%
 		}
 
 		else if (request.getParameter("Type").equals("StratRel")) {
@@ -470,7 +470,7 @@
 			</table>
 			<table border="0" cellspacing="2" cellpadding="0">
 			<tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
-			<tr><td><a href="#" onClick="saveData(\"StratRel\");return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData(\"StratRel\");return false;" class="heading">Add to Main Form</a></td></tr><%
+			<tr><td><a href="#" onClick="saveData('StratRel');return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData('StratRel');return false;" class="heading">Add to Main Form</a></td></tr><%
 		}
 
 		else if (request.getParameter("Type").equals("SedFeat")) {
@@ -488,7 +488,7 @@
 			</table>
 			<table border="0" cellspacing="2" cellpadding="0">
 			<tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
-			<tr><td><a href="#" onClick="saveData(\"SedFeat\");return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData(\"SedFeat\");return false;" class="heading">Add to Main Form</a></td></tr><%
+			<tr><td><a href="#" onClick="saveData('SedFeat');return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData('SedFeat');return false;" class="heading">Add to Main Form</a></td></tr><%
 		}
 
 		else if (request.getParameter("Type").equals("Taxa")) {
@@ -525,7 +525,7 @@
 			</table>
 			<table border="0" cellspacing="2" cellpadding="0">
 			<tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
-			<tr><td><a href="#" onClick="saveData(\"Taxa\");return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData(\"Taxa\");return false;" class="heading">Add to Main Form</a></td></tr><%
+			<tr><td><a href="#" onClick="saveData('Taxa');return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData('Taxa');return false;" class="heading">Add to Main Form</a></td></tr><%
 		}
 	}
 
