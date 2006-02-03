@@ -205,6 +205,10 @@
 				PersonUtil personUtil = new PersonUtil(factory);
 				Person person = personUtil.findOrCreatePerson(request.getParameter("PersonName"));
 				%><script language="JavaScript">alert("<%=person.getName()%> added to list.  Please now select from drop-down list to add to form");</script><%
+				try {
+					HibernateUtil.get().getDAOFactory().closeSession();
+				} catch (Exception e) {
+				}
 			}
 		}
 
