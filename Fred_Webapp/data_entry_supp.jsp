@@ -52,7 +52,7 @@
 	
 	function saveData(type) {
 		with (document.form1) {
-			else if (type == "FeatPer") {
+			if (type == "FeatPer") {
 				window.opener.form1.Person.value = parseDropDown(Person.value);
 				window.close();
 			}
