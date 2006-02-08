@@ -35,6 +35,7 @@ import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FrNumber;
+import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
@@ -237,7 +238,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		Sample newSample = sampleDAO.createNewSample();
 		FREDUtil.beanCopy(sample, newSample, 
 				new FREDUtil.ExcludeByType(Set.class, 
-				new FREDUtil.ExcludeByName(FREDUtil.toVector(new String[] {"audit", "sampleId", "feature", "frNumber"})))
+				new FREDUtil.ExcludeByName(FREDUtil.toVector("audit", "sampleId", "feature", "frNumber")))
 		);
 		newSample.setFeature(newFeature);
 		//Clear the fr number if it has one
@@ -247,7 +248,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			HashSet<Relationship> newRels = new HashSet<Relationship>();
 			for (Relationship rel : relationships) {
 				Relationship newRel = sampleDAO.createNewRelationship();
-				FREDUtil.beanCopy(rel, newRel, new FREDUtil.ExcludeByName(FREDUtil.toVector(new String[] {"relationshipId", "sample"})));
+				FREDUtil.beanCopy(rel, newRel, new FREDUtil.ExcludeByName(FREDUtil.toVector("relationshipId", "sample")));
 				newRel.setSample(newSample);
 				newRels.add(newRel);
 			}
@@ -259,7 +260,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			HashSet<SentTo> newSent = new HashSet<SentTo>();
 			for (SentTo sentTo : sentTos) {
 				SentTo newSentTo = sampleDAO.createNewSentTo();
-				FREDUtil.beanCopy(sentTo, newSentTo, new FREDUtil.ExcludeByName(FREDUtil.toVector(new String[] {"sentToId", "sample"})));
+				FREDUtil.beanCopy(sentTo, newSentTo, new FREDUtil.ExcludeByName(FREDUtil.toVector("sentToId", "sample")));
 				newSentTo.setSample(newSample);
 				newSent.add(newSentTo);
 			}
@@ -268,7 +269,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		
 		//Copy sedimentary feature
 		Set<SedimentaryFeature> sedFeatures = sample.getSedimentaryFeatures();
-		if (sedFeatures != null && sedFeatures.size() > 0) {
+		if (!FREDUtil.isEmpty(sedFeatures)) {
 			HashSet<SedimentaryFeature> newSedFeatures = new HashSet<SedimentaryFeature>();
 			for (SedimentaryFeature sedFeature : sedFeatures) {
 				SedimentaryFeature newSedFeature = sampleDAO.createNewSedimentaryFeature();
@@ -276,6 +277,14 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				newSedFeatures.add(newSedFeature);
 			}
 			newSample.setSedimentaryFeatures(newSedFeatures);
+		}
+		
+		//Copy Collectors
+		Set<Person> collectors = sample.getCollectors();
+		if (!FREDUtil.isEmpty(collectors)) {
+			HashSet<Person> newCollectors = new HashSet<Person>(collectors.size());
+			newCollectors.addAll(collectors);
+			newSample.setCollectors(newCollectors);
 		}
 		
 		//Copy sample images
