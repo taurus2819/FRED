@@ -10,7 +10,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -776,14 +775,14 @@ public class FREDUtil {
 		return to;
 	}
 
-	public static <T> List<T> toVector(T[] array) {
+	public static <T> List<T> toVector(T ... array) {
 		List<T> list = new Vector<T>(array.length);
 		for (T t : array)
 			list.add(t);
 		return list;
 	}
 	
-	public static <T> boolean isEmpty(Set<T> set) {
+	public static boolean isEmpty(Set<?> set) {
 		return set == null || set.size() == 0;
 	}
 }
