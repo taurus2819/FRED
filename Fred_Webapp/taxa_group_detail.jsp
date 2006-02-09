@@ -1,8 +1,11 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
+%><%@page import="nz.cri.gns.fred.model.Feature"
+%><%@page import="nz.cri.gns.fred.model.PaleontologyListEntry"
 %><%@page import="nz.cri.gns.fred.model.Taxon"
 %><%@page import="nz.cri.gns.fred.model.TaxonomicGroup"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
+%><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.db.DBUtils"
@@ -55,7 +58,7 @@
 				%><p>&nbsp;</p><center><p><%
 				startDETable(pageContext);
 				%><table border="0" width="550"><tr><td colspan="19" class="deHeading">Provisional Entries</td></tr>
-				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Submitted By&nbsp;&nbsp;</th><th style="text-align: left">Submitted Date&nbsp;&nbsp;</th><th style="text-align: left">Options</th></tr><%
+				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Submitted By&nbsp;&nbsp;</th><th style="text-align: left">Submitted Date&nbsp;&nbsp;</th><th style="text-align: left">Locality</th><th style="text-align: left">Options</th></tr><%
 				for (Iterator i = taxaUtil.getTaxa(group, FREDConstants.PROVISIONAL).iterator(); i.hasNext(); ) {
 					Taxon taxon = (Taxon) i.next();
 					%><form name="taxonForm<%=taxon.getTaxaId()%>" method="post" action="taxa_group_detail.jsp">
@@ -65,8 +68,16 @@
 					<tr><td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getSubmittedById() != null) ? FREDUtil.getUserName(taxon.getSubmittedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=((taxon.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getSubmittedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><a href="taxa_group_detail.jsp?ID=<%=group.getGroupId()%>&ActionType=Approve&TaxonID=<%=taxon.getTaxaId()%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="approve" /></a><br />
+					<td style="text-align: left"><%=((taxon.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getSubmittedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td><%
+					try {
+						PaleontologyListEntry palList = (PaleontologyListEntry) taxon.getListEntries().iterator().next();
+						Feature feature = palList.getPaleontology().getRecord().getSample().getFeature();
+						%><td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>" target="feat"><%=FeatureUtil.getFeatureName(feature)%></a></td><%
+						
+					} catch (Exception e) {
+						%><td></td><%
+					}
+					%><td style="text-align: left"><a href="taxa_group_detail.jsp?ID=<%=group.getGroupId()%>&ActionType=Approve&TaxonID=<%=taxon.getTaxaId()%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="approve" /></a><br />
 						<textarea name="RejComments" cols="20" rows="3"></textarea>&nbsp;&nbsp;
 						<a href="#" onClick="taxonForm<%=taxon.getTaxaId()%>.submit();"><img src="images/cancel.gif" border="0" height="20" width="20" alt="Reject" /></a></td></tr>
 					</form><%
