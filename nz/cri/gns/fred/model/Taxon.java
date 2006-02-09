@@ -54,8 +54,8 @@ public interface Taxon extends Comparable<Taxon>{
 
     public void setTaxonomicGroup(TaxonomicGroup taxonomicGroup);
 
-    public Set getListEntries();
+    public Set<PaleontologyListEntry> getListEntries();
 
-    public void setListEntries(Set palLists);
+    public void setListEntries(Set<PaleontologyListEntry> palLists);
 
 }

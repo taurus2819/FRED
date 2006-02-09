@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 
 
@@ -46,10 +47,10 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
     private TaxonomicGroup taxonomicGroup;
 
     /** persistent field */
-    private Set palLists;
+    private Set<PaleontologyListEntry> palLists;
 
     /** full constructor */
-    public TaxonomicLookup(String taxonomicName, String author, String status, Integer submittedById, Date submittedDate, Integer approvedById, Date approvedDate, String panelistComments, String sendMessage, nz.cri.gns.fred.hibernate.TaxonomicGroup taxonomicGroup, Set palLists) {
+    public TaxonomicLookup(String taxonomicName, String author, String status, Integer submittedById, Date submittedDate, Integer approvedById, Date approvedDate, String panelistComments, String sendMessage, nz.cri.gns.fred.hibernate.TaxonomicGroup taxonomicGroup, Set<PaleontologyListEntry> palLists) {
         this.taxonomicName = taxonomicName;
         this.author = author;
         this.status = status;
@@ -68,7 +69,7 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
     }
 
     /** minimal constructor */
-    public TaxonomicLookup(String taxonomicName, String status, nz.cri.gns.fred.hibernate.TaxonomicGroup taxonomicGroup, Set palLists) {
+    public TaxonomicLookup(String taxonomicName, String status, nz.cri.gns.fred.hibernate.TaxonomicGroup taxonomicGroup, Set<PaleontologyListEntry> palLists) {
         this.taxonomicName = taxonomicName;
         this.status = status;
         this.taxonomicGroup = taxonomicGroup;
@@ -163,11 +164,11 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
         this.taxonomicGroup = taxonomicGroup;
     }
 
-    public Set getListEntries() {
+    public Set<PaleontologyListEntry> getListEntries() {
         return this.palLists;
     }
 
-    public void setListEntries(Set palLists) {
+    public void setListEntries(Set<PaleontologyListEntry> palLists) {
         this.palLists = palLists;
     }
     
