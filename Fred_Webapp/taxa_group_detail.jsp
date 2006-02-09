@@ -72,7 +72,7 @@
 					try {
 						PaleontologyListEntry palList = (PaleontologyListEntry) taxon.getListEntries().iterator().next();
 						Feature feature = palList.getPaleontology().getRecord().getSample().getFeature();
-						%><td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>" target="feat"><%=FeatureUtil.getFeatureName(feature)%></a></td><%
+						%><td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>" target="feat"><%=FeatureUtil.getFeatureName(feature)%></a>&nbsp;&nbsp;</td><%
 						
 					} catch (Exception e) {
 						%><td></td><%
