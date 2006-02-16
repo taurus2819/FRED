@@ -57,31 +57,36 @@
 			if (taxaUtil.getTaxaCount(group, FREDConstants.PROVISIONAL) > 0) {
 				%><p>&nbsp;</p><center><p><%
 				startDETable(pageContext);
-				%><table border="0" width="550"><tr><td colspan="19" class="deHeading">Provisional Entries</td></tr>
-				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Submitted By&nbsp;&nbsp;</th><th style="text-align: left">Submitted Date&nbsp;&nbsp;</th><th style="text-align: left">Locality</th><th style="text-align: left">Options</th></tr><%
+				%><table border="0" width="800"><tr><td colspan="6" class="deHeading">Provisional Entries</td></tr>
+				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Submitted By&nbsp;&nbsp;</th><th style="text-align: left">Submitted Date&nbsp;&nbsp;</th><th style="text-align: left">Locality(s)</th><th style="text-align: left">Options</th></tr><%
 				for (Iterator i = taxaUtil.getTaxa(group, FREDConstants.PROVISIONAL).iterator(); i.hasNext(); ) {
 					Taxon taxon = (Taxon) i.next();
 					%><form name="taxonForm<%=taxon.getTaxaId()%>" method="post" action="taxa_group_detail.jsp">
 					<input type="hidden" name="ID" value="<%=group.getGroupId()%>" />
 					<input type="hidden" name="TaxonID" value="<%=taxon.getTaxaId()%>" />
 					<input type="hidden" name="ActionType" value="Reject" />
-					<tr><td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
+					<tr>
+					<td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getSubmittedById() != null) ? FREDUtil.getUserName(taxon.getSubmittedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getSubmittedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td><%
-					try {
-						PaleontologyListEntry palList = (PaleontologyListEntry) taxon.getListEntries().iterator().next();
-						Feature feature = palList.getPaleontology().getRecord().getSample().getFeature();
-						%><td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>" target="feat"><%=FeatureUtil.getFeatureName(feature)%></a>&nbsp;&nbsp;</td><%
-						
-					} catch (Exception e) {
+					if (!FREDUtil.isEmpty(taxon.getListEntries())) {
+						%><td><%
+						for (Iterator j = taxon.getListEntries().iterator(); j.hasNext(); ) {
+							PaleontologyListEntry palList = (PaleontologyListEntry) j.next();
+							try {
+								Feature feature = palList.getPaleontology().getRecord().getSample().getFeature();
+								%><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>" target="feat"><%=FeatureUtil.getFeatureName(feature)%></a>&nbsp;&nbsp;<br /><%
+							} catch (Exception e) {}						}
+						%></td><%
+					} else {
 						%><td></td><%
 					}
 					%><td style="text-align: left"><a href="taxa_group_detail.jsp?ID=<%=group.getGroupId()%>&ActionType=Approve&TaxonID=<%=taxon.getTaxaId()%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="approve" /></a><br />
 						<textarea name="RejComments" cols="20" rows="3"></textarea>&nbsp;&nbsp;
 						<a href="#" onClick="taxonForm<%=taxon.getTaxaId()%>.submit();"><img src="images/cancel.gif" border="0" height="20" width="20" alt="Reject" /></a></td></tr>
+					</tr>
 					</form><%
-
 				}
 				%></table><%
 				endDETable(pageContext);
@@ -91,18 +96,30 @@
 			if (taxaUtil.getTaxaCount(group, FREDConstants.REJECTED) > 0) {
 				%><p>&nbsp;</p><center><p><%
 				startDETable(pageContext);
-				%><table border="0" width="550"><tr><td colspan="19" class="deHeading">Rejected Entries</td></tr>
-				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Rejected By&nbsp;&nbsp;</th><th style="text-align: left">Rejected Date&nbsp;&nbsp;</th><th style="text-align: left">Comments&nbsp;&nbsp;</th><th style="text-align: left">Options</th></tr><%
+				%><table border="0" width="800"><tr><td colspan="7" class="deHeading">Rejected Entries</td></tr>
+				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Rejected By&nbsp;&nbsp;</th><th style="text-align: left">Rejected Date&nbsp;&nbsp;</th><th style="text-align: left">Comments&nbsp;&nbsp;</th><th style="text-align: left">Locality(s)&nbsp;&nbsp;</th><th style="text-align: left">Options</th></tr><%
 				for (Iterator i = taxaUtil.getTaxa(group, FREDConstants.REJECTED).iterator(); i.hasNext(); ) {
 					Taxon taxon = (Taxon) i.next();
-					%><tr><td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
+					%><tr>
+					<td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getApprovedById() != null) ? FREDUtil.getUserName(taxon.getApprovedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getApprovedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getPanelistComments())%>&nbsp;&nbsp;</td><%
-					if (FREDUtil.isEmpty(taxon.getListEntries())) {
-						%><td style="text-align: left"><a href="taxa_group_detail.jsp?ID=<%=group.getGroupId()%>&TaxonID=<%=taxon.getTaxaId()%>&ActionType=Delete"><img src="images/delete.gif" height="20" width="20" border="0" alt="Delete" /></a><%
-				}
+					if (!FREDUtil.isEmpty(taxon.getListEntries())) {
+						%><td><%
+						for (Iterator j = taxon.getListEntries().iterator(); j.hasNext(); ) {
+							PaleontologyListEntry palList = (PaleontologyListEntry) j.next();
+							try {
+								Feature feature = palList.getPaleontology().getRecord().getSample().getFeature();
+								%><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>" target="feat"><%=FeatureUtil.getFeatureName(feature)%></a>&nbsp;&nbsp;<br /><%
+							} catch (Exception e) {}
+						}
+						%></td><%						
+					} else {
+						%><td></td><td style="text-align: left"><a href="taxa_group_detail.jsp?ID=<%=group.getGroupId()%>&TaxonID=<%=taxon.getTaxaId()%>&ActionType=Delete"><img src="images/delete.gif" height="20" width="20" border="0" alt="Delete" /></a></td><%
+					}
+					%><tr><%
 				}
 				%></table><%
 				endDETable(pageContext);
@@ -112,15 +129,17 @@
 			if (taxaUtil.getTaxaCount(group, FREDConstants.APPROVED) > 0) {
 				%><p>&nbsp;</p><center><p><%
 				startDETable(pageContext);
-				%><table border="0" width="550"><tr><td colspan="19" class="deHeading">Approved Entries</td></tr>
+				%><table border="0" width="800"><tr><td colspan="5" class="deHeading">Approved Entries</td></tr>
 				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Approved By&nbsp;&nbsp;</th><th style="text-align: left">Approved Date&nbsp;&nbsp;</th><th style="text-align: left">Options</th></tr><%
 				for (Iterator i = taxaUtil.getTaxa(group, FREDConstants.APPROVED).iterator(); i.hasNext(); ) {
 					Taxon taxon = (Taxon) i.next();
-					%><tr><td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
+					%><tr>
+					<td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getApprovedById() != null) ? FREDUtil.getUserName(taxon.getApprovedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getApprovedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><a href="taxa_group_detail.jsp?ID=<%=group.getGroupId()%>&TaxonID=<%=taxon.getTaxaId()%>&ActionType=Obsolete"><img src="images/delete.gif" height="20" width="20" border="0" alt="Make Obsolete" /></a><%
+					<td style="text-align: left"><a href="taxa_group_detail.jsp?ID=<%=group.getGroupId()%>&TaxonID=<%=taxon.getTaxaId()%>&ActionType=Obsolete"><img src="images/delete.gif" height="20" width="20" border="0" alt="Make Obsolete" /></a>
+					</tr><%
 				}
 				%></table><%
 				endDETable(pageContext);
@@ -130,12 +149,14 @@
 			if (taxaUtil.getTaxaCount(group, FREDConstants.OBSOLETE) > 0) {
 				%><p>&nbsp;</p><center><p><%
 				startDETable(pageContext);
-				%><table border="0" width="550"><tr><td colspan="19" class="deHeading">Obsolete Entries</td></tr>
+				%><table border="0" width="800"><tr><td colspan="2" class="deHeading">Obsolete Entries</td></tr>
 				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author</th></tr><%
 				for (Iterator i = taxaUtil.getTaxa(group, FREDConstants.OBSOLETE).iterator(); i.hasNext(); ) {
 					Taxon taxon = (Taxon) i.next();
-					%><tr><td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td><%
+					%><tr>
+					<td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
+					</tr><%
 				}
 				%></table><%
 				endDETable(pageContext);
