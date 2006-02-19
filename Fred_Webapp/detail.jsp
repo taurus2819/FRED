@@ -189,9 +189,13 @@
 					startDETable(pageContext);
 					%><table border="0" width="160">
 					<tr><td colspan="2" class="deHeading">Masterfile Curator</td></tr>
-					<form name="RevForm" method="post" action="detail.jsp">
-					<input type="hidden" name="ID" value="<%=sampID%>" />
-					<input type="hidden" name="ActionType" value="" />
+					<form name="RevForm" method="post" action="detail.jsp"><%
+					if (sample != null) {
+						%><input type="hidden" name="ID" value="<%=sample.getSampleId()%>" /><%
+					} else {
+						%><input type="hidden" name="FeatID" value="<%=feature.getFeatureId()%>" /><%
+					}
+					%><input type="hidden" name="ActionType" value="" />
 					<tr><td colspan="2" class="heading">User Comments</td></tr>
 					<tr><td colspan="2"><%=DBUtils.nvl(workComm)%></td></tr><%
 					if (recoll != null) {
@@ -235,9 +239,13 @@
 					}
 					%></select>
 					</td></tr>
-					<tr><td style="text-align: right" class="heading"><a href="#" onClick="FolderForm.submit();">Add</a></td></tr>
-					<input type="hidden" name="ID" value="<%=sampID%>" />
-					<input type="hidden" name="ActionType" value="AddtoFold" />
+					<tr><td style="text-align: right" class="heading"><a href="#" onClick="FolderForm.submit();">Add</a></td></tr><%
+					if (sample != null) {
+						%><input type="hidden" name="ID" value="<%=sample.getSampleId()%>" /><%
+					} else {
+						%><input type="hidden" name="FeatID" value="<%=feature.getFeatureId()%>" /><%
+					}
+					%><input type="hidden" name="ActionType" value="AddtoFold" />
 					</form>
 					</table><%
 					endDETable(pageContext);
