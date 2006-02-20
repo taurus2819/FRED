@@ -406,7 +406,7 @@
 						if (sample.getFrNumber() != null && !sample.getFrNumber().equals(feature.getFrNumber())) {
 							%><tr><td class="heading">Sample FR Number</td><td class="heading"><%=sample.getFrNumber().getFrNumber()%></td></tr><%
 						}
-						if (sample.getYardFrNumber() != null && !sample.getYardFrNumber().equals(feature.getYardFrNumber()) {
+						if (sample.getYardFrNumber() != null && !sample.getYardFrNumber().equals(feature.getYardFrNumber())) {
 							%><tr><td class="heading">Sample Yard FR Number</td><td><%=sample.getYardFrNumber().getFrNumber()%></td></tr><%
 						}
 						if (!featType.equals(FREDConstants.OUTCROP)) {
