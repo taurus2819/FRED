@@ -65,6 +65,8 @@ Database changes
      
 5. Alter FRED_MAINTAIN code to use FEATURE.FR_ID for FR_NUMBER
 
+6. Alter FEATURE_VIEW
+
 Application Changes
 
 1. Alter FEATURE hibernate files and classes to add FR_ID and relationship
