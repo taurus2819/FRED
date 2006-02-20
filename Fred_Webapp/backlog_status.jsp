@@ -172,7 +172,9 @@
 				if (bs.getStatus().equals(FREDConstants.BACKLOG_COMPLETE)) {
 					%><td width="200">
 					<table border="0" width="100%">
-					<tr><td width="100%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="204" alt="" /></td></tr>
+					<tr>
+					<td width="100%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="204" alt="" /></td>
+					</tr>
 					</table>
 					</td>
 					<td>100%</td><%
@@ -186,8 +188,14 @@
 					int comWidth = 2 * comPct;
 					%><td width="200">
 					<table border="0" width="100%">
-					<tr><td width="<%=comPct%>%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="<%=comWidth%>" alt="" /></td>
-					<td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth%>" alt="" /></td></tr>
+					<tr><%
+					if (comPct > 0) {
+						%><td width="<%=comPct%>%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="<%=comWidth%>" alt="" /></td>
+						<td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth%>" alt="" /></td><%
+					} else {
+						%><td width="100%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="204" alt="" /></td><%
+					}
+					%></tr>
 					</table>
 					</td>
 					<td><%=comPct%>%</td><%					
