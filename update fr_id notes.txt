@@ -22,7 +22,8 @@ Database changes
 3. Populate FEATURE.FR_ID from SAMPLE.FR_ID for drillhole/vert sects by selecting lowest fr_id
 
      update feature f
-     set f.fr_id = (select min(s.fr_id) from sample s where s.feature_id = f.feature_id and s.fr_id is not null);
+     set f.fr_id = (select min(s.fr_id) from sample s where s.feature_id = f.feature_id and s.fr_id is not null)
+     where f.feature_type <> 'Outcrop';
      commit;
        
 4. Set SAMPLE.FR_ID null for drillhole/vert sects WHERE SAMPLE.FR_ID matches FEATURE.FR_ID
@@ -52,7 +53,8 @@ Database changes
      commit;
      
      update feature f
-     set f.yard_fr_id = (select min(s.yard_fr_id) from sample s where s.feature_id = f.feature_id and s.yard_fr_id is not null);
+     set f.yard_fr_id = (select min(s.yard_fr_id) from sample s where s.feature_id = f.feature_id and s.yard_fr_id is not null)
+     where f.feature_type <> 'Outcrop';
      commit;
      
      update sample
