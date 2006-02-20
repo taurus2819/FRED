@@ -307,7 +307,7 @@
 			%><table border="0" width="550"><tr><td colspan="2" class="deHeading">Locality Information&nbsp;&nbsp;&nbsp;<a href="print_front.jsp?FeatID=<%=feature.getFeatureId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr>
 			<tr><td class="heading">FR Number</td><td class="heading"><%=((feature.getFrNumber() != null) ? feature.getFrNumber().getFrNumber() : "not yet allocated")%></td></tr><%
 			if (feature.getYardFrNumber() != null) {
-				%><tr><td class="heading">Yard FR Number</td><td><%=feature.getYardFrNumber()%></td></tr><%
+				%><tr><td class="heading">Yard FR Number</td><td><%=feature.getYardFrNumber().getFrNumber()%></td></tr><%
 			}
 			%><tr><td class="heading">Masterfile</td><td><%=((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : "undefined")%></td></tr>
 			<tr><td class="heading">Locality Type</td><td><%=featType%></td></tr><%
@@ -635,7 +635,7 @@
 						}			
 					}
 				} else  {
-					//Sample Property Data
+					//Sample List
 					%><p><%
 					startDETable(pageContext);
 					%><table border="0" width="550">
@@ -643,7 +643,7 @@
 					<tr class="heading"><td>Locality Name&nbsp;&nbsp;</td><td><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Sample Depth" : "Section Height")%></td></tr><%
 					for (Iterator i = FeatureUtil.getSortedSamples(feature).iterator(); i.hasNext(); ) {
 						Sample locSample = (Sample) i.next();
-						%><tr><td><a href="detail.jsp?ID=<%=locSample.getSampleId()%>"><%=((locSample.getFrNumber() != null) ? locSample.getFrNumber().getFrNumber() : "not yet allocated")%></a>&nbsp;&nbsp;</td>
+						%><tr><td><a href="detail.jsp?ID=<%=locSample.getSampleId()%>"><%=((locSample.getFrNumber() != null && !locSample.getFrNumber().equals(feature.getFrNumber()) ? locSample.getFrNumber().getFrNumber() : "")%></a>&nbsp;&nbsp;</td>
 						<td><a href="detail.jsp?ID=<%=locSample.getSampleId()%>"><%=SampleUtil.getDrillHoleDepthDescription(locSample)%></a></td>
 						<td><a href="print_front.jsp?ID=<%=locSample.getSampleId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr><%
 					}
