@@ -47,7 +47,7 @@
 			DAOFactory factory = HibernateUtil.get().getDAOFactory();
 			if (featID != null) {
 				Feature feature = new FeatureUtil(factory).getFeature(Integer.parseInt(featID));
-				return "FRED :: Locality Detail for " + ((FeatureUtil.getFrNumber(feature) != null) ? FeatureUtil.getFrNumber(feature).getFrNumber() : FeatureUtil.getFeatureName(feature));
+				return "FRED :: Locality Detail for " + FeatureUtil.getFeatureName(feature);
 			} else if (sampID != null) {
 				Sample sample = new SampleUtil(factory).getSample(Integer.parseInt(sampID));
 				return "FRED :: Sample Detail for " + ((sample.getFrNumber() != null) ? sample.getFrNumber().getFrNumber() : FeatureUtil.getFeatureName(sample.getFeature()));
@@ -305,8 +305,11 @@
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" width="550"><tr><td colspan="2" class="deHeading">Locality Information&nbsp;&nbsp;&nbsp;<a href="print_front.jsp?FeatID=<%=feature.getFeatureId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr>
-			<tr><td class="heading">FR Number</td><td class="heading"><%=((FeatureUtil.getFrNumber(feature) != null) ? FeatureUtil.getFrNumber(feature).getFrNumber() : "not yet allocated")%></td></tr>
-			<tr><td class="heading">Masterfile</td><td><%=((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : "undefined")%></td></tr>
+			<tr><td class="heading">FR Number</td><td class="heading"><%=((feature.getFrNumber() != null) ? feature.getFrNumber().getFrNumber() : "not yet allocated")%></td></tr><%
+			if (feature.getYardFrNumber() != null) {
+				%><tr><td class="heading">Yard FR Number</td><td><%=feature.getYardFrNumber()%></td></tr><%
+			}
+			%><tr><td class="heading">Masterfile</td><td><%=((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : "undefined")%></td></tr>
 			<tr><td class="heading">Locality Type</td><td><%=featType%></td></tr><%
 			String featTypeLbl, linkStart = "", linkStop = "", petWellLink = null;
 			if (featType.equals(FREDConstants.OUTCROP)) {
@@ -400,10 +403,10 @@
 						startDETable(pageContext);
 						%><table border="0" width="550">
 						<tr><td colspan="2" class="deHeading">Sample Information&nbsp;&nbsp;&nbsp;<a href="print_front.jsp?ID=<%=sample.getSampleId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr><%
-						if (sample.getFrNumber() != null && !sample.getFrNumber().equals(FeatureUtil.getFrNumber(feature))) {
+						if (sample.getFrNumber() != null && !sample.getFrNumber().equals(feature.getFrNumber())) {
 							%><tr><td class="heading">Sample FR Number</td><td class="heading"><%=sample.getFrNumber().getFrNumber()%></td></tr><%
 						}
-						if (sample.getYardFrNumber() != null) {
+						if (sample.getYardFrNumber() != null && !sample.getYardFrNumber().equals(feature.getYardFrNumber()) {
 							%><tr><td class="heading">Sample Yard FR Number</td><td><%=sample.getYardFrNumber().getFrNumber()%></td></tr><%
 						}
 						if (!featType.equals(FREDConstants.OUTCROP)) {
