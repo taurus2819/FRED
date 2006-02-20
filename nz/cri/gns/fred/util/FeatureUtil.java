@@ -831,7 +831,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 */
 	public static Feature getFeature(FrNumber frNum) {
 		try {
-			return ((Sample)frNum.getSamples().iterator().next()).getFeature();
+			return (Feature) frNum.getFeatures().iterator().next();
 		} catch (Exception e) {
 			return null;
 		}

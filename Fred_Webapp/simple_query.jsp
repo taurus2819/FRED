@@ -45,7 +45,7 @@ function generateSQL(form) {
 				alert("FR Number field incorrectly formatted");
 				return false;
 			}
-			whereSQL = "((" + frNum + ") OR (" + parseFRNum(trim(FRNum.value), "yard_") + ")) AND ";
+			whereSQL = "((" + frNum + ") OR (" + parseFRNum(trim(FRNum.value), "yard_") + ") OR (" + parseFRNum(trim(FRNum.value), "sample_") + ") OR (" + parseFRNum(trim(FRNum.value), "s_yard_") + ")) AND ";
 			queryString = queryString + "FR Number = " + trim(FRNum.value) + " AND ";
 		}
 		if (Map.value.length > 0) {
