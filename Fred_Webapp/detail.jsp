@@ -640,11 +640,10 @@
 					startDETable(pageContext);
 					%><table border="0" width="550">
 					<tr><td colspan="3" class="deHeading"><%=featType%> Samples</td></tr>
-					<tr class="heading"><td>Locality Name&nbsp;&nbsp;</td><td><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Sample Depth" : "Section Height")%></td></tr><%
+					<tr class="heading"><td>Sample</td></tr><%
 					for (Iterator i = FeatureUtil.getSortedSamples(feature).iterator(); i.hasNext(); ) {
 						Sample locSample = (Sample) i.next();
-						%><tr><td><a href="detail.jsp?ID=<%=locSample.getSampleId()%>"><%=((locSample.getFrNumber() != null && !locSample.getFrNumber().equals(feature.getFrNumber()) ? locSample.getFrNumber().getFrNumber() : "")%></a>&nbsp;&nbsp;</td>
-						<td><a href="detail.jsp?ID=<%=locSample.getSampleId()%>"><%=SampleUtil.getDrillHoleDepthDescription(locSample)%></a></td>
+						%><tr><td><a href="detail.jsp?ID=<%=locSample.getSampleId()%>"><%=SampleUtil.getDrillHoleDepthDescription(locSample) + ((locSample.getFrNumber() != null && !locSample.getFrNumber().equals(feature.getFrNumber())) ? " (" + locSample.getFrNumber().getFrNumber() + ")" : "")%></a>&nbsp;&nbsp;</td>
 						<td><a href="print_front.jsp?ID=<%=locSample.getSampleId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr><%
 					}
 					%></table><%

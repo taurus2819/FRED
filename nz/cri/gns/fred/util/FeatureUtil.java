@@ -711,16 +711,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	public void approveFeature(Feature feature, FrNumber fr, String comments, UserAccount user) throws StorageAccessException {
-		//All samples get the same FR number
-		for (Iterator it = feature.getSamples().iterator(); it.hasNext(); ) {
-			Sample sample = (Sample)it.next();
-			sample.setFrNumber(fr);
-			sampleDAO.update(sample);
-		}
-		
-		//explicitly add to working folder
+		//update frNumber and explicitly add to working folder
 		Audit audit = feature.getAudit();
 		try {
+			feature.setFrNumber(fr);
 			feature.getFolders().add(audit.getFolder());
 			featureDAO.update(feature);
 		} catch (Exception e) {
