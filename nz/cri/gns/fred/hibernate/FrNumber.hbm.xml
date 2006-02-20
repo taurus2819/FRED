@@ -75,6 +75,20 @@
             class="nz.cri.gns.fred.hibernate.Sample"
         />
     </set>
+    <!-- bi-directional one-to-many association to Feature -->
+    <set
+        name="features"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="FR_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Feature"
+        />
+    </set>
 
 </class>
 </hibernate-mapping>

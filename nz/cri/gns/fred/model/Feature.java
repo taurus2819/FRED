@@ -46,6 +46,10 @@ public interface Feature extends Audited, Comparable<Feature> {
     public void setStartDateRounding(String startDateRounding);
     public String getFinishDateRounding();
     public void setFinishDateRounding(String finishDateRounding);
+	public nz.cri.gns.fred.model.FrNumber getFrNumber();
+	public void setFrNumber(nz.cri.gns.fred.model.FrNumber frNumber);
+	public FrNumber getYardFrNumber();
+	public void setYardFrNumber(FrNumber yardFrNumber);
     public nz.cri.gns.fred.model.Person getPerson();
     public void setPerson(nz.cri.gns.fred.model.Person person);
     public nz.cri.gns.fred.model.Folder getMasterFile();

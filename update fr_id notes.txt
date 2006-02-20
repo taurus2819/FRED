@@ -1,0 +1,73 @@
+Database changes
+
+1. Add FR_ID to FEATURE table - FK to FR_NUMBER table
+   
+    alter table feature
+    add (fr_id number(7),
+         constraint feature_fk7 foreign key (fr_id) references fr_number (fr_id)
+        );
+    create index feature_idx8 on feature (fr_id) tablespace indx;
+    
+    
+2. Populate FEATURE.FR_ID from SAMPLE.FR_ID for outcrops and set SAMPLE.FR_ID to NULL
+
+     update feature f
+     set f.fr_id = (select s.fr_id from sample s where s.feature_id = f.feature_id)
+     where f.feature_type = 'Outcrop';
+     update sample
+     set fr_id = null
+     where feature_id in (select feature_id from feature where feature_type = 'Outcrop');
+     commit;
+
+3. Populate FEATURE.FR_ID from SAMPLE.FR_ID for drillhole/vert sects by selecting lowest fr_id
+
+     update feature f
+     set f.fr_id = (select min(s.fr_id) from sample s where s.feature_id = f.feature_id and s.fr_id is not null);
+     commit;
+       
+4. Set SAMPLE.FR_ID null for drillhole/vert sects WHERE SAMPLE.FR_ID matches FEATURE.FR_ID
+
+     update sample
+     set fr_id = null
+     where sample_id in
+     (select s.sample_id from sample s, feature f
+      where s.feature_id = f.feature_id
+      and s.fr_id = f.fr_id);
+     commit;
+
+5. Repeat for YARD_FR_ID
+
+    alter table feature
+    add (yard_fr_id number(7),
+         constraint feature_fk8 foreign key (yard_fr_id) references fr_number (fr_id)
+        );
+    create index feature_idx9 on feature (yard_fr_id) tablespace indx;
+
+     update feature f
+     set f.yard_fr_id = (select s.yard_fr_id from sample s where s.feature_id = f.feature_id)
+     where f.feature_type = 'Outcrop';
+     update sample
+     set yard_fr_id = null
+     where feature_id in (select feature_id from feature where feature_type = 'Outcrop');
+     commit;
+     
+     update feature f
+     set f.yard_fr_id = (select min(s.yard_fr_id) from sample s where s.feature_id = f.feature_id and s.yard_fr_id is not null);
+     commit;
+     
+     update sample
+     set yard_fr_id = null
+     where sample_id in
+     (select s.sample_id from sample s, feature f
+      where s.feature_id = f.feature_id
+      and s.yard_fr_id = f.yard_fr_id);
+     commit;
+     
+5. Alter FRED_MAINTAIN code to use FEATURE.FR_ID for FR_NUMBER
+
+Application Changes
+
+1. Alter FEATURE hibernate files and classes to add FR_ID and relationship
+2. Alter FeatureUtil.getFeatureName() method to use Feature.FrNumber
+3. Check detail.jsp page for display of sample FRNumbers (where they differ from feature FRNumber)
+4. Alter FRNumber setting method to set FEATURE.FR_ID not SAMPLE.FR_ID

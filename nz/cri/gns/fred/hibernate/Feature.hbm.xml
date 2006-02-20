@@ -154,6 +154,24 @@
     >
         <column name="MASTERFILE_ID" />
     </many-to-one>
+    <!-- bi-directional many-to-one association to FrNumber -->
+    <many-to-one
+        name="frNumber"
+        class="nz.cri.gns.fred.hibernate.FrNumber"
+		cascade="all"
+        not-null="true"
+    >
+        <column name="FR_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to FrNumber -->
+    <many-to-one
+        name="yardFrNumber"
+        class="nz.cri.gns.fred.hibernate.FrNumber"
+		cascade="all"
+        not-null="true"
+    >
+        <column name="YARD_FR_ID" />
+    </many-to-one>
     <!-- bi-directional one-to-many association to Sample -->
     <set
         name="samples"

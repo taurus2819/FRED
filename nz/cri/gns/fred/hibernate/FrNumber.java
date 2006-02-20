@@ -1,11 +1,15 @@
 package nz.cri.gns.fred.hibernate;
 
+import nz.cri.gns.fred.model.Feature;
+import nz.cri.gns.fred.model.Sample;
 import java.io.Serializable;
 import java.util.Set;
 
 /** @author Hibernate CodeGenerator */
 public class FrNumber implements Serializable, nz.cri.gns.fred.model.FrNumber {
 
+	private static final long serialVersionUID = 20050818L;
+	
     /** identifier field */
     private Integer frId;
 
@@ -23,17 +27,21 @@ public class FrNumber implements Serializable, nz.cri.gns.fred.model.FrNumber {
 
     /** nullable persistent field */
     private String frNumber;
-
+    
     /** persistent field */
-    private Set samples;
+    private Set<Feature> features;
+    
+    /** persistent field */
+    private Set<Sample> samples;
 
     /** full constructor */
-    public FrNumber(String mapSheet, Integer serialNumber, String recollectionNumber, String frnumComments, String frNumber, Set samples) {
+    public FrNumber(String mapSheet, Integer serialNumber, String recollectionNumber, String frnumComments, String frNumber, Set<Feature> features, Set<Sample> samples) {
         this.mapSheet = mapSheet;
         this.serialNumber = serialNumber;
         this.recollectionNumber = recollectionNumber;
         this.frnumComments = frnumComments;
         this.frNumber = frNumber;
+        this.features = features;
         this.samples = samples;
     }
 
@@ -42,9 +50,10 @@ public class FrNumber implements Serializable, nz.cri.gns.fred.model.FrNumber {
     }
 
     /** minimal constructor */
-    public FrNumber(String mapSheet, Integer serialNumber, Set samples) {
+    public FrNumber(String mapSheet, Integer serialNumber, Set<Feature> features, Set<Sample> samples) {
         this.mapSheet = mapSheet;
         this.serialNumber = serialNumber;
+        this.features = features;
         this.samples = samples;
     }
 
@@ -96,11 +105,19 @@ public class FrNumber implements Serializable, nz.cri.gns.fred.model.FrNumber {
         this.frNumber = frNumber;
     }
 
-    public Set getSamples() {
+    public Set<Feature> getFeatures() {
+        return this.features;
+    }
+
+    public void setFeatures(Set<Feature> features) {
+        this.features = features;
+    }
+    
+    public Set<Sample> getSamples() {
         return this.samples;
     }
 
-    public void setSamples(Set samples) {
+    public void setSamples(Set<Sample> samples) {
         this.samples = samples;
     }
     

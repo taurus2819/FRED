@@ -446,7 +446,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			if (mergeToFeature.getFeatureType().equals(FREDConstants.OUTCROP) || mergeFromFeature.getFeatureType().equals(FREDConstants.OUTCROP))
 				throw new IllegalStateException("Cannot merge outcrop localities");
 			
-			FrNumber mergeToFRNumber = FeatureUtil.getFrNumber(mergeToFeature);
+			//FrNumber mergeToFRNumber = FeatureUtil.getFrNumber(mergeToFeature);
 			//put in array as feature.getSamples() changes as you change sample's feature
 			Object[] samples = mergeFromFeature.getSamples().toArray();
 			
@@ -470,9 +470,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				featureDAO.save(edit);
 	
 				//set sample FRNumber if currently null
-				if (sample.getFrNumber() == null)
-					sample.setFrNumber(mergeToFRNumber);
-				sample.setFeature(mergeToFeature);			
+				//if (sample.getFrNumber() == null)
+				//	sample.setFrNumber(mergeToFRNumber);
+				//sample.setFeature(mergeToFeature);			
 				
 				sampleDAO.update(sample);
 			}
@@ -801,30 +801,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 
 	/**
-	 * Returns the FR number for this feature.  The algorithm for this will
-	 * change dramatically once the DB structure has been betterified, so this
-	 * is kept in a discrete method for now.
-	 */
-	public static FrNumber getFrNumber(Feature feature) {
-		//Use the first sample as the link
-		if (feature.getSamples() == null || feature.getSamples().size() == 0)
-			return null;
-		Sample sample = (Sample)feature.getSamples().iterator().next();
-		return sample.getFrNumber();
-	}
-
-	/**
-	 * Returns the Yard FR number for this feature.  As above this will change
-	 */
-	public static FrNumber getYardFrNumber(Feature feature) {
-		//Use the first sample as the link
-		if (feature.getSamples() == null || feature.getSamples().size() == 0)
-			return null;
-		Sample sample = (Sample)feature.getSamples().iterator().next();
-		return sample.getYardFrNumber();
-	}	
-	
-	/**
 	 * Parses FR Number as string and returns FrNumber object
 	 */
 	public static FrNumber parseFRNumber(String frNumStr) throws DataInputException {
@@ -854,28 +830,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		}
 	}
 	
-	
-	public static String getFeatureIdentifyingName(Feature feature) {
-		FrNumber frNum = FeatureUtil.getFrNumber(feature);
-		if (frNum == null)
-			return feature.getFeatureName();
-		else
-			return frNum.getFrNumber();
-
-	}
-
-	/**
-	 * Performs the inverse of getFeatureIdentifyingName
-	 * @throws StorageAccessException 
-	 */
-	public Feature getFeatureWithIdentifyingName(String ident) throws StorageAccessException {
-		FrNumber frNum = featureDAO.getFrNumber(ident);
-		if (frNum == null) 
-			return featureDAO.getFeatureWithName(ident);
-		else
-			return FeatureUtil.getFeature(frNum);
-	}
-
 	/**
 	 * Returns the feature for this FR number.  The algorithm for this will
 	 * change dramatically once the DB structure has been betterified, so this
@@ -920,7 +874,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			sample.setDrillType(sampleDAO.getDrillType(drillTypeId.intValue()));
 		
 		//add first FRNumber (if one defined)
-		sample.setFrNumber(FeatureUtil.getFrNumber(feature));
+		//sample.setFrNumber(FeatureUtil.getFrNumber(feature));
 		
 		sampleDAO.save(sample);
 	}
@@ -979,13 +933,28 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	public static String getFeatureName(Feature feature) {
-		FrNumber frNum = FeatureUtil.getFrNumber(feature);
-		String name = (frNum == null) ? feature.getFeatureName() : frNum.getFrNumber();
-		if (name == null)
-			name = "Unnamed Locality";
-		return name;
+		if (feature.getFrNumber() != null)
+			return feature.getFrNumber().getFrNumber();
+		if (feature.getFeatureName() != null)
+			return feature.getFeatureName();
+		if (feature.getOrigCoord() != null)
+			return feature.getOrigCoord();
+		return "Unnamed " + feature.getFeatureType();
 	}
-
+	
+	/**
+	 * Performs the inverse of getFeatureName
+	 * @throws StorageAccessException 
+	 */
+	public Feature getFeatureWithName(String ident) throws StorageAccessException {
+		FrNumber frNum = featureDAO.getFrNumber(ident);
+		if (frNum != null) 
+			return FeatureUtil.getFeature(frNum);	
+		return featureDAO.getFeatureWithName(ident);
+		
+			
+	}
+	
 	/**
 	 * Backlog method
 	 * @throws StorageAccessException 

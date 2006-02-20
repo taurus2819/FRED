@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Set;
 
 import nz.cri.gns.fred.model.FeatureMeta;
+import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.util.FeatureUtil;
 
 
@@ -71,6 +72,12 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     private String comments;
     
     /** persistent field */
+    private nz.cri.gns.fred.model.FrNumber frNumber;
+
+    /** persistent field */
+    private nz.cri.gns.fred.model.FrNumber yardFrNumber;
+    
+    /** persistent field */
     private nz.cri.gns.fred.model.Person person;
 
     /** persistent field */
@@ -95,7 +102,7 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     private Set<FeatureMeta> featureMetas;
 
     /** full constructor */
-    public Feature(Integer siteId, String locality, Integer origSystemId, String origCoord, Integer mapYear, String coordComments, String featureType, String featureName, String drillholeLicenceName, Date startDate, Date finishDate, String comments, Double datumElevation, Double startDepth, String datumType, Double finishDepth, String startDateRounding, String finishDateRounding, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set samples, Set folders, Set relationships, Set<FeatureMeta> featureMetas) {
+    public Feature(Integer siteId, String locality, Integer origSystemId, String origCoord, Integer mapYear, String coordComments, String featureType, String featureName, String drillholeLicenceName, Date startDate, Date finishDate, String comments, Double datumElevation, Double startDepth, String datumType, Double finishDepth, String startDateRounding, String finishDateRounding, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.FrNumber yardFrNumber, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set samples, Set folders, Set relationships, Set<FeatureMeta> featureMetas) {
         this.siteId = siteId;
         this.locality = locality;
         this.origSystemId = origSystemId;
@@ -114,6 +121,8 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
         this.startDateRounding = startDateRounding;
         this.finishDateRounding = finishDateRounding;
         this.comments = comments;
+        this.frNumber = frNumber;
+        this.yardFrNumber = yardFrNumber;
         this.person = person;
         this.masterFile = masterFile;
         this.auditTable = auditTable;
@@ -129,8 +138,9 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     }
 
     /** minimal constructor */
-    public Feature(String featureType, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set samples, Set folders, Set relationships, Set<FeatureMeta> featureMetas) {
+    public Feature(String featureType, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set samples, Set folders, Set relationships, Set<FeatureMeta> featureMetas) {
         this.featureType = featureType;
+        this.frNumber = frNumber;
         this.person = person;
         this.masterFile = masterFile;
         this.auditTable = auditTable;
@@ -293,6 +303,22 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
         this.finishDateRounding = finishDateRounding;
     }
 
+    public nz.cri.gns.fred.model.FrNumber getFrNumber() {
+        return this.frNumber;
+    }
+
+    public void setFrNumber(nz.cri.gns.fred.model.FrNumber frNumber) {
+        this.frNumber = frNumber;
+    }
+
+    public nz.cri.gns.fred.model.FrNumber getYardFrNumber() {
+        return this.yardFrNumber;
+    }
+
+    public void setYardFrNumber(nz.cri.gns.fred.model.FrNumber yardFrNumber) {
+        this.yardFrNumber = yardFrNumber;
+    }
+    
     public nz.cri.gns.fred.model.Person getPerson() {
         return this.person;
     }

@@ -232,7 +232,7 @@ public class FRFormServlet extends HttpServlet {
 		headerTable.setLockedWidth(true);
 		headerTable.setWidths(new float[] {5 * MM_TO_PT, 65 * MM_TO_PT, 65 * MM_TO_PT});
 	
-		FrNumber frNumber = FeatureUtil.getFrNumber(feature);
+		FrNumber frNumber = feature.getFrNumber();
 		PDFUtil.addCells(headerTable, new String[] {null, "Fossil Record Form", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
 			, new Font[] {fonts[0], fonts[4], fonts[3]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
 		
@@ -256,8 +256,8 @@ public class FRFormServlet extends HttpServlet {
 		localityTable.setTotalWidth(65 * MM_TO_PT);
 		localityTable.setLockedWidth(true);
 		localityTable.setWidths(new float[] {65 * MM_TO_PT});		
-		if (FeatureUtil.getYardFrNumber(feature) != null)
-			PDFUtil.addCell(localityTable, "(" + FeatureUtil.getYardFrNumber(feature).getFrNumber() + ")", fonts[5], PdfPCell.ALIGN_RIGHT, 1);
+		if (feature.getYardFrNumber() != null)
+			PDFUtil.addCell(localityTable, "(" + feature.getYardFrNumber().getFrNumber() + ")", fonts[5], PdfPCell.ALIGN_RIGHT, 1);
 		PDFUtil.addCell(localityTable, "Locality Type: " + feature.getFeatureType(), fonts[5], PdfPCell.ALIGN_RIGHT, 1);
 		cell = new PdfPCell(localityTable);
 		cell.setBorder(PdfPCell.NO_BORDER);
@@ -415,7 +415,7 @@ public class FRFormServlet extends HttpServlet {
 			Object[] relationships = sampleUtil.getRelationships(sample, "Sample", "nearby").toArray();
 			String[] relationshipStr = new String[relationships.length];
 			for (int i = 0; i < relationships.length; i++)
-				relationshipStr[i] = FeatureUtil.getFeatureIdentifyingName(((Relationship) relationships[i]).getFeature());
+				relationshipStr[i] = FeatureUtil.getFeatureName(((Relationship) relationships[i]).getFeature());
 			PDFUtil.addRepeatingCells(table, "Samples Nearby", relationshipStr, bodyFonts, false);			
 			relationships = sampleUtil.getRelationships(sample, "Sample", new String[] {"above", "below"}).toArray();
 			relationshipStr = new String[relationships.length];

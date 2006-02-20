@@ -30,9 +30,6 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     private String comments;
 
     /** nullable persistent field */
-    private FrNumber yardFrId;
-
-    /** nullable persistent field */
     private Date collectionDate;
 
     /** nullable persistent field */
@@ -117,6 +114,9 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     private nz.cri.gns.fred.model.FrNumber frNumber;
 
     /** persistent field */
+    private nz.cri.gns.fred.model.FrNumber yardFrNumber;
+    
+    /** persistent field */
     private nz.cri.gns.fred.model.DrillType drillType;
 
     /** persistent field */
@@ -153,11 +153,10 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     private Set<Relationship> relationships;
 
     /** full constructor */
-    public Sample(Double topDepth, Double bottomDepth, String comments, FrNumber yardFrId, Date collectionDate, String dateRounding, String stratUnit, String inPlace, String notCollected, String significance, String columnMap, Integer dip, String dipDirection, Integer strike, String facing, String comparatorUsed, String wet, String rockNature, String depositionEnv, String correspondence, String sampleName, nz.cri.gns.fred.hibernate.ColourModifier colourModifier, nz.cri.gns.fred.hibernate.Hardness hardness, nz.cri.gns.fred.hibernate.Weathering weathering, nz.cri.gns.fred.hibernate.Carbonate carbonate, nz.cri.gns.fred.hibernate.RockColour rockColourBySecondaryColourId, nz.cri.gns.fred.hibernate.RockColour rockColourByPrimaryColourId, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.Bedding beddingByPrimaryBeddingId, nz.cri.gns.fred.hibernate.Bedding beddingBySecondaryBeddingId, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.DrillType drillType, nz.cri.gns.fred.hibernate.GrainSize grainSizeByPrimaryGrainsizeId, nz.cri.gns.fred.hibernate.GrainSize grainSizeBySecondaryGrainsizeId, nz.cri.gns.fred.hibernate.BedThickness bedThickness, nz.cri.gns.fred.hibernate.Stage stageByKnownStageId, nz.cri.gns.fred.hibernate.Stage stageByInferredStageId, Set<SedimentaryFeature> sedimentaryFeatures, Set<SampleMeta> sampleMetas, Set records, Set<SentTo> sentTos, Set<Person> collectors, Set<Relationship> relationships) {
+    public Sample(Double topDepth, Double bottomDepth, String comments, Date collectionDate, String dateRounding, String stratUnit, String inPlace, String notCollected, String significance, String columnMap, Integer dip, String dipDirection, Integer strike, String facing, String comparatorUsed, String wet, String rockNature, String depositionEnv, String correspondence, String sampleName, nz.cri.gns.fred.hibernate.ColourModifier colourModifier, nz.cri.gns.fred.hibernate.Hardness hardness, nz.cri.gns.fred.hibernate.Weathering weathering, nz.cri.gns.fred.hibernate.Carbonate carbonate, nz.cri.gns.fred.hibernate.RockColour rockColourBySecondaryColourId, nz.cri.gns.fred.hibernate.RockColour rockColourByPrimaryColourId, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.Bedding beddingByPrimaryBeddingId, nz.cri.gns.fred.hibernate.Bedding beddingBySecondaryBeddingId, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.FrNumber yardFrNumber, nz.cri.gns.fred.hibernate.DrillType drillType, nz.cri.gns.fred.hibernate.GrainSize grainSizeByPrimaryGrainsizeId, nz.cri.gns.fred.hibernate.GrainSize grainSizeBySecondaryGrainsizeId, nz.cri.gns.fred.hibernate.BedThickness bedThickness, nz.cri.gns.fred.hibernate.Stage stageByKnownStageId, nz.cri.gns.fred.hibernate.Stage stageByInferredStageId, Set<SedimentaryFeature> sedimentaryFeatures, Set<SampleMeta> sampleMetas, Set records, Set<SentTo> sentTos, Set<Person> collectors, Set<Relationship> relationships) {
         this.topDepth = topDepth;
         this.bottomDepth = bottomDepth;
         this.comments = comments;
-        this.yardFrId = yardFrId;
         this.collectionDate = collectionDate;
         this.dateRounding = dateRounding;
         this.stratUnit = stratUnit;
@@ -186,6 +185,7 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.beddingByPrimaryBeddingId = beddingByPrimaryBeddingId;
         this.beddingBySecondaryBeddingId = beddingBySecondaryBeddingId;
         this.frNumber = frNumber;
+        this.yardFrNumber = yardFrNumber;
         this.drillType = drillType;
         this.grainSizeByPrimaryGrainsizeId = grainSizeByPrimaryGrainsizeId;
         this.grainSizeBySecondaryGrainsizeId = grainSizeBySecondaryGrainsizeId;
@@ -261,14 +261,6 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
 
     public void setComments(String comments) {
         this.comments = comments;
-    }
-
-    public FrNumber getYardFrNumber() {
-        return this.yardFrId;
-    }
-
-    public void setYardFrNumber(FrNumber yardFrId) {
-        this.yardFrId = yardFrId;
     }
 
     public Date getCollectionDate() {
@@ -501,6 +493,14 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.frNumber = frNumber;
     }
 
+    public nz.cri.gns.fred.model.FrNumber getYardFrNumber() {
+        return this.yardFrNumber;
+    }
+
+    public void setYardFrNumber(nz.cri.gns.fred.model.FrNumber yardFrNumber) {
+        this.yardFrNumber = yardFrNumber;
+    }
+    
     public nz.cri.gns.fred.model.DrillType getDrillType() {
         return this.drillType;
     }

@@ -23,10 +23,6 @@ public interface Sample extends Audited, Comparable<Sample> {
 
 	public abstract void setComments(String comments);
 
-	public abstract FrNumber getYardFrNumber();
-
-	public abstract void setYardFrNumber(FrNumber yardFrId);
-
 	public abstract Date getCollectionDate();
 
 	public abstract void setCollectionDate(Date collectionDate);
@@ -142,6 +138,10 @@ public interface Sample extends Audited, Comparable<Sample> {
 
 	public abstract void setFrNumber(nz.cri.gns.fred.model.FrNumber frNumber);
 
+	public abstract FrNumber getYardFrNumber();
+
+	public abstract void setYardFrNumber(FrNumber yardFrNumber);
+	
 	public abstract nz.cri.gns.fred.model.DrillType getDrillType();
 
 	public abstract void setDrillType(
