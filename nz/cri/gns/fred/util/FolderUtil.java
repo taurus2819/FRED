@@ -32,7 +32,7 @@ public class FolderUtil extends ModelUtil {
 		this.typeDAO = dao.getFolderTypeDAO();
 	}
 	
-	public Folder folder(int folderId) throws StorageAccessException {
+	public Folder getFolder(int folderId) throws StorageAccessException {
 		return folderDAO.getFolder(folderId);
 	}
 	
