@@ -1,17 +1,25 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
+%><%@page import="nz.cri.gns.fred.model.Feature"
+%><%@page import="nz.cri.gns.fred.model.Folder"
 %><%@page import="nz.cri.gns.fred.model.Person"
+%><%@page import="nz.cri.gns.fred.model.UserFolder"
+%><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
+%><%@page import="nz.cri.gns.fred.util.FeatureUtil"
+%><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.PersonUtil"
 %><%@page import="nz.cri.gns.db.ComboDescriptor"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.auth.User"
+%><%@page import="java.util.Iterator"
 %><%
 	ComboDescriptor cd;
 	User user = (User) getUser(session);
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
-	String mfID = "0";
+	FeatureUtil featureUtil = new FeatureUtil(factory);
+	FolderUtil folderUtil = new FolderUtil(factory);
 
 	ExtranetTemplate et = new ExtranetTemplate();
 	et.setNewHeaderStyle(true);
@@ -371,26 +379,35 @@
 			cd.orderBy = "folder_id";
 			if (request.getParameter("MF") != null  && !request.getParameter("MF").equals("-")) {
 				cd.selected = request.getParameter("MF");
-				mfID = request.getParameter("MF");
+				FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+				%></td></tr>
+				<tr><td class="heading">Submitted Samples</td><td>
+				<select name="SubFeat"><%
+				int mfID = -1;
+				try {
+					mfID = Integer.parseInt(request.getParameter("MF"));
+				} catch (Exception e) {	}
+				Folder masterfile = folderUtil.getFolder(mfID);
+				for (Iterator i = masterfile.getFeatures().iterator(); i.hasNext();) {
+					Feature feature = (Feature) i.next();
+					if (feature.getAudit().getStatus().equals(FREDConstants.APPROVED)) {
+						%><option value="<%=FeatureUtil.getFeatureIdentifyingName(feature)%>"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></option><%
+					}
+				}
+				%></select><%
 			}
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
 			%></td></tr>
-			<tr><td class="heading">Submitted Samples</td><td><%
-			cd = new ComboDescriptor("feature_view", "sample_name", "sample_name");
-			cd.name = "SubFeat";
-			cd.prompt = "-- Choose --";
-			cd.selectDistinct = true;
-			cd.join = "masterfile_id = " + mfID + " AND feature_status = 'approved'";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
-			%></td></tr>
-			<tr><td class="heading">Samples in Folders</td><td><%
-			cd = new ComboDescriptor("feature_view fv, folder_view fd", "fv.sample_name", "fv.sample_name");
-			cd.name = "WorkFeat";
-			cd.prompt = "-- Choose --";
-			cd.selectDistinct = true;
-			cd.join = "fv.feature_working_folder_id = fd.folder_id AND fv.feature_status <> 'approved' AND fd.user_id = " + user.getPersonId() + " AND fd.folder_type IN (2, 3)";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
-			%></td></tr>
+			<tr><td class="heading">Samples in Folders</td><td>
+			<select name="WorkFeat"><%
+			for (Iterator i = (new FolderUtil(factory)).getPersonalFolders(user).iterator(); i.hasNext();) {
+				UserFolder folder = (UserFolder) i.next();
+				Feature[] features = featureUtil.getFeaturesInFolder(folder);
+				for (int j = 0; j < features.length; j++) {
+					%><option value="<%=FeatureUtil.getFeatureIdentifyingName(features[j])%>"><%=FeatureUtil.getFeatureIdentifyingName(features[j])%></option><%
+				}
+			}
+			%></select>
+			</td></tr>
 			</table>
 			<table border="0" cellspacing="2" cellpadding="0">
 			<tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
@@ -427,7 +444,7 @@
 			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
 			%></td></tr>
 			<tr><td class="heading">Submitted Samples</td><td><%
-			cd = new ComboDescriptor("feature_view", "sample_name", "sample_name");
+			cd = new ComboDescriptor("feature_view", "feature_identifying_name", "feature_identifying_name");
 			cd.name = "SubFeat";
 			cd.prompt = "-- Choose --";
 			cd.selectDistinct = true;
@@ -435,7 +452,7 @@
 			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
 			%></td></tr>
 			<tr><td class="heading">Samples in Folders</td><td><%
-			cd = new ComboDescriptor("feature_view fv, folder_view fd", "fv.sample_name", "fv.sample_name");
+			cd = new ComboDescriptor("feature_view fv, folder_view fd", "fv.feature_identifying_name", "fv.feature_identifying_name");
 			cd.name = "WorkFeat";
 			cd.prompt = "-- Choose --";
 			cd.selectDistinct = true;
