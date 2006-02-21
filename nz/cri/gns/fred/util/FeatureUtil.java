@@ -25,7 +25,6 @@ import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
-import nz.cri.gns.fred.data.FRNumber;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.de.MandatoryFieldsMissingException;
 import nz.cri.gns.fred.model.Audit;
@@ -466,7 +465,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				edit.setAudit(sample.getAudit());
 				edit.setEditedById(new Integer(user.getId()));
 				edit.setEditedDate(new Date());
-				edit.setComments("Sample merged into " + getFeatureName(mergeToFeature) + " from " + getFeatureName(mergeFromFeature));
+				edit.setComments("Sample merged into " + getFeatureIdentifyingName(mergeToFeature) + " from " + getFeatureIdentifyingName(mergeFromFeature));
 				featureDAO.save(edit);
 	
 				//set sample FRNumber if currently null
@@ -926,7 +925,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		
 	}
 	
-	public static String getFeatureName(Feature feature) {
+	public static String getFeatureIdentifyingName(Feature feature) {
 		if (feature.getFrNumber() != null)
 			return feature.getFrNumber().getFrNumber();
 		if (feature.getFeatureName() != null)
@@ -937,16 +936,14 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	/**
-	 * Performs the inverse of getFeatureName
+	 * Performs the inverse of getFeatureIdentifyingName (except where name is a coordinate)
 	 * @throws StorageAccessException 
 	 */
-	public Feature getFeatureWithName(String ident) throws StorageAccessException {
+	public Feature getFeatureWithIdentifyingName(String ident) throws StorageAccessException {
 		FrNumber frNum = featureDAO.getFrNumber(ident);
 		if (frNum != null) 
 			return FeatureUtil.getFeature(frNum);	
 		return featureDAO.getFeatureWithName(ident);
-		
-			
 	}
 	
 	/**

@@ -105,7 +105,7 @@
 				Feature feature = features[i];
 				Audit audit = feature.getAudit();
 				%><tr><td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderId(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" height="20" width="20" border="0" alt="View Locality" /></a></td>
-				<td style="text-align: left" class="heading"><%=FeatureUtil.getFeatureName(feature)%>&nbsp;&nbsp;</td>
+				<td style="text-align: left" class="heading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=(audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : ""%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=FREDUtil.getUserName(audit.getSubmittedById().intValue())%>&nbsp;&nbsp;</td>
@@ -134,7 +134,7 @@
 				Feature feature = features[i];
 				Audit audit = feature.getAudit();
 				%><tr><td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" height="20" width="20" border="0" alt="View Locality" /></a></td>
-				<td style="text-align: left"><span class="heading"><%=FeatureUtil.getFeatureName(feature)%></span>&nbsp;&nbsp;<%=(feature.getFeatureName() != null) ? "<br />(" + feature.getFeatureName() + ")&nbsp;&nbsp;" : ""%></td>
+				<td style="text-align: left"><span class="heading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></span>&nbsp;&nbsp;<%=(feature.getFeatureName() != null) ? "<br />(" + feature.getFeatureName() + ")&nbsp;&nbsp;" : ""%></td>
 				<td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=(audit.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(audit.getApprovedDate()) : ""%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=(audit.getApprovedById() != null) ? FREDUtil.getUserName(audit.getApprovedById().intValue()) : ""%>&nbsp;&nbsp;</td>

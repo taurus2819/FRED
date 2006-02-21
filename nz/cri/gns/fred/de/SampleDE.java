@@ -473,7 +473,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			return "";
 		StringBuffer buffer = new StringBuffer();
 		for (Relationship rel : sampleUtil.getRelationships(sample, relationType, relationshipType))
-			buffer.append(FeatureUtil.getFeatureName(rel.getFeature())).append(separator);
+			buffer.append(FeatureUtil.getFeatureIdentifyingName(rel.getFeature())).append(separator);
 		return buffer.toString();
 	}
 
@@ -893,7 +893,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			//Go through all the new ones
 			for (String previous : request.getParameter("PrevSamp").split(";")) try {
 				previous = previous.trim();
-				Feature feature = featureUtil.getFeatureWithName(previous);
+				Feature feature = featureUtil.getFeatureWithIdentifyingName(previous);
 				boolean found = false;
 				for (Iterator<Relationship> it = previousSample.iterator(); it.hasNext(); ) {
 					Relationship rel = it.next();

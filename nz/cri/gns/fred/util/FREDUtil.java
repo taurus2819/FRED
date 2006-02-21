@@ -34,9 +34,12 @@ import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.BasicDatabaseApp2;
+import nz.cri.gns.db.BoxCreator;
 import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.db.DefaultBoxCreator;
 import nz.cri.gns.db.HTMLUtils;
+import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.db.site.DatumMethod;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.de.DataInputException;
@@ -403,6 +406,14 @@ public class FREDUtil {
 		} finally {
 			conn.close();
 		}
+	}
+	
+	public static void makeDropBox(PrintWriter out, ComboDescriptor cd, Vector<KeyValueObject> kvos) {
+		BoxCreator box = new DefaultBoxCreator();
+		box.writeBoxHeader(out, cd);
+		for (KeyValueObject kvo : kvos)
+			box.addListEntry(out, cd, kvo.getKey(), kvo.getValue());
+		box.writeBoxFooter(out, cd);
 	}
 
 	public static String formatDateForOutput(Date date) {

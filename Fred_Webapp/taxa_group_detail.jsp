@@ -76,7 +76,7 @@
 							PaleontologyListEntry palList = (PaleontologyListEntry) j.next();
 							try {
 								Feature feature = palList.getPaleontology().getRecord().getSample().getFeature();
-								%><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>" target="feat"><%=FeatureUtil.getFeatureName(feature)%></a>&nbsp;&nbsp;<br /><%
+								%><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>" target="feat"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></a>&nbsp;&nbsp;<br /><%
 							} catch (Exception e) {}						}
 						%></td><%
 					} else {
@@ -112,7 +112,7 @@
 							PaleontologyListEntry palList = (PaleontologyListEntry) j.next();
 							try {
 								Feature feature = palList.getPaleontology().getRecord().getSample().getFeature();
-								%><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>" target="feat"><%=FeatureUtil.getFeatureName(feature)%></a>&nbsp;&nbsp;<br /><%
+								%><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>" target="feat"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></a>&nbsp;&nbsp;<br /><%
 							} catch (Exception e) {}
 						}
 						%></td><%						

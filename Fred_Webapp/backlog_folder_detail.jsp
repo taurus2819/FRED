@@ -95,7 +95,7 @@
 				Feature feature = features[i];
 				Audit audit = feature.getAudit();
 				%><tr><td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("backlog_folder_detail.jsp?ID=" + folder.getFolderId(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" height="20" width="20" border="0" alt="View Locality" /></a></td>
-				<td class="heading"><%=FeatureUtil.getFeatureName(feature)%>&nbsp;&nbsp;</td>
+				<td class="heading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%>&nbsp;&nbsp;</td>
 				<td><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 				<td><%
 				if (audit.getSubmittedDate() != null) {

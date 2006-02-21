@@ -168,7 +168,7 @@
 				Feature feature = features[i];
 				Audit audit = feature.getAudit();
 				String status = audit.getStatus();
-				String name = FeatureUtil.getFeatureName(feature);
+				String name = FeatureUtil.getFeatureIdentifyingName(feature);
 				String featName = feature.getFeatureName();
 				%><tr>
 				<td><input type="checkbox" name="FeatIDs" value="<%=feature.getFeatureId()%>" /></td>	
@@ -230,7 +230,7 @@
 			Feature[] mergeToFeatures = featureUtil.getFeaturesInFolder(folder);
 			for (int i = 0; i < features.length; i++) {
 				if (!mergeToFeatures[i].getFeatureType().equals(FREDConstants.OUTCROP)) {
-					%><option value="<%=mergeToFeatures[i].getFeatureId()%>"><%=FeatureUtil.getFeatureName(mergeToFeatures[i])%></option><%		
+					%><option value="<%=mergeToFeatures[i].getFeatureId()%>"><%=FeatureUtil.getFeatureIdentifyingName(mergeToFeatures[i])%></option><%		
 				}
 			}
 			%></select></td></tr>

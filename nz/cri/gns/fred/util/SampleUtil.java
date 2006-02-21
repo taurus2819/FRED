@@ -467,7 +467,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (!rel.getRelationshipType().getName().equals(FREDConstants.NEARBY))
 			desc.append(rel.getRelationshipType().getName()).append(" ");
 		if (rel.getRelationType().getName().equals(FREDConstants.SAMPLE))
-			desc.append(FeatureUtil.getFeatureName(rel.getFeature()));
+			desc.append(FeatureUtil.getFeatureIdentifyingName(rel.getFeature()));
 		else
 			desc.append(rel.getStratUnit());
 		return desc.toString();
@@ -490,7 +490,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	public Relationship decodeSampleRelationshipDescription(String desc) throws StorageAccessException {
 		NoIdRelationship relationship = new NoIdRelationship();
 		String name = getCommonRelationshipPropertiesFromDescription(desc, relationship, sampleDAO.getRelationType("Sample"));
-		relationship.setFeature(new FeatureUtil(factory).getFeatureWithName(name));
+		relationship.setFeature(new FeatureUtil(factory).getFeatureWithIdentifyingName(name));
 		return relationship;
 	}
 

@@ -29,10 +29,10 @@
 			DAOFactory factory = HibernateUtil.get().getDAOFactory();
 			if (featID != null) {
 				Feature feature = new FeatureUtil(factory).getFeature(Integer.parseInt(featID));
-				return "FRED :: Audit Detail for " + FeatureUtil.getFeatureName(feature);
+				return "FRED :: Audit Detail for " + FeatureUtil.getFeatureIdentifyingName(feature);
 			} else if (sampID != null) {
 				Sample sample = new SampleUtil(factory).getSample(Integer.parseInt(sampID));
-				return "FRED :: Audit Detail for " + ((sample.getFrNumber() != null) ? sample.getFrNumber().getFrNumber() : FeatureUtil.getFeatureName(sample.getFeature()));
+				return "FRED :: Audit Detail for " + ((sample.getFrNumber() != null) ? sample.getFrNumber().getFrNumber() : FeatureUtil.getFeatureIdentifyingName(sample.getFeature()));
 			}
 			return "FRED :: The Fossil Record Electronic Database";
 		} catch (Exception e) {

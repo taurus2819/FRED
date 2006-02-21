@@ -415,7 +415,7 @@ public class FRFormServlet extends HttpServlet {
 			Object[] relationships = sampleUtil.getRelationships(sample, "Sample", "nearby").toArray();
 			String[] relationshipStr = new String[relationships.length];
 			for (int i = 0; i < relationships.length; i++)
-				relationshipStr[i] = FeatureUtil.getFeatureName(((Relationship) relationships[i]).getFeature());
+				relationshipStr[i] = FeatureUtil.getFeatureIdentifyingName(((Relationship) relationships[i]).getFeature());
 			PDFUtil.addRepeatingCells(table, "Samples Nearby", relationshipStr, bodyFonts, false);			
 			relationships = sampleUtil.getRelationships(sample, "Sample", new String[] {"above", "below"}).toArray();
 			relationshipStr = new String[relationships.length];

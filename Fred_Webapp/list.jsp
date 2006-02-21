@@ -136,7 +136,7 @@
 		   		if (features.length > 0) {
 					for (int i = 0; i < features.length; i++) {
 						if (featureUtil.isAllowedReadFeature(user, features[i])) {
-							%><tr><td><%=FeatureUtil.getFeatureName(features[i])%></td><td><%=features[i].getFeatureId()%></td></tr><%
+							%><tr><td><%=FeatureUtil.getFeatureIdentifyingName(features[i])%></td><td><%=features[i].getFeatureId()%></td></tr><%
 						}
 					}
 				} else {
