@@ -114,9 +114,9 @@
 */
 
 		} catch (FolderUtilException e) {
-			errMessage = "&ErrMsg=" + URLEncoder.encode("<script language='JavaScript'>alert(\"" + e.getMessage() + "\");</script>", "UTF-8");
+			errMessage = "&ErrMsg=" + URLEncoder.encode("<script language='JavaScript'>alert(\"" + e.getMessage() + "\");</script>", "ISO-8859-1");
 		} catch (Exception e) {
-			errMessage = "&ErrMsg=" + URLEncoder.encode("<script language='JavaScript'>alert(\"Unspecified Error - action not processed\");</script>", "UTF-8");
+			errMessage = "&ErrMsg=" + URLEncoder.encode("<script language='JavaScript'>alert(\"Unspecified Error - action not processed\");</script>", "ISO-8859-1");
 		}
 		response.sendRedirect("folder_detail.jsp?ID=" + foldID + errMessage);
 	}
