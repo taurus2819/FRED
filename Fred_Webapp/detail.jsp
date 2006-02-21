@@ -18,6 +18,7 @@
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="nz.cri.gns.db.site.SiteRecord"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
+%><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.util.map.Datum"
 %><%@page import="nz.cri.gns.util.map.Datum.Coordinate"
 %><%@page import="nz.cri.gns.util.map.Datum.LatLong"
@@ -93,12 +94,21 @@
 	Feature feature =  null;
 	Sample sample = null;
 	
+	String backURL = request.getParameter("backURL");
+	if (backURL != null && backURL.length() == 0)
+		backURL = null;
+	String backText = request.getParameter("backText");
+	if (backText != null && backText.length() == 0)
+		backText = null;
+	String backStr = (backURL != null) ? "&backURL=" + URLEncoder.encode(backURL, "ISO-8859-1") : "";
+	backStr += (backText != null) ? "&backText=" + URLEncoder.encode(backText, "ISO-8859-1") : "";
+	
 	//if FeatureID given then check if outcrop and if redirect to display sample details
 	if (featID != null) {
 		session.setAttribute("FRED.FeatureID", featID);
 		feature = featureUtil.getFeature(Integer.parseInt(featID));
 		if (feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
-			response.sendRedirect("detail.jsp?ID=" + ((Sample)feature.getSamples().iterator().next()).getSampleId());
+			response.sendRedirect("detail.jsp?ID=" + ((Sample)feature.getSamples().iterator().next()).getSampleId() + backStr);
 			return;
 		}
 	} else if (sampID != null) {
@@ -112,6 +122,14 @@
 		response.sendRedirect("detail.jsp?ID=" + ((String) session.getAttribute("FRED.SampleID")));
 		return;
 	}
+	
+	if (backURL != null) {
+		et.setButtons(new IconnedLink[] {
+			new IconnedLink(backURL, "images/back_arrow.gif",
+				((backText != null) ? request.getParameter("backText") : "Back"))
+		});
+	}	
+	
 	
 	if (feature != null) {
 		Audit audit = feature.getAudit();
@@ -195,6 +213,12 @@
 					} else {
 						%><input type="hidden" name="FeatID" value="<%=feature.getFeatureId()%>" /><%
 					}
+					if (backURL != null) {
+						%><input type="hidden" name="backURL" value="<%=URLEncoder.encode(backURL)%>" /><%
+						if (backText != null) {
+							%><input type="hidden" name="backText" value="<%=URLEncoder.encode(backText)%>" /><%
+						}
+					}
 					%><input type="hidden" name="ActionType" value="" />
 					<tr><td colspan="2" class="heading">User Comments</td></tr>
 					<tr><td colspan="2"><%=DBUtils.nvl(workComm)%></td></tr><%
@@ -245,6 +269,12 @@
 					} else {
 						%><input type="hidden" name="FeatID" value="<%=feature.getFeatureId()%>" /><%
 					}
+					if (backURL != null) {
+						%><input type="hidden" name="backURL" value="<%=URLEncoder.encode(backURL)%>" /><%
+						if (backText != null) {
+							%><input type="hidden" name="backText" value="<%=URLEncoder.encode(backText)%>" /><%
+						}
+					}
 					%><input type="hidden" name="ActionType" value="AddtoFold" />
 					</form>
 					</table><%
@@ -258,9 +288,19 @@
 					startDETable(pageContext);
 					%><table border="0" width="160">
 					<tr><td class="deHeading">Taxonomic Display Options</td></tr>
-					<form name="TaxaForm" method="post" action="detail.jsp">
-					<input type="hidden" name="ID" value="<%=sampID%>" />
-					<input type="hidden" name="AuthorChk" value="<%=authorChk%>" />
+					<form name="TaxaForm" method="post" action="detail.jsp"><%
+					if (sample != null) {
+						%><input type="hidden" name="ID" value="<%=sample.getSampleId()%>" /><%
+					} else {
+						%><input type="hidden" name="FeatID" value="<%=feature.getFeatureId()%>" /><%
+					}
+					if (backURL != null) {
+						%><input type="hidden" name="backURL" value="<%=URLEncoder.encode(backURL)%>" /><%
+						if (backText != null) {
+							%><input type="hidden" name="backText" value="<%=URLEncoder.encode(backText)%>" /><%
+						}
+					}
+					%><input type="hidden" name="AuthorChk" value="<%=authorChk%>" />
 					<input type="hidden" name="SCountChk" value="<%=sCountChk%>" />
 					<input type="hidden" name="SCoordChk" value="<%=sCoordChk%>" />
 					<input type="hidden" name="CommChk" value="<%=commChk%>" />
@@ -316,12 +356,12 @@
 				featTypeLbl = "Field Number";
 			} else if (featType.equals(FREDConstants.DRILLHOLE)) {
 				featTypeLbl = "Drillhole Name";
-				linkStart = "<a href=\"detail.jsp?FeatID=" + feature.getFeatureId() + "\">";
+				linkStart = "<a href=\"detail.jsp?FeatID=" + feature.getFeatureId() + backStr + "\">";
 				linkStop = "</a>";
 				petWellLink = FREDUtil.getPetWellLink(feature);
 			} else {
 				featTypeLbl = "Section Name";
-				linkStart = "<a href=\"detail.jsp?FeatID=" + feature.getFeatureId() + "\">";
+				linkStart = "<a href=\"detail.jsp?FeatID=" + feature.getFeatureId() + backStr + "\">";
 				linkStop = "</a>";
 			}
 			%><tr><td class="heading"><%=featTypeLbl%></td><td><%=linkStart + DBUtils.nvl(feature.getFeatureName()) + linkStop%>
@@ -414,11 +454,11 @@
 							//check for samples above and below current one
 							Sample sampleAbove = SampleUtil.getSampleAbove(sample);
 							if (sampleAbove != null && sampleUtil.isAllowedReadSample(user, sampleAbove)) {
-								%><tr><td class="heading">Sample Above</td><td><a href="detail.jsp?ID=<%=sampleAbove.getSampleId()%>"><%=SampleUtil.getDrillHoleDepthDescription(sampleAbove)%></a></td></tr><%
+								%><tr><td class="heading">Sample Above</td><td><a href="detail.jsp?ID=<%=sampleAbove.getSampleId() + backStr%>"><%=SampleUtil.getDrillHoleDepthDescription(sampleAbove)%></a></td></tr><%
 							}
 							Sample sampleBelow = SampleUtil.getSampleBelow(sample);
 							if (sampleBelow != null && sampleUtil.isAllowedReadSample(user, sampleBelow)) {
-								%><tr><td class="heading">Sample Below</td><td><a href="detail.jsp?ID=<%=sampleBelow.getSampleId()%>"><%=SampleUtil.getDrillHoleDepthDescription(sampleBelow)%></a></td></tr><%
+								%><tr><td class="heading">Sample Below</td><td><a href="detail.jsp?ID=<%=sampleBelow.getSampleId() + backStr%>"><%=SampleUtil.getDrillHoleDepthDescription(sampleBelow)%></a></td></tr><%
 							}
 						}
 						%><tr><td>&nbsp;</td></tr>
@@ -643,7 +683,7 @@
 					<tr class="heading"><td>Sample</td></tr><%
 					for (Iterator i = FeatureUtil.getSortedSamples(feature).iterator(); i.hasNext(); ) {
 						Sample locSample = (Sample) i.next();
-						%><tr><td><a href="detail.jsp?ID=<%=locSample.getSampleId()%>"><%=SampleUtil.getDrillHoleDepthDescription(locSample) + ((locSample.getFrNumber() != null && !locSample.getFrNumber().equals(feature.getFrNumber())) ? " (" + locSample.getFrNumber().getFrNumber() + ")" : "")%></a>&nbsp;&nbsp;</td>
+						%><tr><td><a href="detail.jsp?ID=<%=locSample.getSampleId() + backStr%>"><%=SampleUtil.getDrillHoleDepthDescription(locSample) + ((locSample.getFrNumber() != null && !locSample.getFrNumber().equals(feature.getFrNumber())) ? " (" + locSample.getFrNumber().getFrNumber() + ")" : "")%></a>&nbsp;&nbsp;</td>
 						<td><a href="print_front.jsp?ID=<%=locSample.getSampleId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr><%
 					}
 					%></table><%
@@ -654,7 +694,7 @@
 				//didn't pass isAllowedReadFeature()
 				if (user ==  null) {
 					%><tr><td>&nbsp;</td></tr>
-					<tr><td colspan="2">More data may be available for this locality for <a href="login.jsp?loginpage=<%=URLEncoder.encode("/fred/detail.jsp")%>" class="boldlink">logged</a> in users</td></tr><%
+					<tr><td colspan="2">More data may be available for this locality for <a href="login.jsp?loginpage=<%=URLEncoder.encode("/fred/detail.jsp", "ISO-8859-1")%>" class="boldlink">logged</a> in users</td></tr><%
 				}
 				%></table><%
 				endDETable(pageContext);
@@ -667,7 +707,7 @@
 			%><table style="margin-left:20px; margin-top:20px; width:550px;" border="0">
 			<tr><td>You do not have rights to view this sample</td></tr><%
 			if (user == null) {
-				%><tr><td colspan="2">You may be able to view it if you <a href="login.jsp?loginpage=<%=URLEncoder.encode("/fred/detail.jsp")%>" class="boldlink">login</a></td></tr><%
+				%><tr><td colspan="2">You may be able to view it if you <a href="login.jsp?loginpage=<%=URLEncoder.encode("/fred/detail.jsp", "ISO-8859-1")%>" class="boldlink">login</a></td></tr><%
 			}
 			%></table><%
 		}

@@ -13,6 +13,7 @@
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
 %><%@page import="nz.cri.gns.auth.User"
+%><%@page import="java.net.URLEncoder"
 %><%!
 	public String getName(HttpServletRequest request) {
 		try {
@@ -93,7 +94,7 @@
 			for (int i=0; i<features.length; i++) {
 				Feature feature = features[i];
 				Audit audit = feature.getAudit();
-				%><tr><td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" height="20" width="20" border="0" alt="View Locality" /></a></td>
+				%><tr><td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("backlog_folder_detail.jsp?ID=" + folder.getFolderId(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" height="20" width="20" border="0" alt="View Locality" /></a></td>
 				<td class="heading"><%=FeatureUtil.getFeatureName(feature)%>&nbsp;&nbsp;</td>
 				<td><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 				<td><%

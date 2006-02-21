@@ -3,6 +3,7 @@
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="java.util.List"
 %><%@page import="java.util.Iterator"
+%><%@page import="java.net.URLEncoder"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.dataaccess.StorageAccessException"
@@ -171,7 +172,7 @@
 				String featName = feature.getFeatureName();
 				%><tr>
 				<td><input type="checkbox" name="FeatIDs" value="<%=feature.getFeatureId()%>" /></td>	
-				<td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
+				<td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_detail.jsp?ID=" + folder.getFolderId(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
 				<td class="heading" style="text-align: left"><a href="folder_feature_detail.jsp?FoldID=<%=folder.getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><%=name%></a>&nbsp;&nbsp;<%
 				if (featName != null && !featName.equals(name)) {
 					%><br />(<%=featName%>)&nbsp;&nbsp;<%

@@ -3,6 +3,7 @@
 %><%@page import="java.text.DateFormat"
 %><%@page import="java.util.Iterator"
 %><%@page import="java.util.Vector"
+%><%@page import="java.net.URLEncoder"
 %><%@page import="java.util.Collections"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
@@ -155,24 +156,8 @@ function showHide(toShow, toHide) {
 <th colspan="2">Name&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Options</th></tr>
 <tr><td colspan="9"><img src="images/line.gif" height="3" width="550" /></td></tr>
 <%-- Feature --%>
-<tr><td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a>&nbsp;</td>
-<td class="heading"><%
-
-		//The name displayed here is either 1) The FR number if it has one or
-		//									2) The field number if it's an outcrop or		}
-		//									3) The drillhole name if it's a drillhole or	} = feature.feature_name
-		//									4) The section name if it's a vert. sect.		}
-	
-		FrNumber frNum = null;
-		if (feature.getSamples().size() > 0)
-			frNum = ((Sample)feature.getSamples().iterator().next()).getFrNumber();
-		
-		if (frNum != null) {
-			%><%=frNum.getFrNumber()%><%
-		} else {
-			%><%=feature.getFeatureName()%><%
-		}
-		%>&nbsp;&nbsp;<%
+<tr><td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a>&nbsp;</td>
+<td class="heading"><%=FeatureUtil.getFeatureName(feature)%>&nbsp;&nbsp;<%
 
 		Audit audit = feature.getAudit();
 		%></td><td style="color: #FF0000"><%
@@ -225,7 +210,7 @@ function showHide(toShow, toHide) {
 			if (audit.getStatus().equals(FREDConstants.APPROVED) || audit.getFolder() != null && audit.getFolder().equals(folder.getFolder())) {
 				//Commented out the not-showing if no depth fields cos I don't see why...
 				if (!feature.getFeatureType().equals(FREDConstants.OUTCROP)/* && SampleUtil.hasDepthInformation(sample)*/) {
-					%><tr><td><a href="detail.jsp?ID=<%=sample.getSampleId()%>"><img src="images/drill.gif" height="20" width="20" border="0" alt="View Sample Details" /></a>&nbsp;</td><td><%=SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td>
+					%><tr><td><a href="detail.jsp?ID=<%=sample.getSampleId()%>&backURL=<%=URLEncoder.encode("folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/drill.gif" height="20" width="20" border="0" alt="View Sample Details" /></a>&nbsp;</td><td><%=SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td>
 <td style="color: #FF0000"><%
 					if (!audit.getStatus().equals(FREDConstants.APPROVED)) {
 						%><%=audit.getStatus()%>&nbsp;&nbsp;</td><td><%
