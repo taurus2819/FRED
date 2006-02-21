@@ -408,14 +408,6 @@ public class FREDUtil {
 		}
 	}
 	
-	public static void makeDropBox(PrintWriter out, ComboDescriptor cd, Vector<KeyValueObject> kvos) {
-		BoxCreator box = new DefaultBoxCreator();
-		box.writeBoxHeader(out, cd);
-		for (KeyValueObject kvo : kvos)
-			box.addListEntry(out, cd, kvo.getKey(), kvo.getValue());
-		box.writeBoxFooter(out, cd);
-	}
-
 	public static String formatDateForOutput(Date date) {
 		return formatDateForOutput(date, "Day");
 	}
