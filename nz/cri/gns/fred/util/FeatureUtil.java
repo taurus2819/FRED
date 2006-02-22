@@ -528,6 +528,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return featuresArray;
 	}
 	
+	public static Feature[] getOrderedFeaturesInMasterfile(Folder masterfile) {
+		Set<Feature> features = masterfile.getMasterfileFeatures();
+		Feature[] featuresArray = features.toArray(new Feature[features.size()]); 
+		Arrays.sort(featuresArray);
+		return featuresArray;		
+	}
+	
 	public Feature[] getFeaturesApprovedInTheLastWeek(UserFolder masterfile) throws StorageAccessException {
 		GregorianCalendar cal = new GregorianCalendar();
 		Date now = cal.getTime();

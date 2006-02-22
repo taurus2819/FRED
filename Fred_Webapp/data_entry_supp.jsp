@@ -13,7 +13,9 @@
 %><%@page import="nz.cri.gns.db.ComboDescriptor"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.auth.User"
+%><%@page import="java.util.Collections"
 %><%@page import="java.util.Iterator"
+%><%@page import="java.util.Set"
 %><%
 	ComboDescriptor cd;
 	User user = (User) getUser(session);
@@ -390,10 +392,10 @@
 					mfID = Integer.parseInt(request.getParameter("MF"));
 				} catch (Exception e) {	}
 				Folder masterfile = folderUtil.getFolder(mfID);
-				for (Iterator i = masterfile.getMasterfileFeatures().iterator(); i.hasNext();) {
-					Feature feature = (Feature) i.next();
-					if (feature.getAudit().getStatus().equals(FREDConstants.APPROVED)) {
-						String featName = FeatureUtil.getFeatureIdentifyingName(feature);
+				Feature[] features = FeatureUtil.getOrderedFeaturesInMasterfile(masterfile);
+				for (int i = 0; i < features.length; i++) {
+					if (features[i].getAudit().getStatus().equals(FREDConstants.APPROVED)) {
+						String featName = FeatureUtil.getFeatureIdentifyingName(features[i]);
 						%><option value="<%=featName%>"><%=featName%></option><%
 					}
 				}
