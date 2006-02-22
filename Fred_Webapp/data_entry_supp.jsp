@@ -405,7 +405,7 @@
 			%><tr><td class="heading">Samples in Folders</td><td>
 			<select name="WorkFeat">
 			<option value="-">-- Choose --</option><%
-			for (Iterator i = folderUtil.getPersonalFolders(user).iterator(); i.hasNext();) {
+			for (Iterator i = folderUtil.getPersonalPlusBacklogFolders(user).iterator(); i.hasNext();) {
 				UserFolder folder = (UserFolder) i.next();
 				String foldName = folder.getFolderName();
 				Feature[] features = featureUtil.getFeaturesInFolder(folder);
@@ -472,7 +472,7 @@
 			%><tr><td class="heading">Samples in Folders</td><td>
 			<select name="WorkFeat">
 			<option value="-">-- Choose --</option><%
-			for (Iterator i = folderUtil.getPersonalFolders(user).iterator(); i.hasNext();) {
+			for (Iterator i = folderUtil.getPersonalPlusBacklogFolders(user).iterator(); i.hasNext();) {
 				UserFolder folder = (UserFolder) i.next();
 				String foldName = folder.getFolderName();
 				Feature[] features = featureUtil.getFeaturesInFolder(folder);

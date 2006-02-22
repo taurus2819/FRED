@@ -53,8 +53,8 @@ public class FolderUtil extends ModelUtil {
 	 * Returns a list of <code>UserFolder</code>s representing
 	 * admin folders to which the given user has access
 	 */
-	public List getAdminFolders(UserAccount user) throws StorageAccessException {
-		List folders = folderDAO.getAccessibleFolders(Integer.parseInt(user.getId()), typeDAO.getFolderType(Folder.FOLDER_TYPE_ADMIN));
+	public List<UserFolder> getAdminFolders(UserAccount user) throws StorageAccessException {
+		List<UserFolder> folders = folderDAO.getAccessibleFolders(Integer.parseInt(user.getId()), typeDAO.getFolderType(Folder.FOLDER_TYPE_ADMIN));
 		Collections.sort(folders);
 		return folders;
 	}
@@ -63,8 +63,8 @@ public class FolderUtil extends ModelUtil {
 	 * Returns a list of <code>UserFolder</code>s representing
 	 * backlog admin folders to which the given user has access
 	 */
-	public List getBacklogAdminFolders(UserAccount user) throws StorageAccessException {
-		List folders = folderDAO.getAccessibleFolders(Integer.parseInt(user.getId()), typeDAO.getFolderType(Folder.FOLDER_TYPE_BACKLOG_ADMIN));
+	public List<UserFolder> getBacklogAdminFolders(UserAccount user) throws StorageAccessException {
+		List<UserFolder> folders = folderDAO.getAccessibleFolders(Integer.parseInt(user.getId()), typeDAO.getFolderType(Folder.FOLDER_TYPE_BACKLOG_ADMIN));
 		Collections.sort(folders);
 		return folders;
 	}
@@ -81,6 +81,13 @@ public class FolderUtil extends ModelUtil {
 		Collections.sort(folders);
 		return folders;
 	}	
+	
+	public List<UserFolder> getPersonalPlusBacklogFolders(UserAccount user) throws StorageAccessException {
+		List<UserFolder> folders = getPersonalFolders(user);
+		folders.addAll(getBacklogFolders(user));
+		Collections.sort(folders);
+		return folders;
+	}
 	
 	public Folder addFolder(String name, UserAccount user)  throws StorageAccessException {
 	    Folder folder = folderDAO.createNewFolder();
