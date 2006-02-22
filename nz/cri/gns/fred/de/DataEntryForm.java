@@ -32,8 +32,18 @@ public interface DataEntryForm {
 	
 	public int save() throws SQLException, IOException, InsufficientPrivelegesException, StorageAccessException;
 	
-	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException, DataInputException, DataInputException;
+	/**
+	 * @deprecated use save(int dataOriginId)
+	 */
+	public int save(int dataOriginId) throws SQLException, IOException, InsufficientPrivelegesException, StorageAccessException;
 
+	/**
+	 * @deprecated use submit(int dataOriginId)
+	 */
+	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException;
+
+	public int submit(int dataOriginId) throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException;
+	
 	public void delete() throws IOException, SQLException, InsufficientPrivelegesException, StorageAccessException;
 	
 	public int getWorkingFolderID();

@@ -887,14 +887,23 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     	return v;
     }
     
-	public void saveFeature(Feature feature, User user, String comments) throws StorageAccessException {
+	/**
+	 * @deprecated use saveFeature(Feature feature, User user, String comments, int dataOriginId)
+	 */
+    public void saveFeature(Feature feature, User user, String comments) throws StorageAccessException {
+    	saveFeature(feature, user, comments, FREDConstants.DATA_ORIGIN_ONLINE);
+    }
+    
+	public void saveFeature(Feature feature, User user, String comments, int dataOriginId) throws StorageAccessException {
 		
 		Audit audit = feature.getAudit();
 
 		if (feature.getFeatureId() == null) {
 			//New feature
+			audit.setStatus(FREDConstants.WORKING);
 			audit.setCreatedById(user.getPersonId());
 			audit.setCreatedDate(new Date());
+			audit.setDataOrigin((new AuditUtil(factory)).getDataOrigin(new Integer(dataOriginId)));
 		} else if (FeatureUtil.isBacklogFeature(feature)) {
 			//Backlog editing feature
 			AuditEdit edit = featureDAO.createNewAuditEdit();

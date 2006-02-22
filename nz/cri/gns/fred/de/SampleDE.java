@@ -43,6 +43,7 @@ import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.model.Weathering;
+import nz.cri.gns.fred.util.AuditUtil;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.FolderUtil;
@@ -62,6 +63,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	private boolean outcropSample = false;
 
 	private SampleUtil sampleUtil;
+	private DAOFactory factory;
 	private ContentProvider provider;
 	private UserFolder workingFolder;
 	
@@ -83,6 +85,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		this.sample = sample;
 		this.user = user;
 		this.provider = content;
+		this.factory = factory;
 		
 		FolderUtil folderUtil = new FolderUtil(factory);
 		
@@ -565,119 +568,47 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     	}
 	}
 	
+	/**
+	 * @deprecated use save(int dataOriginId)
+	 */
 	public int save() throws StorageAccessException, InsufficientPrivelegesException {
+		return save(FREDConstants.DATA_ORIGIN_ONLINE);
+	}
+	
+	public int save(int dataOriginId) throws StorageAccessException, InsufficientPrivelegesException {
 		if (!isAllowedSubmit)
 			throw new InsufficientPrivelegesException();
 
-		if (sample.getSampleId() == null) {
+		if (sample.getSampleId() == null && !outcropSample) {
 			//It's an insert
 			Audit audit = sample.getAudit();
 			audit.setStatus(FREDConstants.WORKING);
 			audit.setCreatedById(user.getPersonId());
 			audit.setCreatedDate(new Date());
+			audit.setDataOrigin((new AuditUtil(factory)).getDataOrigin(new Integer(dataOriginId)));
 		} 
-    	if (!outcropSample) {
-			//Update AUDIT
-			/* what comments?  what security class?
-					QueryDescriptor qd = new QueryDescriptor("audit_table");
-					qd.addQueryColumn("working_comments", Types.VARCHAR, fields[WORKING_COMMENTS]);
-					qd.addQueryColumn("security_class_id", Types.NUMERIC, ((secClassID != null) ? secClassID : new Integer(4)));
-					qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(auditID));
-					DBUtils.doUpdate(qd, "audit_id = ?", conn);
-			*/
-		}
+
         sampleUtil.saveOrUpdate(sample);
     		
 		return sample.getSampleId().intValue();
 	
 	}
 
-	/*
-	private QueryDescriptor getSampleQD() throws NumberFormatException, IOException, SQLException {
-		QueryDescriptor qd = new QueryDescriptor("sample");
-		qd.addQueryColumn("collection_date", Types.DATE ,((collDate != null) ? collDate.getDate() : null));
-		qd.addQueryColumn("date_rounding", Types.VARCHAR, ((collDate != null) ? collDate.getDateRounding() : null));
-		qd.addQueryColumn("strat_unit", Types.VARCHAR, getField(STRAT_NAME));
-		qd.addQueryColumn("in_place", Types.VARCHAR, getField(FOSSILS_IN_PLACE));
-		qd.addQueryColumn("not_collected", Types.VARCHAR, getField(NOT_COLLECTED));
-		qd.addQueryColumn("significance", Types.VARCHAR, getField(SIGNIFICANCE_COMMENTS));
-		String infStageID = DataEntryUtils.getStageID(getField(INF_AGE_START), getField(INF_START_MOD), getField(INF_AGE_STOP), getField(INF_STOP_MOD), state);
-		qd.addQueryColumn("inferred_stage_id", Types.NUMERIC, ((infStageID != null) ? new Integer(infStageID) : null));
-		String knwStageID = DataEntryUtils.getStageID(getField(KNW_AGE_START), getField(KNW_START_MOD), getField(KNW_AGE_STOP), getField(KNW_STOP_MOD), state);
-		qd.addQueryColumn("known_stage_id", Types.NUMERIC, ((knwStageID != null) ? new Integer(knwStageID) : null));
-		qd.addQueryColumn("column_map", Types.VARCHAR, getField(COLUMN_MAP));
-		qd.addQueryColumn("dip", Types.NUMERIC, ((getField(DIP) != null) ? new Integer(getField(DIP)) : null));
-		qd.addQueryColumn("dip_direction", Types.VARCHAR, getField(DIP_DIRECTION));
-		qd.addQueryColumn("strike", Types.NUMERIC, ((getField(STRIKE) != null) ? new Integer(getField(STRIKE)) : null));
-		qd.addQueryColumn("facing", Types.VARCHAR, getField(FACING));
-		qd.addQueryColumn("primary_grainsize_id", Types.NUMERIC, ((getField(GRAIN_SIZE_P) != null) ? new Integer(getField(GRAIN_SIZE_P)) : null));
-		qd.addQueryColumn("secondary_grainsize_id", Types.NUMERIC, ((getField(GRAIN_SIZE_S) != null) ? new Integer(getField(GRAIN_SIZE_S)) : null));
-		qd.addQueryColumn("comparator_used", Types.VARCHAR, getField(GS_COMP));
-		qd.addQueryColumn("bed_thick_id", Types.NUMERIC, ((getField(BEDDING_THICKNESS) != null) ? new Integer(getField(BEDDING_THICKNESS)) : null));
-		qd.addQueryColumn("primary_bedding_id", Types.NUMERIC, ((getField(BEDDING_P) != null) ? new Integer(getField(BEDDING_P)) : null));
-		qd.addQueryColumn("secondary_bedding_id", Types.NUMERIC, ((getField(BEDDING_S) != null) ? new Integer(getField(BEDDING_S)) : null));
-		qd.addQueryColumn("weathering_id", Types.NUMERIC, ((getField(WEATHERING) != null) ? new Integer(getField(WEATHERING)) : null));
-		qd.addQueryColumn("hardness_id", Types.NUMERIC, ((getField(HARDNESS) != null) ? new Integer(getField(HARDNESS)) : null));
-		qd.addQueryColumn("carbonate_id", Types.NUMERIC, ((getField(CARBONATE) != null) ? new Integer(getField(CARBONATE)) : null));
-		qd.addQueryColumn("colour_modifier_id", Types.NUMERIC, ((getField(COLOUR_MOD) != null) ? new Integer(getField(COLOUR_MOD)) : null));
-		qd.addQueryColumn("primary_colour_id", Types.NUMERIC, ((getField(COLOUR_P) != null) ? new Integer(getField(COLOUR_P)) : null));
-		qd.addQueryColumn("secondary_colour_id", Types.NUMERIC, ((getField(COLOUR_S) != null) ? new Integer(getField(COLOUR_S)) : null));
-		qd.addQueryColumn("wet", Types.VARCHAR, getField(WET));
-		qd.addQueryColumn("deposition_env", Types.VARCHAR, depEnv);
-		qd.addQueryColumn("rock_nature", Types.VARCHAR, getField(ROCK_NATURE));
-		qd.addQueryColumn("correspondence", Types.VARCHAR, getField(CORRESPONDENCE));
-		return qd;
-	}
-
-	public int getWorkingFolderID() {
-		if (workingFolder != null)
-			return workingFolder.getFolderID();
-		return -1;
-	}
-
-	public int getFieldCount() {
-		return fields.length;
-	}
-
-	public void setField(int field, String value) throws DataInputException, TaxonomicListException {
-		if (value != null && (value.equals("") || value.equals("-") || value.equals("null")))
-			value = null;
-		if (value != null) {
-			parseField(field, value);
-		} else {
-			resetHiddenField(field);
-		}
-		fields[field] = value;
-		savedFlag = false;
-	}
-
-	public void setTempField(int field, String value) {
-		tempFields[field] = value;	
-	}
-
-	public String getField(int field) {
-		return fields[field];
-	}
-
-	public String getTempField(int field) {
-		return tempFields[field];
-	}
-
-	public void setFieldsFromTemp() throws DataInputException, TaxonomicListException {
-		for (int i = 0; i < getFieldCount(); i++) {
-			setField(i, tempFields[i]);
-			setTempField(i, null);
-		}
-	}
-*/
+	/**
+	 * @deprecated use submit(int dataOriginId)
+	 */
 	public int submit() throws InsufficientPrivelegesException, DataInputException, StorageAccessException {
+		return submit(FREDConstants.DATA_ORIGIN_ONLINE);
+	}
+	
+	public int submit(int dataOriginId) throws InsufficientPrivelegesException, DataInputException, StorageAccessException {
 		if (!outcropSample && (!isAllowedSubmit || sample.getAudit().getStatus().equals(FREDConstants.WAITING)))
 			throw new InsufficientPrivelegesException();
 		if (sample.getCollectors() == null || sample.getCollectors().size() == 0
 				|| sample.getCollectionDate() == null 
 				|| sample.getInPlace() == null)
 			throw new MandatoryFieldsMissingException();
-		save();
+		save(dataOriginId);
 		if (!outcropSample) {
 			FREDUtil.submit(sample, user, sampleUtil, false);
 		}

@@ -27,6 +27,7 @@ import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RecordMeta;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.UserFolder;
+import nz.cri.gns.fred.util.AuditUtil;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.FolderUtil;
@@ -212,7 +213,14 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         template.loadAll(out);
     }
 
+	/**
+	 * @deprecated use save(int dataOriginId)
+	 */
 	public int save() throws InsufficientPrivelegesException, StorageAccessException {
+		return save(FREDConstants.DATA_ORIGIN_ONLINE);
+	}
+	
+	public int save(int dataOriginId) throws InsufficientPrivelegesException, StorageAccessException {
 		if (!workingFolder.isAllowedCreateLocalities()) 
             throw new InsufficientPrivelegesException("You do not have the ability to save a record in this folder");
         
@@ -222,6 +230,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
             audit.setStatus(FREDConstants.WORKING);
             audit.setCreatedById(user.getPersonId());
             audit.setCreatedDate(new Date());
+            audit.setDataOrigin((new AuditUtil(factory)).getDataOrigin(new Integer(dataOriginId)));
             recordUtil.save(audit);
             recordUtil.save(record);
         } else {
@@ -230,13 +239,19 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 
         return record.getRecordId();
     }
-
-
+	
+	/**
+	 * @deprecated use submit(int dataOriginId)
+	 */
 	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException {
+		return submit(FREDConstants.DATA_ORIGIN_ONLINE);
+	}
+	
+	public int submit(int dataOriginId) throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException {
 		if (!workingFolder.isAllowedSubmitLocalities())
 			throw new InsufficientPrivelegesException("You do not have permission to submit a record from this folder");
 		checkMandatoryFields();
-		int recordID = save();
+		int recordID = save(dataOriginId);
         FREDUtil.submit(record, user, recordUtil, false);
 		//change status
 		return recordID;

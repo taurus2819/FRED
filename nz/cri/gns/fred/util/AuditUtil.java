@@ -14,6 +14,7 @@ import nz.cri.gns.fred.dao.AuditDAO;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
+import nz.cri.gns.fred.model.DataOrigin;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Relationship;
@@ -92,5 +93,9 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		}
 		return null;
     }
+    
+	public DataOrigin getDataOrigin(Integer dataOriginId) throws StorageAccessException {
+		return auditDAO.getDataOrigin(dataOriginId);
+	}
     
 }

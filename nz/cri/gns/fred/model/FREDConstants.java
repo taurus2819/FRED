@@ -53,4 +53,7 @@ public interface FREDConstants {
     public static final String BACKLOG_EMPTY = "no locality";
     public static final String BACKLOG_NEW = "new locality";
 
+    //Data Origin
+    public static final int DATA_ORIGIN_ONLINE = 908;
+    public static final int DATA_ORIGIN_EXCEL = 909;
 }

@@ -495,8 +495,14 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
     }
 	
-	
+	/**
+	 * @deprecated use save(int dataOriginId)
+	 */
 	public int save() throws SQLException, IOException, StorageAccessException, InsufficientPrivelegesException {
+		return save(FREDConstants.DATA_ORIGIN_ONLINE);
+	}
+
+	public int save(int dataOriginId) throws StorageAccessException {
 		//Check the site with the site DB
 		if (site != null) {
 			site.key = null;
@@ -510,18 +516,25 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			feature.setSiteId(null);
 		}
 		
-		featureUtil.saveFeature(feature, user, editComments);
+		featureUtil.saveFeature(feature, user, editComments, dataOriginId);
 		
-		return feature.getFeatureId();
+		return feature.getFeatureId();		
 	}
-
-	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException, DataInputException {
+	
+	/**
+	 * @deprecated use submit(int dataOriginId)
+	 */
+	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException {
+		return submit(FREDConstants.DATA_ORIGIN_ONLINE);
+	}
+	
+	public int submit(int dataOriginId) throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException, DataInputException {
 		if (feature.getAudit().getStatus().equals(FREDConstants.WAITING) || !isAllowedSubmit)
 			throw new InsufficientPrivelegesException();
 		if (feature.getFeatureType() == null || feature.getSiteId() == null || feature.getRegistrationArea() == null)
 			throw new MandatoryFieldsMissingException();
 
-		save();
+		save(dataOriginId);
 		
 		//change status and set Masterfile
 		featureUtil.submitFeature(feature, workingFolder, user);

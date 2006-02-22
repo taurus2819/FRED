@@ -41,6 +41,7 @@ import nz.cri.gns.fred.model.BedThickness;
 import nz.cri.gns.fred.model.Bedding;
 import nz.cri.gns.fred.model.Carbonate;
 import nz.cri.gns.fred.model.ColourModifier;
+import nz.cri.gns.fred.model.DataOrigin;
 import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
@@ -934,5 +935,8 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
         }
 	}
 
+	public DataOrigin getDataOrigin(Integer id) throws StorageAccessException {
+		return HibernateUtils.get(provider, nz.cri.gns.fred.hibernate.DataOrigin.class, id);
+	}
 
 }

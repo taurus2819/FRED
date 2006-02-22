@@ -27,14 +27,14 @@
 				ContentProvider provider = new ContentProvider(new File(request.getSession().getServletContext().getRealPath("/content")));
 				if (formType.equals(FREDConstants.OUTCROP) || formType.equals(FREDConstants.DRILLHOLE) || formType.equals(FREDConstants.VERTICAL_SECTION)) {
 					String featID = request.getParameter("FeatID");
-					if (featID != null) { //editing
+					if (featID != null && featID.length() > 0) { //editing
 						return DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), Integer.parseInt(foldID), user, factory, provider);
 					} else {
 						return DataEntryFormFactory.getLocalityDataEntryForm(formType, user, Integer.parseInt(foldID), factory, provider);
 					}
 				} else if (formType.equals("Sample")) {
 					String sampID = request.getParameter("SampID");
-					if (sampID != null) { //editing
+					if (sampID != null && sampID.length() > 0) { //editing
 						return DataEntryFormFactory.getSampleDataEntryForm(Integer.parseInt(sampID), Integer.parseInt(foldID), user, factory, provider);
 					} else {
 						String featID = request.getParameter("FeatID");
