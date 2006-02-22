@@ -377,33 +377,41 @@
 			cd.tagParams = "onChange='form1.submit();'";
 			cd.join = "folder_type = 1";
 			cd.orderBy = "folder_id";
-			if (request.getParameter("MF") != null  && !request.getParameter("MF").equals("-")) {
+			if (request.getParameter("MF") != null  && !request.getParameter("MF").equals("-"))
 				cd.selected = request.getParameter("MF");
-				FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
-				%></td></tr>
-				<tr><td class="heading">Submitted Samples</td><td>
-				<select name="SubFeat"><%
+			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+			%></td></tr><%
+			if (request.getParameter("MF") != null  && !request.getParameter("MF").equals("-")) {
+				%><tr><td class="heading">Submitted Samples</td><td>
+				<select name="SubFeat">
+				<option value="-">-- Choose --</option><%
 				int mfID = -1;
 				try {
 					mfID = Integer.parseInt(request.getParameter("MF"));
 				} catch (Exception e) {	}
 				Folder masterfile = folderUtil.getFolder(mfID);
-				for (Iterator i = masterfile.getFeatures().iterator(); i.hasNext();) {
+				for (Iterator i = masterfile.getMasterfileFeatures().iterator(); i.hasNext();) {
 					Feature feature = (Feature) i.next();
 					if (feature.getAudit().getStatus().equals(FREDConstants.APPROVED)) {
-						%><option value="<%=FeatureUtil.getFeatureIdentifyingName(feature)%>"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></option><%
+						String featName = FeatureUtil.getFeatureIdentifyingName(feature);
+						%><option value="<%=featName%>"><%=featName%></option><%
 					}
 				}
-				%></select><%
+				%></select>
+				</td></tr><%
+			} else {
+				%><input type="hidden" name="SubFeat" value="-" /><%
 			}
-			%></td></tr>
-			<tr><td class="heading">Samples in Folders</td><td>
-			<select name="WorkFeat"><%
-			for (Iterator i = (new FolderUtil(factory)).getPersonalFolders(user).iterator(); i.hasNext();) {
+			%><tr><td class="heading">Samples in Folders</td><td>
+			<select name="WorkFeat">
+			<option value="-">-- Choose --</option><%
+			for (Iterator i = folderUtil.getPersonalFolders(user).iterator(); i.hasNext();) {
 				UserFolder folder = (UserFolder) i.next();
+				String foldName = folder.getFolderName();
 				Feature[] features = featureUtil.getFeaturesInFolder(folder);
 				for (int j = 0; j < features.length; j++) {
-					%><option value="<%=FeatureUtil.getFeatureIdentifyingName(features[j])%>"><%=FeatureUtil.getFeatureIdentifyingName(features[j])%></option><%
+					String featName = FeatureUtil.getFeatureIdentifyingName(features[j]);
+					%><option value="<%=featName%>"><%=foldName + ": " + featName%></option><%
 				}
 			}
 			%></select>
@@ -439,26 +447,42 @@
 			cd.orderBy = "folder_id";
 			if (request.getParameter("MF") != null  && !request.getParameter("MF").equals("-")) {
 				cd.selected = request.getParameter("MF");
-				mfID = request.getParameter("MF");
 			}
 			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
-			%></td></tr>
-			<tr><td class="heading">Submitted Samples</td><td><%
-			cd = new ComboDescriptor("feature_view", "feature_identifying_name", "feature_identifying_name");
-			cd.name = "SubFeat";
-			cd.prompt = "-- Choose --";
-			cd.selectDistinct = true;
-			cd.join = "masterfile_id = " + mfID + " AND feature_status = 'approved'";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
-			%></td></tr>
-			<tr><td class="heading">Samples in Folders</td><td><%
-			cd = new ComboDescriptor("feature_view fv, folder_view fd", "fv.feature_identifying_name", "fv.feature_identifying_name");
-			cd.name = "WorkFeat";
-			cd.prompt = "-- Choose --";
-			cd.selectDistinct = true;
-			cd.join = "fv.feature_working_folder_id = fd.folder_id AND fv.feature_status <> 'approved' AND fd.user_id = " + user.getPersonId() + " AND fd.folder_type IN (2, 3)";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
-			%></td></tr>
+			%></td></tr><%
+			if (request.getParameter("MF") != null  && !request.getParameter("MF").equals("-")) {
+				%><tr><td class="heading">Submitted Samples</td><td>
+				<select name="SubFeat">
+				<option value="-">-- Choose --</option><%
+				int mfID = -1;
+				try {
+					mfID = Integer.parseInt(request.getParameter("MF"));
+				} catch (Exception e) {	}
+				Folder masterfile = folderUtil.getFolder(mfID);
+				for (Iterator i = masterfile.getMasterfileFeatures().iterator(); i.hasNext();) {
+					Feature feature = (Feature) i.next();
+					if (feature.getAudit().getStatus().equals(FREDConstants.APPROVED)) {
+						String featName = FeatureUtil.getFeatureIdentifyingName(feature);
+						%><option value="<%=featName%>"><%=featName%></option><%
+					}
+				}
+				%></select>
+				</td></tr><%
+			}
+			%><tr><td class="heading">Samples in Folders</td><td>
+			<select name="WorkFeat">
+			<option value="-">-- Choose --</option><%
+			for (Iterator i = folderUtil.getPersonalFolders(user).iterator(); i.hasNext();) {
+				UserFolder folder = (UserFolder) i.next();
+				String foldName = folder.getFolderName();
+				Feature[] features = featureUtil.getFeaturesInFolder(folder);
+				for (int j = 0; j < features.length; j++) {
+					String featName = FeatureUtil.getFeatureIdentifyingName(features[j]);
+					%><option value="<%=featName%>"><%=foldName + ": " + featName%></option><%
+				}
+			}
+			%></select>
+			</td></tr>
 			</table>
 			<table border="0" cellspacing="2" cellpadding="0">
 			<tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
