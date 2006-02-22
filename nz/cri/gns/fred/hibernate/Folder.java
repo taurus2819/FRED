@@ -2,6 +2,7 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 import java.util.Set;
+import nz.cri.gns.fred.model.Feature;
 
 /** @author Hibernate CodeGenerator */
 public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
@@ -27,7 +28,7 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
     private Set auditTables;
 
     /** persistent field */
-    private Set masterfileFeatures;
+    private Set<Feature> masterfileFeatures;
 
     /** persistent field */
     private Set features;
@@ -36,7 +37,7 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
     private Set folderUsers;
 
     /** full constructor */
-    public Folder(String name, FolderType folderType, Integer ownerId, Set records, Set auditTables, Set masterfileFeatures, Set features, Set folderUsers) {
+    public Folder(String name, FolderType folderType, Integer ownerId, Set records, Set auditTables, Set<Feature> masterfileFeatures, Set features, Set folderUsers) {
         this.name = name;
         this.folderType = folderType;
         this.ownerId = ownerId;
@@ -109,11 +110,11 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
         this.auditTables = auditTables;
     }
 
-    public Set getMasterfileFeatures() {
+    public Set<Feature> getMasterfileFeatures() {
         return this.masterfileFeatures;
     }
 
-    public void setMasterfileFeatures(Set masterfileFeatures) {
+    public void setMasterfileFeatures(Set<Feature> masterfileFeatures) {
         this.masterfileFeatures = masterfileFeatures;
     }
 

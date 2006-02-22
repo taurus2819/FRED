@@ -45,9 +45,9 @@ public interface Folder extends Serializable, Comparable<Folder> {
 
 	public abstract void setAudits(Set<Audit> audits);
 
-	public abstract Set getMasterfileFeatures();
+	public abstract Set<Feature> getMasterfileFeatures();
 
-	public abstract void setMasterfileFeatures(Set masterfileFeatures);
+	public abstract void setMasterfileFeatures(Set<Feature> masterfileFeatures);
 
 	public abstract Set<Feature> getFeatures();
 
