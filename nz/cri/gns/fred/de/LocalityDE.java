@@ -176,9 +176,13 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		try {
 			//Set up some basic substitutes
 			if (FeatureUtil.isBacklogFeature(feature)) {
-				template.addSub("isBacklog", "yes");
-				FrNumber frNumber = feature.getFrNumber();
-				template.addSub("frNumber", (frNumber != null ? frNumber.getFrNumber() : ""));
+				if (feature.getFeatureId() != null) {
+					template.addSub("isNewBacklog", "yes");
+				} else {
+					template.addSub("isExistingBacklog", "yes");
+					FrNumber frNumber = feature.getFrNumber();
+					template.addSub("frNumber", (frNumber != null ? frNumber.getFrNumber() : ""));
+				}
 			}
             if (feature.getFeatureId() != null)
                 template.addSub("featureId", feature.getFeatureId().toString());
