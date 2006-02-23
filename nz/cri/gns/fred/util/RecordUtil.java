@@ -16,8 +16,6 @@ import nz.cri.gns.fred.dao.RecordDAO;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.FREDConstants;
-import nz.cri.gns.fred.model.Feature;
-import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.Paleontology;

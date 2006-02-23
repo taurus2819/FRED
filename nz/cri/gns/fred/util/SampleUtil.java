@@ -201,7 +201,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	public static Sample getSampleAbove(Sample sample) {
 		if (!hasDepthInformation(sample))
 			return null;
-		Vector<Sample> samples = new Vector(FeatureUtil.getSortedSamples(sample.getFeature()));
+		Vector<Sample> samples = new Vector<Sample>(FeatureUtil.getSortedSamples(sample.getFeature()));
 		if (samples == null || samples.size() == 1)
 			return null;
 		int sampleIdx = samples.indexOf(sample);
@@ -217,7 +217,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	public static Sample getSampleBelow(Sample sample) {
 		if (!hasDepthInformation(sample))
 			return null;
-		Vector<Sample> samples = new Vector(FeatureUtil.getSortedSamples(sample.getFeature()));
+		Vector<Sample> samples = new Vector<Sample>(FeatureUtil.getSortedSamples(sample.getFeature()));
 		if (samples == null || samples.size() == 1)
 			return null;
 		int sampleIdx = samples.indexOf(sample);

@@ -60,6 +60,8 @@ import com.lowagie.text.pdf.PdfWriter;
 
 public class FRFormServlet extends HttpServlet {
 
+	private static final long serialVersionUID = 20050818L;
+	
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 	private DAOFactory factory;

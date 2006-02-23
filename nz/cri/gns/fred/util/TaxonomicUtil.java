@@ -14,7 +14,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.TaxonomicDAO;
 import nz.cri.gns.fred.dao.TaxonomicGroupDAO;
-import nz.cri.gns.fred.dataentry.DataInputException;
+import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.TaxaPanel;
@@ -140,48 +140,9 @@ public class TaxonomicUtil extends ModelUtil {
 		return groupDAO.findTaxonomicGroup(groupName);
 	}
 
-    public static String cleanAlphaChar (String taxaName, String checkString) {
-        int len = taxaName.length();
-        int pos = 0;
-        boolean ok = true;
-        while (ok) {
-            pos = taxaName.indexOf(checkString, pos + 1);
-            if (pos > 0 && pos + checkString.length() < len) {
-                pos = pos + checkString.length();
-                if (pos + 1 == len || pos + 2 == len) {
-                    taxaName = taxaName.substring(0, pos);
-                } else if (taxaName.indexOf(" ", pos + 1) <= pos + 2 && taxaName.indexOf(" ", pos + 1) > 0) {
-                    taxaName = taxaName.substring(0, pos) + "  " + taxaName.substring(pos + 2, taxaName.length());
-                }
-            } else {
-                ok = false;
-            }
-        }
-        return taxaName;
-    }
-
-    public static String cleanTaxaNameOpen (String taxaName, String checkString) {
-    	taxaName = cleanAlphaChar(taxaName, checkString);
-    	taxaName = cleanTaxaName(taxaName, "n." + checkString + "indet.");
-    	taxaName = cleanTaxaName(taxaName, "n. " + checkString + "indet.");
-    	taxaName = cleanTaxaName(taxaName, "n." + checkString + " indet.");
-    	taxaName = cleanTaxaName(taxaName, "n. " + checkString + " indet.");
-    	taxaName = cleanTaxaName(taxaName, "n." + checkString);
-    	taxaName = cleanTaxaName(taxaName, "n. " + checkString);
-    	taxaName = cleanTaxaName(taxaName, checkString + "indet.");
-    	taxaName = cleanTaxaName(taxaName, checkString + " indet.");
-    	taxaName = cleanTaxaName(taxaName, checkString);
-        return taxaName;
-    }
-
-    public static String cleanTaxaName (String taxaName, String checkString) {
-    	while (taxaName.indexOf(checkString) >= 0) {
-    		taxaName = taxaName.substring(0, taxaName.indexOf(checkString)).trim() + " " + taxaName.substring(taxaName.indexOf(checkString) + checkString.length(), taxaName.length()).trim();
-    		taxaName = taxaName.trim();
-    	}
-    	return taxaName;
-    }
-
+	/**
+	 * Returns the taxonomic name stripped of any prefix and suffix
+	 */
     public static String getCleanedName(String cleanName) throws DataInputException {
     	if (cleanName == null)
     		throw new DataInputException();
@@ -210,6 +171,48 @@ public class TaxonomicUtil extends ModelUtil {
     	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "gr.");
     	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "var.");
     	return cleanName;
+    }
+    
+    private static String cleanTaxaName (String taxaName, String checkString) {
+    	while (taxaName.indexOf(checkString) >= 0) {
+    		taxaName = taxaName.substring(0, taxaName.indexOf(checkString)).trim() + " " + taxaName.substring(taxaName.indexOf(checkString) + checkString.length(), taxaName.length()).trim();
+    		taxaName = taxaName.trim();
+    	}
+    	return taxaName;
+    }
+    
+    private static String cleanTaxaNameOpen (String taxaName, String checkString) {
+    	taxaName = cleanAlphaChar(taxaName, checkString);
+    	taxaName = cleanTaxaName(taxaName, "n." + checkString + "indet.");
+    	taxaName = cleanTaxaName(taxaName, "n. " + checkString + "indet.");
+    	taxaName = cleanTaxaName(taxaName, "n." + checkString + " indet.");
+    	taxaName = cleanTaxaName(taxaName, "n. " + checkString + " indet.");
+    	taxaName = cleanTaxaName(taxaName, "n." + checkString);
+    	taxaName = cleanTaxaName(taxaName, "n. " + checkString);
+    	taxaName = cleanTaxaName(taxaName, checkString + "indet.");
+    	taxaName = cleanTaxaName(taxaName, checkString + " indet.");
+    	taxaName = cleanTaxaName(taxaName, checkString);
+        return taxaName;
+    }
+    
+    private static String cleanAlphaChar (String taxaName, String checkString) {
+        int len = taxaName.length();
+        int pos = 0;
+        boolean ok = true;
+        while (ok) {
+            pos = taxaName.indexOf(checkString, pos + 1);
+            if (pos > 0 && pos + checkString.length() < len) {
+                pos = pos + checkString.length();
+                if (pos + 1 == len || pos + 2 == len) {
+                    taxaName = taxaName.substring(0, pos);
+                } else if (taxaName.indexOf(" ", pos + 1) <= pos + 2 && taxaName.indexOf(" ", pos + 1) > 0) {
+                    taxaName = taxaName.substring(0, pos) + "  " + taxaName.substring(pos + 2, taxaName.length());
+                }
+            } else {
+                ok = false;
+            }
+        }
+        return taxaName;
     }
 
     /**

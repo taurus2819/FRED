@@ -1,13 +1,10 @@
 package nz.cri.gns.fred.util;
 
 import java.beans.IntrospectionException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.AuditDAO;
@@ -16,12 +13,6 @@ import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.DataOrigin;
 import nz.cri.gns.fred.model.FREDConstants;
-import nz.cri.gns.fred.model.Feature;
-import nz.cri.gns.fred.model.Relationship;
-import nz.cri.gns.fred.model.Sample;
-import nz.cri.gns.fred.model.SampleMeta;
-import nz.cri.gns.fred.model.SedimentaryFeature;
-import nz.cri.gns.fred.model.SentTo;
 
 /**
  *
