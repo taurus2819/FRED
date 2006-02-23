@@ -99,7 +99,7 @@
 				<td><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 				<td><%
 				if (audit.getSubmittedDate() != null) {
-					%><%=FREDUtil.formatDateForOutput(audit.getSubmittedDate()))%><%
+					%><%=FREDUtil.formatDateForOutput(audit.getSubmittedDate())%><%
 				}
 				%>&nbsp;&nbsp;</td>
 				<td><%=FREDUtil.getUserName(audit.getSubmittedById().intValue())%>&nbsp;&nbsp;</td>
