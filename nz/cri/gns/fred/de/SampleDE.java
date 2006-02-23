@@ -661,7 +661,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		template.loadAll(out);
 	}
 
-	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
+	public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
         reinitialise(factory);
 
         Vector<String[]> error = new Vector<String[]>();
@@ -729,7 +729,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		//Collectors
         PersonUtil personUtil = new PersonUtil(factory);
         try {
-            sample.setCollectors(FREDUtil.getPersons(request.getParameter("Coll"), personUtil, "Collectors"));
+            sample.setCollectors(FREDUtil.getPersons(request.getParameter("Coll"), personUtil, "Collectors", addIfNew));
         } catch (DataInputException e) {
             if (e.hasAuxiliaryData()) {
                 sample.setCollectors((Set)e.getAuxiliaryData());
@@ -753,7 +753,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     			if (parts[0].length() > 0 && group == null)
     				error.add(new String[] {"Sent To", "Invalid group: " + parts[0]});
     
-    			Person person = (parts.length >= 2 && parts[1].length() != 0) ? personUtil.findPerson(parts[1]) : null;
+    			Person person = (parts.length >= 2 && parts[1].length() != 0) ? (addIfNew ? personUtil.findOrCreatePerson(parts[1]) : personUtil.findPerson(parts[1])) : null;
     			if (parts.length >= 2 && parts[1].length() > 0 && person == null)
     				error.add(new String[] {"Sent To", "Invalid person: " + parts[1]});
     			

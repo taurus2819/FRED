@@ -244,11 +244,11 @@ public class PaleontologyRecordDE extends RecordDE {
         taxonomicUtil = new TaxonomicUtil(factory);
     }
 
-    public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
+    public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
        reinitialise(factory);
        Vector<String[]> error = new Vector<String[]>();
         
-       super.updateFromRequest(request, factory);
+       super.updateFromRequest(request, factory, addIfNew);
         
         Paleontology pal = record.getPaleontology();
         //Collection date
@@ -262,7 +262,7 @@ public class PaleontologyRecordDE extends RecordDE {
         
         //Identifiers
         try {
-            pal.setIdentifiers(FREDUtil.getPersons(request.getParameter("Identifier"), new PersonUtil(factory), "Identifiers"));
+            pal.setIdentifiers(FREDUtil.getPersons(request.getParameter("Identifier"), new PersonUtil(factory), "Identifiers", addIfNew));
         } catch (DataInputException e) {
             error.addAll(e.getError());
         }

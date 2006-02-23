@@ -353,7 +353,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		out.write("<td>" + ((site != null && !site.isNull(SiteRecord.COUNTRY_FIELD)) ? site.getCountry() : "") + "</td>\n");
 	}
 
-	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
+	public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
         reinitialise(factory);
         
         Vector<String[]> error = new Vector<String[]>();

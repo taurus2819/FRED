@@ -698,16 +698,21 @@ public class FREDUtil {
         return names.toString();
     }
 
-    public static Set<Person> getPersons(String parameter, PersonUtil personUtil, String personLabel) throws DataInputException {
+    public static Set<Person> getPersons(String parameter, PersonUtil personUtil, String personLabel, boolean addIfNew) throws DataInputException {
         if (parameter.trim().length() == 0)
             return new HashSet<Person>();
-        String[] adoptors = parameter.split("[;\\n]");
+        String[] peopleStr = parameter.split("[;\\n]");
         HashSet<Person> personSet = new HashSet<Person>();
         Vector<String[]> error = new Vector<String[]>();
-        for (String collector : adoptors) try {
-            Person person = personUtil.findPerson(collector.trim());
+        for (String personStr : peopleStr) try {
+        	Person person;
+        	if (addIfNew) {
+        		person = personUtil.findOrCreatePerson(personStr.trim());
+        	} else {
+        		person = personUtil.findPerson(personStr.trim());
+        	}
             if (person == null)
-                error.add(new String[] {personLabel, "Invalid person: " + collector});
+           		error.add(new String[] {personLabel, "Invalid person: " + personStr});
             else {
                 personSet.add(person);
            }

@@ -27,14 +27,14 @@ public interface DataEntryForm {
 	public void makePostFormHTML(PrintWriter out) throws IOException;
 	
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException;
-	
-	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException;
-	
-	public int save() throws SQLException, IOException, InsufficientPrivelegesException, StorageAccessException;
-	
+
+	public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException;
+
 	/**
 	 * @deprecated use save(int dataOriginId)
 	 */
+	public int save() throws SQLException, IOException, InsufficientPrivelegesException, StorageAccessException;
+
 	public int save(int dataOriginId) throws SQLException, IOException, InsufficientPrivelegesException, StorageAccessException;
 
 	/**

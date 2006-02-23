@@ -17,6 +17,7 @@ import nz.cri.gns.fred.de.DataEntryFormFactory;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.de.TaxonomicListException;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
+import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.test.TestingHttpServletRequest;
@@ -34,8 +35,8 @@ public class SampleTest extends TestCase {
 
 		TestingHttpServletRequest request = (TestingHttpServletRequest) state.getRequest();
 		request.setParameter("KnwStageStart", "5");
-		form.updateFromRequest(request, factory);
-		form.save();
+		form.updateFromRequest(request, factory, false);
+		form.save(FREDConstants.DATA_ORIGIN_ONLINE);
 	}
 	
 }

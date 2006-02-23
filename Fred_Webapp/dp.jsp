@@ -19,7 +19,7 @@
 		DataEntryForm dataEntryForm = (DataEntryForm) session.getAttribute(WebsiteConstants.DATA_ENTRY_FORM);
 		try {
 			DAOFactory factory = HibernateUtil.get().getDAOFactory();
-			dataEntryForm.updateFromRequest(request, factory);
+			dataEntryForm.updateFromRequest(request, factory, false);
 			
 			if (request.getParameter("SaveType").equals("Submit")) {
 				dataEntryForm.submit();

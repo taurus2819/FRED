@@ -95,17 +95,17 @@ public class OutcropLocalityDE extends LocalityDE {
     }
 
     @Override
-    public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
+    public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
         DataInputException e = null;
         //Update the feature fields, catching any exceptions
         try {
-            super.updateFromRequest(request, factory);
+            super.updateFromRequest(request, factory, addIfNew);
         } catch (DataInputException _e) {
             e = _e;
         }
         //Update the sample fields, catching and updating any exceptions
         try {
-            sampleDE.updateFromRequest(request, factory);
+            sampleDE.updateFromRequest(request, factory, addIfNew);
         } catch (DataInputException _e) {
             if (e == null)
                 e = _e;

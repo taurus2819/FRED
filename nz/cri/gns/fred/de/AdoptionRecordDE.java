@@ -84,10 +84,10 @@ public class AdoptionRecordDE extends RecordDE {
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
 	}
 
-    public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
+    public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
         Vector<String[]> error = new Vector<String[]>();
         
-        super.updateFromRequest(request, factory);
+        super.updateFromRequest(request, factory, addIfNew);
         
         Adoption adoption = record.getAdoption();
         //Collection date
@@ -101,7 +101,7 @@ public class AdoptionRecordDE extends RecordDE {
         
         //Adoptors
         try {
-            adoption.setAdopters(FREDUtil.getPersons(request.getParameter("Adoptor"), new PersonUtil(factory), "Adoptors"));
+            adoption.setAdopters(FREDUtil.getPersons(request.getParameter("Adoptor"), new PersonUtil(factory), "Adoptors", addIfNew));
         } catch (DataInputException e) {
             error.addAll(e.getError());
         }

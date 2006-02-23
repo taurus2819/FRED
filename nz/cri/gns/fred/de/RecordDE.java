@@ -270,7 +270,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 		return workingFolder.getFolderId();
 	}
 
-	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
+	public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
         record.setWorkingComments(request.getParameter("WorkComm"));
     }
 	

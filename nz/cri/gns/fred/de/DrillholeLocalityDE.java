@@ -54,8 +54,8 @@ public class DrillholeLocalityDE extends LocalityDE {
 		feature.setFinishDepth(fromFeature.getFinishDepth());
 	}
 
-	public void updateFromRequest(HttpServletRequest request, DAOFactory factory) throws DataInputException {
-		super.updateFromRequest(request, factory);
+	public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
+		super.updateFromRequest(request, factory, addIfNew);
 		
 		String[] error = null;
 		

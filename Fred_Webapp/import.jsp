@@ -88,13 +88,13 @@
 	    	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	    	DataEntryForm dataEntryForm = getDataEntryFormImpl(request, user);
 	    	if (dataEntryForm != null) {
-		    	dataEntryForm.updateFromRequest(request, factory);
+		    	dataEntryForm.updateFromRequest(request, factory, true);
 		    	String id;
 		    	if (button.equals("save")) {
-		    		id = String.valueOf(dataEntryForm.save());
+		    		id = String.valueOf(dataEntryForm.save(FREDConstants.DATA_ORIGIN_EXCEL));
 		    		status = "Saved OK";
 		    	} else {
-		    		id = String.valueOf(dataEntryForm.submit());
+		    		id = String.valueOf(dataEntryForm.submit(FREDConstants.DATA_ORIGIN_EXCEL));
 		    		/*
 		    		if (request.getParameter("FRNum") != null) {
 		    			FRNumber frNum = FRNumber.parseFRNumber(request.getParameter("FRNum"));
