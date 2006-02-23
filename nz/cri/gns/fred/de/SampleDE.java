@@ -568,13 +568,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     	}
 	}
 	
-	/**
-	 * @deprecated use save(int dataOriginId)
-	 */
-	public int save() throws StorageAccessException, InsufficientPrivelegesException {
-		return save(FREDConstants.DATA_ORIGIN_ONLINE);
-	}
-	
 	public int save(int dataOriginId) throws StorageAccessException, InsufficientPrivelegesException {
 		if (!isAllowedSubmit)
 			throw new InsufficientPrivelegesException();
@@ -594,13 +587,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	
 	}
 
-	/**
-	 * @deprecated use submit(int dataOriginId)
-	 */
-	public int submit() throws InsufficientPrivelegesException, DataInputException, StorageAccessException {
-		return submit(FREDConstants.DATA_ORIGIN_ONLINE);
-	}
-	
 	public int submit(int dataOriginId) throws InsufficientPrivelegesException, DataInputException, StorageAccessException {
 		if (!outcropSample && (!isAllowedSubmit || sample.getAudit().getStatus().equals(FREDConstants.WAITING)))
 			throw new InsufficientPrivelegesException();

@@ -213,13 +213,6 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         template.loadAll(out);
     }
 
-	/**
-	 * @deprecated use save(int dataOriginId)
-	 */
-	public int save() throws InsufficientPrivelegesException, StorageAccessException {
-		return save(FREDConstants.DATA_ORIGIN_ONLINE);
-	}
-	
 	public int save(int dataOriginId) throws InsufficientPrivelegesException, StorageAccessException {
 		if (!workingFolder.isAllowedCreateLocalities()) 
             throw new InsufficientPrivelegesException("You do not have the ability to save a record in this folder");
@@ -239,13 +232,6 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 
         return record.getRecordId();
     }
-	
-	/**
-	 * @deprecated use submit(int dataOriginId)
-	 */
-	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException {
-		return submit(FREDConstants.DATA_ORIGIN_ONLINE);
-	}
 	
 	public int submit(int dataOriginId) throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException {
 		if (!workingFolder.isAllowedSubmitLocalities())

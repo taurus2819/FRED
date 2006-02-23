@@ -33,7 +33,6 @@ import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.FrNumber;
-import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
@@ -497,14 +496,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
     }
 	
-	/**
-	 * @deprecated use save(int dataOriginId)
-	 */
-	public int save() throws SQLException, IOException, StorageAccessException, InsufficientPrivelegesException {
-		return save(FREDConstants.DATA_ORIGIN_ONLINE);
-	}
-
-	public int save(int dataOriginId) throws StorageAccessException {
+	public int save(int dataOriginId) throws SQLException, IOException, StorageAccessException, InsufficientPrivelegesException {
 		//Check the site with the site DB
 		if (site != null) {
 			site.key = null;
@@ -521,13 +513,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		featureUtil.saveFeature(feature, user, editComments, dataOriginId);
 		
 		return feature.getFeatureId();		
-	}
-	
-	/**
-	 * @deprecated use submit(int dataOriginId)
-	 */
-	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException {
-		return submit(FREDConstants.DATA_ORIGIN_ONLINE);
 	}
 	
 	public int submit(int dataOriginId) throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException, DataInputException {

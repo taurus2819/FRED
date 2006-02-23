@@ -30,17 +30,7 @@ public interface DataEntryForm {
 
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException;
 
-	/**
-	 * @deprecated use save(int dataOriginId)
-	 */
-	public int save() throws SQLException, IOException, InsufficientPrivelegesException, StorageAccessException;
-
 	public int save(int dataOriginId) throws SQLException, IOException, InsufficientPrivelegesException, StorageAccessException;
-
-	/**
-	 * @deprecated use submit(int dataOriginId)
-	 */
-	public int submit() throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException;
 
 	public int submit(int dataOriginId) throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException;
 	

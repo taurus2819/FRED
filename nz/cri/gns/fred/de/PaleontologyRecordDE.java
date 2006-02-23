@@ -61,7 +61,7 @@ public class PaleontologyRecordDE extends RecordDE {
 		private String panelistComments;
 		private String sendMessage;
 		private TaxonomicGroup taxonomicGroup;
-		private Set listEntries;
+		private Set<PaleontologyListEntry> listEntries;
 		
 		public Integer getApprovedById() {
 			return approvedById;
@@ -87,11 +87,11 @@ public class PaleontologyRecordDE extends RecordDE {
 			this.author = author;
 		}
 
-		public Set getListEntries() {
+		public Set<PaleontologyListEntry> getListEntries() {
 			return listEntries;
 		}
 
-		public void setListEntries(Set listEntries) {
+		public void setListEntries(Set<PaleontologyListEntry> listEntries) {
 			this.listEntries = listEntries;
 		}
 
@@ -520,8 +520,8 @@ public class PaleontologyRecordDE extends RecordDE {
 		return "Edit paleontological record";
 	}
 	
-	public int save() throws InsufficientPrivelegesException, StorageAccessException {
-		int recordId = super.save();
+	public int save(int dataOriginId) throws InsufficientPrivelegesException, StorageAccessException {
+		int recordId = super.save(dataOriginId);
 		/*if (record.getPaleontology().getRecordId() == null)
 			recordUtil.save(record.getPaleontology());
 		else

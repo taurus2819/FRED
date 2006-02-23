@@ -129,8 +129,8 @@ public class AdoptionRecordDE extends RecordDE {
 		return "Edit adoption record";
 	}
 	
-	public int save() throws InsufficientPrivelegesException, StorageAccessException {
-		int recordId = super.save();
+	public int save(int dataOriginId) throws InsufficientPrivelegesException, StorageAccessException {
+		int recordId = super.save(dataOriginId);
 		if (record.getAdoption().getRecordId() == null)
 			recordUtil.save(record.getAdoption());
 		else

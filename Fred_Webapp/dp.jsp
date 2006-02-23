@@ -2,6 +2,7 @@
 %><%@page import="nz.cri.gns.fred.de.DataEntryForm"
 %><%@page import="nz.cri.gns.fred.de.DataInputException"
 %><%@page import="nz.cri.gns.fred.de.TaxonomicListException"
+%><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.model.PaleontologyListEntry"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="java.util.Iterator"
@@ -22,9 +23,9 @@
 			dataEntryForm.updateFromRequest(request, factory, false);
 			
 			if (request.getParameter("SaveType").equals("Submit")) {
-				dataEntryForm.submit();
+				dataEntryForm.submit(FREDConstants.DATA_ORIGIN_ONLINE);
 			} else {
-				dataEntryForm.save();
+				dataEntryForm.save(FREDConstants.DATA_ORIGIN_ONLINE);
 			}
 			factory.closeSession();
 			String whereTo = (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT);
@@ -36,7 +37,7 @@
 
 		} catch (TaxonomicListException e) {
 			//Still save it
-			dataEntryForm.save();
+			dataEntryForm.save(FREDConstants.DATA_ORIGIN_ONLINE);
 			drawTop(out, et, request, response);
 			%><table style="margin-left:20px; margin-top:20px; width:150px;" border="0">
 			<tr><td colspan="2" align="center"><img src="images/loc.gif" height="20" width="20" /></td></tr>

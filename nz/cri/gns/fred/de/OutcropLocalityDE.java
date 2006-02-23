@@ -68,15 +68,15 @@ public class OutcropLocalityDE extends LocalityDE {
 		out.write("</tr>\n");
 	}
 	
-	public int save() throws SQLException, IOException, StorageAccessException, InsufficientPrivelegesException {
-		super.save();
-		sampleDE.save();
+	public int save(int dataOriginId) throws SQLException, IOException, StorageAccessException, InsufficientPrivelegesException {
+		super.save(dataOriginId);
+		sampleDE.save(dataOriginId);
 		return feature.getFeatureId();
 	}
 	
-	public int submit() throws SQLException, IOException, DataInputException, InsufficientPrivelegesException, StorageAccessException {
-		super.submit();
-		sampleDE.submit();
+	public int submit(int dataOriginId) throws SQLException, IOException, DataInputException, InsufficientPrivelegesException, StorageAccessException {
+		super.submit(dataOriginId);
+		sampleDE.submit(dataOriginId);
 		return feature.getFeatureId();	
 	}
 
