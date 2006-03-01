@@ -59,17 +59,14 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
     }
     
     public static String getAuditBacklogStatus(Audit audit) {
-    	//System.out.println("** Checking Backlog Audit Status for auditID: " + audit.getAuditId());
     	Date auditDate = audit.getCreatedDate();
-    	//System.out.println("Audit Created Date: " + auditDate);
 		if (audit.getStatus().equals(FREDConstants.APPROVED)) {
 			if (audit.getCuratorComments() != null && audit.getCuratorComments().indexOf("backlog") > 0)
 				return FREDConstants.BACKLOG_COMPLETE;
 			try {
-				if (audit.getCreatedDate() != null) {
+				if (auditDate != null) {
 					Date oct05 = new SimpleDateFormat("dd/MM/yyyy").parse("01/10/2005");
-					//System.out.println("Oct 05: " + oct05);
-					if (auditDate.after(oct05));
+					if (auditDate.after(oct05))
 						return FREDConstants.BACKLOG_NEW;
 				}
 					
