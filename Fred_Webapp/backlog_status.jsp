@@ -187,14 +187,19 @@
 			} else if (bs.getStatus().equals(FREDConstants.BACKLOG_PROCESSING)) {
 				int totalCount = bs.getLocalityCount().intValue() - bs.getNewCount().intValue();
 				int procPct = (bs.getProcessingCount().intValue() * 100) / totalCount;
-				if (procPct == 0)
+				if (procPct == 0 && bs.getProcessingCount().intValue() > 0)
 					procPct = 1;
-				int comPct = (bs.getCompletedCount().intValue() * 100) / totalCount;
-				if (comPct == 100)
-					comPct = 99;
-				else if (comPct == 0 && bs.getCompletedCount().intValue() > 0)
-					comPct = 1;
-				int nsPct = 100 - procPct - comPct;
+				if (procPct == 100 && bs.getProcessingCount().intValue() < totalCount)
+					procPct = 99;
+				int comPct;
+				int nsPct;
+				if (bs.getProcessingCount().intValue() + bs.getCompletedCount().intValue() == totalCount) {
+					comPct = 100 - procPct;
+					nsPct = 0;
+				} else {
+					comPct = (bs.getCompletedCount().intValue() * 100) / totalCount;
+					nsPct = 100 - procPct - comPct;
+				}
 				int procWidth = 2 * procPct;
 				int comWidth = 2 * comPct;
 				int nsWidth = 2 * nsPct;
