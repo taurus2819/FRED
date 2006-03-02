@@ -174,7 +174,7 @@
 			else if (bs.getStatus().equals(FREDConstants.BACKLOG_EMPTY))
 					statusColour = "#DDDDDD";
 			%><td style="color: <%=statusColour%>"><%=bs.getStatus()%>&nbsp;&nbsp;</td>
-			<td><%=bs.getLocalityCount() - bs.getNewCount()%></td><%
+			<td><%=bs.getLocalityCount().intValue() - bs.getNewCount().intValue()%></td><%
 			if (bs.getStatus().equals(FREDConstants.BACKLOG_COMPLETE)) {
 				%><td width="208">
 				<table border="0" width="100%">
@@ -192,7 +192,7 @@
 				int comPct = (bs.getCompletedCount().intValue() * 100) / totalCount;
 				if (comPct == 100)
 					comPct = 99;
-				else if (comPct == 0 && bs.getCompletedCount() > 0)
+				else if (comPct == 0 && bs.getCompletedCount().intValue() > 0)
 					comPct = 1;
 				int nsPct = 100 - procPct - comPct;
 				int procWidth = 2 * procPct;
