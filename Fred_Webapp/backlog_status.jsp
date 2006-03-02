@@ -21,7 +21,7 @@
 		try {
 			DAOFactory factory = HibernateUtil.get().getDAOFactory();
 			FolderUtil folderUtil = new FolderUtil(factory);
-			Folder folder = folderUtil.getFolder(Integer.parseInt(request.getParameter("masterfileId")));
+			Folder folder = folderUtil.getFolder(Integer.parseInt(request.getParameter("ID")));
 			return "FRED :: Backlog Processing Status for " + folder.getName() + " masterfile";
 		} catch (Exception e) {
 			return "FRED :: Backlog Processing Status";
@@ -157,12 +157,12 @@
 	}
 	%></p><%
 	
+	%><p><%
+	startDETable(pageContext);
+	%><table border="0" width="460">
+	<tr><td class="deHeading" colspan="5">Detail</td></tr><%
 	if (masterfileId > 0) {
-		%><p><%
-		startDETable(pageContext);
-		%><table border="0" width="460">
-		<tr><td class="deHeading" colspan="5">Summary by Map Sheet</td></tr>
-		<tr><th>Map</th><th>Status&nbsp;&nbsp;</th><th>Localities to Process&nbsp;&nbsp;</th><th colspan="2">Percent Complete</th></tr><%
+		%><tr><th>Map</th><th>Status&nbsp;&nbsp;</th><th>Localities to Process&nbsp;&nbsp;</th><th colspan="2">Percent Complete</th></tr><%
 		for (Iterator i = bsUtil.getBacklogStatusInMasterfile(masterfileId).iterator(); i.hasNext();) {
 			BacklogStatus bs = (BacklogStatus) i.next();
 			%><tr><td class="heading"><a href="backlog_status_sheet.jsp?Sheet=<%=bs.getMapNumber()%>"><%=bs.getMapNumber()%></a>&nbsp;&nbsp;</td><%
@@ -230,12 +230,80 @@
 			}
 			%></tr><%
 		}
-		
-		%></table><%
-		endDETable(pageContext);
-		%></p><%		
-		
+	} else {
+		%><tr><th>Masterfile</th><th>Status&nbsp;&nbsp;</th><th>Localities to Process&nbsp;&nbsp;</th><th colspan="2">Percent Complete</th></tr><%
+		for (Iterator i = folderUtil.getAdminFolders().iterator(); i.hasNext();) {
+			Folder masterfile = (Folder) i.next();
+			%><tr><td class="heading"><a href="backlog_status.jsp?ID=<%=masterfile.getFolderId()%>"><%=masterfile.getName()%></a>&nbsp;&nbsp;</td><%
+			String status = bsUtil.getStatus(masterfile.getFolderId().intValue());
+			String statusColour = "#000000";
+			if (status.equals(FREDConstants.BACKLOG_PROCESSING))
+				statusColour = "#FF0000";
+			else if (status.equals(FREDConstants.BACKLOG_COMPLETE))
+				statusColour = "#00FF00";
+			else if (status.equals(FREDConstants.BACKLOG_EMPTY))
+					statusColour = "#DDDDDD";
+			%><td style="color: <%=statusColour%>"><%=status%>&nbsp;&nbsp;</td>
+			<td><%=bsUtil.getSumLocalityCount(masterfile.getFolderId().intValue()) - bsUtil.getSumNewCount(masterfile.getFolderId().intValue())%></td><%
+			if (status.equals(FREDConstants.BACKLOG_COMPLETE)) {
+				%><td width="208">
+				<table border="0" width="100%">
+				<tr>
+				<td width="100%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="208" alt="" /></td>
+				</tr>
+				</table>
+				</td>
+				<td>100%</td><%
+			} else if (status.equals(FREDConstants.BACKLOG_PROCESSING)) {
+				int totalCount = bsUtil.getSumLocalityCount(masterfile.getFolderId().intValue()) - bsUtil.getSumNewCount(masterfile.getFolderId().intValue());
+				int procPct = (bsUtil.getSumProcessingCount(masterfile.getFolderId().intValue()) * 100) / totalCount;
+				if (procPct == 0 && bsUtil.getSumProcessingCount(masterfile.getFolderId().intValue()) > 0)
+					procPct = 1;
+				if (procPct == 100 && bsUtil.getSumProcessingCount(masterfile.getFolderId().intValue()) < totalCount)
+					procPct = 99;
+				int comPct;
+				int nsPct;
+				if (bsUtil.getSumProcessingCount(masterfile.getFolderId().intValue()) + bsUtil.getSumCompletedCount(masterfile.getFolderId().intValue()) == totalCount) {
+					comPct = 100 - procPct;
+					nsPct = 0;
+				} else {
+					comPct = (bsUtil.getSumCompletedCount(masterfile.getFolderId().intValue()) * 100) / totalCount;
+					nsPct = 100 - procPct - comPct;
+				}
+				int procWidth = 2 * procPct;
+				int comWidth = 2 * comPct;
+				int nsWidth = 2 * nsPct;
+				%><td width="208">
+				<table border="0" width="100%">
+				<tr><%
+				if (procPct == 100) {
+					%><td width="100%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="208" alt="" /></td><%
+				} else {
+					if (comPct > 0 && nsPct > 0) {
+						%><td width="<%=comPct%>%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="<%=comWidth%>" alt="" /></td>
+						<td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth%>" alt="" /></td>
+						<td width="<%=nsPct%>%" style="background-color: #000000"><img src="images/blank.gif" height="8" width="<%=nsWidth%>" alt="" /></td><%					
+					} else if (comPct > 0) {
+						%><td width="<%=comPct%>%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="<%=comWidth + 4%>" alt="" /></td>
+						<td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth + 4%>" alt="" /></td><%
+					} else {
+						%><td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth + 4%>" alt="" /></td>
+						<td width="<%=nsPct%>%" style="background-color: #000000"><img src="images/blank.gif" height="8" width="<%=nsWidth + 4%>" alt="" /></td><%					
+					}
+				}
+				%></tr>
+				</table>
+				</td>
+				<td><%=comPct%>%</td><%					
+			} else {
+				%><td></td><td></td><%
+			}
+			%></tr><%
+		}		
 	}
+	%></table><%
+	endDETable(pageContext);
+	%></p><%	
 	
 	%></td></tr></table><%
 
