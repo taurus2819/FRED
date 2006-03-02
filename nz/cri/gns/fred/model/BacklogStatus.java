@@ -37,4 +37,11 @@ public interface BacklogStatus extends Comparable<BacklogStatus> {
 	public abstract Integer getCompletedCount();
 
 	public abstract void setCompletedCount(Integer completedCount);
+	
+	public abstract Integer getNewCount();
+
+	public abstract void setNewCount(Integer newCount);
+	
+	public abstract Integer getNotStartedCount();
+	
 }

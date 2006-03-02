@@ -32,8 +32,11 @@ public class BacklogStatus implements Serializable, nz.cri.gns.fred.model.Backlo
     /** persistent field */
     private Integer completedCount;
     
+    /** persistent field */
+    private Integer newCount;
+    
     /** full constructor */
-    public BacklogStatus(Integer objectId, String mapNumber, String mapName, String status, Integer masterfileId, Integer localityCount, Integer processingCount, Integer completedCount) {
+    public BacklogStatus(Integer objectId, String mapNumber, String mapName, String status, Integer masterfileId, Integer localityCount, Integer processingCount, Integer completedCount, Integer newCount) {
         this.objectId = objectId;
         this.mapNumber = mapNumber;
         this.mapName = mapName;
@@ -42,6 +45,7 @@ public class BacklogStatus implements Serializable, nz.cri.gns.fred.model.Backlo
         this.localityCount = localityCount;
         this.processingCount = processingCount;
         this.completedCount = completedCount;
+        this.newCount = newCount;
     }
 
     /** default constructor */
@@ -111,7 +115,19 @@ public class BacklogStatus implements Serializable, nz.cri.gns.fred.model.Backlo
 	public void setCompletedCount(Integer completedCount) {
 		this.completedCount = completedCount;
 	}
-   
+
+	public Integer getNewCount() {
+		return this.newCount;
+	}
+
+	public void setNewCount(Integer newCount) {
+		this.newCount = newCount;
+	}
+	
+	public Integer getNotStartedCount() {
+		return new Integer(this.localityCount.intValue() - this.processingCount.intValue() - this.completedCount.intValue() - this.newCount.intValue());
+	}
+	
     public String toString() {
         return mapNumber;
     }

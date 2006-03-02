@@ -6,8 +6,10 @@
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.model.BacklogStatus"
+%><%@page import="nz.cri.gns.fred.model.Folder"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.util.BacklogStatusUtil"
+%><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.gis.ims.IMSMap"
 %><%@page import="com.esri.aims.mtier.model.envelope.Envelope"
 %><%!	
@@ -16,11 +18,19 @@
 	}
 %><%!
 	public String getName(HttpServletRequest request) {
-		return "FRED :: Backlog Processing Status";
+		try {
+			DAOFactory factory = HibernateUtil.get().getDAOFactory();
+			FolderUtil folderUtil = new FolderUtil(factory);
+			Folder folder = folderUtil.getFolder(Integer.parseInt(request.getParameter("masterfileId")));
+			return "FRED :: Backlog Processing Status for " + folder.getName() + " masterfile";
+		} catch (Exception e) {
+			return "FRED :: Backlog Processing Status";
+		}
 	}
 %><%
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	BacklogStatusUtil bsUtil = new BacklogStatusUtil(factory);
+	FolderUtil folderUtil = new FolderUtil(factory);
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setUseNavigationColumn(false);
@@ -37,14 +47,12 @@
 	startDETable(pageContext);
 	%><table border="0" width="160">
 	<tr><td class="deHeading">Select a Map</td></tr>
-	<tr><td class="heading"><a href="backlog_status.jsp?ID=-1">Overview</a></td></tr>
-	<tr><td class="heading"><a href="backlog_status.jsp?ID=1">Northern North Island</a></td></tr>
-	<tr><td class="heading"><a href="backlog_status.jsp?ID=2">Central North Island</a></td></tr>
-	<tr><td class="heading"><a href="backlog_status.jsp?ID=3">Southern North Island</a></td></tr>
-	<tr><td class="heading"><a href="backlog_status.jsp?ID=4">Nelson</a></td></tr>
-	<tr><td class="heading"><a href="backlog_status.jsp?ID=5">Central South Island</a></td></tr>
-	<tr><td class="heading"><a href="backlog_status.jsp?ID=6">Southern South Island</a></td></tr>
-	</table><%
+	<tr><td class="heading"><a href="backlog_status.jsp?ID=-1">Summary</a></td></tr><%
+	for (Iterator i = folderUtil.getAdminFolders().iterator(); i.hasNext();) {
+		Folder folder = (Folder) i.next();
+		%><tr><td class="heading"><a href="backlog_status.jsp?ID=<%=folder.getFolderId()%>"><%=folder.getName()%></a></td></tr><%
+	}
+	%></table><%
 	endDETable(pageContext);
 	%></p><%	
 
@@ -66,6 +74,7 @@
 	startDETable(pageContext);
 	%><table border="0" width="460">
 	<tr><td>The summary of map sheets completed in the backlog edit process is shown on the following map.  This map is dynamic, and is updated daily to show the current stage of completion, including those map sheets that are currently undergoing the backlog edit process. It is possible that over time map sheets will be shown as complete and then revert to processing, as they are worked through. However, ultimately each map sheet will become and remain green, as they reach final completion.</td></tr>
+	<tr><td>Note that records for Radiocarbon dating localities are only partially complete, at this stage lacking radiocarbon dating information. Tailored Radiocarbon dating forms are still to be developed to accommodate these details.</td></tr>
 	</table><%
 	endDETable(pageContext);
 	%></p><%	
@@ -76,7 +85,7 @@
 	} catch (Exception e) {	}
 	
 	%><p><%
-	try {
+	if (masterfileId <= 6) try {
 		URL imsService = new URL("http://maps.gns.cri.nz");
 		String service = "fred_backlog";
 		//URL imsService = new URL("http://" + DBUtils.getIMSServerFor(JspUtils.getInstance(application)));
@@ -153,53 +162,64 @@
 		startDETable(pageContext);
 		%><table border="0" width="460">
 		<tr><td class="deHeading" colspan="5">Summary by Map Sheet</td></tr>
-		<tr><th>Map</th><th>Status&nbsp;&nbsp;</th><th>Localities&nbsp;&nbsp;</th><th colspan="2">Percent Complete</th></tr><%
+		<tr><th>Map</th><th>Status&nbsp;&nbsp;</th><th>Localities to Process&nbsp;&nbsp;</th><th colspan="2">Percent Complete</th></tr><%
 		for (Iterator i = bsUtil.getBacklogStatusInMasterfile(masterfileId).iterator(); i.hasNext();) {
 			BacklogStatus bs = (BacklogStatus) i.next();
 			%><tr><td class="heading"><a href="backlog_status_sheet.jsp?Sheet=<%=bs.getMapNumber()%>"><%=bs.getMapNumber()%></a>&nbsp;&nbsp;</td><%
-			if (bs.getStatus() != null) {
-				String statusColour = "#FF0000";
-				if (bs.getStatus().equals(FREDConstants.BACKLOG_COMPLETE))
-					statusColour = "#00FF00";
-				else if (bs.getStatus().equals(FREDConstants.BACKLOG_EMPTY))
+			String statusColour = "#000000";
+			if (bs.getStatus().equals(FREDConstants.BACKLOG_PROCESSING))
+				statusColour = "#FF0000";
+			else if (bs.getStatus().equals(FREDConstants.BACKLOG_COMPLETE))
+				statusColour = "#00FF00";
+			else if (bs.getStatus().equals(FREDConstants.BACKLOG_EMPTY))
 					statusColour = "#DDDDDD";
-				%><td style="color: <%=statusColour%>"><%=bs.getStatus()%>&nbsp;&nbsp;</td><%
-			} else {
-				%><td>not started&nbsp;&nbsp;</td><%
-			}
-			%><td><%=bs.getLocalityCount()%></td><%
-			if (bs.getStatus() != null && !bs.getStatus().equals(FREDConstants.BACKLOG_EMPTY)) {
-				if (bs.getStatus().equals(FREDConstants.BACKLOG_COMPLETE)) {
-					%><td width="200">
-					<table border="0" width="100%">
-					<tr>
-					<td width="100%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="204" alt="" /></td>
-					</tr>
-					</table>
-					</td>
-					<td>100%</td><%
+			%><td style="color: <%=statusColour%>"><%=bs.getStatus()%>&nbsp;&nbsp;</td>
+			<td><%=bs.getLocalityCount() - bs.getNewCount()%></td><%
+			if (bs.getStatus().equals(FREDConstants.BACKLOG_COMPLETE)) {
+				%><td width="208">
+				<table border="0" width="100%">
+				<tr>
+				<td width="100%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="208" alt="" /></td>
+				</tr>
+				</table>
+				</td>
+				<td>100%</td><%
+			} else if (bs.getStatus().equals(FREDConstants.BACKLOG_PROCESSING)) {
+				int totalCount = bs.getLocalityCount().intValue() - bs.getNewCount().intValue();
+				int procPct = (bs.getProcessingCount().intValue() * 100) / totalCount;
+				if (procPct == 0)
+					procPct = 1;
+				int comPct = (bs.getCompletedCount().intValue() * 100) / totalCount;
+				if (comPct == 100)
+					comPct = 99;
+				else if (comPct == 0 && bs.getCompletedCount() > 0)
+					comPct = 1;
+				int nsPct = 100 - procPct - comPct;
+				int procWidth = 2 * procPct;
+				int comWidth = 2 * comPct;
+				int nsWidth = 2 * nsPct;
+				%><td width="208">
+				<table border="0" width="100%">
+				<tr><%
+				if (procPct == 100) {
+					%><td width="100%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="208" alt="" /></td><%
 				} else {
-					int totalCount = bs.getProcessingCount().intValue() + bs.getCompletedCount().intValue();
-					int procPct = (bs.getProcessingCount().intValue() * 100) / totalCount;
-					if (procPct == 0)
-						procPct = 1;
-					int procWidth = 2 * procPct;
-					int comPct = 100 - procPct;
-					int comWidth = 2 * comPct;
-					%><td width="200">
-					<table border="0" width="100%">
-					<tr><%
-					if (comPct > 0) {
+					if (comPct > 0 && nsPct > 0) {
 						%><td width="<%=comPct%>%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="<%=comWidth%>" alt="" /></td>
-						<td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth%>" alt="" /></td><%
+						<td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth%>" alt="" /></td>
+						<td width="<%=nsPct%>%" style="background-color: #000000"><img src="images/blank.gif" height="8" width="<%=nsWidth%>" alt="" /></td><%					
+					} else if (comPct > 0) {
+						%><td width="<%=comPct%>%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="<%=comWidth + 4%>" alt="" /></td>
+						<td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth + 4%>" alt="" /></td><%
 					} else {
-						%><td width="100%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="204" alt="" /></td><%
+						%><td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth + 4%>" alt="" /></td>
+						<td width="<%=nsPct%>%" style="background-color: #000000"><img src="images/blank.gif" height="8" width="<%=nsWidth + 4%>" alt="" /></td><%					
 					}
-					%></tr>
-					</table>
-					</td>
-					<td><%=comPct%>%</td><%					
 				}
+				%></tr>
+				</table>
+				</td>
+				<td><%=comPct%>%</td><%					
 			} else {
 				%><td></td><td></td><%
 			}

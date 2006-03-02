@@ -133,6 +133,14 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		}
 	}
 
+	public List<Folder> getFolders(FolderType type) throws HibernateException, StorageAccessException {
+		Session session = provider.currentSession();
+		Query query = session.createQuery("FROM Folder as f WHERE f.folderType = :type");
+			query.setEntity("type", type);
+			List list = query.list();
+			return list;		
+	}
+	
 	public Folder save(Folder folder) throws StorageAccessException {
 	    return HibernateUtils.save(provider, folder);
 	}
@@ -934,7 +942,99 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
             throw new StorageAccessException(e);
         }
 	}
+	
+	public int getSumLocalityCount() throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+            Query query = session.createQuery("SELECT sum(bs.localityCount) FROM BacklogStatus AS bs");
+    		List list = query.list();
+    		return ((Integer)list.get(0)).intValue();
+		} catch (Exception e) {
+			throw new StorageAccessException(e);
+		}
+	}
+	
+	public int getSumLocalityCount(int masterfileId) throws StorageAccessException {
+		try {
+			Session session = provider.currentSession();
+			Query query = session.createQuery("SELECT sum(bs.localityCount) FROM BacklogStatus AS bs WHERE b.masterFile = :mfId");
+			query.setEntity("folder", masterfileId);
+			List list = query.list();
+			return ((Integer)list.get(0)).intValue();
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+		}		
+	}
 
+	public int getSumProcessingCount() throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+            Query query = session.createQuery("SELECT sum(bs.processingCount) FROM BacklogStatus AS bs");
+    		List list = query.list();
+    		return ((Integer)list.get(0)).intValue();
+		} catch (Exception e) {
+			throw new StorageAccessException(e);
+		}
+	}
+	
+	public int getSumProcessingCount(int masterfileId) throws StorageAccessException {
+		try {
+			Session session = provider.currentSession();
+			Query query = session.createQuery("SELECT sum(bs.processingCount) FROM BacklogStatus AS bs WHERE b.masterFile = :mfId");
+			query.setEntity("folder", masterfileId);
+			List list = query.list();
+			return ((Integer)list.get(0)).intValue();
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+		}		
+	}
+	
+	public int getSumCompletedCount() throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+            Query query = session.createQuery("SELECT sum(bs.completedCount) FROM BacklogStatus AS bs");
+    		List list = query.list();
+    		return ((Integer)list.get(0)).intValue();
+		} catch (Exception e) {
+			throw new StorageAccessException(e);
+		}
+	}
+	
+	public int getSumCompletedCount(int masterfileId) throws StorageAccessException {
+		try {
+			Session session = provider.currentSession();
+			Query query = session.createQuery("SELECT sum(bs.completedCount) FROM BacklogStatus AS bs WHERE b.masterFile = :mfId");
+			query.setEntity("folder", masterfileId);
+			List list = query.list();
+			return ((Integer)list.get(0)).intValue();
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+		}		
+	}
+
+	public int getSumNewCount() throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+            Query query = session.createQuery("SELECT sum(bs.newCount) FROM BacklogStatus AS bs");
+    		List list = query.list();
+    		return ((Integer)list.get(0)).intValue();
+		} catch (Exception e) {
+			throw new StorageAccessException(e);
+		}
+	}
+	
+	public int getSumNewCount(int masterfileId) throws StorageAccessException {
+		try {
+			Session session = provider.currentSession();
+			Query query = session.createQuery("SELECT sum(bs.newCount) FROM BacklogStatus AS bs WHERE b.masterFile = :mfId");
+			query.setEntity("folder", masterfileId);
+			List list = query.list();
+			return ((Integer)list.get(0)).intValue();
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
+		}		
+	}
+	
 	public DataOrigin getDataOrigin(Integer id) throws StorageAccessException {
 		return HibernateUtils.get(provider, nz.cri.gns.fred.hibernate.DataOrigin.class, id);
 	}

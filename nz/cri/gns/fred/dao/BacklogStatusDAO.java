@@ -4,7 +4,6 @@ import java.util.List;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.model.BacklogStatus;
-import nz.cri.gns.fred.model.Folder;
 
 /**
  *
@@ -25,4 +24,20 @@ public interface BacklogStatusDAO {
      */
 	public List<BacklogStatus> getBacklogStatusInMasterfile(int masterfileId) throws StorageAccessException;
 	
+	public int getSumLocalityCount() throws StorageAccessException;
+	
+	public int getSumLocalityCount(int masterfileId) throws StorageAccessException;
+
+	public int getSumProcessingCount() throws StorageAccessException;
+	
+	public int getSumProcessingCount(int masterfileId) throws StorageAccessException;
+	
+	public int getSumCompletedCount() throws StorageAccessException;
+	
+	public int getSumCompletedCount(int masterfileId) throws StorageAccessException;
+	
+	public int getSumNewCount() throws StorageAccessException;
+	
+	public int getSumNewCount(int masterfileId) throws StorageAccessException;
+
 }

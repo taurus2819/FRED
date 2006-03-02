@@ -62,6 +62,12 @@
         column="COMPLETED_COUNT"
         length="4"
     />
+        <property
+        name="newCount"
+        type="int"
+        column="NEW_COUNT"
+        length="4"
+    />
 
 </class>
 </hibernate-mapping>
