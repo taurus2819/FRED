@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import net.sf.hibernate.HibernateException;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FolderDAO;
@@ -58,6 +59,12 @@ public class FolderUtil extends ModelUtil {
 		return folders;
 	}
 
+	public List<Folder> getAdminFolders() throws HibernateException, StorageAccessException {
+		List<Folder> folders = folderDAO.getFolders(typeDAO.getFolderType(Folder.FOLDER_TYPE_ADMIN));
+		Collections.sort(folders);
+		return folders;
+	}
+	
 	/**
 	 * Returns a list of <code>UserFolder</code>s representing
 	 * backlog admin folders to which the given user has access
