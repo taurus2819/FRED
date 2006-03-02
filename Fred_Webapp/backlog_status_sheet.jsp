@@ -46,17 +46,16 @@
 			FrNumber frNumber = (FrNumber) i.next();
 			try {
 				Feature feature = FeatureUtil.getFeature(frNumber);
-				String status = null;
 				Audit audit = feature.getAudit();
-				status = AuditUtil.getAuditBacklogStatus(audit);
+				String status = AuditUtil.getAuditBacklogStatus(audit);
 				%><tr><td class="heading"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><%=frNumber.getFrNumber()%></a>&nbsp;&nbsp;</td>
 				<td><%=feature.getFeatureType()%>&nbsp;&nbsp;<%
-				if (status != null) {
-					String statusColour = ((status.equals(FREDConstants.BACKLOG_PROCESSING)) ? "#FF0000" : "#00FF00");
-					%><td style="color: <%=statusColour%>"><%=status%>&nbsp;&nbsp;</td><%
-				} else {
-					%><td>not started&nbsp;&nbsp;</td><%
-				}
+				String statusColour = "#00FF00";
+				if (status.equals(FREDConstants.BACKLOG_PROCESSING))
+					statusColour = "#FF0000";
+				else if (status.equals(FREDConstants.BACKLOG_NOT_STARTED))
+					statusColour = "#000000";
+				%><td style="color: <%=statusColour%>"><%=status%>&nbsp;&nbsp;</td><%
 				if (status.equals(FREDConstants.BACKLOG_PROCESSING)) {
 					%><td><%=(audit.getStatus() != null) ? audit.getStatus() : ""%></td>
 					<td><%=(audit.getFolder() != null) ? "<a href=\"folder_detail.jsp?ID=" + audit.getFolder().getFolderId() + "\">" + audit.getFolder().getName() + "</a>" : ""%></td><%

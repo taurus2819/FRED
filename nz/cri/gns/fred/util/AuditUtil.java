@@ -69,7 +69,6 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 					if (auditDate.after(oct05))
 						return FREDConstants.BACKLOG_NEW;
 				}
-					
 			} catch (ParseException e) {
 				//shouldn't happen
 			}
@@ -79,7 +78,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 			if (edit.getComments() != null && edit.getComments().indexOf("backlog") > 0)
 				return FREDConstants.BACKLOG_PROCESSING;
 		}
-		return null;
+		return FREDConstants.BACKLOG_NOT_STARTED;
     }
     
 	public DataOrigin getDataOrigin(Integer dataOriginId) throws StorageAccessException {

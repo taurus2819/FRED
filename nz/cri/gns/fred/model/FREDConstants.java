@@ -50,6 +50,7 @@ public interface FREDConstants {
     //BacklogStatus
     public static final String BACKLOG_PROCESSING = "processing";
     public static final String BACKLOG_COMPLETE = "complete";
+    public static final String BACKLOG_NOT_STARTED = "not started";
     public static final String BACKLOG_EMPTY = "no locality";
     public static final String BACKLOG_NEW = "new locality";
 

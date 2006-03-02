@@ -31,9 +31,8 @@ public class BacklogStatusUtil extends ModelUtil {
 	public String getStatus() throws StorageAccessException {
 		if (getSumLocalityCount() - getSumNewCount() == 0)
 			return FREDConstants.BACKLOG_EMPTY;
-		if (getSumCompletedCount() > 0) {
-			if (getSumProcessingCount() > 0)
-				return FREDConstants.BACKLOG_PROCESSING;
+		if (getSumProcessingCount() > 0 || getSumCompletedCount() > 0)
+			return FREDConstants.BACKLOG_PROCESSING;
 		if (getSumCompletedCount() == getSumLocalityCount() - getSumNewCount())
 			return FREDConstants.BACKLOG_COMPLETE;
 		return FREDConstants.BACKLOG_NOT_STARTED;
