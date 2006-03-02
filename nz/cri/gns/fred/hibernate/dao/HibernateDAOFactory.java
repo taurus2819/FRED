@@ -7,9 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import net.sf.hibernate.Criteria;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
+import net.sf.hibernate.expression.Expression;
+import net.sf.hibernate.expression.MatchMode;
+import net.sf.hibernate.expression.Order;
 import net.sf.hibernate.type.IntegerType;
 import net.sf.hibernate.type.ManyToOneType;
 import net.sf.hibernate.type.StringType;
@@ -18,6 +22,7 @@ import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.HibernateProvider;
 import nz.cri.gns.dataaccess.HibernateUtils;
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.AuditDAO;
 import nz.cri.gns.fred.dao.BacklogStatusDAO;
 import nz.cri.gns.fred.dao.DAOFactory;
@@ -825,6 +830,31 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		return HibernateUtils.getFirst(provider, "FROM Person As p WHERE p.name = ?", name, Person.class);
 	}
 
+	public List<Person> getMatchingPersons(String str, Match matchType, int maxMatches) throws StorageAccessException {
+		Criteria crit = provider.currentSession().createCriteria(nz.cri.gns.fred.hibernate.Person.class);
+		switch (matchType) {
+			case ANYWHERE:
+				crit.add(Expression.like("name", str, MatchMode.ANYWHERE));
+				break;
+			case BEGINNING:
+				crit.add(Expression.like("name", str, MatchMode.START));
+				break;
+			case END:
+				crit.add(Expression.like("name", str, MatchMode.END));
+				break;
+		}
+		crit.setMaxResults(maxMatches);
+		crit.addOrder(Order.asc("name"));
+		try {
+			@SuppressWarnings("unchecked")
+			List<Person> pp = crit.list();
+			return pp;
+		} catch (HibernateException e) {
+			throw new StorageAccessException(e);
+		}
+				
+	}
+
     public TaxonomicDAO getTaxonomicDAO() {
         return this;
     }
@@ -1038,5 +1068,4 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public DataOrigin getDataOrigin(Integer id) throws StorageAccessException {
 		return HibernateUtils.get(provider, nz.cri.gns.fred.hibernate.DataOrigin.class, id);
 	}
-
 }

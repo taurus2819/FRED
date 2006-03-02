@@ -1,6 +1,9 @@
 package nz.cri.gns.fred.util;
 
+import java.util.List;
+
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.PersonDAO;
 import nz.cri.gns.fred.model.Person;
@@ -35,5 +38,9 @@ public class PersonUtil extends ModelUtil {
      */
 	public Person findPerson(String name) throws StorageAccessException {
 		return personDAO.getPerson(name);
+	}
+
+	public List<Person> getMatchingPersons(String str, Match matchType, int maxMatches) throws StorageAccessException {
+		return personDAO.getMatchingPersons(str, matchType, maxMatches);
 	}
 }
