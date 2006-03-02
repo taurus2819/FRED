@@ -2,6 +2,7 @@ package nz.cri.gns.fred.dao;
 
 import java.util.List;
 
+import net.sf.hibernate.HibernateException;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.Folder;
@@ -46,6 +47,12 @@ public interface FolderDAO {
      */
     public void delete(Folder folder) throws StorageAccessException;
     
+    /**
+     * Returns all folders of the given type
+     */
+	public List<Folder> getFolders(FolderType type) throws HibernateException, StorageAccessException;
+
+		
     /**
      * Returns the folder with the given id
      */
