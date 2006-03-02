@@ -73,7 +73,7 @@
 	%><p><%
 	startDETable(pageContext);
 	%><table border="0" width="460">
-	<tr><td>The summary of map sheets completed in the backlog edit process is shown on the following map.  This map is dynamic, and is updated daily to show the current stage of completion, including those map sheets that are currently undergoing the backlog edit process. It is possible that over time map sheets will be shown as complete and then revert to processing, as they are worked through. However, ultimately each map sheet will become and remain green, as they reach final completion.</td></tr>
+	<tr><td>The summary of map sheets completed in the backlog edit process is shown on the following map.  This map is dynamic, and is updated daily to show the current stage of completion, including those map sheets that are currently undergoing the backlog edit process. Ultimately each map sheet will become as they reach final completion.</td></tr>
 	<tr><td>Note that records for Radiocarbon dating localities are only partially complete, at this stage lacking radiocarbon dating information. Tailored Radiocarbon dating forms are still to be developed to accommodate these details.</td></tr>
 	</table><%
 	endDETable(pageContext);
