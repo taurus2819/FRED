@@ -161,7 +161,7 @@ this.createAndShowTable = function(xml) {
 		cell.style.paddingLeft = "5px";
 		cell.style.whiteSpace = "nowrap";
 		cell.style.cursor = "default";
-		eval("cell.onclick = function() {getContextHint('" + this.key + "').updateField('" + hint + "');}");
+		eval("cell.onclick = function() {getContextHint('" + this.key + "').updateField(\"" + hint + "\");}");
 		this.hintDiv.appendChild(cell);
 	}
 	//Reset the selected settings
@@ -200,29 +200,32 @@ this.showDropout = function(immediate) {
 
 this.showIEFix = function() {
 	setOpacity(this.hintDiv, 99.999);
+	this.hintDiv.style.zIndex = 2;
 	this.hintDiv.style.visibility = "visible";
-	this.hintDiv.style.zIndex = 10;
-	this.hintFrame.style.visibility = "visible";
 	this.hintFrame.style.left = this.hintDiv.style.left;
 	this.hintFrame.style.top = this.hintDiv.style.top;
 	this.hintFrame.style.width = this.hintDiv.offsetWidth + "px";
 	this.hintFrame.style.height = this.hintDiv.offsetHeight + "px";
-	this.hintFrame.style.zIndex = 9;
-	this.hintDiv.style.visibility = "visible";
-	this.hintDiv.style.zIndex = 10;
+	this.hintFrame.style.zIndex = this.hintDiv.style.zIndex - 1;
+	this.hintFrame.style.visibility = "visible";
 };
 
 this.hideDropout = function(immediate) {
-	if (immediate) {
+	if (this.isIE) {
+		window.setTimeout("hideDropoutIE('" + this.key + "')", 100);
+	} else if (immediate) {
 		this.hintDiv.style.visibility = "hidden";
 	} else {
 		fadeOut(this.key + "Hint", 90);
 	}
 	this.hintVisible = false;
-	if (this.isIE) 
-		this.hintFrame.style.visibility = "hidden";
 };
 
+this.hideDropoutForIE = function() {
+	
+	this.hintFrame.style.visibility = "hidden";
+	this.hintDiv.style.visibility = "hidden";
+}
 
 } //END OF OBJECT DEFINITION
 
@@ -251,6 +254,10 @@ function showHints(key) {
     getContextHint(key).showHint();
 }
 
+function hideDropoutIE(key) {
+	getContextHint(key).hideDropoutForIE();
+}
+
 ContextHint.processUnknownKeyStroke = function(event) {
 	//For ie....
 	(this.isIE) && (event = window.event);
@@ -259,4 +266,6 @@ ContextHint.processUnknownKeyStroke = function(event) {
 	
 	getContextHint(((event.srcElement) ? event.srcElement : event.target).id).processKeyStroke(keyCode);
 }
+
+
 
