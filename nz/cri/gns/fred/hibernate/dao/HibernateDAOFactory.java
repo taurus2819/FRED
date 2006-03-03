@@ -954,7 +954,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public BacklogStatus getBacklogStatus(String mapNumber) throws StorageAccessException {
 		BacklogStatus bs;
 		try {
-			 bs = HibernateUtils.getFirst(provider, "FROM BacklogStatus AS b WHERE b.mapNumber = ?", mapNumber, BacklogStatus.class);
+			 bs = HibernateUtils.getFirst(provider, "FROM BacklogStatus AS bs WHERE bs.mapNumber = ?", mapNumber, BacklogStatus.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 			bs = null;
@@ -965,7 +965,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public List<BacklogStatus> getBacklogStatusInMasterfile(int masterfileId) throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
-            Query query = session.createQuery("FROM BacklogStatus AS b WHERE b.masterfileId = :mfId");
+            Query query = session.createQuery("FROM BacklogStatus AS bs WHERE bs.masterfileId = :mfId");
             query.setInteger("mfId", masterfileId);
             return query.list();
         } catch (Exception e) {
@@ -987,7 +987,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public int getSumLocalityCount(int masterfileId) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-			Query query = session.createQuery("SELECT sum(bs.localityCount) FROM BacklogStatus AS bs WHERE b.masterfileId = :mfId");
+			Query query = session.createQuery("SELECT sum(bs.localityCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = :mfId");
 			query.setInteger("mfId", masterfileId);
 			List list = query.list();
 			return ((Integer)list.get(0)).intValue();
@@ -1011,7 +1011,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public int getSumProcessingCount(int masterfileId) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-			Query query = session.createQuery("SELECT sum(bs.processingCount) FROM BacklogStatus AS bs WHERE b.masterfileId = :mfId");
+			Query query = session.createQuery("SELECT sum(bs.processingCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = :mfId");
 			query.setInteger("mfId", masterfileId);
 			List list = query.list();
 			return ((Integer)list.get(0)).intValue();
@@ -1034,7 +1034,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public int getSumCompletedCount(int masterfileId) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-			Query query = session.createQuery("SELECT sum(bs.completedCount) FROM BacklogStatus AS bs WHERE b.masterfileId = :mfId");
+			Query query = session.createQuery("SELECT sum(bs.completedCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = :mfId");
 			query.setInteger("mfId", masterfileId);
 			List list = query.list();
 			return ((Integer)list.get(0)).intValue();
@@ -1057,7 +1057,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public int getSumNewCount(int masterfileId) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-			Query query = session.createQuery("SELECT sum(bs.newCount) FROM BacklogStatus AS bs WHERE b.masterfileId = :mfId");
+			Query query = session.createQuery("SELECT sum(bs.newCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = :mfId");
 			query.setInteger("mfId", masterfileId);
 			List list = query.list();
 			return ((Integer)list.get(0)).intValue();
