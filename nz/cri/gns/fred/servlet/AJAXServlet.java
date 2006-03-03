@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.db.XMLUtils;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.Person;
@@ -96,7 +98,7 @@ public class AJAXServlet extends HttpServlet {
 				
 				out.println("<?xml version=\"1.0\"?>");
 				out.println("<" + what + ">");
-				out.println("<name>" + name + "</name>");
+				out.println("<name><![CDATA[" + name + "]]></name>");
 				out.println("<status>" + ((confirmation) ? "Exists" : "Doesn't exist") + "</status>");
 				out.println("</" + what + ">");
 			}
