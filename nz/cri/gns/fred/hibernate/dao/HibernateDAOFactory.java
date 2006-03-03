@@ -987,7 +987,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public int getSumLocalityCount(int masterfileId) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-			Query query = session.createQuery("SELECT sum(bs.localityCount) FROM BacklogStatus AS bs WHERE b.masterFile = :mfId");
+			Query query = session.createQuery("SELECT sum(bs.localityCount) FROM BacklogStatus AS bs WHERE b.masterfileId = :mfId");
 			query.setInteger("mfId", masterfileId);
 			List list = query.list();
 			return ((Integer)list.get(0)).intValue();
@@ -1011,7 +1011,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public int getSumProcessingCount(int masterfileId) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-			Query query = session.createQuery("SELECT sum(bs.processingCount) FROM BacklogStatus AS bs WHERE b.masterFile = :mfId");
+			Query query = session.createQuery("SELECT sum(bs.processingCount) FROM BacklogStatus AS bs WHERE b.masterfileId = :mfId");
 			query.setInteger("mfId", masterfileId);
 			List list = query.list();
 			return ((Integer)list.get(0)).intValue();
@@ -1034,7 +1034,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public int getSumCompletedCount(int masterfileId) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-			Query query = session.createQuery("SELECT sum(bs.completedCount) FROM BacklogStatus AS bs WHERE b.masterFile = :mfId");
+			Query query = session.createQuery("SELECT sum(bs.completedCount) FROM BacklogStatus AS bs WHERE b.masterfileId = :mfId");
 			query.setInteger("mfId", masterfileId);
 			List list = query.list();
 			return ((Integer)list.get(0)).intValue();
@@ -1057,7 +1057,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public int getSumNewCount(int masterfileId) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-			Query query = session.createQuery("SELECT sum(bs.newCount) FROM BacklogStatus AS bs WHERE b.masterFile = :mfId");
+			Query query = session.createQuery("SELECT sum(bs.newCount) FROM BacklogStatus AS bs WHERE b.masterfileId = :mfId");
 			query.setInteger("mfId", masterfileId);
 			List list = query.list();
 			return ((Integer)list.get(0)).intValue();
