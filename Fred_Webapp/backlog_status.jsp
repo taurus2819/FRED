@@ -103,6 +103,7 @@
 	<tr><td>&nbsp;</td></tr>
 	<tr><td style="background-color: #FF0000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;</td><td class="heading">Processing</td></tr>
 	<tr><td style="background-color: #00FF00"></td><td></td><td class="heading">Complete</td></tr>
+	<tr><td style="background-color: #000000"></td><td></td><td class="heading">Not started</td></tr>
 	<tr><td style="background-color: #DDDDDD"></td><td></td><td class="heading">No locality</td></tr>
 	</table><%
 	endDETable(pageContext);
