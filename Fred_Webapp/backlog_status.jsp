@@ -231,6 +231,8 @@
 			%></tr><%
 		}
 	} else {
+		System.out.println("Overview masterfile");
+		try {
 		%><tr><th>Masterfile</th><th>Status&nbsp;&nbsp;</th><th>Localities to Process&nbsp;&nbsp;</th><th colspan="2">Percent Complete</th></tr><%
 		for (Iterator i = folderUtil.getAdminFolders().iterator(); i.hasNext();) {
 			Folder masterfile = (Folder) i.next();
@@ -299,7 +301,8 @@
 				%><td></td><td></td><%
 			}
 			%></tr><%
-		}		
+		}
+		} catch (Exception e) { e.printStackTrace(); }
 	}
 	%></table><%
 	endDETable(pageContext);
