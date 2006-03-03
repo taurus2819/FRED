@@ -7,9 +7,72 @@
 <td width="30"></td>
 </tr>
 <tr>
-<td class="heading" style="color: #FF0000">Collectors</td>
-<td><textarea name="Coll" cols="40" rows="3">{@Coll}</textarea></td>
-<td><a href="javascript:var newWin=open('data_entry_supp.jsp?Type=Coll', 'Supp', 'width=600,height=400');" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a></td>
+<td class="heading" style="vertical-align: top; color: #FF0000">Collectors</td>
+<td colspan="2"><table border="0"><tbody id="collTable"></tbody></table><input name="Coll" id="CollectorField" maxlength="64">&nbsp;<a href="javascript:acceptCollector(document.getElementById('CollectorField').value);">Add another</a>
+<script type="text/javascript" src="scripts/ajax.js"></script>
+<script type="text/javascript" src="scripts/locate.js"></script>
+<script type="text/javascript" src="scripts/fade.js"></script>
+<script type="text/javascript" src="scripts/contextHint.js"></script>
+<script><!--
+new ContextHint(
+	document.getElementById("CollectorField"),
+	function generateURL(start) {
+		return "ajaxSupport.xml?action=List&type=Person&start=" + start + "&q=" + Math.random();
+	},
+	true
+);
+
+function acceptCollector(personName) {
+	if (personName.length == 0)
+		alert("Enter a name first!");
+	callAJAX("ajaxSupport.xml?action=Confirm&type=Person&name=" + escape(personName) + "&q=" + Math.random(), processCollectorAccept);
+}
+
+function processCollectorAccept() {
+	if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+		var xml = xmlHttp.responseXML;
+		var reply = xml.getElementsByTagName("status")[0].firstChild.data;
+		var name = xml.getElementsByTagName("name")[0].firstChild.data;
+		if (reply == "Exists")
+			addCollector(name);
+		else if (confirm(name + " does not exist. A new record will be created.  Continue?")) {
+			callAJAX("ajaxSupport.xml?action=Add&type=Person&name=" + escape(name) + "&q=" + Math.random(), processCollectorAccept);
+		}
+	}
+}
+function addCollector(name) {
+	var uid = "coll" + Math.round(Math.random() * 100000);
+	var tbl = document.getElementById("collTable");
+	var tr = document.createElement("tr");
+	tr.id = uid;
+	var td = document.createElement("td");
+	td.innerHTML = name;
+	tr.appendChild(td);
+	td = document.createElement("td");
+	td.innerHTML = '<input type="hidden" name="Coll" value="' + name + '"><a href="javascript:removeCollector(\'' + uid + '\');">remove</a>';
+	tr.appendChild(td);	
+	tbl.appendChild(tr);
+	
+	//Clear the old value
+	var field = document.getElementById("CollectorField");
+	field.value = "";
+	field.focus();
+}
+function removeCollector(uid) {
+	var tbl = document.getElementById("collTable");
+	var tr = document.getElementById(uid);
+	tbl.removeChild(tr);
+}
+//This is for the initial load
+var collArray = new Array();
+{@Coll}
+
+for (var i=0; i<collArray.length; i++) {
+	addCollector(collArray[i]);
+}
+
+//--></script>
+</td>
 </tr>
 <tr>
 <td class="heading">Strat Name</td>
@@ -17,7 +80,7 @@
 <td><a href="javascript:var newWin=open('data_entry_supp.jsp?Type=StratName', 'Supp', 'width=600,height=300');" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a></td>
 </tr>
 <tr><td class="heading" style="color: #FF0000">Fossils In Place</td>
-<td><select name="InPlace">
+<td style="z-index: 1"><select name="InPlace">
 <option value=""> -- Choose -- </option>
 <option value="Yes"{@@isYes: selected@}>Yes</option>
 <option value="Almost"{@@isAlmost: selected@}>Almost</option>

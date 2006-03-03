@@ -248,6 +248,13 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	        //The basic substitutions....
 	        populateTemplateSubstitutions(template, "\n", ";", "*");
 
+	        //Collectors
+	        template.loadUntil(out, "{@Coll}");
+	        Set<Person> collectors = sample.getCollectors();
+	        for (Person collector : collectors) {
+	        	out.println("collArray[collArray.length] = '" + collector.getDisplayName() + "';");
+	        }
+	        
 			//Ages...inferred...
             StageDEUtil.drawStageInputs(out, template, sample.getInferredStage(), "inferredAge", "Inf");
 	
@@ -353,7 +360,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
 	private void populateTemplateSubstitutions(Template template, String newLineSeparator, String semiColonSeparator, String starSeparator) throws NamingException, SQLException, StorageAccessException {
 		template.addSub("CollDate", FREDUtil.formatDateForDE(sample.getCollectionDate(), sample.getDateRounding()));
-		template.addSub("Coll", FREDUtil.getNames(sample.getCollectors(), newLineSeparator));
 		template.addSub("StratName", sample.getStratUnit());
 		
 		//With in place, allow for both direct and select box approach
@@ -493,6 +499,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         try {
 	    	Template template = provider.getContent("sample.de.excel");
             populateTemplateSubstitutions(template, "#", "#", "$");
+            template.addSub("Coll", FREDUtil.getNames(sample.getCollectors(), "#"));
+    		
 			if (!outcropSample) {
 			    template.addSub("featureIdIfNotOutcrop", sample.getFeature().getFeatureId().toString());
 			    template.addSub("folderIdIfNotOutcrop", (workingFolder == null) ? "" : workingFolder.getFolderId().toString());
@@ -715,10 +723,15 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		//Collectors
         PersonUtil personUtil = new PersonUtil(factory);
         try {
-            sample.setCollectors(FREDUtil.getPersons(request.getParameter("Coll"), personUtil, "Collectors", addIfNew));
+        	String[] collectors = request.getParameterValues("Coll");
+        	//This is to support the spreadsheet
+        	if (collectors.length <= 1)
+        		sample.setCollectors(FREDUtil.getPersons(request.getParameter("Coll"), personUtil, "Collectors", addIfNew));
+        	else 
+        		sample.setCollectors(FREDUtil.getPersons(collectors, personUtil, "Collectors", false));
         } catch (DataInputException e) {
             if (e.hasAuxiliaryData()) {
-                sample.setCollectors((Set)e.getAuxiliaryData());
+                sample.setCollectors((Set<Person>)e.getAuxiliaryData());
             }
             error.addAll(e.getError());
         }

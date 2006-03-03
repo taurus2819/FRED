@@ -699,9 +699,15 @@ public class FREDUtil {
         if (parameter.trim().length() == 0)
             return new HashSet<Person>();
         String[] peopleStr = parameter.split("[;\\n]");
+        return getPersons(peopleStr, personUtil, personLabel, addIfNew);
+    }
+    
+    public static Set<Person> getPersons(String[] peopleStr, PersonUtil personUtil, String personLabel, boolean addIfNew) throws DataInputException {
         HashSet<Person> personSet = new HashSet<Person>();
         Vector<String[]> error = new Vector<String[]>();
         for (String personStr : peopleStr) try {
+        	if (personStr.trim().length() == 0)
+        		continue;
         	Person person;
         	if (addIfNew) {
         		person = personUtil.findOrCreatePerson(personStr.trim());

@@ -36,7 +36,7 @@ ContextHint = function(activatorField, urlGenerator, omitFieldFix) {
     this.field.setAttribute("autocomplete", "OFF");
     //Write ie fixes
     if (this.isIE) {
-    	document.write('<iframe id="' + this.key + 'Frame" style="z-index: 9; position:absolute; visibility: hidden; scroll: none"></iframe>');
+    	document.write('<iframe id="' + this.key + 'Frame" scrolling="no" frameborder="0" src="about:blank" style="z-index: 9; position:absolute; visibility: hidden; scrolling: no; scroll: none"></iframe>');
     	this.hintFrame = document.getElementById(this.key + "Frame");
     }
 	//This is to stop forms from submitting on hitting enter
@@ -125,7 +125,6 @@ this.updateFromKeyEvent = function() {
 	this.updateField(document.getElementById(this.key + "Hint" + this.selectedHint).hintValue);
 };
 
-//"ajaxSupport.xml?type=Person&start=" + val + "&q=" + Math.random()
 this.processHint = function() {
 	var val = this.field.value;
 	if (val.length == 0)
@@ -188,18 +187,21 @@ this.showDropout = function(immediate) {
 
 	if (this.isIE) {
 		this.showIEFix();
+	} else {
+	    if (immediate) {
+	        fadeIn(this.key + "Hint", 99.999);
+	    } else {
+		    fadeIn(this.key + "Hint", 0);
+		}
+		this.hintDiv.style.visibility = "visible";
 	}
-
-    if (immediate) {
-        fadeIn(this.key + "Hint", 99.999);
-    } else {
-	    fadeIn(this.key + "Hint", 0);
-	}
-	this.hintDiv.style.visibility = "visible";
 	this.hintVisible = true;
 };
 
 this.showIEFix = function() {
+	setOpacity(this.hintDiv, 99.999);
+	this.hintDiv.style.visibility = "visible";
+	this.hintDiv.style.zIndex = 10;
 	this.hintFrame.style.visibility = "visible";
 	this.hintFrame.style.left = this.hintDiv.style.left;
 	this.hintFrame.style.top = this.hintDiv.style.top;

@@ -18,7 +18,7 @@ import nz.cri.gns.fred.util.PersonUtil;
 
 public class AJAXServlet extends HttpServlet {
 
-	public class NamedId {
+	public static class NamedId {
 		private String id;
 		private String name;
 		public NamedId(String id, String name) {
@@ -39,41 +39,107 @@ public class AJAXServlet extends HttpServlet {
 		Person;
 	};
 	
+	public static enum Action {
+		List() {
+			public void process(Type type, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+				String start = request.getParameter("start");
+				List<NamedId> values = new ArrayList<NamedId>();
+				switch (type) {
+					case Person:
+						PersonUtil util = new PersonUtil(HibernateUtil.get().getDAOFactory());
+						try {
+							List<Person> people = util.getMatchingPersons(start, Match.BEGINNING, 15);
+							for (Person person : people) {
+								values.add(new NamedId(person.getPersonId().toString(), person.getDisplayName()));
+							}
+						} catch (StorageAccessException e) {
+						}
+						break;
+					default:
+						throw new IllegalArgumentException("Unknown type");
+				}
+				
+				PrintWriter out = response.getWriter();
+				
+				String what = type.toString();
+				
+				out.println("<?xml version=\"1.0\"?>");
+				out.println("<" + what + "s>");
+				for (NamedId value : values) {
+					out.println("<" + what + ">");
+					out.println("<name>" + value.getName() + "</name>");
+					out.println("<id>" + value.getId() + "</id>");
+					out.println("</" + what + ">");
+				}
+				out.println("</" + what + "s>");
+				
+			}
+		},
+		Confirm() {
+			public void process(Type type, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+				String name = request.getParameter("name");
+				boolean confirmation = false;
+				switch (type) {
+					case Person:
+						PersonUtil util = new PersonUtil(HibernateUtil.get().getDAOFactory());
+						try {
+							Person person = util.findPerson(name);
+							confirmation = person != null;
+						} catch (StorageAccessException e) {
+						}
+						break;
+				}
+				
+				PrintWriter out = response.getWriter();
+				
+				String what = type.toString();
+				
+				out.println("<?xml version=\"1.0\"?>");
+				out.println("<" + what + ">");
+				out.println("<name>" + name + "</name>");
+				out.println("<status>" + ((confirmation) ? "Exists" : "Doesn't exist") + "</status>");
+				out.println("</" + what + ">");
+			}
+		},
+		Add() {
+			public void process(Type type, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+				String name = request.getParameter("name");
+				boolean confirmation = false;
+				switch (type) {
+					case Person:
+						PersonUtil util = new PersonUtil(HibernateUtil.get().getDAOFactory());
+						try {
+							util.findOrCreatePerson(name);
+							confirmation = true;
+						} catch (StorageAccessException e) {
+						}
+						break;
+				}
+				
+				PrintWriter out = response.getWriter();
+				
+				String what = type.toString();
+				
+				out.println("<?xml version=\"1.0\"?>");
+				out.println("<" + what + ">");
+				out.println("<name>" + name + "</name>");
+				out.println("<status>" + ((confirmation) ? "Exists" : "Could not be created") + "</status>");
+				out.println("</" + what + ">");
+			}
+		};
+		
+		public abstract void process(Type type, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
+	}
+	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String type = request.getParameter("type");
-		String start = request.getParameter("start");
-		
-		List<NamedId> values = new ArrayList<NamedId>();
-		String what = null;
-		switch (Type.valueOf(type)) {
-			case Person:
-				what = "person";
-				PersonUtil util = new PersonUtil(HibernateUtil.get().getDAOFactory());
-				try {
-					List<Person> people = util.getMatchingPersons(start, Match.BEGINNING, 15);
-					for (Person person : people) {
-						values.add(new NamedId(person.getPersonId().toString(), person.getDisplayName()));
-					}
-				} catch (StorageAccessException e) {
-				}
-				break;
-			default:
-				throw new IllegalArgumentException("Unknown type");
-		}
-		
+		//Set as XML output
 		response.setContentType("text/xml");
-		PrintWriter out = response.getWriter();
+
+		String action = request.getParameter("action");
+		String type = request.getParameter("type");
 		
-		out.println("<?xml version=\"1.0\"?>");
-		out.println("<" + what + "s>");
-		for (NamedId value : values) {
-			out.println("<" + what + ">");
-			out.println("<name>" + value.getName() + "</name>");
-			out.println("<id>" + value.getId() + "</id>");
-			out.println("</" + what + ">");
-		}
-		out.println("</" + what + "s>");
+		Action.valueOf(action).process(Type.valueOf(type), request, response);
 	}
 
 	
