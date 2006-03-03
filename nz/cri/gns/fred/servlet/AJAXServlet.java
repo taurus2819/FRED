@@ -69,7 +69,7 @@ public class AJAXServlet extends HttpServlet {
 				out.println("<" + what + "s>");
 				for (NamedId value : values) {
 					out.println("<" + what + ">");
-					out.println("<name>" + value.getName() + "</name>");
+					out.println("<name><![CDATA[" + value.getName() + "]]></name>");
 					out.println("<id>" + value.getId() + "</id>");
 					out.println("</" + what + ">");
 				}
@@ -124,7 +124,7 @@ public class AJAXServlet extends HttpServlet {
 				
 				out.println("<?xml version=\"1.0\"?>");
 				out.println("<" + what + ">");
-				out.println("<name>" + name + "</name>");
+				out.println("<name><![CDATA[" + name + "]]></name>");
 				out.println("<status>" + ((confirmation) ? "Exists" : "Could not be created") + "</status>");
 				out.println("</" + what + ">");
 			}
