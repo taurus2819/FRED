@@ -988,7 +988,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		try {
 			Session session = provider.currentSession();
 			Query query = session.createQuery("SELECT sum(bs.localityCount) FROM BacklogStatus AS bs WHERE b.masterFile = :mfId");
-			query.setEntity("mfId", masterfileId);
+			query.setInteger("mfId", masterfileId);
 			List list = query.list();
 			return ((Integer)list.get(0)).intValue();
         } catch (Exception e) {
@@ -1012,7 +1012,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		try {
 			Session session = provider.currentSession();
 			Query query = session.createQuery("SELECT sum(bs.processingCount) FROM BacklogStatus AS bs WHERE b.masterFile = :mfId");
-			query.setEntity("mfId", masterfileId);
+			query.setInteger("mfId", masterfileId);
 			List list = query.list();
 			return ((Integer)list.get(0)).intValue();
         } catch (Exception e) {
@@ -1035,7 +1035,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		try {
 			Session session = provider.currentSession();
 			Query query = session.createQuery("SELECT sum(bs.completedCount) FROM BacklogStatus AS bs WHERE b.masterFile = :mfId");
-			query.setEntity("mfId", masterfileId);
+			query.setInteger("mfId", masterfileId);
 			List list = query.list();
 			return ((Integer)list.get(0)).intValue();
         } catch (Exception e) {
@@ -1058,7 +1058,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		try {
 			Session session = provider.currentSession();
 			Query query = session.createQuery("SELECT sum(bs.newCount) FROM BacklogStatus AS bs WHERE b.masterFile = :mfId");
-			query.setEntity("mfId", masterfileId);
+			query.setInteger("mfId", masterfileId);
 			List list = query.list();
 			return ((Integer)list.get(0)).intValue();
         } catch (Exception e) {
