@@ -56,7 +56,9 @@ function addCollector(name) {
 	//Clear the old value
 	var field = document.getElementById("CollectorField");
 	field.focus();
+	alert(field.value.length);
 	field.value = "";
+	alert(field.value.length);
 }
 function removeCollector(uid) {
 	var tbl = document.getElementById("collTable");
