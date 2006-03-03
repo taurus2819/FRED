@@ -46,7 +46,7 @@
 	%><p><%
 	startDETable(pageContext);
 	%><table border="0" width="160">
-	<tr><td class="deHeading">Select a Masterfile</td></tr>
+	<tr><td class="deHeading">Masterfile</td></tr>
 	<tr><td class="heading"><a href="backlog_status.jsp?ID=-1">All</a></td></tr><%
 	for (Iterator i = folderUtil.getAdminFolders().iterator(); i.hasNext();) {
 		Folder folder = (Folder) i.next();
