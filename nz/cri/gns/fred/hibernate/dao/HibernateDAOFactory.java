@@ -990,7 +990,9 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 			Query query = session.createQuery("SELECT sum(bs.localityCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = :mfId");
 			query.setInteger("mfId", masterfileId);
 			List list = query.list();
-			return ((Integer)list.get(0)).intValue();
+			if (list.size() > 0)
+				return ((Integer)list.get(0)).intValue();
+			return 0;
         } catch (Exception e) {
         	e.printStackTrace();
             throw new StorageAccessException(e);
@@ -1014,7 +1016,9 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 			Query query = session.createQuery("SELECT sum(bs.processingCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = :mfId");
 			query.setInteger("mfId", masterfileId);
 			List list = query.list();
-			return ((Integer)list.get(0)).intValue();
+			if (list.size() > 0)
+				return ((Integer)list.get(0)).intValue();
+			return 0;
         } catch (Exception e) {
             throw new StorageAccessException(e);
 		}		
@@ -1037,7 +1041,9 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 			Query query = session.createQuery("SELECT sum(bs.completedCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = :mfId");
 			query.setInteger("mfId", masterfileId);
 			List list = query.list();
-			return ((Integer)list.get(0)).intValue();
+			if (list.size() > 0)
+				return ((Integer)list.get(0)).intValue();
+			return 0;
         } catch (Exception e) {
             throw new StorageAccessException(e);
 		}		
@@ -1060,7 +1066,9 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 			Query query = session.createQuery("SELECT sum(bs.newCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = :mfId");
 			query.setInteger("mfId", masterfileId);
 			List list = query.list();
-			return ((Integer)list.get(0)).intValue();
+			if (list.size() > 0)
+				return ((Integer)list.get(0)).intValue();
+			return 0;
         } catch (Exception e) {
             throw new StorageAccessException(e);
 		}		
