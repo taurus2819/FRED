@@ -34,7 +34,7 @@
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setUseNavigationColumn(false);
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	drawTop(out, et, request, response);
 
