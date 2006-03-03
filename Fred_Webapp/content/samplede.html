@@ -56,7 +56,7 @@ function addCollector(name) {
 	//Clear the old value
 	var field = document.getElementById("CollectorField");
 	field.focus();
-	field.value = "";
+	window.setTimeout("document.getElementById('CollectorField').value = ''", 100);
 }
 function removeCollector(uid) {
 	var tbl = document.getElementById("collTable");
