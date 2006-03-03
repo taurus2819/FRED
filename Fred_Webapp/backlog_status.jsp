@@ -27,7 +27,47 @@
 			return "FRED :: Backlog Processing Status";
 		}
 	}
+%><%!
+	public String getStatusColour(String status) {
+		if (status.equals(FREDConstants.BACKLOG_PROCESSING))
+			return STATUS_COLOUR[PROCESSING];
+		if (status.equals(FREDConstants.BACKLOG_COMPLETE))
+			return STATUS_COLOUR[COMPLETED];
+		if (status.equals(FREDConstants.BACKLOG_EMPTY))
+			return "#DDDDDD";
+		return STATUS_COLOUR[NOT_STARTED];
+}
+%><%!
+	public int[] getBarPct(int totalCount, int compCount, int procCount) {
+		if (procCount == totalCount)
+			return new int[] {0, 100, 0};
+		if (compCount == totalCount)
+			return new int[] {100, 0, 0};
+		int procPct = (procCount * 100) / totalCount;
+		if (procPct == 0 && procCount > 0)
+			procPct = 1;
+		if (procPct == 100)
+			procPct = 99;
+		int comPct;
+		int nsPct;
+		if (procCount + compCount == totalCount) {
+			comPct = 100 - procPct;
+			nsPct = 0;
+		} else {
+			comPct = (compCount * 100) / totalCount;
+			if (comPct == 0 && compCount > 0)
+				comPct = 1;
+			nsPct = 100 - procPct - comPct;
+		}
+		return new int[] {comPct, procPct, nsPct};		
+	}
+%><%!
+	public static final int COMPLETED = 0;
+	public static final int PROCESSING = 1;
+	public static final int NOT_STARTED = 2;
+	public static final String[] STATUS_COLOUR = new String[] {"#00FF00", "#FF0000", "#000000"};
 %><%
+
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	BacklogStatusUtil bsUtil = new BacklogStatusUtil(factory);
 	FolderUtil folderUtil = new FolderUtil(factory);
@@ -72,7 +112,7 @@
 	
 	%><p><%
 	startDETable(pageContext);
-	%><table border="0" width="600">
+	%><table border="0" width="480">
 	<tr><td>The summary of map sheets completed in the backlog edit process is shown on the following map.  This map is dynamic, and is updated daily to show the current stage of completion, including those map sheets that are currently undergoing the backlog edit process. Ultimately each map sheet will become as they reach final completion.</td></tr>
 	<tr><td>Note that records for Radiocarbon dating localities are only partially complete, at this stage lacking radiocarbon dating information. Tailored Radiocarbon dating forms are still to be developed to accommodate these details.</td></tr>
 	</table><%
@@ -84,164 +124,6 @@
 		masterfileId = Integer.parseInt(request.getParameter("ID"));
 	} catch (Exception e) {	}
 
-	%><p><%
-	startDETable(pageContext);
-	%><table border="0" width="600">
-	<tr><td class="deHeading" colspan="7">Summary</td></tr><%
-	if (masterfileId > 0) {
-		try {
-		%><tr><th>Status&nbsp;&nbsp;</th><th>Total&nbsp;&nbsp;</th><th>Complete</th><th>Processing&nbsp;&nbsp;</th><th>Not Started&nbsp;&nbsp;</th><th colspan="2">Percent Complete</th></tr><%
-		Folder masterfile = folderUtil.getFolder(masterfileId);
-		String status = bsUtil.getStatus(masterfile.getFolderId().intValue());
-		int compCount = bsUtil.getSumCompletedCount(masterfile.getFolderId().intValue());
-		int procCount = bsUtil.getSumProcessingCount(masterfile.getFolderId().intValue());
-		int totalCount = bsUtil.getSumLocalityCount(masterfile.getFolderId().intValue()) - bsUtil.getSumNewCount(masterfile.getFolderId().intValue());
-		int nsCount = totalCount - compCount - procCount;
-		String statusColour = "#000000";
-		if (status.equals(FREDConstants.BACKLOG_PROCESSING))
-			statusColour = "#FF0000";
-		else if (status.equals(FREDConstants.BACKLOG_COMPLETE))
-			statusColour = "#00FF00";
-		else if (status.equals(FREDConstants.BACKLOG_EMPTY))
-				statusColour = "#DDDDDD";
-		%><tr><td style="color: <%=statusColour%>"><%=status%>&nbsp;&nbsp;</td>
-		<td><%=totalCount%></td>
-		<td><%=compCount%></td>
-		<td><%=procCount%></td>
-		<td><%=nsCount%></td><%
-		if (status.equals(FREDConstants.BACKLOG_COMPLETE)) {
-			%><td width="208">
-			<table border="0" width="100%">
-			<tr>
-			<td width="100%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="208" alt="" /></td>
-			</tr>
-			</table>
-			</td>
-			<td>100%</td><%
-		} else if (status.equals(FREDConstants.BACKLOG_PROCESSING)) {
-			int procPct = (procCount * 100) / totalCount;
-			if (procPct == 0 && procCount > 0)
-				procPct = 1;
-			if (procPct == 100 && procCount < totalCount)
-				procPct = 99;
-			int comPct;
-			int nsPct;
-			if (procCount + compCount == totalCount) {
-				comPct = 100 - procPct;
-				nsPct = 0;
-			} else {
-				comPct = (compCount * 100) / totalCount;
-				nsPct = 100 - procPct - comPct;
-			}
-			int procWidth = 2 * procPct;
-			int comWidth = 2 * comPct;
-			int nsWidth = 2 * nsPct;
-			%><td width="208">
-			<table border="0" width="100%">
-			<tr><%
-			if (procPct == 100) {
-				%><td width="100%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="208" alt="" /></td><%
-			} else {
-				if (comPct > 0 && nsPct > 0) {
-					%><td width="<%=comPct%>%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="<%=comWidth%>" alt="" /></td>
-					<td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth%>" alt="" /></td>
-					<td width="<%=nsPct%>%" style="background-color: #000000"><img src="images/blank.gif" height="8" width="<%=nsWidth%>" alt="" /></td><%					
-				} else if (comPct > 0) {
-					%><td width="<%=comPct%>%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="<%=comWidth + 4%>" alt="" /></td>
-					<td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth + 4%>" alt="" /></td><%
-				} else {
-					%><td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth + 4%>" alt="" /></td>
-					<td width="<%=nsPct%>%" style="background-color: #000000"><img src="images/blank.gif" height="8" width="<%=nsWidth + 4%>" alt="" /></td><%					
-				}
-			}
-			%></tr>
-			</table>
-			</td>
-			<td><%=comPct%>%</td><%					
-		} else {
-			%><td></td><td></td><%
-		}
-		%></tr><%
-	} catch (Exception e) { e.printStackTrace(); }
-	} else {
-		try {
-		%><tr><th>Status&nbsp;&nbsp;</th><th>Total&nbsp;&nbsp;</th><th>Complete</th><th>Processing&nbsp;&nbsp;</th><th>Not Started&nbsp;&nbsp;</th><th colspan="2">Percent Complete</th></tr><%
-		String status = bsUtil.getStatus();
-		int compCount = bsUtil.getSumCompletedCount();
-		int procCount = bsUtil.getSumProcessingCount();
-		int totalCount = bsUtil.getSumLocalityCount() - bsUtil.getSumNewCount();
-		int nsCount = totalCount - compCount - procCount;
-		String statusColour = "#000000";
-		if (status.equals(FREDConstants.BACKLOG_PROCESSING))
-			statusColour = "#FF0000";
-		else if (status.equals(FREDConstants.BACKLOG_COMPLETE))
-			statusColour = "#00FF00";
-		else if (status.equals(FREDConstants.BACKLOG_EMPTY))
-				statusColour = "#DDDDDD";
-		%><tr><td style="color: <%=statusColour%>"><%=status%>&nbsp;&nbsp;</td>
-		<td><%=totalCount%></td>
-		<td><%=compCount%></td>
-		<td><%=procCount%></td>
-		<td><%=nsCount%></td><%
-		if (status.equals(FREDConstants.BACKLOG_COMPLETE)) {
-			%><td width="208">
-			<table border="0" width="100%">
-			<tr>
-			<td width="100%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="208" alt="" /></td>
-			</tr>
-			</table>
-			</td>
-			<td>100%</td><%
-		} else if (status.equals(FREDConstants.BACKLOG_PROCESSING)) {
-			int procPct = (procCount * 100) / totalCount;
-			if (procPct == 0 && procCount > 0)
-				procPct = 1;
-			if (procPct == 100 && procCount < totalCount)
-				procPct = 99;
-			int comPct;
-			int nsPct;
-			if (procCount + compCount == totalCount) {
-				comPct = 100 - procPct;
-				nsPct = 0;
-			} else {
-				comPct = (compCount * 100) / totalCount;
-				nsPct = 100 - procPct - comPct;
-			}
-			int procWidth = 2 * procPct;
-			int comWidth = 2 * comPct;
-			int nsWidth = 2 * nsPct;
-			%><td width="208">
-			<table border="0" width="100%">
-			<tr><%
-			if (procPct == 100) {
-				%><td width="100%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="208" alt="" /></td><%
-			} else {
-				if (comPct > 0 && nsPct > 0) {
-					%><td width="<%=comPct%>%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="<%=comWidth%>" alt="" /></td>
-					<td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth%>" alt="" /></td>
-					<td width="<%=nsPct%>%" style="background-color: #000000"><img src="images/blank.gif" height="8" width="<%=nsWidth%>" alt="" /></td><%					
-				} else if (comPct > 0) {
-					%><td width="<%=comPct%>%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="<%=comWidth + 4%>" alt="" /></td>
-					<td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth + 4%>" alt="" /></td><%
-				} else {
-					%><td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth + 4%>" alt="" /></td>
-					<td width="<%=nsPct%>%" style="background-color: #000000"><img src="images/blank.gif" height="8" width="<%=nsWidth + 4%>" alt="" /></td><%					
-				}
-			}
-			%></tr>
-			</table>
-			</td>
-			<td><%=comPct%>%</td><%					
-		} else {
-			%><td></td><td></td><%
-		}
-		%></tr><%
-	} catch (Exception e) { e.printStackTrace(); }
-	}
-	%></table><%
-	endDETable(pageContext);
-	%></p><%	
-	
 	%><p><%
 	if (masterfileId <= 6) try {
 		URL imsService = new URL("http://maps.gns.cri.nz");
@@ -315,151 +197,126 @@
 	}
 	%></p><%
 	
+	//Summary table
 	%><p><%
 	startDETable(pageContext);
-	%><table border="0" width="600">
+	%><table border="0" width="480">
+	<tr><td class="deHeading" colspan="4">Summary</td></tr>
+	<tr><th>Status&nbsp;&nbsp;</th><th>Localities&nbsp;&nbsp;</th><th colspan="2">Percent Complete</th></tr><%
+	if (masterfileId > 0) {
+		Folder masterfile = folderUtil.getFolder(masterfileId);
+		String status = bsUtil.getStatus(masterfile.getFolderId().intValue());
+		int totalCount = bsUtil.getSumLocalityCount(masterfile.getFolderId().intValue()) - bsUtil.getSumNewCount(masterfile.getFolderId().intValue());
+		%><tr>
+		<td style="color: <%=getStatusColour(status)%>"><%=status%>&nbsp;&nbsp;</td>
+		<td><%=totalCount%></td><%
+		if (status.equals(FREDConstants.BACKLOG_COMPLETE) || status.equals(FREDConstants.BACKLOG_PROCESSING)) {
+			int[] pct = getBarPct(totalCount, bsUtil.getSumCompletedCount(masterfile.getFolderId().intValue()), bsUtil.getSumProcessingCount(masterfile.getFolderId().intValue()));
+			%><td width="200">
+			<table border="0" width="100%" cellspacing="0" cellpadding="0">
+			<tr><%
+			for (int j = 0; j < 3; j++) {
+				if (pct[j] > 0) {
+					%><td width="<%=pct[j]%>%" style="background-color: <%=STATUS_COLOUR[j]%>"><img src="images/blank.gif" height="10" width="<%=pct[j] * 2%>" alt="" /></td><%
+				}
+			}
+			%></tr>
+			</table>
+			</td>
+			<td><%=pct[COMPLETED]%>%</td><%						
+		} else {
+			%><td></td><td></td><%
+		}
+		%></tr><%
+	} else {
+		String status = bsUtil.getStatus();
+		int totalCount = bsUtil.getSumLocalityCount() - bsUtil.getSumNewCount();
+		%><tr>
+		<td style="color: <%=getStatusColour(status)%>"><%=status%>&nbsp;&nbsp;</td>
+		<td><%=totalCount%></td><%
+		if (status.equals(FREDConstants.BACKLOG_COMPLETE) || status.equals(FREDConstants.BACKLOG_PROCESSING)) {
+			int[] pct = getBarPct(totalCount, bsUtil.getSumCompletedCount(), bsUtil.getSumProcessingCount());
+			%><td width="200">
+			<table border="0" width="100%" cellspacing="0" cellpadding="0">
+			<tr><%
+			for (int j = 0; j < 3; j++) {
+				if (pct[j] > 0) {
+					%><td width="<%=pct[j]%>%" style="background-color: <%=STATUS_COLOUR[j]%>"><img src="images/blank.gif" height="10" width="<%=pct[j] * 2%>" alt="" /></td><%
+				}
+			}
+			%></tr>
+			</table>
+			</td>
+			<td><%=pct[COMPLETED]%>%</td><%						
+		} else {
+			%><td></td><td></td><%
+		}
+		%></tr><%
+	}
+	%></table><%
+	endDETable(pageContext);
+	%></p><%
+	
+	//Detail table
+	%><p><%
+	startDETable(pageContext);
+	%><table border="0" width="480">
 	<tr><td class="deHeading" colspan="5">Detail</td></tr><%
 	if (masterfileId > 0) {
-		%><tr><th>Map</th><th>Status&nbsp;&nbsp;</th><th>Localities to Process&nbsp;&nbsp;</th><th colspan="2">Percent Complete</th></tr><%
+		%><tr><th>Map</th><th>Status&nbsp;&nbsp;</th><th>Localities&nbsp;&nbsp;</th><th colspan="2">Percent Complete</th></tr><%
 		for (Iterator i = bsUtil.getBacklogStatusInMasterfile(masterfileId).iterator(); i.hasNext();) {
 			BacklogStatus bs = (BacklogStatus) i.next();
-			%><tr><td class="heading"><a href="backlog_status_sheet.jsp?Sheet=<%=bs.getMapNumber()%>"><%=bs.getMapNumber()%></a>&nbsp;&nbsp;</td><%
-			String statusColour = "#000000";
-			if (bs.getStatus().equals(FREDConstants.BACKLOG_PROCESSING))
-				statusColour = "#FF0000";
-			else if (bs.getStatus().equals(FREDConstants.BACKLOG_COMPLETE))
-				statusColour = "#00FF00";
-			else if (bs.getStatus().equals(FREDConstants.BACKLOG_EMPTY))
-					statusColour = "#DDDDDD";
-			%><td style="color: <%=statusColour%>"><%=bs.getStatus()%>&nbsp;&nbsp;</td>
-			<td><%=bs.getLocalityCount().intValue() - bs.getNewCount().intValue()%></td><%
-			if (bs.getStatus().equals(FREDConstants.BACKLOG_COMPLETE)) {
-				%><td width="208">
-				<table border="0" width="100%">
-				<tr>
-				<td width="100%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="208" alt="" /></td>
-				</tr>
-				</table>
-				</td>
-				<td>100%</td><%
-			} else if (bs.getStatus().equals(FREDConstants.BACKLOG_PROCESSING)) {
-				int totalCount = bs.getLocalityCount().intValue() - bs.getNewCount().intValue();
-				int procPct = (bs.getProcessingCount().intValue() * 100) / totalCount;
-				if (procPct == 0 && bs.getProcessingCount().intValue() > 0)
-					procPct = 1;
-				if (procPct == 100 && bs.getProcessingCount().intValue() < totalCount)
-					procPct = 99;
-				int comPct;
-				int nsPct;
-				if (bs.getProcessingCount().intValue() + bs.getCompletedCount().intValue() == totalCount) {
-					comPct = 100 - procPct;
-					nsPct = 0;
-				} else {
-					comPct = (bs.getCompletedCount().intValue() * 100) / totalCount;
-					nsPct = 100 - procPct - comPct;
-				}
-				int procWidth = 2 * procPct;
-				int comWidth = 2 * comPct;
-				int nsWidth = 2 * nsPct;
-				%><td width="208">
-				<table border="0" width="100%">
+			int totalCount = bs.getLocalityCount().intValue() - bs.getNewCount().intValue();
+			%><tr><td class="heading"><a href="backlog_status_sheet.jsp?Sheet=<%=bs.getMapNumber()%>"><%=bs.getMapNumber()%></a>&nbsp;&nbsp;</td>
+			<td style="color: <%=getStatusColour(bs.getStatus())%>"><%=bs.getStatus()%>&nbsp;&nbsp;</td>
+			<td><%=totalCount%></td><%
+			if (bs.getStatus().equals(FREDConstants.BACKLOG_COMPLETE) || bs.getStatus().equals(FREDConstants.BACKLOG_PROCESSING)) {
+				int[] pct = getBarPct(totalCount, bs.getCompletedCount().intValue(), bs.getProcessingCount().intValue());
+				%><td width="200">
+				<table border="0" width="100%" cellspacing="0" cellpadding="0">
 				<tr><%
-				if (procPct == 100) {
-					%><td width="100%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="208" alt="" /></td><%
-				} else {
-					if (comPct > 0 && nsPct > 0) {
-						%><td width="<%=comPct%>%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="<%=comWidth%>" alt="" /></td>
-						<td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth%>" alt="" /></td>
-						<td width="<%=nsPct%>%" style="background-color: #000000"><img src="images/blank.gif" height="8" width="<%=nsWidth%>" alt="" /></td><%					
-					} else if (comPct > 0) {
-						%><td width="<%=comPct%>%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="<%=comWidth + 4%>" alt="" /></td>
-						<td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth + 4%>" alt="" /></td><%
-					} else {
-						%><td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth + 4%>" alt="" /></td>
-						<td width="<%=nsPct%>%" style="background-color: #000000"><img src="images/blank.gif" height="8" width="<%=nsWidth + 4%>" alt="" /></td><%					
+				for (int j = 0; j < 3; j++) {
+					if (pct[j] > 0) {
+						%><td width="<%=pct[j]%>%" style="background-color: <%=STATUS_COLOUR[j]%>"><img src="images/blank.gif" height="10" width="<%=pct[j] * 2%>" alt="" /></td><%
 					}
 				}
 				%></tr>
 				</table>
 				</td>
-				<td><%=comPct%>%</td><%					
+				<td><%=pct[COMPLETED]%>%</td><%						
 			} else {
 				%><td></td><td></td><%
 			}
 			%></tr><%
 		}
 	} else {
-		try {
-		%><tr><th>Masterfile</th><th>Status&nbsp;&nbsp;</th><th>Localities to Process&nbsp;&nbsp;</th><th colspan="2">Percent Complete</th></tr><%
+		%><tr><th>Masterfile</th><th>Status&nbsp;&nbsp;</th><th>Localities&nbsp;&nbsp;</th><th colspan="2">Percent Complete</th></tr><%
 		for (Iterator i = folderUtil.getAdminFolders().iterator(); i.hasNext();) {
 			Folder masterfile = (Folder) i.next();
-			%><tr><td class="heading"><a href="backlog_status.jsp?ID=<%=masterfile.getFolderId()%>"><%=masterfile.getName()%></a>&nbsp;&nbsp;</td><%
 			String status = bsUtil.getStatus(masterfile.getFolderId().intValue());
-			String statusColour = "#000000";
-			if (status.equals(FREDConstants.BACKLOG_PROCESSING))
-				statusColour = "#FF0000";
-			else if (status.equals(FREDConstants.BACKLOG_COMPLETE))
-				statusColour = "#00FF00";
-			else if (status.equals(FREDConstants.BACKLOG_EMPTY))
-					statusColour = "#DDDDDD";
-			%><td style="color: <%=statusColour%>"><%=status%>&nbsp;&nbsp;</td>
-			<td><%=bsUtil.getSumLocalityCount(masterfile.getFolderId().intValue()) - bsUtil.getSumNewCount(masterfile.getFolderId().intValue())%></td><%
-			if (status.equals(FREDConstants.BACKLOG_COMPLETE)) {
-				%><td width="208">
-				<table border="0" width="100%">
-				<tr>
-				<td width="100%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="208" alt="" /></td>
-				</tr>
-				</table>
-				</td>
-				<td>100%</td><%
-			} else if (status.equals(FREDConstants.BACKLOG_PROCESSING)) {
-				int totalCount = bsUtil.getSumLocalityCount(masterfile.getFolderId().intValue()) - bsUtil.getSumNewCount(masterfile.getFolderId().intValue());
-				int procPct = (bsUtil.getSumProcessingCount(masterfile.getFolderId().intValue()) * 100) / totalCount;
-				if (procPct == 0 && bsUtil.getSumProcessingCount(masterfile.getFolderId().intValue()) > 0)
-					procPct = 1;
-				if (procPct == 100 && bsUtil.getSumProcessingCount(masterfile.getFolderId().intValue()) < totalCount)
-					procPct = 99;
-				int comPct;
-				int nsPct;
-				if (bsUtil.getSumProcessingCount(masterfile.getFolderId().intValue()) + bsUtil.getSumCompletedCount(masterfile.getFolderId().intValue()) == totalCount) {
-					comPct = 100 - procPct;
-					nsPct = 0;
-				} else {
-					comPct = (bsUtil.getSumCompletedCount(masterfile.getFolderId().intValue()) * 100) / totalCount;
-					nsPct = 100 - procPct - comPct;
-				}
-				int procWidth = 2 * procPct;
-				int comWidth = 2 * comPct;
-				int nsWidth = 2 * nsPct;
-				%><td width="208">
-				<table border="0" width="100%">
+			int totalCount = bsUtil.getSumLocalityCount(masterfile.getFolderId().intValue()) - bsUtil.getSumNewCount(masterfile.getFolderId().intValue());
+			%><tr><td class="heading"><a href="backlog_status.jsp?ID=<%=masterfile.getFolderId()%>"><%=masterfile.getName()%></a>&nbsp;&nbsp;</td>
+			<td style="color: <%=getStatusColour(status)%>"><%=status%>&nbsp;&nbsp;</td>
+			<td><%=totalCount%></td><%
+			if (status.equals(FREDConstants.BACKLOG_COMPLETE) || status.equals(FREDConstants.BACKLOG_PROCESSING)) {
+				int[] pct = getBarPct(totalCount, bsUtil.getSumCompletedCount(masterfile.getFolderId().intValue()), bsUtil.getSumProcessingCount(masterfile.getFolderId().intValue()));
+				%><td width="200">
+				<table border="0" width="100%" cellspacing="0" cellpadding="0">
 				<tr><%
-				if (procPct == 100) {
-					%><td width="100%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="208" alt="" /></td><%
-				} else {
-					if (comPct > 0 && nsPct > 0) {
-						%><td width="<%=comPct%>%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="<%=comWidth%>" alt="" /></td>
-						<td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth%>" alt="" /></td>
-						<td width="<%=nsPct%>%" style="background-color: #000000"><img src="images/blank.gif" height="8" width="<%=nsWidth%>" alt="" /></td><%					
-					} else if (comPct > 0) {
-						%><td width="<%=comPct%>%" style="background-color: #00FF00"><img src="images/blank.gif" height="8" width="<%=comWidth + 4%>" alt="" /></td>
-						<td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth + 4%>" alt="" /></td><%
-					} else {
-						%><td width="<%=procPct%>%" style="background-color: #FF0000"><img src="images/blank.gif" height="8" width="<%=procWidth + 4%>" alt="" /></td>
-						<td width="<%=nsPct%>%" style="background-color: #000000"><img src="images/blank.gif" height="8" width="<%=nsWidth + 4%>" alt="" /></td><%					
+				for (int j = 0; j < 3; j++) {
+					if (pct[j] > 0) {
+						%><td width="<%=pct[j]%>%" style="background-color: <%=STATUS_COLOUR[j]%>"><img src="images/blank.gif" height="10" width="<%=pct[j] * 2%>" alt="" /></td><%
 					}
 				}
 				%></tr>
 				</table>
 				</td>
-				<td><%=comPct%>%</td><%					
+				<td><%=pct[COMPLETED]%>%</td><%						
 			} else {
 				%><td></td><td></td><%
 			}
 			%></tr><%
 		}
-		} catch (Exception e) { e.printStackTrace(); }
 	}
 	%></table><%
 	endDETable(pageContext);
