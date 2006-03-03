@@ -994,7 +994,6 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 				return ((Integer)list.get(0)).intValue();
 			return 0;
         } catch (Exception e) {
-        	e.printStackTrace();
             throw new StorageAccessException(e);
 		}		
 	}
@@ -1016,7 +1015,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 			Query query = session.createQuery("SELECT sum(bs.processingCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = :mfId");
 			query.setInteger("mfId", masterfileId);
 			List list = query.list();
-			if (list.size() > 0)
+			if (list.get(0) != null)
 				return ((Integer)list.get(0)).intValue();
 			return 0;
         } catch (Exception e) {
@@ -1041,7 +1040,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 			Query query = session.createQuery("SELECT sum(bs.completedCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = :mfId");
 			query.setInteger("mfId", masterfileId);
 			List list = query.list();
-			if (list.size() > 0)
+			if (list.get(0) != null)
 				return ((Integer)list.get(0)).intValue();
 			return 0;
         } catch (Exception e) {
@@ -1066,7 +1065,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 			Query query = session.createQuery("SELECT sum(bs.newCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = :mfId");
 			query.setInteger("mfId", masterfileId);
 			List list = query.list();
-			if (list.size() > 0)
+			if (list.get(0) != null)
 				return ((Integer)list.get(0)).intValue();
 			return 0;
         } catch (Exception e) {
