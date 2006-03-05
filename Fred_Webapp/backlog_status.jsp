@@ -85,7 +85,7 @@
 
 	%><p><%
 	startDETable(pageContext);
-	%><table border="0" width="160">
+	%><table border="0" width="140">
 	<tr><td class="deHeading">Masterfile</td></tr>
 	<tr><td class="heading"><a href="backlog_status.jsp?ID=-1">All</a></td></tr><%
 	for (Iterator i = folderUtil.getAdminFolders().iterator(); i.hasNext();) {
@@ -98,23 +98,22 @@
 
 	%><p><%
 	startDETable(pageContext);
-	%><table border="0" width="160">
+	%><table border="0" width="140">
 	<tr><td class="deHeading" colspan="3">Legend</td></tr>
 	<tr><td>&nbsp;</td></tr>
 	<tr><td style="background-color: #FF0000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;</td><td class="heading">Processing</td></tr>
 	<tr><td style="background-color: #00FF00"></td><td></td><td class="heading">Complete</td></tr>
-	<tr><td style="background-color: #000000"></td><td></td><td class="heading">Not started</td></tr>
 	<tr><td style="background-color: #DDDDDD"></td><td></td><td class="heading">No locality</td></tr>
 	</table><%
 	endDETable(pageContext);
 	%></p><%
 	
-	%></td><td><img src="images/blank.gif" width="30" height="1" /></td><td style="text-align: left"><%
+	%></td><td><img src="images/blank.gif" width="20" height="1" /></td><td style="text-align: left"><%
 	
 	%><p><%
 	startDETable(pageContext);
 	%><table border="0" width="480">
-	<tr><td>The summary of map sheets completed in the backlog edit process is shown on the following map.  This map is dynamic, and is updated daily to show the current stage of completion, including those map sheets that are currently undergoing the backlog edit process. Ultimately each map sheet will become as they reach final completion.</td></tr>
+	<tr><td>The summary of map sheets completed in the backlog edit process is shown on the following map.  This map is dynamic, and is updated daily to show the current stage of completion, including those map sheets that are currently undergoing the backlog edit process. Ultimately each map sheet will become green as they reach final completion.</td></tr>
 	<tr><td>Note that records for Radiocarbon dating localities are only partially complete, at this stage lacking radiocarbon dating information. Tailored Radiocarbon dating forms are still to be developed to accommodate these details.</td></tr>
 	</table><%
 	endDETable(pageContext);
@@ -218,7 +217,7 @@
 			<tr><%
 			for (int j = 0; j < 3; j++) {
 				if (pct[j] > 0) {
-					%><td width="<%=pct[j]%>%" style="background-color: <%=STATUS_COLOUR[j]%>"><img src="images/blank.gif" height="10" width="<%=pct[j] * 2%>" alt="" /></td><%
+					%><td width="<%=pct[j]%>%"><img src="images/bar<%=j%>.gif" height="10" width="<%=pct[j] * 2%>" alt="" /></td><%
 				}
 			}
 			%></tr>
@@ -242,7 +241,7 @@
 			<tr><%
 			for (int j = 0; j < 3; j++) {
 				if (pct[j] > 0) {
-					%><td width="<%=pct[j]%>%" style="background-color: <%=STATUS_COLOUR[j]%>"><img src="images/blank.gif" height="10" width="<%=pct[j] * 2%>" alt="" /></td><%
+					%><td width="<%=pct[j]%>%"><img src="images/bar<%=j%>.gif" height="10" width="<%=pct[j] * 2%>" alt="" /></td><%
 				}
 			}
 			%></tr>
@@ -278,7 +277,7 @@
 				<tr><%
 				for (int j = 0; j < 3; j++) {
 					if (pct[j] > 0) {
-						%><td width="<%=pct[j]%>%" style="background-color: <%=STATUS_COLOUR[j]%>"><img src="images/blank.gif" height="10" width="<%=pct[j] * 2%>" alt="" /></td><%
+						%><td width="<%=pct[j]%>%"><img src="images/bar<%=j%>.gif" height="10" width="<%=pct[j] * 2%>" alt="" /></td><%
 					}
 				}
 				%></tr>
@@ -306,7 +305,7 @@
 				<tr><%
 				for (int j = 0; j < 3; j++) {
 					if (pct[j] > 0) {
-						%><td width="<%=pct[j]%>%" style="background-color: <%=STATUS_COLOUR[j]%>"><img src="images/blank.gif" height="10" width="<%=pct[j] * 2%>" alt="" /></td><%
+						%><td width="<%=pct[j]%>%"><img src="images/bar<%=j%>.gif" height="10" width="<%=pct[j] * 2%>" alt="" /></td><%
 					}
 				}
 				%></tr>
