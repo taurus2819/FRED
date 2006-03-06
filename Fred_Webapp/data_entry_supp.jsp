@@ -470,6 +470,8 @@
 				}
 				%></select>
 				</td></tr><%
+			} else {
+				%><input type="hidden" name="SubFeat" value="-" /><%
 			}
 			%><tr><td class="heading">Samples in Folders</td><td>
 			<select name="WorkFeat">
