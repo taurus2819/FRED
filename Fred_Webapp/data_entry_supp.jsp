@@ -1,9 +1,8 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.model.Feature"
-%><%@page import="nz.cri.gns.fred.model.Folder"
+%><%@page import="nz.cri.gns.fred.model.FrNumber"
 %><%@page import="nz.cri.gns.fred.model.Person"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
-%><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
@@ -13,9 +12,8 @@
 %><%@page import="nz.cri.gns.db.ComboDescriptor"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.auth.User"
-%><%@page import="java.util.Collections"
+%><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="java.util.Iterator"
-%><%@page import="java.util.Set"
 %><%
 	ComboDescriptor cd;
 	User user = (User) getUser(session);
@@ -370,41 +368,9 @@
 
 		else if (request.getParameter("Type").equals("PrevSamp")) {
 			%><tr><td class="heading" colspan="2">Previous Samples Nearby</td></tr>
-			<tr><td colspan="2">Please select a masterfile area from the drop-down list.  The Sample list will then be populated with all submitted samples plus working samples which you have access to in that masterfile area.<br />You may add multiple samples by clicking the Add To Main Form icon between each sample and then Close to end.</td></tr>
+			<tr><td colspan="2">Please either select a locality in your folders or select a map sheet from the drop-down list - and then select a locality.<br />You may add multiple samples by clicking the Add To Main Form icon between each sample and then Close to end.</td></tr>
 			<tr><td>&nbsp;</td></tr>
-			<tr><td class="heading">Masterfile Area</td><td><%
-			cd = new ComboDescriptor("folder", "folder_id", "name");
-			cd.name = "MF";
-			cd.prompt = "-- Choose --";
-			cd.tagParams = "onChange='form1.submit();'";
-			cd.join = "folder_type = 1";
-			cd.orderBy = "folder_id";
-			if (request.getParameter("MF") != null  && !request.getParameter("MF").equals("-"))
-				cd.selected = request.getParameter("MF");
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
-			%></td></tr><%
-			if (request.getParameter("MF") != null  && !request.getParameter("MF").equals("-")) {
-				%><tr><td class="heading">Submitted Samples</td><td>
-				<select name="SubFeat">
-				<option value="-">-- Choose --</option><%
-				int mfID = -1;
-				try {
-					mfID = Integer.parseInt(request.getParameter("MF"));
-				} catch (Exception e) {	}
-				Folder masterfile = folderUtil.getFolder(mfID);
-				Feature[] features = FeatureUtil.getOrderedFeaturesInMasterfile(masterfile);
-				for (int i = 0; i < features.length; i++) {
-					if (features[i].getAudit().getStatus().equals(FREDConstants.APPROVED)) {
-						String featName = FeatureUtil.getFeatureIdentifyingName(features[i]);
-						%><option value="<%=featName%>"><%=featName%></option><%
-					}
-				}
-				%></select>
-				</td></tr><%
-			} else {
-				%><input type="hidden" name="SubFeat" value="-" /><%
-			}
-			%><tr><td class="heading">Samples in Folders</td><td>
+			<tr><td class="heading">Localities in Folders</td><td>
 			<select name="WorkFeat">
 			<option value="-">-- Choose --</option><%
 			for (Iterator i = folderUtil.getPersonalPlusBacklogFolders(user).iterator(); i.hasNext();) {
@@ -418,6 +384,28 @@
 			}
 			%></select>
 			</td></tr>
+			<tr><td class="heading">Map Sheet</td><td><%
+			cd = new ComboDescriptor("fr_number", "map_sheet", "map_sheet");
+			cd.name = "MapSheet";
+			cd.prompt = "-- Choose --";
+			cd.tagParams = "onChange='form1.submit();'";
+			cd.selectDistinct = true;
+			if (request.getParameter("MapSheet") != null  && !request.getParameter("MapSheet").equals("-"))
+				cd.selected = request.getParameter("MapSheet");
+			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+			if (request.getParameter("MapSheet") != null  && !request.getParameter("MapSheet").equals("-")) {
+				%>&nbsp;&nbsp;
+				<select name="SubFeat">
+				<option value="-">-- Choose --</option><%
+				for (Iterator i = featureUtil.getFrNumbers(request.getParameter("MapSheet")).iterator(); i.hasNext();) {
+					FrNumber frNumber = (FrNumber) i.next();
+					%><option value="<%=frNumber.getFrNumber()%>"><%=frNumber.getFrNumber()%></option><%
+				}
+				%></select><%
+			} else {
+				%><input type="hidden" name="SubFeat" value="-" /><%
+			}
+			%></td></tr>
 			</table>
 			<table border="0" cellspacing="2" cellpadding="0">
 			<tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
@@ -426,54 +414,27 @@
 
 		else if (request.getParameter("Type").equals("SampRel")) {
 			%><tr><td class="heading" colspan="2">Sample Relationships</td></tr>
-			<tr><td colspan="2">Please select a masterfile area from the drop-down list.  The Sample list will then be populated with all submitted samples plus working samples which you have access to in that masterfile area.  Then select a relationship type enter an optional distance (in metres).<br />You may add multiple samples by clicking the Add To Main Form icon between each sample and then Close to end.</td></tr>
+			<tr><td colspan="2">Please select an optional distance (in metres) and a relationship type. Then either select a locality in your folders or select a map sheet from the drop-down list - and then select a locality.<br />You may add multiple localities by clicking the Add To Main Form icon between each sample and then Close to end.</td></tr>
 			<tr><td>&nbsp;</td></tr>
 			<tr><td class="heading">Distance</td>
-			<td class="heading"><select name="DistMod"><option value="-" selected></option><option value="c. ">c.</option><option value="? ">?</option></select>&nbsp;&nbsp;
-			<input type="text" name="Distance" />&nbsp;m&nbsp;-&nbsp;
-			<input type="text" name="DistRange" />&nbsp;m</td></tr>
+			<td><select name="DistMod">
+				<option value="-"<%=((request.getParameter("DistMod") == null || request.getParameter("DistMod").equals("-")) ?  " selected" : "")%>></option>
+				<option value="c. "<%=((request.getParameter("DistMod") != null && request.getParameter("DistMod").equals("c. ")) ?  " selected" : "")%>>c.</option>
+				<option value="? "<%=((request.getParameter("DistMod") != null && request.getParameter("DistMod").equals("? ")) ?  " selected" : "")%>>?</option>
+			</select>&nbsp;&nbsp;
+			<input type="text" name="Distance" value="<%=DBUtils.nvl(request.getParameter("Distance"))%>" />&nbsp;m&nbsp;-&nbsp;
+			<input type="text" name="DistRange" value="<%=DBUtils.nvl(request.getParameter("DistRange"))%>" />&nbsp;m</td></tr>
 			<tr><td class="heading">Relationship</td><td><%
 			cd = new ComboDescriptor("relationship_type", "name", "name");
 			cd.name = "Rel";
 			cd.prompt = "-- Choose --";
 			cd.orderBy = "reltype_id";
 			cd.join = "relation_type = 'Sample' AND name != 'nearby'";
+			if (request.getParameter("Rel") != null && !request.getParameter("Rel").equals("-"))
+				cd.selected = request.getParameter("Rel");
 			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
 			%></td></tr>
-			<tr><td class="heading">Masterfile Area</td><td><%
-			cd = new ComboDescriptor("folder", "folder_id", "name");
-			cd.name = "MF";
-			cd.prompt = "-- Choose --";
-			cd.tagParams = "onChange='form1.submit();'";
-			cd.join = "folder_type = 1";
-			cd.orderBy = "folder_id";
-			if (request.getParameter("MF") != null  && !request.getParameter("MF").equals("-")) {
-				cd.selected = request.getParameter("MF");
-			}
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
-			%></td></tr><%
-			if (request.getParameter("MF") != null  && !request.getParameter("MF").equals("-")) {
-				%><tr><td class="heading">Submitted Samples</td><td>
-				<select name="SubFeat">
-				<option value="-">-- Choose --</option><%
-				int mfID = -1;
-				try {
-					mfID = Integer.parseInt(request.getParameter("MF"));
-				} catch (Exception e) {	}
-				Folder masterfile = folderUtil.getFolder(mfID);
-				for (Iterator i = masterfile.getMasterfileFeatures().iterator(); i.hasNext();) {
-					Feature feature = (Feature) i.next();
-					if (feature.getAudit().getStatus().equals(FREDConstants.APPROVED)) {
-						String featName = FeatureUtil.getFeatureIdentifyingName(feature);
-						%><option value="<%=featName%>"><%=featName%></option><%
-					}
-				}
-				%></select>
-				</td></tr><%
-			} else {
-				%><input type="hidden" name="SubFeat" value="-" /><%
-			}
-			%><tr><td class="heading">Samples in Folders</td><td>
+			<tr><td class="heading">Localities in Folders</td><td>
 			<select name="WorkFeat">
 			<option value="-">-- Choose --</option><%
 			for (Iterator i = folderUtil.getPersonalPlusBacklogFolders(user).iterator(); i.hasNext();) {
@@ -487,6 +448,28 @@
 			}
 			%></select>
 			</td></tr>
+			<tr><td class="heading">Map Sheet</td><td><%
+			cd = new ComboDescriptor("fr_number", "map_sheet", "map_sheet");
+			cd.name = "MapSheet";
+			cd.prompt = "-- Choose --";
+			cd.tagParams = "onChange='form1.submit();'";
+			cd.selectDistinct = true;
+			if (request.getParameter("MapSheet") != null  && !request.getParameter("MapSheet").equals("-"))
+				cd.selected = request.getParameter("MapSheet");
+			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+			if (request.getParameter("MapSheet") != null  && !request.getParameter("MapSheet").equals("-")) {
+				%>&nbsp;&nbsp;
+				<select name="SubFeat">
+				<option value="-">-- Choose --</option><%
+				for (Iterator i = featureUtil.getFrNumbers(request.getParameter("MapSheet")).iterator(); i.hasNext();) {
+					FrNumber frNumber = (FrNumber) i.next();
+					%><option value="<%=frNumber.getFrNumber()%>"><%=frNumber.getFrNumber()%></option><%
+				}
+				%></select><%
+			} else {
+				%><input type="hidden" name="SubFeat" value="-" /><%
+			}
+			%></td></tr>
 			</table>
 			<table border="0" cellspacing="2" cellpadding="0">
 			<tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
