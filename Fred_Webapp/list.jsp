@@ -190,14 +190,6 @@
 			%><tr><td>Outcrop</td></tr>
 			<tr><td>Drillhole</td></tr>
 			<tr><td>Vertical Section</td></tr><%
-		} else if (listName.equals("sedFeature")) {
-			rs = statement.executeQuery("SELECT code, name FROM sedimentary_feature_type ORDER BY code");
-			try {
-				while (rs.next()) {
-					%><tr><td><%=rs.getString(1) + ": " + rs.getString(2).replaceAll(" ", "&nbsp;")%></td><td><%=rs.getString(2)%></td></tr><%
-					%><tr><td><%=rs.getString(1) + "*: " + rs.getString(2).replaceAll(" ", "&nbsp;")%> abundant</td><td><%=rs.getString(2)%>$</td></tr><%
-				}
-			} catch (Exception e) {}
 		} else {
 			if (listName.equals("bedding")) {
 				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || bedding_id  FROM bedding ORDER BY code");
@@ -227,6 +219,8 @@
 				rs = statement.executeQuery("SELECT name || '</td><td>' || reg_area_id FROM registration_area ORDER BY name");
 			} else if (listName.equals("thickness")) {
 				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || thickness_id FROM bed_thickness ORDER BY code");
+			} else if (listName.equals("sedFeature")) {
+				rs = statement.executeQuery("SELECT name FROM sedimentary_feature_type ORDER BY code");
 			} else if (listName.equals("stageName")) {
 				rs = statement.executeQuery("SELECT ag_name || '</td><td>' || ag_id FROM age_view ORDER BY ag_name");
 			} else if (listName.equals("stratName")) {
