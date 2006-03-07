@@ -17,6 +17,7 @@ public interface DAOFactory {
     public TaxonomicDAO getTaxonomicDAO();
     public AuditDAO getAuditDAO();
     public BacklogStatusDAO getBacklogStatusDAO();
+    public StratLexDAO getStratLexDAO();
 	
 	/**
 	 * Closes the current session for this thread

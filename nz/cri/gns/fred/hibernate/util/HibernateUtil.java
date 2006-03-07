@@ -48,6 +48,7 @@ import nz.cri.gns.fred.hibernate.SecurityClass;
 import nz.cri.gns.fred.hibernate.SedimentaryFeatureType;
 import nz.cri.gns.fred.hibernate.SentTo;
 import nz.cri.gns.fred.hibernate.Stage;
+import nz.cri.gns.fred.hibernate.StratigraphicUnit;
 import nz.cri.gns.fred.hibernate.TaxaPanel;
 import nz.cri.gns.fred.hibernate.TaxonomicGroup;
 import nz.cri.gns.fred.hibernate.TaxonomicLookup;
@@ -143,6 +144,7 @@ public class HibernateUtil implements HibernateProvider {
 			SedimentaryFeatureType.class,
 			SentTo.class,
 			Stage.class,
+			StratigraphicUnit.class,
 			TaxaPanel.class,
 			TaxonomicGroup.class,
 			TaxonomicLookup.class,

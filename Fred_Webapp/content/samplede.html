@@ -9,11 +9,23 @@
 <tr>
 <td class="heading" style="vertical-align: top; color: #FF0000">Collectors</td>
 <td colspan="2"><table border="0"><tbody id="collTable"></tbody></table><input name="Coll" id="CollectorField" maxlength="64">&nbsp;<a href="javascript:acceptCollector(document.getElementById('CollectorField').value);">Add another</a>
+</td>
+</tr>
+<tr>
+<td class="heading">Strat Name</td>
+<td colspan="2"><input type="text" id="StratName" name="StratName" size="40" value="{@StratName}">
 <script type="text/javascript" src="scripts/ajax.js"></script>
 <script type="text/javascript" src="scripts/locate.js"></script>
 <script type="text/javascript" src="scripts/fade.js"></script>
 <script type="text/javascript" src="scripts/contextHint.js"></script>
 <script><!--
+new ContextHint(
+	document.getElementById("StratName"),
+	function generateURL(start) {
+		return "ajaxSupport.xml?action=List&type=Strat&start=" + start + "&q=" + Math.random();
+	},
+	true
+);
 new ContextHint(
 	document.getElementById("CollectorField"),
 	function generateURL(start) {
@@ -71,13 +83,7 @@ for (var i=0; i<collArray.length; i++) {
 	addCollector(collArray[i]);
 }
 
-//--></script>
-</td>
-</tr>
-<tr>
-<td class="heading">Strat Name</td>
-<td><input type="text" name="StratName" size="40" value="{@StratName}"></td>
-<td><a href="javascript:var newWin=open('data_entry_supp.jsp?Type=StratName', 'Supp', 'width=600,height=300');" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a></td>
+//--></script></td>
 </tr>
 <tr><td class="heading" style="color: #FF0000">Fossils In Place</td>
 <td style="z-index: 1"><select name="InPlace">

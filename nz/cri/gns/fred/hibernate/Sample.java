@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.SampleMeta;
@@ -461,12 +460,6 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
 
     public void setAudit(nz.cri.gns.fred.model.Audit auditTable) {
         this.auditTable = auditTable;
-        if (auditTable.getSamples() == null)
-        	auditTable.setSamples(new HashSet<nz.cri.gns.fred.model.Sample>());
-        try {
-        	auditTable.getSamples().add(this);
-        } catch (Exception e) {
-        }
     }
 
     public nz.cri.gns.fred.model.Bedding getPrimaryBedding() {

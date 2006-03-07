@@ -11,11 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.db.DBUtils;
-import nz.cri.gns.db.XMLUtils;
 import nz.cri.gns.fred.Match;
+import nz.cri.gns.fred.dao.StratLexDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.Person;
+import nz.cri.gns.fred.model.StratigraphicUnit;
 import nz.cri.gns.fred.util.PersonUtil;
 
 public class AJAXServlet extends HttpServlet {
@@ -38,7 +38,8 @@ public class AJAXServlet extends HttpServlet {
 	private static final long serialVersionUID = 20050818L;
 
 	public static enum Type {
-		Person;
+		Person,
+		Strat;
 	};
 	
 	public static enum Action {
@@ -53,6 +54,16 @@ public class AJAXServlet extends HttpServlet {
 							List<Person> people = util.getMatchingPersons(start, Match.BEGINNING, 15);
 							for (Person person : people) {
 								values.add(new NamedId(person.getPersonId().toString(), person.getDisplayName()));
+							}
+						} catch (StorageAccessException e) {
+						}
+						break;
+					case Strat:
+						StratLexDAO dao = HibernateUtil.get().getDAOFactory().getStratLexDAO();
+						try {
+							List<StratigraphicUnit> units = dao.getMatchingUnitNames(start, Match.BEGINNING, 15);
+							for (StratigraphicUnit unit : units) {
+								values.add(new NamedId(unit.getId().toString(), unit.getName()));
 							}
 						} catch (StorageAccessException e) {
 						}

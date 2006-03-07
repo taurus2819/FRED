@@ -32,6 +32,7 @@ import nz.cri.gns.fred.dao.FolderTypeDAO;
 import nz.cri.gns.fred.dao.PersonDAO;
 import nz.cri.gns.fred.dao.RecordDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
+import nz.cri.gns.fred.dao.StratLexDAO;
 import nz.cri.gns.fred.dao.TaxonomicDAO;
 import nz.cri.gns.fred.dao.TaxonomicGroupDAO;
 import nz.cri.gns.fred.hibernate.AuditTable;
@@ -76,6 +77,7 @@ import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SedimentaryFeatureType;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.Stage;
+import nz.cri.gns.fred.model.StratigraphicUnit;
 import nz.cri.gns.fred.model.TaxaPanel;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
@@ -85,7 +87,7 @@ import nz.cri.gns.fred.model.Weathering;
 /**
  * @author iainm
  */
-public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO, AuditDAO, BacklogStatusDAO {
+public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO, AuditDAO, BacklogStatusDAO, StratLexDAO {
 
 	private HibernateProvider provider;
 
@@ -1075,5 +1077,13 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	
 	public DataOrigin getDataOrigin(Integer id) throws StorageAccessException {
 		return HibernateUtils.get(provider, nz.cri.gns.fred.hibernate.DataOrigin.class, id);
+	}
+	
+	public StratLexDAO getStratLexDAO() {
+		return this;
+	}
+
+	public List<StratigraphicUnit> getMatchingUnitNames(String start, Match matchType, int maxResults) throws StorageAccessException {
+		return HibernateUtils.list(provider, "FROM StratigraphicUnit unit WHERE lower(unit.name) LIKE ? ORDER BY unit.name", maxResults, StratigraphicUnit.class, matchType.getQueryRepresentation(start.toLowerCase()));
 	}
 }
