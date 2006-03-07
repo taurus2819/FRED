@@ -78,6 +78,7 @@ public class AdoptionRecordDE extends RecordDE {
     public void makePostFormHTML(PrintWriter out) throws IOException {
         Template template = provider.getContent("calendar.script");
         template.addSub("inputField", "AdoDate");
+		template.addSub("button", "AdoDateCal");
         template.loadAll(out);
     }
 

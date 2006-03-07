@@ -500,6 +500,7 @@ public class PaleontologyRecordDE extends RecordDE {
 
 	public void makePostFormHTML(PrintWriter out) throws IOException {
         Template template = provider.getContent("calendar.script");
+		template.addSub("button", "PalDateCal");
         template.addSub("inputField", "PalDate");
         template.loadAll(out);
     }

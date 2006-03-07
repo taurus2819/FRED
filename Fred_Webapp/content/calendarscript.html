@@ -2,11 +2,12 @@
 Calendar.setup(
 	{
 		inputField:		"{@inputField}",
+		button:			"{@button}",
 		ifFormat:		"%d/%m/%Y",
-		eventName:		"focus",
+		eventName:		"follow",
 		weekNumbers:	false,
 		showsTime:		false,
-		onClose:		function(cal) {cal.hide(); cal.params.inputField.blur(); }
+		onClose:		function(cal) {cal.hide(); }
 	}
 );
 </script>

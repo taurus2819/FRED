@@ -237,9 +237,11 @@ public class DrillholeLocalityDE extends LocalityDE {
 	public void makePostFormHTML(PrintWriter out) throws IOException {
 		Template template = provider.getContent("calendar.script");
 		template.addSub("inputField", "StartDate");
+		template.addSub("button", "StartDateCal");
 		template.loadAll(out);
 		template = provider.getContent("calendar.script");
 		template.addSub("inputField", "FinishDate");
+		template.addSub("button", "FinishDateCal");
 		template.loadAll(out);
 	}
 

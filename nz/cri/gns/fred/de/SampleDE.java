@@ -652,6 +652,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	public void makePostFormHTML(PrintWriter out) throws IOException {
 		Template template = provider.getContent("calendar.script");
 		template.addSub("inputField", "CollDate");
+		template.addSub("button", "CollDateCal");
 		template.loadAll(out);
 	}
 
