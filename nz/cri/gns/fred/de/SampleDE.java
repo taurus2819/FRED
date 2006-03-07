@@ -251,8 +251,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	        //Collectors
 	        template.loadUntil(out, "{@Coll}");
 	        Set<Person> collectors = sample.getCollectors();
-	        for (Person collector : collectors) {
-	        	out.println("collArray[collArray.length] = '" + collector.getDisplayName() + "';");
+	        if (collectors != null) {
+		        for (Person collector : collectors) {
+		        	out.println("collArray[collArray.length] = '" + collector.getDisplayName() + "';");
+		        }
 	        }
 	        
 			//Ages...inferred...
