@@ -42,7 +42,7 @@
 		ExtranetTemplate et = getExtranetTemplate();
 		et.setDisplayLoadingMessage(true);
 		et.setButtons(new IconnedLink[] {
-				new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders"),
+				new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to Folders"),
 				new IconnedLink("backlog_setup.jsp?ID=" + request.getParameter("ID"), "images/revoke.gif", "Backlog setup"),
 				new IconnedLink("javascript:doNewBacklogFolder();", "images/folder.gif", "New Backlog Edit Folder")});
 	
@@ -97,7 +97,7 @@
 			<p><%
 			startDETable(pageContext);
 			%><table border="0" width="550"><tr><td colspan="9" class="deHeading">Localities to Approve</td></tr>
-			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Type&nbsp;&nbsp;</th><th style="text-align: left">Submitted Date&nbsp;&nbsp;</th><th style="text-align: left">Submitted By&nbsp;&nbsp;</th><th style="text-align: left" colspan="3">Options</th></tr><%
+			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Type&nbsp;&nbsp;</th><th style="text-align: left">Submitted Date&nbsp;&nbsp;</th><th style="text-align: left">Submitted By&nbsp;&nbsp;</th><th style="text-align: left" colspan="4">Options</th></tr><%
 
 			//Display the features
 			Feature[] features = featureUtil.getWaitingFeatures(folder);
@@ -109,6 +109,7 @@
 				<td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=(audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : ""%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=FREDUtil.getUserName(audit.getSubmittedById().intValue())%>&nbsp;&nbsp;</td>
+				<td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderId(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="print_front.jsp?FeatID=<%=feature.getFeatureId() + (feature.getFeatureType().equals(FREDConstants.OUTCROP) ? "" : "&FormType=Short")%>" target="print"><img src="images/print.gif" border="0" height="20" width="20" alt="Print Locality" /></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%
 				if (folder.isAllowedEditLocalities()) {
@@ -126,18 +127,19 @@
 			
 			<p><%
 			startDETable(pageContext);
-			%><table border="0" width="550"><tr><td colspan="9" class="deHeading">Localities Recently Approved</td></tr><% 
+			%><table border="0" width="550"><tr><td colspan="7" class="deHeading">Localities Recently Approved</td></tr><% 
 			//Recently Approved
 			features = featureUtil.getFeaturesApprovedInTheLastWeek(folder);
-			%><tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Type&nbsp;&nbsp;</th><th style="text-align: left">Approved Date&nbsp;&nbsp;</th><th style="text-align: left">Approved By&nbsp;&nbsp;</th><th style="text-align: left" colspan="3">Options</th></tr><%
+			%><tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Type&nbsp;&nbsp;</th><th style="text-align: left">Approved Date&nbsp;&nbsp;</th><th style="text-align: left">Approved By&nbsp;&nbsp;</th><th style="text-align: left" colspan="2">Options</th></tr><%
 			for (int i=0; i<features.length; i++) {
 				Feature feature = features[i];
 				Audit audit = feature.getAudit();
-				%><tr><td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><img src="images/loc.gif" height="20" width="20" border="0" alt="View Locality" /></a></td>
+				%><tr><td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderId(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" height="20" width="20" border="0" alt="View Locality" /></a></td>
 				<td style="text-align: left"><span class="heading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></span>&nbsp;&nbsp;<%=(feature.getFeatureName() != null) ? "<br />(" + feature.getFeatureName() + ")&nbsp;&nbsp;" : ""%></td>
 				<td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=(audit.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(audit.getApprovedDate()) : ""%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=(audit.getApprovedById() != null) ? FREDUtil.getUserName(audit.getApprovedById().intValue()) : ""%>&nbsp;&nbsp;</td>
+				<td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderId(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="print_front.jsp?FeatID=<%=feature.getFeatureId()%><%=(feature.getFeatureType().equals(FREDConstants.OUTCROP)) ? "" : "&FormType=Short"%>" target="print"><img src="images/print.gif" border="0" height="20" width="20" alt="Print Locality" /></a></td></tr><%
 			}
 			%></table><%
