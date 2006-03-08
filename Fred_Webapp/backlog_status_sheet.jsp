@@ -13,6 +13,7 @@
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.AuditUtil"
+%><%@page import="java.net.URLEncoder"
 %><%!
 	public String getName(HttpServletRequest request) {
 		return "FRED :: Backlog Processing Status for Sheet " + DBUtils.nvl(request.getParameter("Sheet"));
@@ -40,15 +41,16 @@
 		%><p><%
 		startDETable(pageContext);
 		%><table border="0">
-		<tr><td class="deHeading" colspan="5">Localities</td></tr>
-		<tr><th>Locality</th><th>Type</th><th>Backlog Status&nbsp;&nbsp;</th><th>FRED Status&nbsp;&nbsp;</th><th>Working Folder&nbsp;&nbsp;</th></tr><%
+		<tr><td class="deHeading" colspan="6">Localities</td></tr>
+		<tr><th colspan="2">Locality</th><th>Type</th><th>Backlog Status&nbsp;&nbsp;</th><th>FRED Status&nbsp;&nbsp;</th><th>Working Folder&nbsp;&nbsp;</th></tr><%
 		for (Iterator i = featureUtil.getFrNumbers(mapSheet).iterator(); i.hasNext();) {
 			FrNumber frNumber = (FrNumber) i.next();
 			try {
 				Feature feature = FeatureUtil.getFeature(frNumber);
 				Audit audit = feature.getAudit();
 				String status = AuditUtil.getAuditBacklogStatus(audit);
-				%><tr><td class="heading"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><%=frNumber.getFrNumber()%></a>&nbsp;&nbsp;</td>
+				%><tr><td class="heading"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("backlog_status_sheet.jsp?Sheet=" + mapSheet, "ISO-8859-1")%>&backText=Back%20To%20<%=mapSheet%>%20List"><%=frNumber.getFrNumber()%></a>&nbsp;&nbsp;</td>
+				<td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("backlog_status_sheet.jsp?Sheet=" + mapSheet, "ISO-8859-1")%>&backText=Back%20To%20<%=mapSheet%>%20List"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;&nbsp;</td>
 				<td><%=feature.getFeatureType()%>&nbsp;&nbsp;<%
 				String statusColour = "#00FF00";
 				if (status.equals(FREDConstants.BACKLOG_PROCESSING))
