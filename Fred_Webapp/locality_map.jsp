@@ -42,7 +42,7 @@
 	FeatureUtil featureUtil = new FeatureUtil(factory);
 	String featId = request.getParameter("FeatID");
 	String dist = request.getParameter("Dist");
-	int distance = 3000;
+	int distance = 2500;
 	try {
 		distance = Integer.parseInt(dist);
 	} catch (Exception e) {}
@@ -65,8 +65,8 @@
 	if (backURL != null)
 		il[x++] = new IconnedLink(backURL, "images/back_arrow.gif", (backText != null) ? request.getParameter("backText") : "Back");
 	il[x++] = new IconnedLink("http://maps.gns.cri.nz/website/fred", "images/map.gif", "Interactive Map");
-	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=20000" + backStr, "images/map.gif", "Small Scale");
-	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=3000" + backStr, "images/map.gif", "Large Scale");
+	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=12500" + backStr, "images/map.gif", "Small Scale");
+	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=2500" + backStr, "images/map.gif", "Large Scale");
 	et.setButtons(il);
 
 	drawTop(out, et, request, response);
@@ -89,7 +89,7 @@
 					try {
 						//map
 						long width = 620;
-						long height = 600;
+						long height = 500;
 						URL imsServer = new URL("http://maps.gns.cri.nz");
 						String service = "fred_nz";
 						String whereClause = "FR.SITE_VIEW.FEATURE_ID = " + featId;
