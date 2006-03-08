@@ -75,6 +75,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		newFeature.setFeatureId(null);
 		newFeature.setFeatureName(newName);
 		newFeature.setAudit(audit);
+		newFeature.setFrNumber(null);
 		//A new copy should not have an entry in folder_contents
 		newFeature.setFolders(null);
 		
@@ -311,6 +312,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		
 		if (!userFolder.isAllowedDeleteLocalities())
 			throw new InsufficientPrivelegesException();
+		
+		if (feature.getFrNumber() != null)
+			feature.setFrNumber(null);
 		
 		Audit audit = feature.getAudit();
 
