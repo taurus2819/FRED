@@ -99,6 +99,7 @@
 						sym.setMarkerType("circle");
 						sym.setColor("255,255,0");
 						sym.setOutline("0,0,0");
+						sym.setTransparency(0.5);
 						IMSMap map = new IMSMap(imsServer, service, width, height);
 						map.setSelectedFeatures(layerID, whereClause, true, sym);
 						map.zoomByDistance(distance * -1);
