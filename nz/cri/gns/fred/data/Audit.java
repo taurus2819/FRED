@@ -45,7 +45,6 @@ public class Audit {
 	public static final String STATUS_APPROVED = "approved";
 	
 
-	private PageState state;
 	private int id;
 	private Object[] values = new Object[21];
 
@@ -53,14 +52,13 @@ public class Audit {
 	 * Cannot be called directly. use static getAudit method instead.
 	 */
 	protected Audit(int id, PageState state) throws SQLException, IOException {
-		this.state = state;
 		DBConnection conn = FREDUtils.getFREDConnection(state);
 		this.id = id;
 		String query =
 			"SELECT audit_id, status, data_origin_id, data_origin, created_by_id, created_by, created_date, "
 				+ "edited_by_id, edited_by, edited_date, edit_comments, submitted_by_id, submitted_by, submitted_date, "
 				+ "approved_by_id, approved_by, approved_date, working_comments, working_folder_id, curator_comments "
-				+ "FROM audit_view WHERE audit_id = ? ORDER BY nvl(edited_date, '01-01-1000')";
+				+ "FROM audit_view WHERE audit_id = ? ORDER BY nvl(edited_date, '01-JAN-1800')";
 		try {
 			ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(id)});
 			Vector edits = new Vector();
