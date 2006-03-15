@@ -24,6 +24,7 @@ new ContextHint(
 	function generateURL(start) {
 		return "ajaxSupport.xml?action=List&type=Strat&start=" + start + "&q=" + Math.random();
 	},
+	null,
 	true
 );
 new ContextHint(
@@ -31,9 +32,16 @@ new ContextHint(
 	function generateURL(start) {
 		return "ajaxSupport.xml?action=List&type=Person&start=" + start + "&q=" + Math.random();
 	},
+	"clearCollectorField();",
 	true
 );
 
+function clearCollectorField() {
+	var colField = document.getElementById("CollectorField");
+	if (colField.value.length > 0) {
+		acceptCollector(document.getElementById('CollectorField').value);
+	}
+}
 function acceptCollector(personName) {
 	if (personName.length == 0)
 		alert("Enter a name first!");

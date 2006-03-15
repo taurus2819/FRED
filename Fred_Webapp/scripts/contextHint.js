@@ -9,8 +9,9 @@
  * Constructor takes a field activatorField which will be the element
  * from which the thing is triggered, and a function urlGenerator which
  * when given the starting text will generate the AJAX url
+ * blurCode is a script snippet that will be added to the onblur of the field if not null
  */
-ContextHint = function(activatorField, urlGenerator, omitFieldFix) {
+ContextHint = function(activatorField, urlGenerator, blurCode, omitFieldFix) {
     this.field = activatorField;
     this.generator = urlGenerator;
     this.isIE = navigator.appName.indexOf("Internet Expl") > -1;
@@ -23,7 +24,11 @@ ContextHint = function(activatorField, urlGenerator, omitFieldFix) {
     contextHints[this.key] = this;
     
     //Setup the field
-    eval("activatorField.onblur = function() {getContextHint('" + this.key + "').hideDropout();};");
+    if (blurCode) {
+	    eval("activatorField.onblur = function() {getContextHint('" + this.key + "').hideDropout();" + blurCode + "};");
+	} else {
+	    eval("activatorField.onblur = function() {getContextHint('" + this.key + "').hideDropout();};");
+	}
 	ContextHint.addEvent(this.field, "keyup", ContextHint.processUnknownKeyStroke);
 	//eval("activatorField.onkeyup = function() {getContextHint('" + this.key + "').processKeyStroke();};");
     
