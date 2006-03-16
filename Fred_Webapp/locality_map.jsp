@@ -41,10 +41,13 @@
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	FeatureUtil featureUtil = new FeatureUtil(factory);
 	String featId = request.getParameter("FeatID");
-	String dist = request.getParameter("Dist");
 	int distance = 2500;
 	try {
-		distance = Integer.parseInt(dist);
+		distance = Integer.parseInt(request.getParameter("Dist"));
+	} catch (Exception e) {}
+	int lyr = 2;
+	try {
+		lyr = Integer.parseInt(request.getParameter("Layer"));
 	} catch (Exception e) {}
 
 	String backURL = request.getParameter("backURL");
@@ -60,16 +63,17 @@
 	et.setUseNavigationColumn(true);
 	et.setDisplayLoadingMessage(true);
 	
-	IconnedLink[] il = new IconnedLink[(backURL != null) ? 4 : 3];
+	IconnedLink[] il = new IconnedLink[(backURL != null) ? 5 : 4];
 	int x = 0;
 	if (backURL != null)
 		il[x++] = new IconnedLink(backURL, "images/back_arrow.gif", (backText != null) ? request.getParameter("backText") : "Back");
 	il[x++] = new IconnedLink("http://maps.gns.cri.nz/website/fred", "images/map.gif", "Interactive Map");
-	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=12500" + backStr, "images/map.gif", "Small Scale");
-	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=2500" + backStr, "images/map.gif", "Large Scale");
+	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=12500&Layer=3" + backStr, "images/map.gif", "Small Scale");
+	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=2500&Layer=2" + backStr, "images/map.gif", "Large Scale");
+	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=500&Layer=0" + backStr, "images/map.gif", "Orthophoto");
 	et.setButtons(il);
-
 	drawTop(out, et, request, response);
+	
 	drawEndNavigation(out);
 	%><p></p><p><%
 	
@@ -93,7 +97,7 @@
 						URL imsServer = new URL("http://maps.gns.cri.nz");
 						String service = "fred_nz";
 						String whereClause = "FR.SITE_VIEW.FEATURE_ID = " + featId;
-						int layerID = 6;
+						int layerID = 7;
 						SimpleMarkerSymbol sym = new SimpleMarkerSymbol();
 						sym.setWidth(20);
 						sym.setMarkerType("circle");
@@ -103,11 +107,15 @@
 						IMSMap map = new IMSMap(imsServer, service, width, height);
 						map.setSelectedFeatures(layerID, whereClause, true, sym);
 						map.zoomByDistance(distance * -1);
-						map.setLayerVisible(3, false);
-						map.setLayerVisible(1, true);
-						map.setLayerVisible(2, true);
-						map.setLayerVisible(6, false);
+						map.setLayerVisible(4, false);
+						map.setLayerVisible(lyr, true);
+						map.setLayerVisible(7, false);
 						%><img src="<%=map.getURL()%>" width="<%=width%>" height="<%=height%>" alt="FRED locality map" border="1" /><%
+						if (lyr == 0) {
+							%><p><table border="0" width="600"><tr><td>
+							Please Note: Orthophoto coverage for New Zealand is not complete.  If the above image has no background please try a different map type.
+							</td></tr></table></p><%
+						}
 						
 						//details
 						%><p><%
