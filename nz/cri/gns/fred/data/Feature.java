@@ -18,13 +18,9 @@ import nz.cri.gns.jsp.PageState;
 public class Feature implements FeatureConstants {
 
 	private FeatureData fd;
-	private PageState state;
-	private User user;
 	private boolean authenticated;
 
 	public Feature(int id, User user, PageState state, boolean forceRefresh) throws SQLException, IOException {
-		this.state = state;
-		this.user = user;
 		this.fd = FeatureData.getData(id, state, forceRefresh);
 		if (FREDUtils.isAllowedLocality(user, fd.getAsString(STATUS), fd.getAsString(FEATURE_ID), state)) {
 			authenticated = true;
