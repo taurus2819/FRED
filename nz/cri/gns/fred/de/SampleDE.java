@@ -726,8 +726,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		//Collectors
         PersonUtil personUtil = new PersonUtil(factory);
         try {
-        	System.out.println("Collectors parameter: " + request.getParameter("Coll"));
         	String[] collectors = request.getParameterValues("Coll");
+        	System.out.println("Collectors.length: " + collectors.length);
         	//This is to support the spreadsheet
         	if (collectors.length <= 1)
         		sample.setCollectors(FREDUtil.getPersons(request.getParameter("Coll"), personUtil, "Collectors", addIfNew));
