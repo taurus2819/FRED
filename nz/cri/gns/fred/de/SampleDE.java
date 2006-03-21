@@ -741,8 +741,17 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
 		//Strat name
 		sample.setStratUnit(request.getParameter("StratName"));
+		
 		//In place
-		sample.setInPlace(request.getParameter("InPlace"));
+		String inPlace = request.getParameter("InPlace");
+		if (inPlace.length() == 0)
+			sample.setInPlace(null);
+		else {
+			if (inPlace.equals("Yes") || inPlace.equals("No") || inPlace.equals("Almost") || inPlace.equals("Unknown"))
+				sample.setInPlace(inPlace);
+			else
+				error.add(new String[] {"In Place", inPlace + " is not valid. In Place must be either 'Yes', 'No', 'Almost' or 'Unknown'"});
+		}
 		
 		//Sent to
         String sentToParam = request.getParameter("SentTo").trim();
@@ -903,7 +912,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		//Column map
 		sample.setColumnMap(request.getParameter("ColMap"));
 		
-		//Dip...
+		//Dip
 		String dip = request.getParameter("Dip");
 		if (dip.length() == 0)
 			sample.setDip(null);
@@ -917,11 +926,16 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			error.add(new String[] {"Dip", dip + " is not valid.  Dip must be a whole number of degrees"});
 		}
 		
+		//Dip Direction
 		String dipDir = request.getParameter("DipDir");
 		if (dipDir.length() == 0)
 			sample.setDipDirection(null);
-		else
-			sample.setDipDirection(dipDir);
+		else {
+			if (dipDir.equals("N") || dipDir.equals("NE") || dipDir.equals("E") || dipDir.equals("SE") || dipDir.equals("S") || dipDir.equals("SW") || dipDir.equals("W") || dipDir.equals("NW"))
+				sample.setDipDirection(dipDir);
+			else
+				error.add(new String[] {"Dip Direction", dipDir + " is not valid. Dip Direction must be either 'N', 'NE', 'E', 'SE', 'S', 'SW', 'W' or 'SW'"});
+		}
 		
 		//Strike
 		String strike = request.getParameter("Strike");
@@ -940,8 +954,12 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		String facing = request.getParameter("Facing");
 		if (facing.length() == 0)
 			sample.setFacing(null);
-		else 
-			sample.setFacing(facing);
+		else {
+			if (facing.equals("Normal") || facing.equals("Overturned"))
+				sample.setFacing(facing);
+			else
+				error.add(new String[] {"Facing", facing + " is not valid. Facing must be either 'Normal' or 'Overturned'"});
+		}
 		
 		try {
 			sample.setPrimaryGrainSize(getGrainSize(request.getParameter("GrainSizeP")));
@@ -950,11 +968,16 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			error.add(new String[] {"Grain size", "Database problem: " + e.getMessage()});
 		}
 			
+		//Comparator Used
 		String gsComp = request.getParameter("GSComp");
 		if (gsComp.length() == 0)
 			sample.setComparatorUsed(null);
-		else
-			sample.setComparatorUsed(gsComp);
+		else {
+			if (gsComp.equals("Y") || gsComp.equals("N"))
+				sample.setComparatorUsed(gsComp);
+			else
+				error.add(new String[] {"Comparator Used", gsComp + " is not valid. Comparator Used must be either 'Y' or 'N'"});
+		}
 		
 		try {
 			sample.setBedThickness(getBeddingThickness(request.getParameter("BedThick")));
@@ -969,11 +992,17 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		} catch (StorageAccessException e) {
 			error.add(new String[] {"Lookups", "Database problem: " + e.getMessage()});
 		}
+		
+		//Wet/Dry
 		String wet = request.getParameter("Wet");
 		if (wet.length() == 0)
 			sample.setWet(null);
-		else
-			sample.setWet(wet);
+		else {
+			if (wet.equals("Wet") || wet.equals("Dry"))
+				sample.setWet(wet);
+			else
+				error.add(new String[] {"Wet/Dry", wet + " is not valid. Wet/Dry must be either 'Wet' or 'Dry'"});
+		}
 		
 		//Sed features
 		Set<SedimentaryFeature> sedFeatures = sample.getSedimentaryFeatures();
