@@ -213,9 +213,9 @@
 						%><input type="hidden" name="FeatID" value="<%=feature.getFeatureId()%>" /><%
 					}
 					if (backURL != null) {
-						%><input type="hidden" name="backURL" value="<%=URLEncoder.encode(backURL)%>" /><%
+						%><input type="hidden" name="backURL" value="<%=backURL%>" /><%
 						if (backText != null) {
-							%><input type="hidden" name="backText" value="<%=URLEncoder.encode(backText)%>" /><%
+							%><input type="hidden" name="backText" value="<%=backText%>" /><%
 						}
 					}
 					%><input type="hidden" name="ActionType" value="" />
@@ -249,7 +249,19 @@
 					%><table border="0" width="160">
 					<tr><td class="deHeading">Add to Folder</td></tr>
 					<tr><td>You can add this locality to one of your personal folders by selecting it from the list and clicking <i>Add</i>.</td></tr>
-					<form name="FolderForm" method="post" action="detail.jsp">
+					<form name="FolderForm" method="post" action="detail.jsp"><%
+					if (sample != null) {
+						%><input type="hidden" name="ID" value="<%=sample.getSampleId()%>" /><%
+					} else {
+						%><input type="hidden" name="FeatID" value="<%=feature.getFeatureId()%>" /><%
+					}
+					if (backURL != null) {
+						%><input type="hidden" name="backURL" value="<%=backURL%>" /><%
+						if (backText != null) {
+							%><input type="hidden" name="backText" value="<%=backText%>" /><%
+						}
+					}
+					%><input type="hidden" name="ActionType" value="AddtoFold" />
 					<tr><td>
 					<select name="FoldID">
 					<option value="-">-- Choose --</option><%
@@ -262,19 +274,7 @@
 					}
 					%></select>
 					</td></tr>
-					<tr><td style="text-align: right" class="heading"><a href="#" onClick="FolderForm.submit();">Add</a></td></tr><%
-					if (sample != null) {
-						%><input type="hidden" name="ID" value="<%=sample.getSampleId()%>" /><%
-					} else {
-						%><input type="hidden" name="FeatID" value="<%=feature.getFeatureId()%>" /><%
-					}
-					if (backURL != null) {
-						%><input type="hidden" name="backURL" value="<%=URLEncoder.encode(backURL)%>" /><%
-						if (backText != null) {
-							%><input type="hidden" name="backText" value="<%=URLEncoder.encode(backText)%>" /><%
-						}
-					}
-					%><input type="hidden" name="ActionType" value="AddtoFold" />
+					<tr><td style="text-align: right" class="heading"><a href="#" onClick="FolderForm.submit();">Add</a></td></tr>
 					</form>
 					</table><%
 					endDETable(pageContext);
@@ -294,9 +294,9 @@
 						%><input type="hidden" name="FeatID" value="<%=feature.getFeatureId()%>" /><%
 					}
 					if (backURL != null) {
-						%><input type="hidden" name="backURL" value="<%=URLEncoder.encode(backURL)%>" /><%
+						%><input type="hidden" name="backURL" value="<%=backURL%>" /><%
 						if (backText != null) {
-							%><input type="hidden" name="backText" value="<%=URLEncoder.encode(backText)%>" /><%
+							%><input type="hidden" name="backText" value="<%=backText%>" /><%
 						}
 					}
 					%><input type="hidden" name="AuthorChk" value="<%=authorChk%>" />
