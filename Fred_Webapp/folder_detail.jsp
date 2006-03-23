@@ -18,6 +18,7 @@
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
+%><%@page import="nz.cri.gns.db.DBUtils"
 %><%!
 	public String getName(HttpServletRequest request) {
 		try {
@@ -181,7 +182,11 @@
 				<td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 				<td style="color: #FF0000; text-align: left"><%
 				if (!status.equals(FREDConstants.APPROVED)) {
-					%><%=status%>&nbsp;&nbsp;</td>
+					%><%=status%>&nbsp;&nbsp;<%
+					if (status.equals(FREDConstants.REJECTED)) {
+						%><br /><div class="smalltext">Curator comments: <%=DBUtils.nvl(audit.getCuratorComments())%></div><%
+					}
+					%></td>
 					<td style="text-align: left"><%=(audit.getCreatedDate() == null) ? "" : FREDUtil.formatDateForOutput(audit.getCreatedDate())%></td><%
 				} else {
 					%></td><td></td><%
