@@ -340,7 +340,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         out.write("<td>Locality</td>\n");
 		out.write("<td>" + ((workingFolder != null) ? workingFolder.getFolderId() : "") + "</td>\n");
 		out.write("<td>" + feature.getAudit().getStatus() + "</td>\n");
-		out.write("<td>" + feature.getAudit().getCuratorComments() + "</td>\n");
+		out.write("<td>" + DBUtils.nvl(feature.getAudit().getCuratorComments()) + "</td>\n");
 		out.write("<td>" + ((feature.getFrNumber() != null) ? feature.getFrNumber().getFrNumber() : "") + "</td>\n");
 		out.write("<td>" + feature.getFeatureType() + "</td>\n");
 		out.write("<td>" + DBUtils.nvl(feature.getFeatureName()) + "</td>\n");
