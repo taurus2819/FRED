@@ -109,7 +109,7 @@
 	    	}
 		} catch (InsufficientPrivelegesException e) {
 			status = "AuthError";
-			message = "User not authorised";
+			message = "User not authorised for this operation";
 	    } catch (DataInputException e) {
 	    	status = "Error";
 			String[] error = (String[])e.getError().firstElement();
