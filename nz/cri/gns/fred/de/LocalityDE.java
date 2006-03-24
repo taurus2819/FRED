@@ -253,10 +253,10 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 							+ "</textarea></td></tr>\n");
 					out.println("<tr><td>&nbsp;</td></tr>");
 				}
-			//} else if (audit.getStatus().equals(FREDConstants.REJECTED)) {
-			//	template.addSub("isRejected", "yes");
-			//	if (audit.getCuratorComments() != null)
-			//		template.addSub("rejComm", audit.getCuratorComments());
+			} else if (audit.getStatus().equals(FREDConstants.REJECTED)) {
+				template.addSub("isRejected", "yes");
+				if (audit.getCuratorComments() != null)
+					template.addSub("rejComm", audit.getCuratorComments());
 			}
 			
 			//Registration area combo box
