@@ -58,6 +58,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	private User user;
 	private Sample sample;
 	private Sample copySample;
+	
+	private boolean isAllowedSave = false;
 	private boolean isAllowedSubmit = false;
 
 	private boolean outcropSample = false;
@@ -89,13 +91,16 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		
 		FolderUtil folderUtil = new FolderUtil(factory);
 		
-		//check status for editing
-		if (!sampleUtil.isAllowedEditSample(user, sample, folderUtil.getUserFolder(folderId, user)))
-			throw new InsufficientPrivelegesException("Insufficient rights to create sample");
+		//check status
+		if (outcropSample || !sampleUtil.isAllowedReadSample(user, sample))
+			throw new InsufficientPrivelegesException("Insufficient rights to view sample");
 		if (sample.getAudit().getFolder() != null)
 			workingFolder = folderUtil.getUserFolder(sample.getAudit().getFolder().getFolderId().intValue(), user);
 		
-		isAllowedSubmit = sampleUtil.isAllowedSubmitSample(user, sample, workingFolder);
+		try {
+			isAllowedSave = outcropSample || sampleUtil.isAllowedEditSample(user, sample, workingFolder);
+			isAllowedSubmit = outcropSample || sampleUtil.isAllowedSubmitSample(user, sample, workingFolder);
+		} catch (Exception e) {}
 	}
 
 	public void copyFrom(int sampleId) throws StorageAccessException  {
@@ -579,8 +584,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 	
 	public int save(int dataOriginId) throws StorageAccessException, InsufficientPrivelegesException {
-		if (!isAllowedSubmit)
-			throw new InsufficientPrivelegesException();
+		if (!isAllowedSave)
+			throw new InsufficientPrivelegesException("Insufficient rights to save this sample");
 
 		if (sample.getSampleId() == null && !outcropSample) {
 			//It's an insert
@@ -598,8 +603,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 
 	public int submit(int dataOriginId) throws InsufficientPrivelegesException, DataInputException, StorageAccessException {
-		if (!outcropSample && (!isAllowedSubmit || sample.getAudit().getStatus().equals(FREDConstants.WAITING)))
-			throw new InsufficientPrivelegesException();
+		if (sample.getAudit().getStatus().equals(FREDConstants.WAITING))
+			throw new InsufficientPrivelegesException("Sample already submitted and waiting approval");
+		if (!isAllowedSubmit)
+			throw new InsufficientPrivelegesException("Insufficient rights to submit this sample");
 		if (sample.getCollectors() == null || sample.getCollectors().size() == 0
 				|| sample.getCollectionDate() == null 
 				|| sample.getInPlace() == null)
@@ -613,12 +620,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 
 
-	public void delete() throws InsufficientPrivelegesException, StorageAccessException {
-		if (sample.getSampleId() != null && !sampleUtil.isAllowedDeleteSample(user, sample, workingFolder))
-			throw new InsufficientPrivelegesException();
-		sampleUtil.delete(sample);
-	}
-	
 	public void makeNavPanelHTML(Writer out) throws IOException {
 /*		out.write("<tr><td colspan='2' align='center'><img src='images/drill.gif' height='20' width='20' /></td></tr>");
 		out.write("<tr><td colspan='2' align='center' class='heading'>Sample</td></tr>\n");

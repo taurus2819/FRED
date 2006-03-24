@@ -70,7 +70,8 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	private Datum.Coordinate coord;
 	private Datum datum;
 	
-	private boolean isAllowedSubmit;
+	private boolean isAllowedSave = false;
+	private boolean isAllowedSubmit = false;
 	
 	public LocalityDE(User user, int folderID, String featureType, DAOFactory factory, ContentProvider content)	throws StorageAccessException, InsufficientPrivelegesException {
 		initialise((featureUtil = new FeatureUtil(factory)).createFeature(folderID, featureType, user), folderID, user, factory, content);
@@ -96,13 +97,16 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		
 		FolderUtil folderUtil = new FolderUtil(factory);
 		
-		//check status for editing
-		if (!featureUtil.isAllowedEditFeature(user, feature, folderUtil.getUserFolder(currentFolderID, user)))
-			throw new InsufficientPrivelegesException("Insufficient rights to create locality");
+		//check status
+		if (!featureUtil.isAllowedReadFeature(user, feature))
+			throw new InsufficientPrivelegesException("Insufficient rights to view this locality");
 		if (feature.getAudit().getFolder() != null)
 			workingFolder = folderUtil.getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), user);
 		
-		isAllowedSubmit = featureUtil.isAllowedSubmitFeature(user, feature, workingFolder);
+		try {
+			isAllowedSave = featureUtil.isAllowedEditFeature(user, feature, workingFolder);
+			isAllowedSubmit = featureUtil.isAllowedSubmitFeature(user, feature, workingFolder);
+		} catch (Exception e) {}
 	}
 
 	public void copyFrom(int featureID) throws InsufficientPrivelegesException, StorageAccessException {
@@ -500,6 +504,8 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
     }
 	
 	public int save(int dataOriginId) throws SQLException, IOException, StorageAccessException, InsufficientPrivelegesException {
+		if (!isAllowedSave)
+			throw new InsufficientPrivelegesException("Insufficient rights to save this locality");
 		//Check the site with the site DB
 		if (site != null) {
 			site.key = null;
@@ -519,8 +525,10 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	}
 	
 	public int submit(int dataOriginId) throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException, DataInputException {
-		if (feature.getAudit().getStatus().equals(FREDConstants.WAITING) || !isAllowedSubmit)
-			throw new InsufficientPrivelegesException();
+		if (feature.getAudit().getStatus().equals(FREDConstants.WAITING))
+			throw new InsufficientPrivelegesException("Locality already submitted and waiting approval");
+		if (!isAllowedSubmit)
+			throw new InsufficientPrivelegesException("Insufficient rights to submit this locality");
 		if (feature.getFeatureType() == null || feature.getSiteId() == null || feature.getRegistrationArea() == null)
 			throw new MandatoryFieldsMissingException();
 
@@ -532,34 +540,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		return feature.getFeatureId().intValue();
 	}
 
-	public static void revoke(nz.cri.gns.fred.data.Feature feature, User user, PageState state) throws SQLException, IOException, InsufficientPrivelegesException {
-		if (!FREDUtils.isAllowedRevokeLocality(user, feature.getAsString(nz.cri.gns.fred.data.Feature.STATUS), String.valueOf(feature.getFeatureID()), state))
-			throw new InsufficientPrivelegesException();
-		DBConnection conn = FREDUtils.getFREDConnection(state);
-		QueryDescriptor qd = new QueryDescriptor("audit_table");
-		qd.addQueryColumn("status", Types.VARCHAR, nz.cri.gns.fred.data.Audit.STATUS_WORKING);
-		qd.addQueryColumn("submitted_by_id", Types.NUMERIC, null);
-		qd.addQueryColumn("submitted_date", Types.DATE, null);
-		qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getAsInt(nz.cri.gns.fred.data.Feature.AUDIT_ID)));
-		DBUtils.doUpdate(qd, "audit_id = ?", conn);
-		conn.releaseStatement();
-		feature = new nz.cri.gns.fred.data.Feature(feature.getFeatureID(), user, state, true);
-		refreshSamples(feature, user, state);
-		new Folder(feature.getAsInt(nz.cri.gns.fred.data.Feature.MASTERFILE_ID), user, state, true);
-	}
-
-	public void approve(FrNumber frNum, String comments) throws SQLException, IOException, InsufficientPrivelegesException, StorageAccessException {
-		featureUtil.approveFeature(feature, frNum, comments, user);
-	}
-	
-	public void reject(String comments) throws SQLException, IOException, InsufficientPrivelegesException, StorageAccessException {
-		featureUtil.rejectLocality(feature, comments, user);
-	}
-
-	public void delete() throws IOException, SQLException, InsufficientPrivelegesException, StorageAccessException {
-		featureUtil.deleteFeature(feature, user);
-	}
-	
 	private static void refreshSamples(nz.cri.gns.fred.data.Feature feature, User user, PageState state) throws InsufficientPrivelegesException, SQLException, IOException {
 		if (feature.getSampleCount() > 0) {
 			for (Iterator i = feature.getAsVector(nz.cri.gns.fred.data.Feature.SAMPLES).iterator(); i.hasNext(); ) {
