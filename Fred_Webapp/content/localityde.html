@@ -1,6 +1,7 @@
 {@startDETable}
 <table border="0" style="border: none; width: 550px; text-align: left" width="550" cellspacing='0' cellpadding='2'>
 <tr><td colspan="3" class="deHeading">Administrative information</td></tr><tr><td style="text-align: left">
+{@@isRejected:<tr><td class="heading" colspan="3" style="color: #FF0000">This locality has been rejected and needs to be edited and re-submitted.  Comments from the Masterfile Curator: @}{@rejComm}{@@isRejected</td></tr>@}
 {@@approved:<tr><td class="heading" colspan="3" style="color: #FF0000">You are editing an approved locality.  Previous edits are shown below.  Please enter comments on the edits you are making in the <em>Edit Comments</em> box below</td></tr>@}
 {@approvedInformation}
 {@@isNewBacklog:<tr><td class="heading">FR Number</td><td></td><td><input type="text" name="FRNumber" value="" /></td></tr>@}

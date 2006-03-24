@@ -212,7 +212,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			if (workComm != null)
 				template.addSub("workingComments", workComm);
 			
-			//Approved?
+			//Approved/Rejected
 			Audit audit = feature.getAudit();
 			if (audit.getStatus().equals(FREDConstants.APPROVED)) {
 				template.addSub("approved", "yes");
@@ -253,6 +253,10 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 							+ "</textarea></td></tr>\n");
 					out.write("<tr><td>&nbsp;</td></tr>");
 				}
+			} else if (audit.getStatus().equals(FREDConstants.REJECTED)) {
+				template.addSub("isRejected", "yes");
+				if (audit.getCuratorComments() != null)
+					template.addSub("rejComm", audit.getCuratorComments());
 			}
 			
 			//Registration area combo box
