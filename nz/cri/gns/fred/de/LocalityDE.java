@@ -524,9 +524,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		return feature.getFeatureId();		
 	}
 	
-	public int submit(int dataOriginId) throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException, DataInputException {
+	public int submit(int dataOriginId) throws InsufficientPrivelegesException, SQLException, IOException, StorageAccessException, DataInputException {
 		if (feature.getAudit().getStatus().equals(FREDConstants.WAITING))
-			throw new InsufficientPrivelegesException("Locality already submitted and waiting approval");
+			throw new DataInputException("Locality", "Locality already submitted and waiting approval");
 		if (!isAllowedSubmit)
 			throw new InsufficientPrivelegesException("Insufficient rights to submit this locality");
 		if (feature.getFeatureType() == null || feature.getSiteId() == null || feature.getRegistrationArea() == null)

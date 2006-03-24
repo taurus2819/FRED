@@ -603,8 +603,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 
 	public int submit(int dataOriginId) throws InsufficientPrivelegesException, DataInputException, StorageAccessException {
-		if (sample.getAudit().getStatus().equals(FREDConstants.WAITING))
-			throw new InsufficientPrivelegesException("Sample already submitted and waiting approval");
 		if (!isAllowedSubmit)
 			throw new InsufficientPrivelegesException("Insufficient rights to submit this sample");
 		if (sample.getCollectors() == null || sample.getCollectors().size() == 0
