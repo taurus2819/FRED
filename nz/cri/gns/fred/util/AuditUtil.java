@@ -85,4 +85,17 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		return auditDAO.getDataOrigin(dataOriginId);
 	}
     
+	public static String getStatusHTMLOutputStyle(String status, String[] extraStyles) {
+		StringBuffer style = new StringBuffer("style=\"");
+		for (int i = 0; i < extraStyles.length; i++)
+			style.append(extraStyles[i]).append("; ");
+		if (status.equals(FREDConstants.WORKING))
+			return style.append("color: #00FF00\"").toString();
+		if (status.equals(FREDConstants.WAITING))
+			return style.append("color: #FFFF00\"").toString();
+		if (status.equals(FREDConstants.REJECTED))
+			return style.append("color: #FF0000\"").toString();
+		return style.append("\"").toString();
+	}
+	
 }

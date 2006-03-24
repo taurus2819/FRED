@@ -15,6 +15,7 @@
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.model.FrNumber"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
+%><%@page import="nz.cri.gns.fred.util.AuditUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
@@ -180,18 +181,13 @@
 				}
 				%></td>
 				<td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
-				<td style="color: #FF0000; text-align: left"><%
-				if (!status.equals(FREDConstants.APPROVED)) {
-					%><%=status%>&nbsp;&nbsp;<%
-					if (status.equals(FREDConstants.REJECTED)) {
-						%><br /><div class="smalltext">Curator comments: <%=DBUtils.nvl(audit.getCuratorComments())%></div><%
-					}
-					%></td>
-					<td style="text-align: left"><%=(audit.getCreatedDate() == null) ? "" : FREDUtil.formatDateForOutput(audit.getCreatedDate())%></td><%
-				} else {
-					%></td><td></td><%
+				<td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {"text-align: left"})%>><%=status%>&nbsp;&nbsp;<%
+				if (status.equals(FREDConstants.REJECTED)) {
+					%><br /><div class="smalltext">Curator comments: <%=DBUtils.nvl(audit.getCuratorComments())%></div><%
 				}
-				%><td style="text-align: left"><%
+				%></td>
+				<td style="text-align: left"><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></td>
+				<td style="text-align: left"><%
 				if (featureUtil.isAllowedEditFeature(user, feature, folder)) {
 					%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a>&nbsp;<%
 				}
