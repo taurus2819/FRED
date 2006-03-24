@@ -248,15 +248,15 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 							out.write("<tr><td>" + editName + "</td><td class=\"smalltext\">" + editDate + "</td><td>" + DBUtils.nvl(ae.getComments()) + "</td></tr>");
 						}
 					}
-					out.write("<tr><td class=\"heading\" colspan=\"2\">Edit Comments</td><td><textarea name=\"EditComm\" rows=\"3\" cols=\"40\">"
+					out.println("<tr><td class=\"heading\" colspan=\"2\">Edit Comments</td><td><textarea name=\"EditComm\" rows=\"3\" cols=\"40\">"
 							+ DBUtils.nvl(editComments)
 							+ "</textarea></td></tr>\n");
-					out.write("<tr><td>&nbsp;</td></tr>");
+					out.println("<tr><td>&nbsp;</td></tr>");
 				}
-			} else if (audit.getStatus().equals(FREDConstants.REJECTED)) {
-				template.addSub("isRejected", "yes");
-				if (audit.getCuratorComments() != null)
-					template.addSub("rejComm", audit.getCuratorComments());
+			//} else if (audit.getStatus().equals(FREDConstants.REJECTED)) {
+			//	template.addSub("isRejected", "yes");
+			//	if (audit.getCuratorComments() != null)
+			//		template.addSub("rejComm", audit.getCuratorComments());
 			}
 			
 			//Registration area combo box
