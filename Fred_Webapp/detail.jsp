@@ -30,6 +30,7 @@
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.util.AuditUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"
@@ -170,8 +171,12 @@
 			startDETable(pageContext);
 			%><table border="0" width="160">
 			<tr><td colspan="2" class="deHeading">Audit Details</td></tr><%
-			if (!audit.getStatus().equals(FREDConstants.APPROVED)) {
-				%><tr><td class="smallheading">Status:&nbsp;</td><td class="smalltext"><%=audit.getStatus()%></td></tr><%
+			String status = audit.getStatus();
+			%><tr><td class="smallheading">Status:&nbsp;</td>
+			<td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {})%> class="smalltext"><%=status%>&nbsp;&nbsp;</td></tr><%
+			if (status.equals(FREDConstants.REJECTED)) {
+				%><tr><td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {})%> class="smallheading">Curator Comments:&nbsp;&nbsp;</td>
+				<td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {})%> class="smalltext"><%=DBUtils.nvl(audit.getCuratorComments())%></td></tr><%
 			}
 			%><tr><td class="smallheading">Created:&nbsp;</td>
 			<td class="smalltext"><%=((audit.getCreatedById() != null) ? FREDUtil.getUserName(audit.getCreatedById().intValue()) + "<br />" : "")%>
