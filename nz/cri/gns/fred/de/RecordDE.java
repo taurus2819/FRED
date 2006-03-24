@@ -46,7 +46,10 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
     protected RecordUtil recordUtil;
     protected ContentProvider provider;
     protected UserFolder workingFolder;
-    protected boolean isAllowedSubmit;
+    
+    protected boolean isAllowedSave = false;
+    protected boolean isAllowedSubmit = false;
+    
     protected DAOFactory factory;
 
     protected RecordDE(User user, Sample sample, int folderID, String recordType, DAOFactory factory, ContentProvider content)   throws StorageAccessException, InsufficientPrivelegesException {
@@ -77,19 +80,16 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         
         FolderUtil folderUtil = new FolderUtil(factory);
         
-        //check status for editing
-        if (!recordUtil.isAllowedEditRecord(user, record, folderUtil.getUserFolder(folderId, user)))
-            throw new InsufficientPrivelegesException("Insufficient rights to edit record");
+        //check status
+        if (!recordUtil.isAllowedReadRecord(user, record))
+            throw new InsufficientPrivelegesException("Insufficient rights to view record");
         if (record.getAudit().getFolder() != null)
-            workingFolder = folderUtil.getUserFolder(record.getAudit().getFolder().getFolderId().intValue(), user);
-        else if (record.getAudit().getStatus().equals(FREDConstants.APPROVED)) {
-            if (recordUtil.hasMasterfileEditRights(user, record)) {
-                workingFolder = folderUtil.getUserFolder(record.getSample().getFeature().getMasterFile().getFolderId(), user);
-            } else {
-                throw new InsufficientPrivelegesException("You do not have access to edit this record");
-            }                
-        }
-        isAllowedSubmit = recordUtil.isAllowedSubmitRecord(user, record, workingFolder);
+            workingFolder = folderUtil.getUserFolder(record.getAudit().getFolder().getFolderId().intValue(), user);               
+        
+        try {
+        	isAllowedSave = recordUtil.isAllowedEditRecord(user, record, workingFolder);
+        	isAllowedSubmit = recordUtil.isAllowedSubmitRecord(user, record, workingFolder);
+        } catch (Exception e) {}
    }
 
 	public void copyFrom(int recordId) throws InsufficientPrivelegesException, StorageAccessException {
@@ -214,9 +214,9 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
     }
 
 	public int save(int dataOriginId) throws InsufficientPrivelegesException, StorageAccessException {
-		if (!workingFolder.isAllowedCreateLocalities()) 
-            throw new InsufficientPrivelegesException("You do not have the ability to save a record in this folder");
-        
+		if (!isAllowedSave)
+			throw new InsufficientPrivelegesException("Insufficient rights to save this record");
+
         if (record.getRecordId() == null) {
             //Save
             Audit audit = record.getAudit();
@@ -234,8 +234,8 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
     }
 	
 	public int submit(int dataOriginId) throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException {
-		if (!workingFolder.isAllowedSubmitLocalities())
-			throw new InsufficientPrivelegesException("You do not have permission to submit a record from this folder");
+		if (!isAllowedSubmit)
+			throw new InsufficientPrivelegesException("Insufficient rights to submit this record");
 		checkMandatoryFields();
 		int recordID = save(dataOriginId);
         FREDUtil.submit(record, user, recordUtil, false);
@@ -244,12 +244,6 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 	}
 	
 	protected void checkMandatoryFields() throws DataInputException {
-	}
-	
-	public void delete() throws IOException, SQLException, InsufficientPrivelegesException, StorageAccessException {
-		if (record != null) {
-            recordUtil.delete(record);
-		}
 	}
 	
 	public int getWorkingFolderID() {
