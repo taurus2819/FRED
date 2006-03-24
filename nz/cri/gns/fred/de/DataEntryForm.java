@@ -34,8 +34,6 @@ public interface DataEntryForm {
 
 	public int submit(int dataOriginId) throws SQLException, IOException, InsufficientPrivelegesException, DataInputException, StorageAccessException;
 	
-	public void delete() throws IOException, SQLException, InsufficientPrivelegesException, StorageAccessException;
-	
 	public int getWorkingFolderID();
 
 	/**
