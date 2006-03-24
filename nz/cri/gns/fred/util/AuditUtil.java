@@ -92,7 +92,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		if (status.equals(FREDConstants.WORKING))
 			return style.append("color: #00FF00\"").toString();
 		if (status.equals(FREDConstants.WAITING))
-			return style.append("color: #FFFF00\"").toString();
+			return style.append("color: #FF9900\"").toString();
 		if (status.equals(FREDConstants.REJECTED))
 			return style.append("color: #FF0000\"").toString();
 		return style.append("\"").toString();
