@@ -605,9 +605,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	public int submit(int dataOriginId) throws InsufficientPrivelegesException, DataInputException, StorageAccessException {
 		if (!isAllowedSubmit)
 			throw new InsufficientPrivelegesException("Insufficient rights to submit this sample");
-		if (sample.getCollectors() == null || sample.getCollectors().size() == 0
-				|| sample.getCollectionDate() == null 
-				|| sample.getInPlace() == null)
+		if (FREDUtil.isEmpty(sample.getCollectors()) || FREDUtil.isEmpty(sample.getSentTos())
+				|| sample.getCollectionDate() == null || sample.getInPlace() == null)
 			throw new MandatoryFieldsMissingException();
 		save(dataOriginId);
 		if (!outcropSample) {

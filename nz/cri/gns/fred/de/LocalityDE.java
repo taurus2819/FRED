@@ -533,8 +533,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			throw new DataInputException("Locality", "Locality already submitted and waiting approval");
 		if (!isAllowedSubmit)
 			throw new InsufficientPrivelegesException("Insufficient rights to submit this locality");
-		if (feature.getFeatureType() == null || feature.getSiteId() == null || feature.getRegistrationArea() == null)
-			throw new MandatoryFieldsMissingException();
+		checkMandatoryFields();
 
 		save(dataOriginId);
 		
@@ -544,13 +543,20 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		return feature.getFeatureId().intValue();
 	}
 
+	protected void checkMandatoryFields() throws DataInputException {
+		if (feature.getFeatureType() == null || feature.getRegistrationArea() == null || feature.getSiteId() == null || feature.getLocality() == null)
+			throw new MandatoryFieldsMissingException();
+	}
+	
+	/*
+	 * Not used??
 	private static void refreshSamples(nz.cri.gns.fred.data.Feature feature, User user, PageState state) throws InsufficientPrivelegesException, SQLException, IOException {
 		if (feature.getSampleCount() > 0) {
 			for (Iterator i = feature.getAsVector(nz.cri.gns.fred.data.Feature.SAMPLES).iterator(); i.hasNext(); ) {
 				new nz.cri.gns.fred.data.Sample(((Integer) i.next()).intValue(), user, state, true);
 			}
 		}
-	}
+	} */
 
 	public int getWorkingFolderID() {
 		if (workingFolder != null)
