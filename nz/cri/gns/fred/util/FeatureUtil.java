@@ -811,7 +811,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		String recollectionNumber;
 		Integer serialNumber;
 		if (frNumStr.indexOf("/f") > 0) {
-			String mapSheet = frNumStr.substring(0, frNumStr.indexOf("/f"));
+			String mapSheet = frNumStr.substring(0, frNumStr.indexOf("/f")).toUpperCase();
 			String num = frNumStr.substring(frNumStr.indexOf("/f") + 2);
 			try {
 				serialNumber = new Integer(num);
