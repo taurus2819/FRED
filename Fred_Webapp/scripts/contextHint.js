@@ -96,7 +96,7 @@ this.unHighlightHint = function(hint) {
 	if (hint >= 0) {
 		oldObj = document.getElementById(this.key + "Hint" + hint);
 		oldObj.style.background = ((hint % 2) == 0) ? "white" : "#eeeeee";
-		oldObj.style.color = "black";
+		oldObj.style.color = this.unhighlightColor;
 	}
 };
 
@@ -125,6 +125,19 @@ this.highlightUp = function() {
 		
 	this.highlightHint(this.selectedHint);
 };
+
+this.highlightMouse = function(index) {
+	this.unHighlightHint(this.selectedHint);
+	
+	this.selectedHint = index;
+	
+	this.highlightHint(this.selectedHint);
+}
+
+this.clearHighlight = function(index) {
+	this.unHighlightHint(index);
+	this.selectedIndex = -1;
+}
 
 this.updateFromKeyEvent = function() {
 	this.updateField(document.getElementById(this.key + "Hint" + this.selectedHint).hintValue);
@@ -167,7 +180,10 @@ this.createAndShowTable = function(xml) {
 		cell.style.whiteSpace = "nowrap";
 		cell.style.cursor = "default";
 		eval("cell.onclick = function() {getContextHint('" + this.key + "').updateField(\"" + hint + "\");}");
+		eval("cell.onmouseover = function() {getContextHint('" + this.key + "').highlightMouse(" + i + ");}");
+		eval("cell.onmouseout = function() {getContextHint('" + this.key + "').clearHighlight(" + i + ");}");
 		this.hintDiv.appendChild(cell);
+		this.unhighlightColor = cell.style.color;
 	}
 	//Reset the selected settings
 	this.selectedHint = -1;
