@@ -238,7 +238,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 			throw new InsufficientPrivelegesException("Insufficient rights to submit this record");
 		checkMandatoryFields();
 		int recordID = save(dataOriginId);
-        FREDUtil.submit(record, user, recordUtil, false);
+        recordUtil.submitRecord(record, workingFolder, user);
 		//change status
 		return recordID;
 	}

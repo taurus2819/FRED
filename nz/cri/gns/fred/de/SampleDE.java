@@ -610,7 +610,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			throw new MandatoryFieldsMissingException();
 		save(dataOriginId);
 		if (!outcropSample) {
-			FREDUtil.submit(sample, user, sampleUtil, false);
+			sampleUtil.submitSample(sample, workingFolder, user);
 		}
 		
 		return sample.getSampleId().intValue();
