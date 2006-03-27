@@ -604,10 +604,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
 	public int submit(int dataOriginId) throws InsufficientPrivelegesException, DataInputException, StorageAccessException {
 		save(dataOriginId);
-		if (!outcropSample) {
-			sampleUtil.submitSample(sample, workingFolder, user);
-		}
-		
+		sampleUtil.submitSample(sample, workingFolder, user);
 		return sample.getSampleId().intValue();
 	}
 
