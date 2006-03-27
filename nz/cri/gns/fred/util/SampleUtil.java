@@ -274,6 +274,15 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			audit.setWorkingComments(null);
 			audit.setFolder(null);
 			sampleDAO.update(audit);
+			
+			//explicity add feature to folder.
+			try {
+				Feature feature = sample.getFeature();
+				feature.getFolders().add(audit.getFolder());
+				factory.getFeatureDAO().update(feature);
+			} catch (Exception e) {
+			}
+			
 		}
 	}
 	

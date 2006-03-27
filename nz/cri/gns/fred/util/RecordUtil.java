@@ -16,6 +16,7 @@ import nz.cri.gns.fred.dao.RecordDAO;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.FREDConstants;
+import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.Paleontology;
@@ -110,6 +111,15 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		audit.setSubmittedDate(new Date());
 		audit.setWorkingComments(null);
 		audit.setFolder(null);
+		
+		//explicity add feature to folder.
+		try {
+			Feature feature = record.getSample().getFeature();
+			feature.getFolders().add(audit.getFolder());
+			factory.getFeatureDAO().update(feature);
+		} catch (Exception e) {
+		}
+		
 		recordDAO.update(audit);
 	}
 
