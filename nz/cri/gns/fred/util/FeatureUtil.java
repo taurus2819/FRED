@@ -334,10 +334,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	public void submitFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
-		if (!folder.isAllowedSubmitLocalities())
+		if (!isAllowedSubmitFeature(user, feature, folder))
 			throw new InsufficientPrivelegesException();
 
-		if (feature.getFeatureType() == null || feature.getSiteId() == null || feature.getRegistrationArea() == null)
+		if (feature.getFeatureType() == null || feature.getRegistrationArea() == null
+				|| feature.getSiteId() == null || feature.getLocality() == null)
 			throw new MandatoryFieldsMissingException();
 
 		Audit audit = feature.getAudit();
@@ -358,7 +359,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 
 	public void revokeFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
-		if (!folder.isAllowedSubmitLocalities())
+		if (!isAllowedRevokeFeature(user, feature, folder))
 			throw new InsufficientPrivelegesException();
 
 		Audit audit = feature.getAudit();
@@ -602,20 +603,20 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return folder.isAllowedEditLocalities();
 	}
 
-	public boolean isAllowedSubmitFeature(User user, Feature feature, UserFolder folder) {
+	public boolean isAllowedSubmitFeature(UserAccount user, Feature feature, UserFolder folder) {
 		String status = feature.getAudit().getStatus();
 		if (status.equals(FREDConstants.WAITING) || status.equals(FREDConstants.APPROVED))
 			return false;
 		return folder.isAllowedSubmitLocalities();
 	}
 	
-	public boolean isAllowedRevokeFeature(User user, Feature feature, UserFolder folder) {
+	public boolean isAllowedRevokeFeature(UserAccount user, Feature feature, UserFolder folder) {
 		if (!feature.getAudit().getStatus().equals(FREDConstants.WAITING))
 			return false;
 		return folder.isAllowedSubmitLocalities();		
 	}
 	
-	public boolean isAllowedDeleteFeature(User user, Feature feature, UserFolder userFolder) throws StorageAccessException {
+	public boolean isAllowedDeleteFeature(UserAccount user, Feature feature, UserFolder userFolder) throws StorageAccessException {
 		Audit audit = feature.getAudit();
 		if (audit.getStatus().equals(APPROVED))
 			return false;

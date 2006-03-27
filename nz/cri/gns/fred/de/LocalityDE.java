@@ -149,7 +149,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		} catch (StorageAccessException e) {
 			throw new DataInputException("Registration Area", "Invalid registration area code given");
 		}
-		
 	}
 
 	public List<IconnedLink> getNavigation() {
@@ -529,23 +528,12 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	}
 	
 	public int submit(int dataOriginId) throws InsufficientPrivelegesException, SQLException, IOException, StorageAccessException, DataInputException {
-		if (feature.getAudit().getStatus().equals(FREDConstants.WAITING))
-			throw new DataInputException("Locality", "Locality already submitted and waiting approval");
-		if (!isAllowedSubmit)
-			throw new InsufficientPrivelegesException("Insufficient rights to submit this locality");
-		checkMandatoryFields();
-
 		save(dataOriginId);
 		
 		//change status and set Masterfile
 		featureUtil.submitFeature(feature, workingFolder, user);
 		
 		return feature.getFeatureId().intValue();
-	}
-
-	protected void checkMandatoryFields() throws DataInputException {
-		if (feature.getFeatureType() == null || feature.getRegistrationArea() == null || feature.getSiteId() == null || feature.getLocality() == null)
-			throw new MandatoryFieldsMissingException();
 	}
 	
 	/*

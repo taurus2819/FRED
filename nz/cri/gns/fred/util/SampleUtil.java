@@ -263,9 +263,10 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public void submitSample(Sample sample, UserFolder folder, UserAccount user) throws DataInputException, InsufficientPrivelegesException, StorageAccessException {
-		if (!folder.isAllowedSubmitLocalities() || sample.getAudit().getStatus().equals(WAITING))
+		if (!isAllowedSubmitSample(user, sample, folder))
 			throw new InsufficientPrivelegesException();
-		if (sample.getCollectors() == null || sample.getCollectors().size() == 0 || sample.getCollectionDate() == null || sample.getInPlace() == null)
+		if (FREDUtil.isEmpty(sample.getCollectors()) || FREDUtil.isEmpty(sample.getSentTos())
+				|| sample.getCollectionDate() == null || sample.getInPlace() == null)
 			throw new MandatoryFieldsMissingException();
 		
 		//Update the audit log, so long as this isn't an outcrop
@@ -336,7 +337,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return folder.isAllowedDeleteLocalities();
 	}
 	
-	public boolean isAllowedEditSample(User user, Sample sample, UserFolder userFolder) throws StorageAccessException {
+	public boolean isAllowedEditSample(UserAccount user, Sample sample, UserFolder userFolder) throws StorageAccessException {
 		Audit audit = sample.getAudit();
 		if (audit.getStatus().equals(APPROVED))
 			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_EDIT_RIGHT, folderDAO) ||
@@ -347,7 +348,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return userFolder.isAllowedEditLocalities();
 	}
 	
-	public boolean isAllowedDeleteSample(User user, Sample sample, UserFolder userFolder) throws StorageAccessException {
+	public boolean isAllowedDeleteSample(UserAccount user, Sample sample, UserFolder userFolder) throws StorageAccessException {
 		Audit audit = sample.getAudit();
 		if (audit.getStatus().equals(APPROVED))
 			return false;
@@ -357,7 +358,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return userFolder.isAllowedDeleteLocalities();
 	}
 	
-	public boolean isAllowedSubmitSample(User user, Sample sample, UserFolder userFolder) throws NumberFormatException, StorageAccessException {
+	public boolean isAllowedSubmitSample(UserAccount user, Sample sample, UserFolder userFolder) throws NumberFormatException, StorageAccessException {
 		Audit audit = sample.getAudit();
 		if (audit.getStatus().equals(APPROVED))
 			return false;	
