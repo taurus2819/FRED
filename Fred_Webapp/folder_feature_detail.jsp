@@ -65,7 +65,7 @@
 		UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("FoldID")), user);
 	
 		if (!featureUtil.folderContainsFeature(folder, feature) || !folder.isAllowedReadLocalities()) {
-			response.sendError(HttpServletResponse.SC_FORBIDDEN);
+			response.sendRedirect("folder_detail.jsp?FoldID=" + folder.getFolderId() + "&q=" + Math.random());
 			return;
 		}
 		
