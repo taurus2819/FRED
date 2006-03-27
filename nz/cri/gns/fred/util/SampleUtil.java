@@ -268,12 +268,6 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		//Update the audit log, so long as this isn't an outcrop
 		if (!sample.getFeature().getFeatureType().equals(OUTCROP)) {
 			Audit audit = sample.getAudit();
-			audit.setStatus(APPROVED);		//Samples don't need approval
-			audit.setSubmittedById(new Integer(user.getId()));
-			audit.setSubmittedDate(new Date());
-			audit.setWorkingComments(null);
-			audit.setFolder(null);
-			sampleDAO.update(audit);
 			
 			//explicity add feature to folder.
 			try {
@@ -283,6 +277,12 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			} catch (Exception e) {
 			}
 			
+			audit.setStatus(APPROVED);		//Samples don't need approval
+			audit.setSubmittedById(new Integer(user.getId()));
+			audit.setSubmittedDate(new Date());
+			audit.setWorkingComments(null);
+			audit.setFolder(null);
+			sampleDAO.update(audit);
 		}
 	}
 	

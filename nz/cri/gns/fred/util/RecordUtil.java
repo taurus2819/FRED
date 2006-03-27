@@ -106,11 +106,6 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		
 		Record record = recordDAO.getRecord(recordId);
 		Audit audit = record.getAudit();
-		audit.setStatus(APPROVED);		//Records don't need approval
-		audit.setSubmittedById(new Integer(user.getId()));
-		audit.setSubmittedDate(new Date());
-		audit.setWorkingComments(null);
-		audit.setFolder(null);
 		
 		//explicity add feature to folder.
 		try {
@@ -120,7 +115,12 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		} catch (Exception e) {
 		}
 		
-		recordDAO.update(audit);
+		audit.setStatus(APPROVED);		//Records don't need approval
+		audit.setSubmittedById(new Integer(user.getId()));
+		audit.setSubmittedDate(new Date());
+		audit.setWorkingComments(null);
+		audit.setFolder(null);
+		recordDAO.update(audit);	
 	}
 
 	
