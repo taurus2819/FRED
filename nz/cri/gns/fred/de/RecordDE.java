@@ -239,7 +239,6 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 		checkMandatoryFields();
 		int recordID = save(dataOriginId);
         recordUtil.submitRecord(record, workingFolder, user);
-		//change status
 		return recordID;
 	}
 	
