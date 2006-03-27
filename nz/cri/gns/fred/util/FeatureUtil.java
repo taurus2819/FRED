@@ -341,6 +341,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				|| feature.getSiteId() == null || feature.getLocality() == null)
 			throw new MandatoryFieldsMissingException();
 
+		if (feature.getFeatureType().equals(FREDConstants.OUTCROP))
+			(new SampleUtil(factory)).submitSample(getOutcropSample(feature), folder, user);
+		
 		Audit audit = feature.getAudit();
 		audit.setStatus(FREDConstants.WAITING);
 		audit.setSubmittedById(new Integer(user.getId()));
