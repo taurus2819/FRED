@@ -110,7 +110,10 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		//explicity add feature to folder.
 		try {
 			Feature feature = record.getSample().getFeature();
+			System.out.println("Feature: " + feature.getFeatureId());
+			System.out.println("Folder: " + audit.getFolder().getFolderId());
 			feature.getFolders().add(audit.getFolder());
+			System.out.println("Feature folder count: " + feature.getFolders().size());
 			factory.getFeatureDAO().update(feature);
 		} catch (Exception e) {
 			e.printStackTrace();
