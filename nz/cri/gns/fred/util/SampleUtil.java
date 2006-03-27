@@ -259,7 +259,10 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 
 	public void submitSample(int sampleId, UserFolder folder, UserAccount user) throws DataInputException, InsufficientPrivelegesException, StorageAccessException {
-		Sample sample = sampleDAO.getSample(sampleId);
+		submitSample(getSample(sampleId), folder, user);
+	}
+	
+	public void submitSample(Sample sample, UserFolder folder, UserAccount user) throws DataInputException, InsufficientPrivelegesException, StorageAccessException {
 		if (!folder.isAllowedSubmitLocalities() || sample.getAudit().getStatus().equals(WAITING))
 			throw new InsufficientPrivelegesException();
 		if (sample.getCollectors() == null || sample.getCollectors().size() == 0 || sample.getCollectionDate() == null || sample.getInPlace() == null)

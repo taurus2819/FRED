@@ -13,6 +13,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.RecordDAO;
+import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.FREDConstants;
@@ -100,11 +101,14 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		recordDAO.delete(record);
 	}
 
-	public void submitRecord(int recordId, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+	public void submitRecord(int recordId, UserFolder folder, UserAccount user) throws DataInputException, InsufficientPrivelegesException, StorageAccessException {
+		submitRecord(getRecord(recordId), folder, user);
+	}
+	
+	public void submitRecord(Record record, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
 		if (!folder.isAllowedSubmitLocalities())
 			throw new InsufficientPrivelegesException();
 		
-		Record record = recordDAO.getRecord(recordId);
 		Audit audit = record.getAudit();
 		
 		//explicity add feature to folder.
