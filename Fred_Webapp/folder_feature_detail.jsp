@@ -58,14 +58,14 @@
 		ExtranetTemplate et = getExtranetTemplate();
 		et.setDisplayLoadingMessage(true);
 		et.setButtons(new IconnedLink[] {
-				new IconnedLink("folder_detail.jsp?ID=" + request.getParameter("FoldID"), "images/back_arrow.gif", "Back to folder contents")
+				new IconnedLink("folder_detail.jsp?ID=" + request.getParameter("FoldID") + "&q=" + Math.random(), "images/back_arrow.gif", "Back to folder contents")
 			});
 	
 		Feature feature = featureUtil.getFeature(Integer.parseInt(request.getParameter("FeatID")));
 		UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("FoldID")), user);
 	
 		if (!featureUtil.folderContainsFeature(folder, feature) || !folder.isAllowedReadLocalities()) {
-			response.sendRedirect("folder_detail.jsp?FoldID=" + folder.getFolderId() + "&q=" + Math.random());
+			response.sendRedirect("folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random());
 			return;
 		}
 		
