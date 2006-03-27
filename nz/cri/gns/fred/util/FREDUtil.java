@@ -667,21 +667,6 @@ public class FREDUtil {
 		}
 	}
 
-    /**
-     * Makes the necessary changes to the db to flag this audited as submitted
-     */
-    public static void submit(Audited audited, User user, AuditedUtil util, boolean requiresApproval) throws StorageAccessException {
-        Audit audit = audited.getAudit();
-        audit.setStatus((requiresApproval) ? FREDConstants.WAITING : FREDConstants.APPROVED);
-        audit.setSubmittedById(user.getPersonId());
-        audit.setSubmittedDate(new Date());
-        if (!requiresApproval) {
-            audit.setWorkingComments(null);
-            audit.setFolder(null);
-        }
-        util.update(audit);
-    }
-
     public static String getNames(Set<? extends PersonRelationship> persons, String separator) {
     	if (persons == null)
     		return "";
