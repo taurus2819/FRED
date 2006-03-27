@@ -113,6 +113,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			feature.getFolders().add(audit.getFolder());
 			factory.getFeatureDAO().update(feature);
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		audit.setStatus(APPROVED);		//Records don't need approval
