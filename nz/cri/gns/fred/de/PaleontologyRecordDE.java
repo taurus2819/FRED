@@ -322,6 +322,7 @@ public class PaleontologyRecordDE extends RecordDE {
                         //It matches
                         it.remove();
                         found = true;
+                        break;
                     }
                 }
                 //Was not already in the list
