@@ -325,7 +325,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (pal.getListEntries() != null) {
 			for (PaleontologyListEntry entry : pal.getListEntries()) {
 				Taxon taxon = entry.getTaxon();
-				if (taxon.getStatus().equals(status))
+				if (taxon != null && taxon.getStatus().equals(status))
 					set.add(taxon);
 			}
 		}
