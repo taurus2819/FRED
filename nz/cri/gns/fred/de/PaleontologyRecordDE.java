@@ -375,7 +375,7 @@ public class PaleontologyRecordDE extends RecordDE {
         }
         System.out.println("Size of taxa list before removal: " + taxaList.size());
         //Now remove any that remain in the 'removed' pile
-        //taxaList.removeAll(removedTaxaList);
+        taxaList.removeAll(removedTaxaList);
         System.out.println("Size of taxa list after removal: " + taxaList.size());
 
         if (error.size() > 0) 

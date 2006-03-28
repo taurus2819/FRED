@@ -242,13 +242,10 @@ public class TaxonomicUtil extends ModelUtil {
         	return false;
         if (entry.getTaxon() != null && !equalsEmptyEquivNull(entry.getTaxon().getAuthor(), author))
             return false;
-        if (!equalsEmptyEquivNull(entry.getSpecimenCount(), specimenCount))
-            return false;
-        if (!equalsEmptyEquivNull(entry.getSpecimenCoords(), specimenCoords))
-            return false;
-        if (!equalsEmptyEquivNull(entry.getComments(), comments))
-            return false;
+        
         entry.setSpecimenCount(specimenCount);
+        entry.setSpecimenCoords(specimenCoords);
+        entry.setComments(comments);
         
         return true;
     }
