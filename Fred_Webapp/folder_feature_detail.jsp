@@ -30,7 +30,7 @@
 	public String getName(HttpServletRequest request) {
 		try {
 			FeatureUtil featureUtil = new FeatureUtil(HibernateUtil.get().getDAOFactory());
-			return "FRED :: " + FeatureUtil.getFeatureIdentifyingName(featureUtil.getFeature(Integer.parseInt(request.getParameter("FeatID"))));
+			return "FRED :: Locality Detail for " + FeatureUtil.getFeatureIdentifyingName(featureUtil.getFeature(Integer.parseInt(request.getParameter("FeatID"))));
 		} catch (StorageAccessException e) {
 			return "FRED :: Fossil Record Electronic Database";
 		}
@@ -152,7 +152,7 @@
 		%><form name="FoldForm" method="put" action="folder_feature_detail.jsp">
 		<table border="0" width="550"><tr><td colspan="9" class="deHeading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></td></tr>
 		<tr>
-		<th colspan="2">Name&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Options</th></tr>
+		<th colspan="2">Name&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Actions</th></tr>
 		<tr><td colspan="9"><img src="images/line.gif" height="3" width="550" /></td></tr>
 		<%-- Feature --%>
 		<tr><td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a>&nbsp;</td>

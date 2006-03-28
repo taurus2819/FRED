@@ -97,7 +97,7 @@
 			<p><%
 			startDETable(pageContext);
 			%><table border="0" width="550"><tr><td colspan="9" class="deHeading">Localities to Approve</td></tr>
-			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Type&nbsp;&nbsp;</th><th style="text-align: left">Submitted Date&nbsp;&nbsp;</th><th style="text-align: left">Submitted By&nbsp;&nbsp;</th><th style="text-align: left" colspan="4">Options</th></tr><%
+			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Type&nbsp;&nbsp;</th><th style="text-align: left">Submitted Date&nbsp;&nbsp;</th><th style="text-align: left">Submitted By&nbsp;&nbsp;</th><th style="text-align: left" colspan="4">Actions</th></tr><%
 
 			//Display the features
 			Feature[] features = featureUtil.getWaitingFeatures(folder);
@@ -130,7 +130,7 @@
 			%><table border="0" width="550"><tr><td colspan="7" class="deHeading">Localities Recently Approved</td></tr><% 
 			//Recently Approved
 			features = featureUtil.getFeaturesApprovedInTheLastWeek(folder);
-			%><tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Type&nbsp;&nbsp;</th><th style="text-align: left">Approved Date&nbsp;&nbsp;</th><th style="text-align: left">Approved By&nbsp;&nbsp;</th><th style="text-align: left" colspan="2">Options</th></tr><%
+			%><tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Type&nbsp;&nbsp;</th><th style="text-align: left">Approved Date&nbsp;&nbsp;</th><th style="text-align: left">Approved By&nbsp;&nbsp;</th><th style="text-align: left" colspan="2">Actions</th></tr><%
 			for (int i=0; i<features.length; i++) {
 				Feature feature = features[i];
 				Audit audit = feature.getAudit();

@@ -159,7 +159,7 @@
 			startDETable(pageContext);
 			%><table border="0" width="550"><tr><td colspan="12" class="deHeading">Localities</td></tr>
 			<tr>
-			<th colspan="3">Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="6">Options</th></tr>
+			<th colspan="3">Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="6">Actions</th></tr>
 			<tr><td colspan="12"><img src="images/line.gif" height="3" width="550" /></td></tr>
 	
 			<form name="FoldForm" method="post" action="folder_detail.jsp"><%
@@ -220,7 +220,7 @@
 			
 			startDETable(pageContext);
 			%><table border="0" width="550">
-			<tr><td colspan="11" class="deHeading">Selected Locality Options</td></tr>
+			<tr><td colspan="11" class="deHeading">Selected Locality Actions</td></tr>
 			<tr><td>&nbsp;</td></tr>
 			<%
 			//<tr><td class="heading" style="text-align: left">

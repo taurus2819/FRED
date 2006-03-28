@@ -91,7 +91,7 @@
 		List personalFolders = folderUtil.getPersonalFolders(user);
 		//List Working folders
 		if (personalFolders.size() > 0) {
-			%><tr><th style="text-align: left">Working Folder&nbsp;&nbsp;</th><th>Owner&nbsp;&nbsp;</th><th>Options</th></tr>
+			%><tr><th style="text-align: left">Working Folder&nbsp;&nbsp;</th><th>Owner&nbsp;&nbsp;</th><th>Actions</th></tr>
 			<form name="PersForm" method="post" action="folder_list.jsp"><%
 			for (Iterator i = personalFolders.iterator(); i.hasNext(); ) {
 				UserFolder folder = (UserFolder) i.next();
@@ -124,7 +124,7 @@
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Backlog Edit Folders</td></tr>
-			<tr><th style="text-align: left">Backlog Edit Folder&nbsp;&nbsp;</th><th>Owner&nbsp;&nbsp;</th><th>Options</th></tr>
+			<tr><th style="text-align: left">Backlog Edit Folder&nbsp;&nbsp;</th><th>Owner&nbsp;&nbsp;</th><th>Actions</th></tr>
 			<form name="BackForm" method="post" action="folder_list.jsp"><%
 			for (Iterator i = backlogFolders.iterator(); i.hasNext(); ) {
 				UserFolder folder = (UserFolder) i.next();
@@ -158,7 +158,7 @@
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Masterfile Folders</td></tr>
-			<tr><th colspan="2">Masterfile Folder&nbsp;&nbsp;</th><th>Options</th></tr><%
+			<tr><th colspan="2">Masterfile Folder&nbsp;&nbsp;</th><th>Actions</th></tr><%
 			for (Iterator i = backlogAdminFolders.iterator(); i.hasNext(); ) {
 				UserFolder folder = (UserFolder) i.next();
 				%><tr>
@@ -196,7 +196,7 @@
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Taxonomic Panels</td></tr>
-			<tr><th colspan="2">Taxonomic Groups&nbsp;&nbsp;</th><th>Options</th></tr><%
+			<tr><th colspan="2">Taxonomic Groups&nbsp;&nbsp;</th><th>Actions</th></tr><%
 			for (Iterator i = panelList.iterator(); i.hasNext(); ) {
 				TaxonomicGroup group = (TaxonomicGroup)i.next();
 				%><tr>

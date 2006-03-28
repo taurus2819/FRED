@@ -58,7 +58,7 @@
 				%><p>&nbsp;</p><center><p><%
 				startDETable(pageContext);
 				%><table border="0" width="800"><tr><td colspan="6" class="deHeading">Provisional Entries</td></tr>
-				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Submitted By&nbsp;&nbsp;</th><th style="text-align: left">Submitted Date&nbsp;&nbsp;</th><th style="text-align: left">Locality(s)</th><th style="text-align: left">Options</th></tr><%
+				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Submitted By&nbsp;&nbsp;</th><th style="text-align: left">Submitted Date&nbsp;&nbsp;</th><th style="text-align: left">Locality(s)</th><th style="text-align: left">Actions</th></tr><%
 				for (Iterator i = taxaUtil.getTaxa(group, FREDConstants.PROVISIONAL).iterator(); i.hasNext(); ) {
 					Taxon taxon = (Taxon) i.next();
 					%><form name="taxonForm<%=taxon.getTaxaId()%>" method="post" action="taxa_group_detail.jsp">
@@ -97,7 +97,7 @@
 				%><p>&nbsp;</p><center><p><%
 				startDETable(pageContext);
 				%><table border="0" width="800"><tr><td colspan="7" class="deHeading">Rejected Entries</td></tr>
-				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Rejected By&nbsp;&nbsp;</th><th style="text-align: left">Rejected Date&nbsp;&nbsp;</th><th style="text-align: left">Comments&nbsp;&nbsp;</th><th style="text-align: left">Locality(s)&nbsp;&nbsp;</th><th style="text-align: left">Options</th></tr><%
+				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Rejected By&nbsp;&nbsp;</th><th style="text-align: left">Rejected Date&nbsp;&nbsp;</th><th style="text-align: left">Comments&nbsp;&nbsp;</th><th style="text-align: left">Locality(s)&nbsp;&nbsp;</th><th style="text-align: left">Actions</th></tr><%
 				for (Iterator i = taxaUtil.getTaxa(group, FREDConstants.REJECTED).iterator(); i.hasNext(); ) {
 					Taxon taxon = (Taxon) i.next();
 					%><tr>
@@ -130,7 +130,7 @@
 				%><p>&nbsp;</p><center><p><%
 				startDETable(pageContext);
 				%><table border="0" width="800"><tr><td colspan="5" class="deHeading">Approved Entries</td></tr>
-				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Approved By&nbsp;&nbsp;</th><th style="text-align: left">Approved Date&nbsp;&nbsp;</th><th style="text-align: left">Options</th></tr><%
+				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Approved By&nbsp;&nbsp;</th><th style="text-align: left">Approved Date&nbsp;&nbsp;</th><th style="text-align: left">Actions</th></tr><%
 				for (Iterator i = taxaUtil.getTaxa(group, FREDConstants.APPROVED).iterator(); i.hasNext(); ) {
 					Taxon taxon = (Taxon) i.next();
 					%><tr>

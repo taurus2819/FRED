@@ -87,7 +87,7 @@
 			<p><%
 			startDETable(pageContext);
 			%><table border="0" width="550"><tr><td colspan="9" class="deHeading">Localities to Approve</td></tr>
-			<tr><th colspan="2">Locality&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Submitted Date&nbsp;&nbsp;</th><th>Submitted By&nbsp;&nbsp;</th><th colspan="3">Options</th></tr><%
+			<tr><th colspan="2">Locality&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Submitted Date&nbsp;&nbsp;</th><th>Submitted By&nbsp;&nbsp;</th><th colspan="3">Actions</th></tr><%
 	
 			//Display the features
 			Feature[] features = featureUtil.getWaitingFeatures(folder);
