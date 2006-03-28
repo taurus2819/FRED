@@ -373,8 +373,10 @@ public class PaleontologyRecordDE extends RecordDE {
 				error.add(new String[] {"Taxanomic List", taxaLine + " not valid"});
 			}
         }
+        System.out.println("Size of taxa list before removal: " + taxaList.size());
         //Now remove any that remain in the 'removed' pile
         taxaList.removeAll(removedTaxaList);
+        System.out.println("Size of taxa list after removal: " + taxaList.size());
 
         if (error.size() > 0) 
             throw new DataInputException(error);
