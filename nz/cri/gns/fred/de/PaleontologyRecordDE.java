@@ -320,7 +320,7 @@ public class PaleontologyRecordDE extends RecordDE {
                     PaleontologyListEntry entry = it.next();
                     if (taxonomicUtil.isMatchingEntry(entry, bits[GROUP], bits[NAME], bits[AUTHOR], specCount, bits[SPECIMEN_COORD], bits[COMMENTS])) {
                         //It matches
-                    	System.out.println("Found matching taxa entry");
+                    	System.out.println("Found matching taxa entry: " + entry.getTaxonomicName());
                         it.remove();
                         found = true;
                         break;
