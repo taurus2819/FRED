@@ -180,9 +180,9 @@ public interface Sample extends Audited, Comparable<Sample> {
 
 	public abstract void setSampleMetas(Set<SampleMeta> sampleMetas);
 
-	public abstract Set getRecords();
+	public abstract Set<Record> getRecords();
 
-	public abstract void setRecords(Set records);
+	public abstract void setRecords(Set<Record> records);
 
 	public abstract Set<SentTo> getSentTos();
 
