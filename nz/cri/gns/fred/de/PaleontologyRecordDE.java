@@ -320,7 +320,7 @@ public class PaleontologyRecordDE extends RecordDE {
                     PaleontologyListEntry entry = it.next();
                     if (taxonomicUtil.isMatchingEntry(entry, bits[GROUP], bits[NAME], bits[AUTHOR], specCount, bits[SPECIMEN_COORD], bits[COMMENTS])) {
                         //It matches
-                    	System.out.println("Found matching taxa entry: " + entry.getTaxonomicName());
+                    	System.out.println("Found matching taxa entry: " + entry.getTaxonomicName() + " - " + entry.getSpecimenCoords());
                         it.remove();
                         found = true;
                         break;
@@ -328,6 +328,7 @@ public class PaleontologyRecordDE extends RecordDE {
                 }
                 //Was not already in the list
                 if (!found) {
+                	System.out.println("Creating entry for: " + bits[NAME] + " - " + bits[SPECIMEN_COORD]);
                 	//The group
                 	TaxonomicGroup group = taxonomicUtil.getTaxonomicGroup(bits[GROUP]);
                 	//clean TaxaName
