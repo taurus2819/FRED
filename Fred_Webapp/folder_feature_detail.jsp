@@ -228,11 +228,11 @@
 				//Records
 				if (sample.getRecords() != null) {
 					Vector records = new Vector(sample.getRecords());
-					Collections.sort(records, new ByCreationDateComparator());
+					Collections.sort(records);
 					for (Iterator k = records.iterator(); k.hasNext(); ) {
 						Record record = (Record)k.next();
-						boolean isAdoption = record.getAdoption() != null;
-						boolean isPaleontology = record.getPaleontology() != null;
+						boolean isAdoption = RecordUtil.getRecordType(record).equals(FREDConstants.ADOPTION);
+						boolean isPaleontology = !isAdoption;
 						audit = record.getAudit();
 						status = audit.getStatus();
 						if (status.equals(FREDConstants.APPROVED) || (audit.getFolder() != null && audit.getFolder().equals(folder.getFolder()))) {
