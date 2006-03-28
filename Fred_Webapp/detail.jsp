@@ -26,6 +26,7 @@
 %><%@page import="java.net.URLEncoder"
 %><%@page import="java.io.PrintWriter"
 %><%@page import="java.util.Iterator"
+%><%@page import="java.util.Arrays"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
@@ -469,6 +470,7 @@
 						
 						<tr><td class="bigheading" colspan="2">Collection Information</td></tr><%
 						Object[] collectors = sample.getCollectors().toArray();
+						Arrays.sort(collectors);
 						String[] collectorStr = new String[collectors.length];
 						for (int i = 0; i < collectors.length; i++)
 							collectorStr[i] = ((PersonRelationship) collectors[i]).getDisplayName();

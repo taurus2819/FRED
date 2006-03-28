@@ -5,7 +5,7 @@ import java.util.Set;
 /**
  *
  */
-public interface Person extends PersonRelationship {
+public interface Person extends PersonRelationship,Comparable<Person> {
 	
 	public abstract Integer getPersonId();
 

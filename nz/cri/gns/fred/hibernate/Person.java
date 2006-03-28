@@ -5,9 +5,8 @@ import java.util.Set;
 
 import nz.cri.gns.fred.model.SentTo;
 
-
 /** @author Hibernate CodeGenerator */
-public class Person implements Serializable, nz.cri.gns.fred.model.Person {
+public class Person implements Serializable, nz.cri.gns.fred.model.Person, Comparable<nz.cri.gns.fred.model.Person> {
 
 	private static final long serialVersionUID = 20050818L;
 
@@ -138,4 +137,9 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
     public String toString() {
     	return super.toString() + " {" + personId + ": " + name + "}";
     }
+    
+	public int compareTo(nz.cri.gns.fred.model.Person arg0) {
+		return this.getName().compareTo(arg0.getName());
+	}
+	
 }
