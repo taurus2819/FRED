@@ -155,8 +155,8 @@
 		<th colspan="2">Name&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Options</th></tr>
 		<tr><td colspan="9"><img src="images/line.gif" height="3" width="550" /></td></tr>
 		<%-- Feature --%>
-		<tr><td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a>&nbsp;</td>
-		<td class="heading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%>&nbsp;&nbsp;<%
+		<tr><td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a>&nbsp;</td>
+		<td  style="text-align: left" class="heading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%>&nbsp;&nbsp;<%
 		Audit audit = feature.getAudit();
 		String status = audit.getStatus();
 		%><td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {"text-align: left"})%>><%=status%>&nbsp;&nbsp;<%
@@ -199,7 +199,8 @@
 			status = audit.getStatus();
 			if (status.equals(FREDConstants.APPROVED) || (audit.getFolder() != null && audit.getFolder().equals(folder.getFolder()))) {
 				if (!feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
-					%><tr><td><a href="detail.jsp?ID=<%=sample.getSampleId()%>&backURL=<%=URLEncoder.encode("folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/drill.gif" height="20" width="20" border="0" alt="View Sample Details" /></a>&nbsp;</td><td><%=SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td>
+					%><tr>
+					<td style="text-align: left"><a href="detail.jsp?ID=<%=sample.getSampleId()%>&backURL=<%=URLEncoder.encode("folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/drill.gif" height="20" width="20" border="0" alt="View Sample Details" /></a>&nbsp;</td><td><%=SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td>
 					<td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {"text-align: left"})%>><%=status%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></td>
 					</td><td><%
@@ -236,11 +237,14 @@
 						audit = record.getAudit();
 						status = audit.getStatus();
 						if (status.equals(FREDConstants.APPROVED) || (audit.getFolder() != null && audit.getFolder().equals(folder.getFolder()))) {
-							%><tr><td><img src="images/<%=(isAdoption) ? "ado" : "pal"%>.gif" width="20" height="20" /></td><td><%
+							%><tr>
+							<td style="text-align: left"><img src="images/<%=(isAdoption) ? "ado" : "pal"%>.gif" width="20" height="20" /></td>
+							<td style="text-align: left"><%
 							if (isPaleontology && !RecordUtil.isTaxaApproved(record)) {
 								%><span class="heading" style="color: #FF0000">*</span>&nbsp;&nbsp;<%
 							}
-							%><%=RecordUtil.getRecordName(record)%>&nbsp;&nbsp;</td>					
+							%><%=RecordUtil.getRecordName(record)%>&nbsp;&nbsp;
+							</td>					
 							<td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {"text-align: left"})%>><%=status%>&nbsp;&nbsp;</td>
 							<td style="text-align: left"><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></td>
 							<td><%
