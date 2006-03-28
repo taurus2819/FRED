@@ -98,11 +98,11 @@
 							if (sample.getRecords().size() > 0) {
 								for (Iterator k = sample.getRecords().iterator(); k.hasNext(); ) {
 									Record record = (Record) k.next();
-									if (record != null && recordUtil.getRecordType(record).equals(recType) && (recID == null || record.getRecordId().intValue() != Integer.parseInt(recID))) {
-										%><tr><td><a href="de.jsp?Type=<%=recordUtil.getRecordType(record)%>&FoldID=<%=folder.getFolderId() + ((recID != null) ? "&RecID=" + recID : "")%>&CopyID=<%=record.getRecordId()%>"><img src="images/load.gif" width="20" height="20" border="0" alt="Copy Record" /></a>&nbsp;&nbsp;</td>
+									if (record != null && RecordUtil.getRecordType(record).equals(recType) && (recID == null || record.getRecordId().intValue() != Integer.parseInt(recID))) {
+										%><tr><td><a href="de.jsp?Type=<%=RecordUtil.getRecordType(record)%>&FoldID=<%=folder.getFolderId() + ((recID != null) ? "&RecID=" + recID : "")%>&CopyID=<%=record.getRecordId()%>"><img src="images/load.gif" width="20" height="20" border="0" alt="Copy Record" /></a>&nbsp;&nbsp;</td>
 										<td><%=FeatureUtil.getFeatureIdentifyingName(features[i])%>&nbsp;&nbsp;</td>
 										<td><%=(features[i].getFeatureType().equals(FREDConstants.OUTCROP)) ? "" : SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td>
-										<td><a href="de.jsp?Type=<%=recordUtil.getRecordType(record)%>&FoldID=<%=folder.getFolderId() + ((recID != null) ? "&RecID=" + recID : "")%>&CopyID=<%=record.getRecordId()%>"><%=RecordUtil.getRecordName(record)%></a></td></tr><%
+										<td><a href="de.jsp?Type=<%=RecordUtil.getRecordType(record)%>&FoldID=<%=folder.getFolderId() + ((recID != null) ? "&RecID=" + recID : "")%>&CopyID=<%=record.getRecordId()%>"><%=RecordUtil.getRecordName(record)%></a></td></tr><%
 									}
 								}
 							}

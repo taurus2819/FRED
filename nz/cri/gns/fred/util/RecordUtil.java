@@ -255,7 +255,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     	return isAllowedReadRecord(user, palRecord.getRecord());
     }
     
-    public String getRecordType(Record record) {
+    public static String getRecordType(Record record) {
         return (record.getAdoption() != null) ? ADOPTION : PALEONTOLOGICAL;
     }
 

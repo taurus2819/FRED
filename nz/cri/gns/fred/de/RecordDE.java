@@ -96,10 +96,8 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         Record fromRecord = recordUtil.getRecord(recordId);
         if (!recordUtil.isAllowedReadRecord(user, fromRecord))
             throw new InsufficientPrivelegesException("You do not have access to that record");
-		if (!recordUtil.getRecordType(record).equals(recordUtil.getRecordType(fromRecord)))
+		if (!RecordUtil.getRecordType(record).equals(RecordUtil.getRecordType(fromRecord)))
 			throw new IllegalArgumentException("Incompatible Record Types for copy operation");
-
-        
         this.copyRecord = fromRecord;
     }
 
@@ -164,7 +162,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         try {
             String args = "?FoldID=" + workingFolder.getFolderId() 
                 + ((record.getRecordId() == null) ? "" : ("&RecID=" + record.getRecordId()))
-                + "&RecType=" + URLEncoder.encode(recordUtil.getRecordType(record), "ISO-8859-1");
+                + "&RecType=" + URLEncoder.encode(RecordUtil.getRecordType(record), "ISO-8859-1");
             
             links.add(new IconnedLink("load_record.jsp" + args, "images/load.gif", "Copy From"));
         } catch (UnsupportedEncodingException e) {
@@ -187,7 +185,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 		if (!record.getSample().getFeature().getFeatureType().equals(FREDConstants.OUTCROP))
 			template.addSub("isDrillVert", "yes");
         template.addSub("drillholeDepth", SampleUtil.getDrillHoleDepthDescription(record.getSample()));
-        template.addSub("recordType", recordUtil.getRecordType(record));
+        template.addSub("recordType", RecordUtil.getRecordType(record));
         if (workingFolder != null)
             template.addSub("folderId", workingFolder.getFolderId().toString());
         template.addSub("workingComments", record.getWorkingComments());
