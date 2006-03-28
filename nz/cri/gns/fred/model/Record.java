@@ -5,7 +5,7 @@ import java.util.Set;
 /**
  *
  */
-public interface Record extends Audited {
+public interface Record extends Audited, Comparable<Record> {
 	public abstract Integer getRecordId();
 
 	public abstract void setRecordId(Integer recordId);

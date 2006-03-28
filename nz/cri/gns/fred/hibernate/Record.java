@@ -4,9 +4,10 @@ import java.io.Serializable;
 import java.util.Set;
 
 import nz.cri.gns.fred.model.RecordMeta;
+import nz.cri.gns.fred.util.RecordUtil;
 
 /** @author Hibernate CodeGenerator */
-public class Record implements Serializable, nz.cri.gns.fred.model.Record {
+public class Record implements Serializable, nz.cri.gns.fred.model.Record, Comparable<nz.cri.gns.fred.model.Record> {
 
     private static final long serialVersionUID = 20050818L;
 
@@ -126,4 +127,11 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record {
     public void setRecordMetas(Set<RecordMeta> recordMetas) {
         this.recordMetas = recordMetas;
     }
+    
+	public int compareTo(nz.cri.gns.fred.model.Record arg0) {
+		String thisName = RecordUtil.getRecordType(this) + RecordUtil.getRecordName(this);
+		String thatName = RecordUtil.getRecordType(arg0) + RecordUtil.getRecordName(arg0);
+		return thisName.compareTo(thatName);
+	}
+	
 }
