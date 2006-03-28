@@ -714,6 +714,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 
 	public Stage getStage(String startStageId, boolean startUncertain, String stopStageId, boolean stopUncertain) throws StorageAccessException, NamingException, SQLException {
+		if (startStageId == null && stopStageId == null && !startUncertain && !stopUncertain)
+			return null;
 		if (startStageId == null)
 			throw new IllegalArgumentException("Start age is null");		
 		
