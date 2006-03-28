@@ -27,14 +27,5 @@ public abstract class ModelUtil implements FREDConstants {
         else
             return str1.equals(str2);
     }
-
-    protected boolean equalsEmptyEquivNull(Integer int1, Integer int2) {
-        if ((int1 == null) ^ (int2 == null))
-            return false;
-        if (int1 == null)
-            return true;
-        else
-            return int1.equals(int2);
-    }
 	
 }
