@@ -42,6 +42,7 @@ import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.intranet.Template;
 import nz.cri.gns.jsp.IconnedLink;
 import nz.cri.gns.jsp.PageState;
+import nz.cri.gns.util.map.ChathamIslandDatum;
 import nz.cri.gns.util.map.Datum;
 import nz.cri.gns.util.map.DatumFactory;
 import nz.cri.gns.util.map.NZGD2000;
@@ -292,7 +293,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 				else
 					template.addSub("mapSheet", ((Datum.MapSheetCoordinate)coord).getMapSheet());
 				
-				if (datum instanceof NZGD49 || datum instanceof WGS84 || datum instanceof NZGD2000) {
+				if (datum instanceof NZGD49 || datum instanceof WGS84 || datum instanceof NZGD2000 || datum instanceof ChathamIslandDatum) {
 					eastingLabel = "Longitude";
 					northingLabel = "Latitude";
 				}
