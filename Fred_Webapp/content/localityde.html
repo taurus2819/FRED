@@ -1,5 +1,5 @@
 {@startDETable}
-<table border="0" style="border: none; width: 550px; text-align: left" width="550" cellspacing='0' cellpadding='2'>
+<table border="0" style="border: none; width: 550px; text-align: left" width="550" cellspacing="0" cellpadding="2">
 <tr><td colspan="3" class="deHeading">Administrative information</td></tr><tr><td style="text-align: left">
 {@@isRejected:<tr><td class="heading" colspan="3" style="color: #FF0000">This locality has been rejected and needs to be edited and re-submitted.  Comments from the Masterfile Curator: @}{@rejComm}{@@isRejected:</td></tr><tr><td></td></tr>@}
 {@@approved:<tr><td class="heading" colspan="3" style="color: #FF0000">You are editing an approved locality.  Previous edits are shown below.  Please enter comments on the edits you are making in the <em>Edit Comments</em> box below</td></tr>@}
@@ -17,9 +17,10 @@
 {@endDETable}
 <p>
 {@startDETable}
-<table border="0" style="border: none; width: 550px; text-align: left" width="550" cellspacing='0' cellpadding='2'>
+<table border="0" style="border: none; width: 550px; text-align: left" width="550" cellspacing="0" cellpadding="2">
 <tr><td colspan="3" class="deHeading">Location information</td></tr><tr><td style="text-align: left">
-<tr><td class="heading" style="color: #FF0000" width="150">Location</td><td class="smallheading" width="100">Coord Type</td>
+<tr><td class="heading" width="150">Location</td>
+<td class="smallheading" style="color: #FF0000" width="100">Coord Type</td>
 <td width="300"><select name="CoordType" onchange="updateCoordTypes(this)">
 <option value="NZMG"{@@isNZMG: selected@}>New Zealand Map Grid</option>
 <option value="NZMS260"{@@isNZMS260: selected@}>NZMS260</option>
@@ -34,22 +35,22 @@
 <option value="NZGD2000"{@@isNZGD2000: selected@}>Lat/Long NZGD2000</option>
 <option value="WGS84"{@@isWGS84: selected@}>Lat/Long WGS84</option>
 </select></td></tr>
-<tr id="mapSheetTr"{@@mapSheetInvisible: style="display: none"@}><td></td><td class="smallheading">Map Sheet</td><td><input type="text" name="MapSheet" value="{@mapSheet}"/></td></tr>
-<tr><td></td><td class="smallheading"><script><!--
+<tr id="mapSheetTr"{@@mapSheetInvisible: style="display: none"@}><td></td><td class="smallheading" style="color: #FF0000">Map Sheet</td><td><input type="text" name="MapSheet" value="{@mapSheet}"/></td></tr>
+<tr><td></td><td class="smallheading" style="color: #FF0000"><script><!--
 	if (document.getElementById) {
 		document.write('<span id="easting">{@eastingLabel}</span>');
 	} else {
 		document.write('Easting/Longitude');
 	}
-//--></script></td><td><input type='text' name='East' value="{@easting}" /></td></tr>
-<tr><td></td><td class='smallheading'><script><!--
+//--></script></td><td><input type="text" name="East" value="{@easting}" /></td></tr>
+<tr><td></td><td class="smallheading" style="color: #FF0000"><script><!--
 	if (document.getElementById) {
 		document.write('<span id="northing">{@northingLabel}</span>');
 	} else {
 		document.write('Northing/Latitude');
 	}
-//--></script></td><td><input type='text' name='North' value="{@northing}" /></td></tr>
-<script language='JavaScript'><!--
+//--></script></td><td><input type="text" name="North" value="{@northing}" /></td></tr>
+<script language="JavaScript"><!--
 function updateCoordTypes(box) {
 
 	var trWhat = "none";
@@ -60,9 +61,9 @@ function updateCoordTypes(box) {
 		case 1:
 		case 4:
 		case 5:
-			var trWhat = 'table-row';
+			var trWhat = "table-row";
 			if (navigator.appName.indexOf("Microsoft Internet Explorer") > -1)
-				trWhat = 'block';
+				trWhat = "block";
 			break;
 		case 9:
 		case 10:
@@ -83,14 +84,14 @@ function setAccuracy(datID, form) {
 	}
 }
 //--></script>
-<tr><td></td><td class='smallheading'>Map Year</td><td><input type='text' name='MapYear' value="{@mapYear}"></td></tr>
-<tr><td></td><td class='smallheading'>Method</td><td><select name="LocMethodID" onchange="setAccuracy(this.value, this.form)">
+<tr><td></td><td class="smallheading">Map Year</td><td><input type="text" name="MapYear" value="{@mapYear}"></td></tr>
+<tr><td></td><td class="smallheading">Method</td><td><select name="LocMethodID" onchange="setAccuracy(this.value, this.form)">
 <option value="-"> --Choose-- </option>
 {@methodCombo}
 </select></td></tr>
-<tr><td></td><td class='smallheading'>Accuracy</td><td><input type='text' name='Accuracy' value="{@accuracy}">&nbsp;m</td></tr>
-<tr><td></td><td class='smallheading'>Locality<br />Description</td><td><textarea name='Loc' cols='40' rows='5'>{@localityDesc}</textarea></td></tr>
-<tr><td></td><td class='smallheading'>Country</td><td>{@countryCombo}</td></tr>
+<tr><td></td><td class="smallheading">Accuracy</td><td><input type="text" name="Accuracy" value="{@accuracy}">&nbsp;m</td></tr>
+<tr><td></td><td class="smallheading" style="color: #FF0000">Locality<br />Description</td><td><textarea name="Loc" cols="40" rows="5">{@localityDesc}</textarea></td></tr>
+<tr><td></td><td class="smallheading">Country</td><td>{@countryCombo}</td></tr>
 </table>
 {@endDETable}
 <p>
