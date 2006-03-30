@@ -176,6 +176,8 @@
 		} else if (listName.equals("datum")) {
 			%><tr><td>New Zealand Map Grid</td><td>NZMG</td></tr>
 			<tr><td>NZMS260</td><td>NZMS260</td></tr>
+			<tr><td>NZTM</td><td>NZTM</td></tr>
+			<tr><td>NZTopo50</td><td>NZTopo50</td></tr>
 			<tr><td>NZ Yard Grid (Sth Isl)</td><td>NZ Yard SthIsl</td></tr>
 			<tr><td>NZ Yard Grid (Nth Isl)</td><td>NZ Yard NthIsl</td></tr>
 			<tr><td>NZMS1 (Sth Isl)</td><td>NZMS1 SthIsl</td></tr>
@@ -184,6 +186,7 @@
 			<tr><td>Auckland Island Grid</td><td>Auckland Island Transverse Mercator</td></tr>
 			<tr><td>Campbell Island Grid</td><td>Campbell Island Transverse Mercator</td></tr>
 			<tr><td>Lat/Long NZGD49</td><td>NZGD49</td></tr>
+			<tr><td>Lat/Long Chatham Isl</td><td>Chatham Island Datum</td></tr>
 			<tr><td>Lat/Long NZGD2000</td><td>NZGD2000</td></tr>
 			<tr><td>Lat/Long WGS84</td><td>WGS84</td></tr><%
 		} else if (listName.equals("localityType")) {
