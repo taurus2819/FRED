@@ -303,14 +303,21 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return newSample;
 	}
 
-	public void deleteRemoveFeatures(String[] featIDs, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException {
+	public void deleteRemoveFeatures(String[] featIDs, UserFolder folder, UserAccount user) {
+		boolean errFlag = false;
 		for (int i = 0; i < featIDs.length; i++) {
-			Feature feature = getFeature(Integer.parseInt(featIDs[i]));
-			if (feature.getAudit().getStatus().equals(FREDConstants.APPROVED))
-				removeFeature(feature, folder, user);
-			else
-				deleteFeature(feature, user);
-		}		
+			try {
+				Feature feature = getFeature(Integer.parseInt(featIDs[i]));
+				if (feature.getAudit().getStatus().equals(FREDConstants.APPROVED))
+					removeFeature(feature, folder, user);
+				else
+					deleteFeature(feature, user);
+			} catch (Exception e) {
+				errFlag = true;
+			}
+		}
+		if (errFlag)
+			throw new IllegalStateException("An error has occured. Not all localities have been removed/deleted");
 	}
 	
 	public void deleteFeature(Feature feature, UserAccount user) throws InsufficientPrivelegesException, StorageAccessException {
