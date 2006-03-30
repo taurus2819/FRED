@@ -9,7 +9,7 @@ import java.util.Vector;
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DBUtils;
-import nz.cri.gns.db.DataException;
+import nz.cri.gns.database.DataException;
 import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.db.metadata.DocumentAttacher;
 import nz.cri.gns.db.metadata.MetadataRecord;

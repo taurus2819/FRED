@@ -19,7 +19,7 @@ import nz.cri.gns.auth.Right;
 import nz.cri.gns.auth.SecurityClass;
 import nz.cri.gns.auth.SecurityClassAccess;
 import nz.cri.gns.auth.User;
-import nz.cri.gns.db.DataException;
+import nz.cri.gns.database.DataException;
 import nz.cri.gns.db.metadata.DocumentAttacher;
 import nz.cri.gns.fred.data.Audit;
 import nz.cri.gns.fred.data.Folder;
