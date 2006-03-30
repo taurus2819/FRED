@@ -336,11 +336,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	public void submitFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
 		if (!isAllowedSubmitFeature(user, feature, folder))
 			throw new InsufficientPrivelegesException();
-		if (!isBacklogFeature(feature) && (feature.getFeatureType() == null || feature.getRegistrationArea() == null
-				|| feature.getSiteId() == null || feature.getLocality() == null))
-			throw new MandatoryFieldsMissingException();
-		if (feature.getFeatureType().equals(FREDConstants.OUTCROP))
-			(new SampleUtil(factory)).submitSample(getOutcropSample(feature), folder, user);
+		if (feature.getFeatureType() == null || feature.getRegistrationArea() == null
+				|| feature.getSiteId() == null || (!isBacklogFeature(feature) && feature.getLocality() == null))
+				throw new MandatoryFieldsMissingException();			
 		
 		Audit audit = feature.getAudit();
 		audit.setStatus(FREDConstants.WAITING);
