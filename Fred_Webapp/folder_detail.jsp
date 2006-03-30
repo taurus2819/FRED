@@ -107,6 +107,8 @@
 						}
 						response.sendRedirect("frf/frf.pdf?" + queryStr.toString());
 						return;
+					} else if (actionType.equals("DeleteFeatures")) {
+						featureUtil.deleteRemoveFeatures(request.getParameterValues("FeatIDs"), folder, user);
 					} else if (actionType.equals("MergeFeatures")) {
 						Feature mergeToFeature = featureUtil.getFeature(Integer.parseInt(request.getParameter("MergeToFeatID")));
 						featureUtil.mergeFeatures(mergeToFeature, request.getParameterValues("FeatIDs"), folder, user);
@@ -214,10 +216,10 @@
 			}
 			%></table><%
 			endDETable(pageContext);
-	
-	
-			%></p><p><%
+			%></p>
 			
+			//Selected Actions box
+			<p><%
 			startDETable(pageContext);
 			%><table border="0" width="550">
 			<tr><td colspan="11" class="deHeading">Selected Locality Actions</td></tr>
@@ -227,6 +229,7 @@
 			//<a href="javascript:document.FoldForm.ActionType.value='PrintFeatures';document.FoldForm.target='_blank';document.FoldForm.submit();"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print Selected" />&nbsp;Print Selected</a>
 			//</td></tr>
 			%>
+			<tr><td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='DeleteFeatures';document.FoldForm.submit();">Delete/Remove</a></td></tr>
 			<tr><td class="heading" style="text-align: left">
 			<a href="javascript:document.FoldForm.ActionType.value='MergeFeatures';document.FoldForm.submit();">Merge To:</a>&nbsp;
 			<select name="MergeToFeatID"><option value="-">-- Choose --</option><%
@@ -245,10 +248,9 @@
 				<option value="Vertical Section">Vertical Section</option>
 			</select></td></tr>		
 			</table><%		
-			
 			endDETable(pageContext);
-	
 			%></p>
+			
 			<input type="hidden" name="ActionType" value="" />
 			<input type="hidden" name="ID" value="<%=folder.getFolder().getFolderId()%>" />
 			<input type="hidden" name="FeatID" value="" />

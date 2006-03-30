@@ -303,6 +303,16 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return newSample;
 	}
 
+	public void deleteRemoveFeatures(String[] featIDs, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException {
+		for (int i = 0; i < featIDs.length; i++) {
+			Feature feature = getFeature(Integer.parseInt(featIDs[i]));
+			if (feature.getAudit().getStatus().equals(FREDConstants.APPROVED))
+				removeFeature(feature, folder, user);
+			else
+				deleteFeature(feature, user);
+		}		
+	}
+	
 	public void deleteFeature(Feature feature, UserAccount user) throws InsufficientPrivelegesException, StorageAccessException {
 		Folder folder = feature.getAudit().getFolder();
 		if (folder == null)
