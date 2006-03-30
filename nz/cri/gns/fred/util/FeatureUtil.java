@@ -340,17 +340,17 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				|| feature.getSiteId() == null || (!isBacklogFeature(feature) && feature.getLocality() == null))
 				throw new MandatoryFieldsMissingException();			
 		
-		Audit audit = feature.getAudit();
-		audit.setStatus(FREDConstants.WAITING);
-		audit.setSubmittedById(new Integer(user.getId()));
-		audit.setSubmittedDate(new Date());
-
 		int masterfile = -1;
 		try {
 			masterfile = FREDUtil.getMasterfile(feature);
 		} catch (Exception e) {
 			throw new StorageAccessException(e);
 		}
+		
+		Audit audit = feature.getAudit();
+		audit.setStatus(FREDConstants.WAITING);
+		audit.setSubmittedById(new Integer(user.getId()));
+		audit.setSubmittedDate(new Date());
 		
 		feature.setMasterFile(folderDAO.getFolder(masterfile));
 		featureDAO.update(audit);
