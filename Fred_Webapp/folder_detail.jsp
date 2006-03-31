@@ -224,8 +224,9 @@
 			endDETable(pageContext);
 			%></p>
 			
-			//Selected Actions box
+			
 			<p><%
+			//Selected Actions box
 			startDETable(pageContext);
 			%><table border="0" width="550">
 			<tr><td colspan="11" class="deHeading">Selected Locality Actions</td></tr>
