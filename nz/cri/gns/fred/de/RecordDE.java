@@ -24,11 +24,9 @@ import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Record;
-import nz.cri.gns.fred.model.RecordMeta;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.util.AuditUtil;
-import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.FolderUtil;
 import nz.cri.gns.fred.util.RecordUtil;
@@ -189,16 +187,6 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         if (workingFolder != null)
             template.addSub("folderId", workingFolder.getFolderId().toString());
         template.addSub("workingComments", record.getWorkingComments());
-        
-        template.loadUntil(out, "{@recordMeta}");
-        
-        Set<RecordMeta> images = record.getRecordMetas();
-        if (images != null) try {
-            for (RecordMeta meta : images) {
-                out.println(FREDUtil.getMetaTitle(meta) + "<br />");
-            }
-        } catch (Exception e) {
-        }
 
         template.loadAll(out);
 	}

@@ -37,7 +37,6 @@ import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.RockColour;
 import nz.cri.gns.fred.model.Sample;
-import nz.cri.gns.fred.model.SampleMeta;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.Stage;
@@ -218,16 +217,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 				template.addSub("sampleId", sample.getSampleId().toString());
             template.addSub("folderId", (workingFolder == null) ? "" : workingFolder.getFolderId().toString());
             prepareTemplate(template, provider);
-            
-            template.loadUntil(out, "{@sampleMeta}");
-            
-            Set<SampleMeta> images = sample.getSampleMetas();
-            if (images != null) try {
-                for (SampleMeta meta : images) {
-                    out.println(FREDUtil.getMetaTitle(meta) + "<br />");
-                }
-            } catch (Exception e) {
-            }
 
             template.loadAll(out);
         }

@@ -7,7 +7,6 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -21,27 +20,21 @@ import nz.cri.gns.auth.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.DBUtils;
-import nz.cri.gns.db.QueryDescriptor;
 import nz.cri.gns.db.site.DatumMethod;
 import nz.cri.gns.db.site.SiteRecord;
-import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.data.Folder;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
-import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.FolderUtil;
 import nz.cri.gns.fred.website.ContentProvider;
-import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.intranet.Template;
 import nz.cri.gns.jsp.IconnedLink;
-import nz.cri.gns.jsp.PageState;
 import nz.cri.gns.util.map.ChathamIslandDatum;
 import nz.cri.gns.util.map.Datum;
 import nz.cri.gns.util.map.DatumFactory;
@@ -270,13 +263,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 	
 			//Metadata listing
 			//template.loadUntil(out, "{@metadataList}");
-	
-			//Set<FeatureMeta> images = feature.getFeatureMetas();
-			//if (images != null) {
-			//	for (FeatureMeta meta : images) {
-			//		out.println(FREDUtil.getMetaTitle(meta) + "<br />");
-			//	}
-			//}
 			
 			//Site setup
 			String eastingLabel = "Easting";
