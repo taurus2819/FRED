@@ -35,6 +35,14 @@
 	try {
 		request = DocumentAttacher.decodeRequest(request);
 
+		//Set<FeatureMeta> images = feature.getFeatureMetas();
+		//if (images != null) {
+		//	for (FeatureMeta meta : images) {
+		//		out.println(FREDUtil.getMetaTitle(meta) + "<br />");
+		//	}
+		//}
+		
+		
 		if (request.getParameter("ID") != null && request.getParameter("RecType") != null && request.getParameter("FoldID") != null) {
 			int id = Integer.parseInt(request.getParameter("ID"));
 			String recType = request.getParameter("RecType");
