@@ -34,14 +34,6 @@
 
 	try {
 		request = DocumentAttacher.decodeRequest(request);
-
-		//Set<FeatureMeta> images = feature.getFeatureMetas();
-		//if (images != null) {
-		//	for (FeatureMeta meta : images) {
-		//		out.println(FREDUtil.getMetaTitle(meta) + "<br />");
-		//	}
-		//}
-		
 		
 		if (request.getParameter("ID") != null && request.getParameter("RecType") != null && request.getParameter("FoldID") != null) {
 			int id = Integer.parseInt(request.getParameter("ID"));
@@ -79,7 +71,7 @@
 					}
 				}
 
-				%><center><p></p><p><%
+				%><center><p>&nbsp;</p><p><%
 				startDETable(pageContext);
 				%><table border="0" width="550"><tr><td colspan="2" class="deHeading">Add Image/File</td></tr>
 				<form enctype="multipart/form-data" method="post" action="binary_data_entry.jsp">
@@ -87,10 +79,10 @@
 				<input type="hidden" name="RecType" value="<%=recType%>">
 				<input type="hidden" name="FoldID" value="<%=folder.getFolderId()%>">
 				<input type="hidden" name="Action" value="Insert">
-				<tr><td style=text-align:left" class="heading">File<br><span class="smalltext">The following types of files can be loaded: images (JPEG, TIFF, GIF, BMP), text, Microsoft Word/Excel and PDF files</span></td><td style=text-align:left"><input type="file" name="Upload"></td></tr>
-				<tr><td style=text-align:left" class="heading">Name<br><span class="smalltext">If different to filename</span></td><td style=text-align:left"><input type="text" name="Name"></td></tr>
-				<tr><td style=text-align:left" class="heading">Description</td><td style=text-align:left"><input type="text" name="Desc"></td></tr>
-				<tr><td style=text-align:left"><input type="submit" value="Upload"></td></tr>
+				<tr><td style="text-align:left" class="heading">File<br><span class="smalltext">The following types of files can be loaded: images (JPEG, TIFF, GIF, BMP), text, Microsoft Word/Excel and PDF files</span></td><td style="text-align:left"><input type="file" name="Upload"></td></tr>
+				<tr><td style="text-align:left" class="heading">Name<br><span class="smalltext">If different to filename</span></td><td style="text-align:left"><input type="text" name="Name"></td></tr>
+				<tr><td style="text-align:left" class="heading">Description</td><td style="text-align:left"><input type="text" name="Desc"></td></tr>
+				<tr><td style="text-align:left"><input type="submit" value="Upload"></td></tr>
 				</form>
 				</table><%
 				endDETable(pageContext);
@@ -102,9 +94,9 @@
 					%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Existing Images/Files</td></tr>
 						<tr><td>&nbsp;</td></tr><%
 					for (int i = 0; i < mr.length; i++) {
-						%><tr><td style=text-align:left"><a href="binary_data_entry.jsp?ID=<%=id%>&RecType=<%=recType%>&FoldID=<%=folder.getFolderId()%>&Action=Remove&DeleteID=<%=i%>"><img src="images/cancel.gif" width="20" height="20" border="0" alt="Delete" /></a></td>
-						<td style=text-align:left"><a href="/online/DigitalDocument?src=<%=mr[i].getCode()%>"><img border="0" src="/online/Thumbnail?src=<%=mr[i].getCode()%>" alt="FRED document" /></a>&nbsp;&nbsp;</td>
-						<td style=text-align:left"><%=mr[i].getTitle()%></td></tr><%
+						%><tr><td style="text-align:left"><a href="binary_data_entry.jsp?ID=<%=id%>&RecType=<%=recType%>&FoldID=<%=folder.getFolderId()%>&Action=Remove&DeleteID=<%=i%>"><img src="images/cancel.gif" width="20" height="20" border="0" alt="Delete" /></a></td>
+						<td style="text-align:left"><a href="/online/DigitalDocument?src=<%=mr[i].getCode()%>"><img border="0" src="/online/Thumbnail?src=<%=mr[i].getCode()%>" alt="FRED document" /></a>&nbsp;&nbsp;</td>
+						<td style="text-align:left"><%=mr[i].getTitle()%></td></tr><%
 					}
 					%></table><%
 					endDETable(pageContext);

@@ -143,14 +143,17 @@
 			%><table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
 			<tr><td colspan="3" class="deHeading">Folder Instructions</td></tr><tr><td style="text-align: left">
 			<ul>
-			<li>Listed below are the localities you have added to this folder.
-			<li>Working localities are named with their field number or drillhole name until they are allocated a Fossil Record Number.
-			<li>Click on the locality to add/edit locality records, or use the options to work with the locality itself:
+			<li>Listed below are the localities you have added to this folder.</li>
+			<li>Working localities are named with their field number or drillhole name until they are allocated a Fossil Record Number.</li>
+			<li>Click on the locality to add/edit locality records, or use the options to work with the locality itself:</li>
 			<ul>
-			<li><img src="images/edit.gif" border="0"> to edit the locality
-			<li><img src="images/copy.gif" border="0"> to make a copy of the locality (front of form data only)
-			<li><img src="images/delete.gif" border="0"> to delete the locality
-			<li><img src="images/submit.gif" border="0"> to submit the locality for entry to the masterfile
+			<li><img src="images/edit.gif" border="0" height="20" width="20" alt="" /> to edit the locality</li>
+			<li><img src="images/new_file.gif" border="0" height="20" width="20" alt="" /> to add a file/image to the locality/sample/record</li>
+			<li><img src="images/map.gif" border="0" height="20" width="20" alt="" /> to view a map of the locality</li>
+			<li><img src="images/copy.gif" border="0" height="20" width="20" alt="" /> to make a copy of the locality (front of form data only)</li>
+			<li><img src="images/delete.gif" border="0" height="20" width="20" alt="" /> to delete the locality</li>
+			<li><img src="images/submit.gif" border="0" height="20" width="20" alt="" /> to submit the locality for entry to the masterfile</li>
+			<li><img src="images/revoke.gif" border="0" height="20" width="20" alt="" /> to revoke the locality for entry from the masterfile</li>
 			</ul>
 			</ul>
 			</td></tr>

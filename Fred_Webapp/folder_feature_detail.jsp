@@ -30,7 +30,7 @@
 	public String getName(HttpServletRequest request) {
 		try {
 			FeatureUtil featureUtil = new FeatureUtil(HibernateUtil.get().getDAOFactory());
-			return "FRED :: Locality Detail for " + FeatureUtil.getFeatureIdentifyingName(featureUtil.getFeature(Integer.parseInt(request.getParameter("FeatID"))));
+			return "FRED :: Locality Details for " + FeatureUtil.getFeatureIdentifyingName(featureUtil.getFeature(Integer.parseInt(request.getParameter("FeatID"))));
 		} catch (StorageAccessException e) {
 			return "FRED :: Fossil Record Electronic Database";
 		}
@@ -130,16 +130,18 @@
 		%><table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
 		<tr><td colspan="3" class="deHeading">Locality Instructions</td></tr><tr><td style="text-align: left">
 		<ul>
-		<li>Listed below are the working records for this locality - adoption (blue) and paleontology (green).  
-		<li>Drillhole and Vertical Section localities will also have individual samples listed.
-		<li>Paleontology records marked with a red asterix contain taxonomic entries which have not been approved.  These records can not be submitted.
-		<li>Click on the icons to work with the locality's records:
+		<li>Listed below are the working records for this locality - adoption (blue) and paleontology (green).</li>
+		<li>Drillhole and Vertical Section localities will also have individual samples listed.</li>
+		<li>Paleontology records marked with a red asterix contain taxonomic entries which have not been approved.  These records can not be submitted.</li>
+		<li>Click on the icons to work with the locality's records:</li>
 		<ul>
-		<li><img src="images/edit.gif" border="0"> to edit the locality
-		<li><img src="images/submit.gif" border="0"> to submit the locality for entry to the masterfile
-		<li><img src="images/drill.gif" border="0"> to create a sample this locality
-		<li><img src="images/new_ado.gif" border="0"> to create a new adoption for this locality
-		<li><img src="images/new_pal.gif" border="0"> to create a new paleontological reocrd for this locality
+		<li><img src="images/edit.gif" border="0" height="20" width="20" alt="" /> to edit the locality/sample/record</li>
+		<li><img src="images/new_file.gif" border="0" height="20" width="20" alt="" /> to add a file/image to the locality/sample/record</li>
+		<li><img src="images/map.gif" border="0" height="20" width="20" alt="" /> to view a map of the locality</li>
+		<li><img src="images/submit.gif" border="0" height="20" width="20" alt="" /> to submit the locality/sample/record for entry to the masterfile</li>
+		<li><img src="images/drill.gif" border="0" height="20" width="20" alt="" /> to create a sample for this locality</li>
+		<li><img src="images/new_ado.gif" border="0" height="20" width="20" alt="" /> to create a new adoption record for this locality/sample</li>
+		<li><img src="images/new_pal.gif" border="0" height="20" width="20" alt="" /> to create a new paleontological record for this locality/sample</li>
 		</ul>
 		</ul>
 		</td></tr>
@@ -150,13 +152,13 @@
 		<p><%
 		startDETable(pageContext);
 		%><form name="FoldForm" method="put" action="folder_feature_detail.jsp">
-		<table border="0" width="550"><tr><td colspan="9" class="deHeading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></td></tr>
+		<table border="0" width="550"><tr><td colspan="10" class="deHeading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></td></tr>
 		<tr>
-		<th colspan="2">Name&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="5">Actions</th></tr>
-		<tr><td colspan="9"><img src="images/line.gif" height="3" width="550" /></td></tr>
+		<th colspan="2">Name&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="6">Actions</th></tr>
+		<tr><td colspan="10"><img src="images/line.gif" height="3" width="550" /></td></tr>
 		<%-- Feature --%>
 		<tr><td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a>&nbsp;</td>
-		<td  style="text-align: left" class="heading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%>&nbsp;&nbsp;<%
+		<td style="text-align: left" class="heading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%>&nbsp;&nbsp;<%
 		Audit audit = feature.getAudit();
 		String status = audit.getStatus();
 		%><td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {"text-align: left"})%>><%=status%>&nbsp;&nbsp;<%
@@ -167,30 +169,33 @@
 		<td style="text-align: left"><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></td>
 		<td style="text-align: left"><%
 		if (featureUtil.isAllowedEditFeature(user, feature, folder)) {
-			%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
+			%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a>&nbsp;
+			<td style="text-align: left"><a href="binary_data_entry.jsp?ID=<%=feature.getFeatureId()%>&RecType=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Add Image/File" /></a>&nbsp;<%
+		} else {
+			%></td><td><%	
 		}
-		
-		%></td><td><%
+		%></td>
+		<td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;</td>
+		<td style="text-align: left"><%
 		if (featureUtil.isAllowedSubmitFeature(user, feature, folder)) {
-			%><a href="javascript:if (confirm('Are you sure you want to submit this locality') == true) {document.FoldForm.ActionType.value='Submit';document.FoldForm.submit();}"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
+			%><a href="javascript:if (confirm('Are you sure you want to submit this locality') == true) {document.FoldForm.ActionType.value='Submit';document.FoldForm.submit();}"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Locality" /></a>&nbsp;<%
 		}
 		if (featureUtil.isAllowedRevokeFeature(user, feature, folder)) {
-			%><a href="javascript:if (confirm('Are you sure you want to revoke this locality') == true) {document.FoldForm.ActionType.value='Revoke';document.FoldForm.submit();}"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke Locality" /></a><img src="images/blank.gif" height="20" width="2" /><%
+			%><a href="javascript:if (confirm('Are you sure you want to revoke this locality') == true) {document.FoldForm.ActionType.value='Revoke';document.FoldForm.submit();}"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke Locality" /></a>&nbsp;<%
 		}
-		%></td><td><%
-			
+		%></td>
+		<td style="text-align: left"><%
 		if (folder.isAllowedCreateLocalities()) {
 			if (feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
 				Sample sample = featureUtil.getOutcropSample(feature);
-				%><a href="de.jsp?Type=<%=FREDConstants.ADOPTION%>&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/new_ado.gif" border="0" height="20" width="20" alt="Add Adoption Record" /></a><img src="images/blank.gif" height="20" width="2" />
-				</td><td>
-				<a href="de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/new_pal.gif" border="0" height="20" width="20" alt="Add Paleontology Record" /></a><%
+				%><a href="de.jsp?Type=<%=FREDConstants.ADOPTION%>&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/new_ado.gif" border="0" height="20" width="20" alt="Add Adoption Record" /></a>&nbsp;</td>
+				<td style="text-align: left"><a href="de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/new_pal.gif" border="0" height="20" width="20" alt="Add Paleontology Record" /></a><%
 			} else {
-				%><a href="de.jsp?Type=Sample&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/drill.gif" border="0" height="20" width="20" alt="New Sample" /></a><img src="images/blank.gif" height="20" width="2" /><%
+				%><a href="de.jsp?Type=Sample&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/drill.gif" border="0" height="20" width="20" alt="New Sample" /></a>&nbsp;<%
 			}
 		}
 		%></td></tr>
-		<tr><td colspan='11'><img src='images/line.gif' height='3' width='550' /></td></tr><%
+		<tr><td colspan="11"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 		
 		//samples
 		for (Iterator i = FeatureUtil.getSortedSamples(feature).iterator(); i.hasNext(); ) {
@@ -200,26 +205,30 @@
 			if (status.equals(FREDConstants.APPROVED) || (audit.getFolder() != null && audit.getFolder().equals(folder.getFolder()))) {
 				if (!feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
 					%><tr>
-					<td style="text-align: left"><a href="detail.jsp?ID=<%=sample.getSampleId()%>&backURL=<%=URLEncoder.encode("folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/drill.gif" height="20" width="20" border="0" alt="View Sample Details" /></a>&nbsp;</td><td><%=SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><a href="detail.jsp?ID=<%=sample.getSampleId()%>&backURL=<%=URLEncoder.encode("folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/drill.gif" height="20" width="20" border="0" alt="View Sample Details" /></a>&nbsp;</td>
+					<td style="text-align: left"><%=SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td>
 					<td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {"text-align: left"})%>><%=status%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></td>
-					</td><td><%
+					</td><td style="text-align: left"><%
 					if (sampleUtil.isAllowedEditSample(user, sample, folder)) {
-						%><a href="de.jsp?Type=Sample&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Sample Details" /></a><img src="images/blank.gif" height="20" width="2" /><%
+						%><a href="de.jsp?Type=Sample&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Sample Details" /></a><img src="images/blank.gif" height="20" width="2" />
+						<td style="text-align: left"><a href="binary_data_entry.jsp?ID=<%=sample.getSampleId()%>&RecType=SMP&FoldID=<%=folder.getFolderId()%>"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Add Image/File" /></a>&nbsp;<%
+					} else {
+						%></td><td><%
 					}
-					%></td><td><%
+					%></td><td style="text-align: left"><%
 					if (sampleUtil.isAllowedDeleteSample(user, sample, folder)) {
 						%><a href="javascript:if (confirm('Are you sure you want to delete this sample') == true) {document.FoldForm.ActionType.value='DeleteSamp';document.FoldForm.SampID.value='<%=sample.getSampleId()%>';document.FoldForm.submit();}" title="Delete Sample"><img src="images/delete.gif" border="0" height="20" width="20"></a><img src="images/blank.gif" height="20" width="2" /><%
 					}
-					%></td><td><%
+					%></td><td style="text-align: left"><%
 					if (sampleUtil.isAllowedSubmitSample(user, sample, folder)) {
 						%><a href="javascript:document.FoldForm.ActionType.value='SubmitSamp';document.FoldForm.SampID.value='<%=sample.getSampleId()%>';document.FoldForm.submit();"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Sample" /></a><img src="images/blank.gif" height="20" width="2" /><%
 					}
-					%></td><td><%
+					%></td><td style="text-align: left"><%
 					if (folder.isAllowedCreateLocalities()) {
 						%><a href="de.jsp?Type=<%=FREDConstants.ADOPTION%>&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/new_ado.gif" border="0" height="20" width="20" alt="Add Adoption Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
 					}
-					%></td><td><%
+					%></td><td style="text-align: left"><%
 					if (folder.isAllowedCreateLocalities()) {
 						%><a href="de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/new_pal.gif" border="0" height="20" width="20"  /></a><%
 					}
@@ -247,16 +256,19 @@
 							</td>					
 							<td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {"text-align: left"})%>><%=status%>&nbsp;&nbsp;</td>
 							<td style="text-align: left"><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></td>
-							<td><%
+							<td style="text-align: left"><%
 							//Record Options
 							if (recordUtil.isAllowedEditRecord(user, record, folder)) {
-								%><a href="de.jsp?Type=<%=(isAdoption) ? FREDConstants.ADOPTION : FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&RecID=<%=record.getRecordId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
+								%><a href="de.jsp?Type=<%=(isAdoption) ? FREDConstants.ADOPTION : FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&RecID=<%=record.getRecordId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Record" /></a><img src="images/blank.gif" height="20" width="2" />
+								<td style="text-align: left"><a href="binary_data_entry.jsp?ID=<%=record.getRecordId()%>&RecType=<%=(isAdoption) ? FREDConstants.ADOPTION : FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Add Image/File" /></a>&nbsp;<%
+							} else {
+								%></td><td><%
 							}
-							%></td><td><%
+							%></td><td style="text-align: left"><%
 							if (recordUtil.isAllowedDeleteRecord(user, record, folder)) {
 								%><a href="javascript:if (confirm('Are you sure you want to delete this record') == true) {document.FoldForm.ActionType.value='DeleteRec';document.FoldForm.RecID.value='<%=record.getRecordId()%>';document.FoldForm.submit();}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
 							}
-							%></td><td><%
+							%></td><td style="text-align: left"><%
 							if (recordUtil.isAllowedSubmitRecord(user, record, folder)) {
 								%><a href="javascript:document.FoldForm.ActionType.value='SubmitRec';document.FoldForm.RecID.value='<%=record.getRecordId()%>';document.FoldForm.submit();"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
 							}
@@ -264,7 +276,7 @@
 						}
 					}
 				}
-				%><tr><td colspan="9"><img src="images/line.gif" height="3" width="550" /></td></tr><%
+				%><tr><td colspan="10"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 			}
 		}
 		%><input type="hidden" name="ActionType" value="">
