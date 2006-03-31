@@ -23,6 +23,8 @@ import java.util.Vector;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
@@ -30,24 +32,25 @@ import javax.xml.parsers.ParserConfigurationException;
 import nz.cri.gns.auth.Right;
 import nz.cri.gns.auth.SecurityClass;
 import nz.cri.gns.auth.SecurityClassAccess;
-import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.database.DataException;
 import nz.cri.gns.db.BasicDatabaseApp2;
 import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.HTMLUtils;
+import nz.cri.gns.db.metadata.DocumentAttacher;
 import nz.cri.gns.db.site.DatumMethod;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.de.DataInputException;
-import nz.cri.gns.fred.model.Audit;
-import nz.cri.gns.fred.model.Audited;
-import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Meta;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.PersonRelationship;
 import nz.cri.gns.fred.model.RegistrationArea;
+import nz.cri.gns.intranet.DBConnection;
+import nz.cri.gns.jsp.JspUtils;
+import nz.cri.gns.jsp.PageState;
 import nz.cri.gns.util.map.Datum;
 import nz.cri.gns.util.map.DatumFactory;
 import nz.cri.gns.util.map.NZMG;
@@ -713,6 +716,17 @@ public class FREDUtil {
         return personSet;
     }
 
+	public static DocumentAttacher getDocumentAttacher(String docType, PageState state) throws SQLException, DataException, IOException, NamingException {
+		return new DocumentAttacher(state.getSession(),
+				state.getContext(),
+				new DBConnection(getConnection()),
+				"Fossil Record File",
+				1,
+				docType.toUpperCase() + "_META",
+				new String[] {docType.toUpperCase() + "_ID", "META_ID"},
+				new Object[] {DocumentAttacher.ID_PLACEHOLDER, DocumentAttacher.DOCUMENT_PLACEHOLDER});
+	}
+    
     public static String decodeCombo(String parameter) {
     	return ("-".equals(parameter) || "".equals(parameter)) ? null : parameter;
     }
