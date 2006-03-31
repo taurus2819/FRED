@@ -230,7 +230,6 @@
 			startDETable(pageContext);
 			%><table border="0" width="550">
 			<tr><td colspan="11" class="deHeading">Selected Locality Actions</td></tr>
-			<tr><td>&nbsp;</td></tr>
 			<%
 			//<tr><td class="heading" style="text-align: left">
 			//<a href="javascript:document.FoldForm.ActionType.value='PrintFeatures';document.FoldForm.target='_blank';document.FoldForm.submit();"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print Selected" />&nbsp;Print Selected</a>
