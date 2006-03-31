@@ -269,14 +269,14 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			FREDUtil.makeDropBox(out, cd);
 	
 			//Metadata listing
-			template.loadUntil(out, "{@metadataList}");
+			//template.loadUntil(out, "{@metadataList}");
 	
-			Set<FeatureMeta> images = feature.getFeatureMetas();
-			if (images != null) {
-				for (FeatureMeta meta : images) {
-					out.println(FREDUtil.getMetaTitle(meta) + "<br />");
-				}
-			}
+			//Set<FeatureMeta> images = feature.getFeatureMetas();
+			//if (images != null) {
+			//	for (FeatureMeta meta : images) {
+			//		out.println(FREDUtil.getMetaTitle(meta) + "<br />");
+			//	}
+			//}
 			
 			//Site setup
 			String eastingLabel = "Easting";
