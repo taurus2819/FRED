@@ -537,7 +537,7 @@
 							<tr><td colspan="2"><table border="0" cellspacing="0" width="600"><%
 							int y = 1;
 							%><tr><%
-							for (Iterator i = feature.getFeatureMetas().iterator(); i.hasNext();) {
+							for (Iterator i = sample.getSampleMetas().iterator(); i.hasNext();) {
 								Meta meta = (Meta) i.next();
 								if (y++ == 5) {
 									%></tr><tr><%
@@ -575,7 +575,7 @@
 										<tr><td colspan="2"><table border="0" cellspacing="0" width="600"><%
 										int y = 1;
 										%><tr><%
-										for (Iterator j = feature.getFeatureMetas().iterator(); j.hasNext();) {
+										for (Iterator j = adoRecord.getRecord().getRecordMetas().iterator(); j.hasNext();) {
 											Meta meta = (Meta) j.next();
 											if (y++ == 5) {
 												%></tr><tr><%
@@ -663,7 +663,7 @@
 										<tr><td colspan="2"><table border="0" cellspacing="0" width="600"><%
 										int y = 1;
 										%><tr><%
-										for (Iterator j = feature.getFeatureMetas().iterator(); j.hasNext();) {
+										for (Iterator j = palRecord.getRecord().getRecordMetas().iterator(); j.hasNext();) {
 											Meta meta = (Meta) j.next();
 											if (y++ == 5) {
 												%></tr><tr><%
