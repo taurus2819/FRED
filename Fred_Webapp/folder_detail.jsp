@@ -25,14 +25,11 @@
 		try {
 			FolderUtil folderUtil = new FolderUtil(HibernateUtil.get().getDAOFactory());
 			UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), getUser(request.getSession()));
-			return "FRED :: " + ((User)getUser(request.getSession())).getFullName() + "'s "
-					+ ((folder.isBacklogFolder()) ? "Backlog " : "")
-					+ "Folders: " + folder.getFolder().getName();
+			return "FRED :: " + folder.getFolder().getName();
 		} catch (Exception e) {
 			return "FRED :: The Fossil Record Electronic Database";
 		}
-	}
-	
+	}	
 %><%
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	if (request.getParameter("ID") == null) {
