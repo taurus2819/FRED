@@ -60,6 +60,7 @@
 			queryString = (String) session.getAttribute("QueryString");
 		} else {
 			queryRes = new Vector();
+			System.out.println("SELECT DISTINCT fv.feature_id, fv.sample_name FROM " + tableName + " WHERE " + whereSQL + " ORDER BY fv.sample_name");
 			rs = statement.executeQuery("SELECT DISTINCT fv.feature_id, fv.sample_name FROM " + tableName + " WHERE " + whereSQL + " ORDER BY fv.sample_name");
 			while (rs.next()) {
 				queryRes.add(rs.getString(1));

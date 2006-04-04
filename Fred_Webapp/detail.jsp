@@ -349,7 +349,7 @@
 			//Locality Data
 			%><p><%
 			startDETable(pageContext);
-			%><table border="0" width="550"><tr><td colspan="2" class="deHeading">Locality Information&nbsp;&nbsp;&nbsp;<a href="print_front.jsp?FeatID=<%=feature.getFeatureId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr>
+			%><table border="0" width="550"><tr><td colspan="2" class="deHeading">Locality Information&nbsp;&nbsp;&nbsp;<a href="print_front.jsp?FeatID=<%=feature.getFeatureId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr>
 			<tr><td class="heading">FR Number</td><td class="heading"><%=((feature.getFrNumber() != null) ? feature.getFrNumber().getFrNumber() : "not yet allocated")%></td></tr><%
 			if (feature.getYardFrNumber() != null) {
 				%><tr><td class="heading">Yard FR Number</td><td><%=feature.getYardFrNumber().getFrNumber()%></td></tr><%
@@ -447,7 +447,7 @@
 						%><p><%
 						startDETable(pageContext);
 						%><table border="0" width="550">
-						<tr><td colspan="2" class="deHeading">Sample Information&nbsp;&nbsp;&nbsp;<a href="print_front.jsp?ID=<%=sample.getSampleId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr><%
+						<tr><td colspan="2" class="deHeading">Sample Information&nbsp;&nbsp;&nbsp;<a href="print_front.jsp?ID=<%=sample.getSampleId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr><%
 						if (sample.getFrNumber() != null && !sample.getFrNumber().equals(feature.getFrNumber())) {
 							%><tr><td class="heading">Sample FR Number</td><td class="heading"><%=sample.getFrNumber().getFrNumber()%></td></tr><%
 						}
@@ -690,7 +690,7 @@
 					for (Iterator i = FeatureUtil.getSortedSamples(feature).iterator(); i.hasNext(); ) {
 						Sample locSample = (Sample) i.next();
 						%><tr><td><a href="detail.jsp?ID=<%=locSample.getSampleId() + backStr%>"><%=SampleUtil.getDrillHoleDepthDescription(locSample) + ((locSample.getFrNumber() != null && !locSample.getFrNumber().equals(feature.getFrNumber())) ? " (" + locSample.getFrNumber().getFrNumber() + ")" : "")%></a>&nbsp;&nbsp;</td>
-						<td><a href="print_front.jsp?ID=<%=locSample.getSampleId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr><%
+						<td><a href="print_front.jsp?ID=<%=locSample.getSampleId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr><%
 					}
 					%></table><%
 					endDETable(pageContext);

@@ -21,7 +21,7 @@
 		try {
 			Feature feature = new Feature(Integer.parseInt(request.getParameter("FeatID")), user, state);
 			if (feature.get(Feature.SAMPLES) != null)
-				response.sendRedirect("print_front.jsp?ID=" + ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).toString());
+				response.sendRedirect("print_front.jsp?ID=" + ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).toString() + "&q=" + Math.random());
 				return;
 		} catch (Exception e) {}
 	}
