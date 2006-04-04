@@ -7,6 +7,7 @@
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
+%><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.auth.InsufficientPrivelegesException"
@@ -85,28 +86,34 @@
 	
 	if (type != null && !type.equals("") && user != null) {
 	    try {
-	    	DAOFactory factory = HibernateUtil.get().getDAOFactory();
-	    	DataEntryForm dataEntryForm = getDataEntryFormImpl(request, user);
-	    	if (dataEntryForm != null) {
-		    	dataEntryForm.updateFromRequest(request, factory, true);
-		    	String id;
-		    	if (button.equals("save")) {
-		    		id = String.valueOf(dataEntryForm.save(FREDConstants.DATA_ORIGIN_EXCEL));
-		    		status = "Saved OK";
-		    	} else {
-		    		id = String.valueOf(dataEntryForm.submit(FREDConstants.DATA_ORIGIN_EXCEL));
-		    		/*
-		    		if (request.getParameter("FRNum") != null) {
-		    			FRNumber frNum = FRNumber.parseFRNumber(request.getParameter("FRNum"));
-		    			FolderUtils.approveLocality(id, frNum, null, user, state);
-		    		} */
-		    		status = "Submitted OK";
-		    	}
-				message = id;
+	    	if (type.equals("NewFold")) {
+	    		new FolderUtil(HibernateUtil.get().getDAOFactory()).addFolder(request.getParameter("FoldName"), user);
+	    		status = "Created OK";
+	    		message = "";
 	    	} else {
-	    		status = "Error";
-	    		message = "Not able to create data entry form";
-	    	}
+		    	DAOFactory factory = HibernateUtil.get().getDAOFactory();
+		    	DataEntryForm dataEntryForm = getDataEntryFormImpl(request, user);
+		    	if (dataEntryForm != null) {
+			    	dataEntryForm.updateFromRequest(request, factory, true);
+			    	String id;
+			    	if (button.equals("save")) {
+			    		id = String.valueOf(dataEntryForm.save(FREDConstants.DATA_ORIGIN_EXCEL));
+			    		status = "Saved OK";
+			    	} else {
+			    		id = String.valueOf(dataEntryForm.submit(FREDConstants.DATA_ORIGIN_EXCEL));
+			    		/*
+			    		if (request.getParameter("FRNum") != null) {
+			    			FRNumber frNum = FRNumber.parseFRNumber(request.getParameter("FRNum"));
+			    			FolderUtils.approveLocality(id, frNum, null, user, state);
+			    		} */
+			    		status = "Submitted OK";
+			    	}
+					message = id;
+		    	} else {
+		    		status = "Error";
+		    		message = "Not able to create data entry form";
+		    	}
+		    }
 		} catch (InsufficientPrivelegesException e) {
 			status = "AuthError";
 			message = "User not authorised for this operation";
