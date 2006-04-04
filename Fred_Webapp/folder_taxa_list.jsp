@@ -14,18 +14,20 @@
 %><%@page import="nz.cri.gns.fred.model.Sample"
 %><%@page import="nz.cri.gns.fred.model.Record"
 %><%@page import="nz.cri.gns.fred.model.Paleontology"
+%><%@page import="nz.cri.gns.fred.model.PaleontologyListEntry"
 %><%@page import="nz.cri.gns.fred.model.Taxon"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
+%><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
 %><%!
 public String getName(HttpServletRequest request) {
 	try {
 		FolderUtil folderUtil = new FolderUtil(HibernateUtil.get().getDAOFactory());
 		UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), getUser(request.getSession()));
-		return "FRED :: " + folder.getFolder().getName();
+		return "FRED :: Problem Taxa for " + folder.getFolder().getName() + " folder";
 	} catch (Exception e) {
 		return "FRED :: The Fossil Record Electronic Database";
 	}
@@ -47,14 +49,12 @@ public String getName(HttpServletRequest request) {
 			Set<Taxon> rejTaxa = new HashSet<Taxon>();
 			Set<Taxon> obTaxa = new HashSet<Taxon>();
 			UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), getUser(request.getSession()));
+			session.setAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT, "folder_taxa_list.jsp?ID=" + folder.getFolder().getFolderId());
 			Feature[] features = featureUtil.getFeaturesInFolder(folder);
-			System.out.println("Feature count: " + features.length);
 			for (int x = 0; x < features.length; x++) {
 				Set<Sample> samples = features[x].getSamples();
-				System.out.println("Sample count: " + samples.size());
 				for (Sample sample : samples) {
 					Set<Record> records = sample.getRecords();
-					System.out.println("Record count: " + records.size());
 					for (Record record : records) {
 						if (RecordUtil.getRecordType(record).equals(FREDConstants.PALEONTOLOGICAL)) {
 							Paleontology pal = record.getPaleontology();
@@ -71,17 +71,26 @@ public String getName(HttpServletRequest request) {
 				//Collections.sort(provTaxa);
 				%><p><%
 				startDETable(pageContext);
-				%><table border="0" cellspacing="0" cellpadding="2" width="550">
-				<tr><td colspan=5 class=deHeading>Provisional Entries</td></tr>
-				<tr><td colspan="5" style="text-align: left; color: #FF0000">This record contains provisional taxonomic entries. You must wait until these entries are approved before submitting the record</td></tr>
-				<tr><th style="text-align: left">Taxonomic Name&nbsp;&nbsp;</th><th style="text-align: left">Group&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th colspan="2" style="text-align: left">Submitted By</th></tr><%
-				for (Iterator i = provTaxa.iterator(); i.hasNext(); ) {
-					Taxon taxon = (Taxon)i.next();
+				%><table border="0" cellspacing="0" cellpadding="2" width="650">
+				<tr><td colspan=6 class=deHeading>Provisional Entries</td></tr>
+				<tr><td colspan="6" style="text-align: left; color: #FF0000">This record contains provisional taxonomic entries. You must wait until these entries are approved before submitting the record</td></tr>
+				<tr><th style="text-align: left">Taxonomic Name&nbsp;&nbsp;</th><th style="text-align: left">Group&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th colspan="2" style="text-align: left">Submitted By&nbsp;&nbsp;</th><th style="text-align: left">Locality(s)</th></tr><%
+				for (Taxon taxon : provTaxa) {
 					%><tr><td style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=taxon.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getSubmittedById() != null) ? FREDUtil.getUserName(taxon.getSubmittedById().intValue()) : "")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getSubmittedDate()) : "")%>&nbsp;&nbsp;</td><%
+					if (!FREDUtil.isEmpty(taxon.getListEntries())) {
+						%><td style="text-align: left"><%
+						for (PaleontologyListEntry palList : taxon.getListEntries()) {
+							try {
+								Feature feature = palList.getPaleontology().getRecord().getSample().getFeature();
+								%><a href="de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&RecID=<%=palList.getPaleontology().getRecordId()%>"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></a>&nbsp;&nbsp;<br /><%
+							} catch (Exception e) {}						}
+						%></td><%
+					}
+					%></tr><%
 				}
 				%></table><%
 				endDETable(pageContext);
@@ -93,18 +102,27 @@ public String getName(HttpServletRequest request) {
 				//Collections.sort(rejTaxa);
 				%><p><%
 				startDETable(pageContext);
-				%><table border="0" cellspacing="0" cellpadding="2" width="550">
-				<tr><th colspan="6" class="deHeading">Rejected Entries</th></tr>
-				<tr><td colspan="6" style="text-align: left; color: #FF0000">This record contains rejected taxonomic entries. You must remove these entries before submitting the record</td></tr>
-				<tr><th style="text-align: left">Taxonomic Name&nbsp;&nbsp;</th><th style="text-align: left">Group&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th colspan="2" style="text-align: left">Rejected By&nbsp;&nbsp;</th><th style="text-align: left">Comments</th></tr><%
-				for (Iterator i = rejTaxa.iterator(); i.hasNext(); ) {
-					Taxon taxon = (Taxon)i.next();
+				%><table border="0" cellspacing="0" cellpadding="2" width="650">
+				<tr><th colspan="7" class="deHeading">Rejected Entries</th></tr>
+				<tr><td colspan="7" style="text-align: left; color: #FF0000">This record contains rejected taxonomic entries. You must remove these entries before submitting the record</td></tr>
+				<tr><th style="text-align: left">Taxonomic Name&nbsp;&nbsp;</th><th style="text-align: left">Group&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th colspan="2" style="text-align: left">Rejected By&nbsp;&nbsp;</th><th style="text-align: left">Comments&nbsp;&nbsp;</th><th style="text-align: left">Locality(s)</th></tr><%
+				for (Taxon taxon : rejTaxa) {
 					%><tr><td style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=taxon.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getApprovedById() != null) ? FREDUtil.getUserName(taxon.getApprovedById().intValue()) : "")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getApprovedDate()) : "")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getPanelistComments())%>&nbsp;&nbsp;</td><%
+					if (!FREDUtil.isEmpty(taxon.getListEntries())) {
+						%><td style="text-align: left"><%
+						for (PaleontologyListEntry palList : taxon.getListEntries()) {
+							try {
+								Feature feature = palList.getPaleontology().getRecord().getSample().getFeature();
+								%><a href="de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&RecID=<%=palList.getPaleontology().getRecordId()%>"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></a>&nbsp;&nbsp;<br /><%
+							} catch (Exception e) {}						}
+						%></td><%
+					}
+					%></tr><%
 				}
 				%></table><%
 				endDETable(pageContext);
@@ -116,15 +134,24 @@ public String getName(HttpServletRequest request) {
 				//Collections.sort(obTaxa);
 				%><p><%
 				startDETable(pageContext);
-				%><table border="0" cellspacing="0" cellpadding="2" width="550">
-				<tr><th colspan="3" class="deHeading">Obsolete Entries</th></tr>
-				<tr><td colspan="3" style="text-align: left; color: #FF0000">This record contains obsolete taxonomic entries. You must remove these entries before submitting the record</td></tr>
-				<tr><th style="text-align: left">Taxonomic Name&nbsp;&nbsp;</th><th style="text-align: left">Group&nbsp;&nbsp;</th><th style="text-align: left">Author</th></tr><%
-				for (Iterator i = obTaxa.iterator(); i.hasNext(); ) {
-					Taxon taxon = (Taxon)i.next();
+				%><table border="0" cellspacing="0" cellpadding="2" width="650">
+				<tr><th colspan="4" class="deHeading">Obsolete Entries</th></tr>
+				<tr><td colspan="4" style="text-align: left; color: #FF0000">This record contains obsolete taxonomic entries. You must remove these entries before submitting the record</td></tr>
+				<tr><th style="text-align: left">Taxonomic Name&nbsp;&nbsp;</th><th style="text-align: left">Group&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Locality(s)</th></tr><%
+				for (Taxon taxon : obTaxa) {
 					%><tr><td style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=taxon.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td><%
+					if (!FREDUtil.isEmpty(taxon.getListEntries())) {
+						%><td style="text-align: left"><%
+						for (PaleontologyListEntry palList : taxon.getListEntries()) {
+							try {
+								Feature feature = palList.getPaleontology().getRecord().getSample().getFeature();
+								%><a href="de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&RecID=<%=palList.getPaleontology().getRecordId()%>"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></a>&nbsp;&nbsp;<br /><%
+							} catch (Exception e) {}						}
+						%></td><%
+					}
+					%></tr><%
 				}
 				%></table><%
 				endDETable(pageContext);
