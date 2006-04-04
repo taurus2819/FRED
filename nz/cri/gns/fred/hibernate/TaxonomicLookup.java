@@ -173,6 +173,6 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
     }
     
 	public int compareTo(nz.cri.gns.fred.model.Taxon arg0) {
-		return taxonomicName.compareTo(arg0.getTaxonomicName());
+		return (getTaxonomicGroup().getName().toUpperCase() + taxonomicName.toUpperCase()).compareTo(arg0.getTaxonomicGroup().getName().toUpperCase() + arg0.getTaxonomicName().toUpperCase());
 	}
 }
