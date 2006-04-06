@@ -12,7 +12,6 @@
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.auth.User"
-%><%@page import="java.util.Iterator"
 %><%!
 	public String getName(HttpServletRequest request) {
 		try {
@@ -59,8 +58,7 @@
 				startDETable(pageContext);
 				%><table border="0" width="800"><tr><td colspan="6" class="deHeading">Provisional Entries</td></tr>
 				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Submitted By&nbsp;&nbsp;</th><th style="text-align: left">Submitted Date&nbsp;&nbsp;</th><th style="text-align: left">Locality(s)</th><th style="text-align: left">Actions</th></tr><%
-				for (Iterator i = taxaUtil.getTaxa(group, FREDConstants.PROVISIONAL).iterator(); i.hasNext(); ) {
-					Taxon taxon = (Taxon) i.next();
+				for (Taxon taxon : taxaUtil.getTaxa(group, FREDConstants.PROVISIONAL)) {
 					%><form name="taxonForm<%=taxon.getTaxaId()%>" method="post" action="taxa_group_detail.jsp">
 					<input type="hidden" name="ID" value="<%=group.getGroupId()%>" />
 					<input type="hidden" name="TaxonID" value="<%=taxon.getTaxaId()%>" />
@@ -72,8 +70,7 @@
 					<td style="text-align: left"><%=((taxon.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getSubmittedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td><%
 					if (!FREDUtil.isEmpty(taxon.getListEntries())) {
 						%><td><%
-						for (Iterator j = taxon.getListEntries().iterator(); j.hasNext(); ) {
-							PaleontologyListEntry palList = (PaleontologyListEntry) j.next();
+						for (PaleontologyListEntry palList : taxon.getListEntries()) {
 							try {
 								Feature feature = palList.getPaleontology().getRecord().getSample().getFeature();
 								%><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>" target="feat"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></a>&nbsp;&nbsp;<br /><%
@@ -98,8 +95,7 @@
 				startDETable(pageContext);
 				%><table border="0" width="800"><tr><td colspan="7" class="deHeading">Rejected Entries</td></tr>
 				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Rejected By&nbsp;&nbsp;</th><th style="text-align: left">Rejected Date&nbsp;&nbsp;</th><th style="text-align: left">Comments&nbsp;&nbsp;</th><th style="text-align: left">Locality(s)&nbsp;&nbsp;</th><th style="text-align: left">Actions</th></tr><%
-				for (Iterator i = taxaUtil.getTaxa(group, FREDConstants.REJECTED).iterator(); i.hasNext(); ) {
-					Taxon taxon = (Taxon) i.next();
+				for (Taxon taxon : taxaUtil.getTaxa(group, FREDConstants.REJECTED)) {
 					%><tr>
 					<td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
@@ -108,8 +104,7 @@
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getPanelistComments())%>&nbsp;&nbsp;</td><%
 					if (!FREDUtil.isEmpty(taxon.getListEntries())) {
 						%><td><%
-						for (Iterator j = taxon.getListEntries().iterator(); j.hasNext(); ) {
-							PaleontologyListEntry palList = (PaleontologyListEntry) j.next();
+						for (PaleontologyListEntry palList : taxon.getListEntries()) {
 							try {
 								Feature feature = palList.getPaleontology().getRecord().getSample().getFeature();
 								%><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>" target="feat"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></a>&nbsp;&nbsp;<br /><%
@@ -131,8 +126,7 @@
 				startDETable(pageContext);
 				%><table border="0" width="800"><tr><td colspan="5" class="deHeading">Approved Entries</td></tr>
 				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Approved By&nbsp;&nbsp;</th><th style="text-align: left">Approved Date&nbsp;&nbsp;</th><th style="text-align: left">Actions</th></tr><%
-				for (Iterator i = taxaUtil.getTaxa(group, FREDConstants.APPROVED).iterator(); i.hasNext(); ) {
-					Taxon taxon = (Taxon) i.next();
+				for (Taxon taxon : taxaUtil.getTaxa(group, FREDConstants.APPROVED)) {
 					%><tr>
 					<td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
@@ -151,8 +145,7 @@
 				startDETable(pageContext);
 				%><table border="0" width="800"><tr><td colspan="2" class="deHeading">Obsolete Entries</td></tr>
 				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author</th></tr><%
-				for (Iterator i = taxaUtil.getTaxa(group, FREDConstants.OBSOLETE).iterator(); i.hasNext(); ) {
-					Taxon taxon = (Taxon) i.next();
+				for (Taxon taxon : taxaUtil.getTaxa(group, FREDConstants.OBSOLETE)) {
 					%><tr>
 					<td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
