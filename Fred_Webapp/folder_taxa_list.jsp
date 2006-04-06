@@ -1,12 +1,8 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.db.DBUtils"
-%><%@page import="java.util.Collections"
-%><%@page import="java.util.Iterator"
-%><%@page import="java.util.List"
 %><%@page import="java.util.Set"
-%><%@page import="java.util.HashSet"
-%><%@page import="java.util.Vector"
+%><%@page import="java.util.TreeSet"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
@@ -27,7 +23,7 @@ public String getName(HttpServletRequest request) {
 	try {
 		FolderUtil folderUtil = new FolderUtil(HibernateUtil.get().getDAOFactory());
 		UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), getUser(request.getSession()));
-		return "FRED :: Problem Taxa for " + folder.getFolder().getName() + " folder";
+		return "FRED :: Problem Taxa for " + folder.getFolder().getName();
 	} catch (Exception e) {
 		return "FRED :: The Fossil Record Electronic Database";
 	}
@@ -45,9 +41,9 @@ public String getName(HttpServletRequest request) {
 		drawTop(out, et, request, response);
 		%><center><p>&nbsp;</p><%	
 		try {
-			Set<Taxon> provTaxa = new HashSet<Taxon>();
-			Set<Taxon> rejTaxa = new HashSet<Taxon>();
-			Set<Taxon> obTaxa = new HashSet<Taxon>();
+			Set<Taxon> provTaxa = new TreeSet<Taxon>();
+			Set<Taxon> rejTaxa = new TreeSet<Taxon>();
+			Set<Taxon> obTaxa = new TreeSet<Taxon>();
 			UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), getUser(request.getSession()));
 			session.setAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT, "folder_taxa_list.jsp?ID=" + folder.getFolder().getFolderId());
 			Feature[] features = featureUtil.getFeaturesInFolder(folder);
@@ -68,7 +64,6 @@ public String getName(HttpServletRequest request) {
 	
 			//List provisional taxa
 			if (provTaxa.size() > 0) {
-				//Collections.sort(provTaxa);
 				%><p><%
 				startDETable(pageContext);
 				%><table border="0" cellspacing="0" cellpadding="2" width="650">
@@ -99,7 +94,6 @@ public String getName(HttpServletRequest request) {
 	
 			//List rejected taxa
 			if (rejTaxa.size() > 0) {
-				//Collections.sort(rejTaxa);
 				%><p><%
 				startDETable(pageContext);
 				%><table border="0" cellspacing="0" cellpadding="2" width="650">
@@ -131,7 +125,6 @@ public String getName(HttpServletRequest request) {
 	
 			//List obsoloete taxa
 			if (obTaxa.size() > 0) {
-				//Collections.sort(obTaxa);
 				%><p><%
 				startDETable(pageContext);
 				%><table border="0" cellspacing="0" cellpadding="2" width="650">
@@ -169,7 +162,4 @@ public String getName(HttpServletRequest request) {
 		HibernateUtil.get().getDAOFactory().closeSession();
 	} catch (Exception e) {
 	}
-
 %>
-
-
