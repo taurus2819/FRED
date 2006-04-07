@@ -8,7 +8,7 @@
 </tr>
 <tr>
 <td class="heading" style="vertical-align: top; color: #FF0000">Collectors</td>
-<td colspan="2"><table border="0"><tbody id="collTable"></tbody></table><input name="Coll" id="CollectorField" maxlength="64">&nbsp;<a href="javascript:var x=null;">Add</a>
+<td colspan="2"><table border="0"><tbody id="collTable"></tbody></table><input name="Coll" id="CollectorField" maxlength="64">&nbsp;<a href="javascript:acceptCollector(document.getElementById("CollectorField").value);">Add</a>
 </td>
 </tr>
 <tr>
@@ -32,7 +32,7 @@ new ContextHint(
 	function generateURL(start) {
 		return "ajaxSupport.xml?action=List&type=Person&start=" + start + "&q=" + Math.random();
 	},
-	"clearCollectorField();",
+	null,
 	true
 );
 
@@ -42,21 +42,32 @@ function clearCollectorField() {
 		acceptCollector(document.getElementById('CollectorField').value);
 	}
 }
+function acceptCollectorAndSubmit(personName) {
+	//Only called if personName is > 0
+	callAJAX("ajaxSupport.xml?action=Confirm&type=Person&name=" + escape(personName) + "&q=" + Math.random(), processCollectorAcceptAndSubmit);
+}
 function acceptCollector(personName) {
 	if (personName.length == 0)
 		alert("Enter a name first!");
 	callAJAX("ajaxSupport.xml?action=Confirm&type=Person&name=" + escape(personName) + "&q=" + Math.random(), processCollectorAccept);
 }
-
+function processCollectorAcceptAndSubmit() {
+	processCollectorAcceptImpl(true);
+}
 function processCollectorAccept() {
+	processCollectorAcceptImpl(true);
+}
+function processCollectorAcceptImpl(doSubmit) {
 	if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
 		var xml = xmlHttp.responseXML;
 		var reply = xml.getElementsByTagName("status")[0].firstChild.data;
 		var name = xml.getElementsByTagName("name")[0].firstChild.data;
-		if (reply == "Exists")
+		if (reply == "Exists") {
 			addCollector(name);
-		else if (confirm(name + " does not exist. A new record will be created.  Continue?")) {
-			callAJAX("ajaxSupport.xml?action=Add&type=Person&name=" + escape(name) + "&q=" + Math.random(), processCollectorAccept);
+			if (doSubmit)
+				document.form1.submit();
+		} else if (confirm(name + " does not exist. A new record will be created.  Continue?")) {
+			callAJAX("ajaxSupport.xml?action=Add&type=Person&name=" + escape(name) + "&q=" + Math.random(), (doSubmit) ? processCollectorAcceptAndSubmit : processCollectorAccept);
 		}
 	}
 }
@@ -91,6 +102,14 @@ for (var i=0; i<collArray.length; i++) {
 	addCollector(collArray[i]);
 }
 
+//Modify the form to force appropriate actions on submit
+document.form1.onsubmit = function { 
+	var collField = document.getElementById("CollectorField");
+	if (collField.value.length > 0) {
+
+	} else
+		return true;
+}
 //--></script></td>
 </tr>
 <tr><td class="heading" style="color: #FF0000">Fossils In Place</td>
