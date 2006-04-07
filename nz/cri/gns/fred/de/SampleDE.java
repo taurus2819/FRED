@@ -635,7 +635,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		template.addSub("inputField", "CollDate");
 		template.addSub("button", "CollDateCal");
 		template.loadAll(out);
-		template = provider.getContent("sample_postform.html");
+		template = provider.getContent("sample.postform");
 		template.loadAll(out);
 	}
 
