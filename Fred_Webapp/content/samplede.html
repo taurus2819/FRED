@@ -55,7 +55,7 @@ function processCollectorAcceptAndSubmit() {
 	processCollectorAcceptImpl(true);
 }
 function processCollectorAccept() {
-	processCollectorAcceptImpl(true);
+	processCollectorAcceptImpl(false);
 }
 function processCollectorAcceptImpl(doSubmit) {
 	if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
