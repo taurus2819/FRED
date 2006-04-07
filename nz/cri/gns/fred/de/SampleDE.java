@@ -609,9 +609,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 				+ ((sample != null) ? "&SampID=" + sample.getSampleID() : "")
 				+ "&RecType=Sample' class='boldlink'>Copy From</a></td></tr>\n");
 		}
-		out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick='form1.SaveType.value=\"Save\";form1.submit();' class='boldlink'>Save</a></td></tr>\n");
+		out.write("<tr><td><a href='#' onClick="submitForm('Save');'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick="submitForm('Save');" class='boldlink'>Save</a></td></tr>\n");
 		if (isAllowedSubmit)
-			out.write("<tr><td><a href='#' onClick='form1.SaveType.value=\"Submit\";form1.submit();'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database' /></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick='form1.SaveType.value=\"Submit\";form1.submit();' class='boldlink'>Submit</a></td></tr>\n");
+			out.write("<tr><td><a href='#' onClick="submitForm('Submit');"><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database' /></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick="submitForm('Submit');" class='boldlink'>Submit</a></td></tr>\n");
 		*/
 	}
 
@@ -623,9 +623,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			+ "&RecType=Sample";
 			
 		links.add(new IconnedLink("load_record.jsp" + args, "images/load.gif", "Copy From"));
-		links.add(new IconnedLink("javascript:document.form1.SaveType.value='Save';document.form1.submit();", "images/save.gif", "Save"));
+		links.add(new IconnedLink("javascript:submitForm('Save');", "images/save.gif", "Save"));
 		if (isAllowedSubmit)
-			links.add(new IconnedLink("javascript:document.form1.SaveType.value='Submit';document.form1.submit();", "images/submit.gif", "Submit"));
+			links.add(new IconnedLink("javascript:submitForm('Submit');", "images/submit.gif", "Submit"));
 		
 		return links;
 	}
