@@ -826,6 +826,10 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 
 	public void save(Person person) throws StorageAccessException {
 		HibernateUtils.save(provider, person);
+		try {
+			provider.currentSession().flush();
+		} catch (Exception e) {
+		}
 	}
 
 	public Person getPerson(String name) throws StorageAccessException {
