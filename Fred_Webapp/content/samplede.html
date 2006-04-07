@@ -8,7 +8,7 @@
 </tr>
 <tr>
 <td class="heading" style="vertical-align: top; color: #FF0000">Collectors</td>
-<td colspan="2"><table border="0"><tbody id="collTable"></tbody></table><input name="Coll" id="CollectorField" maxlength="64">&nbsp;<a href="javascript:acceptCollector(document.getElementById("CollectorField").value);">Add</a>
+<td colspan="2"><table border="0"><tbody id="collTable"></tbody></table><input name="Coll" id="CollectorField" maxlength="64">&nbsp;<a href="javascript:acceptCollector(document.getElementById('CollectorField').value);">Add</a>
 </td>
 </tr>
 <tr>
@@ -100,15 +100,6 @@ var collArray = new Array();
 
 for (var i=0; i<collArray.length; i++) {
 	addCollector(collArray[i]);
-}
-
-//Modify the form to force appropriate actions on submit
-document.form1.onsubmit = function() { 
-	var collField = document.getElementById("CollectorField");
-	if (collField.value.length > 0) {
-
-	} else
-		return true;
 }
 //--></script></td>
 </tr>

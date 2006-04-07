@@ -635,6 +635,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		template.addSub("inputField", "CollDate");
 		template.addSub("button", "CollDateCal");
 		template.loadAll(out);
+		Template template = provider.getContent("sample_postform.html");
+		template.loadAll(out);
 	}
 
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
