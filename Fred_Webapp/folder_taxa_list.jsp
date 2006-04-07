@@ -1,5 +1,6 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
+%><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="java.util.Set"
 %><%@page import="java.util.TreeSet"
@@ -38,13 +39,21 @@ public String getName(HttpServletRequest request) {
 	et.setDisplayLoadingMessage(true);
 
 	if (request.getParameter("ID") != null) {
+		
+		et.setDisplayLoadingMessage(true);
+		et.setButtons(new IconnedLink[] {
+				new IconnedLink("folder_detail.jsp?ID=" + request.getParameter("ID") + "&q=" + Math.random(), "images/back_arrow.gif", "Back to folder contents")
+			});
+
 		drawTop(out, et, request, response);
-		%><center><p>&nbsp;</p><%	
-		try {
+		%><center><p>&nbsp;</p><%
+		
+		UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), getUser(request.getSession()));
+		if (folder != null && folder.isAllowedReadLocalities()) {
+			
 			Set<Taxon> provTaxa = new TreeSet<Taxon>();
 			Set<Taxon> rejTaxa = new TreeSet<Taxon>();
-			Set<Taxon> obTaxa = new TreeSet<Taxon>();
-			UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), getUser(request.getSession()));
+			
 			session.setAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT, "folder_taxa_list.jsp?ID=" + folder.getFolder().getFolderId());
 			Feature[] features = featureUtil.getFeaturesInFolder(folder);
 			for (int x = 0; x < features.length; x++) {
@@ -56,7 +65,6 @@ public String getName(HttpServletRequest request) {
 							Paleontology pal = record.getPaleontology();
 							provTaxa.addAll(recordUtil.getTaxon(pal, Taxon.PROVISIONAL_STATUS));
 							rejTaxa.addAll(recordUtil.getTaxon(pal, Taxon.REJECTED_STATUS));
-							obTaxa.addAll(recordUtil.getTaxon(pal, Taxon.OBSOLETE_STATUS));
 						}
 					}
 				}
@@ -122,38 +130,20 @@ public String getName(HttpServletRequest request) {
 				endDETable(pageContext);
 				%></p><%
 			}
-	
-			//List obsoloete taxa
-			if (obTaxa.size() > 0) {
+			
+			if (provTaxa.size() + rejTaxa.size() == 0) {
 				%><p><%
 				startDETable(pageContext);
 				%><table border="0" cellspacing="0" cellpadding="2" width="650">
-				<tr><th colspan="4" class="deHeading">Obsolete Entries</th></tr>
-				<tr><td colspan="4" style="text-align: left; color: #FF0000">This record contains obsolete taxonomic entries. You must remove these entries before submitting the record</td></tr>
-				<tr><th style="text-align: left">Taxonomic Name&nbsp;&nbsp;</th><th style="text-align: left">Group&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Locality(s)</th></tr><%
-				for (Taxon taxon : obTaxa) {
-					%><tr><td style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=taxon.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td><%
-					if (!FREDUtil.isEmpty(taxon.getListEntries())) {
-						%><td style="text-align: left"><%
-						for (PaleontologyListEntry palList : taxon.getListEntries()) {
-							try {
-								Feature feature = palList.getPaleontology().getRecord().getSample().getFeature();
-								%><a href="de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&RecID=<%=palList.getPaleontology().getRecordId()%>"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></a>&nbsp;&nbsp;<br /><%
-							} catch (Exception e) {}						}
-						%></td><%
-					}
-					%></tr><%
-				}
-				%></table><%
+				<tr><td style="text-align: left">No problem taxa in this folder</td></tr>
+				</table><%
 				endDETable(pageContext);
-				%></p><%
+				%></p><%				
 			}
 			
 			out.println("</center>");
-		} catch (Exception e) {
-			e.printStackTrace();
+		} else {
+			%>You do not have sufficient rights to view this page<%
 		}
 		drawBottom(out, et);
 	}
