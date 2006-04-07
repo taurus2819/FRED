@@ -151,7 +151,15 @@
 			<p>An error has occured while writing the data entry form.</p><%
 		}
 	}
-	
+	%><script><!--
+
+function submitForm(saveType) {
+	document.form1.SaveType.value = saveType;
+	if (!preSubmit || preSubmit()) {
+		document.form1.submit();
+	}
+}
+//--></script><%
 	drawBottom(out, et);
 	
 	try {

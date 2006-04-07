@@ -158,9 +158,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		} catch (UnsupportedEncodingException e) {
 			//Aint' gonna happen
 		}
-		links.add(new IconnedLink("javascript:document.form1.SaveType.value='Save';document.form1.submit();", "images/save.gif", "Save"));
+		links.add(new IconnedLink("javascript:submitForm('Save');", "images/save.gif", "Save"));
 		if (isAllowedSubmit)
-			links.add(new IconnedLink("javascript:document.form1.SaveType.value='Submit';document.form1.submit();", "images/submit.gif", "Submit"));
+			links.add(new IconnedLink("javascript:submitForm('Submit');", "images/submit.gif", "Submit"));
 		
 		return links;
 	}

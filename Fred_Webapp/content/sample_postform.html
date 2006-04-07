@@ -1,7 +1,8 @@
+<!--BTW this can be moved back into the main one now...-->
 <script><!--
 
 //Modify the form to force appropriate actions on submit
-document.form1.onsubmit = function() { 
+function preSubmit() { 
 	var collField = document.getElementById("CollectorField");
 	if (collField.value.length > 0) {
 		acceptCollectorAndSubmit(collField.value);
