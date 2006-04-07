@@ -47,18 +47,20 @@
 	et.setDisplayLoadingMessage(true);
 	
 	if (folder != null && folder.isAllowedCreateLocalities()) {
-		IconnedLink[] iLink = new IconnedLink[((folder.isBacklogFolder()) ? 6 : 5)];
-		iLink[0] = new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to Folders");
+		IconnedLink[] iLink = new IconnedLink[((folder.isBacklogFolder()) ? 7 : 6)];
+		iLink[0] = new IconnedLink("folder_list.jsp?&q=" + Math.random(), "images/back_arrow.gif", "Back to Folders");
 		iLink[1] = new IconnedLink(null, "images/new.gif", "New: ");
 		iLink[2] = new IconnedLink("de.jsp?Type=Outcrop&FoldID=" + folder.getFolder().getFolderId(), null, "Outcrop");
 		iLink[3] = new IconnedLink("de.jsp?Type=Drillhole&FoldID=" + folder.getFolder().getFolderId(), null, "Drillhole");
 		iLink[4] = new IconnedLink("de.jsp?Type=Vertical+Section&FoldID=" + folder.getFolder().getFolderId(), null, "V. Section");
+		iLink[5] = new IconnedLink("folder_taxa_list.jsp?ID=" + folder.getFolder().getFolderId() + "&q=" + Math.random() , "images/loc.gif", "Taxa Status");
 		if (folder.isBacklogFolder())
-			iLink[5] = new IconnedLink("backlog_status.jsp", "images/map.gif", "Status");
+			iLink[6] = new IconnedLink("backlog_status.jsp", "images/map.gif", "Backlog Status");
 		et.setButtons(iLink);
 	} else {
 		et.setButtons(new IconnedLink[] {
-			new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")
+			new IconnedLink("folder_list.jsp?q=" + Math.random(), "images/back_arrow.gif", "Back to folders"),
+			new IconnedLink("folder_taxa_list.jsp?ID=" + folder.getFolder().getFolderId() + "&q=" + Math.random(), "images/loc.gif", "Taxa Status")
 		});
 	}	
 	
@@ -177,7 +179,7 @@
 				%><tr>
 				<td style="text-align: left"><input type="checkbox" name="FeatIDs" value="<%=feature.getFeatureId()%>" /></td>	
 				<td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
-				<td style="text-align: left" class="heading"><a href="folder_feature_detail.jsp?FoldID=<%=folder.getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><%=name%></a>&nbsp;&nbsp;<%
+				<td style="text-align: left" class="heading"><a href="folder_feature_detail.jsp?FoldID=<%=folder.getFolderId()%>&FeatID=<%=feature.getFeatureId() + "&q=" + Math.random()%>"><%=name%></a>&nbsp;&nbsp;<%
 				if (featName != null && !featName.equals(name)) {
 					%><br />(<%=featName%>)&nbsp;&nbsp;<%
 				}
