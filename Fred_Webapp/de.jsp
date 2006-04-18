@@ -155,7 +155,7 @@
 
 function submitForm(saveType) {
 	document.form1.SaveType.value = saveType;
-	if (!preSubmit || preSubmit()) {
+	if (!window.preSubmit || preSubmit()) {
 		document.form1.submit();
 	}
 }
