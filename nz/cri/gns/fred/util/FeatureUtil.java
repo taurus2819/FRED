@@ -619,6 +619,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return folder.isAllowedEditLocalities();
 	}
 
+	public boolean isAllowedEditApprovedFeature(UserAccount user, Feature feature) throws StorageAccessException {
+		if (!feature.getAudit().getStatus().equals(FREDConstants.APPROVED))
+			return false;
+		return hasMasterfileRights(user, feature, UserFolder.FOLDER_EDIT_RIGHT);
+	}
+	
 	public boolean isAllowedSubmitFeature(UserAccount user, Feature feature, UserFolder folder) {
 		String status = feature.getAudit().getStatus();
 		if (status.equals(FREDConstants.WAITING) || status.equals(FREDConstants.APPROVED))
