@@ -7,11 +7,12 @@
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.jsp.PageState"
+%><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.intranet.DBConnection"
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.auth.User"
-%><%@page import="java.util.Collections"
 %><%@page import="java.util.TreeSet"
+%><%@page import="java.net.URLEncoder"
 %><%@page import="java.sql.Statement"
 %><%@page import="java.sql.ResultSet"
 %><%!
@@ -32,33 +33,17 @@
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
+	et.setButtons(new IconnedLink[] {new IconnedLink("simple_query.jsp", "images/search.gif", "Search Again")});
 
 	drawTop(out, et, request, response);
-
-	%><table style="margin-left:20px; margin-top:20px; width:150px;" border="0">
-	<tr><td colspan="2" align="center"><img src="images/mult_loc.gif" height="20" width="20" /></td></tr>
-	<tr><td colspan="2" class="bigheading" align="center">Search Results</td></tr>
-	<tr><td><img src="images/blank.gif" width="1" height="10" /></td></tr><%
-	if (request.getParameter("FoldID") != null) {
-		%><tr><td><a href="simple_query.jsp?FoldID=<%=request.getParameter("FoldID")%>" title="Search Again"><img src="images/search.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="simple_query.jsp?FoldID=<%=request.getParameter("FoldID")%>" class="heading">Search Again</a></td></tr><%
-	} else {
-		%><tr><td><a href="simple_query.jsp" title="Search Again"><img src="images/search.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="simple_query.jsp" class="heading">Search Again</a></td></tr><%
-	}
-	%></table><%
-
 	drawEndNavigation(out);
-
-	%><table style="margin-left:20px; width:550px;" border="0">
-	<tr><td><%
 
 	if ((request.getParameter("WhereSQL") != null && request.getParameter("TableName") != null && request.getParameter("QueryString") != null) || request.getParameter("Page") != null) {
 		String whereSQL = request.getParameter("WhereSQL");
 		String tableName = request.getParameter("TableName");
 		String queryString = request.getParameter("QueryString");
 		
-		//System.out.println("TableName: " + tableName + " * WhereSQL: " + whereSQL);
-		
-		int pageNum = 0;
+		int pageNum = 1;
 		if (request.getParameter("Page") != null)
 			pageNum = Integer.parseInt(request.getParameter("Page"));
 		boolean useStored = (request.getParameter("Page") != null);
@@ -70,7 +55,7 @@
 			features = (TreeSet<Feature>) session.getAttribute("FRED.features");
 			queryString = (String) session.getAttribute("FRED.queryString");
 		} else {
-			//System.out.println("SELECT DISTINCT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
+			System.out.println("SELECT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
 			ResultSet rs = statement.executeQuery("SELECT DISTINCT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
 			while (rs.next()) {
 				Feature feature = featureUtil.getFeature(rs.getInt(1));
@@ -105,47 +90,49 @@
 				maxRangePage = endPage;
 			}
 
-			//list matching records
-			%><table border="0" width="400">
-			<tr><td colspan="2">Search Criteria: <em>" + queryString + "</em></td></tr><%
+			//list matching localities
+			%><p><%
+			startDETable(pageContext);
+			%><table width="600" border="0">
+			<tr><td class="deHeading" colspan="5">Matching Localities</td></tr>
+			<tr><td colspan="5">Search Criteria: <em><%=queryString%></em></td></tr><%
 			if (maxRangePage > 1) {
 				%><tr><td></td></tr>
-				<tr><td class="heading">Displaying records <%=startIndex%> to <%=endIndex%> of <%=numRecords%></td>
-				<td align="right"><%
+				<tr><td class="heading" colspan="4">Displaying records <%=startIndex%> to <%=endIndex%> of <%=numRecords%></td>
+				<td style="text-align: right"><%
 				for (int i = minRangePage; i <= maxRangePage; i++) {
 					%>&nbsp;<a href="result_list.jsp?Page=<%=i%>"<%=((i == pageNum) ? " class=\"heading\"" : "")%>><%=i%></a><%
 				}
 			}
 			%></td></tr>
-			</table>
 
-			<table border="0" cellspacing="0" cellpadding="3" width="400">
-			<tr><th>FR Number&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Yard FR Number&nbsp;&nbsp;</th><th>Field Number/<br />Drillhole Name&nbsp;&nbsp;</th></tr><%
-			int i = 0;
+			<tr><th>FR Number&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Yard FR Number&nbsp;&nbsp;</th><th>Name&nbsp;&nbsp;</th><th>Actions</th></tr><%
+			int j = 1;
 			for (Feature feature : features) {
-				if (++i > startIndex && i <= endIndex) {
-					%><tr><td class="heading"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></a>&nbsp;&nbsp;</td><td><%=feature.getFeatureType()%>&nbsp;&nbsp;</td><td><%=((feature.getYardFrNumber() != null) ? feature.getYardFrNumber().getFrNumber() : "")%>&nbsp;&nbsp;</td><td><%=DBUtils.nvl(feature.getFeatureName())%>&nbsp;&nbsp;</td><%
-					if (featureUtil.isAllowedEditApprovedFeature(user, feature)) {
-						%><td><a href="data_entry.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>"><img src="images/edit.gif" height="20" width="20" border="0" alt="Edit" /></a></td><%
+				if (j >= startIndex && j <= endIndex) {
+					%><tr><td class="heading"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></a>&nbsp;&nbsp;</td><td><%=feature.getFeatureType()%>&nbsp;&nbsp;</td><td><%=((feature.getYardFrNumber() != null) ? feature.getYardFrNumber().getFrNumber() : "")%>&nbsp;&nbsp;</td><td><%=DBUtils.nvl(feature.getFeatureName())%>&nbsp;&nbsp;</td>
+					<td><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;&nbsp;<%
+					if (user != null && featureUtil.isAllowedEditApprovedFeature(user, feature)) {
+						%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=feature.getMasterFile().getFolderId()%>"><img src="images/edit.gif" height="20" width="20" border="0" alt="Edit" /></a><%
 					}
+					%></td><%
 				}
+				j++;
 				%></tr><%
 			}
-			%></table><%
 
-			%><table border="0" width="400">
-			<tr><td colspan="2">Search Criteria: <em>" + queryString + "</em></td></tr><%
 			if (maxRangePage > 1) {
 				%><tr><td></td></tr>
-				<tr><td class="heading">Displaying records <%=startIndex%> to <%=endIndex%> of <%=numRecords%></td>
+				<tr><td class="heading" colspan="4">Displaying records <%=startIndex%> to <%=endIndex%> of <%=numRecords%></td>
 				<td align="right"><%
 				for (int i = minRangePage; i <= maxRangePage; i++) {
 					%>&nbsp;<a href="result_list.jsp?Page=<%=i%>"<%=((i == pageNum) ? " class=\"heading\"" : "")%>><%=i%></a><%
 				}
 			}
 			%></td></tr>
-			</table>
-
+			</table><%
+			endDETable(pageContext);
+			%></p><%
 		}
 		else {
 			%><p>No records found matching your search criteria</p><%
