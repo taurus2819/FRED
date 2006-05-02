@@ -568,13 +568,31 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		
 	}
 
+	public static String getDipStrikeDescription(Sample sample) {
+		StringBuffer desc = new StringBuffer();
+		if (sample.getDip() != null)
+			desc.append(sample.getDip());
+		if (sample.getDipDirection() != null)
+			desc.append(sample.getDipDirection());
+		if (desc.length() == 0)
+			desc.append("undefined");
+		desc.append("/");
+		if (sample.getStrike() != null)
+			desc.append(sample.getStrike());
+		else
+			desc.append("undefined");
+		if (sample.getFacing() != null)
+			desc.append(" (Facing: ").append(sample.getFacing()).append(")");
+		return desc.toString();
+	}
+	
 	/**
 	 * Returns string representing a single SentTo
 	 */
 	public static String getSentToDescription(SentTo sentTo) {
 		StringBuffer desc = new StringBuffer();
 		if (sentTo.getFossilGroup() != null)
-			desc.append(sentTo.getFossilGroup().getName()).append(": ");
+			desc.append("(").append(sentTo.getFossilGroup().getName()).append(") ");
 		if (sentTo.getPerson() != null) {
 			desc.append(sentTo.getPerson().getDisplayName());
 			if (sentTo.getLabId() != null)
@@ -586,7 +604,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			} catch (Exception e) {}
 		}
 		if (sentTo.getComments() != null)
-			desc.append(" (").append(sentTo.getComments()).append(")");
+			desc.append(": ").append(sentTo.getComments());
 		return desc.toString();
 	}
 	
