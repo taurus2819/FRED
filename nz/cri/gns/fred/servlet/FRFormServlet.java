@@ -430,9 +430,7 @@ public class FRFormServlet extends HttpServlet {
 				relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
 			PDFUtil.addRepeatingCells(table, "Strat. Relationships", relationshipStr, bodyFonts, true);			
 			PDFUtil.addCells(table, new String[] {"Column/Map", sample.getColumnMap()}, bodyFonts);
-			PDFUtil.addTable(table, new Object[] {"Dip", sample.getDip(), null, "Dip Direction", sample.getDipDirection()}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
-			PDFUtil.addTable(table, new Object[] {"Strike", sample.getStrike(), null, "Facing", sample.getFacing()}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
-		
+			PDFUtil.addCells(table, new String[] {"Dip/Strike", SampleUtil.getDipStrikeDescription(sample)}, bodyFonts);		
 			document.add(table);
 
 			//Sedimentary Features
@@ -489,23 +487,23 @@ public class FRFormServlet extends HttpServlet {
 			if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
 
 				for (Iterator j = recordUtil.getTaxonomicGroups(palRecord).iterator(); j.hasNext(); ) {
-					PdfPTable taxaTable = new PdfPTable(5);
+					PdfPTable taxaTable = new PdfPTable(4);
 					taxaTable.setTotalWidth(bodyTableWidth);
 					taxaTable.setLockedWidth(true);
-					taxaTable.setWidths(new float[] {40 * MM_TO_PT, 30 * MM_TO_PT, 25 * MM_TO_PT, 25 * MM_TO_PT, 55 * MM_TO_PT});
+					taxaTable.setWidths(new float[] {65 * MM_TO_PT, 25 * MM_TO_PT, 25 * MM_TO_PT, 60 * MM_TO_PT});
 					taxaTable.setSpacingAfter(3 * MM_TO_PT);
 
 					TaxonomicGroup taxaGroup = (TaxonomicGroup) j.next();
 					PDFUtil.addCell(taxaTable, taxaGroup.getName(), fonts[1], PdfPCell.ALIGN_LEFT, 5);
 					if (recordUtil.getListEntries(palRecord, taxaGroup).size() > 0) {
-					PDFUtil.addCells(taxaTable, new String[] {"Taxonomic Name", "Author", "Spec Count", "Spec Coord", "Comments"}, new Font[] {fonts[1], fonts[1], fonts[1], fonts[1], fonts[1]});
+					PDFUtil.addCells(taxaTable, new String[] {"Taxonomic Name", "Spec Count", "Spec Coord", "Comments"}, new Font[] {fonts[1], fonts[1], fonts[1], fonts[1], fonts[1]});
 						for (Iterator k = recordUtil.getListEntries(palRecord, taxaGroup).iterator(); k.hasNext(); ) {
 							PaleontologyListEntry taxa = (PaleontologyListEntry) k.next();
-							PDFUtil.addCells(taxaTable, new Object[] {taxa.getTaxonomicName(), ((taxa.getTaxon() != null) ? taxa.getTaxon().getAuthor() : null), taxa.getSpecimenCount(), taxa.getSpecimenCoords(), taxa.getComments()},
-									new Font[] {taxonomicNameFont, fonts[0], fonts[0], fonts[0], fonts[0]});
+							PDFUtil.addCells(taxaTable, new Object[] {taxa.getTaxonomicName(), taxa.getSpecimenCount(), taxa.getSpecimenCoords(), taxa.getComments()},
+									new Font[] {taxonomicNameFont, fonts[0], fonts[0], fonts[0]});
 						}
 					} else {
-						PDFUtil.addCell(taxaTable, "No fossils listed", fonts[0], PdfPCell.ALIGN_LEFT, 5);
+						PDFUtil.addCell(taxaTable, "No fossils listed", fonts[0], PdfPCell.ALIGN_LEFT, 4);
 					}
 					document.add(taxaTable);
 				}
