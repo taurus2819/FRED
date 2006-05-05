@@ -143,9 +143,9 @@ public class FRFormServlet extends HttpServlet {
 		Font[] fonts = new Font[4];
 		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.NORMAL);
 		fonts[1] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
-		fonts[1].setColor(40, 22, 111);
+		//fonts[1].setColor(40, 22, 111);
 		fonts[2] = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD);
-		fonts[2].setColor(40, 22, 111);
+		//fonts[2].setColor(40, 22, 111);
 		fonts[3] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
 		
 		if (features.size() > 0) {
