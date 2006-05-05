@@ -21,6 +21,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
+import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FrNumber;
@@ -74,9 +75,6 @@ public class FRFormServlet extends HttpServlet {
 	
 	private static final float bodyTableWidth = 175 * MM_TO_PT;
 	private static final float[] bodyTableColWidths = new float[] {45 * MM_TO_PT, 130 * MM_TO_PT};
-	private static final float insertTableWidth = 175 * MM_TO_PT;
-	private static final float[] insertTableColWidths = new float[] {45 * MM_TO_PT, 38 * MM_TO_PT, 9 * MM_TO_PT, 45 * MM_TO_PT, 38 * MM_TO_PT};
-
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
@@ -167,7 +165,6 @@ public class FRFormServlet extends HttpServlet {
 			for (int i = 0; i < samples.length; i++) {
 				try {
 					writeHeader(samples[i], document);
-					writeLocality(samples[i], document, fonts);
 					writeSample(samples[i], document, fonts);
 					if (i < samples.length - 1)
 						document.newPage();
@@ -182,7 +179,7 @@ public class FRFormServlet extends HttpServlet {
 		if (features != null) {
 			for (int i = 0; i < features.length; i++) {
 				try {
-					writeHeader(features[i], document);
+					writeHeader(features[i], document, features[i].getFeatureType());
 					writeLocality(features[i], document, fonts);
 					if (features[i].getFeatureType().equals(FREDConstants.OUTCROP))
 						writeSample(features[i], document, fonts);
@@ -198,7 +195,7 @@ public class FRFormServlet extends HttpServlet {
 		document.close();
 	}
 	
-	private void writeHeader(Feature feature, Document document) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException {
+	private void writeHeader(Feature feature, Document document, String formType) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException {
 		Font[] fonts = new Font[6];
 		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.NORMAL);
 		fonts[1] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.BOLD);
@@ -222,7 +219,7 @@ public class FRFormServlet extends HttpServlet {
 		cell.setBorder(PdfPCell.NO_BORDER);
 		table.addCell(cell);
 		
-		image = Image.getInstance(new URL(baseURL + "gns_red_big.png"));
+		image = Image.getInstance(new URL(baseURL + "GNS_logo_black.png"));
 		image.scaleToFit(12 * MM_TO_PT, 20 * MM_TO_PT);
 		cell = new PdfPCell(image);
 		cell.setBorder(PdfPCell.NO_BORDER);
@@ -234,8 +231,9 @@ public class FRFormServlet extends HttpServlet {
 		headerTable.setLockedWidth(true);
 		headerTable.setWidths(new float[] {5 * MM_TO_PT, 65 * MM_TO_PT, 65 * MM_TO_PT});
 	
+		PDFUtil.addCells(headerTable, new String[] {null, "NEW ZEALAND FOSSIL RECORD FILE", "FOSSIL RECORD NUMBER"}, new Font[] {fonts[0], fonts[4], fonts[4]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
 		FrNumber frNumber = feature.getFrNumber();
-		PDFUtil.addCells(headerTable, new String[] {null, "Fossil Record Form", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
+		PDFUtil.addCells(headerTable, new String[] {null, formType + " Record Form", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
 			, new Font[] {fonts[0], fonts[4], fonts[3]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
 		
 		PDFUtil.addCell(headerTable, null, fonts[0]);
@@ -246,21 +244,24 @@ public class FRFormServlet extends HttpServlet {
 		mfTable.setLockedWidth(true);
 		mfTable.setWidths(new float[] {15 * MM_TO_PT, 50 * MM_TO_PT});
 			
-		PDFUtil.addCells(mfTable, new String[] {"Masterfile", ((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : null)}, new Font[] {fonts[1], fonts[0]});
-		String app = ((feature.getAudit().getApprovedById() != null) ? FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue()) : "")
+		PDFUtil.addCells(mfTable, new String[] {"Masterfile:", ((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : null)}, new Font[] {fonts[1], fonts[0]});
+		String approveStr = ((feature.getAudit().getApprovedById() != null) ? FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue()) : "")
 				+ ((feature.getAudit().getApprovedDate() != null) ? " " + FREDUtil.formatDateForOutput(feature.getAudit().getApprovedDate()) : "");
-		PDFUtil.addCells(mfTable, new String[] {"Approved", app}, new Font[] {fonts[1], fonts[0]});	
+		PDFUtil.addCells(mfTable, new String[] {"Approved:", approveStr}, new Font[] {fonts[1], fonts[0]});
+		if (feature.getAudit().getCuratorComments() != null)
+			PDFUtil.addCells(mfTable, new String[] {"Comments:", feature.getAudit().getCuratorComments()}, new Font[] {fonts[1], fonts[0]});
 		cell = new PdfPCell(mfTable);
 		cell.setBorder(PdfPCell.NO_BORDER);
 		headerTable.addCell(cell);
 		
+		//locality text
 		PdfPTable localityTable = new PdfPTable(1);
 		localityTable.setTotalWidth(65 * MM_TO_PT);
 		localityTable.setLockedWidth(true);
 		localityTable.setWidths(new float[] {65 * MM_TO_PT});		
 		if (feature.getYardFrNumber() != null)
 			PDFUtil.addCell(localityTable, "(" + feature.getYardFrNumber().getFrNumber() + ")", fonts[5], PdfPCell.ALIGN_RIGHT, 1);
-		PDFUtil.addCell(localityTable, "Locality Type: " + feature.getFeatureType(), fonts[5], PdfPCell.ALIGN_RIGHT, 1);
+		PDFUtil.addCell(localityTable, feature.getFeatureType(), fonts[5], PdfPCell.ALIGN_RIGHT, 1);
 		cell = new PdfPCell(localityTable);
 		cell.setBorder(PdfPCell.NO_BORDER);
 		headerTable.addCell(cell);
@@ -273,17 +274,16 @@ public class FRFormServlet extends HttpServlet {
 	}
 	
 	private void writeHeader(Sample sample, Document document) throws MalformedURLException, DocumentException, IOException, NamingException, SQLException {
-		writeHeader(sample.getFeature(), document);
+		writeHeader(sample.getFeature(), document, sample.getFeature().getFeatureType() + " Sample");
 	}
 	
 	private void writeHeader(Record record, Document document) throws MalformedURLException, DocumentException, IOException, NamingException, SQLException {
-		writeHeader(record.getSample().getFeature(), document);
+		writeHeader(record.getSample().getFeature(), document, RecordUtil.getRecordType(record));
 	}
 	
 	private void writeLocality(Feature feature, Document document, Font[] fonts) throws StorageAccessException, DocumentException, NamingException, SQLException {
 		boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
 		Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
-		Font[] insertBodyFonts = new Font[] {fonts[1], fonts[0], fonts[0], fonts[1], fonts[0]};
 		
 		//Location Information
 		PdfPTable table = new PdfPTable(2);
@@ -292,7 +292,7 @@ public class FRFormServlet extends HttpServlet {
 		table.setWidths(bodyTableColWidths);
 		table.setSpacingAfter(3 * MM_TO_PT);
 		
-		PDFUtil.addCell(table, "Location Information", fonts[2], PdfPCell.ALIGN_LEFT, 2);
+		PDFUtil.addCell(table, "Location", fonts[2], PdfPCell.ALIGN_LEFT, 2);
 		String featType = feature.getFeatureType();
 		String featTypeLbl;
 		if (featType.equals(FREDConstants.OUTCROP)) {
@@ -325,31 +325,27 @@ public class FRFormServlet extends HttpServlet {
 			PDFUtil.addCells(table, new String[] {"Converted Dec. Lat/Long", ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"}, bodyFonts);
 		}
 		PDFUtil.addCells(table, new Object[] {"Map Year", feature.getMapYear()}, bodyFonts);
-		PDFUtil.addTable(table, new String[] {"Method", ((sr != null) ? FREDUtil.getSiteMethod(sr) : null), null, "Accuracy", ((sr != null && !sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(sr.getAccuracy()) + " m" : null)}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
+		PDFUtil.addCells(table, new String[] {"Method", ((sr != null) ? FREDUtil.getSiteMethod(sr) : null)}, bodyFonts);
+		PDFUtil.addCells(table, new String[] {"Accuracy", ((sr != null && !sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(sr.getAccuracy()) + " m" : null)}, bodyFonts);
 		if (isAllowedReadFeature)
 			PDFUtil.addCells(table, new String[] {"Locality", feature.getLocality()}, bodyFonts);
 		PDFUtil.addCells(table, new String[] {"Country", ((sr != null) ? FREDUtil.getSiteCountry(sr) : null)}, bodyFonts);
 		if (isAllowedReadFeature && !featType.equals(FREDConstants.OUTCROP)) {
 			PDFUtil.addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector"), ((feature.getPerson() != null) ? feature.getPerson().getName() : null)}, bodyFonts);
-			PDFUtil.addTable(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date"),
-					((feature.getStartDate() != null) ? FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding()) : null),
-					null, "Completion Date",
-					((feature.getFinishDate() != null) ? FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding()) : null)},
-					insertBodyFonts, 2, insertTableWidth, insertTableColWidths);		
+			PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date"),
+					((feature.getStartDate() != null) ? FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding()) : null)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Completion Date",
+					((feature.getFinishDate() != null) ? FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding()) : null)}, bodyFonts);		
 			if (featType.equals(FREDConstants.DRILLHOLE))
 				PDFUtil.addCells(table, new String[] {"Licence Area", feature.getDrillholeLicenceName()}, bodyFonts);
-			PDFUtil.addTable(table, new String[] {"Datum Type", feature.getDatumType(), null, "Datum Elevation", ((feature.getDatumElevation() != null) ? String.valueOf(feature.getDatumElevation()) + " m asl" : null)}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
-			PDFUtil.addTable(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon"),
-					((feature.getStartDepth() != null) ? String.valueOf(feature.getStartDepth()) + " m" : null), null,
-					((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon"),
-					((feature.getFinishDepth() != null) ? String.valueOf(feature.getFinishDepth()) + " m" : null)},
-					insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
+			PDFUtil.addCells(table, new String[] {"Datum Type", feature.getDatumType()}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Datum Elevation", ((feature.getDatumElevation() != null) ? String.valueOf(feature.getDatumElevation()) + " m asl" : null)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon"),
+					((feature.getStartDepth() != null) ? String.valueOf(feature.getStartDepth()) + " m" : null)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon"),
+					((feature.getFinishDepth() != null) ? String.valueOf(feature.getFinishDepth()) + " m" : null)}, bodyFonts);
 		}
 		document.add(table);		
-	}
-	
-	private void writeLocality(Sample sample, Document document, Font[] fonts) throws StorageAccessException, DocumentException, NamingException, SQLException {
-		writeLocality(sample.getFeature(), document, fonts);
 	}
 	
 	private void writeSample(Feature feature, Document document, Font[] fonts) throws MalformedURLException, DocumentException, IOException, NamingException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, StorageAccessException {
@@ -361,15 +357,15 @@ public class FRFormServlet extends HttpServlet {
 	private void writeSample(Sample sample, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, StorageAccessException {
 		if(sampleUtil.isAllowedReadSample(user, sample)) {
 			Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
-			Font[] insertBodyFonts = new Font[] {fonts[1], fonts[0], fonts[0], fonts[1], fonts[0]};
 			
-			//if not OUTCROP then add sample depth data
+			//if not OUTCROP then add name and sample depth data
 			if (!sample.getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
 				PdfPTable table = new PdfPTable(2);
 				table.setTotalWidth(bodyTableWidth);
 				table.setLockedWidth(true);
 				table.setWidths(bodyTableColWidths);
 				table.setSpacingAfter(3 * MM_TO_PT);
+				PDFUtil.addCells(table, new String[] {((sample.getFeature().getFeatureType().equals(FREDConstants.DRILLHOLE)) ? "Drillhole" : "Section") + " Name", sample.getFeature().getFeatureName()}, new Font[] {fonts[2], fonts[3]});
 				PDFUtil.addCells(table, new String[] {"Sample", SampleUtil.getDrillHoleDepthDescription(sample)}, new Font[] {fonts[2], fonts[3]});
 				document.add(table);
 			}
@@ -386,9 +382,8 @@ public class FRFormServlet extends HttpServlet {
 			String[] collectorStr = new String[collectors.length];
 			for (int i = 0; i < collectors.length; i++)
 				collectorStr[i] = ((PersonRelationship) collectors[i]).getDisplayName();
-			PDFUtil.addRepeatingCells(table, "Collectors", collectorStr, bodyFonts, false);
+			PDFUtil.addRepeatingCells(table, "Collector(s)", collectorStr, bodyFonts, false);
 			PDFUtil.addCells(table, new String[] {"Collection Date", ((sample.getCollectionDate() != null) ? FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding()) : null)}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {"Stratigraphic Name", sample.getStratUnit()}, bodyFonts);
 			PDFUtil.addCells(table, new String[] {"Fossils in Place", sample.getInPlace()}, bodyFonts);
 			Object[] sentTos = sample.getSentTos().toArray();
 			String[] sentToStr = new String[sentTos.length];
@@ -397,7 +392,6 @@ public class FRFormServlet extends HttpServlet {
 			PDFUtil.addRepeatingCells(table, "Sent To", sentToStr, bodyFonts, true);
 			PDFUtil.addCells(table, new String[] {"Not Collected", sample.getNotCollected()}, bodyFonts);
 			PDFUtil.addCells(table, new String[] {"Significance/Comments", sample.getSignificance()}, bodyFonts);
-		
 			document.add(table);
 			
 			//Stratigraphy
@@ -408,12 +402,11 @@ public class FRFormServlet extends HttpServlet {
 			table.setSpacingAfter(3 * MM_TO_PT);
 			
 			PDFUtil.addCell(table, "Stratigraphy", fonts[2], PdfPCell.ALIGN_LEFT, 2);
-			
-			PDFUtil.addTable(table, new String[] {"Inferred Stage",
-					((sample.getInferredStage() != null) ? StageUtil.getStageDescription(sample.getInferredStage()) : null),
-					"", "Known Stage",
-					((sample.getKnownStage() != null) ? StageUtil.getStageDescription(sample.getKnownStage()) : null)},
-					insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
+			PDFUtil.addCells(table, new String[] {"Stratigraphic Name", sample.getStratUnit()}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Inferred Stage",
+					((sample.getInferredStage() != null) ? StageUtil.getStageDescription(sample.getInferredStage()) : null)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Known Stage",
+					((sample.getKnownStage() != null) ? StageUtil.getStageDescription(sample.getKnownStage()) : null)}, bodyFonts);
 			Object[] relationships = sampleUtil.getRelationships(sample, "Sample", "nearby").toArray();
 			String[] relationshipStr = new String[relationships.length];
 			for (int i = 0; i < relationships.length; i++)
@@ -438,12 +431,16 @@ public class FRFormServlet extends HttpServlet {
 			table.setTotalWidth(bodyTableWidth);
 			table.setLockedWidth(true);
 			table.setWidths(bodyTableColWidths);
+			table.setSpacingAfter(3 * MM_TO_PT);
 			
 			PDFUtil.addCell(table, "Sedimentary Features", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
 			PDFUtil.addCells(table, new String[] {"Grain Size", SampleUtil.getGrainSizeDescription(sample)}, bodyFonts);
-			PDFUtil.addTable(table, new String[] {"Bedding Thickness", ((sample.getBedThickness() != null) ? sample.getBedThickness().getName() : null), null, "Bedding Features", SampleUtil.getBeddingDescription(sample)}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
-			PDFUtil.addTable(table, new String[] {"Weathering", ((sample.getWeathering() != null) ? sample.getWeathering().getName() : null), null, "Hardness", ((sample.getHardness() != null) ? sample.getHardness().getName() : null)}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
-			PDFUtil.addTable(table, new String[] {"Carbonate", ((sample.getCarbonate() != null) ? sample.getCarbonate().getName() : null), null, "Colour", SampleUtil.getColourDescription(sample)}, insertBodyFonts, 2, insertTableWidth, insertTableColWidths);
+			PDFUtil.addCells(table, new String[] {"Bedding Thickness", ((sample.getBedThickness() != null) ? sample.getBedThickness().getName() : null)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Bedding Features", SampleUtil.getBeddingDescription(sample)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Weathering", ((sample.getWeathering() != null) ? sample.getWeathering().getName() : null)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Hardness", ((sample.getHardness() != null) ? sample.getHardness().getName() : null)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Carbonate", ((sample.getCarbonate() != null) ? sample.getCarbonate().getName() : null)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Colour", SampleUtil.getColourDescription(sample)}, bodyFonts);
 			Object[] sedFeatures = sample.getSedimentaryFeatures().toArray();
 			String[] sedFeaturesStr = new String[sedFeatures.length];
 			for (int i = 0; i < sedFeatures.length; i++)
@@ -451,65 +448,114 @@ public class FRFormServlet extends HttpServlet {
 			PDFUtil.addRepeatingCells(table, "Additional Features", sedFeaturesStr, bodyFonts, false);	
 			PDFUtil.addCells(table, new String[] {"Inferred Environment", sample.getDepositionEnv()}, bodyFonts);
 			PDFUtil.addCells(table, new String[] {"Nature of Rock Unit", sample.getRockNature()}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {"Correspondence", sample.getCorrespondence()}, bodyFonts);
+			document.add(table);
 			
+			//Correspondence
+			table = new PdfPTable(2);
+			table.setTotalWidth(bodyTableWidth);
+			table.setLockedWidth(true);
+			table.setWidths(bodyTableColWidths);
+			
+			PDFUtil.addCells(table, new String[] {"Correspondence", sample.getCorrespondence()}, bodyFonts);
 			document.add(table);
 		}
 	}
 	
 	private void writeRecord(Record record, Document document, Font[] fonts) throws StorageAccessException, DocumentException, NamingException, SQLException {
-		if(recordUtil.isAllowedReadRecord(user, record) && RecordUtil.getRecordType(record).equals(FREDConstants.PALEONTOLOGICAL)) {
-			Paleontology palRecord = record.getPaleontology();
-			Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
-			Font taxonomicNameFont = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.ITALIC);
-
-			PdfPTable table = new PdfPTable(2);
-			table.setTotalWidth(bodyTableWidth);
-			table.setLockedWidth(true);
-			table.setWidths(bodyTableColWidths);
-			table.setSpacingAfter(3 * MM_TO_PT);
-			
-			PDFUtil.addCell(table, "Paleontology Information", fonts[2], PdfPCell.ALIGN_LEFT, 2);
-			Object[] identifiers = palRecord.getIdentifiers().toArray();
-			String[] identifiersStr = new String[identifiers.length];
-			for (int i = 0; i < identifiers.length; i++)
-				identifiersStr[i] = ((PersonRelationship) identifiers[i]).getDisplayName();
-			PDFUtil.addRepeatingCells(table, "Identifiers", identifiersStr, bodyFonts, false);
-			PDFUtil.addCells(table, new String[] {"Identification Date", ((palRecord.getIdentificationDate() != null) ? FREDUtil.formatDateForOutput(palRecord.getIdentificationDate(), palRecord.getDateRounding()) : null)}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {"Stage", ((palRecord.getStage() != null) ? StageUtil.getStageDescription(palRecord.getStage()) : null)}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {"Stage Comments", palRecord.getStageComments()}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {"Lab", ((palRecord.getLabSection() != null) ? RecordUtil.getLabDescription(palRecord.getLabSection()) : null)}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {"Lab Number", palRecord.getLabNumber()}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {"Collection Comments", palRecord.getCollectionComments()}, bodyFonts);
+		Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
+		
+		//Locality information
+		PdfPTable table = new PdfPTable(2);
+		table.setTotalWidth(bodyTableWidth);
+		table.setLockedWidth(true);
+		table.setWidths(bodyTableColWidths);
+		table.setSpacingAfter(3 * MM_TO_PT);
+		String featType = record.getSample().getFeature().getFeatureType();
+		String featTypeLbl;
+		if (featType.equals(FREDConstants.OUTCROP)) {
+			featTypeLbl = "Field Number";
+		} else if (featType.equals(FREDConstants.DRILLHOLE)) {
+			featTypeLbl = "Drillhole Name";
+		} else {
+			featTypeLbl = "Section Name";
+		}
+		PDFUtil.addCells(table, new String[] {featTypeLbl, record.getSample().getFeature().getFeatureName()}, bodyFonts);
+		//if not OUTCROP then add name and sample depth data
+		if (!record.getSample().getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
+			PDFUtil.addCells(table, new String[] {"Sample", SampleUtil.getDrillHoleDepthDescription(record.getSample())}, new Font[] {fonts[2], fonts[3]});
 			document.add(table);
-			
-			//taxa (Pal list)
-			if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
-
-				for (Iterator j = recordUtil.getTaxonomicGroups(palRecord).iterator(); j.hasNext(); ) {
-					PdfPTable taxaTable = new PdfPTable(4);
-					taxaTable.setTotalWidth(bodyTableWidth);
-					taxaTable.setLockedWidth(true);
-					taxaTable.setWidths(new float[] {65 * MM_TO_PT, 25 * MM_TO_PT, 25 * MM_TO_PT, 60 * MM_TO_PT});
-					taxaTable.setSpacingAfter(3 * MM_TO_PT);
-
-					TaxonomicGroup taxaGroup = (TaxonomicGroup) j.next();
-					PDFUtil.addCell(taxaTable, taxaGroup.getName(), fonts[1], PdfPCell.ALIGN_LEFT, 5);
-					if (recordUtil.getListEntries(palRecord, taxaGroup).size() > 0) {
-					PDFUtil.addCells(taxaTable, new String[] {"Taxonomic Name", "Spec Count", "Spec Coord", "Comments"}, new Font[] {fonts[1], fonts[1], fonts[1], fonts[1], fonts[1]});
-						for (Iterator k = recordUtil.getListEntries(palRecord, taxaGroup).iterator(); k.hasNext(); ) {
-							PaleontologyListEntry taxa = (PaleontologyListEntry) k.next();
-							PDFUtil.addCells(taxaTable, new Object[] {taxa.getTaxonomicName(), taxa.getSpecimenCount(), taxa.getSpecimenCoords(), taxa.getComments()},
-									new Font[] {taxonomicNameFont, fonts[0], fonts[0], fonts[0]});
-						}
-					} else {
-						PDFUtil.addCell(taxaTable, "No fossils listed", fonts[0], PdfPCell.ALIGN_LEFT, 4);
-					}
-					document.add(taxaTable);
-				}
+		}		
+		
+		if(recordUtil.isAllowedReadRecord(user, record)) {
+			if (RecordUtil.getRecordType(record).equals(FREDConstants.PALEONTOLOGICAL)) {
+				Paleontology palRecord = record.getPaleontology();
+				Font taxonomicNameFont = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.ITALIC);
+	
+				table = new PdfPTable(2);
+				table.setTotalWidth(bodyTableWidth);
+				table.setLockedWidth(true);
+				table.setWidths(bodyTableColWidths);
+				table.setSpacingAfter(3 * MM_TO_PT);
 				
+				PDFUtil.addCell(table, "Paleontology", fonts[2], PdfPCell.ALIGN_LEFT, 2);
+				Object[] identifiers = palRecord.getIdentifiers().toArray();
+				String[] identifiersStr = new String[identifiers.length];
+				for (int i = 0; i < identifiers.length; i++)
+					identifiersStr[i] = ((PersonRelationship) identifiers[i]).getDisplayName();
+				PDFUtil.addRepeatingCells(table, "Identifier(s)", identifiersStr, bodyFonts, false);
+				PDFUtil.addCells(table, new String[] {"Identification Date", ((palRecord.getIdentificationDate() != null) ? FREDUtil.formatDateForOutput(palRecord.getIdentificationDate(), palRecord.getDateRounding()) : null)}, bodyFonts);
+				PDFUtil.addCells(table, new String[] {"Stage", ((palRecord.getStage() != null) ? StageUtil.getStageDescription(palRecord.getStage()) : null)}, bodyFonts);
+				PDFUtil.addCells(table, new String[] {"Stage Comments", palRecord.getStageComments()}, bodyFonts);
+				PDFUtil.addCells(table, new String[] {"Lab Number", ((palRecord.getLabNumber() != null) ? RecordUtil.getLabNumberDescription(palRecord) : null)}, bodyFonts);
+				PDFUtil.addCells(table, new String[] {"Collection Comments", palRecord.getCollectionComments()}, bodyFonts);
+				document.add(table);
+				
+				//taxa (Pal list)
+				if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
+	
+					for (Iterator j = recordUtil.getTaxonomicGroups(palRecord).iterator(); j.hasNext(); ) {
+						PdfPTable taxaTable = new PdfPTable(4);
+						taxaTable.setTotalWidth(bodyTableWidth);
+						taxaTable.setLockedWidth(true);
+						taxaTable.setWidths(new float[] {65 * MM_TO_PT, 25 * MM_TO_PT, 25 * MM_TO_PT, 60 * MM_TO_PT});
+						taxaTable.setSpacingAfter(3 * MM_TO_PT);
+	
+						TaxonomicGroup taxaGroup = (TaxonomicGroup) j.next();
+						PDFUtil.addCell(taxaTable, taxaGroup.getName(), fonts[1], PdfPCell.ALIGN_LEFT, 5);
+						if (recordUtil.getListEntries(palRecord, taxaGroup).size() > 0) {
+						PDFUtil.addCells(taxaTable, new String[] {"Taxonomic Name", "Spec Count", "Spec Coord", "Comments"}, new Font[] {fonts[1], fonts[1], fonts[1], fonts[1], fonts[1]});
+							for (Iterator k = recordUtil.getListEntries(palRecord, taxaGroup).iterator(); k.hasNext(); ) {
+								PaleontologyListEntry taxa = (PaleontologyListEntry) k.next();
+								PDFUtil.addCells(taxaTable, new Object[] {taxa.getTaxonomicName(), taxa.getSpecimenCount(), taxa.getSpecimenCoords(), taxa.getComments()},
+										new Font[] {taxonomicNameFont, fonts[0], fonts[0], fonts[0]});
+							}
+						} else {
+							PDFUtil.addCell(taxaTable, "No fossils listed", fonts[0], PdfPCell.ALIGN_LEFT, 4);
+						}
+						document.add(taxaTable);
+					}
+					
+				}
+			} else if (RecordUtil.getRecordType(record).equals(FREDConstants.ADOPTION)) {
+				Adoption adoRecord = record.getAdoption();
+	
+				table = new PdfPTable(2);
+				table.setTotalWidth(bodyTableWidth);
+				table.setLockedWidth(true);
+				table.setWidths(bodyTableColWidths);
+				table.setSpacingAfter(3 * MM_TO_PT);
+				
+				PDFUtil.addCell(table, "Adoption", fonts[2], PdfPCell.ALIGN_LEFT, 2);
+				Object[] adoptors = adoRecord.getAdopters().toArray();
+				String[] adoptorsStr = new String[adoptors.length];
+				for (int i = 0; i < adoptors.length; i++)
+					adoptorsStr[i] = ((PersonRelationship) adoptors[i]).getDisplayName();
+				PDFUtil.addRepeatingCells(table, "Adoptor(s)", adoptorsStr, bodyFonts, false);
+				PDFUtil.addCells(table, new String[] {"Adoption Date", ((adoRecord.getAdoptionDate() != null) ? FREDUtil.formatDateForOutput(adoRecord.getAdoptionDate(), adoRecord.getDateRounding()) : null)}, bodyFonts);
+				PDFUtil.addCells(table, new String[] {"Stage", ((adoRecord.getStage() != null) ? StageUtil.getStageDescription(adoRecord.getStage()) : null)}, bodyFonts);
+				PDFUtil.addCells(table, new String[] {"Comments", adoRecord.getComments()}, bodyFonts);
+				document.add(table);				
 			}
-			
 		}
 	}
 	
