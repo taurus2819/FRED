@@ -608,8 +608,7 @@
 									%><tr><td class="heading">Identification Date</td><td><%=((palRecord.getIdentificationDate() != null) ? FREDUtil.formatDateForOutput(palRecord.getIdentificationDate(), palRecord.getDateRounding()) : "&nbsp;")%></td></tr>
 									<tr><td class="heading">Stage</td><td><%=((palRecord.getStage() != null) ? StageUtil.getStageDescription(palRecord.getStage()) : "&nbsp;")%></td></tr>
 									<tr><td class="heading">Stage Comments</td><td><%=DBUtils.nvl(palRecord.getStageComments())%></td></tr>
-									<tr><td class="heading">Lab</td><td><%=((palRecord.getLabSection() != null) ? RecordUtil.getLabDescription(palRecord.getLabSection()) : "&nbsp;")%></td></tr>
-									<tr><td class="heading">Lab Number</td><td><%=DBUtils.nvl(palRecord.getLabNumber())%></td></tr>
+									<tr><td class="heading">Lab Number</td><td><%=((palRecord.getLabNumber() != null) ? RecordUtil.getLabNumberDescription(palRecord) : "&nbsp;")%></td></tr>
 									<tr><td class="heading">Collection Comments</td><td><%=DBUtils.nvl(palRecord.getCollectionComments())%></td></tr><%
 					
 									//taxa (Pal list)

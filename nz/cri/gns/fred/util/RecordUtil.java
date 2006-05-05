@@ -78,13 +78,16 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return ((person.length() + date.length() > 0) ? person + ((person.length() > 0 && date.length() > 0) ? ", " : "") + date : "Unnamed Record");
 	}
 	
-	public static String getLabDescription(LabSection ls) {
+	public static String getLabNumberDescription(Paleontology pal) {
+		LabSection ls = pal.getLabSection();
 		StringBuffer desc = new StringBuffer();
 		if (ls.getLab() != null && ls.getLab().getName() != null)
 			desc.append(ls.getLab().getName()).append(" ");
-		if (ls.getName() != null)
-			desc.append(ls.getName());
-		return desc.toString();		
+		if (ls.getCode() != null)
+			desc.append(ls.getCode());
+		if (pal.getLabNumber() != null)
+			desc.append(pal.getLabNumber());
+		return desc.toString();			
 	}
 	
 	public void deleteRecord(int recordId, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
