@@ -571,16 +571,16 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	public static String getDipStrikeDescription(Sample sample) {
 		StringBuffer desc = new StringBuffer();
 		if (sample.getDip() != null)
-			desc.append(sample.getDip());
+			desc.append(sample.getDip()).append((char)176);
 		if (sample.getDipDirection() != null)
 			desc.append(sample.getDipDirection());
-		if (desc.length() == 0)
-			desc.append("undefined");
-		desc.append("/");
 		if (sample.getStrike() != null)
-			desc.append(sample.getStrike());
-		else
-			desc.append("undefined");
+			if (desc.length() > 0)
+				desc.append("/");
+			String strikeStr = String.valueOf(sample.getStrike());
+			while (strikeStr.length() < 3)
+				strikeStr = "0" + strikeStr;
+			desc.append(strikeStr);
 		if (sample.getFacing() != null)
 			desc.append(" (Facing: ").append(sample.getFacing()).append(")");
 		return desc.toString();

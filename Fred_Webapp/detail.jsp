@@ -507,10 +507,7 @@
 							relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
 						addRepeatingCells(new PrintWriter(out), "Strat. Relationships", relationshipStr, true);	
 						%><tr><td class="heading">Column/Map</td><td><%=DBUtils.nvl(sample.getColumnMap())%></td></tr>
-						<tr><td class="heading">Dip</td><td><%=DBUtils.nvl(sample.getDip())%></td></tr>
-						<tr><td class="heading">Dip Direction</td><td><%=DBUtils.nvl(sample.getDipDirection())%></td></tr>
-						<tr><td class="heading">Strike</td><td><%=DBUtils.nvl(sample.getStrike())%></td></tr>
-						<tr><td class="heading">Facing</td><td><%=DBUtils.nvl(sample.getFacing())%></td></tr>
+						<tr><td class="heading">Dip/Strike</td><td><%=DBUtils.nvl(SampleUtil.getDipStrikeDescription(sample))%></td></tr>
 		
 						<tr><td>&nbsp;</td></tr>
 		
