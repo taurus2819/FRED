@@ -476,7 +476,6 @@
 							collectorStr[i] = ((PersonRelationship) collectors[i]).getDisplayName();
 						addRepeatingCells(new PrintWriter(out), "Collectors", collectorStr, false);
 						%><tr><td class="heading">Collection Date</td><td><%=((sample.getCollectionDate() != null) ? FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding()) : "&nbsp;")%></td></tr>
-						<tr><td class="heading">Stratigraphic Name</td><td><%=DBUtils.nvl(sample.getStratUnit())%></td></tr>
 						<tr><td class="heading">Fossils in Place</td><td><%=DBUtils.nvl(sample.getInPlace())%></td></tr><%
 						Object[] sentTos = sample.getSentTos().toArray();
 						String[] sentToStr = new String[sentTos.length];
@@ -489,6 +488,7 @@
 						<tr><td>&nbsp;</td></tr>
 		
 						<tr><td class="bigheading" colspan="2">Stratigraphy</td></tr>
+						<tr><td class="heading">Stratigraphic Name</td><td><%=DBUtils.nvl(sample.getStratUnit())%></td></tr>
 						<tr><td class="heading">Inferred Stage</td><td><%=((sample.getInferredStage() != null) ? StageUtil.getStageDescription(sample.getInferredStage()) : "&nbsp;")%></td></tr>
 						<tr><td class="heading">Known Stage</td><td><%=((sample.getKnownStage() != null) ? StageUtil.getStageDescription(sample.getKnownStage()) : "&nbsp;")%></td></tr><%
 						Object[] relationships = sampleUtil.getRelationships(sample, "Sample", "nearby").toArray();
@@ -507,7 +507,7 @@
 							relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
 						addRepeatingCells(new PrintWriter(out), "Strat. Relationships", relationshipStr, true);	
 						%><tr><td class="heading">Column/Map</td><td><%=DBUtils.nvl(sample.getColumnMap())%></td></tr>
-						<tr><td class="heading">Dip/Strike</td><td><%=DBUtils.nvl(SampleUtil.getDipStrikeDescription(sample))%></td></tr>
+						<tr><td class="heading">Dip/Strike</td><td><%=SampleUtil.getDipStrikeDescription(sample)%></td></tr>
 		
 						<tr><td>&nbsp;</td></tr>
 		
