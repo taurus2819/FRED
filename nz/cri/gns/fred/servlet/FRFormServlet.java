@@ -28,13 +28,13 @@ import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
-import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.PersonRelationship;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SentTo;
+import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.PDFUtil;
@@ -231,7 +231,7 @@ public class FRFormServlet extends HttpServlet {
 		PdfPTable headerTable = new PdfPTable(3);
 		headerTable.setTotalWidth(135 * MM_TO_PT);
 		headerTable.setLockedWidth(true);
-		headerTable.setWidths(new float[] {5 * MM_TO_PT, 65 * MM_TO_PT, 65 * MM_TO_PT});
+		headerTable.setWidths(new float[] {5 * MM_TO_PT, 75 * MM_TO_PT, 55 * MM_TO_PT});
 	
 		PDFUtil.addCells(headerTable, new String[] {null, "NEW ZEALAND FOSSIL RECORD FILE", "FOSSIL RECORD NUMBER"}, new Font[] {fonts[0], fonts[6], fonts[1]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
 		FrNumber frNumber = feature.getFrNumber();
@@ -242,9 +242,9 @@ public class FRFormServlet extends HttpServlet {
 		
 		//Masterfile text
 		PdfPTable mfTable = new PdfPTable(2);
-		mfTable.setTotalWidth(65 * MM_TO_PT);
+		mfTable.setTotalWidth(75 * MM_TO_PT);
 		mfTable.setLockedWidth(true);
-		mfTable.setWidths(new float[] {18 * MM_TO_PT, 47 * MM_TO_PT});
+		mfTable.setWidths(new float[] {18 * MM_TO_PT, 57 * MM_TO_PT});
 			
 		PDFUtil.addCells(mfTable, new String[] {"Masterfile:", ((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : null)}, new Font[] {fonts[1], fonts[0]});
 		String approveStr = ((feature.getAudit().getApprovedById() != null) ? FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue()) : "")
@@ -258,9 +258,9 @@ public class FRFormServlet extends HttpServlet {
 		
 		//locality text
 		PdfPTable localityTable = new PdfPTable(1);
-		localityTable.setTotalWidth(65 * MM_TO_PT);
+		localityTable.setTotalWidth(55 * MM_TO_PT);
 		localityTable.setLockedWidth(true);
-		localityTable.setWidths(new float[] {65 * MM_TO_PT});		
+		localityTable.setWidths(new float[] {55 * MM_TO_PT});		
 		if (feature.getYardFrNumber() != null)
 			PDFUtil.addCell(localityTable, "(" + feature.getYardFrNumber().getFrNumber() + ")", fonts[5], PdfPCell.ALIGN_RIGHT, 1);
 		PDFUtil.addCell(localityTable, feature.getFeatureType(), fonts[5], PdfPCell.ALIGN_RIGHT, 1);
