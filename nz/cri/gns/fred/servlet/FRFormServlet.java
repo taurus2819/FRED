@@ -231,9 +231,9 @@ public class FRFormServlet extends HttpServlet {
 		headerTable.setLockedWidth(true);
 		headerTable.setWidths(new float[] {5 * MM_TO_PT, 65 * MM_TO_PT, 65 * MM_TO_PT});
 	
-		PDFUtil.addCells(headerTable, new String[] {null, "NEW ZEALAND FOSSIL RECORD FILE", "FOSSIL RECORD NUMBER"}, new Font[] {fonts[0], fonts[2], fonts[2]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
+		PDFUtil.addCells(headerTable, new String[] {null, "NEW ZEALAND FOSSIL RECORD FILE", "FOSSIL RECORD NUMBER"}, new Font[] {fonts[0], fonts[1], fonts[1]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
 		FrNumber frNumber = feature.getFrNumber();
-		PDFUtil.addCells(headerTable, new String[] {null, formType + " Record Form", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
+		PDFUtil.addCells(headerTable, new String[] {null, formType + " Form", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
 			, new Font[] {fonts[0], fonts[4], fonts[3]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
 		
 		PDFUtil.addCell(headerTable, null, fonts[0]);
