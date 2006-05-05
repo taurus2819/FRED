@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -86,39 +87,39 @@ public class FRFormServlet extends HttpServlet {
 			this.featureUtil = new FeatureUtil(factory);
 			this.user = (UserAccount)request.getSession().getAttribute(User.USER_ATTRIBUTE);
 			
-			Record[] records = null;
-			Sample[] samples = null;
-			Feature[] features = null;
+			Set<Record> records = new HashSet<Record>();
+			Set<Sample> samples = new HashSet<Sample>();
+			Set<Feature> features = new HashSet<Feature>();
 			
 			if (request.getParameter("RecIDs") != null) {
 				String[] recIDs = request.getParameterValues("RecIDs");
-				records = new Record[recIDs.length];
 				for (int i = 0; i < recIDs.length; i++) {
 					try {
 						Record record = recordUtil.getRecord(Integer.parseInt(recIDs[i]));
-						records[i] = record;
+						records.add(record);
 					}
 					catch (Exception _e) {}
 				}
 			}
 			if (request.getParameter("SampIDs") != null) {
 				String[] sampIDs = request.getParameterValues("SampIDs");
-				samples = new Sample[sampIDs.length];
 				for (int i = 0; i < sampIDs.length; i++) {
 					try {
 						Sample sample = sampleUtil.getSample(Integer.parseInt(sampIDs[i]));
-						samples[i] = sample;
+						if (sample.getFeature().getFeatureType().equals(FREDConstants.OUTCROP))
+							features.add(sample.getFeature());
+						else
+							samples.add(sample);
 					}
 					catch (Exception _e) {}
 				}			
 			}
 			if (request.getParameter("FeatIDs") != null) {
 				String[] featIDs = request.getParameterValues("FeatIDs");
-				features = new Feature[featIDs.length];
 				for (int i = 0; i < featIDs.length; i++) {
 					try {
 						Feature feature = featureUtil.getFeature(Integer.parseInt(featIDs[i]));
-						features[i] = feature;
+						features.add(feature);
 					}
 					catch (Exception _e) {}
 				}			
@@ -132,7 +133,7 @@ public class FRFormServlet extends HttpServlet {
 		}
 	}
 		
-	private void makePDF(Record[] records, Sample[] samples, Feature[] features) throws DocumentException, IOException, NamingException, SQLException {
+	private void makePDF(Set<Record> records, Set<Sample> samples, Set<Feature> features) throws DocumentException, IOException, NamingException, SQLException {
 		Document document = new Document(PageSize.A4, 20 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT, 20 * MM_TO_PT);
 		PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
 		writer.setEncryption(true, null, null, PdfWriter.AllowPrinting | PdfWriter.AllowScreenReaders);
@@ -147,51 +148,51 @@ public class FRFormServlet extends HttpServlet {
 		fonts[2].setColor(40, 22, 111);
 		fonts[3] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
 		
-		if (records != null) {
-			for (int i =0; i < records.length; i++) {
+		if (features.size() > 0) {
+			int i = 0;
+			for (Feature feature : features) {
 				try {
-					writeHeader(records[i], document);
-					writeRecord(records[i], document, fonts);
-					if (i < records.length - 1)
-						document.newPage();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			if (samples != null || features != null)
-				document.newPage();
-		}
-		if (samples != null) {
-			for (int i = 0; i < samples.length; i++) {
-				try {
-					writeHeader(samples[i], document);
-					writeSample(samples[i], document, fonts);
-					if (i < samples.length - 1)
-						document.newPage();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				//out.flush();
-			}
-			if (features != null)
-				document.newPage();
-		}
-		if (features != null) {
-			for (int i = 0; i < features.length; i++) {
-				try {
-					writeHeader(features[i], document, "Locality");
-					writeLocality(features[i], document, fonts);
-					if (features[i].getFeatureType().equals(FREDConstants.OUTCROP))
-						writeSample(features[i], document, fonts);
-					if (i < features.length - 1)
+					writeHeader(feature, document, "Locality");
+					writeLocality(feature, document, fonts);
+					if (feature.getFeatureType().equals(FREDConstants.OUTCROP))
+						writeSample(feature, document, fonts);
+					if (++i < features.size())
 						document.newPage();
 				} catch (Exception e) {
 					e.printStackTrace();				
 				}
-				//out.flush();
-			}			
+			}
+			if (samples.size() + records.size() > 0)
+				document.newPage();
 		}
-		
+		if (samples != null) {
+			int i = 0;
+			for (Sample sample : samples) {
+				try {
+					writeHeader(sample, document);
+					writeSample(sample, document, fonts);
+					if (++i < samples.size())
+						document.newPage();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			if (records.size() > 0)
+				document.newPage();
+		}
+		if (records != null) {
+			int i = 0;
+			for (Record record : records) {
+				try {
+					writeHeader(record, document);
+					writeRecord(record, document, fonts);
+					if (++i < records.size())
+						document.newPage();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}	
 		document.close();
 	}
 	
@@ -231,7 +232,7 @@ public class FRFormServlet extends HttpServlet {
 		headerTable.setLockedWidth(true);
 		headerTable.setWidths(new float[] {5 * MM_TO_PT, 65 * MM_TO_PT, 65 * MM_TO_PT});
 	
-		PDFUtil.addCells(headerTable, new String[] {null, "NEW ZEALAND FOSSIL RECORD FILE", "FOSSIL RECORD NUMBER"}, new Font[] {fonts[0], fonts[1], fonts[1]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
+		PDFUtil.addCells(headerTable, new String[] {null, "NEW ZEALAND FOSSIL RECORD FILE", "FOSSIL RECORD NUMBER"}, new Font[] {fonts[0], fonts[5], fonts[1]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
 		FrNumber frNumber = feature.getFrNumber();
 		PDFUtil.addCells(headerTable, new String[] {null, formType + " Form", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
 			, new Font[] {fonts[0], fonts[4], fonts[3]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
