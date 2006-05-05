@@ -20,7 +20,7 @@ public class EndPage extends PdfPageEventHelper {
 		//footer
 		Rectangle page = document.getPageSize();
 		PdfPTable footer = new PdfPTable(1);
-		PDFUtil.addCell(footer, "Generated from FRED database on " + new java.util.Date(), FontFactory.getFont(FontFactory.HELVETICA, 8, Font.BOLD), PdfPCell.ALIGN_RIGHT, 1);
+		PDFUtil.addCell(footer, "Printed on " + new java.util.Date() + " from FRED, the computer database for the NZ Fossil Record File (FRF).  FRF is a nationally significant database administered by GSNZ and GNS Science", FontFactory.getFont(FontFactory.HELVETICA, 6, Font.BOLD), PdfPCell.ALIGN_LEFT, 1);
 		footer.setTotalWidth(page.width() - document.leftMargin() - document.rightMargin());
 		footer.writeSelectedRows(0, -1, document.leftMargin(), document.bottomMargin(),	writer.getDirectContent());
         
