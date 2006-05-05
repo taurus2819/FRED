@@ -179,7 +179,7 @@ public class FRFormServlet extends HttpServlet {
 		if (features != null) {
 			for (int i = 0; i < features.length; i++) {
 				try {
-					writeHeader(features[i], document, features[i].getFeatureType());
+					writeHeader(features[i], document, "Locality");
 					writeLocality(features[i], document, fonts);
 					if (features[i].getFeatureType().equals(FREDConstants.OUTCROP))
 						writeSample(features[i], document, fonts);
@@ -231,7 +231,7 @@ public class FRFormServlet extends HttpServlet {
 		headerTable.setLockedWidth(true);
 		headerTable.setWidths(new float[] {5 * MM_TO_PT, 65 * MM_TO_PT, 65 * MM_TO_PT});
 	
-		PDFUtil.addCells(headerTable, new String[] {null, "NEW ZEALAND FOSSIL RECORD FILE", "FOSSIL RECORD NUMBER"}, new Font[] {fonts[0], fonts[4], fonts[4]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
+		PDFUtil.addCells(headerTable, new String[] {null, "NEW ZEALAND FOSSIL RECORD FILE", "FOSSIL RECORD NUMBER"}, new Font[] {fonts[0], fonts[2], fonts[2]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
 		FrNumber frNumber = feature.getFrNumber();
 		PDFUtil.addCells(headerTable, new String[] {null, formType + " Record Form", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
 			, new Font[] {fonts[0], fonts[4], fonts[3]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
@@ -242,7 +242,7 @@ public class FRFormServlet extends HttpServlet {
 		PdfPTable mfTable = new PdfPTable(2);
 		mfTable.setTotalWidth(65 * MM_TO_PT);
 		mfTable.setLockedWidth(true);
-		mfTable.setWidths(new float[] {15 * MM_TO_PT, 50 * MM_TO_PT});
+		mfTable.setWidths(new float[] {18 * MM_TO_PT, 47 * MM_TO_PT});
 			
 		PDFUtil.addCells(mfTable, new String[] {"Masterfile:", ((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : null)}, new Font[] {fonts[1], fonts[0]});
 		String approveStr = ((feature.getAudit().getApprovedById() != null) ? FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue()) : "")
