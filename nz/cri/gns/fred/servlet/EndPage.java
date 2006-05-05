@@ -20,7 +20,8 @@ public class EndPage extends PdfPageEventHelper {
 		//footer
 		Rectangle page = document.getPageSize();
 		PdfPTable footer = new PdfPTable(1);
-		PDFUtil.addCell(footer, "Printed on " + new java.util.Date() + " from FRED, the computer database for the NZ Fossil Record File (FRF).  FRF is a nationally significant database administered by GSNZ and GNS Science", FontFactory.getFont(FontFactory.HELVETICA, 6, Font.BOLD), PdfPCell.ALIGN_LEFT, 1);
+		PDFUtil.addCell(footer, "Printed on " + new java.util.Date() + " from FRED, the computer database for the NZ Fossil Record File (FRF).", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD), PdfPCell.ALIGN_LEFT, 1);
+		PDFUtil.addCell(footer, "FRF is a nationally significant database administered by GSNZ and GNS Science", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD), PdfPCell.ALIGN_LEFT, 1);
 		footer.setTotalWidth(page.width() - document.leftMargin() - document.rightMargin());
 		footer.writeSelectedRows(0, -1, document.leftMargin(), document.bottomMargin(),	writer.getDirectContent());
         
@@ -29,7 +30,7 @@ public class EndPage extends PdfPageEventHelper {
 		cb.saveState();
 		cb.setRGBColorStroke(110, 110, 110);
 		cb.setLineWidth(2);
-		cb.rectangle(15 * MM_TO_PT, 15 * MM_TO_PT, 185 * MM_TO_PT, 272 * MM_TO_PT);
+		cb.rectangle(15 * MM_TO_PT, 15 * MM_TO_PT, 185 * MM_TO_PT, 277 * MM_TO_PT);
 		cb.stroke();
 		cb.restoreState();
     }

@@ -485,8 +485,8 @@ public class FRFormServlet extends HttpServlet {
 		//if not OUTCROP then add name and sample depth data
 		if (!record.getSample().getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
 			PDFUtil.addCells(table, new String[] {"Sample", SampleUtil.getDrillHoleDepthDescription(record.getSample())}, new Font[] {fonts[2], fonts[3]});
-			document.add(table);
-		}		
+		}
+		document.add(table);
 		
 		if(recordUtil.isAllowedReadRecord(user, record)) {
 			if (RecordUtil.getRecordType(record).equals(FREDConstants.PALEONTOLOGICAL)) {
