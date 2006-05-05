@@ -197,13 +197,14 @@ public class FRFormServlet extends HttpServlet {
 	}
 	
 	private void writeHeader(Feature feature, Document document, String formType) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException {
-		Font[] fonts = new Font[6];
+		Font[] fonts = new Font[7];
 		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.NORMAL);
 		fonts[1] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.BOLD);
 		fonts[2] = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD);
 		fonts[3] = FontFactory.getFont(FontFactory.HELVETICA, 24, Font.BOLD);
 		fonts[4] = FontFactory.getFont(FontFactory.HELVETICA, 16, Font.BOLD);
 		fonts[5] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
+		fonts[6] = FontFactory.getFont(FontFactory.HELVETICA, 9, Font.BOLD);
 		
 		PdfPTable table = new PdfPTable(3);
 		table.setTotalWidth(bodyTableWidth);
@@ -232,7 +233,7 @@ public class FRFormServlet extends HttpServlet {
 		headerTable.setLockedWidth(true);
 		headerTable.setWidths(new float[] {5 * MM_TO_PT, 65 * MM_TO_PT, 65 * MM_TO_PT});
 	
-		PDFUtil.addCells(headerTable, new String[] {null, "NEW ZEALAND FOSSIL RECORD FILE", "FOSSIL RECORD NUMBER"}, new Font[] {fonts[0], fonts[5], fonts[1]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
+		PDFUtil.addCells(headerTable, new String[] {null, "NEW ZEALAND FOSSIL RECORD FILE", "FOSSIL RECORD NUMBER"}, new Font[] {fonts[0], fonts[6], fonts[1]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
 		FrNumber frNumber = feature.getFrNumber();
 		PDFUtil.addCells(headerTable, new String[] {null, formType + " Form", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
 			, new Font[] {fonts[0], fonts[4], fonts[3]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
