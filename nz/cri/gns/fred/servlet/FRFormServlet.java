@@ -235,7 +235,7 @@ public class FRFormServlet extends HttpServlet {
 	
 		PDFUtil.addCells(headerTable, new String[] {null, "NEW ZEALAND FOSSIL RECORD FILE", "FOSSIL RECORD NUMBER"}, new Font[] {fonts[0], fonts[6], fonts[1]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
 		FrNumber frNumber = feature.getFrNumber();
-		PDFUtil.addCells(headerTable, new String[] {null, formType + " Form", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
+		PDFUtil.addCells(headerTable, new String[] {null, formType + " Report", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
 			, new Font[] {fonts[0], fonts[4], fonts[3]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
 		
 		PDFUtil.addCell(headerTable, null, fonts[0]);
@@ -276,7 +276,7 @@ public class FRFormServlet extends HttpServlet {
 	}
 	
 	private void writeHeader(Sample sample, Document document) throws MalformedURLException, DocumentException, IOException, NamingException, SQLException {
-		writeHeader(sample.getFeature(), document, sample.getFeature().getFeatureType() + " Sample");
+		writeHeader(sample.getFeature(), document, (sample.getFeature().getFeatureType().equals("Vertical Section")) ? "Vert. Sect." :  sample.getFeature().getFeatureType() + " Sample");
 	}
 	
 	private void writeHeader(Record record, Document document) throws MalformedURLException, DocumentException, IOException, NamingException, SQLException {
@@ -458,7 +458,7 @@ public class FRFormServlet extends HttpServlet {
 			table.setLockedWidth(true);
 			table.setWidths(bodyTableColWidths);
 			
-			PDFUtil.addCells(table, new String[] {"Correspondence", sample.getCorrespondence()}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Correspondence", sample.getCorrespondence()}, new Font[] {fonts[2], fonts[0]});
 			document.add(table);
 		}
 	}
@@ -481,7 +481,7 @@ public class FRFormServlet extends HttpServlet {
 		} else {
 			featTypeLbl = "Section Name";
 		}
-		PDFUtil.addCells(table, new String[] {featTypeLbl, record.getSample().getFeature().getFeatureName()}, bodyFonts);
+		PDFUtil.addCells(table, new String[] {featTypeLbl, record.getSample().getFeature().getFeatureName()}, new Font[] {fonts[2], fonts[3]});
 		//if not OUTCROP then add name and sample depth data
 		if (!record.getSample().getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
 			PDFUtil.addCells(table, new String[] {"Sample", SampleUtil.getDrillHoleDepthDescription(record.getSample())}, new Font[] {fonts[2], fonts[3]});
@@ -547,7 +547,7 @@ public class FRFormServlet extends HttpServlet {
 				table.setWidths(bodyTableColWidths);
 				table.setSpacingAfter(3 * MM_TO_PT);
 				
-				PDFUtil.addCell(table, "Adoption", fonts[2], PdfPCell.ALIGN_LEFT, 2);
+				PDFUtil.addCell(table, "Adopted Age", fonts[2], PdfPCell.ALIGN_LEFT, 2);
 				Object[] adoptors = adoRecord.getAdopters().toArray();
 				String[] adoptorsStr = new String[adoptors.length];
 				for (int i = 0; i < adoptors.length; i++)
