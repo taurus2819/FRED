@@ -235,7 +235,7 @@ public class FRFormServlet extends HttpServlet {
 	
 		PDFUtil.addCells(headerTable, new String[] {null, "NEW ZEALAND FOSSIL RECORD FILE", "FOSSIL RECORD NUMBER"}, new Font[] {fonts[0], fonts[6], fonts[1]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
 		FrNumber frNumber = feature.getFrNumber();
-		PDFUtil.addCells(headerTable, new String[] {null, formType + " Report", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
+		PDFUtil.addCells(headerTable, new String[] {null, formType + " Record", ((frNumber != null) ? frNumber.getFrNumber() : "____/f_____")}
 			, new Font[] {fonts[0], fonts[4], fonts[3]}, new int[] {PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_LEFT, PdfPCell.ALIGN_RIGHT});
 		
 		PDFUtil.addCell(headerTable, null, fonts[0]);
@@ -276,7 +276,7 @@ public class FRFormServlet extends HttpServlet {
 	}
 	
 	private void writeHeader(Sample sample, Document document) throws MalformedURLException, DocumentException, IOException, NamingException, SQLException {
-		writeHeader(sample.getFeature(), document, (sample.getFeature().getFeatureType().equals("Vertical Section")) ? "Vert. Sect." :  sample.getFeature().getFeatureType() + " Sample");
+		writeHeader(sample.getFeature(), document, ((sample.getFeature().getFeatureType().equals("Vertical Section")) ? "V. Section" :  sample.getFeature().getFeatureType()) + " Sample");
 	}
 	
 	private void writeHeader(Record record, Document document) throws MalformedURLException, DocumentException, IOException, NamingException, SQLException {

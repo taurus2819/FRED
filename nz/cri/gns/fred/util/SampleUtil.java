@@ -580,7 +580,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			String strikeStr = String.valueOf(sample.getStrike());
 			while (strikeStr.length() < 3)
 				strikeStr = "0" + strikeStr;
-			desc.append(strikeStr);
+			desc.append(strikeStr).append((char)176);
 		}
 		if (sample.getFacing() != null)
 			desc.append(" (Facing: ").append(sample.getFacing()).append(")");
