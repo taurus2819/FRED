@@ -62,18 +62,18 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 		et.setDisplayLogin(true);
 		et.setShowGnsLogo(true);
 		et.setUseNavigationColumn(true);
-		et.addStyleSheet("/fred/fredde.css");
-        et.addScript("/fred/showhide.js");
+		et.addStyleSheet("fredde.css");
+        et.addScript("showhide.js");
 		KeyValueObject links[] = new KeyValueObject[4];
-		links[0] = new KeyValueObject("/fred/index.jsp", "FRED Home");
-		links[1] = new KeyValueObject("/fred/simple_query.jsp", "Query");
+		links[0] = new KeyValueObject("index.jsp", "FRED Home");
+		links[1] = new KeyValueObject("simple_query.jsp", "Query");
 		links[2] = new KeyValueObject("http://maps.gns.cri.nz/website/fred", "Map");
-		links[3] = new KeyValueObject("/fred/folder_list.jsp", "Data Entry");
+		links[3] = new KeyValueObject("folder_list.jsp", "Data Entry");
 		et.setLinks(links);
-		et.setImageBase("/fred/images/fred.gif");
+		et.setImageBase("images/fred.gif");
 		et.setNewHeaderStyle(true);
 		KeyValueObject logos[] = new KeyValueObject[1];
-		logos[0] = new KeyValueObject("http://www.gsnz.org.nz", "/fred/images/gsnz_logo_head.gif");
+		logos[0] = new KeyValueObject("http://www.gsnz.org.nz", "images/gsnz_logo_head.gif");
 		et.setHeaderLogos(logos);
 		return et;
 	}
