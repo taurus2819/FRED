@@ -11,7 +11,6 @@ import java.util.Vector;
 import javax.naming.NamingException;
 
 import nz.cri.gns.auth.InsufficientPrivelegesException;
-import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
@@ -263,14 +262,15 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public void submitSample(Sample sample, UserFolder folder, UserAccount user) throws DataInputException, InsufficientPrivelegesException, StorageAccessException {
-		if (!isAllowedSubmitSample(user, sample, folder))
-			throw new InsufficientPrivelegesException();
 		if (!FeatureUtil.isBacklogFeature(sample.getFeature()) && (FREDUtil.isEmpty(sample.getCollectors()) || FREDUtil.isEmpty(sample.getSentTos())
 				|| sample.getCollectionDate() == null || sample.getInPlace() == null))
 			throw new MandatoryFieldsMissingException();
 		
 		//Update the audit log, so long as this isn't an outcrop
 		if (!sample.getFeature().getFeatureType().equals(OUTCROP)) {
+			if (!isAllowedSubmitSample(user, sample, folder))
+				throw new InsufficientPrivelegesException();
+			
 			Audit audit = sample.getAudit();
 			
 			//explicity add feature to folder.
