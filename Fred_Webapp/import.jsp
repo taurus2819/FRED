@@ -116,7 +116,9 @@
 		    }
 		} catch (InsufficientPrivelegesException e) {
 			status = "AuthError";
-			message = "User not authorised for this operation";
+			message = "User not authorised";
+			System.out.println("*** FRED Error: " + new java.util.Date() + " ***");
+			e.printStackTrace();
 	    } catch (DataInputException e) {
 	    	status = "Error";
 			String[] error = (String[])e.getError().firstElement();
@@ -124,6 +126,7 @@
 	    } catch (Exception e) {
 	    	status = "Error";
 			message = "Unspecified Error: " + e.toString();
+			System.out.println("*** FRED Error: " + new java.util.Date() + " ***");
 			e.printStackTrace();
 	    }
 	}
