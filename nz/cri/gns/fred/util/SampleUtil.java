@@ -262,8 +262,9 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public void submitSample(Sample sample, UserFolder folder, UserAccount user) throws DataInputException, InsufficientPrivelegesException, StorageAccessException {
-		if (!FeatureUtil.isBacklogFeature(sample.getFeature()) && (FREDUtil.isEmpty(sample.getCollectors()) || FREDUtil.isEmpty(sample.getSentTos())
-				|| sample.getCollectionDate() == null || sample.getInPlace() == null))
+		if (!FeatureUtil.isBacklogFeature(sample.getFeature()) && (FREDUtil.isEmpty(sample.getCollectors())
+				|| sample.getCollectionDate() == null || sample.getInPlace() == null)
+				|| (FREDUtil.isEmpty(sample.getSentTos()) && sample.getNotCollected() == null))
 			throw new MandatoryFieldsMissingException();
 		
 		//Update the audit log, so long as this isn't an outcrop
