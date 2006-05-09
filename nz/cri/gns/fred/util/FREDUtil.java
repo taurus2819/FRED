@@ -23,8 +23,6 @@ import java.util.Vector;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
@@ -49,7 +47,6 @@ import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.PersonRelationship;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.intranet.DBConnection;
-import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 import nz.cri.gns.util.map.Datum;
 import nz.cri.gns.util.map.DatumFactory;
@@ -795,4 +792,9 @@ public class FREDUtil {
 	public static boolean isEmpty(Set<?> set) {
 		return set == null || set.size() == 0;
 	}
+	
+	public static boolean isEmpty(String str) {
+		return str == null || str.length() == 0;
+	}
+	
 }
