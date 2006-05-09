@@ -264,6 +264,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	public void submitSample(Sample sample, UserFolder folder, UserAccount user) throws DataInputException, InsufficientPrivelegesException, StorageAccessException {
 		System.out.println("sentTo empty: " + FREDUtil.isEmpty(sample.getSentTos()));
 		System.out.println("notCollected null: " + sample.getNotCollected() == null);
+		System.out.println("notCollected = \"\": " + sample.getNotCollected().equals("")); 
 		if (!FeatureUtil.isBacklogFeature(sample.getFeature()) && (FREDUtil.isEmpty(sample.getCollectors())
 				|| sample.getCollectionDate() == null || sample.getInPlace() == null
 				|| (FREDUtil.isEmpty(sample.getSentTos()) && sample.getNotCollected() == null)))
