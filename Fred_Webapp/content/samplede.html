@@ -206,13 +206,12 @@ for (var i=0; i<collArray.length; i++) {
 <td><img src="images/blank.gif" width="1" height="5" /></td>
 </tr>
 <tr>
-<td width="150" class="heading">Attitude</td>
+<td width="150" class="heading" rowspan="4">Attitude<br /><span class="smalltext">For flat-lying strata, enter 0 for <i>Dip</i>, Normal or Overturned for <i>Facing</i> and leave other fields blank.</span></td>
 <td width="100" class="smallheading">Dip</td>
 <td width="270"><input type="text" name="Dip" size="3" value="{@Dip}"></td>
 <td width="30"></td>
 </tr>
 <tr>
-<td></td>
 <td class="smallheading">Dip Dirn.</td>
 <td><select name="DipDir">
 <option value=""> -- Choose -- </option>
@@ -227,12 +226,10 @@ for (var i=0; i<collArray.length; i++) {
 </select></td>
 </tr>
 <tr>
-<td></td>
 <td class="smallheading">Strike</td>
 <td><input type="text" name="Strike" size="4" value="{@Strike}"></td>
 </tr>
 <tr>
-<td></td>
 <td class="smallheading">Facing</td><td><select name="Facing">
 <option value=""> -- Choose -- </option>
 <option value="Normal"{@@isFacingNormal: selected@}>Normal</option>
