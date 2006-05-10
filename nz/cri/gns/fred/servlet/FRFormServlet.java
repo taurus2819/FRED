@@ -332,6 +332,8 @@ public class FRFormServlet extends HttpServlet {
 		if (isAllowedReadFeature)
 			PDFUtil.addCells(table, new String[] {"Locality", feature.getLocality()}, bodyFonts);
 		PDFUtil.addCells(table, new String[] {"Country", ((sr != null) ? FREDUtil.getSiteCountry(sr) : null)}, bodyFonts);
+		PDFUtil.addCells(table, new String[] {"Coordinate Comments", feature.getCoordComments()}, bodyFonts);
+		PDFUtil.addCells(table, new String[] {"Locality Comments", feature.getComments()}, bodyFonts);
 		if (isAllowedReadFeature && !featType.equals(FREDConstants.OUTCROP)) {
 			PDFUtil.addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector"), ((feature.getPerson() != null) ? feature.getPerson().getName() : null)}, bodyFonts);
 			PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date"),

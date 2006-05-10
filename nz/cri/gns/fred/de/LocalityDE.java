@@ -125,6 +125,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			e.printStackTrace();
 			//Site wasn't set
 		}
+		feature.setMapYear(fromFeature.getMapYear());
+		feature.setComments(fromFeature.getComments());
+		feature.setCoordComments(fromFeature.getCoordComments());
 	}
 
 	public Integer getFeatureID() {
@@ -315,6 +318,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			cd.selected = (site == null) ? "NZ" : site.getCountry();
 			FREDUtil.makeDropBox(out, cd);
 			
+			template.addSub("coordComm", DBUtils.nvl(feature.getCoordComments()));
+			template.addSub("locComm", DBUtils.nvl(feature.getComments()));
+			
 		} catch (NamingException e) {
 			e.printStackTrace();
 			//Should never happen!
@@ -470,6 +476,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		} catch (Exception e) {
 			error.add(new String[] {"Map Year", "Map Year not numeric"});
 		}
+		
+		feature.setCoordComments(request.getParameter("CoordComm"));
+		feature.setComments(request.getParameter("LocComm"));
 		
 		editComments = request.getParameter("EditComm");
 		
