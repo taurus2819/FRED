@@ -144,7 +144,7 @@
 			<ul>
 			<li>Listed below are the localities you have added to this folder.</li>
 			<li>Working localities are named with their field number or drillhole name until they are allocated a Fossil Record Number.</li>
-			<li>Click on the locality to add/edit locality records, or use the options to work with the locality itself:</li>
+			<li>Click on the locality to add/edit drillhole/vertical section samples, and paleontology and adopted age data, or use the options to work with the locality itself:</li>
 			<ul>
 			<li><img src="images/edit.gif" border="0" height="20" width="20" alt="" /> to edit the locality</li>
 			<li><img src="images/new_file.gif" border="0" height="20" width="20" alt="" /> to add a file/image to the locality/sample/record</li>
