@@ -214,22 +214,14 @@ public class FRFormServlet extends HttpServlet {
 		table.setSpacingAfter(2 * MM_TO_PT);
 			
 		//Logo
-		String baseURL = "http://" + JspUtils.getServerName(new PageState(request, response, getServletContext()))
-				+ "/fred/images/";
-		//String realPath = getServletContext().getRealPath(request.getContextPath());
-		System.out.println("Request.getContextPath(): " + request.getContextPath());
-		System.out.println("Request.getPathInfo(): " + request.getPathInfo());
-		System.out.println("Request.getPathTranslated(): " + request.getPathTranslated());
-		System.out.println("Context.getRealPath() (with images + / appended): " + getServletContext().getRealPath("/images") + "/");
 		String realPath = getServletContext().getRealPath("/images") + "/";
-		//Image image = Image.getInstance(new URL(baseURL + "gsnz_logo_big.png"));
 		Image image = Image.getInstance(realPath + "gsnz_logo_big.png");
 		image.scaleToFit(20 * MM_TO_PT, 20 * MM_TO_PT);
 		PdfPCell cell = new PdfPCell(image);
 		cell.setBorder(PdfPCell.NO_BORDER);
 		table.addCell(cell);
 		
-		image = Image.getInstance(new URL(baseURL + "GNS_logo_black.png"));
+		image = Image.getInstance(realPath + "GNS_logo_black.png");
 		image.scaleToFit(12 * MM_TO_PT, 20 * MM_TO_PT);
 		cell = new PdfPCell(image);
 		cell.setBorder(PdfPCell.NO_BORDER);
