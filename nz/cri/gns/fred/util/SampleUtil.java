@@ -262,17 +262,12 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public void submitSample(Sample sample, UserFolder folder, UserAccount user) throws DataInputException, InsufficientPrivelegesException, StorageAccessException {
-		System.out.println("sentTo empty: " + FREDUtil.isEmpty(sample.getSentTos()));
-		System.out.println("notCollected empty: " + FREDUtil.isEmpty(sample.getNotCollected()));
-		if (!FeatureUtil.isBacklogFeature(sample.getFeature()) && (FREDUtil.isEmpty(sample.getCollectors())
-				|| sample.getCollectionDate() == null || sample.getInPlace() == null
-				|| (FREDUtil.isEmpty(sample.getSentTos()) && FREDUtil.isEmpty(sample.getNotCollected()))))
-			throw new MandatoryFieldsMissingException();
-		
 		//Update the audit log, so long as this isn't an outcrop
 		if (!sample.getFeature().getFeatureType().equals(OUTCROP)) {
 			if (!isAllowedSubmitSample(user, sample, folder))
 				throw new InsufficientPrivelegesException();
+			if (!isMandatoryFieldComplete(sample))
+				throw new MandatoryFieldsMissingException();
 			
 			Audit audit = sample.getAudit();
 			
@@ -291,6 +286,16 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			audit.setFolder(null);
 			sampleDAO.update(audit);
 		}
+	}
+	
+	public static boolean isMandatoryFieldComplete(Sample sample) {
+		if (FeatureUtil.isBacklogFeature(sample.getFeature()))
+			return true;
+		if (FREDUtil.isEmpty(sample.getCollectors())
+				|| sample.getCollectionDate() == null || sample.getInPlace() == null
+				|| (FREDUtil.isEmpty(sample.getSentTos()) && FREDUtil.isEmpty(sample.getNotCollected())))
+			return false;
+		return true;
 	}
 	
 	/**

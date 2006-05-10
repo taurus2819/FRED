@@ -357,6 +357,14 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				|| feature.getSiteId() == null || (!isBacklogFeature(feature) && feature.getLocality() == null))
 				throw new MandatoryFieldsMissingException();			
 		
+		//if outcrop also check sample mandatory fields
+		if (feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
+			for (Sample sample : feature.getSamples()) {
+				if (!SampleUtil.isMandatoryFieldComplete(sample))
+					throw new MandatoryFieldsMissingException();
+			}
+		}
+		
 		int masterfile = -1;
 		try {
 			masterfile = FREDUtil.getMasterfile(feature);
