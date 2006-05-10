@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import javax.naming.NamingException;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -215,7 +216,13 @@ public class FRFormServlet extends HttpServlet {
 		//Logo
 		String baseURL = "http://" + JspUtils.getServerName(new PageState(request, response, getServletContext()))
 				+ "/fred/images/";
+		//String realPath = getServletContext().getRealPath(request.getContextPath());
+		System.out.println("Request.getContextPath(): " + request.getContextPath());
+		System.out.println("Request.getPathInfo(): " + request.getPathInfo());
+		System.out.println("Request.getPathTranslated(): " + request.getPathTranslated());
+		System.out.println("Context.getRealPath(): " + getServletContext().getRealPath(request.getContextPath()));
 		Image image = Image.getInstance(new URL(baseURL + "gsnz_logo_big.png"));
+		//image image2 = Image.getInstants(path + "gsnz_logo_big.png");
 		image.scaleToFit(20 * MM_TO_PT, 20 * MM_TO_PT);
 		PdfPCell cell = new PdfPCell(image);
 		cell.setBorder(PdfPCell.NO_BORDER);
