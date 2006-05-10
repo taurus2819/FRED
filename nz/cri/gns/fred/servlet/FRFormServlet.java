@@ -332,22 +332,24 @@ public class FRFormServlet extends HttpServlet {
 		if (isAllowedReadFeature)
 			PDFUtil.addCells(table, new String[] {"Locality", feature.getLocality()}, bodyFonts);
 		PDFUtil.addCells(table, new String[] {"Country", ((sr != null) ? FREDUtil.getSiteCountry(sr) : null)}, bodyFonts);
-		PDFUtil.addCells(table, new String[] {"Coordinate Comments", feature.getCoordComments()}, bodyFonts);
-		PDFUtil.addCells(table, new String[] {"Locality Comments", feature.getComments()}, bodyFonts);
-		if (isAllowedReadFeature && !featType.equals(FREDConstants.OUTCROP)) {
-			PDFUtil.addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector"), ((feature.getPerson() != null) ? feature.getPerson().getName() : null)}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date"),
-					((feature.getStartDate() != null) ? FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding()) : null)}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {"Completion Date",
-					((feature.getFinishDate() != null) ? FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding()) : null)}, bodyFonts);		
-			if (featType.equals(FREDConstants.DRILLHOLE))
-				PDFUtil.addCells(table, new String[] {"Licence Area", feature.getDrillholeLicenceName()}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {"Datum Type", feature.getDatumType()}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {"Datum Elevation", ((feature.getDatumElevation() != null) ? String.valueOf(feature.getDatumElevation()) + " m asl" : null)}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon"),
-					((feature.getStartDepth() != null) ? String.valueOf(feature.getStartDepth()) + " m" : null)}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon"),
-					((feature.getFinishDepth() != null) ? String.valueOf(feature.getFinishDepth()) + " m" : null)}, bodyFonts);
+		if (isAllowedReadFeature) {
+			PDFUtil.addCells(table, new String[] {"Coordinate Comments", feature.getCoordComments()}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Locality Comments", feature.getComments()}, bodyFonts);
+			if (!featType.equals(FREDConstants.OUTCROP)) {
+				PDFUtil.addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector"), ((feature.getPerson() != null) ? feature.getPerson().getName() : null)}, bodyFonts);
+				PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date"),
+						((feature.getStartDate() != null) ? FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding()) : null)}, bodyFonts);
+				PDFUtil.addCells(table, new String[] {"Completion Date",
+						((feature.getFinishDate() != null) ? FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding()) : null)}, bodyFonts);		
+				if (featType.equals(FREDConstants.DRILLHOLE))
+					PDFUtil.addCells(table, new String[] {"Licence Area", feature.getDrillholeLicenceName()}, bodyFonts);
+				PDFUtil.addCells(table, new String[] {"Datum Type", feature.getDatumType()}, bodyFonts);
+				PDFUtil.addCells(table, new String[] {"Datum Elevation", ((feature.getDatumElevation() != null) ? String.valueOf(feature.getDatumElevation()) + " m asl" : null)}, bodyFonts);
+				PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon"),
+						((feature.getStartDepth() != null) ? String.valueOf(feature.getStartDepth()) + " m" : null)}, bodyFonts);
+				PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon"),
+						((feature.getFinishDepth() != null) ? String.valueOf(feature.getFinishDepth()) + " m" : null)}, bodyFonts);
+			}
 		}
 		document.add(table);		
 	}
