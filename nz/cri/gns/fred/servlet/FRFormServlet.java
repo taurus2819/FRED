@@ -220,7 +220,7 @@ public class FRFormServlet extends HttpServlet {
 		System.out.println("Request.getContextPath(): " + request.getContextPath());
 		System.out.println("Request.getPathInfo(): " + request.getPathInfo());
 		System.out.println("Request.getPathTranslated(): " + request.getPathTranslated());
-		System.out.println("Context.getRealPath() (with images appended): " + getServletContext().getRealPath("/images/"));
+		System.out.println("Context.getRealPath() (with images/ appended): " + getServletContext().getRealPath("/images/"));
 		String realPath = getServletContext().getRealPath("/images/");
 		//Image image = Image.getInstance(new URL(baseURL + "gsnz_logo_big.png"));
 		Image image = Image.getInstance(realPath + "gsnz_logo_big.png");
