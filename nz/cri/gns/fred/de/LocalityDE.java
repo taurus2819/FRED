@@ -175,10 +175,10 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		try {
 			//Set up some basic substitutes
 			if (FeatureUtil.isBacklogFeature(feature)) {
-				if (feature.getFeatureId() == null) {
-					template.addSub("isNewBacklog", "yes");
+				if (feature.getFrNumber() == null) {
+					template.addSub("noFrNumber", "yes");
 				} else {
-					template.addSub("isExistingBacklog", "yes");
+					template.addSub("hasFrNumber", "yes");
 					FrNumber frNumber = feature.getFrNumber();
 					template.addSub("frNumber", (frNumber != null ? frNumber.getFrNumber() : ""));
 				}
@@ -367,9 +367,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         //FRNum (if backlog - but only update if null)
         if (FeatureUtil.isBacklogFeature(feature)) {
         	try {
-        		String frNumberStr = request.getParameter("FRNumber");
         	   	FrNumber frNumber = feature.getFrNumber();
         	   	if (frNumber == null) {
+        	   		String frNumberStr = request.getParameter("FRNumber");
         	   		frNumber = FeatureUtil.parseFRNumber(frNumberStr);
         	   		feature.setFrNumber(frNumber);
         	   	}

@@ -839,9 +839,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 * Parses FR Number as string and returns FrNumber object
 	 */
 	public static FrNumber parseFRNumber(String frNumStr) throws DataInputException {
-		String recollectionNumber;
-		Integer serialNumber;
-		if (frNumStr.indexOf("/f") > 0) {
+		if (frNumStr != null && frNumStr.indexOf("/f") > 0) {
+			String recollectionNumber;
+			Integer serialNumber;
 			String mapSheet = frNumStr.substring(0, frNumStr.indexOf("/f")).toUpperCase();
 			String num = frNumStr.substring(frNumStr.indexOf("/f") + 2);
 			try {
@@ -861,7 +861,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			frNumber.setRecollectionNumber(recollectionNumber);
 			return frNumber;
 		} else {
-			throw new DataInputException("FR Number", "Badly formed FR Number");
+			throw new DataInputException("FR Number", "Badly formed or missing FR Number");
 		}
 	}
 	
