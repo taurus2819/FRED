@@ -150,17 +150,15 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
 	public List<IconnedLink> getNavigation() {
 		List<IconnedLink> links = new Vector<IconnedLink>(4);
+		/* removed as bug in copy method
 		try {
-			
 			String args = ((workingFolder == null) ? "?q" : ("?FoldID=" + workingFolder.getFolderId())) 
 				+ ((feature.getFeatureId() == null) ? "" : ("&FeatID=" + feature.getFeatureId()))
 				+ "&RecType=" + URLEncoder.encode(feature.getFeatureType(), "ISO-8859-1");
-			
-			
 			links.add(new IconnedLink("load_record.jsp" + args, "images/load.gif", "Copy From"));
 		} catch (UnsupportedEncodingException e) {
 			//Aint' gonna happen
-		}
+		} */
 		links.add(new IconnedLink("javascript:submitForm('Save');", "images/save.gif", "Save"));
 		if (isAllowedSubmit)
 			links.add(new IconnedLink("javascript:submitForm('Submit');", "images/submit.gif", "Submit"));
