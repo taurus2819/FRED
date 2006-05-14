@@ -597,25 +597,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		return sample.getSampleId().intValue();
 	}
 
-
-	public void makeNavPanelHTML(Writer out) throws IOException {
-/*		out.write("<tr><td colspan='2' align='center'><img src='images/drill.gif' height='20' width='20' /></td></tr>");
-		out.write("<tr><td colspan='2' align='center' class='heading'>Sample</td></tr>\n");
-		out.write("<tr><td>&nbsp;</td></tr>");
-		if (workingFolder != null) {
-			out.write("<tr><td><a href='load_record.jsp?FoldID=" + workingFolder.getFolderID()
-				+ ((sample != null) ? "&SampID=" + sample.getSampleID() : "")
-				+ "&RecType=Sample'><img src='images/load.gif' height='20' width='20' border='0' alt='Copy From' /></a>&nbsp;&nbsp;</td><td><a href='load_record.jsp?FoldID=" + workingFolder.getFolderID()
-				+ ((sample != null) ? "&SampID=" + sample.getSampleID() : "")
-				+ "&RecType=Sample' class='boldlink'>Copy From</a></td></tr>\n");
-		}
-		out.write("<tr><td><a href='#' onClick="submitForm('Save');'><img src='images/save.gif' height='20' width='20' border='0' alt='Save'/></a>&nbsp;&nbsp;</td><td><a href='#' onClick="submitForm('Save');" class='boldlink'>Save</a></td></tr>\n");
-		if (isAllowedSubmit)
-			out.write("<tr><td><a href='#' onClick="submitForm('Submit');"><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit to Database' /></a>&nbsp;&nbsp;</td><td><a href='#' class='heading' onClick="submitForm('Submit');" class='boldlink'>Submit</a></td></tr>\n");
-		*/
-	}
-
-
 	public List<IconnedLink> getNavigation() {
 		List<IconnedLink> links = new Vector<IconnedLink>(4);
 		/* temp removed as bug in copy method
@@ -643,20 +624,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         reinitialise(factory);
 
         Vector<String[]> error = new Vector<String[]>();
-
-        //FRNumber update - only if backlog locality and FRNumber is null. Remove once FRNumber moved to Feature
-        if (FeatureUtil.isBacklogFeature(sample.getFeature()) && request.getParameter("FRNumber") != null) {
-        	try {
-        		String frNumberStr = request.getParameter("FRNumber");
-        		FrNumber frNumber = sample.getFrNumber();
-        		if (frNumber == null) {
-        			frNumber = FeatureUtil.parseFRNumber(frNumberStr);
-        			sample.setFrNumber(frNumber);
-        		}
-        	} catch (DataInputException e) {
-        		error.add(new String[] {"FR Number", e.getMessage()});
-        	}
-    	}
         
         //Drillhole/Vert Section depths
         if (!sample.getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
