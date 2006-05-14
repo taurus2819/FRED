@@ -72,9 +72,8 @@
 			if (folder.isAllowedReadLocalities() && features.length > 0) {
 				%><tr class="heading"><td></td><td>Locality</td><td>Sample</td></tr><%		
 				for (int i = 0; i < features.length; i++) {
-					if (!features[i].getFeatureType().equals(FREDConstants.OUTCROP) && features[i].getSamples().size() > 0) {
-						for (Iterator j = features[i].getSamples().iterator(); j.hasNext(); ) {
-							Sample sample = (Sample) j.next();
+					if (!features[i].getFeatureType().equals(FREDConstants.OUTCROP)) {
+						for (Sample sample : features[i].getSamples()) {
 							if (sampID == null || sample.getSampleId().intValue() != Integer.parseInt(sampID)) {
 								%><tr><td><a href="de.jsp?Type=<%=recType%>&FoldID=<%=folder.getFolderId() + ((sampID != null) ? "&SampID=" + sampID : "")%>&CopyID=<%=sample.getSampleId()%>"><img src="images/load.gif" width="20" height="20" border="0" alt="Copy Sample" /></a>&nbsp;&nbsp;</td>
 								<td><%=FeatureUtil.getFeatureIdentifyingName(features[i])%>&nbsp;&nbsp;</td>
@@ -92,19 +91,13 @@
 			if (folder.isAllowedReadLocalities() && features.length > 0) {
 				%><tr class="heading"><td></td><td>Locality</td><td>Sample</td><td>Record</td></tr><%
 				for (int i = 0; i < features.length; i++) {
-					if (features[i].getSamples().size() > 0) {
-						for (Iterator j = features[i].getSamples().iterator(); j.hasNext(); ) {
-							Sample sample = (Sample) j.next();
-							if (sample.getRecords().size() > 0) {
-								for (Iterator k = sample.getRecords().iterator(); k.hasNext(); ) {
-									Record record = (Record) k.next();
-									if (record != null && RecordUtil.getRecordType(record).equals(recType) && (recID == null || record.getRecordId().intValue() != Integer.parseInt(recID))) {
-										%><tr><td><a href="de.jsp?Type=<%=RecordUtil.getRecordType(record)%>&FoldID=<%=folder.getFolderId() + ((recID != null) ? "&RecID=" + recID : "")%>&CopyID=<%=record.getRecordId()%>"><img src="images/load.gif" width="20" height="20" border="0" alt="Copy Record" /></a>&nbsp;&nbsp;</td>
-										<td><%=FeatureUtil.getFeatureIdentifyingName(features[i])%>&nbsp;&nbsp;</td>
-										<td><%=(features[i].getFeatureType().equals(FREDConstants.OUTCROP)) ? "" : SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td>
-										<td><a href="de.jsp?Type=<%=RecordUtil.getRecordType(record)%>&FoldID=<%=folder.getFolderId() + ((recID != null) ? "&RecID=" + recID : "")%>&CopyID=<%=record.getRecordId()%>"><%=RecordUtil.getRecordName(record)%></a></td></tr><%
-									}
-								}
+					for (Sample sample : features[i].getSamples()) {
+						for (Record record : sample.getRecords()) {
+							if (record != null && RecordUtil.getRecordType(record).equals(recType) && (recID == null || record.getRecordId().intValue() != Integer.parseInt(recID))) {
+								%><tr><td><a href="de.jsp?Type=<%=RecordUtil.getRecordType(record)%>&FoldID=<%=folder.getFolderId() + ((recID != null) ? "&RecID=" + recID : "")%>&CopyID=<%=record.getRecordId()%>"><img src="images/load.gif" width="20" height="20" border="0" alt="Copy Record" /></a>&nbsp;&nbsp;</td>
+								<td><%=FeatureUtil.getFeatureIdentifyingName(features[i])%>&nbsp;&nbsp;</td>
+								<td><%=(features[i].getFeatureType().equals(FREDConstants.OUTCROP)) ? "" : SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td>
+								<td><a href="de.jsp?Type=<%=RecordUtil.getRecordType(record)%>&FoldID=<%=folder.getFolderId() + ((recID != null) ? "&RecID=" + recID : "")%>&CopyID=<%=record.getRecordId()%>"><%=RecordUtil.getRecordName(record)%></a></td></tr><%
 							}
 						}
 					}
