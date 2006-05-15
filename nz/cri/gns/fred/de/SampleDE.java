@@ -151,9 +151,19 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         } else {
         	relationships.clear();
         }
-        if (fromSample.getRelationships() != null)
+        if (fromSample.getRelationships() != null) {
+        	for (Relationship rel : fromSample.getRelationships()) {
+        		System.out.println("From Rel: " + rel.getRelationshipId() + ":" + SampleUtil.getRelationshipDescription(rel));
+        	}
         	relationships.addAll(fromSample.getRelationships());
+        	for (Relationship rel : relationships) {
+        		System.out.println("Temp Rel: " + rel.getRelationshipId() + ":" + SampleUtil.getRelationshipDescription(rel));
+        	}
+        	for (Relationship rel : sample.getRelationships()) {
+        		System.out.println("To Rel: " + rel.getRelationshipId() + ":" + SampleUtil.getRelationshipDescription(rel));
+        	}
 		//sample.setRelationships(fromSample.getRelationships());
+        }
         
 		sample.setColumnMap(fromSample.getColumnMap());
 		sample.setDip(fromSample.getDip());
