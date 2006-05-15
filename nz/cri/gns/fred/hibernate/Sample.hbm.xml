@@ -270,7 +270,7 @@
 		cascade="all"
     >
         <key>
-            <column name="SAMPLE_ID" />
+            <column not-null="true" name="SAMPLE_ID" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.Relationship"
