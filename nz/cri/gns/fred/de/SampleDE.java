@@ -248,6 +248,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         */
 
 		try {
+			System.out.println("Before template substitution, rel count = " + sample.getRelationships().size());
 	        Template template = provider.getContent("sample.de.form");
             prepareTemplate(template, provider);
 	        
@@ -383,6 +384,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		StageDEUtil.addStageSubs(template, sample.getKnownStage(), "Known");
 		
 		//Previous samples....
+		System.out.println("Before PrevSample, rel count = " + sample.getRelationships().size());
 		template.addSub("PrevSamp", getRelationshipsBrief(FREDConstants.SAMPLE, FREDConstants.NEARBY, semiColonSeparator));
 
 		template.addSub("SampRel", getRelationshipsFull(FREDConstants.SAMPLE, new String[] {FREDConstants.ABOVE, FREDConstants.BELOW}, newLineSeparator));
@@ -486,6 +488,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 
 	private String getRelationshipsBrief(String relationType, String relationshipType, String separator) throws StorageAccessException {
+		System.out.println("getRelationshipsBrief (" + relationType + "), rel count = " + sample.getRelationships().size());
 		if (sample.getRelationships() == null)
 			return "";
 		StringBuffer buffer = new StringBuffer();
