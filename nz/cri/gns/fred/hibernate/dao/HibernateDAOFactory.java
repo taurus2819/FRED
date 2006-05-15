@@ -751,6 +751,15 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		}
 	}
 
+	public void delete(Relationship rel) throws StorageAccessException {
+		HibernateUtils.delete(provider, rel);
+		try {
+			provider.currentSession().flush();
+		} catch (HibernateException e) {
+			throw new StorageAccessException(e);
+		}
+	}
+	
 	public RecordDAO getRecordDAO() {
 		return this;
 	}

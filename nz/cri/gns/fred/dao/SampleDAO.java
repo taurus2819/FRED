@@ -211,4 +211,6 @@ public interface SampleDAO {
     public void attach(Object o) throws StorageAccessException;
 
 	public void delete(SentTo sentTo) throws StorageAccessException;
+	
+	public void delete(Relationship rel) throws StorageAccessException;
 }
