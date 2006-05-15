@@ -808,6 +808,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		relationships.removeAll(previousSample);
 	
 		//Next up - sample relationships
+		System.out.println("*** Starting Relationship processing: " + new java.util.Date() + " ***");
 		if (request.getParameter("SampRel").length() > 0) {
 			//Go through each entered relationship
 			for (String relationshipDesc : request.getParameter("SampRel").split("\\n")) try {
@@ -850,7 +851,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 				boolean found = false;
 				for (Iterator<Relationship> it = stratRel.iterator(); it.hasNext(); ) {
 					Relationship rel = it.next();
-					if (newRelationship.equals(rel)) {
+					if (sampleUtil.isMatchingRelationship(rel, newRelationship)) {
 						//Remove it from the old set
 						it.remove();
 						found = true;
