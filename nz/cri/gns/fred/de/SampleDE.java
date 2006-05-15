@@ -719,19 +719,15 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     			FossilGroup group = (parts[0].length() == 0) ? null : sampleUtil.getFossilGroup(parts[0]);
     			if (parts[0].length() > 0 && group == null)
     				error.add(new String[] {"Sent To", "Invalid group: " + parts[0]});
-    
     			Person person = (parts.length >= 2 && parts[1].length() != 0) ? (addIfNew ? personUtil.findOrCreatePerson(parts[1]) : personUtil.findPerson(parts[1])) : null;
     			if (parts.length >= 2 && parts[1].length() > 0 && person == null)
     				error.add(new String[] {"Sent To", "Invalid person: " + parts[1]});
-    			
     			Integer lab = (parts.length >= 3 && parts[2].length() != 0) ? FREDUtil.getLabId(parts[2]) : null;
     			if (parts.length >= 3 && parts[2].length() > 0 && lab == null)
     				error.add(new String[] {"Sent To", "Invalid lab: " + parts[2]});
-    			
     			String comments = ((parts.length >= 4) ? parts[3].replaceAll(String.valueOf((char)13), "") : null);
     			if (comments != null && comments.length() == 0)
     				comments = null;
-    			
     			sentToSet.add(sampleUtil.findOrCreateSentTo(sample, group, person, lab, comments));
     		} catch (Exception e) {
                 e.printStackTrace();
@@ -816,7 +812,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			//Go through each entered relationship
 			for (String relationshipDesc : request.getParameter("SampRel").split("\\n")) try {
 				Relationship newRelationship = sampleUtil.decodeSampleRelationshipDescription(relationshipDesc);
-				newRelationship.setSample(sample);
+				//newRelationship.setSample(sample);
 				boolean found = false;
 				for (Iterator<Relationship> it = sampleRel.iterator(); it.hasNext(); ) {
 					Relationship rel = it.next();
