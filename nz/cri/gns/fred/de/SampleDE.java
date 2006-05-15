@@ -825,6 +825,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 						//Remove it from the old set
 						it.remove();
 						found = true;
+						break;
 					}
 				}
 				if (!found) {
@@ -847,6 +848,11 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		}
 		System.out.println("Count of relationships before removal: " + relationships.size());
 		relationships.removeAll(sampleRel);
+		for (Relationship rel : sampleRel) try {
+			sampleUtil.delete(rel);
+		} catch (StorageAccessException e) {
+			e.printStackTrace();
+		}
 		System.out.println("Count of relationships after removal: " + relationships.size());
 
 		//Lastly - strat relationships
