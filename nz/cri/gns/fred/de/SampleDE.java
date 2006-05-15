@@ -199,7 +199,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
+		System.out.println("Before reinitialise, rel count = " + sample.getRelationships().size());
         reinitialise(factory);
+        System.out.println("After reinitialise, rel count = " + sample.getRelationships().size());
 		ComboDescriptor cd;
 		
 		if (!outcropSample) {
