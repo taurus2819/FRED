@@ -492,8 +492,14 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		if (sample.getRelationships() == null)
 			return "";
 		StringBuffer buffer = new StringBuffer();
-		for (Relationship rel : sampleUtil.getRelationships(sample, relationType, relationshipType))
-			buffer.append(FeatureUtil.getFeatureIdentifyingName(rel.getFeature())).append(separator);
+		for (Relationship rel : sample.getRelationships()) {
+			System.out.println("getRelationshipsBrief: " + SampleUtil.getRelationshipDescription(rel));
+			if (rel.getRelationType().getName().equals(relationType) && rel.getRelationshipType().getName().equals(relationshipType)) {
+				buffer.append(FeatureUtil.getFeatureIdentifyingName(rel.getFeature())).append(separator);
+			}
+		}
+		//for (Relationship rel : sampleUtil.getRelationships(sample, relationType, relationshipType))
+		//	buffer.append(FeatureUtil.getFeatureIdentifyingName(rel.getFeature())).append(separator);
 		return buffer.toString();
 	}
 
@@ -614,11 +620,11 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
 	public List<IconnedLink> getNavigation() {
 		List<IconnedLink> links = new Vector<IconnedLink>(4);
-		/* temp removed as bug in copy method
+		//temp removed as bug in copy method
 		String args = ((workingFolder == null) ? "?q" : ("?FoldID=" + workingFolder.getFolderId())) 
 			+ ((sample.getSampleId() == null) ? "" : ("&SampID=" + sample.getSampleId()))
 			+ "&RecType=Sample";
-		links.add(new IconnedLink("load_record.jsp" + args, "images/load.gif", "Copy From")); */
+		links.add(new IconnedLink("load_record.jsp" + args, "images/load.gif", "Copy From"));
 		links.add(new IconnedLink("javascript:submitForm('Save');", "images/save.gif", "Save"));
 		if (isAllowedSubmit)
 			links.add(new IconnedLink("javascript:submitForm('Submit');", "images/submit.gif", "Submit"));
