@@ -808,20 +808,15 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		relationships.removeAll(previousSample);
 	
 		//Next up - sample relationships
-		System.out.println("*** Starting Relationship processing: " + new java.util.Date() + " ***");
 		if (request.getParameter("SampRel").length() > 0) {
 			//Go through each entered relationship
 			for (String relationshipDesc : request.getParameter("SampRel").split("\\n")) try {
-				System.out.println("Relationship string: " + relationshipDesc);
 				Relationship newRelationship = sampleUtil.decodeSampleRelationshipDescription(relationshipDesc);
-				System.out.println("Relationship: " + SampleUtil.getRelationshipDescription(newRelationship));
 				newRelationship.setSample(sample);
 				boolean found = false;
 				for (Iterator<Relationship> it = sampleRel.iterator(); it.hasNext(); ) {
 					Relationship rel = it.next();
-					System.out.println("Looping: " + SampleUtil.getRelationshipDescription(rel));
 					if (sampleUtil.isMatchingRelationship(rel, newRelationship)) {
-						System.out.println("Found a match");
 						//Remove it from the old set
 						it.remove();
 						found = true;
@@ -830,10 +825,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 				}
 				if (!found) {
 					//Wasn't in the old set, so add it
-					System.out.println("Adding: " + SampleUtil.getRelationshipDescription(newRelationship));
-					System.out.println("Relationship count before add = " + relationships.size());
 					relationships.add(sampleUtil.cloneRelationship(newRelationship));
-					System.out.println("Relationship count after add = " + relationships.size());
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -841,19 +833,14 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			}
 		}
 		//Remove any that are still in the old set
-		System.out.println("Removing deleted relationships");
-		System.out.println("Count of sampleRel " + sampleRel.size());
-		for (Relationship relationship : sampleRel) {
-			System.out.println("Removing: " + SampleUtil.getRelationshipDescription(relationship));
+		if (sampleRel != null) {
+			relationships.removeAll(sampleRel);
+			for (Relationship rel : sampleRel) try {
+				sampleUtil.delete(rel);
+			} catch (StorageAccessException e) {
+				e.printStackTrace();
+			}
 		}
-		System.out.println("Count of relationships before removal: " + relationships.size());
-		relationships.removeAll(sampleRel);
-		for (Relationship rel : sampleRel) try {
-			sampleUtil.delete(rel);
-		} catch (StorageAccessException e) {
-			e.printStackTrace();
-		}
-		System.out.println("Count of relationships after removal: " + relationships.size());
 
 		//Lastly - strat relationships
 		if (request.getParameter("StratRel").length() > 0) {
@@ -880,7 +867,14 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			}
 		}
 		//Remove any that are still in the old set
-		relationships.removeAll(stratRel);
+		if (stratRel != null) {
+			relationships.removeAll(stratRel);
+			for (Relationship rel : stratRel) try {
+				sampleUtil.delete(rel);
+			} catch (StorageAccessException e) {
+				e.printStackTrace();
+			}
+		}
 		
 		//Column map
 		sample.setColumnMap(request.getParameter("ColMap"));
