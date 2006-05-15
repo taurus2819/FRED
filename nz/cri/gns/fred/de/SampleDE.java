@@ -840,7 +840,14 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			}
 		}
 		//Remove any that are still in the old set
+		System.out.println("Removing deleted relationships");
+		System.out.println("Count of sampleRel " + sampleRel.size());
+		for (Relationship relationship : sampleRel) {
+			System.out.println("Removing: " + SampleUtil.getRelationshipDescription(relationship));
+		}
+		System.out.println("Count of relationships before removal: " + relationships.size());
 		relationships.removeAll(sampleRel);
+		System.out.println("Count of relationships after removal: " + relationships.size());
 
 		//Lastly - strat relationships
 		if (request.getParameter("StratRel").length() > 0) {
