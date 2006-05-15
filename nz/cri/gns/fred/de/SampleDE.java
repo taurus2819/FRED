@@ -814,12 +814,12 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 				System.out.println("Relationship string: " + relationshipDesc);
 				Relationship newRelationship = sampleUtil.decodeSampleRelationshipDescription(relationshipDesc);
 				System.out.println("Relationship: " + SampleUtil.getRelationshipDescription(newRelationship));
-				//newRelationship.setSample(sample);
+				newRelationship.setSample(sample);
 				boolean found = false;
 				for (Iterator<Relationship> it = sampleRel.iterator(); it.hasNext(); ) {
 					Relationship rel = it.next();
 					System.out.println("Looping: " + SampleUtil.getRelationshipDescription(rel));
-					if (newRelationship.equals(rel)) {
+					if (sampleUtil.isMatchingRelationship(rel, newRelationship)) {
 						System.out.println("Found a match");
 						//Remove it from the old set
 						it.remove();
@@ -830,7 +830,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 					//Wasn't in the old set, so add it
 					System.out.println("Adding: " + SampleUtil.getRelationshipDescription(newRelationship));
 					System.out.println("Relationship count before add = " + relationships.size());
-					newRelationship.setSample(sample);
 					relationships.add(sampleUtil.cloneRelationship(newRelationship));
 					System.out.println("Relationship count after add = " + relationships.size());
 				}

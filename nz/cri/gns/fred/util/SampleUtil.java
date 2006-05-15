@@ -812,6 +812,24 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			&& rel.getRelationshipType().getName().equals(relationshipType);
 	}
 
+	public boolean isMatchingRelationship(Relationship rel1, Relationship rel2) throws StorageAccessException {
+		if (!rel1.getRelationType().equals(rel2.getRelationType()))
+			return false;
+		if (!rel1.getRelationshipType().equals(rel2.getRelationshipType()))
+			return false;
+		if (!rel1.getFeature().equals(rel2.getFeature()))
+			return false;
+		if (!rel1.getStratUnit().equals(rel2.getStratUnit()))
+			return false;
+		if (rel1.getDistanceMod().equals(rel2.getDistanceMod()))
+			return false;
+		if (!rel1.getDistance().equals(rel2.getDistance()))
+			return false;
+		if (!rel1.getDistanceRange().equals(rel2.getDistanceRange()))
+			return false;
+		return true;
+	}
+	
 	/**
 	 * Creates a relationship with the given fields
 	 * @throws StorageAccessException 
