@@ -493,13 +493,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			return "";
 		StringBuffer buffer = new StringBuffer();
 		for (Relationship rel : sample.getRelationships()) {
-			System.out.println("getRelationshipsBrief: " + SampleUtil.getRelationshipDescription(rel));
-			if (rel.getRelationType().getName().equals(relationType) && rel.getRelationshipType().getName().equals(relationshipType)) {
+			if (rel.getRelationType().getName().equals(relationType) && rel.getRelationshipType().getName().equals(relationshipType))
 				buffer.append(FeatureUtil.getFeatureIdentifyingName(rel.getFeature())).append(separator);
-			}
 		}
-		//for (Relationship rel : sampleUtil.getRelationships(sample, relationType, relationshipType))
-		//	buffer.append(FeatureUtil.getFeatureIdentifyingName(rel.getFeature())).append(separator);
 		return buffer.toString();
 	}
 
@@ -507,8 +503,16 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		if (sample.getRelationships() == null)
 			return "";
 		StringBuffer buffer = new StringBuffer();
-		for (Relationship rel : sampleUtil.getRelationships(sample, relationType, relationshipTypes))
-			buffer.append(SampleUtil.getRelationshipDescription(rel)).append(separator);
+		for (Relationship rel : sample.getRelationships()) {
+			for (int i = 0; i < relationshipTypes.length; i++) {
+				if (rel.getRelationType().getName().equals(relationType) && rel.getRelationshipType().getName().equals(relationshipTypes[i])) {
+					buffer.append(SampleUtil.getRelationshipDescription(rel)).append(separator);
+					break;
+				}
+			}
+		}
+		//for (Relationship rel : sampleUtil.getRelationships(sample, relationType, relationshipTypes))
+		//	buffer.append(SampleUtil.getRelationshipDescription(rel)).append(separator);
 		return buffer.toString();
 	}
 
