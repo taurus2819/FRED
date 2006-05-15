@@ -811,20 +811,27 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		if (request.getParameter("SampRel").length() > 0) {
 			//Go through each entered relationship
 			for (String relationshipDesc : request.getParameter("SampRel").split("\\n")) try {
+				System.out.println("Relationship string: " + relationshipDesc);
 				Relationship newRelationship = sampleUtil.decodeSampleRelationshipDescription(relationshipDesc);
+				System.out.println("Relationship: " + SampleUtil.getRelationshipDescription(newRelationship));
 				//newRelationship.setSample(sample);
 				boolean found = false;
 				for (Iterator<Relationship> it = sampleRel.iterator(); it.hasNext(); ) {
 					Relationship rel = it.next();
+					System.out.println("Looping: " + SampleUtil.getRelationshipDescription(rel));
 					if (newRelationship.equals(rel)) {
+						System.out.println("Found a match");
 						//Remove it from the old set
 						it.remove();
 						found = true;
 					}
 				}
 				if (!found) {
-					//Wasn't in the old set, so add it 
+					//Wasn't in the old set, so add it
+					System.out.println("Adding: " + SampleUtil.getRelationshipDescription(newRelationship));
+					System.out.println("Relationship count before add = " + relationships.size());
 					relationships.add(sampleUtil.cloneRelationship(newRelationship));
+					System.out.println("Relationship count after add = " + relationships.size());
 				}
 			} catch (Exception e) {
 				error.add(new String[] {"Sample relationships", e.getMessage()});
