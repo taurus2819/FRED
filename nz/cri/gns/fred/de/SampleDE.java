@@ -608,7 +608,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
 	public List<IconnedLink> getNavigation() {
 		List<IconnedLink> links = new Vector<IconnedLink>(4);
-		//temp removed as bug in copy method
 		String args = ((workingFolder == null) ? "?q" : ("?FoldID=" + workingFolder.getFolderId())) 
 			+ ((sample.getSampleId() == null) ? "" : ("&SampID=" + sample.getSampleId()))
 			+ "&RecType=Sample";
