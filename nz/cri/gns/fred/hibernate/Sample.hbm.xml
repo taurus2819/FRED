@@ -266,7 +266,7 @@
     <set
         name="relationships"
         lazy="true"
-        inverse="false"
+        inverse="true"
 		cascade="all"
     >
         <key>
