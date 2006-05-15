@@ -350,6 +350,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		featureDAO.update(feature);
 	}
 	
+	public void submitFeatures(String[] featIds, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, DataInputException {
+		for (int i = 0; i < featIds.length; i++) {
+			submitFeature(getFeature(Integer.parseInt(featIds[i])), folder, user);
+		}
+	}
+	
 	public void submitFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
 		if (!isAllowedSubmitFeature(user, feature, folder))
 			throw new InsufficientPrivelegesException();
@@ -380,6 +386,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		feature.setMasterFile(folderDAO.getFolder(masterfile));
 		featureDAO.update(audit);
 		featureDAO.update(feature);		
+	}
+	
+	public void revokeFeatures(String[] featIds, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException { 
+		for (int i = 0; i < featIds.length; i++) {
+			revokeFeature(getFeature(Integer.parseInt(featIds[i])), folder, user);
+		}
 	}
 
 	public void revokeFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
@@ -465,7 +477,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			mergeFeature(mergeToFeature, getFeature(Integer.parseInt(mergeFeatIDs[i])), folder, user);
 		}
 	}
-		
 		
 	private void mergeFeature(Feature mergeToFeature, Feature mergeFromFeature, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
 		if (!folder.isAllowedEditLocalities())

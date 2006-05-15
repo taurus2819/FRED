@@ -96,7 +96,11 @@
 						featureUtil.revokeFeature(feature, folder, user);
 					}
 				} else if (request.getParameter("FeatIDs") != null) {
-					if (actionType.equals("PrintFeatures")) {
+					if (actionType.equals("SubmitFeatures")) {
+						featureUtil.submitFeatures(request.getParameterValues("FeatIDs"), folder, user);
+					} else if (actionType.equals("RevokeFeatures")) {
+						featureUtil.revokeFeatures(request.getParameterValues("FeatIDs"), folder, user);
+					} else if (actionType.equals("PrintFeatures")) {
 						String[] featIDs = request.getParameterValues("FeatIDs");
 						StringBuffer queryStr = new StringBuffer();
 						for (int i = 0; i < featIDs.length; i++) {
@@ -229,6 +233,9 @@
 			startDETable(pageContext);
 			%><table border="0" width="550">
 			<tr><td colspan="11" class="deHeading">Selected Locality Actions</td></tr>
+			<tr><td>&nbsp;</td></tr>
+			<tr><td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='SubmitFeatures';document.FoldForm.submit();">Submit</a></td></tr>
+			<tr><td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='RevokeFeatures';document.FoldForm.submit();">Revoke</a></td></tr>
 			<%
 			//<tr><td class="heading" style="text-align: left">
 			//<a href="javascript:document.FoldForm.ActionType.value='PrintFeatures';document.FoldForm.target='_blank';document.FoldForm.submit();"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print Selected" />&nbsp;Print Selected</a>
