@@ -835,6 +835,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 					System.out.println("Relationship count after add = " + relationships.size());
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				error.add(new String[] {"Sample relationships", e.getMessage()});
 			}
 		}
