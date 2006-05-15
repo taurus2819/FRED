@@ -122,7 +122,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			coord = FREDUtil.getFREDCoordinate(fromFeature);
 			datum = FREDUtil.getFREDDatum(fromFeature);
 		} catch (Exception e) {
-			e.printStackTrace();
 			//Site wasn't set
 		}
 		feature.setMapYear(fromFeature.getMapYear());
