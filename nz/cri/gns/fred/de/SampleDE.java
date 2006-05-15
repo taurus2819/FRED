@@ -152,16 +152,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         	relationships.clear();
         }
         if (fromSample.getRelationships() != null) {
-        	for (Relationship rel : fromSample.getRelationships()) {
-        		System.out.println("From Rel: " + rel.getRelationshipId() + ":" + SampleUtil.getRelationshipDescription(rel));
-        	}
         	relationships.addAll(fromSample.getRelationships());
-        	for (Relationship rel : relationships) {
-        		System.out.println("Temp Rel: " + rel.getRelationshipId() + ":" + SampleUtil.getRelationshipDescription(rel));
-        	}
-        	for (Relationship rel : sample.getRelationships()) {
-        		System.out.println("To Rel: " + rel.getRelationshipId() + ":" + SampleUtil.getRelationshipDescription(rel));
-        	}
 		//sample.setRelationships(fromSample.getRelationships());
         }
         
@@ -199,10 +190,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
-		System.out.println("Before reinitialise, rel count = " + sample.getRelationships().size());
         reinitialise(factory);
-        System.out.println("After reinitialise, rel count = " + sample.getRelationships().size());
-		ComboDescriptor cd;
+ 		ComboDescriptor cd;
 		
 		if (!outcropSample) {
             //This section is only relevant if this is _not_ an outcrop sample
@@ -248,7 +237,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         */
 
 		try {
-			System.out.println("Before template substitution, rel count = " + sample.getRelationships().size());
 	        Template template = provider.getContent("sample.de.form");
             prepareTemplate(template, provider);
 	        
@@ -384,7 +372,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		StageDEUtil.addStageSubs(template, sample.getKnownStage(), "Known");
 		
 		//Previous samples....
-		System.out.println("Before PrevSample, rel count = " + sample.getRelationships().size());
 		template.addSub("PrevSamp", getRelationshipsBrief(FREDConstants.SAMPLE, FREDConstants.NEARBY, semiColonSeparator));
 
 		template.addSub("SampRel", getRelationshipsFull(FREDConstants.SAMPLE, new String[] {FREDConstants.ABOVE, FREDConstants.BELOW}, newLineSeparator));
@@ -488,7 +475,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 
 	private String getRelationshipsBrief(String relationType, String relationshipType, String separator) throws StorageAccessException {
-		System.out.println("getRelationshipsBrief (" + relationType + "), rel count = " + sample.getRelationships().size());
 		if (sample.getRelationships() == null)
 			return "";
 		StringBuffer buffer = new StringBuffer();
@@ -511,8 +497,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 				}
 			}
 		}
-		//for (Relationship rel : sampleUtil.getRelationships(sample, relationType, relationshipTypes))
-		//	buffer.append(SampleUtil.getRelationshipDescription(rel)).append(separator);
 		return buffer.toString();
 	}
 
