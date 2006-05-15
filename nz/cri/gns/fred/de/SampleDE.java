@@ -830,6 +830,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 					//Wasn't in the old set, so add it
 					System.out.println("Adding: " + SampleUtil.getRelationshipDescription(newRelationship));
 					System.out.println("Relationship count before add = " + relationships.size());
+					newRelationship.setSample(sample);
 					relationships.add(sampleUtil.cloneRelationship(newRelationship));
 					System.out.println("Relationship count after add = " + relationships.size());
 				}
