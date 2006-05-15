@@ -158,6 +158,7 @@
 			<li><img src="images/submit.gif" border="0" height="20" width="20" alt="" /> to submit the locality for entry to the masterfile</li>
 			<li><img src="images/revoke.gif" border="0" height="20" width="20" alt="" /> to revoke the locality for entry from the masterfile</li>
 			</ul>
+			<li>Multiple localities may be selected by <i>ticking</i> the checkboxes on the left-hand side.  You can then use the tools in the <i>Selected Locality Actions</i> box</li>
 			</ul>
 			</td></tr>
 			<tr><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr></table><%
@@ -233,17 +234,26 @@
 			startDETable(pageContext);
 			%><table border="0" width="550">
 			<tr><td colspan="11" class="deHeading">Selected Locality Actions</td></tr>
-			<tr><td>&nbsp;</td></tr>
-			<tr><td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='SubmitFeatures';document.FoldForm.submit();">Submit</a></td></tr>
-			<tr><td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='RevokeFeatures';document.FoldForm.submit();">Revoke</a></td></tr>
+			<tr>
+			<td><a href="javascript:document.FoldForm.ActionType.value='SubmitFeatures';document.FoldForm.submit();"><img src="images/submit.gif" border="0" alt="Submit" /></a></td>
+			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='SubmitFeatures';document.FoldForm.submit();">Submit</a></td>
+			</tr>
+			<tr>
+			<td><a href="javascript:document.FoldForm.ActionType.value='RevokeFeatures';document.FoldForm.submit();"><img src="images/revoke.gif" border="0" alt="Revoke" /></a></td>
+			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='RevokeFeatures';document.FoldForm.submit();">Revoke</a></td>
+			</tr>
 			<%
 			//<tr><td class="heading" style="text-align: left">
 			//<a href="javascript:document.FoldForm.ActionType.value='PrintFeatures';document.FoldForm.target='_blank';document.FoldForm.submit();"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print Selected" />&nbsp;Print Selected</a>
 			//</td></tr>
 			%>
-			<tr><td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='DeleteFeatures';document.FoldForm.submit();">Delete/Remove</a></td></tr>
-			<tr><td class="heading" style="text-align: left">
-			<a href="javascript:document.FoldForm.ActionType.value='MergeFeatures';document.FoldForm.submit();">Merge To:</a>&nbsp;
+			<tr>
+			<td><a href="javascript:document.FoldForm.ActionType.value='DeleteFeatures';document.FoldForm.submit();"><img src="images/delete.gif" border="0" alt="Delete/Remove" /></a></td>
+			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='DeleteFeatures';document.FoldForm.submit();">Delete/Remove</a></td>
+			</tr>
+			<tr>
+			<td><a href="javascript:document.FoldForm.ActionType.value='MergeFeatures';document.FoldForm.submit();"><img src="images/edit.gif" border="0" alt="Merge" /></a></td>
+			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='MergeFeatures';document.FoldForm.submit();">Merge To:</a>&nbsp;
 			<select name="MergeToFeatID"><option value="-">-- Choose --</option><%
 			Feature[] mergeToFeatures = featureUtil.getFeaturesInFolder(folder);
 			for (int i = 0; i < features.length; i++) {
@@ -251,14 +261,19 @@
 					%><option value="<%=mergeToFeatures[i].getFeatureId()%>"><%=FeatureUtil.getFeatureIdentifyingName(mergeToFeatures[i])%></option><%		
 				}
 			}
-			%></select></td></tr>
-			<tr><td class="heading" style="text-align: left">
-			<a href="javascript:document.FoldForm.ActionType.value='AlterType';document.FoldForm.submit();">Alter Locality Type To:</a>&nbsp;
+			%></select>
+			</td>
+			</tr>
+			<tr>
+			<td><a href="javascript:document.FoldForm.ActionType.value='AlterType';document.FoldForm.submit();"><img src="images/edit.gif" border="0" alt="Alter Type" /></a></td>
+			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='AlterType';document.FoldForm.submit();">Alter Locality Type To:</a>&nbsp;
 			<select name="NewFeatType"><option value="-">-- Choose --</option>
 				<option value="Outcrop">Outcrop</option>
 				<option value="Drillhole">Drillhole</option>
 				<option value="Vertical Section">Vertical Section</option>
-			</select></td></tr>		
+			</select>
+			</td>
+			</tr>		
 			</table><%		
 			endDETable(pageContext);
 			%></p>
