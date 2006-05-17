@@ -7,9 +7,7 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.naming.NamingException;
