@@ -8,7 +8,6 @@
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
-%><%@page import="java.util.Iterator"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
@@ -97,14 +96,11 @@
 		<td><%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
 		</tr><%
 				
-		if (audit.getAuditEdits() != null && audit.getAuditEdits().size() > 0) {
-			for (Iterator i = audit.getAuditEdits().iterator(); i.hasNext();) {
-				AuditEdit edit = (AuditEdit) i.next();
-				%><tr><td class="heading">Edited:&nbsp;&nbsp;</td>
-				<td><%=((edit.getEditedById() != null) ? FREDUtil.getUserName(edit.getEditedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-				<td><%=((edit.getEditedDate() != null) ? FREDUtil.formatDateForOutput(edit.getEditedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-				<td class="smalltext"><%=DBUtils.nvl(edit.getComments())%></td></tr><%				
-			}
+		for (AuditEdit edit : AuditUtil.getOrderedAuditEdits(audit)) {
+			%><tr><td class="heading">Edited:&nbsp;&nbsp;</td>
+			<td><%=((edit.getEditedById() != null) ? FREDUtil.getUserName(edit.getEditedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+			<td><%=((edit.getEditedDate() != null) ? FREDUtil.formatDateForOutput(edit.getEditedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+			<td class="smalltext"><%=DBUtils.nvl(edit.getComments())%></td></tr><%				
 		}
 		
 		if (!status.equals(FREDConstants.WORKING)) {
@@ -149,14 +145,11 @@
 				<td><%=((audit.getCreatedById() != null) ? FREDUtil.getUserName(audit.getCreatedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
 				<td><%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
 
-				if (audit.getAuditEdits() != null && audit.getAuditEdits().size() > 0) {
-					for (Iterator i = audit.getAuditEdits().iterator(); i.hasNext();) {
-						AuditEdit edit = (AuditEdit) i.next();
-						%><tr><td class="heading">Edited:&nbsp;&nbsp;</td>
-						<td><%=((edit.getEditedById() != null) ? FREDUtil.getUserName(edit.getEditedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-						<td><%=((edit.getEditedDate() != null) ? FREDUtil.formatDateForOutput(edit.getEditedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-						<td class="smalltext"><%=DBUtils.nvl(edit.getComments())%></td></tr><%				
-					}
+				for (AuditEdit edit : AuditUtil.getOrderedAuditEdits(audit)) {
+					%><tr><td class="heading">Edited:&nbsp;&nbsp;</td>
+					<td><%=((edit.getEditedById() != null) ? FREDUtil.getUserName(edit.getEditedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+					<td><%=((edit.getEditedDate() != null) ? FREDUtil.formatDateForOutput(edit.getEditedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+					<td class="smalltext"><%=DBUtils.nvl(edit.getComments())%></td></tr><%				
 				}
 				
 				if (!status.equals(FREDConstants.WORKING)) {
@@ -171,98 +164,85 @@
 			}
 				
 			//Adoption
-			if (sampleUtil.getAdoptionRecordCount(sample) > 0) {
-				for (Iterator i = sampleUtil.getAdoptionRecords(sample).iterator(); i.hasNext();) {
-					Adoption adoRecord = (Adoption) i.next();
-					if (recordUtil.isAllowedReadRecord(user, adoRecord.getRecord())) {				
-						audit = adoRecord.getRecord().getAudit();
-						status = audit.getStatus();
-						%><p><%
-						startDETable(pageContext);
-						%><table border="0" width="550">
-						<tr><td colspan="4" class="deHeading">Adoption Record</td></tr>
-						<tr><td class="heading">Record Name&nbsp;&nbsp;</td><td colspan="3"><%=RecordUtil.getRecordName(adoRecord.getRecord())%>&nbsp;&nbsp;</td></tr>
-						
-						<tr>
-						<td class="heading">Status:&nbsp;&nbsp;</td>
-						<td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {})%>><%=status%>&nbsp;&nbsp;</td>
-						</tr>
-						
-						<tr><td class="heading">Origin:&nbsp;&nbsp;</td><td colspan="3"><%=(audit.getDataOrigin() != null) ? audit.getDataOrigin().getName() + " (" + audit.getDataOrigin().getDescription() + ")" : ""%></td></tr>
-
-						<tr><td class="heading">Created:&nbsp;&nbsp;</td>
-						<td><%=((audit.getCreatedById() != null) ? FREDUtil.getUserName(audit.getCreatedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-						<td><%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
-						
-						if (audit.getAuditEdits() != null && audit.getAuditEdits().size() > 0) {
-							for (Iterator j = audit.getAuditEdits().iterator(); j.hasNext();) {
-								AuditEdit edit = (AuditEdit) j.next();
-								%><tr><td class="heading">Edited:&nbsp;&nbsp;</td>
-								<td><%=((edit.getEditedById() != null) ? FREDUtil.getUserName(edit.getEditedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-								<td><%=((edit.getEditedDate() != null) ? FREDUtil.formatDateForOutput(edit.getEditedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-								<td class="smalltext"><%=DBUtils.nvl(edit.getComments())%></td></tr><%				
-							}
-						}
-						
-						if (!status.equals(FREDConstants.WORKING)) {
-							%><tr><td class="heading">Submitted:&nbsp;&nbsp;</td>
-							<td><%=((audit.getSubmittedById() != null) ? FREDUtil.getUserName(audit.getSubmittedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-							<td><%=((audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
-						}
-						
-						%></table><%
-						endDETable(pageContext);
-						%></p><%
+			for (Adoption adoRecord : sampleUtil.getAdoptionRecords(sample)) {
+				if (recordUtil.isAllowedReadRecord(user, adoRecord.getRecord())) {				
+					audit = adoRecord.getRecord().getAudit();
+					status = audit.getStatus();
+					%><p><%
+					startDETable(pageContext);
+					%><table border="0" width="550">
+					<tr><td colspan="4" class="deHeading">Adoption Record</td></tr>
+					<tr><td class="heading">Record Name&nbsp;&nbsp;</td><td colspan="3"><%=RecordUtil.getRecordName(adoRecord.getRecord())%>&nbsp;&nbsp;</td></tr>
+					
+					<tr>
+					<td class="heading">Status:&nbsp;&nbsp;</td>
+					<td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {})%>><%=status%>&nbsp;&nbsp;</td>
+					</tr>
+					
+					<tr><td class="heading">Origin:&nbsp;&nbsp;</td><td colspan="3"><%=(audit.getDataOrigin() != null) ? audit.getDataOrigin().getName() + " (" + audit.getDataOrigin().getDescription() + ")" : ""%></td></tr>
+					<tr><td class="heading">Created:&nbsp;&nbsp;</td>
+					<td><%=((audit.getCreatedById() != null) ? FREDUtil.getUserName(audit.getCreatedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+					<td><%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
+					
+					for (AuditEdit edit : AuditUtil.getOrderedAuditEdits(audit)) {
+						%><tr><td class="heading">Edited:&nbsp;&nbsp;</td>
+						<td><%=((edit.getEditedById() != null) ? FREDUtil.getUserName(edit.getEditedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+						<td><%=((edit.getEditedDate() != null) ? FREDUtil.formatDateForOutput(edit.getEditedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+						<td class="smalltext"><%=DBUtils.nvl(edit.getComments())%></td></tr><%				
 					}
+					
+					if (!status.equals(FREDConstants.WORKING)) {
+						%><tr><td class="heading">Submitted:&nbsp;&nbsp;</td>
+						<td><%=((audit.getSubmittedById() != null) ? FREDUtil.getUserName(audit.getSubmittedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+						<td><%=((audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
+					}
+					
+					%></table><%
+					endDETable(pageContext);
+					%></p><%
 				}
 			}
 			
 			//Paleontology
-			if (sampleUtil.getPaleontologyRecordCount(sample) > 0) {
-				for (Iterator i = sampleUtil.getPaleontologyRecords(sample).iterator(); i.hasNext();) {
-					Paleontology palRecord = (Paleontology) i.next();
-					if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {				
-						audit = palRecord.getRecord().getAudit();
-						status = audit.getStatus();
-						%><p><%
-						startDETable(pageContext);
-						%><table border="0" width="550">
-						<tr><td colspan="4" class="deHeading">Paleontology Record</td></tr>
-						<tr><td class="heading">Record Name&nbsp;&nbsp;</td><td colspan="3"><%=RecordUtil.getRecordName(palRecord.getRecord())%>&nbsp;&nbsp;</td></tr>
-						
-						<tr>
-						<td class="heading">Status:&nbsp;&nbsp;</td>
-						<td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {})%>><%=status%>&nbsp;&nbsp;</td>
-						</tr>
-						
-						<tr><td class="heading">Origin:&nbsp;&nbsp;</td><td colspan="3"><%=(audit.getDataOrigin() != null) ? audit.getDataOrigin().getName() + " (" + audit.getDataOrigin().getDescription() + ")" : ""%></td></tr>
-
-						<tr><td class="heading">Created:&nbsp;&nbsp;</td>
-						<td><%=((audit.getCreatedById() != null) ? FREDUtil.getUserName(audit.getCreatedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-						<td><%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
-						
-						if (audit.getAuditEdits() != null && audit.getAuditEdits().size() > 0) {
-							for (Iterator j = audit.getAuditEdits().iterator(); j.hasNext();) {
-								AuditEdit edit = (AuditEdit) j.next();
-								%><tr><td class="heading">Edited:&nbsp;&nbsp;</td>
-								<td><%=((edit.getEditedById() != null) ? FREDUtil.getUserName(edit.getEditedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-								<td><%=((edit.getEditedDate() != null) ? FREDUtil.formatDateForOutput(edit.getEditedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-								<td class="smalltext"><%=DBUtils.nvl(edit.getComments())%></td></tr><%				
-							}
-						}
-						
-						if (!status.equals(FREDConstants.WORKING)) {
-							%><tr><td class="heading">Submitted:&nbsp;&nbsp;</td>
-							<td><%=((audit.getSubmittedById() != null) ? FREDUtil.getUserName(audit.getSubmittedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
-							<td><%=((audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
-						}
-						
-						%></table><%
-						endDETable(pageContext);
-						%></p><%
+			for (Paleontology palRecord : sampleUtil.getPaleontologyRecords(sample)) {
+				if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {				
+					audit = palRecord.getRecord().getAudit();
+					status = audit.getStatus();
+					%><p><%
+					startDETable(pageContext);
+					%><table border="0" width="550">
+					<tr><td colspan="4" class="deHeading">Paleontology Record</td></tr>
+					<tr><td class="heading">Record Name&nbsp;&nbsp;</td><td colspan="3"><%=RecordUtil.getRecordName(palRecord.getRecord())%>&nbsp;&nbsp;</td></tr>
+					
+					<tr>
+					<td class="heading">Status:&nbsp;&nbsp;</td>
+					<td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {})%>><%=status%>&nbsp;&nbsp;</td>
+					</tr>
+					
+					<tr><td class="heading">Origin:&nbsp;&nbsp;</td><td colspan="3"><%=(audit.getDataOrigin() != null) ? audit.getDataOrigin().getName() + " (" + audit.getDataOrigin().getDescription() + ")" : ""%></td></tr>
+					<tr><td class="heading">Created:&nbsp;&nbsp;</td>
+					<td><%=((audit.getCreatedById() != null) ? FREDUtil.getUserName(audit.getCreatedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+					<td><%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
+					
+					for (AuditEdit edit : AuditUtil.getOrderedAuditEdits(audit)) {
+						%><tr><td class="heading">Edited:&nbsp;&nbsp;</td>
+						<td><%=((edit.getEditedById() != null) ? FREDUtil.getUserName(edit.getEditedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+						<td><%=((edit.getEditedDate() != null) ? FREDUtil.formatDateForOutput(edit.getEditedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+						<td class="smalltext"><%=DBUtils.nvl(edit.getComments())%></td></tr><%				
 					}
+					
+					if (!status.equals(FREDConstants.WORKING)) {
+						%><tr><td class="heading">Submitted:&nbsp;&nbsp;</td>
+						<td><%=((audit.getSubmittedById() != null) ? FREDUtil.getUserName(audit.getSubmittedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+						<td><%=((audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
+					}
+					
+					%></table><%
+					endDETable(pageContext);
+					%></p><%
 				}
-			}				
+			}
+
 		}
 	}
 
