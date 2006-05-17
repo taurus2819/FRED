@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.Set;
 
 import nz.cri.gns.fred.model.FeatureMeta;
-import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.util.FeatureUtil;
 
 
