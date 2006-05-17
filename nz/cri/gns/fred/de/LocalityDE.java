@@ -7,6 +7,7 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -27,6 +28,7 @@ import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.UserFolder;
+import nz.cri.gns.fred.util.AuditUtil;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.FolderUtil;
@@ -211,7 +213,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 					out.print("<tr><td>" + ((audit.getApprovedById() != null) ? FREDUtil.getUserName(audit.getApprovedById().intValue()) : "") + "</td>"
 							+ "<td class=\"smalltext\">" + ((audit.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(audit.getApprovedDate()) : "") + "</td>"
 							+ "<td>Curator approval comments: " + DBUtils.nvl(audit.getCuratorComments()) + "</td></tr>");
-				for (AuditEdit ae : audit.getAuditEdits())
+				for (AuditEdit ae : AuditUtil.getOrderedAuditEdits(audit))
 					out.write("<tr><td>" + ((ae.getEditedById() != null) ? FREDUtil.getUserName(ae.getEditedById().intValue()) : "") + "</td>"
 							+ "<td class=\"smalltext\">" + ((ae.getEditedDate() != null) ? FREDUtil.formatDateForOutput(ae.getEditedDate()) : "") + "</td>"
 							+ "<td>" + DBUtils.nvl(ae.getComments()) + "</td></tr>");

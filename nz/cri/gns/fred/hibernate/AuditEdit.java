@@ -6,7 +6,7 @@ import java.util.Date;
 import nz.cri.gns.fred.model.Audit;
 
 /** @author Hibernate CodeGenerator */
-public class AuditEdit implements Serializable, Comparable, nz.cri.gns.fred.model.AuditEdit {
+public class AuditEdit implements Serializable, Comparable<nz.cri.gns.fred.model.AuditEdit>, nz.cri.gns.fred.model.AuditEdit {
 
 	private static final long serialVersionUID = 20050818L;
 	
@@ -85,7 +85,7 @@ public class AuditEdit implements Serializable, Comparable, nz.cri.gns.fred.mode
     /**
      * Orders in reverse chronological order
      */
-	public int compareTo(Object o) {
+	public int compareTo(nz.cri.gns.fred.model.AuditEdit o) {
 		if (editedDate == null)
 			return ((AuditEdit)o).editedDate == null ? 0 : -1;
 		else if (((AuditEdit)o).editedDate == null)

@@ -5,7 +5,8 @@ import java.util.Date;
 /**
  *
  */
-public interface AuditEdit {
+public interface AuditEdit extends Comparable<AuditEdit>{
+	
 	public abstract Integer getAuditEditId();
 
 	public abstract void setAuditEditId(Integer auditEditId);

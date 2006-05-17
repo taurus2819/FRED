@@ -3,8 +3,12 @@ package nz.cri.gns.fred.util;
 import java.beans.IntrospectionException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.AuditDAO;
@@ -96,6 +100,12 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		if (status.equals(FREDConstants.REJECTED))
 			return style.append("color: #FF0000\"").toString();
 		return style.append("\"").toString();
+	}
+	
+	public static List<AuditEdit> getOrderedAuditEdits(Audit audit) {
+		List<AuditEdit> edits = new Vector<AuditEdit>(audit.getAuditEdits());
+		Collections.sort(edits);
+		return edits;
 	}
 	
 }
