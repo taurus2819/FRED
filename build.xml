@@ -23,6 +23,9 @@
 					<include name="gol-spatial.jar" />
 					<include name="gol-dataaccess.jar" />
 					<include name="gol-test.jar" />
+					<include name="gol-auth.jar" />
+					<include name="gol-dbimpl.jar" />
+					<include name="gol-web.jar" />
 				</fileset>
 			</classpath>
 		</javac>
