@@ -209,42 +209,18 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			if (audit.getStatus().equals(FREDConstants.APPROVED)) {
 				template.addSub("approved", "yes");
 				template.loadUntil(out, "{@approvedInformation}");
-	
-				if (audit.getCuratorComments() != null) {
-					String approveName = "";
-					try {
-						approveName = FREDUtil.getUserName(audit.getApprovedById().intValue());
-					} catch (NullPointerException e) {
-					}
-					String approveDate = "";
-					try {
-						approveDate = FREDUtil.formatDateForOutput(audit.getApprovedDate());
-					} catch (Exception e) {
-					}
-					out.print("<tr><td>" + approveName + "</td><td class=\"smalltext\">" + approveDate + "</td><td>Curator approval comments: " + DBUtils.nvl(audit.getCuratorComments()) + "</td></tr>");
-					
-					Set edits = audit.getAuditEdits();
-					if (edits != null && edits.size() > 0) {
-						for (Iterator i = edits.iterator(); i.hasNext(); ) {
-							AuditEdit ae = (AuditEdit) i.next();
-							String editName = "";
-							try {
-								editName = FREDUtil.getUserName(ae.getEditedById().intValue());
-							} catch (NullPointerException e) {
-							}
-							String editDate = "";
-							try {
-								editDate = FREDUtil.formatDateForOutput(audit.getApprovedDate());
-							} catch (Exception e) {
-							}
-							out.write("<tr><td>" + editName + "</td><td class=\"smalltext\">" + editDate + "</td><td>" + DBUtils.nvl(ae.getComments()) + "</td></tr>");
-						}
-					}
-					out.println("<tr><td class=\"heading\" colspan=\"2\">Edit Comments</td><td><textarea name=\"EditComm\" rows=\"3\" cols=\"40\">"
-							+ DBUtils.nvl(editComments)
-							+ "</textarea></td></tr>\n");
-					out.println("<tr><td>&nbsp;</td></tr>");
-				}
+				if (audit.getCuratorComments() != null)
+					out.print("<tr><td>" + ((audit.getApprovedById() != null) ? FREDUtil.getUserName(audit.getApprovedById().intValue()) : "") + "</td>"
+							+ "<td class=\"smalltext\">" + ((audit.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(audit.getApprovedDate()) : "") + "</td>"
+							+ "<td>Curator approval comments: " + DBUtils.nvl(audit.getCuratorComments()) + "</td></tr>");
+				for (AuditEdit ae : audit.getAuditEdits())
+					out.write("<tr><td>" + ((ae.getEditedById() != null) ? FREDUtil.getUserName(ae.getEditedById().intValue()) : "") + "</td>"
+							+ "<td class=\"smalltext\">" + ((ae.getEditedDate() != null) ? FREDUtil.formatDateForOutput(ae.getEditedDate()) : "") + "</td>"
+							+ "<td>" + DBUtils.nvl(ae.getComments()) + "</td></tr>");
+				out.println("<tr><td class=\"heading\" colspan=\"2\">Edit Comments</td><td><textarea name=\"EditComm\" rows=\"3\" cols=\"40\">"
+						+ DBUtils.nvl(editComments)
+						+ "</textarea></td></tr>\n");
+				out.println("<tr><td>&nbsp;</td></tr>");
 			} else if (audit.getStatus().equals(FREDConstants.REJECTED)) {
 				template.addSub("isRejected", "yes");
 				if (audit.getCuratorComments() != null)
