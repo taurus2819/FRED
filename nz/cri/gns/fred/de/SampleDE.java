@@ -933,7 +933,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		try {
 			sample.setPrimaryGrainSize(getGrainSize(grainSizeP));
 			String grainSizeS = request.getParameter("GrainSizeS");
-			if (grainSizeP == null && grainSizeS != null)
+			if (FREDUtil.isEmpty(grainSizeP) && !FREDUtil.isEmpty(grainSizeS))
 				error.add(new String[] {"Grain Size", "Primary Grain Size must be entered if entering Secondary Grain Size"});
 			else 
 				sample.setSecondaryGrainSize(getGrainSize(grainSizeS));
@@ -941,10 +941,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			error.add(new String[] {"Grain Size", "Database problem: " + e.getMessage()});
 		}	
 		String gsComp = request.getParameter("GSComp");
-		if (gsComp.length() == 0)
+		if (FREDUtil.isEmpty(gsComp))
 			sample.setComparatorUsed(null);
 		else {
-			if (grainSizeP == null) {
+			if (FREDUtil.isEmpty(grainSizeP)) {
 				error.add(new String[] {"Comparator Used", "Primary grain size must be entered if entering Comparator Used"});
 			} else {
 				if (gsComp.equals("Y") || gsComp.equals("N"))
