@@ -928,22 +928,30 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 				error.add(new String[] {"Facing", facing + " is not valid. Facing must be either 'Normal' or 'Overturned'"});
 		}
 		
+		//Grainsize
+		String grainSizeP = request.getParameter("GrainSizeP");
 		try {
-			sample.setPrimaryGrainSize(getGrainSize(request.getParameter("GrainSizeP")));
-			sample.setSecondaryGrainSize(getGrainSize(request.getParameter("GrainSizeS")));
+			sample.setPrimaryGrainSize(getGrainSize(grainSizeP));
+			String grainSizeS = request.getParameter("GrainSizeS");
+			if (grainSizeP == null && grainSizeS != null)
+				error.add(new String[] {"Grain Size", "Primary Grain Size must be entered if entering Secondary Grain Size"});
+			else 
+				sample.setSecondaryGrainSize(getGrainSize(grainSizeS));
 		} catch (StorageAccessException e) {
-			error.add(new String[] {"Grain size", "Database problem: " + e.getMessage()});
-		}
-			
-		//Comparator Used
+			error.add(new String[] {"Grain Size", "Database problem: " + e.getMessage()});
+		}	
 		String gsComp = request.getParameter("GSComp");
 		if (gsComp.length() == 0)
 			sample.setComparatorUsed(null);
 		else {
-			if (gsComp.equals("Y") || gsComp.equals("N"))
-				sample.setComparatorUsed(gsComp);
-			else
-				error.add(new String[] {"Comparator Used", gsComp + " is not valid. Comparator Used must be either 'Y' or 'N'"});
+			if (grainSizeP == null) {
+				error.add(new String[] {"Comparator Used", "Primary grain size must be entered if entering Comparator Used"});
+			} else {
+				if (gsComp.equals("Y") || gsComp.equals("N"))
+					sample.setComparatorUsed(gsComp);
+				else
+					error.add(new String[] {"Comparator Used", gsComp + " is not valid. Comparator Used must be either 'Y' or 'N'"});
+			}
 		}
 		
 		try {
