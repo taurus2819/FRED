@@ -28,6 +28,9 @@ public class FrNumber implements Serializable, nz.cri.gns.fred.model.FrNumber {
     /** nullable persistent field */
     private String frNumber;
     
+    /** nullable persistent field */
+    private String obsolete;
+    
     /** persistent field */
     private Set<Feature> features;
     
@@ -35,12 +38,13 @@ public class FrNumber implements Serializable, nz.cri.gns.fred.model.FrNumber {
     private Set<Sample> samples;
 
     /** full constructor */
-    public FrNumber(String mapSheet, Integer serialNumber, String recollectionNumber, String frnumComments, String frNumber, Set<Feature> features, Set<Sample> samples) {
+    public FrNumber(String mapSheet, Integer serialNumber, String recollectionNumber, String frnumComments, String frNumber, String obsolete, Set<Feature> features, Set<Sample> samples) {
         this.mapSheet = mapSheet;
         this.serialNumber = serialNumber;
         this.recollectionNumber = recollectionNumber;
         this.frnumComments = frnumComments;
         this.frNumber = frNumber;
+        this.obsolete = obsolete;
         this.features = features;
         this.samples = samples;
     }
@@ -105,6 +109,14 @@ public class FrNumber implements Serializable, nz.cri.gns.fred.model.FrNumber {
         this.frNumber = frNumber;
     }
 
+    public String getObsolete() {
+        return this.obsolete;
+    }
+
+    public void setObsolete(String obsolete) {
+        this.obsolete = obsolete;
+    }
+    
     public Set<Feature> getFeatures() {
         return this.features;
     }

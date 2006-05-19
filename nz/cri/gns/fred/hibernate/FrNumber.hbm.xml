@@ -58,6 +58,12 @@
         column="FR_NUMBER"
         length="15"
     />
+    <property
+        name="obsolete"
+        type="java.lang.String"
+        column="OBSOLETE"
+        length="1"
+    />
 
     <!-- Associations -->
   

@@ -29,6 +29,10 @@ public interface FrNumber extends Comparable<FrNumber> {
 	public abstract String getFrNumber();
 
 	public abstract void setFrNumber(String frNumber);
+	
+	public abstract String getObsolete();
+
+	public abstract void setObsolete(String obsolete);
 
 	public abstract Set<Feature> getFeatures();
 
