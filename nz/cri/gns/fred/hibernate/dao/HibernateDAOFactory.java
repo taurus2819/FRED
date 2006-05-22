@@ -447,7 +447,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	}
 
 	public FrNumber getFrNumber(String frNum) throws StorageAccessException {
-		return HibernateUtils.getFirst(provider, "FROM FrNumber AS f WHERE f.frNumber = ?", frNum, FrNumber.class);
+		return HibernateUtils.getFirst(provider, "FROM FrNumber AS f WHERE f.frNumber = ? AND f.obsolete IS NULL", frNum, FrNumber.class);
 	}
 
 	public Feature getFeatureWithName(String name) throws StorageAccessException {
@@ -489,7 +489,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public List<FrNumber> getFrNumbers(String mapSheet) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-            Query query = session.createQuery("FROM FrNumber as num WHERE num.mapSheet = :map");
+            Query query = session.createQuery("FROM FrNumber as num WHERE num.mapSheet = :map AND num.obsolete IS NULL");
             query.setString("map", mapSheet);
             List<FrNumber> frNums = query.list();
             Collections.sort(frNums);
@@ -502,7 +502,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public List<FrNumber> getFrNumbers(String mapSheet, int start, int end) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
-            Query query = session.createQuery("FROM FrNumber as num WHERE num.mapSheet = :map AND num.serialNumber BETWEEN :start AND :end");
+            Query query = session.createQuery("FROM FrNumber as num WHERE num.mapSheet = :map AND num.serialNumber BETWEEN :start AND :end AND num.obsolete IS NULL");
             query.setString("map", mapSheet);
             query.setInteger("start", start);
             query.setInteger("end", end);
