@@ -20,6 +20,7 @@ import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.FolderUtilException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FeatureDAO;
@@ -707,17 +708,36 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return (Sample)it.next();
 	}
 	
-	public void approveFeature(Feature feature, String mapSheet, Integer serialNum, String recollectionNum, String comments, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+	public void approveFeature(Feature feature, String mapSheet, Integer serialNumber, String recollectionNumber, String comments, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
 		if (!hasMasterfileRights(user, feature, UserFolder.FOLDER_APPROVE_RIGHT))
 			throw new InsufficientPrivelegesException();
 		
-		//Make an FR number
-		FrNumber fr = sampleDAO.createFRNumber();
-		fr.setMapSheet(mapSheet);
-		fr.setSerialNumber(serialNum);
-		fr.setRecollectionNumber(recollectionNum);
+		//Check FR number and throw exception if already exists
+		FrNumber frNumber = getFrNumber(mapSheet, serialNumber, recollectionNumber);
+		if (frNumber != null)
+			throw new DataInputException("FR Number", "FR Number already defined in database");
+		frNumber = new nz.cri.gns.fred.hibernate.FrNumber();
+		frNumber.setMapSheet(mapSheet);
+		frNumber.setSerialNumber(serialNumber);
+		frNumber.setRecollectionNumber(recollectionNumber);
 		
-		approveFeature(feature, fr, comments, user);
+		//update feature and explicitly add to working folder
+		Audit audit = feature.getAudit();
+		try {
+			feature.setFrNumber(frNumber);
+			feature.getFolders().add(audit.getFolder());
+			featureDAO.update(feature);
+		} catch (Exception e) {
+		}
+		
+		//update audit table
+		audit.setStatus(APPROVED);
+		audit.setApprovedById(new Integer(user.getId()));
+		audit.setApprovedDate(new Date());
+		audit.setFolder(null);
+		audit.setWorkingComments(null);
+		audit.setCuratorComments(comments);
+		featureDAO.update(audit);
 	}
 	
 	/**
@@ -760,26 +780,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		feature.setMasterFile(folderDAO.getFolder(FREDUtil.getMasterfile(feature)));
 		featureDAO.update(audit);
 		featureDAO.update(feature);
-	}
-	
-	public void approveFeature(Feature feature, FrNumber fr, String comments, UserAccount user) throws StorageAccessException {
-		//update frNumber and explicitly add to working folder
-		Audit audit = feature.getAudit();
-		try {
-			feature.setFrNumber(fr);
-			feature.getFolders().add(audit.getFolder());
-			featureDAO.update(feature);
-		} catch (Exception e) {
-		}
-		
-		//update audit table
-		audit.setStatus(APPROVED);
-		audit.setApprovedById(new Integer(user.getId()));
-		audit.setApprovedDate(new Date());
-		audit.setFolder(null);
-		audit.setWorkingComments(null);
-		audit.setCuratorComments(comments);
-		featureDAO.update(audit);
 	}
 	
 	public void rejectLocality(Feature feature, String comments, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
@@ -848,8 +848,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
 	/**
 	 * Parses FR Number as string and returns FrNumber object
+	 * If FRNumber exists it is returned, or a new FRNumber object is created
+	 * @throws StorageAccessException 
 	 */
-	public static FrNumber parseFRNumber(String frNumStr) throws DataInputException {
+	public FrNumber parseFrNumber(String frNumStr) throws DataInputException, StorageAccessException {
 		if (frNumStr != null && frNumStr.indexOf("/f") > 0) {
 			String recollectionNumber;
 			Integer serialNumber;
@@ -877,15 +879,18 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	/**
-	 * Returns the feature for this FR number.  The algorithm for this will
-	 * change dramatically once the DB structure has been betterified, so this
-	 * is kept in a discrete method for now.
+	 * Returns the feature for this FR number.  If FEATURE not found then also checks SAMPLE
 	 */
-	public static Feature getFeature(FrNumber frNum) {
+	public Feature getFeature(FrNumber frNum) {
 		try {
 			return (Feature) frNum.getFeatures().iterator().next();
 		} catch (Exception e) {
-			return null;
+			try {
+				Sample sample = (Sample) frNum.getSamples().iterator().next();
+				return sample.getFeature();
+			} catch (Exception e1) {
+				return null;
+			}
 		}
 	}
 
@@ -1042,6 +1047,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return (folder != null && folder.getFolderType().getName().equals(Folder.FOLDER_TYPE_BACKLOG));
 	}
 
+	public FrNumber getFrNumber(String mapSheet, Integer serialNumber, String recollectionNumber) throws StorageAccessException {
+		String serialNum = String.valueOf(serialNumber);
+		while (serialNum.length() < 4)
+			serialNum = "0" + serialNum;
+		return featureDAO.getFrNumber(mapSheet + "/f" + serialNum + DBUtils.nvl(recollectionNumber));		
+	}
+	
 	public List<FrNumber> getFrNumbers(String mapSheet) throws StorageAccessException {
 		return featureDAO.getFrNumbers(mapSheet);
 	}

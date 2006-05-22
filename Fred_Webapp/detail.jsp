@@ -38,6 +38,7 @@
 %><%@page import="nz.cri.gns.fred.util.StageUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
+%><%@page import="nz.cri.gns.fred.de.DataInputException"
 %><%!	
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { 
 		return new Authenticable[0]; 
@@ -146,9 +147,13 @@
 			if (request.getParameter("ActionType") != null) { //do something
 				String actionType = request.getParameter("ActionType");
 				if (actionType.equals("Approve")) {
-					featureUtil.approveFeature(feature, request.getParameter("MapSheet"), new Integer(request.getParameter("SerialNum")), request.getParameter("RecollNum"), request.getParameter("CurComm"), user);
-					response.sendRedirect("admin_folder_detail.jsp?ID=" + feature.getMasterFile().getFolderId() + "&q=" + Math.random());
-					return;
+					try {
+						featureUtil.approveFeature(feature, request.getParameter("MapSheet"), new Integer(request.getParameter("SerialNum")), request.getParameter("RecollNum"), request.getParameter("CurComm"), user);
+						response.sendRedirect("admin_folder_detail.jsp?ID=" + feature.getMasterFile().getFolderId() + "&q=" + Math.random());
+						return;
+					} catch (DataInputException e) {
+						%><script language="JavaScript">alert("The FR Number already exists please try another one");</script><%
+					}
 				}
 				else if (actionType.equals("Reject")) {
 					featureUtil.rejectLocality(feature, request.getParameter("CurComm"), user);
