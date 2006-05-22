@@ -1009,7 +1009,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	public Feature getFeatureWithIdentifyingName(String ident) throws StorageAccessException {
 		FrNumber frNum = featureDAO.getFrNumber(ident);
 		if (frNum != null) 
-			return FeatureUtil.getFeature(frNum);	
+			return getFeature(frNum);	
 		return featureDAO.getFeatureWithName(ident);
 	}
 	
@@ -1024,7 +1024,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		Folder folder = folderToAddTo.getFolder();
 		Folder masterFileFolder = masterFile.getFolder();
 		for (FrNumber num : numbers) {
-			Feature feature = FeatureUtil.getFeature(num);
+			Feature feature = getFeature(num);
 			if (feature == null
 					|| !feature.getMasterFile().equals(masterFileFolder)
 					|| !feature.getAudit().getStatus().equals(APPROVED))
