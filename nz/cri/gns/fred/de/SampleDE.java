@@ -805,7 +805,14 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			}
 		} 
 		//Remove any that are still in the old set
-		relationships.removeAll(previousSample);
+		if (previousSample != null) {
+			relationships.removeAll(previousSample);
+			for (Relationship rel : previousSample) try {
+				sampleUtil.delete(rel);
+			} catch (StorageAccessException e) {
+				e.printStackTrace();
+			}
+		}
 	
 		//Next up - sample relationships
 		if (request.getParameter("SampRel").length() > 0) {
