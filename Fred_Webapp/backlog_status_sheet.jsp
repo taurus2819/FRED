@@ -46,7 +46,7 @@
 		for (Iterator i = featureUtil.getFrNumbers(mapSheet).iterator(); i.hasNext();) {
 			FrNumber frNumber = (FrNumber) i.next();
 			try {
-				Feature feature = FeatureUtil.getFeature(frNumber);
+				Feature feature = featureUtil.getFeature(frNumber);
 				Audit audit = feature.getAudit();
 				String status = AuditUtil.getAuditBacklogStatus(audit);
 				%><tr><td class="heading"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("backlog_status_sheet.jsp?Sheet=" + mapSheet, "ISO-8859-1")%>&backText=Back%20To%20<%=mapSheet%>%20List"><%=frNumber.getFrNumber()%></a>&nbsp;&nbsp;</td>
