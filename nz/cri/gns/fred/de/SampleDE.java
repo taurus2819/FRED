@@ -1025,10 +1025,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			
 		//DepositionalEnvironment
 		StringBuffer depEnv = new StringBuffer();
-		depEnv.append(request.getParameter("DepEnv1"));
-		if (depEnv.length() > 0)
+		depEnv.append(request.getParameter("DepEnv1").trim());
+		if (depEnv.length() > 0 && request.getParameter("DepEnv2").trim().length() > 0)
 			depEnv.append(": ");
-		depEnv.append(request.getParameter("DepEnv2"));
+		depEnv.append(request.getParameter("DepEnv2").trim());
 		sample.setDepositionEnv(depEnv.toString());
 		
 		//Rock nature
