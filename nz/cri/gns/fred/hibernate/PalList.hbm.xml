@@ -76,6 +76,19 @@
     >
         <column name="TAXA_ID" />
     </many-to-one>
+    <!-- bi-directional one-to-many association to PalListMeta -->
+    <set
+        name="palListMetas"
+        lazy="true"
+        cascade="none"
+        >
+        <key>
+            <column name="PAL_LIST_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.PalListMeta"
+        />
+    </set>
 
 </class>
 </hibernate-mapping>
