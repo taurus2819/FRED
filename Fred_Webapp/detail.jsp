@@ -82,6 +82,7 @@
 		}
 	}
 %><%
+try {
 	User user = (User) getUser(session);
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	SampleUtil sampleUtil = new SampleUtil(factory);
@@ -90,7 +91,7 @@
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setUseNavigationColumn(false);
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 
 	String sampID = request.getParameter("ID");
 	String featID = request.getParameter("FeatID");
@@ -719,6 +720,9 @@
 	}
 	
 	drawBottom(out, et);
+	} catch (Exception e) {
+		e.printStackTrace(new java.io.PrintWriter(out));
+	}
 	
 	try {
 		HibernateUtil.get().getDAOFactory().closeSession();
