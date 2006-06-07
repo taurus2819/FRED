@@ -1,9 +1,11 @@
 <%@page extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
+%><%@page import="nz.cri.gns.fred.util.RecordUtil"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
+%><%@page import="nz.cri.gns.fred.model.PaleontologyListEntry"
 %><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.jsp.PageState"
@@ -12,6 +14,8 @@
 %><%@page import="nz.cri.gns.db.metadata.DocumentAttacher"
 %><%@page import="nz.cri.gns.db.metadata.MetadataRecord"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
+%><%@page import="nz.cri.gns.html.select.SelectBox"
+%><%@page import="java.io.PrintWriter"
 %><%!
 	public String getName(HttpServletRequest request) {
 		return "FRED :: Add Image/File";
@@ -22,6 +26,7 @@
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	User user = (User)getUser(session);
 	FolderUtil folderUtil = new FolderUtil(factory);
+	RecordUtil recordUtil = new RecordUtil(factory);
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
@@ -70,11 +75,24 @@
 						</script><%
 					}
 				}
-
-				%><center><p>&nbsp;</p><p><%
+				
+				%><center>
+				<form enctype="multipart/form-data" method="post" action="binary_data_entry.jsp"><%
+				
+				if (recType.equals(FREDConstants.PALEONTOLOGICAL)) {
+					%><p>&nbsp;</p><p><%
+					startDETable(pageContext);
+					%><table border="0" width="550"><tr><td colspan="2" class="deHeading">Select Taxon</td></tr><%
+					SelectBox<PaleontologyListEntry> selectBox = new SelectBox<PaleontologyListEntry>(recordUtil.getRecord(id).getPaleontology().getListEntries());
+					selectBox.writeBox(null, "Entire Paleo record", null, null, new PrintWriter(out));
+					%></table><%
+					endDETable(pageContext);
+					%></p><%
+				}
+				
+				%><p>&nbsp;</p><p><%
 				startDETable(pageContext);
 				%><table border="0" width="550"><tr><td colspan="2" class="deHeading">Add Image/File</td></tr>
-				<form enctype="multipart/form-data" method="post" action="binary_data_entry.jsp">
 				<input type="hidden" name="ID" value="<%=id%>">
 				<input type="hidden" name="RecType" value="<%=recType%>">
 				<input type="hidden" name="FoldID" value="<%=folder.getFolderId()%>">
@@ -83,11 +101,12 @@
 				<tr><td style="text-align:left" class="heading">Name<br><span class="smalltext">If different to filename</span></td><td style="text-align:left"><input type="text" name="Name"></td></tr>
 				<tr><td style="text-align:left" class="heading">Description</td><td style="text-align:left"><input type="text" name="Desc"></td></tr>
 				<tr><td style="text-align:left"><input type="submit" value="Upload"></td></tr>
-				</form>
 				</table><%
 				endDETable(pageContext);
-				%></p><%
+				%></p>
 
+				</form><%
+				
 				if (mr != null) {
 					%><p><%
 					startDETable(pageContext);
