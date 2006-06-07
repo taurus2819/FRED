@@ -1,6 +1,8 @@
 package nz.cri.gns.fred.model;
 
-public interface PaleontologyListEntry {
+import nz.cri.gns.core.NameableAndIdentifiable;
+
+public interface PaleontologyListEntry extends NameableAndIdentifiable {
 
     public Integer getPalListId();
 

@@ -120,4 +120,12 @@ public class PalList implements Serializable, PaleontologyListEntry {
         this.taxon = taxon;
     }
 
+	public String getUniqueIdentifier() {
+		return String.valueOf(getPalListId());
+	}
+
+	public String getDisplayName() {
+		return getTaxonomicName();
+	}
+
 }
