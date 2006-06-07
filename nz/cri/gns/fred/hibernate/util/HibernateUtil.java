@@ -33,6 +33,7 @@ import nz.cri.gns.fred.hibernate.Hardness;
 import nz.cri.gns.fred.hibernate.Lab;
 import nz.cri.gns.fred.hibernate.LabSection;
 import nz.cri.gns.fred.hibernate.PalList;
+import nz.cri.gns.fred.hibernate.PalListMeta;
 import nz.cri.gns.fred.hibernate.Paleontology;
 import nz.cri.gns.fred.hibernate.Person;
 import nz.cri.gns.fred.hibernate.Record;
@@ -129,6 +130,7 @@ public class HibernateUtil implements HibernateProvider {
             LabSection.class,
 			Paleontology.class,
 			PalList.class,
+			PalListMeta.class,
 			Person.class,
 			Record.class,
 			RecordMeta.class,
