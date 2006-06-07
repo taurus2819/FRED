@@ -1,5 +1,7 @@
 package nz.cri.gns.fred.model;
 
+import java.util.Set;
+
 import nz.cri.gns.core.NameableAndIdentifiable;
 
 public interface PaleontologyListEntry extends NameableAndIdentifiable {
@@ -37,5 +39,9 @@ public interface PaleontologyListEntry extends NameableAndIdentifiable {
     public Taxon getTaxon();
 
     public void setTaxon(Taxon taxon);
-
+    
+    public Set<PalListMeta> getPalListMetas();
+    
+    public void setPalListMetas(Set<PalListMeta> palListMeta);
+ 
 }
