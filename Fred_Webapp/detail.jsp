@@ -229,8 +229,8 @@
 						}
 					}
 					%><input type="hidden" name="ActionType" value="" />
-<table border="0" width="160">
-<tr><td colspan="2" class="deHeading">Masterfile Curator</td></tr>
+					<table border="0" width="160">
+					<tr><td colspan="2" class="deHeading">Masterfile Curator</td></tr>
 					<tr><td colspan="2" class="heading">User Comments</td></tr>
 					<tr><td colspan="2"><%=DBUtils.nvl(workComm)%></td></tr><%
 					if (recoll != null) {
@@ -277,8 +277,7 @@
 					<tr><td>
 					<select name="FoldID">
 					<option value="-">-- Choose --</option><%
-					for (Iterator i = (new FolderUtil(factory)).getPersonalFolders(user).iterator(); i.hasNext();) {
-						UserFolder folder = (UserFolder) i.next();
+					for (UserFolder folder : (new FolderUtil(factory)).getPersonalFolders(user)) {
 						String folderName = folder.getFolderName();
 						if (folderName.length() > 17)
 							folderName = folderName.substring(0, 17);
@@ -431,8 +430,7 @@
 					<tr><td colspan="2"><table border="0" cellspacing="0" width="600"><%
 					int y = 1;
 					%><tr><%
-					for (Iterator i = feature.getFeatureMetas().iterator(); i.hasNext();) {
-						Meta meta = (Meta) i.next();
+					for (Meta meta : feature.getFeatureMetas()) {
 						if (y++ == 5) {
 							%></tr><tr><%
 							y = 2;
@@ -540,8 +538,7 @@
 							<tr><td colspan="2"><table border="0" cellspacing="0" width="600"><%
 							int y = 1;
 							%><tr><%
-							for (Iterator i = sample.getSampleMetas().iterator(); i.hasNext();) {
-								Meta meta = (Meta) i.next();
+							for (Meta meta : sample.getSampleMetas()) {
 								if (y++ == 5) {
 									%></tr><tr><%
 									y = 2;
@@ -556,131 +553,125 @@
 						%></p><%
 						
 						//Adoption
-						if (sampleUtil.getAdoptionRecordCount(sample) > 0) {
-							for (Iterator i = sampleUtil.getAdoptionRecords(sample).iterator(); i.hasNext();) {
-								Adoption adoRecord = (Adoption) i.next();
-								if (recordUtil.isAllowedReadRecord(user, adoRecord.getRecord())) {
-									%><p><%
-									startDETable(pageContext);
-									%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Adoption Information</td></tr><%
-									Object[] adoptors = adoRecord.getAdopters().toArray();
-									String[] adoptorsStr = new String[adoptors.length];
-									for (int j = 0; j < adoptors.length; j++)
-										adoptorsStr[j] = ((PersonRelationship) adoptors[j]).getDisplayName();
-									addRepeatingCells(new PrintWriter(out), "Adoptors", adoptorsStr, false);
-									%><tr><td class="heading">Adoption Date</td><td><%=((adoRecord.getAdoptionDate() != null) ? FREDUtil.formatDateForOutput(adoRecord.getAdoptionDate(), adoRecord.getDateRounding()) : "&nbsp;")%></td></tr>
-									<tr><td class="heading">Adopted Stage</td><td><%=((adoRecord.getStage() != null) ? StageUtil.getStageDescription(adoRecord.getStage()) : "&nbsp;")%></td></tr>
-									<tr><td class="heading">Comments</td><td><%=DBUtils.nvl(adoRecord.getComments())%></td></tr><%
-									
-									//Image/Files
-									if (adoRecord.getRecord().getRecordMetas().size() > 0) {
-										%><tr><td colspan="2" class="heading">Images/Files</td></tr>
-										<tr><td colspan="2"><table border="0" cellspacing="0" width="600"><%
-										int y = 1;
-										%><tr><%
-										for (Iterator j = adoRecord.getRecord().getRecordMetas().iterator(); j.hasNext();) {
-											Meta meta = (Meta) j.next();
-											if (y++ == 5) {
-												%></tr><tr><%
-												y = 2;
-											}
-											%><td width="150" align="center" class="smalltext"><a href="/online/DigitalDocument?src=<%=meta.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=meta.getMetaId()%>" alt="FRED Digital Document" /><br /><%=FREDUtil.getMetaTitle(meta)%></a></td><%
+						for (Adoption adoRecord : sampleUtil.getAdoptionRecords(sample)) {
+							if (recordUtil.isAllowedReadRecord(user, adoRecord.getRecord())) {
+								%><p><%
+								startDETable(pageContext);
+								%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Adoption Information</td></tr><%
+								Object[] adoptors = adoRecord.getAdopters().toArray();
+								String[] adoptorsStr = new String[adoptors.length];
+								for (int j = 0; j < adoptors.length; j++)
+									adoptorsStr[j] = ((PersonRelationship) adoptors[j]).getDisplayName();
+								addRepeatingCells(new PrintWriter(out), "Adoptors", adoptorsStr, false);
+								%><tr><td class="heading">Adoption Date</td><td><%=((adoRecord.getAdoptionDate() != null) ? FREDUtil.formatDateForOutput(adoRecord.getAdoptionDate(), adoRecord.getDateRounding()) : "&nbsp;")%></td></tr>
+								<tr><td class="heading">Adopted Stage</td><td><%=((adoRecord.getStage() != null) ? StageUtil.getStageDescription(adoRecord.getStage()) : "&nbsp;")%></td></tr>
+								<tr><td class="heading">Comments</td><td><%=DBUtils.nvl(adoRecord.getComments())%></td></tr><%
+								
+								//Image/Files
+								if (adoRecord.getRecord().getRecordMetas().size() > 0) {
+									%><tr><td colspan="2" class="heading">Images/Files</td></tr>
+									<tr><td colspan="2"><table border="0" cellspacing="0" width="600"><%
+									int y = 1;
+									%><tr><%
+									for (Meta meta : adoRecord.getRecord().getRecordMetas()) {
+										if (y++ == 5) {
+											%></tr><tr><%
+											y = 2;
 										}
-										%></td></tr></table></td></tr><%
+										%><td width="150" align="center" class="smalltext"><a href="/online/DigitalDocument?src=<%=meta.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=meta.getMetaId()%>" alt="FRED Digital Document" /><br /><%=FREDUtil.getMetaTitle(meta)%></a></td><%
 									}
-									%></table><%
-									endDETable(pageContext);
-									%></p><%
+									%></td></tr></table></td></tr><%
 								}
+								%></table><%
+								endDETable(pageContext);
+								%></p><%
 							}
 						}
 			
 						//Paleontology
-						if (sampleUtil.getPaleontologyRecordCount(sample) > 0) {
-							for (Iterator i = sampleUtil.getPaleontologyRecords(sample).iterator(); i.hasNext();) {
-								Paleontology palRecord = (Paleontology) i.next();
-								if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {
-									%><p><%
-									startDETable(pageContext);
-									%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Paleontology Information&nbsp;&nbsp;&nbsp;<a href="print_pal.jsp?ID=<%=palRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></td></tr><%
-									Object[] identifiers = palRecord.getIdentifiers().toArray();
-									String[] identifiersStr = new String[identifiers.length];
-									for (int j = 0; j < identifiers.length; j++)
-										identifiersStr[j] = ((PersonRelationship) identifiers[j]).getDisplayName();
-									addRepeatingCells(new PrintWriter(out), "Identifiers", identifiersStr, false);
-									%><tr><td class="heading">Identification Date</td><td><%=((palRecord.getIdentificationDate() != null) ? FREDUtil.formatDateForOutput(palRecord.getIdentificationDate(), palRecord.getDateRounding()) : "&nbsp;")%></td></tr>
-									<tr><td class="heading">Stage</td><td><%=((palRecord.getStage() != null) ? StageUtil.getStageDescription(palRecord.getStage()) : "&nbsp;")%></td></tr>
-									<tr><td class="heading">Stage Comments</td><td><%=DBUtils.nvl(palRecord.getStageComments())%></td></tr>
-									<tr><td class="heading">Lab Number</td><td><%=((palRecord.getLabNumber() != null) ? RecordUtil.getLabNumberDescription(palRecord) : "&nbsp;")%></td></tr>
-									<tr><td class="heading">Collection Comments</td><td><%=DBUtils.nvl(palRecord.getCollectionComments())%></td></tr><%
-					
-									//taxa (Pal list)
-									if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
-										%><tr><td colspan="2"><table border="0" cellspacing="0" cellpadding="2"><%
-										for (Iterator k = recordUtil.getTaxonomicGroups(palRecord).iterator(); k.hasNext(); ) {
-											TaxonomicGroup taxaGroup = (TaxonomicGroup) k.next();
-											%><tr><td colspan="4" class="heading"><%=taxaGroup.getName()%></td></tr><%
-											if (recordUtil.getListEntries(palRecord, taxaGroup).size() > 0) {
-												%><tr class="heading"><td>Taxonomic Name&nbsp;&nbsp;</td><%
+						for (Paleontology palRecord : sampleUtil.getPaleontologyRecords(sample)) {
+							if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {
+								%><p><%
+								startDETable(pageContext);
+								%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Paleontology Information&nbsp;&nbsp;&nbsp;<a href="print_pal.jsp?ID=<%=palRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></td></tr><%
+								Object[] identifiers = palRecord.getIdentifiers().toArray();
+								String[] identifiersStr = new String[identifiers.length];
+								for (int j = 0; j < identifiers.length; j++)
+									identifiersStr[j] = ((PersonRelationship) identifiers[j]).getDisplayName();
+								addRepeatingCells(new PrintWriter(out), "Identifiers", identifiersStr, false);
+								%><tr><td class="heading">Identification Date</td><td><%=((palRecord.getIdentificationDate() != null) ? FREDUtil.formatDateForOutput(palRecord.getIdentificationDate(), palRecord.getDateRounding()) : "&nbsp;")%></td></tr>
+								<tr><td class="heading">Stage</td><td><%=((palRecord.getStage() != null) ? StageUtil.getStageDescription(palRecord.getStage()) : "&nbsp;")%></td></tr>
+								<tr><td class="heading">Stage Comments</td><td><%=DBUtils.nvl(palRecord.getStageComments())%></td></tr>
+								<tr><td class="heading">Lab Number</td><td><%=((palRecord.getLabNumber() != null) ? RecordUtil.getLabNumberDescription(palRecord) : "&nbsp;")%></td></tr>
+								<tr><td class="heading">Collection Comments</td><td><%=DBUtils.nvl(palRecord.getCollectionComments())%></td></tr><%
+				
+								//taxa (Pal list)
+								if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
+									%><tr><td colspan="2"><table border="0" cellspacing="0" cellpadding="2"><%
+									for (TaxonomicGroup taxaGroup : recordUtil.getTaxonomicGroups(palRecord)) {
+										%><tr><td colspan="5" class="heading"><%=taxaGroup.getName()%></td></tr><%
+										if (recordUtil.getListEntries(palRecord, taxaGroup).size() > 0) {
+											%><tr class="heading"><td>Taxonomic Name&nbsp;&nbsp;</td><%
+											if (authorChk) {
+												%><td>Author&nbsp;&nbsp;</td><%
+											}
+											if (sCountChk) {
+												%><td>Spec Count&nbsp;&nbsp;</td><%
+											}
+											if (sCoordChk) {
+												%><td>Spec Coord&nbsp;&nbsp;</td><%
+											}
+											if (commChk) {
+												%><td>Comments&nbsp;&nbsp;</td><%
+											}
+											%></tr><%
+											for (PaleontologyListEntry taxa : recordUtil.getListEntries(palRecord, taxaGroup)) {
+												%><tr><td><i><%=taxa.getTaxonomicName()%></i>&nbsp;&nbsp;</td><%
 												if (authorChk) {
-													%><td>Author&nbsp;&nbsp;</td><%
+													%><td><%=DBUtils.nvl(taxa.getTaxon().getAuthor())%>&nbsp;&nbsp;</td><%
 												}
 												if (sCountChk) {
-													%><td>Spec Count&nbsp;&nbsp;</td><%
+													%><td><%=DBUtils.nvl(taxa.getSpecimenCount())%>&nbsp;&nbsp;</td><%
 												}
 												if (sCoordChk) {
-													%><td>Spec Coord&nbsp;&nbsp;</td><%
+													%><td><%=DBUtils.nvl(taxa.getSpecimenCoords())%>&nbsp;&nbsp;</td><%
 												}
 												if (commChk) {
-													%><td>Comments&nbsp;&nbsp;</td><%
+													%><td><%=DBUtils.nvl(taxa.getComments())%>&nbsp;&nbsp;</td><%
 												}
-												%></tr><%
-												for (Iterator l = recordUtil.getListEntries(palRecord, taxaGroup).iterator(); l.hasNext(); ) {
-													PaleontologyListEntry taxa = (PaleontologyListEntry) l.next();
-													%><tr><td><i><%=taxa.getTaxonomicName()%></i>&nbsp;&nbsp;</td><%
-													if (authorChk) {
-														%><td><%=DBUtils.nvl(taxa.getTaxon().getAuthor())%>&nbsp;&nbsp;</td><%
-													}
-													if (sCountChk) {
-														%><td><%=DBUtils.nvl(taxa.getSpecimenCount())%>&nbsp;&nbsp;</td><%
-													}
-													if (sCoordChk) {
-														%><td><%=DBUtils.nvl(taxa.getSpecimenCoords())%>&nbsp;&nbsp;</td><%
-													}
-													if (commChk) {
-														%><td><%=DBUtils.nvl(taxa.getComments())%>&nbsp;&nbsp;</td><%
-													}
-													%></tr><%
+												%><td><%
+												for (Meta meta : taxa.getPalListMetas()) {
+													%><a href="/online/DigitalDocument?src=<%=meta.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=meta.getMetaId()%>" alt="FRED Digital Document" /><br /><%=FREDUtil.getMetaTitle(meta)%></a><br /><%
 												}
-											} else {
-												%><tr><td colspan="4">No fossils listed</td></tr><%
+												%></td></tr><%
 											}
-											%><tr><td>&nbsp;</td></tr><%
+										} else {
+											%><tr><td colspan="4">No fossils listed</td></tr><%
 										}
-										%></td></tr></table></td></tr><%
+										%><tr><td>&nbsp;</td></tr><%
 									}
-									//Image/Files
-									if (palRecord.getRecord().getRecordMetas().size() > 0) {
-										%><tr><td colspan="2" class="heading">Images/Files</td></tr>
-										<tr><td colspan="2"><table border="0" cellspacing="0" width="600"><%
-										int y = 1;
-										%><tr><%
-										for (Iterator j = palRecord.getRecord().getRecordMetas().iterator(); j.hasNext();) {
-											Meta meta = (Meta) j.next();
-											if (y++ == 5) {
-												%></tr><tr><%
-												y = 2;
-											}
-											%><td width="150" align="center" class="smalltext"><a href="/online/DigitalDocument?src=<%=meta.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=meta.getMetaId()%>" alt="FRED Digital Document" /><br /><%=FREDUtil.getMetaTitle(meta)%></a></td><%
-										}
-										%></td></tr></table></td></tr><%
-									}
-									%></table><%
-									endDETable(pageContext);
-									%></p><%
+									%></td></tr></table></td></tr><%
 								}
+								//Image/Files
+								if (palRecord.getRecord().getRecordMetas().size() > 0) {
+									%><tr><td colspan="2" class="heading">Images/Files</td></tr>
+									<tr><td colspan="2"><table border="0" cellspacing="0" width="600"><%
+									int y = 1;
+									%><tr><%
+									for (Meta meta : palRecord.getRecord().getRecordMetas()) {
+										if (y++ == 5) {
+											%></tr><tr><%
+											y = 2;
+										}
+										%><td width="150" align="center" class="smalltext"><a href="/online/DigitalDocument?src=<%=meta.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=meta.getMetaId()%>" alt="FRED Digital Document" /><br /><%=FREDUtil.getMetaTitle(meta)%></a></td><%
+									}
+									%></td></tr></table></td></tr><%
+								}
+								%></table><%
+								endDETable(pageContext);
+								%></p><%
 							}
-						}			
+						}
 					}
 				} else  {
 					//Sample List
@@ -689,8 +680,7 @@
 					%><table border="0" width="550">
 					<tr><td colspan="3" class="deHeading"><%=featType%> Samples</td></tr>
 					<tr class="heading"><td>Sample</td></tr><%
-					for (Iterator i = FeatureUtil.getSortedSamples(feature).iterator(); i.hasNext(); ) {
-						Sample locSample = (Sample) i.next();
+					for (Sample locSample : FeatureUtil.getSortedSamples(feature)) {
 						%><tr><td><a href="detail.jsp?ID=<%=locSample.getSampleId() + backStr%>"><%=SampleUtil.getDrillHoleDepthDescription(locSample) + ((locSample.getFrNumber() != null && !locSample.getFrNumber().equals(feature.getFrNumber())) ? " (" + locSample.getFrNumber().getFrNumber() + ")" : "")%></a>&nbsp;&nbsp;</td>
 						<td><a href="print_front.jsp?ID=<%=locSample.getSampleId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr><%
 					}
