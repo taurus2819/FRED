@@ -14,6 +14,8 @@ public interface TaxonomicDAO {
      * @return
      */
     public PaleontologyListEntry createNewPaleontologyListEntry();
+    
+    public PaleontologyListEntry getPaleontologyListEntry(int palListId) throws StorageAccessException;
 
     /**
      * Finds the taxon with the given parameters

@@ -878,6 +878,10 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
         return new PalList();
     }
 
+    public PaleontologyListEntry getPaleontologyListEntry(int palListId) throws StorageAccessException {
+    	return HibernateUtils.getFirst(provider, "FROM PalList as pl WHERE pl.palListId = ?", palListId, PaleontologyListEntry.class);
+    }
+    
 	public Taxon getTaxon(int taxonId) throws StorageAccessException {
 		return HibernateUtils.getFirst(provider, "FROM TaxonomicLookup as tl WHERE tl.taxaId = ?", taxonId, Taxon.class);
 	}

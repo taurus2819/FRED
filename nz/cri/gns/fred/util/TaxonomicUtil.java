@@ -251,6 +251,10 @@ public class TaxonomicUtil extends ModelUtil {
     public PaleontologyListEntry createPaleontologyListEntry() {
        return taxonomicDAO.createNewPaleontologyListEntry();
     }
+    
+    public PaleontologyListEntry getPaleontologyListEntry(int palListId) throws StorageAccessException {
+    	return taxonomicDAO.getPaleontologyListEntry(palListId);
+    }
 
     public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException {
     	//No author, don't include it in the search
