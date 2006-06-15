@@ -44,14 +44,12 @@
 			    			FeatureUtil featureUtil = new FeatureUtil(factory);
 			    			FolderUtil folderUtil = new FolderUtil(factory);
 			    			UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(foldID), user);
-			    			System.out.println("Folder: " + folder.getFolderName());
-			    			//try {
-				    			Feature feature = featureUtil.getFeatureWithIdentifyingName(request.getParameter("featName"), folder);
-				    			System.out.println("Feature is null: " + (feature == null));
+			    			try {
+				    			Feature feature = featureUtil.getFeatureWithName(request.getParameter("featName"), folder);
 				    			featID = String.valueOf(feature.getFeatureId());
-			    			//} catch (Exception e) {
-							//	throw new DataInputException("Locality Name", "Locality name not found");
-			    			//}
+			    			} catch (Exception e) {
+								throw new DataInputException("Locality Name", "Locality name not found");
+			    			}
 			    		}
 						return DataEntryFormFactory.getSampleDataEntryForm(user, Integer.parseInt(featID), Integer.parseInt(foldID), factory, provider);
 					}
