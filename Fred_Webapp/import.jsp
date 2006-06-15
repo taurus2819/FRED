@@ -2,6 +2,7 @@
 %><%@page import="nz.cri.gns.fred.de.DataEntryForm"
 %><%@page import="nz.cri.gns.fred.de.DataInputException"
 %><%@page import="nz.cri.gns.fred.model.Feature"
+%><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.jsp.JspUtils"
 %><%@page import="nz.cri.gns.jsp.PageState"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
@@ -41,12 +42,16 @@
 						String featID = request.getParameter("FeatID");
 			    		if (featID == null || featID.equals("")) {
 			    			FeatureUtil featureUtil = new FeatureUtil(factory);
-			    			try {
-				    			Feature feature = featureUtil.getFeatureWithIdentifyingName(request.getParameter("featName"), new FolderUtil(factory).getUserFolder(Integer.parseInt(foldID), user));
+			    			FolderUtil folderUtil = new FolderUtil(factory);
+			    			UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(foldID), user);
+			    			System.out.println("Folder: " + folder.getFolderName());
+			    			//try {
+				    			Feature feature = featureUtil.getFeatureWithIdentifyingName(request.getParameter("featName"), folder);
+				    			System.out.println("Feature is null: " + (feature == null));
 				    			featID = String.valueOf(feature.getFeatureId());
-			    			} catch (Exception e) {
-								throw new DataInputException("Locality Name", "Locality name not found");
-			    			}
+			    			//} catch (Exception e) {
+							//	throw new DataInputException("Locality Name", "Locality name not found");
+			    			//}
 			    		}
 						return DataEntryFormFactory.getSampleDataEntryForm(user, Integer.parseInt(featID), Integer.parseInt(foldID), factory, provider);
 					}
