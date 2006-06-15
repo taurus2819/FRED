@@ -42,7 +42,7 @@
 			    		if (featID == null || featID.equals("")) {
 			    			FeatureUtil featureUtil = new FeatureUtil(factory);
 			    			try {
-				    			Feature feature = featureUtil.getFeatureWithIdentifyingName(request.getParameter("featName"));
+				    			Feature feature = featureUtil.getFeatureWithIdentifyingName(request.getParameter("featName"), new FolderUtil(factory).getUserFolder(Integer.parseInt(foldID), user));
 				    			featID = String.valueOf(feature.getFeatureId());
 			    			} catch (Exception e) {
 								throw new DataInputException("Locality Name", "Locality name not found");

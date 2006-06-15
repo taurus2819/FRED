@@ -1014,6 +1014,18 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	/**
+	 * Performs the inverse of getFeatureIdentifyingName within a folder;
+	 * @throws StorageAccessException 
+	 */
+	public Feature getFeatureWithIdentifyingName(String ident, UserFolder folder) throws StorageAccessException {
+		for (Feature feature : folder.getFolder().getFeatures()) {
+			if (getFeatureIdentifyingName(feature).equals(ident))
+				return feature;
+		}
+		return null;
+	}
+	
+	/**
 	 * Backlog method
 	 * @throws StorageAccessException 
 	 */
