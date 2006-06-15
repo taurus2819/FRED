@@ -173,13 +173,17 @@
 			%><tr><td>No folders defined</td><td>-1</td></tr><%
 		} else if (listName.equals("datum")) {
 			%><tr><td>New Zealand Map Grid</td><td>NZMG</td></tr>
-			<tr><td>NZMS260</td><td>NZMS260</td></tr>
+			<tr><td>NZMS260 - 3-digit</td><td>NZMS260</td></tr>
+			<tr><td>NZMS260 - 4-digit</td><td>NZMS260</td></tr>
 			<tr><td>NZTM</td><td>NZTM</td></tr>
-			<tr><td>NZTopo50</td><td>NZTopo50</td></tr>
+			<tr><td>NZTopo50 - 3-digit</td><td>NZTopo50</td></tr>
+			<tr><td>NZTopo50 - 4-digit</td><td>NZTopo50</td></tr>
 			<tr><td>NZ Yard Grid (Sth Isl)</td><td>NZ Yard SthIsl</td></tr>
 			<tr><td>NZ Yard Grid (Nth Isl)</td><td>NZ Yard NthIsl</td></tr>
-			<tr><td>NZMS1 (Sth Isl)</td><td>NZMS1 SthIsl</td></tr>
-			<tr><td>NZMS1 (Nth Isl)</td><td>NZMS1 NthIsl</td></tr>
+			<tr><td>NZMS1 (Sth Isl) - 3-digit</td><td>NZMS1 SthIsl</td></tr>
+			<tr><td>NZMS1 (Sth Isl) - 4-digit</td><td>NZMS1 SthIsl</td></tr>
+			<tr><td>NZMS1 (Nth Isl) - 3-digit</td><td>NZMS1 NthIsl</td></tr>
+			<tr><td>NZMS1 (Nth Isl) - 4-digit</td><td>NZMS1 NthIsl</td></tr>
 			<tr><td>Chatham Island Grid</td><td>Chatham Island Grid</td></tr>
 			<tr><td>Auckland Island Grid</td><td>Auckland Island Transverse Mercator</td></tr>
 			<tr><td>Campbell Island Grid</td><td>Campbell Island Transverse Mercator</td></tr>
