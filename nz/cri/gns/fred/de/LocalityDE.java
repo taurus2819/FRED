@@ -322,8 +322,8 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		out.write("<td>" + DBUtils.nvl(comms[0]) + "</td>\n");
 		out.write("<td>" + ((datum != null) ? datum.getName() : "") + "</td>\n");
 		out.write("<td>" + ((datum != null && datum.isMapSheetSystem()) ? (((MapSheetCoordinate)coord).getMapSheet()) : "") + "</td>\n");
-		out.write("<td>" + ((coord != null) ? coord.getEastWestString() : "") + "</td>\n");
-		out.write("<td>" + ((coord != null) ? coord.getNorthSouthString() : "") + "</td>\n");
+		out.write("<td>#" + ((coord != null) ? coord.getEastWestString() : "") + "#</td>\n");
+		out.write("<td>#" + ((coord != null) ? coord.getNorthSouthString() : "") + "#</td>\n");
 		out.write("<td>" + DBUtils.nvl(feature.getMapYear()) + "</td>\n");
 		out.write("<td>" + ((site != null && !site.isNull(SiteRecord.H_METHOD_FIELD)) ? String.valueOf(site.getMethod()) : "") + "</td>\n");
 		out.write("<td>" + ((site != null && !site.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(site.getAccuracy()) : "") + "</td>\n");
