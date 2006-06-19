@@ -1031,7 +1031,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		//DepositionalEnvironment
 		StringBuffer depEnv = new StringBuffer();
 		String depEnv1 = request.getParameter("DepEnv1").trim();
-		if (depEnv1 == null)
+		if (depEnv1 == null || depEnv.length() == 0)
 			depEnv1 = getDepositionalEnvironmentMarineOrNot(request.getParameter("DepEnv2"));
 		depEnv.append(depEnv1);
 		if (depEnv.length() > 0 && request.getParameter("DepEnv2").trim().length() > 0)
