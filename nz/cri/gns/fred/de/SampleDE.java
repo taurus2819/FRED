@@ -442,11 +442,11 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		String dep = sample.getDepositionEnv();
 		if (dep == null)
 			return null;
-		if (dep.startsWith(FREDConstants.MARINE))
+		if (dep.toUpperCase().startsWith(FREDConstants.MARINE.toUpperCase()))
 			dep = dep.substring(6).trim();
-		else if (dep.startsWith(FREDConstants.NON_MARINE))
+		else if (dep.toUpperCase().startsWith(FREDConstants.NON_MARINE.toUpperCase()))
 			dep = dep.substring(10).trim();
-		if (dep.startsWith(":"))
+		if (dep.startsWith(":") || dep.startsWith(".") || dep.startsWith(","))
 			return dep.substring(1).trim();
 		return dep;
 	}
@@ -455,9 +455,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		String dep = sample.getDepositionEnv();
 		if (dep == null)
 			return null;
-		if (dep.startsWith(FREDConstants.MARINE))
+		if (dep.toUpperCase().startsWith(FREDConstants.MARINE.toUpperCase()))
 			return FREDConstants.MARINE;
-		else if (dep.startsWith(FREDConstants.NON_MARINE))
+		else if (dep.toUpperCase().startsWith(FREDConstants.NON_MARINE.toUpperCase()))
 			return FREDConstants.NON_MARINE;
 		return null;
 	}
