@@ -405,11 +405,11 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		template.addSub("SedFeat", getSedimentaryFeatures(semiColonSeparator, starSeparator));
 		
 		//Inferred environ as value and select
-		String marine = getDepositionalEnvironmentMarineOrNot();
+		String marine = getDepositionalEnvironmentMarineOrNot(sample.getDepositionEnv());
 		template.addSub("DepEnv1", marine);
 		template.addSub("is" + marine, "Yes");
 		//Inferred environ part II
-		template.addSub("DepEnv2", getDepositionalEnvironmentFreeText());
+		template.addSub("DepEnv2", getDepositionalEnvironmentFreeText(sample.getDepositionEnv()));
 		
 		template.addSub("RockNat", sample.getRockNature());
 		template.addSub("Corr", sample.getCorrespondence());
@@ -438,10 +438,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		return buffer.toString();
 	}
 
-	private String getDepositionalEnvironmentFreeText() {
-		String dep = sample.getDepositionEnv();
+	private String getDepositionalEnvironmentFreeText(String dep) {
 		if (dep == null)
 			return null;
+		dep = dep.trim();
 		if (dep.toUpperCase().startsWith(FREDConstants.MARINE.toUpperCase()))
 			dep = dep.substring(6).trim();
 		else if (dep.toUpperCase().startsWith(FREDConstants.NON_MARINE.toUpperCase()))
@@ -451,10 +451,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		return dep;
 	}
 
-	private String getDepositionalEnvironmentMarineOrNot() {
-		String dep = sample.getDepositionEnv();
+	private String getDepositionalEnvironmentMarineOrNot(String dep) {
 		if (dep == null)
 			return null;
+		dep = dep.trim();
 		if (dep.toUpperCase().startsWith(FREDConstants.MARINE.toUpperCase()))
 			return FREDConstants.MARINE;
 		else if (dep.toUpperCase().startsWith(FREDConstants.NON_MARINE.toUpperCase()))
@@ -1031,9 +1031,14 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		//DepositionalEnvironment
 		StringBuffer depEnv = new StringBuffer();
 		depEnv.append(request.getParameter("DepEnv1").trim());
+		String depEnv1 = request.getParameter("DepEnv1").trim();
+		if (depEnv1 == null)
+			depEnv1 = getDepositionalEnvironmentMarineOrNot(request.getParameter("DepEnv2"));
+		depEnv.append(depEnv1);
 		if (depEnv.length() > 0 && request.getParameter("DepEnv2").trim().length() > 0)
 			depEnv.append(": ");
-		depEnv.append(request.getParameter("DepEnv2").trim());
+		String depEnv2 = getDepositionalEnvironmentFreeText(request.getParameter("DepEnv2"));
+		depEnv.append(depEnv2);
 		sample.setDepositionEnv(depEnv.toString());
 		
 		//Rock nature
