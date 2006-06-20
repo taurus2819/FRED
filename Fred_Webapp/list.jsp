@@ -107,7 +107,7 @@
 		   	try {
 		   		Feature feature = featureUtil.getFeature(Integer.parseInt(request.getParameter("featureID")));
 		   		if (!feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
-					for (Sample sample : feature.getSamples()) {
+					for (Sample sample : FeatureUtil.getSortedSamples(feature)) {
 						if (sampleUtil.isAllowedReadSample(user, sample)) {
 							%><tr><td><%=SampleUtil.getDrillHoleDepthDescription(sample)%></td><td><%=sample.getSampleId()%></td></tr><%
 						}
