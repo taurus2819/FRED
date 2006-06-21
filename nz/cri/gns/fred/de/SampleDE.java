@@ -512,7 +512,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			    template.addSub("featureIdIfNotOutcrop", sample.getFeature().getFeatureId().toString());
 			    template.addSub("folderIdIfNotOutcrop", (workingFolder == null) ? "" : workingFolder.getFolderId().toString());
 			    template.addSub("featureTypeIfNotOutcrop", sample.getFeature().getFeatureType());
-			    template.addSub("sampleNameIfNotOutcrop", sample.getSampleName());
+			    template.addSub("sampleNameIfNotOutcrop", sample.getFeature().getFeatureName());
 			    template.addSub("sampleStatusIfNotOutcrop", sample.getAudit().getStatus());
 			    template.addSub("curatorCommentsIfNotOutcrop", sample.getAudit().getCuratorComments());
 			    template.addSub("frNumberIfNotOutcrop", (sample.getFeature().getFrNumber() != null) ? sample.getFeature().getFrNumber().getFrNumber() : "");

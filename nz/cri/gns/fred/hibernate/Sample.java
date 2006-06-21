@@ -76,9 +76,6 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     /** nullable persistent field */
     private String correspondence;
 
-    /** nullable persistent field */
-    private String sampleName;
-
     /** persistent field */
     private nz.cri.gns.fred.model.ColourModifier colourModifier;
 
@@ -152,7 +149,7 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     private Set<Relationship> relationships;
 
     /** full constructor */
-    public Sample(Double topDepth, Double bottomDepth, String comments, Date collectionDate, String dateRounding, String stratUnit, String inPlace, String notCollected, String significance, String columnMap, Integer dip, String dipDirection, Integer strike, String facing, String comparatorUsed, String wet, String rockNature, String depositionEnv, String correspondence, String sampleName, nz.cri.gns.fred.hibernate.ColourModifier colourModifier, nz.cri.gns.fred.hibernate.Hardness hardness, nz.cri.gns.fred.hibernate.Weathering weathering, nz.cri.gns.fred.hibernate.Carbonate carbonate, nz.cri.gns.fred.hibernate.RockColour rockColourBySecondaryColourId, nz.cri.gns.fred.hibernate.RockColour rockColourByPrimaryColourId, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.Bedding beddingByPrimaryBeddingId, nz.cri.gns.fred.hibernate.Bedding beddingBySecondaryBeddingId, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.FrNumber yardFrNumber, nz.cri.gns.fred.hibernate.DrillType drillType, nz.cri.gns.fred.hibernate.GrainSize grainSizeByPrimaryGrainsizeId, nz.cri.gns.fred.hibernate.GrainSize grainSizeBySecondaryGrainsizeId, nz.cri.gns.fred.hibernate.BedThickness bedThickness, nz.cri.gns.fred.hibernate.Stage stageByKnownStageId, nz.cri.gns.fred.hibernate.Stage stageByInferredStageId, Set<SedimentaryFeature> sedimentaryFeatures, Set<SampleMeta> sampleMetas, Set<Record> records, Set<SentTo> sentTos, Set<Person> collectors, Set<Relationship> relationships) {
+    public Sample(Double topDepth, Double bottomDepth, String comments, Date collectionDate, String dateRounding, String stratUnit, String inPlace, String notCollected, String significance, String columnMap, Integer dip, String dipDirection, Integer strike, String facing, String comparatorUsed, String wet, String rockNature, String depositionEnv, String correspondence, nz.cri.gns.fred.hibernate.ColourModifier colourModifier, nz.cri.gns.fred.hibernate.Hardness hardness, nz.cri.gns.fred.hibernate.Weathering weathering, nz.cri.gns.fred.hibernate.Carbonate carbonate, nz.cri.gns.fred.hibernate.RockColour rockColourBySecondaryColourId, nz.cri.gns.fred.hibernate.RockColour rockColourByPrimaryColourId, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.Bedding beddingByPrimaryBeddingId, nz.cri.gns.fred.hibernate.Bedding beddingBySecondaryBeddingId, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.FrNumber yardFrNumber, nz.cri.gns.fred.hibernate.DrillType drillType, nz.cri.gns.fred.hibernate.GrainSize grainSizeByPrimaryGrainsizeId, nz.cri.gns.fred.hibernate.GrainSize grainSizeBySecondaryGrainsizeId, nz.cri.gns.fred.hibernate.BedThickness bedThickness, nz.cri.gns.fred.hibernate.Stage stageByKnownStageId, nz.cri.gns.fred.hibernate.Stage stageByInferredStageId, Set<SedimentaryFeature> sedimentaryFeatures, Set<SampleMeta> sampleMetas, Set<Record> records, Set<SentTo> sentTos, Set<Person> collectors, Set<Relationship> relationships) {
         this.topDepth = topDepth;
         this.bottomDepth = bottomDepth;
         this.comments = comments;
@@ -172,7 +169,6 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.rockNature = rockNature;
         this.depositionEnv = depositionEnv;
         this.correspondence = correspondence;
-        this.sampleName = sampleName;
         this.colourModifier = colourModifier;
         this.hardness = hardness;
         this.weathering = weathering;
@@ -390,14 +386,6 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.correspondence = correspondence;
     }
 
-    public String getSampleName() {
-        return this.sampleName;
-    }
-
-    public void setSampleName(String sampleName) {
-        this.sampleName = sampleName;
-    }
-
     public nz.cri.gns.fred.model.ColourModifier getColourModifier() {
         return this.colourModifier;
     }
@@ -595,11 +583,9 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
 			if (getTopDepth().equals(sample.getTopDepth()) && getBottomDepth() != null && sample.getBottomDepth() != null)
 				return getBottomDepth().compareTo(sample.getBottomDepth());
 			return getTopDepth().compareTo(sample.getTopDepth());
-		} else if (getTopDepth() == null && sample.getTopDepth() == null && getSampleName() != null && sample.getSampleName() != null)
-			return getSampleName().compareTo(sample.getSampleName());
-		else 
-			//Anything undepthed goes to the end
-			return (getTopDepth() == null) ? 1 : -1;
+		} 
+		//Anything undepthed goes to the end
+		return (getTopDepth() == null) ? 1 : -1;
 	}
 
 }

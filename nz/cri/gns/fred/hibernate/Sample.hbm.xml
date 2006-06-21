@@ -140,12 +140,6 @@
         column="CORRESPONDENCE"
         length="512"
     />
-    <property
-        name="sampleName"
-        type="java.lang.String"
-        column="SAMPLE_NAME"
-        length="64"
-    />
 
     <!-- Associations -->
   

@@ -87,10 +87,6 @@ public interface Sample extends Audited, Comparable<Sample> {
 
 	public abstract void setCorrespondence(String correspondence);
 
-	public abstract String getSampleName();
-
-	public abstract void setSampleName(String sampleName);
-
 	public abstract nz.cri.gns.fred.model.ColourModifier getColourModifier();
 
 	public abstract void setColourModifier(
