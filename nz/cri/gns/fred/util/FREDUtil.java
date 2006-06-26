@@ -453,7 +453,7 @@ public class FREDUtil {
 		try {
 			conn = getConnection();
 			Statement statement = conn.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT Method_ID, Method, Nom_Accuracy_XY, Nom_Accuracy_Z FROM SC.Method WHERE Nom_Accuracy_XY IS NOT NULL ORDER BY Method_ID");
+			ResultSet rs = statement.executeQuery("SELECT Method_ID, Method, Nom_Accuracy_XY, Nom_Accuracy_Z FROM SC.Method WHERE Nom_Accuracy_XY IS NOT NULL ORDER BY Nom_Accuracy_XY");
 			
 			List<DatumMethod> list = new Vector<DatumMethod>();
 			while (rs.next()) {
