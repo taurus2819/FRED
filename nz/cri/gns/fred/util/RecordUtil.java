@@ -81,10 +81,12 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	public static String getLabNumberDescription(Paleontology pal) {
 		LabSection ls = pal.getLabSection();
 		StringBuffer desc = new StringBuffer();
-		if (ls.getLab() != null && ls.getLab().getName() != null)
-			desc.append(ls.getLab().getName()).append(" ");
-		if (ls.getCode() != null)
-			desc.append(ls.getCode()).append(" ");
+		if (ls != null) {
+			if (ls.getLab() != null && ls.getLab().getName() != null)
+				desc.append(ls.getLab().getName()).append(" ");
+			if (ls.getCode() != null)
+				desc.append(ls.getCode()).append(" ");
+		}
 		if (pal.getLabNumber() != null)
 			desc.append(pal.getLabNumber());
 		return desc.toString();			
