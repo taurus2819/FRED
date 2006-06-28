@@ -76,33 +76,25 @@
 		%><table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
 		<tr><td colspan="3" class="deHeading">Instructions</td></tr><tr><td style="text-align: left">
 		<ul>
-		<li>All data entry is done within a folder.
-		<li>Folders to which you have access are listed below and you can create more folders by clicking on the button above.
-		<li>Click on the folder name to view its contents, or use the options on the right hand side to edit the folder properties or delete the folder.
+		<li>Data entry can be done either in a <i>Data Entry Folder</i> or using the <i>Data Entry Spreadsheet</i>.</li>
+		<li>Data entered via the <i>Data Entry Spreadsheet</i> can be edited within a <i>Data Entry Folder</i> and vice versa.</li>
+		<li>Folders to which you have access are listed below and you can create more folders by clicking on the link above.</li>
+		<li>Click on the folder name to open it (to add/edit data), or use the actions on the right hand side to edit the folder users or delete the folder.</li>
 		</ul>
 		</td></tr>
 		<tr><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr></table><%
 		endDETable(pageContext);
 		%></div><%
-	
-		%><p><%
-		startDETable(pageContext);
-		%><table border="0" width="550"><tr><td colspan="2" class="deHeading">Data Entry Spreadsheet</td></tr>
-		<tr><td colspan="2">Download the spreadsheet by clicking on the link below and then choosing "Save" when prompted by your browser. The spreadsheet will then need to be extracted using <a href="www.winzip.com" target="zip">WinZip</a> or similar.  The spreadsheet has been tested with Microsoft Excel 2002, but should work with all versions.  Full instructions are included in the spreadsheet.</td></tr>
-		<tr><td><a href="images/FRED.zip" target="spreadsheet"><img src="images/excel.gif" border="0" width="20" height="20" alt="Data entry spreadsheet" /></a>&nbsp;&nbsp;</td>
-		<td class="heading"><a href="images/FRED.zip" target="spreadsheet">Download FRED.zip</a></td></tr>
-		</table><%
-		endDETable(pageContext);
-		%></p><%
-		
 		
 		%><p><%
 		startDETable(pageContext);
-		%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Personal Folders</td></tr><%
+		%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Data Entry Folders</td></tr>
+		<tr><td colspan="3">Use for entering/editing small amounts of data</td></tr>
+		<tr><td>&nbsp;</td></tr><%
 		List personalFolders = folderUtil.getPersonalFolders(user);
 		//List Working folders
 		if (personalFolders.size() > 0) {
-			%><tr><th style="text-align: left">Working Folder&nbsp;&nbsp;</th><th>Owner&nbsp;&nbsp;</th><th>Actions</th></tr>
+			%><tr><th style="text-align: left">Folder Name&nbsp;&nbsp;</th><th>Owner&nbsp;&nbsp;</th><th>Actions</th></tr>
 			<form name="PersForm" method="post" action="folder_list.jsp"><%
 			for (Iterator i = personalFolders.iterator(); i.hasNext(); ) {
 				UserFolder folder = (UserFolder) i.next();
@@ -123,19 +115,31 @@
 			<input type="hidden" name="FoldID" value="">
 			</form><%
 		} else {
-			%><tr><td class="heading">You do not currently have any personal folders. Click <a href="javascript:doNewFolder();">here</a> to create one.</td></tr><%
+			%><tr><td class="heading">You do not currently have any data entry folders. Click <a href="javascript:doNewFolder();">here</a> to create one.</td></tr><%
 		}
 		%></table><%
 		endDETable(pageContext);
 		%></p><%
 	
+		%><p><%
+		startDETable(pageContext);
+		%><table border="0" width="550"><tr><td colspan="2" class="deHeading">Data Entry Spreadsheet</td></tr>
+		<tr><td colspan="3">Use for entering/editing large amounts of data</td></tr>
+		<tr><td>&nbsp;</td></tr>
+		<tr><td colspan="2">Download the spreadsheet by clicking on the link below and then choosing "Save" when prompted by your browser. The spreadsheet will then need to be extracted using <a href="www.winzip.com" target="zip">WinZip</a> or similar.  The spreadsheet has been tested with Microsoft Excel 2002, but should work with all versions.  Full instructions are included in the spreadsheet.</td></tr>
+		<tr><td><a href="images/FRED.zip" target="spreadsheet"><img src="images/excel.gif" border="0" width="20" height="20" alt="Data entry spreadsheet" /></a>&nbsp;&nbsp;</td>
+		<td class="heading"><a href="images/FRED.zip" target="spreadsheet">Download FRED.zip</a></td></tr>
+		</table><%
+		endDETable(pageContext);
+		%></p><%
+		
 		List backlogFolders = folderUtil.getBacklogFolders(user);
 		//List Backlog folders
 		if (backlogFolders.size() > 0) {
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Backlog Edit Folders</td></tr>
-			<tr><th style="text-align: left">Backlog Edit Folder&nbsp;&nbsp;</th><th>Owner&nbsp;&nbsp;</th><th>Actions</th></tr>
+			<tr><th style="text-align: left">Folder Name&nbsp;&nbsp;</th><th>Owner&nbsp;&nbsp;</th><th>Actions</th></tr>
 			<form name="BackForm" method="post" action="folder_list.jsp"><%
 			for (Iterator i = backlogFolders.iterator(); i.hasNext(); ) {
 				UserFolder folder = (UserFolder) i.next();
@@ -169,7 +173,7 @@
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Masterfile Folders</td></tr>
-			<tr><th colspan="2">Masterfile Folder&nbsp;&nbsp;</th><th>Actions</th></tr><%
+			<tr><th colspan="2">Folder Name&nbsp;&nbsp;</th><th>Actions</th></tr><%
 			for (Iterator i = backlogAdminFolders.iterator(); i.hasNext(); ) {
 				UserFolder folder = (UserFolder) i.next();
 				%><tr>
@@ -207,7 +211,7 @@
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Taxonomic Panels</td></tr>
-			<tr><th colspan="2">Taxonomic Groups&nbsp;&nbsp;</th><th>Actions</th></tr><%
+			<tr><th colspan="2">Group Name&nbsp;&nbsp;</th><th>Actions</th></tr><%
 			for (Iterator i = panelList.iterator(); i.hasNext(); ) {
 				TaxonomicGroup group = (TaxonomicGroup)i.next();
 				%><tr>

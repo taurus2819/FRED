@@ -147,16 +147,17 @@
 			<tr><td colspan="3" class="deHeading">Folder Instructions</td></tr><tr><td style="text-align: left">
 			<ul>
 			<li>Listed below are the localities you have added to this folder.</li>
+			<li>To create a new locality click on the New: Outcrop, Drillhole or V. Section links above.</li>
 			<li>Working localities are named with their field number or drillhole name until they are allocated a Fossil Record Number.</li>
-			<li>Click on the locality to add/edit drillhole/vertical section samples, and paleontology and adopted age data, or use the options to work with the locality itself:</li>
+			<li>Click on the locality to add/edit drillhole/vertical section samples, and paleontology and adopted age data records, or use the actions to work with the locality itself:</li>
 			<ul>
-			<li><img src="images/edit.gif" border="0" height="20" width="20" alt="" /> to edit the locality</li>
-			<li><img src="images/new_file.gif" border="0" height="20" width="20" alt="" /> to add a file/image to the locality/sample/record</li>
-			<li><img src="images/map.gif" border="0" height="20" width="20" alt="" /> to view a map of the locality</li>
-			<li><img src="images/copy.gif" border="0" height="20" width="20" alt="" /> to make a copy of the locality (front of form data only)</li>
-			<li><img src="images/delete.gif" border="0" height="20" width="20" alt="" /> to delete the locality</li>
-			<li><img src="images/submit.gif" border="0" height="20" width="20" alt="" /> to submit the locality for entry to the masterfile</li>
-			<li><img src="images/revoke.gif" border="0" height="20" width="20" alt="" /> to revoke the locality for entry from the masterfile</li>
+			<li><img src="images/edit.gif" border="0" height="20" width="20" alt="" /> edit the locality</li>
+			<li><img src="images/new_file.gif" border="0" height="20" width="20" alt="" /> add a file/image to the locality/sample/record</li>
+			<li><img src="images/map.gif" border="0" height="20" width="20" alt="" /> view a map of the locality</li>
+			<li><img src="images/copy.gif" border="0" height="20" width="20" alt="" /> make a copy of the locality (front of form data only)</li>
+			<li><img src="images/delete.gif" border="0" height="20" width="20" alt="" /> delete the locality</li>
+			<li><img src="images/submit.gif" border="0" height="20" width="20" alt="" /> submit the locality for entry to the masterfile</li>
+			<li><img src="images/revoke.gif" border="0" height="20" width="20" alt="" /> revoke the locality for entry from the masterfile</li>
 			</ul>
 			<li>Multiple localities may be selected by <i>ticking</i> the checkboxes on the left-hand side.  You can then use the tools in the <i>Selected Locality Actions</i> box</li>
 			</ul>
