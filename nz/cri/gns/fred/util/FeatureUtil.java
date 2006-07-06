@@ -419,6 +419,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	public void alterFeatureType(Feature feature, String newFeatureType, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
 		if (!folder.isAllowedEditLocalities())
 			throw new InsufficientPrivelegesException();
+		if (feature.getAudit().getStatus().equals(FREDConstants.WAITING))
+			throw new IllegalStateException("Cannot change type as status = waiting");
 		String oldFeatureType = feature.getFeatureType();
 		if (!oldFeatureType.equals(newFeatureType)) {
 			Set<Sample> samples = feature.getSamples();
