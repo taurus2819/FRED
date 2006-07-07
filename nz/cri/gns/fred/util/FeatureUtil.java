@@ -768,17 +768,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		
 		//delete initial backlog edit comments
 		try {
-			Set<AuditEdit> edits = audit.getAuditEdits();
-			for (AuditEdit edit : edits) {
+			for (AuditEdit edit : audit.getAuditEdits()) {
 				if (edit.getComments().equals(BACKLOG_PREPARE_COMMENTS)) {
 					featureDAO.delete(edit);
 					break;
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
+		} catch (Exception e) {	}
 		feature.setMasterFile(folderDAO.getFolder(FREDUtil.getMasterfile(feature)));
 		featureDAO.update(audit);
 		featureDAO.update(feature);
