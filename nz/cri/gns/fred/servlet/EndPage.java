@@ -3,6 +3,7 @@ package nz.cri.gns.fred.servlet;
 import nz.cri.gns.fred.util.PDFUtil;
 
 import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import com.lowagie.text.Rectangle;
@@ -19,10 +20,21 @@ public class EndPage extends PdfPageEventHelper {
 	public void onEndPage(PdfWriter writer, Document document) {
 		//footer
 		Rectangle page = document.getPageSize();
-		PdfPTable footer = new PdfPTable(1);
-		PDFUtil.addCell(footer, "Printed on " + new java.util.Date() + " from FRED, the computer database for the NZ Fossil Record File (FRF).", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD), PdfPCell.ALIGN_LEFT, 1);
+		float width = page.width() - document.leftMargin() - document.rightMargin();
+		//PdfPTable footer = new PdfPTable(1);
+		PdfPTable footer = new PdfPTable(2);
+		footer.setTotalWidth(width);
+		footer.setLockedWidth(true);
+		try {
+			footer.setWidths(new float[] {100 * MM_TO_PT, width - (100 * MM_TO_PT)});
+		} catch (DocumentException e) {
+			System.out.println("*** PDF Footer Exception ***");
+			e.printStackTrace();
+		}
+				
+		PDFUtil.addCell(footer, "Printed on " + new java.util.Date() + " from FRED, the computer database for the NZ Fossil Record File (FRF).", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD), PdfPCell.ALIGN_LEFT, 2);
 		PDFUtil.addCell(footer, "FRF is a nationally significant database administered by GSNZ and GNS Science", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD), PdfPCell.ALIGN_LEFT, 1);
-		footer.setTotalWidth(page.width() - document.leftMargin() - document.rightMargin());
+		PDFUtil.addCell(footer, "Page " + writer.getPageNumber() + " of ", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL), PdfPCell.ALIGN_RIGHT, 1);
 		footer.writeSelectedRows(0, -1, document.leftMargin(), document.bottomMargin(),	writer.getDirectContent());
         
 		//border
