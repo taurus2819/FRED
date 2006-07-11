@@ -53,21 +53,29 @@ import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfPageEvent;
+import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 
-public class FRFormServlet extends HttpServlet {
+public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 
 	private static final long serialVersionUID = 20050818L;
 	
-	private HttpServletRequest request;
 	private HttpServletResponse response;
 	private DAOFactory factory;
 	private RecordUtil recordUtil;
 	private SampleUtil sampleUtil;
 	private FeatureUtil featureUtil;
 	private UserAccount user;
+	
+	private PdfTemplate tpl;
+	private BaseFont baseFont;
 	
 	private static final float MM_TO_PT = 2.8346f;
 	
@@ -76,7 +84,6 @@ public class FRFormServlet extends HttpServlet {
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
-			this.request = request;
 			this.response = response;
 			this.factory = HibernateUtil.get().getDAOFactory();
 			this.recordUtil = new RecordUtil(factory);
@@ -134,7 +141,7 @@ public class FRFormServlet extends HttpServlet {
 		Document document = new Document(PageSize.A4, 20 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT, 20 * MM_TO_PT);
 		PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
 		writer.setEncryption(true, null, null, PdfWriter.AllowPrinting | PdfWriter.AllowScreenReaders);
-		writer.setPageEvent(new EndPage());
+		writer.setPageEvent(this);
 		document.open();
 		
 		Font[] fonts = new Font[4];
@@ -559,6 +566,69 @@ public class FRFormServlet extends HttpServlet {
 				document.add(table);				
 			}
 		}
+	}
+
+	public void onOpenDocument(PdfWriter writer, Document document) {
+		baseFont = FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD).getBaseFont();
+		tpl = writer.getDirectContent().createTemplate(20, 20);
+	}
+
+	public void onStartPage(PdfWriter arg0, Document arg1) {
+	}
+
+	public void onEndPage(PdfWriter writer, Document document) {
+		PdfContentByte cb = writer.getDirectContent();
+		cb.saveState();
+		
+		//footer
+		String pageNumStr = "Page " + writer.getPageNumber() + " of ";
+		//String frNumStr = 
+		cb.beginText();
+		cb.setFontAndSize(baseFont, 7);
+		cb.setTextMatrix(document.left(), document.bottomMargin() - 10);
+		cb.showText("Printed on " + new java.util.Date() + " from FRED, the computer database for the NZ Fossil Record File (FRF).");
+		cb.setTextMatrix(document.left(), document.bottomMargin() - 20);
+		cb.showText("FRF is a nationally significant database administered by GSNZ and GNS Science");
+		cb.setTextMatrix(document.right() - (baseFont.getWidthPoint(pageNumStr + "0", 7)), document.bottomMargin() - 20);
+		cb.showText(pageNumStr);
+		cb.endText();
+		cb.addTemplate(tpl, document.right() - baseFont.getWidthPoint("0", 7), document.bottomMargin() - 20);
+		
+		//border
+		cb.setRGBColorStroke(110, 110, 110);
+		cb.setLineWidth(2);
+		cb.rectangle(15 * MM_TO_PT, 10 * MM_TO_PT, 185 * MM_TO_PT, 277 * MM_TO_PT);
+		cb.stroke();
+		cb.restoreState();
+	}
+
+	public void onCloseDocument(PdfWriter writer, Document document) {
+		tpl.beginText();
+		tpl.setFontAndSize(baseFont, 7);
+		tpl.setTextMatrix(0, 0);
+		tpl.showText("" + (writer.getPageNumber() - 1));
+		tpl.endText();
+	}
+
+	public void onParagraph(PdfWriter arg0, Document arg1, float arg2) {
+	}
+
+	public void onParagraphEnd(PdfWriter arg0, Document arg1, float arg2) {
+	}
+
+	public void onChapter(PdfWriter arg0, Document arg1, float arg2, Paragraph arg3) {
+	}
+
+	public void onChapterEnd(PdfWriter arg0, Document arg1, float arg2) {
+	}
+
+	public void onSection(PdfWriter arg0, Document arg1, float arg2, int arg3, Paragraph arg4) {
+	}
+
+	public void onSectionEnd(PdfWriter arg0, Document arg1, float arg2) {
+	}
+
+	public void onGenericTag(PdfWriter arg0, Document arg1, Rectangle arg2, String arg3) {
 	}
 	
 }
