@@ -160,14 +160,18 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 					writeLocality(feature, document, fonts);
 					if (feature.getFeatureType().equals(FREDConstants.OUTCROP))
 						writeSample(feature, document, fonts);
-					if (++i < features.size())
+					if (++i < features.size()) {
 						document.newPage();
+						document.setPageCount(1);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();				
 				}
 			}
-			if (samples.size() + records.size() > 0)
+			if (samples.size() + records.size() > 0) {
 				document.newPage();
+				document.setPageCount(1);
+			}
 		}
 		if (samples != null) {
 			int i = 0;
@@ -175,14 +179,18 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				try {
 					writeHeader(sample, document);
 					writeSample(sample, document, fonts);
-					if (++i < samples.size())
+					if (++i < samples.size()) {
 						document.newPage();
+						document.setPageCount(1);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-			if (records.size() > 0)
+			if (records.size() > 0) {
 				document.newPage();
+				document.setPageCount(1);
+			}
 		}
 		if (records != null) {
 			int i = 0;
@@ -190,8 +198,10 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				try {
 					writeHeader(record, document);
 					writeRecord(record, document, fonts);
-					if (++i < records.size())
+					if (++i < records.size()) {
 						document.newPage();
+						document.setPageCount(1);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -270,7 +280,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		if (feature.getYardFrNumber() != null)
 			PDFUtil.addCell(localityTable, "(" + feature.getYardFrNumber().getFrNumber() + ")", fonts[5], PdfPCell.ALIGN_RIGHT, 1);
 		PDFUtil.addCell(localityTable, feature.getFeatureType(), fonts[5], PdfPCell.ALIGN_RIGHT, 1);
-		PDFUtil.addCell(localityTable, "http://www.fred.org.nz/detail.jsp?FeatID=" + feature.getFeatureId(), fonts[1], PdfPCell.ALIGN_RIGHT, 1);
+		PDFUtil.addCell(localityTable, "www.fred.org.nz/detail.jsp?FeatID=" + feature.getFeatureId(), fonts[1], PdfPCell.ALIGN_RIGHT, 1);
 		cell = new PdfPCell(localityTable);
 		cell.setBorder(PdfPCell.NO_BORDER);
 		headerTable.addCell(cell);
