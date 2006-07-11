@@ -19,6 +19,12 @@ public class EndPage extends PdfPageEventHelper {
 	private static final float MM_TO_PT = 2.8346f;
 	private PdfTemplate tpl;
 	
+    public void onOpenDocument(PdfWriter writer, Document document) {
+            // initialization of the template
+            tpl = writer.getDirectContent().createTemplate(100, 100);
+            tpl.setBoundingBox(new Rectangle(-20, -20, 100, 100));
+    }  
+    
 	public void onEndPage(PdfWriter writer, Document document) {
 		PdfContentByte cb = writer.getDirectContent();
 		cb.saveState();
@@ -39,8 +45,8 @@ public class EndPage extends PdfPageEventHelper {
 				
 		PDFUtil.addCell(footer, "Printed on " + new java.util.Date() + " from FRED, the computer database for the NZ Fossil Record File (FRF).", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD), PdfPCell.ALIGN_LEFT, 2);
 		PDFUtil.addCell(footer, "FRF is a nationally significant database administered by GSNZ and GNS Science", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD), PdfPCell.ALIGN_LEFT, 2);
-		//PDFUtil.addCell(footer, "Page " + writer.getPageNumber() + " of ", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL), PdfPCell.ALIGN_RIGHT, 1);
-		//cb.addTemplate(tpl, document.rightMargin() - FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL).getBaseFont().getWidthPoint("2", 7), document.bottomMargin());
+		PDFUtil.addCell(footer, "Page " + writer.getPageNumber() + " of ", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL), PdfPCell.ALIGN_RIGHT, 1);
+		cb.addTemplate(tpl, document.rightMargin() - FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL).getBaseFont().getWidthPoint("2", 7), document.bottomMargin());
 		footer.writeSelectedRows(0, -1, document.leftMargin(), document.bottomMargin(),	cb);
         
 		//border
