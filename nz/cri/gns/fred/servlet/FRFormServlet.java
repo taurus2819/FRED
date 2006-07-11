@@ -76,7 +76,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	
 	private PdfTemplate tpl;
 	private BaseFont baseFont;
-	private FrNumber currentFrNumber;
+	private FrNumber currentFrNumber = null;
 	
 	private static final float MM_TO_PT = 2.8346f;
 	
@@ -586,7 +586,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		
 		//footer
 		String pageNumStr = "Page " + writer.getPageNumber() + " of ";
-		String frNumStr = currentFrNumber.getFrNumber();
+		String frNumStr = (currentFrNumber != null) ? currentFrNumber.getFrNumber() : "";
 		cb.beginText();
 		cb.setFontAndSize(baseFont, 7);
 		cb.setTextMatrix(document.left(), document.bottomMargin() - 10);
