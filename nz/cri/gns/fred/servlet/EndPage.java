@@ -57,6 +57,5 @@ public class EndPage extends PdfPageEventHelper {
         tpl.showText("" + (writer.getPageNumber() - 1));
         tpl.endText();
      }
- }
 
 }
