@@ -26,6 +26,7 @@ public class EndPage extends PdfPageEventHelper {
     }  
     
 	public void onEndPage(PdfWriter writer, Document document) {
+		try {
 		PdfContentByte cb = writer.getDirectContent();
 		cb.saveState();
 		
@@ -44,9 +45,9 @@ public class EndPage extends PdfPageEventHelper {
 		}
 				
 		PDFUtil.addCell(footer, "Printed on " + new java.util.Date() + " from FRED, the computer database for the NZ Fossil Record File (FRF).", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD), PdfPCell.ALIGN_LEFT, 2);
-		PDFUtil.addCell(footer, "FRF is a nationally significant database administered by GSNZ and GNS Science", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD), PdfPCell.ALIGN_LEFT, 2);
+		PDFUtil.addCell(footer, "FRF is a nationally significant database administered by GSNZ and GNS Science", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD), PdfPCell.ALIGN_LEFT, 1);
 		PDFUtil.addCell(footer, "Page " + writer.getPageNumber() + " of ", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL), PdfPCell.ALIGN_RIGHT, 1);
-		//cb.addTemplate(tpl, document.rightMargin() - FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL).getBaseFont().getWidthPoint("2", 7), document.bottomMargin());
+		cb.addTemplate(tpl, document.rightMargin() - FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL).getBaseFont().getWidthPoint("2", 7), document.bottomMargin());
 		footer.writeSelectedRows(0, -1, document.leftMargin(), document.bottomMargin(),	cb);
         
 		//border
@@ -55,6 +56,10 @@ public class EndPage extends PdfPageEventHelper {
 		cb.rectangle(15 * MM_TO_PT, 10 * MM_TO_PT, 185 * MM_TO_PT, 277 * MM_TO_PT);
 		cb.stroke();
 		cb.restoreState();
+		} catch (Exception e) {
+			System.out.println("*** PDF Footer Main Exception ***");
+			e.printStackTrace();
+		}
     }
 	
     public void onCloseDocument(PdfWriter writer, Document document) {
