@@ -76,6 +76,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	
 	private PdfTemplate tpl;
 	private BaseFont baseFont;
+	private FrNumber currentFrNumber;
 	
 	private static final float MM_TO_PT = 2.8346f;
 	
@@ -209,6 +210,9 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		fonts[4] = FontFactory.getFont(FontFactory.HELVETICA, 16, Font.BOLD);
 		fonts[5] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
 		fonts[6] = FontFactory.getFont(FontFactory.HELVETICA, 9, Font.BOLD);
+		
+		//Set FRNumber
+		currentFrNumber = feature.getFrNumber();
 		
 		PdfPTable table = new PdfPTable(3);
 		table.setTotalWidth(bodyTableWidth);
@@ -582,14 +586,16 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		
 		//footer
 		String pageNumStr = "Page " + writer.getPageNumber() + " of ";
-		//String frNumStr = 
+		String frNumStr = currentFrNumber.getFrNumber();
 		cb.beginText();
 		cb.setFontAndSize(baseFont, 7);
 		cb.setTextMatrix(document.left(), document.bottomMargin() - 10);
 		cb.showText("Printed on " + new java.util.Date() + " from FRED, the computer database for the NZ Fossil Record File (FRF).");
+		cb.setTextMatrix(document.right() - baseFont.getWidthPoint(frNumStr, 7), document.bottomMargin() - 10);
+		cb.showText(frNumStr);
 		cb.setTextMatrix(document.left(), document.bottomMargin() - 20);
 		cb.showText("FRF is a nationally significant database administered by GSNZ and GNS Science");
-		cb.setTextMatrix(document.right() - (baseFont.getWidthPoint(pageNumStr + "0", 7)), document.bottomMargin() - 20);
+		cb.setTextMatrix(document.right() - baseFont.getWidthPoint(pageNumStr + "0", 7), document.bottomMargin() - 20);
 		cb.showText(pageNumStr);
 		cb.endText();
 		cb.addTemplate(tpl, document.right() - baseFont.getWidthPoint("0", 7), document.bottomMargin() - 20);
