@@ -40,7 +40,7 @@ public class EndPage extends PdfPageEventHelper {
 		PDFUtil.addCell(footer, "Printed on " + new java.util.Date() + " from FRED, the computer database for the NZ Fossil Record File (FRF).", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD), PdfPCell.ALIGN_LEFT, 2);
 		PDFUtil.addCell(footer, "FRF is a nationally significant database administered by GSNZ and GNS Science", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD), PdfPCell.ALIGN_LEFT, 2);
 		//PDFUtil.addCell(footer, "Page " + writer.getPageNumber() + " of ", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL), PdfPCell.ALIGN_RIGHT, 1);
-		cb.addTemplate(tpl, document.rightMargin() - FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL).getBaseFont().getWidthPoint("2", 7), document.bottomMargin());
+		//cb.addTemplate(tpl, document.rightMargin() - FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL).getBaseFont().getWidthPoint("2", 7), document.bottomMargin());
 		footer.writeSelectedRows(0, -1, document.leftMargin(), document.bottomMargin(),	cb);
         
 		//border
