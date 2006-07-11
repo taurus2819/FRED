@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.naming.NamingException;
@@ -271,6 +270,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		if (feature.getYardFrNumber() != null)
 			PDFUtil.addCell(localityTable, "(" + feature.getYardFrNumber().getFrNumber() + ")", fonts[5], PdfPCell.ALIGN_RIGHT, 1);
 		PDFUtil.addCell(localityTable, feature.getFeatureType(), fonts[5], PdfPCell.ALIGN_RIGHT, 1);
+		PDFUtil.addCell(localityTable, "http://www.fred.org.nz/detail.jsp?FeatID=" + feature.getFeatureId(), fonts[1], PdfPCell.ALIGN_RIGHT, 1);
 		cell = new PdfPCell(localityTable);
 		cell.setBorder(PdfPCell.NO_BORDER);
 		headerTable.addCell(cell);
@@ -358,6 +358,10 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 						((feature.getFinishDepth() != null) ? String.valueOf(feature.getFinishDepth()) + " m" : null)}, bodyFonts);
 			}
 		}
+		
+		if (!FREDUtil.isEmpty(feature.getFeatureMetas()))
+			PDFUtil.addCells(table, new Object[] {"Attached Images", "Images have been attached to this locality and can be viewed online"}, bodyFonts);
+		
 		document.add(table);		
 	}
 	
@@ -470,6 +474,10 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 			table.setWidths(bodyTableColWidths);
 			
 			PDFUtil.addCells(table, new String[] {"Correspondence", sample.getCorrespondence()}, new Font[] {fonts[2], fonts[0]});
+			
+			if (!FREDUtil.isEmpty(sample.getSampleMetas()))
+				PDFUtil.addCells(table, new Object[] {"Attached Images", "Images have been attached to this sample and can be viewed online"}, bodyFonts);
+			
 			document.add(table);
 		}
 	}
@@ -521,24 +529,24 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				PDFUtil.addCells(table, new String[] {"Stage Comments", palRecord.getStageComments()}, bodyFonts);
 				PDFUtil.addCells(table, new String[] {"Lab Number", ((palRecord.getLabNumber() != null) ? RecordUtil.getLabNumberDescription(palRecord) : null)}, bodyFonts);
 				PDFUtil.addCells(table, new String[] {"Collection Comments", palRecord.getCollectionComments()}, bodyFonts);
+				
+				if (!FREDUtil.isEmpty(record.getRecordMetas()))
+					PDFUtil.addCells(table, new String[] {"Attached Images", "Images have been attached to this record and can be viewed online"}, bodyFonts);
+
 				document.add(table);
 				
 				//taxa (Pal list)
 				if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
-	
-					for (Iterator j = recordUtil.getTaxonomicGroups(palRecord).iterator(); j.hasNext(); ) {
+					for (TaxonomicGroup taxaGroup : recordUtil.getTaxonomicGroups(palRecord)) {
 						PdfPTable taxaTable = new PdfPTable(4);
 						taxaTable.setTotalWidth(bodyTableWidth);
 						taxaTable.setLockedWidth(true);
 						taxaTable.setWidths(new float[] {65 * MM_TO_PT, 25 * MM_TO_PT, 25 * MM_TO_PT, 60 * MM_TO_PT});
 						taxaTable.setSpacingAfter(3 * MM_TO_PT);
-	
-						TaxonomicGroup taxaGroup = (TaxonomicGroup) j.next();
 						PDFUtil.addCell(taxaTable, taxaGroup.getName(), fonts[1], PdfPCell.ALIGN_LEFT, 5);
 						if (recordUtil.getListEntries(palRecord, taxaGroup).size() > 0) {
 						PDFUtil.addCells(taxaTable, new String[] {"Taxonomic Name", "Spec Count", "Spec Coord", "Comments"}, new Font[] {fonts[1], fonts[1], fonts[1], fonts[1], fonts[1]});
-							for (Iterator k = recordUtil.getListEntries(palRecord, taxaGroup).iterator(); k.hasNext(); ) {
-								PaleontologyListEntry taxa = (PaleontologyListEntry) k.next();
+							for (PaleontologyListEntry taxa : recordUtil.getListEntries(palRecord, taxaGroup)) {
 								PDFUtil.addCells(taxaTable, new Object[] {taxa.getTaxonomicName(), taxa.getSpecimenCount(), taxa.getSpecimenCoords(), taxa.getComments()},
 										new Font[] {taxonomicNameFont, fonts[0], fonts[0], fonts[0]});
 							}
@@ -567,6 +575,10 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				PDFUtil.addCells(table, new String[] {"Adoption Date", ((adoRecord.getAdoptionDate() != null) ? FREDUtil.formatDateForOutput(adoRecord.getAdoptionDate(), adoRecord.getDateRounding()) : null)}, bodyFonts);
 				PDFUtil.addCells(table, new String[] {"Stage", ((adoRecord.getStage() != null) ? StageUtil.getStageDescription(adoRecord.getStage()) : null)}, bodyFonts);
 				PDFUtil.addCells(table, new String[] {"Comments", adoRecord.getComments()}, bodyFonts);
+				
+				if (!FREDUtil.isEmpty(record.getRecordMetas()))
+					PDFUtil.addCells(table, new String[] {"Attached Images", "Images have been attached to this record and can be viewed online"}, bodyFonts);
+
 				document.add(table);				
 			}
 		}
@@ -586,7 +598,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		
 		//footer
 		String pageNumStr = "Page " + writer.getPageNumber() + " of ";
-		String frNumStr = (currentFrNumber != null) ? currentFrNumber.getFrNumber() : "";
+		String frNumStr = (currentFrNumber != null) ? currentFrNumber.getFrNumber() : "____/f_____";
 		cb.beginText();
 		cb.setFontAndSize(baseFont, 7);
 		cb.setTextMatrix(document.left(), document.bottomMargin() - 10);
