@@ -203,7 +203,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	}
 	
 	private void writeHeader(Feature feature, Document document, String formType) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException {
-		Font[] fonts = new Font[7];
+		Font[] fonts = new Font[8];
 		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.NORMAL);
 		fonts[1] = FontFactory.getFont(FontFactory.HELVETICA, 8, Font.BOLD);
 		fonts[2] = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD);
@@ -211,6 +211,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		fonts[4] = FontFactory.getFont(FontFactory.HELVETICA, 16, Font.BOLD);
 		fonts[5] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
 		fonts[6] = FontFactory.getFont(FontFactory.HELVETICA, 9, Font.BOLD);
+		fonts[7] = FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD);
 		
 		//Set FRNumber
 		currentFrNumber = feature.getFrNumber();
@@ -271,8 +272,8 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		localityTable.setWidths(new float[] {55 * MM_TO_PT});		
 		if (feature.getYardFrNumber() != null)
 			PDFUtil.addCell(localityTable, "(" + feature.getYardFrNumber().getFrNumber() + ")", fonts[5], PdfPCell.ALIGN_RIGHT, 1);
+		PDFUtil.addCell(localityTable, "www.fred.org.nz/detail.jsp?FeatID=" + feature.getFeatureId(), fonts[7], PdfPCell.ALIGN_RIGHT, 1);
 		PDFUtil.addCell(localityTable, feature.getFeatureType(), fonts[5], PdfPCell.ALIGN_RIGHT, 1);
-		PDFUtil.addCell(localityTable, "www.fred.org.nz/detail.jsp?FeatID=" + feature.getFeatureId(), fonts[1], PdfPCell.ALIGN_RIGHT, 1);
 		cell = new PdfPCell(localityTable);
 		cell.setBorder(PdfPCell.NO_BORDER);
 		headerTable.addCell(cell);
