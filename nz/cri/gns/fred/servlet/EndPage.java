@@ -1,91 +1,56 @@
 package nz.cri.gns.fred.servlet;
 
-import nz.cri.gns.fred.util.PDFUtil;
-
 import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
-import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 
 public class EndPage extends PdfPageEventHelper {
-
+	
 	private static final float MM_TO_PT = 2.8346f;
 	private PdfTemplate tpl;
 	private BaseFont baseFont;
 	
-    public void onOpenDocument(PdfWriter writer, Document document) {
-            // initialization of the template
-            tpl = writer.getDirectContent().createTemplate(100, 100);
-            //tpl.setBoundingBox(new Rectangle(-20, -20, 100, 100));
-            baseFont = FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD).getBaseFont();
-    }  
-    
+	public void onOpenDocument(PdfWriter writer, Document document) {
+		baseFont = FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD).getBaseFont();
+		tpl = writer.getDirectContent().createTemplate(20, 20);
+	}  
+	
 	public void onEndPage(PdfWriter writer, Document document) {
 		PdfContentByte cb = writer.getDirectContent();
 		cb.saveState();
 		
 		//footer
-		Rectangle page = document.getPageSize();
-		float width = page.width() - document.leftMargin() - document.rightMargin();
-		//PdfPTable footer = new PdfPTable(1);
-		//PdfPTable footer = new PdfPTable(2);
-		//footer.setTotalWidth(width);
-		//footer.setLockedWidth(true);
-		//try {
-		//	footer.setWidths(new float[] {100 * MM_TO_PT, width - (100 * MM_TO_PT)});
-		//} catch (DocumentException e) {
-		//	System.out.println("*** PDF Footer Exception ***");
-		//	e.printStackTrace();
-		//}
-				
-		//PDFUtil.addCell(footer, "Printed on " + new java.util.Date() + " from FRED, the computer database for the NZ Fossil Record File (FRF).", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD), PdfPCell.ALIGN_LEFT, 2);
-		//PDFUtil.addCell(footer, "FRF is a nationally significant database administered by GSNZ and GNS Science", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD), PdfPCell.ALIGN_LEFT, 1);
-		//PDFUtil.addCell(footer, "Page " + writer.getPageNumber() + " of ", FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL), PdfPCell.ALIGN_RIGHT, 1);
-		String line1 = "Printed on " + new java.util.Date() + " from FRED, the computer database for the NZ Fossil Record File (FRF).";
-		String line2 = "FRF is a nationally significant database administered by GSNZ and GNS Science";
-		String pageNum = "Page " + writer.getPageNumber() + " of ";
-		
-		
+		String pageNumStr = "Page " + writer.getPageNumber() + " of ";
 		cb.beginText();
 		cb.setFontAndSize(baseFont, 7);
 		cb.setTextMatrix(document.left(), document.bottomMargin() - 10);
-		cb.showText(line1);
-		
+		cb.showText("Printed on " + new java.util.Date() + " from FRED, the computer database for the NZ Fossil Record File (FRF).");
 		cb.setTextMatrix(document.left(), document.bottomMargin() - 20);
-		cb.showText(line2);
-		
-		cb.setTextMatrix(document.right() - (baseFont.getWidthPoint(pageNum + "0", 7)), document.bottomMargin() - 20);
-		cb.showText(pageNum);
-		
+		cb.showText("FRF is a nationally significant database administered by GSNZ and GNS Science");
+		cb.setTextMatrix(document.right() - (baseFont.getWidthPoint(pageNumStr + "0", 7)), document.bottomMargin() - 20);
+		cb.showText(pageNumStr);
 		cb.endText();
+		cb.addTemplate(tpl, document.right() - baseFont.getWidthPoint("0", 7), document.bottomMargin() - 20);
 		
-		cb.addTemplate(tpl, document.rightMargin() - baseFont.getWidthPoint("0", 7), document.bottomMargin() - 20);
-		
-		//cb.addTemplate(tpl, document.rightMargin() - FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL).getBaseFont().getWidthPoint("2", 7), document.bottomMargin());
-		//footer.writeSelectedRows(0, -1, document.leftMargin(), document.bottomMargin(),	cb);
-        
 		//border
 		cb.setRGBColorStroke(110, 110, 110);
 		cb.setLineWidth(2);
 		cb.rectangle(15 * MM_TO_PT, 10 * MM_TO_PT, 185 * MM_TO_PT, 277 * MM_TO_PT);
 		cb.stroke();
 		cb.restoreState();
-    }
+	}
 	
-    public void onCloseDocument(PdfWriter writer, Document document) {
-        tpl.beginText();
-        tpl.setFontAndSize(baseFont, 7);
-        tpl.setTextMatrix(0, 0);
-        tpl.showText("" + (writer.getPageNumber() - 1));
-        tpl.endText();
-     }
-
+	public void onCloseDocument(PdfWriter writer, Document document) {
+		tpl.beginText();
+		tpl.setFontAndSize(baseFont, 7);
+		tpl.setTextMatrix(0, 0);
+		tpl.showText("" + (writer.getPageNumber() - 1));
+		tpl.endText();
+	}
+	
 }
