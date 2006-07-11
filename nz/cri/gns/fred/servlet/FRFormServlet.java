@@ -3,6 +3,7 @@ package nz.cri.gns.fred.servlet;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -73,6 +74,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	private FeatureUtil featureUtil;
 	private UserAccount user;
 	
+	private Date generateDate = new Date();
 	private PdfTemplate tpl;
 	private BaseFont baseFont;
 	private FrNumber currentFrNumber = null;
@@ -602,7 +604,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		cb.beginText();
 		cb.setFontAndSize(baseFont, 7);
 		cb.setTextMatrix(document.left(), document.bottomMargin() - 10);
-		cb.showText("Printed on " + new java.util.Date() + " from FRED, the computer database for the NZ Fossil Record File (FRF).");
+		cb.showText("Printed on " + generateDate + " from FRED, the computer database for the NZ Fossil Record File (FRF).");
 		cb.setTextMatrix(document.right() - baseFont.getWidthPoint(frNumStr, 7), document.bottomMargin() - 10);
 		cb.showText(frNumStr);
 		cb.setTextMatrix(document.left(), document.bottomMargin() - 20);
