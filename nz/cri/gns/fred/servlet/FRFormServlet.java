@@ -132,6 +132,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				}			
 			}
 			templates = new PdfTemplate[records.size() + samples.size() + features.size()];
+			System.out.println("***** New PDF ***** " + new java.util.Date());
 			System.out.println("Templates size =" + templates.length);
 			makePDF(records, samples, features);
 		} catch (Exception e) {
@@ -222,8 +223,10 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		templates[reportNumber].endText();
 		if (newPage) {
 			document.newPage();
-			document.setPageCount(1);
+			writer.setPageCount(1);
 			reportNumber++;
+			System.out.println("Report Number incremented to: " + reportNumber);
+			System.out.println("writer.pageNumber changed to: " + writer.getPageNumber());
 		}
 	}
 	
