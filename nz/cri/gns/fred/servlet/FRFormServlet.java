@@ -76,7 +76,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	
 	private Date generateDate = new Date();
 	private PdfTemplate[] templates;
-	private int reportNumber = 0;
+	private int formNumber;
 	private BaseFont baseFont;
 	private FrNumber currentFrNumber = null;
 	
@@ -132,8 +132,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				}			
 			}
 			templates = new PdfTemplate[records.size() + samples.size() + features.size()];
-			System.out.println("***** New PDF ***** " + new java.util.Date());
-			System.out.println("Templates size =" + templates.length);
+			formNumber = 0;
 			makePDF(records, samples, features);
 		} catch (Exception e) {
 			System.out.println("************************************");
@@ -151,9 +150,8 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		document.open();
 		
 		//initialise template array
-		for (int i = 0; i < templates.length; i++) {
+		for (int i = 0; i < templates.length; i++)
 			templates[i] = writer.getDirectContent().createTemplate(20, 20);
-		}
 		
 		Font[] fonts = new Font[4];
 		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.NORMAL);
@@ -172,13 +170,13 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 					if (feature.getFeatureType().equals(FREDConstants.OUTCROP))
 						writeSample(feature, document, fonts);
 					if (++i < features.size())
-						endReport(document, writer, true);
+						endForm(document, writer, true);
 				} catch (Exception e) {
 					e.printStackTrace();				
 				}
 			}
 			if (samples.size() + records.size() > 0)
-				endReport(document, writer, true);
+				endForm(document, writer, true);
 		}
 		if (samples != null) {
 			int i = 0;
@@ -187,13 +185,13 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 					writeHeader(sample, document);
 					writeSample(sample, document, fonts);
 					if (++i < samples.size())
-						endReport(document, writer, true);
+						endForm(document, writer, true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 			if (records.size() > 0)
-				endReport(document, writer, true);
+				endForm(document, writer, true);
 		}
 		if (records != null) {
 			int i = 0;
@@ -202,31 +200,26 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 					writeHeader(record, document);
 					writeRecord(record, document, fonts);
 					if (++i < records.size())
-						endReport(document, writer, true);
+						endForm(document, writer, true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		endReport(document, writer, false);
+		endForm(document, writer, false);
 		document.close();
 	}
 	
-	private void endReport(Document document, PdfWriter writer, boolean newPage) throws DocumentException {
-		System.out.println("*** Ending report ***");
-		System.out.println("Report Number = " + reportNumber);
-		templates[reportNumber].beginText();
-		templates[reportNumber].setFontAndSize(baseFont, 7);
-		templates[reportNumber].setTextMatrix(0, 0);
-		System.out.println("writer.pageNumber: " + writer.getPageNumber());
-		templates[reportNumber].showText("" + (writer.getPageNumber()));
-		templates[reportNumber].endText();
+	private void endForm(Document document, PdfWriter writer, boolean newPage) throws DocumentException {
+		templates[formNumber].beginText();
+		templates[formNumber].setFontAndSize(baseFont, 7);
+		templates[formNumber].setTextMatrix(0, 0);
+		templates[formNumber].showText("" + (writer.getPageNumber()));
+		templates[formNumber].endText();
 		if (newPage) {
 			document.newPage();
 			document.setPageCount(1);
-			reportNumber++;
-			System.out.println("Report Number incremented to: " + reportNumber);
-			System.out.println("writer.pageNumber changed to: " + writer.getPageNumber());
+			formNumber++;
 		}
 	}
 	
@@ -623,7 +616,6 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	}
 
 	public void onEndPage(PdfWriter writer, Document document) {
-		System.out.println("onEndPage. Report Number = " + reportNumber);
 		PdfContentByte cb = writer.getDirectContent();
 		cb.saveState();
 		
@@ -641,7 +633,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		cb.setTextMatrix(document.right() - baseFont.getWidthPoint(pageNumStr + "0", 7), document.bottomMargin() - 20);
 		cb.showText(pageNumStr);
 		cb.endText();
-		cb.addTemplate(templates[reportNumber], document.right() - baseFont.getWidthPoint("0", 7), document.bottomMargin() - 20);
+		cb.addTemplate(templates[formNumber], document.right() - baseFont.getWidthPoint("0", 7), document.bottomMargin() - 20);
 		
 		//border
 		cb.setRGBColorStroke(110, 110, 110);
