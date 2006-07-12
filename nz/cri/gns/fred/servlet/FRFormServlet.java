@@ -223,7 +223,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		templates[reportNumber].endText();
 		if (newPage) {
 			document.newPage();
-			writer.setPageCount(1);
+			document.setPageCount(1);
 			reportNumber++;
 			System.out.println("Report Number incremented to: " + reportNumber);
 			System.out.println("writer.pageNumber changed to: " + writer.getPageNumber());
