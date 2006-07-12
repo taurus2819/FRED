@@ -217,6 +217,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		templates[reportNumber].beginText();
 		templates[reportNumber].setFontAndSize(baseFont, 7);
 		templates[reportNumber].setTextMatrix(0, 0);
+		System.out.println("document.pageNumber: " + document.getPageNumber());
 		templates[reportNumber].showText("" + (document.getPageNumber()));
 		templates[reportNumber].endText();
 		if (newPage) {
