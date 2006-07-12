@@ -171,13 +171,13 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 					if (feature.getFeatureType().equals(FREDConstants.OUTCROP))
 						writeSample(feature, document, fonts);
 					if (++i < features.size())
-						nextReport(document);
+						endReport(document, true);
 				} catch (Exception e) {
 					e.printStackTrace();				
 				}
 			}
 			if (samples.size() + records.size() > 0)
-				nextReport(document);
+				endReport(document, true);
 		}
 		if (samples != null) {
 			int i = 0;
@@ -186,13 +186,13 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 					writeHeader(sample, document);
 					writeSample(sample, document, fonts);
 					if (++i < samples.size())
-						nextReport(document);
+						endReport(document, true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 			if (records.size() > 0)
-				nextReport(document);
+				endReport(document, true);
 		}
 		if (records != null) {
 			int i = 0;
@@ -201,26 +201,29 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 					writeHeader(record, document);
 					writeRecord(record, document, fonts);
 					if (++i < records.size())
-						nextReport(document);
+						endReport(document, true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-		}	
+		}
+		endReport(document, false);
 		document.close();
 	}
 	
-	private void nextReport(Document document) throws DocumentException {
-		System.out.println("*** Starting a new report ***");
+	private void endReport(Document document, boolean newPage) throws DocumentException {
+		System.out.println("*** Ending report ***");
 		System.out.println("Report Number = " + reportNumber);
-		document.newPage();
 		templates[reportNumber].beginText();
 		templates[reportNumber].setFontAndSize(baseFont, 7);
 		templates[reportNumber].setTextMatrix(0, 0);
-		templates[reportNumber].showText("" + (document.getPageNumber() - 1));
+		templates[reportNumber].showText("" + (document.getPageNumber()));
 		templates[reportNumber].endText();
-		document.setPageCount(1);
-		reportNumber++;
+		if (newPage) {
+			document.newPage();
+			document.setPageCount(1);
+			reportNumber++;
+		}
 	}
 	
 	private void writeHeader(Feature feature, Document document, String formType) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException {
