@@ -75,7 +75,8 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	private UserAccount user;
 	
 	private Date generateDate = new Date();
-	private PdfTemplate tpl;
+	private PdfTemplate[] templates;
+	private int reportNumber = 0;
 	private BaseFont baseFont;
 	private FrNumber currentFrNumber = null;
 	
@@ -130,6 +131,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 					catch (Exception _e) {}
 				}			
 			}
+			templates = new PdfTemplate[records.size() + samples.size() + features.size()];
 			makePDF(records, samples, features);
 		} catch (Exception e) {
 			System.out.println("************************************");
@@ -145,6 +147,11 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		writer.setEncryption(true, null, null, PdfWriter.AllowPrinting | PdfWriter.AllowScreenReaders);
 		writer.setPageEvent(this);
 		document.open();
+		
+		//initialise template array
+		for (int i = 0; i < templates.length; i++) {
+			templates[i] = writer.getDirectContent().createTemplate(20, 20);
+		}
 		
 		Font[] fonts = new Font[4];
 		fonts[0] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.NORMAL);
@@ -163,13 +170,13 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 					if (feature.getFeatureType().equals(FREDConstants.OUTCROP))
 						writeSample(feature, document, fonts);
 					if (++i < features.size())
-						document.newPage();
+						nextReport(document);
 				} catch (Exception e) {
 					e.printStackTrace();				
 				}
 			}
 			if (samples.size() + records.size() > 0)
-				document.newPage();
+				nextReport(document);
 		}
 		if (samples != null) {
 			int i = 0;
@@ -178,13 +185,13 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 					writeHeader(sample, document);
 					writeSample(sample, document, fonts);
 					if (++i < samples.size())
-						document.newPage();
+						nextReport(document);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 			if (records.size() > 0)
-				document.newPage();
+				nextReport(document);
 		}
 		if (records != null) {
 			int i = 0;
@@ -193,13 +200,24 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 					writeHeader(record, document);
 					writeRecord(record, document, fonts);
 					if (++i < records.size())
-						document.newPage();
+						nextReport(document);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}	
 		document.close();
+	}
+	
+	private void nextReport(Document document) throws DocumentException {
+		document.newPage();
+		templates[reportNumber].beginText();
+		templates[reportNumber].setFontAndSize(baseFont, 7);
+		templates[reportNumber].setTextMatrix(0, 0);
+		templates[reportNumber].showText("" + (document.getPageNumber() - 1));
+		templates[reportNumber].endText();
+		document.setPageCount(1);
+		reportNumber++;
 	}
 	
 	private void writeHeader(Feature feature, Document document, String formType) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException {
@@ -589,7 +607,6 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 
 	public void onOpenDocument(PdfWriter writer, Document document) {
 		baseFont = FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD).getBaseFont();
-		tpl = writer.getDirectContent().createTemplate(20, 20);
 	}
 
 	public void onStartPage(PdfWriter arg0, Document arg1) {
@@ -613,7 +630,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		cb.setTextMatrix(document.right() - baseFont.getWidthPoint(pageNumStr + "0", 7), document.bottomMargin() - 20);
 		cb.showText(pageNumStr);
 		cb.endText();
-		cb.addTemplate(tpl, document.right() - baseFont.getWidthPoint("0", 7), document.bottomMargin() - 20);
+		cb.addTemplate(templates[reportNumber], document.right() - baseFont.getWidthPoint("0", 7), document.bottomMargin() - 20);
 		
 		//border
 		cb.setRGBColorStroke(110, 110, 110);
@@ -624,11 +641,6 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	}
 
 	public void onCloseDocument(PdfWriter writer, Document document) {
-		tpl.beginText();
-		tpl.setFontAndSize(baseFont, 7);
-		tpl.setTextMatrix(0, 0);
-		tpl.showText("" + (writer.getPageNumber() - 1));
-		tpl.endText();
 	}
 
 	public void onParagraph(PdfWriter arg0, Document arg1, float arg2) {
