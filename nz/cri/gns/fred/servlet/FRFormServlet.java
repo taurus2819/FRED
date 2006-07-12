@@ -132,6 +132,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				}			
 			}
 			templates = new PdfTemplate[records.size() + samples.size() + features.size()];
+			System.out.println("Templates size =" + templates.length);
 			makePDF(records, samples, features);
 		} catch (Exception e) {
 			System.out.println("************************************");
@@ -210,6 +211,8 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	}
 	
 	private void nextReport(Document document) throws DocumentException {
+		System.out.println("*** Starting a new report ***");
+		System.out.println("Report Number = " + reportNumber);
 		document.newPage();
 		templates[reportNumber].beginText();
 		templates[reportNumber].setFontAndSize(baseFont, 7);
@@ -613,6 +616,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	}
 
 	public void onEndPage(PdfWriter writer, Document document) {
+		System.out.println("onEndPage. Report Number = " + reportNumber);
 		PdfContentByte cb = writer.getDirectContent();
 		cb.saveState();
 		
