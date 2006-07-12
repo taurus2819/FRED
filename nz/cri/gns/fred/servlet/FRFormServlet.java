@@ -171,13 +171,13 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 					if (feature.getFeatureType().equals(FREDConstants.OUTCROP))
 						writeSample(feature, document, fonts);
 					if (++i < features.size())
-						endReport(document, true);
+						endReport(document, writer, true);
 				} catch (Exception e) {
 					e.printStackTrace();				
 				}
 			}
 			if (samples.size() + records.size() > 0)
-				endReport(document, true);
+				endReport(document, writer, true);
 		}
 		if (samples != null) {
 			int i = 0;
@@ -186,13 +186,13 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 					writeHeader(sample, document);
 					writeSample(sample, document, fonts);
 					if (++i < samples.size())
-						endReport(document, true);
+						endReport(document, writer, true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 			if (records.size() > 0)
-				endReport(document, true);
+				endReport(document, writer, true);
 		}
 		if (records != null) {
 			int i = 0;
@@ -201,24 +201,24 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 					writeHeader(record, document);
 					writeRecord(record, document, fonts);
 					if (++i < records.size())
-						endReport(document, true);
+						endReport(document, writer, true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		endReport(document, false);
+		endReport(document, writer, false);
 		document.close();
 	}
 	
-	private void endReport(Document document, boolean newPage) throws DocumentException {
+	private void endReport(Document document, PdfWriter writer, boolean newPage) throws DocumentException {
 		System.out.println("*** Ending report ***");
 		System.out.println("Report Number = " + reportNumber);
 		templates[reportNumber].beginText();
 		templates[reportNumber].setFontAndSize(baseFont, 7);
 		templates[reportNumber].setTextMatrix(0, 0);
-		System.out.println("document.pageNumber: " + document.getPageNumber());
-		templates[reportNumber].showText("" + (document.getPageNumber()));
+		System.out.println("writer.pageNumber: " + writer.getPageNumber());
+		templates[reportNumber].showText("" + (writer.getPageNumber()));
 		templates[reportNumber].endText();
 		if (newPage) {
 			document.newPage();
