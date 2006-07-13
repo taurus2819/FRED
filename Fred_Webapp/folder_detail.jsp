@@ -144,7 +144,8 @@
 			<center><p>&nbsp;<p/><div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-al`ign: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none"><%
 			startDETable(pageContext);
 			%><table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
-			<tr><td colspan="3" class="deHeading">Folder Instructions</td></tr><tr><td style="text-align: left">
+			<tr><td class="deHeading">Folder Instructions</td></tr>
+			<tr><td style="text-align: left">
 			<ul>
 			<li>Listed below are the localities you have added to this folder.</li>
 			<li>To create a new locality click on the New: Outcrop, Drillhole or V. Section links above.</li>
@@ -158,19 +159,21 @@
 			<li><img src="images/delete.gif" border="0" height="20" width="20" alt="" /> delete the locality</li>
 			<li><img src="images/submit.gif" border="0" height="20" width="20" alt="" /> submit the locality for entry to the masterfile</li>
 			<li><img src="images/revoke.gif" border="0" height="20" width="20" alt="" /> revoke the locality for entry from the masterfile</li>
+			<li><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="" /> to print the locality</li>
 			</ul>
 			<li>Multiple localities may be selected by <i>ticking</i> the checkboxes on the left-hand side.  You can then use the tools in the <i>Selected Locality Actions</i> box</li>
 			</ul>
 			</td></tr>
+			<tr><td><a href="http://www.adobe.com/products/acrobat/readstep2.html" target="getAcrobat"><img src="images/get_adobe_reader.gif" border="0" alt="Get Adobe Reader" /></a>&nbsp;&nbsp;Adobe reader is required to print localities</td></tr>
 			<tr><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr></table><%
 			endDETable(pageContext);
 			%></div>
 			<p><%
 			startDETable(pageContext);
-			%><table border="0" width="550"><tr><td colspan="12" class="deHeading">Localities</td></tr>
+			%><table border="0" width="550"><tr><td colspan="13" class="deHeading">Localities</td></tr>
 			<tr>
-			<th colspan="3">Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="6">Actions</th></tr>
-			<tr><td colspan="12"><img src="images/line.gif" height="3" width="550" /></td></tr>
+			<th colspan="3">Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="7">Actions</th></tr>
+			<tr><td colspan="13"><img src="images/line.gif" height="3" width="550" /></td></tr>
 	
 			<form name="FoldForm" method="post" action="folder_detail.jsp"><%
 			
@@ -222,8 +225,10 @@
 				} else if (featureUtil.isAllowedRevokeFeature(user, feature, folder)) {
 					%><a href="javascript:if (confirm('Are you sure you want to revoke this locality') == true) {document.FoldForm.ActionType.value='Revoke';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke Locality" /></a>&nbsp;<%
 				}
-				%></td></tr>
-				<tr><td colspan="12"><img src="images/line.gif" height="3" width="550" /></td></tr><%
+				%></td><td style="text-align: left">
+				<a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" width="20" height="20" alt="Print Locality" /></a>&nbsp;
+				</td></tr>
+				<tr><td colspan="13"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 			}
 			%></table><%
 			endDETable(pageContext);

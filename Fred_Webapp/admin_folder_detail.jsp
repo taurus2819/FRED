@@ -79,17 +79,19 @@
 			<center><p>&nbsp;<p/><div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none"><%
 			startDETable(pageContext);
 			%><table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
-			<tr><td colspan="3" class="deHeading">Masterfile Folder Instructions</td></tr><tr><td style="text-align: left">
+			<tr><td class="deHeading">Masterfile Folder Instructions</td></tr>
+			<tr><td style="text-align: left">
 			<ul>
 			<li>Listed below are the localities currently in this masterfile folder.
 			<li>Click on the icons to work with an individual locality record:
 			<ul>
-			<li><img src="images/print.gif" border="0"> to print the locality
+			<li><img src="images/pdf_icon.gif" border="0"> to print the locality
 			<li><img src="images/edit.gif" border="0"> to edit the locality
 			<li><img src="images/review.gif" border="0"> to accept or reject the locality
 			</ul>
 			</ul>
 			</td></tr>
+			<tr><td><a href="http://www.adobe.com/products/acrobat/readstep2.html" target="getAcrobat"><img src="images/get_adobe_reader.gif" border="0" alt="Get Adobe Reader" /></a>&nbsp;&nbsp;Adobe reader is required to print localities</td></tr>
 			<tr><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr></table><%
 			endDETable(pageContext);
 			%></div>
@@ -110,7 +112,7 @@
 				<td style="text-align: left"><%=(audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : ""%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=FREDUtil.getUserName(audit.getSubmittedById().intValue())%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;&nbsp;</td>
-				<td style="text-align: left"><a href="print_front.jsp?FeatID=<%=feature.getFeatureId() + (feature.getFeatureType().equals(FREDConstants.OUTCROP) ? "" : "&FormType=Short&q=" + Math.random())%>" target="print"><img src="images/print.gif" border="0" height="20" width="20" alt="Print Locality" /></a>&nbsp;&nbsp;</td>
+				<td style="text-align: left"><a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId()%>&q=<%=Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print Locality" /></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%
 				if (folder.isAllowedEditLocalities()) {
 					%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a>&nbsp;&nbsp;<%
@@ -140,7 +142,7 @@
 				<td style="text-align: left"><%=(audit.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(audit.getApprovedDate()) : ""%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=(audit.getApprovedById() != null) ? FREDUtil.getUserName(audit.getApprovedById().intValue()) : ""%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;&nbsp;</td>
-				<td style="text-align: left"><a href="print_front.jsp?FeatID=<%=feature.getFeatureId()%><%=(feature.getFeatureType().equals(FREDConstants.OUTCROP)) ? "" : "&FormType=Shortprint_front.jsp&q=" + Math.random()%>" target="print"><img src="images/print.gif" border="0" height="20" width="20" alt="Print Locality" /></a></td></tr><%
+				<td style="text-align: left"><a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId()%>&q=<%=Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print Locality" /></a></td></tr><%
 			}
 			%></table><%
 			endDETable(pageContext);
