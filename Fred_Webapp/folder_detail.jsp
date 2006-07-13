@@ -100,16 +100,6 @@
 						featureUtil.submitFeatures(request.getParameterValues("FeatIDs"), folder, user);
 					} else if (actionType.equals("RevokeFeatures")) {
 						featureUtil.revokeFeatures(request.getParameterValues("FeatIDs"), folder, user);
-					} else if (actionType.equals("PrintFeatures")) {
-						String[] featIDs = request.getParameterValues("FeatIDs");
-						StringBuffer queryStr = new StringBuffer();
-						for (int i = 0; i < featIDs.length; i++) {
-							queryStr.append("FeatIDs=").append(featIDs[i]);
-							if (i < featIDs.length - 1)
-								queryStr.append("&");
-						}
-						response.sendRedirect("frf/frf.pdf?" + queryStr.toString());
-						return;
 					} else if (actionType.equals("DeleteFeatures")) {
 						featureUtil.deleteRemoveFeatures(request.getParameterValues("FeatIDs"), folder, user);
 					} else if (actionType.equals("MergeFeatures")) {
@@ -230,7 +220,29 @@
 				</td></tr>
 				<tr><td colspan="13"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 			}
-			%></table><%
+			%>
+			<tr><td colspan="13" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
+			<script><!--
+			function selectAll() {
+				if (document.FoldForm.FeatIDs.length) {
+					for (var i=0; i<document.FoldForm.FeatIDs.length; i++) {
+						document.FoldForm.FeatIDs[i].checked = true;
+					}
+				} else {
+					document.FoldForm.FeatIDs.checked = true;
+				}
+			}
+			function unselectAll() {
+				if (document.FoldForm.FeatIDs.length) {
+					for (var i=0; i<document.FoldForm.FeatIDs.length; i++) {
+						document.FoldForm.FeatIDs[i].checked = false;
+					}
+				} else {
+					document.FoldForm.FeatIDs.checked = false;
+				}
+			}
+			//--></script>
+			</table><%
 			endDETable(pageContext);
 			%></p>
 			
@@ -249,8 +261,8 @@
 			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='RevokeFeatures';document.FoldForm.submit();">Revoke</a></td>
 			</tr>
 			<tr>
-			<td><a href="javascript:document.FoldForm.ActionType.value='PrintFeatures';document.FoldForm.target='_blank';document.FoldForm.submit();"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print" /></a></td>
-			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='PrintFeatures';document.FoldForm.target='_blank';document.FoldForm.submit();">Print</a></td>
+			<td><a href="javascript:document.FoldForm.action='frf/frf.pdf';document.FoldForm.method='get';document.FoldForm.target='_blank';document.FoldForm.submit();"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print" /></a></td>
+			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.action='frf/frf.pdf';document.FoldForm.method='get';document.FoldForm.target='_blank';document.FoldForm.submit();">Print</a></td>
 			</tr>
 			<tr>
 			<td><a href="javascript:document.FoldForm.ActionType.value='DeleteFeatures';document.FoldForm.submit();"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete/Remove" /></a></td>
@@ -288,6 +300,7 @@
 			<input type="hidden" name="FeatID" value="" />
 			<input type="hidden" name="NewFoldID" value="" />
 			<input type="hidden" name="NewFeatName" value="" />
+			<input type="hidden" name="q" value="<%=Math.random()%>" />
 			</table></p>
 			</form>
 			</td></tr></table><%

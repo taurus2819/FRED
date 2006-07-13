@@ -85,10 +85,12 @@
 			<li>Listed below are the localities currently in this masterfile folder.
 			<li>Click on the icons to work with an individual locality record:
 			<ul>
+			<li><img src="images/map.gif" border="0" height="20" width="20" alt="" /> view a map of the locality</li>
 			<li><img src="images/pdf_icon.gif" border="0"> to print the locality
 			<li><img src="images/edit.gif" border="0"> to edit the locality
 			<li><img src="images/review.gif" border="0"> to accept or reject the locality
 			</ul>
+			<li>Multiple localities may be selected by <i>ticking</i> the checkboxes on the left-hand side.  You can then use the tools in the <i>Selected Locality Actions</i> box</li>
 			</ul>
 			</td></tr>
 			<tr><td><a href="http://www.adobe.com/products/acrobat/readstep2.html" target="getAcrobat"><img src="images/get_adobe_reader.gif" border="0" alt="Get Adobe Reader" /></a>&nbsp;&nbsp;Adobe reader is required to print localities</td></tr>
@@ -96,17 +98,22 @@
 			endDETable(pageContext);
 			%></div>
 			
+			<form name="FoldForm" method="get" action="frf/frf.pdf" target="_blank">
+			
 			<p><%
 			startDETable(pageContext);
-			%><table border="0" width="550"><tr><td colspan="9" class="deHeading">Localities to Approve</td></tr>
-			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Type&nbsp;&nbsp;</th><th style="text-align: left">Submitted Date&nbsp;&nbsp;</th><th style="text-align: left">Submitted By&nbsp;&nbsp;</th><th style="text-align: left" colspan="4">Actions</th></tr><%
+			%><table border="0" width="550"><tr><td colspan="10" class="deHeading">Localities to Approve</td></tr>
+			<tr><th style="text-align: left" colspan="3">Locality&nbsp;&nbsp;</th><th style="text-align: left">Type&nbsp;&nbsp;</th><th style="text-align: left">Submitted Date&nbsp;&nbsp;</th><th style="text-align: left">Submitted By&nbsp;&nbsp;</th><th style="text-align: left" colspan="4">Actions</th></tr>
+			<tr><td colspan="10"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 
 			//Display the features
 			Feature[] features = featureUtil.getWaitingFeatures(folder);
 			for (int i=0; i<features.length; i++) {
 				Feature feature = features[i];
 				Audit audit = feature.getAudit();
-				%><tr><td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" height="20" width="20" border="0" alt="View Locality" /></a></td>
+				%><tr>
+				<td style="text-align: left"><input type="checkbox" name="FeatIDs" value="<%=feature.getFeatureId()%>" /></td>
+				<td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" height="20" width="20" border="0" alt="View Locality" /></a></td>
 				<td style="text-align: left" class="heading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=(audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : ""%>&nbsp;&nbsp;</td>
@@ -121,7 +128,8 @@
 				if (folder.isAllowedApproveLocalities()) {
 					%><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/review.gif" width="20" height="20" border="0" alt="Review Localities" /></a><%
 				}
-				%></td></tr><%
+				%></td></tr>
+				<tr><td colspan="10"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 			}
 			%></table><%
 			endDETable(pageContext);
@@ -129,22 +137,42 @@
 			
 			<p><%
 			startDETable(pageContext);
-			%><table border="0" width="550"><tr><td colspan="7" class="deHeading">Localities Recently Approved</td></tr><% 
+			%><table border="0" width="550"><tr><td colspan="8" class="deHeading">Localities Recently Approved</td></tr><% 
 			//Recently Approved
 			features = featureUtil.getFeaturesApprovedInTheLastWeek(folder);
-			%><tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Type&nbsp;&nbsp;</th><th style="text-align: left">Approved Date&nbsp;&nbsp;</th><th style="text-align: left">Approved By&nbsp;&nbsp;</th><th style="text-align: left" colspan="2">Actions</th></tr><%
+			%><tr><th style="text-align: left" colspan="3">Locality&nbsp;&nbsp;</th><th style="text-align: left">Type&nbsp;&nbsp;</th><th style="text-align: left">Approved Date&nbsp;&nbsp;</th><th style="text-align: left">Approved By&nbsp;&nbsp;</th><th style="text-align: left" colspan="2">Actions</th></tr>
+			<tr><td colspan="8"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 			for (int i=0; i<features.length; i++) {
 				Feature feature = features[i];
 				Audit audit = feature.getAudit();
-				%><tr><td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" height="20" width="20" border="0" alt="View Locality" /></a></td>
+				%><tr>
+				<td style="text-align: left"><input type="checkbox" name="FeatIDs" value="<%=feature.getFeatureId()%>" /></td>
+				<td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" height="20" width="20" border="0" alt="View Locality" /></a></td>
 				<td style="text-align: left"><span class="heading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></span>&nbsp;&nbsp;<%=(feature.getFeatureName() != null) ? "<br />(" + feature.getFeatureName() + ")&nbsp;&nbsp;" : ""%></td>
 				<td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=(audit.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(audit.getApprovedDate()) : ""%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=(audit.getApprovedById() != null) ? FREDUtil.getUserName(audit.getApprovedById().intValue()) : ""%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;&nbsp;</td>
-				<td style="text-align: left"><a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId()%>&q=<%=Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print Locality" /></a></td></tr><%
+				<td style="text-align: left"><a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId()%>&q=<%=Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print Locality" /></a></td></tr>
+				<tr><td colspan="8"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 			}
 			%></table><%
+			endDETable(pageContext);
+			%></p>
+			
+			<input type="hidden" name="q" value="<%=Math.random()%>" />
+			</form>
+			
+			<p><%
+			//Selected Actions box
+			startDETable(pageContext);
+			%><table border="0" width="550">
+			<tr><td colspan="2" class="deHeading">Selected Locality Actions</td></tr>
+			<tr>
+			<td><a href="javascript:document.FoldForm.submit();"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print" /></a></td>
+			<td class="heading" style="text-align: left"><a href="document.FoldForm.submit();">Print</a></td>
+			</tr>	
+			</table><%		
 			endDETable(pageContext);
 			%></p><%
 		}
