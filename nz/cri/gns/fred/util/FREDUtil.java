@@ -174,7 +174,7 @@ public class FREDUtil {
 					return (isBacklog) ? MASTERFILE_NTH_NI_BACKLOG : MASTERFILE_NTH_NI;
 				if (northing >= 6160000 || (easting >= 2730000 && northing >= 6070000))
 					return (isBacklog) ? MASTERFILE_CEN_NI_BACKLOG : MASTERFILE_CEN_NI;
-				if (easting >= 2650000)
+				if (easting >= 2650000 || northing >= 6130000)
 					return 	(isBacklog) ? MASTERFILE_STH_NI_BACKLOG : MASTERFILE_STH_NI;
 				if (northing >= 5920000)
 					return (isBacklog) ? MASTERFILE_NELSON_BACKLOG : MASTERFILE_NELSON;
