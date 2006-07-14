@@ -133,16 +133,23 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 			}
 			templates = new PdfTemplate[records.size() + samples.size() + features.size()];
 			formNumber = 0;
-			makePDF(records, samples, features);
+			System.out.println("FeatureID: " + request.getParameter("FeatIDs"));
+			System.out.println("Number of Features: " + features.size());
+			makePdf(records, samples, features);
 		} catch (Exception e) {
 			System.out.println("************************************");
 			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			try {
+				makeErrorPdf();
+			} catch (Exception e1) {
+				//shouldn't happen
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
 			return;
 		}
 	}
 		
-	private void makePDF(Set<Record> records, Set<Sample> samples, Set<Feature> features) throws DocumentException, IOException, NamingException, SQLException {
+	private void makePdf(Set<Record> records, Set<Sample> samples, Set<Feature> features) throws DocumentException, IOException, NamingException, SQLException {
 		Document document = new Document(PageSize.A4, 20 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT, 20 * MM_TO_PT);
 		PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
 		writer.setEncryption(true, null, null, PdfWriter.AllowPrinting | PdfWriter.AllowScreenReaders);
@@ -608,6 +615,18 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		}
 	}
 
+	private void makeErrorPdf() throws DocumentException, IOException {
+		Document document = new Document(PageSize.A4, 20 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT, 20 * MM_TO_PT);
+		PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
+		writer.setEncryption(true, null, null, PdfWriter.AllowPrinting | PdfWriter.AllowScreenReaders);
+		document.open();
+		PdfPTable table = new PdfPTable(1);
+		table.setLockedWidth(true);
+		PDFUtil.addCell(table, "An error has occured when generating this form", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
+		document.add(table);
+		document.close();
+	}
+	
 	public void onOpenDocument(PdfWriter writer, Document document) {
 		baseFont = FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD).getBaseFont();
 	}
