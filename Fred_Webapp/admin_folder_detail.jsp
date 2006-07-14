@@ -170,7 +170,7 @@
 			<tr><td colspan="2" class="deHeading">Selected Locality Actions</td></tr>
 			<tr>
 			<td><a href="javascript:document.FoldForm.submit();"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print" /></a></td>
-			<td class="heading" style="text-align: left"><a href="document.FoldForm.submit();">Print</a></td>
+			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.submit();">Print</a></td>
 			</tr>	
 			</table><%		
 			endDETable(pageContext);
