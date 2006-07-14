@@ -300,7 +300,8 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		localityTable.setWidths(new float[] {55 * MM_TO_PT});		
 		if (feature.getYardFrNumber() != null)
 			PDFUtil.addCell(localityTable, "(" + feature.getYardFrNumber().getFrNumber() + ")", fonts[5], PdfPCell.ALIGN_RIGHT, 1);
-		PDFUtil.addCell(localityTable, "www.fred.org.nz/locality/" + feature.getFrNumber().getFrNumber(), fonts[7], PdfPCell.ALIGN_RIGHT, 1);
+		if (feature.getFrNumber() != null)
+			PDFUtil.addCell(localityTable, "www.fred.org.nz/locality/" + feature.getFrNumber().getFrNumber(), fonts[7], PdfPCell.ALIGN_RIGHT, 1);
 		PDFUtil.addCell(localityTable, feature.getFeatureType(), fonts[5], PdfPCell.ALIGN_RIGHT, 1);
 		cell = new PdfPCell(localityTable);
 		cell.setBorder(PdfPCell.NO_BORDER);
