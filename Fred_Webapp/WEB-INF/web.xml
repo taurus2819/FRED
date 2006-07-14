@@ -30,6 +30,10 @@
 		<servlet-name>ajax</servlet-name>
 		<servlet-class>nz.cri.gns.fred.servlet.AJAXServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>locality</servlet-name>
+		<servlet-class>nz.cri.gns.fred.servlet.LocalityServlet</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>ajax</servlet-name>
 		<url-pattern>/ajaxSupport.xml</url-pattern>
@@ -37,6 +41,10 @@
 	<servlet-mapping>
 		<servlet-name>frf</servlet-name>
 		<url-pattern>/frf/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>locality</servlet-name>
+		<url-pattern>/locality/*</url-pattern>
 	</servlet-mapping>
 
     <session-config>
