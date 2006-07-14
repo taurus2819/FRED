@@ -789,7 +789,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		featureDAO.update(audit);
 	}
 	
-	public void addToFolder(Feature feature, int folderId, UserAccount user) throws StorageAccessException, FolderUtilException {
+	public void addToFolder(Feature feature, int folderId, UserAccount user) throws StorageAccessException, DataInputException {
 		if (!feature.getAudit().getStatus().equals(APPROVED))
 			throw new DataInputException("Folder", "Cannot add a working locality");
 		
