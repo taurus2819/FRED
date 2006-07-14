@@ -3,9 +3,11 @@ package nz.cri.gns.fred.servlet;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
@@ -94,9 +96,9 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 			this.featureUtil = new FeatureUtil(factory);
 			this.user = (UserAccount)request.getSession().getAttribute(User.USER_ATTRIBUTE);
 			
-			Set<Record> records = new HashSet<Record>();
-			Set<Sample> samples = new HashSet<Sample>();
-			Set<Feature> features = new HashSet<Feature>();
+			List<Record> records = new Vector<Record>();
+			List<Sample> samples = new Vector<Sample>();
+			List<Feature> features = new Vector<Feature>();
 			
 			if (request.getParameter("RecIDs") != null) {
 				String[] recIDs = request.getParameterValues("RecIDs");
@@ -133,6 +135,9 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 			}
 			templates = new PdfTemplate[records.size() + samples.size() + features.size()];
 			formNumber = 0;
+			Collections.sort(records);
+			Collections.sort(samples);
+			Collections.sort(features);
 			makePdf(records, samples, features);
 		} catch (Exception e) {
 			System.out.println("************************************");
@@ -147,7 +152,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		}
 	}
 		
-	private void makePdf(Set<Record> records, Set<Sample> samples, Set<Feature> features) throws DocumentException, IOException, NamingException, SQLException {
+	private void makePdf(List<Record> records, List<Sample> samples, List<Feature> features) throws DocumentException, IOException, NamingException, SQLException {
 		Document document = new Document(PageSize.A4, 20 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT, 20 * MM_TO_PT);
 		PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
 		writer.setEncryption(true, null, null, PdfWriter.AllowPrinting | PdfWriter.AllowScreenReaders);
