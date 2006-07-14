@@ -133,8 +133,6 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 			}
 			templates = new PdfTemplate[records.size() + samples.size() + features.size()];
 			formNumber = 0;
-			System.out.println("FeatureID: " + request.getParameter("FeatIDs"));
-			System.out.println("Number of Features: " + features.size());
 			makePdf(records, samples, features);
 		} catch (Exception e) {
 			System.out.println("************************************");
