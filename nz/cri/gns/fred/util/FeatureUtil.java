@@ -21,7 +21,6 @@ import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
-import nz.cri.gns.fred.FolderUtilException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.dao.FolderDAO;
@@ -792,11 +791,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	
 	public void addToFolder(Feature feature, int folderId, UserAccount user) throws StorageAccessException, FolderUtilException {
 		if (!feature.getAudit().getStatus().equals(APPROVED))
-			throw new FolderUtilException("Cannot add a working locality");
+			throw new DataInputException("Folder", "Cannot add a working locality");
 		
 		UserFolder userFolder = new FolderUtil(factory).getUserFolder(folderId, user);
 		if (!userFolder.isAllowedCreateLocalities())
-			throw new FolderUtilException("Do not have appropriate rights to add to this folder");
+			throw new DataInputException("Folder", "Do not have appropriate rights to add to this folder");
 				
 		feature.getFolders().add(folderDAO.getFolder(folderId));
 	}
