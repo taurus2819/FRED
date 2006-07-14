@@ -26,6 +26,7 @@ import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.LabSection;
+import nz.cri.gns.fred.model.PalListMeta;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Record;
@@ -165,6 +166,8 @@ public class PaleontologyRecordDE extends RecordDE {
 		private TaxonomicGroup taxonomicGroup;
 		private Paleontology paleontology;
 		private Taxon taxon;
+		private Set<PalListMeta> palListMetas;
+		
 		public Integer getPalListId() {
 			return null;
 		}
@@ -227,6 +230,14 @@ public class PaleontologyRecordDE extends RecordDE {
 
 		public void setTaxonomicName(String taxonomicName) {
 			this.taxonomicName = taxonomicName;
+		}
+
+		public Set<PalListMeta> getPalListMetas() {
+			return palListMetas;
+		}
+
+		public void setPalListMetas(Set<PalListMeta> palListMetas) {
+			this.palListMetas = palListMetas;
 		}
 	}
 
