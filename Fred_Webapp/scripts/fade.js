@@ -18,24 +18,26 @@ var currentFadeIn, currentFadeOut;
 
 function fadeIn(objId,opacity) {
   if (document.getElementById) {
-    clearTimeout(currentFadeOut);
     obj = document.getElementById(objId);
+    if (obj.currentFadeOut)
+    	clearTimeout(obj.currentFadeOut);
     if (opacity <= 100) {
       setOpacity(obj, opacity);
       opacity += 20;
-      currentFadeIn = window.setTimeout("fadeIn('"+objId+"',"+opacity+")", 100);
+      obj.currentFadeIn = window.setTimeout("fadeIn('"+objId+"',"+opacity+")", 100);
     }
   }
 }
 
 function fadeOut(objId,opacity) {
   if (document.getElementById) {
-    clearTimeout(currentFadeIn);
     obj = document.getElementById(objId);
+    if (obj.currentFadeIn)
+    	clearTimeout(obj.currentFadeIn);
     if (opacity >= 0) {
       setOpacity(obj, opacity);
       opacity -= 20;
-      currentFadeOut = window.setTimeout("fadeOut('"+objId+"',"+opacity+")", 100);
+      obj.currentFadeOut = window.setTimeout("fadeOut('"+objId+"',"+opacity+")", 100);
     } else {
     	obj.style.visibility = "hidden";
     }

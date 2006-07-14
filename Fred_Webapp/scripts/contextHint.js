@@ -95,15 +95,19 @@ this.processKeyStroke = function(keyCode) {
 this.unHighlightHint = function(hint) {
 	if (hint >= 0) {
 		oldObj = document.getElementById(this.key + "Hint" + hint);
-		oldObj.style.background = ((hint % 2) == 0) ? "white" : "#eeeeee";
-		oldObj.style.color = this.unhighlightColor;
+		if (oldObj) {
+			oldObj.style.background = ((hint % 2) == 0) ? "white" : "#eeeeee";
+			oldObj.style.color = this.unhighlightColor;
+		}
 	}
 };
 
 this.highlightHint = function(hint) {
 	newObj = document.getElementById(this.key + "Hint" + hint);
-	newObj.style.background = "darkblue";
-	newObj.style.color = "white";
+	if (newObj) {
+		newObj.style.background = "darkblue";
+		newObj.style.color = "white";
+	}
 };
 
 this.highlightDown = function() {
