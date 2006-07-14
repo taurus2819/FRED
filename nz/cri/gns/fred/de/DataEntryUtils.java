@@ -9,16 +9,20 @@ import java.util.Date;
 
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.QueryDescriptor;
-import nz.cri.gns.fred.FREDUtils;
 import nz.cri.gns.intranet.DBConnection;
+import nz.cri.gns.jsp.JspUtils;
 import nz.cri.gns.jsp.PageState;
 
 
 public class DataEntryUtils {
 
+	public static DBConnection getFREDConnection(PageState state) throws IOException {
+		return JspUtils.createDatabaseConnection(state.session, "fred", "fr", state.context);
+	}
+	
 	public static void checkDropDownID(String fieldName, String query, int[] types, Object[] values, PageState state) throws DataInputException {
 		try {
-			ResultSet rs = FREDUtils.getFREDConnection(state).executeQuery(query, types, values);
+			ResultSet rs = getFREDConnection(state).executeQuery(query, types, values);
 			rs.next();
 		} catch (Exception e) {
 			throw new DataInputException(fieldName, "Invalid value");
@@ -92,7 +96,7 @@ public class DataEntryUtils {
 
 	public static String getStageID(String stageStartID, String startMod, String stageStopID, String stopMod, PageState state) throws IOException, SQLException {
 		if (stageStartID != null) {
-			DBConnection conn = FREDUtils.getFREDConnection(state);
+			DBConnection conn = getFREDConnection(state);
 			String query = "SELECT Get_Stage_ID(?, ?, ?, ?) FROM DUAL";
 			ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC, Types.VARCHAR, Types.NUMERIC, Types.VARCHAR},
 				new Object[] {new Integer(stageStartID), startMod, ((stageStopID != null) ? new Integer(stageStopID) : null), stopMod});
@@ -112,7 +116,7 @@ public class DataEntryUtils {
 	
 	public static void parseAge(String stageStart, String stageStop, String fieldName, PageState state) throws DataInputException, IOException, NumberFormatException, SQLException {
 		try {
-			DBConnection conn = FREDUtils.getFREDConnection(state);
+			DBConnection conn = getFREDConnection(state);
 			String query = "SELECT ta_age_start, ta_age_stop FROM age_view WHERE ag_id = ?";
 			ResultSet rs = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(stageStart)});
 			rs.next();
