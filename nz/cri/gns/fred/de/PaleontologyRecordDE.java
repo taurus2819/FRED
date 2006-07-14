@@ -239,6 +239,14 @@ public class PaleontologyRecordDE extends RecordDE {
 		public void setPalListMetas(Set<PalListMeta> palListMetas) {
 			this.palListMetas = palListMetas;
 		}
+
+		public String getUniqueIdentifier() {
+			return String.valueOf(getPalListId());
+		}
+
+		public String getDisplayName() {
+			return getTaxonomicName();
+		}
 	}
 
 	private Set<PaleontologyListEntry> badTaxaList;
