@@ -1,9 +1,17 @@
 <%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, java.lang.*, nz.cri.gns.auth.*"
-%><%!	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
+%><%@page import="nz.cri.gns.db.ComboDescriptor"
+%><%@page import="nz.cri.gns.db.HTMLUtils"
+%><%@page import="nz.cri.gns.jsp.PageState"
+%><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
+%><%@page import="nz.cri.gns.intranet.DBConnection"
+%><%@page import="java.sql.ResultSet"
+%><%@page import="nz.cri.gns.fred.de.DataEntryUtils"
+%><%@page import="nz.cri.gns.auth.Authenticable"
+%><%!
+	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 	PageState state = new PageState(request, response, getServletContext());
-	DBConnection connection = FREDUtils.getFREDConnection(state);
+	DBConnection connection = DataEntryUtils.getFREDConnection(state);
 	java.sql.Statement statement = connection.statement;
 	ResultSet rs;
 	ComboDescriptor cd;
