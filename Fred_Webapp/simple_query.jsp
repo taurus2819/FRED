@@ -316,6 +316,7 @@ function parseSerialNum(serialNum, prefix) {
 
 <table border="0" cellspacing="0" cellpadding="3">
 <tr><td class="heading">Fossil Record No.&nbsp;&nbsp;</td><td></td><td colspan="3"><input type="text" name="FRNum" size="30" /></td></tr>
+<tr><td colspan="5">Note: You can also now jump straight to a single locality by typing the following URL into your browser <i>http://www.fred.org.nz/locality/</i> followed by the FR Number (eg <i>http://www.fred.org.nz/locality/<b>I44/f0001</b></i>)</td></tr> 
 <tr><td class="heading">NZMG Sheet&nbsp;&nbsp;</td><td></td><td colspan="3"><input type="text" name="Map" size="10" /></td></tr>
 <tr><td class="heading">QMap Sheet&nbsp;&nbsp;</td><td></td><td colspan="3">
 	<select name="QMap">
