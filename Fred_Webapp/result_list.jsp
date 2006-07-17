@@ -1,5 +1,5 @@
 <%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
-%><%@page import="nz.cri.gns.fred.FREDUtils"
+%><%@page import="nz.cri.gns.fred.de.DataEntryUtils"
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
@@ -23,7 +23,7 @@
 	}
 %><%
 	PageState state = new PageState(request, response, getServletContext());
-	DBConnection connection = FREDUtils.getFREDConnection(state);
+	DBConnection connection = DataEntryUtils.getFREDConnection(state);
 	Statement statement = connection.statement;
 	User user = (User)getUser(session);
 
