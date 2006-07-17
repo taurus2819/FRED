@@ -186,7 +186,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 			if (samples.size() + records.size() > 0)
 				endForm(document, writer, true);
 		}
-		if (samples != null) {
+		if (samples.size() > 0) {
 			System.out.println("Samples: " + samples.size());
 			int i = 0;
 			for (Sample sample : samples) {
@@ -202,7 +202,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 			if (records.size() > 0)
 				endForm(document, writer, true);
 		}
-		if (records != null) {
+		if (records.size() > 0) {
 			System.out.println("Records: " + records.size());
 			int i = 0;
 			for (Record record : records) {
