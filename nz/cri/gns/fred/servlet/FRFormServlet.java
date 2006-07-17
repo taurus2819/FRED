@@ -138,16 +138,13 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 			Collections.sort(records);
 			Collections.sort(samples);
 			Collections.sort(features);
+			System.out.println("Num forms: " + templates.length);
+			System.out.println("Num records: " + records.size());
 			makePdf(records, samples, features);
 		} catch (Exception e) {
-			System.out.println("************************************");
+			System.out.println("************************************ " + new java.util.Date());
 			e.printStackTrace();
-			try {
-				makeErrorPdf();
-			} catch (Exception e1) {
-				//shouldn't happen
-				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			}
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			return;
 		}
 	}
@@ -206,6 +203,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		if (records != null) {
 			int i = 0;
 			for (Record record : records) {
+				System.out.println("Writing record: " + record.getRecordId());
 				try {
 					writeHeader(record, document);
 					writeRecord(record, document, fonts);
