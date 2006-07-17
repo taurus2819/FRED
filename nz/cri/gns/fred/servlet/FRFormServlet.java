@@ -138,8 +138,6 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 			Collections.sort(records);
 			Collections.sort(samples);
 			Collections.sort(features);
-			System.out.println("Num forms: " + templates.length);
-			System.out.println("Num records: " + records.size());
 			makePdf(records, samples, features);
 		} catch (Exception e) {
 			System.out.println("************************************ " + new java.util.Date());
@@ -169,7 +167,6 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		fonts[3] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
 		
 		if (features.size() > 0) {
-			System.out.println("Features: " + features.size());
 			int i = 0;
 			for (Feature feature : features) {
 				try {
@@ -187,7 +184,6 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				endForm(document, writer, true);
 		}
 		if (samples.size() > 0) {
-			System.out.println("Samples: " + samples.size());
 			int i = 0;
 			for (Sample sample : samples) {
 				try {
@@ -203,15 +199,12 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				endForm(document, writer, true);
 		}
 		if (records.size() > 0) {
-			System.out.println("Records: " + records.size());
 			int i = 0;
 			for (Record record : records) {
-				System.out.println("Writing record: " + record.getRecordId());
 				try {
 					writeHeader(record, document);
 					writeRecord(record, document, fonts);
 					if (++i < records.size()) {
-						System.out.println("endForm");
 						endForm(document, writer, true);
 					}
 				} catch (Exception e) {
