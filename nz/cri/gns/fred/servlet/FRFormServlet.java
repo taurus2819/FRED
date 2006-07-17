@@ -169,6 +169,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		fonts[3] = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.BOLD);
 		
 		if (features.size() > 0) {
+			System.out.println("Features: " + features.size());
 			int i = 0;
 			for (Feature feature : features) {
 				try {
@@ -186,6 +187,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				endForm(document, writer, true);
 		}
 		if (samples != null) {
+			System.out.println("Samples: " + samples.size());
 			int i = 0;
 			for (Sample sample : samples) {
 				try {
@@ -201,14 +203,17 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				endForm(document, writer, true);
 		}
 		if (records != null) {
+			System.out.println("Records: " + records.size());
 			int i = 0;
 			for (Record record : records) {
 				System.out.println("Writing record: " + record.getRecordId());
 				try {
 					writeHeader(record, document);
 					writeRecord(record, document, fonts);
-					if (++i < records.size())
+					if (++i < records.size()) {
+						System.out.println("endForm");
 						endForm(document, writer, true);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
