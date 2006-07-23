@@ -76,7 +76,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	private FeatureUtil featureUtil;
 	private UserAccount user;
 	
-	private Date generateDate = new Date();
+	private Date generateDate;
 	private PdfTemplate[] templates;
 	private int formNumber;
 	private BaseFont baseFont;
@@ -95,6 +95,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 			this.sampleUtil = new SampleUtil(factory);
 			this.featureUtil = new FeatureUtil(factory);
 			this.user = (UserAccount)request.getSession().getAttribute(User.USER_ATTRIBUTE);
+			this.generateDate = new Date();
 			
 			List<Record> records = new Vector<Record>();
 			List<Sample> samples = new Vector<Sample>();
