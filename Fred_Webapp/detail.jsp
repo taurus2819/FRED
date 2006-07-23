@@ -25,7 +25,6 @@
 %><%@page import="nz.cri.gns.util.map.DatumFactory"
 %><%@page import="java.net.URLEncoder"
 %><%@page import="java.io.PrintWriter"
-%><%@page import="java.util.Iterator"
 %><%@page import="java.util.Arrays"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.auth.Authenticable"
@@ -629,7 +628,7 @@ try {
 											for (PaleontologyListEntry taxa : recordUtil.getListEntries(palRecord, taxaGroup)) {
 												%><tr><td><i><%=taxa.getTaxonomicName()%></i>&nbsp;&nbsp;</td><%
 												if (authorChk) {
-													%><td><%=DBUtils.nvl(taxa.getTaxon().getAuthor())%>&nbsp;&nbsp;</td><%
+													%><td><%=(taxa.getTaxon() != null) ? DBUtils.nvl(taxa.getTaxon().getAuthor()) : ""%>&nbsp;&nbsp;</td><%
 												}
 												if (sCountChk) {
 													%><td><%=DBUtils.nvl(taxa.getSpecimenCount())%>&nbsp;&nbsp;</td><%
