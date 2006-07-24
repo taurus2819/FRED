@@ -334,8 +334,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			feature.setFrNumber(null);
 		
 		if (!FREDUtil.isEmpty(feature.getRelationships())) {
-			Feature relFeature = ((Relationship)feature.getRelationships().iterator().next()).getFeature();
-			throw new IllegalStateException("Cannot delete this locality as is references in a relationship with " + FeatureUtil.getFeatureIdentifyingName(relFeature));
+			Feature relFeature = ((Relationship)feature.getRelationships().iterator().next()).getSample().getFeature();
+			throw new IllegalStateException("Cannot delete this locality as it is referenced in a relationship by " + FeatureUtil.getFeatureIdentifyingName(relFeature));
 		}
 		
 		Audit audit = feature.getAudit();
@@ -870,7 +870,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 					throw new DataInputException("FR Number", "Badly formed FR Number");
 				}
 			}
-			FrNumber frNumber = featureDAO.getFrNumber(mapSheet + "/f" + serialNumber + recollectionNumber);
+			String serialNumStr = String.valueOf(serialNumber);
+			while (serialNumStr.length() < 5)
+				serialNumStr = "0" + serialNumStr;
+			FrNumber frNumber = featureDAO.getFrNumber(mapSheet + "/f" + serialNumStr + recollectionNumber);
 			if (frNumber == null && createNew) {
 				frNumber = new nz.cri.gns.fred.hibernate.FrNumber();
 				frNumber.setMapSheet(mapSheet);
