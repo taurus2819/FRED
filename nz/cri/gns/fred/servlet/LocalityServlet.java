@@ -28,7 +28,7 @@ public class LocalityServlet extends HttpServlet {
 		DAOFactory factory = null;
 		try {
 			factory = HibernateUtil.get().getDAOFactory();
-			
+			System.out.println(frNum);
 			FrNumber num = new FeatureUtil(factory).parseFrNumber(frNum, false);
 			if (num != null) {
 				Feature feature = num.getFeatures().iterator().next();
