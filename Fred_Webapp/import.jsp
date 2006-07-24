@@ -106,7 +106,7 @@
 			    		id = String.valueOf(dataEntryForm.submit(FREDConstants.DATA_ORIGIN_EXCEL));
 			    		/*
 			    		if (request.getParameter("FRNum") != null) {
-			    			FRNumber frNum = FRNumber.parseFRNumber(request.getParameter("FRNum"));
+			    			FRNumber frNum = FRNumber.parseFRNumber(request.getParameter("FRNum"), true);
 			    			FolderUtils.approveLocality(id, frNum, null, user, state);
 			    		} */
 			    		status = "Submitted OK";

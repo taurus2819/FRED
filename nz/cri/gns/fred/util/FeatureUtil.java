@@ -850,10 +850,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
 	/**
 	 * Parses FR Number as string and returns FrNumber object
-	 * If FRNumber exists it is returned, or a new FRNumber object is created
+	 * If FRNumber exists it is returned, or a new FRNumber object is created (if createNew is TRUE)
 	 * @throws StorageAccessException 
 	 */
-	public FrNumber parseFrNumber(String frNumStr) throws DataInputException, StorageAccessException {
+	public FrNumber parseFrNumber(String frNumStr, boolean createNew) throws DataInputException, StorageAccessException {
 		if (frNumStr != null && frNumStr.indexOf("/f") > 0) {
 			String recollectionNumber;
 			Integer serialNumber;
@@ -870,10 +870,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 					throw new DataInputException("FR Number", "Badly formed FR Number");
 				}
 			}
-			FrNumber frNumber = new nz.cri.gns.fred.hibernate.FrNumber();
-			frNumber.setMapSheet(mapSheet);
-			frNumber.setSerialNumber(serialNumber);
-			frNumber.setRecollectionNumber(recollectionNumber);
+			FrNumber frNumber = featureDAO.getFrNumber(mapSheet + "/f" + serialNumber + recollectionNumber);
+			if (frNumber == null && createNew) {
+				frNumber = new nz.cri.gns.fred.hibernate.FrNumber();
+				frNumber.setMapSheet(mapSheet);
+				frNumber.setSerialNumber(serialNumber);
+				frNumber.setRecollectionNumber(recollectionNumber);
+			}
 			return frNumber;
 		} else {
 			throw new DataInputException("FR Number", "Badly formed or missing FR Number");
