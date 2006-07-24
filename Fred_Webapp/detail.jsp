@@ -76,8 +76,6 @@
 				}
 				out.println("<tr><td class=\"heading\">" + heading + "</td><td>" + textLine.toString() + "</td></tr>");
 			}
-		} else {
-			out.println("<tr><td class=\"heading\">" + heading + "</td><td>&nbsp;</td></tr>");
 		}
 	}
 %><%
@@ -361,68 +359,93 @@ try {
 			}
 			%><tr><td class="heading">Masterfile</td><td><%=((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : "undefined")%></td></tr>
 			<tr><td class="heading">Locality Type</td><td><%=featType%></td></tr><%
-			String featTypeLbl, linkStart = "", linkStop = "", petWellLink = null;
-			if (featType.equals(FREDConstants.OUTCROP)) {
-				featTypeLbl = "Field Number";
-			} else if (featType.equals(FREDConstants.DRILLHOLE)) {
-				featTypeLbl = "Drillhole Name";
-				linkStart = "<a href=\"detail.jsp?FeatID=" + feature.getFeatureId() + backStr + "\">";
-				linkStop = "</a>";
-				petWellLink = FREDUtil.getPetWellLink(feature);
-			} else {
-				featTypeLbl = "Section Name";
-				linkStart = "<a href=\"detail.jsp?FeatID=" + feature.getFeatureId() + backStr + "\">";
-				linkStop = "</a>";
+			if (feature.getFeatureName() != null) {
+				String featTypeLbl, linkStart = "", linkStop = "", petWellLink = null;
+				if (featType.equals(FREDConstants.OUTCROP)) {
+					featTypeLbl = "Field Number";
+				} else if (featType.equals(FREDConstants.DRILLHOLE)) {
+					featTypeLbl = "Drillhole Name";
+					linkStart = "<a href=\"detail.jsp?FeatID=" + feature.getFeatureId() + backStr + "\">";
+					linkStop = "</a>";
+					petWellLink = FREDUtil.getPetWellLink(feature);
+				} else {
+					featTypeLbl = "Section Name";
+					linkStart = "<a href=\"detail.jsp?FeatID=" + feature.getFeatureId() + backStr + "\">";
+					linkStop = "</a>";
+				}
+				%><tr><td class="heading"><%=featTypeLbl%></td><td><%=linkStart + DBUtils.nvl(feature.getFeatureName()) + linkStop%>
+				<%=((petWellLink != null) ? "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"" + petWellLink + "\" target=\"_blank\" class=\"boldlink\">Open GNS Petroleum Wells Database</a>" : "")%></td></tr><%
 			}
-			%><tr><td class="heading"><%=featTypeLbl%></td><td><%=linkStart + DBUtils.nvl(feature.getFeatureName()) + linkStop%>
-			<%=((petWellLink != null) ? "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"" + petWellLink + "\" target=\"_blank\" class=\"boldlink\">Open GNS Petroleum Wells Database</a>" : "")%></td></tr>			
-			<tr><td class="heading">Original Grid Reference</td><%
+			SiteRecord sr = null;
 			if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
 				Datum datum = FREDUtil.getFREDDatum(feature);
 				Coordinate coord = FREDUtil.getFREDCoordinate(feature);
-				%><td><%=datum.getHumanStringFor(coord).replaceAll("Geographic ", "")%></td><%
+				%><tr><td class="heading">Original Grid Reference</td><td><%=datum.getHumanStringFor(coord).replaceAll("Geographic ", "")%></td></tr><%
 				if (!datum.getName().equals("NZMG")) {
 					try {
 						Datum nzmgDatum = DatumFactory.createDatum("NZMG");
 						Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
 						if (nzmgDatum.coordinateAcceptable(nzmgCoord)) {
-							%></tr><tr><td class="heading">Converted Grid Reference</td><td><%=nzmgDatum.getHumanStringFor(nzmgCoord)%></td><%
+							%><tr><td class="heading">Converted Grid Reference</td><td><%=nzmgDatum.getHumanStringFor(nzmgCoord)%></td></tr><%
 						}
 					} catch (Exception e) { }
 				}
+				if (feature.getSiteId() != null) {
+					sr = FREDUtil.getSite(feature);
+					LatLong ll = sr.getLatLong();
+					%><tr><td class="heading">Converted Dec. Lat/Long</td><td><%=ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"%></td></tr><%
+				}	
 			}
-			%></tr><%
-			SiteRecord sr = null;
-			if (feature.getSiteId() != null) {
-				sr = FREDUtil.getSite(feature);
-				LatLong ll = sr.getLatLong();
-				%><tr><td class="heading">Converted Dec. Lat/Long</td><td><%=ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"%></td></tr><%
-			}			
-			
-			%><tr><td class="heading">Map Year</td><td><%=DBUtils.nvl(feature.getMapYear())%></td></tr>
-			<tr><td class="heading">Method</td><td><%=((sr != null && !sr.isNull(SiteRecord.H_METHOD_FIELD)) ? FREDUtil.getSiteMethod(sr) : "&nbsp;")%></td></tr>
-			<tr><td class="heading">Accuracy</td><td><%=((sr != null && !sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? "&#177;" + String.valueOf(sr.getAccuracy()) + " m" : "&nbsp;")%></td></tr><%
-
+			if (feature.getMapYear() != null) {
+				%><tr><td class="heading">Map Year</td><td><%=DBUtils.nvl(feature.getMapYear())%></td></tr><%
+			}
+			if (sr != null && !sr.isNull(SiteRecord.H_METHOD_FIELD)) {
+				%><tr><td class="heading">Method</td><td><%=FREDUtil.getSiteMethod(sr)%></td></tr><%
+			}
+			if (sr != null && !sr.isNull(SiteRecord.H_ACCURACY_FIELD)) {
+				%><tr><td class="heading">Accuracy</td><td>&#177;<%=String.valueOf(sr.getAccuracy())%> m</td></tr><%
+			}
 			if (isAllowedReadFeature) {
-				%><tr><td class="heading">Locality</td><td><%=DBUtils.nvl(feature.getLocality())%></td></tr>
-				<tr><td class="heading">Country</td><td><%=((sr != null && !sr.isNull(SiteRecord.COUNTRY_FIELD)) ? FREDUtil.getSiteCountry(sr) : "&nbsp;")%></td></tr>
-				<tr><td class="heading">Coordinate Comments</td><td><%=DBUtils.nvl(feature.getCoordComments())%></td></tr><%
+				if (feature.getLocality() != null) {
+					%><tr><td class="heading">Locality</td><td><%=feature.getLocality()%></td></tr><%
+				}
+				if (sr != null && !sr.isNull(SiteRecord.COUNTRY_FIELD)) {
+					%><tr><td class="heading">Country</td><td><%=FREDUtil.getSiteCountry(sr)%></td></tr><%
+				}
+				if (feature.getCoordComments() != null) {
+					%><tr><td class="heading">Coordinate Comments</td><td><%=DBUtils.nvl(feature.getCoordComments())%></td></tr><%
+				}
 
 				//Drillhole/Vert Sect fields
 				if (!featType.equals(FREDConstants.OUTCROP)) {
-					%><tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector")%></td><td><%=((feature.getPerson() != null) ? feature.getPerson().getName() : "&nbsp;")%></td></tr>
-					<tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date")%></td><td><%=((feature.getStartDate() != null) ? FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding()) : "&nbsp;")%></td></tr>
-					<tr><td class="heading">Completion Date</td><td><%=((feature.getFinishDate() != null) ? FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding()) : "&nbsp;")%></td></tr><%
-					if (featType.equals(FREDConstants.DRILLHOLE)) {
-						%><tr><td class="heading">Licence Area</td><td><%=DBUtils.nvl(feature.getDrillholeLicenceName())%></td></tr><%
+					if (feature.getPerson() != null) {
+					%><tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector")%></td><td><%=feature.getPerson().getName()%></td></tr><%
 					}
-					%><tr><td class="heading">Datum Type</td><td><%=DBUtils.nvl(feature.getDatumType())%></td></tr>
-					<tr><td class="heading">Datum Elevation</td><td><%=((feature.getDatumElevation() != null) ? String.valueOf(feature.getDatumElevation()) + " m asl" : "&nbsp;")%></td></tr>
-					<tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon")%></td><td><%=((feature.getStartDepth() != null) ? String.valueOf(feature.getStartDepth()) + " m" : "&nbsp;")%></td></tr>
-					<tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon")%></td><td><%=((feature.getFinishDepth() != null) ? String.valueOf(feature.getFinishDepth()) + " m" : "&nbsp;")%></td></tr><%
+					if (feature.getStartDate() != null) {
+						%><tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date")%></td><td><%=FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding())%></td></tr><%
+					}
+					if (feature.getFinishDate() != null) {
+						%><tr><td class="heading">Completion Date</td><td><%=FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding())%></td></tr><%
+					}
+					if (featType.equals(FREDConstants.DRILLHOLE) && feature.getDrillholeLicenceName() != null) {
+						%><tr><td class="heading">Licence Area</td><td><%=feature.getDrillholeLicenceName()%></td></tr><%
+					}
+					if (feature.getDatumType() != null) {
+						%><tr><td class="heading">Datum Type</td><td><%=feature.getDatumType()%></td></tr><%
+					}
+					if (feature.getDatumElevation() != null) {
+						%><tr><td class="heading">Datum Elevation</td><td><%=feature.getDatumElevation()%> m asl</td></tr><%
+					}
+					if (feature.getStartDepth() != null) {
+						%><tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon")%></td><td><%=feature.getStartDepth()%> m</td></tr><%
+					}
+					if (feature.getFinishDepth() != null) {
+						%><tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon")%></td><td><%=feature.getFinishDepth()%> m</td></tr><%
+					}
 				}
-				
-				%><tr><td class="heading">Locality Comments</td><td><%=DBUtils.nvl(feature.getComments())%></td></tr><%
+				if (feature.getComments() != null) {
+					%><tr><td class="heading">Locality Comments</td><td><%=feature.getComments()%></td></tr><%
+				}
 			
 				//Image/Files
 				if (feature.getFeatureMetas().size() > 0) {
@@ -451,7 +474,12 @@ try {
 						%><p><%
 						startDETable(pageContext);
 						%><table border="0" width="550">
-						<tr><td colspan="2" class="deHeading">Sample Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?SampIDs=<%=sample.getSampleId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr><%
+						<tr><td colspan="2" class="deHeading">Sample Information<%
+						if (!featType.equals(FREDConstants.OUTCROP)) {
+							//add PDF link
+							%>&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?SampIDs=<%=sample.getSampleId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a><%
+						}
+						%></td></tr><%
 						if (sample.getFrNumber() != null && !sample.getFrNumber().equals(feature.getFrNumber())) {
 							%><tr><td class="heading">Sample FR Number</td><td class="heading"><%=sample.getFrNumber().getFrNumber()%></td></tr><%
 						}
@@ -459,7 +487,9 @@ try {
 							%><tr><td class="heading">Sample Yard FR Number</td><td><%=sample.getYardFrNumber().getFrNumber()%></td></tr><%
 						}
 						if (!featType.equals(FREDConstants.OUTCROP)) {
-							%><tr><td class="heading">Sample Depth</td><td><%=DBUtils.nvl(SampleUtil.getDrillHoleDepthDescription(sample))%></td></tr><%
+							if (SampleUtil.getDrillHoleDepthDescription(sample) != null) {
+								%><tr><td class="heading">Sample Depth</td><td><%=SampleUtil.getDrillHoleDepthDescription(sample)%></td></tr><%
+							}
 							//check for samples above and below current one
 							Sample sampleAbove = SampleUtil.getSampleAbove(sample);
 							if (sampleAbove != null && sampleUtil.isAllowedReadSample(user, sampleAbove)) {
@@ -479,22 +509,36 @@ try {
 						for (int i = 0; i < collectors.length; i++)
 							collectorStr[i] = ((PersonRelationship) collectors[i]).getDisplayName();
 						addRepeatingCells(new PrintWriter(out), "Collectors", collectorStr, false);
-						%><tr><td class="heading">Collection Date</td><td><%=((sample.getCollectionDate() != null) ? FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding()) : "&nbsp;")%></td></tr>
-						<tr><td class="heading">Fossils in Place</td><td><%=DBUtils.nvl(sample.getInPlace())%></td></tr><%
+						if (sample.getCollectionDate() != null) {
+							%><tr><td class="heading">Collection Date</td><td><%=FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding())%></td></tr><%
+						}
+						if (sample.getInPlace() != null) {
+							%><tr><td class="heading">Fossils in Place</td><td><%=sample.getInPlace()%></td></tr><%
+						}
 						Object[] sentTos = sample.getSentTos().toArray();
 						String[] sentToStr = new String[sentTos.length];
 						for (int i = 0; i < sentTos.length; i++)
 							sentToStr[i] = SampleUtil.getSentToDescription((SentTo) sentTos[i]);
 						addRepeatingCells(new PrintWriter(out), "Sent To", sentToStr, true);
-						%><tr><td class="heading">Not Collected</td><td><%=DBUtils.nvl(sample.getNotCollected())%></td></tr>
-						<tr><td class="heading">Significance/Comments</td><td><%=DBUtils.nvl(sample.getSignificance())%></td></tr>
+						if (sample.getNotCollected() != null) {
+							%><tr><td class="heading">Not Collected</td><td><%=sample.getNotCollected()%></td></tr><%
+						}
+						if (sample.getSignificance() != null) {
+							%><tr><td class="heading">Significance/Comments</td><td><%=sample.getSignificance()%></td></tr><%
+						}
 		
-						<tr><td>&nbsp;</td></tr>
+						%><tr><td>&nbsp;</td></tr>
 		
-						<tr><td class="bigheading" colspan="2">Stratigraphy</td></tr>
-						<tr><td class="heading">Stratigraphic Name</td><td><%=DBUtils.nvl(sample.getStratUnit())%></td></tr>
-						<tr><td class="heading">Inferred Stage</td><td><%=((sample.getInferredStage() != null) ? StageUtil.getStageDescription(sample.getInferredStage()) : "&nbsp;")%></td></tr>
-						<tr><td class="heading">Known Stage</td><td><%=((sample.getKnownStage() != null) ? StageUtil.getStageDescription(sample.getKnownStage()) : "&nbsp;")%></td></tr><%
+						<tr><td class="bigheading" colspan="2">Stratigraphy</td></tr><%
+						if (sample.getStratUnit() != null) {
+							%><tr><td class="heading">Stratigraphic Name</td><td><%=sample.getStratUnit()%></td></tr><%
+						}
+						if (sample.getInferredStage() != null) {
+							%><tr><td class="heading">Inferred Stage</td><td><%=StageUtil.getStageDescription(sample.getInferredStage())%></td></tr><%
+						}
+						if (sample.getKnownStage() != null) {
+							%><tr><td class="heading">Known Stage</td><td><%=StageUtil.getStageDescription(sample.getKnownStage())%></td></tr><%
+						}
 						Object[] relationships = sampleUtil.getRelationships(sample, "Sample", "nearby").toArray();
 						String[] relationshipStr = new String[relationships.length];
 						for (int i = 0; i < relationships.length; i++)
@@ -509,28 +553,56 @@ try {
 						relationshipStr = new String[relationships.length];
 						for (int i = 0; i < relationships.length; i++)
 							relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
-						addRepeatingCells(new PrintWriter(out), "Strat. Relationships", relationshipStr, true);	
-						%><tr><td class="heading">Column/Map</td><td><%=DBUtils.nvl(sample.getColumnMap())%></td></tr>
-						<tr><td class="heading">Dip/Strike</td><td><%=SampleUtil.getDipStrikeDescription(sample)%></td></tr>
+						addRepeatingCells(new PrintWriter(out), "Strat. Relationships", relationshipStr, true);
+						if (sample.getColumnMap() != null) {
+							%><tr><td class="heading">Column/Map</td><td><%=sample.getColumnMap()%></td></tr><%
+						}
+						String dipStrike = SampleUtil.getDipStrikeDescription(sample);
+						if (dipStrike != null && dipStrike.length() > 0) {
+							%><tr><td class="heading">Dip/Strike</td><td><%=dipStrike%></td></tr><%
+						}
+						
+						%><tr><td>&nbsp;</td></tr>
 		
-						<tr><td>&nbsp;</td></tr>
-		
-						<tr><td class="bigheading" colspan="2">Sedimentary Features</td></tr>		
-						<tr><td class="heading">Grain Size</td><td><%=SampleUtil.getGrainSizeDescription(sample)%></td></tr>
-						<tr><td class="heading">Bedding Thickness</td><td><%=((sample.getBedThickness() != null) ? sample.getBedThickness().getName() : "&nbsp;")%></td></tr>
-						<tr><td class="heading">Bedding Features</td><td><%=SampleUtil.getBeddingDescription(sample)%></td></tr>
-						<tr><td class="heading">Weathering</td><td><%=((sample.getWeathering() != null) ? sample.getWeathering().getName() : "&nbsp;")%></td></tr>
-						<tr><td class="heading">Hardness</td><td><%=((sample.getHardness() != null) ? sample.getHardness().getName() : "&nbsp;")%></td></tr>
-						<tr><td class="heading">Carbonate</td><td><%=((sample.getCarbonate() != null) ? sample.getCarbonate().getName() : "&nbsp;")%></td></tr>
-						<tr><td class="heading">Colour</td><td><%=SampleUtil.getColourDescription(sample)%></td></tr><%
+						<tr><td class="bigheading" colspan="2">Sedimentary Features</td></tr><%
+						String grainSize = SampleUtil.getGrainSizeDescription(sample);
+						if (grainSize != null && grainSize.length() > 0) {
+							%><tr><td class="heading">Grain Size</td><td><%=grainSize%></td></tr><%
+						}
+						if (sample.getBedThickness() != null) {
+							%><tr><td class="heading">Bedding Thickness</td><td><%=sample.getBedThickness().getName()%></td></tr><%
+						}
+						String bedDesc = SampleUtil.getBeddingDescription(sample);
+						if (bedDesc != null && bedDesc.length() > 0) {
+							%><tr><td class="heading">Bedding Features</td><td><%=bedDesc%></td></tr><%
+						}
+						if (sample.getWeathering() != null) {
+							%><tr><td class="heading">Weathering</td><td><%=sample.getWeathering().getName()%></td></tr><%
+						}
+						if (sample.getHardness() != null) {
+							%><tr><td class="heading">Hardness</td><td><%=sample.getHardness().getName()%></td></tr><%
+						}
+						if (sample.getCarbonate() != null) {
+							%><tr><td class="heading">Carbonate</td><td><%=sample.getCarbonate().getName()%></td></tr><%
+						}
+						String colourDesc = SampleUtil.getColourDescription(sample);
+						if (colourDesc != null && colourDesc.length() > 0) {
+							%><tr><td class="heading">Colour</td><td><%=colourDesc%></td></tr><%
+						}
 						Object[] sedFeatures = sample.getSedimentaryFeatures().toArray();
 						String[] sedFeaturesStr = new String[sedFeatures.length];
 						for (int i = 0; i < sedFeatures.length; i++)
 							sedFeaturesStr[i] = SampleUtil.getSedFeatureDescription((SedimentaryFeature) sedFeatures[i]);
 						addRepeatingCells(new PrintWriter(out), "Additional Features", sedFeaturesStr, false);
-						%><tr><td class="heading">Inferred Environment</td><td><%=DBUtils.nvl(sample.getDepositionEnv())%></td></tr>
-						<tr><td class="heading">Nature of Rock Unit</td><td><%=DBUtils.nvl(sample.getRockNature())%></td></tr>
-						<tr><td class="heading">Correspondence</td><td><%=DBUtils.nvl(sample.getCorrespondence())%></td></tr><%
+						if (sample.getDepositionEnv() != null) {
+							%><tr><td class="heading">Inferred Environment</td><td><%=sample.getDepositionEnv()%></td></tr><%
+						}
+						if (sample.getRockNature() != null) {
+							%><tr><td class="heading">Nature of Rock Unit</td><td><%=sample.getRockNature()%></td></tr><%
+						}
+						if (sample.getCorrespondence() != null) {
+							%><tr><td class="heading">Correspondence</td><td><%=sample.getCorrespondence()%></td></tr><%
+						}
 						
 						//Image/Files
 						if (sample.getSampleMetas().size() > 0) {
@@ -563,9 +635,15 @@ try {
 								for (int j = 0; j < adoptors.length; j++)
 									adoptorsStr[j] = ((PersonRelationship) adoptors[j]).getDisplayName();
 								addRepeatingCells(new PrintWriter(out), "Adoptors", adoptorsStr, false);
-								%><tr><td class="heading">Adoption Date</td><td><%=((adoRecord.getAdoptionDate() != null) ? FREDUtil.formatDateForOutput(adoRecord.getAdoptionDate(), adoRecord.getDateRounding()) : "&nbsp;")%></td></tr>
-								<tr><td class="heading">Adopted Stage</td><td><%=((adoRecord.getStage() != null) ? StageUtil.getStageDescription(adoRecord.getStage()) : "&nbsp;")%></td></tr>
-								<tr><td class="heading">Comments</td><td><%=DBUtils.nvl(adoRecord.getComments())%></td></tr><%
+								if (adoRecord.getAdoptionDate() != null) {
+									%><tr><td class="heading">Adoption Date</td><td><%=FREDUtil.formatDateForOutput(adoRecord.getAdoptionDate(), adoRecord.getDateRounding())%></td></tr><%
+								}
+								if (adoRecord.getStage() != null) {
+									%><tr><td class="heading">Adopted Stage</td><td><%=StageUtil.getStageDescription(adoRecord.getStage())%></td></tr><%
+								}
+								if (adoRecord.getComments() != null) {
+									%><tr><td class="heading">Comments</td><td><%=adoRecord.getComments()%></td></tr><%
+								}
 								
 								//Image/Files
 								if (adoRecord.getRecord().getRecordMetas().size() > 0) {
@@ -599,11 +677,21 @@ try {
 								for (int j = 0; j < identifiers.length; j++)
 									identifiersStr[j] = ((PersonRelationship) identifiers[j]).getDisplayName();
 								addRepeatingCells(new PrintWriter(out), "Identifiers", identifiersStr, false);
-								%><tr><td class="heading">Identification Date</td><td><%=((palRecord.getIdentificationDate() != null) ? FREDUtil.formatDateForOutput(palRecord.getIdentificationDate(), palRecord.getDateRounding()) : "&nbsp;")%></td></tr>
-								<tr><td class="heading">Stage</td><td><%=((palRecord.getStage() != null) ? StageUtil.getStageDescription(palRecord.getStage()) : "&nbsp;")%></td></tr>
-								<tr><td class="heading">Stage Comments</td><td><%=DBUtils.nvl(palRecord.getStageComments())%></td></tr>
-								<tr><td class="heading">Lab Number</td><td><%=((palRecord.getLabNumber() != null) ? RecordUtil.getLabNumberDescription(palRecord) : "&nbsp;")%></td></tr>
-								<tr><td class="heading">Collection Comments</td><td><%=DBUtils.nvl(palRecord.getCollectionComments())%></td></tr><%
+								if (palRecord.getIdentificationDate() != null) {
+									%><tr><td class="heading">Identification Date</td><td><%=FREDUtil.formatDateForOutput(palRecord.getIdentificationDate(), palRecord.getDateRounding())%></td></tr><%
+								}
+								if (palRecord.getStage() != null) {
+									%><tr><td class="heading">Stage</td><td><%=StageUtil.getStageDescription(palRecord.getStage())%></td></tr><%
+								}
+								if (palRecord.getStageComments() != null) {
+									%><tr><td class="heading">Stage Comments</td><td><%=palRecord.getStageComments()%></td></tr><%
+								}
+								if (palRecord.getLabNumber() != null) {
+									%><tr><td class="heading">Lab Number</td><td><%=RecordUtil.getLabNumberDescription(palRecord)%></td></tr><%
+								}
+								if (palRecord.getCollectionComments() != null) {
+									%><tr><td class="heading">Collection Comments</td><td><%=palRecord.getCollectionComments()%></td></tr><%
+								}
 				
 								//taxa (Pal list)
 								if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
