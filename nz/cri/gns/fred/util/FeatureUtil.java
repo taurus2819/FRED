@@ -873,7 +873,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			String serialNumStr = String.valueOf(serialNumber);
 			while (serialNumStr.length() < 4)
 				serialNumStr = "0" + serialNumStr;
-			System.out.println("parsed FRNumber = " + mapSheet + "/f" + serialNumStr + ((recollectionNumber != null) ? recollectionNumber : ""));
 			FrNumber frNumber = featureDAO.getFrNumber(mapSheet + "/f" + serialNumStr + ((recollectionNumber != null) ? recollectionNumber : ""));
 			if (frNumber == null && createNew) {
 				frNumber = new nz.cri.gns.fred.hibernate.FrNumber();
