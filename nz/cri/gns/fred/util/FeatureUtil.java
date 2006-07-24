@@ -333,6 +333,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (feature.getFrNumber() != null)
 			feature.setFrNumber(null);
 		
+		if (!FREDUtil.isEmpty(feature.getRelationships())) {
+			Feature relFeature = ((Relationship)feature.getRelationships().iterator().next()).getFeature();
+			throw new IllegalStateException("Cannot delete this locality as is references in a relationship with " + FeatureUtil.getFeatureIdentifyingName(relFeature));
+		}
+		
 		Audit audit = feature.getAudit();
 
 		featureDAO.delete(feature);
