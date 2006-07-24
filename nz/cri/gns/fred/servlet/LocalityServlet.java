@@ -11,6 +11,7 @@ import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FrNumber;
+import nz.cri.gns.fred.util.FeatureUtil;
 
 public class LocalityServlet extends HttpServlet {
 
@@ -28,10 +29,11 @@ public class LocalityServlet extends HttpServlet {
 		try {
 			factory = HibernateUtil.get().getDAOFactory();
 			
-			FrNumber num = factory.getFeatureDAO().getFrNumber(frNum);
-			Feature feature = num.getFeatures().iterator().next();
-			
-			response.sendRedirect("../../detail.jsp?FeatID=" + feature.getFeatureId());
+			FrNumber num = new FeatureUtil(factory).parseFrNumber(frNum, false);
+			if (num != null) {
+				Feature feature = num.getFeatures().iterator().next();
+				response.sendRedirect("../../detail.jsp?FeatID=" + feature.getFeatureId());
+			}
 		} catch (Exception e) {
 			//Don't log this by default or we'll get a record of every clown's mistake
 			if (false)
