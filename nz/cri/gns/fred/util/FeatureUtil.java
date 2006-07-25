@@ -540,6 +540,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			}
 			
 			//delete merge feature
+			System.out.println("Deleting feature");
 			deleteFeature(mergeFromFeature, user);
 		}
 	}	
