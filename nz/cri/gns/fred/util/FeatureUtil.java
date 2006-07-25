@@ -345,7 +345,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
 		System.out.println("Deleting Feature");
 		featureDAO.delete(feature);
-		\System.out.println("Deleting Audit");
+		System.out.println("Deleting Audit");
 		featureDAO.delete(audit);
 		//try deleting FRNumbers - if can't then must be referenced elsewhere
 		try {
