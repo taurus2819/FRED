@@ -337,7 +337,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		
 		Audit audit = feature.getAudit();
 		FrNumber frNumber = feature.getFrNumber();
+		feature.setFrNumber(null);
 		FrNumber yardFrNumber = feature.getYardFrNumber();
+		feature.setYardFrNumber(null);
 
 		featureDAO.delete(feature);
 		featureDAO.delete(audit);
