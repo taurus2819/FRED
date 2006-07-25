@@ -178,4 +178,7 @@ public interface FeatureDAO {
 	 * 
 	 */
 	public List<FrNumber> getFrNumbers(String mapSheet, int start, int end) throws StorageAccessException;
+	
+	public void delete(FrNumber frNumber) throws StorageAccessException;
+	
 }
