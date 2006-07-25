@@ -499,7 +499,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			if (mergeToFeature.getFeatureType().equals(FREDConstants.OUTCROP) || mergeFromFeature.getFeatureType().equals(FREDConstants.OUTCROP))
 				throw new IllegalStateException("Cannot merge outcrop localities");
 			
-			FrNumber mergeToFRNumber = mergeToFeature.getFrNumber();
+			FrNumber mergeToFrNumber = mergeToFeature.getFrNumber();
+			if (mergeToFrNumber != null)
+				System.out.println("Merging to FRNumber: " + mergeToFrNumber.getFrNumber());
+			else
+				System.out.println("Merging to FRNumber = null");
 			//put in array as feature.getSamples() changes as you change sample's feature
 			Object[] samples = mergeFromFeature.getSamples().toArray();
 			
@@ -523,8 +527,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				featureDAO.save(edit);
 	
 				//set sample FRNumber if currently null
-				if (sample.getFrNumber() == null)
-					sample.setFrNumber(mergeToFRNumber);
+				if (sample.getFrNumber() == null && mergeToFrNumber != null) {
+					System.out.println("Merge From sample FRNumber = null");
+					sample.setFrNumber(mergeToFrNumber);
+					System.out.println("Merge From sample FRNumber = " + mergeToFrNumber.getFrNumber());
+				}
 				sample.setFeature(mergeToFeature);			
 				
 				sampleDAO.update(sample);
