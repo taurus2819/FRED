@@ -335,19 +335,25 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			throw new IllegalStateException("Cannot delete this locality as it is referenced in a relationship by " + FeatureUtil.getFeatureIdentifyingName(relFeature));
 		}
 		
+		System.out.println("Ready to delete feature " + getFeatureIdentifyingName(feature));
+		
 		Audit audit = feature.getAudit();
 		FrNumber frNumber = feature.getFrNumber();
 		feature.setFrNumber(null);
 		FrNumber yardFrNumber = feature.getYardFrNumber();
 		feature.setYardFrNumber(null);
 
+		System.out.println("Deleting Feature");
 		featureDAO.delete(feature);
+		\System.out.println("Deleting Audit");
 		featureDAO.delete(audit);
 		//try deleting FRNumbers - if can't then must be referenced elsewhere
 		try {
+			System.out.println("Deleting FRNumber");
 			featureDAO.delete(frNumber);
 		} catch (Exception e) {}
 		try {
+			System.out.println("Deleting YardFRNumber");
 			featureDAO.delete(yardFrNumber);
 		} catch (Exception e) {}
 		
