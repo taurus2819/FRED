@@ -338,20 +338,18 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		System.out.println("Ready to delete feature " + getFeatureIdentifyingName(feature));
 		
 		Audit audit = feature.getAudit();
+		feature.setAudit(null);
 		FrNumber frNumber = feature.getFrNumber();
 		feature.setFrNumber(null);
 		FrNumber yardFrNumber = feature.getYardFrNumber();
 		feature.setYardFrNumber(null);
 		
-		System.out.println("Delete feature from folder content");
-		feature.setFolders(null);
-
 		System.out.println("Deleting Feature");
 		featureDAO.delete(feature);
-		System.out.println("Deleting Audit");
-		audit.setFolder(null);
-		featureDAO.delete(audit);
-		//Delete FRNumbers if not used elsewhere
+		if (audit != null && FREDUtil.isEmpty(audit.getFeatures()) && FREDUtil.isEmpty(audit.getSamples()) && FREDUtil.isEmpty(audit.getRecords())) {
+			System.out.println("Deleting Audit");
+			featureDAO.delete(audit);
+		}
 		if (frNumber != null && FREDUtil.isEmpty(frNumber.getFeatures()) && FREDUtil.isEmpty(frNumber.getSamples())) {
 			System.out.println("Deleting FRNumber");
 			featureDAO.delete(frNumber);
