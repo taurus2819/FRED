@@ -349,6 +349,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		System.out.println("Deleting Feature");
 		featureDAO.delete(feature);
 		System.out.println("Deleting Audit");
+		audit.setFolder(null);
 		featureDAO.delete(audit);
 		//Delete FRNumbers if not used elsewhere
 		if (frNumber != null && FREDUtil.isEmpty(frNumber.getFeatures()) && FREDUtil.isEmpty(frNumber.getSamples())) {
@@ -588,7 +589,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			if (featuresToAdd != null)
 				features.addAll(featuresToAdd);
 
-			//- results
+			//- records
 			featuresToAdd = featureDAO.getFeaturesByRecord(audit);
 			if (featuresToAdd != null)
 				features.addAll(featuresToAdd);
