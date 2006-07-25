@@ -330,18 +330,25 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (!userFolder.isAllowedDeleteLocalities())
 			throw new InsufficientPrivelegesException();
 		
-		if (feature.getFrNumber() != null)
-			feature.setFrNumber(null);
-		
 		if (!FREDUtil.isEmpty(feature.getRelationships())) {
 			Feature relFeature = ((Relationship)feature.getRelationships().iterator().next()).getSample().getFeature();
 			throw new IllegalStateException("Cannot delete this locality as it is referenced in a relationship by " + FeatureUtil.getFeatureIdentifyingName(relFeature));
 		}
 		
 		Audit audit = feature.getAudit();
+		FrNumber frNumber = feature.getFrNumber();
+		FrNumber yardFrNumber = feature.getYardFrNumber();
 
 		featureDAO.delete(feature);
 		featureDAO.delete(audit);
+		//try deleting FRNumbers - if can't then must be referenced elsewhere
+		try {
+			featureDAO.delete(frNumber);
+		} catch (Exception e) {}
+		try {
+			featureDAO.delete(yardFrNumber);
+		} catch (Exception e) {}
+		
 	}
 	
 	public void removeFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
@@ -492,7 +499,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			if (mergeToFeature.getFeatureType().equals(FREDConstants.OUTCROP) || mergeFromFeature.getFeatureType().equals(FREDConstants.OUTCROP))
 				throw new IllegalStateException("Cannot merge outcrop localities");
 			
-			//FrNumber mergeToFRNumber = FeatureUtil.getFrNumber(mergeToFeature);
+			FrNumber mergeToFRNumber = mergeToFeature.getFrNumber();
 			//put in array as feature.getSamples() changes as you change sample's feature
 			Object[] samples = mergeFromFeature.getSamples().toArray();
 			
@@ -516,9 +523,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				featureDAO.save(edit);
 	
 				//set sample FRNumber if currently null
-				//if (sample.getFrNumber() == null)
-				//	sample.setFrNumber(mergeToFRNumber);
-				//sample.setFeature(mergeToFeature);			
+				if (sample.getFrNumber() == null)
+					sample.setFrNumber(mergeToFRNumber);
+				sample.setFeature(mergeToFeature);			
 				
 				sampleDAO.update(sample);
 			}
