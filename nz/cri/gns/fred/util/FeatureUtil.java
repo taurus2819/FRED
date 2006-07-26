@@ -525,7 +525,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 					Audit newAudit = new AuditUtil(factory).cloneAudit(sample.getAudit());
 					featureDAO.save(newAudit);
 					sample.setAudit(newAudit);
-					sampleDAO.update(sample);
+					//sampleDAO.update(sample);
 				}
 	
 				//add comments
@@ -540,7 +540,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				if (sample.getFrNumber() == null && mergeToFrNumber != null) {
 					System.out.println("Merge From sample FRNumber = null");
 					sample.setFrNumber(mergeToFrNumber);
-					System.out.println("Merge From sample FRNumber = " + mergeToFrNumber.getFrNumber());
+					System.out.println("Merge From sample FRNumber = " + sample.getFrNumber().getFrNumber());
 				}
 				sample.setFeature(mergeToFeature);			
 				
