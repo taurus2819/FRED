@@ -509,6 +509,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				throw new IllegalStateException("Cannot merge outcrop localities");
 			
 			FrNumber mergeFromFrNumber = mergeFromFeature.getFrNumber();
+			FrNumber mergeFromYardFrNumber = mergeFromFeature.getYardFrNumber();
 			//put in array as feature.getSamples() changes as you change sample's feature
 			Object[] samples = mergeFromFeature.getSamples().toArray();
 			
@@ -517,7 +518,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				Sample sample = (Sample) samples[i];
 				//check audits - if same as feature then create new onw
 				if (sample.getAudit().equals(mergeFromFeature.getAudit())) {
-					System.out.println("Adding new audit entry for sample");
 					Audit newAudit = new AuditUtil(factory).cloneAudit(sample.getAudit());
 					featureDAO.save(newAudit);
 					sample.setAudit(newAudit);
@@ -532,19 +532,17 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				featureDAO.save(edit);
 	
 				//set sample FRNumber if currently null
-				if (sample.getFrNumber() == null && mergeFromFrNumber != null) {
-					System.out.println("Merge From sample FRNumber = null");
+				if (sample.getFrNumber() == null && mergeFromFrNumber != null)
 					sample.setFrNumber(mergeFromFrNumber);
-					System.out.println("Merge From sample FRNumber = " + sample.getFrNumber().getFrNumber());
-				}
+				if (sample.getYardFrNumber() == null && mergeFromYardFrNumber != null)
+					sample.setYardFrNumber(mergeFromYardFrNumber);
 				sample.setFeature(mergeToFeature);			
 				
 				sampleDAO.update(sample);
 			}
 			
 			//delete merge feature
-			System.out.println("Deleting feature");
-			//deleteFeature(mergeFromFeature, user);
+			deleteFeature(mergeFromFeature, user);
 		}
 	}	
 	
