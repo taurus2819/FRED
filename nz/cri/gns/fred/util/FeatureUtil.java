@@ -357,7 +357,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (yardFrNumber != null && FREDUtil.isEmpty(yardFrNumber.getFeatures()) && FREDUtil.isEmpty(yardFrNumber.getSamples())) {
 			System.out.println("Deleting YardFRNumber");
 			featureDAO.delete(yardFrNumber);
-		}		
+		}
 	}
 	
 	public void removeFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
@@ -521,6 +521,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				Sample sample = (Sample) samples[i];
 				//check audits - if same as feature then create new onw
 				if (sample.getAudit().equals(mergeFromFeature.getAudit())) {
+					System.out.println("Adding new audit entry for sample");
 					Audit newAudit = new AuditUtil(factory).cloneAudit(sample.getAudit());
 					featureDAO.save(newAudit);
 					sample.setAudit(newAudit);
@@ -548,7 +549,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			
 			//delete merge feature
 			System.out.println("Deleting feature");
-			deleteFeature(mergeFromFeature, user);
+			//deleteFeature(mergeFromFeature, user);
 		}
 	}	
 	
