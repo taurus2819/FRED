@@ -344,8 +344,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		FrNumber yardFrNumber = feature.getYardFrNumber();
 		feature.setYardFrNumber(null);
 		
-		System.out.println("Deleting Feature");
-		featureDAO.delete(feature);
 		if (audit != null && FREDUtil.isEmpty(audit.getFeatures()) && FREDUtil.isEmpty(audit.getSamples()) && FREDUtil.isEmpty(audit.getRecords())) {
 			System.out.println("Deleting Audit");
 			featureDAO.delete(audit);
@@ -358,6 +356,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			System.out.println("Deleting YardFRNumber");
 			featureDAO.delete(yardFrNumber);
 		}
+		
+		System.out.println("Deleting Feature");
+		featureDAO.delete(feature);
 	}
 	
 	public void removeFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
