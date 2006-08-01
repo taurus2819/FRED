@@ -322,6 +322,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	public void deleteFeature(Feature feature, UserAccount user) throws InsufficientPrivelegesException, StorageAccessException {
+		System.out.println("** Deleting Feature: " + getFeatureIdentifyingName(feature) + " **");
 		Folder folder = feature.getAudit().getFolder();
 		if (folder == null)
 			folder = feature.getMasterFile();
@@ -333,10 +334,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		
 		if (!FREDUtil.isEmpty(feature.getRelationships())) {
 			Feature relFeature = ((Relationship)feature.getRelationships().iterator().next()).getSample().getFeature();
-			throw new IllegalStateException("Cannot delete this locality as it is referenced in a relationship by " + FeatureUtil.getFeatureIdentifyingName(relFeature));
+			throw new IllegalStateException("Cannot delete this locality as it is referenced in a relationship by " + getFeatureIdentifyingName(relFeature));
 		}
 		
 		Audit audit = feature.getAudit();
+		feature.setAudit(null);
 		audit.getFeatures().remove(feature);
 		deleteAudit(audit);
 		FrNumber frNumber = feature.getFrNumber();
@@ -347,10 +349,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		for (Sample sample : feature.getSamples()) {
 			audit = sample.getAudit();
 			audit.getSamples().remove(sample);
+			sample.setAudit(null);
 			deleteAudit(audit);
 			for (Record record : sample.getRecords()) {
 				audit = record.getAudit();
 				audit.getRecords().remove(record);
+				record.setAudit(null);
 				deleteAudit(audit);
 			}
 		}
