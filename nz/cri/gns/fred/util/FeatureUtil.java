@@ -322,7 +322,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	public void deleteFeature(Feature feature, UserAccount user) throws InsufficientPrivelegesException, StorageAccessException {
-		System.out.println("** Deleting Feature: " + getFeatureIdentifyingName(feature) + " **");
 		Folder folder = feature.getAudit().getFolder();
 		if (folder == null)
 			folder = feature.getMasterFile();
@@ -359,7 +358,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			}
 		}
 		
-		
 		if (frNumber != null && FREDUtil.isEmpty(frNumber.getFeatures()) && FREDUtil.isEmpty(frNumber.getSamples()))
 			featureDAO.delete(frNumber);
 		if (yardFrNumber != null && FREDUtil.isEmpty(yardFrNumber.getFeatures()) && FREDUtil.isEmpty(yardFrNumber.getSamples()))
@@ -369,10 +367,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	private void deleteAudit(Audit audit) throws StorageAccessException {
-		if (audit != null && FREDUtil.isEmpty(audit.getFeatures()) && FREDUtil.isEmpty(audit.getSamples()) && FREDUtil.isEmpty(audit.getRecords())) {
-			System.out.println("Deleting auditId: " + audit.getAuditId());
-			featureDAO.delete(audit);
-		}			
+		if (audit != null && FREDUtil.isEmpty(audit.getFeatures()) && FREDUtil.isEmpty(audit.getSamples()) && FREDUtil.isEmpty(audit.getRecords()))
+			featureDAO.delete(audit);		
 	}
 	
 	public void removeFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
@@ -579,10 +575,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		
 		//Get from feature_content
 		Collection<? extends Feature> featuresToAdd = folder.getFolder().getFeatures();
-		if (featuresToAdd != null) {
-			outputFeaturesToAdd("Folder_Content", featuresToAdd);
+		if (featuresToAdd != null)
 			features.addAll(featuresToAdd);
-		}
 		
 		//Get from audit
 		List<Audit> audits = folderDAO.getAuditsFor(folder.getFolder());
@@ -590,35 +584,23 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		for (Audit audit : audits) {
 			// - features
 			featuresToAdd = audit.getFeatures();
-			if (featuresToAdd != null) {
-				outputFeaturesToAdd("Feature Audit", featuresToAdd);
+			if (featuresToAdd != null)
 				features.addAll(featuresToAdd);
-			}
 			
 			//- samples
 			featuresToAdd = featureDAO.getFeaturesBySample(audit);
-			if (featuresToAdd != null) {
-				outputFeaturesToAdd("Sample Audit", featuresToAdd);
+			if (featuresToAdd != null)
 				features.addAll(featuresToAdd);
-			}
-
+			
 			//- records
 			featuresToAdd = featureDAO.getFeaturesByRecord(audit);
-			if (featuresToAdd != null) {
-				outputFeaturesToAdd("Record Audit", featuresToAdd);
+			if (featuresToAdd != null)
 				features.addAll(featuresToAdd);
-			}
-
 		}
 		
 		Feature[] featuresArray = features.toArray(new Feature[features.size()]); 
 		Arrays.sort(featuresArray);
 		return featuresArray;
-	}
-	
-	private void outputFeaturesToAdd(String s, Collection<? extends Feature> f) {
-		for (Feature feature : f)
-			System.out.println("Adding " + getFeatureIdentifyingName(feature) + " from " + s);
 	}
 	
 	public static Feature[] getOrderedFeaturesInMasterfile(Folder masterfile) {
