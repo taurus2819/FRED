@@ -335,8 +335,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			throw new IllegalStateException("Cannot delete this locality as it is referenced in a relationship by " + FeatureUtil.getFeatureIdentifyingName(relFeature));
 		}
 		
-		System.out.println("Ready to delete feature " + getFeatureIdentifyingName(feature));
-		
 		Audit audit = feature.getAudit();
 		feature.setAudit(null);
 		FrNumber frNumber = feature.getFrNumber();
@@ -344,20 +342,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		FrNumber yardFrNumber = feature.getYardFrNumber();
 		feature.setYardFrNumber(null);
 		
-		if (audit != null && FREDUtil.isEmpty(audit.getFeatures()) && FREDUtil.isEmpty(audit.getSamples()) && FREDUtil.isEmpty(audit.getRecords())) {
-			System.out.println("Deleting Audit");
+		if (audit != null && FREDUtil.isEmpty(audit.getFeatures()) && FREDUtil.isEmpty(audit.getSamples()) && FREDUtil.isEmpty(audit.getRecords()))
 			featureDAO.delete(audit);
-		}
-		if (frNumber != null && FREDUtil.isEmpty(frNumber.getFeatures()) && FREDUtil.isEmpty(frNumber.getSamples())) {
-			System.out.println("Deleting FRNumber");
+		if (frNumber != null && FREDUtil.isEmpty(frNumber.getFeatures()) && FREDUtil.isEmpty(frNumber.getSamples()))
 			featureDAO.delete(frNumber);
-		}
-		if (yardFrNumber != null && FREDUtil.isEmpty(yardFrNumber.getFeatures()) && FREDUtil.isEmpty(yardFrNumber.getSamples())) {
-			System.out.println("Deleting YardFRNumber");
+		if (yardFrNumber != null && FREDUtil.isEmpty(yardFrNumber.getFeatures()) && FREDUtil.isEmpty(yardFrNumber.getSamples()))
 			featureDAO.delete(yardFrNumber);
-		}
 		
-		System.out.println("Deleting Feature");
 		featureDAO.delete(feature);
 	}
 	
@@ -565,8 +556,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		
 		//Get from feature_content
 		Collection<? extends Feature> featuresToAdd = folder.getFolder().getFeatures();
-		if (featuresToAdd != null)
+		if (featuresToAdd != null) {
+			outputFeaturesToAdd("Folder_Content", featuresToAdd);
 			features.addAll(featuresToAdd);
+		}
 		
 		//Get from audit
 		List<Audit> audits = folderDAO.getAuditsFor(folder.getFolder());
@@ -574,24 +567,35 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		for (Audit audit : audits) {
 			// - features
 			featuresToAdd = audit.getFeatures();
-			if (featuresToAdd != null)
+			if (featuresToAdd != null) {
+				outputFeaturesToAdd("Feature Audit", featuresToAdd);
 				features.addAll(featuresToAdd);
+			}
 			
 			//- samples
 			featuresToAdd = featureDAO.getFeaturesBySample(audit);
-			if (featuresToAdd != null)
+			if (featuresToAdd != null) {
+				outputFeaturesToAdd("Sample Audit", featuresToAdd);
 				features.addAll(featuresToAdd);
+			}
 
 			//- records
 			featuresToAdd = featureDAO.getFeaturesByRecord(audit);
-			if (featuresToAdd != null)
+			if (featuresToAdd != null) {
+				outputFeaturesToAdd("Record Audit", featuresToAdd);
 				features.addAll(featuresToAdd);
+			}
 
 		}
 		
 		Feature[] featuresArray = features.toArray(new Feature[features.size()]); 
 		Arrays.sort(featuresArray);
 		return featuresArray;
+	}
+	
+	private void outputFeaturesToAdd(String s, Collection<? extends Feature> f) {
+		for (Feature feature : f)
+			System.out.println("Adding " + getFeatureIdentifyingName(feature) + " from " + s);
 	}
 	
 	public static Feature[] getOrderedFeaturesInMasterfile(Folder masterfile) {

@@ -171,7 +171,15 @@
 			Feature[] features = featureUtil.getFeaturesInFolder(folder);
 			for (int i = 0; i < features.length; i++) {
 				Feature feature = features[i];
+				if (feature != null)
+					System.out.println("Feature " +  FeatureUtil.getFeatureIdentifyingName(feature));
+				else
+					System.out.println("Feature is null");
 				Audit audit = feature.getAudit();
+				if (audit != null)
+					System.out.println("Audit exists");
+				else
+					System.out.println("Audit is null");
 				String status = audit.getStatus();
 				String name = FeatureUtil.getFeatureIdentifyingName(feature);
 				String featName = feature.getFeatureName();
