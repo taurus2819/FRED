@@ -332,8 +332,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			throw new InsufficientPrivelegesException();
 		
 		if (!FREDUtil.isEmpty(feature.getRelationships())) {
-			Feature relFeature = ((Relationship)feature.getRelationships().iterator().next()).getSample().getFeature();
-			throw new IllegalStateException("Cannot delete this locality as it is referenced in a relationship by " + getFeatureIdentifyingName(relFeature));
+			try {
+				Feature relFeature = ((Relationship)feature.getRelationships().iterator().next()).getSample().getFeature();
+				throw new IllegalStateException("Cannot delete this locality as it is referenced in a relationship by " + getFeatureIdentifyingName(relFeature));
+			} catch (Exception e) {
+				throw new IllegalStateException("Cannot delete this locality as it is referenced in a relationship");
+			}
 		}
 		
 		Audit audit = feature.getAudit();
