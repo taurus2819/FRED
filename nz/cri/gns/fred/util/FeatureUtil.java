@@ -551,7 +551,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 					sample.setFrNumber(mergeFromFrNumber);
 				if (sample.getYardFrNumber() == null && mergeFromYardFrNumber != null)
 					sample.setYardFrNumber(mergeFromYardFrNumber);
-				sample.setFeature(mergeToFeature);			
+				sample.setFeature(mergeToFeature);
+				mergeFromFeature.getSamples().remove(sample);
 				
 				sampleDAO.update(sample);
 			}
