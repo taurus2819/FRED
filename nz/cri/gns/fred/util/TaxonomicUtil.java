@@ -183,7 +183,7 @@ public class TaxonomicUtil extends ModelUtil {
     }
     
     private static String cleanTaxaNameOpen (String taxaName, String checkString) {
-    	System.out.println("cleanTaxaNameOpen start: " + taxaName);
+    	System.out.println("cleanTaxaNameOpen start: " + taxaName + ", checkString: " + checkString);
     	taxaName = cleanAlphaChar(taxaName, checkString);
     	taxaName = cleanTaxaName(taxaName, "n." + checkString + "indet.");
     	taxaName = cleanTaxaName(taxaName, "n. " + checkString + "indet.");
