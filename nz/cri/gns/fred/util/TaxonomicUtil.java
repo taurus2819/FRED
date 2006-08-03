@@ -183,6 +183,7 @@ public class TaxonomicUtil extends ModelUtil {
     }
     
     private static String cleanTaxaNameOpen (String taxaName, String checkString) {
+    	System.out.println("cleanTaxaNameOpen start: " + taxaName);
     	taxaName = cleanAlphaChar(taxaName, checkString);
     	taxaName = cleanTaxaName(taxaName, "n." + checkString + "indet.");
     	taxaName = cleanTaxaName(taxaName, "n. " + checkString + "indet.");
@@ -193,6 +194,7 @@ public class TaxonomicUtil extends ModelUtil {
     	taxaName = cleanTaxaName(taxaName, checkString + "indet.");
     	taxaName = cleanTaxaName(taxaName, checkString + " indet.");
     	taxaName = cleanTaxaName(taxaName, checkString);
+    	System.out.println("cleanTaxaNameOpen result: " + taxaName);
         return taxaName;
     }
     
