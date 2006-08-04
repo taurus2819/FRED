@@ -152,7 +152,6 @@ public class TaxonomicUtil extends ModelUtil {
     	cleanName = cleanName.replaceAll("  ", " ");
     	cleanName = cleanName.replaceAll("group", "gr.");
     	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "?");
-    	cleanName = TaxonomicUtil.cleanTaxaNameOpen(cleanName, " et ");
     	cleanName = TaxonomicUtil.cleanTaxaNameOpen(cleanName, "subsp.");
     	cleanName = TaxonomicUtil.cleanTaxaNameOpen(cleanName, "subspp.");
     	cleanName = TaxonomicUtil.cleanTaxaNameOpen(cleanName, "sp.");
@@ -161,6 +160,7 @@ public class TaxonomicUtil extends ModelUtil {
     	cleanName = TaxonomicUtil.cleanTaxaNameOpen(cleanName, "gen.");
     	cleanName = TaxonomicUtil.cleanTaxaNameOpen(cleanName, "subfam.");
     	cleanName = TaxonomicUtil.cleanTaxaNameOpen(cleanName, "fam.");
+    	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, " et ");
     	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "indet.");
     	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "cf.");
     	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "aff.");
