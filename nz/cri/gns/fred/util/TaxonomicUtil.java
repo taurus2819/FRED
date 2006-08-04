@@ -170,7 +170,7 @@ public class TaxonomicUtil extends ModelUtil {
     	cleanName = cleanTaxaName(cleanName, "ex gr.");
     	cleanName = cleanTaxaName(cleanName, "gr.");
     	cleanName = cleanTaxaName(cleanName, "var.");
-    	cleanName = cleanEt(cleanName);
+    	cleanName = cleanNoDot(cleanName, "et");
     	return cleanName;
     }
     
@@ -216,20 +216,14 @@ public class TaxonomicUtil extends ModelUtil {
         return taxaName;
     }
 
-    private static String cleanEt(String taxaName) {
-    	System.out.println("cleanET: " + taxaName);
-    	taxaName = cleanTaxaName(taxaName, " et ");
-    	System.out.println("cleaned: " + taxaName);
-    	//check for "et" at end of string
-    	System.out.println("lastIndexOf = " + taxaName.lastIndexOf(" et"));
-    	System.out.println("length = " + taxaName.length());
-    	if (taxaName.lastIndexOf(" et") == taxaName.length() - 3)
+    private static String cleanNoDot(String taxaName, String checkString) {
+    	taxaName = cleanTaxaName(taxaName, " " + checkString + " ");
+    	//check end of string
+    	if (taxaName.lastIndexOf(" " + checkString) == taxaName.length() - checkString.length() - 1)
     		taxaName = taxaName.substring(0, taxaName.lastIndexOf(" et")).trim();
-    	System.out.println("Chopped right: " + taxaName);
-    	//check for "et" at beginning of string
-    	if (taxaName.indexOf("et ") == 0)
-    		taxaName = taxaName.substring(3, taxaName.length()).trim();
-    	System.out.println("Chopped left: " + taxaName);
+    	//check beginning of string
+    	if (taxaName.indexOf(checkString + " ") == 0)
+    		taxaName = taxaName.substring(checkString.length() + 1, taxaName.length()).trim();
     	return taxaName;
     }
     
