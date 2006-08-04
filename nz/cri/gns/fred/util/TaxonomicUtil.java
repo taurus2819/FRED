@@ -223,7 +223,7 @@ public class TaxonomicUtil extends ModelUtil {
     	//check for "et" at end of string
     	System.out.println("lastIndexOf = " + taxaName.lastIndexOf(" et"));
     	System.out.println("length = " + taxaName.length());
-    	if (taxaName.lastIndexOf(" et") == taxaName.length() - 2)
+    	if (taxaName.lastIndexOf(" et") == taxaName.length() - 3)
     		taxaName = taxaName.substring(0, taxaName.lastIndexOf(" et")).trim();
     	System.out.println("Chopped right: " + taxaName);
     	//check for "et" at beginning of string
