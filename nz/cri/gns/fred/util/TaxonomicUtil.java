@@ -151,26 +151,26 @@ public class TaxonomicUtil extends ModelUtil {
     	cleanName = cleanName.replaceAll(">", "'");
     	cleanName = cleanName.replaceAll("  ", " ");
     	cleanName = cleanName.replaceAll("group", "gr.");
-    	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "?");
-    	cleanName = TaxonomicUtil.cleanTaxaNameOpen(cleanName, "subsp.");
-    	cleanName = TaxonomicUtil.cleanTaxaNameOpen(cleanName, "subspp.");
-    	cleanName = TaxonomicUtil.cleanTaxaNameOpen(cleanName, "sp.");
-    	cleanName = TaxonomicUtil.cleanTaxaNameOpen(cleanName, "spp.");
-    	cleanName = TaxonomicUtil.cleanTaxaNameOpen(cleanName, "subgen.");
-    	cleanName = TaxonomicUtil.cleanTaxaNameOpen(cleanName, "gen.");
-    	cleanName = TaxonomicUtil.cleanTaxaNameOpen(cleanName, "subfam.");
-    	cleanName = TaxonomicUtil.cleanTaxaNameOpen(cleanName, "fam.");
-    	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, " et ");
-    	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "indet.");
-    	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "cf.");
-    	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "aff.");
-    	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "MS.");
-    	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "s.s.");
-    	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "s.s");
-    	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "s.l.");
-    	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "ex gr.");
-    	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "gr.");
-    	cleanName = TaxonomicUtil.cleanTaxaName(cleanName, "var.");
+    	cleanName = cleanTaxaName(cleanName, "?");
+    	cleanName = cleanTaxaNameOpen(cleanName, "subsp.");
+    	cleanName = cleanTaxaNameOpen(cleanName, "subspp.");
+    	cleanName = cleanTaxaNameOpen(cleanName, "sp.");
+    	cleanName = cleanTaxaNameOpen(cleanName, "spp.");
+    	cleanName = cleanTaxaNameOpen(cleanName, "subgen.");
+    	cleanName = cleanTaxaNameOpen(cleanName, "gen.");
+    	cleanName = cleanTaxaNameOpen(cleanName, "subfam.");
+    	cleanName = cleanTaxaNameOpen(cleanName, "fam.");
+    	cleanName = cleanTaxaName(cleanName, "indet.");
+    	cleanName = cleanTaxaName(cleanName, "cf.");
+    	cleanName = cleanTaxaName(cleanName, "aff.");
+    	cleanName = cleanTaxaName(cleanName, "MS.");
+    	cleanName = cleanTaxaName(cleanName, "s.s.");
+    	cleanName = cleanTaxaName(cleanName, "s.s");
+    	cleanName = cleanTaxaName(cleanName, "s.l.");
+    	cleanName = cleanTaxaName(cleanName, "ex gr.");
+    	cleanName = cleanTaxaName(cleanName, "gr.");
+    	cleanName = cleanTaxaName(cleanName, "var.");
+    	cleanName = cleanEt(cleanName);
     	return cleanName;
     }
     
@@ -183,7 +183,6 @@ public class TaxonomicUtil extends ModelUtil {
     }
     
     private static String cleanTaxaNameOpen (String taxaName, String checkString) {
-    	System.out.println("cleanTaxaNameOpen start: " + taxaName + ", checkString: " + checkString);
     	taxaName = cleanAlphaChar(taxaName, checkString);
     	taxaName = cleanTaxaName(taxaName, "n." + checkString + "indet.");
     	taxaName = cleanTaxaName(taxaName, "n. " + checkString + "indet.");
@@ -194,7 +193,6 @@ public class TaxonomicUtil extends ModelUtil {
     	taxaName = cleanTaxaName(taxaName, checkString + "indet.");
     	taxaName = cleanTaxaName(taxaName, checkString + " indet.");
     	taxaName = cleanTaxaName(taxaName, checkString);
-    	System.out.println("cleanTaxaNameOpen result: " + taxaName);
         return taxaName;
     }
     
@@ -218,6 +216,23 @@ public class TaxonomicUtil extends ModelUtil {
         return taxaName;
     }
 
+    private static String cleanEt(String taxaName) {
+    	System.out.println("cleanET: " + taxaName);
+    	taxaName = cleanTaxaName(taxaName, " et ");
+    	System.out.println("cleaned: " + taxaName);
+    	//check for "et" at end of string
+    	System.out.println("lastIndexOf = " + taxaName.lastIndexOf(" et"));
+    	System.out.println("length = " + taxaName.length());
+    	if (taxaName.lastIndexOf(" et") == taxaName.length() - 2)
+    		taxaName = taxaName.substring(0, taxaName.lastIndexOf(" et")).trim();
+    	System.out.println("Chopped right: " + taxaName);
+    	//check for "et" at beginning of string
+    	if (taxaName.indexOf("et ") == 0)
+    		taxaName = taxaName.substring(3, taxaName.length()).trim();
+    	System.out.println("Chopped left: " + taxaName);
+    	return taxaName;
+    }
+    
     /**
      * Checks vital comparitive fields and if compatible, then updates others to match
      * and returns true, otherwise return false;
