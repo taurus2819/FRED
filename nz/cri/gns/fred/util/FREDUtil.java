@@ -62,6 +62,7 @@ import org.xml.sax.SAXException;
  *
  */
 public class FREDUtil {
+	private static ThreadLocal<Connection> docAttacherConnections = new ThreadLocal<Connection>();
 	
 	public static class CopyAll implements Instruction {
 		public boolean include(PropertyDescriptor prop) {
@@ -714,9 +715,11 @@ public class FREDUtil {
     }
 
 	public static DocumentAttacher getDocumentAttacher(String docType, PageState state) throws SQLException, DataException, IOException, NamingException {
+		Connection connection = getConnection();
+		docAttacherConnections.set(connection);
 		return new DocumentAttacher(state.getSession(),
 				state.getContext(),
-				new DBConnection(getConnection()),
+				new DBConnection(connection),
 				"Fossil Record File",
 				1,
 				docType.toUpperCase() + "_META",
@@ -724,6 +727,10 @@ public class FREDUtil {
 				new Object[] {DocumentAttacher.ID_PLACEHOLDER, DocumentAttacher.DOCUMENT_PLACEHOLDER});
 	}
     
+	public static void closeDocumentAttacherConnection() throws SQLException {
+		docAttacherConnections.get().close();
+	}
+	
     public static String decodeCombo(String parameter) {
     	return ("-".equals(parameter) || "".equals(parameter)) ? null : parameter;
     }
