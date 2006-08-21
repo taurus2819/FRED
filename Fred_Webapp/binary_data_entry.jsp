@@ -61,14 +61,13 @@
 				docType = "PAL_LIST";
 				loadId = Integer.parseInt(palListId);
 			}
-			
+				
 			DocumentAttacher attacher = null;
-			MetadataRecord[] mrs = attacher.getDocumentsForId(loadId);
-			
-			if (folder.isAllowedEditLocalities()) {
+			if (folder.isAllowedEditLocalities()) try {
+				attacher = FREDUtil.getDocumentAttacher(docType, state);
+				MetadataRecord[] mrs = attacher.getDocumentsForId(loadId);
 				if (request.getParameter("Action") != null) {
 					try {
-						attacher = FREDUtil.getDocumentAttacher(docType, state);
 						if (request.getParameter("Action").equals("Insert")) {
 							int docID = attacher.insertDocument(loadId, request, "Upload");
 							MetadataRecord mr = attacher.getDocumentForId(docID);
@@ -86,12 +85,6 @@
 						%><script language="JavaScript">
 						alert("Your file can not be loaded: <%=e%>");
 						</script><%
-					} finally {
-						if (attacher != null) try {
-							FREDUtil.closeDocumentAttacherConnection();
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
 					}
 				}
 				
@@ -160,8 +153,14 @@
 					%></p><%
 				}
 				%></center><%
+			} finally {
+				if (attacher != null) try {
+					FREDUtil.closeDocumentAttacherConnection();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-		}
+		} 
 		else {
 			%><p><span class="subhead">Access denied</span></p>You don't have sufficient rights in this folder.  Click <a href="index.jsp" class="heading">here</a> to return to the FRED home page.<%
 		}
