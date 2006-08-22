@@ -55,7 +55,7 @@
 			features = (TreeSet<Feature>) session.getAttribute("FRED.features");
 			queryString = (String) session.getAttribute("FRED.queryString");
 		} else {
-			System.out.println("SELECT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
+			//System.out.println("SELECT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
 			ResultSet rs = statement.executeQuery("SELECT DISTINCT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
 			while (rs.next()) {
 				Feature feature = featureUtil.getFeature(rs.getInt(1));
