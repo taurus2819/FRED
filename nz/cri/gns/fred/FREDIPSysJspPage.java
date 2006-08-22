@@ -16,9 +16,10 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.website.ContentProvider;
+import nz.cri.gns.jsp.CustomHTMLLink;
 import nz.cri.gns.jsp.ExtranetTemplate;
 import nz.cri.gns.jsp.IPSysJspPage;
-import nz.cri.gns.jsp.IconnedLink;
+import nz.cri.gns.jsp.Link;
 import nz.cri.gns.jsp.PageState;
 
 public abstract class FREDIPSysJspPage extends IPSysJspPage {
@@ -75,6 +76,13 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 		KeyValueObject logos[] = new KeyValueObject[1];
 		logos[0] = new KeyValueObject("http://www.gsnz.org.nz", "images/gsnz_logo_head.gif");
 		et.setHeaderLogos(logos);
+		
+		//set FRNumber lik
+		String htmlLink = "<form method=\"get\" action=\"locality\" name=\"FRNumJumpForm\">"
+			+ "<input type=\"text\" size=\"10\" name=\"FRNum\" />"
+			+ "&nbsp;<a href=\"javascript:document.FRNumJumpForm.action='locality/' + document.FRNumJumpForm.FRNum.value;document.FRNumJumpForm.submit();\">Go to locality</a>"
+			+ "</form";
+		et.setButtons(new Link[] {new CustomHTMLLink(htmlLink)});
 		return et;
 	}
 
@@ -87,9 +95,19 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 		return cp;
 	}
 	
-	protected IconnedLink[] getButtons(HttpServletRequest request) {
-		return new IconnedLink[0];
+	public void addButtons(ExtranetTemplate et, Link[] links) {
+		Link[] buttons = et.getButtons();
+		Link[] l = new Link[buttons.length + links.length];
+		for (int i = 0; i < buttons.length; i++)
+			l[i] = buttons[i];
+		for (int i = 0; i < links.length; i++)
+			l[i + buttons.length] = links[i];
+		et.setButtons(l);
 	}
+	
+	//protected Link[] getButtons(HttpServletRequest request) {
+	//	return new Link[0];
+	//}
 	
 	protected void startDETable(PageContext context) throws IOException, ServletException {
         context.include("/content/detablestart.html");
