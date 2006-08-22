@@ -416,6 +416,10 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				table.setSpacingAfter(3 * MM_TO_PT);
 				PDFUtil.addCells(table, new String[] {((sample.getFeature().getFeatureType().equals(FREDConstants.DRILLHOLE)) ? "Drillhole" : "Section") + " Name", sample.getFeature().getFeatureName()}, new Font[] {fonts[2], fonts[3]});
 				PDFUtil.addCells(table, new String[] {"Sample", SampleUtil.getDrillHoleDepthDescription(sample)}, new Font[] {fonts[2], fonts[3]});
+				if (sample.getFrNumber() != null)
+					PDFUtil.addCells(table, new String[] {"Sample FRNumber", sample.getFrNumber().getFrNumber()}, new Font[] {fonts[2], fonts[3]});
+				if (sample.getYardFrNumber() != null)
+					PDFUtil.addCells(table, new String[] {"Sample Yard FRNumber", sample.getYardFrNumber().getFrNumber()}, new Font[] {fonts[2], fonts[3]});
 				document.add(table);
 			}
 			
