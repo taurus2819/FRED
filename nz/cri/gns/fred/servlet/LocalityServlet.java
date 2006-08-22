@@ -17,14 +17,19 @@ public class LocalityServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 20060714L;
 
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		redirect(request.getParameter("frNum"), response);
+	}
+	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String url = request.getRequestURI();
-		
 		String[] bits = url.split("/");
-		
 		String frNum = bits[bits.length-2] +  "/" + bits[bits.length-1];
-		
+		redirect(frNum, response);
+	}
+	
+	private void redirect(String frNum, HttpServletResponse response) throws IOException {
 		DAOFactory factory = null;
 		try {
 			factory = HibernateUtil.get().getDAOFactory();
