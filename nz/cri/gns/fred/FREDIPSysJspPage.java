@@ -79,9 +79,9 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 		
 		//set FRNumber lik
 		String htmlLink = "<form method=\"get\" action=\"locality\" name=\"FRNumJumpForm\">"
-			+ "<input type=\"text\" size=\"10\" name=\"FRNum\" />"
-			+ "&nbsp;<a href=\"javascript:document.FRNumJumpForm.action='locality/' + document.FRNumJumpForm.FRNum.value;document.FRNumJumpForm.submit();\">Go to locality</a>"
-			+ "</form";
+			+ "<input type=\"text\" size=\"10\" name=\"FRNum\" />&nbsp;</td>"
+			+ "<td style=\"vertical-align: middle\"><a class=\"buttn\" href=\"javascript:document.FRNumJumpForm.action='locality/' + document.FRNumJumpForm.FRNum.value;document.FRNumJumpForm.submit();\">Go to locality</a>"
+			+ "</form>";
 		et.setButtons(new Link[] {new CustomHTMLLink(htmlLink)});
 		return et;
 	}
