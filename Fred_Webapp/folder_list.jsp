@@ -26,7 +26,7 @@
 		
 		ExtranetTemplate et = getExtranetTemplate();
 		et.setDisplayLoadingMessage(true);
-		et.setButtons(new IconnedLink[] {new IconnedLink("javascript:doNewFolder();", "images/folder.gif", "New Folder")});
+		addButtons(et, new IconnedLink[] {new IconnedLink("javascript:doNewFolder();", "images/folder.gif", "New Folder")});
 	
 		String error = null;
 		if (request.getParameter("ActionType") != null) { //do something
