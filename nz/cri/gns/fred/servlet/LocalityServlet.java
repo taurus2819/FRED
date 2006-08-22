@@ -18,7 +18,7 @@ public class LocalityServlet extends HttpServlet {
 	private static final long serialVersionUID = 20060714L;
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		redirect(request.getParameter("frNum"), response);
+		redirect(request.getParameter("frNum"), "detail.jsp", response);
 	}
 	
 	@Override
@@ -26,17 +26,17 @@ public class LocalityServlet extends HttpServlet {
 		String url = request.getRequestURI();
 		String[] bits = url.split("/");
 		String frNum = bits[bits.length-2] +  "/" + bits[bits.length-1];
-		redirect(frNum, response);
+		redirect(frNum, "../../detail.jsp?FeatID=", response);
 	}
 	
-	private void redirect(String frNum, HttpServletResponse response) throws IOException {
+	private void redirect(String frNum, String url, HttpServletResponse response) throws IOException {
 		DAOFactory factory = null;
 		try {
 			factory = HibernateUtil.get().getDAOFactory();
 			FrNumber num = new FeatureUtil(factory).parseFrNumber(frNum, false);
 			if (num != null) {
 				Feature feature = num.getFeatures().iterator().next();
-				response.sendRedirect("../../detail.jsp?FeatID=" + feature.getFeatureId());
+				response.sendRedirect(url + feature.getFeatureId());
 			}
 		} catch (Exception e) {
 			//Don't log this by default or we'll get a record of every clown's mistake
