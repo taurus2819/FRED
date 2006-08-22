@@ -47,7 +47,7 @@ try {
 	}
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
-	et.setButtons(new IconnedLink[] {
+	addButtons(et, new IconnedLink[] {
 			new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")});
 
 	drawTop(out, et, request, response);

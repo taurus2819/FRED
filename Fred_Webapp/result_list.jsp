@@ -33,7 +33,7 @@
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
-	et.setButtons(new IconnedLink[] {new IconnedLink("simple_query.jsp", "images/search.gif", "Search Again")});
+	addButtons(et, new IconnedLink[] {new IconnedLink("simple_query.jsp", "images/search.gif", "Search Again")});
 
 	drawTop(out, et, request, response);
 	drawEndNavigation(out);

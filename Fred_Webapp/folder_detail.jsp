@@ -56,9 +56,9 @@
 		iLink[5] = new IconnedLink("folder_taxa_list.jsp?ID=" + folder.getFolder().getFolderId() + "&q=" + Math.random() , "images/loc.gif", "Taxa Status");
 		if (folder.isBacklogFolder())
 			iLink[6] = new IconnedLink("backlog_status.jsp", "images/map.gif", "Backlog Status");
-		et.setButtons(iLink);
+		addButtons(et, iLink);
 	} else {
-		et.setButtons(new IconnedLink[] {
+		addButtons(et, new IconnedLink[] {
 			new IconnedLink("folder_list.jsp?q=" + Math.random(), "images/back_arrow.gif", "Back to folders"),
 			new IconnedLink("folder_taxa_list.jsp?ID=" + folder.getFolder().getFolderId() + "&q=" + Math.random(), "images/loc.gif", "Taxa Status")
 		});

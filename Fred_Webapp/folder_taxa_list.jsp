@@ -41,7 +41,7 @@ public String getName(HttpServletRequest request) {
 	if (request.getParameter("ID") != null) {
 		
 		et.setDisplayLoadingMessage(true);
-		et.setButtons(new IconnedLink[] {
+		addButtons(et, new IconnedLink[] {
 				new IconnedLink("folder_detail.jsp?ID=" + request.getParameter("ID") + "&q=" + Math.random(), "images/back_arrow.gif", "Back to folder contents")
 			});
 

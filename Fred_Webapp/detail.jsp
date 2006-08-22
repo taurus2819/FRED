@@ -128,7 +128,7 @@ try {
 	if (backURL != null)
 		il[0] = new IconnedLink(backURL, "images/back_arrow.gif", (backText != null) ? request.getParameter("backText") : "Back");
 	il[(backURL != null) ? 1 : 0] = new IconnedLink("locality_map.jsp?FeatID=" + feature.getFeatureId() + "&backURL=" + URLEncoder.encode("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr, "ISO-8859-1")+ "&backText=Back%20To%20Locality", "images/map.gif", "Locality Map");
-	et.setButtons(il);
+	addButtons(et, il);
 	
 	
 	if (feature != null) {

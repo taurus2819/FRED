@@ -34,7 +34,7 @@
 	ExtranetTemplate et = getExtranetTemplate();
 	//et.setDisplayLoadingMessage(true);
 	et.setUseNavigationColumn(false);
-	et.setButtons(new IconnedLink[] {
+	addButtons(et, new IconnedLink[] {
 			new IconnedLink((String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "&q=" + Math.random(), "images/back_arrow.gif", "Back")
 		});
 

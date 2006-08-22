@@ -28,7 +28,7 @@
 	
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setUseNavigationColumn(false);
-	et.setButtons(new IconnedLink[] {
+	addButtons(et, new IconnedLink[] {
 			new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")
 		});
 	

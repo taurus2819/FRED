@@ -94,7 +94,7 @@
 			List list = dataEntryForm.getNavigation();
 			IconnedLink[] links = (IconnedLink[])list.toArray(new IconnedLink[list.size()+1]);
 			links[links.length-1] = new IconnedLink((String)request.getSession().getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT), "images/cancel.gif", "Quit");
-			et.setButtons(links);
+			addButtons(et, links);
 		
 			drawTop(out, et, request, response);
 			

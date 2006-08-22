@@ -71,7 +71,7 @@
 	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=12500&Layer=3" + backStr, "images/map.gif", "Small Scale");
 	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=2500&Layer=2" + backStr, "images/map.gif", "Large Scale");
 	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=500&Layer=0" + backStr, "images/map.gif", "Orthophoto");
-	et.setButtons(il);
+	addButtons(et, il);
 	drawTop(out, et, request, response);
 	
 	drawEndNavigation(out);

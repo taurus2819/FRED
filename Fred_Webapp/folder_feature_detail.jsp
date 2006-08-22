@@ -57,7 +57,7 @@
 		
 		ExtranetTemplate et = getExtranetTemplate();
 		et.setDisplayLoadingMessage(true);
-		et.setButtons(new IconnedLink[] {
+		addButtons(et, new IconnedLink[] {
 				new IconnedLink("folder_detail.jsp?ID=" + request.getParameter("FoldID") + "&q=" + Math.random(), "images/back_arrow.gif", "Back to folder contents")
 			});
 	
