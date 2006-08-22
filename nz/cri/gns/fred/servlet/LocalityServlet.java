@@ -26,7 +26,7 @@ public class LocalityServlet extends HttpServlet {
 		String url = request.getRequestURI();
 		String[] bits = url.split("/");
 		String frNum = bits[bits.length-2] +  "/" + bits[bits.length-1];
-		redirect(frNum, "../../detail.jsp?FeatID=", response);
+		redirect(frNum, "../../detail.jsp", response);
 	}
 	
 	private void redirect(String frNum, String url, HttpServletResponse response) throws IOException {
@@ -36,7 +36,7 @@ public class LocalityServlet extends HttpServlet {
 			FrNumber num = new FeatureUtil(factory).parseFrNumber(frNum, false);
 			if (num != null) {
 				Feature feature = num.getFeatures().iterator().next();
-				response.sendRedirect(url + feature.getFeatureId());
+				response.sendRedirect(url + "?FeatID=" + feature.getFeatureId());
 			}
 		} catch (Exception e) {
 			//Don't log this by default or we'll get a record of every clown's mistake
