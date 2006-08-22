@@ -151,7 +151,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	private void makePdf(List<Record> records, List<Sample> samples, List<Feature> features) throws DocumentException, IOException, NamingException, SQLException {
 		Document document = new Document(PageSize.A4, 20 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT, 20 * MM_TO_PT);
 		PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
-		writer.setEncryption(true, null, null, PdfWriter.AllowPrinting | PdfWriter.AllowScreenReaders);
+		writer.setEncryption(true, null, null, PdfWriter.AllowPrinting | PdfWriter.AllowScreenReaders | PdfWriter.AllowCopy);
 		writer.setPageEvent(this);
 		document.open();
 		
