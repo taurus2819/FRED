@@ -841,19 +841,22 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	/**
 	 * Returns the next available FR number - <b>not</b> saved to the DB
 	 * @param feature
-	 * @return
-	 * @throws NamingException
-	 * @throws SQLException
-	 * @throws StorageAccessException
 	 */
 	public FrNumber getNextAvailableFrNumber(Feature feature) throws SQLException, NamingException, StorageAccessException {
 		String mapSheet = FREDUtil.getFrNumberMapSheet(feature);
+		return getNextAvailableFrNumber(mapSheet);
+	}
+
+	/**
+	 * Returns the next available FR number - <b>not</b> saved to the DB
+	 * @param mapSheet
+	 */
+	public FrNumber getNextAvailableFrNumber(String mapSheet) throws StorageAccessException {
 		int nextAvailable = featureDAO.getNextAvailableSerialNumber(mapSheet);
 		FrNumber frNum = sampleDAO.createFRNumber();
 		frNum.setMapSheet(mapSheet);
 		frNum.setSerialNumber(new Integer(nextAvailable));
-		
-		return frNum;		
+		return frNum;
 	}
 
 	/**
