@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -36,6 +35,7 @@ import nz.cri.gns.database.DataException;
 import nz.cri.gns.db.BasicDatabaseApp2;
 import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.db.DatabaseApp2;
 import nz.cri.gns.db.HTMLUtils;
 import nz.cri.gns.db.metadata.DocumentAttacher;
 import nz.cri.gns.db.site.DatumMethod;
@@ -275,8 +275,7 @@ public class FREDUtil {
 	 */
 	private static Connection getConnection() throws NamingException, SQLException {
 		InitialContext context = new InitialContext();
-		Context ctx = (Context)context.lookup("java:/comp/env");
-		DataSource source = (DataSource)ctx.lookup("jdbc/fr");
+		DataSource source = (DataSource)context.lookup("java:comp/env/jdbc/fr");
 		
 		return source.getConnection();
 	}
@@ -370,12 +369,20 @@ public class FREDUtil {
 	}
 	
 	public static SiteRecord getSite(Feature feature) throws NamingException, SQLException {
-		Connection conn = getConnection();
+		Connection conn = null;
+		DatabaseApp2 app = null;
 		SiteRecord sr = null;
 		try {
-			sr = SiteRecord.querySite(new BasicDatabaseApp2(conn, ""), feature.getSiteId().intValue());
+			conn = getConnection();
+			app = new BasicDatabaseApp2(conn, "");
+			sr = SiteRecord.querySite(app, feature.getSiteId().intValue());
 		} finally {
-			conn.close();
+			if (app != null) {
+				app.close();
+			} else if (conn != null) try {
+				conn.close();
+			} catch (SQLException e) {
+			}
 		}
 		return sr;
 	}
