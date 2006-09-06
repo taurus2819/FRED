@@ -34,6 +34,7 @@ import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.util.FREDUtil;
+import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.util.NullOutputStream;
 
 public class TaxaReport {
@@ -63,7 +64,6 @@ public class TaxaReport {
 		
 		//Collect all the samples
 		Set<Sample> samples = new HashSet<Sample>();
-		Set<Feature> features = new HashSet<Feature>();
 		
 		TaxonomicDAO dao = HibernateUtil.get().getDAOFactory().getTaxonomicDAO();
 		TaxonomicGroupDAO groupDAO = HibernateUtil.get().getDAOFactory().getTaxonomicGroupDAO();
@@ -78,16 +78,17 @@ public class TaxaReport {
 			for (PaleontologyListEntry entry : entries) {
 				Sample sample = entry.getPaleontology().getRecord().getSample();
 				samples.add(sample);
-				features.add(sample.getFeature());
 			}
 		}
 		
 		//Now we can do the reports
 		System.out.println("Generating locality report");
 		PrintWriter localities = new PrintWriter(new FileWriter(new File(outDir, "localities.csv")));
-		for (Feature feature : features) {
+		for (Sample sample : samples) {
+			Feature feature = sample.getFeature(); 
 			System.out.println(feature.getFrNumber().getFrNumber());
 			SiteRecord site = FREDUtil.getSite(feature);
+			boolean single = feature.getSamples().size() == 1;
 			localities.println(
 				feature.getFrNumber().getFrNumber()
 				+ ",\""
@@ -99,9 +100,47 @@ public class TaxaReport {
 				+ ","
 				+ site.getLonAsDouble()
 				+ ","
+				+ ((single) ? "" : (sample.getTopDepth() + "-" + sample.getBottomDepth()))
+				+ ","
 				+ (feature.getStartDate() == null ? "" : FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding()))
 				+ ","
 				+ (feature.getFinishDate() == null ? "" : FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding()))
+				+ ","
+				+ (sample.getInferredStage() == null ? "" : StageUtil.getStageDescriptionAbbrev(sample.getInferredStage()))
+				+ ","
+				+ (sample.getKnownStage() == null ? "" : StageUtil.getStageDescriptionAbbrev(sample.getKnownStage()))
+				+ ","
+				+ DBUtils.nvl(sample.getDip())
+				+ ","
+				+ DBUtils.nvl(sample.getDipDirection())
+				+ ","
+				+ DBUtils.nvl(sample.getStrike())
+				+ ","
+				+ DBUtils.nvl(sample.getFacing())
+				+ ","
+				+ (sample.getPrimaryGrainSize() == null ? "" : sample.getPrimaryGrainSize().getName())
+				+ ","
+				+ (sample.getSecondaryGrainSize() == null ? "" : sample.getSecondaryGrainSize().getName())
+				+ ","
+				+ (sample.getBedThickness() == null ? "" : sample.getBedThickness().getName())
+				+ ","
+				+ (sample.getPrimaryBedding() == null ? "" : sample.getPrimaryBedding().getName())
+				+ ","
+				+ (sample.getSecondaryBedding() == null ? "" : sample.getSecondaryBedding().getName())
+				+ ","
+				+ (sample.getWeathering() == null ? "" : sample.getWeathering().getName())
+				+ ","
+				+ (sample.getHardness() == null ? "" : sample.getHardness().getName())
+				+ ","
+				+ (sample.getCarbonate() == null ? "" : sample.getCarbonate().getName())
+				+ ","
+				+ (sample.getColourModifier() == null ? "" : sample.getColourModifier().getName())
+				+ ","
+				+ (sample.getPrimaryColour() == null ? "" : sample.getPrimaryColour().getName())
+				+ ","
+				+ (sample.getSecondaryColour() == null ? "" : sample.getSecondaryColour().getName())
+				+ ","
+				+ DBUtils.nvl(sample.getWet())
 			);
 		}
 		localities.close();
