@@ -1,4 +1,5 @@
 <%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
+%><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="java.io.PrintWriter"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.auth.Authenticable"
@@ -16,7 +17,42 @@
 	
 	drawEndNavigation(out);
 
-	contentProvider.getContent("index.main").loadAll(new PrintWriter(out));
+	%><table style="margin-left:20px; width:550px;" border="0">
+	<tr>
+		<td colspan="2">
+			<p>FRED is a computer database for the New Zealand Fossil Record File.  This is a recording scheme for fossil localities in NZ and nearby regions including SE Pacific Islands and the Ross Sea region of Antarctica, and is administered jointly by <a href="http://www.gsnz.org.nz" target="gsnz">Geological Society of New Zealand</a> and GNS Science.  FRED is operated by GNS Science through the FRST National Paleontological Databases Programme, with the assistance of staff at Auckland, Victoria, Canterbury and Otago universities.</p>
+		</td>
+	</tr>
+	<tr><td><img src="images/blank.gif" width="275" height="3"></td><td><img src="images/blank.gif" width="275" height="3"></td></tr>
+	<tr>
+		<td>
+			<img src="images/graptolites.jpg" width="250" height="180" class="border" alt="graptolites"/>
+		</td>
+		<td>
+			FRED primarily contains initial registration information about fossil localities:
+			<ul>
+				<li>geographic coordinates</li>
+				<li>collecting details, including geological context</li>
+				<li>initial repository of specimens</li>
+			</ul>
+		</td>
+	</tr>
+	<tr><td><img src="images/blank.gif" width="275" height="3"></td><td><img src="images/blank.gif" width="275" height="3"></td></tr>
+	<tr>
+		<td colspan="2">
+			For some localities it also provides additional data deposited by government, university, industry, and amateur geoscientists:
+			<ul>
+				<li>taxonomic determinations</li>
+				<li>paleontological interpretations of stratigraphic age and paleoenvironment</li>
+				<li>geological opinions about stratigraphic age</li>
+			</ul>
+			<p>FRED now contains over <%=FREDUtil.getTotalLocalityCount()%> locality coordinate records; over 57000 have fuller collection and paleontology data.  A programme to enter full collection data for all registered sites is underway - the FRF scheme also plans to replace paper-form site recording with online recording through this website.</p>
+			<p>Geographic coordinates can be queried and downloaded by anyone free of charge.  Access to detailed information, and capability to contribute new site records or other data requires a username and password - registered users agree to abide by accepted <a href="conditions.jsp">Conditions of Use</a>.</p>
+			<p>If you are a new user please see the <a href="quick_start.jsp">Quick Start Guide</a>.</p>
+			<p><span class="smalltext">Macintosh users: webmaps require Safari or Netscape 7+ browsers</span></p>
+		</td>
+	</tr>
+	</table><%
 
 	drawBottom(out, et); 
 	%>
