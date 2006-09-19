@@ -1143,4 +1143,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		}
 	}
 	
+	public int getTotalFeatureCount() throws StorageAccessException {
+		return featureDAO.getTotalFeatureCount();
+	}
+	
 }

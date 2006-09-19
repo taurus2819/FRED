@@ -181,4 +181,6 @@ public interface FeatureDAO {
 	
 	public void delete(FrNumber frNumber) throws StorageAccessException;
 	
+	public int getTotalFeatureCount() throws StorageAccessException;
+	
 }

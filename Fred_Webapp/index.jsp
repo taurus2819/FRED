@@ -1,5 +1,6 @@
 <%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
-%><%@page import="nz.cri.gns.fred.util.FREDUtil"
+%><%@page import="nz.cri.gns.fred.util.FeatureUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="java.io.PrintWriter"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.auth.Authenticable"
@@ -11,6 +12,9 @@
 %><%
 	ExtranetTemplate et = getExtranetTemplate();
 	ContentProvider contentProvider = getContentProvider(getPageState(request, response));
+	
+	FeatureUtil featureUtil = new FeatureUtil(HibernateUtil.get().getDAOFactory());
+	
 	drawTop(out, et, request, response);
 
 	contentProvider.getContent("index.nav").loadAll(new PrintWriter(out));
@@ -46,7 +50,7 @@
 				<li>paleontological interpretations of stratigraphic age and paleoenvironment</li>
 				<li>geological opinions about stratigraphic age</li>
 			</ul>
-			<p>FRED now contains over <%=FREDUtil.getTotalLocalityCount()%> locality coordinate records; over 57000 have fuller collection and paleontology data.  A programme to enter full collection data for all registered sites is underway - the FRF scheme also plans to replace paper-form site recording with online recording through this website.</p>
+			<p>FRED now contains over <%=featureUtil.getTotalFeatureCount()%> locality coordinate records; over 57000 have fuller collection and paleontology data.  A programme to enter full collection data for all registered sites is underway - the FRF scheme also plans to replace paper-form site recording with online recording through this website.</p>
 			<p>Geographic coordinates can be queried and downloaded by anyone free of charge.  Access to detailed information, and capability to contribute new site records or other data requires a username and password - registered users agree to abide by accepted <a href="conditions.jsp">Conditions of Use</a>.</p>
 			<p>If you are a new user please see the <a href="quick_start.jsp">Quick Start Guide</a>.</p>
 			<p><span class="smalltext">Macintosh users: webmaps require Safari or Netscape 7+ browsers</span></p>

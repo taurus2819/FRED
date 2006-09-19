@@ -1107,4 +1107,15 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public void delete(FrNumber frNumber) throws StorageAccessException {
 		HibernateUtils.delete(provider, frNumber);		
 	}
+
+	public int getTotalFeatureCount() throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+            Query query = session.createQuery("SELECT count(*) FROM Feature AS f");
+    		List list = query.list();
+    		return ((Integer)list.get(0)).intValue();
+		} catch (Exception e) {
+			throw new StorageAccessException(e);
+		}
+	}
 }
