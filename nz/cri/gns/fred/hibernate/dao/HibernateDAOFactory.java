@@ -1115,8 +1115,20 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
     		List list = query.list();
     		return ((Integer)list.get(0)).intValue();
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new StorageAccessException(e);
 		}
 	}
+	
+	public Date getLastFeatureApprovalDate() throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+            Query query = session.createQuery("SELECT MAX(a.approvedDate) FROM Feature AS f JOIN f.audit AS a");
+    		List list = query.list();
+    		return (Date)list.get(0);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new StorageAccessException(e);
+		}		
+	}
+	
 }

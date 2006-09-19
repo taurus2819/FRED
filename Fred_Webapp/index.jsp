@@ -51,7 +51,7 @@
 				<li>paleontological interpretations of stratigraphic age and paleoenvironment</li>
 				<li>geological opinions about stratigraphic age</li>
 			</ul>
-			<p>FRED now contains <%=featureUtil.getTotalFeatureCount()%> locality coordinate records and was last updated on <%=FREDUtil.formatDateForOutput(featureUtil.getLastFeatureApprovalDate())%>; over 57000 have fuller collection and paleontology data.  A programme to enter full collection data for all registered sites is underway - the FRF scheme also plans to replace paper-form site recording with online recording through this website.</p>
+			<p>FRED now contains <%=featureUtil.getTotalFeatureCount()%> locality coordinate records and was last updated on <%=FREDUtil.formatDateForOutput(featureUtil.getLastFeatureApprovalDate())%>.  A programme to enter full collection data for all registered sites is underway and progress can be viewed <a href="backlog_status.jsp">here</a>.</p>
 			<p>Geographic coordinates can be queried and downloaded by anyone free of charge.  Access to detailed information, and capability to contribute new site records or other data requires a username and password - registered users agree to abide by accepted <a href="conditions.jsp">Conditions of Use</a>.</p>
 			<p>If you are a new user please see the <a href="quick_start.jsp">Quick Start Guide</a>.</p>
 			<p><span class="smalltext">Macintosh users: webmaps require Safari or Netscape 7+ browsers</span></p>

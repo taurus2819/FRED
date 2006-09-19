@@ -183,4 +183,5 @@ public interface FeatureDAO {
 	
 	public int getTotalFeatureCount() throws StorageAccessException;
 	
+	public Date getLastFeatureApprovalDate() throws StorageAccessException;
 }
