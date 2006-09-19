@@ -1111,7 +1111,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public int getTotalFeatureCount() throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
-            Query query = session.createQuery("SELECT count(*) FROM Feature AS f INNER JOIN f.auditTable AS a WHERE a.status='approved'");
+            Query query = session.createQuery("SELECT count(*) FROM Feature AS f JOIN f.audit AS a WHERE a.status='approved'");
     		List list = query.list();
     		return ((Integer)list.get(0)).intValue();
 		} catch (Exception e) {
