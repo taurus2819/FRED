@@ -533,33 +533,39 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * @throws StorageAccessException 
 	 */
 	private String getCommonRelationshipPropertiesFromDescription(String desc, Relationship rel, RelationType relationType) throws StorageAccessException {
+		//assume no distance data first
+		
 		desc = desc.trim();
 		String[] parts = desc.split("\\s");
 		int where = 0;
-		try {
-			rel.setDistance(new Double(parts[where++])); 
-		} catch (Exception e) {
-			//This means that there is a modifier in the way
+		
+		if (parts.length > 2) {
+			//must have a distance component
 			try {
-				rel.setDistance(new Double(parts[where++]));
-				rel.setDistanceMod(parts[0]);
-			} catch (Exception _e) {
-				throw new IllegalArgumentException("Relationship description not properly formatted");
+				rel.setDistance(new Double(parts[where++])); 
+			} catch (Exception e) {
+				//This means that there is a modifier in the way
+				try {
+					rel.setDistance(new Double(parts[where++]));
+					rel.setDistanceMod(parts[0]);
+				} catch (Exception _e) {
+					throw new IllegalArgumentException("Relationship description not properly formatted");
+				}
 			}
-		}
-		
-		//skip "m" if present
-		if (parts[where].equals("m"))
-			where++;
-		
-		if (parts[where].equals("-")) try {
-			rel.setDistanceRange(new Double(parts[++where]));
-			++where;
+			
 			//skip "m" if present
 			if (parts[where].equals("m"))
 				where++;
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Relationship description not properly formatted");
+			
+			if (parts[where].equals("-")) try {
+				rel.setDistanceRange(new Double(parts[++where]));
+				++where;
+				//skip "m" if present
+				if (parts[where].equals("m"))
+					where++;
+			} catch (Exception e) {
+				throw new IllegalArgumentException("Relationship description not properly formatted");
+			}
 		}
 		
 		//Allow one or two word relationships
@@ -575,7 +581,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return FREDUtil.join(parts, where);
 		
 	}
-
+		
 	public static String getDipStrikeDescription(Sample sample) {
 		StringBuffer desc = new StringBuffer();
 		if (sample.getDip() != null)
