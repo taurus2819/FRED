@@ -539,41 +539,42 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		String[] parts = desc.split("\\s");
 		int where = 0;
 		
-		if (parts.length > 2) {
-			//must have a distance component
+		try {
+			rel.setDistance(new Double(parts[where]));
+			where++;
+		} catch (Exception e) {
+			//This means that there is a modifier in the way
 			try {
-				rel.setDistance(new Double(parts[where++])); 
-			} catch (Exception e) {
-				//This means that there is a modifier in the way
-				try {
-					rel.setDistance(new Double(parts[where++]));
-					rel.setDistanceMod(parts[0]);
-				} catch (Exception _e) {
-					throw new IllegalArgumentException("Relationship description not properly formatted");
-				}
+				rel.setDistance(new Double(parts[where + 1]));
+				rel.setDistanceMod(parts[where]);
+				where++;
+				where++;
+			} catch (Exception _e) {
+				//don't throw exception as distance bits may be NULL
 			}
-			
+		}
+		
+		//skip "m" if present
+		if (parts[where].equals("m"))
+			where++;
+		
+		if (parts[where].equals("-")) try {
+			rel.setDistanceRange(new Double(parts[++where]));
+			++where;
 			//skip "m" if present
 			if (parts[where].equals("m"))
 				where++;
-			
-			if (parts[where].equals("-")) try {
-				rel.setDistanceRange(new Double(parts[++where]));
-				++where;
-				//skip "m" if present
-				if (parts[where].equals("m"))
-					where++;
-			} catch (Exception e) {
-				throw new IllegalArgumentException("Relationship description not properly formatted");
-			}
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Relationship description not properly formatted");
 		}
+
 		
 		//Allow one or two word relationships
 		RelationshipType relType = sampleDAO.getRelationshipType(relationType, parts[where++]);
 		if (relType == null) {
 			relType = sampleDAO.getRelationshipType(relationType, parts[where-1] + " " + parts[where++]);
 			if (relType == null)
-				throw new IllegalArgumentException("Relationship description has invalid relationship type: ('" + parts[where-2] + "' nor '" + parts[where-2] + " " + parts[where-1] + "')");
+				throw new IllegalArgumentException("Relationship description is invalid");
 		}
 		rel.setRelationshipType(relType);
 		rel.setRelationType(relationType);
