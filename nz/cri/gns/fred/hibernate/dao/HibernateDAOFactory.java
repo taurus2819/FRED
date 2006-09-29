@@ -4,7 +4,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import net.sf.hibernate.Criteria;
@@ -575,7 +577,13 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public Sample createNewSample(Feature feature) {
 		nz.cri.gns.fred.hibernate.Sample sample = new nz.cri.gns.fred.hibernate.Sample();
 		sample.setFeature(feature);
-		feature.getSamples().add(sample);
+		if (feature.getSamples() != null)
+			feature.getSamples().add(sample);
+		else {
+			Set<Sample> samples = new HashSet<Sample>();
+			samples.add(sample);
+			feature.setSamples(samples);
+		}
 		return sample;
 	}
 
