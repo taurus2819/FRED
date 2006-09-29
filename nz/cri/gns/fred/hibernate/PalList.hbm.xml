@@ -80,7 +80,8 @@
     <set
         name="palListMetas"
         lazy="true"
-        cascade="none"
+        inverse="true"
+        cascade="all-delete-orphan"
         >
         <key>
             <column name="PAL_LIST_ID" />

@@ -53,6 +53,7 @@
         class="nz.cri.gns.fred.hibernate.Record"
         outer-join="auto"
         constrained="true"
+        cascade="all"
     />
     <!-- bi-directional many-to-many association to Person via Adoptor -->
     <set
@@ -60,7 +61,7 @@
         table="ADOPTOR"
         lazy="true"
         inverse="false"
-		cascade="all"
+		cascade="none"
     >
         <key>
             <column name="RECORD_ID" />

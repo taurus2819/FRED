@@ -27,12 +27,6 @@
     </id>
 
     <property
-        name="palId"
-        type="int"
-        column="PAL_ID"
-        length="8"
-    />
-    <property
         name="identificationDate"
         type="java.sql.Date"
         column="IDENTIFICATION_DATE"
@@ -71,6 +65,7 @@
         class="nz.cri.gns.fred.hibernate.Record"
         outer-join="auto"
         constrained="true"
+        cascade="all"
     />
     <!-- bi-directional many-to-one association to LabSection -->
     <many-to-one
@@ -84,8 +79,8 @@
     <set
         name="listEntries"
         lazy="true"
-        inverse="false"
-		cascade="all"
+        inverse="true"
+		cascade="all-delete-orphan"
     >
         <key>
             <column name="RECORD_ID" />
@@ -97,10 +92,10 @@
     <!-- bi-directional many-to-many association to Person via Identifier -->
     <set
         name="identifiers"
-        table="identifier"
+        table="IDENTIFIER"
         lazy="true"
         inverse="false"
-		cascade="all"
+		cascade="none"
     >
         <key>
             <column name="RECORD_ID" />

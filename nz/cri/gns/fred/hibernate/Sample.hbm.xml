@@ -201,8 +201,8 @@
     <set
         name="sampleMetas"
         lazy="true"
-        inverse="false"
-		cascade="none"
+        inverse="true"
+		cascade="all-delete-orphan"
     >
         <key>
             <column name="SAMPLE_ID" />
@@ -216,7 +216,7 @@
         name="records"
         lazy="true"
         inverse="true"
-		cascade="none"
+		cascade="all-delete-orphan"
     >
         <key>
             <column name="SAMPLE_ID" />
@@ -230,7 +230,7 @@
         name="sentTos"
         lazy="true"
         inverse="true"
-		cascade="all"
+		cascade="all-delete-orphan"
     >
         <key>
             <column not-null="true" name="SAMPLE_ID" />
@@ -243,7 +243,7 @@
     <!-- bi-directional many-to-many association to Person via Collector -->
     <set
         name="collectors"
-        table="collector"
+        table="COLLECTOR"
         lazy="true"
         inverse="false"
 		cascade="none"
@@ -261,7 +261,7 @@
         name="relationships"
         lazy="true"
         inverse="true"
-		cascade="all"
+		cascade="all-delete-orphan"
     >
         <key>
             <column not-null="true" name="SAMPLE_ID" />
@@ -306,8 +306,8 @@
     <many-to-one
         name="audit"
         class="nz.cri.gns.fred.hibernate.AuditTable"
-		cascade="all"
         not-null="true"
+        cascade="all"
     >
         <column name="AUDIT_ID" />
     </many-to-one>
@@ -390,6 +390,7 @@
         name="inferredStage"
         class="nz.cri.gns.fred.hibernate.Stage"
         not-null="true"
+        cascade="none"
     >
         <column name="INFERRED_STAGE_ID" />
     </many-to-one>

@@ -48,7 +48,7 @@
         table="ADOPTOR"
         lazy="true"
         inverse="true"
-		cascade="all"
+		cascade="none"
     >
         <key>
             <column name="PERSON_ID" />
@@ -61,10 +61,10 @@
     <!-- bi-directional many-to-many association to Paleontology via Identifier -->
     <set
         name="identifiedPaleontologies"
-        table="identifier"
+        table="IDENTIFIER"
         lazy="true"
         inverse="true"
-		cascade="all"
+		cascade="none"
     >
         <key>
             <column name="PERSON_ID" />

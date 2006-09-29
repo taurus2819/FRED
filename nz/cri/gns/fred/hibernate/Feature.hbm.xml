@@ -177,7 +177,7 @@
         name="samples"
         lazy="true"
         inverse="true"
-		cascade="none"
+		cascade="all-delete-orphan"
     >
         <key>
             <column name="FEATURE_ID" />
@@ -221,7 +221,7 @@
         name="featureMetas"
         lazy="true"
         inverse="true"
-		cascade="all"
+		cascade="all-delete-orphan"
     >
         <key>
             <column name="FEATURE_ID" />
@@ -235,6 +235,7 @@
         name="audit"
         class="nz.cri.gns.fred.hibernate.AuditTable"
         not-null="true"
+        cascade="all"
     >
         <column name="AUDIT_ID" />
     </many-to-one>
