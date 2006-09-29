@@ -35,7 +35,6 @@ import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Person;
-import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
@@ -44,9 +43,6 @@ import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.UserFolder;
 
-/**
- *
- */
 public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
 	private FeatureDAO featureDAO;
@@ -236,12 +232,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
 	public Sample cloneSample(Feature newFeature, Sample sample) throws StorageAccessException, IntrospectionException {
 		Set images;
-		Sample newSample = sampleDAO.createNewSample();
+		Sample newSample = sampleDAO.createNewSample(newFeature);
 		FREDUtil.beanCopy(sample, newSample, 
 				new FREDUtil.ExcludeByType(Set.class, 
 				new FREDUtil.ExcludeByName(FREDUtil.toVector("audit", "sampleId", "feature", "frNumber")))
 		);
-		newSample.setFeature(newFeature);
 		//Clear the fr number if it has one
 		//Copy relationships
 		Set<Relationship> relationships = sample.getRelationships();
@@ -340,39 +335,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			}
 		}
 		
-		Audit audit = feature.getAudit();
-		feature.setAudit(null);
-		audit.getFeatures().remove(feature);
-		deleteAudit(audit);
-		FrNumber frNumber = feature.getFrNumber();
-		feature.setFrNumber(null);
-		FrNumber yardFrNumber = feature.getYardFrNumber();
-		feature.setYardFrNumber(null);
-		
-		for (Sample sample : feature.getSamples()) {
-			audit = sample.getAudit();
-			audit.getSamples().remove(sample);
-			sample.setAudit(null);
-			deleteAudit(audit);
-			for (Record record : sample.getRecords()) {
-				audit = record.getAudit();
-				audit.getRecords().remove(record);
-				record.setAudit(null);
-				deleteAudit(audit);
-			}
-		}
-		
-		if (frNumber != null && FREDUtil.isEmpty(frNumber.getFeatures()) && FREDUtil.isEmpty(frNumber.getSamples()))
-			featureDAO.delete(frNumber);
-		if (yardFrNumber != null && FREDUtil.isEmpty(yardFrNumber.getFeatures()) && FREDUtil.isEmpty(yardFrNumber.getSamples()))
-			featureDAO.delete(yardFrNumber);
-		
 		featureDAO.delete(feature);
-	}
-	
-	private void deleteAudit(Audit audit) throws StorageAccessException {
-		if (audit != null && FREDUtil.isEmpty(audit.getFeatures()) && FREDUtil.isEmpty(audit.getSamples()) && FREDUtil.isEmpty(audit.getRecords()))
-			featureDAO.delete(audit);		
 	}
 	
 	public void removeFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
