@@ -177,7 +177,7 @@
         name="samples"
         lazy="true"
         inverse="true"
-		cascade="all-delete-orphan"
+		cascade="all"
     >
         <key>
             <column name="FEATURE_ID" />
