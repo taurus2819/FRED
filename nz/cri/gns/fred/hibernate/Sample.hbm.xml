@@ -299,6 +299,7 @@
         name="feature"
         class="nz.cri.gns.fred.hibernate.Feature"
         not-null="true"
+        cascade="none"
     >
         <column name="FEATURE_ID" />
     </many-to-one>

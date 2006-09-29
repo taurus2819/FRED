@@ -151,7 +151,7 @@
         name="auditEdits"
         lazy="true"
         inverse="true"
-		cascade="none"
+		cascade="all-delete-orphan"
 		sort="natural"
     >
         <key>
