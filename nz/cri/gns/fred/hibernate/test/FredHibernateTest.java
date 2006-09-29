@@ -38,6 +38,7 @@ import nz.cri.gns.fred.hibernate.Hardness;
 import nz.cri.gns.fred.hibernate.Lab;
 import nz.cri.gns.fred.hibernate.LabSection;
 import nz.cri.gns.fred.hibernate.PalList;
+import nz.cri.gns.fred.hibernate.PalListMeta;
 import nz.cri.gns.fred.hibernate.Paleontology;
 import nz.cri.gns.fred.hibernate.Person;
 import nz.cri.gns.fred.hibernate.Record;
@@ -92,7 +93,7 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 		factory = new HibernateDAOFactory(this);
 		
 		try {
-			user = new User("iainm", "*****", app);
+			user = new User("ben", "St.Bathans", app);
 		} catch (Exception e) {
 			System.out.println("No user created");
 		}
@@ -123,6 +124,7 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 	        Lab.class,
 	        Paleontology.class,
 			PalList.class,
+			PalListMeta.class,
 			Person.class,
 			Record.class,
 			RecordMeta.class,
