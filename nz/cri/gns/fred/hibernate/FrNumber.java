@@ -33,12 +33,18 @@ public class FrNumber implements Serializable, nz.cri.gns.fred.model.FrNumber {
     
     /** persistent field */
     private Set<Feature> features;
+
+    /** persistent field */
+    private Set<Feature> featuresByYard;
     
     /** persistent field */
     private Set<Sample> samples;
+    
+    /** persistent field */
+    private Set<Sample> samplesByYard;
 
     /** full constructor */
-    public FrNumber(String mapSheet, Integer serialNumber, String recollectionNumber, String frnumComments, String frNumber, String obsolete, Set<Feature> features, Set<Sample> samples) {
+    public FrNumber(String mapSheet, Integer serialNumber, String recollectionNumber, String frnumComments, String frNumber, String obsolete, Set<Feature> features, Set<Feature> featuresByYard, Set<Sample> samples, Set<Sample> samplesByYard) {
         this.mapSheet = mapSheet;
         this.serialNumber = serialNumber;
         this.recollectionNumber = recollectionNumber;
@@ -46,7 +52,9 @@ public class FrNumber implements Serializable, nz.cri.gns.fred.model.FrNumber {
         this.frNumber = frNumber;
         this.obsolete = obsolete;
         this.features = features;
+        this.featuresByYard = featuresByYard;
         this.samples = samples;
+        this.samplesByYard = samplesByYard;
     }
 
     /** default constructor */
@@ -54,11 +62,13 @@ public class FrNumber implements Serializable, nz.cri.gns.fred.model.FrNumber {
     }
 
     /** minimal constructor */
-    public FrNumber(String mapSheet, Integer serialNumber, Set<Feature> features, Set<Sample> samples) {
+    public FrNumber(String mapSheet, Integer serialNumber, Set<Feature> features, Set<Feature> featuresByYard, Set<Sample> samples, Set<Sample> samplesByYard) {
         this.mapSheet = mapSheet;
         this.serialNumber = serialNumber;
         this.features = features;
+        this.featuresByYard = featuresByYard;
         this.samples = samples;
+        this.samplesByYard = samplesByYard;
     }
 
     public Integer getFrId() {
@@ -124,6 +134,14 @@ public class FrNumber implements Serializable, nz.cri.gns.fred.model.FrNumber {
     public void setFeatures(Set<Feature> features) {
         this.features = features;
     }
+
+    public Set<Feature> getFeaturesByYard() {
+        return this.featuresByYard;
+    }
+
+    public void setFeaturesByYard(Set<Feature> featuresByYard) {
+        this.featuresByYard = featuresByYard;
+    }
     
     public Set<Sample> getSamples() {
         return this.samples;
@@ -131,6 +149,14 @@ public class FrNumber implements Serializable, nz.cri.gns.fred.model.FrNumber {
 
     public void setSamples(Set<Sample> samples) {
         this.samples = samples;
+    }
+    
+    public Set<Sample> getSamplesByYard() {
+        return this.samplesByYard;
+    }
+
+    public void setSamplesByYard(Set<Sample> samplesByYard) {
+        this.samplesByYard = samplesByYard;
     }
     
 	public int compareTo(nz.cri.gns.fred.model.FrNumber frNumber) {
