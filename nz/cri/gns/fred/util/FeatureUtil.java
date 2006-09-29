@@ -479,7 +479,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		}
 	}
 		
-	private void mergeFeature(Feature mergeToFeature, Feature mergeFromFeature, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
+	public void mergeFeature(Feature mergeToFeature, Feature mergeFromFeature, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
 		if (!folder.isAllowedEditLocalities())
 			throw new InsufficientPrivelegesException();
 		if (!mergeFromFeature.equals(mergeToFeature.getFeatureId())) {
@@ -514,13 +514,17 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 					sample.setFrNumber(mergeFromFrNumber);
 				if (sample.getYardFrNumber() == null && mergeFromYardFrNumber != null)
 					sample.setYardFrNumber(mergeFromYardFrNumber);
-				sample.setFeature(mergeToFeature);
-				mergeFromFeature.getSamples().remove(sample);
 				
+				sample.setFeature(mergeToFeature);
+				mergeToFeature.getSamples().add(sample);
+				mergeFromFeature.getSamples().remove(sample);
 				sampleDAO.update(sample);
 			}
 			
 			//delete merge feature
+			//need to remove FRNumbers to stop hibernate cascade deleting them
+			mergeFromFeature.setFrNumber(null);
+			mergeFromFeature.setYardFrNumber(null);
 			deleteFeature(mergeFromFeature, user);
 		}
 	}	
