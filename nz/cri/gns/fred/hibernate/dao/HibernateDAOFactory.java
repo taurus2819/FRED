@@ -572,8 +572,11 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
         }
 	}
 
-	public Sample createNewSample() {
-		return new nz.cri.gns.fred.hibernate.Sample();
+	public Sample createNewSample(Feature feature) {
+		nz.cri.gns.fred.hibernate.Sample sample = new nz.cri.gns.fred.hibernate.Sample();
+		sample.setFeature(feature);
+		feature.getSamples().add(sample);
+		return sample;
 	}
 
 	public SedimentaryFeature createNewSedimentaryFeature() {

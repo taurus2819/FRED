@@ -10,6 +10,7 @@ import nz.cri.gns.fred.model.Bedding;
 import nz.cri.gns.fred.model.Carbonate;
 import nz.cri.gns.fred.model.ColourModifier;
 import nz.cri.gns.fred.model.DrillType;
+import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.GrainSize;
@@ -107,7 +108,7 @@ public interface SampleDAO {
 	 * Creates a new empty sample object
 	 * @return
 	 */
-	public Sample createNewSample() throws StorageAccessException;
+	public Sample createNewSample(Feature feature) throws StorageAccessException;
 
 	/**
 	 * Retrieves the so-named relation type
