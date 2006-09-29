@@ -93,7 +93,7 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 		factory = new HibernateDAOFactory(this);
 		
 		try {
-			user = new User("ben", "St.Bathans", app);
+			user = new User("ben", "*****", app);
 		} catch (Exception e) {
 			System.out.println("No user created");
 		}
