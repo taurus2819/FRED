@@ -18,9 +18,6 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
     private Integer recordId;
 
     /** nullable persistent field */
-    private Integer palId;
-
-    /** nullable persistent field */
     private Date identificationDate;
 
     /** nullable persistent field */
@@ -51,9 +48,8 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
     private Set<Person> identifiers;
 
     /** full constructor */
-    public Paleontology(Integer recordId, Integer palId, Date identificationDate, String dateRounding, String stageComments, String labNumber, String collectionComments, nz.cri.gns.fred.hibernate.Record record, nz.cri.gns.fred.hibernate.LabSection labSection, nz.cri.gns.fred.hibernate.Stage stage, Set<PaleontologyListEntry> palLists, Set<Person> identifiers) {
+    public Paleontology(Integer recordId, Date identificationDate, String dateRounding, String stageComments, String labNumber, String collectionComments, nz.cri.gns.fred.hibernate.Record record, nz.cri.gns.fred.hibernate.LabSection labSection, nz.cri.gns.fred.hibernate.Stage stage, Set<PaleontologyListEntry> palLists, Set<Person> identifiers) {
         this.recordId = recordId;
-        this.palId = palId;
         this.identificationDate = identificationDate;
         this.dateRounding = dateRounding;
         this.stageComments = stageComments;
@@ -85,14 +81,6 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
 
     public void setRecordId(Integer recordId) {
         this.recordId = recordId;
-    }
-
-    public Integer getPalId() {
-        return this.palId;
-    }
-
-    public void setPalId(Integer palId) {
-        this.palId = palId;
     }
 
     public Date getIdentificationDate() {

@@ -11,10 +11,6 @@ public interface Paleontology extends RecordDetails {
 
 	public abstract void setRecordId(Integer recordId);
 
-	public abstract Integer getPalId();
-
-	public abstract void setPalId(Integer palId);
-
 	public abstract Date getIdentificationDate();
 
 	public abstract void setIdentificationDate(Date identificationDate);
