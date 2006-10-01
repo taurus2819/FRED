@@ -806,6 +806,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 					relationships.add(sampleUtil.createRelationship(sample, feature, FREDConstants.SAMPLE, FREDConstants.NEARBY));
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				error.add(new String[] {"Previous sample", e.getMessage()});
 			}
 		} 
