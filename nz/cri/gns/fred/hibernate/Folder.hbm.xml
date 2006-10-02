@@ -113,7 +113,7 @@
         name="folderUsers"
         lazy="true"
         inverse="false"
-		cascade="none"
+		cascade="all"
     >
         <key>
             <column name="FOLDER_ID" />
