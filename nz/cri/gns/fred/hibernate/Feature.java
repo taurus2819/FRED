@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.Set;
 
 import nz.cri.gns.fred.model.FeatureMeta;
+import nz.cri.gns.fred.model.Folder;
+import nz.cri.gns.fred.model.Relationship;
+import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.util.FeatureUtil;
 
 
@@ -89,19 +92,19 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     private nz.cri.gns.fred.model.RegistrationArea registrationArea;
 
     /** persistent field */
-    private Set samples;
+    private Set<Sample> samples;
 
     /** persistent field */
-    private Set folders;
+    private Set<Folder> folders;
 
     /** persistent field */
-    private Set relationships;
+    private Set<Relationship> relationships;
 
     /** persistent field */
     private Set<FeatureMeta> featureMetas;
 
     /** full constructor */
-    public Feature(Integer siteId, String locality, Integer origSystemId, String origCoord, Integer mapYear, String coordComments, String featureType, String featureName, String drillholeLicenceName, Date startDate, Date finishDate, String comments, Double datumElevation, Double startDepth, String datumType, Double finishDepth, String startDateRounding, String finishDateRounding, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.FrNumber yardFrNumber, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set samples, Set folders, Set relationships, Set<FeatureMeta> featureMetas) {
+    public Feature(Integer siteId, String locality, Integer origSystemId, String origCoord, Integer mapYear, String coordComments, String featureType, String featureName, String drillholeLicenceName, Date startDate, Date finishDate, String comments, Double datumElevation, Double startDepth, String datumType, Double finishDepth, String startDateRounding, String finishDateRounding, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.FrNumber yardFrNumber, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set<Sample> samples, Set<Folder> folders, Set<Relationship> relationships, Set<FeatureMeta> featureMetas) {
         this.siteId = siteId;
         this.locality = locality;
         this.origSystemId = origSystemId;
@@ -137,7 +140,7 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     }
 
     /** minimal constructor */
-    public Feature(String featureType, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set samples, Set folders, Set relationships, Set<FeatureMeta> featureMetas) {
+    public Feature(String featureType, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set<Sample> samples, Set<Folder> folders, Set<Relationship> relationships, Set<FeatureMeta> featureMetas) {
         this.featureType = featureType;
         this.frNumber = frNumber;
         this.person = person;
@@ -350,27 +353,27 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
         this.registrationArea = registrationArea;
     }
 
-    public Set getSamples() {
+    public Set<Sample> getSamples() {
         return this.samples;
     }
 
-    public void setSamples(Set samples) {
+    public void setSamples(Set<Sample> samples) {
         this.samples = samples;
     }
 
-    public Set getFolders() {
+    public Set<Folder> getFolders() {
         return this.folders;
     }
 
-    public void setFolders(Set folders) {
+    public void setFolders(Set<Folder> folders) {
         this.folders = folders;
     }
 
-    public Set getRelationships() {
+    public Set<Relationship> getRelationships() {
         return this.relationships;
     }
 
-    public void setRelationships(Set relationships) {
+    public void setRelationships(Set<Relationship> relationships) {
         this.relationships = relationships;
     }
 

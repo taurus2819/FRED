@@ -60,8 +60,8 @@ public interface Feature extends Audited, Comparable<Feature> {
     public void setSamples(Set<Sample> samples);
     public Set<Folder> getFolders();
     public void setFolders(Set<Folder> folders);
-    public Set getRelationships();
-    public void setRelationships(Set relationships);
+    public Set<Relationship> getRelationships();
+    public void setRelationships(Set<Relationship> relationships);
     public Set<FeatureMeta> getFeatureMetas();
     public void setFeatureMetas(Set<FeatureMeta> featureMetas);
 }
