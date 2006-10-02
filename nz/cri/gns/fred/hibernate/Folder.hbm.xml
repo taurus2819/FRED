@@ -112,7 +112,7 @@
     <set
         name="folderUsers"
         lazy="true"
-        inverse="false"
+        inverse="true"
 		cascade="all"
     >
         <key>
