@@ -918,7 +918,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
 	public SedimentaryFeature createSedimentaryFeature(Sample sample, String sedFeature, boolean isAbundant) throws StorageAccessException {
 		SedimentaryFeature feature = sampleDAO.createNewSedimentaryFeature();
-		feature.setAbundant((isAbundant) ? "Y" : null);
+		feature.setAbundant((isAbundant) ? "Y" : "N");
 		SedimentaryFeatureType type = sampleDAO.getSedimentaryFeatureTypeWithName(sedFeature);
 		if (type == null)
 			throw new IllegalArgumentException("Invalid sedimentary feature type: " + sedFeature);
