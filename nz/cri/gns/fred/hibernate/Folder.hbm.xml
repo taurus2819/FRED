@@ -113,7 +113,7 @@
         name="folderUsers"
         lazy="true"
         inverse="true"
-		cascade="all"
+		cascade="all-delete-orphan"
     >
         <key>
             <column name="FOLDER_ID" />
