@@ -482,7 +482,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	public void mergeFeature(Feature mergeToFeature, Feature mergeFromFeature, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
 		if (!folder.isAllowedEditLocalities())
 			throw new InsufficientPrivelegesException();
-		if (!mergeFromFeature.equals(mergeToFeature.getFeatureId())) {
+		if (!mergeFromFeature.equals(mergeToFeature)) {
 			if (mergeToFeature.getFeatureType().equals(FREDConstants.OUTCROP) || mergeFromFeature.getFeatureType().equals(FREDConstants.OUTCROP))
 				throw new IllegalStateException("Cannot merge outcrop localities");
 			
@@ -515,16 +515,40 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				if (sample.getYardFrNumber() == null && mergeFromYardFrNumber != null)
 					sample.setYardFrNumber(mergeFromYardFrNumber);
 				
+				//delete any relationships that reference MergeToFeature (otherwise would be referencing itself
+				Set<Relationship> relationships = sample.getRelationships();
+				for (Relationship relationship : relationships) {
+					if (relationship.getFeature() != null && relationship.getFeature().equals(mergeToFeature)) {
+						sample.getRelationships().remove(relationship);
+						sampleDAO.delete(relationship);
+					}
+				}
+				
 				sample.setFeature(mergeToFeature);
 				mergeToFeature.getSamples().add(sample);
 				mergeFromFeature.getSamples().remove(sample);
 				sampleDAO.update(sample);
 			}
 			
-			//delete merge feature
+			
 			//need to remove FRNumbers to stop hibernate cascade deleting them
 			mergeFromFeature.setFrNumber(null);
 			mergeFromFeature.setYardFrNumber(null);
+			
+			//move any relationships referencing soon to be deleted feature
+			Set<Relationship> relationships = mergeFromFeature.getRelationships();
+			for (Relationship relationship : relationships) {
+				if (relationship.getSample().getFeature().equals(mergeToFeature))
+					sampleDAO.delete(relationship);
+				else {
+					relationship.setFeature(mergeToFeature);
+					mergeFromFeature.getRelationships().remove(relationship);
+					sampleDAO.save(relationship);
+				}
+			}
+			mergeFromFeature.setRelationships(null);
+			
+			//delete merge feature
 			deleteFeature(mergeFromFeature, user);
 		}
 	}	
