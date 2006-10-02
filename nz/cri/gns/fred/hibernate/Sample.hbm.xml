@@ -230,7 +230,7 @@
         name="sentTos"
         lazy="true"
         inverse="true"
-		cascade="all-delete-orphan"
+		cascade="all"
     >
         <key>
             <column not-null="true" name="SAMPLE_ID" />
@@ -261,7 +261,7 @@
         name="relationships"
         lazy="true"
         inverse="true"
-		cascade="all-delete-orphan"
+		cascade="all"
     >
         <key>
             <column not-null="true" name="SAMPLE_ID" />
