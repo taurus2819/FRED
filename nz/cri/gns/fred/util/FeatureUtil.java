@@ -798,7 +798,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		try {
 			for (AuditEdit edit : audit.getAuditEdits()) {
 				if (edit.getComments().equals(BACKLOG_PREPARE_COMMENTS)) {
-					featureDAO.delete(edit);
+					audit.getAuditEdits().remove(edit);
 					break;
 				}
 			}
