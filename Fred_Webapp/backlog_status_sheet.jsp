@@ -13,6 +13,7 @@
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.AuditUtil"
+%><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="java.net.URLEncoder"
 %><%!
 	public String getName(HttpServletRequest request) {
@@ -27,6 +28,10 @@
 	et.setUseNavigationColumn(false);
 	et.setDisplayLoadingMessage(true);
 
+	String backURL = "backlog_status.jsp" + ((request.getParameter("MF") != null) ? "ID=" + request.getParameter("MF") : "");
+	IconnedLink[] il = new IconnedLink[] {new IconnedLink(backURL, "images/back_arrow.gif", "Back to Status Map")};
+	addButtons(et, il);
+	
 	drawTop(out, et, request, response);
 
 	//List data

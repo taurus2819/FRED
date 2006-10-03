@@ -267,7 +267,7 @@
 		for (Iterator i = bsUtil.getBacklogStatusInMasterfile(masterfileId).iterator(); i.hasNext();) {
 			BacklogStatus bs = (BacklogStatus) i.next();
 			int totalCount = bs.getLocalityCount().intValue() - bs.getNewCount().intValue();
-			%><tr><td class="heading"><a href="backlog_status_sheet.jsp?Sheet=<%=bs.getMapNumber()%>"><%=bs.getMapNumber()%></a>&nbsp;&nbsp;</td>
+			%><tr><td class="heading"><a href="backlog_status_sheet.jsp?Sheet=<%=bs.getMapNumber()%>&MF=<%=masterfileId%>"><%=bs.getMapNumber()%></a>&nbsp;&nbsp;</td>
 			<td style="color: <%=getStatusColour(bs.getStatus())%>"><%=bs.getStatus()%>&nbsp;&nbsp;</td>
 			<td><%=totalCount%></td><%
 			if (bs.getStatus().equals(FREDConstants.BACKLOG_COMPLETE) || bs.getStatus().equals(FREDConstants.BACKLOG_PROCESSING)) {
