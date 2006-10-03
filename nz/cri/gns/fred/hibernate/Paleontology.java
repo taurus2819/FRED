@@ -7,6 +7,8 @@ import java.util.Set;
 import nz.cri.gns.fred.hibernate.dao.AssignedKeyed;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
+import nz.cri.gns.fred.model.RecordDetails;
+import nz.cri.gns.fred.util.RecordUtil;
 
 
 /** @author Hibernate CodeGenerator */
@@ -182,4 +184,11 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
 	public boolean isUnsaved() {
 		return recordId == null;
 	}
+
+	public int compareTo(RecordDetails arg0) {
+		String thisName = RecordUtil.getRecordName(this);
+		String thatName = RecordUtil.getRecordName(arg0);
+		return thisName.compareTo(thatName);
+	}
+	
 }

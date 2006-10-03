@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  * A superinterface for Adoption and Paleontology
  */
-public interface RecordDetails {
+public interface RecordDetails extends Comparable<RecordDetails> {
 	
 	public Date getDate();
 	public String getDateRounding();

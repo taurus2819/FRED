@@ -58,6 +58,10 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	
 	public static String getRecordName(Record record) {
 		RecordDetails details = (record.getAdoption() == null) ? ((record.getPaleontology() == null) ? null : (RecordDetails)record.getPaleontology()) : record.getAdoption();
+		return getRecordName(details);
+	}
+	
+	public static String getRecordName(RecordDetails details) {
 		if (details == null)
 			return "Unnamed Record";
 		

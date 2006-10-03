@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.util;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -400,23 +401,24 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return count;
 	}
 	
-	public Set<Paleontology> getPaleontologyRecords(Sample sample) {
-		Set<Paleontology> palRecords = new HashSet<Paleontology>();
-		for (Iterator it = sample.getRecords().iterator(); it.hasNext(); ) {
-			Record record = (Record) it.next();
+	public List<Paleontology> getPaleontologyRecords(Sample sample) {
+		List<Paleontology> palRecords = new Vector<Paleontology>();
+		for (Record record : sample.getRecords()) {
 			if (record.getPaleontology() != null)
 				palRecords.add(record.getPaleontology());
-		}		
+		}
+		Collections.sort(palRecords);
 		return palRecords;
 	}
 
-	public Set<Adoption> getAdoptionRecords(Sample sample) {
-		Set<Adoption> adoRecords = new HashSet<Adoption>();
+	public List<Adoption> getAdoptionRecords(Sample sample) {
+		List<Adoption> adoRecords = new Vector<Adoption>();
 		for (Iterator it = sample.getRecords().iterator(); it.hasNext(); ) {
 			Record record = (Record) it.next();
 			if (record.getAdoption() != null)
 				adoRecords.add(record.getAdoption());
-		}		
+		}
+		Collections.sort(adoRecords);
 		return adoRecords;
 	}	
 	
