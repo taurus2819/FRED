@@ -341,6 +341,8 @@ public class PaleontologyRecordDE extends RecordDE {
                         //It matches
                         it.remove();
                         found = true;
+                        if (entry.getTaxon() != null && !entry.getTaxon().getStatus().equals(FREDConstants.APPROVED))
+                        	nonApprovedTaxaFlag = true;
                         break;
                     }
                 }
@@ -384,6 +386,8 @@ public class PaleontologyRecordDE extends RecordDE {
                     	entry.setSpecimenCount(new Integer(bits[SPECIMEN_COUNT]));
                     entry.setSpecimenCoords(bits[SPECIMEN_COORD]);
                     entry.setComments(bits[COMMENTS]);
+                    if (entry.getTaxon() != null && !entry.getTaxon().getStatus().equals(FREDConstants.APPROVED))
+                    	nonApprovedTaxaFlag = true;
                 }
 			} catch (Exception e) {
 				e.printStackTrace();
