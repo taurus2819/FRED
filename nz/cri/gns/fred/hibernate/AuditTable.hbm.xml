@@ -152,7 +152,6 @@
         lazy="true"
         inverse="true"
 		cascade="all-delete-orphan"
-		sort="natural"
     >
         <key>
             <column name="AUDIT_ID" />
