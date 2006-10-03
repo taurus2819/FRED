@@ -28,7 +28,7 @@
 	et.setUseNavigationColumn(false);
 	et.setDisplayLoadingMessage(true);
 
-	String backURL = "backlog_status.jsp" + ((request.getParameter("MF") != null) ? "ID=" + request.getParameter("MF") : "");
+	String backURL = "backlog_status.jsp" + ((request.getParameter("MF") != null) ? "?ID=" + request.getParameter("MF") : "");
 	IconnedLink[] il = new IconnedLink[] {new IconnedLink(backURL, "images/back_arrow.gif", "Back to Status Map")};
 	addButtons(et, il);
 	
