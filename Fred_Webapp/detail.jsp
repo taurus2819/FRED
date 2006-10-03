@@ -88,7 +88,7 @@ try {
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setUseNavigationColumn(false);
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 
 	String sampID = request.getParameter("ID");
 	String featID = request.getParameter("FeatID");
