@@ -10,6 +10,6 @@ public interface RecordDetails extends Comparable<RecordDetails> {
 	
 	public Date getDate();
 	public String getDateRounding();
-	public Set getPersons();
+	public Set<Person> getPersons();
 	
 }
