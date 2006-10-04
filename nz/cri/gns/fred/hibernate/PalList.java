@@ -5,12 +5,10 @@ import java.util.Set;
 
 import nz.cri.gns.fred.model.PalListMeta;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
-import nz.cri.gns.fred.model.RecordMeta;
 import nz.cri.gns.fred.model.Taxon;
-import nz.cri.gns.fred.util.RecordUtil;
 
 /** @author Hibernate CodeGenerator */
-public class PalList implements Serializable, PaleontologyListEntry, Comparable<nz.cri.gns.fred.model.PaleontologyListEntry> {
+public class PalList implements Serializable, PaleontologyListEntry {
 
     private static final long serialVersionUID = 20050818L;
 

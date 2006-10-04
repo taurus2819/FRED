@@ -4,7 +4,7 @@ import java.util.Set;
 
 import nz.cri.gns.core.NameableAndIdentifiable;
 
-public interface PaleontologyListEntry extends NameableAndIdentifiable {
+public interface PaleontologyListEntry extends NameableAndIdentifiable, Comparable<PaleontologyListEntry> {
 
     public Integer getPalListId();
 

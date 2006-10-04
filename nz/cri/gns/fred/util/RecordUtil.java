@@ -326,7 +326,9 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * @throws StorageAccessException 
 	 */
 	public List<PaleontologyListEntry> getListEntries(Paleontology pal, TaxonomicGroup group) throws StorageAccessException {
-		return recordDAO.getListEntries(pal, group);
+		List<PaleontologyListEntry> entries = recordDAO.getListEntries(pal, group);
+		Collections.sort(entries);
+		return entries;
 	}
 
 	/**
