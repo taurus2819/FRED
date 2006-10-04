@@ -1,9 +1,12 @@
 package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.RecordDetails;
 import nz.cri.gns.fred.model.RecordMeta;
+import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.RecordUtil;
 
 /** @author Hibernate CodeGenerator */
@@ -129,9 +132,28 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record, Compa
     }
     
 	public int compareTo(nz.cri.gns.fred.model.Record arg0) {
-		String thisName = RecordUtil.getRecordType(this) + RecordUtil.getRecordName(this);
-		String thatName = RecordUtil.getRecordType(arg0) + RecordUtil.getRecordName(arg0);
-		return thisName.compareTo(thatName);
+		//first compare record types
+		String thisType = RecordUtil.getRecordType(this);
+		String thatType = RecordUtil.getRecordType(arg0);
+		if (!thisType.equals(thatType))
+			return thisType.compareTo(thatType);
+		
+		//record types match so compare date and then person
+		RecordDetails thisDetails = RecordUtil.getRecordDetails(this);
+		RecordDetails thatDetails = RecordUtil.getRecordDetails(arg0);
+		
+		Date thisDate = thisDetails.getDate();
+		Date thatDate = thisDetails.getDate();
+		if (FREDUtil.equals(thisDate, thatDate, true))
+			return RecordUtil.getRecordName(thisDetails).compareTo(RecordUtil.getRecordName(thatDetails));
+		else try {
+			return thisDate.compareTo(thatDate);
+		} catch (Exception e) {
+			if (thisDate != null)
+				return 1;
+			else
+				return -1;
+		}
 	}
 	
 }

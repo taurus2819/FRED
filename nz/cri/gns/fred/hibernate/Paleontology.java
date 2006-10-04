@@ -8,8 +8,8 @@ import nz.cri.gns.fred.hibernate.dao.AssignedKeyed;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.RecordDetails;
+import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.RecordUtil;
-
 
 /** @author Hibernate CodeGenerator */
 public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleontology, AssignedKeyed {
@@ -173,7 +173,7 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
 		return getIdentificationDate();
 	}
 
-	public Set getPersons() {
+	public Set<Person> getPersons() {
 		return getIdentifiers();
 	}
 
@@ -186,9 +186,18 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
 	}
 
 	public int compareTo(RecordDetails arg0) {
-		String thisName = RecordUtil.getRecordName(this);
-		String thatName = RecordUtil.getRecordName(arg0);
-		return thisName.compareTo(thatName);
+		Date thisDate = this.getDate();
+		Date thatDate = arg0.getDate();
+		if (FREDUtil.equals(thisDate, thatDate, true))
+			return RecordUtil.getRecordName(this).compareTo(RecordUtil.getRecordName(arg0));
+		else try {
+			return thisDate.compareTo(thatDate);
+		} catch (Exception e) {
+			if (thisDate != null)
+				return 1;
+			else
+				return -1;
+		}
 	}
 	
 }
