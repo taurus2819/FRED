@@ -1,7 +1,7 @@
 package nz.cri.gns.fred.util;
 
+import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -56,30 +56,33 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return true;
 	}
 	
+	public static RecordDetails getRecordDetails(Record record) {
+		return (record.getAdoption() == null) ? ((record.getPaleontology() == null) ? null : record.getPaleontology()) : record.getAdoption();
+	}
+	
 	public static String getRecordName(Record record) {
-		RecordDetails details = (record.getAdoption() == null) ? ((record.getPaleontology() == null) ? null : (RecordDetails)record.getPaleontology()) : record.getAdoption();
-		return getRecordName(details);
+		return getRecordName(getRecordDetails(record));
 	}
 	
 	public static String getRecordName(RecordDetails details) {
 		if (details == null)
 			return "Unnamed Record";
 		
-		String person = "";
-		if (details.getPersons() != null) {
-			Iterator it = details.getPersons().iterator();
-			if (it.hasNext()) {
-				Person p = (Person)it.next();
-				person = p.getName();
-			}
+		String personStr = "";
+		if (!FREDUtil.isEmpty(details.getPersons())) {
+			List<Person> persons = new Vector<Person>();
+			for (Person person : details.getPersons())
+				persons.add(person);
+			Collections.sort(persons);
+			for (Person person : persons)
+				personStr = person.getName();
 		}
-		
+
 		String date = "";
-		if (details.getDate() != null) {
+		if (details.getDate() != null)
 			date = FREDUtil.formatDateForOutput(details.getDate(), details.getDateRounding());
-		}
 		
-		return ((person.length() + date.length() > 0) ? person + ((person.length() > 0 && date.length() > 0) ? ", " : "") + date : "Unnamed Record");
+		return ((personStr.length() + date.length() > 0) ? personStr + ((personStr.length() > 0 && date.length() > 0) ? ", " : "") + date : "Unnamed Record");
 	}
 	
 	public static String getLabNumberDescription(Paleontology pal) {
