@@ -143,16 +143,17 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record, Compa
 		RecordDetails thatDetails = RecordUtil.getRecordDetails(arg0);
 		
 		Date thisDate = thisDetails.getDate();
-		Date thatDate = thisDetails.getDate();
-		if (FREDUtil.equals(thisDate, thatDate, true))
+		Date thatDate = thatDetails.getDate();
+		if (FREDUtil.equals(thisDate, thatDate, true)) {
 			return RecordUtil.getRecordName(thisDetails).compareTo(RecordUtil.getRecordName(thatDetails));
+		}
 		else try {
 			return thisDate.compareTo(thatDate);
 		} catch (Exception e) {
 			if (thisDate != null)
-				return 1;
-			else
 				return -1;
+			else
+				return 1;
 		}
 	}
 	
