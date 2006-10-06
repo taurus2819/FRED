@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.util;
 
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -190,11 +191,14 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		}
 		
 		if (FEET_UNIT.equals(unit)) {
+			DecimalFormat f = new DecimalFormat("0.##");
+			desc.append(" (");
 			if (sample.getTopDepth() != null)
-				desc.append(sample.getTopDepth().doubleValue() * FT_TO_M).append("m");
+				desc.append(f.format(sample.getTopDepth().doubleValue() * FT_TO_M)).append("m");
 			if (sample.getBottomDepth() != null) {
-				desc.append(" - ").append(sample.getBottomDepth().doubleValue() * FT_TO_M).append("m");
-			}			
+				desc.append(" - ").append(f.format(sample.getBottomDepth().doubleValue() * FT_TO_M)).append("m");
+			}
+			desc.append(")");
 		}
 		
 		if (sample.getDrillType() != null) {
