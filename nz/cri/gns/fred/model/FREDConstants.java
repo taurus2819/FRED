@@ -24,6 +24,9 @@ public interface FREDConstants {
 	public static final String SAMPLE = "Sample";
 	public static final String STRATIGRAPHIC = "Stratigraphic";
 
+	//Drillhole depths
+	public static final String FEET_UNIT = "ft";
+	public static final String METRES_UNIT = "m";
 	public static final String DEPTH_NOT_SPECIFIED = "Depth not specified";
 
     //Relationship types

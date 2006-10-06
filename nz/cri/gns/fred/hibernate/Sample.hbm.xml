@@ -39,6 +39,12 @@
         length="7"
     />
     <property
+        name="depthUnit"
+        type="java.lang.String"
+        column="DEPTH_UNIT"
+        length="2"
+    />
+    <property
         name="comments"
         type="java.lang.String"
         column="COMMENTS"

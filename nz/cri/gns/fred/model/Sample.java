@@ -19,6 +19,10 @@ public interface Sample extends Audited, Comparable<Sample> {
 
 	public abstract void setBottomDepth(Double bottomDepth);
 
+	public abstract String getDepthUnit();
+
+	public abstract void setDepthUnit(String depthUnit);
+	
 	public abstract String getComments();
 
 	public abstract void setComments(String comments);
