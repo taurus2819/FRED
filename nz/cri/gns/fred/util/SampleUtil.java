@@ -3,10 +3,8 @@ package nz.cri.gns.fred.util;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.naming.NamingException;
@@ -51,6 +49,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
 	private static String NOT_DETERMINED_STAGE = "166";
 	private static String NO_FOSSILS_STAGE = "167";
+	private static double FT_TO_M = 0.3048;
 	
 	/**
 	 * An implementation of relationship that does a thorough (field by field)
@@ -180,15 +179,29 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (!hasDepthInformation(sample))
 			return DEPTH_NOT_SPECIFIED;
 		
-		String desc = (sample.getTopDepth() != null) ? sample.getTopDepth() + "m" : "";
+		String unit = sample.getDepthUnit();
+		
+		StringBuffer desc = new StringBuffer();
+		
+		if (sample.getTopDepth() != null)
+			desc.append(sample.getTopDepth()).append(unit);
 		if (sample.getBottomDepth() != null) {
-			desc += " - " + sample.getBottomDepth() + "m";
-		}
-		if (sample.getDrillType() != null) {
-			desc += " " + sample.getDrillType().getName();
+			desc.append(" - ").append(sample.getBottomDepth()).append(unit);
 		}
 		
-		return desc;
+		if (FEET_UNIT.equals(unit)) {
+			if (sample.getTopDepth() != null)
+				desc.append(sample.getTopDepth().doubleValue() * FT_TO_M).append("m");
+			if (sample.getBottomDepth() != null) {
+				desc.append(" - ").append(sample.getBottomDepth().doubleValue() * FT_TO_M).append("m");
+			}			
+		}
+		
+		if (sample.getDrillType() != null) {
+			desc.append(" ").append(sample.getDrillType().getName());
+		}
+		
+		return desc.toString();
 	}
 	
 	public static boolean hasDepthInformation(Sample sample) {
