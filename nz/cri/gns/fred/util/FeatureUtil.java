@@ -1150,4 +1150,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		}
 	}
 	
+	public static String formatDepthForOutput(Double depth, String unit) {
+		StringBuffer d = new StringBuffer(FREDUtil.formatDoubleForOutput(depth, 3)).append(" ").append(unit);
+		if (FEET_UNIT.equals(unit))
+			d.append(" (").append(FREDUtil.formatDoubleForOutput(new Double(depth.doubleValue() * FT_TO_M), 3)).append(" ft)");
+		return d.toString();
+	}
+	
 }
