@@ -122,6 +122,12 @@ public class DrillholeLocalityDE extends LocalityDE {
 			error = new String[] {"Termination Depth", "Invalid depth entered"};
 		}
 		
+    	String depthUnit = request.getParameter("DepthUnit");
+    	if ("ft".equals(depthUnit))
+    		feature.setDepthUnit("ft");
+    	else
+    		feature.setDepthUnit("m");
+		
 		if (error != null)
 			throw new DataInputException(error[0], error[1]);
 	}
