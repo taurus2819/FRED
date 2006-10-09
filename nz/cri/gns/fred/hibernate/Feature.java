@@ -12,7 +12,7 @@ import nz.cri.gns.fred.util.FeatureUtil;
 
 
 /** @author Hibernate CodeGenerator */
-public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Cloneable, Comparable<nz.cri.gns.fred.model.Feature> {
+public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Cloneable {
 
     private static final long serialVersionUID = 20050818L;
 
@@ -65,6 +65,9 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     private Double finishDepth;
 
     /** nullable persistent field */
+    private String depthUnit;
+    
+    /** nullable persistent field */
     private String startDateRounding;
 
     /** nullable persistent field */
@@ -104,7 +107,7 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     private Set<FeatureMeta> featureMetas;
 
     /** full constructor */
-    public Feature(Integer siteId, String locality, Integer origSystemId, String origCoord, Integer mapYear, String coordComments, String featureType, String featureName, String drillholeLicenceName, Date startDate, Date finishDate, String comments, Double datumElevation, Double startDepth, String datumType, Double finishDepth, String startDateRounding, String finishDateRounding, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.FrNumber yardFrNumber, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set<Sample> samples, Set<Folder> folders, Set<Relationship> relationships, Set<FeatureMeta> featureMetas) {
+    public Feature(Integer siteId, String locality, Integer origSystemId, String origCoord, Integer mapYear, String coordComments, String featureType, String featureName, String drillholeLicenceName, Date startDate, Date finishDate, String comments, Double datumElevation, Double startDepth, String datumType, Double finishDepth, String depthUnit, String startDateRounding, String finishDateRounding, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.FrNumber yardFrNumber, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set<Sample> samples, Set<Folder> folders, Set<Relationship> relationships, Set<FeatureMeta> featureMetas) {
         this.siteId = siteId;
         this.locality = locality;
         this.origSystemId = origSystemId;
@@ -120,6 +123,7 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
         this.startDepth = startDepth;
         this.datumType = datumType;
         this.finishDepth = finishDepth;
+        this.depthUnit = depthUnit;
         this.startDateRounding = startDateRounding;
         this.finishDateRounding = finishDateRounding;
         this.comments = comments;
@@ -287,6 +291,14 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
 
     public void setFinishDepth(Double finishDepth) {
         this.finishDepth = finishDepth;
+    }
+    
+    public String getDepthUnit() {
+        return this.depthUnit;
+    }
+
+    public void setDepthUnit(String depthUnit) {
+        this.depthUnit = depthUnit;
     }
 
     public String getStartDateRounding() {

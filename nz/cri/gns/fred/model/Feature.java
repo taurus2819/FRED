@@ -3,9 +3,6 @@ package nz.cri.gns.fred.model;
 import java.util.Date;
 import java.util.Set;
 
-/**
- *
- */
 public interface Feature extends Audited, Comparable<Feature> {
 
 	public Integer getFeatureId();
@@ -42,20 +39,22 @@ public interface Feature extends Audited, Comparable<Feature> {
     public void setDatumType(String datumType);
     public Double getFinishDepth();
     public void setFinishDepth(Double finishDepth);
+	public String getDepthUnit();
+	public void setDepthUnit(String depthUnit);
     public String getStartDateRounding();
     public void setStartDateRounding(String startDateRounding);
     public String getFinishDateRounding();
     public void setFinishDateRounding(String finishDateRounding);
-	public nz.cri.gns.fred.model.FrNumber getFrNumber();
-	public void setFrNumber(nz.cri.gns.fred.model.FrNumber frNumber);
+	public FrNumber getFrNumber();
+	public void setFrNumber(FrNumber frNumber);
 	public FrNumber getYardFrNumber();
 	public void setYardFrNumber(FrNumber yardFrNumber);
-    public nz.cri.gns.fred.model.Person getPerson();
-    public void setPerson(nz.cri.gns.fred.model.Person person);
-    public nz.cri.gns.fred.model.Folder getMasterFile();
-    public void setMasterFile(nz.cri.gns.fred.model.Folder masterFile);
-    public nz.cri.gns.fred.model.RegistrationArea getRegistrationArea();
-    public void setRegistrationArea(nz.cri.gns.fred.model.RegistrationArea registrationArea);
+    public Person getPerson();
+    public void setPerson(Person person);
+    public Folder getMasterFile();
+    public void setMasterFile(Folder masterFile);
+    public RegistrationArea getRegistrationArea();
+    public void setRegistrationArea(RegistrationArea registrationArea);
     public Set<Sample> getSamples();
     public void setSamples(Set<Sample> samples);
     public Set<Folder> getFolders();
@@ -64,4 +63,5 @@ public interface Feature extends Audited, Comparable<Feature> {
     public void setRelationships(Set<Relationship> relationships);
     public Set<FeatureMeta> getFeatureMetas();
     public void setFeatureMetas(Set<FeatureMeta> featureMetas);
+    
 }

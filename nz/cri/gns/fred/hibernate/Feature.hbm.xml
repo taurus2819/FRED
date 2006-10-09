@@ -118,6 +118,12 @@
         length="5"
     />
     <property
+        name="depthUnit"
+        type="java.lang.String"
+        column="DEPTH_UNIT"
+        length="2"
+    />
+    <property
         name="startDateRounding"
         type="java.lang.String"
         column="START_DATE_ROUNDING"
