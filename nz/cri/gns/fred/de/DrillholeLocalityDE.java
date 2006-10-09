@@ -52,6 +52,7 @@ public class DrillholeLocalityDE extends LocalityDE {
 		feature.setDatumElevation(fromFeature.getDatumElevation());
 		feature.setStartDepth(fromFeature.getStartDepth());
 		feature.setFinishDepth(fromFeature.getFinishDepth());
+		feature.setDepthUnit(fromFeature.getDepthUnit());
 	}
 
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
@@ -156,6 +157,12 @@ public class DrillholeLocalityDE extends LocalityDE {
 			template.addSub("startDepth", feature.getStartDepth().toString());
 		if (feature.getFinishDepth() != null) 
 			template.addSub("finishDepth", feature.getFinishDepth().toString());
+		
+        if ("ft".equals(feature.getDepthUnit()))
+        	template.addSub("depthft", "checked ");
+        else
+        	template.addSub("depthm", "checked ");
+		
 		
 		template.loadAll(out);
 	}

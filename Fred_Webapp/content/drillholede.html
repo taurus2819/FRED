@@ -27,7 +27,7 @@
 <option value='RT'{@@isRT: selected@}>RT</option>
 <option value='KB'{@@isKB: selected@}>KB</option>
 <option value='Seafloor'{@@isSeafloor: selected@}>Seafloor</option>
-</select>&nbsp;&nbsp;<input type='text' name='DatumEl' value="{@datumElevation}" size='10'>&nbsp;m&nbsp;asl</td>
+</select>&nbsp;&nbsp;<input type='text' name='DatumEl' value="{@datumElevation}" size='10'>&nbsp;asl</td>
 </tr>
 <tr>
 <td class='heading'>Drillhole Depths</td>
@@ -38,6 +38,10 @@
 <td class='heading'></td>
 <td class='smallheading'>Termination (TD)</td>
 <td class='smallheading'><input type='text' name='FinishDepth' value="{@finishDepth}">&nbsp;m</td>
+</tr>
+<tr>
+<td class="heading">Depth Unit</td>
+<td><input type="radio" name="DepthUnit" value="m" {@depthm}/>Metres&nbsp;&nbsp;<input type="radio" name="DepthUnit" value="ft" {@depthft}/>Feet</td>
 </tr>
 </table>
 {@endDETable}
