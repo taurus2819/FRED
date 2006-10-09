@@ -200,9 +200,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             template.addSub("topDepth", ((sample.getTopDepth() != null) ? String.valueOf(sample.getTopDepth()) : ""));
             template.addSub("bottomDepth", ((sample.getBottomDepth() != null) ? String.valueOf(sample.getBottomDepth()) : ""));
             if ("ft".equals(sample.getDepthUnit()))
-            	template.addSub("depthft", "selected ");
+            	template.addSub("depthft", "checked ");
             else
-            	template.addSub("depthm", "selected ");
+            	template.addSub("depthm", "checked ");
             
 			if (sample.getFeature().getFeatureType().equals(FREDConstants.DRILLHOLE)) {
 				template.addSub("isDrillhole", "yes");
