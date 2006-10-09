@@ -5,6 +5,8 @@ package nz.cri.gns.fred.model;
  */
 public interface FREDConstants {
 
+	public static double FT_TO_M = 0.3048;
+	
     //Status types
 	public static final String WAITING = "waiting";
 	public static final String WORKING = "working";
