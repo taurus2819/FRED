@@ -50,7 +50,6 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
 	private static String NOT_DETERMINED_STAGE = "166";
 	private static String NO_FOSSILS_STAGE = "167";
-	public static double FT_TO_M = 0.3048;
 	
 	/**
 	 * An implementation of relationship that does a thorough (field by field)
@@ -185,18 +184,17 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		StringBuffer desc = new StringBuffer();
 		
 		if (sample.getTopDepth() != null)
-			desc.append(sample.getTopDepth()).append(unit);
+			desc.append(FREDUtil.formatDoubleForOutput(sample.getTopDepth(), 3)).append(" ").append(unit);
 		if (sample.getBottomDepth() != null) {
-			desc.append(" - ").append(sample.getBottomDepth()).append(unit);
+			desc.append(" - ").append(FREDUtil.formatDoubleForOutput(sample.getBottomDepth(), 3)).append(" ").append(unit);
 		}
 		
 		if (FEET_UNIT.equals(unit)) {
-			DecimalFormat f = new DecimalFormat("0.##");
 			desc.append(" (");
 			if (sample.getTopDepth() != null)
-				desc.append(f.format(sample.getTopDepth().doubleValue() * FT_TO_M)).append("m");
+				desc.append(FREDUtil.formatDoubleForOutput(new Double(sample.getTopDepth().doubleValue() * FT_TO_M), 3)).append(" m");
 			if (sample.getBottomDepth() != null) {
-				desc.append(" - ").append(f.format(sample.getBottomDepth().doubleValue() * FT_TO_M)).append("m");
+				desc.append(" - ").append(FREDUtil.formatDoubleForOutput(new Double(sample.getBottomDepth().doubleValue() * FT_TO_M), 3)).append(" m");
 			}
 			desc.append(")");
 		}

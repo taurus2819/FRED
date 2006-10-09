@@ -341,13 +341,19 @@ public class FREDUtil {
 		}
 	}
 
-	public static String formatDoubleForOutput(Double dbl) {
+	public static String formatDoubleForOutput(Double dbl, int maxDp) {
 		if (dbl == null)
 			return null;
 		String dblStr = String.valueOf(dbl);
-		if (dblStr.endsWith(".0"))
+		if (dblStr.endsWith(".0")) {
 			dblStr = dblStr.substring(0, dblStr.length() - 2);
-		return dblStr;
+			return dblStr;
+		}
+		StringBuffer fmt = new StringBuffer("0."); 
+		for (int i = 0; i < maxDp; i++)
+			fmt.append("#");
+		DecimalFormat f = new DecimalFormat(fmt.toString());
+		return f.format(dbl);
 	}
 	
 	public static String getFrNumberMapSheet(Feature feature) throws SQLException, NamingException {
