@@ -58,10 +58,8 @@ import nz.cri.gns.util.map.Datum.Coordinate;
 
 import org.xml.sax.SAXException;
 
-/**
- *
- */
 public class FREDUtil {
+	
 	private static ThreadLocal<Connection> docAttacherConnections = new ThreadLocal<Connection>();
 	
 	public static class CopyAll implements Instruction {
@@ -322,7 +320,7 @@ public class FREDUtil {
 			return DateFormat.getDateInstance(DateFormat.LONG).format(date);
 		}
 	}
-
+	
 	/**
 	 * Returns a string of a date with appropriate formatting 
 	 */
@@ -343,6 +341,15 @@ public class FREDUtil {
 		}
 	}
 
+	public static String formatDoubleForOutput(Double dbl) {
+		if (dbl == null)
+			return null;
+		String dblStr = String.valueOf(dbl);
+		if (dblStr.endsWith(".0"))
+			dblStr = dblStr.substring(0, dblStr.length() - 2);
+		return dblStr;
+	}
+	
 	public static String getFrNumberMapSheet(Feature feature) throws SQLException, NamingException {
 		RegistrationArea area = feature.getRegistrationArea();
 
