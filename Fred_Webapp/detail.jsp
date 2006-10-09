@@ -434,13 +434,13 @@ try {
 						%><tr><td class="heading">Datum Type</td><td><%=feature.getDatumType()%></td></tr><%
 					}
 					if (feature.getDatumElevation() != null) {
-						%><tr><td class="heading">Datum Elevation</td><td><%=feature.getDatumElevation()%> m asl</td></tr><%
+						%><tr><td class="heading">Datum Elevation</td><td><%=FeatureUtil.formatDepthForOutput(feature.getDatumElevation(), feature.getDepthUnit())%> asl</td></tr><%
 					}
 					if (feature.getStartDepth() != null) {
-						%><tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon")%></td><td><%=feature.getStartDepth()%> m</td></tr><%
+						%><tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon")%></td><td><%=FeatureUtil.formatDepthForOutput(feature.getStartDepth(), feature.getDepthUnit())%></td></tr><%
 					}
 					if (feature.getFinishDepth() != null) {
-						%><tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon")%></td><td><%=feature.getFinishDepth()%> m</td></tr><%
+						%><tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon")%></td><td><%=FeatureUtil.formatDepthForOutput(feature.getFinishDepth(), feature.getDepthUnit())%></td></tr><%
 					}
 				}
 				if (feature.getComments() != null) {
