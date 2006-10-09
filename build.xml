@@ -29,6 +29,9 @@
 					<include name="gol-web.jar" />
 					<include name="itext-1.3.jar" />
 					<include name="junit.jar" />
+					<include name="hibernate2.jar" />
+					<include name="junit.jar" />
+					<include name="servlet23.jar" />
 				</fileset>
 			</classpath>
 		</javac>
