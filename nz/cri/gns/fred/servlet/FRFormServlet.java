@@ -383,11 +383,11 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				if (featType.equals(FREDConstants.DRILLHOLE))
 					PDFUtil.addCells(table, new String[] {"Licence Area", feature.getDrillholeLicenceName()}, bodyFonts);
 				PDFUtil.addCells(table, new String[] {"Datum Type", feature.getDatumType()}, bodyFonts);
-				PDFUtil.addCells(table, new String[] {"Datum Elevation", ((feature.getDatumElevation() != null) ? String.valueOf(feature.getDatumElevation()) + " m asl" : null)}, bodyFonts);
+				PDFUtil.addCells(table, new String[] {"Datum Elevation", ((feature.getDatumElevation() != null) ? FeatureUtil.formatDepthForOutput(feature.getDatumElevation(), feature.getDepthUnit()) + " asl" : null)}, bodyFonts);
 				PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon"),
-						((feature.getStartDepth() != null) ? String.valueOf(feature.getStartDepth()) + " m" : null)}, bodyFonts);
+						((feature.getStartDepth() != null) ? FeatureUtil.formatDepthForOutput(feature.getStartDepth(), feature.getDepthUnit()) : null)}, bodyFonts);
 				PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon"),
-						((feature.getFinishDepth() != null) ? String.valueOf(feature.getFinishDepth()) + " m" : null)}, bodyFonts);
+						((feature.getFinishDepth() != null) ? FeatureUtil.formatDepthForOutput(feature.getFinishDepth(), feature.getDepthUnit()) : null)}, bodyFonts);
 			}
 		}
 		
