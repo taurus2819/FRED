@@ -50,7 +50,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
 	private static String NOT_DETERMINED_STAGE = "166";
 	private static String NO_FOSSILS_STAGE = "167";
-	private static double FT_TO_M = 0.3048;
+	public static double FT_TO_M = 0.3048;
 	
 	/**
 	 * An implementation of relationship that does a thorough (field by field)

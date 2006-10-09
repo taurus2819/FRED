@@ -10,6 +10,7 @@ import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.SampleMeta;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SentTo;
+import nz.cri.gns.fred.util.SampleUtil;
 
 /** @author Hibernate CodeGenerator */
 public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Cloneable {
@@ -592,12 +593,22 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
 
 	public int compareTo(nz.cri.gns.fred.model.Sample sample) {
 		if (getTopDepth() != null && sample.getTopDepth() != null) {
-			if (getTopDepth().equals(sample.getTopDepth()) && getBottomDepth() != null && sample.getBottomDepth() != null)
-				return getBottomDepth().compareTo(sample.getBottomDepth());
-			return getTopDepth().compareTo(sample.getTopDepth());
+			if (getMetricDepth(getTopDepth(), getDepthUnit()).equals(getMetricDepth(sample.getTopDepth(), sample.getDepthUnit())) && getBottomDepth() != null && sample.getBottomDepth() != null)
+				return getMetricDepth(getBottomDepth(), getDepthUnit()).compareTo(getMetricDepth(sample.getBottomDepth(), sample.getDepthUnit()));
+			return getMetricDepth(getTopDepth(), getDepthUnit()).compareTo(getMetricDepth(sample.getTopDepth(), sample.getDepthUnit()));
 		} 
 		//Anything undepthed goes to the end
 		return (getTopDepth() == null) ? 1 : -1;
+	}
+	
+	private static Double getMetricDepth(Double depth, String unit) {
+		try {
+			if ("m".equals(unit))
+				return depth;
+			else if ("ft".equals(unit))
+				return new Double(depth.doubleValue() * SampleUtil.FT_TO_M);
+		} catch (Exception e) {}
+		return null;
 	}
 
 }
