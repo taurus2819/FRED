@@ -497,9 +497,9 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (rel.getDistanceMod() != null)
 			desc.append(rel.getDistanceMod()).append(" ");
 		if (rel.getDistance() != null) {
-			desc.append(rel.getDistance()).append(" m ");
+			desc.append(FREDUtil.formatDoubleForOutput(rel.getDistance(), 2)).append(" m ");
 			if (rel.getDistanceRange() != null)
-				desc.append("- ").append(rel.getDistanceRange()).append(" m ");
+				desc.append("- ").append(FREDUtil.formatDoubleForOutput(rel.getDistanceRange(), 2)).append(" m ");
 		}
 		if (!rel.getRelationshipType().getName().equals(FREDConstants.NEARBY))
 			desc.append(rel.getRelationshipType().getName()).append(" ");
