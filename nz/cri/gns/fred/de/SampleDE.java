@@ -30,7 +30,6 @@ import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FossilGroup;
-import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.Person;
@@ -200,6 +199,11 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             template.addSub("featureName", sample.getFeature().getFeatureName());
             template.addSub("topDepth", ((sample.getTopDepth() != null) ? String.valueOf(sample.getTopDepth()) : ""));
             template.addSub("bottomDepth", ((sample.getBottomDepth() != null) ? String.valueOf(sample.getBottomDepth()) : ""));
+            if ("ft".equals(sample.getDepthUnit()))
+            	template.addSub("depthft", "selected ");
+            else
+            	template.addSub("depthm", "selected ");
+            
 			if (sample.getFeature().getFeatureType().equals(FREDConstants.DRILLHOLE)) {
 				template.addSub("isDrillhole", "yes");
 				try {
@@ -665,6 +669,11 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		        	error.add(new String[] {"Bottom Depth", "Non-numeric value"});
 		        }
         	}
+        	String depthUnit = request.getParameter("DepthUnit");
+        	if ("ft".equals(depthUnit))
+        		sample.setDepthUnit("ft");
+        	else
+        		sample.setDepthUnit("m");
     		String drillType = request.getParameter("DrillType");
     		if (drillType != null) { //catch no drilltype for vert sects
     			try {

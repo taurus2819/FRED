@@ -7,11 +7,15 @@
 </tr>
 <tr>
 <td class="heading">Top Depth</td>
-<td><input type="text" name="TopDepth" value="{@topDepth}">&nbsp;m</td>
+<td><input type="text" name="TopDepth" value="{@topDepth}"></td>
 </tr>
 <tr>
 <td class="heading">Bottom Depth</td>
-<td><input type="text" name="BottomDepth" value="{@bottomDepth}">&nbsp;m</td>
+<td><input type="text" name="BottomDepth" value="{@bottomDepth}"></td>
+</tr>
+<tr>
+<td class="heading">Depth Unit</td>
+<td><input type="radio" name="DepthUnit" value="m" {@depthm}/>Metres&nbsp;&nbsp;<input type="radio" name="DepthUnit" value="ft" {@depthft}/>Feet</td>
 </tr>
 {@@isDrillhole:<tr><td class="heading">Drill Type</td><td>@}{@drillTypeCombo}{@@isDrillhole:</td></tr>@}
 </table>
