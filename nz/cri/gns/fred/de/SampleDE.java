@@ -664,7 +664,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         		}
         		if ("Bottom".equals(sample.getFeature().getDatumType())) {
 	        		if (topDepth.doubleValue() < bottomDepth.doubleValue())
-	        			error.add(new String[] {"Depths/Heights", "Top depth/height < bottom depth/height and datum = Bottom"});
+	        			error.add(new String[] {"Heights", "Top height < bottom height and datum = Bottom"});
 	        	} else {
 	        		if (topDepth.doubleValue() > bottomDepth.doubleValue()) {
 	        			error.add(new String[] {"Depths", "Top depth > bottom depth"});
