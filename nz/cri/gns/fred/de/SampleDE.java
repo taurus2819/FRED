@@ -645,30 +645,29 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         //Drillhole/Vert Section depths
         if (!sample.getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
         	Double topDepth = null;
-        	if (request.getParameter("TopDepth").length() == 0) {
-        		sample.setTopDepth(null);
-        	} else {
-		        try {
-		        	topDepth = new Double(request.getParameter("TopDepth"));
-		        	sample.setTopDepth(topDepth);
-		        } catch (Exception e) {
-		        	error.add(new String[] {"Top Depth", "Non-numeric value"});
-		        }
+        	Double bottomDepth = null;
+        	if (request.getParameter("TopDepth").length() > 0) try {
+		        topDepth = new Double(request.getParameter("TopDepth"));
+        	} catch (Exception e) {
+        		error.add(new String[] {"Top Depth/Height", "Non-numeric value"});
         	}
-        	if (request.getParameter("BottomDepth").length() == 0) {
-        		sample.setBottomDepth(null);
-        	} else {
-		        try {
-		        	Double bottomDepth = new Double(request.getParameter("BottomDepth"));
-		        	if (topDepth != null && topDepth > bottomDepth) {
-		        		error.add(new String[] {"Depths", "Top Depth greater than Bottom Depth"});
-		        	} else {
-		        		sample.setBottomDepth(bottomDepth);
-		        	}
-		        } catch (Exception e) {
-		        	error.add(new String[] {"Bottom Depth", "Non-numeric value"});
-		        }
+        	if (request.getParameter("BottomDepth").length() > 0) {
+        		try {
+        			bottomDepth = new Double(request.getParameter("BottomDepth"));
+        		} catch (Exception e) {
+        			error.add(new String[] {"Bottom Depth/Height", "Non-numeric value"});
+        		}
+	        	if ("Bottom".equals(sample.getFeature().getDatumType())) {
+	        		if (topDepth.doubleValue() < bottomDepth.doubleValue())
+	        			error.add(new String[] {"Depths/Heights", "Top depth/height < bottom depth/height and datum = Bottom"});
+	        	} else {
+	        		if (topDepth.doubleValue() > bottomDepth.doubleValue()) {
+	        			error.add(new String[] {"Depths", "Top depth > bottom depth"});
+	        		}
+	        	}
         	}
+        	sample.setTopDepth(topDepth);
+        	sample.setBottomDepth(bottomDepth);
         	String depthUnit = request.getParameter("DepthUnit");
         	if ("ft".equals(depthUnit))
         		sample.setDepthUnit("ft");
