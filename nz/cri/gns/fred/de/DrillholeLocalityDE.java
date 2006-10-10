@@ -104,24 +104,26 @@ public class DrillholeLocalityDE extends LocalityDE {
 			error = new String[] {"Datum Elevation", "Invalid elevation entered"};
 		}
 		
-		String startDepth = request.getParameter("StartDepth").trim();
-		if (startDepth.length() == 0)
-			feature.setStartDepth(null);
-		else try {
-			feature.setStartDepth(new Double(startDepth));
+		Double startDepth = null;
+		Double finishDepth = null;
+		if (request.getParameter("StartDepth").length() > 0) try {
+			startDepth = new Double(request.getParameter("StartDepth").trim());
 		} catch (NumberFormatException e) {
 			error = new String[] {"Kickoff Depth", "Invalid depth entered"};
 		}
 
-		String finishDepth = request.getParameter("FinishDepth").trim();
-		if (finishDepth.length() == 0)
-			feature.setFinishDepth(null);
-		else try {
-			feature.setFinishDepth(new Double(finishDepth));
-		} catch (NumberFormatException e) {
-			error = new String[] {"Termination Depth", "Invalid depth entered"};
+		if (request.getParameter("FinishDepth").length() == 0) {
+			try {
+				finishDepth = new Double(request.getParameter("FinishDepth").trim());
+			} catch (NumberFormatException e) {
+				error = new String[] {"Termination Depth", "Invalid depth entered"};
+			}
+			if (startDepth.doubleValue() > finishDepth.doubleValue())
+				error = new String[] {"Depths/Heights", "Start depth/height > finish depth/height"};
 		}
-		
+			
+		feature.setStartDepth(startDepth);
+		feature.setFinishDepth(finishDepth);
     	String depthUnit = request.getParameter("DepthUnit");
     	if ("ft".equals(depthUnit))
     		feature.setDepthUnit("ft");

@@ -652,20 +652,16 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         	Double topDepth = null;
         	Double bottomDepth = null;
         	if (request.getParameter("TopDepth").length() > 0) try {
-		        topDepth = new Double(request.getParameter("TopDepth"));
+		        topDepth = new Double(request.getParameter("TopDepth").trim());
         	} catch (Exception e) {
         		error.add(new String[] {"Top Depth/Height", "Non-numeric value"});
         	}
         	if (request.getParameter("BottomDepth").length() > 0) {
         		try {
-        			bottomDepth = new Double(request.getParameter("BottomDepth"));
+        			bottomDepth = new Double(request.getParameter("BottomDepth").trim());
         		} catch (Exception e) {
         			error.add(new String[] {"Bottom Depth/Height", "Non-numeric value"});
         		}
-        		System.out.println("Checking depths/height order");
-        		System.out.println("Datum = " + sample.getFeature().getDatumType());
-        		System.out.println("Top: " + topDepth);
-        		System.out.println("Bottom: " + bottomDepth);
         		if ("Bottom".equals(sample.getFeature().getDatumType())) {
 	        		if (topDepth.doubleValue() < bottomDepth.doubleValue())
 	        			error.add(new String[] {"Depths/Heights", "Top depth/height < bottom depth/height and datum = Bottom"});
