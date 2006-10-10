@@ -197,6 +197,11 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             Template template = provider.getContent("sample.no.outcrop.de.form");
             prepareTemplate(template, provider);
             template.addSub("featureName", sample.getFeature().getFeatureName());
+            
+            if ("Bottom".equals(sample.getFeature().getDatumType()))
+            	template.addSub("depthName", "Height");
+            else
+            	template.addSub("depthName", "Depth");
             template.addSub("topDepth", ((sample.getTopDepth() != null) ? String.valueOf(sample.getTopDepth()) : ""));
             template.addSub("bottomDepth", ((sample.getBottomDepth() != null) ? String.valueOf(sample.getBottomDepth()) : ""));
             if ("ft".equals(sample.getDepthUnit()))
@@ -657,7 +662,11 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         		} catch (Exception e) {
         			error.add(new String[] {"Bottom Depth/Height", "Non-numeric value"});
         		}
-	        	if ("Bottom".equals(sample.getFeature().getDatumType())) {
+        		System.out.println("Checking depths/height order");
+        		System.out.println("Datum = " + sample.getFeature().getDatumType());
+        		System.out.println("Top: " + topDepth);
+        		System.out.println("Bottom: " + bottomDepth);
+        		if ("Bottom".equals(sample.getFeature().getDatumType())) {
 	        		if (topDepth.doubleValue() < bottomDepth.doubleValue())
 	        			error.add(new String[] {"Depths/Heights", "Top depth/height < bottom depth/height and datum = Bottom"});
 	        	} else {
