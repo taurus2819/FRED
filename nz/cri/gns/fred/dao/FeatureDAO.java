@@ -135,6 +135,11 @@ public interface FeatureDAO {
 	public FrNumber getFrNumber(String frNum) throws StorageAccessException;
 
 	/**
+	 * Returns the frNumber entry with the given numbr
+	 */
+	public FrNumber getYardFrNumber(String frNum) throws StorageAccessException;
+	
+	/**
 	 * Returns the first feature with the given name, or null if none exists.
 	 */
 	public Feature getFeatureWithName(String ident) throws StorageAccessException;

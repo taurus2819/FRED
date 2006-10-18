@@ -881,6 +881,19 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 * @throws StorageAccessException 
 	 */
 	public FrNumber parseFrNumber(String frNumStr, boolean createNew) throws DataInputException, StorageAccessException {
+		return parseFrNumber(frNumStr, createNew, false);
+	}
+	
+	/**
+	 * Parses FR Number as string and returns FrNumber object
+	 * If FRNumber exists it is returned, or a new FRNumber object is created (if createNew is TRUE)
+	 * @throws StorageAccessException 
+	 */
+	public FrNumber parseYardFrNumber(String frNumStr, boolean createNew) throws DataInputException, StorageAccessException {
+		return parseFrNumber(frNumStr, createNew, true);
+	}
+	
+	private FrNumber parseFrNumber(String frNumStr, boolean createNew, boolean yard) throws DataInputException, StorageAccessException {
 		if (frNumStr != null && frNumStr.indexOf("/f") > 0) {
 			String recollectionNumber;
 			Integer serialNumber;
@@ -892,7 +905,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			} catch (Exception e) {
 				try {
 					serialNumber = new Integer(num.substring(0, num.length() - 1));
-					recollectionNumber = num.substring(num.length() - 1);
+					recollectionNumber = num.substring(num.length() - 1).toUpperCase();
 				} catch (Exception e1) {
 					throw new DataInputException("FR Number", "Badly formed FR Number");
 				}
@@ -900,17 +913,23 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			String serialNumStr = String.valueOf(serialNumber);
 			while (serialNumStr.length() < 4)
 				serialNumStr = "0" + serialNumStr;
-			FrNumber frNumber = featureDAO.getFrNumber(mapSheet + "/f" + serialNumStr + ((recollectionNumber != null) ? recollectionNumber : ""));
+			FrNumber frNumber = null;
+			if (yard)
+				frNumber = featureDAO.getYardFrNumber(mapSheet + "/f" + serialNumStr + ((recollectionNumber != null) ? recollectionNumber : ""));
+			else
+				frNumber = featureDAO.getFrNumber(mapSheet + "/f" + serialNumStr + ((recollectionNumber != null) ? recollectionNumber : ""));
 			if (frNumber == null && createNew) {
 				frNumber = new nz.cri.gns.fred.hibernate.FrNumber();
 				frNumber.setMapSheet(mapSheet);
 				frNumber.setSerialNumber(serialNumber);
 				frNumber.setRecollectionNumber(recollectionNumber);
+				if (yard)
+					frNumber.setObsolete("Y");
 			}
 			return frNumber;
 		} else {
 			throw new DataInputException("FR Number", "Badly formed or missing FR Number");
-		}
+		}		
 	}
 	
 	/**

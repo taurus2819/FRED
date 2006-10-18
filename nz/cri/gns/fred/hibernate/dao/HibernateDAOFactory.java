@@ -452,6 +452,10 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		return HibernateUtils.getFirst(provider, "FROM FrNumber AS f WHERE f.frNumber = ? AND f.obsolete IS NULL", frNum, FrNumber.class);
 	}
 
+	public FrNumber getYardFrNumber(String frNum) throws StorageAccessException {
+		return HibernateUtils.getFirst(provider, "FROM FrNumber AS f WHERE f.frNumber = ? AND f.obsolete IS NOT NULL", frNum, FrNumber.class);
+	}
+	
 	public Feature getFeatureWithName(String name) throws StorageAccessException {
 		return HibernateUtils.getFirst(provider, "FROM Feature AS f WHERE f.featureName = ?", name, Feature.class);
 	}
