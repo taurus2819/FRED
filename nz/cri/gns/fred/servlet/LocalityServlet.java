@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.servlet;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -21,22 +22,22 @@ public class LocalityServlet extends HttpServlet {
 	private static final long serialVersionUID = 20060714L;
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		redirect(request.getParameter("frNum"), "detail.jsp", request, response);
+		redirect(request.getParameter("frNum"), "", request, response);
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String url = request.getRequestURI();
 		String[] bits = url.split("/");
 		String frNum = bits[bits.length-2] +  "/" + bits[bits.length-1];
-		redirect(frNum, "../../detail.jsp", request, response);
+		redirect(frNum, "../../", request, response);
 	}
 	
-	private void redirect(String frNum, String url, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	private void redirect(String frNum, String baseUrl, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		DAOFactory factory = null;
 		factory = HibernateUtil.get().getDAOFactory();
 		FrNumber num = null;
 		FrNumber yardNum = null;
-		Vector<Feature> features = new Vector<Feature>();
+		HashSet<Feature> features = new HashSet<Feature>();
 		try {
 			num = new FeatureUtil(factory).parseFrNumber(frNum, false);
 		} catch (Exception e) {}
@@ -64,17 +65,17 @@ public class LocalityServlet extends HttpServlet {
 			}
 			System.out.println("Total feature count = " + features.size());
 			if (features.size() == 1) {
-				response.sendRedirect(url + "?FeatID=" + features.iterator().next().getFeatureId());
+				response.sendRedirect(baseUrl + "detail.jsp?FeatID=" + features.iterator().next().getFeatureId());
 			} else if (features.size() == 0) {
-				response.sendRedirect(url + "?FeatID=-1");
+				response.sendRedirect(baseUrl + "detail.jsp?FeatID=-1");
 			} else {
 				request.getSession().setAttribute("FRED.features", features);
 				request.getSession().setAttribute("FRED.queryString", frNum);
-				response.sendRedirect(url + "../result_list.jsp?Page=1");
+				response.sendRedirect(baseUrl + "result_list.jsp?Page=1");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			response.sendRedirect(url + "?FeatID=-1");
+			response.sendRedirect(baseUrl + "detail.jsp?FeatID=-1");
 		} finally {
 			if (factory != null) try {
 				factory.closeSession();
