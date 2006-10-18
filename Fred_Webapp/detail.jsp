@@ -105,6 +105,7 @@ try {
 	backStr += (backText != null) ? "&backText=" + URLEncoder.encode(backText, "ISO-8859-1") : "";
 	
 	//if FeatureID given then check if outcrop and if redirect to display sample details
+	try {
 	if (featID != null) {
 		session.setAttribute("FRED.FeatureID", featID);
 		feature = featureUtil.getFeature(Integer.parseInt(featID));
@@ -123,15 +124,16 @@ try {
 		response.sendRedirect("detail.jsp?ID=" + ((String) session.getAttribute("FRED.SampleID")));
 		return;
 	}
-	
-	IconnedLink[] il = new IconnedLink[(backURL != null) ? 2 : 1];
-	if (backURL != null)
-		il[0] = new IconnedLink(backURL, "images/back_arrow.gif", (backText != null) ? request.getParameter("backText") : "Back");
-	il[(backURL != null) ? 1 : 0] = new IconnedLink("locality_map.jsp?FeatID=" + feature.getFeatureId() + "&backURL=" + URLEncoder.encode("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr, "ISO-8859-1")+ "&backText=Back%20To%20Locality", "images/map.gif", "Locality Map");
-	addButtons(et, il);
-	
+	} catch (Exception e) {}
 	
 	if (feature != null) {
+		
+		IconnedLink[] il = new IconnedLink[(backURL != null) ? 2 : 1];
+		if (backURL != null)
+			il[0] = new IconnedLink(backURL, "images/back_arrow.gif", (backText != null) ? request.getParameter("backText") : "Back");
+		il[(backURL != null) ? 1 : 0] = new IconnedLink("locality_map.jsp?FeatID=" + feature.getFeatureId() + "&backURL=" + URLEncoder.encode("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr, "ISO-8859-1")+ "&backText=Back%20To%20Locality", "images/map.gif", "Locality Map");
+		addButtons(et, il);
+	
 		Audit audit = feature.getAudit();
 		String featType = feature.getFeatureType();
 		boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
@@ -802,17 +804,17 @@ try {
 		 //no sampleID
 		drawTop(out, et, request, response);
 		%><table style="margin-left:20px; margin-top:20px; width:550px;" border="0">
-		<tr><td>No SampleID entered.</td></tr>
+		<tr><td>No Locality found</td></tr>
 		</table><%
 	}
 	
 	drawBottom(out, et);
-	} catch (Exception e) {
-		e.printStackTrace(new java.io.PrintWriter(out));
-	}
+} catch (Exception e) {
+	e.printStackTrace();
+}
 	
-	try {
-		HibernateUtil.get().getDAOFactory().closeSession();
-	} catch (Exception e) {
-	}
+try {
+	HibernateUtil.get().getDAOFactory().closeSession();
+} catch (Exception e) {
+}
 %>
