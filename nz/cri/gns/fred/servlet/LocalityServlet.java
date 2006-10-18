@@ -57,6 +57,7 @@ public class LocalityServlet extends HttpServlet {
 				System.out.println("Count after metric samples = " + features.size());
 			}
 			if (yardNum != null) {
+				System.out.println("Yard FRNUm: " + yardNum.getFrNumber());
 				if (!FREDUtil.isEmpty(yardNum.getFeaturesByYard()))
 					features.addAll(yardNum.getFeaturesByYard());
 				System.out.println("Count after yard features = " + features.size());
