@@ -43,7 +43,9 @@ public class LocalityServlet extends HttpServlet {
 		} catch (Exception e) {}
 		try {
 			yardNum = new FeatureUtil(factory).parseYardFrNumber(frNum, false);
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		try {
 			System.out.println("Adding features");
