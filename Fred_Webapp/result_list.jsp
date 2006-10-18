@@ -11,7 +11,7 @@
 %><%@page import="nz.cri.gns.intranet.DBConnection"
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.auth.User"
-%><%@page import="java.util.TreeSet"
+%><%@page import="java.util.HashSet"
 %><%@page import="java.net.URLEncoder"
 %><%@page import="java.sql.Statement"
 %><%@page import="java.sql.ResultSet"
@@ -50,9 +50,9 @@
 
 		session.setAttribute("dataEntryRedirect", "result_list.jsp?Page=" + pageNum);
 
-		TreeSet<Feature> features = new TreeSet<Feature>();
+		HashSet<Feature> features = new HashSet<Feature>();
 		if (useStored) {
-			features = (TreeSet<Feature>) session.getAttribute("FRED.features");
+			features = (HashSet<Feature>) session.getAttribute("FRED.features");
 			queryString = (String) session.getAttribute("FRED.queryString");
 		} else {
 			//System.out.println("SELECT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
