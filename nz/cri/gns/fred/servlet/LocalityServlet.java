@@ -13,6 +13,7 @@ import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Sample;
+import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 
 public class LocalityServlet extends HttpServlet {
@@ -45,9 +46,11 @@ public class LocalityServlet extends HttpServlet {
 		
 		try {
 			System.out.println("Adding features");
-			features.addAll(num.getFeatures());
+			if (!FREDUtil.isEmpty(num.getFeatures()))
+				features.addAll(num.getFeatures());
 			System.out.println("Count after metric features = " + features.size());
-			features.addAll(yardNum.getFeatures());
+			if (!FREDUtil.isEmpty(yardNum.getFeatures()))
+				features.addAll(yardNum.getFeatures());
 			System.out.println("Count after yard features = " + features.size());
 			for (Sample sample : num.getSamples())
 				features.add(sample.getFeature());
