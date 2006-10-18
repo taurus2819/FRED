@@ -38,7 +38,15 @@ public interface FrNumber extends Comparable<FrNumber> {
 
 	public abstract void setFeatures(Set<Feature> features);
 	
+    public abstract Set<Feature> getFeaturesByYard();
+
+    public abstract void setFeaturesByYard(Set<Feature> featuresByYard);
+	
 	public abstract Set<Sample> getSamples();
 
 	public abstract void setSamples(Set<Sample> samples);
+	
+    public abstract Set<Sample> getSamplesByYard();
+
+    public abstract void setSamplesByYard(Set<Sample> samplesByYard);
 }
