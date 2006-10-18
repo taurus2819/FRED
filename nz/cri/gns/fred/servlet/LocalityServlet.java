@@ -47,25 +47,18 @@ public class LocalityServlet extends HttpServlet {
 		}
 		
 		try {
-			System.out.println("Adding features");
 			if (num != null) {
 				if (!FREDUtil.isEmpty(num.getFeatures()))
 					features.addAll(num.getFeatures());
-				System.out.println("Count after metric features = " + features.size());
 				for (Sample sample : num.getSamples())
 					features.add(sample.getFeature());
-				System.out.println("Count after metric samples = " + features.size());
 			}
 			if (yardNum != null) {
-				System.out.println("Yard FRNUm: " + yardNum.getFrNumber());
 				if (!FREDUtil.isEmpty(yardNum.getFeaturesByYard()))
 					features.addAll(yardNum.getFeaturesByYard());
-				System.out.println("Count after yard features = " + features.size());
 				for (Sample sample : yardNum.getSamplesByYard())
 					features.add(sample.getFeature());
-				System.out.println("Count after yard samples = " + features.size());
 			}
-			System.out.println("Total feature count = " + features.size());
 			if (features.size() == 1) {
 				response.sendRedirect(baseUrl + "detail.jsp?FeatID=" + features.iterator().next().getFeatureId());
 			} else if (features.size() == 0) {
