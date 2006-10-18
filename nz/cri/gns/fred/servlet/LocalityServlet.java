@@ -2,7 +2,6 @@ package nz.cri.gns.fred.servlet;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
