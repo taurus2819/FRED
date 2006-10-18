@@ -46,18 +46,23 @@ public class LocalityServlet extends HttpServlet {
 		
 		try {
 			System.out.println("Adding features");
-			if (!FREDUtil.isEmpty(num.getFeatures()))
-				features.addAll(num.getFeatures());
-			System.out.println("Count after metric features = " + features.size());
-			if (!FREDUtil.isEmpty(yardNum.getFeatures()))
-				features.addAll(yardNum.getFeatures());
-			System.out.println("Count after yard features = " + features.size());
-			for (Sample sample : num.getSamples())
-				features.add(sample.getFeature());
-			System.out.println("Count after metric samples = " + features.size());
-			for (Sample sample : yardNum.getSamples())
-				features.add(sample.getFeature());
-			System.out.println("Count after yard samples = " + features.size());
+			if (num != null) {
+				if (!FREDUtil.isEmpty(num.getFeatures()))
+					features.addAll(num.getFeatures());
+				System.out.println("Count after metric features = " + features.size());
+				for (Sample sample : num.getSamples())
+					features.add(sample.getFeature());
+				System.out.println("Count after metric samples = " + features.size());
+			}
+			if (yardNum != null) {
+				if (!FREDUtil.isEmpty(yardNum.getFeatures()))
+					features.addAll(yardNum.getFeatures());
+				System.out.println("Count after yard features = " + features.size());
+				for (Sample sample : yardNum.getSamples())
+					features.add(sample.getFeature());
+				System.out.println("Count after yard samples = " + features.size());
+			}
+			System.out.println("Total feature count = " + features.size());
 			if (features.size() == 1) {
 				response.sendRedirect(url + "?FeatID=" + features.iterator().next().getFeatureId());
 			} else if (features.size() == 0) {
