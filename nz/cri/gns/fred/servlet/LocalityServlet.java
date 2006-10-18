@@ -44,7 +44,6 @@ public class LocalityServlet extends HttpServlet {
 		try {
 			yardNum = new FeatureUtil(factory).parseYardFrNumber(frNum, false);
 		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		
 		try {
@@ -58,10 +57,10 @@ public class LocalityServlet extends HttpServlet {
 				System.out.println("Count after metric samples = " + features.size());
 			}
 			if (yardNum != null) {
-				if (!FREDUtil.isEmpty(yardNum.getFeatures()))
+				if (!FREDUtil.isEmpty(yardNum.getFeaturesByYard()))
 					features.addAll(yardNum.getFeatures());
 				System.out.println("Count after yard features = " + features.size());
-				for (Sample sample : yardNum.getSamples())
+				for (Sample sample : yardNum.getSamplesByYard())
 					features.add(sample.getFeature());
 				System.out.println("Count after yard samples = " + features.size());
 			}
