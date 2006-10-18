@@ -23,7 +23,6 @@ public class LocalityServlet extends HttpServlet {
 		redirect(request.getParameter("frNum"), "detail.jsp", request, response);
 	}
 	
-	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String url = request.getRequestURI();
 		String[] bits = url.split("/");
@@ -45,12 +44,17 @@ public class LocalityServlet extends HttpServlet {
 		} catch (Exception e) {}
 		
 		try {
+			System.out.println("Adding features");
 			features.addAll(num.getFeatures());
+			System.out.println("Count after metric features = " + features.size());
 			features.addAll(yardNum.getFeatures());
+			System.out.println("Count after yard features = " + features.size());
 			for (Sample sample : num.getSamples())
 				features.add(sample.getFeature());
+			System.out.println("Count after metric samples = " + features.size());
 			for (Sample sample : yardNum.getSamples())
 				features.add(sample.getFeature());
+			System.out.println("Count after yard samples = " + features.size());
 			if (features.size() == 1) {
 				response.sendRedirect(url + "?FeatID=" + features.iterator().next().getFeatureId());
 			} else if (features.size() == 0) {
@@ -61,6 +65,7 @@ public class LocalityServlet extends HttpServlet {
 				response.sendRedirect(url + "../result_list.jsp?Page=1");
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			response.sendRedirect(url + "?FeatID=-1");
 		} finally {
 			if (factory != null) try {
