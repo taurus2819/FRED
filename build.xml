@@ -27,6 +27,7 @@
 					<include name="gol-auth.jar" />
 					<include name="gol-dbimpl.jar" />
 					<include name="gol-web.jar" />
+					<include name="gol-querybuilder.jar" />
 					<include name="itext-1.3.jar" />
 					<include name="junit.jar" />
 					<include name="hibernate2.jar" />
