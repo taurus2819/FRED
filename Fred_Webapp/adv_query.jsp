@@ -4,6 +4,7 @@
 %><%@page import="nz.cri.gns.db.querybuilder.QueryElement"
 %><%@page import="nz.cri.gns.db.querybuilder.advanced.AdvancedQuery"
 %><%@page import="nz.cri.gns.fred.query.FREDQuery"
+%><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.jsp.*"
 %><%@page import="java.util.Date"
 %><%@page import="java.util.Iterator"
@@ -12,7 +13,7 @@
 </head>
 <body><center><%
 	PageState state = new PageState(request, response, getServletContext());
-	FREDQuery query = new FREDQuery();
+	FREDQuery query = FREDUtil.getFREDQuery(state);
 	if (request.getParameter(AdvancedQuery.LEFT_BRACKET) != null) try {
 		query.decodeRequest(request);
 

@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
@@ -46,6 +47,7 @@ import nz.cri.gns.fred.model.Meta;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.PersonRelationship;
 import nz.cri.gns.fred.model.RegistrationArea;
+import nz.cri.gns.fred.query.FREDQuery;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.PageState;
 import nz.cri.gns.util.map.Datum;
@@ -107,7 +109,49 @@ public class FREDUtil {
 			return !clazz.isAssignableFrom(prop.getPropertyType()) && (instruction == null || instruction.include(prop));
 		}
 	}
+	
+	private static final String QUERY_ATTRIBUTE_NAME = "fred.query";
+	private static final String LOCK_ATTRIBUTE_NAME = "fred.lock";
+	
+	/**
+	 * Stores the given query in the session under <code>QUERY_ATTRIBUTE_NAME</code>
+	 */
+	public static void setFREDQuery(HttpSession session, FREDQuery query) {
+		synchronized(getSessionLock(session)) {
+			session.setAttribute(QUERY_ATTRIBUTE_NAME, query);
+		}
+	}
 
+	/**
+	 * Retrieves the query from the session, where it is stored under <code>QUERY_ATTRIBUTE_NAME</code>.
+	 * This method is synchronized on <code>getSessionLock()</code> to alleviate concurrent access problems
+	 */
+	public static FREDQuery getFREDQuery(PageState state) throws IOException, SQLException {
+		//Synchronizing on the session will ensure that two frames don't have
+		//problems, whilst allowing other users to still run concurrently
+		synchronized(getSessionLock(state.session)) {
+			FREDQuery query = (FREDQuery)state.session.getAttribute(QUERY_ATTRIBUTE_NAME);
+			if (query == null) {
+				query = new FREDQuery();
+				state.session.setAttribute(QUERY_ATTRIBUTE_NAME, query);
+			}
+			return query;
+		}
+	}
+	
+	public static void setSessionLock(HttpSession session) {
+		if (session.getAttribute(LOCK_ATTRIBUTE_NAME) == null) 
+			session.setAttribute(LOCK_ATTRIBUTE_NAME, new Object());
+	}
+	
+	public static Object getSessionLock(HttpSession session) {
+		Object o = session.getAttribute(LOCK_ATTRIBUTE_NAME);
+		if (o == null)
+			setSessionLock(session);
+			
+		return session.getAttribute(LOCK_ATTRIBUTE_NAME);
+	}
+	
 	public static final int REG_MAINLAND_NZ = 400;
 	public static final int REG_CHATHAM_ISLANDS = 401;
 	public static final int REG_ROSS_SEA = 402;

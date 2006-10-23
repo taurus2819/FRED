@@ -2,7 +2,9 @@
 %><%@page import="nz.cri.gns.fred.de.DataEntryUtils"
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
+%><%@page import="nz.cri.gns.fred.query.FREDQuery"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
+%><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
@@ -38,7 +40,16 @@
 	drawTop(out, et, request, response);
 	drawEndNavigation(out);
 
-	if ((request.getParameter("WhereSQL") != null && request.getParameter("TableName") != null && request.getParameter("QueryString") != null) || request.getParameter("Page") != null) {
+	if ("Adv".equals(request.getParameter("Type"))) {
+		//PageState state = new PageState(request, response, getServletContext());
+		FREDQuery query = FREDUtil.getFREDQuery(state);
+		String whereSQL = query.getQuery();
+		String queryString = query.getQueryAsString();
+		%><tr><td><%=whereSQL%></td></tr><%
+		%><tr><td><%=queryString%></td></tr><%
+	}
+	
+	else if ((request.getParameter("WhereSQL") != null && request.getParameter("TableName") != null && request.getParameter("QueryString") != null) || request.getParameter("Page") != null) {
 		String whereSQL = request.getParameter("WhereSQL");
 		String tableName = request.getParameter("TableName");
 		String queryString = request.getParameter("QueryString");
