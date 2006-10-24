@@ -59,18 +59,19 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		return super.getHQLQuery("", "Feature AS f", null, null, null);
 	}
 	
-	private <T extends Comparable<? super T>> List<T> getValues(String query, Class<T> clazz) {
+	private <T extends NameableAndIdentifiable> List<T> getValues(String query, Class<T> clazz) {
 		FeatureDAO featureDAO = HibernateUtil.get().getDAOFactory().getFeatureDAO();
-		List<T> v = null;
+		List<T> values = null;
 		try {
-			v = featureDAO.getList(query, clazz);
-			for (T t : v)
+			values = featureDAO.getNameableAndIdentifiableList(query, clazz);
+			System.out.println("List size: " + values.size());
+			for (T t : values)
 				System.out.println(t.toString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return v;
+		return values;
 	}
 	
 	public int getLastUsedId() {
