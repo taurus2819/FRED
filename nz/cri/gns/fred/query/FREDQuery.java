@@ -65,8 +65,6 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		try {
 			values = featureDAO.getNameableAndIdentifiableList(query, clazz);
 			System.out.println("List size: " + values.size());
-			for (T t : values)
-				System.out.println(t.toString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
