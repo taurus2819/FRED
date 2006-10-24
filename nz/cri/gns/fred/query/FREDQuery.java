@@ -12,10 +12,10 @@ import nz.cri.gns.db.querybuilder.InvalidOperatorException;
 import nz.cri.gns.db.querybuilder.InvalidValueException;
 import nz.cri.gns.db.querybuilder.advanced.NumberSource;
 import nz.cri.gns.db.querybuilder.advanced.PossibleValueField;
-import nz.cri.gns.db.querybuilder.advanced.StandardJoin;
-import nz.cri.gns.db.querybuilder.advanced.TableRequiredTextField;
 import nz.cri.gns.db.querybuilder.advanced.TwoLevelField;
+import nz.cri.gns.db.querybuilder.advanced.hql.HqlAliasedJoin;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlQuery;
+import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredTextField;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.Person;
@@ -33,7 +33,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		add(new TwoLevelField("Locality Fields", f));
 		
 		f = new Field[8];
-		f[0] = new PossibleValueField("f.person", "Operating Company", getValues("FROM Person AS p", Person.class));
+		f[0] = new PossibleValueField("f.person", "Operating Company", getValues("FROM cx Person AS p", Person.class));
 		f[1] = new BasicDateField("f.startDate", "Spud Date");
 		f[2] = new BasicDateField("f.finishDate", "Completion Date");
 		f[3] = new BasicTextField("f.licenceArea", "Licence Area");
@@ -43,8 +43,9 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[7] = new BasicNumberField("f.stopDepth", "Termination Depth");
 		add(new TwoLevelField("Drillhole Fields", f));
 		
-		f = new Field[1];
-		f[0] = new TableRequiredTextField("sample.significance", "Significance/Comments", "Sample AS sample", new StandardJoin("f", "featureId", "sample", "featureId", false));
+		f = new Field[2];
+		f[0] = new HqlTableRequiredTextField("sample.significance", "Significance/Comments", "Sample AS sample", new HqlAliasedJoin("Feature", "featureId", "f"));
+		f[1] = new BasicTextField("f.sample.siginificance", "Sig2");
 		add(new TwoLevelField("Sample Fields", f));
 		              
 	}
