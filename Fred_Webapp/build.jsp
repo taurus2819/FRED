@@ -1,6 +1,9 @@
 <%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.query.FREDQuery"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
+%><%@page import="nz.cri.gns.auth.Authenticable"
+%><%!
+	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
 	ExtranetTemplate et = getExtranetTemplate();
 	//et.setDisplayLoadingMessage(true);
@@ -25,13 +28,8 @@ function doTransfer(frm) {
 }
 //--></script>
 
-<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>
-<tr><td><a href='query.jsp' target='_top'><img src='images/search.gif' height='20' width='20' border='0' alt='Simple Query'  /></a></td><td><a href='query.jsp' class='boldlink' target='_top'>Simple Query</a></td></tr>
-<tr><td><a href='saved_query.jsp' target='_top'><img src='images/search.gif' height='20' width='20' border='0' alt='Saved Queries' /></a></td><td><a href='saved_query.jsp' class='boldlink' target='_top'>Saved Queries</a></td></tr>
-<tr><td><a href='http://maps.gns.cri.nz/website/petlab'><img src='images/map.gif' height='20' width='20' border='0' alt='Maps' /></a></td><td><a href='http://maps.gns.cri.nz/website/petlab' class='boldlink'>Maps</a></td></tr>
-</table>
 
-<%	drawEndNavigation(out);
+<%	
 	FREDQuery query = new FREDQuery();
 %>
 <table style='margin-left:20px; width:550px;' border='0'>

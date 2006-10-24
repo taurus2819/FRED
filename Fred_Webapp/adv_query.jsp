@@ -5,9 +5,12 @@
 %><%@page import="nz.cri.gns.db.querybuilder.advanced.AdvancedQuery"
 %><%@page import="nz.cri.gns.fred.query.FREDQuery"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
-%><%@page import="nz.cri.gns.jsp.*"
+%><%@page import="nz.cri.gns.jsp.PageState"
 %><%@page import="java.util.Date"
 %><%@page import="java.util.Iterator"
+%><%@page import="nz.cri.gns.auth.Authenticable"
+%><%!
+	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><html><head>
 <link rel="StyleSheet" href="/online/style/extranet.css" type="text/css" />
 </head>

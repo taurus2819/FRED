@@ -13,7 +13,8 @@
 %><%@page import="nz.cri.gns.intranet.DBConnection"
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.auth.User"
-%><%@page import="java.util.HashSet"
+%><%@page import="java.util.List"
+%><%@page import="java.util.Vector"
 %><%@page import="java.net.URLEncoder"
 %><%@page import="java.sql.Statement"
 %><%@page import="java.sql.ResultSet"
@@ -40,16 +41,9 @@
 	drawTop(out, et, request, response);
 	drawEndNavigation(out);
 
-	if ("Adv".equals(request.getParameter("Type"))) {
-		//PageState state = new PageState(request, response, getServletContext());
-		FREDQuery query = FREDUtil.getFREDQuery(state);
-		String whereSQL = query.getQuery();
-		String queryString = query.getQueryAsString();
-		%><tr><td><%=whereSQL%></td></tr><%
-		%><tr><td><%=queryString%></td></tr><%
-	}
+
 	
-	else if ((request.getParameter("WhereSQL") != null && request.getParameter("TableName") != null && request.getParameter("QueryString") != null) || request.getParameter("Page") != null) {
+	if ((request.getParameter("WhereSQL") != null && request.getParameter("TableName") != null && request.getParameter("QueryString") != null) || request.getParameter("Page") != null || request.getParameter("Type") != null) {
 		String whereSQL = request.getParameter("WhereSQL");
 		String tableName = request.getParameter("TableName");
 		String queryString = request.getParameter("QueryString");
@@ -61,11 +55,20 @@
 
 		session.setAttribute("dataEntryRedirect", "result_list.jsp?Page=" + pageNum);
 
-		HashSet<Feature> features = new HashSet<Feature>();
+		List<Feature> features;
 		if (useStored) {
-			features = (HashSet<Feature>) session.getAttribute("FRED.features");
+			features = (Vector<Feature>) session.getAttribute("FRED.features");
 			queryString = (String) session.getAttribute("FRED.queryString");
+		} else 	if ("Adv".equals(request.getParameter("Type"))) {
+			//PageState state = new PageState(request, response, getServletContext());
+			FREDQuery query = FREDUtil.getFREDQuery(state);
+			whereSQL = query.getQuery();
+			queryString = query.getQueryAsString();
+			%><tr><td><%=whereSQL%></td></tr><%
+			%><tr><td><%=queryString%></td></tr><%
+			features = featureUtil.getListFromQueryBuilder(whereSQL);
 		} else {
+			features = new Vector<Feature>();
 			//System.out.println("SELECT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
 			ResultSet rs = statement.executeQuery("SELECT DISTINCT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
 			while (rs.next()) {
