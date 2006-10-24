@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -59,11 +60,11 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		return super.getHQLQuery("", "Feature AS f", null, null, null);
 	}
 	
-	private <T extends NameableAndIdentifiable> List<T> getValues(String query, Class<T> clazz) {
+	private <T extends Comparable<? super T>> List<T> getValues(String query, Class<T> clazz) {
 		FeatureDAO featureDAO = HibernateUtil.get().getDAOFactory().getFeatureDAO();
 		List<T> values = null;
 		try {
-			values = featureDAO.getNameableAndIdentifiableList(query, clazz);
+			values = featureDAO.getList(query, clazz);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

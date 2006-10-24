@@ -1151,9 +1151,4 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		return items;
 	}
 	
-	public <T extends NameableAndIdentifiable> List<T> getNameableAndIdentifiableList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException {
-		List<T> items = HibernateUtils.list(provider, query, clazz, parameters);
-		return items;
-	}
-	
 }

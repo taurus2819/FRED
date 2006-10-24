@@ -195,6 +195,4 @@ public interface FeatureDAO {
 	
 	public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException;
 	
-	public <T extends NameableAndIdentifiable> List<T> getNameableAndIdentifiableList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException;
-	
 }
