@@ -1,16 +1,8 @@
 package nz.cri.gns.fred.query;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Vector;
 
-import nz.cri.gns.core.NameableAndIdentifiable;
-import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.db.DatabaseApp2;
 import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.db.querybuilder.BasicDateField;
 import nz.cri.gns.db.querybuilder.BasicNumberField;
@@ -18,24 +10,15 @@ import nz.cri.gns.db.querybuilder.BasicTextField;
 import nz.cri.gns.db.querybuilder.Field;
 import nz.cri.gns.db.querybuilder.InvalidOperatorException;
 import nz.cri.gns.db.querybuilder.InvalidValueException;
-import nz.cri.gns.db.querybuilder.advanced.AdvancedQuery;
-import nz.cri.gns.db.querybuilder.advanced.FilteredNumberField;
-import nz.cri.gns.db.querybuilder.advanced.FilteredPossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.NumberSource;
 import nz.cri.gns.db.querybuilder.advanced.PossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.StandardJoin;
-import nz.cri.gns.db.querybuilder.advanced.Table;
-import nz.cri.gns.db.querybuilder.advanced.TableRequiredDateField;
-import nz.cri.gns.db.querybuilder.advanced.TableRequiredPossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.TableRequiredTextField;
 import nz.cri.gns.db.querybuilder.advanced.TwoLevelField;
-import nz.cri.gns.db.querybuilder.advanced.UniqueSubTableFilteredNumberField;
-import nz.cri.gns.db.querybuilder.advanced.UniqueSubTablePossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlQuery;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.Person;
-import nz.cri.gns.intranet.DBConnection;
 
 public class FREDQuery extends HqlQuery implements NumberSource {
 
@@ -44,11 +27,26 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	private int lastUsedId = 900000;
 	
 	public FREDQuery() {
-		Field[] f = new Field[3];
+		Field[] f = new Field[2];
 		f[0] = new BasicTextField("f.featureName", "Feature Name");
-		f[1] = new BasicNumberField("f.startDepth", "Start Depth");
-		f[2] = new PossibleValueField("f.person", "Person", getValues("FROM Person AS p", Person.class));
-		add(new TwoLevelField("Test 1", f));
+		f[1] = new PossibleValueField("f.featureType", "Feature Type", getFeatureType());
+		add(new TwoLevelField("Locality Fields", f));
+		
+		f = new Field[8];
+		f[0] = new PossibleValueField("f.person", "Operating Company", getValues("Person AS p", Person.class));
+		f[1] = new BasicDateField("f.startDate", "Spud Date");
+		f[2] = new BasicDateField("f.finishDate", "Completion Date");
+		f[3] = new BasicTextField("f.licenceArea", "Licence Area");
+		f[4] = new PossibleValueField("f.datumType", "Datum Type", getDrillholeDatumType());
+		f[5] = new BasicNumberField("f.datumElevation", "Datum Elevation");
+		f[6] = new BasicNumberField("f.startDepth", "Kick-off Depth");
+		f[7] = new BasicNumberField("f.stopDepth", "Termination Depth");
+		add(new TwoLevelField("Drillhole Fields", f));
+		
+		f = new Field[1];
+		f[0] = new TableRequiredTextField("sample.significance", "Significance/Comments", "Sample AS sample", new StandardJoin("f", "featureId", "sample", "featureId", false));
+		add(new TwoLevelField("Sample Fields", f));
+		              
 	}
 
 	public String getQuery() throws InvalidOperatorException, InvalidValueException {
@@ -70,6 +68,29 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 			e.printStackTrace();
 		}
 		return values;
+	}
+	
+	private List<KeyValueObject> getFeatureType() {
+		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>(3);
+		options.add(new KeyValueObject("Outcrop", "Outcrop"));
+		options.add(new KeyValueObject("Drillhole", "Drillhole"));
+		options.add(new KeyValueObject("Vertical Section", "Vertical Section"));
+		return options;
+	}
+	
+	private List<KeyValueObject> getDrillholeDatumType() {
+		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>(3);
+		options.add(new KeyValueObject("KB", "KB"));
+		options.add(new KeyValueObject("RT", "RT"));
+		options.add(new KeyValueObject("Seafloor", "Seafloor"));
+		return options;		
+	}
+	
+	private List<KeyValueObject> getVertSectDatumType() {
+		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>(2);
+		options.add(new KeyValueObject("Top", "Top"));
+		options.add(new KeyValueObject("Bottom", "Bottom"));
+		return options;		
 	}
 	
 	public int getLastUsedId() {
