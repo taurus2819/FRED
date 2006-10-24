@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import nz.cri.gns.core.NameableAndIdentifiable;
+import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DatabaseApp2;
 import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.db.querybuilder.BasicDateField;
@@ -29,6 +31,9 @@ import nz.cri.gns.db.querybuilder.advanced.TwoLevelField;
 import nz.cri.gns.db.querybuilder.advanced.UniqueSubTableFilteredNumberField;
 import nz.cri.gns.db.querybuilder.advanced.UniqueSubTablePossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlQuery;
+import nz.cri.gns.fred.dao.FeatureDAO;
+import nz.cri.gns.fred.hibernate.util.HibernateUtil;
+import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.intranet.DBConnection;
 
 public class FREDQuery extends HqlQuery implements NumberSource {
@@ -39,7 +44,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	
 	public FREDQuery() {
 		Field[] f = new Field[2];
-		//f[0] = new PossibleValueField("f.person_id", "Person", getValues("SELECT person_id, name FROM person ORDER BY person_id", app));
+		f[0] = new PossibleValueField("f.person", "Person", getValues("SELECT p.personId, p.name FROM Person AS p", Person.class));
 		f[0] = new BasicTextField("f.featureName", "Feature Name");
 		f[1] = new BasicNumberField("f.startDepth", "Start Depth");
 		add(new TwoLevelField("Test 1", f));
@@ -57,7 +62,19 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	}
 
 	public String getHQLQuery() throws InvalidOperatorException, InvalidValueException {
-		return getHQLQuery("", "Feature AS f", null, null, null);
+		return super.getHQLQuery("", "Feature AS f", null, null, null);
+	}
+	
+	private <T extends Comparable<? super T>> List<T> getValues(String query, Class<T> clazz) {
+		FeatureDAO featureDAO = HibernateUtil.get().getDAOFactory().getFeatureDAO();
+		List<T> v = null;
+		try {
+			v = featureDAO.getList(query, clazz);
+		} catch (StorageAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return v;
 	}
 	
 	public int getLastUsedId() {
