@@ -44,8 +44,8 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		add(new TwoLevelField("Drillhole Fields", f));
 		
 		f = new Field[2];
-		f[0] = new HqlTableRequiredTextField("sample.significance", "Significance/Comments", "Sample AS sample", new HqlAliasedJoin("Feature", "featureId", "f"));
-		f[1] = new BasicTextField("f.sample.siginificance", "Sig2");
+		f[0] = new HqlTableRequiredTextField("sample.significance", "Significance/Comments", "Sample AS sample", new HqlAliasedJoin("Sample", "featureId", "sample"));
+		f[1] = new BasicTextField("f.samples.siginificance", "Sig2");
 		add(new TwoLevelField("Sample Fields", f));
 		              
 	}
