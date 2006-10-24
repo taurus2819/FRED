@@ -2,10 +2,12 @@ package nz.cri.gns.fred.model;
 
 import java.util.Set;
 
+import nz.cri.gns.core.NameableAndIdentifiable;
+
 /**
  *
  */
-public interface Person extends PersonRelationship,Comparable<Person> {
+public interface Person extends PersonRelationship, Comparable<Person>, NameableAndIdentifiable {
 	
 	public abstract Integer getPersonId();
 
