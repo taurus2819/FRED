@@ -1146,7 +1146,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	
 	public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException {
 		List<T> items = HibernateUtils.list(provider, query, clazz, parameters);
-		Collections.sort(items);
+		//Collections.sort(items);
 		return items;
 	}
 	
