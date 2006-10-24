@@ -43,9 +43,8 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[7] = new BasicNumberField("f.stopDepth", "Termination Depth");
 		add(new TwoLevelField("Drillhole Fields", f));
 		
-		f = new Field[2];
-		f[0] = new HqlTableRequiredTextField("s.significance", "Significance/Comments", "Sample AS s", new HqlAliasedJoin("f", "samples", "s"));
-		f[1] = new BasicTextField("f.samples.siginificance", "Sig2");
+		f = new Field[1];
+		add(new HqlTableRequiredTextField("s.significance", "Significance/Comments", "Sample AS s", new HqlAliasedJoin("f", "samples", "s")));
 		add(new TwoLevelField("Sample Fields", f));
 		              
 	}
@@ -56,7 +55,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	}
 
 	public String getHQLQuery() throws InvalidOperatorException, InvalidValueException {
-		return super.getHQLQuery("SELECT feature", "Feature AS f", null, null, null);
+		return super.getHQLQuery("SELECT f", "Feature AS f", null, null, null);
 	}
 	
 	private <T extends Comparable<? super T>> List<T> getValues(String query, Class<T> clazz) {
