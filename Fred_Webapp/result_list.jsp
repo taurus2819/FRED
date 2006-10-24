@@ -35,7 +35,7 @@
 	int pageSize = 50;
 
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 	addButtons(et, new IconnedLink[] {new IconnedLink("simple_query.jsp", "images/search.gif", "Search Again")});
 
 	drawTop(out, et, request, response);
@@ -64,8 +64,6 @@
 				FREDQuery query = FREDUtil.getFREDQuery(state);
 				whereSQL = query.getHQLQuery();
 				queryString = query.getQueryAsString();
-				%><tr><td><%=whereSQL%></td></tr><%
-				%><tr><td><%=queryString%></td></tr><%
 				features = featureUtil.getListFromQueryBuilder(whereSQL);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -152,8 +150,7 @@
 			</table><%
 			endDETable(pageContext);
 			%></p><%
-		}
-		else {
+		} else {
 			%><p>No records found matching your search criteria</p><%
 		}
 	}
