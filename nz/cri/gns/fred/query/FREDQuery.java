@@ -70,7 +70,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		List<T> v = null;
 		try {
 			v = featureDAO.getList(query, clazz);
-		} catch (StorageAccessException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
