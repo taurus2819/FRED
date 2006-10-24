@@ -48,6 +48,7 @@ import nz.cri.gns.fred.hibernate.SampleMeta;
 import nz.cri.gns.fred.hibernate.SecurityClass;
 import nz.cri.gns.fred.hibernate.SedimentaryFeatureType;
 import nz.cri.gns.fred.hibernate.SentTo;
+import nz.cri.gns.fred.hibernate.SiteView;
 import nz.cri.gns.fred.hibernate.Stage;
 import nz.cri.gns.fred.hibernate.StratigraphicUnit;
 import nz.cri.gns.fred.hibernate.TaxaPanel;
@@ -145,6 +146,7 @@ public class HibernateUtil implements HibernateProvider {
 			//SedimentaryFeature.class,
 			SedimentaryFeatureType.class,
 			SentTo.class,
+			SiteView.class,
 			Stage.class,
 			StratigraphicUnit.class,
 			TaxaPanel.class,

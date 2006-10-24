@@ -92,6 +92,9 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     private nz.cri.gns.fred.model.Audit auditTable;
 
     /** persistent field */
+    private nz.cri.gns.fred.model.SiteView siteView;
+    
+    /** persistent field */
     private nz.cri.gns.fred.model.RegistrationArea registrationArea;
 
     /** persistent field */
@@ -107,7 +110,7 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     private Set<FeatureMeta> featureMetas;
 
     /** full constructor */
-    public Feature(Integer siteId, String locality, Integer origSystemId, String origCoord, Integer mapYear, String coordComments, String featureType, String featureName, String drillholeLicenceName, Date startDate, Date finishDate, String comments, Double datumElevation, Double startDepth, String datumType, Double finishDepth, String depthUnit, String startDateRounding, String finishDateRounding, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.FrNumber yardFrNumber, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set<Sample> samples, Set<Folder> folders, Set<Relationship> relationships, Set<FeatureMeta> featureMetas) {
+    public Feature(Integer siteId, String locality, Integer origSystemId, String origCoord, Integer mapYear, String coordComments, String featureType, String featureName, String drillholeLicenceName, Date startDate, Date finishDate, String comments, Double datumElevation, Double startDepth, String datumType, Double finishDepth, String depthUnit, String startDateRounding, String finishDateRounding, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.FrNumber yardFrNumber, nz.cri.gns.fred.hibernate.Person person, nz.cri.gns.fred.hibernate.Folder masterFile, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.SiteView siteView, nz.cri.gns.fred.hibernate.RegistrationArea registrationArea, Set<Sample> samples, Set<Folder> folders, Set<Relationship> relationships, Set<FeatureMeta> featureMetas) {
         this.siteId = siteId;
         this.locality = locality;
         this.origSystemId = origSystemId;
@@ -132,6 +135,7 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
         this.person = person;
         this.masterFile = masterFile;
         this.auditTable = auditTable;
+        this.siteView = siteView;
         this.registrationArea = registrationArea;
         this.samples = samples;
         this.folders = folders;
@@ -357,6 +361,14 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
         this.auditTable = auditTable;
    }
 
+    public nz.cri.gns.fred.model.SiteView getSiteView() {
+        return this.siteView;
+    }
+
+    public void setSiteView(nz.cri.gns.fred.model.SiteView siteView) {
+        this.siteView = siteView;
+   }
+    
     public nz.cri.gns.fred.model.RegistrationArea getRegistrationArea() {
         return this.registrationArea;
     }

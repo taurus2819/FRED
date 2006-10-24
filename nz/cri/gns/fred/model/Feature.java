@@ -53,6 +53,10 @@ public interface Feature extends Audited, Comparable<Feature> {
     public void setPerson(Person person);
     public Folder getMasterFile();
     public void setMasterFile(Folder masterFile);
+    public Audit getAudit();
+    public void setAudit(Audit auditTable);
+    public SiteView getSiteView();
+    public void setSiteView(SiteView siteView);
     public RegistrationArea getRegistrationArea();
     public void setRegistrationArea(RegistrationArea registrationArea);
     public Set<Sample> getSamples();
