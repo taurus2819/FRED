@@ -64,7 +64,7 @@
 				FREDQuery query = FREDUtil.getFREDQuery(state);
 				whereSQL = query.getHQLQuery();
 				queryString = query.getQueryAsString();
-				%><tr><td><%=whereSQL%></td></tr><%
+				System.out.println("PET Query: " + whereSQL);
 				features = featureUtil.getListFromQueryBuilder(whereSQL);
 			} catch (Exception e) {
 				e.printStackTrace();
