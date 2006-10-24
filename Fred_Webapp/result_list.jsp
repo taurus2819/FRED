@@ -62,7 +62,7 @@
 		} else 	if ("Adv".equals(request.getParameter("Type"))) {
 			try {
 				FREDQuery query = FREDUtil.getFREDQuery(state);
-				whereSQL = query.getQuery();
+				whereSQL = query.getHQLQuery();
 				queryString = query.getQueryAsString();
 				%><tr><td><%=whereSQL%></td></tr><%
 				%><tr><td><%=queryString%></td></tr><%

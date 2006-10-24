@@ -57,7 +57,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	}
 
 	public String getHQLQuery() throws InvalidOperatorException, InvalidValueException {
-		return getHQLQuery("", "feature AS f", null, null, null);
+		return getHQLQuery("", "Feature AS f", null, null, null);
 	}
 	
 	public int getLastUsedId() {
