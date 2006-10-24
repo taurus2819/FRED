@@ -43,10 +43,10 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	private int lastUsedId = 900000;
 	
 	public FREDQuery() {
-		Field[] f = new Field[2];
+		Field[] f = new Field[3];
 		f[0] = new PossibleValueField("f.person", "Person", getValues("SELECT p.personId, p.name FROM Person AS p", Person.class));
-		f[0] = new BasicTextField("f.featureName", "Feature Name");
-		f[1] = new BasicNumberField("f.startDepth", "Start Depth");
+		f[1] = new BasicTextField("f.featureName", "Feature Name");
+		f[2] = new BasicNumberField("f.startDepth", "Start Depth");
 		add(new TwoLevelField("Test 1", f));
 
 		f = new Field[2];
