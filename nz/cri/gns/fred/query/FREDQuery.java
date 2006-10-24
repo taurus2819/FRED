@@ -33,7 +33,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		add(new TwoLevelField("Locality Fields", f));
 		
 		f = new Field[8];
-		f[0] = new PossibleValueField("f.person", "Operating Company", getValues("Person AS p", Person.class));
+		f[0] = new PossibleValueField("f.person", "Operating Company", getValues("FROM Person AS p", Person.class));
 		f[1] = new BasicDateField("f.startDate", "Spud Date");
 		f[2] = new BasicDateField("f.finishDate", "Completion Date");
 		f[3] = new BasicTextField("f.licenceArea", "Licence Area");
