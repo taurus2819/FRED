@@ -46,7 +46,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		Field[] f = new Field[3];
 		f[0] = new BasicTextField("f.featureName", "Feature Name");
 		f[1] = new BasicNumberField("f.startDepth", "Start Depth");
-		f[2] = new PossibleValueField("f.person", "Person", getValues("SELECT p.personId, p.name FROM Person AS p", Person.class));
+		f[2] = new PossibleValueField("f.person", "Person", getValues("FROM Person AS p", Person.class));
 		add(new TwoLevelField("Test 1", f));
 	}
 
@@ -64,7 +64,6 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		List<T> values = null;
 		try {
 			values = featureDAO.getNameableAndIdentifiableList(query, clazz);
-			System.out.println("List size: " + values.size());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
