@@ -27,9 +27,10 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	private int lastUsedId = 900000;
 	
 	public FREDQuery() {
-		Field[] f = new Field[2];
+		Field[] f = new Field[3];
 		f[0] = new BasicTextField("f.featureName", "Feature Name");
 		f[1] = new PossibleValueField("f.featureType", "Feature Type", getFeatureType());
+		f[2] = new BasicTextField("f.siteView.nzmgSheet", "NZMG Sheet");
 		add(new TwoLevelField("Locality Fields", f));
 		
 		f = new Field[8];
@@ -46,7 +47,6 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f = new Field[1];
 		f[0] = new HqlTableRequiredTextField("s.significance", "Significance/Comments", "Sample AS s", new HqlAliasedJoin("f", "samples", "s"));
 		add(new TwoLevelField("Sample Fields", f));
-		              
 	}
 
 	public String getQuery() throws InvalidOperatorException, InvalidValueException {
