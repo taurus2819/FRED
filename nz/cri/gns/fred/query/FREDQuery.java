@@ -44,16 +44,10 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	
 	public FREDQuery() {
 		Field[] f = new Field[3];
-		f[0] = new PossibleValueField("f.person", "Person", getValues("SELECT p.personId, p.name FROM Person AS p", Person.class));
-		f[1] = new BasicTextField("f.featureName", "Feature Name");
-		f[2] = new BasicNumberField("f.startDepth", "Start Depth");
-		add(new TwoLevelField("Test 1", f));
-
-		f = new Field[2];
-		//f[0] = new PossibleValueField("f.person_id", "Person", getValues("SELECT person_id, name FROM person ORDER BY person_id", app));
 		f[0] = new BasicTextField("f.featureName", "Feature Name");
 		f[1] = new BasicNumberField("f.startDepth", "Start Depth");
-		add(new TwoLevelField("Test 2", f));
+		f[2] = new PossibleValueField("f.person", "Person", getValues("SELECT p.personId, p.name FROM Person AS p", Person.class));
+		add(new TwoLevelField("Test 1", f));
 	}
 
 	public String getQuery() throws InvalidOperatorException, InvalidValueException {
@@ -70,6 +64,8 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		List<T> v = null;
 		try {
 			v = featureDAO.getList(query, clazz);
+			for (T t : v)
+				System.out.println(t.toString());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
