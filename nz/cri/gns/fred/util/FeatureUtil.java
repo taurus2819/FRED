@@ -1177,4 +1177,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return d.toString();
 	}
 	
+	public List<Feature> getListFromQueryBuilder(String query) throws StorageAccessException {
+		return featureDAO.getList(query, Feature.class);
+	}
+	
+	
 }

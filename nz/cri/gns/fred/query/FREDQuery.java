@@ -40,14 +40,14 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	public FREDQuery() {
 		Field[] f = new Field[2];
 		//f[0] = new PossibleValueField("f.person_id", "Person", getValues("SELECT person_id, name FROM person ORDER BY person_id", app));
-		f[0] = new BasicTextField("f.feature_name", "FeatureName");
-		f[1] = new BasicNumberField("f.start_depth", "StartDepth");
+		f[0] = new BasicTextField("f.featureName", "Feature Name");
+		f[1] = new BasicNumberField("f.startDepth", "Start Depth");
 		add(new TwoLevelField("Test 1", f));
 
 		f = new Field[2];
 		//f[0] = new PossibleValueField("f.person_id", "Person", getValues("SELECT person_id, name FROM person ORDER BY person_id", app));
-		f[0] = new BasicTextField("f.feature_name", "Feature Name");
-		f[1] = new BasicNumberField("f.start_depth", "Start Depth");
+		f[0] = new BasicTextField("f.featureName", "Feature Name");
+		f[1] = new BasicNumberField("f.startDepth", "Start Depth");
 		add(new TwoLevelField("Test 2", f));
 	}
 

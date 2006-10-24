@@ -19,8 +19,6 @@ import net.sf.hibernate.expression.Order;
 import net.sf.hibernate.type.IntegerType;
 import net.sf.hibernate.type.ManyToOneType;
 import net.sf.hibernate.type.StringType;
-import net.sf.hibernate.type.Type;
-import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.HibernateProvider;
 import nz.cri.gns.dataaccess.HibernateUtils;
 import nz.cri.gns.dataaccess.StorageAccessException;
@@ -1144,6 +1142,12 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 			e.printStackTrace();
 			throw new StorageAccessException(e);
 		}		
+	}
+	
+	public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException {
+		List<T> items = HibernateUtils.list(provider, query, clazz, parameters);
+		Collections.sort(items);
+		return items;
 	}
 	
 }

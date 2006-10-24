@@ -1,9 +1,11 @@
 package nz.cri.gns.fred.dao;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import nz.cri.gns.dataaccess.HibernateUtils;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
@@ -189,4 +191,7 @@ public interface FeatureDAO {
 	public int getTotalFeatureCount() throws StorageAccessException;
 	
 	public Date getLastFeatureApprovalDate() throws StorageAccessException;
+	
+	public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException;
+	
 }

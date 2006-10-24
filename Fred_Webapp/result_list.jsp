@@ -55,18 +55,21 @@
 
 		session.setAttribute("dataEntryRedirect", "result_list.jsp?Page=" + pageNum);
 
-		List<Feature> features;
+		List<Feature> features = null;
 		if (useStored) {
 			features = (Vector<Feature>) session.getAttribute("FRED.features");
 			queryString = (String) session.getAttribute("FRED.queryString");
 		} else 	if ("Adv".equals(request.getParameter("Type"))) {
-			//PageState state = new PageState(request, response, getServletContext());
-			FREDQuery query = FREDUtil.getFREDQuery(state);
-			whereSQL = query.getQuery();
-			queryString = query.getQueryAsString();
-			%><tr><td><%=whereSQL%></td></tr><%
-			%><tr><td><%=queryString%></td></tr><%
-			features = featureUtil.getListFromQueryBuilder(whereSQL);
+			try {
+				FREDQuery query = FREDUtil.getFREDQuery(state);
+				whereSQL = query.getQuery();
+				queryString = query.getQueryAsString();
+				%><tr><td><%=whereSQL%></td></tr><%
+				%><tr><td><%=queryString%></td></tr><%
+				features = featureUtil.getListFromQueryBuilder(whereSQL);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		} else {
 			features = new Vector<Feature>();
 			//System.out.println("SELECT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
