@@ -1,5 +1,8 @@
 package nz.cri.gns.fred.query;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -32,6 +35,7 @@ import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.RockColour;
 import nz.cri.gns.fred.model.Weathering;
+import nz.cri.gns.fred.util.FREDUtil;
 
 public class FREDQuery extends HqlQuery implements NumberSource {
 
@@ -39,15 +43,20 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	
 	private int lastUsedId = 900000;
 	
+	private List<Person> people = null;
+	
 	public FREDQuery() {
+		
+		this.people = getValues("FROM Person AS p", Person.class);
+		
 		Field[] f = new Field[12];
 		f[0] = new BasicTextField("f.featureName", "Feature Name");
 		f[1] = new PossibleValueField("f.featureType", "Feature Type", getFeatureTypes());
 		f[2] = new PossibleValueField("f.masterfile", "Masterfile", getValues("FROM Folder AS f WHERE f.folderType.name='Admin'", Folder.class));
 		f[3] = new BasicTextField("f.siteView.nzmgSheet", "NZMS260 Sheet");
 		f[4] = new PossibleValueField("f.siteView.qmapSheet", "QMap Sheet", getQMapSheets());
-		//f[9] = new PossibleValueField("pv.country_name", "Country", getValues("SELECT country_name as quoted_country_name, country_name FROM mis.country ORDER BY UPPER(country_name)", app));
-		//f[10] = new PossibleValueField("pv.island", "Island", getValues("SELECT DISTINCT name as quoted_name, name FROM sc.island ORDER BY UPPER(name)", app));
+		f[5] = new PossibleValueField("f.siteView.countryName", "Country", getSQLValues("SELECT country_name as cn, country_name FROM mis.country ORDER BY UPPER(country_name)"));
+		f[6] = new PossibleValueField("f.siteView.island", "Island", getSQLValues("SELECT DISTINCT name as n, name FROM sc.island ORDER BY UPPER(name)"));
 		f[5] = new BasicNumberField("f.siteView.nzmgEast", "NZMG Easting");
 		f[6] = new BasicNumberField("f.siteView.nzmgNorth", "NZMG Northing");
 		f[7] = new BasicNumberField("f.siteView.latitude", "Latitude");
@@ -59,7 +68,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		
 		f = new Field[9];
 		f[0] = new BasicTextField("f.featureName", "Drillhole Name");
-		f[1] = new PossibleValueField("f.person", "Operating Company", getValues("FROM Person AS p", Person.class));
+		f[1] = new PossibleValueField("f.person", "Operating Company", people);
 		f[2] = new BasicDateField("f.startDate", "Spud Date");
 		f[3] = new BasicDateField("f.finishDate", "Completion Date");
 		f[4] = new BasicTextField("f.licenceArea", "Licence Area");
@@ -71,7 +80,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		
 		f = new Field[8];
 		f[0] = new BasicTextField("f.featureName", "Vertical Section Name");
-		f[1] = new PossibleValueField("f.person", "Section Collector", getValues("FROM Person AS p", Person.class));
+		f[1] = new PossibleValueField("f.person", "Section Collector", people);
 		f[2] = new BasicDateField("f.startDate", "Sampling Start Date");
 		f[3] = new BasicDateField("f.finishDate", "Completion Date");
 		f[4] = new PossibleValueField("f.datumType", "Datum Type", getVertSectDatumTypes());
@@ -136,10 +145,24 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		try {
 			values = featureDAO.getList(query, clazz);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return values;
+	}
+	
+	private List<KeyValueObject> getSQLValues(String sql) {
+		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>();
+		Connection conn;
+		try {
+			conn = FREDUtil.getConnection();
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery(sql);
+			while (rs.next())
+				options.add(new KeyValueObject(rs.getString(1), rs.getString(2)));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return options;
 	}
 	
 	private List<KeyValueObject> getFeatureTypes() {
