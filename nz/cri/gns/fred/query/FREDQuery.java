@@ -22,9 +22,14 @@ import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredPossibleValueFiel
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredTextField;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
+import nz.cri.gns.fred.model.BedThickness;
+import nz.cri.gns.fred.model.Bedding;
+import nz.cri.gns.fred.model.Carbonate;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.GrainSize;
+import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.Person;
+import nz.cri.gns.fred.model.Weathering;
 
 public class FREDQuery extends HqlQuery implements NumberSource {
 
@@ -93,7 +98,15 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		
 		f = new Field[4];
 		f[0] = new HqlTableRequiredPossibleValueField("sample.primaryGrainSize", "Primary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[1] = new HqlTableRequiredPossibleValueField("sample.secondaryGrainSize.name", "Secondary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[1] = new HqlTableRequiredPossibleValueField("sample.secondaryGrainSize", "Secondary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[2] = new HqlTableRequiredPossibleValueField("sample.comparatorUsed", "Comparator Used", getComparatorUsed(), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[3] = new HqlTableRequiredPossibleValueField("sample.bedThickness", "Bedding Thickness", getValues("FROM BedThickness AS b", BedThickness.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[2] = new HqlTableRequiredPossibleValueField("sample.primaryBedding", "Primary Bedding", getValues("FROM Bedding AS b", Bedding.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[2] = new HqlTableRequiredPossibleValueField("sample.secondaryBedding", "Secondary Bedding", getValues("FROM Bedding AS b", Bedding.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[2] = new HqlTableRequiredPossibleValueField("sample.weathering", "Weathering", getValues("FROM Weathering AS w", Weathering.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[2] = new HqlTableRequiredPossibleValueField("sample.hardness", "Hardness", getValues("FROM Hardness AS h", Hardness.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[2] = new HqlTableRequiredPossibleValueField("sample.carbonate", "Carbonate", getValues("FROM Carbonate AS c", Carbonate.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		
 		f[2] = new HqlTableRequiredTextField("sample.depositionEnv", "Inferred Enviornment", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
 		f[3] = new HqlTableRequiredTextField("sample.rockNature", "Nature of Rock Unit", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
 		//need to add grain size, etc and additional features
@@ -204,6 +217,13 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>(3);
 		options.add(new KeyValueObject("Normal", "Normal"));
 		options.add(new KeyValueObject("Overturned", "Overturned"));
+		return options;
+	}
+	
+	private List<KeyValueObject> getComparatorUsed() {
+		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>(3);
+		options.add(new KeyValueObject("Y", "Yes"));
+		options.add(new KeyValueObject("N", "No"));
 		return options;
 	}
 	
