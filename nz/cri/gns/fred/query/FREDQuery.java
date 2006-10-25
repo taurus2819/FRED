@@ -25,10 +25,12 @@ import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.BedThickness;
 import nz.cri.gns.fred.model.Bedding;
 import nz.cri.gns.fred.model.Carbonate;
+import nz.cri.gns.fred.model.ColourModifier;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.Person;
+import nz.cri.gns.fred.model.RockColour;
 import nz.cri.gns.fred.model.Weathering;
 
 public class FREDQuery extends HqlQuery implements NumberSource {
@@ -96,20 +98,22 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		//need to add stages, relationships
 		add(new TwoLevelField("Stratigraphic Fields", f));
 		
-		f = new Field[4];
+		f = new Field[14];
 		f[0] = new HqlTableRequiredPossibleValueField("sample.primaryGrainSize", "Primary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
 		f[1] = new HqlTableRequiredPossibleValueField("sample.secondaryGrainSize", "Secondary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
 		f[2] = new HqlTableRequiredPossibleValueField("sample.comparatorUsed", "Comparator Used", getComparatorUsed(), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
 		f[3] = new HqlTableRequiredPossibleValueField("sample.bedThickness", "Bedding Thickness", getValues("FROM BedThickness AS b", BedThickness.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[2] = new HqlTableRequiredPossibleValueField("sample.primaryBedding", "Primary Bedding", getValues("FROM Bedding AS b", Bedding.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[2] = new HqlTableRequiredPossibleValueField("sample.secondaryBedding", "Secondary Bedding", getValues("FROM Bedding AS b", Bedding.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[2] = new HqlTableRequiredPossibleValueField("sample.weathering", "Weathering", getValues("FROM Weathering AS w", Weathering.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[2] = new HqlTableRequiredPossibleValueField("sample.hardness", "Hardness", getValues("FROM Hardness AS h", Hardness.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[2] = new HqlTableRequiredPossibleValueField("sample.carbonate", "Carbonate", getValues("FROM Carbonate AS c", Carbonate.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		
-		f[2] = new HqlTableRequiredTextField("sample.depositionEnv", "Inferred Enviornment", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[3] = new HqlTableRequiredTextField("sample.rockNature", "Nature of Rock Unit", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		//need to add grain size, etc and additional features
+		f[4] = new HqlTableRequiredPossibleValueField("sample.primaryBedding", "Primary Bedding", getValues("FROM Bedding AS b", Bedding.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[5] = new HqlTableRequiredPossibleValueField("sample.secondaryBedding", "Secondary Bedding", getValues("FROM Bedding AS b", Bedding.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[6] = new HqlTableRequiredPossibleValueField("sample.weathering", "Weathering", getValues("FROM Weathering AS w", Weathering.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[7] = new HqlTableRequiredPossibleValueField("sample.hardness", "Hardness", getValues("FROM Hardness AS h", Hardness.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[8] = new HqlTableRequiredPossibleValueField("sample.carbonate", "Carbonate", getValues("FROM Carbonate AS c", Carbonate.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[9] = new HqlTableRequiredPossibleValueField("sample.colourModifier", "Colour Modifier", getValues("FROM ColourModifier AS c", ColourModifier.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[10] = new HqlTableRequiredPossibleValueField("sample.primaryColour", "Primary Colour", getValues("FROM RockColour AS r", RockColour.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[11] = new HqlTableRequiredPossibleValueField("sample.secondaryColour", "Secondary Colour", getValues("FROM RockColour AS r", RockColour.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));		
+		f[12] = new HqlTableRequiredTextField("sample.depositionEnv", "Inferred Enviornment", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[13] = new HqlTableRequiredTextField("sample.rockNature", "Nature of Rock Unit", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		//need to add additional features
 		add(new TwoLevelField("Sedimentary Feature Fields", f));
 		
 		f = new Field[1];
