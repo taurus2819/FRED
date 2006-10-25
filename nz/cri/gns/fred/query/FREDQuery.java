@@ -16,6 +16,7 @@ import nz.cri.gns.db.querybuilder.advanced.PossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.TwoLevelField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlAliasedJoin;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlQuery;
+import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredDateField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredTextField;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
@@ -70,26 +71,27 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[7] = new BasicNumberField("f.stopDepth", "Base Horizon");
 		add(new TwoLevelField("Vertical Section Fields", f));
 		
-		f = new Field[2];
-		f[0] = new HqlTableRequiredTextField("sample.notCollected", "Not Collected", "Sample AS sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[1] = new HqlTableRequiredTextField("sample.significance", "Significance/Comments", "Sample AS sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f = new Field[3];
+		f[0] = new HqlTableRequiredDateField("sample.collectionDate", "Collection Date", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[1] = new HqlTableRequiredTextField("sample.notCollected", "Not Collected", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[2] = new HqlTableRequiredTextField("sample.significance", "Significance/Comments", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
 		//need to add collectors, collection date, fossils in place, sent to
 		add(new TwoLevelField("Collection Fields", f));
 		
 		f = new Field[2];
-		f[0] = new HqlTableRequiredTextField("sample.stratUnit", "Stratigraphic Name", "Sample AS sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[1] = new HqlTableRequiredTextField("sample.columnMap", "Column/Map", "Sample AS sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[0] = new HqlTableRequiredTextField("sample.stratUnit", "Stratigraphic Name", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[1] = new HqlTableRequiredTextField("sample.columnMap", "Column/Map", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
 		//need to add stages, relationships, dip/strike
 		add(new TwoLevelField("Stratigraphic Fields", f));
 		
 		f = new Field[2];
-		f[0] = new HqlTableRequiredTextField("sample.depositionEnv", "Inferred Enviornment", "Sample AS sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[1] = new HqlTableRequiredTextField("sample.rockNature", "Nature of Rock Unit", "Sample AS sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[0] = new HqlTableRequiredTextField("sample.depositionEnv", "Inferred Enviornment", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[1] = new HqlTableRequiredTextField("sample.rockNature", "Nature of Rock Unit", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
 		//need to add grain size, etc and additional features
 		add(new TwoLevelField("Sedimentary Feature Fields", f));
 		
 		f = new Field[1];
-		f[0] = new HqlTableRequiredTextField("sample.correspondence", "Correspondence", "Sample AS sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[0] = new HqlTableRequiredTextField("sample.correspondence", "Correspondence", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
 		add(new TwoLevelField("Correspondence Fields", f));
 	}
 
