@@ -31,7 +31,6 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	private static final long serialVersionUID = 20060120L;
 	
 	private int lastUsedId = 900000;
-	private static List<Person> people = null;
 	
 	public FREDQuery() {
 		Field[] f = new Field[12];
@@ -53,7 +52,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		
 		f = new Field[9];
 		f[0] = new BasicTextField("f.featureName", "Drillhole Name");
-		f[1] = new PossibleValueField("f.person", "Operating Company", getPeople());
+		f[1] = new PossibleValueField("f.person", "Operating Company", getValues("FROM Person AS p", Person.class));
 		f[2] = new BasicDateField("f.startDate", "Spud Date");
 		f[3] = new BasicDateField("f.finishDate", "Completion Date");
 		f[4] = new BasicTextField("f.licenceArea", "Licence Area");
@@ -65,7 +64,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		
 		f = new Field[8];
 		f[0] = new BasicTextField("f.featureName", "Vertical Section Name");
-		f[1] = new PossibleValueField("f.person", "Section Collector", getPeople());
+		f[1] = new PossibleValueField("f.person", "Section Collector", getValues("FROM Person AS p", Person.class));
 		f[2] = new BasicDateField("f.startDate", "Sampling Start Date");
 		f[3] = new BasicDateField("f.finishDate", "Completion Date");
 		f[4] = new PossibleValueField("f.datumType", "Datum Type", getVertSectDatumTypes());
@@ -92,10 +91,11 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		//need to add stages, relationships
 		add(new TwoLevelField("Stratigraphic Fields", f));
 		
-		f = new Field[3];
-		f[0] = new HqlTableRequiredPossibleValueField("sample.grainSize.name", "Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[1] = new HqlTableRequiredTextField("sample.depositionEnv", "Inferred Enviornment", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[2] = new HqlTableRequiredTextField("sample.rockNature", "Nature of Rock Unit", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f = new Field[4];
+		f[0] = new HqlTableRequiredPossibleValueField("sample.grainSizeByPrimaryGrainsizeId.name", "Primary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[1] = new HqlTableRequiredPossibleValueField("sample.grainSizeBySecondaryGrainsizeId.name", "Secondary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[2] = new HqlTableRequiredTextField("sample.depositionEnv", "Inferred Enviornment", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[3] = new HqlTableRequiredTextField("sample.rockNature", "Nature of Rock Unit", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
 		//need to add grain size, etc and additional features
 		add(new TwoLevelField("Sedimentary Feature Fields", f));
 		
@@ -123,12 +123,6 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 			e.printStackTrace();
 		}
 		return values;
-	}
-	
-	private List<Person> getPeople() {
-		if (people == null)
-			people = getValues("FROM Person AS p", Person.class);
-		return people;
 	}
 	
 	private List<KeyValueObject> getFeatureTypes() {
