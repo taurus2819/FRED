@@ -46,7 +46,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	private List<Person> people = null;
 	
 	public FREDQuery() {
-		
+
 		this.people = getValues("FROM Person AS p", Person.class);
 		
 		Field[] f = new Field[14];
@@ -74,8 +74,8 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[4] = new BasicTextField("f.licenceArea", "Licence Area");
 		f[5] = new PossibleValueField("f.datumType", "Datum Type", getDrillholeDatumTypes());
 		f[6] = new BasicNumberField("f.datumElevation", "Datum Elevation");
-		f[7] = new MetricDepthField("f.startDepth", "Kick-off Depth", "depthUnit");
-		f[8] = new MetricDepthField("f.stopDepth", "Termination Depth", "depthUnit");
+		f[7] = new MetricDepthField("f.startDepth", "Kick-off Depth", "f.depthUnit");
+		f[8] = new MetricDepthField("f.finishDepth", "Termination Depth", "f.depthUnit");
 		add(new TwoLevelField("Drillhole Fields", f));
 		
 		f = new Field[8];
@@ -85,8 +85,8 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[3] = new BasicDateField("f.finishDate", "Completion Date");
 		f[4] = new PossibleValueField("f.datumType", "Datum Type", getVertSectDatumTypes());
 		f[5] = new BasicNumberField("f.datumElevation", "Datum Elevation");
-		f[6] = new BasicNumberField("f.startDepth", "Top Horizon");
-		f[7] = new BasicNumberField("f.stopDepth", "Base Horizon");
+		f[6] = new MetricDepthField("f.startDepth", "Top Horizon", "f.depthUnit");
+		f[7] = new MetricDepthField("f.finishDepth", "Base Horizon", "f.depthUnit");
 		add(new TwoLevelField("Vertical Section Fields", f));
 		
 		f = new Field[4];
