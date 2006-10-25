@@ -17,11 +17,13 @@ import nz.cri.gns.db.querybuilder.advanced.TwoLevelField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlAliasedJoin;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlQuery;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredDateField;
+import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredNumberField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredPossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredTextField;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.Folder;
+import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Person;
 
 public class FREDQuery extends HqlQuery implements NumberSource {
@@ -80,15 +82,20 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		//need to add collectors, sent to
 		add(new TwoLevelField("Collection Fields", f));
 		
-		f = new Field[2];
+		f = new Field[6];
 		f[0] = new HqlTableRequiredTextField("sample.stratUnit", "Stratigraphic Name", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
 		f[1] = new HqlTableRequiredTextField("sample.columnMap", "Column/Map", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		//need to add stages, relationships, dip/strike
+		f[2] = new HqlTableRequiredNumberField("sample.dip", "Dip", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[3] = new HqlTableRequiredPossibleValueField("sample.dipDirection", "Dip Direction", getDipDirection(), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[4] = new HqlTableRequiredNumberField("sample.strike", "Strike", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[5] = new HqlTableRequiredPossibleValueField("sample.facing", "Facing", getFacing(), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		//need to add stages, relationships
 		add(new TwoLevelField("Stratigraphic Fields", f));
 		
-		f = new Field[2];
-		f[0] = new HqlTableRequiredTextField("sample.depositionEnv", "Inferred Enviornment", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[1] = new HqlTableRequiredTextField("sample.rockNature", "Nature of Rock Unit", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f = new Field[3];
+		f[0] = new HqlTableRequiredPossibleValueField("sample.grainSize.name", "Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[1] = new HqlTableRequiredTextField("sample.depositionEnv", "Inferred Enviornment", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[2] = new HqlTableRequiredTextField("sample.rockNature", "Nature of Rock Unit", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
 		//need to add grain size, etc and additional features
 		add(new TwoLevelField("Sedimentary Feature Fields", f));
 		
@@ -183,6 +190,26 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		options.add(new KeyValueObject("No", "No"));
 		options.add(new KeyValueObject("Almost", "Almost"));
 		options.add(new KeyValueObject("Unknown", "Unknown"));
+		return options;
+	}
+	
+	private List<KeyValueObject> getDipDirection() {
+		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>(3);
+		options.add(new KeyValueObject("N", "N"));
+		options.add(new KeyValueObject("NE", "NE"));
+		options.add(new KeyValueObject("E", "E"));
+		options.add(new KeyValueObject("SE", "SE"));
+		options.add(new KeyValueObject("S", "S"));
+		options.add(new KeyValueObject("SW", "SW"));
+		options.add(new KeyValueObject("W", "W"));
+		options.add(new KeyValueObject("NW", "NW"));
+		return options;
+	}
+	
+	private List<KeyValueObject> getFacing() {
+		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>(3);
+		options.add(new KeyValueObject("Normal", "Normal"));
+		options.add(new KeyValueObject("Overturned", "Overturned"));
 		return options;
 	}
 	
