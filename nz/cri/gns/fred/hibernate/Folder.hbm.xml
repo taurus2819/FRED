@@ -41,7 +41,7 @@
     />
 
     <!-- Associations -->
-    <!-- bi-directional many-to-one association to Hardness -->
+    <!-- bi-directional many-to-one association to FolderType -->
     <many-to-one
         name="folderType"
         class="nz.cri.gns.fred.hibernate.FolderType"
@@ -50,20 +50,6 @@
         <column name="FOLDER_TYPE" />
     </many-to-one>
   
-    <!-- bi-directional one-to-many association to Record -->
-    <set
-        name="records"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <key>
-            <column name="WORKING_FOLDER_ID" />
-        </key>
-        <one-to-many 
-            class="nz.cri.gns.fred.hibernate.Record"
-        />
-    </set>
     <!-- bi-directional one-to-many association to AuditTable -->
     <set
         name="audits"

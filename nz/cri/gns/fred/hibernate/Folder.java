@@ -2,7 +2,10 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 import java.util.Set;
+import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.Feature;
+import nz.cri.gns.fred.model.FolderType;
+import nz.cri.gns.fred.model.FolderUser;
 
 /** @author Hibernate CodeGenerator */
 public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
@@ -22,26 +25,22 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
     private Integer ownerId;
 
     /** persistent field */
-    private Set records;
-
-    /** persistent field */
-    private Set auditTables;
+    private Set<Audit> auditTables;
 
     /** persistent field */
     private Set<Feature> masterfileFeatures;
 
     /** persistent field */
-    private Set features;
+    private Set<Feature> features;
 
     /** persistent field */
-    private Set folderUsers;
+    private Set<FolderUser> folderUsers;
 
     /** full constructor */
-    public Folder(String name, FolderType folderType, Integer ownerId, Set records, Set auditTables, Set<Feature> masterfileFeatures, Set features, Set folderUsers) {
+    public Folder(String name, FolderType folderType, Integer ownerId, Set<Audit> auditTables, Set<Feature> masterfileFeatures, Set<Feature> features, Set<FolderUser> folderUsers) {
         this.name = name;
         this.folderType = folderType;
         this.ownerId = ownerId;
-        this.records = records;
         this.auditTables = auditTables;
         this.masterfileFeatures = masterfileFeatures;
         this.features = features;
@@ -53,9 +52,8 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
     }
 
     /** minimal constructor */
-    public Folder(String name, Set records, Set auditTables, Set masterfileFeatures, Set features, Set folderUsers) {
+    public Folder(String name, Set<Audit> auditTables, Set<Feature> masterfileFeatures, Set<Feature> features, Set<FolderUser> folderUsers) {
         this.name = name;
-        this.records = records;
         this.auditTables = auditTables;
         this.masterfileFeatures = masterfileFeatures;
         this.features = features;
@@ -78,11 +76,11 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
         this.name = name;
     }
 
-    public nz.cri.gns.fred.model.FolderType getFolderType() {
+    public FolderType getFolderType() {
         return this.folderType;
     }
 
-    public void setFolderType(nz.cri.gns.fred.model.FolderType folderType) {
+    public void setFolderType(FolderType folderType) {
         this.folderType = folderType;
     }
 
@@ -94,19 +92,11 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
         this.ownerId = ownerId;
     }
 
-    public Set getRecords() {
-        return this.records;
-    }
-
-    public void setRecords(Set records) {
-        this.records = records;
-    }
-
-    public Set getAudits() {
+    public Set<Audit> getAudits() {
         return this.auditTables;
     }
 
-    public void setAudits(Set auditTables) {
+    public void setAudits(Set<Audit> auditTables) {
         this.auditTables = auditTables;
     }
 
@@ -118,19 +108,19 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
         this.masterfileFeatures = masterfileFeatures;
     }
 
-    public Set getFeatures() {
+    public Set<Feature> getFeatures() {
         return this.features;
     }
 
-    public void setFeatures(Set features) {
+    public void setFeatures(Set<Feature> features) {
         this.features = features;
     }
 
-    public Set getFolderUsers() {
+    public Set<FolderUser> getFolderUsers() {
         return this.folderUsers;
     }
 
-    public void setFolderUsers(Set folderUsers) {
+    public void setFolderUsers(Set<FolderUser> folderUsers) {
         this.folderUsers = folderUsers;
     }
 
@@ -140,5 +130,13 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
 	
 	public boolean equals(Object o) {
 		return o instanceof Folder && ((Folder)o).getFolderId().intValue() == getFolderId().intValue();
+	}
+
+	public String getUniqueIdentifier() {
+		return String.valueOf(this.folderId);
+	}
+
+	public String getDisplayName() {
+		return this.name;
 	}
 }

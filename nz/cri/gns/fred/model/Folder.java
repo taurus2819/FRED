@@ -3,10 +3,12 @@ package nz.cri.gns.fred.model;
 import java.io.Serializable;
 import java.util.Set;
 
+import nz.cri.gns.core.NameableAndIdentifiable;
+
 /**
  * @author iainm
  */
-public interface Folder extends Serializable, Comparable<Folder> {
+public interface Folder extends Serializable, Comparable<Folder>, NameableAndIdentifiable {
 	
 	public static final int FOLDER_READ_RIGHT = 1;
 	public static final int FOLDER_EDIT_RIGHT = 2;
@@ -36,10 +38,6 @@ public interface Folder extends Serializable, Comparable<Folder> {
 	public abstract Integer getOwnerId();
 
 	public abstract void setOwnerId(Integer ownerId);
-
-	public abstract Set getRecords();
-
-	public abstract void setRecords(Set records);
 
 	public abstract Set<Audit> getAudits();
 
