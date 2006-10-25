@@ -315,7 +315,7 @@ public class FREDUtil {
 	 * @throws NamingException
 	 * @throws SQLException
 	 */
-	private static Connection getConnection() throws NamingException, SQLException {
+	public static Connection getConnection() throws NamingException, SQLException {
 		InitialContext context = new InitialContext();
 		DataSource source = (DataSource)context.lookup("java:comp/env/jdbc/fr");
 		
