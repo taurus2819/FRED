@@ -2,7 +2,6 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 
-import nz.cri.gns.fred.hibernate.dao.CompositeKeyed;
 import nz.cri.gns.fred.util.FREDUtil;
 
 /** @author Hibernate CodeGenerator */
