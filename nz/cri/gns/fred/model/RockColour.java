@@ -2,29 +2,17 @@ package nz.cri.gns.fred.model;
 
 import java.util.Set;
 
-/**
- *
- */
-public interface RockColour {
-	public abstract Integer getColourId();
+import nz.cri.gns.core.NameableAndIdentifiable;
 
-	public abstract void setColourId(Integer colourId);
-
-	public abstract String getName();
-
-	public abstract void setName(String name);
-
-	public abstract String getCode();
-
-	public abstract void setCode(String code);
-
-	public abstract Set getSamplesBySecondaryColourId();
-
-	public abstract void setSamplesBySecondaryColourId(
-			Set samplesBySecondaryColourId);
-
-	public abstract Set getSamplesByPrimaryColourId();
-
-	public abstract void setSamplesByPrimaryColourId(
-			Set samplesByPrimaryColourId);
+public interface RockColour extends Comparable<RockColour>, NameableAndIdentifiable {
+	public Integer getColourId();
+	public void setColourId(Integer colourId);
+	public String getName();
+	public void setName(String name);
+	public String getCode();
+	public void setCode(String code);
+	public Set<Sample> getSamplesBySecondaryColourId();
+	public void setSamplesBySecondaryColourId(Set<Sample> samplesBySecondaryColourId);
+	public Set<Sample> getSamplesByPrimaryColourId();
+	public void setSamplesByPrimaryColourId(Set<Sample> samplesByPrimaryColourId);
 }

@@ -2,6 +2,7 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 import java.util.Set;
+import nz.cri.gns.fred.model.Sample;
 
 /** @author Hibernate CodeGenerator */
 public class RockColour implements Serializable, nz.cri.gns.fred.model.RockColour {
@@ -18,13 +19,13 @@ public class RockColour implements Serializable, nz.cri.gns.fred.model.RockColou
     private String code;
 
     /** persistent field */
-    private Set samplesBySecondaryColourId;
+    private Set<Sample> samplesBySecondaryColourId;
 
     /** persistent field */
-    private Set samplesByPrimaryColourId;
+    private Set<Sample> samplesByPrimaryColourId;
 
     /** full constructor */
-    public RockColour(Integer colourId, String name, String code, Set samplesBySecondaryColourId, Set samplesByPrimaryColourId) {
+    public RockColour(Integer colourId, String name, String code, Set<Sample> samplesBySecondaryColourId, Set<Sample> samplesByPrimaryColourId) {
         this.colourId = colourId;
         this.name = name;
         this.code = code;
@@ -60,19 +61,19 @@ public class RockColour implements Serializable, nz.cri.gns.fred.model.RockColou
         this.code = code;
     }
 
-    public Set getSamplesBySecondaryColourId() {
+    public Set<Sample> getSamplesBySecondaryColourId() {
         return this.samplesBySecondaryColourId;
     }
 
-    public void setSamplesBySecondaryColourId(Set samplesBySecondaryColourId) {
+    public void setSamplesBySecondaryColourId(Set<Sample> samplesBySecondaryColourId) {
         this.samplesBySecondaryColourId = samplesBySecondaryColourId;
     }
 
-    public Set getSamplesByPrimaryColourId() {
+    public Set<Sample> getSamplesByPrimaryColourId() {
         return this.samplesByPrimaryColourId;
     }
 
-    public void setSamplesByPrimaryColourId(Set samplesByPrimaryColourId) {
+    public void setSamplesByPrimaryColourId(Set<Sample> samplesByPrimaryColourId) {
         this.samplesByPrimaryColourId = samplesByPrimaryColourId;
     }
 
@@ -80,5 +81,16 @@ public class RockColour implements Serializable, nz.cri.gns.fred.model.RockColou
         return name;
     }
 
+	public int compareTo(nz.cri.gns.fred.model.RockColour arg0) {
+		return this.code.compareTo((arg0.getCode()));
+	}
+
+	public String getUniqueIdentifier() {
+		return String.valueOf(this.colourId);
+	}
+
+	public String getDisplayName() {
+		return this.code + ": " + this.name;
+	}
 
 }

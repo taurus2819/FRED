@@ -2,6 +2,7 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 import java.util.Set;
+import nz.cri.gns.fred.model.Sample;
 
 /** @author Hibernate CodeGenerator */
 public class ColourModifier implements Serializable, nz.cri.gns.fred.model.ColourModifier {
@@ -18,10 +19,10 @@ public class ColourModifier implements Serializable, nz.cri.gns.fred.model.Colou
     private String code;
 
     /** persistent field */
-    private Set samples;
+    private Set<Sample> samples;
 
     /** full constructor */
-    public ColourModifier(Integer modifierId, String name, String code, Set samples) {
+    public ColourModifier(Integer modifierId, String name, String code, Set<Sample> samples) {
         this.modifierId = modifierId;
         this.name = name;
         this.code = code;
@@ -56,16 +57,28 @@ public class ColourModifier implements Serializable, nz.cri.gns.fred.model.Colou
         this.code = code;
     }
 
-    public Set getSamples() {
+    public Set<Sample> getSamples() {
         return this.samples;
     }
 
-    public void setSamples(Set samples) {
+    public void setSamples(Set<Sample> samples) {
         this.samples = samples;
     }
 
     public String toString() {
         return name;
     }
+    
+	public int compareTo(nz.cri.gns.fred.model.ColourModifier arg0) {
+		return this.code.compareTo((arg0.getCode()));
+	}
+
+	public String getUniqueIdentifier() {
+		return String.valueOf(this.modifierId);
+	}
+
+	public String getDisplayName() {
+		return this.code + ": " + this.name;
+	}
 
 }

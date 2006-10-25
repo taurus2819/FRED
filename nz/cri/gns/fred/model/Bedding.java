@@ -4,7 +4,7 @@ import java.util.Set;
 
 import nz.cri.gns.core.NameableAndIdentifiable;
 
-public interface Bedding  extends Comparable<Bedding>, NameableAndIdentifiable {
+public interface Bedding extends Comparable<Bedding>, NameableAndIdentifiable {
 	public Integer getBeddingId();
 	public void setBeddingId(Integer beddingId);
 	public String getName();
