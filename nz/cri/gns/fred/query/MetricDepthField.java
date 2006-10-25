@@ -19,7 +19,7 @@ public class MetricDepthField extends BasicNumberField {
 	public MetricDepthField(String databaseName, String humanName, String unitField) {
 		super(databaseName, humanName);
 		this.metricField = new FilteredNumberField(databaseName, humanName, unitField + " = 'm'");
-		this.imperialField = new FilteredFactoredNumberField(databaseName, humanName, FREDConstants.FT_TO_M, unitField + " = 'ft'");
+		this.imperialField = new FilteredFactoredNumberField(databaseName, humanName, 1 / FREDConstants.FT_TO_M, unitField + " = 'ft'");
 	}
 
 	public String getJoin(Operator op, Value value) throws InvalidOperatorException, InvalidValueException {
