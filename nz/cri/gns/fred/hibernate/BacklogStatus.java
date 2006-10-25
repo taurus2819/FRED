@@ -2,8 +2,6 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 
-import nz.cri.gns.fred.util.FeatureUtil;
-
 public class BacklogStatus implements Serializable, nz.cri.gns.fred.model.BacklogStatus {
 
     private static final long serialVersionUID = 20050818L;
