@@ -92,8 +92,8 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		add(new TwoLevelField("Stratigraphic Fields", f));
 		
 		f = new Field[4];
-		f[0] = new HqlTableRequiredPossibleValueField("sample.grainSizeByPrimaryGrainsizeId.name", "Primary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[1] = new HqlTableRequiredPossibleValueField("sample.grainSizeBySecondaryGrainsizeId.name", "Secondary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[0] = new HqlTableRequiredPossibleValueField("sample.primaryGrainSize.name", "Primary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[1] = new HqlTableRequiredPossibleValueField("sample.secondaryGrainSize.name", "Secondary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
 		f[2] = new HqlTableRequiredTextField("sample.depositionEnv", "Inferred Enviornment", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
 		f[3] = new HqlTableRequiredTextField("sample.rockNature", "Nature of Rock Unit", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
 		//need to add grain size, etc and additional features
