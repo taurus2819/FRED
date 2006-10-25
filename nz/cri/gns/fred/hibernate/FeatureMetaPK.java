@@ -8,6 +8,8 @@ import nz.cri.gns.fred.util.FREDUtil;
 /** @author Hibernate CodeGenerator */
 public class FeatureMetaPK implements Serializable, CompositeKey {
 
+    private static final long serialVersionUID = 20050818L;
+    
     /** identifier field */
     private Integer featureId;
 
