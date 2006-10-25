@@ -7,6 +7,7 @@
 %><%@page import="java.sql.ResultSet"
 %><%@page import="nz.cri.gns.fred.de.DataEntryUtils"
 %><%@page import="nz.cri.gns.auth.Authenticable"
+%><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%
@@ -18,6 +19,7 @@
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
+	addButtons(et, new IconnedLink[] {new IconnedLink("buildframe.jsp", "images/search.gif", "Advanced Query")});
 
 	drawTop(out, et, request, response);
 

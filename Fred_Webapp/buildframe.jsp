@@ -1,7 +1,7 @@
 <%
 	nz.cri.gns.fred.util.FREDUtil.setSessionLock(session);
 %><html>
-<frameset rows="205,*" border="0">
+<frameset rows="275,*" border="0">
  <frame name="buildpanel" src="build.jsp?frameset=buildframe.jsp" scrolling="no" noresize="noresize" />
  <frame name="querydisp" src="adv_query.jsp" />
 <noframes>

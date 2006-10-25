@@ -30,19 +30,21 @@
 	Statement statement = connection.statement;
 	User user = (User)getUser(session);
 
+	String queryURL = request.getParameter("QueryURL");
+	if (queryURL == null)
+		queryURL = "simple_query.jsp";
+	
 	FeatureUtil featureUtil = new FeatureUtil(HibernateUtil.get().getDAOFactory());
 	
 	int pageSize = 50;
 
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
-	addButtons(et, new IconnedLink[] {new IconnedLink("simple_query.jsp", "images/search.gif", "Search Again")});
+	et.setDisplayLoadingMessage(true);
+	addButtons(et, new IconnedLink[] {new IconnedLink(queryURL, "images/search.gif", "Search Again")});
 
 	drawTop(out, et, request, response);
 	drawEndNavigation(out);
 
-
-	
 	if ((request.getParameter("WhereSQL") != null && request.getParameter("TableName") != null && request.getParameter("QueryString") != null) || request.getParameter("Page") != null || request.getParameter("Type") != null) {
 		String whereSQL = request.getParameter("WhereSQL");
 		String tableName = request.getParameter("TableName");
@@ -57,7 +59,7 @@
 
 		List<Feature> features = null;
 		if (useStored) {
-			features = (Vector<Feature>) session.getAttribute("FRED.features");
+			features = (List<Feature>) session.getAttribute("FRED.features");
 			queryString = (String) session.getAttribute("FRED.queryString");
 		} else 	if ("Adv".equals(request.getParameter("Type"))) {
 			try {
