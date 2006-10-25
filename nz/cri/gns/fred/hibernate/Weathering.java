@@ -2,6 +2,7 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 import java.util.Set;
+import nz.cri.gns.fred.model.Sample;
 
 /** @author Hibernate CodeGenerator */
 public class Weathering implements Serializable, nz.cri.gns.fred.model.Weathering {
@@ -18,10 +19,10 @@ public class Weathering implements Serializable, nz.cri.gns.fred.model.Weatherin
     private String code;
 
     /** persistent field */
-    private Set samples;
+    private Set<Sample> samples;
 
     /** full constructor */
-    public Weathering(Integer weatheringId, String name, String code, Set samples) {
+    public Weathering(Integer weatheringId, String name, String code, Set<Sample> samples) {
         this.weatheringId = weatheringId;
         this.name = name;
         this.code = code;
@@ -56,11 +57,11 @@ public class Weathering implements Serializable, nz.cri.gns.fred.model.Weatherin
         this.code = code;
     }
 
-    public Set getSamples() {
+    public Set<Sample> getSamples() {
         return this.samples;
     }
 
-    public void setSamples(Set samples) {
+    public void setSamples(Set<Sample> samples) {
         this.samples = samples;
     }
 
@@ -68,5 +69,16 @@ public class Weathering implements Serializable, nz.cri.gns.fred.model.Weatherin
         return name;
     }
 
+	public int compareTo(nz.cri.gns.fred.model.Weathering arg0) {
+		return this.code.compareTo((arg0.getCode()));
+	}
+
+	public String getUniqueIdentifier() {
+		return String.valueOf(this.weatheringId);
+	}
+
+	public String getDisplayName() {
+		return this.code + ": " + this.name;
+	}
 
 }

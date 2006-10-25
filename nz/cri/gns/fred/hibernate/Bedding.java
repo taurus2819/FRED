@@ -2,6 +2,7 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 import java.util.Set;
+import nz.cri.gns.fred.model.Sample;
 
 /** @author Hibernate CodeGenerator */
 public class Bedding implements Serializable, nz.cri.gns.fred.model.Bedding {
@@ -18,13 +19,13 @@ public class Bedding implements Serializable, nz.cri.gns.fred.model.Bedding {
     private String code;
 
     /** persistent field */
-    private Set samplesByPrimaryBeddingId;
+    private Set<Sample> samplesByPrimaryBeddingId;
 
     /** persistent field */
-    private Set samplesBySecondaryBeddingId;
+    private Set<Sample> samplesBySecondaryBeddingId;
 
     /** full constructor */
-    public Bedding(Integer beddingId, String name, String code, Set samplesByPrimaryBeddingId, Set samplesBySecondaryBeddingId) {
+    public Bedding(Integer beddingId, String name, String code, Set<Sample> samplesByPrimaryBeddingId, Set<Sample> samplesBySecondaryBeddingId) {
         this.beddingId = beddingId;
         this.name = name;
         this.code = code;
@@ -60,24 +61,36 @@ public class Bedding implements Serializable, nz.cri.gns.fred.model.Bedding {
         this.code = code;
     }
 
-    public Set getSamplesByPrimaryBeddingId() {
+    public Set<Sample> getSamplesByPrimaryBeddingId() {
         return this.samplesByPrimaryBeddingId;
     }
 
-    public void setSamplesByPrimaryBeddingId(Set samplesByPrimaryBeddingId) {
+    public void setSamplesByPrimaryBeddingId(Set<Sample> samplesByPrimaryBeddingId) {
         this.samplesByPrimaryBeddingId = samplesByPrimaryBeddingId;
     }
 
-    public Set getSamplesBySecondaryBeddingId() {
+    public Set<Sample> getSamplesBySecondaryBeddingId() {
         return this.samplesBySecondaryBeddingId;
     }
 
-    public void setSamplesBySecondaryBeddingId(Set samplesBySecondaryBeddingId) {
+    public void setSamplesBySecondaryBeddingId(Set<Sample> samplesBySecondaryBeddingId) {
         this.samplesBySecondaryBeddingId = samplesBySecondaryBeddingId;
     }
 
     public String toString() {
         return name;
     }
+
+	public int compareTo(nz.cri.gns.fred.model.Bedding arg0) {
+		return this.code.compareTo((arg0.getCode()));
+	}
+
+	public String getUniqueIdentifier() {
+		return String.valueOf(this.beddingId);
+	}
+
+	public String getDisplayName() {
+		return this.code + ": " + this.name;
+	}
 
 }

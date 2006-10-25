@@ -2,29 +2,17 @@ package nz.cri.gns.fred.model;
 
 import java.util.Set;
 
-/**
- *
- */
-public interface Bedding {
-	public abstract Integer getBeddingId();
+import nz.cri.gns.core.NameableAndIdentifiable;
 
-	public abstract void setBeddingId(Integer beddingId);
-
-	public abstract String getName();
-
-	public abstract void setName(String name);
-
-	public abstract String getCode();
-
-	public abstract void setCode(String code);
-
-	public abstract Set getSamplesByPrimaryBeddingId();
-
-	public abstract void setSamplesByPrimaryBeddingId(
-			Set samplesByPrimaryBeddingId);
-
-	public abstract Set getSamplesBySecondaryBeddingId();
-
-	public abstract void setSamplesBySecondaryBeddingId(
-			Set samplesBySecondaryBeddingId);
+public interface Bedding  extends Comparable<Bedding>, NameableAndIdentifiable {
+	public Integer getBeddingId();
+	public void setBeddingId(Integer beddingId);
+	public String getName();
+	public void setName(String name);
+	public String getCode();
+	public void setCode(String code);
+	public Set<Sample> getSamplesByPrimaryBeddingId();
+	public void setSamplesByPrimaryBeddingId(Set<Sample> samplesByPrimaryBeddingId);
+	public Set<Sample> getSamplesBySecondaryBeddingId();
+	public void setSamplesBySecondaryBeddingId(Set<Sample> samplesBySecondaryBeddingId);
 }

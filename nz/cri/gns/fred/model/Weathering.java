@@ -2,23 +2,15 @@ package nz.cri.gns.fred.model;
 
 import java.util.Set;
 
-/**
- *
- */
-public interface Weathering {
-	public abstract Integer getWeatheringId();
+import nz.cri.gns.core.NameableAndIdentifiable;
 
-	public abstract void setWeatheringId(Integer weatheringId);
-
-	public abstract String getName();
-
-	public abstract void setName(String name);
-
-	public abstract String getCode();
-
-	public abstract void setCode(String code);
-
-	public abstract Set getSamples();
-
-	public abstract void setSamples(Set samples);
+public interface Weathering extends Comparable<Weathering>, NameableAndIdentifiable {
+	public Integer getWeatheringId();
+	public void setWeatheringId(Integer weatheringId);
+	public String getName();
+	public void setName(String name);
+	public String getCode();
+	public void setCode(String code);
+	public Set<Sample> getSamples();
+	public void setSamples(Set<Sample> samples);
 }

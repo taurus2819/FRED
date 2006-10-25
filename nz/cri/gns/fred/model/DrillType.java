@@ -2,19 +2,13 @@ package nz.cri.gns.fred.model;
 
 import java.util.Set;
 
-/**
- *
- */
-public interface DrillType {
-	public abstract Integer getDrillTypeId();
+import nz.cri.gns.core.NameableAndIdentifiable;
 
-	public abstract void setDrillTypeId(Integer drillTypeId);
-
-	public abstract String getName();
-
-	public abstract void setName(String name);
-
-	public abstract Set getSamples();
-
-	public abstract void setSamples(Set samples);
+public interface DrillType extends Comparable<DrillType>, NameableAndIdentifiable {
+	public Integer getDrillTypeId();
+	public void setDrillTypeId(Integer drillTypeId);
+	public String getName();
+	public void setName(String name);
+	public Set<Sample> getSamples();
+	public void setSamples(Set<Sample> samples);
 }

@@ -2,6 +2,7 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 import java.util.Set;
+import nz.cri.gns.fred.model.Sample;
 
 /** @author Hibernate CodeGenerator */
 public class BedThickness implements Serializable, nz.cri.gns.fred.model.BedThickness {
@@ -18,10 +19,10 @@ public class BedThickness implements Serializable, nz.cri.gns.fred.model.BedThic
     private String code;
 
     /** persistent field */
-    private Set samples;
+    private Set<Sample> samples;
 
     /** full constructor */
-    public BedThickness(Integer thicknessId, String name, String code, Set samples) {
+    public BedThickness(Integer thicknessId, String name, String code, Set<Sample> samples) {
         this.thicknessId = thicknessId;
         this.name = name;
         this.code = code;
@@ -56,16 +57,28 @@ public class BedThickness implements Serializable, nz.cri.gns.fred.model.BedThic
         this.code = code;
     }
 
-    public Set getSamples() {
+    public Set<Sample> getSamples() {
         return this.samples;
     }
 
-    public void setSamples(Set samples) {
+    public void setSamples(Set<Sample> samples) {
         this.samples = samples;
     }
 
     public String toString() {
         return name;
     }
+
+	public int compareTo(nz.cri.gns.fred.model.BedThickness arg0) {
+		return this.code.compareTo((arg0.getCode()));
+	}
+
+	public String getUniqueIdentifier() {
+		return String.valueOf(this.thicknessId);
+	}
+
+	public String getDisplayName() {
+		return this.code + ": " + this.name;
+	}
 
 }
