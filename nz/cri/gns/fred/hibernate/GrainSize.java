@@ -93,5 +93,4 @@ public class GrainSize implements Serializable, nz.cri.gns.fred.model.GrainSize 
 		return this.code + ": " + this.name;
 	}
 
-
 }
