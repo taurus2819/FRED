@@ -2,10 +2,13 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 import java.util.Set;
+import nz.cri.gns.fred.model.Sample;
 
 /** @author Hibernate CodeGenerator */
 public class GrainSize implements Serializable, nz.cri.gns.fred.model.GrainSize {
 
+    private static final long serialVersionUID = 20050818L;
+    
     /** identifier field */
     private Integer grainSizeId;
 
@@ -16,13 +19,13 @@ public class GrainSize implements Serializable, nz.cri.gns.fred.model.GrainSize 
     private String code;
 
     /** persistent field */
-    private Set samplesByPrimaryGrainsizeId;
+    private Set<Sample> samplesByPrimaryGrainsizeId;
 
     /** persistent field */
-    private Set samplesBySecondaryGrainsizeId;
+    private Set<Sample> samplesBySecondaryGrainsizeId;
 
     /** full constructor */
-    public GrainSize(Integer grainSizeId, String name, String code, Set samplesByPrimaryGrainsizeId, Set samplesBySecondaryGrainsizeId) {
+    public GrainSize(Integer grainSizeId, String name, String code, Set<Sample> samplesByPrimaryGrainsizeId, Set<Sample> samplesBySecondaryGrainsizeId) {
         this.grainSizeId = grainSizeId;
         this.name = name;
         this.code = code;
@@ -58,25 +61,37 @@ public class GrainSize implements Serializable, nz.cri.gns.fred.model.GrainSize 
         this.code = code;
     }
 
-    public Set getSamplesByPrimaryGrainsizeId() {
+    public Set<Sample> getSamplesByPrimaryGrainsizeId() {
         return this.samplesByPrimaryGrainsizeId;
     }
 
-    public void setSamplesByPrimaryGrainsizeId(Set samplesByPrimaryGrainsizeId) {
+    public void setSamplesByPrimaryGrainsizeId(Set<Sample> samplesByPrimaryGrainsizeId) {
         this.samplesByPrimaryGrainsizeId = samplesByPrimaryGrainsizeId;
     }
 
-    public Set getSamplesBySecondaryGrainsizeId() {
+    public Set<Sample> getSamplesBySecondaryGrainsizeId() {
         return this.samplesBySecondaryGrainsizeId;
     }
 
-    public void setSamplesBySecondaryGrainsizeId(Set samplesBySecondaryGrainsizeId) {
+    public void setSamplesBySecondaryGrainsizeId(Set<Sample> samplesBySecondaryGrainsizeId) {
         this.samplesBySecondaryGrainsizeId = samplesBySecondaryGrainsizeId;
     }
 
     public String toString() {
         return name;
     }
+
+	public int compareTo(nz.cri.gns.fred.model.GrainSize arg0) {
+		return this.code.compareTo((arg0.getCode()));
+	}
+
+	public String getUniqueIdentifier() {
+		return String.valueOf(this.grainSizeId);
+	}
+
+	public String getDisplayName() {
+		return this.code + ": " + this.name;
+	}
 
 
 }
