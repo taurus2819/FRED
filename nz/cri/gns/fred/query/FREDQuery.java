@@ -17,6 +17,7 @@ import nz.cri.gns.db.querybuilder.advanced.TwoLevelField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlAliasedJoin;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlQuery;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredDateField;
+import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredPossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredTextField;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
@@ -71,11 +72,12 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[7] = new BasicNumberField("f.stopDepth", "Base Horizon");
 		add(new TwoLevelField("Vertical Section Fields", f));
 		
-		f = new Field[3];
+		f = new Field[4];
 		f[0] = new HqlTableRequiredDateField("sample.collectionDate", "Collection Date", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[1] = new HqlTableRequiredTextField("sample.notCollected", "Not Collected", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[2] = new HqlTableRequiredTextField("sample.significance", "Significance/Comments", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		//need to add collectors, collection date, fossils in place, sent to
+		f[1] = new HqlTableRequiredPossibleValueField("sample.inPlace", "Fossils In Place", getInPlace(), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[2] = new HqlTableRequiredTextField("sample.notCollected", "Not Collected", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[3] = new HqlTableRequiredTextField("sample.significance", "Significance/Comments", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		//need to add collectors, sent to
 		add(new TwoLevelField("Collection Fields", f));
 		
 		f = new Field[2];
@@ -172,6 +174,15 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		for (int i=0; i<21; i++) {
 			options.add(o[i]);
 		}
+		return options;
+	}
+	
+	private List<KeyValueObject> getInPlace() {
+		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>(3);
+		options.add(new KeyValueObject("Yes", "Yes"));
+		options.add(new KeyValueObject("No", "No"));
+		options.add(new KeyValueObject("Almost", "Almost"));
+		options.add(new KeyValueObject("Unknown", "Unknown"));
 		return options;
 	}
 	
