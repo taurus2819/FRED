@@ -49,7 +49,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		
 		this.people = getValues("FROM Person AS p", Person.class);
 		
-		Field[] f = new Field[12];
+		Field[] f = new Field[14];
 		f[0] = new BasicTextField("f.featureName", "Feature Name");
 		f[1] = new PossibleValueField("f.featureType", "Feature Type", getFeatureTypes());
 		f[2] = new PossibleValueField("f.masterfile", "Masterfile", getValues("FROM Folder AS f WHERE f.folderType.name='Admin'", Folder.class));
@@ -57,13 +57,13 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[4] = new PossibleValueField("f.siteView.qmapSheet", "QMap Sheet", getQMapSheets());
 		f[5] = new PossibleValueField("f.siteView.countryName", "Country", getSQLValues("SELECT country_name as cn, country_name FROM mis.country ORDER BY UPPER(country_name)"));
 		f[6] = new PossibleValueField("f.siteView.island", "Island", getSQLValues("SELECT DISTINCT name as n, name FROM sc.island ORDER BY UPPER(name)"));
-		f[5] = new BasicNumberField("f.siteView.nzmgEast", "NZMG Easting");
-		f[6] = new BasicNumberField("f.siteView.nzmgNorth", "NZMG Northing");
-		f[7] = new BasicNumberField("f.siteView.latitude", "Latitude");
-		f[8] = new BasicNumberField("f.siteView.longitude", "Longitude");
-		f[9] = new BasicTextField("f.locality", "Locality");
-		f[10] = new BasicTextField("f.coordComments", "Coordinate Comments");
-		f[11] = new BasicTextField("f.comments", "Locality Comments");
+		f[7] = new BasicNumberField("f.siteView.nzmgEast", "NZMG Easting");
+		f[8] = new BasicNumberField("f.siteView.nzmgNorth", "NZMG Northing");
+		f[9] = new BasicNumberField("f.siteView.latitude", "Latitude");
+		f[10] = new BasicNumberField("f.siteView.longitude", "Longitude");
+		f[11] = new BasicTextField("f.locality", "Locality");
+		f[12] = new BasicTextField("f.coordComments", "Coordinate Comments");
+		f[13] = new BasicTextField("f.comments", "Locality Comments");
 		add(new TwoLevelField("Locality Fields", f));
 		
 		f = new Field[9];
