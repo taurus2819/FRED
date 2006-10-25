@@ -74,8 +74,8 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[4] = new BasicTextField("f.licenceArea", "Licence Area");
 		f[5] = new PossibleValueField("f.datumType", "Datum Type", getDrillholeDatumTypes());
 		f[6] = new BasicNumberField("f.datumElevation", "Datum Elevation");
-		f[7] = new BasicNumberField("f.startDepth", "Kick-off Depth");
-		f[8] = new BasicNumberField("f.stopDepth", "Termination Depth");
+		f[7] = new MetricDepthField("f.startDepth", "Kick-off Depth", "depthUnit");
+		f[8] = new MetricDepthField("f.stopDepth", "Termination Depth", "depthUnit");
 		add(new TwoLevelField("Drillhole Fields", f));
 		
 		f = new Field[8];
