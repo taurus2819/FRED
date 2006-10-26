@@ -35,6 +35,7 @@ import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.RockColour;
+import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.Weathering;
 import nz.cri.gns.fred.util.FREDUtil;
 
@@ -139,14 +140,23 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		//need to add adoptors and stages
 		add(new TwoLevelField("Adoption Fields", f));
 		
-		f = new Field[5];
+		String[] palListTables = new String[] {"Sample", "Record", "PalList"};
+		HqlAliasedJoin[] palListJoins = {new HqlAliasedJoin("f", "samples", "sample"), new HqlAliasedJoin("sample", "records", "record"), new HqlAliasedJoin("record", "paleontology.listEntries", "palList")};
+		
+		f = new Field[9];
 		f[0] = new HqlTableRequiredDateField("record.paleontology.identificationDate", "Identification Date", recordTables, recordJoins);
 		f[1] = new HqlTableRequiredTextField("record.paleontology.stageComments", "Stage Comments", recordTables, recordJoins);
 		f[2] = new HqlTableRequiredPossibleValueField("record.paleontology.labSection", "Laboratory", getValues("FROM LabSection AS ls", LabSection.class), recordTables, recordJoins);
 		f[3] = new HqlTableRequiredTextField("record.paleontology.labNumber", "Lab Number", recordTables, recordJoins);
 		f[4] = new HqlTableRequiredTextField("record.paleontology.collectionComments", "Collection Comments", recordTables, recordJoins);
+		f[5] = new HqlTableRequiredPossibleValueField("palList.taxonomicGroup", "Taxonomic Group", getValues("FROM TaxonomicGroup AS tg", TaxonomicGroup.class), palListTables, palListJoins);
+		f[6] = new HqlTableRequiredNumberField("palList.specimenCount", "Specimen Count", palListTables, palListJoins);
+		f[7] = new HqlTableRequiredTextField("palList.specimenCoords", "Specimen Coordinates", palListTables, palListJoins);
+		f[8] = new HqlTableRequiredTextField("palList.comments", "Paleontology List Comments", palListTables, palListJoins);
 		//need to add identifiers and stages
-		add(new TwoLevelField("Adoption Fields", f));
+		add(new TwoLevelField("Paleontology Fields", f));
+		
+		
 	}
 
 	public String getQuery() throws InvalidOperatorException, InvalidValueException {
