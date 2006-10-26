@@ -143,7 +143,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		String[] palListTables = new String[] {"Sample", "Record", "PalList"};
 		HqlAliasedJoin[] palListJoins = {new HqlAliasedJoin("f", "samples", "sample"), new HqlAliasedJoin("sample", "records", "record"), new HqlAliasedJoin("record", "paleontology.listEntries", "palList")};
 		
-		f = new Field[9];
+		f = new Field[10];
 		f[0] = new HqlTableRequiredDateField("record.paleontology.identificationDate", "Identification Date", recordTables, recordJoins);
 		f[1] = new HqlTableRequiredTextField("record.paleontology.stageComments", "Stage Comments", recordTables, recordJoins);
 		f[2] = new HqlTableRequiredPossibleValueField("record.paleontology.labSection", "Laboratory", getValues("FROM LabSection AS ls", LabSection.class), recordTables, recordJoins);
@@ -151,9 +151,9 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[4] = new HqlTableRequiredTextField("record.paleontology.collectionComments", "Collection Comments", recordTables, recordJoins);
 		f[5] = new HqlTableRequiredPossibleValueField("palList.taxonomicGroup", "Taxonomic Group", getValues("FROM TaxonomicGroup AS tg", TaxonomicGroup.class), palListTables, palListJoins);
 		f[6] = new HqlTableRequiredTextField("palList.taxon.taxonomicName", "Taxonomic Name", palListTables, palListJoins);
-		f[6] = new HqlTableRequiredNumberField("palList.specimenCount", "Specimen Count", palListTables, palListJoins);
-		f[7] = new HqlTableRequiredTextField("palList.specimenCoords", "Specimen Coordinates", palListTables, palListJoins);
-		f[8] = new HqlTableRequiredTextField("palList.comments", "Paleontology List Comments", palListTables, palListJoins);
+		f[7] = new HqlTableRequiredNumberField("palList.specimenCount", "Specimen Count", palListTables, palListJoins);
+		f[8] = new HqlTableRequiredTextField("palList.specimenCoords", "Specimen Coordinates", palListTables, palListJoins);
+		f[9] = new HqlTableRequiredTextField("palList.comments", "Paleontology List Comments", palListTables, palListJoins);
 		//need to add identifiers and stages
 		add(new TwoLevelField("Paleontology Fields", f));
 		
