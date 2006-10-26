@@ -45,13 +45,13 @@
 			<tr><td>&nbsp;</td></tr>
 			<tr class="heading"><td style="text-align: left">User&nbsp;&nbsp;</td><td width="60" style="text-align: left">Member</td></tr>
 
-			<form name="AddForm" method="get" action="taxa_panelist_hib.jsp">
+			<form name="AddForm" method="get" action="taxa_panelist.jsp">
 			<input type="hidden" name="GroupID" value="<%=group.getGroupId()%>" />
 			<input type="hidden" name="ActionType" value="Add" /><%
 
 			for (Iterator i = taxaUtil.getMembersOfPanel(group).iterator(); i.hasNext();) {
 				int memberId = ((Integer) i.next()).intValue();
-				%><tr><td style="text-align: left"><%=FREDUtil.getUserName(memberId)%>&nbsp;&nbsp;</td><td style="text-align: left"><a href="taxa_panelist_hib.jsp?GroupID=<%=group.getGroupId()%>&ActionType=Delete&UserID=<%=memberId%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="Delete User" /></a></td></tr><%
+				%><tr><td style="text-align: left"><%=FREDUtil.getUserName(memberId)%>&nbsp;&nbsp;</td><td style="text-align: left"><a href="taxa_panelist.jsp?GroupID=<%=group.getGroupId()%>&ActionType=Delete&UserID=<%=memberId%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="Delete User" /></a></td></tr><%
 			}
 			
 			%><tr><td style="text-align: left"><%
