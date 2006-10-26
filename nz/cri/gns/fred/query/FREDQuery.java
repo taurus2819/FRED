@@ -16,7 +16,9 @@ import nz.cri.gns.db.querybuilder.InvalidOperatorException;
 import nz.cri.gns.db.querybuilder.InvalidValueException;
 import nz.cri.gns.db.querybuilder.advanced.NumberSource;
 import nz.cri.gns.db.querybuilder.advanced.PossibleValueField;
+import nz.cri.gns.db.querybuilder.advanced.StandardJoin;
 import nz.cri.gns.db.querybuilder.advanced.TwoLevelField;
+import nz.cri.gns.db.querybuilder.advanced.UniqueSubTablePossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlAliasedJoin;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlQuery;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredDateField;
@@ -43,12 +45,19 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 
 	private static final long serialVersionUID = 20060120L;
 	
+	private static final String SAMPLE_TABLE = "Sample";
+	private static final HqlAliasedJoin SAMPLE_JOIN = new HqlAliasedJoin("f", "samples", "sample");
+	private static final String[] RECORD_TABLES = new String[] {"Sample", "Record"};
+	private static final HqlAliasedJoin[] RECORD_JOINS = {new HqlAliasedJoin("f", "samples", "sample"), new HqlAliasedJoin("sample", "records", "record")};
+	private static final String[] PAL_LIST_TABLES = new String[] {"Sample", "Record", "PalList"};
+	private static final HqlAliasedJoin[] PAL_LIST_JOINS = {new HqlAliasedJoin("f", "samples", "sample"), new HqlAliasedJoin("sample", "records", "record"), new HqlAliasedJoin("record", "paleontology.listEntries", "palList")};
+
 	private int lastUsedId = 900000;
 	
 	private List<Person> people = null;
 	
 	public FREDQuery() {
-
+		
 		this.people = getValues("FROM Person AS p", Person.class);
 		
 		Field[] f = new Field[14];
@@ -91,69 +100,64 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[7] = new MetricDepthField("f.finishDepth", "Base Horizon (m)", "f.depthUnit");
 		add(new TwoLevelField("Vertical Section Fields", f));
 		
-		f = new Field[4];
-		f[0] = new HqlTableRequiredDateField("sample.collectionDate", "Collection Date", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[1] = new HqlTableRequiredPossibleValueField("sample.inPlace", "Fossils In Place", getInPlace(), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[2] = new HqlTableRequiredTextField("sample.notCollected", "Not Collected", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[3] = new HqlTableRequiredTextField("sample.significance", "Significance/Comments", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f = new Field[5];
+		f[0] = new HqlTableRequiredPossibleValueField("sample.collectors", "Collectors", people, SAMPLE_TABLE, SAMPLE_JOIN);
+		f[1] = new HqlTableRequiredDateField("sample.collectionDate", "Collection Date", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[2] = new HqlTableRequiredPossibleValueField("sample.inPlace", "Fossils In Place", getInPlace(), SAMPLE_TABLE, SAMPLE_JOIN);
+		f[3] = new HqlTableRequiredTextField("sample.notCollected", "Not Collected", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[4] = new HqlTableRequiredTextField("sample.significance", "Significance/Comments", SAMPLE_TABLE, SAMPLE_JOIN);
 		//need to add collectors, sent to
 		add(new TwoLevelField("Collection Fields", f));
 		
 		f = new Field[6];
-		f[0] = new HqlTableRequiredTextField("sample.stratUnit", "Stratigraphic Name", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[1] = new HqlTableRequiredTextField("sample.columnMap", "Column/Map", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[2] = new HqlTableRequiredNumberField("sample.dip", "Dip", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[3] = new HqlTableRequiredPossibleValueField("sample.dipDirection", "Dip Direction", getDipDirection(), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[4] = new HqlTableRequiredNumberField("sample.strike", "Strike", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[5] = new HqlTableRequiredPossibleValueField("sample.facing", "Facing", getFacing(), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[0] = new HqlTableRequiredTextField("sample.stratUnit", "Stratigraphic Name", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[1] = new HqlTableRequiredTextField("sample.columnMap", "Column/Map", SAMPLE_TABLE, new HqlAliasedJoin("f", "samples", "sample"));
+		f[2] = new HqlTableRequiredNumberField("sample.dip", "Dip", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[3] = new HqlTableRequiredPossibleValueField("sample.dipDirection", "Dip Direction", getDipDirection(), SAMPLE_TABLE, SAMPLE_JOIN);
+		f[4] = new HqlTableRequiredNumberField("sample.strike", "Strike", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[5] = new HqlTableRequiredPossibleValueField("sample.facing", "Facing", getFacing(), SAMPLE_TABLE, SAMPLE_JOIN);
 		//need to add stages, relationships
 		add(new TwoLevelField("Stratigraphic Fields", f));
 		
 		f = new Field[14];
-		f[0] = new HqlTableRequiredPossibleValueField("sample.primaryGrainSize", "Primary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[1] = new HqlTableRequiredPossibleValueField("sample.secondaryGrainSize", "Secondary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[2] = new HqlTableRequiredPossibleValueField("sample.comparatorUsed", "Comparator Used", getComparatorUsed(), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[3] = new HqlTableRequiredPossibleValueField("sample.bedThickness", "Bedding Thickness", getValues("FROM BedThickness AS b", BedThickness.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[4] = new HqlTableRequiredPossibleValueField("sample.primaryBedding", "Primary Bedding", getValues("FROM Bedding AS b", Bedding.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[5] = new HqlTableRequiredPossibleValueField("sample.secondaryBedding", "Secondary Bedding", getValues("FROM Bedding AS b", Bedding.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[6] = new HqlTableRequiredPossibleValueField("sample.weathering", "Weathering", getValues("FROM Weathering AS w", Weathering.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[7] = new HqlTableRequiredPossibleValueField("sample.hardness", "Hardness", getValues("FROM Hardness AS h", Hardness.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[8] = new HqlTableRequiredPossibleValueField("sample.carbonate", "Carbonate", getValues("FROM Carbonate AS c", Carbonate.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[9] = new HqlTableRequiredPossibleValueField("sample.colourModifier", "Colour Modifier", getValues("FROM ColourModifier AS c", ColourModifier.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[10] = new HqlTableRequiredPossibleValueField("sample.primaryColour", "Primary Colour", getValues("FROM RockColour AS r", RockColour.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[11] = new HqlTableRequiredPossibleValueField("sample.secondaryColour", "Secondary Colour", getValues("FROM RockColour AS r", RockColour.class), "Sample", new HqlAliasedJoin("f", "samples", "sample"));		
-		f[12] = new HqlTableRequiredTextField("sample.depositionEnv", "Inferred Enviornment", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
-		f[13] = new HqlTableRequiredTextField("sample.rockNature", "Nature of Rock Unit", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[0] = new HqlTableRequiredPossibleValueField("sample.primaryGrainSize", "Primary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), SAMPLE_TABLE, SAMPLE_JOIN);
+		f[1] = new HqlTableRequiredPossibleValueField("sample.secondaryGrainSize", "Secondary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), SAMPLE_TABLE, SAMPLE_JOIN);
+		f[2] = new HqlTableRequiredPossibleValueField("sample.comparatorUsed", "Comparator Used", getComparatorUsed(), SAMPLE_TABLE, SAMPLE_JOIN);
+		f[3] = new HqlTableRequiredPossibleValueField("sample.bedThickness", "Bedding Thickness", getValues("FROM BedThickness AS b", BedThickness.class), SAMPLE_TABLE, SAMPLE_JOIN);
+		f[4] = new HqlTableRequiredPossibleValueField("sample.primaryBedding", "Primary Bedding", getValues("FROM Bedding AS b", Bedding.class), SAMPLE_TABLE, SAMPLE_JOIN);
+		f[5] = new HqlTableRequiredPossibleValueField("sample.secondaryBedding", "Secondary Bedding", getValues("FROM Bedding AS b", Bedding.class), SAMPLE_TABLE, SAMPLE_JOIN);
+		f[6] = new HqlTableRequiredPossibleValueField("sample.weathering", "Weathering", getValues("FROM Weathering AS w", Weathering.class), SAMPLE_TABLE, SAMPLE_JOIN);
+		f[7] = new HqlTableRequiredPossibleValueField("sample.hardness", "Hardness", getValues("FROM Hardness AS h", Hardness.class), SAMPLE_TABLE, SAMPLE_JOIN);
+		f[8] = new HqlTableRequiredPossibleValueField("sample.carbonate", "Carbonate", getValues("FROM Carbonate AS c", Carbonate.class), SAMPLE_TABLE, SAMPLE_JOIN);
+		f[9] = new HqlTableRequiredPossibleValueField("sample.colourModifier", "Colour Modifier", getValues("FROM ColourModifier AS c", ColourModifier.class), SAMPLE_TABLE, SAMPLE_JOIN);
+		f[10] = new HqlTableRequiredPossibleValueField("sample.primaryColour", "Primary Colour", getValues("FROM RockColour AS r", RockColour.class), SAMPLE_TABLE, SAMPLE_JOIN);
+		f[11] = new HqlTableRequiredPossibleValueField("sample.secondaryColour", "Secondary Colour", getValues("FROM RockColour AS r", RockColour.class), SAMPLE_TABLE, SAMPLE_JOIN);		
+		f[12] = new HqlTableRequiredTextField("sample.depositionEnv", "Inferred Enviornment", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[13] = new HqlTableRequiredTextField("sample.rockNature", "Nature of Rock Unit", SAMPLE_TABLE, SAMPLE_JOIN);
 		//need to add additional features
 		add(new TwoLevelField("Sedimentary Feature Fields", f));
 		
 		f = new Field[1];
-		f[0] = new HqlTableRequiredTextField("sample.correspondence", "Correspondence", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
+		f[0] = new HqlTableRequiredTextField("sample.correspondence", "Correspondence", SAMPLE_TABLE, SAMPLE_JOIN);
 		add(new TwoLevelField("Correspondence Fields", f));
 		
-		String[] recordTables = new String[] {"Sample", "Record"};
-		HqlAliasedJoin[] recordJoins = {new HqlAliasedJoin("f", "samples", "sample"), new HqlAliasedJoin("sample", "records", "record")};
-		
 		f = new Field[2];
-		f[0] = new HqlTableRequiredDateField("record.adoption.adoptionDate", "Adoption Date", recordTables, recordJoins);
-		f[1] = new HqlTableRequiredTextField("record.adoption.comments", "Comments", recordTables, recordJoins);
+		f[0] = new HqlTableRequiredDateField("record.adoption.adoptionDate", "Adoption Date", RECORD_TABLES, RECORD_JOINS);
+		f[1] = new HqlTableRequiredTextField("record.adoption.comments", "Comments", RECORD_TABLES, RECORD_JOINS);
 		//need to add adoptors and stages
 		add(new TwoLevelField("Adoption Fields", f));
 		
-		String[] palListTables = new String[] {"Sample", "Record", "PalList"};
-		HqlAliasedJoin[] palListJoins = {new HqlAliasedJoin("f", "samples", "sample"), new HqlAliasedJoin("sample", "records", "record"), new HqlAliasedJoin("record", "paleontology.listEntries", "palList")};
-		
 		f = new Field[10];
-		f[0] = new HqlTableRequiredDateField("record.paleontology.identificationDate", "Identification Date", recordTables, recordJoins);
-		f[1] = new HqlTableRequiredTextField("record.paleontology.stageComments", "Stage Comments", recordTables, recordJoins);
-		f[2] = new HqlTableRequiredPossibleValueField("record.paleontology.labSection", "Laboratory", getValues("FROM LabSection AS ls", LabSection.class), recordTables, recordJoins);
-		f[3] = new HqlTableRequiredTextField("record.paleontology.labNumber", "Lab Number", recordTables, recordJoins);
-		f[4] = new HqlTableRequiredTextField("record.paleontology.collectionComments", "Collection Comments", recordTables, recordJoins);
-		f[5] = new HqlTableRequiredPossibleValueField("palList.taxonomicGroup", "Taxonomic Group", getValues("FROM TaxonomicGroup AS tg", TaxonomicGroup.class), palListTables, palListJoins);
-		f[6] = new HqlTableRequiredTextField("palList.taxonomicName", "Taxonomic Name", palListTables, palListJoins);
-		f[7] = new HqlTableRequiredNumberField("palList.specimenCount", "Specimen Count", palListTables, palListJoins);
-		f[8] = new HqlTableRequiredTextField("palList.specimenCoords", "Specimen Coordinates", palListTables, palListJoins);
-		f[9] = new HqlTableRequiredTextField("palList.comments", "Paleontology List Comments", palListTables, palListJoins);
+		f[0] = new HqlTableRequiredDateField("record.paleontology.identificationDate", "Identification Date", RECORD_TABLES, RECORD_JOINS);
+		f[1] = new HqlTableRequiredTextField("record.paleontology.stageComments", "Stage Comments", RECORD_TABLES, RECORD_JOINS);
+		f[2] = new HqlTableRequiredPossibleValueField("record.paleontology.labSection", "Laboratory", getValues("FROM LabSection AS ls", LabSection.class), RECORD_TABLES, RECORD_JOINS);
+		f[3] = new HqlTableRequiredTextField("record.paleontology.labNumber", "Lab Number", RECORD_TABLES, RECORD_JOINS);
+		f[4] = new HqlTableRequiredTextField("record.paleontology.collectionComments", "Collection Comments", RECORD_TABLES, RECORD_JOINS);
+		f[5] = new HqlTableRequiredPossibleValueField("palList.taxonomicGroup", "Taxonomic Group", getValues("FROM TaxonomicGroup AS tg", TaxonomicGroup.class), PAL_LIST_TABLES, PAL_LIST_JOINS);
+		f[6] = new HqlTableRequiredTextField("palList.taxonomicName", "Taxonomic Name", PAL_LIST_TABLES, PAL_LIST_JOINS);
+		f[7] = new HqlTableRequiredNumberField("palList.specimenCount", "Specimen Count", PAL_LIST_TABLES, PAL_LIST_JOINS);
+		f[8] = new HqlTableRequiredTextField("palList.specimenCoords", "Specimen Coordinates", PAL_LIST_TABLES, PAL_LIST_JOINS);
+		f[9] = new HqlTableRequiredTextField("palList.comments", "Paleontology List Comments", PAL_LIST_TABLES, PAL_LIST_JOINS);
 		//need to add identifiers and stages
 		add(new TwoLevelField("Paleontology Fields", f));
 		
