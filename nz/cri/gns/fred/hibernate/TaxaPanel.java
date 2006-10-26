@@ -82,10 +82,6 @@ public class TaxaPanel implements Serializable, nz.cri.gns.fred.model.TaxaPanel,
 		comp_id.setPanelistId(userId);
 	}
 
-	public int compareTo(Object arg0) {
-		return taxonomicGroup.compareTo(((TaxaPanel)arg0).taxonomicGroup);
-	}
-
 	public boolean isUnsaved() {
 		return unsaved;
 	}
@@ -96,6 +92,10 @@ public class TaxaPanel implements Serializable, nz.cri.gns.fred.model.TaxaPanel,
 
 	public void setKey(CompositeKey arg1) {
 		comp_id = (TaxaPanelPK)arg1;
+	}
+
+	public int compareTo(nz.cri.gns.fred.model.TaxaPanel arg0) {
+		return taxonomicGroup.compareTo(arg0.getTaxonomicGroup());
 	}
 
 }
