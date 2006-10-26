@@ -16,15 +16,14 @@ import nz.cri.gns.db.querybuilder.InvalidOperatorException;
 import nz.cri.gns.db.querybuilder.InvalidValueException;
 import nz.cri.gns.db.querybuilder.advanced.NumberSource;
 import nz.cri.gns.db.querybuilder.advanced.PossibleValueField;
-import nz.cri.gns.db.querybuilder.advanced.StandardJoin;
 import nz.cri.gns.db.querybuilder.advanced.TwoLevelField;
-import nz.cri.gns.db.querybuilder.advanced.UniqueSubTablePossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlAliasedJoin;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlQuery;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredDateField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredNumberField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredPossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredTextField;
+import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTableTextField;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.BedThickness;
@@ -101,7 +100,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		add(new TwoLevelField("Vertical Section Fields", f));
 		
 		f = new Field[5];
-		f[0] = new HqlTableRequiredPossibleValueField("sample.collectors", "Collectors", people, SAMPLE_TABLE, SAMPLE_JOIN);
+		f[0] = new HqlUniqueSubTableTextField("collector.name", "Collectors", new String[] {"Sample", "Collector"}, new HqlAliasedJoin[] {new HqlAliasedJoin("f", "samples", "sample"), new HqlAliasedJoin("sample", "collectors", "collector")});
 		f[1] = new HqlTableRequiredDateField("sample.collectionDate", "Collection Date", SAMPLE_TABLE, SAMPLE_JOIN);
 		f[2] = new HqlTableRequiredPossibleValueField("sample.inPlace", "Fossils In Place", getInPlace(), SAMPLE_TABLE, SAMPLE_JOIN);
 		f[3] = new HqlTableRequiredTextField("sample.notCollected", "Not Collected", SAMPLE_TABLE, SAMPLE_JOIN);
@@ -160,7 +159,6 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[9] = new HqlTableRequiredTextField("palList.comments", "Paleontology List Comments", PAL_LIST_TABLES, PAL_LIST_JOINS);
 		//need to add identifiers and stages
 		add(new TwoLevelField("Paleontology Fields", f));
-		
 		
 	}
 
