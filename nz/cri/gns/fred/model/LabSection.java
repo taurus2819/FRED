@@ -2,31 +2,19 @@ package nz.cri.gns.fred.model;
 
 import java.util.Set;
 
-/**
- *
- */
-public interface LabSection {
-	public abstract Integer getLabSectionId();
+import nz.cri.gns.core.NameableAndIdentifiable;
 
-	public abstract void setLabSectionId(Integer labSectionId);
-
-	public abstract Lab getLab();
-
-	public abstract void setLab(Lab lab);
-
-	public abstract String getName();
-
-	public abstract void setName(String name);
-
-	public abstract String getCode();
-
-	public abstract void setCode(String code);
-
-	public abstract String getClosed();
-
-	public abstract void setClosed(String closed);
-
-	public abstract Set getPaleontologies();
-
-	public abstract void setPaleontologies(Set paleontologies);
+public interface LabSection extends Comparable<LabSection>, NameableAndIdentifiable {
+	public Integer getLabSectionId();
+	public void setLabSectionId(Integer labSectionId);
+	public Lab getLab();
+	public void setLab(Lab lab);
+	public String getName();
+	public void setName(String name);
+	public String getCode();
+	public void setCode(String code);
+	public String getClosed();
+	public void setClosed(String closed);
+	public Set<Paleontology> getPaleontologies();
+	public void setPaleontologies(Set<Paleontology> paleontologies);
 }

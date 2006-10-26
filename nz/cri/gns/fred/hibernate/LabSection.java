@@ -2,11 +2,12 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 import java.util.Set;
+import nz.cri.gns.fred.model.Paleontology;
 
 import nz.cri.gns.fred.model.Lab;
 
 /** @author Hibernate CodeGenerator */
-public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSection, Comparable {
+public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSection {
 
     private static final long serialVersionUID = 20050818L;
 
@@ -26,10 +27,10 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
     private String closed;
 
     /** persistent field */
-    private Set paleontologies;
+    private Set<Paleontology> paleontologies;
 
     /** full constructor */
-    public LabSection(Lab lab, String name, String code, String closed, Set paleontologies) {
+    public LabSection(Lab lab, String name, String code, String closed, Set<Paleontology> paleontologies) {
         this.lab = lab;
         this.name = name;
         this.code = code;
@@ -42,7 +43,7 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
     }
 
     /** minimal constructor */
-    public LabSection(Set paleontologies) {
+    public LabSection(Set<Paleontology> paleontologies) {
         this.paleontologies = paleontologies;
     }
 
@@ -86,16 +87,24 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
         this.closed = closed;
     }
 
-    public final Set getPaleontologies() {
+    public final Set<Paleontology> getPaleontologies() {
         return this.paleontologies;
     }
 
-    public void setPaleontologies(Set paleontologies) {
+    public void setPaleontologies(Set<Paleontology> paleontologies) {
         this.paleontologies = paleontologies;
     }
 
-	public int compareTo(Object o) {
-		return getCode().compareTo(((LabSection)o).getCode());
+	public int compareTo(nz.cri.gns.fred.model.LabSection arg0) {
+		return (name + code).compareTo(arg0.getName() + arg0.getCode());
+	}
+
+	public String getUniqueIdentifier() {
+		return String.valueOf(labSectionId);
+	}
+
+	public String getDisplayName() {
+		return name + " " + code;
 	}
 
 }
