@@ -32,6 +32,7 @@ import nz.cri.gns.fred.model.ColourModifier;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
+import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.RockColour;
 import nz.cri.gns.fred.model.Weathering;
@@ -73,9 +74,9 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[3] = new BasicDateField("f.finishDate", "Completion Date");
 		f[4] = new BasicTextField("f.licenceArea", "Licence Area");
 		f[5] = new PossibleValueField("f.datumType", "Datum Type", getDrillholeDatumTypes());
-		f[6] = new BasicNumberField("f.datumElevation", "Datum Elevation");
-		f[7] = new MetricDepthField("f.startDepth", "Kick-off Depth", "f.depthUnit");
-		f[8] = new MetricDepthField("f.finishDepth", "Termination Depth", "f.depthUnit");
+		f[6] = new BasicNumberField("f.datumElevation", "Datum Elevation (m)");
+		f[7] = new MetricDepthField("f.startDepth", "Kick-off Depth (m)", "f.depthUnit");
+		f[8] = new MetricDepthField("f.finishDepth", "Termination Depth (m)", "f.depthUnit");
 		add(new TwoLevelField("Drillhole Fields", f));
 		
 		f = new Field[8];
@@ -84,9 +85,9 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[2] = new BasicDateField("f.startDate", "Sampling Start Date");
 		f[3] = new BasicDateField("f.finishDate", "Completion Date");
 		f[4] = new PossibleValueField("f.datumType", "Datum Type", getVertSectDatumTypes());
-		f[5] = new BasicNumberField("f.datumElevation", "Datum Elevation");
-		f[6] = new MetricDepthField("f.startDepth", "Top Horizon", "f.depthUnit");
-		f[7] = new MetricDepthField("f.finishDepth", "Base Horizon", "f.depthUnit");
+		f[5] = new BasicNumberField("f.datumElevation", "Datum Elevation (m)");
+		f[6] = new MetricDepthField("f.startDepth", "Top Horizon (m)", "f.depthUnit");
+		f[7] = new MetricDepthField("f.finishDepth", "Base Horizon (m)", "f.depthUnit");
 		add(new TwoLevelField("Vertical Section Fields", f));
 		
 		f = new Field[4];
@@ -128,6 +129,24 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f = new Field[1];
 		f[0] = new HqlTableRequiredTextField("sample.correspondence", "Correspondence", "Sample", new HqlAliasedJoin("f", "samples", "sample"));
 		add(new TwoLevelField("Correspondence Fields", f));
+		
+		String[] recordTables = new String[] {"Sample", "Record"};
+		HqlAliasedJoin[] recordJoins = {new HqlAliasedJoin("f", "samples", "sample"), new HqlAliasedJoin("sample", "records", "record")};
+		
+		f = new Field[2];
+		f[0] = new HqlTableRequiredDateField("record.adoption.adoptionDate", "Adoption Date", recordTables, recordJoins);
+		f[1] = new HqlTableRequiredTextField("record.adoption.comments", "Comments", recordTables, recordJoins);
+		//need to add adoptors and stages
+		add(new TwoLevelField("Adoption Fields", f));
+		
+		f = new Field[5];
+		f[0] = new HqlTableRequiredDateField("record.paleontology.identificationDate", "Identification Date", recordTables, recordJoins);
+		f[1] = new HqlTableRequiredTextField("record.paleontology.stageComments", "Stage Comments", recordTables, recordJoins);
+		f[2] = new HqlTableRequiredPossibleValueField("record.paleontology.labSection", "Laboratory", getValues("FROM LabSection AS ls", LabSection.class), recordTables, recordJoins);
+		f[3] = new HqlTableRequiredTextField("record.paleontology.labNumber", "Lab Number", recordTables, recordJoins);
+		f[4] = new HqlTableRequiredTextField("record.paleontology.collectionComments", "Collection Comments", recordTables, recordJoins);
+		//need to add identifiers and stages
+		add(new TwoLevelField("Adoption Fields", f));
 	}
 
 	public String getQuery() throws InvalidOperatorException, InvalidValueException {
