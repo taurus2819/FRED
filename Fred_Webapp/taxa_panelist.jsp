@@ -1,98 +1,75 @@
-<%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
-		import="nz.cri.gns.fred.*, nz.cri.gns.db.*, nz.cri.gns.jsp.*, java.net.URL, nz.cri.gns.intranet.*, java.sql.*, nz.cri.gns.auth.*"
-%><%!
-	public Authenticable[] getRequiredRights(HttpServletRequest request) {
-		try {
-			return new Authenticable[] {
-				 new IPRightAccess(
-					new IPRight(
-						"FRED data entry",
-						getIPApp(
-							request.getSession(),
-							getServletConfig().getServletContext())),
-					Right.ANY_RIGHT)};
-		} catch (Exception e) {
-			//Database error, so just block them
-			return new Authenticable[] {
-				 new IPRightAccess(
-					IPRight.BLOCKED_IP_RIGHT,
-					Right.BLOCKED_RIGHT)};
-		}
-	}
+<%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
+%><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
+%><%@page import="nz.cri.gns.jsp.IconnedLink"
+%><%@page import="nz.cri.gns.fred.model.TaxonomicGroup"
+%><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
+%><%@page import="nz.cri.gns.fred.util.FREDUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.auth.User"
+%><%@page import="nz.cri.gns.db.ComboDescriptor"
+%><%@page import="java.util.Iterator"
 %><%
-	PageState state = new PageState(request, response, getServletContext());
-	DBConnection connection = FREDUtils.getFREDConnection(state);
-	Statement statement = connection.statement;
-	ResultSet rs;
+	TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
 	User user = (User)getUser(session);
-	int userID = user.getPersonId(), execUp;
-	String groupID;
-	ComboDescriptor cd;
 
 	ExtranetTemplate et = getExtranetTemplate();
+	et.setUseNavigationColumn(false);
+	addButtons(et, new IconnedLink[] {
+			new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")
+		});
 
-	drawTop(out, et, request, response);
-
-	out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
-	out.println("<tr><td><a href='folder_list.jsp' title='Back to Folders'><img src='images/back_arrow.gif' height='20' width='20' border='0' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='folder_list.jsp' class='heading'>Back to Folders</a></td></tr>");
-	out.println("</table>");
-
-	drawEndNavigation(out);
-
-	out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-	out.println("<tr><td>");
-	
 	if (request.getParameter("GroupID") != null) {
-		groupID = request.getParameter("GroupID");
-		rs =statement.executeQuery("SELECT Group_Name FROM Taxa_Panel_View WHERE Panelist_ID = " + userID + " AND Group_ID = " + groupID);
-		if (rs.next()) { //to get past this if statement user must be a panelist
-			out.println("<p><span class='bigheading'>" + rs.getString(1) + "</span></p>");
+		TaxonomicGroup group = taxaUtil.getTaxonomicGroup(Integer.parseInt(request.getParameter("GroupID")));
+		if (group != null && taxaUtil.isUserMemberOf(group, user)) {
+			
+			drawTop(out, et, request, response);
 
 			//process any changes
 			if (request.getParameter("ActionType") != null) {
 				String actionType = request.getParameter("ActionType");
+				int userId = Integer.parseInt(request.getParameter("UserID"));
 				if (actionType.equals("Add")) {
-					execUp = statement.executeUpdate("INSERT INTO Taxa_Panel (Group_ID, Panelist_ID) VALUES (" + groupID + ", " + request.getParameter("UserID") + ")");
-					response.sendRedirect("taxa_panelist.jsp?GroupID=" + groupID);
+					taxaUtil.addUserToPanel(group, userId);
 				}
 				else if (actionType.equals("Delete")) {
-					execUp = statement.executeUpdate("DELETE FROM Taxa_Panel WHERE Group_ID = " + groupID + " AND Panelist_ID = " + request.getParameter("UserID"));
-					response.sendRedirect("taxa_panelist.jsp?GroupID=" + groupID);
+					taxaUtil.removeUserFromPanel(group, userId);
 				}
 			}
+			
+			%><p>&nbsp;</p><center><p><%
+			startDETable(pageContext);
+			%><table border="0" width="550"><tr><td colspan="19" class="deHeading"><%=group.getName()%> Panel users</td></tr>
+			<tr><td colspan="2">
+			The users listed below are on the panel for this taxonomic group and may accept or reject new entries to the thesaurus.<br />Users can be added or deleted from this list by clicking on the <img src='images/ok.gif' width='20' height='20' border='0' /> or <img src='images/cancel.gif' width='20' height='20' border='0' /> icons.
+			</td></tr>
+			<tr><td>&nbsp;</td></tr>
+			<tr class="heading"><td style="text-align: left">User&nbsp;&nbsp;</td><td width="60" style="text-align: left">Member</td></tr>
 
-			out.println("<p>The users listed below are on the panel for this taxonomic group and may accept or reject new entries to the thesaurus.<br />Users can be added or deleted from this list by clicking on the <img src='images/ok.gif' width='20' height='20' border='0' /> or <img src='images/cancel.gif' width='20' height='20' border='0' /> icons.</p>");
+			<form name="AddForm" method="get" action="taxa_panelist_hib.jsp">
+			<input type="hidden" name="GroupID" value="<%=group.getGroupId()%>" />
+			<input type="hidden" name="ActionType" value="Add" /><%
 
-			out.println("<p><table border='0' cellspacing='0' cellpadding='2'>");
-			out.println("<tr class='heading'><td>User&nbsp&nbsp</td><td width='60' align='center'>Member</td></tr>");
-			out.println("<tr><td><img src='images/blank.gif width='1' height='5' /></td></tr>");
-			out.println("<form name='AddForm' method='post' action='taxa_panelist.jsp'>");
-			out.println("<input type='hidden' name='GroupID' value='" + groupID + "'>");
-			out.println("<input type='hidden' name='ActionType' value='Add'>");
-			out.print("<tr><td>");
-			cd = new ComboDescriptor("FR_User_View", "PE_ID", "Full_Name");
+			for (Iterator i = taxaUtil.getMembersOfPanel(group).iterator(); i.hasNext();) {
+				int memberId = ((Integer) i.next()).intValue();
+				%><tr><td style="text-align: left"><%=FREDUtil.getUserName(memberId)%>&nbsp;&nbsp;</td><td style="text-align: left"><a href="taxa_panelist_hib.jsp?GroupID=<%=group.getGroupId()%>&ActionType=Delete&UserID=<%=memberId%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="Delete User" /></a></td></tr><%
+			}
+			
+			%><tr><td style="text-align: left"><%
+			ComboDescriptor cd = new ComboDescriptor("FR_User_View", "PE_ID", "Full_Name");
 			cd.name = "UserID";
 			cd.orderBy = "Family_Name";
-			cd.join = "NOT PE_ID IN (SELECT Panelist_ID FROM Taxa_Panel WHERE Group_ID = " + groupID + ")";
-			HTMLUtils.makeDropBox(new java.io.PrintWriter(out), statement, cd);
-			out.println("<img src='images/blank.gif' width='20' height='1' /></td><td align='center'><a href='#' onClick='AddForm.submit();' title='Add User'><img src='images/cancel.gif' border='0' height='20' width='20' /></a></td></tr>");
-			out.println("</form>");
-
-			rs = statement.executeQuery("SELECT Panelist_ID, Panelist_Name FROM Taxa_Panel_View WHERE Group_ID = " + groupID);
-			while (rs.next()) {
-				out.print("<tr><td>" + rs.getString(2) + "<img src='images/blank.gif' width='20' height='1' /></td><td align='center'><a href='taxa_panelist.jsp?GroupID=" + groupID + "&ActionType=Delete&UserID=" + rs.getString(1) + "' title='Delete User'><img src='images/ok.gif' border='0' height='20' width='20' /></a></td></tr>");
-			}
-
-			out.println("</table></p>");
+			cd.join = "NOT PE_ID IN (SELECT Panelist_ID FROM Taxa_Panel WHERE Group_ID = " + group.getGroupId() + ")";
+			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+			%>&nbsp;&nbsp;</td><td style="text-align: left"><a href="#" onClick="AddForm.submit();"><img src="images/cancel.gif" border="0" height="20" width="20" alt="Add User" /></a></td></tr>
+			</form>
+			</table><%
+			endDETable(pageContext);
+			%></p></center><%
 		}
 		else { //no rights
 			out.println("<p><span class='subhead'>Access denied</span></p>Either there is no folder matching the ID you entered or you have insufficient rights to edit the folder.  Click <a href='index.jsp' class='fname'>here</a> to return to the FRED home page.");
 		}
 	}
 
-	out.println("</table>");
-
-	out.println("</td></tr></table>");
 	drawBottom(out, et);
-
 %>
