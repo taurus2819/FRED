@@ -150,7 +150,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[3] = new HqlTableRequiredTextField("record.paleontology.labNumber", "Lab Number", recordTables, recordJoins);
 		f[4] = new HqlTableRequiredTextField("record.paleontology.collectionComments", "Collection Comments", recordTables, recordJoins);
 		f[5] = new HqlTableRequiredPossibleValueField("palList.taxonomicGroup", "Taxonomic Group", getValues("FROM TaxonomicGroup AS tg", TaxonomicGroup.class), palListTables, palListJoins);
-		f[6] = new HqlTableRequiredTextField("palList.taxon.taxonomicName", "Taxonomic Name", palListTables, palListJoins);
+		f[6] = new HqlTableRequiredTextField("palList.taxonomicName", "Taxonomic Name", palListTables, palListJoins);
 		f[7] = new HqlTableRequiredNumberField("palList.specimenCount", "Specimen Count", palListTables, palListJoins);
 		f[8] = new HqlTableRequiredTextField("palList.specimenCoords", "Specimen Coordinates", palListTables, palListJoins);
 		f[9] = new HqlTableRequiredTextField("palList.comments", "Paleontology List Comments", palListTables, palListJoins);
