@@ -4,7 +4,6 @@ import java.util.Set;
 import nz.cri.gns.fred.model.TaxaPanel;
 import nz.cri.gns.fred.model.Taxon;
 
-
 /** @author Hibernate CodeGenerator */
 public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
 
@@ -80,6 +79,14 @@ public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
 
 	public int compareTo(nz.cri.gns.fred.model.TaxonomicGroup arg0) {
 		return name.compareTo(arg0.getName());
+	}
+
+	public String getUniqueIdentifier() {
+		return String.valueOf(groupId);
+	}
+
+	public String getDisplayName() {
+		return name;
 	}
 
 }
