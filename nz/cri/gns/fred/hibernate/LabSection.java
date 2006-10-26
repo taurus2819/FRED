@@ -95,8 +95,12 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
         this.paleontologies = paleontologies;
     }
 
+    public String toString() {
+    	return lab.getName() + " " + code;
+    }
+    
 	public int compareTo(nz.cri.gns.fred.model.LabSection arg0) {
-		return (name + code).compareTo(arg0.getName() + arg0.getCode());
+		return (lab.getName() + code).compareTo(arg0.getLab().getName() + arg0.getCode());
 	}
 
 	public String getUniqueIdentifier() {
@@ -104,7 +108,7 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
 	}
 
 	public String getDisplayName() {
-		return name + " " + code;
+		return lab.getName() + " " + code;
 	}
 
 }
