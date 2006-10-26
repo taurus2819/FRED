@@ -78,7 +78,7 @@ public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
     }
 
 	public int compareTo(nz.cri.gns.fred.model.TaxonomicGroup arg0) {
-		return name.compareTo(arg0.getName());
+		return groupId.compareTo(arg0.getGroupId());
 	}
 
 	public String getUniqueIdentifier() {
