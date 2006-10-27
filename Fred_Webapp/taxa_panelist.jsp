@@ -7,16 +7,13 @@
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.db.ComboDescriptor"
-%><%@page import="java.util.Iterator"
 %><%
 	TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
 	User user = (User)getUser(session);
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setUseNavigationColumn(false);
-	addButtons(et, new IconnedLink[] {
-			new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")
-		});
+	addButtons(et, new IconnedLink[] {new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")});
 
 	if (request.getParameter("GroupID") != null) {
 		TaxonomicGroup group = taxaUtil.getTaxonomicGroup(Integer.parseInt(request.getParameter("GroupID")));
@@ -49,9 +46,8 @@
 			<input type="hidden" name="GroupID" value="<%=group.getGroupId()%>" />
 			<input type="hidden" name="ActionType" value="Add" /><%
 
-			for (Iterator i = taxaUtil.getMembersOfPanel(group).iterator(); i.hasNext();) {
-				int memberId = ((Integer) i.next()).intValue();
-				%><tr><td style="text-align: left"><%=FREDUtil.getUserName(memberId)%>&nbsp;&nbsp;</td><td style="text-align: left"><a href="taxa_panelist.jsp?GroupID=<%=group.getGroupId()%>&ActionType=Delete&UserID=<%=memberId%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="Delete User" /></a></td></tr><%
+			for (Integer memberId :  taxaUtil.getMembersOfPanel(group)) {
+				%><tr><td style="text-align: left"><%=FREDUtil.getUserName(memberId.intValue())%>&nbsp;&nbsp;</td><td style="text-align: left"><a href="taxa_panelist.jsp?GroupID=<%=group.getGroupId()%>&ActionType=Delete&UserID=<%=memberId.intValue()%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="Delete User" /></a></td></tr><%
 			}
 			
 			%><tr><td style="text-align: left"><%
