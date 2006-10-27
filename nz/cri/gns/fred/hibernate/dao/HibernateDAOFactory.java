@@ -258,7 +258,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		return HibernateUtils.getFirst(provider, "FROM TaxonomicGroup as tg WHERE tg.groupId = ?", groupId, TaxonomicGroup.class);
 	}
 	
-	public List getPanelsIsMemberOf(int userId) throws StorageAccessException {
+	public List<TaxonomicGroup> getPanelsIsMemberOf(int userId) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
 			return session.find("SELECT g FROM TaxaPanel tp INNER JOIN tp.taxonomicGroup g WHERE tp.comp_id.panelistId = ?", new Integer(userId), new IntegerType());
