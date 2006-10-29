@@ -56,7 +56,6 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	private List<Person> people = null;
 	
 	public FREDQuery() {
-		
 		this.people = getValues("FROM Person AS p", Person.class);
 		
 		Field[] f = new Field[14];
@@ -108,14 +107,16 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		//need to add collectors, sent to
 		add(new TwoLevelField("Collection Fields", f));
 		
-		f = new Field[6];
+		f = new Field[8];
 		f[0] = new HqlTableRequiredTextField("sample.stratUnit", "Stratigraphic Name", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[1] = new HqlTableRequiredTextField("sample.columnMap", "Column/Map", SAMPLE_TABLE, new HqlAliasedJoin("f", "samples", "sample"));
-		f[2] = new HqlTableRequiredNumberField("sample.dip", "Dip", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[3] = new HqlTableRequiredPossibleValueField("sample.dipDirection", "Dip Direction", getDipDirection(), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[4] = new HqlTableRequiredNumberField("sample.strike", "Strike", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[5] = new HqlTableRequiredPossibleValueField("sample.facing", "Facing", getFacing(), SAMPLE_TABLE, SAMPLE_JOIN);
-		//need to add stages, relationships
+		f[1] = new HqlTableRequiredAgeField("sample.inferredStage", "Inferred Stage (numeric)", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[2] = new HqlTableRequiredAgeField("sample.knownStage", "Known Stage (numeric)", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[3] = new HqlTableRequiredTextField("sample.columnMap", "Column/Map", SAMPLE_TABLE, new HqlAliasedJoin("f", "samples", "sample"));
+		f[4] = new HqlTableRequiredNumberField("sample.dip", "Dip", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[5] = new HqlTableRequiredPossibleValueField("sample.dipDirection", "Dip Direction", getDipDirection(), SAMPLE_TABLE, SAMPLE_JOIN);
+		f[6] = new HqlTableRequiredNumberField("sample.strike", "Strike", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[7] = new HqlTableRequiredPossibleValueField("sample.facing", "Facing", getFacing(), SAMPLE_TABLE, SAMPLE_JOIN);
+		//need to add relationships
 		add(new TwoLevelField("Stratigraphic Fields", f));
 		
 		f = new Field[14];
