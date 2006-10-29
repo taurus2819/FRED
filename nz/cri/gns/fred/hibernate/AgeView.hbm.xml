@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.AgeView" 
+    table="AGE_VIEW"
+    mutable="false"
+>
+
+    <id
+        name="ageId"
+        type="int"
+        column="AG_ID"
+    >
+        <generator class="sequence">
+                <param name="sequence">AGE_SEQ</param>
+        </generator>
+    </id>
+
+	    <property
+    	    name="ageName"
+        	type="java.lang.String"
+        	column="AG_NAME"
+        	length="60"
+	    />
+	    <property
+    	    name="ageAbbrev"
+        	type="java.lang.String"
+        	column="AG_ABBREV"
+        	length="6"
+	    />
+	    <property
+    	    name="ageStop"
+        	type="double"
+        	column="TA_AGE_STOP"
+	    />
+	    <property
+    	    name="ageStart"
+        	type="double"
+        	column="TA_AGE_START"
+	    />
+   		   		   		
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to Stage -->
+    <set
+        name="stagesByStageLowerId"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="STAGE_LOWER_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Stage"
+        />
+    </set>
+
+    <!-- bi-directional one-to-many association to Stage -->
+    <set
+        name="stagesByStageUpperId"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="STAGE_UPPER_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Stage"
+        />
+    </set>
+    
+</class>
+</hibernate-mapping>

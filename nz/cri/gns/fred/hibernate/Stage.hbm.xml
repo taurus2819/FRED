@@ -116,6 +116,29 @@
             class="nz.cri.gns.fred.hibernate.Adoption"
         />
     </set>
-
+    
+    <!-- bi-directional many-to-one association to AgeView -->
+    <many-to-one
+        name="lowerAgeView"
+        class="nz.cri.gns.fred.hibernate.AgeView"
+        not-null="false"
+        insert="false"
+        update="false"
+        cascade="none"
+    >
+        <column name="STAGE_LOWER_ID" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to AgeView -->
+    <many-to-one
+        name="upperAgeView"
+        class="nz.cri.gns.fred.hibernate.AgeView"
+        not-null="false"
+        insert="false"
+        update="false"
+        cascade="none"
+    >
+        <column name="STAGE_UPPER_ID" />
+    </many-to-one>
 </class>
 </hibernate-mapping>

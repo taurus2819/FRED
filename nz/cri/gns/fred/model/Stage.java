@@ -2,48 +2,29 @@ package nz.cri.gns.fred.model;
 
 import java.util.Set;
 
-/**
- *
- */
 public interface Stage {
-	public abstract Integer getStageId();
-
-	public abstract void setStageId(Integer stageId);
-
-	public abstract Integer getStageLowerId();
-
-	public abstract void setStageLowerId(Integer stageLowerId);
-
-	public abstract String getStageLowerMod();
-
-	public abstract void setStageLowerMod(String stageLowerMod);
-
-	public abstract Integer getStageUpperId();
-
-	public abstract void setStageUpperId(Integer stageUpperId);
-
-	public abstract String getStageUpperMod();
-
-	public abstract void setStageUpperMod(String stageUpperMod);
-
-	public abstract String getStageMod();
-
-	public abstract void setStageMod(String stageMod);
-
-	public abstract Set getSamplesByKnownStageId();
-
-	public abstract void setSamplesByKnownStageId(Set samplesByKnownStageId);
-
-	public abstract Set getSamplesByInferredStageId();
-
-	public abstract void setSamplesByInferredStageId(
-			Set samplesByInferredStageId);
-
-	public abstract Set getPaleontologies();
-
-	public abstract void setPaleontologies(Set paleontologies);
-
-	public abstract Set getAdoptions();
-
-	public abstract void setAdoptions(Set adoptions);
+	public Integer getStageId();
+	public void setStageId(Integer stageId);
+	public Integer getStageLowerId();
+	public void setStageLowerId(Integer stageLowerId);
+	public String getStageLowerMod();
+	public void setStageLowerMod(String stageLowerMod);
+	public Integer getStageUpperId();
+	public void setStageUpperId(Integer stageUpperId);
+	public String getStageUpperMod();
+	public void setStageUpperMod(String stageUpperMod);
+	public String getStageMod();
+	public void setStageMod(String stageMod);
+	public AgeView getLowerAgeView();
+    public void setLowerAgeView(AgeView lowerAgeView);
+	public AgeView getUpperAgeView();
+	public void setUpperAgeView(AgeView upperAgeView);
+	public Set<Sample> getSamplesByKnownStageId();
+	public void setSamplesByKnownStageId(Set<Sample> samplesByKnownStageId);
+	public Set<Sample> getSamplesByInferredStageId();
+	public void setSamplesByInferredStageId(Set<Sample> samplesByInferredStageId);
+	public Set<Paleontology> getPaleontologies();
+	public void setPaleontologies(Set<Paleontology> paleontologies);
+	public Set<Adoption> getAdoptions();
+	public void setAdoptions(Set<Adoption> adoptions);
 }

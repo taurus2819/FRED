@@ -17,6 +17,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.BasicDatabaseApp2;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.Adoption;
+import nz.cri.gns.fred.hibernate.AgeView;
 import nz.cri.gns.fred.hibernate.AuditEdit;
 import nz.cri.gns.fred.hibernate.AuditTable;
 import nz.cri.gns.fred.hibernate.BedThickness;
@@ -53,6 +54,7 @@ import nz.cri.gns.fred.hibernate.SampleMeta;
 import nz.cri.gns.fred.hibernate.SecurityClass;
 import nz.cri.gns.fred.hibernate.SedimentaryFeatureType;
 import nz.cri.gns.fred.hibernate.SentTo;
+import nz.cri.gns.fred.hibernate.SiteView;
 import nz.cri.gns.fred.hibernate.Stage;
 import nz.cri.gns.fred.hibernate.TaxaPanel;
 import nz.cri.gns.fred.hibernate.TaxonomicGroup;
@@ -71,11 +73,11 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 	public void setUp() throws HibernateException, SQLException, InvalidCredentialsException, ClassNotFoundException {
 		Properties props = new Properties();
 		props.put("hibernate.connection.driver_class", "oracle.jdbc.OracleDriver");
-		props.put("hibernate.connection.url", "jdbc:oracle:thin:@raptor.gns.cri.nz:1521:dev");
+		props.put("hibernate.connection.url", "jdbc:oracle:thin:@raptor.gns.cri.nz:1521:gns");
 		props.put("hibernate.connection.username", "fr");
 		props.put("hibernate.connection.password", "ossify");
 		props.put("hibernate.dialect", "net.sf.hibernate.dialect.Oracle9Dialect");
-		props.put("hibernate.show_sql", "true");
+		props.put("hibernate.show_sql", "false");
 		props.put("hibernate.cglib.use_reflection_optimizer", "false");
 	
 		Configuration cfg = new Configuration().setProperties(props);
@@ -87,13 +89,13 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 		
 		sessions = cfg.buildSessionFactory();
 		Class.forName("oracle.jdbc.OracleDriver");
-		Connection conn = DriverManager.getConnection("jdbc:oracle:thin:ip/manying@raptor:1521:dev");
+		Connection conn = DriverManager.getConnection("jdbc:oracle:thin:ip/manying@raptor:1521:gns");
 		BasicDatabaseApp2 app = new BasicDatabaseApp2(conn, "1988");
 		
 		factory = new HibernateDAOFactory(this);
 		
 		try {
-			user = new User("ben", "*****", app);
+			user = new User("ben", "St.Bathans", app);
 		} catch (Exception e) {
 			System.out.println("No user created");
 		}
@@ -102,6 +104,7 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 	private Class[] getHibernateClasses() {
 		return new Class[] {
 			Adoption.class,
+			AgeView.class,
 			AuditEdit.class,
 			AuditTable.class,
 			Bedding.class,
@@ -139,6 +142,7 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 			//SedimentaryFeature.class,
 			SedimentaryFeatureType.class,
 			SentTo.class,
+			SiteView.class,
 			Stage.class,
 			TaxaPanel.class,
 			TaxonomicGroup.class,

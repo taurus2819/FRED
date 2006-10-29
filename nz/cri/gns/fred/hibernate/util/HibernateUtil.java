@@ -11,6 +11,7 @@ import nz.cri.gns.dataaccess.HibernateProvider;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.Adoption;
+import nz.cri.gns.fred.hibernate.AgeView;
 import nz.cri.gns.fred.hibernate.AuditEdit;
 import nz.cri.gns.fred.hibernate.AuditTable;
 import nz.cri.gns.fred.hibernate.BacklogStatus;
@@ -108,6 +109,7 @@ public class HibernateUtil implements HibernateProvider {
 	private Class[] getHibernateClasses() {
 		return new Class[] {
 			Adoption.class,
+			AgeView.class,
 			AuditEdit.class,
 			AuditTable.class,
 			BacklogStatus.class,

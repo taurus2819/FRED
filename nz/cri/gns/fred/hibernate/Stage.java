@@ -3,6 +3,11 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.Adoption;
+import nz.cri.gns.fred.model.AgeView;
+import nz.cri.gns.fred.model.Paleontology;
+import nz.cri.gns.fred.model.Sample;
+
 /** @author Hibernate CodeGenerator */
 public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
 
@@ -27,24 +32,32 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
     private String stageMod;
 
     /** persistent field */
-    private Set samplesByKnownStageId;
+    private AgeView lowerAgeView;
+    
+    /** persistent field */
+    private AgeView upperAgeView;
+    
+    /** persistent field */
+    private Set<Sample> samplesByKnownStageId;
 
     /** persistent field */
-    private Set samplesByInferredStageId;
+    private Set<Sample> samplesByInferredStageId;
 
     /** persistent field */
-    private Set paleontologies;
+    private Set<Paleontology> paleontologies;
 
     /** persistent field */
-    private Set adoptions;
+    private Set<Adoption> adoptions;
 
     /** full constructor */
-    public Stage(Integer stageLowerId, String stageLowerMod, Integer stageUpperId, String stageUpperMod, String stageMod, Set samplesByKnownStageId, Set samplesByInferredStageId, Set paleontologies, Set adoptions) {
+    public Stage(Integer stageLowerId, String stageLowerMod, Integer stageUpperId, String stageUpperMod, String stageMod, AgeView lowerAgeView, AgeView upperAgeView, Set<Sample> samplesByKnownStageId, Set<Sample> samplesByInferredStageId, Set<Paleontology> paleontologies, Set<Adoption> adoptions) {
         this.stageLowerId = stageLowerId;
         this.stageLowerMod = stageLowerMod;
         this.stageUpperId = stageUpperId;
         this.stageUpperMod = stageUpperMod;
         this.stageMod = stageMod;
+        this.setLowerAgeView(lowerAgeView);
+        this.setUpperAgeView(upperAgeView);
         this.samplesByKnownStageId = samplesByKnownStageId;
         this.samplesByInferredStageId = samplesByInferredStageId;
         this.paleontologies = paleontologies;
@@ -56,7 +69,7 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
     }
 
     /** minimal constructor */
-    public Stage(Integer stageLowerId, Set samplesByKnownStageId, Set samplesByInferredStageId, Set paleontologies, Set adoptions) {
+    public Stage(Integer stageLowerId, Set<Sample> samplesByKnownStageId, Set<Sample> samplesByInferredStageId, Set<Paleontology> paleontologies, Set<Adoption> adoptions) {
         this.stageLowerId = stageLowerId;
         this.samplesByKnownStageId = samplesByKnownStageId;
         this.samplesByInferredStageId = samplesByInferredStageId;
@@ -111,38 +124,53 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
     public void setStageMod(String stageMod) {
         this.stageMod = stageMod;
     }
+    
+	public AgeView getLowerAgeView() {
+		return lowerAgeView;
+	}
 
-    public Set getSamplesByKnownStageId() {
+    public void setLowerAgeView(AgeView lowerAgeView) {
+		this.lowerAgeView = lowerAgeView;
+	}
+
+	public AgeView getUpperAgeView() {
+		return upperAgeView;
+	}
+	
+	public void setUpperAgeView(AgeView upperAgeView) {
+		this.upperAgeView = upperAgeView;
+	}
+
+	public Set<Sample> getSamplesByKnownStageId() {
         return this.samplesByKnownStageId;
     }
 
-    public void setSamplesByKnownStageId(Set samplesByKnownStageId) {
+    public void setSamplesByKnownStageId(Set<Sample> samplesByKnownStageId) {
         this.samplesByKnownStageId = samplesByKnownStageId;
     }
 
-    public Set getSamplesByInferredStageId() {
+    public Set<Sample> getSamplesByInferredStageId() {
         return this.samplesByInferredStageId;
     }
 
-    public void setSamplesByInferredStageId(Set samplesByInferredStageId) {
+    public void setSamplesByInferredStageId(Set<Sample> samplesByInferredStageId) {
         this.samplesByInferredStageId = samplesByInferredStageId;
     }
 
-    public Set getPaleontologies() {
+    public Set<Paleontology> getPaleontologies() {
         return this.paleontologies;
     }
 
-    public void setPaleontologies(Set paleontologies) {
+    public void setPaleontologies(Set<Paleontology> paleontologies) {
         this.paleontologies = paleontologies;
     }
 
-    public Set getAdoptions() {
+    public Set<Adoption> getAdoptions() {
         return this.adoptions;
     }
 
-    public void setAdoptions(Set adoptions) {
+    public void setAdoptions(Set<Adoption> adoptions) {
         this.adoptions = adoptions;
     }
-
 
 }
