@@ -1,26 +1,37 @@
 package nz.cri.gns.fred.query;
 
+import java.util.List;
+
+import nz.cri.gns.db.querybuilder.BasicValue;
 import nz.cri.gns.db.querybuilder.BetweenValue;
 import nz.cri.gns.db.querybuilder.InvalidOperatorException;
 import nz.cri.gns.db.querybuilder.InvalidValueException;
 import nz.cri.gns.db.querybuilder.Operator;
 import nz.cri.gns.db.querybuilder.Value;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlAliasedJoin;
-import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredNumberField;
+import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredPossibleValueField;
+import nz.cri.gns.fred.model.AgeView;
 
-public class HqlTableRequiredAgeField extends HqlTableRequiredNumberField {
+public class HqlTableRequiredAgeField extends HqlTableRequiredPossibleValueField {
 
 	private static final long serialVersionUID = 20061026L;
 	
-	public HqlTableRequiredAgeField(String databaseName, String humanName, String[] tables, HqlAliasedJoin[] joins) {
-		super(databaseName, humanName, tables, joins);
+	private List<AgeView> ages;
+	private HqlTableRequiredNumericAgeField numericField;
+	
+	public HqlTableRequiredAgeField(String databaseName, String humanName, List<AgeView> values, String[] tables, HqlAliasedJoin[] joins) {
+		super(databaseName, humanName, values, tables, joins);
+		this.ages = values;
+		this.numericField = new HqlTableRequiredNumericAgeField(databaseName, humanName, tables, joins);
 	}
 
 	/**
 	 * Convenience constructor for when there is only one joining table
 	 */
-	public HqlTableRequiredAgeField(String databaseName, String humanName, String table, HqlAliasedJoin join) {
-		super(databaseName, humanName, table, join);
+	public HqlTableRequiredAgeField(String databaseName, String humanName, List<AgeView> values, String table, HqlAliasedJoin join) {
+		super(databaseName, humanName, values, table, join);
+		this.ages = values;
+		this.numericField = new HqlTableRequiredNumericAgeField(databaseName, humanName, table, join);
 	}
 	
 	//Bean methods
@@ -31,25 +42,37 @@ public class HqlTableRequiredAgeField extends HqlTableRequiredNumberField {
 	public HqlTableRequiredAgeField() {
 	}
 
-	public String getJoin(Operator op, Value value) throws InvalidOperatorException, InvalidValueException {
-		checkValue(op, value);
-		if (op.equals(Operator.BETWEEN)) {
-			Value leftValue = ((BetweenValue)value).getLeftValue();
-			Value rightValue = ((BetweenValue)value).getRightValue();
-			return "(" + getJoin(Operator.EQUALS, leftValue) + " OR " + getJoin(Operator.EQUALS, rightValue) + ")";
-		} else if (op.equals(Operator.NULL) || op.equals(Operator.NOT_NULL))
-			return dbName + " " + op.getDatabaseOperator();
-		else if (op.equals(Operator.EQUALS))
-			return "((" + dbName + ".upperAgeView.ageStop <= " + value + " OR " + dbName + ".lowerAgeView.ageStop <= " + value
-				+ ") AND " + dbName + ".lowerAgeView.ageStart >= " + value + ")";
-		else if (op.equals(Operator.GREATER_THAN) || op.equals(Operator.GREATER_THAN_EQUAL))
-			return dbName + ".lowerAgeView.ageStart " + op.getDatabaseOperator() + " " + value;
-		else if (op.equals(Operator.LESS_THAN) || op.equals(Operator.LESS_THAN_EQUAL))
-			return "(" + dbName + ".upperAgeView.ageStop " + op.getDatabaseOperator() + " " + value + " OR "
-				+ dbName + ".lowerAgeView.ageStop " + op.getDatabaseOperator() + " " + value + ")";
-		else
-			return dbName + " " + op.getDatabaseOperator() + " " + value;
-		
+	public void checkValue(Operator operator, Value value) throws InvalidOperatorException, InvalidValueException {
+		if (operator.equals(Operator.EQUALS) || operator.equals(Operator.GREATER_THAN) || operator.equals(Operator.GREATER_THAN_EQUAL) || operator.equals(Operator.LESS_THAN) || operator.equals(Operator.LESS_THAN_EQUAL)) {
+			String key = value.toString();
+			for (AgeView thisValue : ages) {
+				if (thisValue.getUniqueIdentifier().equals(key))
+					return;
+			}
+			throw new InvalidValueException(value, this);
+		} else if (!operator.equals(Operator.NULL) && !operator.equals(Operator.NOT_NULL)){
+			throw new InvalidOperatorException(operator, this);
+		}
+	}
+	
+	public String getJoin(Operator operator, Value value) throws InvalidOperatorException, InvalidValueException {
+		checkValue(operator, value);
+		if (operator.equals(Operator.NULL) || operator.equals(Operator.NOT_NULL)) {
+			return dbName + " " + operator.getDatabaseOperator();
+		} else {
+			AgeView age = null;
+			String key = value.toString();
+			for (AgeView thisValue : ages) {
+				if (thisValue.getUniqueIdentifier().equals(key))
+					age = thisValue;
+			}
+			if (operator.equals(Operator.EQUALS))
+				return numericField.getJoin(Operator.BETWEEN, new BetweenValue(age.getAgeStop(), age.getAgeStart()));
+			else if (operator.equals(Operator.GREATER_THAN) || operator.equals(Operator.LESS_THAN_EQUAL))
+				return numericField.getJoin(operator, new BasicValue(String.valueOf(age.getAgeStart())));
+			else
+				return numericField.getJoin(operator, new BasicValue(String.valueOf(age.getAgeStop())));
+		}
 	}
 
 }
