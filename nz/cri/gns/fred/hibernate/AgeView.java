@@ -100,5 +100,17 @@ public class AgeView implements Serializable, nz.cri.gns.fred.model.AgeView {
 	public Set<Stage> getStagesByStageUpperId() {
 		return stagesByStageUpperId;
 	}
+
+	public int compareTo(nz.cri.gns.fred.model.AgeView arg0) {
+		return ageStop.compareTo(arg0.getAgeStop());
+	}
+
+	public String getUniqueIdentifier() {
+		return String.valueOf(ageId);
+	}
+
+	public String getDisplayName() {
+		return ageName;
+	}
 	
 }

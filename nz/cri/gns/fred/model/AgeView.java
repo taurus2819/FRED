@@ -2,7 +2,9 @@ package nz.cri.gns.fred.model;
 
 import java.util.Set;
 
-public interface AgeView {
+import nz.cri.gns.core.NameableAndIdentifiable;
+
+public interface AgeView extends Comparable<AgeView>, NameableAndIdentifiable {
 	public void setAgeId(Integer ageId);
 	public Integer getAgeId();
 	public void setAgeName(String ageName);
