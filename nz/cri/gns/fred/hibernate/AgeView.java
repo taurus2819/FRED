@@ -102,7 +102,9 @@ public class AgeView implements Serializable, nz.cri.gns.fred.model.AgeView {
 	}
 
 	public int compareTo(nz.cri.gns.fred.model.AgeView arg0) {
-		return ageStop.compareTo(arg0.getAgeStop());
+		if (!ageStop.equals(arg0.getAgeStop()))
+			return ageStop.compareTo(arg0.getAgeStop());
+		return ageStart.compareTo(arg0.getAgeStart());
 	}
 
 	public String getUniqueIdentifier() {
