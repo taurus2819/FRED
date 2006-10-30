@@ -51,20 +51,25 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	private static final HqlAliasedJoin[] RECORD_JOINS = {new HqlAliasedJoin("f", "samples", "sample"), new HqlAliasedJoin("sample", "records", "record")};
 	private static final String[] PAL_LIST_TABLES = new String[] {"Sample", "Record", "PalList"};
 	private static final HqlAliasedJoin[] PAL_LIST_JOINS = {new HqlAliasedJoin("f", "samples", "sample"), new HqlAliasedJoin("sample", "records", "record"), new HqlAliasedJoin("record", "paleontology.listEntries", "palList")};
+	private static final String EDIT_TABLE = "AuditEdit";
+	private static final HqlAliasedJoin EDIT_JOIN = new HqlAliasedJoin("f.audit", "auditEdits", "edit");
 
+	
 	private int lastUsedId = 900000;
 	
 	private List<Person> people = null;
 	private List<AgeView> ages = null;
+	private List<KeyValueObject> frUsers = null;
 	
 	public FREDQuery() {
 		this.people = getValues("FROM Person AS p", Person.class);
 		this.ages = getValues("FROM AgeView AS a WHERE a.ageAbbrev <> 'nd' AND a.ageAbbrev <> 'nf'", AgeView.class);
+		this.frUsers = getSQLValues("SELECT pe_id, full_name FROM fr_user_view ORDER BY family_name, given_name");
 		
 		Field[] f = new Field[14];
 		f[0] = new BasicTextField("f.featureName", "Feature Name");
 		f[1] = new PossibleValueField("f.featureType", "Feature Type", getFeatureTypes());
-		f[2] = new PossibleValueField("f.masterfile", "Masterfile", getValues("FROM Folder AS f WHERE f.folderType.name='Admin'", Folder.class));
+		f[2] = new PossibleValueField("f.masterFile", "Masterfile", getValues("FROM Folder AS f WHERE f.folderType.name='Admin'", Folder.class));
 		f[3] = new BasicTextField("f.siteView.nzmgSheet", "NZMS260 Sheet");
 		f[4] = new PossibleValueField("f.siteView.qmapSheet", "QMap Sheet", getQMapSheets());
 		f[5] = new PossibleValueField("f.siteView.countryName", "Country", getSQLValues("SELECT country_name as cn, country_name FROM mis.country ORDER BY UPPER(country_name)"));
@@ -170,15 +175,26 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		//need to add identifiers
 		add(new TwoLevelField("Paleontology Fields", f));
 		
+		f = new Field[10];
+		f[0] = new PossibleValueField("f.audit.createdById", "Created By", frUsers);
+		f[1] = new BasicDateField("f.audit.createdDate", "Created Date");
+		f[2] = new PossibleValueField("f.audit.submittedById", "Submitted By", frUsers);
+		f[3] = new BasicDateField("f.audit.submittedDate", "Submitted Date");
+		f[4] = new PossibleValueField("f.audit.approvedById", "Approved By", frUsers);
+		f[5] = new BasicDateField("f.audit.approvedDate", "Approved Date");
+		f[6] = new BasicTextField("f.audit.curatorComments", "Curator Comments");
+		f[7] = new HqlTableRequiredPossibleValueField("edit.editedById", "Edited By", frUsers, EDIT_TABLE, EDIT_JOIN);
+		f[8] = new HqlTableRequiredDateField("edit.editedDate", "Edited Date", EDIT_TABLE, EDIT_JOIN);
+		f[9] = new HqlTableRequiredTextField("edit.comments", "Edit Comments", EDIT_TABLE, EDIT_JOIN);
+		add(new TwoLevelField("Audit Fields", f));
 	}
 
 	public String getQuery() throws InvalidOperatorException, InvalidValueException {
-		String[] tables = { "feature f" };
-		return getQuery(tables, null);
+		return null;
 	}
 
 	public String getHQLQuery() throws InvalidOperatorException, InvalidValueException {
-		return super.getHQLQuery("SELECT DISTINCT f", "Feature AS f", null, null, null);
+		return super.getHQLQuery("SELECT DISTINCT f", "Feature AS f", "f.audit.status = 'approved'", null, null);
 	}
 	
 	private <T extends Comparable<? super T>> List<T> getValues(String query, Class<T> clazz) {
