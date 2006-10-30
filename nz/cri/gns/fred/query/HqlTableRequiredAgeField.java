@@ -3,7 +3,6 @@ package nz.cri.gns.fred.query;
 import java.util.List;
 
 import nz.cri.gns.db.querybuilder.BasicValue;
-import nz.cri.gns.db.querybuilder.BetweenValue;
 import nz.cri.gns.db.querybuilder.InvalidOperatorException;
 import nz.cri.gns.db.querybuilder.InvalidValueException;
 import nz.cri.gns.db.querybuilder.Operator;
@@ -67,7 +66,8 @@ public class HqlTableRequiredAgeField extends HqlTableRequiredPossibleValueField
 					age = thisValue;
 			}
 			if (operator.equals(Operator.EQUALS))
-				return numericField.getJoin(Operator.BETWEEN, new BetweenValue(age.getAgeStop(), age.getAgeStart()));
+				return "(" + numericField.getJoin(Operator.GREATER_THAN_EQUAL, new BasicValue(String.valueOf(age.getAgeStop())))
+					+ " AND " + numericField.getJoin(Operator.LESS_THAN_EQUAL, new BasicValue(String.valueOf(age.getAgeStart()))) + ")";
 			else if (operator.equals(Operator.GREATER_THAN) || operator.equals(Operator.LESS_THAN_EQUAL))
 				return numericField.getJoin(operator, new BasicValue(String.valueOf(age.getAgeStart())));
 			else
