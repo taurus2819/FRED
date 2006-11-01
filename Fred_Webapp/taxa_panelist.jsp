@@ -8,7 +8,9 @@
 %><%@page import="nz.cri.gns.fred.util.UserUtil"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.auth.User"
-%><%@page import="nz.cri.gns.db.ComboDescriptor"
+%><%@page import="nz.cri.gns.html.select.SelectBox"
+%><%@page import="nz.cri.gns.html.Attributes"
+%><%@page import="java.io.PrintWriter"
 %><%
 	TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
 	UserUtil userUtil = new UserUtil(HibernateUtil.get().getDAOFactory());
@@ -54,11 +56,10 @@
 			}
 			
 			%><tr><td style="text-align: left"><%
-			ComboDescriptor cd = new ComboDescriptor("FR_User_View", "PE_ID", "Full_Name");
-			cd.name = "UserID";
-			cd.orderBy = "Family_Name";
-			cd.join = "NOT PE_ID IN (SELECT Panelist_ID FROM Taxa_Panel WHERE Group_ID = " + group.getGroupId() + ")";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+			SelectBox<FrUserView> selectBox = new SelectBox<FrUserView>(userUtil.getFrUsersWithout(group.getPanelists()));
+			Attributes attributes = Attributes.createNameOnlyAttributes("UserID");
+			%><tr><td>&nbsp;</td></tr><tr><td style="text-align: left"><%
+			selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
 			%>&nbsp;&nbsp;</td><td style="text-align: left"><a href="#" onClick="AddForm.submit();"><img src="images/cancel.gif" border="0" height="20" width="20" alt="Add User" /></a></td></tr>
 			</form>
 			</table><%
