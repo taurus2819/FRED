@@ -1,7 +1,6 @@
 package nz.cri.gns.fred.util;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -180,11 +179,9 @@ public class FolderUtil extends ModelUtil {
 
 	public void removeUserFromFolder(UserFolder folder, int userId) throws StorageAccessException {
 		Integer userAsInteger = new Integer(userId);
-		for (Iterator<FolderUser> it = folder.getFolder().getFolderUsers().iterator(); it.hasNext(); ) {
-			FolderUser user = it.next();
+		for (FolderUser user : folder.getFolder().getFolderUsers()) {
 			if (user.getUserId().equals(userAsInteger)) {
-				folderDAO.delete(user);
-				it.remove();
+				folder.getFolder().getFolderUsers().remove(user);
 				return;
 			}
 		}
