@@ -65,23 +65,7 @@
         />
     </set>
     
-    
-    
-    
-    <!-- bi-directional one-to-many association to TaxaPanel 
-    <set
-        name="taxaPanelists"
-        lazy="true"
-        inverse="true"
-		cascade="all-delete-orphan"
-    >
-        <key>
-            <column name="GROUP_ID" />
-        </key>
-        <one-to-many 
-            class="nz.cri.gns.fred.hibernate.TaxaPanelist"
-        />
-    </set> -->
+
     <!-- bi-directional one-to-many association to TaxonomicLookup -->
     <set
         name="taxonomicLookups"
