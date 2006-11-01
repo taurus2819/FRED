@@ -37,7 +37,7 @@
 
 		drawTop(out, et, request, response);
 		
-		if (taxaUtil.isUserMemberOf(group, user)) {
+		if (taxaUtil.isUserPanelistOf(group, user)) {
 
 			if (request.getParameter("ActionType") != null && request.getParameter("TaxonID") != null) { //do something
 				String actionType = request.getParameter("ActionType");

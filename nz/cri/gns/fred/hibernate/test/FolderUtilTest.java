@@ -40,7 +40,7 @@ public class FolderUtilTest extends FredHibernateTest implements HibernateProvid
 	}
 
 	public void testPanels() throws StorageAccessException, HibernateException {
-		List list = new TaxonomicUtil(factory).getPanelsIsMemberOf(user);
+		List list = new TaxonomicUtil(factory).getTaxonomicGroupsIsPanelistOf(user);
 		for (Iterator it = list.iterator(); it.hasNext(); ) {
 			System.out.println(((nz.cri.gns.fred.model.TaxonomicGroup)it.next()).getName());
 		}

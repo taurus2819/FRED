@@ -48,20 +48,40 @@
             class="nz.cri.gns.fred.hibernate.PalList"
         />
     </set>
-    <!-- bi-directional one-to-many association to TaxaPanel -->
+        <!-- bi-directional many-to-many association to FrUserView via TaxaPanel -->
     <set
-        name="taxaPanels"
+        name="panelists"
+        table="TAXA_PANEL"
         lazy="true"
-        inverse="true"
+        inverse="false"
 		cascade="none"
     >
         <key>
             <column name="GROUP_ID" />
         </key>
-        <one-to-many 
-            class="nz.cri.gns.fred.hibernate.TaxaPanel"
+        <many-to-many 
+			column="PANELIST_ID"
+            class="nz.cri.gns.fred.hibernate.FrUserView"
         />
     </set>
+    
+    
+    
+    
+    <!-- bi-directional one-to-many association to TaxaPanel 
+    <set
+        name="taxaPanelists"
+        lazy="true"
+        inverse="true"
+		cascade="all-delete-orphan"
+    >
+        <key>
+            <column name="GROUP_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.TaxaPanelist"
+        />
+    </set> -->
     <!-- bi-directional one-to-many association to TaxonomicLookup -->
     <set
         name="taxonomicLookups"

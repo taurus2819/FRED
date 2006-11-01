@@ -34,6 +34,7 @@ import nz.cri.gns.fred.hibernate.FolderType;
 import nz.cri.gns.fred.hibernate.FolderUser;
 import nz.cri.gns.fred.hibernate.FossilGroup;
 import nz.cri.gns.fred.hibernate.FrNumber;
+import nz.cri.gns.fred.hibernate.FrUserView;
 import nz.cri.gns.fred.hibernate.GrainSize;
 import nz.cri.gns.fred.hibernate.Hardness;
 import nz.cri.gns.fred.hibernate.Lab;
@@ -56,7 +57,6 @@ import nz.cri.gns.fred.hibernate.SedimentaryFeatureType;
 import nz.cri.gns.fred.hibernate.SentTo;
 import nz.cri.gns.fred.hibernate.SiteView;
 import nz.cri.gns.fred.hibernate.Stage;
-import nz.cri.gns.fred.hibernate.TaxaPanel;
 import nz.cri.gns.fred.hibernate.TaxonomicGroup;
 import nz.cri.gns.fred.hibernate.TaxonomicLookup;
 import nz.cri.gns.fred.hibernate.Weathering;
@@ -73,11 +73,11 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 	public void setUp() throws HibernateException, SQLException, InvalidCredentialsException, ClassNotFoundException {
 		Properties props = new Properties();
 		props.put("hibernate.connection.driver_class", "oracle.jdbc.OracleDriver");
-		props.put("hibernate.connection.url", "jdbc:oracle:thin:@raptor.gns.cri.nz:1521:gns");
+		props.put("hibernate.connection.url", "jdbc:oracle:thin:@raptor.gns.cri.nz:1521:dev");
 		props.put("hibernate.connection.username", "fr");
 		props.put("hibernate.connection.password", "ossify");
 		props.put("hibernate.dialect", "net.sf.hibernate.dialect.Oracle9Dialect");
-		props.put("hibernate.show_sql", "false");
+		props.put("hibernate.show_sql", "true");
 		props.put("hibernate.cglib.use_reflection_optimizer", "false");
 	
 		Configuration cfg = new Configuration().setProperties(props);
@@ -121,6 +121,7 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 			FolderUser.class,
 			FossilGroup.class,
 			FrNumber.class,
+			FrUserView.class,
 			GrainSize.class,
 			Hardness.class,
 	        LabSection.class,
@@ -144,7 +145,6 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 			SentTo.class,
 			SiteView.class,
 			Stage.class,
-			TaxaPanel.class,
 			TaxonomicGroup.class,
 			TaxonomicLookup.class,
 			Weathering.class

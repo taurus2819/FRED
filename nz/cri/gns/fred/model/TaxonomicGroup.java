@@ -9,8 +9,8 @@ public interface TaxonomicGroup extends Comparable<TaxonomicGroup>, NameableAndI
 	public void setName(String name);
 	public Integer getGroupId();
 	public void setGroupId(Integer groupId);
-    public Set<TaxaPanel> getTaxaPanels();
-    public void setTaxaPanels(Set<TaxaPanel> taxaPanels);
+    public Set<FrUserView> getPanelists();
+    public void setPanelists(Set<FrUserView> taxaPanelists);
     public Set<Taxon> getTaxonomicLookups();
     public void setTaxonomicLookups(Set<Taxon> taxonomicLookups);
 }

@@ -3,7 +3,6 @@ package nz.cri.gns.fred.dao;
 import java.util.List;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.fred.model.TaxaPanel;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 
@@ -12,22 +11,15 @@ import nz.cri.gns.fred.model.TaxonomicGroup;
  */
 public interface TaxonomicGroupDAO {
 
-	public TaxaPanel createNewTaxaPanel();
-	
-	public TaxaPanel save(TaxaPanel panel) throws StorageAccessException;
-	
 	public TaxonomicGroup getTaxonomicGroup(int groupId) throws StorageAccessException;
 	
 	public TaxonomicGroup save(TaxonomicGroup group) throws StorageAccessException;
 	
 	public Taxon save(Taxon taxon) throws StorageAccessException;
 	
-	/**
-	 * Returns a list of Taxonomic groups for which the given
-	 * user is a member of the panel
-	 * @throws StorageAccessException
-	 */
-	public List<TaxonomicGroup> getPanelsIsMemberOf(int userId) throws StorageAccessException;
+	/*
+	public List<TaxonomicGroup> getTaxonomicGroupsIsPanelistOf(int userId) throws StorageAccessException;
+	*/
 	
 	/**
 	 *@return a count of provisional taxa within the given group
@@ -54,6 +46,8 @@ public interface TaxonomicGroupDAO {
 	 */
 	public TaxonomicGroup findTaxonomicGroup(String groupName) throws StorageAccessException;
 
-	public List<Integer> getPanelsIsMemberOf(TaxonomicGroup group) throws StorageAccessException;
+	/*
+	public List<Integer> getPanelistsOfTaxonomicGroup(TaxonomicGroup group) throws StorageAccessException;
+	*/
 	
 }

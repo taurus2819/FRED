@@ -17,9 +17,7 @@ import net.sf.hibernate.expression.Expression;
 import net.sf.hibernate.expression.MatchMode;
 import net.sf.hibernate.expression.Order;
 import net.sf.hibernate.type.IntegerType;
-import net.sf.hibernate.type.ManyToOneType;
 import net.sf.hibernate.type.StringType;
-import nz.cri.gns.core.NameableAndIdentifiable;
 import nz.cri.gns.dataaccess.HibernateProvider;
 import nz.cri.gns.dataaccess.HibernateUtils;
 import nz.cri.gns.dataaccess.StorageAccessException;
@@ -36,6 +34,7 @@ import nz.cri.gns.fred.dao.SampleDAO;
 import nz.cri.gns.fred.dao.StratLexDAO;
 import nz.cri.gns.fred.dao.TaxonomicDAO;
 import nz.cri.gns.fred.dao.TaxonomicGroupDAO;
+import nz.cri.gns.fred.dao.UserDAO;
 import nz.cri.gns.fred.hibernate.AuditTable;
 import nz.cri.gns.fred.hibernate.FolderUser;
 import nz.cri.gns.fred.hibernate.PalList;
@@ -58,6 +57,7 @@ import nz.cri.gns.fred.model.FolderRight;
 import nz.cri.gns.fred.model.FolderType;
 import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
+import nz.cri.gns.fred.model.FrUserView;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.Lab;
@@ -79,7 +79,6 @@ import nz.cri.gns.fred.model.SedimentaryFeatureType;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.model.StratigraphicUnit;
-import nz.cri.gns.fred.model.TaxaPanel;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.UserFolder;
@@ -88,7 +87,7 @@ import nz.cri.gns.fred.model.Weathering;
 /**
  * @author iainm
  */
-public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO, AuditDAO, BacklogStatusDAO, StratLexDAO {
+public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO, AuditDAO, BacklogStatusDAO, StratLexDAO, UserDAO {
 
 	private HibernateProvider provider;
 
@@ -258,25 +257,6 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		return HibernateUtils.getFirst(provider, "FROM TaxonomicGroup as tg WHERE tg.groupId = ?", groupId, TaxonomicGroup.class);
 	}
 	
-	public List<TaxonomicGroup> getPanelsIsMemberOf(int userId) throws StorageAccessException {
-		try {
-			Session session = provider.currentSession();
-			return session.find("SELECT g FROM TaxaPanel tp INNER JOIN tp.taxonomicGroup g WHERE tp.comp_id.panelistId = ?", new Integer(userId), new IntegerType());
-		} catch (Exception e) {
-			throw new StorageAccessException(e);
-		}
-	}
-	
-
-	public List<Integer> getPanelsIsMemberOf(TaxonomicGroup group) throws StorageAccessException {
-		try {
-			Session session = provider.currentSession();
-			return session.find("SELECT tp.comp_id.panelistId FROM TaxaPanel tp WHERE tp.taxonomicGroup = ?", group, new ManyToOneType(nz.cri.gns.fred.hibernate.TaxonomicGroup.class));
-		} catch (Exception e) {
-			throw new StorageAccessException(e);
-		}
-	}
-
 	/**
 	 * @deprectaed use getTaxaCount
 	 */
@@ -322,14 +302,6 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		return HibernateUtils.getFirst(provider, "FROM TaxonomicGroup As g WHERE g.name = ?", groupName, TaxonomicGroup.class);
 	}
 	
-	public TaxaPanel createNewTaxaPanel() {
-		return new nz.cri.gns.fred.hibernate.TaxaPanel(false);
-	}
-	
-	public TaxaPanel save(TaxaPanel panel) throws StorageAccessException {
-	    return HibernateUtils.save(provider, panel);
-	}
-
 	public TaxonomicGroup save(TaxonomicGroup group) throws StorageAccessException {
 	    return HibernateUtils.save(provider, group);
 	}
@@ -1149,6 +1121,18 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		List<T> items = HibernateUtils.list(provider, query, clazz, parameters);
 		Collections.sort(items);
 		return items;
+	}
+	
+	public UserDAO getUserDAO() {
+		return this;
+	}
+
+	public FrUserView getFrUserView(String userName) throws StorageAccessException {
+		return HibernateUtils.getFirst(provider, "FROM FrUserView As f WHERE f.userName = ?", userName, FrUserView.class);	
+	}
+
+	public FrUserView getFrUserView(Integer userId) throws StorageAccessException {
+		return HibernateUtils.getFirst(provider, "FROM FrUserView As f WHERE f.userId = ?", userId, FrUserView.class);	
 	}
 	
 }

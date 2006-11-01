@@ -3,9 +3,9 @@ package nz.cri.gns.fred.util;
 import java.beans.IntrospectionException;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
@@ -14,10 +14,11 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.TaxonomicDAO;
 import nz.cri.gns.fred.dao.TaxonomicGroupDAO;
+import nz.cri.gns.fred.dao.UserDAO;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.model.FREDConstants;
+import nz.cri.gns.fred.model.FrUserView;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
-import nz.cri.gns.fred.model.TaxaPanel;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 
@@ -28,11 +29,13 @@ public class TaxonomicUtil extends ModelUtil {
 
 	private TaxonomicGroupDAO groupDAO;
     private TaxonomicDAO taxonomicDAO;
-	
+	private UserDAO userDAO;
+    
 	public TaxonomicUtil(DAOFactory dao) {
         super(dao);
 		this.groupDAO = dao.getTaxonomicGroupDAO();
         this.taxonomicDAO = dao.getTaxonomicDAO();
+        this.userDAO = dao.getUserDAO();
 	}
 	
 	public TaxonomicGroup getTaxonomicGroup(int groupId) throws StorageAccessException {
@@ -43,45 +46,36 @@ public class TaxonomicUtil extends ModelUtil {
 		return taxonomicDAO.getTaxon(taxonId);
 	}
 	
-	public List<TaxonomicGroup> getPanelsIsMemberOf(UserAccount user) throws StorageAccessException {
-		List<TaxonomicGroup> panels = groupDAO.getPanelsIsMemberOf(Integer.parseInt(user.getId()));
-		Collections.sort(panels);
-		return panels;
+	public List<TaxonomicGroup> getTaxonomicGroupsIsPanelistOf(UserAccount user) throws StorageAccessException {
+		FrUserView frUser = userDAO.getFrUserView(new Integer(user.getId()));
+		List<TaxonomicGroup> groups = new Vector<TaxonomicGroup>();
+		for (TaxonomicGroup group : frUser.getTaxonomicGroups())
+			groups.add(group);
+		Collections.sort(groups);
+		return groups;
 	}
 	
-	public List<Integer> getMembersOfPanel(TaxonomicGroup group) throws StorageAccessException {
-		List<Integer> members = groupDAO.getPanelsIsMemberOf(group);
-		return members;
-	}
-	
-	public boolean isUserMemberOf(TaxonomicGroup group, UserAccount user) throws StorageAccessException {
-		for (Iterator<TaxonomicGroup> it = getPanelsIsMemberOf(user).iterator(); it.hasNext(); ) {
-			if (group.equals(it.next()))
+	public boolean isUserPanelistOf(TaxonomicGroup group, UserAccount user) throws StorageAccessException {
+		Integer userId = new Integer(user.getId());
+		for (FrUserView frUser : group.getPanelists()) {
+			if (frUser.getUserId().equals(userId))
 				return true;
 		}
 		return false;
 	}
 	
-	public void addUserToPanel(TaxonomicGroup group, int userId) throws StorageAccessException {
-		TaxaPanel panel = groupDAO.createNewTaxaPanel();
-		panel.setTaxonomicGroup(group);
-		panel.setUserId(userId);
-		groupDAO.save(panel);
+	public void addPanelistToTaxonomicGroup(TaxonomicGroup group, FrUserView frUser) throws StorageAccessException {
+		group.getPanelists().add(frUser);
+		groupDAO.save(group);
 	}
 
-	public void removeUserFromPanel(TaxonomicGroup group, int userId) throws StorageAccessException {
-		Set<TaxaPanel> panels = group.getTaxaPanels();
-		for (TaxaPanel panel : panels) {
-			if (panel.getUserId().intValue() == userId) {
-				panels.remove(panel);
-				break;
-			}
-		}
+	public void removePanelistFromTaxonomicGroup(TaxonomicGroup group, FrUserView frUser) throws StorageAccessException {
+		group.getPanelists().remove(frUser);
 		groupDAO.save(group);
 	}
 	
 	public Taxon approveTaxon(Taxon taxon, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
-		if (!isUserMemberOf(taxon.getTaxonomicGroup(), user))
+		if (!isUserPanelistOf(taxon.getTaxonomicGroup(), user))
 			throw new InsufficientPrivelegesException();
 		taxon.setStatus(FREDConstants.APPROVED);
 		taxon.setApprovedById(new Integer(user.getId()));
@@ -91,7 +85,7 @@ public class TaxonomicUtil extends ModelUtil {
 	}
 
 	public Taxon rejectTaxon(Taxon taxon, UserAccount user, String comments) throws StorageAccessException, InsufficientPrivelegesException {
-		if (!isUserMemberOf(taxon.getTaxonomicGroup(), user))
+		if (!isUserPanelistOf(taxon.getTaxonomicGroup(), user))
 			throw new InsufficientPrivelegesException();
 		taxon.setStatus(FREDConstants.REJECTED);
 		taxon.setApprovedById(new Integer(user.getId()));
@@ -102,7 +96,7 @@ public class TaxonomicUtil extends ModelUtil {
 	}
 	
 	public Taxon obsoleteTaxon(Taxon taxon, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
-		if (!isUserMemberOf(taxon.getTaxonomicGroup(), user))
+		if (!isUserPanelistOf(taxon.getTaxonomicGroup(), user))
 			throw new InsufficientPrivelegesException();
 		taxon.setStatus(FREDConstants.OBSOLETE);
 		taxon.setApprovedById(new Integer(user.getId()));
@@ -112,7 +106,7 @@ public class TaxonomicUtil extends ModelUtil {
 	}
 	
 	public void deleteTaxon(Taxon taxon, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
-		if (!isUserMemberOf(taxon.getTaxonomicGroup(), user))
+		if (!isUserPanelistOf(taxon.getTaxonomicGroup(), user))
 			throw new InsufficientPrivelegesException();
 		if (!FREDUtil.isEmpty(taxon.getListEntries()))
 			throw new IllegalStateException("Cannot delete as referenced in a Paleontology list");

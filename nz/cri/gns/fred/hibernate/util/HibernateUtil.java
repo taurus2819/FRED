@@ -29,6 +29,7 @@ import nz.cri.gns.fred.hibernate.FolderType;
 import nz.cri.gns.fred.hibernate.FolderUser;
 import nz.cri.gns.fred.hibernate.FossilGroup;
 import nz.cri.gns.fred.hibernate.FrNumber;
+import nz.cri.gns.fred.hibernate.FrUserView;
 import nz.cri.gns.fred.hibernate.GrainSize;
 import nz.cri.gns.fred.hibernate.Hardness;
 import nz.cri.gns.fred.hibernate.Lab;
@@ -52,7 +53,6 @@ import nz.cri.gns.fred.hibernate.SentTo;
 import nz.cri.gns.fred.hibernate.SiteView;
 import nz.cri.gns.fred.hibernate.Stage;
 import nz.cri.gns.fred.hibernate.StratigraphicUnit;
-import nz.cri.gns.fred.hibernate.TaxaPanel;
 import nz.cri.gns.fred.hibernate.TaxonomicGroup;
 import nz.cri.gns.fred.hibernate.TaxonomicLookup;
 import nz.cri.gns.fred.hibernate.Weathering;
@@ -95,7 +95,7 @@ public class HibernateUtil implements HibernateProvider {
 		Properties props = new Properties();
         props.put("hibernate.connection.datasource", "java:comp/env/jdbc/fr");
 		props.put("hibernate.dialect", "net.sf.hibernate.dialect.Oracle9Dialect");
-		//props.put("hibernate.show_sql", "true");
+		props.put("hibernate.show_sql", "true");
 
     	Configuration cfg = new Configuration().setProperties(props);
     	
@@ -127,6 +127,7 @@ public class HibernateUtil implements HibernateProvider {
 			FolderUser.class,
 			FossilGroup.class,
 			FrNumber.class,
+			FrUserView.class,
 			GrainSize.class,
 			Hardness.class,
             Lab.class,
@@ -151,7 +152,6 @@ public class HibernateUtil implements HibernateProvider {
 			SiteView.class,
 			Stage.class,
 			StratigraphicUnit.class,
-			TaxaPanel.class,
 			TaxonomicGroup.class,
 			TaxonomicLookup.class,
 			Weathering.class

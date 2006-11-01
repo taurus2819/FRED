@@ -205,7 +205,7 @@
 			%></p><%
 		}
 	
-		List panelList = taxaUtil.getPanelsIsMemberOf(user);
+		List panelList = taxaUtil.getTaxonomicGroupsIsPanelistOf(user);
 		//List Taxonomic groups (if any)
 		if (panelList.size() > 0) {
 			%><p><%

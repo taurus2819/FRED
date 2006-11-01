@@ -48,7 +48,6 @@ import nz.cri.gns.fred.hibernate.SedimentaryFeature;
 import nz.cri.gns.fred.hibernate.SedimentaryFeatureType;
 import nz.cri.gns.fred.hibernate.SentTo;
 import nz.cri.gns.fred.hibernate.Stage;
-import nz.cri.gns.fred.hibernate.TaxaPanel;
 import nz.cri.gns.fred.hibernate.TaxonomicGroup;
 import nz.cri.gns.fred.hibernate.TaxonomicLookup;
 import nz.cri.gns.fred.hibernate.Weathering;
@@ -120,7 +119,6 @@ public class FrOddities extends TestCase {
 			SedimentaryFeatureType.class,
 			SentTo.class,
 			Stage.class,
-			TaxaPanel.class,
 			TaxonomicGroup.class,
 			TaxonomicLookup.class,
 			Weathering.class

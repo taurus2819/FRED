@@ -1,8 +1,8 @@
 package nz.cri.gns.fred.hibernate;
 
 import java.util.Set;
-import nz.cri.gns.fred.model.TaxaPanel;
 import nz.cri.gns.fred.model.Taxon;
+import nz.cri.gns.fred.model.FrUserView;
 
 /** @author Hibernate CodeGenerator */
 public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
@@ -19,17 +19,17 @@ public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
     private Set palLists;
 
     /** persistent field */
-    private Set<TaxaPanel> taxaPanels;
+    private Set<FrUserView> panelists;
 
     /** persistent field */
     private Set<Taxon> taxonomicLookups;
 
     /** full constructor */
-    public TaxonomicGroup(Integer groupId, String name, Set palLists, Set<TaxaPanel> taxaPanels, Set<Taxon> taxonomicLookups) {
+    public TaxonomicGroup(Integer groupId, String name, Set palLists, Set<FrUserView> panelists, Set<Taxon> taxonomicLookups) {
         this.groupId = groupId;
         this.name = name;
         this.palLists = palLists;
-        this.taxaPanels = taxaPanels;
+        this.panelists = panelists;
         this.taxonomicLookups = taxonomicLookups;
     }
 
@@ -61,12 +61,12 @@ public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
         this.palLists = palLists;
     }
 
-    public Set<TaxaPanel> getTaxaPanels() {
-        return this.taxaPanels;
+    public Set<FrUserView> getPanelists() {
+        return this.panelists;
     }
 
-    public void setTaxaPanels(Set<TaxaPanel> taxaPanels) {
-        this.taxaPanels = taxaPanels;
+    public void setPanelists(Set<FrUserView> taxaPanels) {
+        this.panelists = taxaPanels;
     }
 
     public Set<Taxon> getTaxonomicLookups() {

@@ -1,14 +1,17 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
+%><%@page import="nz.cri.gns.fred.model.FrUserView"
 %><%@page import="nz.cri.gns.fred.model.TaxonomicGroup"
 %><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
+%><%@page import="nz.cri.gns.fred.util.UserUtil"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.db.ComboDescriptor"
 %><%
 	TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
+	UserUtil userUtil = new UserUtil(HibernateUtil.get().getDAOFactory());
 	User user = (User)getUser(session);
 
 	ExtranetTemplate et = getExtranetTemplate();
@@ -17,19 +20,19 @@
 
 	if (request.getParameter("GroupID") != null) {
 		TaxonomicGroup group = taxaUtil.getTaxonomicGroup(Integer.parseInt(request.getParameter("GroupID")));
-		if (group != null && taxaUtil.isUserMemberOf(group, user)) {
+		if (group != null && taxaUtil.isUserPanelistOf(group, user)) {
 			
 			drawTop(out, et, request, response);
 
 			//process any changes
 			if (request.getParameter("ActionType") != null) {
 				String actionType = request.getParameter("ActionType");
-				int userId = Integer.parseInt(request.getParameter("UserID"));
+				FrUserView frUser = userUtil.getFrUserView(new Integer(request.getParameter("UserID")));
 				if (actionType.equals("Add")) {
-					taxaUtil.addUserToPanel(group, userId);
+					taxaUtil.addPanelistToTaxonomicGroup(group, frUser);
 				}
 				else if (actionType.equals("Delete")) {
-					taxaUtil.removeUserFromPanel(group, userId);
+					taxaUtil.removePanelistFromTaxonomicGroup(group, frUser);
 				}
 			}
 			
@@ -46,8 +49,8 @@
 			<input type="hidden" name="GroupID" value="<%=group.getGroupId()%>" />
 			<input type="hidden" name="ActionType" value="Add" /><%
 
-			for (Integer memberId :  taxaUtil.getMembersOfPanel(group)) {
-				%><tr><td style="text-align: left"><%=FREDUtil.getUserName(memberId.intValue())%>&nbsp;&nbsp;</td><td style="text-align: left"><a href="taxa_panelist.jsp?GroupID=<%=group.getGroupId()%>&ActionType=Delete&UserID=<%=memberId.intValue()%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="Delete User" /></a></td></tr><%
+			for (FrUserView panelist :  group.getPanelists()) {
+				%><tr><td style="text-align: left"><%=panelist.getFullName()%>&nbsp;&nbsp;</td><td style="text-align: left"><a href="taxa_panelist.jsp?GroupID=<%=group.getGroupId()%>&ActionType=Delete&UserID=<%=panelist.getUserId().intValue()%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="Delete User" /></a></td></tr><%
 			}
 			
 			%><tr><td style="text-align: left"><%
