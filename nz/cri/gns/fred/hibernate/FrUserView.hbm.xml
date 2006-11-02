@@ -154,20 +154,6 @@
             class="nz.cri.gns.fred.hibernate.TaxonomicLookup"
         />
     </set>
-    <!-- bi-directional one-to-many association to FolderUser -->
-    <set
-        name="folderUsers"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <key>
-            <column name="USER_ID" />
-        </key>
-        <one-to-many 
-            class="nz.cri.gns.fred.hibernate.FolderUser"
-        />
-    </set>
     
 </class>
 </hibernate-mapping>
