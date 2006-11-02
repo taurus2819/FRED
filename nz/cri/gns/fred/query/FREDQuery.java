@@ -65,8 +65,15 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		this.people = getValues("FROM Person AS p", Person.class);
 		this.ages = getValues("FROM AgeView AS a WHERE a.ageAbbrev <> 'nd' AND a.ageAbbrev <> 'nf'", AgeView.class);
 		this.frUsers = getSQLValues("SELECT pe_id, full_name FROM fr_user_view ORDER BY family_name, given_name");
+				
+		Field[] f = new Field[4];
+		f[0] = new FrNumberTextField("frNumber", "Fr Number");
+		f[1] = new FrNumberTextField("mapSheet", "Fr Number Map Sheet");
+		f[2] = new FrNumberNumberField("serialNumber", "Fr Number Serial Number");
+		f[3] = new FrNumberTextField("recollectionNumber", "Fr Number Recollection Number");
+		add(new TwoLevelField("FR Number Fields", f));
 		
-		Field[] f = new Field[14];
+		f = new Field[14];
 		f[0] = new BasicTextField("f.featureName", "Feature Name");
 		f[1] = new PossibleValueField("f.featureType", "Feature Type", getFeatureTypes());
 		f[2] = new PossibleValueField("f.masterFile", "Masterfile", getValues("FROM Folder AS f WHERE f.folderType.name='Admin'", Folder.class));
