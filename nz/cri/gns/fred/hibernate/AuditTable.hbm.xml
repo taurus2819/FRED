@@ -117,6 +117,8 @@
         name="createdBy"
         class="nz.cri.gns.fred.hibernate.FrUserView"
         not-null="false"
+        insert="false"
+        update="false"
     >
         <column name="CREATED_BY_ID" />
     </many-to-one>
@@ -125,6 +127,8 @@
         name="submittedBy"
         class="nz.cri.gns.fred.hibernate.FrUserView"
         not-null="false"
+        insert="false"
+        update="false"
     >
         <column name="SUBMITTED_BY_ID" />
     </many-to-one>
@@ -133,6 +137,8 @@
         name="approvedBy"
         class="nz.cri.gns.fred.hibernate.FrUserView"
         not-null="false"
+        insert="false"
+        update="false"
     >
         <column name="APPROVED_BY_ID" />
     </many-to-one>

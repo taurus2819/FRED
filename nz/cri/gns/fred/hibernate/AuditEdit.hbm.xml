@@ -60,6 +60,8 @@
         name="editedBy"
         class="nz.cri.gns.fred.hibernate.FrUserView"
         not-null="false"
+        insert="false"
+        update="false"
     >
         <column name="EDITED_BY_ID" />
     </many-to-one>

@@ -83,7 +83,7 @@
 
 			if (isPersonal) {
 				out.println("<p><span class='bigheading'>Folder: " + folder.getFolderName() + "</span><br>");
-				out.println("<span class='heading'>Owner: " + FREDUtil.getUserName(folder.getFolder().getOwnerId().intValue()) + "</span></p>");
+				out.println("<span class='heading'>Owner: " + FolderUtil.getUserName(folder.getFolder().getOwnerId().intValue()) + "</span></p>");
 			} else {
 				out.println("<p><span class='bigheading'>Masterfile: " + folder.getFolderName() + "</span></p>");
 			}
