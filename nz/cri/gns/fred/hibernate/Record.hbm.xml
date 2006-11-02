@@ -26,13 +26,6 @@
         </generator>
     </id>
 
-    <property
-        name="workingComments"
-        type="java.lang.String"
-        column="WORKING_COMMENTS"
-        length="255"
-    />
-
     <!-- Associations -->
   
     <!-- bi-directional one-to-one association to Paleontology -->
@@ -70,14 +63,6 @@
         not-null="true"
     >
         <column name="SAMPLE_ID" />
-    </many-to-one>
-    <!-- bi-directional many-to-one association to Folder -->
-    <many-to-one
-        name="folder"
-        class="nz.cri.gns.fred.hibernate.Folder"
-        not-null="true"
-    >
-        <column name="WORKING_FOLDER_ID" />
     </many-to-one>
     <!-- bi-directional many-to-one association to AuditTable -->
     <many-to-one

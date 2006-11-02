@@ -18,9 +18,6 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record, Compa
     private Integer recordId;
 
     /** nullable persistent field */
-    private String workingComments;
-
-    /** nullable persistent field */
     private nz.cri.gns.fred.model.Paleontology paleontology;
 
     /** nullable persistent field */
@@ -30,21 +27,16 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record, Compa
     private nz.cri.gns.fred.model.Sample sample;
 
     /** persistent field */
-    private nz.cri.gns.fred.model.Folder folder;
-
-    /** persistent field */
     private nz.cri.gns.fred.model.Audit auditTable;
 
     /** persistent field */
     private Set<RecordMeta> recordMetas;
     
     /** full constructor */
-    public Record(String workingComments, nz.cri.gns.fred.hibernate.Paleontology paleontology, nz.cri.gns.fred.hibernate.Adoption adoption, nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.Folder folder, nz.cri.gns.fred.hibernate.AuditTable auditTable, Set<RecordMeta> recordMetas) {
-        this.workingComments = workingComments;
+    public Record(nz.cri.gns.fred.hibernate.Paleontology paleontology, nz.cri.gns.fred.hibernate.Adoption adoption, nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.AuditTable auditTable, Set<RecordMeta> recordMetas) {
         this.paleontology = paleontology;
         this.adoption = adoption;
         this.sample = sample;
-        this.folder = folder;
         this.auditTable = auditTable;
         this.recordMetas = recordMetas;
     }
@@ -54,9 +46,8 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record, Compa
     }
 
     /** minimal constructor */
-    public Record(nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.Folder folder, nz.cri.gns.fred.hibernate.AuditTable auditTable, Set<RecordMeta> recordMetas) {
+    public Record(nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.AuditTable auditTable, Set<RecordMeta> recordMetas) {
         this.sample = sample;
-        this.folder = folder;
         this.auditTable = auditTable;
         this.recordMetas = recordMetas;
     }
@@ -73,14 +64,6 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record, Compa
         if (adoption != null) {
         	adoption.setRecordId(recordId);
         }*/
-    }
-
-    public String getWorkingComments() {
-        return this.workingComments;
-    }
-
-    public void setWorkingComments(String workingComments) {
-        this.workingComments = workingComments;
     }
 
     public nz.cri.gns.fred.model.Paleontology getPaleontology() {
@@ -105,14 +88,6 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record, Compa
 
     public void setSample(nz.cri.gns.fred.model.Sample sample) {
         this.sample = sample;
-    }
-
-    public nz.cri.gns.fred.model.Folder getFolder() {
-        return this.folder;
-    }
-
-    public void setFolder(nz.cri.gns.fred.model.Folder folder) {
-        this.folder = folder;
     }
 
     public nz.cri.gns.fred.model.Audit getAudit() {
