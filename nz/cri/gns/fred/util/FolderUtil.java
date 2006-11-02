@@ -1,8 +1,14 @@
 package nz.cri.gns.fred.util;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
+
+import javax.naming.NamingException;
 
 import net.sf.hibernate.HibernateException;
 import nz.cri.gns.dataaccess.StorageAccessException;
@@ -31,6 +37,24 @@ public class FolderUtil extends ModelUtil {
 		this.typeDAO = dao.getFolderTypeDAO();
 	}
 	
+	public static String getUserName(int userId) throws NamingException, SQLException {
+		Connection conn = null;
+		try {
+			conn = FREDUtil.getConnection();
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT given_name || ' ' || family_name FROM ip.person_view WHERE pe_id = " + userId);
+			String name = (rs.next()) ? rs.getString(1) : "";
+			rs.close();
+			statement.close();
+			return name;
+		} finally {
+			if (conn != null) try {
+				conn.close();
+			} catch (Exception _e) {
+			}
+		}
+	}
+		
 	public Folder getFolder(int folderId) throws StorageAccessException {
 		return folderDAO.getFolder(folderId);
 	}
@@ -160,7 +184,7 @@ public class FolderUtil extends ModelUtil {
 		List<FolderAccessor> accessors = new Vector<FolderAccessor>(folder.getFolderUsers().size());
 		
 		for (FolderUser user : folder.getFolderUsers()) try {
-			accessors.add(new FolderAccessor(user, FREDUtil.getUserName(user.getUserId().intValue())));
+			accessors.add(new FolderAccessor(user, getUserName(user.getUserId().intValue())));
 		} catch (Exception e) {
 			throw new StorageAccessException(e);
 		}

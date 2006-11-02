@@ -104,6 +104,38 @@
     >
         <column name="WORKING_FOLDER_ID" />
     </many-to-one>
+    <!-- bi-directional many-to-one association to DataOrigin -->
+    <many-to-one
+        name="dataOrigin"
+        class="nz.cri.gns.fred.hibernate.DataOrigin"
+        not-null="true"
+    >
+        <column name="DATA_ORIGIN_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to FrUSerView -->
+    <many-to-one
+        name="createdBy"
+        class="nz.cri.gns.fred.hibernate.FrUserView"
+        not-null="false"
+    >
+        <column name="CREATED_BY_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to FrUserView -->
+    <many-to-one
+        name="submittedBy"
+        class="nz.cri.gns.fred.hibernate.FrUserView"
+        not-null="false"
+    >
+        <column name="SUBMITTED_BY_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to FrUserView -->
+    <many-to-one
+        name="approvedBy"
+        class="nz.cri.gns.fred.hibernate.FrUserView"
+        not-null="false"
+    >
+        <column name="APPROVED_BY_ID" />
+    </many-to-one>
     <!-- bi-directional one-to-many association to Sample -->
     <set
         name="samples"
@@ -160,14 +192,6 @@
             class="nz.cri.gns.fred.hibernate.AuditEdit"
         />
     </set>
-    <!-- bi-directional many-to-one association to DataOrigin -->
-    <many-to-one
-        name="dataOrigin"
-        class="nz.cri.gns.fred.hibernate.DataOrigin"
-        not-null="true"
-    >
-        <column name="DATA_ORIGIN_ID" />
-    </many-to-one>
 
 </class>
 </hibernate-mapping>

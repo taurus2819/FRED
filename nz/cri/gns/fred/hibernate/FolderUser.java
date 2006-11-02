@@ -5,6 +5,7 @@ import java.io.Serializable;
 import nz.cri.gns.fred.hibernate.dao.CompositeKey;
 import nz.cri.gns.fred.hibernate.dao.CompositeKeyed;
 import nz.cri.gns.fred.model.Folder;
+import nz.cri.gns.fred.model.FrUserView;
 
 
 /** @author Hibernate CodeGenerator */
@@ -20,7 +21,7 @@ public class FolderUser implements Serializable, nz.cri.gns.fred.model.FolderUse
 
     /** nullable persistent field */
     private nz.cri.gns.fred.model.Folder folder;
-
+    
 	private boolean saved;
 
     /** default constructor */

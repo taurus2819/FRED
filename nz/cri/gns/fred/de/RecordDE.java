@@ -151,7 +151,8 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
                 lists.addAll(fromPal.getListEntries());
         }
 
-        record.setWorkingComments(fromRecord.getWorkingComments());
+        record.getAudit().setWorkingComments(fromRecord.getAudit().getWorkingComments());
+		
         //TODO not copying metas....for now ???
 	}
 
@@ -185,7 +186,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         template.addSub("recordType", RecordUtil.getRecordType(record));
         if (workingFolder != null)
             template.addSub("folderId", workingFolder.getFolderId().toString());
-        template.addSub("workingComments", record.getWorkingComments());
+        template.addSub("workingComments", record.getAudit().getWorkingComments());
 
         template.loadAll(out);
 	}
@@ -235,7 +236,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 	}
 
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
-        record.setWorkingComments(request.getParameter("WorkComm"));
+        record.getAudit().setWorkingComments(request.getParameter("WorkComm"));
     }
 	
     protected void reinitialise(DAOFactory factory) {

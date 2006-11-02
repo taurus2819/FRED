@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import nz.cri.gns.fred.model.Audit;
+import nz.cri.gns.fred.model.FrUserView;
 
 /** @author Hibernate CodeGenerator */
 public class AuditEdit implements Serializable, Comparable<nz.cri.gns.fred.model.AuditEdit>, nz.cri.gns.fred.model.AuditEdit {
@@ -24,13 +25,17 @@ public class AuditEdit implements Serializable, Comparable<nz.cri.gns.fred.model
 
     /** persistent field */
     private Audit audit;
+    
+    /** persistent field */
+    private FrUserView editedBy;
 
     /** full constructor */
-    public AuditEdit(Integer editedById, Date editedDate, String comments, Audit auditTable) {
+    public AuditEdit(Integer editedById, Date editedDate, String comments, Audit auditTable, FrUserView editedBy) {
         this.editedById = editedById;
         this.editedDate = editedDate;
         this.comments = comments;
         this.audit = auditTable;
+        this.setEditedBy(editedBy);
     }
 
     /** default constructor */
@@ -38,7 +43,7 @@ public class AuditEdit implements Serializable, Comparable<nz.cri.gns.fred.model
     }
 
     /** minimal constructor */
-    public AuditEdit(Audit auditTable) {
+    public AuditEdit(AuditTable auditTable) {
         this.audit = auditTable;
     }
 
@@ -82,7 +87,15 @@ public class AuditEdit implements Serializable, Comparable<nz.cri.gns.fred.model
         this.audit = audit;
     }
 
-    /**
+    public void setEditedBy(FrUserView editedBy) {
+		this.editedBy = editedBy;
+	}
+
+	public FrUserView getEditedBy() {
+		return editedBy;
+	}
+
+	/**
      * Orders in chronological order
      */
 	public int compareTo(nz.cri.gns.fred.model.AuditEdit o) {

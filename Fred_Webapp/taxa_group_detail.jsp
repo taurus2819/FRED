@@ -66,7 +66,7 @@
 					<tr>
 					<td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=((taxon.getSubmittedById() != null) ? FREDUtil.getUserName(taxon.getSubmittedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=((taxon.getSubmittedById() != null) ? taxon.getSubmittedBy().getFullName() : "&nbsp;")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getSubmittedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td><%
 					if (!FREDUtil.isEmpty(taxon.getListEntries())) {
 						%><td><%
@@ -99,7 +99,7 @@
 					%><tr>
 					<td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=((taxon.getApprovedById() != null) ? FREDUtil.getUserName(taxon.getApprovedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=((taxon.getApprovedById() != null) ? taxon.getApprovedBy().getFullName() : "&nbsp;")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getApprovedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getPanelistComments())%>&nbsp;&nbsp;</td><%
 					if (!FREDUtil.isEmpty(taxon.getListEntries())) {
@@ -130,7 +130,7 @@
 					%><tr>
 					<td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=((taxon.getApprovedById() != null) ? FREDUtil.getUserName(taxon.getApprovedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=((taxon.getApprovedById() != null) ? taxon.getApprovedBy().getFullName() : "&nbsp;")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getApprovedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><a href="taxa_group_detail.jsp?ID=<%=group.getGroupId()%>&TaxonID=<%=taxon.getTaxaId()%>&ActionType=Obsolete"><img src="images/delete.gif" height="20" width="20" border="0" alt="Make Obsolete" /></a>
 					</tr><%

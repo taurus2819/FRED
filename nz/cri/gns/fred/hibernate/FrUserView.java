@@ -3,6 +3,7 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 
 public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserView {
@@ -27,14 +28,26 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
     /** persistent field */
     private Set<TaxonomicGroup> taxonomicGroups;
     
+    /** persistent field */
+    private Set<Audit> auditsByCreatedById;
+    
+    /** persistent field */
+    private Set<Audit> auditsBySubmittedById;
+    
+    /** persistent field */
+    private Set<Audit> auditsByApprovedById;
+    
     /** full constructor */
-    public FrUserView(Integer userId, String userName, String givenName, String familyName, String fullName, Set<TaxonomicGroup> taxonomicGroups) {
+    public FrUserView(Integer userId, String userName, String givenName, String familyName, String fullName, Set<TaxonomicGroup> taxonomicGroups, Set<Audit> auditsByCreatedById, Set<Audit> auditsBySubmittedById, Set<Audit> auditsByApprovedById) {
     	this.userId = userId;
     	this.userName = userName;
     	this.familyName = familyName;
     	this.fullName = fullName;
     	this.givenName = givenName;
     	this.taxonomicGroups = taxonomicGroups;
+    	this.auditsByCreatedById = auditsByCreatedById;
+    	this.auditsBySubmittedById = auditsBySubmittedById;
+    	this.auditsByApprovedById = auditsByApprovedById;
     }
 
     /** default constructor */
@@ -87,6 +100,30 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
 
 	public Set<TaxonomicGroup> getTaxonomicGroups() {
 		return taxonomicGroups;
+	}
+
+	public void setAuditsByCreatedById(Set<Audit> auditsByCreatedById) {
+		this.auditsByCreatedById = auditsByCreatedById;
+	}
+
+	public Set<Audit> getAuditsByCreatedById() {
+		return auditsByCreatedById;
+	}
+
+	public void setAuditsBySubmittedById(Set<Audit> auditsBySubmittedById) {
+		this.auditsBySubmittedById = auditsBySubmittedById;
+	}
+
+	public Set<Audit> getAuditsBySubmittedById() {
+		return auditsBySubmittedById;
+	}
+
+	public void setAuditsByApprovedById(Set<Audit> auditsByApprovedById) {
+		this.auditsByApprovedById = auditsByApprovedById;
+	}
+
+	public Set<Audit> getAuditsByApprovedById() {
+		return auditsByApprovedById;
 	}
 
 	public int compareTo(nz.cri.gns.fred.model.FrUserView arg0) {

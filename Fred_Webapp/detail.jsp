@@ -185,19 +185,19 @@ try {
 				<td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {})%> class="smalltext"><%=DBUtils.nvl(audit.getCuratorComments())%></td></tr><%
 			}
 			%><tr><td class="smallheading">Created:&nbsp;</td>
-			<td class="smalltext"><%=((audit.getCreatedById() != null) ? FREDUtil.getUserName(audit.getCreatedById().intValue()) + "<br />" : "")%>
+			<td class="smalltext"><%=((audit.getCreatedById() != null) ? audit.getCreatedBy().getFullName() + "<br />" : "")%>
 				<%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "")%></td></tr>
 			<tr><td class="smallheading">Edited:&nbsp;</td><%
 			if (audit.getAuditEdits() != null && audit.getAuditEdits().size() > 0) {
 				AuditEdit edit = (AuditEdit) audit.getAuditEdits().iterator().next();
-			%><td class="smalltext"><%=((edit.getEditedById() != null) ? FREDUtil.getUserName(edit.getEditedById().intValue()) + "<br />" : "")%>
+			%><td class="smalltext"><%=((edit.getEditedById() != null) ? edit.getEditedBy().getFullName() + "<br />" : "")%>
 				<%=((edit.getEditedDate() != null) ? FREDUtil.formatDateForOutput(edit.getEditedDate()) : "")%></td></tr><%
 			}
 			%><tr><td class="smallheading">Submitted:&nbsp;</td>
-			<td class="smalltext"><%=((audit.getSubmittedById() != null) ? FREDUtil.getUserName(audit.getSubmittedById().intValue()) + "<br />" : "")%>
+			<td class="smalltext"><%=((audit.getSubmittedById() != null) ? audit.getSubmittedBy().getFullName() + "<br />" : "")%>
 				<%=((audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : "")%></td></tr>
 			<tr><td class="smallheading">Approved:&nbsp;</td>
-			<td class="smalltext"><%=((audit.getApprovedById() != null) ? FREDUtil.getUserName(audit.getApprovedById().intValue()) + "<br />" : "")%>
+			<td class="smalltext"><%=((audit.getApprovedById() != null) ? audit.getApprovedBy().getFullName() + "<br />" : "")%>
 				<%=((audit.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(audit.getApprovedDate()) : "")%></td></tr>
 
 			<tr><td class="smallheading"><a href="audit_detail.jsp?<%=((sample != null) ? "ID=" + sample.getSampleId() : "FeatID=" + feature.getFeatureId())%>" target="audit">More...</a></td></tr>

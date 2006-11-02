@@ -92,26 +92,26 @@
 		</tr>
 				
 		<tr><td class="heading">Created:&nbsp;&nbsp;</td>
-		<td><%=((audit.getCreatedById() != null) ? FREDUtil.getUserName(audit.getCreatedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+		<td><%=((audit.getCreatedById() != null) ? audit.getCreatedBy().getFullName() : "&nbsp;")%>&nbsp;&nbsp;</td>
 		<td><%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
 		</tr><%
 				
 		for (AuditEdit edit : AuditUtil.getOrderedAuditEdits(audit)) {
 			%><tr><td class="heading">Edited:&nbsp;&nbsp;</td>
-			<td><%=((edit.getEditedById() != null) ? FREDUtil.getUserName(edit.getEditedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+			<td><%=((edit.getEditedById() != null) ? edit.getEditedBy().getFullName() : "&nbsp;")%>&nbsp;&nbsp;</td>
 			<td><%=((edit.getEditedDate() != null) ? FREDUtil.formatDateForOutput(edit.getEditedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
 			<td class="smalltext"><%=DBUtils.nvl(edit.getComments())%></td></tr><%				
 		}
 		
 		if (!status.equals(FREDConstants.WORKING)) {
 			%><tr><td class="heading">Submitted:&nbsp;&nbsp;</td>
-			<td><%=((audit.getSubmittedById() != null) ? FREDUtil.getUserName(audit.getSubmittedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+			<td><%=((audit.getSubmittedById() != null) ? audit.getSubmittedBy().getFullName() : "&nbsp;")%>&nbsp;&nbsp;</td>
 			<td><%=((audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
 		}
 		
 		if (status.equals(FREDConstants.APPROVED)) {
 			%><tr><td class="heading">Approved:&nbsp;&nbsp;</td>
-			<td><%=((audit.getApprovedById() != null) ? FREDUtil.getUserName(audit.getApprovedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+			<td><%=((audit.getApprovedById() != null) ? audit.getApprovedBy().getFullName() : "&nbsp;")%>&nbsp;&nbsp;</td>
 			<td><%=((audit.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(audit.getApprovedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
 			<td class="smalltext"><%=DBUtils.nvl(audit.getCuratorComments())%></td></tr><%
 		}
@@ -142,19 +142,19 @@
 				</tr><%
 				
 				%><tr><td class="heading">Created:&nbsp;&nbsp;</td>
-				<td><%=((audit.getCreatedById() != null) ? FREDUtil.getUserName(audit.getCreatedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+				<td><%=((audit.getCreatedById() != null) ? audit.getCreatedBy().getFullName() : "&nbsp;")%>&nbsp;&nbsp;</td>
 				<td><%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
 
 				for (AuditEdit edit : AuditUtil.getOrderedAuditEdits(audit)) {
 					%><tr><td class="heading">Edited:&nbsp;&nbsp;</td>
-					<td><%=((edit.getEditedById() != null) ? FREDUtil.getUserName(edit.getEditedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+					<td><%=((edit.getEditedById() != null) ? edit.getEditedBy().getFullName() : "&nbsp;")%>&nbsp;&nbsp;</td>
 					<td><%=((edit.getEditedDate() != null) ? FREDUtil.formatDateForOutput(edit.getEditedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
 					<td class="smalltext"><%=DBUtils.nvl(edit.getComments())%></td></tr><%				
 				}
 				
 				if (!status.equals(FREDConstants.WORKING)) {
 					%><tr><td class="heading">Submitted:&nbsp;&nbsp;</td>
-					<td><%=((audit.getSubmittedById() != null) ? FREDUtil.getUserName(audit.getSubmittedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+					<td><%=((audit.getSubmittedById() != null) ? audit.getSubmittedBy().getFullName() : "&nbsp;")%>&nbsp;&nbsp;</td>
 					<td><%=((audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
 				}
 				
@@ -181,19 +181,19 @@
 					
 					<tr><td class="heading">Origin:&nbsp;&nbsp;</td><td colspan="3"><%=(audit.getDataOrigin() != null) ? audit.getDataOrigin().getName() + " (" + audit.getDataOrigin().getDescription() + ")" : ""%></td></tr>
 					<tr><td class="heading">Created:&nbsp;&nbsp;</td>
-					<td><%=((audit.getCreatedById() != null) ? FREDUtil.getUserName(audit.getCreatedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+					<td><%=((audit.getCreatedById() != null) ? audit.getCreatedBy().getFullName() : "&nbsp;")%>&nbsp;&nbsp;</td>
 					<td><%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
 					
 					for (AuditEdit edit : AuditUtil.getOrderedAuditEdits(audit)) {
 						%><tr><td class="heading">Edited:&nbsp;&nbsp;</td>
-						<td><%=((edit.getEditedById() != null) ? FREDUtil.getUserName(edit.getEditedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+						<td><%=((edit.getEditedById() != null) ? edit.getEditedBy().getFullName() : "&nbsp;")%>&nbsp;&nbsp;</td>
 						<td><%=((edit.getEditedDate() != null) ? FREDUtil.formatDateForOutput(edit.getEditedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
 						<td class="smalltext"><%=DBUtils.nvl(edit.getComments())%></td></tr><%				
 					}
 					
 					if (!status.equals(FREDConstants.WORKING)) {
 						%><tr><td class="heading">Submitted:&nbsp;&nbsp;</td>
-						<td><%=((audit.getSubmittedById() != null) ? FREDUtil.getUserName(audit.getSubmittedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+						<td><%=((audit.getSubmittedById() != null) ? audit.getSubmittedBy().getFullName() : "&nbsp;")%>&nbsp;&nbsp;</td>
 						<td><%=((audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
 					}
 					
@@ -221,19 +221,19 @@
 					
 					<tr><td class="heading">Origin:&nbsp;&nbsp;</td><td colspan="3"><%=(audit.getDataOrigin() != null) ? audit.getDataOrigin().getName() + " (" + audit.getDataOrigin().getDescription() + ")" : ""%></td></tr>
 					<tr><td class="heading">Created:&nbsp;&nbsp;</td>
-					<td><%=((audit.getCreatedById() != null) ? FREDUtil.getUserName(audit.getCreatedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+					<td><%=((audit.getCreatedById() != null) ? audit.getCreatedBy().getFullName() : "&nbsp;")%>&nbsp;&nbsp;</td>
 					<td><%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
 					
 					for (AuditEdit edit : AuditUtil.getOrderedAuditEdits(audit)) {
 						%><tr><td class="heading">Edited:&nbsp;&nbsp;</td>
-						<td><%=((edit.getEditedById() != null) ? FREDUtil.getUserName(edit.getEditedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+						<td><%=((edit.getEditedById() != null) ? edit.getEditedBy().getFullName() : "&nbsp;")%>&nbsp;&nbsp;</td>
 						<td><%=((edit.getEditedDate() != null) ? FREDUtil.formatDateForOutput(edit.getEditedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td>
 						<td class="smalltext"><%=DBUtils.nvl(edit.getComments())%></td></tr><%				
 					}
 					
 					if (!status.equals(FREDConstants.WORKING)) {
 						%><tr><td class="heading">Submitted:&nbsp;&nbsp;</td>
-						<td><%=((audit.getSubmittedById() != null) ? FREDUtil.getUserName(audit.getSubmittedById().intValue()) : "&nbsp;")%>&nbsp;&nbsp;</td>
+						<td><%=((audit.getSubmittedById() != null) ? audit.getSubmittedBy().getFullName() : "&nbsp;")%>&nbsp;&nbsp;</td>
 						<td><%=((audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : "&nbsp;")%>&nbsp;&nbsp;</td></tr><%
 					}
 					

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.FrUserView;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 
@@ -44,13 +45,19 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
     private String sendMessage;
 
     /** persistent field */
+    private FrUserView submittedBy;
+    
+    /** persistent field */
+    private FrUserView approvedBy;
+    
+    /** persistent field */
     private TaxonomicGroup taxonomicGroup;
 
     /** persistent field */
     private Set<PaleontologyListEntry> palLists;
 
     /** full constructor */
-    public TaxonomicLookup(String taxonomicName, String author, String status, Integer submittedById, Date submittedDate, Integer approvedById, Date approvedDate, String panelistComments, String sendMessage, nz.cri.gns.fred.hibernate.TaxonomicGroup taxonomicGroup, Set<PaleontologyListEntry> palLists) {
+    public TaxonomicLookup(String taxonomicName, String author, String status, Integer submittedById, Date submittedDate, Integer approvedById, Date approvedDate, String panelistComments, String sendMessage, FrUserView submittedBy, FrUserView approvedBy, TaxonomicGroup taxonomicGroup, Set<PaleontologyListEntry> palLists) {
         this.taxonomicName = taxonomicName;
         this.author = author;
         this.status = status;
@@ -60,6 +67,8 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
         this.approvedDate = approvedDate;
         this.panelistComments = panelistComments;
         this.sendMessage = sendMessage;
+        this.submittedBy = submittedBy;
+        this.approvedBy = approvedBy;
         this.taxonomicGroup = taxonomicGroup;
         this.palLists = palLists;
     }
@@ -156,6 +165,22 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
         this.sendMessage = sendMessage;
     }
 
+    public void setSubmittedBy(FrUserView submittedBy) {
+		this.submittedBy = submittedBy;
+	}
+
+	public FrUserView getSubmittedBy() {
+		return submittedBy;
+	}
+
+	public void setApprovedBy(FrUserView approvedBy) {
+		this.approvedBy = approvedBy;
+	}
+
+	public FrUserView getApprovedBy() {
+		return approvedBy;
+	}
+	
     public TaxonomicGroup getTaxonomicGroup() {
         return this.taxonomicGroup;
     }

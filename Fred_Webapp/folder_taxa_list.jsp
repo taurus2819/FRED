@@ -82,7 +82,7 @@ public String getName(HttpServletRequest request) {
 					%><tr><td style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=taxon.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=((taxon.getSubmittedById() != null) ? FREDUtil.getUserName(taxon.getSubmittedById().intValue()) : "")%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=((taxon.getSubmittedById() != null) ? taxon.getSubmittedBy().getFullName() : "")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getSubmittedDate()) : "")%>&nbsp;&nbsp;</td><%
 					if (!FREDUtil.isEmpty(taxon.getListEntries())) {
 						%><td style="text-align: left"><%
@@ -112,7 +112,7 @@ public String getName(HttpServletRequest request) {
 					%><tr><td style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=taxon.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=((taxon.getApprovedById() != null) ? FREDUtil.getUserName(taxon.getApprovedById().intValue()) : "")%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=((taxon.getApprovedById() != null) ? taxon.getApprovedBy().getFullName() : "")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=((taxon.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(taxon.getApprovedDate()) : "")%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getPanelistComments())%>&nbsp;&nbsp;</td><%
 					if (!FREDUtil.isEmpty(taxon.getListEntries())) {

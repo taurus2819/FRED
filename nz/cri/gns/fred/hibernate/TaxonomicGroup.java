@@ -17,7 +17,7 @@ public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
 
     /** persistent field */
     private Set palLists;
-
+    
     /** persistent field */
     private Set<FrUserView> panelists;
 
@@ -53,7 +53,7 @@ public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
         this.name = name;
     }
 
-    public Set getPalLists() {
+	public Set getPalLists() {
         return this.palLists;
     }
 

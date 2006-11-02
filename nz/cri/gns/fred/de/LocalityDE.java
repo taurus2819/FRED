@@ -7,7 +7,6 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -210,11 +209,11 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 				template.addSub("approved", "yes");
 				template.loadUntil(out, "{@approvedInformation}");
 				if (audit.getCuratorComments() != null)
-					out.print("<tr><td>" + ((audit.getApprovedById() != null) ? FREDUtil.getUserName(audit.getApprovedById().intValue()) : "") + "</td>"
+					out.print("<tr><td>" + ((audit.getApprovedById() != null) ? audit.getApprovedBy().getFullName() : "") + "</td>"
 							+ "<td class=\"smalltext\">" + ((audit.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(audit.getApprovedDate()) : "") + "</td>"
 							+ "<td>Curator approval comments: " + DBUtils.nvl(audit.getCuratorComments()) + "</td></tr>");
 				for (AuditEdit ae : AuditUtil.getOrderedAuditEdits(audit))
-					out.write("<tr><td>" + ((ae.getEditedById() != null) ? FREDUtil.getUserName(ae.getEditedById().intValue()) : "") + "</td>"
+					out.write("<tr><td>" + ((ae.getEditedById() != null) ? ae.getEditedBy().getFullName() : "") + "</td>"
 							+ "<td class=\"smalltext\">" + ((ae.getEditedDate() != null) ? FREDUtil.formatDateForOutput(ae.getEditedDate()) : "") + "</td>"
 							+ "<td>" + DBUtils.nvl(ae.getComments()) + "</td></tr>");
 				out.println("<tr><td class=\"heading\" colspan=\"2\">Edit Comments</td><td><textarea name=\"EditComm\" rows=\"3\" cols=\"40\">"

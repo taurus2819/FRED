@@ -117,7 +117,7 @@
 				<td style="text-align: left" class="heading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=(audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : ""%>&nbsp;&nbsp;</td>
-				<td style="text-align: left"><%=FREDUtil.getUserName(audit.getSubmittedById().intValue())%>&nbsp;&nbsp;</td>
+				<td style="text-align: left"><%=audit.getSubmittedBy().getFullName()%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId()%>&q=<%=Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print Locality" /></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%
@@ -151,7 +151,7 @@
 				<td style="text-align: left"><span class="heading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></span>&nbsp;&nbsp;<%=(feature.getFeatureName() != null) ? "<br />(" + feature.getFeatureName() + ")&nbsp;&nbsp;" : ""%></td>
 				<td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=(audit.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(audit.getApprovedDate()) : ""%>&nbsp;&nbsp;</td>
-				<td style="text-align: left"><%=(audit.getApprovedById() != null) ? FREDUtil.getUserName(audit.getApprovedById().intValue()) : ""%>&nbsp;&nbsp;</td>
+				<td style="text-align: left"><%=(audit.getApprovedById() != null) ? audit.getApprovedBy().getFullName() : ""%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId()%>&q=<%=Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print Locality" /></a></td></tr>
 				<tr><td colspan="8"><img src="images/line.gif" height="3" width="550" /></td></tr><%

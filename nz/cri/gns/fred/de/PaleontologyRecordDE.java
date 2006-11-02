@@ -24,6 +24,7 @@ import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.FREDConstants;
+import nz.cri.gns.fred.model.FrUserView;
 import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.PalListMeta;
@@ -61,6 +62,8 @@ public class PaleontologyRecordDE extends RecordDE {
 		private Date approvedDate;
 		private String panelistComments;
 		private String sendMessage;
+	    private FrUserView submittedBy;
+	    private FrUserView approvedBy;
 		private TaxonomicGroup taxonomicGroup;
 		private Set<PaleontologyListEntry> listEntries;
 		
@@ -136,6 +139,22 @@ public class PaleontologyRecordDE extends RecordDE {
 			this.submittedDate = submittedDate;
 		}
 
+	    public void setSubmittedBy(FrUserView submittedBy) {
+			this.submittedBy = submittedBy;
+		}
+
+		public FrUserView getSubmittedBy() {
+			return submittedBy;
+		}
+
+		public void setApprovedBy(FrUserView approvedBy) {
+			this.approvedBy = approvedBy;
+		}
+
+		public FrUserView getApprovedBy() {
+			return approvedBy;
+		}
+		
 		public TaxonomicGroup getTaxonomicGroup() {
 			return taxonomicGroup;
 		}

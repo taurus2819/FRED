@@ -292,24 +292,6 @@ public class FREDUtil {
 		
 	}
 
-	public static String getUserName(int userId) throws NamingException, SQLException {
-		Connection conn = null;
-		try {
-			conn = getConnection();
-			Statement statement = conn.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT given_name || ' ' || family_name FROM ip.person_view WHERE pe_id = " + userId);
-			String name = (rs.next()) ? rs.getString(1) : "";
-			rs.close();
-			statement.close();
-			return name;
-		} finally {
-			if (conn != null) try {
-				conn.close();
-			} catch (Exception _e) {
-			}
-		}
-	}
-	
 	/**
 	 * @return
 	 * @throws NamingException

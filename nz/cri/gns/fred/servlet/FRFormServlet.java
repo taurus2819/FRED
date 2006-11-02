@@ -284,7 +284,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		mfTable.setWidths(new float[] {18 * MM_TO_PT, 57 * MM_TO_PT});
 			
 		PDFUtil.addCells(mfTable, new String[] {"Masterfile:", ((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : null)}, new Font[] {fonts[1], fonts[0]});
-		String approveStr = ((feature.getAudit().getApprovedById() != null) ? FREDUtil.getUserName(feature.getAudit().getApprovedById().intValue()) : "")
+		String approveStr = ((feature.getAudit().getApprovedById() != null) ? feature.getAudit().getApprovedBy().getFullName() : "")
 				+ ((feature.getAudit().getApprovedDate() != null) ? " " + FREDUtil.formatDateForOutput(feature.getAudit().getApprovedDate()) : "");
 		PDFUtil.addCells(mfTable, new String[] {"Approved:", approveStr}, new Font[] {fonts[1], fonts[0]});
 		if (feature.getAudit().getCuratorComments() != null)
@@ -620,18 +620,6 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		}
 	}
 
-	private void makeErrorPdf() throws DocumentException, IOException {
-		Document document = new Document(PageSize.A4, 20 * MM_TO_PT, 15 * MM_TO_PT, 15 * MM_TO_PT, 20 * MM_TO_PT);
-		PdfWriter writer = PdfWriter.getInstance(document, response.getOutputStream());
-		writer.setEncryption(true, null, null, PdfWriter.AllowPrinting | PdfWriter.AllowScreenReaders);
-		document.open();
-		PdfPTable table = new PdfPTable(1);
-		table.setLockedWidth(true);
-		PDFUtil.addCell(table, "An error has occured when generating this form", FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD));
-		document.add(table);
-		document.close();
-	}
-	
 	public void onOpenDocument(PdfWriter writer, Document document) {
 		baseFont = FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD).getBaseFont();
 	}

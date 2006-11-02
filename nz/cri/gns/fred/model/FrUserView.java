@@ -17,4 +17,10 @@ public interface FrUserView extends Comparable<FrUserView>, NameableAndIdentifia
 	public String getFullName();
 	public void setTaxonomicGroups(Set<TaxonomicGroup> taxonomicGroups);
 	public Set<TaxonomicGroup> getTaxonomicGroups();
+	public void setAuditsByCreatedById(Set<Audit> auditsByCreatedById);
+	public Set<Audit> getAuditsByCreatedById();
+	public void setAuditsBySubmittedById(Set<Audit> auditsBySubmittedById);
+	public Set<Audit> getAuditsBySubmittedById();
+	public void setAuditsByApprovedById(Set<Audit> auditsByApprovedById);
+	public Set<Audit> getAuditsByApprovedById();
 }

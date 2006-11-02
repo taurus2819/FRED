@@ -98,7 +98,7 @@
 				<td style="text-align: left" class="heading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=(audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : ""%>&nbsp;&nbsp;</td>
-				<td style="text-align: left"><%=FREDUtil.getUserName(audit.getSubmittedById().intValue())%>&nbsp;&nbsp;</td>
+				<td style="text-align: left"><%=audit.getSubmittedBy().getFullName()%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("backlog_folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId()%>&q=<%=Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print Locality" /></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%

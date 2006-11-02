@@ -3,9 +3,8 @@ package nz.cri.gns.fred.model;
 import java.util.Date;
 import java.util.Set;
 
-/**
- *
- */
+import nz.cri.gns.fred.hibernate.FrUserView;
+
 public interface Audit {
     public Integer getAuditId();
     public void setAuditId(Integer auditId);
@@ -31,10 +30,16 @@ public interface Audit {
     public void setSendMessage(String sendMessage);
     public Integer getSecurityClassId();
     public void setSecurityClassId(Integer securityClassId);
-    public DataOrigin getDataOrigin();
-    public void setDataOrigin(DataOrigin dataOrigin);
     public Folder getFolder();
     public void setFolder(Folder folder);
+    public DataOrigin getDataOrigin();
+    public void setDataOrigin(DataOrigin dataOrigin);
+	public FrUserView getCreatedBy();
+    public void setCreatedBy(FrUserView createdBy);
+	public FrUserView getSubmittedBy();
+	public void setSubmittedBy(FrUserView submittedBy);
+	public FrUserView getApprovedBy();
+	public void setApprovedBy(FrUserView approvedBy);
     public Set<Sample> getSamples();
     public void setSamples(Set<Sample> samples);
     public Set<Record> getRecords();
