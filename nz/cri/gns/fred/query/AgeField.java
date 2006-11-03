@@ -7,30 +7,30 @@ import nz.cri.gns.db.querybuilder.InvalidOperatorException;
 import nz.cri.gns.db.querybuilder.InvalidValueException;
 import nz.cri.gns.db.querybuilder.Operator;
 import nz.cri.gns.db.querybuilder.Value;
-import nz.cri.gns.db.querybuilder.advanced.hql.HqlAliasedJoin;
-import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredPossibleValueField;
+import nz.cri.gns.db.querybuilder.advanced.TableRequiredPossibleValueField;
+import nz.cri.gns.db.querybuilder.advanced.hql.HqlJoin;
 import nz.cri.gns.fred.model.AgeView;
 
-public class HqlTableRequiredAgeField extends HqlTableRequiredPossibleValueField {
+public class AgeField extends TableRequiredPossibleValueField {
 
 	private static final long serialVersionUID = 20061026L;
 	
 	private List<AgeView> ages;
-	private HqlTableRequiredNumericAgeField numericField;
+	private NumericAgeField numericField;
 	
-	public HqlTableRequiredAgeField(String databaseName, String humanName, List<AgeView> values, String[] tables, HqlAliasedJoin[] joins) {
+	public AgeField(String databaseName, String humanName, List<AgeView> values, String[] tables, HqlJoin[] joins) {
 		super(databaseName, humanName, values, tables, joins);
 		this.ages = values;
-		this.numericField = new HqlTableRequiredNumericAgeField(databaseName, humanName, tables, joins);
+		this.numericField = new NumericAgeField(databaseName, humanName, tables, joins);
 	}
 
 	/**
 	 * Convenience constructor for when there is only one joining table
 	 */
-	public HqlTableRequiredAgeField(String databaseName, String humanName, List<AgeView> values, String table, HqlAliasedJoin join) {
+	public AgeField(String databaseName, String humanName, List<AgeView> values, String table, HqlJoin join) {
 		super(databaseName, humanName, values, table, join);
 		this.ages = values;
-		this.numericField = new HqlTableRequiredNumericAgeField(databaseName, humanName, table, join);
+		this.numericField = new NumericAgeField(databaseName, humanName, table, join);
 	}
 	
 	//Bean methods
@@ -38,7 +38,7 @@ public class HqlTableRequiredAgeField extends HqlTableRequiredPossibleValueField
 	 * This constructor is implement to satisfy the bean requirements.  Other
 	 * code should not use it.
 	 */
-	public HqlTableRequiredAgeField() {
+	public AgeField() {
 	}
 
 	public void checkValue(Operator operator, Value value) throws InvalidOperatorException, InvalidValueException {

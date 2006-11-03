@@ -5,21 +5,21 @@ import nz.cri.gns.db.querybuilder.InvalidOperatorException;
 import nz.cri.gns.db.querybuilder.InvalidValueException;
 import nz.cri.gns.db.querybuilder.Operator;
 import nz.cri.gns.db.querybuilder.Value;
-import nz.cri.gns.db.querybuilder.advanced.hql.HqlAliasedJoin;
-import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredNumberField;
+import nz.cri.gns.db.querybuilder.advanced.TableRequiredNumberField;
+import nz.cri.gns.db.querybuilder.advanced.hql.HqlJoin;
 
-public class HqlTableRequiredNumericAgeField extends HqlTableRequiredNumberField {
+public class NumericAgeField extends TableRequiredNumberField {
 
 	private static final long serialVersionUID = 20061026L;
 	
-	public HqlTableRequiredNumericAgeField(String databaseName, String humanName, String[] tables, HqlAliasedJoin[] joins) {
+	public NumericAgeField(String databaseName, String humanName, String[] tables, HqlJoin[] joins) {
 		super(databaseName, humanName, tables, joins);
 	}
 
 	/**
 	 * Convenience constructor for when there is only one joining table
 	 */
-	public HqlTableRequiredNumericAgeField(String databaseName, String humanName, String table, HqlAliasedJoin join) {
+	public NumericAgeField(String databaseName, String humanName, String table, HqlJoin join) {
 		super(databaseName, humanName, table, join);
 	}
 	
@@ -28,7 +28,7 @@ public class HqlTableRequiredNumericAgeField extends HqlTableRequiredNumberField
 	 * This constructor is implement to satisfy the bean requirements.  Other
 	 * code should not use it.
 	 */
-	public HqlTableRequiredNumericAgeField() {
+	public NumericAgeField() {
 	}
 
 	public String getJoin(Operator op, Value value) throws InvalidOperatorException, InvalidValueException {

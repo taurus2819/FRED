@@ -5,10 +5,10 @@ import nz.cri.gns.db.querybuilder.InvalidOperatorException;
 import nz.cri.gns.db.querybuilder.InvalidValueException;
 import nz.cri.gns.db.querybuilder.Operator;
 import nz.cri.gns.db.querybuilder.Value;
-import nz.cri.gns.db.querybuilder.advanced.hql.HqlAliasedJoin;
-import nz.cri.gns.db.querybuilder.advanced.hql.HqlTableRequiredNumberField;
+import nz.cri.gns.db.querybuilder.advanced.TableRequiredNumberField;
+import nz.cri.gns.db.querybuilder.advanced.hql.HqlJoin;
 
-public class FrNumberNumberField extends HqlTableRequiredNumberField {
+public class FrNumberNumberField extends TableRequiredNumberField {
 
 	private static final long serialVersionUID = 20061026L;
 	
@@ -17,8 +17,8 @@ public class FrNumberNumberField extends HqlTableRequiredNumberField {
 	private BasicNumberField metricSampleFrNumberField;
 	private BasicNumberField imperialSampleFrNumberField;
 	
-	private static final String SAMPLE_TABLE = "Sample";
-	private static final HqlAliasedJoin SAMPLE_JOIN = new HqlAliasedJoin("f", "samples", "sample");
+	private static final String SAMPLE_TABLE = "f.samples";
+	private static final HqlJoin SAMPLE_JOIN = new HqlJoin(false, "sample");
 
 	
 	public FrNumberNumberField(String databaseName, String humanName) {
