@@ -114,7 +114,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		add(new TwoLevelField("Vertical Section Fields", f));
 		
 		f = new Field[5];
-		f[0] = new HqlUniqueSubTablePossibleValueField("collector.name", "Collectors", people, new String[] {"f.samples", "sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "collector")});
+		f[0] = new HqlUniqueSubTablePossibleValueField("collector", "Collectors", people, new String[] {"f.samples", "sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "collector")});
 		f[1] = new TableRequiredDateField("sample.collectionDate", "Collection Date", SAMPLE_TABLE, SAMPLE_JOIN);
 		f[2] = new TableRequiredPossibleValueField("sample.inPlace", "Fossils In Place", getInPlace(), SAMPLE_TABLE, SAMPLE_JOIN);
 		f[3] = new TableRequiredTextField("sample.notCollected", "Not Collected", SAMPLE_TABLE, SAMPLE_JOIN);
