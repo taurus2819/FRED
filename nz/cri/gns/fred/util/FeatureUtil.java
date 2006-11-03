@@ -914,7 +914,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			while (serialNumStr.length() < 4)
 				serialNumStr = "0" + serialNumStr;
 			FrNumber frNumber = null;
-			System.out.println("Parsed number = " + mapSheet + "/f" + serialNumStr + ((recollectionNumber != null) ? recollectionNumber : ""));
 			if (yard)
 				frNumber = featureDAO.getYardFrNumber(mapSheet + "/f" + serialNumStr + ((recollectionNumber != null) ? recollectionNumber : ""));
 			else
