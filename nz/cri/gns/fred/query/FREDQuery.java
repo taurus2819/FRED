@@ -23,7 +23,6 @@ import nz.cri.gns.db.querybuilder.advanced.TableRequiredTextField;
 import nz.cri.gns.db.querybuilder.advanced.TwoLevelField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlJoin;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlQuery;
-import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTableTextField;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.AgeView;
@@ -113,12 +112,12 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[7] = new MetricDepthField("f.finishDepth", "Base Horizon (m)", "f.depthUnit");
 		add(new TwoLevelField("Vertical Section Fields", f));
 		
-		f = new Field[5];
+		f = new Field[4];
 		//f[0] = new HqlUniqueSubTableTextField("collector.name", "Collectors", new String[] {"Sample", "Collector"}, new HqlAliasedJoin[] {new HqlAliasedJoin("f", "samples", false, "sample"), new HqlAliasedJoin("sample", "collectors", false, "collector")});
-		f[1] = new TableRequiredDateField("sample.collectionDate", "Collection Date", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[2] = new TableRequiredPossibleValueField("sample.inPlace", "Fossils In Place", getInPlace(), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[3] = new TableRequiredTextField("sample.notCollected", "Not Collected", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[4] = new TableRequiredTextField("sample.significance", "Significance/Comments", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[0] = new TableRequiredDateField("sample.collectionDate", "Collection Date", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[1] = new TableRequiredPossibleValueField("sample.inPlace", "Fossils In Place", getInPlace(), SAMPLE_TABLE, SAMPLE_JOIN);
+		f[2] = new TableRequiredTextField("sample.notCollected", "Not Collected", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[3] = new TableRequiredTextField("sample.significance", "Significance/Comments", SAMPLE_TABLE, SAMPLE_JOIN);
 		//need to add collectors, sent to
 		add(new TwoLevelField("Collection Fields", f));
 		
