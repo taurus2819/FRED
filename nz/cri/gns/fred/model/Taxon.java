@@ -32,10 +32,10 @@ public interface Taxon extends Comparable<Taxon> {
     public void setSendMessage(String sendMessage);
     public TaxonomicGroup getTaxonomicGroup();
     public void setTaxonomicGroup(TaxonomicGroup taxonomicGroup);
-	public FrUserView getSubmittedBy();
-    public void setSubmittedBy(FrUserView submittedBy);
-	public FrUserView getApprovedBy();
-	public void setApprovedBy(FrUserView approvedBy);
+	public UserView getSubmittedBy();
+    public void setSubmittedBy(UserView submittedBy);
+	public UserView getApprovedBy();
+	public void setApprovedBy(UserView approvedBy);
     public Set<PaleontologyListEntry> getListEntries();
     public void setListEntries(Set<PaleontologyListEntry> palLists);
 

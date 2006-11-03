@@ -4,10 +4,9 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
-import nz.cri.gns.fred.model.FrUserView;
+import nz.cri.gns.fred.model.UserView;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.TaxonomicGroup;
-
 
 /** @author Hibernate CodeGenerator */
 public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxon {
@@ -45,10 +44,10 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
     private String sendMessage;
 
     /** persistent field */
-    private FrUserView submittedBy;
+    private UserView submittedBy;
     
     /** persistent field */
-    private FrUserView approvedBy;
+    private UserView approvedBy;
     
     /** persistent field */
     private TaxonomicGroup taxonomicGroup;
@@ -57,7 +56,7 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
     private Set<PaleontologyListEntry> palLists;
 
     /** full constructor */
-    public TaxonomicLookup(String taxonomicName, String author, String status, Integer submittedById, Date submittedDate, Integer approvedById, Date approvedDate, String panelistComments, String sendMessage, FrUserView submittedBy, FrUserView approvedBy, TaxonomicGroup taxonomicGroup, Set<PaleontologyListEntry> palLists) {
+    public TaxonomicLookup(String taxonomicName, String author, String status, Integer submittedById, Date submittedDate, Integer approvedById, Date approvedDate, String panelistComments, String sendMessage, UserView submittedBy, UserView approvedBy, TaxonomicGroup taxonomicGroup, Set<PaleontologyListEntry> palLists) {
         this.taxonomicName = taxonomicName;
         this.author = author;
         this.status = status;
@@ -165,19 +164,19 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
         this.sendMessage = sendMessage;
     }
 
-    public void setSubmittedBy(FrUserView submittedBy) {
+    public void setSubmittedBy(UserView submittedBy) {
 		this.submittedBy = submittedBy;
 	}
 
-	public FrUserView getSubmittedBy() {
+	public UserView getSubmittedBy() {
 		return submittedBy;
 	}
 
-	public void setApprovedBy(FrUserView approvedBy) {
+	public void setApprovedBy(UserView approvedBy) {
 		this.approvedBy = approvedBy;
 	}
 
-	public FrUserView getApprovedBy() {
+	public UserView getApprovedBy() {
 		return approvedBy;
 	}
 	

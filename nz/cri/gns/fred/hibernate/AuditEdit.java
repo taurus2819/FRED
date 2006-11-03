@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import nz.cri.gns.fred.model.Audit;
-import nz.cri.gns.fred.model.FrUserView;
+import nz.cri.gns.fred.model.UserView;
 
 /** @author Hibernate CodeGenerator */
 public class AuditEdit implements Serializable, Comparable<nz.cri.gns.fred.model.AuditEdit>, nz.cri.gns.fred.model.AuditEdit {
@@ -27,10 +27,10 @@ public class AuditEdit implements Serializable, Comparable<nz.cri.gns.fred.model
     private Audit audit;
     
     /** persistent field */
-    private FrUserView editedBy;
+    private UserView editedBy;
 
     /** full constructor */
-    public AuditEdit(Integer editedById, Date editedDate, String comments, Audit auditTable, FrUserView editedBy) {
+    public AuditEdit(Integer editedById, Date editedDate, String comments, Audit auditTable, UserView editedBy) {
         this.editedById = editedById;
         this.editedDate = editedDate;
         this.comments = comments;
@@ -87,11 +87,11 @@ public class AuditEdit implements Serializable, Comparable<nz.cri.gns.fred.model
         this.audit = audit;
     }
 
-    public void setEditedBy(FrUserView editedBy) {
+    public void setEditedBy(UserView editedBy) {
 		this.editedBy = editedBy;
 	}
 
-	public FrUserView getEditedBy() {
+	public UserView getEditedBy() {
 		return editedBy;
 	}
 

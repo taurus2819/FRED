@@ -59,6 +59,7 @@ import nz.cri.gns.fred.hibernate.SiteView;
 import nz.cri.gns.fred.hibernate.Stage;
 import nz.cri.gns.fred.hibernate.TaxonomicGroup;
 import nz.cri.gns.fred.hibernate.TaxonomicLookup;
+import nz.cri.gns.fred.hibernate.UserView;
 import nz.cri.gns.fred.hibernate.Weathering;
 import nz.cri.gns.fred.hibernate.dao.FREDInterceptor;
 import nz.cri.gns.fred.hibernate.dao.HibernateDAOFactory;
@@ -147,6 +148,7 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 			Stage.class,
 			TaxonomicGroup.class,
 			TaxonomicLookup.class,
+			UserView.class,
 			Weathering.class
 		};
 	}

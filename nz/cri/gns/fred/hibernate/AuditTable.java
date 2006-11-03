@@ -11,6 +11,7 @@ import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Sample;
+import nz.cri.gns.fred.model.UserView;
 
 /** @author Hibernate CodeGenerator */
 public class AuditTable implements Serializable, Audit {
@@ -60,13 +61,13 @@ public class AuditTable implements Serializable, Audit {
     private DataOrigin dataOrigin;
 
     /** persistent field */
-    private FrUserView createdBy;
+    private UserView createdBy;
     
     /** persistent field */
-    private FrUserView submittedBy;
+    private UserView submittedBy;
     
     /** persistent field */
-    private FrUserView approvedBy;
+    private UserView approvedBy;
     
     /** persistent field */
     private Set<Sample> samples;
@@ -81,7 +82,7 @@ public class AuditTable implements Serializable, Audit {
     private Set<AuditEdit> auditEdits;
 
     /** full constructor */
-    public AuditTable(String status, Integer createdById, Date createdDate, Integer submittedById, Date submittedDate, Integer approvedById, Date approvedDate, String workingComments, String curatorComments, String sendMessage, Integer securityClassId, Folder folder, DataOrigin dataOrigin, FrUserView createdBy, FrUserView submittedBy, FrUserView approvedBy, Set<Sample> samples, Set<Record> records, Set<Feature> features, Set<AuditEdit> auditEdits) {
+    public AuditTable(String status, Integer createdById, Date createdDate, Integer submittedById, Date submittedDate, Integer approvedById, Date approvedDate, String workingComments, String curatorComments, String sendMessage, Integer securityClassId, Folder folder, DataOrigin dataOrigin, UserView createdBy, UserView submittedBy, UserView approvedBy, Set<Sample> samples, Set<Record> records, Set<Feature> features, Set<AuditEdit> auditEdits) {
         this.status = status;
         this.createdById = createdById;
         this.createdDate = createdDate;
@@ -231,27 +232,27 @@ public class AuditTable implements Serializable, Audit {
         this.dataOrigin = dataOrigin;
     }
 
-    public void setCreatedBy(FrUserView createdBy) {
+    public void setCreatedBy(UserView createdBy) {
 		this.createdBy = createdBy;
 	}
 
-	public FrUserView getCreatedBy() {
+	public UserView getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setSubmittedBy(FrUserView submittedBy) {
+	public void setSubmittedBy(UserView submittedBy) {
 		this.submittedBy = submittedBy;
 	}
 
-	public FrUserView getSubmittedBy() {
+	public UserView getSubmittedBy() {
 		return submittedBy;
 	}
 
-	public void setApprovedBy(FrUserView approvedBy) {
+	public void setApprovedBy(UserView approvedBy) {
 		this.approvedBy = approvedBy;
 	}
 
-	public FrUserView getApprovedBy() {
+	public UserView getApprovedBy() {
 		return approvedBy;
 	}
 

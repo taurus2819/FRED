@@ -55,6 +55,7 @@ import nz.cri.gns.fred.hibernate.Stage;
 import nz.cri.gns.fred.hibernate.StratigraphicUnit;
 import nz.cri.gns.fred.hibernate.TaxonomicGroup;
 import nz.cri.gns.fred.hibernate.TaxonomicLookup;
+import nz.cri.gns.fred.hibernate.UserView;
 import nz.cri.gns.fred.hibernate.Weathering;
 import nz.cri.gns.fred.hibernate.dao.FREDInterceptor;
 import nz.cri.gns.fred.hibernate.dao.HibernateDAOFactory;
@@ -154,6 +155,7 @@ public class HibernateUtil implements HibernateProvider {
 			StratigraphicUnit.class,
 			TaxonomicGroup.class,
 			TaxonomicLookup.class,
+			UserView.class,
 			Weathering.class
 		};
 	}

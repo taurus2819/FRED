@@ -55,10 +55,10 @@
     >
         <column name="AUDIT_ID" />
     </many-to-one>
-    <!-- bi-directional many-to-one association to FrUSerView -->
+    <!-- bi-directional many-to-one association to UserView -->
     <many-to-one
         name="editedBy"
-        class="nz.cri.gns.fred.hibernate.FrUserView"
+        class="nz.cri.gns.fred.hibernate.UserView"
         not-null="false"
         insert="false"
         update="false"

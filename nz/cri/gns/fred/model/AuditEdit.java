@@ -13,7 +13,7 @@ public interface AuditEdit extends Comparable<AuditEdit>{
 	public void setComments(String comments);
 	public Audit getAudit();
 	public void setAudit(Audit audit);
-	public FrUserView getEditedBy();
-    public void setEditedBy(FrUserView editedBy);
+	public UserView getEditedBy();
+    public void setEditedBy(UserView editedBy);
 
 }

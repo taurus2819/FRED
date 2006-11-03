@@ -34,12 +34,12 @@ public interface Audit {
     public void setFolder(Folder folder);
     public DataOrigin getDataOrigin();
     public void setDataOrigin(DataOrigin dataOrigin);
-	public FrUserView getCreatedBy();
-    public void setCreatedBy(FrUserView createdBy);
-	public FrUserView getSubmittedBy();
-	public void setSubmittedBy(FrUserView submittedBy);
-	public FrUserView getApprovedBy();
-	public void setApprovedBy(FrUserView approvedBy);
+	public UserView getCreatedBy();
+    public void setCreatedBy(UserView createdBy);
+	public UserView getSubmittedBy();
+	public void setSubmittedBy(UserView submittedBy);
+	public UserView getApprovedBy();
+	public void setApprovedBy(UserView approvedBy);
     public Set<Sample> getSamples();
     public void setSamples(Set<Sample> samples);
     public Set<Record> getRecords();

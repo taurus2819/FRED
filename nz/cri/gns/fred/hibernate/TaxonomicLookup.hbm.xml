@@ -107,20 +107,20 @@
             class="nz.cri.gns.fred.hibernate.PalList"
         />
     </set>
-    <!-- bi-directional many-to-one association to FrUSerView -->
+    <!-- bi-directional many-to-one association to UserView -->
     <many-to-one
         name="submittedBy"
-        class="nz.cri.gns.fred.hibernate.FrUserView"
+        class="nz.cri.gns.fred.hibernate.UserView"
         not-null="true"
         insert="false"
         update="false"
     >
         <column name="SUBMITTED_BY_ID" />
     </many-to-one>
-    <!-- bi-directional many-to-one association to FrUserView -->
+    <!-- bi-directional many-to-one association to UserView -->
     <many-to-one
         name="approvedBy"
-        class="nz.cri.gns.fred.hibernate.FrUserView"
+        class="nz.cri.gns.fred.hibernate.UserView"
         not-null="false"
         insert="false"
         update="false"
