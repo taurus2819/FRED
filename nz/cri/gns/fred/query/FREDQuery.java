@@ -61,17 +61,20 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	private List<KeyValueObject> frUsers = null;
 	
 	public FREDQuery() {
+		
+
+		
 		this.people = getValues("FROM Person AS p", Person.class);
 		this.ages = getValues("FROM AgeView AS a WHERE a.ageAbbrev <> 'nd' AND a.ageAbbrev <> 'nf'", AgeView.class);
 		this.frUsers = getSQLValues("SELECT pe_id, full_name FROM fr_user_view ORDER BY family_name, given_name");
 
-		//will need to make this a table required beasty to work properly if more than one field is selected
-//		Field[] f = new Field[4];
-//		f[0] = new FrNumberTextField("frNumber", "Fr Number");
-//		f[1] = new FrNumberTextField("mapSheet", "Fr Number Map Sheet");
-//		f[2] = new FrNumberNumberField("serialNumber", "Fr Number Serial Number");
-//		f[3] = new FrNumberTextField("recollectionNumber", "Fr Number Recollection Number");
-//		add(new TwoLevelField("FR Number Fields", f));
+		//this is going to be tricky.  Need to handle multiple selections and the ORs in the individual fields
+		//Field[] f = new Field[4];
+		//f[0] = new FrNumberTextField("frNumber", "Fr Number");
+		//f[1] = new FrNumberTextField("mapSheet", "Fr Number Map Sheet");
+		//f[2] = new FrNumberNumberField("serialNumber", "Fr Number Serial Number");
+		//f[3] = new FrNumberTextField("recollectionNumber", "Fr Number Recollection Number");
+		//add(new TwoLevelField("FR Number Fields", f));
 		
 		Field[] f = new Field[14];
 		f[0] = new BasicTextField("f.featureName", "Feature Name");
@@ -114,12 +117,12 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		add(new TwoLevelField("Vertical Section Fields", f));
 		
 		f = new Field[5];
-		f[0] = new HqlUniqueSubTablePossibleValueField("collector", "Collectors", people, new String[] {"f.samples", "sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "collector")});
+		f[0] = new HqlUniqueSubTablePossibleValueField("collector.personId", "Collector", people, new String[] {"f.samples", "sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "collector")});
 		f[1] = new TableRequiredDateField("sample.collectionDate", "Collection Date", SAMPLE_TABLE, SAMPLE_JOIN);
 		f[2] = new TableRequiredPossibleValueField("sample.inPlace", "Fossils In Place", getInPlace(), SAMPLE_TABLE, SAMPLE_JOIN);
 		f[3] = new TableRequiredTextField("sample.notCollected", "Not Collected", SAMPLE_TABLE, SAMPLE_JOIN);
 		f[4] = new TableRequiredTextField("sample.significance", "Significance/Comments", SAMPLE_TABLE, SAMPLE_JOIN);
-		//need to add collectors, sent to
+		//need to add sent to
 		add(new TwoLevelField("Collection Fields", f));
 		
 		f = new Field[10];
@@ -159,6 +162,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		add(new TwoLevelField("Correspondence Fields", f));
 		
 		f = new Field[4];
+		//f[0] = new HqlUniqueSubTablePossibleValueField("adoptor.personId", "Adoptor", people, new String[] {"f.samples", "sample.records", "record.adoption", "adoption.adoptors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "record"), new HqlJoin(false, "adoption"), new HqlJoin(false, "adoptor")});
 		f[0] = new TableRequiredDateField("record.adoption.adoptionDate", "Adoption Date", RECORD_TABLES, RECORD_JOINS);
 		f[1] = new AgeField("record.adoption.stage", "Adopted Stage", ages, RECORD_TABLES, RECORD_JOINS);
 		f[2] = new NumericAgeField("record.adoption.stage", "Adopted Stage (numeric)", RECORD_TABLES, RECORD_JOINS);

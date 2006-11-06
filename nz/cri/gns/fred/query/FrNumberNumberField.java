@@ -14,8 +14,8 @@ public class FrNumberNumberField extends TableRequiredNumberField {
 	
 	private BasicNumberField metricFrNumberField;
 	private BasicNumberField imperialFrNumberField;
-	private BasicNumberField metricSampleFrNumberField;
-	private BasicNumberField imperialSampleFrNumberField;
+	private TableRequiredNumberField metricSampleFrNumberField;
+	private TableRequiredNumberField imperialSampleFrNumberField;
 	
 	private static final String SAMPLE_TABLE = "f.samples";
 	private static final HqlJoin SAMPLE_JOIN = new HqlJoin(false, "sample");
@@ -25,8 +25,8 @@ public class FrNumberNumberField extends TableRequiredNumberField {
 		super(databaseName, humanName, SAMPLE_TABLE, SAMPLE_JOIN);
 		this.metricFrNumberField = new BasicNumberField("f.frNumber." + databaseName, humanName);
 		this.imperialFrNumberField = new BasicNumberField("f.yardFrNumber." + databaseName, humanName);
-		this.metricSampleFrNumberField = new BasicNumberField("sample.frNumber." + databaseName, humanName);
-		this.imperialSampleFrNumberField = new BasicNumberField("sample.yardFrNumber." + databaseName, humanName);
+		this.metricSampleFrNumberField = new TableRequiredNumberField("sample.frNumber." + databaseName, humanName, SAMPLE_TABLE, SAMPLE_JOIN);
+		this.imperialSampleFrNumberField = new TableRequiredNumberField("sample.yardFrNumber." + databaseName, humanName, SAMPLE_TABLE, SAMPLE_JOIN);
 	}
 
 	public String getJoin(Operator op, Value value) throws InvalidOperatorException, InvalidValueException {
