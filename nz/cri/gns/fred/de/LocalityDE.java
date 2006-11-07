@@ -174,9 +174,10 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 					template.addSub("noFrNumber", "yes");
 				} else {
 					template.addSub("hasFrNumber", "yes");
-					FrNumber frNumber = feature.getFrNumber();
-					template.addSub("frNumber", (frNumber != null ? frNumber.getFrNumber() : ""));
+					template.addSub("frNumber", (feature.getFrNumber().getFrNumber()));
 				}
+				template.addSub("needYardFrNumber", "yes");
+				template.addSub("yardFrNumber", (feature.getYardFrNumber() != null ? feature.getYardFrNumber().getFrNumber() : ""));
 			}
             if (feature.getFeatureId() != null)
                 template.addSub("featureId", feature.getFeatureId().toString());
@@ -356,6 +357,11 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			} catch (StorageAccessException e) {
 				e.printStackTrace();
 				//Should never happen
+			}
+			try {
+				feature.setYardFrNumber(featureUtil.parseYardFrNumber(request.getParameter("YardFRNumber"), true));
+			} catch (Exception e) {
+				error.add(new String[] {"Yard FR Number", e.getMessage()});
 			}
         }
         
