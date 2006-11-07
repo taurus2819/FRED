@@ -782,7 +782,7 @@ try {
 				//didn't pass isAllowedReadFeature()
 				if (user ==  null) {
 					%><tr><td>&nbsp;</td></tr>
-					<tr><td colspan="2">More data may be available for this locality for <a href="login.jsp?loginpage=<%=URLEncoder.encode("/detail.jsp", "ISO-8859-1")%>" class="boldlink">logged</a> in users</td></tr><%
+					<tr><td colspan="2">More data may be available for this locality for <a href="<%=this.getLoginURL() + "?loginpage=" + java.net.URLEncoder.encode(request.getRequestURI(), "ISO-8859-1")%>" class="boldlink">logged</a> in users</td></tr><%
 				}
 				%></table><%
 				endDETable(pageContext);
@@ -795,7 +795,7 @@ try {
 			%><table style="margin-left:20px; margin-top:20px; width:550px;" border="0">
 			<tr><td>You do not have rights to view this sample</td></tr><%
 			if (user == null) {
-				%><tr><td colspan="2">You may be able to view it if you <a href="login.jsp?loginpage=<%=URLEncoder.encode("/detail.jsp", "ISO-8859-1")%>" class="boldlink">login</a></td></tr><%
+				%><tr><td colspan="2">You may be able to view it if you <a href="<%=this.getLoginURL() + "?loginpage=" + java.net.URLEncoder.encode(request.getRequestURI(), "ISO-8859-1")%>" class="boldlink">login</a></td></tr><%
 			}
 			%></table><%
 		}
