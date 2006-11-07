@@ -152,7 +152,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[9] = new TableRequiredPossibleValueField("sample.colourModifier", "Colour Modifier", getValues("FROM ColourModifier AS c", ColourModifier.class), SAMPLE_TABLE, SAMPLE_JOIN);
 		f[10] = new TableRequiredPossibleValueField("sample.primaryColour", "Primary Colour", getValues("FROM RockColour AS r", RockColour.class), SAMPLE_TABLE, SAMPLE_JOIN);
 		f[11] = new TableRequiredPossibleValueField("sample.secondaryColour", "Secondary Colour", getValues("FROM RockColour AS r", RockColour.class), SAMPLE_TABLE, SAMPLE_JOIN);		
-		f[12] = new TableRequiredTextField("sample.depositionEnv", "Inferred Enviornment", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[12] = new TableRequiredTextField("sample.depositionEnv", "Inferred Environment", SAMPLE_TABLE, SAMPLE_JOIN);
 		f[13] = new TableRequiredTextField("sample.rockNature", "Nature of Rock Unit", SAMPLE_TABLE, SAMPLE_JOIN);
 		//need to add additional features
 		add(new TwoLevelField("Sedimentary Feature Fields", f));
