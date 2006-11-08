@@ -358,11 +358,14 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 				e.printStackTrace();
 				//Should never happen
 			}
-			try {
-				feature.setYardFrNumber(featureUtil.parseYardFrNumber(request.getParameter("YardFRNumber"), true));
-			} catch (Exception e) {
-				error.add(new String[] {"Yard FR Number", e.getMessage()});
-			}
+			if (FREDUtil.isEmpty(request.getParameter("YardFRNumber"))) {
+				try {
+					feature.setYardFrNumber(featureUtil.parseYardFrNumber(request.getParameter("YardFRNumber"), true));
+				} catch (Exception e) {
+					error.add(new String[] {"Yard FR Number", e.getMessage()});
+				}
+			} else
+				feature.setYardFrNumber(null);
         }
         
 		//Feature name
