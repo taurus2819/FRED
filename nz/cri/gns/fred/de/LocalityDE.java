@@ -359,6 +359,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 				//Should never happen
 			}
 			if (!FREDUtil.isEmpty(request.getParameter("YardFRNumber"))) {
+				System.out.println("Parsing Yard number");
 				try {
 					feature.setYardFrNumber(featureUtil.parseYardFrNumber(request.getParameter("YardFRNumber"), true));
 				} catch (Exception e) {
