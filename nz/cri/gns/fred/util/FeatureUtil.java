@@ -636,9 +636,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			if (feature.getMasterFile() != null)
 				mfFolder = folderDAO.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
 			return ((folder != null && folder.isAllowedReadLocalities()) || (mfFolder != null && mfFolder.isAllowedReadLocalities()));
-
 		}
-		return true;
+		//exclude any features with security class <> 4 - no checking of user at this stage.
+		return (feature.getAudit().getSecurityClassId() == null || feature.getAudit().getSecurityClassId().intValue() == 4);
 	}
 	
 	/**

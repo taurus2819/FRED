@@ -254,10 +254,8 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			return (folder != null && folder.isAllowedReadLocalities());
 		}
 		
-		/**
-		 * @TODO last stage is to check sample security code assume OK for moment
-		 */
-		return true;
+		//exclude any records with security class <> 4 - no checking of user at this stage.
+		return (record.getAudit().getSecurityClassId() == null || record.getAudit().getSecurityClassId().intValue() == 4);
     }
     
     public boolean isAllowedReadPalList(UserAccount user, Paleontology palRecord) throws StorageAccessException {

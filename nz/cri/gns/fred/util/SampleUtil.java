@@ -336,10 +336,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			return (folder != null && folder.isAllowedReadLocalities());
 		}
 		
-		/**
-		 * @TODO last stage is to check sample security code assume OK for moment
-		 */
-		return true;
+		//exclude any samples with security class <> 4 - no checking of user at this stage.
+		return (sample.getAudit().getSecurityClassId() == null || sample.getAudit().getSecurityClassId().intValue() == 4);
 	}	
 	
 	/**
