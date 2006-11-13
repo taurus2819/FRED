@@ -638,7 +638,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			return ((folder != null && folder.isAllowedReadLocalities()) || (mfFolder != null && mfFolder.isAllowedReadLocalities()));
 		}
 		//exclude any features with security class <> 4 - no checking of user at this stage.
-		return (feature.getAudit().getSecurityClassId() == null || feature.getAudit().getSecurityClassId().intValue() == 4);
+		return (feature.getAudit().getSecurityClassId() == null || feature.getAudit().getSecurityClassId().intValue() == 4 || feature.getAudit().getSecurityClassId().intValue() == 5);
 	}
 	
 	/**

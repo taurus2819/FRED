@@ -1,7 +1,6 @@
 package nz.cri.gns.fred.util;
 
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -286,15 +285,6 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 				throw new MandatoryFieldsMissingException();
 			
 			Audit audit = sample.getAudit();
-			
-			//explicity add feature to folder.
-			try {
-				Feature feature = sample.getFeature();
-				feature.getFolders().add(audit.getFolder());
-				factory.getFeatureDAO().update(feature);
-			} catch (Exception e) {
-			}
-			
 			audit.setStatus(APPROVED);		//Samples don't need approval
 			audit.setSubmittedById(new Integer(user.getId()));
 			audit.setSubmittedDate(new Date());
@@ -337,7 +327,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		}
 		
 		//exclude any samples with security class <> 4 - no checking of user at this stage.
-		return (sample.getAudit().getSecurityClassId() == null || sample.getAudit().getSecurityClassId().intValue() == 4);
+		return (sample.getAudit().getSecurityClassId() == null || sample.getAudit().getSecurityClassId().intValue() == 4 || sample.getAudit().getSecurityClassId().intValue() == 5);
 	}	
 	
 	/**

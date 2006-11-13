@@ -17,7 +17,6 @@ import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.FREDConstants;
-import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.Paleontology;
@@ -122,16 +121,6 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			throw new InsufficientPrivelegesException();
 		
 		Audit audit = record.getAudit();
-		
-		//explicity add feature to folder.
-		try {
-			Feature feature = record.getSample().getFeature();
-			feature.getFolders().add(audit.getFolder());
-			factory.getFeatureDAO().update(feature);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
 		audit.setStatus(APPROVED);		//Records don't need approval
 		audit.setSubmittedById(new Integer(user.getId()));
 		audit.setSubmittedDate(new Date());
@@ -255,7 +244,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		}
 		
 		//exclude any records with security class <> 4 - no checking of user at this stage.
-		return (record.getAudit().getSecurityClassId() == null || record.getAudit().getSecurityClassId().intValue() == 4);
+		return (record.getAudit().getSecurityClassId() == null || record.getAudit().getSecurityClassId().intValue() == 4 || record.getAudit().getSecurityClassId().intValue() == 5);
     }
     
     public boolean isAllowedReadPalList(UserAccount user, Paleontology palRecord) throws StorageAccessException {
