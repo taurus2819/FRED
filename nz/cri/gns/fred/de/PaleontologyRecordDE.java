@@ -413,7 +413,7 @@ public class PaleontologyRecordDE extends RecordDE {
                     	nonApprovedTaxaFlag = true;
                 }
 			} catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 				error.add(new String[] {"Taxanomic List", taxaLine + " not valid"});
 			}
         }
