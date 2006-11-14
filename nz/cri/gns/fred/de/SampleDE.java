@@ -1030,11 +1030,18 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 				}
 				if (!found) try {
 					//Create a new one
-					SedimentaryFeature feature = sampleUtil.createSedimentaryFeature(sample, sedFeature, isAbundant);
+					SedimentaryFeature feature = sampleUtil.createSedimentaryFeature(sedFeature, isAbundant);
+					//check feature type doesn't already exist in set
+					for (SedimentaryFeature testFeat : newFeatures) {
+						if (testFeat.getSedimentaryFeatureType().equals(feature.getSedimentaryFeatureType())) {
+							error.add(new String[] {"Additional Features", "Duplicate feature: " + sedFeature});
+							break;
+						}
+					}
 					newFeatures.add(feature);
 					sedFeatures.add(feature);
 				} catch (Exception e) {
-					throw new DataInputException("Additional Features", "Invalid feature: " + sedFeature);
+					error.add(new String[] {"Additional Features", "Invalid feature: " + sedFeature});
 				}
 			}
 			//Remove anything that's not still there.
