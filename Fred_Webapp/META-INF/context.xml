@@ -1,4 +1,4 @@
-<Context path="/fred" docBase="fred" debug="1" reloadable="true">
+<Context path="/" docBase="fred" debug="1" reloadable="true">
 	<Resource name="jdbc/fr" auth="Container" type="javax.sql.DataSource" 
 		factory="nz.cri.gns.dbcp.GOLDataSourceFactory" driverClassName="oracle.jdbc.OracleDriver"
 		url="jdbc:oracle:thin:@raptor.gns.cri.nz:1521:dev" username="fr"
