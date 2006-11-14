@@ -921,7 +921,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return sampleDAO.getCarbonate(id);
 	}
 
-	public SedimentaryFeature createSedimentaryFeature(Sample sample, String sedFeature, boolean isAbundant) throws StorageAccessException {
+	public SedimentaryFeature createSedimentaryFeature(String sedFeature, boolean isAbundant) throws StorageAccessException {
 		SedimentaryFeature feature = sampleDAO.createNewSedimentaryFeature();
 		feature.setAbundant((isAbundant) ? "Y" : "N");
 		SedimentaryFeatureType type = sampleDAO.getSedimentaryFeatureTypeWithName(sedFeature);
