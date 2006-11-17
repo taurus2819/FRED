@@ -62,4 +62,8 @@ public class SedimentaryFeature implements Serializable, nz.cri.gns.fred.model.S
     		return null;
     	}
     }
+
+	public int compareTo(nz.cri.gns.fred.model.SedimentaryFeature arg0) {
+		return sedimentaryFeatureType.getName().compareTo(arg0.getSedimentaryFeatureType().getName());
+	}
 }
