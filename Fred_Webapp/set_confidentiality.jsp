@@ -22,6 +22,9 @@
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.html.select.SelectBox"
 %><%@page import="nz.cri.gns.html.Attributes"
+%><%@page import="java.util.Date"
+%><%@page import="java.util.Set"
+%><%@page import="java.util.HashSet"
 %><%@page import="java.io.PrintWriter"
 %><%!
 	public String getName(HttpServletRequest request) {
@@ -61,39 +64,42 @@
 
 		if (folder.isAllowedEditLocalities()) {
 		
-			/*
-			if (request.getParameter("Action") != null) {
+			
+			if ("Update".equals(request.getParameter("Action"))) {
 				try {
-					if (request.getParameter("Action").equals("Insert")) {
-						int docID = attacher.insertDocument(loadId, request, "Upload");
-						MetadataRecord mr = attacher.getDocumentForId(docID);
-						if (request.getParameter("Name") != null)
-							attacher.setTitle(mr, request.getParameter("Name"));
-						if (request.getParameter("Desc") != null)
-							attacher.setNote(mr, request.getParameter("Desc"));
-					} else if (request.getParameter("Action").equals("Remove")) {
-						attacher.removeDocument(loadId, mrs[Integer.parseInt(request.getParameter("DeleteID"))]);
+					if ("confid".equals(request.getParameter("confidType"))) {
+						audit.setConfidentialFlag(true);
+						audit.setConfidLapseDate(new Date());
+						if (request.getParameter("confidGroups") != null) {
+							String[] confidGroupIds = request.getParameterValues("confidGroups");
+							Set<ConfidentialGroup> confidGroups = new HashSet<ConfidentialGroup>();
+							for (int i = 0; i < confidGroupIds.length; i++)
+								confidGroups.add(auditUtil.getConfidentialGroup(new Integer(confidGroupIds[i])));
+							audit.setConfidGroups(confidGroups);
+						}
+					} else {
+						audit.setConfidentialFlag(false);
 					}
-					mrs = attacher.getDocumentsForId(loadId);
+					auditUtil.update(audit);
 				} catch (Exception e) {
-					System.out.println("********** FRED binary data entry error: " + new java.util.Date());
+					System.out.println("********** FRED confidentiality error: " + new java.util.Date());
 					e.printStackTrace();
 				}
-			} */
+			}
 				
 			%><center><%
 			
 			%><p>&nbsp;</p><p><%
 			startDETable(pageContext);
 			%><table border="0" width="550">
-			<form method="get" action="set_confidential.jsp">
+			<form method="get" action="set_confidentiality.jsp">
 			<tr><td colspan="2" class="deHeading">Confidentiality Options</td></tr>
 			<input type="hidden" name="ID" value="<%=id%>">
 			<input type="hidden" name="RecType" value="<%=recType%>">
 			<input type="hidden" name="FoldID" value="<%=folder.getFolderId()%>">
 			<input type="hidden" name="Action" value="Update">
-			<tr><td><input type="radio" name="confidType" value="open" selected /></td><td style="text-align:left" class="heading">Open</td></tr>
-			<tr><td><input type="radio" name="confidType" value="confid" /></td><td style="text-align:left" class="heading">Confidential&nbsp;&nbsp;</td>
+			<tr><td><input type="radio" name="confidType" value="open" <%=audit.getConfidentialFlag() ? "" : "checked"%> /></td><td style="text-align:left" class="heading">Open</td></tr>
+			<tr><td><input type="radio" name="confidType" value="confid" <%=audit.getConfidentialFlag() ? "checked" : ""%> /></td><td style="text-align:left" class="heading">Confidential&nbsp;&nbsp;</td>
 			<td style="text-align:left" class="heading">Confidential Period:&nbsp;</td>
 			<td><select name="confidPeriod">
 			  <option value="0.5">6 months</option>
@@ -102,9 +108,17 @@
 			  <option value="5">5 years</option>
 			</select></td></tr><%
 			for (ConfidentialGroup confidGroup : auditUtil.getConfidentialGroups()) {
-				%><input type="checkbox" name="confidGroups" value="<%=confidGroup.getGroupId()%>" /></td><td style="text-align:left"><%=confidGroup.getName()%></td></tr><%
+				%><tr><td><input type="checkbox" name="confidGroups" value="<%=confidGroup.getGroupId()%>"<%
+				for (ConfidentialGroup auditConfidGroup : audit.getConfidGroups()) {
+					if (confidGroup.equals(auditConfidGroup)) {
+						%>checked<%
+						break;
+					}
+				}
+				%> /></td><td style="text-align:left"><%=confidGroup.getName()%></td></tr><%
 			}
-			%></form>
+			%><tr><td colspan="2"><input type="submit" /></td></tr>
+			</form>
 			</table><%
 			endDETable(pageContext);
 			%></p><%
