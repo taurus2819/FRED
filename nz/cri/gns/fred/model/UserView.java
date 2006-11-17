@@ -15,6 +15,8 @@ public interface UserView extends Comparable<UserView>, NameableAndIdentifiable 
 	public String getFamilyName();
 	public void setFullName(String fullName);
 	public String getFullName();
+	public void setOrgView(OrgView orgView);
+	public OrgView getOrgView();
 	public void setAuditsByCreatedById(Set<Audit> auditsByCreatedById);
 	public Set<Audit> getAuditsByCreatedById();
 	public void setAuditsBySubmittedById(Set<Audit> auditsBySubmittedById);

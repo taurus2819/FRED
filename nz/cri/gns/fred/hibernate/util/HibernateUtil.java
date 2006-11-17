@@ -19,6 +19,7 @@ import nz.cri.gns.fred.hibernate.BedThickness;
 import nz.cri.gns.fred.hibernate.Bedding;
 import nz.cri.gns.fred.hibernate.Carbonate;
 import nz.cri.gns.fred.hibernate.ColourModifier;
+import nz.cri.gns.fred.hibernate.ConfidentialGroup;
 import nz.cri.gns.fred.hibernate.DataOrigin;
 import nz.cri.gns.fred.hibernate.DrillType;
 import nz.cri.gns.fred.hibernate.Feature;
@@ -34,6 +35,7 @@ import nz.cri.gns.fred.hibernate.GrainSize;
 import nz.cri.gns.fred.hibernate.Hardness;
 import nz.cri.gns.fred.hibernate.Lab;
 import nz.cri.gns.fred.hibernate.LabSection;
+import nz.cri.gns.fred.hibernate.OrgView;
 import nz.cri.gns.fred.hibernate.PalList;
 import nz.cri.gns.fred.hibernate.PalListMeta;
 import nz.cri.gns.fred.hibernate.Paleontology;
@@ -118,6 +120,7 @@ public class HibernateUtil implements HibernateProvider {
 			BedThickness.class,
 			Carbonate.class,
 			ColourModifier.class,
+			ConfidentialGroup.class,
 			DataOrigin.class,
 			DrillType.class,
 			Feature.class,
@@ -133,6 +136,7 @@ public class HibernateUtil implements HibernateProvider {
 			Hardness.class,
             Lab.class,
             LabSection.class,
+            OrgView.class,
 			Paleontology.class,
 			PalList.class,
 			PalListMeta.class,

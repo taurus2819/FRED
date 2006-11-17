@@ -3,8 +3,6 @@ package nz.cri.gns.fred.model;
 import java.util.Date;
 import java.util.Set;
 
-import nz.cri.gns.fred.hibernate.FrUserView;
-
 public interface Audit {
     public Integer getAuditId();
     public void setAuditId(Integer auditId);
@@ -28,8 +26,10 @@ public interface Audit {
     public void setCuratorComments(String curatorComments);
     public String getSendMessage();
     public void setSendMessage(String sendMessage);
-    public Integer getSecurityClassId();
-    public void setSecurityClassId(Integer securityClassId);
+	public Boolean getConfidentialFlag();
+    public void setConfidentialFlag(Boolean confidentialFlag);
+	public Date getConfidLapseDate();
+	public void setConfidLapseDate(Date confidLapseDate);
     public Folder getFolder();
     public void setFolder(Folder folder);
     public DataOrigin getDataOrigin();
@@ -44,8 +44,12 @@ public interface Audit {
     public void setSamples(Set<Sample> samples);
     public Set<Record> getRecords();
     public void setRecords(Set<Record> records);
+	public Set<Record> getRecordByPalListAuditIds();
+    public void setRecordByPalListAuditIds(Set<Record> recordByPalListAuditIds);
     public Set<Feature> getFeatures();
     public void setFeatures(Set<Feature> features);
     public Set<AuditEdit> getAuditEdits();
     public void setAuditEdits(Set<AuditEdit> auditEdits);
+	public Set<ConfidentialGroup> getConfidGroups();
+	public void setConfidGroups(Set<ConfidentialGroup> confidGroups);
 }

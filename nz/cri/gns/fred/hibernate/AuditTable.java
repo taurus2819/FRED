@@ -6,6 +6,7 @@ import java.util.Set;
 
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
+import nz.cri.gns.fred.model.ConfidentialGroup;
 import nz.cri.gns.fred.model.DataOrigin;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Folder;
@@ -50,9 +51,12 @@ public class AuditTable implements Serializable, Audit {
 
     /** nullable persistent field */
     private String sendMessage;
-
+    
     /** nullable persistent field */
-    private Integer securityClassId;
+    private Boolean confidentialFlag;
+    
+    /** nullable persistent field */
+    private Date confidLapseDate;
 
     /** persistent field */
     private Folder folder;
@@ -76,13 +80,19 @@ public class AuditTable implements Serializable, Audit {
     private Set<Record> records;
 
     /** persistent field */
+    private Set<Record> recordByPalListAuditIds;
+    
+    /** persistent field */
     private Set<Feature> features;
 
     /** persistent field */
     private Set<AuditEdit> auditEdits;
+    
+    /** persistent field */
+    private Set<ConfidentialGroup> confidGroups;
 
     /** full constructor */
-    public AuditTable(String status, Integer createdById, Date createdDate, Integer submittedById, Date submittedDate, Integer approvedById, Date approvedDate, String workingComments, String curatorComments, String sendMessage, Integer securityClassId, Folder folder, DataOrigin dataOrigin, UserView createdBy, UserView submittedBy, UserView approvedBy, Set<Sample> samples, Set<Record> records, Set<Feature> features, Set<AuditEdit> auditEdits) {
+    public AuditTable(String status, Integer createdById, Date createdDate, Integer submittedById, Date submittedDate, Integer approvedById, Date approvedDate, String workingComments, String curatorComments, String sendMessage, Folder folder, DataOrigin dataOrigin, UserView createdBy, UserView submittedBy, UserView approvedBy, Set<Sample> samples, Set<Record> records, Set<Record> recordByPalListAuditIds, Set<Feature> features, Set<AuditEdit> auditEdits, Set<ConfidentialGroup> confidGroups) {
         this.status = status;
         this.createdById = createdById;
         this.createdDate = createdDate;
@@ -93,7 +103,6 @@ public class AuditTable implements Serializable, Audit {
         this.workingComments = workingComments;
         this.curatorComments = curatorComments;
         this.sendMessage = sendMessage;
-        this.securityClassId = securityClassId;
         this.folder = folder;
         this.dataOrigin = dataOrigin;
         this.createdBy = createdBy;
@@ -101,8 +110,10 @@ public class AuditTable implements Serializable, Audit {
         this.approvedBy = approvedBy;
         this.samples = samples;
         this.records = records;
+        this.setRecordByPalListAuditIds(recordByPalListAuditIds);
         this.features = features;
         this.auditEdits = auditEdits;
+        this.confidGroups = confidGroups;
     }
 
     /** default constructor */
@@ -208,15 +219,23 @@ public class AuditTable implements Serializable, Audit {
         this.sendMessage = sendMessage;
     }
 
-    public Integer getSecurityClassId() {
-        return this.securityClassId;
-    }
+	public Boolean getConfidentialFlag() {
+		return confidentialFlag;
+	}
+	
+    public void setConfidentialFlag(Boolean confidentialFlag) {
+		this.confidentialFlag = confidentialFlag;
+	}
 
-    public void setSecurityClassId(Integer securityClassId) {
-        this.securityClassId = securityClassId;
-    }
+	public Date getConfidLapseDate() {
+		return confidLapseDate;
+	}
 
-    public Folder getFolder() {
+	public void setConfidLapseDate(Date confidLapseDate) {
+		this.confidLapseDate = confidLapseDate;
+	}
+	
+	public Folder getFolder() {
         return this.folder;
     }
 
@@ -272,7 +291,15 @@ public class AuditTable implements Serializable, Audit {
         this.records = records;
     }
 
-    public Set<Feature> getFeatures() {
+	public Set<Record> getRecordByPalListAuditIds() {
+		return recordByPalListAuditIds;
+	}
+	
+    public void setRecordByPalListAuditIds(Set<Record> recordByPalListAuditIds) {
+		this.recordByPalListAuditIds = recordByPalListAuditIds;
+	}
+
+	public Set<Feature> getFeatures() {
         return this.features;
     }
 
@@ -287,5 +314,13 @@ public class AuditTable implements Serializable, Audit {
     public void setAuditEdits(Set<AuditEdit> auditEdits) {
         this.auditEdits = auditEdits;
     }
+
+	public Set<ConfidentialGroup> getConfidGroups() {
+		return confidGroups;
+	}
+	
+	public void setConfidGroups(Set<ConfidentialGroup> confidGroups) {
+		this.confidGroups = confidGroups;
+	}
 
 }

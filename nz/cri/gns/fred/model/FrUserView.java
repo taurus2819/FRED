@@ -15,7 +15,10 @@ public interface FrUserView extends Comparable<FrUserView>, NameableAndIdentifia
 	public String getFamilyName();
 	public void setFullName(String fullName);
 	public String getFullName();
+	public void setOrgView(OrgView orgView);
+	public OrgView getOrgView();
 	public void setTaxonomicGroups(Set<TaxonomicGroup> taxonomicGroups);
 	public Set<TaxonomicGroup> getTaxonomicGroups();
-
+	public Set<ConfidentialGroup> getConfidGroups();
+	public void setConfidGroups(Set<ConfidentialGroup> confidGroups);
 }

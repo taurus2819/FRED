@@ -3,6 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.ConfidentialGroup;
+import nz.cri.gns.fred.model.OrgView;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 
 public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserView {
@@ -25,16 +27,24 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
     private String fullName;
     
     /** persistent field */
+    private OrgView orgView;
+    
+    /** persistent field */
     private Set<TaxonomicGroup> taxonomicGroups;
     
+    /** persistent field */
+    private Set<ConfidentialGroup> confidGroups;
+    
     /** full constructor */
-    public FrUserView(Integer userId, String userName, String givenName, String familyName, String fullName, Set<TaxonomicGroup> taxonomicGroups) {
+    public FrUserView(Integer userId, String userName, String givenName, String familyName, String fullName, OrgView orgView, Set<TaxonomicGroup> taxonomicGroups, Set<ConfidentialGroup> confidGroups) {
     	this.userId = userId;
     	this.userName = userName;
+    	this.givenName = givenName;
     	this.familyName = familyName;
     	this.fullName = fullName;
-    	this.givenName = givenName;
+    	this.orgView = orgView;
     	this.taxonomicGroups = taxonomicGroups;
+    	this.setConfidGroups(confidGroups);
     }
 
     /** default constructor */
@@ -80,6 +90,14 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
 	public String getFullName() {
 		return fullName;
 	}
+	
+	public void setOrgView(OrgView orgView) {
+		this.orgView = orgView;
+	}
+
+	public OrgView getOrgView() {
+		return orgView;
+	}
 
 	public void setTaxonomicGroups(Set<TaxonomicGroup> taxonomicGroups) {
 		this.taxonomicGroups = taxonomicGroups;
@@ -87,6 +105,14 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
 
 	public Set<TaxonomicGroup> getTaxonomicGroups() {
 		return taxonomicGroups;
+	}
+	
+	public Set<ConfidentialGroup> getConfidGroups() {
+		return confidGroups;
+	}
+	
+	public void setConfidGroups(Set<ConfidentialGroup> confidGroups) {
+		this.confidGroups = confidGroups;
 	}
 
 	public int compareTo(nz.cri.gns.fred.model.FrUserView arg0) {

@@ -320,7 +320,9 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 
 	//FeatureDAO methods
 	public Audit createNewAudit() {
-		return new AuditTable();
+		Audit audit = new AuditTable();
+		audit.setConfidentialFlag(false);
+		return audit;
 	}
 
 	public Audit save(Audit audit) throws StorageAccessException {

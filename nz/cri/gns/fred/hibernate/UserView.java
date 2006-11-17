@@ -5,6 +5,7 @@ import java.util.Set;
 
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
+import nz.cri.gns.fred.model.OrgView;
 import nz.cri.gns.fred.model.Taxon;
 
 public class UserView implements Serializable, nz.cri.gns.fred.model.UserView {
@@ -27,6 +28,9 @@ public class UserView implements Serializable, nz.cri.gns.fred.model.UserView {
     private String fullName;
     
     /** persistent field */
+    private OrgView orgView;
+    
+    /** persistent field */
     private Set<Audit> auditsByCreatedById;
     
     /** persistent field */
@@ -45,12 +49,13 @@ public class UserView implements Serializable, nz.cri.gns.fred.model.UserView {
     private Set<Taxon> taxaByApprovedById;
     
     /** full constructor */
-    public UserView(Integer userId, String userName, String givenName, String familyName, String fullName, Set<Audit> auditsByCreatedById, Set<Audit> auditsBySubmittedById, Set<Audit> auditsByApprovedById, Set<AuditEdit> auditEdits, Set<Taxon> taxaBySubmittedById, Set<Taxon> taxaByApprovedById) {
+    public UserView(Integer userId, String userName, String givenName, String familyName, String fullName, OrgView orgView, Set<Audit> auditsByCreatedById, Set<Audit> auditsBySubmittedById, Set<Audit> auditsByApprovedById, Set<AuditEdit> auditEdits, Set<Taxon> taxaBySubmittedById, Set<Taxon> taxaByApprovedById) {
     	this.userId = userId;
     	this.userName = userName;
+    	this.givenName = givenName;
     	this.familyName = familyName;
     	this.fullName = fullName;
-    	this.givenName = givenName;
+    	this.orgView = orgView;
     	this.auditsByCreatedById = auditsByCreatedById;
     	this.auditsBySubmittedById = auditsBySubmittedById;
     	this.auditsByApprovedById = auditsByApprovedById;
@@ -101,6 +106,14 @@ public class UserView implements Serializable, nz.cri.gns.fred.model.UserView {
 
 	public String getFullName() {
 		return fullName;
+	}
+
+	public void setOrgView(OrgView orgView) {
+		this.orgView = orgView;
+	}
+
+	public OrgView getOrgView() {
+		return orgView;
 	}
 
 	public void setAuditsByCreatedById(Set<Audit> auditsByCreatedById) {

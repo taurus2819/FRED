@@ -8,15 +8,20 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
+import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.AuditDAO;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
+import nz.cri.gns.fred.model.ConfidentialGroup;
 import nz.cri.gns.fred.model.DataOrigin;
 import nz.cri.gns.fred.model.FREDConstants;
+import nz.cri.gns.fred.model.FrUserView;
+import nz.cri.gns.fred.model.OrgView;
 
 /**
  *
@@ -106,6 +111,46 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		List<AuditEdit> edits = new Vector<AuditEdit>(audit.getAuditEdits());
 		Collections.sort(edits);
 		return edits;
+	}
+	
+	public boolean isAllowedReadApproved(Audit audit, UserAccount user) throws NumberFormatException, StorageAccessException {
+		if (user == null || audit == null)
+			return false;
+		if (!FREDConstants.APPROVED.equals(audit.getStatus()))
+			return false;
+		if (audit.getConfidentialFlag()) {
+			FrUserView frUser = new UserUtil(factory).getFrUserView(Integer.parseInt(user.getId()));
+			OrgView userOrg = frUser.getOrgView();
+			if (audit.getSubmittedBy().getUserId().equals(frUser.getUserId())) {
+				System.out.println("OK as submitter = user");
+				return true;
+			}
+			for (ConfidentialGroup confidGroup : audit.getConfidGroups()) {
+				if (confidGroup.getOrgView() != null) {
+					if (confidGroup.getOrgView().equals(userOrg)) {
+						System.out.println("OK as user in approved org");
+						return true;
+					}
+				} else {
+					for (FrUserView confidUser : confidGroup.getUsers()) {
+						if (confidUser.equals(frUser)) {
+							System.out.println("OK as user os approved group");
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		} else {
+			System.out.println("OK as not confidential");
+			return true;
+		}
+	}
+	
+	public List<ConfidentialGroup> getConfidentialGroups() throws StorageAccessException {
+		List<ConfidentialGroup> confidGroups = auditDAO.getList("FROM ConfidentialGroup AS c", ConfidentialGroup.class);
+		Collections.sort(confidGroups);
+		return confidGroups;
 	}
 	
 }

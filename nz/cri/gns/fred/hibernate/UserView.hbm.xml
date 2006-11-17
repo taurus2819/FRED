@@ -139,5 +139,14 @@
         />
     </set>
     
+    <!-- bi-directional many-to-one association to OrgView -->
+    <many-to-one
+        name="orgView"
+        class="nz.cri.gns.fred.hibernate.OrgView"
+        not-null="true"
+    >
+        <column name="PE_CLIENT_CODE" />
+    </many-to-one>
+    
 </class>
 </hibernate-mapping>

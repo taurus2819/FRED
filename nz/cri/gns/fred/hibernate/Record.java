@@ -4,13 +4,17 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.Audit;
+import nz.cri.gns.fred.model.Adoption;
+import nz.cri.gns.fred.model.Paleontology;
+import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.RecordDetails;
 import nz.cri.gns.fred.model.RecordMeta;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.RecordUtil;
 
 /** @author Hibernate CodeGenerator */
-public class Record implements Serializable, nz.cri.gns.fred.model.Record, Comparable<nz.cri.gns.fred.model.Record> {
+public class Record implements Serializable, nz.cri.gns.fred.model.Record {
 
     private static final long serialVersionUID = 20050818L;
 
@@ -18,26 +22,29 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record, Compa
     private Integer recordId;
 
     /** nullable persistent field */
-    private nz.cri.gns.fred.model.Paleontology paleontology;
+    private Paleontology paleontology;
 
     /** nullable persistent field */
-    private nz.cri.gns.fred.model.Adoption adoption;
+    private Adoption adoption;
 
     /** persistent field */
-    private nz.cri.gns.fred.model.Sample sample;
+    private Sample sample;
 
     /** persistent field */
-    private nz.cri.gns.fred.model.Audit auditTable;
+    private Audit audit;
+    
+    /** persistent field */
+    private Audit palListAudit;
 
     /** persistent field */
     private Set<RecordMeta> recordMetas;
     
     /** full constructor */
-    public Record(nz.cri.gns.fred.hibernate.Paleontology paleontology, nz.cri.gns.fred.hibernate.Adoption adoption, nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.AuditTable auditTable, Set<RecordMeta> recordMetas) {
+    public Record(Paleontology paleontology, Adoption adoption, Sample sample, AuditTable audit, AuditTable palListAudit, Set<RecordMeta> recordMetas) {
         this.paleontology = paleontology;
         this.adoption = adoption;
         this.sample = sample;
-        this.auditTable = auditTable;
+        this.audit = audit;
         this.recordMetas = recordMetas;
     }
 
@@ -46,9 +53,9 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record, Compa
     }
 
     /** minimal constructor */
-    public Record(nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.AuditTable auditTable, Set<RecordMeta> recordMetas) {
+    public Record(Sample sample, AuditTable auditTable, Set<RecordMeta> recordMetas) {
         this.sample = sample;
-        this.auditTable = auditTable;
+        this.audit = auditTable;
         this.recordMetas = recordMetas;
     }
 
@@ -66,39 +73,47 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record, Compa
         }*/
     }
 
-    public nz.cri.gns.fred.model.Paleontology getPaleontology() {
+    public Paleontology getPaleontology() {
         return this.paleontology;
     }
 
-    public void setPaleontology(nz.cri.gns.fred.model.Paleontology paleontology) {
+    public void setPaleontology(Paleontology paleontology) {
         this.paleontology = paleontology;
     }
 
-    public nz.cri.gns.fred.model.Adoption getAdoption() {
+    public Adoption getAdoption() {
         return this.adoption;
     }
 
-    public void setAdoption(nz.cri.gns.fred.model.Adoption adoption) {
+    public void setAdoption(Adoption adoption) {
         this.adoption = adoption;
     }
 
-    public nz.cri.gns.fred.model.Sample getSample() {
+    public Sample getSample() {
         return this.sample;
     }
 
-    public void setSample(nz.cri.gns.fred.model.Sample sample) {
+    public void setSample(Sample sample) {
         this.sample = sample;
     }
 
-    public nz.cri.gns.fred.model.Audit getAudit() {
-        return this.auditTable;
+    public Audit getAudit() {
+        return this.audit;
     }
 
-    public void setAudit(nz.cri.gns.fred.model.Audit auditTable) {
-        this.auditTable = auditTable;
+    public void setAudit(Audit auditTable) {
+        this.audit = auditTable;
     }
 
-    public Set<RecordMeta> getRecordMetas() {
+	public Audit getPalListAudit() {
+		return palListAudit;
+	}
+	
+    public void setPalListAudit(Audit palListAudit) {
+		this.palListAudit = palListAudit;
+	}
+
+	public Set<RecordMeta> getRecordMetas() {
         return this.recordMetas;
     }
 

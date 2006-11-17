@@ -23,7 +23,6 @@
         column="PE_ID"
     >
         <generator class="sequence">
-                <param name="sequence">USER_SEQ</param>
         </generator>
     </id>
 
@@ -70,6 +69,32 @@
             class="nz.cri.gns.fred.hibernate.TaxonomicGroup"
         />
     </set>
+    
+    <!-- bi-directional many-to-many association to ConfidGroup via ConfidUser -->
+    <set
+        name="confidGroups"
+        table="CONFID_USER"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="USER_ID" />
+        </key>
+        <many-to-many 
+			column="GROUP_ID"
+            class="nz.cri.gns.fred.hibernate.ConfidentialGroup"
+        />
+    </set>
+    
+    <!-- bi-directional many-to-one association to OrgView -->
+    <many-to-one
+        name="orgView"
+        class="nz.cri.gns.fred.hibernate.OrgView"
+        not-null="true"
+    >
+        <column name="PE_CLIENT_CODE" />
+    </many-to-one>
     
 </class>
 </hibernate-mapping>

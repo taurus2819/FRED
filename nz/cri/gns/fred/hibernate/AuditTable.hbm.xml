@@ -41,9 +41,8 @@
     />
     <property
         name="createdDate"
-        type="java.sql.Timestamp"
+        type="java.sql.Date"
         column="CREATED_DATE"
-        length="7"
     />
     <property
         name="submittedById"
@@ -53,9 +52,8 @@
     />
     <property
         name="submittedDate"
-        type="java.sql.Timestamp"
+        type="java.sql.Date"
         column="SUBMITTED_DATE"
-        length="7"
     />
     <property
         name="approvedById"
@@ -67,7 +65,6 @@
         name="approvedDate"
         type="java.sql.Date"
         column="APPROVED_DATE"
-        length="7"
     />
     <property
         name="workingComments"
@@ -88,10 +85,14 @@
         length="6"
     />
     <property
-        name="securityClassId"
-        type="int"
-        column="SECURITY_CLASS_ID"
-        length="5"
+        name="confidentialFlag"
+        type="boolean"
+        column="CONFIDENTIAL_FLAG"
+    />
+    <property
+        name="confidLapseDate"
+        type="java.sql.Date"
+        column="CONFID_LAPSE_DATE"
     />
 
     <!-- Associations -->
@@ -112,7 +113,7 @@
     >
         <column name="DATA_ORIGIN_ID" />
     </many-to-one>
-    <!-- bi-directional many-to-one association to USerView -->
+    <!-- bi-directional many-to-one association to UserView -->
     <many-to-one
         name="createdBy"
         class="nz.cri.gns.fred.hibernate.UserView"
@@ -170,6 +171,20 @@
             class="nz.cri.gns.fred.hibernate.Record"
         />
     </set>
+    <!-- bi-directional one-to-many association to Record -->
+    <set
+        name="recordByPalListAuditIds"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="PAL_LIST_AUDIT_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Record"
+        />
+    </set>
     <!-- bi-directional one-to-many association to Feature -->
     <set
         name="features"
@@ -199,5 +214,22 @@
         />
     </set>
 
+    <!-- bi-directional many-to-many association to ConfidentialGroup via AuditConfid -->
+    <set
+        name="confidGroups"
+        table="AUDIT_CONFID"
+        lazy="true"
+        inverse="false"
+		cascade="none"
+    >
+        <key>
+            <column name="AUDIT_ID" />
+        </key>
+        <many-to-many 
+			column="GROUP_ID"
+            class="nz.cri.gns.fred.hibernate.ConfidentialGroup"
+        />
+    </set>
+    
 </class>
 </hibernate-mapping>

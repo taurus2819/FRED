@@ -73,6 +73,15 @@
     >
         <column name="AUDIT_ID" />
     </many-to-one>
+    <!-- bi-directional many-to-one association to AuditTable -->
+    <many-to-one
+        name="palListAudit"
+        class="nz.cri.gns.fred.hibernate.AuditTable"
+        not-null="true"
+        cascade="all"
+    >
+        <column name="PAL_LIST_AUDIT_ID" />
+    </many-to-one>
 
 
 </class>

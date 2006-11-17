@@ -126,7 +126,16 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		audit.setSubmittedDate(new Date());
 		audit.setWorkingComments(null);
 		audit.setFolder(null);
-		recordDAO.update(audit);	
+		recordDAO.update(audit);
+		
+		if (PALEONTOLOGICAL.equals(getRecordType(record))) {
+			audit = record.getPalListAudit();
+			audit.setStatus(APPROVED);
+			audit.setSubmittedById(new Integer(user.getId()));
+			audit.setSubmittedDate(new Date());
+			recordDAO.update(audit);
+		}
+		
 	}
 
 	
@@ -157,17 +166,23 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
      * @return a new <code>Record</code>
 	 * @throws StorageAccessException 
 	 */
-    public Record createRecord(Sample sample, String recordType, int folderId) throws StorageAccessException {
+    public Record createRecord(Sample sample, String recordType, int folderId, UserAccount user) throws StorageAccessException {
         Record record = recordDAO.createNewRecord();
         record.setSample(sample);
         
         Audit audit = recordDAO.createNewAudit();
-        audit.setStatus(WORKING);
-        audit.setFolder(sample.getAudit().getFolder());
-        audit.setFolder(folderDAO.getFolder(folderId));
+		audit.setFolder(folderDAO.getFolder(folderId));
+		audit.setStatus(FREDConstants.WORKING);
+		audit.setCreatedDate(new Date());
+		audit.setCreatedById(new Integer(user.getId()));
         record.setAudit(audit);
 
         if (recordType.equals(PALEONTOLOGICAL)) {
+        	audit = recordDAO.createNewAudit();
+    		audit.setStatus(FREDConstants.WORKING);
+    		audit.setCreatedDate(new Date());
+    		audit.setCreatedById(new Integer(user.getId()));
+        	record.setPalListAudit(audit);
             Paleontology pal = recordDAO.createNewPaleontology();
         	record.setPaleontology(pal);
         	pal.setRecord(record);
@@ -232,26 +247,23 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (user == null)
 			return false;
 		
-		//first check allowed to read sample if not then return false (also checks feature)
-		Sample sample = record.getSample();
-		if (!(new SampleUtil(factory).isAllowedReadSample(user, sample)))
-			return false;
-		
-		//now check record
-		if (!record.getAudit().getStatus().equals(FREDConstants.APPROVED)) {
+		//first check record
+		if (record.getAudit().getStatus().equals(FREDConstants.APPROVED)) {
+			if(!new AuditUtil(factory).isAllowedReadApproved(record.getAudit(), user))
+				return false;			
+		} else {
 			UserFolder folder = new FolderUtil(factory).getUserFolder(record.getAudit().getFolder().getFolderId().intValue(), user);
-			return (folder != null && folder.isAllowedReadLocalities());
+			if (folder == null && !folder.isAllowedReadLocalities())
+				return false;
 		}
 		
-		//exclude any records with security class <> 4 - no checking of user at this stage.
-		return (record.getAudit().getSecurityClassId() == null || record.getAudit().getSecurityClassId().intValue() == 4 || record.getAudit().getSecurityClassId().intValue() == 5);
+		//then check allowed to read sample (which checks feature)
+		Sample sample = record.getSample();
+		return new SampleUtil(factory).isAllowedReadSample(user, sample);
     }
     
     public boolean isAllowedReadPalList(UserAccount user, Paleontology palRecord) throws StorageAccessException {
-    	/**
-    	 // @TODO will need to flesh this out to check pallist security code when implemented. Now just check record
-    	 */
-    	return isAllowedReadRecord(user, palRecord.getRecord());
+    	return new AuditUtil(factory).isAllowedReadApproved(palRecord.getRecord().getPalListAudit(), user) && isAllowedReadRecord(user, palRecord.getRecord());
     }
     
     public static String getRecordType(Record record) {

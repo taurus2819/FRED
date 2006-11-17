@@ -51,23 +51,12 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
     protected DAOFactory factory;
 
     protected RecordDE(User user, Sample sample, int folderID, String recordType, DAOFactory factory, ContentProvider content)   throws StorageAccessException, InsufficientPrivelegesException {
-        initialise((recordUtil = new RecordUtil(factory)).createRecord(sample, recordType, folderID), folderID, user, factory, content);
+        initialise((recordUtil = new RecordUtil(factory)).createRecord(sample, recordType, folderID, user), folderID, user, factory, content);
     }
     
-    /*this.user = user;
-		
-        if (!(recordType.equals(Record.ADOPTION_RECORD) || recordType.equals(Record.PALEONTOLOGY_RECORD)))
-			throw new DataInputException("Record Type", "Invalid value");
-		this.recordType = recordType;
-		this.folder = new Folder(folderID, user, state);		
-	}*/
-
     public RecordDE(Record record, int folderId, User user, DAOFactory factory, ContentProvider provider) throws InsufficientPrivelegesException, StorageAccessException {
         recordUtil = new RecordUtil(factory);
         initialise(record, folderId, user, factory, provider);
-        if (record.getAudit().getStatus().equals(FREDConstants.APPROVED)) {
-            
-        }
     }
 
 	private void initialise(Record record, int folderId, User user, DAOFactory factory, ContentProvider provider) throws StorageAccessException, InsufficientPrivelegesException {
