@@ -79,6 +79,8 @@
 						}
 					} else {
 						audit.setConfidentialFlag(false);
+						audit.setConfidLapseDate(null);
+						audit.setConfidGroups(null);
 					}
 					auditUtil.update(audit);
 				} catch (Exception e) {

@@ -153,4 +153,8 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		return confidGroups;
 	}
 	
+	public ConfidentialGroup getConfidentialGroup(Integer groupId) throws StorageAccessException {
+		return auditDAO.getConfidentialGroup(groupId);
+	}
+	
 }
