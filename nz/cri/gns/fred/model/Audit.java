@@ -28,6 +28,8 @@ public interface Audit {
     public void setSendMessage(String sendMessage);
 	public Boolean getConfidentialFlag();
     public void setConfidentialFlag(Boolean confidentialFlag);
+	public Double getConfidPeriod();
+	public void setConfidPeriod(Double confidPeriod);
 	public Date getConfidLapseDate();
 	public void setConfidLapseDate(Date confidLapseDate);
     public Folder getFolder();

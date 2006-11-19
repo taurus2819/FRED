@@ -90,6 +90,11 @@
         column="CONFIDENTIAL_FLAG"
     />
     <property
+        name="confidPeriod"
+        type="double"
+        column="CONFID_PERIOD"
+    />
+    <property
         name="confidLapseDate"
         type="java.sql.Date"
         column="CONFID_LAPSE_DATE"

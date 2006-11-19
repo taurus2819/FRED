@@ -54,6 +54,9 @@ public class AuditTable implements Serializable, Audit {
     
     /** nullable persistent field */
     private Boolean confidentialFlag;
+ 
+    /** nullable persistent field */
+    private Double confidPeriod;
     
     /** nullable persistent field */
     private Date confidLapseDate;
@@ -92,7 +95,7 @@ public class AuditTable implements Serializable, Audit {
     private Set<ConfidentialGroup> confidGroups;
 
     /** full constructor */
-    public AuditTable(String status, Integer createdById, Date createdDate, Integer submittedById, Date submittedDate, Integer approvedById, Date approvedDate, String workingComments, String curatorComments, String sendMessage, Folder folder, DataOrigin dataOrigin, UserView createdBy, UserView submittedBy, UserView approvedBy, Set<Sample> samples, Set<Record> records, Set<Record> recordByPalListAuditIds, Set<Feature> features, Set<AuditEdit> auditEdits, Set<ConfidentialGroup> confidGroups) {
+    public AuditTable(String status, Integer createdById, Date createdDate, Integer submittedById, Date submittedDate, Integer approvedById, Date approvedDate, String workingComments, String curatorComments, String sendMessage, Boolean confidentialFlag, Double confidPeriod, Date confidLapseDate, Folder folder, DataOrigin dataOrigin, UserView createdBy, UserView submittedBy, UserView approvedBy, Set<Sample> samples, Set<Record> records, Set<Record> recordByPalListAuditIds, Set<Feature> features, Set<AuditEdit> auditEdits, Set<ConfidentialGroup> confidGroups) {
         this.status = status;
         this.createdById = createdById;
         this.createdDate = createdDate;
@@ -103,6 +106,9 @@ public class AuditTable implements Serializable, Audit {
         this.workingComments = workingComments;
         this.curatorComments = curatorComments;
         this.sendMessage = sendMessage;
+        this.confidentialFlag = confidentialFlag;
+        this.confidPeriod = confidPeriod;
+        this.confidLapseDate = confidLapseDate;
         this.folder = folder;
         this.dataOrigin = dataOrigin;
         this.createdBy = createdBy;
@@ -110,7 +116,7 @@ public class AuditTable implements Serializable, Audit {
         this.approvedBy = approvedBy;
         this.samples = samples;
         this.records = records;
-        this.setRecordByPalListAuditIds(recordByPalListAuditIds);
+        this.recordByPalListAuditIds = recordByPalListAuditIds;
         this.features = features;
         this.auditEdits = auditEdits;
         this.confidGroups = confidGroups;
@@ -225,6 +231,14 @@ public class AuditTable implements Serializable, Audit {
 	
     public void setConfidentialFlag(Boolean confidentialFlag) {
 		this.confidentialFlag = confidentialFlag;
+	}
+
+	public Double getConfidPeriod() {
+		return confidPeriod;
+	}
+	
+	public void setConfidPeriod(Double confidPeriod) {
+		this.confidPeriod = confidPeriod;
 	}
 
 	public Date getConfidLapseDate() {
