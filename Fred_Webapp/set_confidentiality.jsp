@@ -23,6 +23,8 @@
 %><%@page import="nz.cri.gns.html.select.SelectBox"
 %><%@page import="nz.cri.gns.html.Attributes"
 %><%@page import="java.util.Date"
+%><%@page import="java.util.Calendar"
+%><%@page import="java.util.GregorianCalendar"
 %><%@page import="java.util.Set"
 %><%@page import="java.util.HashSet"
 %><%@page import="java.io.PrintWriter"
@@ -69,7 +71,16 @@
 				try {
 					if ("confid".equals(request.getParameter("confidType"))) {
 						audit.setConfidentialFlag(true);
-						audit.setConfidLapseDate(new Date());
+						audit.setConfidPeriod(new Double(request.getParameter("confidPeriod")));
+						if (FREDConstants.APPROVED.equals(audit.getStatus())) {
+							GregorianCalendar cal = new GregorianCalendar();
+							if (audit.getConfidPeriod().doubleValue() == 0.5)
+								cal.add(Calendar.MONTH, 6);
+							else
+								cal.add(Calendar.YEAR, audit.getConfidPeriod().intValue());
+							audit.setConfidLapseDate(cal.getTime());
+						} else
+							audit.setConfidLapseDate(null);
 						if (request.getParameter("confidGroups") != null) {
 							String[] confidGroupIds = request.getParameterValues("confidGroups");
 							Set<ConfidentialGroup> confidGroups = new HashSet<ConfidentialGroup>();
@@ -80,6 +91,7 @@
 					} else {
 						audit.setConfidentialFlag(false);
 						audit.setConfidLapseDate(null);
+						audit.setConfidPeriod(null);
 						audit.setConfidGroups(null);
 					}
 					auditUtil.update(audit);
@@ -103,11 +115,14 @@
 			<tr><td><input type="radio" name="confidType" value="open" <%=audit.getConfidentialFlag() ? "" : "checked"%> /></td><td style="text-align:left" class="heading">Open</td></tr>
 			<tr><td><input type="radio" name="confidType" value="confid" <%=audit.getConfidentialFlag() ? "checked" : ""%> /></td><td style="text-align:left" class="heading">Confidential&nbsp;&nbsp;</td>
 			<td style="text-align:left" class="heading">Confidential Period:&nbsp;</td>
-			<td><select name="confidPeriod">
-			  <option value="0.5">6 months</option>
-			  <option value="1" selected>1 year</option>
-			  <option value="2">2 years</option>
-			  <option value="5">5 years</option>
+			<td><select name="confidPeriod"><%
+			double confidPeriod = (audit.getConfidPeriod() != null) ? audit.getConfidPeriod().doubleValue() : 1;
+			if (confidPeriod != 0.5 && confidPeriod != 2 && confidPeriod != 5)
+				confidPeriod = 1;
+			%><option value="0.5"<%=(confidPeriod == 0.5) ? " selected" : ""%>>6 months</option>
+			<option value="1" <%=(confidPeriod == 1) ? " selected" : ""%>>1 year</option>
+			<option value="2"<%=(confidPeriod == 2) ? " selected" : ""%>>2 years</option>
+			<option value="5"<%=(confidPeriod == 5) ? " selected" : ""%>>5 years</option>
 			</select></td></tr><%
 			for (ConfidentialGroup confidGroup : auditUtil.getConfidentialGroups()) {
 				%><tr><td><input type="checkbox" name="confidGroups" value="<%=confidGroup.getGroupId()%>"<%
