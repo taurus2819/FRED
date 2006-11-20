@@ -136,6 +136,7 @@
 		<li>Click on the icons to work with the locality's records:</li>
 		<ul>
 		<li><img src="images/edit.gif" border="0" height="20" width="20" alt="" /> to edit the locality/sample/record</li>
+		<li><img src="images/lock.gif" border="0" height="20" width="20" alt="" /> set the confidentiality of the locality/sample/record</li>
 		<li><img src="images/new_file.gif" border="0" height="20" width="20" alt="" /> to add a file/image to the locality/sample/record</li>
 		<li><img src="images/map.gif" border="0" height="20" width="20" alt="" /> to view a map of the locality</li>
 		<li><img src="images/submit.gif" border="0" height="20" width="20" alt="" /> to submit the locality/sample/record for entry to the masterfile</li>
@@ -152,10 +153,10 @@
 		<p><%
 		startDETable(pageContext);
 		%><form name="FoldForm" method="put" action="folder_feature_detail.jsp">
-		<table border="0" width="550"><tr><td colspan="10" class="deHeading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></td></tr>
+		<table border="0" width="550"><tr><td colspan="11" class="deHeading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></td></tr>
 		<tr>
-		<th colspan="2">Name&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="6">Actions</th></tr>
-		<tr><td colspan="10"><img src="images/line.gif" height="3" width="550" /></td></tr>
+		<th colspan="2">Name&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="7">Actions</th></tr>
+		<tr><td colspan="11"><img src="images/line.gif" height="3" width="550" /></td></tr>
 		<%-- Feature --%>
 		<tr><td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a>&nbsp;</td>
 		<td style="text-align: left" class="heading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%>&nbsp;&nbsp;<%
@@ -170,9 +171,10 @@
 		<td style="text-align: left"><%
 		if (featureUtil.isAllowedEditFeature(user, feature, folder)) {
 			%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a>&nbsp;
+			<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=feature.getFeatureId()%>&RecType=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Set Confidentiality" /></a>&nbsp;
 			<td style="text-align: left"><a href="binary_data_entry.jsp?ID=<%=feature.getFeatureId()%>&RecType=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Add Image/File" /></a>&nbsp;<%
 		} else {
-			%></td><td><%	
+			%></td><td><td></td><%	
 		}
 		%></td>
 		<td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;</td>
@@ -212,9 +214,10 @@
 					</td><td style="text-align: left"><%
 					if (sampleUtil.isAllowedEditSample(user, sample, folder)) {
 						%><a href="de.jsp?Type=Sample&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Sample Details" /></a><img src="images/blank.gif" height="20" width="2" />
+						<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=sample.getSampleId()%>&RecType=SMP&FoldID=<%=folder.getFolderId()%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Set Confidentiality" /></a>&nbsp;
 						<td style="text-align: left"><a href="binary_data_entry.jsp?ID=<%=sample.getSampleId()%>&RecType=SMP&FoldID=<%=folder.getFolderId()%>"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Add Image/File" /></a>&nbsp;<%
 					} else {
-						%></td><td><%
+						%></td><td><td></td><%
 					}
 					%></td><td style="text-align: left"><%
 					if (sampleUtil.isAllowedDeleteSample(user, sample, folder)) {
@@ -260,9 +263,10 @@
 							//Record Options
 							if (recordUtil.isAllowedEditRecord(user, record, folder)) {
 								%><a href="de.jsp?Type=<%=(isAdoption) ? FREDConstants.ADOPTION : FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&RecID=<%=record.getRecordId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Record" /></a><img src="images/blank.gif" height="20" width="2" />
+								<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=record.getRecordId()%>&RecType=<%=(isAdoption) ? FREDConstants.ADOPTION : FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Set Confidentiality" /></a>&nbsp;
 								<td style="text-align: left"><a href="binary_data_entry.jsp?ID=<%=record.getRecordId()%>&RecType=<%=(isAdoption) ? FREDConstants.ADOPTION : FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Add Image/File" /></a>&nbsp;<%
 							} else {
-								%></td><td><%
+								%></td><td><td></td><%
 							}
 							%></td><td style="text-align: left"><%
 							if (recordUtil.isAllowedDeleteRecord(user, record, folder)) {
@@ -276,7 +280,7 @@
 						}
 					}
 				}
-				%><tr><td colspan="10"><img src="images/line.gif" height="3" width="550" /></td></tr><%
+				%><tr><td colspan="11"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 			}
 		}
 		%><input type="hidden" name="ActionType" value="">

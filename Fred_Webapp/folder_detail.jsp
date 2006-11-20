@@ -143,6 +143,7 @@
 			<li>Click on the locality to add/edit drillhole/vertical section samples, and paleontology and adopted age data records, or use the actions to work with the locality itself:</li>
 			<ul>
 			<li><img src="images/edit.gif" border="0" height="20" width="20" alt="" /> edit the locality</li>
+			<li><img src="images/lock.gif" border="0" height="20" width="20" alt="" /> set the confidentiality of the locality/sample/record</li>
 			<li><img src="images/new_file.gif" border="0" height="20" width="20" alt="" /> add a file/image to the locality/sample/record</li>
 			<li><img src="images/map.gif" border="0" height="20" width="20" alt="" /> view a map of the locality</li>
 			<li><img src="images/copy.gif" border="0" height="20" width="20" alt="" /> make a copy of the locality (front of form data only)</li>
@@ -160,10 +161,10 @@
 			%></div>
 			<p><%
 			startDETable(pageContext);
-			%><table border="0" width="550"><tr><td colspan="13" class="deHeading">Localities</td></tr>
+			%><table border="0" width="550"><tr><td colspan="14" class="deHeading">Localities</td></tr>
 			<tr>
-			<th colspan="3">Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="7">Actions</th></tr>
-			<tr><td colspan="13"><img src="images/line.gif" height="3" width="550" /></td></tr>
+			<th colspan="3">Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="8">Actions</th></tr>
+			<tr><td colspan="14"><img src="images/line.gif" height="3" width="550" /></td></tr>
 	
 			<form name="FoldForm" method="post" action="folder_detail.jsp"><%
 			
@@ -193,9 +194,10 @@
 				<td style="text-align: left"><%
 				if (featureUtil.isAllowedEditFeature(user, feature, folder)) {
 					%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a>&nbsp;</td>
+					<td><a href="set_confidentiality.jsp?ID=<%=feature.getFeatureId()%>&RecType=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Set Confidentiality" /></a>&nbsp;
 					<td><a href="binary_data_entry.jsp?ID=<%=feature.getFeatureId()%>&RecType=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Add Image/File" /></a>&nbsp;<%
 				} else {
-					%></td><td><%
+					%></td><td><td></td><%
 				}
 				%></td>
 				<td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;</td>
@@ -221,7 +223,7 @@
 				<tr><td colspan="13"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 			}
 			%>
-			<tr><td colspan="13" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
+			<tr><td colspan="14" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
 			<script><!--
 			function selectAll() {
 				if (document.FoldForm.FeatIDs.length) {
