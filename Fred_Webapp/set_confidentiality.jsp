@@ -21,6 +21,7 @@
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.html.select.SelectBox"
 %><%@page import="nz.cri.gns.html.Attributes"
+%><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="java.util.Date"
 %><%@page import="java.util.Calendar"
 %><%@page import="java.util.GregorianCalendar"
@@ -33,11 +34,12 @@
 	}
 
 %><%!
-	public void updateConfidentiality(Audit audit, String confidType, String confidPeriod, String[] confidGroupIds) throws StorageAccessException {
+	public void updateConfidentiality(Audit audit, String confidType, String confidPeriod, String confidLapseEmail, String[] confidGroupIds) throws StorageAccessException {
 		AuditUtil auditUtil = new AuditUtil(HibernateUtil.get().getDAOFactory());
 		if ("confid".equals(confidType)) {
 			audit.setConfidentialFlag(true);
 			audit.setConfidPeriod(new Double(confidPeriod));
+			audit.setConfidLapseEmail(confidLapseEmail);
 			if (FREDConstants.APPROVED.equals(audit.getStatus())) {
 				GregorianCalendar cal = new GregorianCalendar();
 				if (audit.getConfidPeriod().doubleValue() == 0.5)
@@ -57,6 +59,7 @@
 			audit.setConfidentialFlag(false);
 			audit.setConfidLapseDate(null);
 			audit.setConfidPeriod(null);
+			audit.setConfidLapseEmail(null);
 			audit.setConfidGroups(null);
 		}
 		auditUtil.update(audit);	
@@ -85,7 +88,7 @@
 		
 		Audit audit = null;
 		Audit palListAudit = null;
-		String dataType;
+		String dataType = "";
 		if (FREDConstants.ADOPTION.equals(recType) || FREDConstants.PALEONTOLOGICAL.equals(recType)) {
 			audit = new RecordUtil(factory).getRecord(id).getAudit();
 			dataType = "record";
@@ -94,18 +97,15 @@
 		} else if ("SMP".equals(recType)) {
 			audit = new SampleUtil(factory).getSample(id).getAudit();
 			dataType = "sample";
-		} else {
-			audit = new FeatureUtil(factory).getFeature(id).getAudit();
-			dataType = "locality";
 		}
 
-		if (folder.isAllowedEditLocalities()) {
+		if (folder.isAllowedEditLocalities() && audit != null) {
 					
 			if ("Update".equals(request.getParameter("Action"))) {
 				try {
-					updateConfidentiality(audit, request.getParameter("confidType"), request.getParameter("confidPeriod"), request.getParameterValues("confidGroups"));
+					updateConfidentiality(audit, request.getParameter("confidType"), request.getParameter("confidPeriod"), request.getParameter("confidLapseEmail"), request.getParameterValues("confidGroups"));
 					if (FREDConstants.PALEONTOLOGICAL.equals(recType))
-						updateConfidentiality(palListAudit, request.getParameter("palConfidType"), request.getParameter("palConfidPeriod"), request.getParameterValues("palConfidGroups"));
+						updateConfidentiality(palListAudit, request.getParameter("palConfidType"), request.getParameter("palConfidPeriod"), request.getParameter("palConfidLapseEmail"), request.getParameterValues("palConfidGroups"));
 					response.sendRedirect((String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "&q=" + Math.random());
 					return;
 				} catch (Exception e) {
@@ -156,13 +156,14 @@
 			<option value="5"<%=(confidPeriod == 5) ? " selected" : ""%>>5 years</option>
 			</select></td></tr>
 			<tr><td colspan="4">This <%=dataType%> will be restricted to me and the following groups</td></tr><%
-			for (ConfidentialGroup confidGroup : auditUtil.getConfidentialGroups()) {
+			for (ConfidentialGroup confidGroup : auditUtil.getConfidentialGroups(user)) {
 				%><tr><td><input type="checkbox" name="confidGroups" value="<%=confidGroup.getGroupId()%>"<%
 				if (!FREDUtil.isEmpty(audit.getConfidGroups()) && audit.getConfidGroups().contains(confidGroup)) {
 					%> checked<%
 				}
 				%> /></td><td style="text-align:left"><%=confidGroup.getName()%></td></tr><%
 			}
+			%><tr><td colspan="4" class="heading">Alternative email address (to notify when confidentiality is expiring)&nbsp;&nbsp;&nbsp;<input type="text" name="confidLapseEmail" value="<%=DBUtils.nvl(audit.getConfidLapseEmail())%>" /></td></tr><%
 			
 			if (FREDConstants.PALEONTOLOGICAL.equals(recType)) {
 				%><tr><td>&nbsp;</td></tr>
@@ -180,13 +181,15 @@
 				<option value="5"<%=(confidPeriod == 5) ? " selected" : ""%>>5 years</option>
 				</select></td></tr>
 				<tr><td colspan="4">This taxonimic list will be restricted to me and the following groups</td></tr><%
-				for (ConfidentialGroup confidGroup : auditUtil.getConfidentialGroups()) {
+				for (ConfidentialGroup confidGroup : auditUtil.getConfidentialGroups(user)) {
 					%><tr><td><input type="checkbox" name="palConfidGroups" value="<%=confidGroup.getGroupId()%>"<%
 					if (!FREDUtil.isEmpty(palListAudit.getConfidGroups()) && palListAudit.getConfidGroups().contains(confidGroup)) {
 						%> checked<%
 					}
 					%> /></td><td style="text-align:left"><%=confidGroup.getName()%></td></tr><%
 				}
+				%><tr><td colspan="4" class="heading">Alternative email address (to notify when confidentiality is expiring)&nbsp;&nbsp;&nbsp;<input type="text" name="palConfidLapseEmail" value="<%=DBUtils.nvl(palListAudit.getConfidLapseEmail())%>" /></td></tr><%
+				
 			}
 			%><tr><td></td><td><a href="#" onClick="document.confidForm.submit();"><img src="images/save.gif" height="20" width="20" border="0" alt="Save"/></a>&nbsp;&nbsp;<a href="#" onClick="document.confidForm.submit();" class="boldlink">Save</a></td></tr>
 

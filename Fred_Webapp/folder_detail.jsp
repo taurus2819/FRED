@@ -47,20 +47,19 @@
 	et.setDisplayLoadingMessage(true);
 	
 	if (folder != null && folder.isAllowedCreateLocalities()) {
-		IconnedLink[] iLink = new IconnedLink[((folder.isBacklogFolder()) ? 7 : 6)];
+		IconnedLink[] iLink = new IconnedLink[((folder.isBacklogFolder()) ? 6 : 5)];
 		iLink[0] = new IconnedLink("folder_list.jsp?&q=" + Math.random(), "images/back_arrow.gif", "Back to Folders");
-		iLink[1] = new IconnedLink(null, "images/new.gif", "New: ");
-		iLink[2] = new IconnedLink("de.jsp?Type=Outcrop&FoldID=" + folder.getFolder().getFolderId(), null, "Outcrop");
-		iLink[3] = new IconnedLink("de.jsp?Type=Drillhole&FoldID=" + folder.getFolder().getFolderId(), null, "Drillhole");
-		iLink[4] = new IconnedLink("de.jsp?Type=Vertical+Section&FoldID=" + folder.getFolder().getFolderId(), null, "V. Section");
-		iLink[5] = new IconnedLink("folder_taxa_list.jsp?ID=" + folder.getFolder().getFolderId() + "&q=" + Math.random() , "images/loc.gif", "Taxa");
+		iLink[1] = new IconnedLink("de.jsp?Type=Outcrop&FoldID=" + folder.getFolder().getFolderId(), "images/new.gif", "New Outcrop");
+		iLink[2] = new IconnedLink("de.jsp?Type=Drillhole&FoldID=" + folder.getFolder().getFolderId(), "images/new.gif", "New Drillhole");
+		iLink[3] = new IconnedLink("de.jsp?Type=Vertical+Section&FoldID=" + folder.getFolder().getFolderId(), "images/new.gif", "New Vert. Section");
+		iLink[4] = new IconnedLink("folder_taxa_list.jsp?ID=" + folder.getFolder().getFolderId() + "&q=" + Math.random() , "images/loc.gif", "Taxa Status");
 		if (folder.isBacklogFolder())
-			iLink[6] = new IconnedLink("backlog_status.jsp", "images/map.gif", "Backlog");
+			iLink[5] = new IconnedLink("backlog_status.jsp", "images/map.gif", "Backlog Status");
 		addButtons(et, iLink);
 	} else {
 		addButtons(et, new IconnedLink[] {
 			new IconnedLink("folder_list.jsp?q=" + Math.random(), "images/back_arrow.gif", "Back to folders"),
-			new IconnedLink("folder_taxa_list.jsp?ID=" + folder.getFolder().getFolderId() + "&q=" + Math.random(), "images/loc.gif", "Taxa")
+			new IconnedLink("folder_taxa_list.jsp?ID=" + folder.getFolder().getFolderId() + "&q=" + Math.random(), "images/loc.gif", "Taxa Status")
 		});
 	}	
 	
@@ -131,7 +130,7 @@
 				document.getElementById(toHide).style.display = 'none';
 			}
 			//--></script>
-			<center><p>&nbsp;<p/><div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-al`ign: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none"><%
+			<div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-al`ign: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none"><%
 			startDETable(pageContext);
 			%><table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
 			<tr><td class="deHeading">Folder Instructions</td></tr>
@@ -143,7 +142,6 @@
 			<li>Click on the locality to add/edit drillhole/vertical section samples, and paleontology and adopted age data records, or use the actions to work with the locality itself:</li>
 			<ul>
 			<li><img src="images/edit.gif" border="0" height="20" width="20" alt="" /> edit the locality</li>
-			<li><img src="images/lock.gif" border="0" height="20" width="20" alt="" /> set the confidentiality of the locality/sample/record</li>
 			<li><img src="images/new_file.gif" border="0" height="20" width="20" alt="" /> add a file/image to the locality/sample/record</li>
 			<li><img src="images/map.gif" border="0" height="20" width="20" alt="" /> view a map of the locality</li>
 			<li><img src="images/copy.gif" border="0" height="20" width="20" alt="" /> make a copy of the locality (front of form data only)</li>
@@ -159,12 +157,13 @@
 			<tr><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr></table><%
 			endDETable(pageContext);
 			%></div>
+			
 			<p><%
 			startDETable(pageContext);
 			%><table border="0" width="550"><tr><td colspan="14" class="deHeading">Localities</td></tr>
 			<tr>
-			<th colspan="3">Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="8">Actions</th></tr>
-			<tr><td colspan="14"><img src="images/line.gif" height="3" width="550" /></td></tr>
+			<th colspan="3">Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="7">Actions</th></tr>
+			<tr><td colspan="13"><img src="images/line.gif" height="3" width="550" /></td></tr>
 	
 			<form name="FoldForm" method="post" action="folder_detail.jsp"><%
 			
@@ -190,17 +189,14 @@
 					%><br /><div class="smalltext">Curator comments: <%=DBUtils.nvl(audit.getCuratorComments())%></div><%
 				}
 				%></td>
-				<td style="text-align: left"><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></td>
-				<td style="text-align: left"><%
+				<td style="text-align: left"><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></td><%
 				if (featureUtil.isAllowedEditFeature(user, feature, folder)) {
-					%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a>&nbsp;</td>
-					<td><a href="set_confidentiality.jsp?ID=<%=feature.getFeatureId()%>&RecType=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Set Confidentiality" /></a>&nbsp;
-					<td><a href="binary_data_entry.jsp?ID=<%=feature.getFeatureId()%>&RecType=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Add Image/File" /></a>&nbsp;<%
+					%><td style="text-align: left"><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a>&nbsp;</td>
+					<td style="text-align: left"><a href="binary_data_entry.jsp?ID=<%=feature.getFeatureId()%>&RecType=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Add Image/File" /></a>&nbsp;</td><%
 				} else {
-					%></td><td><td></td><%
+					%><td></td><td></td><td></td><%
 				}
-				%></td>
-				<td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;</td>
+				%><td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;</td>
 				<td style="text-align: left"><%
 				if (folder.isAllowedCreateLocalities()) {
 					%><a href="javascript:prmpt=prompt('Please enter the new name', 'Copy of <%=FeatureUtil.getFeatureIdentifyingName(feature)%>');if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value='CopyFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/copy.gif" border="0" height="20" width="20" alt="Copy Locality" /></a>&nbsp;<%
@@ -223,7 +219,7 @@
 				<tr><td colspan="13"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 			}
 			%>
-			<tr><td colspan="14" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
+			<tr><td colspan="13" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
 			<script><!--
 			function selectAll() {
 				if (document.FoldForm.FeatIDs.length) {

@@ -19,7 +19,9 @@ import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.jsp.CustomHTMLLink;
 import nz.cri.gns.jsp.ExtranetTemplate;
 import nz.cri.gns.jsp.IPSysJspPage;
+import nz.cri.gns.jsp.IconnedLink;
 import nz.cri.gns.jsp.Link;
+import nz.cri.gns.jsp.NewExtranetTemplate;
 import nz.cri.gns.jsp.PageState;
 
 public abstract class FREDIPSysJspPage extends IPSysJspPage {
@@ -54,16 +56,16 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 		return fredRights;
 	}
 
-	protected ExtranetTemplate getExtranetTemplate() {
+	protected NewExtranetTemplate getExtranetTemplate() {
 		return FREDIPSysJspPage.getFREDTemplate();
 	}
 
-	public static ExtranetTemplate getFREDTemplate() {
-		ExtranetTemplate et = new ExtranetTemplate();
+	public static NewExtranetTemplate getFREDTemplate() {
+		NewExtranetTemplate et = new NewExtranetTemplate();
 		et.setDisplayLogin(true);
 		et.setShowGnsLogo(true);
 		et.setUseNavigationColumn(true);
-		et.addStyleSheet("fredde.css");
+		et.addStyleSheet("fred.css");
         et.addScript("showhide.js");
 		KeyValueObject links[] = new KeyValueObject[4];
 		links[0] = new KeyValueObject("index.jsp", "FRED Home");
@@ -72,17 +74,19 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 		links[3] = new KeyValueObject("folder_list.jsp", "Data Entry");
 		et.setLinks(links);
 		et.setImageBase("images/fred.gif");
+		et.setNavListHeading("FRED");
+		et.setNewTemplateImage("images/fred_banner.jpg");
+		et.setAppHome("http://www.fred.org.nz");
 		et.setNewHeaderStyle(true);
 		KeyValueObject logos[] = new KeyValueObject[1];
-		logos[0] = new KeyValueObject("http://www.gsnz.org.nz", "images/gsnz_logo_head.gif");
+		logos[0] = new KeyValueObject("http://www.gsnz.org.nz", "images/gsnz_header.gif");
 		et.setHeaderLogos(logos);
 		
 		//set FRNumber lik
-		String htmlLink = "<form method=\"post\" action=\"locality\" name=\"FRNumJumpForm\" style=\"display: inline; margin: 0;\">"
+		String htmlLink = "<img src=\"images\\blank.gif\" height=\"20\" width=\"10\" alt=\"\" /><form method=\"post\" action=\"locality\" name=\"FRNumJumpForm\" style=\"display: inline; margin: 0;\">"
 			+ "<input type=\"text\" size=\"10\" name=\"frNum\" style=\"border: 0; font-size: 10pt\" />&nbsp;"
-			+ "<a class=\"buttn\" href=\"javascript:document.FRNumJumpForm.submit();\">Go To Locality</a>"
-			+ "</form>";
-		et.setButtons(new Link[] {new CustomHTMLLink(htmlLink)});
+			+ "<input type=\"submit\" value=\"Go\" /></form>";
+		et.setButtons(new Link[] {new CustomHTMLLink(htmlLink), new IconnedLink("index.jsp", "images/home.gif", "FRED Home")});
 		return et;
 	}
 

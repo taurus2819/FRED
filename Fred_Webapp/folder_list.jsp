@@ -62,8 +62,8 @@
 		<input type="hidden" name="ActionType" value="Add">
 		<input type="hidden" name="FoldName" value="">
 		</form>
-		
-		<center><p>&nbsp;<p/><div id="showInst">
+				
+		<div id="showInst">
 		<table border="0" width="550" style="border: none; width: 550px">
 		<tr>
 		<td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td>

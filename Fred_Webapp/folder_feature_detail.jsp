@@ -125,7 +125,7 @@
 			document.getElementById(toHide).style.display = 'none';
 		}
 		//--></script>
-		<center><p>&nbsp;<p/><div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none"><%
+		<div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none"><%
 		startDETable(pageContext);
 		%><table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
 		<tr><td colspan="3" class="deHeading">Locality Instructions</td></tr><tr><td style="text-align: left">
@@ -136,7 +136,7 @@
 		<li>Click on the icons to work with the locality's records:</li>
 		<ul>
 		<li><img src="images/edit.gif" border="0" height="20" width="20" alt="" /> to edit the locality/sample/record</li>
-		<li><img src="images/lock.gif" border="0" height="20" width="20" alt="" /> set the confidentiality of the locality/sample/record</li>
+		<li><img src="images/lock.gif" border="0" height="20" width="20" alt="" /> set the confidentiality of the sample/record. <i>Note: localities are always open</i></li>
 		<li><img src="images/new_file.gif" border="0" height="20" width="20" alt="" /> to add a file/image to the locality/sample/record</li>
 		<li><img src="images/map.gif" border="0" height="20" width="20" alt="" /> to view a map of the locality</li>
 		<li><img src="images/submit.gif" border="0" height="20" width="20" alt="" /> to submit the locality/sample/record for entry to the masterfile</li>
@@ -167,17 +167,15 @@
 			%><br /><div class="smalltext">Curator comments: <%=DBUtils.nvl(audit.getCuratorComments())%></div><%
 		}
 		%></td>
-		<td style="text-align: left"><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></td>
-		<td style="text-align: left"><%
+		<td style="text-align: left"><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></td><%
 		if (featureUtil.isAllowedEditFeature(user, feature, folder)) {
-			%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a>&nbsp;
-			<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=feature.getFeatureId()%>&RecType=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Set Confidentiality" /></a>&nbsp;
-			<td style="text-align: left"><a href="binary_data_entry.jsp?ID=<%=feature.getFeatureId()%>&RecType=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Add Image/File" /></a>&nbsp;<%
+			%><td style="text-align: left"><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a>&nbsp;</td>
+			<td style="text-align: left">&nbsp;</td>
+			<td style="text-align: left"><a href="binary_data_entry.jsp?ID=<%=feature.getFeatureId()%>&RecType=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Add Image/File" /></a>&nbsp;</td><%
 		} else {
-			%></td><td><td></td><%	
+			%><td></td><td></td><td></td><%	
 		}
-		%></td>
-		<td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;</td>
+		%><td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;</td>
 		<td style="text-align: left"><%
 		if (featureUtil.isAllowedSubmitFeature(user, feature, folder)) {
 			%><a href="javascript:if (confirm('Are you sure you want to submit this locality') == true) {document.FoldForm.ActionType.value='Submit';document.FoldForm.submit();}"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Locality" /></a>&nbsp;<%
@@ -210,16 +208,15 @@
 					<td style="text-align: left"><a href="detail.jsp?ID=<%=sample.getSampleId()%>&backURL=<%=URLEncoder.encode("folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/drill.gif" height="20" width="20" border="0" alt="View Sample Details" /></a>&nbsp;</td>
 					<td style="text-align: left"><%=SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td>
 					<td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {"text-align: left"})%>><%=status%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></td>
-					</td><td style="text-align: left"><%
+					<td style="text-align: left"><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></td><%
 					if (sampleUtil.isAllowedEditSample(user, sample, folder)) {
-						%><a href="de.jsp?Type=Sample&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Sample Details" /></a><img src="images/blank.gif" height="20" width="2" />
-						<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=sample.getSampleId()%>&RecType=SMP&FoldID=<%=folder.getFolderId()%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Set Confidentiality" /></a>&nbsp;
-						<td style="text-align: left"><a href="binary_data_entry.jsp?ID=<%=sample.getSampleId()%>&RecType=SMP&FoldID=<%=folder.getFolderId()%>"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Add Image/File" /></a>&nbsp;<%
+						%><td style="text-align: left"><a href="de.jsp?Type=Sample&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Sample Details" /></a>&nbsp;</td>
+						<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=sample.getSampleId()%>&RecType=SMP&FoldID=<%=folder.getFolderId()%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Set Confidentiality" /></a>&nbsp;</td>
+						<td style="text-align: left"><a href="binary_data_entry.jsp?ID=<%=sample.getSampleId()%>&RecType=SMP&FoldID=<%=folder.getFolderId()%>"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Add Image/File" /></a>&nbsp;</td><%
 					} else {
-						%></td><td><td></td><%
+						%><td></td><td></td><td></td><%
 					}
-					%></td><td style="text-align: left"><%
+					%><td style="text-align: left"><%
 					if (sampleUtil.isAllowedDeleteSample(user, sample, folder)) {
 						%><a href="javascript:if (confirm('Are you sure you want to delete this sample') == true) {document.FoldForm.ActionType.value='DeleteSamp';document.FoldForm.SampID.value='<%=sample.getSampleId()%>';document.FoldForm.submit();}" title="Delete Sample"><img src="images/delete.gif" border="0" height="20" width="20"></a><img src="images/blank.gif" height="20" width="2" /><%
 					}
@@ -258,17 +255,16 @@
 							%><%=RecordUtil.getRecordName(record)%>&nbsp;&nbsp;
 							</td>					
 							<td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {"text-align: left"})%>><%=status%>&nbsp;&nbsp;</td>
-							<td style="text-align: left"><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></td>
-							<td style="text-align: left"><%
+							<td style="text-align: left"><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></td><%
 							//Record Options
 							if (recordUtil.isAllowedEditRecord(user, record, folder)) {
-								%><a href="de.jsp?Type=<%=(isAdoption) ? FREDConstants.ADOPTION : FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&RecID=<%=record.getRecordId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Record" /></a><img src="images/blank.gif" height="20" width="2" />
-								<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=record.getRecordId()%>&RecType=<%=(isAdoption) ? FREDConstants.ADOPTION : FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Set Confidentiality" /></a>&nbsp;
-								<td style="text-align: left"><a href="binary_data_entry.jsp?ID=<%=record.getRecordId()%>&RecType=<%=(isAdoption) ? FREDConstants.ADOPTION : FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Add Image/File" /></a>&nbsp;<%
+								%><td style="text-align: left"><a href="de.jsp?Type=<%=(isAdoption) ? FREDConstants.ADOPTION : FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&RecID=<%=record.getRecordId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Record" /></a>&nbsp;</td>
+								<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=record.getRecordId()%>&RecType=<%=(isAdoption) ? FREDConstants.ADOPTION : FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Set Confidentiality" /></a>&nbsp;</td>
+								<td style="text-align: left"><a href="binary_data_entry.jsp?ID=<%=record.getRecordId()%>&RecType=<%=(isAdoption) ? FREDConstants.ADOPTION : FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Add Image/File" /></a>&nbsp;</td><%
 							} else {
-								%></td><td><td></td><%
+								%><td></td><td></td><td></td><%
 							}
-							%></td><td style="text-align: left"><%
+							%><td style="text-align: left"><%
 							if (recordUtil.isAllowedDeleteRecord(user, record, folder)) {
 								%><a href="javascript:if (confirm('Are you sure you want to delete this record') == true) {document.FoldForm.ActionType.value='DeleteRec';document.FoldForm.RecID.value='<%=record.getRecordId()%>';document.FoldForm.submit();}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
 							}

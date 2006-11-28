@@ -1,28 +1,16 @@
-<%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
+<%@page	extends="nz.cri.gns.fred.FREDStaticIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.util.BacklogStatusUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
-%><%@page import="java.io.PrintWriter"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
-%><%@page import="nz.cri.gns.auth.Authenticable"
-%><%@page import="nz.cri.gns.fred.website.ContentProvider"
-%><%!	
-	public Authenticable[] getRequiredRights(HttpServletRequest request) {
-		return new Authenticable[0];
-	}
 %><%
 	ExtranetTemplate et = getExtranetTemplate();
-	ContentProvider contentProvider = getContentProvider(getPageState(request, response));
 	
 	FeatureUtil featureUtil = new FeatureUtil(HibernateUtil.get().getDAOFactory());
 	BacklogStatusUtil bsUtil = new BacklogStatusUtil(HibernateUtil.get().getDAOFactory());
 	
 	drawTop(out, et, request, response);
-
-	contentProvider.getContent("index.nav").loadAll(new PrintWriter(out));
-	
-	drawEndNavigation(out);
 
 	%><table style="margin-left:20px; width:550px;" border="0">
 	<tr>
