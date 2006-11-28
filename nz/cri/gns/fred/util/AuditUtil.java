@@ -5,10 +5,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import nz.cri.gns.auth.UserAccount;
@@ -147,8 +145,9 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		}
 	}
 	
-	public List<ConfidentialGroup> getConfidentialGroups() throws StorageAccessException {
-		List<ConfidentialGroup> confidGroups = auditDAO.getList("FROM ConfidentialGroup AS c", ConfidentialGroup.class);
+	public List<ConfidentialGroup> getConfidentialGroups(UserAccount user) throws StorageAccessException {
+		FrUserView frUser = new UserUtil(factory).getFrUserView(new Integer(user.getId()));
+		List<ConfidentialGroup> confidGroups = auditDAO.getList("FROM ConfidentialGroup AS c WHERE c.owner IS NULL OR c.owner = ?", ConfidentialGroup.class, frUser);
 		Collections.sort(confidGroups);
 		return confidGroups;
 	}

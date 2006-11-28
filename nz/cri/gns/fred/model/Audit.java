@@ -32,6 +32,8 @@ public interface Audit {
 	public void setConfidPeriod(Double confidPeriod);
 	public Date getConfidLapseDate();
 	public void setConfidLapseDate(Date confidLapseDate);
+	public String getConfidLapseEmail();
+	public void setConfidLapseEmail(String confidLapseEmail);
     public Folder getFolder();
     public void setFolder(Folder folder);
     public DataOrigin getDataOrigin();

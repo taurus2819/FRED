@@ -22,7 +22,7 @@
         column="GROUP_ID"
     >
         <generator class="sequence">
-                <param name="sequence">CONFID_GROUP_SEQ</param>
+                <param name="sequence">CONFIDENTIAL_GROUP_SEQ</param>
         </generator>
     </id>
 
@@ -43,7 +43,16 @@
     >
         <column name="ORG_ID" />
     </many-to-one>
-    
+
+    <!-- bi-directional many-to-one association to FrUserView -->
+    <many-to-one
+        name="owner"
+        class="nz.cri.gns.fred.hibernate.FrUserView"
+        not-null="true"
+    >
+        <column name="OWNER_ID" />
+    </many-to-one>
+       
     <!-- bi-directional many-to-many association to AuditTable via AuditConfid -->
     <set
         name="audits"
@@ -64,7 +73,7 @@
     <!-- bi-directional many-to-many association to FrUserView via ConfidUser -->
     <set
         name="users"
-        table="CONFID_USER"
+        table="CONFID_GROUP_USER"
         lazy="true"
         inverse="true"
 		cascade="none"

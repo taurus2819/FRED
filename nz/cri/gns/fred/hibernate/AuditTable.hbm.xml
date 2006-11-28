@@ -99,7 +99,13 @@
         type="java.sql.Date"
         column="CONFID_LAPSE_DATE"
     />
-
+    <property
+        name="confidLapseEmail"
+        type="java.lang.String"
+        column="CONFID_LAPSE_EMAIL"
+        length="32"
+    />
+    
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Folder -->

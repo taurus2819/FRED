@@ -625,11 +625,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	
 	/**
 	 * Returns true if a user is allowed to view the locality
+	 * always true if user != null && status == approved
 	 */
 	public boolean isAllowedReadFeature(UserAccount user, Feature feature) throws StorageAccessException {
-		String status = feature.getAudit().getStatus();
 		if (user == null)
 			return false;
+		String status = feature.getAudit().getStatus();
 		if (!status.equals(FREDConstants.APPROVED)) {
 			UserFolder folder = new FolderUtil(factory).getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), user);
 			UserFolder mfFolder = null;
@@ -637,11 +638,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				mfFolder = folderDAO.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
 			return ((folder != null && folder.isAllowedReadLocalities()) || (mfFolder != null && mfFolder.isAllowedReadLocalities()));
 		}
-		return new AuditUtil(factory).isAllowedReadApproved(feature.getAudit(), user);
+		return true;
 	}
 	
 	/**
 	 * Returns true if a user is allowed to view the locality site information
+	 * always true if status == approved
 	 */
 	public boolean isAllowedReadFeatureSite(UserAccount user, Feature feature) throws StorageAccessException {
 		String status = feature.getAudit().getStatus();
