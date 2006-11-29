@@ -281,7 +281,13 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
     
     public boolean isAllowedReadPalList(UserAccount user, Paleontology palRecord) throws StorageAccessException {
-    	return new AuditUtil(factory).isAllowedReadApproved(palRecord.getRecord().getPalListAudit(), user) && isAllowedReadRecord(user, palRecord.getRecord());
+    	if (user ==  null)
+    		return false;
+    	
+    	if (palRecord.getRecord().getAudit().getStatus().equals(FREDConstants.APPROVED))
+    		return new AuditUtil(factory).isAllowedReadApproved(palRecord.getRecord().getPalListAudit(), user) && isAllowedReadRecord(user, palRecord.getRecord());
+    	
+    	return isAllowedReadRecord(user, palRecord.getRecord());
     }
     
     public static String getRecordType(Record record) {
