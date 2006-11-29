@@ -1,16 +1,23 @@
 package nz.cri.gns.fred.util;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.naming.NamingException;
 
+import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
+import nz.cri.gns.fred.dao.StageDAO;
+import nz.cri.gns.fred.model.AgeView;
 import nz.cri.gns.fred.model.Stage;
 
 public class StageUtil extends ModelUtil {
 
+	private StageDAO stageDAO;
+	
     public StageUtil(DAOFactory factory) {
 		super(factory);
+		this.stageDAO = factory.getStageDAO();
 	}
 
 	/**
@@ -49,5 +56,12 @@ public class StageUtil extends ModelUtil {
 		return desc.toString();		
 	}
 	
+	public List<AgeView> getAges() throws StorageAccessException {
+		return stageDAO.getList("FROM AgeView AS A", AgeView.class);
+	}
 
+	public int getMaxAgeId() throws StorageAccessException {
+		return stageDAO.getMaxAgeId();
+	}
+	
 }

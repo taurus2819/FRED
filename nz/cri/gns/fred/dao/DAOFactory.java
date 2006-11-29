@@ -19,6 +19,7 @@ public interface DAOFactory {
     public BacklogStatusDAO getBacklogStatusDAO();
     public StratLexDAO getStratLexDAO();
     public UserDAO getUserDAO();
+    public StageDAO getStageDAO();
 	
 	/**
 	 * Closes the current session for this thread

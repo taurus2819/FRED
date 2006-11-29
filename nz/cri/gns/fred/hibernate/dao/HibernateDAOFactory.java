@@ -31,6 +31,7 @@ import nz.cri.gns.fred.dao.FolderTypeDAO;
 import nz.cri.gns.fred.dao.PersonDAO;
 import nz.cri.gns.fred.dao.RecordDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
+import nz.cri.gns.fred.dao.StageDAO;
 import nz.cri.gns.fred.dao.StratLexDAO;
 import nz.cri.gns.fred.dao.TaxonomicDAO;
 import nz.cri.gns.fred.dao.TaxonomicGroupDAO;
@@ -88,7 +89,7 @@ import nz.cri.gns.fred.model.Weathering;
 /**
  * @author iainm
  */
-public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO, AuditDAO, BacklogStatusDAO, StratLexDAO, UserDAO {
+public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO, AuditDAO, BacklogStatusDAO, StratLexDAO, UserDAO, StageDAO {
 
 	private HibernateProvider provider;
 
@@ -1140,6 +1141,22 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 
 	public FrUserView getFrUserView(Integer userId) throws StorageAccessException {
 		return HibernateUtils.getFirst(provider, "FROM FrUserView As f WHERE f.userId = ?", userId, FrUserView.class);	
+	}
+
+	public StageDAO getStageDAO() {
+		return this;
+	}
+	
+	public int getMaxAgeId() throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+            Query query = session.createQuery("SELECT MAX(a.ageId) FROM AgeView AS a");
+    		List list = query.list();
+    		return ((Integer)list.get(0)).intValue();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new StorageAccessException(e);
+		}
 	}
 	
 }

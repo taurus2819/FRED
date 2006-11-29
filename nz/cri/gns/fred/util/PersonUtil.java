@@ -43,4 +43,9 @@ public class PersonUtil extends ModelUtil {
 	public List<Person> getMatchingPersons(String str, Match matchType, int maxMatches) throws StorageAccessException {
 		return personDAO.getMatchingPersons(str, matchType, maxMatches);
 	}
+	
+	public List<Person> getPeople() throws StorageAccessException {
+		return personDAO.getList("FROM Person AS P", Person.class);
+	}
+	
 }
