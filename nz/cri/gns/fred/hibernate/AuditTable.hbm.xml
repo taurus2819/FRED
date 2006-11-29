@@ -100,6 +100,12 @@
         column="CONFID_LAPSE_DATE"
     />
     <property
+        name="confidEmailFlag"
+        type="boolean"
+        column="CONFID_EMAIL_FLAG"
+    />
+
+    <property
         name="confidLapseEmail"
         type="java.lang.String"
         column="CONFID_LAPSE_EMAIL"

@@ -21,7 +21,6 @@
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.html.select.SelectBox"
 %><%@page import="nz.cri.gns.html.Attributes"
-%><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="java.util.Date"
 %><%@page import="java.util.Calendar"
 %><%@page import="java.util.GregorianCalendar"
@@ -49,6 +48,7 @@
 				audit.setConfidLapseDate(cal.getTime());
 			} else
 				audit.setConfidLapseDate(null);
+			audit.setConfidEmailFlag(false);
 			if (confidGroupIds != null) {
 				Set<ConfidentialGroup> confidGroups = new HashSet<ConfidentialGroup>();
 				for (int i = 0; i < confidGroupIds.length; i++)
@@ -59,6 +59,7 @@
 			audit.setConfidentialFlag(false);
 			audit.setConfidLapseDate(null);
 			audit.setConfidPeriod(null);
+			audit.setConfidEmailFlag(null);
 			audit.setConfidLapseEmail(null);
 			audit.setConfidGroups(null);
 		}
