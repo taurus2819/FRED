@@ -1,7 +1,9 @@
 package nz.cri.gns.fred.util;
 
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -126,6 +128,14 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		audit.setSubmittedDate(new Date());
 		audit.setWorkingComments(null);
 		audit.setFolder(null);
+		if (audit.getConfidentialFlag()) {
+			GregorianCalendar cal = new GregorianCalendar();
+			if (audit.getConfidPeriod().doubleValue() == 0.5)
+				cal.add(Calendar.MONTH, 6);
+			else
+				cal.add(Calendar.YEAR, audit.getConfidPeriod().intValue());
+			audit.setConfidLapseDate(cal.getTime());
+		}
 		recordDAO.update(audit);
 		
 		if (PALEONTOLOGICAL.equals(getRecordType(record))) {
@@ -133,6 +143,14 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			audit.setStatus(APPROVED);
 			audit.setSubmittedById(new Integer(user.getId()));
 			audit.setSubmittedDate(new Date());
+			if (audit.getConfidentialFlag()) {
+				GregorianCalendar cal = new GregorianCalendar();
+				if (audit.getConfidPeriod().doubleValue() == 0.5)
+					cal.add(Calendar.MONTH, 6);
+				else
+					cal.add(Calendar.YEAR, audit.getConfidPeriod().intValue());
+				audit.setConfidLapseDate(cal.getTime());
+			}
 			recordDAO.update(audit);
 		}
 		

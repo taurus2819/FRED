@@ -1,8 +1,10 @@
 package nz.cri.gns.fred.util;
 
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -290,6 +292,14 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			audit.setSubmittedDate(new Date());
 			audit.setWorkingComments(null);
 			audit.setFolder(null);
+			if (audit.getConfidentialFlag()) {
+				GregorianCalendar cal = new GregorianCalendar();
+				if (audit.getConfidPeriod().doubleValue() == 0.5)
+					cal.add(Calendar.MONTH, 6);
+				else
+					cal.add(Calendar.YEAR, audit.getConfidPeriod().intValue());
+				audit.setConfidLapseDate(cal.getTime());
+			}
 			sampleDAO.update(audit);
 		}
 	}
