@@ -74,8 +74,7 @@
 	addButtons(et, il);
 	drawTop(out, et, request, response);
 	
-	drawEndNavigation(out);
-	%><p></p><p><%
+	%><p><%
 	
 	if (featId != null) {
 		Feature feature = featureUtil.getFeature(Integer.parseInt(featId));

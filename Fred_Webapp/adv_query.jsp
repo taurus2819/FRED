@@ -13,12 +13,26 @@
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %>
-	<html>
-	<head>
-	<link rel="StyleSheet" href="/online/style/extranet.css" type="text/css" />
-	</head>
-	<body>
-	<center><%
+<!DOCTYPE html 
+   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <title>FRED :: The Fossil Record Electronic Database</title>
+  <link rel="stylesheet" href="/online/style/link_styles_internal.css" type="text/css" />
+  <link rel="stylesheet" href="fred.css" type="text/css" />
+  </head>
+  <body>
+    <div id="navBarWrap">
+   <div class="left">
+
+   <div id="navBarSpacer">
+   </div>
+   <div id="navPositioner">
+   </div>
+   </div>
+  <div id="contentWrapInner"><%
 	PageState state = new PageState(request, response, getServletContext());
 	FREDQuery query = FREDUtil.getFREDQuery(state);
 	if (request.getParameter(AdvancedQuery.LEFT_BRACKET) != null) try {
@@ -60,12 +74,9 @@
 		 <input type="hidden" name="<%=AdvancedQuery.RIGHT_BRACKET%>">
 		 <input type="hidden" name="button">
 		</form>
-	
-		<table border="0" cellspacing="0" cellpadding="0" class="tall" width="100%" >
-		<tr>
-		<td height="100%" width="198" ></td>
-		<td style="padding-top:20px;" ><%
 		
+		<p><%
+	
 		startDETable(pageContext);
 		%><table style='margin-left:20px; width:550px;' border='0'><tr><td>
 		
@@ -88,13 +99,13 @@
 		<tr><td colspan="2" ></td></tr>
 		</table><%
 		endDETable(pageContext);
+		%></p>
+		
+		<p>&nbsp;</p><%
 	} catch (Exception e) {
 		e.printStackTrace(new java.io.PrintWriter(out));
 	}
 	
-	%></td>
-	</tr>
-	</table>
-	</center>
+	%></div>
 	</body>
 	</html>

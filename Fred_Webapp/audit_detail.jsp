@@ -8,6 +8,7 @@
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
+%><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
@@ -17,6 +18,7 @@
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
+%><%@page import="java.net.URLEncoder"
 %><%!	
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { 
 		return new Authenticable[0]; 
@@ -47,6 +49,18 @@
 	RecordUtil recordUtil = new RecordUtil(factory);
 	
 	ExtranetTemplate et = getExtranetTemplate();
+	
+	String backURL = request.getParameter("backURL");
+	if (backURL != null && backURL.length() == 0)
+		backURL = null;
+	String backText = request.getParameter("backText");
+	if (backText != null && backText.length() == 0)
+		backText = null;
+	String backStr = (backURL != null) ? "&backURL=" + URLEncoder.encode(backURL, "ISO-8859-1") : "";
+	backStr += (backText != null) ? "&backText=" + URLEncoder.encode(backText, "ISO-8859-1") : "";
+	if (backURL != null)
+		addButtons(et, new IconnedLink[] {new IconnedLink(backURL, "images/back_arrow.gif", (backText != null) ? request.getParameter("backText") : "Back")});
+	
 	et.setDisplayLoadingMessage(true);
 	
 	String sampID = request.getParameter("ID");
@@ -69,8 +83,6 @@
 	}
 	
 	drawTop(out, et, request, response);
-	drawEndNavigation(out);
-	%><p>&nbsp;<p/><%
 	
 	if (feature != null && featureUtil.isAllowedReadFeatureSite(user, feature)) {
 		Audit audit = feature.getAudit();

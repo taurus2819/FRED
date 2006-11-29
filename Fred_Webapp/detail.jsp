@@ -128,10 +128,11 @@ try {
 	
 	if (feature != null) {
 		
-		IconnedLink[] il = new IconnedLink[(backURL != null) ? 2 : 1];
+		IconnedLink[] il = new IconnedLink[(backURL != null) ? 3 : 2];
 		if (backURL != null)
 			il[0] = new IconnedLink(backURL, "images/back_arrow.gif", (backText != null) ? request.getParameter("backText") : "Back");
 		il[(backURL != null) ? 1 : 0] = new IconnedLink("locality_map.jsp?FeatID=" + feature.getFeatureId() + "&backURL=" + URLEncoder.encode("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr, "ISO-8859-1")+ "&backText=Back%20To%20Locality", "images/map.gif", "Locality Map");
+		il[(backURL != null) ? 2 : 1] = new IconnedLink("audit_detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "FeatID=" + feature.getFeatureId()) + "&backURL=" + URLEncoder.encode("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr, "ISO-8859-1")+ "&backText=Back%20To%20Locality", "images/loc.gif", "Audit Details");
 		addButtons(et, il);
 	
 		Audit audit = feature.getAudit();
@@ -171,39 +172,6 @@ try {
 			//List data
 			%><table border="0"><tr><td><img src="images/blank.gif" width="10" height="10" /></td></tr>
 			<tr><td></td><td><%
-			
-			//Audit details
-			%><p><%
-			startDETable(pageContext);
-			%><table border="0" width="160">
-			<tr><td colspan="2" class="deHeading">Audit Details</td></tr><%
-			String status = audit.getStatus();
-			%><tr><td class="smallheading">Status:&nbsp;</td>
-			<td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {})%> class="smalltext"><%=status%>&nbsp;&nbsp;</td></tr><%
-			if (status.equals(FREDConstants.REJECTED)) {
-				%><tr><td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {})%> class="smallheading">Curator Comments:&nbsp;&nbsp;</td>
-				<td <%=AuditUtil.getStatusHTMLOutputStyle(status, new String[] {})%> class="smalltext"><%=DBUtils.nvl(audit.getCuratorComments())%></td></tr><%
-			}
-			%><tr><td class="smallheading">Created:&nbsp;</td>
-			<td class="smalltext"><%=((audit.getCreatedById() != null) ? audit.getCreatedBy().getFullName() + "<br />" : "")%>
-				<%=((audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : "")%></td></tr>
-			<tr><td class="smallheading">Edited:&nbsp;</td><%
-			if (audit.getAuditEdits() != null && audit.getAuditEdits().size() > 0) {
-				AuditEdit edit = (AuditEdit) audit.getAuditEdits().iterator().next();
-			%><td class="smalltext"><%=((edit.getEditedById() != null) ? edit.getEditedBy().getFullName() + "<br />" : "")%>
-				<%=((edit.getEditedDate() != null) ? FREDUtil.formatDateForOutput(edit.getEditedDate()) : "")%></td></tr><%
-			}
-			%><tr><td class="smallheading">Submitted:&nbsp;</td>
-			<td class="smalltext"><%=((audit.getSubmittedById() != null) ? audit.getSubmittedBy().getFullName() + "<br />" : "")%>
-				<%=((audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : "")%></td></tr>
-			<tr><td class="smallheading">Approved:&nbsp;</td>
-			<td class="smalltext"><%=((audit.getApprovedById() != null) ? audit.getApprovedBy().getFullName() + "<br />" : "")%>
-				<%=((audit.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(audit.getApprovedDate()) : "")%></td></tr>
-
-			<tr><td class="smallheading"><a href="audit_detail.jsp?<%=((sample != null) ? "ID=" + sample.getSampleId() : "FeatID=" + feature.getFeatureId())%>" target="audit">More...</a></td></tr>
-			</table><%
-			endDETable(pageContext);
-			%></p><%
 			
 			if (isAllowedReadFeature) {	
 

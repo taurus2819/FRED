@@ -43,7 +43,6 @@
 	addButtons(et, new IconnedLink[] {new IconnedLink(queryURL, "images/search.gif", "Search Again")});
 
 	drawTop(out, et, request, response);
-	drawEndNavigation(out);
 
 	if ((request.getParameter("WhereSQL") != null && request.getParameter("TableName") != null && request.getParameter("QueryString") != null) || request.getParameter("Page") != null || request.getParameter("Type") != null) {
 		String whereSQL = request.getParameter("WhereSQL");

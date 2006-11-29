@@ -14,10 +14,9 @@
 %><%
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
-	addButtons(et, new IconnedLink[] {new IconnedLink("simple_query.jsp\" target=\"_top", "images/search.gif", "Simple Query")});
+	addButtons(et, new IconnedLink[] {new IconnedLink("simple_query.jsp", "images/search.gif", "Simple Query")});
 	
 	drawTop(out, et, request, response, true);
-	drawEndNavigation(out);
 
 	%><script><!--
 	function doTransfer(frm) {

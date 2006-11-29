@@ -4,7 +4,6 @@
 %><%@page import="nz.cri.gns.fred.model.FrUserView"
 %><%@page import="nz.cri.gns.fred.model.TaxonomicGroup"
 %><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
-%><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.util.UserUtil"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.auth.User"
