@@ -18,6 +18,8 @@
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="nz.cri.gns.db.site.SiteRecord"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
+%><%@page import="nz.cri.gns.jsp.CustomHTMLLink"
+%><%@page import="nz.cri.gns.jsp.Link"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.util.map.Datum"
 %><%@page import="nz.cri.gns.util.map.Datum.Coordinate"
@@ -26,6 +28,7 @@
 %><%@page import="java.net.URLEncoder"
 %><%@page import="java.io.PrintWriter"
 %><%@page import="java.util.Arrays"
+%><%@page import="java.util.Vector"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
@@ -126,23 +129,82 @@ try {
 	}
 	} catch (Exception e) {}
 	
+	boolean authorChk = true;
+	try {
+		authorChk = (Boolean) session.getAttribute("FRED.AuthorChk");
+	} catch (Exception e) {	}
+	if (request.getParameter("AuthorChk") != null)
+		authorChk = request.getParameter("AuthorChk").equals("true");
+	session.setAttribute("FRED.AuthorChk", new Boolean(authorChk));
+	boolean sCountChk = false;
+	try {
+		sCountChk = (Boolean) session.getAttribute("FRED.SCountChk");
+	} catch (Exception e) {	}
+	if (request.getParameter("SCountChk") != null)
+		sCountChk = request.getParameter("SCountChk").equals("true");
+	session.setAttribute("FRED.SCountChk", new Boolean(sCountChk));
+	boolean sCoordChk = false;
+	try {
+		sCoordChk = (Boolean) session.getAttribute("FRED.SCoordChk");
+	} catch (Exception e) {	}
+	if (request.getParameter("SCoordChk") != null)
+		sCoordChk = request.getParameter("SCoordChk").equals("true");
+	session.setAttribute("FRED.SCoordChk", new Boolean(sCoordChk));
+	boolean commChk = false;
+	try {
+		commChk = (Boolean) session.getAttribute("FRED.CommChk");
+	} catch (Exception e) {	}
+	if (request.getParameter("CommChk") != null)
+		commChk = request.getParameter("CommChk").equals("true");
+	session.setAttribute("FRED.CommChk", new Boolean(commChk));
+	
 	if (feature != null) {
 		
-		IconnedLink[] il = new IconnedLink[(backURL != null) ? 3 : 2];
+		Vector<Link> il = new Vector<Link>();
 		if (backURL != null)
-			il[0] = new IconnedLink(backURL, "images/back_arrow.gif", (backText != null) ? request.getParameter("backText") : "Back");
-		il[(backURL != null) ? 1 : 0] = new IconnedLink("locality_map.jsp?FeatID=" + feature.getFeatureId() + "&backURL=" + URLEncoder.encode("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr, "ISO-8859-1")+ "&backText=Back%20To%20Locality", "images/map.gif", "Locality Map");
-		il[(backURL != null) ? 2 : 1] = new IconnedLink("audit_detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "FeatID=" + feature.getFeatureId()) + "&backURL=" + URLEncoder.encode("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr, "ISO-8859-1")+ "&backText=Back%20To%20Locality", "images/loc.gif", "Audit Details");
-		addButtons(et, il);
+			il.add(new IconnedLink(backURL, "images/back_arrow.gif", (backText != null) ? request.getParameter("backText") : "Back"));
+		il.add(new IconnedLink("locality_map.jsp?FeatID=" + feature.getFeatureId() + "&backURL=" + URLEncoder.encode("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr, "ISO-8859-1")+ "&backText=Back%20To%20Locality", "images/map.gif", "Locality Map"));
+		if (user != null)
+			il.add(new IconnedLink("audit_detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "FeatID=" + feature.getFeatureId()) + "&backURL=" + URLEncoder.encode("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr, "ISO-8859-1")+ "&backText=Back%20To%20Locality", "images/loc.gif", "Audit Details"));
+		//Add to Folder link
+		if (user != null && feature.getAudit().getStatus().equals(FREDConstants.APPROVED) && (new FolderUtil(factory)).getPersonalFolders(user).size() > 0) {		
+			StringBuffer customHTML = new StringBuffer("<form method=\"post\" action=\"detail.jsp\" name=\"FolderForm\" style=\"display: inline; margin: 0;\">");
+			if (sample != null)
+				customHTML.append("<input type=\"hidden\" name=\"ID\" value=\"").append(sample.getSampleId()).append("\" />");
+			else
+				customHTML.append("<input type=\"hidden\" name=\"FeatID\" value=\"").append(feature.getFeatureId()).append("\" />");
+			if (backURL != null) {
+				customHTML.append("<input type=\"hidden\" name=\"backURL\" value=\"").append(backURL).append("\" />");
+				if (backText != null)
+					customHTML.append("<input type=\"hidden\" name=\"backText\" value=\"").append(backText).append("\" />");
+			}
+			customHTML.append("<input type=\"hidden\" name=\"ActionType\" value=\"AddtoFold\" />");
+			customHTML.append("<img src=\"images\\blank.gif\" height=\"20\" width=\"10\" alt=\"\" /><select name=\"FoldID\">");
+			customHTML.append("<option value=\"-\">-- Choose --</option>");
+			for (UserFolder folder : (new FolderUtil(factory)).getPersonalFolders(user)) {
+				String folderName = folder.getFolderName();
+				if (folderName.length() > 17)
+					folderName = folderName.substring(0, 14) + "...";
+				customHTML.append("<option value=\"").append(folder.getFolderId()).append("\">").append(folderName).append("</option>");
+			}
+			customHTML.append("</select><br />");
+			customHTML.append("<img src=\"images\\blank.gif\" height=\"20\" width=\"10\" alt=\"\" /><input type=\"submit\" value=\"Add to Folder\" />");
+			customHTML.append("</form>");
+			il.add(new CustomHTMLLink(customHTML.toString()));
+		}
+		//Taxa list options
+		if (user != null && sample != null && sampleUtil.getPaleontologyRecordCount(sample) > 0) {
+			il.add(new IconnedLink("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr + "&AuthorChk=" + ((authorChk) ? "false" : "true"), ((authorChk) ? "images/ok.gif" : "images/cancel.gif"), "Show Taxonomic Author"));
+			il.add(new IconnedLink("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr + "&SCountChk=" + ((sCountChk) ? "false" : "true"), ((sCountChk) ? "images/ok.gif" : "images/cancel.gif"), "Show Specimen Count"));
+			il.add(new IconnedLink("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr + "&SCoordChk=" + ((sCoordChk) ? "false" : "true"), ((sCoordChk) ? "images/ok.gif" : "images/cancel.gif"), "Show Specimen Coords"));
+			il.add(new IconnedLink("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr + "&CommChk=" + ((commChk) ? "false" : "true"), ((commChk) ? "images/ok.gif" : "images/cancel.gif"), "Show Taxonomic Comments"));
+		}
+		addButtons(et, il.toArray(new Link[il.size()]));
 	
 		Audit audit = feature.getAudit();
 		String featType = feature.getFeatureType();
 		boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
 		
-		boolean authorChk = (request.getParameter("AuthorChk") != null && request.getParameter("AuthorChk").equals("true"));
-		boolean sCountChk = (request.getParameter("SCountChk") != null && request.getParameter("SCountChk").equals("true"));
-		boolean sCoordChk = (request.getParameter("SCoordChk") != null && request.getParameter("SCoordChk").equals("true"));
-		boolean commChk = (request.getParameter("CommChk") != null && request.getParameter("CommChk").equals("true"));		
 		
 		if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
 			if (request.getParameter("ActionType") != null) { //do something
@@ -220,100 +282,9 @@ try {
 					</table><%
 					endDETable(pageContext);
 					%></p><%
-				}				
+				}						
 				
-				//Add to Folder
-				if (feature.getAudit().getStatus().equals(FREDConstants.APPROVED) && (new FolderUtil(factory)).getPersonalFolders(user).size() > 0) {		
-					%><p><%
-					startDETable(pageContext);
-					%><table border="0" width="160">
-					<tr><td class="deHeading">Add to Folder</td></tr>
-					<tr><td>You can add this locality to one of your personal folders by selecting it from the list and clicking <i>Add</i>.</td></tr>
-					<form name="FolderForm" method="post" action="detail.jsp"><%
-					if (sample != null) {
-						%><input type="hidden" name="ID" value="<%=sample.getSampleId()%>" /><%
-					} else {
-						%><input type="hidden" name="FeatID" value="<%=feature.getFeatureId()%>" /><%
-					}
-					if (backURL != null) {
-						%><input type="hidden" name="backURL" value="<%=backURL%>" /><%
-						if (backText != null) {
-							%><input type="hidden" name="backText" value="<%=backText%>" /><%
-						}
-					}
-					%><input type="hidden" name="ActionType" value="AddtoFold" />
-					<tr><td>
-					<select name="FoldID">
-					<option value="-">-- Choose --</option><%
-					for (UserFolder folder : (new FolderUtil(factory)).getPersonalFolders(user)) {
-						String folderName = folder.getFolderName();
-						if (folderName.length() > 17)
-							folderName = folderName.substring(0, 17);
-						%><option value="<%=folder.getFolderId()%>"><%=folderName%></option><%
-					}
-					%></select>
-					</td></tr>
-					<tr><td style="text-align: right" class="heading"><a href="#" onClick="FolderForm.submit();">Add</a></td></tr>
-					</form>
-					</table><%
-					endDETable(pageContext);
-					%></p><%
-				}		
-				
-				//Taxa list options
-				if (sample != null && sampleUtil.getPaleontologyRecordCount(sample) > 0) {
-					%><p><%
-					startDETable(pageContext);
-					%><table border="0" width="160">
-					<tr><td class="deHeading">Taxonomic Display Options</td></tr>
-					<form name="TaxaForm" method="post" action="detail.jsp"><%
-					if (sample != null) {
-						%><input type="hidden" name="ID" value="<%=sample.getSampleId()%>" /><%
-					} else {
-						%><input type="hidden" name="FeatID" value="<%=feature.getFeatureId()%>" /><%
-					}
-					if (backURL != null) {
-						%><input type="hidden" name="backURL" value="<%=backURL%>" /><%
-						if (backText != null) {
-							%><input type="hidden" name="backText" value="<%=backText%>" /><%
-						}
-					}
-					%><input type="hidden" name="AuthorChk" value="<%=authorChk%>" />
-					<input type="hidden" name="SCountChk" value="<%=sCountChk%>" />
-					<input type="hidden" name="SCoordChk" value="<%=sCoordChk%>" />
-					<input type="hidden" name="CommChk" value="<%=commChk%>" />
-					<tr><td class="heading"><%
-					if (authorChk) {
-						%><a href="#" onClick="document.TaxaForm.AuthorChk.value='false';document.TaxaForm.submit();" title="Hide"><img src="images/ok.gif" width="20" height="20" border="0" /><%
-					} else {
-						%><a href="#" onClick="document.TaxaForm.AuthorChk.value='true';document.TaxaForm.submit();" title="Show"><img src="images/cancel.gif" width="20" height="20" border="0" /><%
-					}
-					%></a>&nbsp;&nbsp;Author</td></tr>
-					<tr><td class="heading"><%
-					if (sCountChk) {
-						%><a href="#" onClick="document.TaxaForm.SCountChk.value='false';document.TaxaForm.submit();" title="Hide"><img src="images/ok.gif" width="20" height="20" border="0" /><%
-					} else {
-						%><a href="#" onClick="document.TaxaForm.SCountChk.value='true';document.TaxaForm.submit();" title="Show"><img src="images/cancel.gif" width="20" height="20" border="0" /><%
-					}
-					%></a>&nbsp;&nbsp;Specimen Count</td></tr>
-					<tr><td class="heading"><%
-					if (sCoordChk) {
-						%><a href="#" onClick="document.TaxaForm.SCoordChk.value='false';document.TaxaForm.submit();" title="Hide"><img src="images/ok.gif" width="20" height="20" border="0" /><%
-					} else {
-						%><a href="#" onClick="document.TaxaForm.SCoordChk.value='true';document.TaxaForm.submit();" title="Show"><img src="images/cancel.gif" width="20" height="20" border="0" /><%
-					}
-					%></a>&nbsp;&nbsp;Specimen Coord</td></tr>
-					<tr><td class="heading"><%
-					if (commChk) {
-						%><a href="#" onClick="document.TaxaForm.CommChk.value='false';document.TaxaForm.submit();" title="Hide"><img src="images/ok.gif" width="20" height="20" border="0" /><%
-					} else {
-						%><a href="#" onClick="document.TaxaForm.CommChk.value='true';document.TaxaForm.submit();" title="Show"><img src="images/cancel.gif" width="20" height="20" border="0" /><%
-					}
-					%></a>&nbsp;&nbsp;Comments</td></tr>
-					</form></table><%
-					endDETable(pageContext);
-					%></p><%
-				}
+
 			}	
 			
 			//start data column
