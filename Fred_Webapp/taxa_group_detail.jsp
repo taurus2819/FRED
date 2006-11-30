@@ -54,7 +54,7 @@
 			}
 
 			if (taxaUtil.getTaxaCount(group, FREDConstants.PROVISIONAL) > 0) {
-				%><p>&nbsp;</p><center><p><%
+				%><p><%
 				startDETable(pageContext);
 				%><table border="0" width="800"><tr><td colspan="6" class="deHeading">Provisional Entries</td></tr>
 				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Submitted By&nbsp;&nbsp;</th><th style="text-align: left">Submitted Date&nbsp;&nbsp;</th><th style="text-align: left">Locality(s)</th><th style="text-align: left">Actions</th></tr><%
@@ -87,11 +87,11 @@
 				}
 				%></table><%
 				endDETable(pageContext);
-				%></p></center><%
+				%></p><%
 			}
 			
 			if (taxaUtil.getTaxaCount(group, FREDConstants.REJECTED) > 0) {
-				%><p>&nbsp;</p><center><p><%
+				%><p><%
 				startDETable(pageContext);
 				%><table border="0" width="800"><tr><td colspan="7" class="deHeading">Rejected Entries</td></tr>
 				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Rejected By&nbsp;&nbsp;</th><th style="text-align: left">Rejected Date&nbsp;&nbsp;</th><th style="text-align: left">Comments&nbsp;&nbsp;</th><th style="text-align: left">Locality(s)&nbsp;&nbsp;</th><th style="text-align: left">Actions</th></tr><%
@@ -118,11 +118,11 @@
 				}
 				%></table><%
 				endDETable(pageContext);
-				%></p></center><%
+				%></p><%
 			}
 			
 			if (taxaUtil.getTaxaCount(group, FREDConstants.APPROVED) > 0) {
-				%><p>&nbsp;</p><center><p><%
+				%><p><%
 				startDETable(pageContext);
 				%><table border="0" width="800"><tr><td colspan="5" class="deHeading">Approved Entries</td></tr>
 				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th style="text-align: left">Approved By&nbsp;&nbsp;</th><th style="text-align: left">Approved Date&nbsp;&nbsp;</th><th style="text-align: left">Actions</th></tr><%
@@ -137,11 +137,11 @@
 				}
 				%></table><%
 				endDETable(pageContext);
-				%></p></center><%
+				%></p><%
 			}
 
 			if (taxaUtil.getTaxaCount(group, FREDConstants.OBSOLETE) > 0) {
-				%><p>&nbsp;</p><center><p><%
+				%><p><%
 				startDETable(pageContext);
 				%><table border="0" width="800"><tr><td colspan="2" class="deHeading">Obsolete Entries</td></tr>
 				<tr><th style="text-align: left">Name&nbsp;&nbsp;</th><th style="text-align: left">Author</th></tr><%
@@ -153,7 +153,7 @@
 				}
 				%></table><%
 				endDETable(pageContext);
-				%></p></center><%
+				%></p><%
 			}
 
 		}

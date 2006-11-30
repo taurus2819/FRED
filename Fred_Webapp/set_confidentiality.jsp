@@ -21,6 +21,7 @@
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.html.select.SelectBox"
 %><%@page import="nz.cri.gns.html.Attributes"
+%><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="java.util.Date"
 %><%@page import="java.util.Calendar"
 %><%@page import="java.util.GregorianCalendar"
@@ -74,10 +75,11 @@
 	TaxonomicUtil taxonomicUtil = new TaxonomicUtil(factory);
 
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 	et.setUseNavigationColumn(false);
 	addButtons(et, new IconnedLink[] {
-			new IconnedLink((String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "&q=" + Math.random(), "images/back_arrow.gif", "Back")
+			new IconnedLink((String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "&q=" + Math.random(), "images/back_arrow.gif", "Back"),
+			new IconnedLink("manage_confid_groups.jsp", "images/edit.gif", "Manage User Groups")
 		});
 
 	drawTop(out, et, request, response);
@@ -115,8 +117,7 @@
 				}
 			}
 				
-			%><center>
-			<p>&nbsp;</p><p><%
+			%><p><%
 			startDETable(pageContext);
 			%><table border="0" width="550">
 			<tr><td class="deHeading">Instructions</td></tr>
@@ -197,15 +198,13 @@
 			</table><%
 			endDETable(pageContext);
 			%></p>
-			</form>
-			</center><%
+			</form><%
 		} 
 		else {
 			%><p><span class="subhead">Access denied</span></p>You don't have sufficient rights in this folder.  Click <a href="index.jsp" class="heading">here</a> to return to the FRED home page.<%
 		}
 	}
-		
-	%></td></tr></table><%
+
 	drawBottom(out, et);
 		
 %>

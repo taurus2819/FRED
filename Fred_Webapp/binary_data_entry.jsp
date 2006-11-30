@@ -88,11 +88,9 @@
 					}
 				}
 				
-				%><center><%
-				
 				if (recType.equals(FREDConstants.PALEONTOLOGICAL)) {
 					try {
-					%><p>&nbsp;</p><p><%
+					%><p><%
 					startDETable(pageContext);
 					%><table border="0" width="550">
 					<form name="palIDForm" method="post" action="binary_data_entry.jsp">
@@ -119,7 +117,7 @@
 					}
 				}
 				
-				%><p>&nbsp;</p><p><%
+				%><p><%
 				startDETable(pageContext);
 				%><table border="0" width="550">
 				<form enctype="multipart/form-data" method="post" action="binary_data_entry.jsp">
@@ -152,7 +150,6 @@
 					endDETable(pageContext);
 					%></p><%
 				}
-				%></center><%
 			} finally {
 				if (attacher != null) try {
 					FREDUtil.closeDocumentAttacherConnection();

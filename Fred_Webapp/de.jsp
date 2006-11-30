@@ -77,7 +77,7 @@
 	} catch (Exception e) {
 		e.printStackTrace();
 		drawTop(out, et, request, response);
-		drawEndNavigation(out);
+
 		%><table style="margin-left:20px; width:550px;" border="0">
 		<tr><td>
 		<p>An error has occured while generating the data entry form.</p><%
@@ -97,7 +97,6 @@
 			addButtons(et, links);
 		
 			drawTop(out, et, request, response);
-			
 			
 			if (request.getParameter("CopyID") != null)
 				dataEntryForm.copyFrom(Integer.parseInt(request.getParameter("CopyID")));
@@ -120,21 +119,22 @@
 				session.setAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT, "de.jsp?Err=Yes&Type=" + formType + "&FoldID=" + foldID);
 			}
 			%><form name="form1" method="post" action="dp.jsp" />
-<input type="hidden" name="SaveType" value="" />
-<center><p>&nbsp;<p/><div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none"><%
+			<input type="hidden" name="SaveType" value="" />
+			<p><div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none"><%
 			startDETable(pageContext);
 			%><table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
-<tr><td colspan="3" class="deHeading">Instructions</td></tr><tr><td style="text-align: left">
-<ul>
-	<li>Please fill out the following fields.  
-	<li>Click the <img src="images/build.gif" height="20" width="20" alt="Build..."> icon to open the field builder for more help.  
-	<li><span style="color: #FF0000">Red</span> fields must be completed before submitting this form.
-</ul>
-</td></tr>
-<tr><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr></table><%
+			<tr><td colspan="3" class="deHeading">Instructions</td></tr><tr><td style="text-align: left">
+			<ul>
+			<li>Please fill out the following fields.  
+			<li>Click the <img src="images/build.gif" height="20" width="20" alt="Build..."> icon to open the field builder for more help.  
+			<li><span style="color: #FF0000">Red</span> fields must be completed before submitting this form.
+			</ul>
+			</td></tr>
+			<tr><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr></table><%
 			endDETable(pageContext);
 			%></div>
-<p><%
+			
+			<p><%
 			dataEntryForm.makeDataEntryHTML(new PrintWriter(out), factory);
 			%></form><%
 			dataEntryForm.makePostFormHTML(new PrintWriter(out));
@@ -145,21 +145,19 @@
 			System.out.println("FRED data entry form error : " + new java.util.Date());
 			e.printStackTrace();
 			System.out.println("************************************************************");
-			drawEndNavigation(out);
 			%><table style="margin-left:20px; width:550px;" border="0">
 			<tr><td>
 			<p>An error has occured while writing the data entry form.</p><%
 		}
 	}
 	%><script><!--
-
-function submitForm(saveType) {
-	document.form1.SaveType.value = saveType;
-	if (!window.preSubmit || preSubmit()) {
-		document.form1.submit();
+	function submitForm(saveType) {
+		document.form1.SaveType.value = saveType;
+		if (!window.preSubmit || preSubmit()) {
+			document.form1.submit();
+		}
 	}
-}
-//--></script><%
+	//--></script><%
 	drawBottom(out, et);
 	
 	try {

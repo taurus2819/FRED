@@ -76,7 +76,7 @@
 			<input type="hidden" name="FoldName" value="">
 			</form>
 	
-			<center><p>&nbsp;<p/><div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none"><%
+			<p><div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none"><%
 			startDETable(pageContext);
 			%><table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
 			<tr><td class="deHeading">Masterfile Folder Instructions</td></tr>
@@ -96,7 +96,7 @@
 			<tr><td><a href="http://www.adobe.com/products/acrobat/readstep2.html" target="getAcrobat"><img src="images/get_adobe_reader.gif" border="0" alt="Get Adobe Reader" /></a>&nbsp;&nbsp;Adobe reader is required to print localities</td></tr>
 			<tr><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr></table><%
 			endDETable(pageContext);
-			%></div>
+			%></div></p>
 			
 			<form name="FoldForm" method="get" action="frf/frf.pdf" target="_blank">
 			
@@ -180,7 +180,6 @@
 			%>No folder found<%
 		}
 
-		%></td></tr></table><%
 		drawBottom(out, et);
 	} catch (Exception e) {
 		e.printStackTrace();

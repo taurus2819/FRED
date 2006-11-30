@@ -5,7 +5,6 @@
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.model.PaleontologyListEntry"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
-%><%@page import="java.util.Iterator"
 %><%@page import="java.io.IOException"
 %><%@page import="java.sql.SQLException"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
@@ -13,9 +12,18 @@
 %><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
 %><%@page import="nz.cri.gns.auth.InsufficientPrivelegesException"
 %><%@page import="nz.cri.gns.dataaccess.StorageAccessException"
+%><%@page import="nz.cri.gns.jsp.IconnedLink"
+%><%!
+	public String getName(HttpServletRequest request) {
+		return "FRED :: Data Entry Error";
+	}
 %><%
 	ExtranetTemplate et = getExtranetTemplate();
-
+	addButtons(et, new IconnedLink[] {
+			new IconnedLink((String)session.getAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT), "images/back_arrow.gif", "Back to Data Entry"),
+			new IconnedLink((String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT), "images/cancel.gif", "Quit")
+	});
+	
 	if (request.getParameter("SaveType") != null) {
 		DataEntryForm dataEntryForm = (DataEntryForm) session.getAttribute(WebsiteConstants.DATA_ENTRY_FORM);
 		try {
@@ -38,125 +46,86 @@
 		} catch (TaxonomicListException e) {
 			//Still save it
 			dataEntryForm.save(FREDConstants.DATA_ORIGIN_ONLINE);
-			drawTop(out, et, request, response);
-			%><table style="margin-left:20px; margin-top:20px; width:150px;" border="0">
-			<tr><td colspan="2" align="center"><img src="images/loc.gif" height="20" width="20" /></td></tr>
-			<tr><td colspan="2" align="center" class="heading">Data Entry Error</td></tr>
-			<tr><td>&nbsp;</td></tr>
-			<tr><td><a href="<%=(String)session.getAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT)%>"><img src="images/back_arrow.gif" height="20" width="20" border="0" alt="Back to Data Entry" /></a><img src="images/blank.gif" height="20" width="10" border="0" /></td><td><a href="<%=(String)session.getAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT)%>" class="heading">Back to Data Entry</a></td></tr>
-			<tr><td><a href="<%=(String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT)%>"><img src="images/cancel.gif" height="20" width="20" border="0" alt="Quit Without Saving" /></a><img src="images/blank.gif" height="20" width="10" border="0" /></td><td><a href="<%=(String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT)%>" class="heading">Quit</a></td></tr>
-			</table><% 
-			drawEndNavigation(out);
-			%><table style="margin-left:20px; width:550px;" border="0">
-			<tr><td><%
 			session.setAttribute("taxa", request.getParameter("Taxa"));
 			session.setAttribute(WebsiteConstants.BAD_TAXA_LIST, e.getTaxaList());
 			session.setAttribute(WebsiteConstants.DATA_ENTRY_FORM, dataEntryForm);
-			%><p><span class="bigheading">Data Error</span></p>
-			<p>The following list contains taxonomic entries which do not match a value in the thesaurus.  This could be either because you have entered incorrect syntax or because the entry is not in the thesaurus.<br />Note submitted entries will be provisional until checked by database curators and you will not be able to submit this record until the entry has been approved.</p>
-			<table border="0" cellspacing="2">
+
+			drawTop(out, et, request, response);
+			%><p><%
+			startDETable(pageContext);
+			%><table style="margin-left:20px; width:550px;" border="0">
+			<tr><td colspan="4" class="deHeading">Taxonomic Name Error</td></tr>
+			<tr><td colspan="4">The following list contains taxonomic entries which do not match a value in the thesaurus.  This could be either because you have entered incorrect syntax or because the entry is not in the thesaurus.<br />Note submitted entries will be provisional until checked by database curators and you will not be able to submit this record until the entry has been approved.</td></tr>
+			<tr><td>&nbsp;</td></tr>
 			<tr><th>Group&nbsp;&nbsp;</th><th>Entered Name&nbsp;&nbsp;</th><th>Parsed Name&nbsp;&nbsp;</th><th>Author</th></tr><%
-			for (Iterator i = e.getTaxaList().iterator(); i.hasNext();) {
-				PaleontologyListEntry t = (PaleontologyListEntry) i.next();
-				out.println("<tr><td>" + t.getTaxonomicGroup().getName() + "&nbsp;&nbsp;</td><td>" + t.getTaxonomicName() + "&nbsp;&nbsp;</td><td>" + t.getTaxon().getTaxonomicName() + "&nbsp;&nbsp;</td><td>" + t.getTaxon().getAuthor() + "</td></tr>");
+			for (PaleontologyListEntry t : e.getTaxaList()) {
+				%><tr><td><%=t.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td><td><%=t.getTaxonomicName()%>&nbsp;&nbsp;</td><td><%=t.getTaxon().getTaxonomicName()%>&nbsp;&nbsp;</td><td><%=t.getTaxon().getAuthor()%></td></tr><%
 			}
-			%></table><%
-			out.println("<p><a href='submit_taxa.jsp'><img src='images/submit.gif' height='20' width='20' border='0' alt='Submit Taxa' /></a>&nbsp;<a href='submit_taxa.jsp' class='boldlink'>Submit Taxa.</a></p>");
-			out.println("<p>Note: No reference to these taxa has been saved yet.  You must either choose to submit the above taxa or return to the data entry form, edit and re-save</p>");
+			%><tr><td colsapn="4"><a href="submit_taxa.jsp"><img src="images/submit.gif" height="20" width="20" border="0" alt="Submit Taxa" /></a>&nbsp;<a href="submit_taxa.jsp">Submit Taxa.</a></td></tr>
+			<tr><td colspan="4">Note: No reference to these taxa has been saved yet.  You must either choose to submit the above taxa or return to the data entry form, edit and re-save</td></tr>
+			</table><%
+			endDETable(pageContext);
+			%></p><%
 		} catch (DataInputException e) {
 			drawTop(out, et, request, response);
-			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
-			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
-			out.println("<tr><td colspan='2' align='center' class='heading'>Data Entry Error</td></tr>");
-			out.println("<tr><td>&nbsp;</td></tr>");
-			out.println("<tr><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT) + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT) + "' class='heading'>Back to Data Entry</a></td></tr>");
-			out.println("<tr><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "' class='heading'>Quit</a></td></tr>");
-			out.println("</table>");
-			drawEndNavigation(out);
-			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-			out.println("<tr><td>");
-			out.println("<p><span class='bigheading'>Data Error</span></p>");
-			out.println("<table border='0' cellspacing='0'>");
-			for (Iterator it = e.getError().iterator(); it.hasNext(); ) {
-				String[] error = (String[])it.next();
-			    out.println("<tr><td class='heading'>Problem Field<img src='images/blank.gif' width='20' height='1' /></td><td>" + error[0] + "</td></tr>");
-				out.println("<tr><td class='heading'>Error</td><td>"+ error[1] + "</td></tr>");
+			startDETable(pageContext);
+			%><table style="margin-left:20px; width:550px;" border="0">
+			<tr><td colspan="2" class="deHeading">Syntax Error</td></tr><%
+			for (String[] error : e.getError()) {
+			    %><tr><td class="heading">Problem Field&nbsp;&nbsp;</td><td><%=error[0]%></td></tr>
+				<tr><td class="heading">Error</td><td><%=error[1]%></td></tr><%
 			}
-			out.println("</table>");
+			%></table><%
+			endDETable(pageContext);
+			%></p><%
 		} catch (InsufficientPrivelegesException e) {
 			drawTop(out, et, request, response);
-			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
-			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
-			out.println("<tr><td colspan='2' align='center' class='heading'>Data Entry Error</td></tr>");
-			out.println("<tr><td>&nbsp;</td></tr>");
-			out.println("<tr><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT) + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT) + "' class='heading'>Back to Data Entry</a></td></tr>");
-			out.println("<tr><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "' class='heading'>Quit</a></td></tr>");
-			out.println("</table>");
-			drawEndNavigation(out);
-			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-			out.println("<tr><td>");
-			out.println("<p><span class='bigheading'>Data Error</span></p>");
-			out.println("<p>You do not have sufficient rights to save this record</p>");
+			startDETable(pageContext);
+			%><table style="margin-left:20px; width:550px;" border="0">
+			<tr><td class="deHeading">Insufficient Privileges Error</td></tr>
+			<tr><td>You do not have sufficient rights to save this record</td></tr><%
+			%></table><%
+			endDETable(pageContext);
+			%></p><%
 		} catch (IOException e) {
 			drawTop(out, et, request, response);
-			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
-			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
-			out.println("<tr><td colspan='2' align='center' class='heading'>Data Entry Error</td></tr>");
-			out.println("<tr><td>&nbsp;</td></tr>");
-			out.println("<tr><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT) + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT) + "' class='heading'>Back to Data Entry</a></td></tr>");
-			out.println("<tr><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "' class='heading'>Quit</a></td></tr>");
-			out.println("</table>");
-			drawEndNavigation(out);
-			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-			out.println("<tr><td>");
-			out.println("<p><span class='bigheading'>IO Data Error</span></p>");
-			out.println("<p>A Database error has occured: " + e.getMessage() + "</p>");
+			startDETable(pageContext);
+			%><table style="margin-left:20px; width:550px;" border="0">
+			<tr><td class="deHeading">I/O Data Error</td></tr>
+			<tr><td>A Database error has occured: <%=e.getMessage()%></td></tr><%
+			%></table><%
+			endDETable(pageContext);
+			%></p><%
 		} catch (SQLException e) {
 			drawTop(out, et, request, response);
-			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
-			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
-			out.println("<tr><td colspan='2' align='center' class='heading'>Data Entry Error</td></tr>");
-			out.println("<tr><td>&nbsp;</td></tr>");
-			out.println("<tr><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT) + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT) + "' class='heading'>Back to Data Entry</a></td></tr>");
-			out.println("<tr><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "' class='heading'>Quit</a></td></tr>");
-			out.println("</table>");
-			drawEndNavigation(out);
-			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-			out.println("<tr><td>");
-			out.println("<p><span class='bigheading'>Database Error</span></p>");
-			out.println("<p>A Database error has occured: " + e.getMessage() + "</p>");
+			startDETable(pageContext);
+			%><table style="margin-left:20px; width:550px;" border="0">
+			<tr><td class="deHeading">SQL Data Error</td></tr>
+			<tr><td>A Database error has occured: <%=e.getMessage()%></td></tr><%
+			%></table><%
+			endDETable(pageContext);
+			%></p><%
 		} catch (StorageAccessException e) {
-			e.printStackTrace();
 			drawTop(out, et, request, response);
-			out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
-			out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
-			out.println("<tr><td colspan='2' align='center' class='heading'>Data Entry Error</td></tr>");
-			out.println("<tr><td>&nbsp;</td></tr>");
-			out.println("<tr><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT) + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT) + "' class='heading'>Back to Data Entry</a></td></tr>");
-			out.println("<tr><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "' class='heading'>Quit</a></td></tr>");
-			out.println("</table>");
-			drawEndNavigation(out);
-			out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-			out.println("<tr><td>");
-			out.println("<p><span class='bigheading'>Database Error</span></p>");
-			out.println("<p>A Database error has occured: " + e.getMessage() + "</p>");
+			startDETable(pageContext);
+			%><table style="margin-left:20px; width:550px;" border="0">
+			<tr><td class="deHeading">Storage Data Error</td></tr>
+			<tr><td>A Database error has occured: <%=e.getMessage()%></td></tr><%
+			%></table><%
+			endDETable(pageContext);
+			%></p><%
 		}
 	}
 	else {
 		drawTop(out, et, request, response);
-		out.println("<table style='margin-left:20px; margin-top:20px; width:150px;' border='0'>");
-		out.println("<tr><td colspan='2' align='center'><img src='images/loc.gif' height='20' width='20' /></td></tr>");
-		out.println("<tr><td colspan='2' align='center' class='heading'>Data Entry Error</td></tr>");
-		out.println("<tr><td>&nbsp;</td></tr>");
-		out.println("<tr><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT) + "'><img src='images/back_arrow.gif' height='20' width='20' border='0' alt='Back to Data Entry' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT) + "' class='heading'>Back to Data Entry</a></td></tr>");
-		out.println("<tr><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "'><img src='images/cancel.gif' height='20' width='20' border='0' alt='Quit Without Saving' /></a><img src='images/blank.gif' height='20' width='10' border='0' /></td><td><a href='" + (String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "' class='heading'>Quit</a></td></tr>");
-		out.println("</table>");
-		drawEndNavigation(out);
-		out.println("<table style='margin-left:20px; width:550px;' border='0'>");
-		out.println("<tr><td>");
-		out.println("<p><span class='bigheading'>Unidentified Data Entry Error has occured</span></p>");
+		startDETable(pageContext);
+		%><table style="margin-left:20px; width:550px;" border="0">
+		<tr><td class="deHeading">Data Error</td></tr>
+		<tr><td>A unidentified error has occured</td></tr><%
+		%></table><%
+		endDETable(pageContext);
+		%></p><%
 	}
-	out.println("</td></tr></table>");
 	drawBottom(out, et);
 	try {
 		HibernateUtil.get().getDAOFactory().closeSession();

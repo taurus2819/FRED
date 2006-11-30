@@ -37,33 +37,29 @@
 				}
 			}
 			
-			%><p><%
+			%><p>
+			<form name="AddForm" method="post" action="taxa_panelist.jsp">
+			<input type="hidden" name="GroupID" value="<%=group.getGroupId()%>" />
+			<input type="hidden" name="ActionType" value="Add" /><%
 			startDETable(pageContext);
 			%><table border="0" width="550"><tr><td colspan="19" class="deHeading"><%=group.getName()%> Panel users</td></tr>
 			<tr><td colspan="2">
 			The users listed below are on the panel for this taxonomic group and may accept or reject new entries to the thesaurus.<br />Users can be added or deleted from this list by clicking on the <img src='images/ok.gif' width='20' height='20' border='0' /> or <img src='images/cancel.gif' width='20' height='20' border='0' /> icons.
 			</td></tr>
 			<tr><td>&nbsp;</td></tr>
-			<tr class="heading"><td style="text-align: left">User&nbsp;&nbsp;</td><td width="60" style="text-align: left">Member</td></tr>
-
-			<form name="AddForm" method="get" action="taxa_panelist.jsp">
-			<input type="hidden" name="GroupID" value="<%=group.getGroupId()%>" />
-			<input type="hidden" name="ActionType" value="Add" /><%
-
+			<tr class="heading"><td style="text-align: left">User&nbsp;&nbsp;</td><td width="60" style="text-align: left">Member</td></tr><%
 			for (FrUserView panelist :  group.getPanelists()) {
 				%><tr><td style="text-align: left"><%=panelist.getFullName()%>&nbsp;&nbsp;</td><td style="text-align: left"><a href="taxa_panelist.jsp?GroupID=<%=group.getGroupId()%>&ActionType=Delete&UserID=<%=panelist.getUserId().intValue()%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="Delete User" /></a></td></tr><%
 			}
-			
 			%><tr><td style="text-align: left"><%
 			SelectBox<FrUserView> selectBox = new SelectBox<FrUserView>(userUtil.getFrUsersWithout(group.getPanelists()));
 			Attributes attributes = Attributes.createNameOnlyAttributes("UserID");
 			%><tr><td>&nbsp;</td></tr><tr><td style="text-align: left"><%
 			selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
 			%>&nbsp;&nbsp;</td><td style="text-align: left"><a href="#" onClick="AddForm.submit();"><img src="images/cancel.gif" border="0" height="20" width="20" alt="Add User" /></a></td></tr>
-			</form>
 			</table><%
 			endDETable(pageContext);
-			%></p><%
+			%></form></p><%
 		}
 		else { //no rights
 			%><p>Access denied</p>Either there is no folder matching the ID you entered or you have insufficient rights to edit the folder.  Click <a href='index.jsp' class='fname'>here</a> to return to the FRED home page.<%

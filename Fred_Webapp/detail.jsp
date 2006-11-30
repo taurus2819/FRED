@@ -253,7 +253,7 @@ try {
 				}
 				%><input type="hidden" name="ActionType" value="" />
 				<table border="0" width="550">
-				<tr><td colspan="4" class="deHeading">Masterfile Curator</td></tr>
+				<tr><td colspan="4" class="deHeading">Masterfile Curator Options</td></tr>
 				<tr><td colspan="4" class="heading">User Comments</td></tr>
 				<tr><td colspan="4"><%=DBUtils.nvl(workComm)%></td></tr><%
 				if (recoll != null) {

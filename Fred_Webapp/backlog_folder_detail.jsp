@@ -67,8 +67,8 @@
 			<form name="backlogForm" action="backlog_folder_detail.jsp" method="post">
 			<input type="hidden" name="ID" value="<%=folder.getFolderId()%>">
 			<input type="hidden" name="sbmit" value="yes">
-			<center><p>&nbsp;<p/><div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none"><%
-			
+			<p><div id="showInst">
+			<table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none"><%
 			startDETable(pageContext);
 			%><table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
 			<tr><td colspan="3" class="deHeading">Masterfile Folder Instructions</td></tr><tr><td style="text-align: left">
@@ -83,7 +83,8 @@
 			</td></tr>
 			<tr><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr></table><%
 			endDETable(pageContext);
-			%></div>
+			%></div></p>
+			
 			<p><%
 			startDETable(pageContext);
 			%><table border="0" width="550"><tr><td colspan="9" class="deHeading">Localities to Approve</td></tr>

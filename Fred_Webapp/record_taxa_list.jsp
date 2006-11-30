@@ -1,7 +1,6 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.db.DBUtils"
-%><%@page import="java.util.Iterator"
 %><%@page import="java.util.List"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
@@ -33,23 +32,20 @@
 		drawTop(out, et, request, response);
 		try {
 			Paleontology pal = recordUtil.getRecord(Integer.parseInt(request.getParameter("RecID"))).getPaleontology();
-			List appTaxa = recordUtil.getTaxon(pal, Taxon.APPROVED_STATUS);
-			List provTaxa = recordUtil.getTaxon(pal, Taxon.PROVISIONAL_STATUS);
-			List rejTaxa = recordUtil.getTaxon(pal, Taxon.REJECTED_STATUS);
-			List obTaxa = recordUtil.getTaxon(pal, Taxon.OBSOLETE_STATUS);
+			List<Taxon> appTaxa = recordUtil.getTaxon(pal, Taxon.APPROVED_STATUS);
+			List<Taxon> provTaxa = recordUtil.getTaxon(pal, Taxon.PROVISIONAL_STATUS);
+			List<Taxon> rejTaxa = recordUtil.getTaxon(pal, Taxon.REJECTED_STATUS);
+			List<Taxon> obTaxa = recordUtil.getTaxon(pal, Taxon.OBSOLETE_STATUS);
 	
-			%><center><p>&nbsp;</p><%		
-			
 			//List provisional taxa
 			if (provTaxa.size() > 0) {
-				out.println("<p>");
+				%><p><%
 				startDETable(pageContext);
 				%><table border="0" cellspacing="0" cellpadding="2" width="550">
 				<tr><td colspan=5 class=deHeading>Provisional Entries</td></tr>
 				<tr><td colspan="5" style="text-align: left; color: #FF0000">This record contains provisional taxonomic entries. You must wait until these entries are approved before submitting the record</td></tr>
 				<tr><th style="text-align: left">Taxonomic Name&nbsp;&nbsp;</th><th style="text-align: left">Group&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th colspan="2" style="text-align: left">Submitted By</th></tr><%
-				for (Iterator i = provTaxa.iterator(); i.hasNext(); ) {
-					Taxon taxon = (Taxon)i.next();
+				for (Taxon taxon : provTaxa) {
 					%><tr><td style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=taxon.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
@@ -58,19 +54,18 @@
 				}
 				%></table><%
 				endDETable(pageContext);
-				out.println("</p>");
+				%></p><%
 			}
 	
 			//List rejected taxa
 			if (rejTaxa.size() > 0) {
-				out.println("<p>");
+				%><p><%
 				startDETable(pageContext);
 				%><table border="0" cellspacing="0" cellpadding="2" width="550">
 				<tr><th colspan="5" class="deHeading">Rejected Entries</th></tr>
 				<tr><td colspan="5" style="text-align: left; color: #FF0000">This record contains rejected taxonomic entries. You must remove these entries before submitting the record</td></tr>
 				<tr><th style="text-align: left">Taxonomic Name&nbsp;&nbsp;</th><th style="text-align: left">Group&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th colspan="2" style="text-align: left">Rejected By&nbsp;&nbsp;</th><th style="text-align: left">Comments</th></tr><%
-				for (Iterator i = rejTaxa.iterator(); i.hasNext(); ) {
-					Taxon taxon = (Taxon)i.next();
+				for (Taxon taxon : rejTaxa) {
 					%><tr><td style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=taxon.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
@@ -80,37 +75,35 @@
 				}
 				%></table><%
 				endDETable(pageContext);
-				out.println("</p>");
+				%></p><%
 			}
 	
 			//List obsoloete taxa
 			if (obTaxa.size() > 0) {
-				out.println("<p>");
+				%><p><%
 				startDETable(pageContext);
 				%><table border="0" cellspacing="0" cellpadding="2" width="550">
 				<tr><th colspan="3" class="deHeading">Obsolete Entries</th></tr>
 				<tr><td colspan="3" style="text-align: left; color: #FF0000">This record contains obsolete taxonomic entries. You must remove these entries before submitting the record</td></tr>
 				<tr><th style="text-align: left">Taxonomic Name&nbsp;&nbsp;</th><th style="text-align: left">Group&nbsp;&nbsp;</th><th style="text-align: left">Author</th></tr><%
-				for (Iterator i = obTaxa.iterator(); i.hasNext(); ) {
-					Taxon taxon = (Taxon)i.next();
+				for (Taxon taxon : obTaxa) {
 					%><tr><td style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=taxon.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td><%
 				}
 				%></table><%
 				endDETable(pageContext);
-				out.println("</p>");
+				%></p><%
 			}
 	
 			//List approved taxa
 			if (appTaxa.size() > 0) {
-				out.println("<p>");
+				%><p><%
 				startDETable(pageContext);
 				%><table border="0" cellspacing="0" cellpadding="2" width="550">
 				<tr><th colspan="5" class="deHeading">Approved Entries</th></tr>
 				<tr><th style="text-align: left">Taxonomic Name&nbsp;&nbsp;</th><th style="text-align: left">Group&nbsp;&nbsp;</th><th style="text-align: left">Author&nbsp;&nbsp;</th><th colspan="2" style="text-align: left">Approved By</th></tr><%
-				for (Iterator i = appTaxa.iterator(); i.hasNext(); ) {
-					Taxon taxon = (Taxon)i.next();
+				for (Taxon taxon : appTaxa) {
 					%><tr><td style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=taxon.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
@@ -119,7 +112,7 @@
 				}
 				%></table><%
 				endDETable(pageContext);
-				out.println("</p>");
+				%></p><%
 			}	
 	
 			out.println("</center>");
