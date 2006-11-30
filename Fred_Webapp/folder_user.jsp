@@ -1,16 +1,21 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.dataaccess.StorageAccessException"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
+%><%@page import="nz.cri.gns.fred.model.FolderUser"
 %><%@page import="nz.cri.gns.fred.model.FolderRight"
-%><%@page import="nz.cri.gns.fred.model.FolderAccessor"
+%><%@page import="nz.cri.gns.fred.model.FrUserView"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
+%><%@page import="nz.cri.gns.fred.util.UserUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
-%><%@page import="nz.cri.gns.db.ComboDescriptor"
+%><%@page import="java.io.PrintWriter"
+%><%@page import="java.util.List"
+%><%@page import="java.util.HashSet"
+%><%@page import="java.util.Set"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
-%><%@page import="java.util.List"
-%><%@page import="java.util.Iterator"
+%><%@page import="nz.cri.gns.html.select.SelectBox"
+%><%@page import="nz.cri.gns.html.Attributes"
 %><%@page import="nz.cri.gns.auth.User"
 %><%!
 	public String getName(HttpServletRequest request) {
@@ -28,6 +33,7 @@
 
 %><%
 	FolderUtil folderUtil = new FolderUtil(HibernateUtil.get().getDAOFactory());
+	UserUtil userUtil = new UserUtil(HibernateUtil.get().getDAOFactory());
 	User user = (User)getUser(session);
 
 	ExtranetTemplate et = getExtranetTemplate();
@@ -74,74 +80,67 @@
 	
 			drawTop(out, et, request, response);
 
-			List rightTypes = folderUtil.getRightTypesForDisplay(folder);	
-			boolean isPersonal = folder.getFolder().getFolderType().getName().equals(UserFolder.FOLDER_TYPE_PERSONAL) || folder.getFolder().getFolderType().getName().equals(UserFolder.FOLDER_TYPE_BACKLOG);
-			%><center><p>&nbsp;<p/><%
+			List<FolderRight> rightTypes = folderUtil.getRightTypesForDisplay(folder);
+			%><p><%
 			startDETable(pageContext);
-			%><table border="0" width="550"><tr><td colspan="19" class="deHeading"><%=folder.getFolderName()%> users</td></tr>
-<tr><td><%
-
-			if (isPersonal) {
-				out.println("<p><span class='bigheading'>Folder: " + folder.getFolderName() + "</span><br>");
-				out.println("<span class='heading'>Owner: " + FolderUtil.getUserName(folder.getFolder().getOwnerId().intValue()) + "</span></p>");
-			} else {
-				out.println("<p><span class='bigheading'>Masterfile: " + folder.getFolderName() + "</span></p>");
+			%><table border="0" width="550"><tr><td colspan="19" class="deHeading"><%=folder.getFolderName()%> users</td></tr><%
+try {
+			if (folder.getFolder().getFolderType().getName().equals(UserFolder.FOLDER_TYPE_PERSONAL) || folder.getFolder().getFolderType().getName().equals(UserFolder.FOLDER_TYPE_BACKLOG)) {
+				%><tr><td class="heading" colspan="19">Folder Owner: <%=FolderUtil.getUserName(folder.getFolder().getOwnerId().intValue())%></span></td></tr>
+				<tr><td>&nbsp;</td></tr><%
 			}
-
-			out.println("<p>The users listed below have rights to this folder.<br>Users can be added or deleted from this list and their rights altered by clicking on the <img src='images/ok.gif' width='20' height='20' border='0' /> or <img src='images/cancel.gif' width='20' height='20' border='0' /> icons.</p>");
-
-			out.println("<p><table border='0' cellspacing='0' cellpadding='2'>");
-			out.print("<tr class='heading' align='center'><td align='left'>User&nbsp&nbsp</td><td width='60'>Read</td>");
-			for (Iterator it = rightTypes.iterator(); it.hasNext(); ) {
-				%><td width="60"><%=((FolderRight)it.next()).getRightDescription()%></td><%
+			%><tr><td colspan="19">The users listed below have rights to this folder.  Users can be added or deleted from this list and their rights altered by clicking on the <img src="images/ok.gif" width="20" height="20" border="0" /> or <img src="images/cancel.gif" width="20" height="20" border="0" /> icons.</td></tr>
+			<tr><td>&nbsp;</td></tr>
+			<tr><td class="heading">User&nbsp;&nbsp;</td><td width="60" class="heading" style="width=60px; text-align=center">Read</td><%
+			for (FolderRight rightType : rightTypes) {
+				%><td width="60" class="heading" style="width=60px; text-align=center"><%=rightType.getRightDescription()%></td><%
 			}
-			%><tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr><%
-
-			List users = folderUtil.getNonOwningUsers(folder);
-			String foldID = folder.getFolder().getFolderId().toString();
-			for (Iterator it = users.iterator(); it.hasNext(); ) {
-				FolderAccessor folderUser = (FolderAccessor)it.next();
-				%><tr><td><%=folderUser.getUserName()%>&nbsp;&nbsp;</td>
-<td align="center"><a href="folder_user.jsp?FoldID=<%=foldID%>&ActionType=DeleteUser&UserID=<%=folderUser.getUserId()%>" title="Delete User"><img src="images/ok.gif" width="20" height="20" border="0" /></a></td>
-<%
-				for (Iterator it1 = rightTypes.iterator();  it1.hasNext(); ) {
-					FolderRight rightType = (FolderRight)it1.next();
-					out.print("<td align='center'><a href='folder_user.jsp?FoldID=" + foldID + "&ActionType=ChangeRight&UserID=" + folderUser.getUserId() + "&Right=");
+			Set<FrUserView> excludeFrUsers = new HashSet<FrUserView>();
+			if (folder.getFolder().getOwnerId() != null)
+				excludeFrUsers.add(userUtil.getFrUserView(folder.getFolder().getOwnerId()));
+			for (FolderUser folderUser : folder.getFolder().getFolderUsers()) {
+				FrUserView frUser = userUtil.getFrUserView(folderUser.getUserId());
+				excludeFrUsers.add(frUser);
+				%><tr><td><%=frUser.getFullName()%>&nbsp;&nbsp;</td>
+				<td style="text-align: center;"><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&ActionType=DeleteUser&UserID=<%=frUser.getUserId()%>"><img src="images/ok.gif" width="20" height="20" border="0" alt="Delete User" /></a></td><%
+				for (FolderRight rightType : rightTypes) {
+					%><td style="text-align: center;"><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&ActionType=ChangeRight&UserID=<%=frUser.getUserId()%>&Right=<%=rightType.getRightCode()%>"><%
 					if ((folderUser.getUserRights().intValue() & rightType.getRightCode()) != 0) {
-						out.print((rightType.getRightCode()) + "' title='Remove Right'><img src='images/ok.gif'");
+						%><img src="images/ok.gif" alt="Remove Right"height="20" width="20" border="0"  /><%
 					} else {
-						out.print(rightType.getRightCode() + "' title='Add Right'><img src='images/cancel.gif'");
+						%><img src="images/cancel.gif" alt="Add Right"height="20" width="20" border="0"  /><%
 					}
-					out.print(" width='20' height='20' border='0' /></a></td>");
+					%></a></td><%
 				}
-				out.println("</tr>");
+				%></tr><%
 			}
 			
-			out.println("<form name='UserForm' method='post' action='folder_user.jsp'>");
-			out.println("<input type='hidden' name='FoldID' value='" + foldID + "'>");
-			out.println("<input type='hidden' name='ActionType' value='AddUser'>");
-			out.print("<tr><td>");
-			ComboDescriptor cd = new ComboDescriptor("FR_User_View", "PE_ID", "Full_Name");
-			cd.name = "UserID";
-			cd.orderBy = "Family_Name";
-			cd.join = "NOT PE_ID IN (SELECT User_ID FROM Folder_View WHERE Folder_ID = " + foldID + ")";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
-			out.println("&nbsp&nbsp</td><td align='center'><a href='#' onClick='UserForm.submit();' title='Add User'><img src='images/cancel.gif' width='20' height='20' border='0' /></a></td></tr>");
-			out.println("</form>");
+			%><form name="UserForm" method="post" action="folder_user.jsp">
+			<input type="hidden" name="FoldID" value="<%=folder.getFolder().getFolderId()%>" />
+			<input type="hidden" name="ActionType" value="AddUser" />
+			<tr><td><%
+			SelectBox<FrUserView> selectBox = new SelectBox<FrUserView>(userUtil.getFrUsersWithout(excludeFrUsers));
+			Attributes attributes = Attributes.createNameOnlyAttributes("UserID");
+			selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
+			%>&nbsp;&nbsp;</td><td style="text-align: center;"><a href="#" onClick="UserForm.submit();"><img src="images/cancel.gif" width="20" height="20" border="0" alt="Add User" /></a></td></tr>
+			</form>
 			
-			out.println("</table></p>");
-			out.println("</table>");
+			</table><%
 			endDETable(pageContext);
-			out.println("</td></tr></table>");
+			%></td></tr></table></p><%
+} catch (Exception e) {
+	out.println("Error");
+	e.printStackTrace();
+}
 		}
 		else { //no rights
-			out.println("<p><span class='subhead'>Access denied</span></p>Either there is no folder matching the ID you entered or you have insufficient rights to edit the folder.  Click <a href='index.jsp' class='fname'>here</a> to return to the FRED home page.");
+			%><p>Access denied</p>Either there is no folder matching the ID you entered or you have insufficient rights to edit the folder.  Click <a href='index.jsp' class='fname'>here</a> to return to the FRED home page.<%
 		}
 	} else {
 		drawTop(out, et, request, response);
-		drawEndNavigation(out);
 	}
 
 	drawBottom(out, et);
 	folderUtil.closeSession();
+
 %>
