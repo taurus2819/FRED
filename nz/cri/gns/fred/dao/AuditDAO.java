@@ -41,6 +41,8 @@ public interface AuditDAO {
 	
 	public ConfidentialGroup getConfidentialGroup(Integer id) throws StorageAccessException;
 	
+	public void save(ConfidentialGroup group) throws StorageAccessException;
+	
 	public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException;
 
 }

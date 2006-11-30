@@ -75,7 +75,7 @@
         name="users"
         table="CONFID_GROUP_USER"
         lazy="true"
-        inverse="true"
+        inverse="false"
 		cascade="none"
     >
         <key>

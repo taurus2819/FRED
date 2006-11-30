@@ -1159,4 +1159,8 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		}
 	}
 	
+	public void save(ConfidentialGroup group) throws StorageAccessException {
+		HibernateUtils.save(provider, group);
+	}
+	
 }

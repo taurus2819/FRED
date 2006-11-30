@@ -19,6 +19,8 @@ public interface FrUserView extends Comparable<FrUserView>, NameableAndIdentifia
 	public OrgView getOrgView();
 	public void setTaxonomicGroups(Set<TaxonomicGroup> taxonomicGroups);
 	public Set<TaxonomicGroup> getTaxonomicGroups();
-	public Set<ConfidentialGroup> getConfidGroups();
+	public void setConfidGroupsByOwnerId(Set<ConfidentialGroup> confidGroupsByOwnerId);
+	public Set<ConfidentialGroup> getConfidGroupsByOwnerId();
 	public void setConfidGroups(Set<ConfidentialGroup> confidGroups);
+	public Set<ConfidentialGroup> getConfidGroups();
 }

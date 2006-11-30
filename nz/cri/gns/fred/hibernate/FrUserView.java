@@ -33,10 +33,13 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
     private Set<TaxonomicGroup> taxonomicGroups;
     
     /** persistent field */
+    private Set<ConfidentialGroup> confidGroupsByOwnerId;
+    
+    /** persistent field */
     private Set<ConfidentialGroup> confidGroups;
     
     /** full constructor */
-    public FrUserView(Integer userId, String userName, String givenName, String familyName, String fullName, OrgView orgView, Set<TaxonomicGroup> taxonomicGroups, Set<ConfidentialGroup> confidGroups) {
+    public FrUserView(Integer userId, String userName, String givenName, String familyName, String fullName, OrgView orgView, Set<TaxonomicGroup> taxonomicGroups, Set<ConfidentialGroup> confidGroupsByOwnerId, Set<ConfidentialGroup> confidGroups) {
     	this.userId = userId;
     	this.userName = userName;
     	this.givenName = givenName;
@@ -44,7 +47,8 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
     	this.fullName = fullName;
     	this.orgView = orgView;
     	this.taxonomicGroups = taxonomicGroups;
-    	this.setConfidGroups(confidGroups);
+    	this.confidGroupsByOwnerId = confidGroupsByOwnerId;
+    	this.confidGroups = confidGroups;
     }
 
     /** default constructor */
@@ -106,7 +110,15 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
 	public Set<TaxonomicGroup> getTaxonomicGroups() {
 		return taxonomicGroups;
 	}
+
+	public Set<ConfidentialGroup> getConfidGroupsByOwnerId() {
+		return confidGroupsByOwnerId;
+	}
 	
+	public void setConfidGroupsByOwnerId(Set<ConfidentialGroup> confidGroupsByOwnerId) {
+		this.confidGroupsByOwnerId = confidGroupsByOwnerId;
+	}
+
 	public Set<ConfidentialGroup> getConfidGroups() {
 		return confidGroups;
 	}

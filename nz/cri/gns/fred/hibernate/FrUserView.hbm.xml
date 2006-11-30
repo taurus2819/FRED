@@ -70,7 +70,7 @@
         />
     </set>
     
-    <!-- bi-directional many-to-many association to ConfidGroup via ConfidUser -->
+    <!-- bi-directional many-to-many association to ConfidentialGroup via ConfidUser -->
     <set
         name="confidGroups"
         table="CONFID_USER"
@@ -83,6 +83,21 @@
         </key>
         <many-to-many 
 			column="GROUP_ID"
+            class="nz.cri.gns.fred.hibernate.ConfidentialGroup"
+        />
+    </set>
+    
+    <!-- bi-directional one-to-many association to ConfidentialGroup -->
+    <set
+        name="confidGroupsByOwnerId"
+        lazy="true"
+        inverse="true"
+		cascade="all"
+    >
+        <key>
+            <column name="OWNER_ID" />
+        </key>
+        <one-to-many 
             class="nz.cri.gns.fred.hibernate.ConfidentialGroup"
         />
     </set>
