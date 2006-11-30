@@ -31,6 +31,7 @@
 	<tr><td>&nbsp;</td></tr>
 	<tr><td><a href="images/geosciences06.pdf" target="comp"><img src="images/pdf_icon.gif" border="0" alt="pdf" /></a>&nbsp;&nbsp;</td>
 	<td><a href="images/geosciences06.pdf" target="comp">Entry Form</a></td><tr>
+	<tr><td colspan="2">Please note: there is an error in the original form. Questions 11 and 12 ask for <i>bedding thickness > 120mm</i>, this should be <i>bedding thickness > 120<b>cm</b></i>.  The form above has been corrected, however we will accept answers using the incorrect form of the questions.</td></tr>
 	</table><%
 	endDETable(pageContext);
 	%></p><%
