@@ -11,17 +11,15 @@ import java.util.Vector;
 import javax.naming.NamingException;
 
 import net.sf.hibernate.HibernateException;
+import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.FolderTypeDAO;
 import nz.cri.gns.fred.model.Folder;
-import nz.cri.gns.fred.model.FolderAccessor;
 import nz.cri.gns.fred.model.FolderRight;
 import nz.cri.gns.fred.model.FolderUser;
 import nz.cri.gns.fred.model.UserFolder;
-
-import nz.cri.gns.auth.UserAccount;
 
 /**
  * @author iainm
@@ -170,26 +168,6 @@ public class FolderUtil extends ModelUtil {
 			|| folder.getFolder().getFolderType().getName().equals(Folder.FOLDER_TYPE_BACKLOG)) 
 			? folderDAO.getFolderRightList("code NOT IN ('1', '64')", "TO_NUMBER(code)") 
 			: folderDAO.getFolderRightList("code NOT IN ('1', '4', '8', '16')", "TO_NUMBER(code)");
-	}
-	/**
-	 * Returns a list of UserFolder objects describing each user that has some access to
-	 * the given folder.  The UserFolders are ordered alphabetically
-	 * @param folder
-	 * @return
-	 * @throws StorageAccessException 
-	 */
-	public List<FolderAccessor> getNonOwningUsers(UserFolder userFolder) throws StorageAccessException {
-		
-		Folder folder = userFolder.getFolder();
-		List<FolderAccessor> accessors = new Vector<FolderAccessor>(folder.getFolderUsers().size());
-		
-		for (FolderUser user : folder.getFolderUsers()) try {
-			accessors.add(new FolderAccessor(user, getUserName(user.getUserId().intValue())));
-		} catch (Exception e) {
-			throw new StorageAccessException(e);
-		}
-		Collections.sort(accessors);
-		return accessors;
 	}
 	
 	public void addUserToFolder(UserFolder folder, int userId, int permissions) throws StorageAccessException {
