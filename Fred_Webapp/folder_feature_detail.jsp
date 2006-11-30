@@ -58,7 +58,7 @@
 		ExtranetTemplate et = getExtranetTemplate();
 		et.setDisplayLoadingMessage(true);
 		addButtons(et, new IconnedLink[] {
-				new IconnedLink("folder_detail.jsp?ID=" + request.getParameter("FoldID") + "&q=" + Math.random(), "images/back_arrow.gif", "Back to folder contents")
+				new IconnedLink("folder_detail.jsp?ID=" + request.getParameter("FoldID") + "&q=" + Math.random(), "images/back_arrow.gif", "Back to Folder Contents")
 			});
 	
 		Feature feature = featureUtil.getFeature(Integer.parseInt(request.getParameter("FeatID")));
