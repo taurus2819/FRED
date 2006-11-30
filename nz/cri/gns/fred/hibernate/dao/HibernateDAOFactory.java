@@ -411,8 +411,8 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		return new nz.cri.gns.fred.hibernate.AuditEdit();
 	}
 
-	public void save(AuditEdit edit) throws StorageAccessException {
-		HibernateUtils.save(provider, edit);
+	public AuditEdit save(AuditEdit edit) throws StorageAccessException {
+		return HibernateUtils.save(provider, edit);
 	}
 
 	public void delete(AuditEdit edit) throws StorageAccessException {
@@ -1159,8 +1159,16 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		}
 	}
 	
-	public void save(ConfidentialGroup group) throws StorageAccessException {
-		HibernateUtils.save(provider, group);
+	public ConfidentialGroup save(ConfidentialGroup group) throws StorageAccessException {
+		return HibernateUtils.save(provider, group);
+	}
+	
+	public void delete(ConfidentialGroup group) throws StorageAccessException {
+		HibernateUtils.delete(provider, group);
+	}
+
+	public ConfidentialGroup createNewConfidentialGroup() throws StorageAccessException {
+		return new nz.cri.gns.fred.hibernate.ConfidentialGroup();
 	}
 	
 }

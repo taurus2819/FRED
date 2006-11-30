@@ -18,8 +18,10 @@ import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.ConfidentialGroup;
 import nz.cri.gns.fred.model.DataOrigin;
 import nz.cri.gns.fred.model.FREDConstants;
+import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FrUserView;
 import nz.cri.gns.fred.model.OrgView;
+import nz.cri.gns.fred.model.UserFolder;
 
 /**
  *
@@ -154,6 +156,21 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	
 	public ConfidentialGroup getConfidentialGroup(Integer groupId) throws StorageAccessException {
 		return auditDAO.getConfidentialGroup(groupId);
+	}
+	
+	public ConfidentialGroup addConfidentialGroup(String name, UserAccount user)  throws StorageAccessException {
+	    ConfidentialGroup group = auditDAO.createNewConfidentialGroup();
+	    group.setName(name);
+	    group.setOwner(new UserUtil(factory).getFrUserView(new Integer(user.getId())));
+	    auditDAO.save(group);
+	    return group;
+	}
+	
+	public void deleteConfidentialGroup(int groupId, UserAccount user)  throws StorageAccessException {
+		ConfidentialGroup group = auditDAO.getConfidentialGroup(new Integer(groupId));
+		if (!String.valueOf(group.getOwner().getUserId()).equals(user.getId()))
+			throw new IllegalStateException("Cannot delete group as not owner");
+	    auditDAO.delete(group);
 	}
 	
 	public void addUserToConfidGroup(ConfidentialGroup group, FrUserView frUser) throws StorageAccessException {

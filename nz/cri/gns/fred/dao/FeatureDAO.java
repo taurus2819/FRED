@@ -122,7 +122,7 @@ public interface FeatureDAO {
 	 */
 	public AuditEdit createNewAuditEdit() throws StorageAccessException;
 
-	public void save(AuditEdit edit) throws StorageAccessException;
+	public AuditEdit save(AuditEdit edit) throws StorageAccessException;
 
 	public void delete(AuditEdit edit) throws StorageAccessException;
 	

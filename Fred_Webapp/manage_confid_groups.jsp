@@ -23,31 +23,62 @@
 	}
 %><%
 	UserUtil userUtil = new UserUtil(HibernateUtil.get().getDAOFactory());
+	AuditUtil auditUtil = new AuditUtil(HibernateUtil.get().getDAOFactory());
 	User user = (User)getUser(session);
 
 	ExtranetTemplate et = getExtranetTemplate();
 	
 	if (request.getParameter("GroupID") == null) {
-		addButtons(et, new IconnedLink[] {new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")});
+		addButtons(et, new IconnedLink[] {
+				new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders"),
+				new IconnedLink("javascript:doNewFolder();", "images/folder.gif", "New Folder")		
+		});
+		
+		if (request.getParameter("ActionType") != null) { //do something
+			String actionType = request.getParameter("ActionType");
+			if (actionType.equals("Add")) //add folder
+				auditUtil.addConfidentialGroup(request.getParameter("GroupName"), user);
+			else if (actionType.equals("Delete")) //Delete group
+				auditUtil.deleteConfidentialGroup(Integer.parseInt(request.getParameter("GrpID")), user);
+		}
+		
 		drawTop(out, et, request, response);
+		
+		%><script><!--
+		function doNewGroup() {
+			var newName = prompt("Please enter the group name", "New User Group");
+			if (newName) {
+				document.NewGroupForm.GroupName.value = newName;
+				document.NewGroupForm.submit();
+			}
+		}
+	
+		//--></script>
+		<form name="NewGroupForm" method="post" action="manage_confid_groups.jsp">
+		<input type="hidden" name="ActionType" value="Add">
+		<input type="hidden" name="GroupName" value="">
+		</form><%
 		FrUserView frUser = userUtil.getFrUserView(new Integer(user.getId()));
 		%><p><%
 		startDETable(pageContext);
 		%><table border="0" width="550">
-		<tr><td class="deHeading">User Groups</td></tr><%
+		<tr><td class="deHeading" colspan="2">User Groups</td></tr><%
 		for (ConfidentialGroup group : frUser.getConfidGroupsByOwnerId()) {
-			%><tr><td><a href="manage_confid_groups.jsp?GroupID=<%=group.getGroupId()%>"><%=group.getName()%></a></td></tr><%
+			%><tr>
+			<td><a href="manage_confid_groups.jsp?GroupID=<%=group.getGroupId()%>"><%=group.getName()%></a>&nbsp;&nbsp;</td>
+			<td><a href="manage_confid_groups.jsp?ActionType=Delete&GrpID=<%=group.getGroupId()%>"><img src="images/delete.gif" height="20" width="20" border="0" alt="Delete" /></a></td>
+			</tr><%
 		}
 		%></table><%
 		endDETable(pageContext);
-		%></p><%
+		%></p>
+		</form><%
 	} else {
 		addButtons(et, new IconnedLink[] {
 				new IconnedLink("manage_confid_groups.jsp", "images/back_arrow.gif", "Back to Group List"),
 				new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")
 		});
 		drawTop(out, et, request, response);
-		AuditUtil auditUtil = new AuditUtil(HibernateUtil.get().getDAOFactory());
 		ConfidentialGroup group = auditUtil.getConfidentialGroup(new Integer(request.getParameter("GroupID")));
 		
 		//process any changes
