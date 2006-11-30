@@ -1,6 +1,7 @@
 #contentWrapInner {
 	font-family: Verdana, Arial, Helvetica, Sans-Serif;
 	font-size: 12px;
+	margin-left: 30px;
 }
 
 #contentWrapInner td,input,select,textarea {

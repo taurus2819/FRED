@@ -1,7 +1,6 @@
 <%@page extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.db.DBUtils"
-%><%@page import="java.util.Iterator"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.model.FrNumber"
@@ -34,12 +33,6 @@
 	
 	drawTop(out, et, request, response);
 
-	//List data
-	%><table border="0">
-	<tr><td><img src="images/blank.gif" width="10" height="10" /></td></tr>
-	<tr><td></td><td>
-	</td><td><img src="images/blank.gif" width="30" height="1" /></td><td style="text-align: left"><%
-	
 	String mapSheet = request.getParameter("Sheet");
 	
 	if (mapSheet != null) {
@@ -48,8 +41,7 @@
 		%><table border="0">
 		<tr><td class="deHeading" colspan="6">Localities</td></tr>
 		<tr><th colspan="2">Locality</th><th>Type</th><th>Backlog Status&nbsp;&nbsp;</th><th>FRED Status&nbsp;&nbsp;</th><th>Working Folder&nbsp;&nbsp;</th></tr><%
-		for (Iterator i = featureUtil.getFrNumbers(mapSheet).iterator(); i.hasNext();) {
-			FrNumber frNumber = (FrNumber) i.next();
+		for (FrNumber frNumber : featureUtil.getFrNumbers(mapSheet)) {
 			try {
 				Feature feature = featureUtil.getFeature(frNumber);
 				Audit audit = feature.getAudit();
@@ -76,9 +68,6 @@
 		endDETable(pageContext);
 		%></p><%		
 	}
-	
-	%></td></tr></table><%
-
 	
 	drawBottom(out, et);
 	

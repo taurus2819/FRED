@@ -1,7 +1,6 @@
 <%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="java.net.URL"
-%><%@page import="java.util.Iterator"
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
@@ -10,6 +9,7 @@
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.util.BacklogStatusUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
+%><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.gis.ims.IMSMap"
 %><%@page import="com.esri.aims.mtier.model.envelope.Envelope"
 %><%!	
@@ -18,6 +18,8 @@
 	}
 %><%!
 	public String getName(HttpServletRequest request) {
+		if (request.getParameter("ID") == null || request.getParameter("ID").equals("-1"))
+			return "FRED :: Backlog Processing Status Summary";
 		try {
 			DAOFactory factory = HibernateUtil.get().getDAOFactory();
 			FolderUtil folderUtil = new FolderUtil(factory);
@@ -74,47 +76,29 @@
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setUseNavigationColumn(false);
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 
+	IconnedLink[] il = new IconnedLink[12];
+	il[0] = new IconnedLink("backlog_status.jsp?ID=-1", "images/book.gif", "All Masterfiles");
+	int i = 1;
+	for (Folder folder : folderUtil.getAdminFolders()) {
+		il[i++] = new IconnedLink("backlog_status.jsp?ID=" + folder.getFolderId(), "images/book.gif", folder.getName());
+	}
+	addButtons(et, il);
+	
 	drawTop(out, et, request, response);
 
-	//List data
-	%><table border="0">
-	<tr><td><img src="images/blank.gif" width="10" height="10" /></td></tr>
-	<tr><td></td><td><%
-
-	%><p><%
-	startDETable(pageContext);
-	%><table border="0" width="140">
-	<tr><td class="deHeading">Masterfile</td></tr>
-	<tr><td class="heading"><a href="backlog_status.jsp?ID=-1">All</a></td></tr><%
-	for (Iterator i = folderUtil.getAdminFolders().iterator(); i.hasNext();) {
-		Folder folder = (Folder) i.next();
-		%><tr><td class="heading"><a href="backlog_status.jsp?ID=<%=folder.getFolderId()%>"><%=folder.getName()%></a></td></tr><%
-	}
-	%></table><%
-	endDETable(pageContext);
-	%></p><%	
-
-	%><p><%
-	startDETable(pageContext);
-	%><table border="0" width="140">
-	<tr><td class="deHeading" colspan="3">Legend</td></tr>
-	<tr><td>&nbsp;</td></tr>
-	<tr><td style="background-color: #FF0000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;</td><td class="heading">Processing</td></tr>
-	<tr><td style="background-color: #00FF00"></td><td></td><td class="heading">Complete</td></tr>
-	<tr><td style="background-color: #DDDDDD"></td><td></td><td class="heading">No locality</td></tr>
-	</table><%
-	endDETable(pageContext);
-	%></p><%
-	
-	%></td><td><img src="images/blank.gif" width="20" height="1" /></td><td style="text-align: left"><%
-	
 	%><p><%
 	startDETable(pageContext);
 	%><table border="0" width="480">
-	<tr><td>The summary of map sheets completed in the backlog edit process is shown on the following map.  This map is dynamic, and is updated daily to show the current stage of completion, including those map sheets that are currently undergoing the backlog edit process. Ultimately each map sheet will become green as they reach final completion.</td></tr>
-	<tr><td>Note that records for Radiocarbon dating localities are only partially complete, at this stage lacking radiocarbon dating information. Tailored Radiocarbon dating forms are still to be developed to accommodate these details.</td></tr>
+	<tr><td colspan="3">The summary of map sheets completed in the backlog edit process is shown on the following map.  This map is dynamic, and is updated daily to show the current stage of completion, including those map sheets that are currently undergoing the backlog edit process. Ultimately each map sheet will become green as they reach final completion.</td></tr>
+	<tr><td colspan="3">Note that records for Radiocarbon dating localities are only partially complete, at this stage lacking radiocarbon dating information. Tailored Radiocarbon dating forms are still to be developed to accommodate these details.</td></tr>
+	<tr><td>&nbsp;</td></tr>
+	<tr><td class="heading" colspan="3">Legend</td></tr>
+	<tr><td style="background-color: #FF0000">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;</td><td class="heading">Processing</td></tr>
+	<tr><td style="background-color: #00FF00"></td><td></td><td class="heading">Complete</td></tr>
+	<tr><td style="background-color: #DDDDDD"></td><td></td><td class="heading">No locality</td></tr>
+	
 	</table><%
 	endDETable(pageContext);
 	%></p><%	
@@ -264,8 +248,7 @@
 	<tr><td class="deHeading" colspan="5">Detail</td></tr><%
 	if (masterfileId > 0) {
 		%><tr><th>Map</th><th>Status&nbsp;&nbsp;</th><th>Localities&nbsp;&nbsp;</th><th colspan="2">Percent Complete</th></tr><%
-		for (Iterator i = bsUtil.getBacklogStatusInMasterfile(masterfileId).iterator(); i.hasNext();) {
-			BacklogStatus bs = (BacklogStatus) i.next();
+		for (BacklogStatus bs : bsUtil.getBacklogStatusInMasterfile(masterfileId)) {
 			int totalCount = bs.getLocalityCount().intValue() - bs.getNewCount().intValue();
 			%><tr><td class="heading"><a href="backlog_status_sheet.jsp?Sheet=<%=bs.getMapNumber()%>&MF=<%=masterfileId%>"><%=bs.getMapNumber()%></a>&nbsp;&nbsp;</td>
 			<td style="color: <%=getStatusColour(bs.getStatus())%>"><%=bs.getStatus()%>&nbsp;&nbsp;</td>
@@ -291,8 +274,7 @@
 		}
 	} else {
 		%><tr><th>Masterfile</th><th>Status&nbsp;&nbsp;</th><th>Localities&nbsp;&nbsp;</th><th colspan="2">Percent Complete</th></tr><%
-		for (Iterator i = folderUtil.getAdminFolders().iterator(); i.hasNext();) {
-			Folder masterfile = (Folder) i.next();
+		for (Folder masterfile : folderUtil.getAdminFolders()) {
 			String status = bsUtil.getStatus(masterfile.getFolderId().intValue());
 			int totalCount = bsUtil.getSumLocalityCount(masterfile.getFolderId().intValue()) - bsUtil.getSumNewCount(masterfile.getFolderId().intValue());
 			%><tr><td class="heading"><a href="backlog_status.jsp?ID=<%=masterfile.getFolderId()%>"><%=masterfile.getName()%></a>&nbsp;&nbsp;</td>
@@ -321,9 +303,6 @@
 	%></table><%
 	endDETable(pageContext);
 	%></p><%	
-	
-	%></td></tr></table><%
-
 	
 	drawBottom(out, et);
 	

@@ -46,7 +46,6 @@ public String getName(HttpServletRequest request) {
 			});
 
 		drawTop(out, et, request, response);
-		%><center><p>&nbsp;</p><%
 		
 		UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), getUser(request.getSession()));
 		if (folder != null && folder.isAllowedReadLocalities()) {
@@ -141,7 +140,6 @@ public String getName(HttpServletRequest request) {
 				%></p><%				
 			}
 			
-			out.println("</center>");
 		} else {
 			%>You do not have sufficient rights to view this page<%
 		}

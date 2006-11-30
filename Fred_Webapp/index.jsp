@@ -12,10 +12,10 @@
 	
 	drawTop(out, et, request, response);
 
-	%><table style="margin-left:20px; width:550px;" border="0">
+	%><table width="550" style="width:550px;" border="0">
 	<tr>
 		<td colspan="2">
-			<p>FRED is a computer database for the New Zealand Fossil Record File.  This is a recording scheme for fossil localities in NZ and nearby regions including SE Pacific Islands and the Ross Sea region of Antarctica, and is administered jointly by <a href="http://www.gsnz.org.nz" target="gsnz">Geological Society of New Zealand</a> and GNS Science.  FRED is operated by GNS Science through the FRST National Paleontological Databases Programme, with the assistance of staff at Auckland, Victoria, Canterbury and Otago universities.</p>
+			<p>FRED is a computer database for the New Zealand Fossil Record File.  This is a recording scheme for fossil localities in NZ and nearby regions including SE Pacific Islands and the Ross Sea region of Antarctica, and is jointly managed by <a href="http://www.gsnz.org.nz" target="gsnz">Geological Society of New Zealand</a> and <a href="http://www.gns.cri.nz" target="gns">GNS Science</a>.  FRED is operated by GNS Science through the FRST National Paleontological Databases Programme, with the assistance of staff at Auckland, Victoria, Canterbury and Otago universities.</p>
 		</td>
 	</tr>
 	<tr><td><img src="images/blank.gif" width="275" height="3"></td><td><img src="images/blank.gif" width="275" height="3"></td></tr>

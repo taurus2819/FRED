@@ -160,14 +160,16 @@ try {
 	
 	if (feature != null) {
 		
+		boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
+		
 		Vector<Link> il = new Vector<Link>();
 		if (backURL != null)
 			il.add(new IconnedLink(backURL, "images/back_arrow.gif", (backText != null) ? request.getParameter("backText") : "Back"));
 		il.add(new IconnedLink("locality_map.jsp?FeatID=" + feature.getFeatureId() + "&backURL=" + URLEncoder.encode("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr, "ISO-8859-1")+ "&backText=Back%20To%20Locality", "images/map.gif", "Locality Map"));
-		if (user != null)
+		if (isAllowedReadFeature)
 			il.add(new IconnedLink("audit_detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "FeatID=" + feature.getFeatureId()) + "&backURL=" + URLEncoder.encode("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr, "ISO-8859-1")+ "&backText=Back%20To%20Locality", "images/loc.gif", "Audit Details"));
 		//Add to Folder link
-		if (user != null && feature.getAudit().getStatus().equals(FREDConstants.APPROVED) && (new FolderUtil(factory)).getPersonalFolders(user).size() > 0) {		
+		if (isAllowedReadFeature && feature.getAudit().getStatus().equals(FREDConstants.APPROVED) && (new FolderUtil(factory)).getPersonalFolders(user).size() > 0) {		
 			StringBuffer customHTML = new StringBuffer("<form method=\"post\" action=\"detail.jsp\" name=\"FolderForm\" style=\"display: inline; margin: 0;\">");
 			if (sample != null)
 				customHTML.append("<input type=\"hidden\" name=\"ID\" value=\"").append(sample.getSampleId()).append("\" />");
@@ -193,7 +195,7 @@ try {
 			il.add(new CustomHTMLLink(customHTML.toString()));
 		}
 		//Taxa list options
-		if (user != null && sample != null && sampleUtil.getPaleontologyRecordCount(sample) > 0) {
+		if (isAllowedReadFeature && sample != null && sampleUtil.getPaleontologyRecordCount(sample) > 0) {
 			il.add(new IconnedLink("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr + "&AuthorChk=" + ((authorChk) ? "false" : "true"), ((authorChk) ? "images/ok.gif" : "images/cancel.gif"), "Show Taxonomic Author"));
 			il.add(new IconnedLink("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr + "&SCountChk=" + ((sCountChk) ? "false" : "true"), ((sCountChk) ? "images/ok.gif" : "images/cancel.gif"), "Show Specimen Count"));
 			il.add(new IconnedLink("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr + "&SCoordChk=" + ((sCoordChk) ? "false" : "true"), ((sCoordChk) ? "images/ok.gif" : "images/cancel.gif"), "Show Specimen Coords"));
@@ -203,13 +205,11 @@ try {
 	
 		Audit audit = feature.getAudit();
 		String featType = feature.getFeatureType();
-		boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
-		
 		
 		if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
 			if (request.getParameter("ActionType") != null) { //do something
 				String actionType = request.getParameter("ActionType");
-				if (actionType.equals("Approve")) {
+				if (actionType.equals("Approve") && featureUtil.isAllowedApproveFeature(user, feature)) {
 					try {
 						featureUtil.approveFeature(feature, request.getParameter("MapSheet"), new Integer(request.getParameter("SerialNum")), request.getParameter("RecollNum"), request.getParameter("CurComm"), user);
 						response.sendRedirect("admin_folder_detail.jsp?ID=" + feature.getMasterFile().getFolderId() + "&q=" + Math.random());
@@ -218,7 +218,7 @@ try {
 						%><script language="JavaScript">alert("The FR Number already exists please try another one");</script><%
 					}
 				}
-				else if (actionType.equals("Reject")) {
+				else if (actionType.equals("Reject") && featureUtil.isAllowedApproveFeature(user, feature)) {
 					featureUtil.rejectLocality(feature, request.getParameter("CurComm"), user);
 					response.sendRedirect("admin_folder_detail.jsp?ID=" + feature.getMasterFile().getFolderId() + "&q=" + Math.random());
 					return;
@@ -231,64 +231,50 @@ try {
 
 			drawTop(out, et, request, response);
 
-			//List data
-			%><table border="0"><tr><td><img src="images/blank.gif" width="10" height="10" /></td></tr>
-			<tr><td></td><td><%
-			
-			if (isAllowedReadFeature) {	
-
-				//Approve/Reject
-				if (featureUtil.isAllowedApproveFeature(user, feature)) {
-					FrNumber frNumber = featureUtil.getNextAvailableFrNumber(feature);
-					String[] comms = FeatureUtil.splitWorkingComments(feature.getAudit().getWorkingComments());
-					String workComm = comms[0];
-					String recoll = comms[1];
-					%><p><%
-					startDETable(pageContext);
-					%><form name="RevForm" method="post" action="detail.jsp">
-					<%
-					if (sample != null) {
-						%><input type="hidden" name="ID" value="<%=sample.getSampleId()%>" /><%
-					} else {
-						%><input type="hidden" name="FeatID" value="<%=feature.getFeatureId()%>" /><%
+			//Approve/Reject
+			if (featureUtil.isAllowedApproveFeature(user, feature)) {
+				FrNumber frNumber = featureUtil.getNextAvailableFrNumber(feature);
+				String[] comms = FeatureUtil.splitWorkingComments(feature.getAudit().getWorkingComments());
+				String workComm = comms[0];
+				String recoll = comms[1];
+				%><p><%
+				startDETable(pageContext);
+				%><form name="RevForm" method="post" action="detail.jsp"><%
+				if (sample != null) {
+					%><input type="hidden" name="ID" value="<%=sample.getSampleId()%>" /><%
+				} else {
+					%><input type="hidden" name="FeatID" value="<%=feature.getFeatureId()%>" /><%
+				}
+				if (backURL != null) {
+					%><input type="hidden" name="backURL" value="<%=backURL%>" /><%
+					if (backText != null) {
+						%><input type="hidden" name="backText" value="<%=backText%>" /><%
 					}
-					if (backURL != null) {
-						%><input type="hidden" name="backURL" value="<%=backURL%>" /><%
-						if (backText != null) {
-							%><input type="hidden" name="backText" value="<%=backText%>" /><%
-						}
-					}
-					%><input type="hidden" name="ActionType" value="" />
-					<table border="0" width="160">
-					<tr><td colspan="2" class="deHeading">Masterfile Curator</td></tr>
-					<tr><td colspan="2" class="heading">User Comments</td></tr>
-					<tr><td colspan="2"><%=DBUtils.nvl(workComm)%></td></tr><%
-					if (recoll != null) {
-						%><tr><td colspan="2">The submitter has indicated that this record is a recollection of <%=recoll%>.</td></tr><%
-					}
-					%><tr><td><img src="images/blank.gif" height="5" width="1" /></td></tr>
-					<tr><td colspan="2" class="heading">FR Number</td></tr>
-					<tr><td colspan="2">
-						<input type="text" name="MapSheet" size="8" value="<%=frNumber.getMapSheet()%>" />&nbsp;
-						/f&nbsp;<input type="text" name="SerialNum" size="3" value="<%=frNumber.getSerialNumber()%>" />&nbsp;
-						<input type="text" name="RecollNum" size="1" value="" />
-					</td></tr>
-
-					<tr><td colspan="2" class="heading">Curator Comments</td></tr>
-					<tr><td colspan="2"><textarea name="CurComm" rows="5" cols="22"><%=DBUtils.nvl(audit.getCuratorComments())%></textarea></td></tr>
-					<tr><td><a href="#" onClick="document.RevForm.ActionType.value='Approve';document.RevForm.submit();"><img src="images/ok.gif" width="20" height="20" border="0" alt="Approve" /></a></td><td class="heading" style="text-align: left">Approve</td></tr>
-					<tr><td><a href="#" onClick="document.RevForm.ActionType.value='Reject';document.RevForm.submit();"><img src="images/cancel.gif" width="20" height="20" border="0" alt="reject" /></a></td><td class="heading" style="text-align: left">Reject</td></tr>
-					</form>
-					</table><%
-					endDETable(pageContext);
-					%></p><%
-				}						
-				
-
-			}	
-			
-			//start data column
-			%></td><td><img src="images/blank.gif" width="30" height="1" /></td><td style="text-align: left"><%
+				}
+				%><input type="hidden" name="ActionType" value="" />
+				<table border="0" width="550">
+				<tr><td colspan="4" class="deHeading">Masterfile Curator</td></tr>
+				<tr><td colspan="4" class="heading">User Comments</td></tr>
+				<tr><td colspan="4"><%=DBUtils.nvl(workComm)%></td></tr><%
+				if (recoll != null) {
+					%><tr><td colspan="4">The submitter has indicated that this record is a recollection of <%=recoll%>.</td></tr><%
+				}
+				%><tr><td><img src="images/blank.gif" height="5" width="1" /></td></tr>
+				<tr><td colspan="4" class="heading">FR Number</td></tr>
+				<tr><td colspan="4">
+				<input type="text" name="MapSheet" size="8" value="<%=frNumber.getMapSheet()%>" />&nbsp;
+				/f&nbsp;<input type="text" name="SerialNum" size="3" value="<%=frNumber.getSerialNumber()%>" />&nbsp;
+				<input type="text" name="RecollNum" size="1" value="" />
+				</td></tr>
+				<tr><td colspan="4" class="heading">Curator Comments</td></tr>
+				<tr><td colspan="4"><textarea name="CurComm" rows="2" cols="80"><%=DBUtils.nvl(audit.getCuratorComments())%></textarea></td></tr>
+				<tr><td><a href="#" onClick="document.RevForm.ActionType.value='Approve';document.RevForm.submit();"><img src="images/ok.gif" width="20" height="20" border="0" alt="Approve" /></a></td><td class="heading" style="text-align: left">Approve</td>
+				<td><a href="#" onClick="document.RevForm.ActionType.value='Reject';document.RevForm.submit();"><img src="images/cancel.gif" width="20" height="20" border="0" alt="reject" /></a></td><td class="heading" style="text-align: left">Reject</td></tr>
+				</form>
+				</table><%
+				endDETable(pageContext);
+				%></p><%
+			}						
 			
 			//Locality Data
 			%><p><%
