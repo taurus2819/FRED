@@ -10,6 +10,7 @@
 %><%@page import="nz.cri.gns.html.select.SelectBox"
 %><%@page import="nz.cri.gns.html.Attributes"
 %><%@page import="java.io.PrintWriter"
+%><%@page import="java.net.URLEncoder"
 %><%!
 	public String getName(HttpServletRequest request) {
 		if (request.getParameter("GroupID") == null)
@@ -25,13 +26,14 @@
 	UserUtil userUtil = new UserUtil(HibernateUtil.get().getDAOFactory());
 	AuditUtil auditUtil = new AuditUtil(HibernateUtil.get().getDAOFactory());
 	User user = (User)getUser(session);
+	String backURL = request.getParameter("backURL");
 
 	ExtranetTemplate et = getExtranetTemplate();
 	
 	if (request.getParameter("GroupID") == null) {
 		addButtons(et, new IconnedLink[] {
-				new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders"),
-				new IconnedLink("javascript:doNewFolder();", "images/folder.gif", "New Folder")		
+				new IconnedLink(backURL + "&q=" + Math.random(), "images/back_arrow.gif", "Back to Set Confidentiality"),
+				new IconnedLink("javascript:doNewGroup();", "images/lock.gif", "New User Group")		
 		});
 		
 		if (request.getParameter("ActionType") != null) { //do something
@@ -55,18 +57,20 @@
 	
 		//--></script>
 		<form name="NewGroupForm" method="post" action="manage_confid_groups.jsp">
-		<input type="hidden" name="ActionType" value="Add">
-		<input type="hidden" name="GroupName" value="">
+		<input type="hidden" name="ActionType" value="Add" />
+		<input type="hidden" name="backURL" value="<%=backURL%>" />
+		<input type="hidden" name="GroupName" value="" />
 		</form><%
 		FrUserView frUser = userUtil.getFrUserView(new Integer(user.getId()));
 		%><p><%
 		startDETable(pageContext);
 		%><table border="0" width="550">
-		<tr><td class="deHeading" colspan="2">User Groups</td></tr><%
+		<tr><td class="deHeading" colspan="2">User Groups</td></tr>
+		<tr><th>User Group Name&nbsp;&nbsp;</th><th>Actions</th></tr><%
 		for (ConfidentialGroup group : frUser.getConfidGroupsByOwnerId()) {
 			%><tr>
-			<td><a href="manage_confid_groups.jsp?GroupID=<%=group.getGroupId()%>"><%=group.getName()%></a>&nbsp;&nbsp;</td>
-			<td><a href="manage_confid_groups.jsp?ActionType=Delete&GrpID=<%=group.getGroupId()%>"><img src="images/delete.gif" height="20" width="20" border="0" alt="Delete" /></a></td>
+			<td><a href="manage_confid_groups.jsp?GroupID=<%=group.getGroupId()%>&backURL=<%=URLEncoder.encode(backURL, "ISO-8859-1")%>"><%=group.getName()%></a>&nbsp;&nbsp;</td>
+			<td><a href="manage_confid_groups.jsp?ActionType=Delete&GrpID=<%=group.getGroupId()%>&backURL=<%=URLEncoder.encode(backURL, "ISO-8859-1")%>"><img src="images/delete.gif" height="20" width="20" border="0" alt="Delete" /></a></td>
 			</tr><%
 		}
 		%></table><%
@@ -76,7 +80,7 @@
 	} else {
 		addButtons(et, new IconnedLink[] {
 				new IconnedLink("manage_confid_groups.jsp", "images/back_arrow.gif", "Back to Group List"),
-				new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to folders")
+				new IconnedLink(backURL + "&q=" + Math.random(), "images/back_arrow.gif", "Back to Set Confidentiality")
 		});
 		drawTop(out, et, request, response);
 		ConfidentialGroup group = auditUtil.getConfidentialGroup(new Integer(request.getParameter("GroupID")));
@@ -84,23 +88,22 @@
 		//process any changes
 		if (request.getParameter("ActionType") != null) {
 			String actionType = request.getParameter("ActionType");
-			if (actionType.equals("Add")) {
+			if (actionType.equals("Add"))
 				auditUtil.addUserToConfidGroup(group, userUtil.getFrUserView(new Integer(request.getParameter("UserID"))));
-			}
-			else if (actionType.equals("Delete")) {
+			else if (actionType.equals("Delete"))
 				auditUtil.removeUserFromConfidGroup(group, userUtil.getFrUserView(new Integer(request.getParameter("UserID"))));
-			}
 		}
 		
 		%><p>
 		<form name="AddForm" method="post" action="manage_confid_groups.jsp">
 		<input type="hidden" name="GroupID" value="<%=group.getGroupId()%>" />
+		<input type="hidden" name="backURL" value="<%=backURL%>" />
 		<input type="hidden" name="ActionType" value="Add" /><%
 		startDETable(pageContext);
 		%><table border="0" width="550">
-		<tr><td class="deHeading" colspan="2">Members of Group</td></tr><%
-		for (FrUserView frUser :  group.getUsers()) {
-			%><tr><td style="text-align: left"><%=frUser.getFullName()%>&nbsp;&nbsp;</td><td style="text-align: left"><a href="manage_confid_groups.jsp?GroupID=<%=group.getGroupId()%>&ActionType=Delete&UserID=<%=frUser.getUserId()%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="Delete User" /></a></td></tr><%
+		<tr><td class="deHeading" colspan="2">Members of <%=group.getName()%></td></tr><%
+		for (FrUserView frUser : group.getUsers()) {
+			%><tr><td style="text-align: left"><%=frUser.getFullName()%>&nbsp;&nbsp;</td><td style="text-align: left"><a href="manage_confid_groups.jsp?GroupID=<%=group.getGroupId()%>&ActionType=Delete&UserID=<%=frUser.getUserId()%>&backURL=<%=URLEncoder.encode(backURL, "ISO-8859-1")%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="Delete User" /></a></td></tr><%
 		}
 		%><tr><td style="text-align: left"><%
 		SelectBox<FrUserView> selectBox = new SelectBox<FrUserView>(userUtil.getFrUsersWithout(group.getUsers()));

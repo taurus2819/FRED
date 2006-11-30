@@ -28,6 +28,7 @@
 %><%@page import="java.util.Set"
 %><%@page import="java.util.HashSet"
 %><%@page import="java.io.PrintWriter"
+%><%@page import="java.net.URLEncoder"
 %><%!
 	public String getName(HttpServletRequest request) {
 		return "FRED :: Set Confidentiality";
@@ -79,7 +80,7 @@
 	et.setUseNavigationColumn(false);
 	addButtons(et, new IconnedLink[] {
 			new IconnedLink((String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "&q=" + Math.random(), "images/back_arrow.gif", "Back"),
-			new IconnedLink("manage_confid_groups.jsp", "images/edit.gif", "Manage User Groups")
+			new IconnedLink("manage_confid_groups.jsp?backURL=" + URLEncoder.encode("set_confidentiality.jsp?ID=" + request.getParameter("ID") + "&RecType=" + request.getParameter("RecType") + "&FoldID=" + request.getParameter("FoldID"), "ISO-8859-1"), "images/edit.gif", "Manage User Groups")
 		});
 
 	drawTop(out, et, request, response);
