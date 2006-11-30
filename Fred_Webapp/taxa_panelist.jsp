@@ -37,7 +37,7 @@
 				}
 			}
 			
-			%><p>&nbsp;</p><center><p><%
+			%><p><%
 			startDETable(pageContext);
 			%><table border="0" width="550"><tr><td colspan="19" class="deHeading"><%=group.getName()%> Panel users</td></tr>
 			<tr><td colspan="2">
@@ -63,10 +63,10 @@
 			</form>
 			</table><%
 			endDETable(pageContext);
-			%></p></center><%
+			%></p><%
 		}
 		else { //no rights
-			out.println("<p><span class='subhead'>Access denied</span></p>Either there is no folder matching the ID you entered or you have insufficient rights to edit the folder.  Click <a href='index.jsp' class='fname'>here</a> to return to the FRED home page.");
+			%><p>Access denied</p>Either there is no folder matching the ID you entered or you have insufficient rights to edit the folder.  Click <a href='index.jsp' class='fname'>here</a> to return to the FRED home page.<%
 		}
 	}
 
