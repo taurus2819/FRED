@@ -84,7 +84,7 @@
         table="folder_content"
         lazy="true"
         inverse="true"
-		cascade="all"
+		cascade="none"
     >
         <key>
             <column name="FOLDER_ID" />

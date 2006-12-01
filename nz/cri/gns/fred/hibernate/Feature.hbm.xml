@@ -209,7 +209,7 @@
         table="folder_content"
         lazy="true"
         inverse="false"
-		cascade="all"
+		cascade="none"
     >
         <key>
             <column name="FEATURE_ID" />
