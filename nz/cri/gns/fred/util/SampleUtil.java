@@ -321,24 +321,20 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (user == null)
 			return false;
 		
-		//first check sample
-		if (sample.getAudit().getStatus().equals(FREDConstants.APPROVED)) {
-			if(!new AuditUtil(factory).isAllowedReadApproved(sample.getAudit(), user))
-				return false;
-		} else {
-			UserFolder folder = new FolderUtil(factory).getUserFolder(sample.getAudit().getFolder().getFolderId().intValue(), user);
-			if (folder == null && !folder.isAllowedReadLocalities())
-				return false;
+		//check feature type - if not outcrop then check sample
+		if (!sample.getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
+			if (sample.getAudit().getStatus().equals(FREDConstants.APPROVED)) {
+				if(!new AuditUtil(factory).isAllowedReadApproved(sample.getAudit(), user))
+					return false;
+			} else {
+				UserFolder folder = new FolderUtil(factory).getUserFolder(sample.getAudit().getFolder().getFolderId().intValue(), user);
+				if (folder == null && !folder.isAllowedReadLocalities())
+					return false;
+			}
 		}
 		
-		Feature feature = sample.getFeature();
-		
-		//then check feature type - if outcrop then return true as already checked audit
-		if (feature.getFeatureType().equals(FREDConstants.OUTCROP))
-			return true;		
-		
 		//then check allowed to read feature
-		return new FeatureUtil(factory).isAllowedReadFeature(user, feature);
+		return new FeatureUtil(factory).isAllowedReadFeature(user, sample.getFeature());
 	}	
 	
 	/**
