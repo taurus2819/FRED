@@ -12,8 +12,13 @@
 %><%@page import="nz.cri.gns.db.ComboDescriptor"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.auth.User"
+%><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="java.util.Iterator"
+%><%!
+	public String getName(HttpServletRequest request) {
+		return "FRED :: Data Entry Helper";
+	}
 %><%
 	ComboDescriptor cd;
 	User user = (User) getUser(session);
@@ -21,13 +26,9 @@
 	FeatureUtil featureUtil = new FeatureUtil(factory);
 	FolderUtil folderUtil = new FolderUtil(factory);
 
-	ExtranetTemplate et = new ExtranetTemplate();
-	et.setNewHeaderStyle(true);
-	et.setImageBase("/fred/images/fred.gif");
+	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLogin(false);
-	et.setShowGnsLogo(false);
-	et.setUseNavigationColumn(false);
-	et.setDisplayLoadingMessage(true);
+	et.setButtons(new IconnedLink[0]);
 
 	drawTop(out, et, request, response);
 	
@@ -198,7 +199,7 @@
 	
 	</script>
 	
-	<table style="margin-left:20px; width:550px;" border="0">
+	<table width="550" style="width:550px;" border="0">
 	<tr><td>
 	
 	<form name="form1" method="post" action="data_entry_supp.jsp">
