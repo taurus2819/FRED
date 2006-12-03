@@ -3,6 +3,8 @@ package nz.cri.gns.fred;
 import java.sql.SQLException;
 import java.util.Date;
 
+import javax.servlet.http.HttpSession;
+
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DatabaseApp2;
@@ -31,6 +33,12 @@ public class FREDUser extends User {
 			System.out.println("**** User logging exception : " + new Date() + " ****");
 			e.printStackTrace();
 		}
+	}
+	
+	public FREDUser(String username, String password, DatabaseApp2 app, HttpSession session) throws SQLException, InvalidCredentialsException {
+		this(username, password, app);
+		//Register the user
+		session.setAttribute(USER_ATTRIBUTE, this);
 	}
 
 }

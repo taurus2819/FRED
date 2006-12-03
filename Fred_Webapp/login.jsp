@@ -1,11 +1,10 @@
-<%@page extends="nz.cri.gns.jsp.IPSysLoginPage"
+<%@page extends="nz.cri.gns.fred.FREDIPSysLoginPage"
 %><%@ page import="nz.cri.gns.fred.FREDIPSysJspPage"
 %><%@ page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%!
 	public String getName(HttpServletRequest request) {
 		return "FRED Login";
 	}
-
 %><%
 
 	ExtranetTemplate et = FREDIPSysJspPage.getFREDTemplate();
