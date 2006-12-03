@@ -7,6 +7,7 @@ import java.util.Set;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.UserDAO;
+import nz.cri.gns.fred.model.FrUser;
 import nz.cri.gns.fred.model.FrUserView;
 
 public class UserUtil extends ModelUtil {
@@ -25,6 +26,10 @@ public class UserUtil extends ModelUtil {
 	public FrUserView getFrUserView(Integer userId) throws StorageAccessException {
 		return userDAO.getFrUserView(userId);
 	}
+
+	public FrUser getFrUser(Integer userId) throws StorageAccessException {
+		return userDAO.getFrUser(userId);
+	}
 	
 	public List<FrUserView> getFrUsersWithout(Set<FrUserView> excludeFrUsers) throws StorageAccessException {
 		List<FrUserView> frUsers = userDAO.getList("FROM FrUserView AS f", FrUserView.class);
@@ -33,4 +38,7 @@ public class UserUtil extends ModelUtil {
 		return frUsers;
 	}
 		
+	public FrUser save(FrUser frUser) throws StorageAccessException {
+		return userDAO.save(frUser);
+	}
 }

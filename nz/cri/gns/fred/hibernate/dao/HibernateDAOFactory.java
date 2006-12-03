@@ -59,6 +59,7 @@ import nz.cri.gns.fred.model.FolderRight;
 import nz.cri.gns.fred.model.FolderType;
 import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
+import nz.cri.gns.fred.model.FrUser;
 import nz.cri.gns.fred.model.FrUserView;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
@@ -1142,7 +1143,15 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public FrUserView getFrUserView(Integer userId) throws StorageAccessException {
 		return HibernateUtils.getFirst(provider, "FROM FrUserView As f WHERE f.userId = ?", userId, FrUserView.class);	
 	}
+	
+	public FrUser getFrUser(Integer userId) throws StorageAccessException {
+		return HibernateUtils.getFirst(provider, "FROM FrUser As f WHERE f.userId = ?", userId, FrUser.class);	
+	}
 
+	public FrUser save(FrUser frUser) throws StorageAccessException {
+		return HibernateUtils.save(provider, frUser);
+	}
+	
 	public StageDAO getStageDAO() {
 		return this;
 	}

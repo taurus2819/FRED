@@ -30,6 +30,7 @@ import nz.cri.gns.fred.hibernate.FolderType;
 import nz.cri.gns.fred.hibernate.FolderUser;
 import nz.cri.gns.fred.hibernate.FossilGroup;
 import nz.cri.gns.fred.hibernate.FrNumber;
+import nz.cri.gns.fred.hibernate.FrUser;
 import nz.cri.gns.fred.hibernate.FrUserView;
 import nz.cri.gns.fred.hibernate.GrainSize;
 import nz.cri.gns.fred.hibernate.Hardness;
@@ -131,6 +132,7 @@ public class HibernateUtil implements HibernateProvider {
 			FolderUser.class,
 			FossilGroup.class,
 			FrNumber.class,
+			FrUser.class,
 			FrUserView.class,
 			GrainSize.class,
 			Hardness.class,
