@@ -130,7 +130,7 @@
 			<li>If set to <i>Open</i> any registered user will be able to view it (after it has been submitted/approved).</li>
 			<li>If set to <i>Confidential</i> only you (the submitter) plus any member of the groups you have selected will be able to view it.  You must also select a time period that the <%=dataType%> will remain confidential.  At the end of this period you will be notified and may increase the period or the <%=dataType%> will automatically become <i>open</i>.</li>
 			</ul>
-			Note: Confidentiality can be set at locality, sample (for drillholes and vertical sections), record and taxonomic list levels.  Confidentiality is inheirited down the levels, so for example setting a locality as confidential will also mean any records for that locality will also be confidential.  You can increase the level of confidentiality down the levels, but not decrease it - for example you can set a locality to be open, and a particular paleontology record to be confidential, but not the other way around.
+			Note: Confidentiality can be set at locality, sample (for drillholes and vertical sections), record and taxonomic list levels.  Confidentiality is inherited down the levels, so for example setting a locality as confidential will also mean any records for that locality will also be confidential.  You can increase the level of confidentiality down the levels, but not decrease it - for example you can set a locality to be open, and a particular paleontology record to be confidential, but not the other way around.
 			</td></tr>
 			</table><%
 			endDETable(pageContext);
