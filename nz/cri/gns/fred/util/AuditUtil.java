@@ -45,7 +45,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
     
     public Audit cloneAudit(Audit audit) throws IntrospectionException, StorageAccessException {
     	Audit newAudit = auditDAO.createNewAudit();
-   		FREDUtil.beanCopy(audit, newAudit, new FREDUtil.ExcludeByName(FREDUtil.toVector(new String[] {"auditId", "features", "samples", "records", "auditEdits"}))    		);
+   		FREDUtil.beanCopy(audit, newAudit, new FREDUtil.ExcludeByName(FREDUtil.toVector(new String[] {"auditId", "features", "samples", "records", "recordByPalListAuditIds", "confidGroups", "auditEdits", "confidentialFlag", "confidPeriod",  "confidLapseDate",  "confidEmailFlag", "confidLapseEmail"})));
    	
    		/**
    		 * @TODO This bit doesn't work - get Iain to check (as copied from his FeatureUtil.cloneSamples();
