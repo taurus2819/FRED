@@ -18,10 +18,8 @@ import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.ConfidentialGroup;
 import nz.cri.gns.fred.model.DataOrigin;
 import nz.cri.gns.fred.model.FREDConstants;
-import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FrUserView;
 import nz.cri.gns.fred.model.OrgView;
-import nz.cri.gns.fred.model.UserFolder;
 
 /**
  *

@@ -1,12 +1,9 @@
 package nz.cri.gns.fred.dao;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import nz.cri.gns.core.NameableAndIdentifiable;
-import nz.cri.gns.dataaccess.HibernateUtils;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
