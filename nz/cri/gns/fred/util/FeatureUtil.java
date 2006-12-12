@@ -338,14 +338,15 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		featureDAO.delete(feature);
 	}
 	
-	public void removeFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+	public void removeFeature(Feature feature, UserFolder userFolder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
 		if (!feature.getAudit().getStatus().equals(FREDConstants.APPROVED))
 			throw new IllegalStateException("Cannot remove a working locality");
-		if (!folder.isAllowedDeleteLocalities())
+		if (!userFolder.isAllowedDeleteLocalities())
 			throw new InsufficientPrivelegesException();
 		
-		Set folders = feature.getFolders();
-		folders.remove(folder.getFolder());
+		Folder folder = userFolder.getFolder();
+		folder.getFeatures().remove(feature);
+		feature.getFolders().remove(folder);
 		featureDAO.update(feature);
 	}
 	
