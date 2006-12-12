@@ -27,6 +27,10 @@ public class UserUtil extends ModelUtil {
 		return userDAO.getFrUserView(userId);
 	}
 
+	public FrUser createNewFrUser() {
+		return userDAO.createNewFrUser();
+	}
+	
 	public FrUser getFrUser(Integer userId) throws StorageAccessException {
 		return userDAO.getFrUser(userId);
 	}

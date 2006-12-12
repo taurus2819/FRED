@@ -30,8 +30,17 @@ public class FREDUser extends User {
 			frUser.setLastLogin(new Date());
 			userUtil.save(frUser);
 		} catch (Exception e) {
-			System.out.println("**** User logging exception : " + new Date() + " ****");
-			e.printStackTrace();
+			//try and create a new FrUser
+			try {
+				UserUtil userUtil = new UserUtil(HibernateUtil.get().getDAOFactory());
+				FrUser frUser = userUtil.createNewFrUser();
+				frUser.setUserId(new Integer(getId()));
+				frUser.setLastLogin(new Date());
+				userUtil.save(frUser);				
+			} catch (Exception e1) {
+				System.out.println("**** User logging exception : " + new Date() + " ****");
+				e.printStackTrace();
+			}
 		}
 	}
 	

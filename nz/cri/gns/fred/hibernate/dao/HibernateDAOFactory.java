@@ -1148,6 +1148,10 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		return HibernateUtils.getFirst(provider, "FROM FrUser As f WHERE f.userId = ?", userId, FrUser.class);	
 	}
 
+	public FrUser createNewFrUser() {
+		return new nz.cri.gns.fred.hibernate.FrUser();
+	}
+	
 	public FrUser save(FrUser frUser) throws StorageAccessException {
 		return HibernateUtils.save(provider, frUser);
 	}

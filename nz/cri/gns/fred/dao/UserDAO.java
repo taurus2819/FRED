@@ -12,6 +12,8 @@ public interface UserDAO {
 
 	public FrUserView getFrUserView(Integer userId) throws StorageAccessException;
 	
+	public FrUser createNewFrUser();
+	
 	public FrUser getFrUser(Integer userId) throws StorageAccessException;
 	
 	public FrUser save(FrUser frUser) throws StorageAccessException;
