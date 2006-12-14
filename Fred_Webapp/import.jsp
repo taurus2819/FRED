@@ -142,6 +142,6 @@
 <html>
 <head></head>
 <body>
-<table><tr><td><%=status%></td><td><%=message%></td></tr></table>
+<table><tr><td><%=status%></td><td><%=message%></td><td><%=(status.equals("AuthError")) ? "" : session.getId()%></td></tr></table>
 </body>
 </html>
