@@ -41,7 +41,6 @@
 				<li>paleontological interpretations of stratigraphic age and paleoenvironment</li>
 				<li>geological opinions about stratigraphic age</li>
 			</ul>
-			<p><span style="color: #FF0000"><b>FRED is running a competition for <a href="http://www.gsnz.org.nz/gsconference06.htm" target="geo06">Geosciences '06</a> delegates. The competition has now closed - click <a href="geosciences06.jsp">here</a> for answers to the questions.</b></span></p>
 			<p>FRED now contains <%=featureUtil.getTotalFeatureCount()%> locality records and was last updated on <%=FREDUtil.formatDateForOutput(featureUtil.getLastFeatureApprovalDate())%>.  A programme to enter full collection data for all registered sites is underway and currently <%=((bsUtil.getSumCompletedCount() * 100) / (bsUtil.getSumLocalityCount() - bsUtil.getSumNewCount()))%>% of localities have been processed.  More detailed statistics and working areas can be viewed <a href="backlog_status.jsp">here</a>.</p>
 			<p>Geographic coordinates can be queried and downloaded by anyone free of charge.  Access to detailed information, and capability to contribute new site records or other data requires a username and password - registered users agree to abide by accepted <a href="conditions.jsp">Conditions of Use</a>.</p>
 			<p>If you are a new user please see the <a href="quick_start.jsp">Quick Start Guide</a>.</p>
