@@ -271,7 +271,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 				return false;			
 		} else {
 			UserFolder folder = new FolderUtil(factory).getUserFolder(record.getAudit().getFolder().getFolderId().intValue(), user);
-			if (folder == null && !folder.isAllowedReadLocalities())
+			if (folder == null || !folder.isAllowedReadLocalities())
 				return false;
 		}
 		

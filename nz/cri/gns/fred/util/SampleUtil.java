@@ -328,7 +328,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 					return false;
 			} else {
 				UserFolder folder = new FolderUtil(factory).getUserFolder(sample.getAudit().getFolder().getFolderId().intValue(), user);
-				if (folder == null && !folder.isAllowedReadLocalities())
+				if (folder == null || !folder.isAllowedReadLocalities())
 					return false;
 			}
 		}
