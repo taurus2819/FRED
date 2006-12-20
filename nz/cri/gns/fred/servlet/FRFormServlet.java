@@ -51,6 +51,7 @@ import org.xml.sax.SAXException;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import com.lowagie.text.Image;
@@ -77,10 +78,13 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	private UserAccount user;
 	
 	private Date generateDate;
+	private String username;
 	private PdfTemplate[] templates;
 	private int formNumber;
 	private BaseFont baseFont;
 	private FrNumber currentFrNumber = null;
+	
+	private boolean confidFlag;
 	
 	private static final float MM_TO_PT = 2.8346f;
 	
@@ -96,6 +100,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 			this.featureUtil = new FeatureUtil(factory);
 			this.user = (UserAccount)request.getSession().getAttribute(User.USER_ATTRIBUTE);
 			this.generateDate = new Date();
+			this.username = ((user != null) ? user.getGivenName() + " " + user.getFamilyName() : "unknown");
 			
 			List<Record> records = new Vector<Record>();
 			List<Sample> samples = new Vector<Sample>();
@@ -323,78 +328,82 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	}
 	
 	private void writeLocality(Feature feature, Document document, Font[] fonts) throws StorageAccessException, DocumentException, NamingException, SQLException {
-		boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
 		Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
-		
-		//Location Information
 		PdfPTable table = new PdfPTable(2);
 		table.setTotalWidth(bodyTableWidth);
 		table.setLockedWidth(true);
 		table.setWidths(bodyTableColWidths);
 		table.setSpacingAfter(3 * MM_TO_PT);
 		
-		PDFUtil.addCell(table, "Location", fonts[2], PdfPCell.ALIGN_LEFT, 2);
-		String featType = feature.getFeatureType();
-		String featTypeLbl;
-		if (featType.equals(FREDConstants.OUTCROP)) {
-			featTypeLbl = "Field Number";
-		} else if (featType.equals(FREDConstants.DRILLHOLE)) {
-			featTypeLbl = "Drillhole Name";
-		} else {
-			featTypeLbl = "Section Name";
-		}
-		PDFUtil.addCells(table, new String[] {featTypeLbl, feature.getFeatureName()}, bodyFonts);
-		PDFUtil.addCell(table, "Original Grid Reference", fonts[1]);
-		if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
-			Datum datum = FREDUtil.getFREDDatum(feature);
-			Coordinate coord = FREDUtil.getFREDCoordinate(feature);
-			PDFUtil.addCell(table, datum.getHumanStringFor(coord).replaceAll("Geographic ", ""), fonts[0]);
-			if (!datum.getName().equals("NZMG")) {
-				try {
-					Datum nzmgDatum = DatumFactory.createDatum("NZMG");
-					Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
-					PDFUtil.addCells(table, new String[] {"Converted Grid Reference", nzmgDatum.getHumanStringFor(nzmgCoord)}, bodyFonts);
-				} catch (Exception e) { }
+		confidFlag = false;
+		
+		if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
+			//Location Information
+			PDFUtil.addCell(table, "Location", fonts[2], PdfPCell.ALIGN_LEFT, 2);
+			String featType = feature.getFeatureType();
+			String featTypeLbl;
+			if (featType.equals(FREDConstants.OUTCROP)) {
+				featTypeLbl = "Field Number";
+			} else if (featType.equals(FREDConstants.DRILLHOLE)) {
+				featTypeLbl = "Drillhole Name";
+			} else {
+				featTypeLbl = "Section Name";
+			}
+			PDFUtil.addCells(table, new String[] {featTypeLbl, feature.getFeatureName()}, bodyFonts);
+			PDFUtil.addCell(table, "Original Grid Reference", fonts[1]);
+			if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
+				Datum datum = FREDUtil.getFREDDatum(feature);
+				Coordinate coord = FREDUtil.getFREDCoordinate(feature);
+				PDFUtil.addCell(table, datum.getHumanStringFor(coord).replaceAll("Geographic ", ""), fonts[0]);
+				if (!datum.getName().equals("NZMG")) {
+					try {
+						Datum nzmgDatum = DatumFactory.createDatum("NZMG");
+						Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
+						PDFUtil.addCells(table, new String[] {"Converted Grid Reference", nzmgDatum.getHumanStringFor(nzmgCoord)}, bodyFonts);
+					} catch (Exception e) { }
+				}
+			} else {
+				PDFUtil.addCell(table, "", fonts[0]);
+			}
+			SiteRecord sr = null;
+			if (feature.getSiteId() != null) {
+				sr = FREDUtil.getSite(feature);
+				LatLong ll = sr.getLatLong();
+				PDFUtil.addCells(table, new String[] {"Converted Dec. Lat/Long", ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"}, bodyFonts);
+			}
+			PDFUtil.addCells(table, new Object[] {"Map Year", feature.getMapYear()}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Method", ((sr != null) ? FREDUtil.getSiteMethod(sr) : null)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Accuracy", ((sr != null && !sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(sr.getAccuracy()) + " m" : null)}, bodyFonts);
+
+			if (featureUtil.isAllowedReadFeature(user, feature)) {
+				PDFUtil.addCells(table, new String[] {"Locality", feature.getLocality()}, bodyFonts);
+				PDFUtil.addCells(table, new String[] {"Country", ((sr != null) ? FREDUtil.getSiteCountry(sr) : null)}, bodyFonts);	
+				PDFUtil.addCells(table, new String[] {"Coordinate Comments", feature.getCoordComments()}, bodyFonts);
+				PDFUtil.addCells(table, new String[] {"Locality Comments", feature.getComments()}, bodyFonts);
+				if (!featType.equals(FREDConstants.OUTCROP)) {
+					PDFUtil.addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector"), ((feature.getPerson() != null) ? feature.getPerson().getName() : null)}, bodyFonts);
+					PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date"),
+							((feature.getStartDate() != null) ? FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding()) : null)}, bodyFonts);
+					PDFUtil.addCells(table, new String[] {"Completion Date",
+							((feature.getFinishDate() != null) ? FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding()) : null)}, bodyFonts);		
+					if (featType.equals(FREDConstants.DRILLHOLE))
+						PDFUtil.addCells(table, new String[] {"Licence Area", feature.getDrillholeLicenceName()}, bodyFonts);
+					PDFUtil.addCells(table, new String[] {"Datum Type", feature.getDatumType()}, bodyFonts);
+					PDFUtil.addCells(table, new String[] {"Datum Elevation", ((feature.getDatumElevation() != null) ? FeatureUtil.formatDepthForOutput(feature.getDatumElevation(), feature.getDepthUnit()) + " asl" : null)}, bodyFonts);
+					PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon"),
+							((feature.getStartDepth() != null) ? FeatureUtil.formatDepthForOutput(feature.getStartDepth(), feature.getDepthUnit()) : null)}, bodyFonts);
+					PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon"),
+							((feature.getFinishDepth() != null) ? FeatureUtil.formatDepthForOutput(feature.getFinishDepth(), feature.getDepthUnit()) : null)}, bodyFonts);
+				}
+				if (!FREDUtil.isEmpty(feature.getFeatureMetas()))
+					PDFUtil.addCells(table, new Object[] {"Attached Images", "Images have been attached to this locality and can be viewed online"}, bodyFonts);
+			} else {
+				PDFUtil.addCell(table, "You do not have rights to view full data for this locality", fonts[1], PdfPCell.ALIGN_LEFT, 2);
 			}
 		} else {
-			PDFUtil.addCell(table, "", fonts[0]);
+			PDFUtil.addCell(table, "You do not have rights to view this locality", fonts[1], PdfPCell.ALIGN_LEFT, 2);
 		}
-		SiteRecord sr = null;
-		if (feature.getSiteId() != null) {
-			sr = FREDUtil.getSite(feature);
-			LatLong ll = sr.getLatLong();
-			PDFUtil.addCells(table, new String[] {"Converted Dec. Lat/Long", ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"}, bodyFonts);
-		}
-		PDFUtil.addCells(table, new Object[] {"Map Year", feature.getMapYear()}, bodyFonts);
-		PDFUtil.addCells(table, new String[] {"Method", ((sr != null) ? FREDUtil.getSiteMethod(sr) : null)}, bodyFonts);
-		PDFUtil.addCells(table, new String[] {"Accuracy", ((sr != null && !sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(sr.getAccuracy()) + " m" : null)}, bodyFonts);
-		if (isAllowedReadFeature)
-			PDFUtil.addCells(table, new String[] {"Locality", feature.getLocality()}, bodyFonts);
-		PDFUtil.addCells(table, new String[] {"Country", ((sr != null) ? FREDUtil.getSiteCountry(sr) : null)}, bodyFonts);
-		if (isAllowedReadFeature) {
-			PDFUtil.addCells(table, new String[] {"Coordinate Comments", feature.getCoordComments()}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {"Locality Comments", feature.getComments()}, bodyFonts);
-			if (!featType.equals(FREDConstants.OUTCROP)) {
-				PDFUtil.addCells(table, new Object[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector"), ((feature.getPerson() != null) ? feature.getPerson().getName() : null)}, bodyFonts);
-				PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date"),
-						((feature.getStartDate() != null) ? FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding()) : null)}, bodyFonts);
-				PDFUtil.addCells(table, new String[] {"Completion Date",
-						((feature.getFinishDate() != null) ? FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding()) : null)}, bodyFonts);		
-				if (featType.equals(FREDConstants.DRILLHOLE))
-					PDFUtil.addCells(table, new String[] {"Licence Area", feature.getDrillholeLicenceName()}, bodyFonts);
-				PDFUtil.addCells(table, new String[] {"Datum Type", feature.getDatumType()}, bodyFonts);
-				PDFUtil.addCells(table, new String[] {"Datum Elevation", ((feature.getDatumElevation() != null) ? FeatureUtil.formatDepthForOutput(feature.getDatumElevation(), feature.getDepthUnit()) + " asl" : null)}, bodyFonts);
-				PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon"),
-						((feature.getStartDepth() != null) ? FeatureUtil.formatDepthForOutput(feature.getStartDepth(), feature.getDepthUnit()) : null)}, bodyFonts);
-				PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon"),
-						((feature.getFinishDepth() != null) ? FeatureUtil.formatDepthForOutput(feature.getFinishDepth(), feature.getDepthUnit()) : null)}, bodyFonts);
-			}
-		}
-		
-		if (!FREDUtil.isEmpty(feature.getFeatureMetas()))
-			PDFUtil.addCells(table, new Object[] {"Attached Images", "Images have been attached to this locality and can be viewed online"}, bodyFonts);
-		
-		document.add(table);		
+		document.add(table);
 	}
 	
 	private void writeSample(Feature feature, Document document, Font[] fonts) throws MalformedURLException, DocumentException, IOException, NamingException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, StorageAccessException {
@@ -405,6 +414,10 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	
 	private void writeSample(Sample sample, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, StorageAccessException {
 		if(sampleUtil.isAllowedReadSample(user, sample)) {
+			
+			//check confid flag
+			confidFlag = sample.getAudit().getConfidentialFlag().booleanValue();
+						
 			Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
 			
 			//if not OUTCROP then add name and sample depth data
@@ -521,6 +534,8 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	private void writeRecord(Record record, Document document, Font[] fonts) throws StorageAccessException, DocumentException, NamingException, SQLException {
 		Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
 		
+		confidFlag = record.getAudit().getConfidentialFlag().booleanValue();
+		
 		//Locality information
 		PdfPTable table = new PdfPTable(2);
 		table.setTotalWidth(bodyTableWidth);
@@ -624,7 +639,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		baseFont = FontFactory.getFont(FontFactory.HELVETICA, 7, Font.BOLD).getBaseFont();
 	}
 
-	public void onStartPage(PdfWriter arg0, Document arg1) {
+	public void onStartPage(PdfWriter writer, Document document) {
 	}
 
 	public void onEndPage(PdfWriter writer, Document document) {
@@ -637,7 +652,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		cb.beginText();
 		cb.setFontAndSize(baseFont, 7);
 		cb.setTextMatrix(document.left(), document.bottomMargin() - 10);
-		cb.showText("Printed on " + generateDate + " from FRED, the computer database for the NZ Fossil Record File (FRF).");
+		cb.showText("Printed on " + generateDate + " by " + username + " from FRED, the computer database for the NZ Fossil Record File (FRF).");
 		cb.setTextMatrix(document.right() - baseFont.getWidthPoint(frNumStr, 7), document.bottomMargin() - 10);
 		cb.showText(frNumStr);
 		cb.setTextMatrix(document.left(), document.bottomMargin() - 20);
@@ -653,6 +668,18 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		cb.rectangle(15 * MM_TO_PT, 10 * MM_TO_PT, 185 * MM_TO_PT, 277 * MM_TO_PT);
 		cb.stroke();
 		cb.restoreState();
+		
+		//watermark
+		if (confidFlag) {
+            PdfContentByte cb2 = writer.getDirectContentUnder();
+            cb2.saveState();
+            cb2.setRGBColorFill(255, 0, 0);
+            cb2.beginText();
+            cb2.setFontAndSize(baseFont, 48);
+            cb2.showTextAligned(Element.ALIGN_CENTER, "Confidential", document.getPageSize().width() / 2, document.getPageSize().height() / 2, 45);
+            cb2.endText();
+            cb2.restoreState();
+		}
 	}
 
 	public void onCloseDocument(PdfWriter writer, Document document) {
