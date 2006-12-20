@@ -672,9 +672,9 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		if (confidFlag) {
             PdfContentByte cb2 = writer.getDirectContentUnder();
             cb2.saveState();
-            cb2.setRGBColorFill(126, 0, 0);
+            cb2.setRGBColorFill(255, 165, 165);
             cb2.beginText();
-            cb2.setFontAndSize(baseFont, 64);
+            cb2.setFontAndSize(baseFont, 80);
             cb2.showTextAligned(Element.ALIGN_CENTER, "Confidential", document.getPageSize().width() / 2, document.getPageSize().height() / 2, 60);
             cb2.endText();
             cb2.restoreState();
