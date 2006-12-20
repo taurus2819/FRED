@@ -119,30 +119,22 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		if (audit.getConfidentialFlag()) {
 			FrUserView frUser = new UserUtil(factory).getFrUserView(Integer.parseInt(user.getId()));
 			OrgView userOrg = frUser.getOrgView();
-			if (audit.getSubmittedBy().getUserId().equals(frUser.getUserId())) {
-				System.out.println("OK as submitter = user");
+			if (audit.getSubmittedBy().getUserId().equals(frUser.getUserId()))
 				return true;
-			}
 			for (ConfidentialGroup confidGroup : audit.getConfidGroups()) {
 				if (confidGroup.getOrgView() != null) {
-					if (confidGroup.getOrgView().equals(userOrg)) {
-						System.out.println("OK as user in approved org");
+					if (confidGroup.getOrgView().equals(userOrg))
 						return true;
-					}
 				} else {
 					for (FrUserView confidUser : confidGroup.getUsers()) {
-						if (confidUser.equals(frUser)) {
-							System.out.println("OK as user os approved group");
+						if (confidUser.equals(frUser))
 							return true;
-						}
 					}
 				}
 			}
 			return false;
-		} else {
-			System.out.println("OK as not confidential");
+		} else
 			return true;
-		}
 	}
 	
 	public List<ConfidentialGroup> getConfidentialGroups(UserAccount user) throws StorageAccessException {

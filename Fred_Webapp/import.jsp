@@ -24,17 +24,14 @@
 	private DataEntryForm getDataEntryFormImpl(HttpServletRequest request, User user) {
 		DAOFactory factory = HibernateUtil.get().getDAOFactory();
 			try {
-				System.out.println("Creating DE form");
 				String formType = request.getParameter("Type");
 				String foldID = request.getParameter("FoldID");
 				ContentProvider provider = new ContentProvider(new File(request.getSession().getServletContext().getRealPath("/content")));
 				if (formType.equals(FREDConstants.OUTCROP) || formType.equals(FREDConstants.DRILLHOLE) || formType.equals(FREDConstants.VERTICAL_SECTION)) {
 					String featID = request.getParameter("FeatID");
 					if (featID != null && featID.length() > 0) { //editing
-						System.out.println("Getting existing form - featureID = " + featID);
 						return DataEntryFormFactory.getLocalityDataEntryForm(Integer.parseInt(featID), Integer.parseInt(foldID), user, factory, provider);
 					} else {
-						System.out.println("Creating new locality form");
 						return DataEntryFormFactory.getLocalityDataEntryForm(formType, user, Integer.parseInt(foldID), factory, provider);
 					}
 				} else if (formType.equals("Sample")) {
@@ -99,13 +96,10 @@
 	    	} else {
 		    	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 		    	DataEntryForm dataEntryForm = getDataEntryFormImpl(request, user);
-		    	System.out.println("Got DE form");
 		    	if (dataEntryForm != null) {
-		    		System.out.println("Updating");
 			    	dataEntryForm.updateFromRequest(request, factory, true);
 			    	String id;
 			    	if (button.equals("save")) {
-			    		System.out.println("Saving");
 			    		id = String.valueOf(dataEntryForm.save(FREDConstants.DATA_ORIGIN_EXCEL));
 			    		status = "Saved OK";
 			    	} else {
@@ -117,7 +111,6 @@
 			    		} */
 			    		status = "Submitted OK";
 			    	}
-			    	System.out.println("Done");
 					message = id;
 		    	} else {
 		    		status = "Error";

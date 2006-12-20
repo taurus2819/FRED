@@ -496,12 +496,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		if (!isAllowedSave)
 			throw new InsufficientPrivelegesException("Insufficient rights to save this locality");
 		//Check the site with the site DB
-		System.out.println("Doing site stuff");
 		if (site != null) {
-			System.out.println("Site: " + site);
 			site.key = null;
 			try {
-				System.out.println("Get Site");
 				site = FREDUtil.getSite(site);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -511,9 +508,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		} else {
 			feature.setSiteId(null);
 		}
-		System.out.println("SiteID = " + feature.getSiteId());
-		
-		System.out.println("Saving feature");
+
 		featureUtil.saveFeature(feature, user, editComments, dataOriginId);
 		
 		return feature.getFeatureId();		
