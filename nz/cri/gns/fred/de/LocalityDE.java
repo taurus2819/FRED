@@ -498,10 +498,13 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		//Check the site with the site DB
 		System.out.println("Doing site stuff");
 		if (site != null) {
+			System.out.println("Site: " + site);
 			site.key = null;
 			try {
+				System.out.println("Get Site");
 				site = FREDUtil.getSite(site);
 			} catch (Exception e) {
+				e.printStackTrace();
 				throw new StorageAccessException(e);
 			}
 			feature.setSiteId(new Integer(site.key));
