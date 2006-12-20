@@ -69,8 +69,11 @@ public class OutcropLocalityDE extends LocalityDE {
 	}
 	
 	public int save(int dataOriginId) throws SQLException, IOException, StorageAccessException, InsufficientPrivelegesException {
+		System.out.println("Saving feature");
 		super.save(dataOriginId);
+		System.out.println("Saving sample");
 		sampleDE.save(dataOriginId);
+		System.out.println("Finished outcrop save");
 		return feature.getFeatureId();
 	}
 	
