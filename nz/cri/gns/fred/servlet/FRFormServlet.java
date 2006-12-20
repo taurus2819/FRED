@@ -398,6 +398,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				if (!FREDUtil.isEmpty(feature.getFeatureMetas()))
 					PDFUtil.addCells(table, new Object[] {"Attached Images", "Images have been attached to this locality and can be viewed online"}, bodyFonts);
 			} else {
+				PDFUtil.addCell(table, "", fonts[1], PdfPCell.ALIGN_LEFT, 2);
 				PDFUtil.addCell(table, "You do not have rights to view full data for this locality", fonts[1], PdfPCell.ALIGN_LEFT, 2);
 			}
 		} else {
@@ -541,23 +542,24 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		table.setLockedWidth(true);
 		table.setWidths(bodyTableColWidths);
 		table.setSpacingAfter(3 * MM_TO_PT);
-		String featType = record.getSample().getFeature().getFeatureType();
-		String featTypeLbl;
-		if (featType.equals(FREDConstants.OUTCROP)) {
-			featTypeLbl = "Field Number";
-		} else if (featType.equals(FREDConstants.DRILLHOLE)) {
-			featTypeLbl = "Drillhole Name";
-		} else {
-			featTypeLbl = "Section Name";
-		}
-		PDFUtil.addCells(table, new String[] {featTypeLbl, record.getSample().getFeature().getFeatureName()}, new Font[] {fonts[2], fonts[3]});
-		//if not OUTCROP then add name and sample depth data
-		if (!record.getSample().getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
-			PDFUtil.addCells(table, new String[] {"Sample", SampleUtil.getDrillHoleDepthDescription(record.getSample())}, new Font[] {fonts[2], fonts[3]});
-		}
-		document.add(table);
 		
-		if(recordUtil.isAllowedReadRecord(user, record)) {
+		if (recordUtil.isAllowedReadRecord(user, record)) {
+			String featType = record.getSample().getFeature().getFeatureType();
+			String featTypeLbl;
+			if (featType.equals(FREDConstants.OUTCROP)) {
+				featTypeLbl = "Field Number";
+			} else if (featType.equals(FREDConstants.DRILLHOLE)) {
+				featTypeLbl = "Drillhole Name";
+			} else {
+				featTypeLbl = "Section Name";
+			}
+			PDFUtil.addCells(table, new String[] {featTypeLbl, record.getSample().getFeature().getFeatureName()}, new Font[] {fonts[2], fonts[3]});
+			//if not OUTCROP then add name and sample depth data
+			if (!record.getSample().getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
+				PDFUtil.addCells(table, new String[] {"Sample", SampleUtil.getDrillHoleDepthDescription(record.getSample())}, new Font[] {fonts[2], fonts[3]});
+			}
+			document.add(table);
+		
 			if (RecordUtil.getRecordType(record).equals(FREDConstants.PALEONTOLOGICAL)) {
 				Paleontology palRecord = record.getPaleontology();
 				Font taxonomicNameFont = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.ITALIC);
@@ -631,6 +633,9 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 
 				document.add(table);				
 			}
+		} else {
+			PDFUtil.addCell(table, "You do not have rights to view this record", fonts[1], PdfPCell.ALIGN_LEFT, 2);
+			document.add(table);
 		}
 	}
 
