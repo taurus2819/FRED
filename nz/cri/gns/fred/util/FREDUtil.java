@@ -579,6 +579,7 @@ public class FREDUtil {
 			instance = DBUtils.getInstance(new BasicDatabaseApp2(conn, ""));
 			conn.close();
 		}
+		System.out.println("Instance = " + instance);
 		return instance;
 	}
 
