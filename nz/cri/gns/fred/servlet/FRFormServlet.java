@@ -414,14 +414,13 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	
 	private void writeSample(Sample sample, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, StorageAccessException {
 		if(sampleUtil.isAllowedReadSample(user, sample)) {
-			
-			//check confid flag
-			confidFlag = sample.getAudit().getConfidentialFlag().booleanValue();
-						
 			Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
 			
 			//if not OUTCROP then add name and sample depth data
 			if (!sample.getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
+				//check confid flag
+				confidFlag = sample.getAudit().getConfidentialFlag().booleanValue();
+				
 				PdfPTable table = new PdfPTable(2);
 				table.setTotalWidth(bodyTableWidth);
 				table.setLockedWidth(true);
@@ -673,10 +672,10 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		if (confidFlag) {
             PdfContentByte cb2 = writer.getDirectContentUnder();
             cb2.saveState();
-            cb2.setRGBColorFill(255, 0, 0);
+            cb2.setRGBColorFill(126, 0, 0);
             cb2.beginText();
-            cb2.setFontAndSize(baseFont, 48);
-            cb2.showTextAligned(Element.ALIGN_CENTER, "Confidential", document.getPageSize().width() / 2, document.getPageSize().height() / 2, 45);
+            cb2.setFontAndSize(baseFont, 64);
+            cb2.showTextAligned(Element.ALIGN_CENTER, "Confidential", document.getPageSize().width() / 2, document.getPageSize().height() / 2, 60);
             cb2.endText();
             cb2.restoreState();
 		}
