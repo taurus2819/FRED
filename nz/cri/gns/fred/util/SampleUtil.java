@@ -314,6 +314,12 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return true;
 	}
 	
+	public boolean isSampleConfidential(Sample sample) {
+		if (sample.getFeature().getFeatureType().equals(FREDConstants.OUTCROP))
+			return false;
+		return sample.getAudit().getConfidentialFlag().booleanValue();
+	}
+	
 	/**
 	 * Returns true if a user is allowed to view the locality
 	 */

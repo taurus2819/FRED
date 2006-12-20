@@ -254,6 +254,18 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
        return recordDAO.getRecord(recordId);
     }
 
+	public boolean isRecordConfidential(Record record) {
+		if (record.getAudit().getConfidentialFlag().booleanValue())
+			return true;
+		return new SampleUtil(factory).isSampleConfidential(record.getSample());
+	}
+    
+	public boolean isPalListConfidential(Paleontology palRecord) {
+		if (palRecord.getRecord().getPalListAudit().getConfidentialFlag().booleanValue())
+			return true;
+		return isRecordConfidential(palRecord.getRecord());
+	}
+	
     /**
      * @deprecated use isAllowedReadRecord
      */
