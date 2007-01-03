@@ -2,7 +2,9 @@ package nz.cri.gns.fred.model;
 
 import java.util.Set;
 
-public interface Lab {
+import nz.cri.gns.core.NameableAndIdentifiable;
+
+public interface Lab extends Comparable<Lab>, NameableAndIdentifiable {
     public Integer getLabId();
     public void setLabId(Integer labId);
     public String getName();

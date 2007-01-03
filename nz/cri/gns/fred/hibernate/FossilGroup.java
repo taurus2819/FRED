@@ -8,9 +8,6 @@ import nz.cri.gns.fred.model.SentTo;
 /** @author Hibernate CodeGenerator */
 public class FossilGroup implements Serializable, nz.cri.gns.fred.model.FossilGroup {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 20050818L;
 
 	/** identifier field */
@@ -64,4 +61,16 @@ public class FossilGroup implements Serializable, nz.cri.gns.fred.model.FossilGr
     public boolean equals(Object o) {
     	return o instanceof FossilGroup && groupId != null && groupId.equals(((FossilGroup)o).groupId);
     }
+
+	public int compareTo(nz.cri.gns.fred.model.FossilGroup arg0) {
+		return name.compareTo(arg0.getName());
+	}
+
+	public String getUniqueIdentifier() {
+		return String.valueOf(groupId);
+	}
+
+	public String getDisplayName() {
+		return name;
+	}
 }

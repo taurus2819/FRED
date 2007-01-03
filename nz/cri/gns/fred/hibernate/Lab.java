@@ -96,4 +96,16 @@ public class Lab implements Serializable, nz.cri.gns.fred.model.Lab {
 		this.sentTos = sentTos;
 	}
 
+	public int compareTo(nz.cri.gns.fred.model.Lab arg0) {
+		return name.compareTo(arg0.getName());
+	}
+
+	public String getUniqueIdentifier() {
+		return String.valueOf(labId);
+	}
+
+	public String getDisplayName() {
+		return name;
+	}
+
 }

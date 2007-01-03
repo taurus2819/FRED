@@ -2,17 +2,13 @@ package nz.cri.gns.fred.model;
 
 import java.util.Set;
 
-public interface FossilGroup {
+import nz.cri.gns.core.NameableAndIdentifiable;
+
+public interface FossilGroup extends Comparable<FossilGroup>, NameableAndIdentifiable {
 	public abstract Integer getGroupId();
-
 	public abstract void setGroupId(Integer groupId);
-
 	public abstract String getName();
-
-	public abstract void setName(String name);
-	
-	public abstract Set<SentTo> getSentTos();
-
-	public abstract void setSentTos(Set<SentTo> sentTos);
-	
+	public void setName(String name);
+	public Set<SentTo> getSentTos();
+	public void setSentTos(Set<SentTo> sentTos);
 }
