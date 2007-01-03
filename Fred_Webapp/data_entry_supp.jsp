@@ -1,6 +1,8 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.model.Feature"
+%><%@page import="nz.cri.gns.fred.model.FossilGroup"
 %><%@page import="nz.cri.gns.fred.model.FrNumber"
+%><%@page import="nz.cri.gns.fred.model.Lab"
 %><%@page import="nz.cri.gns.fred.model.Person"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
@@ -9,6 +11,7 @@
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.PersonUtil"
+%><%@page import="nz.cri.gns.fred.util.SampleUtil"
 %><%@page import="nz.cri.gns.db.ComboDescriptor"
 %><%@page import="nz.cri.gns.html.select.SelectBox"
 %><%@page import="nz.cri.gns.html.Attributes"
@@ -29,6 +32,7 @@
 	FeatureUtil featureUtil = new FeatureUtil(factory);
 	FolderUtil folderUtil = new FolderUtil(factory);
 	PersonUtil personUtil = new PersonUtil(factory);
+	SampleUtil sampleUtil = new SampleUtil(factory);
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLogin(false);
@@ -344,22 +348,22 @@
 			<tr><td colspan="2">Please select a fossil group and then one or both of a person and lab.<br />You may add enter multiple rows by clicking the Add To Main Form icon between each row and then Close to end.</td></tr>
 			<tr><td>&nbsp;</td></tr>
 			<tr><td class="heading">Fossil Group</td><td><%
-			cd = new ComboDescriptor("fossil_group", "name", "name");
-			cd.name = "Group";
-			cd.prompt = "-- Choose --";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+			SelectBox<FossilGroup> fgSelectBox = new SelectBox<FossilGroup>(sampleUtil.getFossilGroups());
+			fgSelectBox.setNameNameFlag(true);
+			Attributes attributes = Attributes.createNameOnlyAttributes("Group");
+			fgSelectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
 			%></td></tr>
 			<tr><td class="heading">Person</td><td><%
-			cd = new ComboDescriptor("Person", "Name", "Name");
-			cd.name = "Person";
-			cd.prompt = "-- Choose --";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+			SelectBox<Person> pSelectBox = new SelectBox<Person>(personUtil.getPeople());
+			pSelectBox.setNameNameFlag(true);
+			attributes = Attributes.createNameOnlyAttributes("Person");
+			pSelectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
 			%></td></tr>
 			<tr><td class="heading">Lab</td><td><%
-			cd = new ComboDescriptor("SC.Lab", "Lab_Name", "Lab_Name");
-			cd.name = "Lab";
-			cd.prompt = "-- Choose --";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+			SelectBox<Lab> lSelectBox = new SelectBox<Lab>(sampleUtil.getLabs());
+			lSelectBox.setNameNameFlag(true);
+			attributes = Attributes.createNameOnlyAttributes("Lab");
+			lSelectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
 			%><tr><td class="heading">Comments</td><td><textarea name="Comm" rows="3" cols="40"></textarea></td></tr>
 			<tr><td class="heading" colspan="2">Add to Person List</td></tr>
 			<tr><td class="smallheading">Name</td><td><input type="text" name="PersonName" />&nbsp;&nbsp;
