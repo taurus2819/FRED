@@ -48,6 +48,7 @@ public class StageDEUtil {
 	    	try {
 	    		return stageUtil.getStage(startId, startMod != null, stopId, stopMod != null);
 	    	} catch (Exception e) {
+	    		e.printStackTrace();
 	    		throw new DataInputException(label, e.getMessage());
 	    	}
 	    } else {
