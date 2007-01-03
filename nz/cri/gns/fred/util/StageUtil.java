@@ -78,6 +78,7 @@ public class StageUtil extends ModelUtil {
 			throw new IllegalArgumentException("Start age is null");
 		
 		AgeView startAge = stageDAO.getAgeView(Integer.parseInt(startAgeId));
+		System.out.println("Start Age: " + startAge.getAgeId() + "/" + startAge.getAgeName());
 		AgeView stopAge = (stopAgeId != null) ? stageDAO.getAgeView(Integer.parseInt(stopAgeId)) : null;
 
 		//check start/stop ages if both entered unless "not determined" or "no fossils"
