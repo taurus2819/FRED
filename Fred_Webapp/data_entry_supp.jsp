@@ -10,6 +10,9 @@
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.PersonUtil"
 %><%@page import="nz.cri.gns.db.ComboDescriptor"
+%><%@page import="nz.cri.gns.html.select.SelectBox"
+%><%@page import="nz.cri.gns.html.Attributes"
+%><%@page import="java.io.PrintWriter"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
@@ -25,6 +28,7 @@
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	FeatureUtil featureUtil = new FeatureUtil(factory);
 	FolderUtil folderUtil = new FolderUtil(factory);
+	PersonUtil personUtil = new PersonUtil(factory);
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLogin(false);
@@ -211,7 +215,6 @@
 
 		if (request.getParameter("Add") != null) {  //add data to lookup tables
 			if (request.getParameter("Add").equals("Person")) {
-				PersonUtil personUtil = new PersonUtil(factory);
 				Person person = personUtil.findOrCreatePerson(request.getParameter("PersonName"));
 				%><script language="JavaScript">alert("<%=person.getName()%> added to list.  Please now select from drop-down list to add to form");</script><%
 				try {
@@ -226,10 +229,10 @@
 			<tr><td colspan="2">Select a person/company from the drop-down list.  New companies can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button.</td></tr>
 			<tr><td>&nbsp;</td></tr>
 			<tr><td class="heading">Person/Company</td><td><%
-			cd = new ComboDescriptor("Person", "Name", "Name");
-			cd.name = "Person";
-			cd.prompt = "-- Choose --";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+			SelectBox<Person> selectBox = new SelectBox<Person>(personUtil.getPeople());
+			selectBox.setNameNameFlag(true);
+			Attributes attributes = Attributes.createNameOnlyAttributes("Person");
+			selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
 			%></td></tr>
 			<tr><td class="heading" colspan="2">Add to Person List</td></tr>
 			<tr><td class="smallheading">Name</td><td><input type="text" name="PersonName" />&nbsp;&nbsp;
@@ -245,10 +248,10 @@
 			<tr><td colspan="2">Select a person/company from the drop-down list.  New collectors can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button.</td></tr>
 			<tr><td>&nbsp;</td></tr>
 			<tr><td class="heading">Person/Company</td><td><%
-			cd = new ComboDescriptor("Person", "Name", "Name");
-			cd.name = "Person";
-			cd.prompt = "-- Choose --";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+			SelectBox<Person> selectBox = new SelectBox<Person>(personUtil.getPeople());
+			selectBox.setNameNameFlag(true);
+			Attributes attributes = Attributes.createNameOnlyAttributes("Person");
+			selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
 			%></td></tr>
 			<tr><td class="heading" colspan="2">Add to Person List</td></tr>
 			<tr><td class="smallheading">Name</td><td><input type="text" name="PersonName" />&nbsp;&nbsp;
@@ -264,10 +267,10 @@
 			<tr><td colspan="2">Select a person/company from the drop-down list.  New collectors can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button<br />You may add multiple collectors by clicking the Add To Main Form icon between each collector and then Close to end.</td></tr>
 			<tr><td>&nbsp;</td></tr>
 			<tr><td class="heading">Person/Company</td><td><%
-			cd = new ComboDescriptor("Person", "Name", "Name");
-			cd.name = "Person";
-			cd.prompt = "-- Choose --";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+			SelectBox<Person> selectBox = new SelectBox<Person>(personUtil.getPeople());
+			selectBox.setNameNameFlag(true);
+			Attributes attributes = Attributes.createNameOnlyAttributes("Person");
+			selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
 			%></td></tr>
 			<tr><td class="heading" colspan="2">Add to Person List</td></tr>
 			<tr><td class="smallheading">Name</td><td><input type="text" name="PersonName" />&nbsp;&nbsp;
@@ -283,10 +286,10 @@
 			<tr><td colspan="2">Select a person/company from the drop-down list.  New adoptors can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button<br />You may add multiple adoptors by clicking the Add To Main Form icon between each collector and then Close to end.</td></tr>
 			<tr><td>&nbsp;</td></tr>
 			<tr><td class="heading">Person</td><td><%
-			cd = new ComboDescriptor("Person", "Name", "Name");
-			cd.name = "Person";
-			cd.prompt = "-- Choose --";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+			SelectBox<Person> selectBox = new SelectBox<Person>(personUtil.getPeople());
+			selectBox.setNameNameFlag(true);
+			Attributes attributes = Attributes.createNameOnlyAttributes("Person");
+			selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
 			%></td></tr>
 			<tr><td class="heading" colspan="2">Add to Person List</td></tr>
 			<tr><td class="smallheading">Name</td><td><input type="text" name="PersonName" />&nbsp;&nbsp;
@@ -302,10 +305,10 @@
 			<tr><td colspan="2">Select a person/company from the drop-down list.  New identifiers can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button<br />You may add multiple identifiers by clicking the Add To Main Form icon between each collector and then Close to end.</td></tr>
 			<tr><td>&nbsp;</td></tr>
 			<tr><td class="heading">Person</td><td><%
-			cd = new ComboDescriptor("Person", "Name", "Name");
-			cd.name = "Person";
-			cd.prompt = "-- Choose --";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+			SelectBox<Person> selectBox = new SelectBox<Person>(personUtil.getPeople());
+			selectBox.setNameNameFlag(true);
+			Attributes attributes = Attributes.createNameOnlyAttributes("Person");
+			selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
 			%></td></tr>
 			<tr><td class="heading" colspan="2">Add to Person List</td></tr>
 			<tr><td class="smallheading">Name</td><td><input type="text" name="PersonName" />&nbsp;&nbsp;
