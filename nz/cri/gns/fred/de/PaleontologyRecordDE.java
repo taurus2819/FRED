@@ -38,6 +38,7 @@ import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.PersonUtil;
 import nz.cri.gns.fred.util.RecordUtil;
 import nz.cri.gns.fred.util.SampleUtil;
+import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.util.TaxonomicUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.intranet.Template;
@@ -311,7 +312,7 @@ public class PaleontologyRecordDE extends RecordDE {
         
         //Stage
         try {
-            pal.setStage(StageDEUtil.getStage(request, "Stage", pal.getStage(), new SampleUtil(factory), "Stage"));
+            pal.setStage(StageDEUtil.getStage(request, "Stage", pal.getStage(), new StageUtil(factory), "Stage"));
         } catch (DataInputException e) {
 			error.addAll(e.getError());
         }

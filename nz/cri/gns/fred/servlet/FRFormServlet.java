@@ -35,12 +35,14 @@ import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SentTo;
+import nz.cri.gns.fred.model.SiteView;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.PDFUtil;
 import nz.cri.gns.fred.util.RecordUtil;
 import nz.cri.gns.fred.util.SampleUtil;
+import nz.cri.gns.fred.util.SiteUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.util.map.Datum;
 import nz.cri.gns.util.map.DatumFactory;
@@ -352,8 +354,8 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 			PDFUtil.addCells(table, new String[] {featTypeLbl, feature.getFeatureName()}, bodyFonts);
 			PDFUtil.addCell(table, "Original Grid Reference", fonts[1]);
 			if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
-				Datum datum = FREDUtil.getFREDDatum(feature);
-				Coordinate coord = FREDUtil.getFREDCoordinate(feature);
+				Datum datum = SiteUtil.getFREDDatum(feature);
+				Coordinate coord = SiteUtil.getFREDCoordinate(feature);
 				PDFUtil.addCell(table, datum.getHumanStringFor(coord).replaceAll("Geographic ", ""), fonts[0]);
 				if (!datum.getName().equals("NZMG")) {
 					try {
@@ -365,19 +367,19 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 			} else {
 				PDFUtil.addCell(table, "", fonts[0]);
 			}
-			SiteRecord sr = null;
-			if (feature.getSiteId() != null) {
-				sr = FREDUtil.getSite(feature);
-				LatLong ll = sr.getLatLong();
+			SiteView sv = null;
+			if (feature.getSiteView() != null) {
+				sv = feature.getSiteView();
+				LatLong ll = SiteUtil.getSiteLatLong(sv);
 				PDFUtil.addCells(table, new String[] {"Converted Dec. Lat/Long", ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"}, bodyFonts);
 			}
 			PDFUtil.addCells(table, new Object[] {"Map Year", feature.getMapYear()}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {"Method", ((sr != null) ? FREDUtil.getSiteMethod(sr) : null)}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {"Accuracy", ((sr != null && !sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(sr.getAccuracy()) + " m" : null)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Method", ((sv != null) ? sv.getHorizMethod() : null)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Accuracy", ((sv != null && sv.getAccuracy() != null) ? String.valueOf(sv.getAccuracy()) + " m" : null)}, bodyFonts);
 
 			if (featureUtil.isAllowedReadFeature(user, feature)) {
 				PDFUtil.addCells(table, new String[] {"Locality", feature.getLocality()}, bodyFonts);
-				PDFUtil.addCells(table, new String[] {"Country", ((sr != null) ? FREDUtil.getSiteCountry(sr) : null)}, bodyFonts);	
+				PDFUtil.addCells(table, new String[] {"Country", ((sv != null) ? sv.getCountryName() : null)}, bodyFonts);	
 				PDFUtil.addCells(table, new String[] {"Coordinate Comments", feature.getCoordComments()}, bodyFonts);
 				PDFUtil.addCells(table, new String[] {"Locality Comments", feature.getComments()}, bodyFonts);
 				if (!featType.equals(FREDConstants.OUTCROP)) {

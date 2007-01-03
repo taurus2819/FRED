@@ -373,7 +373,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		
 		int masterfile = -1;
 		try {
-			masterfile = FREDUtil.getMasterfile(feature);
+			masterfile = SiteUtil.getMasterfile(feature);
 		} catch (Exception e) {
 			throw new StorageAccessException(e);
 		}
@@ -805,7 +805,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				}
 			}
 		} catch (Exception e) {	}
-		feature.setMasterFile(folderDAO.getFolder(FREDUtil.getMasterfile(feature)));
+		feature.setMasterFile(folderDAO.getFolder(SiteUtil.getMasterfile(feature)));
 		featureDAO.update(audit);
 		featureDAO.update(feature);
 	}
@@ -836,7 +836,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 * @param feature
 	 */
 	public FrNumber getNextAvailableFrNumber(Feature feature) throws SQLException, NamingException, StorageAccessException {
-		String mapSheet = FREDUtil.getFrNumberMapSheet(feature);
+		String mapSheet = SiteUtil.getFrNumberMapSheet(feature);
 		return getNextAvailableFrNumber(mapSheet);
 	}
 

@@ -22,6 +22,7 @@ import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.PersonUtil;
 import nz.cri.gns.fred.util.SampleUtil;
+import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.intranet.Template;
 
@@ -58,14 +59,14 @@ public class AdoptionRecordDE extends RecordDE {
             ComboDescriptor cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
     		cd.name = "StageStart";
     		cd.prompt = " -- Choose -- ";
-    		cd.selected = (stage != null && stage.getStageLowerId() != null) ? adoption.getStage().getStageLowerId().toString() : null;
+    		cd.selected = (stage != null && stage.getLowerAgeView() != null) ? adoption.getStage().getLowerAgeView().getAgeId().toString() : null;
     		cd.orderBy = "Ag_Name";
     		FREDUtil.makeDropBox(out, cd);
     
     
             template.loadUntil(out, "{@StageStop}");
             cd.name = "StageStop";
-            cd.selected = (stage != null && stage.getStageUpperId() != null) ? adoption.getStage().getStageUpperId().toString() : null;
+            cd.selected = (stage != null && stage.getUpperAgeView() != null) ? adoption.getStage().getUpperAgeView().getAgeId().toString() : null;
             FREDUtil.makeDropBox(out, cd);
         } catch (Exception e) {
             //TODO somehting...
@@ -109,7 +110,7 @@ public class AdoptionRecordDE extends RecordDE {
        
         //Stage
         try {
-            adoption.setStage(StageDEUtil.getStage(request, "", adoption.getStage(), new SampleUtil(factory), "Stage"));
+            adoption.setStage(StageDEUtil.getStage(request, "", adoption.getStage(), new StageUtil(factory), "Stage"));
         } catch (DataInputException e) {
             error.addAll(e.getError());
         }

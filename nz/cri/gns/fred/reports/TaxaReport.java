@@ -34,6 +34,7 @@ import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.util.FREDUtil;
+import nz.cri.gns.fred.util.SiteUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.util.NullOutputStream;
 
@@ -87,7 +88,7 @@ public class TaxaReport {
 		for (Sample sample : samples) {
 			Feature feature = sample.getFeature(); 
 			System.out.println(feature.getFrNumber().getFrNumber());
-			SiteRecord site = FREDUtil.getSite(feature);
+			SiteRecord site = SiteUtil.getSite(feature);
 			boolean single = feature.getSamples().size() == 1;
 			localities.println(
 				feature.getFrNumber().getFrNumber()
