@@ -618,14 +618,15 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 			Session session = provider.currentSession();
             Query query = session.createQuery("FROM Stage AS s WHERE s.lowerAgeView = :lower AND s.stageLowerMod = :lMod AND s.upperAgeView = :upper AND s.stageUpperMod = :uMod");
             query.setEntity("lower", startStage);
-            query.setBoolean("lMod", startUncertain);
+            query.setString("lMod", (startUncertain) ? "?" : null);
             query.setEntity("upper", stopStage);
-            query.setBoolean("uMod", stopUncertain);
+            query.setString("uMod", (stopUncertain) ? "?" : null);
             List list = query.list();
 			if (list.size() == 0)
 			    return null;
 			return (Stage)list.get(0);
         } catch (Exception e) {
+        	e.printStackTrace();
             throw new StorageAccessException(e);
         }
 	}
