@@ -4,42 +4,21 @@ import java.util.Set;
 
 import nz.cri.gns.core.NameableAndIdentifiable;
 
-/**
- *
- */
 public interface Person extends PersonRelationship, Comparable<Person>, NameableAndIdentifiable {
-	
-	public abstract Integer getPersonId();
-
-	public abstract void setPersonId(Integer personId);
-
-	public abstract String getName();
-
-	public abstract void setName(String name);
-
-	public abstract Integer getStCode();
-
-	public abstract void setStCode(Integer stCode);
-
-	public abstract Set getAdoptions();
-
-	public abstract void setAdoptions(Set adoptions);
-
-	public abstract Set getIdentifiedPaleontologies();
-
-	public abstract void setIdentifiedPaleontologies(
-			Set identifiedPaleontologies);
-
-	public abstract Set getFeatures();
-
-	public abstract void setFeatures(Set features);
-
-	public abstract Set getCollectedSamples();
-
-	public abstract void setCollectedSamples(Set collectedSamples);
-	
-	public abstract Set<SentTo> getSentTos();
-
-	public abstract void setSentTos(Set<SentTo> sentTos);
-	
+	public Integer getPersonId();
+	public void setPersonId(Integer personId);
+	public String getName();
+	public void setName(String name);
+	public Integer getStCode();
+	public void setStCode(Integer stCode);
+	public Set<Adoption> getAdoptions();
+	public void setAdoptions(Set<Adoption> adoptions);
+	public Set<Paleontology> getIdentifiedPaleontologies();
+	public void setIdentifiedPaleontologies(Set<Paleontology> identifiedPaleontologies);
+	public Set<Feature> getFeatures();
+	public void setFeatures(Set<Feature> features);
+	public Set<Sample> getCollectedSamples();
+	public void setCollectedSamples(Set<Sample> collectedSamples);
+	public Set<SentTo> getSentTos();
+	public void setSentTos(Set<SentTo> sentTos);
 }

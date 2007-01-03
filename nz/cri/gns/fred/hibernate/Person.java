@@ -3,6 +3,10 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.Adoption;
+import nz.cri.gns.fred.model.Feature;
+import nz.cri.gns.fred.model.Paleontology;
+import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SentTo;
 
 /** @author Hibernate CodeGenerator */
@@ -20,22 +24,22 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
     private Integer stCode;
 
     /** persistent field */
-    private Set adoptions;
+    private Set<Adoption> adoptions;
 
     /** persistent field */
-    private Set identifiedPaleontologies;
+    private Set<Paleontology> identifiedPaleontologies;
 
     /** persistent field */
-    private Set features;
+    private Set<Feature> features;
 
     /** persistent field */
-    private Set collectedSamples;
+    private Set<Sample> collectedSamples;
 
     /** persistent field */
     private Set<SentTo> sentTos;
     
     /** full constructor */
-    public Person(String name, Integer stCode, Set adoptions, Set identifiedPaleontologies, Set features, Set collectedSamples, Set<SentTo> sentTos) {
+    public Person(String name, Integer stCode, Set<Adoption> adoptions, Set<Paleontology> identifiedPaleontologies, Set<Feature> features, Set<Sample> collectedSamples, Set<SentTo> sentTos) {
         this.name = name;
         this.stCode = stCode;
         this.adoptions = adoptions;
@@ -50,7 +54,7 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
     }
 
     /** minimal constructor */
-    public Person(String name, Set adoptions, Set identifiedPaleontologies, Set features, Set collectedSamples) {
+    public Person(String name, Set<Adoption> adoptions, Set<Paleontology> identifiedPaleontologies, Set<Feature> features, Set<Sample> collectedSamples) {
         this.name = name;
         this.adoptions = adoptions;
         this.identifiedPaleontologies = identifiedPaleontologies;
@@ -82,35 +86,35 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
         this.stCode = stCode;
     }
 
-    public Set getAdoptions() {
+    public Set<Adoption> getAdoptions() {
         return this.adoptions;
     }
 
-    public void setAdoptions(Set adoptions) {
+    public void setAdoptions(Set<Adoption> adoptions) {
         this.adoptions = adoptions;
     }
 
-    public Set getIdentifiedPaleontologies() {
+    public Set<Paleontology> getIdentifiedPaleontologies() {
         return this.identifiedPaleontologies;
     }
 
-    public void setIdentifiedPaleontologies(Set identifiedPaleontologies) {
+    public void setIdentifiedPaleontologies(Set<Paleontology> identifiedPaleontologies) {
         this.identifiedPaleontologies = identifiedPaleontologies;
     }
 
-    public Set getFeatures() {
+    public Set<Feature> getFeatures() {
         return this.features;
     }
 
-    public void setFeatures(Set features) {
+    public void setFeatures(Set<Feature> features) {
         this.features = features;
     }
 
-    public Set getCollectedSamples() {
+    public Set<Sample> getCollectedSamples() {
         return this.collectedSamples;
     }
 
-    public void setCollectedSamples(Set collectedSamples) {
+    public void setCollectedSamples(Set<Sample> collectedSamples) {
         this.collectedSamples = collectedSamples;
     }
 
