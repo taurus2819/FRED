@@ -47,7 +47,7 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional one-to-many association to Paleontology -->
+    <!-- bi-directional one-to-many association to LabSection -->
     <set
         name="sections"
         lazy="true"
@@ -62,5 +62,20 @@
         />
     </set>
 
+    <!-- bi-directional one-to-many association to SentTo -->
+    <set
+        name="sentTos"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="LAB_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.SentTo"
+        />
+    </set>
+    
 </class>
 </hibernate-mapping>

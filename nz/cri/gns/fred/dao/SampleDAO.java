@@ -15,6 +15,7 @@ import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
+import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.RelationType;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.RelationshipType;
@@ -138,22 +139,7 @@ public interface SampleDAO {
 	 */
 	public FossilGroup getFossilGroup(String name) throws StorageAccessException;
 
-	/**
-	 * Locates, if one exists, a Stage entry in persistent storage that uses the given 
-	 * stages (by id) and has uncertainty as specified. 
-	 *@return a Stage object or null if no such object exists
-	 */
-	public Stage findStage(String startStageId, boolean startUncertain, String stopStageId, boolean stopUncertain) throws StorageAccessException;
-
-	/**
-	 * Creates a new, uninitialised Stage object
-	 */
-	public Stage createNewStage();
-
-	/**
-	 * Saves the given stage to persistent storage
-	 */
-	public void save(Stage stage) throws StorageAccessException;
+	public Lab findLab(String labName) throws StorageAccessException;
 
 	/**
 	 * Creates a new, uninitialised Relationship object

@@ -5,12 +5,8 @@ import java.util.Set;
 public interface Stage {
 	public Integer getStageId();
 	public void setStageId(Integer stageId);
-	public Integer getStageLowerId();
-	public void setStageLowerId(Integer stageLowerId);
 	public String getStageLowerMod();
 	public void setStageLowerMod(String stageLowerMod);
-	public Integer getStageUpperId();
-	public void setStageUpperId(Integer stageUpperId);
 	public String getStageUpperMod();
 	public void setStageUpperMod(String stageUpperMod);
 	public String getStageMod();

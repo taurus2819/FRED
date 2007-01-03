@@ -16,14 +16,8 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
     /** identifier field */
     private Integer stageId;
 
-    /** persistent field */
-    private Integer stageLowerId;
-
     /** nullable persistent field */
     private String stageLowerMod;
-
-    /** nullable persistent field */
-    private Integer stageUpperId;
 
     /** nullable persistent field */
     private String stageUpperMod;
@@ -50,10 +44,8 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
     private Set<Adoption> adoptions;
 
     /** full constructor */
-    public Stage(Integer stageLowerId, String stageLowerMod, Integer stageUpperId, String stageUpperMod, String stageMod, AgeView lowerAgeView, AgeView upperAgeView, Set<Sample> samplesByKnownStageId, Set<Sample> samplesByInferredStageId, Set<Paleontology> paleontologies, Set<Adoption> adoptions) {
-        this.stageLowerId = stageLowerId;
+    public Stage(String stageLowerMod, String stageUpperMod, String stageMod, AgeView lowerAgeView, AgeView upperAgeView, Set<Sample> samplesByKnownStageId, Set<Sample> samplesByInferredStageId, Set<Paleontology> paleontologies, Set<Adoption> adoptions) {
         this.stageLowerMod = stageLowerMod;
-        this.stageUpperId = stageUpperId;
         this.stageUpperMod = stageUpperMod;
         this.stageMod = stageMod;
         this.setLowerAgeView(lowerAgeView);
@@ -69,8 +61,7 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
     }
 
     /** minimal constructor */
-    public Stage(Integer stageLowerId, Set<Sample> samplesByKnownStageId, Set<Sample> samplesByInferredStageId, Set<Paleontology> paleontologies, Set<Adoption> adoptions) {
-        this.stageLowerId = stageLowerId;
+    public Stage(Set<Sample> samplesByKnownStageId, Set<Sample> samplesByInferredStageId, Set<Paleontology> paleontologies, Set<Adoption> adoptions) {
         this.samplesByKnownStageId = samplesByKnownStageId;
         this.samplesByInferredStageId = samplesByInferredStageId;
         this.paleontologies = paleontologies;
@@ -85,28 +76,12 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
         this.stageId = stageId;
     }
 
-    public Integer getStageLowerId() {
-        return this.stageLowerId;
-    }
-
-    public void setStageLowerId(Integer stageLowerId) {
-        this.stageLowerId = stageLowerId;
-    }
-
     public String getStageLowerMod() {
         return this.stageLowerMod;
     }
 
     public void setStageLowerMod(String stageLowerMod) {
         this.stageLowerMod = stageLowerMod;
-    }
-
-    public Integer getStageUpperId() {
-        return this.stageUpperId;
-    }
-
-    public void setStageUpperId(Integer stageUpperId) {
-        this.stageUpperId = stageUpperId;
     }
 
     public String getStageUpperMod() {

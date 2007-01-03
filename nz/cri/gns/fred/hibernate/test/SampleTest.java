@@ -38,11 +38,11 @@ public class SampleTest extends FredHibernateTest {
 		Sample sample = sampleUtil.createSample(feature, folder.getFolderId().intValue(), true, user);
 		samples.add(sample);
 		FossilGroup group = sampleUtil.getFossilGroup("microflora");
-		Person persom = new PersonUtil(factory).findPerson("Adachi, M.");
+		Person person = new PersonUtil(factory).findPerson("Adachi, M.");
 		int labId = 1;
 		String comments = "La comments";
 		
-		SentTo sentTo = sampleUtil.findOrCreateSentTo(sample, group, persom, labId, comments);
+		SentTo sentTo = sampleUtil.findOrCreateSentTo(sample, group, person, labId, comments);
 		HashSet<SentTo> st = new HashSet<SentTo>();
 		st.add(sentTo);
 		sample.setSentTos(st);
@@ -57,14 +57,14 @@ public class SampleTest extends FredHibernateTest {
 		//Check the sentto
 		SentTo savedSentTo = sample.getSentTos().iterator().next();
 		assertEquals(group, savedSentTo.getFossilGroup());
-		assertEquals(persom, savedSentTo.getPerson());
-		assertEquals(labId, savedSentTo.getLabId().intValue());
+		assertEquals(person, savedSentTo.getPerson());
+		assertEquals(labId, savedSentTo.getLab().getLabId().intValue());
 		assertEquals(comments, savedSentTo.getComments());
 		
 		System.out.println("Original: " + sample.getSentTos().iterator().next());
 		
 		st = new HashSet<SentTo>();
-		sentTo = sampleUtil.findOrCreateSentTo(sample, group, persom, labId, comments);
+		sentTo = sampleUtil.findOrCreateSentTo(sample, group, person, labId, comments);
 		System.out.println("New: " + sentTo);
 		st.add(sentTo);
 		sample.setSentTos(st);
@@ -85,13 +85,13 @@ public class SampleTest extends FredHibernateTest {
 		
 		savedSentTo = sample.getSentTos().iterator().next();
 		assertEquals(group, savedSentTo.getFossilGroup());
-		assertEquals(persom, savedSentTo.getPerson());
-		assertEquals(labId, savedSentTo.getLabId().intValue());
+		assertEquals(person, savedSentTo.getPerson());
+		assertEquals(labId, savedSentTo.getLab().getLabId().intValue());
 		assertEquals(comments, savedSentTo.getComments());
 		savedSentTo = sample2.getSentTos().iterator().next();
 		assertEquals(group, savedSentTo.getFossilGroup());
-		assertEquals(persom, savedSentTo.getPerson());
-		assertEquals(labId, savedSentTo.getLabId().intValue());
+		assertEquals(person, savedSentTo.getPerson());
+		assertEquals(labId, savedSentTo.getLab().getLabId().intValue());
 		assertEquals(comments, savedSentTo.getComments());
 		
 		factory.closeSession();

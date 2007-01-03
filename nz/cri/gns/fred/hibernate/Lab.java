@@ -2,7 +2,9 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 import java.util.Set;
+
 import nz.cri.gns.fred.model.LabSection;
+import nz.cri.gns.fred.model.SentTo;
 
 /** @author Hibernate CodeGenerator */
 public class Lab implements Serializable, nz.cri.gns.fred.model.Lab {
@@ -23,14 +25,18 @@ public class Lab implements Serializable, nz.cri.gns.fred.model.Lab {
 
     /** persistent field */
     private Set<LabSection> sections;
+    
+    /** persistent field */
+    private Set<SentTo> sentTos;
 
     /** full constructor */
-    public Lab(Integer labId, String name, String address, String country, Set<LabSection> sections) {
+    public Lab(Integer labId, String name, String address, String country, Set<LabSection> sections, Set<SentTo> sentTos) {
         this.labId = labId;
         this.name = name;
         this.address = address;
         this.country = country;
         this.sections = sections;
+        this.sentTos = sentTos;
     }
 
     /** default constructor */
@@ -81,5 +87,13 @@ public class Lab implements Serializable, nz.cri.gns.fred.model.Lab {
     public void setSections(Set<LabSection> sections) {
         this.sections = sections;
     }
+
+	public Set<SentTo> getSentTos() {
+		return sentTos;
+	}
+	
+	public void setSentTos(Set<SentTo> sentTos) {
+		this.sentTos = sentTos;
+	}
 
 }

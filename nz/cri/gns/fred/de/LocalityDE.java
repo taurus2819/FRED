@@ -31,6 +31,7 @@ import nz.cri.gns.fred.util.AuditUtil;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.FolderUtil;
+import nz.cri.gns.fred.util.SiteUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.intranet.Template;
 import nz.cri.gns.jsp.IconnedLink;
@@ -74,9 +75,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         featureUtil = new FeatureUtil(factory);
 		initialise(feature, folderID, user, factory, content);
 		try {
-			site = FREDUtil.getSite(feature);
-			coord = FREDUtil.getFREDCoordinate(feature);
-			datum = FREDUtil.getFREDDatum(feature);
+			site = SiteUtil.getSite(feature);
+			coord = SiteUtil.getFREDCoordinate(feature);
+			datum = SiteUtil.getFREDDatum(feature);
 		} catch (Exception e) {
 			//Site wasn't set
 		}
@@ -117,9 +118,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		feature.getAudit().setWorkingComments(fromFeature.getAudit().getWorkingComments());
 		feature.setLocality(fromFeature.getLocality());
 		try {
-			site = FREDUtil.getSite(fromFeature);
-			coord = FREDUtil.getFREDCoordinate(fromFeature);
-			datum = FREDUtil.getFREDDatum(fromFeature);
+			site = SiteUtil.getSite(fromFeature);
+			coord = SiteUtil.getFREDCoordinate(fromFeature);
+			datum = SiteUtil.getFREDDatum(fromFeature);
 		} catch (Exception e) {
 			//Site wasn't set
 		}
@@ -271,7 +272,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			template.addSub("eastingLabel", eastingLabel);
 			
 			template.loadUntil(out, "{@datumMethodArray}");
-			List<DatumMethod> datums = FREDUtil.getSiteDatumMethods();
+			List<DatumMethod> datums = SiteUtil.getSiteDatumMethods();
 			for (DatumMethod method : datums)
 				out.println("datumMethod[" + method.getKey() + "] = '" + method.getHorizontalAccuracy() + "';\n");
 	
@@ -499,7 +500,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		if (site != null) {
 			site.key = null;
 			try {
-				site = FREDUtil.getSite(site);
+				site = SiteUtil.getSite(site);
 			} catch (Exception e) {
 				e.printStackTrace();
 				throw new StorageAccessException(e);
@@ -508,7 +509,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		} else {
 			feature.setSiteId(null);
 		}
-
+		
 		featureUtil.saveFeature(feature, user, editComments, dataOriginId);
 		
 		return feature.getFeatureId();		

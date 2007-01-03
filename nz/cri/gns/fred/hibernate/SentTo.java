@@ -3,6 +3,10 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Date;
 
+import nz.cri.gns.fred.model.FossilGroup;
+import nz.cri.gns.fred.model.Lab;
+import nz.cri.gns.fred.model.Person;
+import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.util.FREDUtil;
 
 
@@ -21,29 +25,29 @@ public class SentTo implements nz.cri.gns.fred.model.SentTo, Serializable {
     private String dateRounding;
 
     /** nullable persistent field */
-    private Integer labId;
-
-    /** nullable persistent field */
     private String comments;
 
     /** persistent field */
-    private nz.cri.gns.fred.model.Sample sample;
+    private Sample sample;
     
     /** nullable persistent field */
-    private nz.cri.gns.fred.model.FossilGroup fossilGroup;
+    private FossilGroup fossilGroup;
 
     /** nullable persistent field */
-    private nz.cri.gns.fred.model.Person person;
-
+    private Person person;
+    
+    /** nullable persistent field */
+    private Lab lab;
+    
     /** full constructor */
-    public SentTo(Date sentDate, String dateRounding, Integer labId, String comments, nz.cri.gns.fred.model.Sample sample, nz.cri.gns.fred.model.FossilGroup fossilGroup, nz.cri.gns.fred.model.Person person) {
+    public SentTo(Date sentDate, String dateRounding, String comments, Sample sample, FossilGroup fossilGroup, Person person, Lab lab) {
         this.sentDate = sentDate;
         this.dateRounding = dateRounding;
-        this.labId = labId;
         this.comments = comments;
         this.sample = sample;
         this.fossilGroup = fossilGroup;
         this.person = person;
+        this.setLab(lab);
     }
 
     /** default constructor */
@@ -79,14 +83,6 @@ public class SentTo implements nz.cri.gns.fred.model.SentTo, Serializable {
         this.dateRounding = dateRounding;
     }
 
-    public Integer getLabId() {
-        return this.labId;
-    }
-
-    public void setLabId(Integer labId) {
-        this.labId = labId;
-    }
-
     public String getComments() {
         return this.comments;
     }
@@ -95,31 +91,39 @@ public class SentTo implements nz.cri.gns.fred.model.SentTo, Serializable {
         this.comments = comments;
     }
 
-    public nz.cri.gns.fred.model.Sample getSample() {
+    public Sample getSample() {
         return this.sample;
     }
 
-    public void setSample(nz.cri.gns.fred.model.Sample sample) {
+    public void setSample(Sample sample) {
         this.sample = sample;
     }
     
-    public nz.cri.gns.fred.model.FossilGroup getFossilGroup() {
+    public FossilGroup getFossilGroup() {
         return this.fossilGroup;
     }
 
-    public void setFossilGroup(nz.cri.gns.fred.model.FossilGroup fossilGroup) {
+    public void setFossilGroup(FossilGroup fossilGroup) {
         this.fossilGroup = fossilGroup;
     }
 
-    public nz.cri.gns.fred.model.Person getPerson() {
+    public Person getPerson() {
         return this.person;
     }
 
-    public void setPerson(nz.cri.gns.fred.model.Person person) {
+    public void setPerson(Person person) {
         this.person = person;
     }
 
-    public String toString() {
+	public Lab getLab() {
+		return lab;
+	}
+	
+    public void setLab(Lab lab) {
+		this.lab = lab;
+	}
+
+	public String toString() {
         return super.toString() + "{" + getFossilGroup() + "}";
     }
 
@@ -145,7 +149,7 @@ public class SentTo implements nz.cri.gns.fred.model.SentTo, Serializable {
 		SentTo sentTo = (SentTo)o;
 		return FREDUtil.equals(sentDate, sentTo.getSentDate(), true)
 			&& FREDUtil.equals(person, sentTo.getPerson(), true)
-			&& FREDUtil.equals(labId, sentTo.getLabId(), true)
+			&& FREDUtil.equals(lab, sentTo.getLab(), true)
 			&& FREDUtil.equals(fossilGroup, sentTo.getFossilGroup(), true)
 			&& FREDUtil.equals(dateRounding, sentTo.getDateRounding(), true)
 			&& FREDUtil.equals(comments, sentTo.getComments(), true)

@@ -39,12 +39,6 @@
     	    length="5"
 	    />
 	    <property
-    	    name="labId"
-        	type="int"
-        	column="LAB_ID"
-    	    length="4"
-	    />
-	    <property
     	    name="comments"
         	type="java.lang.String"
 	        column="COMMENTS"
@@ -76,6 +70,15 @@
         not-null="true"
     >
         <column name="SAMPLE_ID" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Lab -->
+    <many-to-one
+        name="lab"
+        class="nz.cri.gns.fred.hibernate.Lab"
+        not-null="true"
+    >
+        <column name="LAB_ID" />
     </many-to-one>
 
 </class>

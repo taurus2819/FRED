@@ -13,4 +13,6 @@ public interface Lab {
     public void setCountry(String country);
     public Set<LabSection> getSections();
     public void setSections(Set<LabSection> sections);
+	public Set<SentTo> getSentTos();
+	public void setSentTos(Set<SentTo> sentTos);
 }

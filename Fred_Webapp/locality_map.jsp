@@ -1,7 +1,6 @@
 <%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.db.DBUtils"
-%><%@page import="nz.cri.gns.db.site.SiteRecord"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.gis.ims.IMSMap"
@@ -15,8 +14,10 @@
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.model.SiteView"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
+%><%@page import="nz.cri.gns.fred.util.SiteUtil"
 %><%@page import="com.esri.aims.mtier.model.map.layer.renderer.symbol.SimpleMarkerSymbol"
 %><%!	
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { 
@@ -79,9 +80,10 @@
 	if (featId != null) {
 		Feature feature = featureUtil.getFeature(Integer.parseInt(featId));
 		if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
-			if (feature.getSiteId() != null) {
-				SiteRecord sr = FREDUtil.getSite(feature);
-				LatLong ll = sr.getLatLong();
+			SiteView sv = null;
+			if (feature.getSiteView() != null) {
+				sv = feature.getSiteView();
+				LatLong ll = SiteUtil.getSiteLatLong(sv);
 				Datum nzms260Datum = DatumFactory.createDatum("NZMS260");
 				Coordinate nzms260Coord = null;
 				try {
@@ -123,8 +125,8 @@
 						<tr><td colspan="2" class="deHeading">Locality Details</td></tr>
 						<tr><td class="heading">Original Grid Reference</td><%
 						if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
-							Datum datum = FREDUtil.getFREDDatum(feature);
-							Coordinate coord = FREDUtil.getFREDCoordinate(feature);
+							Datum datum = SiteUtil.getFREDDatum(feature);
+							Coordinate coord = SiteUtil.getFREDCoordinate(feature);
 							%><td><%=datum.getHumanStringFor(coord).replaceAll("Geographic ", "")%></td><%
 							if (!datum.getName().equals("NZMG")) {
 								try {
@@ -139,11 +141,11 @@
 						%></tr>
 						<tr><td class="heading">Converted Dec. Lat/Long</td><td><%=ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"%></td></tr>
 						<tr><td class="heading">Map Year</td><td><%=DBUtils.nvl(feature.getMapYear())%></td></tr>
-						<tr><td class="heading">Method</td><td><%=((sr != null && !sr.isNull(SiteRecord.H_METHOD_FIELD)) ? FREDUtil.getSiteMethod(sr) : "&nbsp;")%></td></tr>
-						<tr><td class="heading">Accuracy</td><td><%=((sr != null && !sr.isNull(SiteRecord.H_ACCURACY_FIELD)) ? "&#177;" + String.valueOf(sr.getAccuracy()) + " m" : "&nbsp;")%></td></tr><%
+						<tr><td class="heading">Method</td><td><%=((sv != null && sv.getHorizMethod() != null) ? sv.getHorizMethod() : "&nbsp;")%></td></tr>
+						<tr><td class="heading">Accuracy</td><td><%=((sv != null && sv.getAccuracy() != null) ? "&#177;" + String.valueOf(sv.getAccuracy()) + " m" : "&nbsp;")%></td></tr><%
 						if (featureUtil.isAllowedReadFeature(user, feature)) {
 							%><tr><td class="heading">Locality</td><td><%=DBUtils.nvl(feature.getLocality())%></td></tr>
-							<tr><td class="heading">Country</td><td><%=((sr != null && !sr.isNull(SiteRecord.COUNTRY_FIELD)) ? FREDUtil.getSiteCountry(sr) : "&nbsp;")%></td></tr>
+							<tr><td class="heading">Country</td><td><%=((sv != null && sv.getCountryName() != null) ? sv.getCountryName() : "&nbsp;")%></td></tr>
 							<tr><td class="heading">Coordinate Comments</td><td><%=DBUtils.nvl(feature.getCoordComments())%></td></tr><%
 						}
 						%></table><%

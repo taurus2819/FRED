@@ -27,23 +27,10 @@
     </id>
 
     <property
-        name="stageLowerId"
-        type="int"
-        column="STAGE_LOWER_ID"
-        not-null="true"
-        length="5"
-    />
-    <property
         name="stageLowerMod"
         type="java.lang.String"
         column="STAGE_LOWER_MOD"
         length="16"
-    />
-    <property
-        name="stageUpperId"
-        type="int"
-        column="STAGE_UPPER_ID"
-        length="5"
     />
     <property
         name="stageUpperMod"

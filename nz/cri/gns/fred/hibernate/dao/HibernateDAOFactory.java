@@ -31,6 +31,7 @@ import nz.cri.gns.fred.dao.FolderTypeDAO;
 import nz.cri.gns.fred.dao.PersonDAO;
 import nz.cri.gns.fred.dao.RecordDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
+import nz.cri.gns.fred.dao.SiteDAO;
 import nz.cri.gns.fred.dao.StageDAO;
 import nz.cri.gns.fred.dao.StratLexDAO;
 import nz.cri.gns.fred.dao.TaxonomicDAO;
@@ -41,6 +42,7 @@ import nz.cri.gns.fred.hibernate.FolderUser;
 import nz.cri.gns.fred.hibernate.PalList;
 import nz.cri.gns.fred.hibernate.TaxonomicLookup;
 import nz.cri.gns.fred.model.Adoption;
+import nz.cri.gns.fred.model.AgeView;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.BacklogStatus;
@@ -80,6 +82,7 @@ import nz.cri.gns.fred.model.SampleMeta;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SedimentaryFeatureType;
 import nz.cri.gns.fred.model.SentTo;
+import nz.cri.gns.fred.model.SiteView;
 import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.model.StratigraphicUnit;
 import nz.cri.gns.fred.model.Taxon;
@@ -90,7 +93,7 @@ import nz.cri.gns.fred.model.Weathering;
 /**
  * @author iainm
  */
-public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO, AuditDAO, BacklogStatusDAO, StratLexDAO, UserDAO, StageDAO {
+public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO, AuditDAO, BacklogStatusDAO, StratLexDAO, UserDAO, StageDAO, SiteDAO {
 
 	private HibernateProvider provider;
 
@@ -1182,6 +1185,25 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 
 	public ConfidentialGroup createNewConfidentialGroup() throws StorageAccessException {
 		return new nz.cri.gns.fred.hibernate.ConfidentialGroup();
+	}
+	
+	public SiteDAO getSiteDAO() {
+		return this;
+	}
+
+	/**
+     * Returns the siteView with the given id
+     */
+	public SiteView getSiteView(int siteId) throws StorageAccessException {
+		return HibernateUtils.getFirst(provider, "FROM SiteView AS s WHERE s.siteId = ?", siteId, SiteView.class);
+    }
+
+	public Lab findLab(String labName) throws StorageAccessException {
+		return HibernateUtils.getFirst(provider, "FROM Lab As l WHERE l.name = ?", labName, Lab.class);
+	}
+
+	public AgeView getAgeView(int ageId) throws StorageAccessException {
+		return HibernateUtils.getFirst(provider, "FROM AgeView AS a WHERE a.ageId = ?", ageId, AgeView.class);
 	}
 	
 }

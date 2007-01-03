@@ -32,6 +32,7 @@ import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
+import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.RockColour;
@@ -436,8 +437,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			if (sentTo.getPerson() != null)
 				buffer.append(sentTo.getPerson().getDisplayName());
 			buffer.append("*");
-			if (sentTo.getLabId() != null)
-				buffer.append(FREDUtil.getLabName(sentTo.getLabId()));
+			if (sentTo.getLab() != null)
+				buffer.append(sentTo.getLab().getName());
 			buffer.append("*");
 			if (sentTo.getComments() != null)
 				buffer.append(sentTo.getComments());
@@ -740,7 +741,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     			Person person = (parts.length >= 2 && parts[1].length() != 0) ? (addIfNew ? personUtil.findOrCreatePerson(parts[1]) : personUtil.findPerson(parts[1])) : null;
     			if (parts.length >= 2 && parts[1].length() > 0 && person == null)
     				error.add(new String[] {"Sent To", "Invalid person: " + parts[1]});
-    			Integer lab = (parts.length >= 3 && parts[2].length() != 0) ? FREDUtil.getLabId(parts[2]) : null;
+    			Lab lab = (parts.length >= 3 && parts[2].length() != 0) ? sampleUtil.findLab(parts[2]) : null;
     			if (parts.length >= 3 && parts[2].length() > 0 && lab == null)
     				error.add(new String[] {"Sent To", "Invalid lab: " + parts[2]});
     			String comments = ((parts.length >= 4) ? parts[3].replaceAll(String.valueOf((char)13), "") : null);

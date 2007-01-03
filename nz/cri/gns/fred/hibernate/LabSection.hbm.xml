@@ -46,7 +46,7 @@
     />
 
     <!-- Associations -->
-    <!-- bi-directional many-to-one association to LabSection -->
+    <!-- bi-directional many-to-one association to Lab -->
     <many-to-one
         name="lab"
         class="nz.cri.gns.fred.hibernate.Lab"

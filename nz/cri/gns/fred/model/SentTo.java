@@ -2,45 +2,23 @@ package nz.cri.gns.fred.model;
 
 import java.util.Date;
 
-/**
- *
- */
 public interface SentTo extends PersonRelationship {
-
-    public abstract Integer getSentToId();
-
-    public abstract void setSentToId(Integer sentToId);
-    
-	public abstract Date getSentDate();
-
-	public abstract void setSentDate(Date sentDate);
-
-	public abstract String getDateRounding();
-
-	public abstract void setDateRounding(String dateRounding);
-
-	public abstract Integer getLabId();
-
-	public abstract void setLabId(Integer labId);
-
-	public abstract String getComments();
-
-	public abstract void setComments(String comments);
-
-    public abstract nz.cri.gns.fred.model.Sample getSample();
-
-    public abstract void setSample(nz.cri.gns.fred.model.Sample sample);
-    
-	public abstract nz.cri.gns.fred.model.FossilGroup getFossilGroup();
-
-	public abstract void setFossilGroup(
-			nz.cri.gns.fred.model.FossilGroup fossilGroup);
-
-	public abstract nz.cri.gns.fred.model.Person getPerson();
-
-	public abstract void setPerson(nz.cri.gns.fred.model.Person person);
-
-	public abstract boolean equals(Object other);
-
-	public abstract int hashCode();
+    public Integer getSentToId();
+    public void setSentToId(Integer sentToId);
+	public Date getSentDate();
+	public void setSentDate(Date sentDate);
+	public String getDateRounding();
+	public void setDateRounding(String dateRounding);
+	public String getComments();
+	public void setComments(String comments);
+    public Sample getSample();
+    public void setSample(Sample sample);
+	public FossilGroup getFossilGroup();
+	public void setFossilGroup(FossilGroup fossilGroup);
+	public Person getPerson();
+	public void setPerson(Person person);
+	public Lab getLab();
+    public void setLab(Lab lab);
+	public boolean equals(Object other);
+	public int hashCode();
 }

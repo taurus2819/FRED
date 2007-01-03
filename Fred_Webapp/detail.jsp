@@ -10,13 +10,13 @@
 %><%@page import="nz.cri.gns.fred.model.Sample"
 %><%@page import="nz.cri.gns.fred.model.Relationship"
 %><%@page import="nz.cri.gns.fred.model.PersonRelationship"
+%><%@page import="nz.cri.gns.fred.model.SiteView"
 %><%@page import="nz.cri.gns.fred.model.SentTo"
 %><%@page import="nz.cri.gns.fred.model.SedimentaryFeature"
 %><%@page import="nz.cri.gns.fred.model.TaxonomicGroup"
 %><%@page import="nz.cri.gns.fred.model.Meta"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.db.DBUtils"
-%><%@page import="nz.cri.gns.db.site.SiteRecord"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.jsp.CustomHTMLLink"
 %><%@page import="nz.cri.gns.jsp.Link"
@@ -38,6 +38,7 @@
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"
 %><%@page import="nz.cri.gns.fred.util.StageUtil"
+%><%@page import="nz.cri.gns.fred.util.SiteUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.de.DataInputException"
@@ -303,10 +304,10 @@ try {
 				%><tr><td class="heading"><%=featTypeLbl%></td><td><%=linkStart + DBUtils.nvl(feature.getFeatureName()) + linkStop%>
 				<%=((petWellLink != null) ? "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"" + petWellLink + "\" target=\"_blank\" class=\"boldlink\">Open GNS Petroleum Wells Database</a>" : "")%></td></tr><%
 			}
-			SiteRecord sr = null;
+			SiteView sv = null;
 			if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
-				Datum datum = FREDUtil.getFREDDatum(feature);
-				Coordinate coord = FREDUtil.getFREDCoordinate(feature);
+				Datum datum = SiteUtil.getFREDDatum(feature);
+				Coordinate coord = SiteUtil.getFREDCoordinate(feature);
 				%><tr><td class="heading">Original Grid Reference</td><td><%=datum.getHumanStringFor(coord).replaceAll("Geographic ", "")%></td></tr><%
 				if (!datum.getName().equals("NZMG")) {
 					try {
@@ -317,27 +318,27 @@ try {
 						}
 					} catch (Exception e) { }
 				}
-				if (feature.getSiteId() != null) {
-					sr = FREDUtil.getSite(feature);
-					LatLong ll = sr.getLatLong();
+				if (feature.getSiteView() != null) {
+					sv = feature.getSiteView();
+					LatLong ll = SiteUtil.getSiteLatLong(sv);
 					%><tr><td class="heading">Converted Dec. Lat/Long</td><td><%=ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"%></td></tr><%
 				}	
 			}
 			if (feature.getMapYear() != null) {
 				%><tr><td class="heading">Map Year</td><td><%=DBUtils.nvl(feature.getMapYear())%></td></tr><%
 			}
-			if (sr != null && !sr.isNull(SiteRecord.H_METHOD_FIELD)) {
-				%><tr><td class="heading">Method</td><td><%=FREDUtil.getSiteMethod(sr)%></td></tr><%
+			if (sv != null && sv.getHorizMethod() != null) {
+				%><tr><td class="heading">Method</td><td><%=sv.getHorizMethod()%></td></tr><%
 			}
-			if (sr != null && !sr.isNull(SiteRecord.H_ACCURACY_FIELD)) {
-				%><tr><td class="heading">Accuracy</td><td>&#177;<%=String.valueOf(sr.getAccuracy())%> m</td></tr><%
+			if (sv != null && sv.getAccuracy() != null) {
+				%><tr><td class="heading">Accuracy</td><td>&#177;<%=String.valueOf(sv.getAccuracy())%> m</td></tr><%
 			}
 			if (isAllowedReadFeature) {
 				if (feature.getLocality() != null) {
 					%><tr><td class="heading">Locality</td><td><%=feature.getLocality()%></td></tr><%
 				}
-				if (sr != null && !sr.isNull(SiteRecord.COUNTRY_FIELD)) {
-					%><tr><td class="heading">Country</td><td><%=FREDUtil.getSiteCountry(sr)%></td></tr><%
+				if (sv != null && sv.getCountryName() != null) {
+					%><tr><td class="heading">Country</td><td><%=sv.getCountryName()%></td></tr><%
 				}
 				if (feature.getCoordComments() != null) {
 					%><tr><td class="heading">Coordinate Comments</td><td><%=DBUtils.nvl(feature.getCoordComments())%></td></tr><%

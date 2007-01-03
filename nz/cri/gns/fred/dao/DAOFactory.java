@@ -20,6 +20,7 @@ public interface DAOFactory {
     public StratLexDAO getStratLexDAO();
     public UserDAO getUserDAO();
     public StageDAO getStageDAO();
+    public SiteDAO getSiteDAO();
 	
 	/**
 	 * Closes the current session for this thread

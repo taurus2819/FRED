@@ -10,6 +10,7 @@ import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Paleontology;
+import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RecordDetails;
 import nz.cri.gns.fred.model.TaxonomicGroup;
@@ -79,6 +80,8 @@ public interface RecordDAO {
      */
 	public List<Lab> getAllLabs() throws StorageAccessException;
 
+	public Lab findLab(String labName) throws StorageAccessException;
+	
 	/**
 	 * Returns all taxa in the given list of the given group
 	 * @throws StorageAccessException 

@@ -386,7 +386,10 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         return recordDAO.getLabSection(id);
     }
 
-
+    public Lab findLab(String labName) throws StorageAccessException {
+    	return recordDAO.findLab(labName);
+    }
+    
 	public void save(RecordDetails details) throws StorageAccessException {
 		recordDAO.save(details);
 	}

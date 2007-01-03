@@ -17,6 +17,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
+import nz.cri.gns.fred.dao.StageDAO;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.de.MandatoryFieldsMissingException;
 import nz.cri.gns.fred.model.Adoption;
@@ -32,6 +33,7 @@ import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
+import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Record;
@@ -48,9 +50,6 @@ import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.model.Weathering;
 
 public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil {
-
-	private static String NOT_DETERMINED_STAGE = "166";
-	private static String NO_FOSSILS_STAGE = "167";
 	
 	/**
 	 * An implementation of relationship that does a thorough (field by field)
@@ -154,20 +153,13 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	private SampleDAO sampleDAO;
 	private FolderDAO folderDAO;
 
-	
 	public SampleUtil(DAOFactory factory) {
 		super(factory);
 		this.sampleDAO = factory.getSampleDAO();
 		this.folderDAO = factory.getFolderDAO();
 	}	
-	
-	/**
-	 * Implements
-	 * 	DECODE(F.Feature_Type, 'Outcrop', NULL, DECODE(S.Top_Depth || S.Bottom_Depth || L2.Name, NULL, 'Depth Not Specified',
-		DECODE(S.Top_Depth, NULL, NULL, S.Top_Depth || 'm') || DECODE(S.Bottom_Depth, NULL, NULL, ' - ' || S.Bottom_Depth || 'm')
-	    || DECODE(L2.Name, NULL, NULL, ' ' || L2.Name))) AS Drillhole_Depth, 
 
-	 * @param sample
+	 /** @param sample
 	 * @return
 	 */
 	public static String getDrillHoleDepthDescription(Sample sample) {
@@ -628,12 +620,12 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			desc.append("(").append(sentTo.getFossilGroup().getName()).append(") ");
 		if (sentTo.getPerson() != null) {
 			desc.append(sentTo.getPerson().getDisplayName());
-			if (sentTo.getLabId() != null)
+			if (sentTo.getLab() != null)
 				desc.append("/");
 		}
-		if (sentTo.getLabId() != null) {
+		if (sentTo.getLab() != null) {
 			try {
-				desc.append(FREDUtil.getLabName(sentTo.getLabId()));
+				desc.append(sentTo.getLab().getName());
 			} catch (Exception e) {}
 		}
 		if (sentTo.getComments() != null)
@@ -715,7 +707,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		sampleDAO.delete(sample);
 	}
 
-	public SentTo findOrCreateSentTo(Sample sample, FossilGroup group, Person person, Integer lab, String comments) throws StorageAccessException {
+	public SentTo findOrCreateSentTo(Sample sample, FossilGroup group, Person person, Lab lab, String comments) throws StorageAccessException {
 		if (sample.getSentTos() != null) {
 			for (SentTo sentTo : sample.getSentTos()) {
 				//Check group
@@ -731,10 +723,10 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 				if (person != null && !person.equals(sentTo.getPerson())) {
 					continue;
 				}
-				if (lab == null && sentTo.getLabId() != null) {
+				if (lab == null && sentTo.getLab() != null) {
 					continue;
 				}
-				if (lab != null && !lab.equals(sentTo.getLabId())) {
+				if (lab != null && !lab.equals(sentTo.getLab())) {
 					continue;
 				}
 				if (comments == null && sentTo.getComments() != null) {
@@ -751,7 +743,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		sentTo.setSample(sample);
 		sentTo.setFossilGroup(group);
 		sentTo.setPerson(person);
-		sentTo.setLabId(lab);
+		sentTo.setLab(lab);
 		sentTo.setComments(comments);
 		return sentTo;
 	}
@@ -764,67 +756,9 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return sampleDAO.getFossilGroup(name);
 	}
 
-	public Stage getStage(String startStageId, boolean startUncertain, String stopStageId, boolean stopUncertain) throws StorageAccessException, NamingException, SQLException {
-		if (startStageId == null && stopStageId == null && !startUncertain && !stopUncertain)
-			return null;
-		if (startStageId == null)
-			throw new IllegalArgumentException("Start age is null");		
-		
-		//check start/stop ages if both entered unless "not determined" or "no fossils"
-		if (stopStageId != null
-				&& !(startStageId.equals(NOT_DETERMINED_STAGE)
-				|| startStageId.equals(NO_FOSSILS_STAGE)
-				|| stopStageId.equals(NOT_DETERMINED_STAGE)
-				|| stopStageId.equals(NO_FOSSILS_STAGE))) {
-			double[] startRange = null, stopRange = null;
-			startRange = FREDUtil.getStageAgeRange(startStageId);
-			stopRange = FREDUtil.getStageAgeRange(stopStageId);
-			if (startRange != null && stopRange != null) {
-				if (startRange[0] < stopRange[0] || startRange[1] < stopRange[1])
-					throw new IllegalArgumentException("Stop age is older than start age");
-			} else {
-				throw new IllegalArgumentException("Invalid stage(s)");
-			}
-		}
-		
-		Stage stage = sampleDAO.findStage(startStageId, startUncertain, stopStageId, stopUncertain);
-		if (stage == null) {
-			stage = sampleDAO.createNewStage();
-			stage.setStageLowerId((startStageId == null) ? null : new Integer(startStageId));
-			stage.setStageLowerMod((startUncertain) ? "?" : null);
-			stage.setStageUpperId((stopStageId == null) ? null : new Integer(stopStageId));
-			stage.setStageUpperMod((stopUncertain) ? "?" : null);
-			sampleDAO.save(stage);
-		}
-		return stage;
-	}
-
-	/**
-	 * Returns true if the given stage differs from that described by the arguments
-	 */
-	public boolean stageDiffers(Stage stage, String startId, boolean startUncertain, String stopId, boolean stopUncertain) {
-
-		if (stage == null)
-			return (startId != null || stopId != null);
-		
-		if (stage.getStageLowerId() == null ^ startId == null)
-			return true;
-		
-		if (stage.getStageUpperId() == null ^ stopId == null)
-			return true;
-		
-		if (startId != null && !new Integer(startId).equals(stage.getStageLowerId()))
-			return true;
-		
-		if (stopId != null && !new Integer(stopId).equals(stage.getStageUpperId()))
-			return true;
-		
-		//If we're still here then all the stages are the same - check uncertainties
-		if (startUncertain ^ "?".equals(stage.getStageLowerMod()))
-			return true;
-			
-		return stopUncertain ^ "?".equals(stage.getStageUpperMod());
-	}
+    public Lab findLab(String labName) throws StorageAccessException {
+    	return sampleDAO.findLab(labName);
+    }
 
 	/**
 	 * Tests for a match between the given relationship and the other arguments.  Ignores the fields of 
