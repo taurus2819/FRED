@@ -102,6 +102,21 @@
         />
     </set>
     
+    <!-- bi-directional one-to-many association to Folder -->
+    <set
+        name="folders"
+        lazy="true"
+        inverse="true"
+		cascade="all"
+    >
+        <key>
+            <column name="OWNER_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Folder"
+        />
+    </set>
+    
     <!-- bi-directional many-to-one association to OrgView -->
     <many-to-one
         name="orgView"

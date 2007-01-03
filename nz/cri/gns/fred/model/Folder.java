@@ -1,14 +1,10 @@
 package nz.cri.gns.fred.model;
 
-import java.io.Serializable;
 import java.util.Set;
 
 import nz.cri.gns.core.NameableAndIdentifiable;
 
-/**
- * @author iainm
- */
-public interface Folder extends Serializable, Comparable<Folder>, NameableAndIdentifiable {
+public interface Folder extends Comparable<Folder>, NameableAndIdentifiable {
 	
 	public static final int FOLDER_READ_RIGHT = 1;
 	public static final int FOLDER_EDIT_RIGHT = 2;
@@ -23,35 +19,22 @@ public interface Folder extends Serializable, Comparable<Folder>, NameableAndIde
 	public static final String FOLDER_TYPE_PERSONAL = "Personal";
 	public static final String FOLDER_TYPE_BACKLOG = "Backlog";
 
-	public abstract Integer getFolderId();
-
-	public abstract void setFolderId(Integer folderId);
-
-	public abstract String getName();
-
-	public abstract void setName(String name);
-
-	public abstract FolderType getFolderType();
-
-	public abstract void setFolderType(FolderType folderType);
-
-	public abstract Integer getOwnerId();
-
-	public abstract void setOwnerId(Integer ownerId);
-
-	public abstract Set<Audit> getAudits();
-
-	public abstract void setAudits(Set<Audit> audits);
-
-	public abstract Set<Feature> getMasterfileFeatures();
-
-	public abstract void setMasterfileFeatures(Set<Feature> masterfileFeatures);
-
-	public abstract Set<Feature> getFeatures();
-
-	public abstract void setFeatures(Set<Feature> features);
-
-	public abstract Set<FolderUser> getFolderUsers();
-
-	public abstract void setFolderUsers(Set<FolderUser> folderUsers);
+	public Integer getFolderId();
+	public void setFolderId(Integer folderId);
+	public String getName();
+	public void setName(String name);
+	public FolderType getFolderType();
+	public void setFolderType(FolderType folderType);
+	public Integer getOwnerId();
+	public void setOwnerId(Integer ownerId);
+	public FrUserView getFrUserView();
+    public void setFrUserView(FrUserView frUserView);
+	public Set<Audit> getAudits();
+	public void setAudits(Set<Audit> audits);
+	public Set<Feature> getMasterfileFeatures();
+	public void setMasterfileFeatures(Set<Feature> masterfileFeatures);
+	public Set<Feature> getFeatures();
+	public void setFeatures(Set<Feature> features);
+	public Set<FolderUser> getFolderUsers();
+	public void setFolderUsers(Set<FolderUser> folderUsers);
 }

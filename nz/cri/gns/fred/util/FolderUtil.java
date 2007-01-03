@@ -1,14 +1,8 @@
 package nz.cri.gns.fred.util;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
-
-import javax.naming.NamingException;
 
 import net.sf.hibernate.HibernateException;
 import nz.cri.gns.auth.UserAccount;
@@ -33,24 +27,6 @@ public class FolderUtil extends ModelUtil {
 		super(dao);
 		this.folderDAO = dao.getFolderDAO();
 		this.typeDAO = dao.getFolderTypeDAO();
-	}
-	
-	public static String getUserName(int userId) throws NamingException, SQLException {
-		Connection conn = null;
-		try {
-			conn = FREDUtil.getConnection();
-			Statement statement = conn.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT given_name || ' ' || family_name FROM ip.person_view WHERE pe_id = " + userId);
-			String name = (rs.next()) ? rs.getString(1) : "";
-			rs.close();
-			statement.close();
-			return name;
-		} finally {
-			if (conn != null) try {
-				conn.close();
-			} catch (Exception _e) {
-			}
-		}
 	}
 		
 	public Folder getFolder(int folderId) throws StorageAccessException {

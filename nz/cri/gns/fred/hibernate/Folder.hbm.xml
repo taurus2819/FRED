@@ -49,7 +49,18 @@
     >
         <column name="FOLDER_TYPE" />
     </many-to-one>
-  
+
+    <!-- bi-directional many-to-one association to FrUserView -->
+    <many-to-one
+        name="frUserView"
+        class="nz.cri.gns.fred.hibernate.FrUserView"
+        insert="false"
+        update="false"
+        cascade="none"
+    >
+        <column name="OWNER_ID" />
+    </many-to-one>
+      
     <!-- bi-directional one-to-many association to AuditTable -->
     <set
         name="audits"

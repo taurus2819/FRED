@@ -86,7 +86,7 @@
 			%><table border="0" width="550"><tr><td colspan="19" class="deHeading"><%=folder.getFolderName()%> users</td></tr><%
 try {
 			if (folder.getFolder().getFolderType().getName().equals(UserFolder.FOLDER_TYPE_PERSONAL) || folder.getFolder().getFolderType().getName().equals(UserFolder.FOLDER_TYPE_BACKLOG)) {
-				%><tr><td class="heading" colspan="19">Folder Owner: <%=FolderUtil.getUserName(folder.getFolder().getOwnerId().intValue())%></span></td></tr>
+				%><tr><td class="heading" colspan="19">Folder Owner: <%=(folder.getFolder().getFrUserView() != null) ? folder.getFolder().getFrUserView().getFullName() : ""%></span></td></tr>
 				<tr><td>&nbsp;</td></tr><%
 			}
 			%><tr><td colspan="19">The users listed below have rights to this folder.  Users can be added or deleted from this list and their rights altered by clicking on the <img src="images/ok.gif" width="20" height="20" border="0" /> or <img src="images/cancel.gif" width="20" height="20" border="0" /> icons.</td></tr>

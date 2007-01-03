@@ -2,10 +2,12 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 import java.util.Set;
+
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FolderType;
 import nz.cri.gns.fred.model.FolderUser;
+import nz.cri.gns.fred.model.FrUserView;
 
 /** @author Hibernate CodeGenerator */
 public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
@@ -19,11 +21,14 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
     private String name;
 
     /** nullable persistent field */
-    private nz.cri.gns.fred.model.FolderType folderType;
+    private FolderType folderType;
 
     /** nullable persistent field */
     private Integer ownerId;
 
+    /** nullable persistent field */
+    private FrUserView frUserView;
+    
     /** persistent field */
     private Set<Audit> auditTables;
 
@@ -37,10 +42,11 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
     private Set<FolderUser> folderUsers;
 
     /** full constructor */
-    public Folder(String name, FolderType folderType, Integer ownerId, Set<Audit> auditTables, Set<Feature> masterfileFeatures, Set<Feature> features, Set<FolderUser> folderUsers) {
+    public Folder(String name, FolderType folderType, Integer ownerId, FrUserView frUserView, Set<Audit> auditTables, Set<Feature> masterfileFeatures, Set<Feature> features, Set<FolderUser> folderUsers) {
         this.name = name;
         this.folderType = folderType;
         this.ownerId = ownerId;
+        this.frUserView = frUserView;
         this.auditTables = auditTables;
         this.masterfileFeatures = masterfileFeatures;
         this.features = features;
@@ -92,7 +98,15 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
         this.ownerId = ownerId;
     }
 
-    public Set<Audit> getAudits() {
+	public FrUserView getFrUserView() {
+		return frUserView;
+	}
+	
+    public void setFrUserView(FrUserView frUserView) {
+		this.frUserView = frUserView;
+	}
+
+	public Set<Audit> getAudits() {
         return this.auditTables;
     }
 

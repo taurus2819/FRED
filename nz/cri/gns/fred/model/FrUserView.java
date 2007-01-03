@@ -23,4 +23,6 @@ public interface FrUserView extends Comparable<FrUserView>, NameableAndIdentifia
 	public Set<ConfidentialGroup> getConfidGroupsByOwnerId();
 	public void setConfidGroups(Set<ConfidentialGroup> confidGroups);
 	public Set<ConfidentialGroup> getConfidGroups();
+	public Set<Folder> getFolders();
+	public void setFolders(Set<Folder> folders);
 }

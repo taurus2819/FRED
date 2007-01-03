@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 import nz.cri.gns.fred.model.ConfidentialGroup;
+import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.OrgView;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 
@@ -37,9 +38,12 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
     
     /** persistent field */
     private Set<ConfidentialGroup> confidGroups;
+
+    /** persistent field */
+    private Set<Folder> folders;
     
     /** full constructor */
-    public FrUserView(Integer userId, String userName, String givenName, String familyName, String fullName, OrgView orgView, Set<TaxonomicGroup> taxonomicGroups, Set<ConfidentialGroup> confidGroupsByOwnerId, Set<ConfidentialGroup> confidGroups) {
+    public FrUserView(Integer userId, String userName, String givenName, String familyName, String fullName, OrgView orgView, Set<TaxonomicGroup> taxonomicGroups, Set<ConfidentialGroup> confidGroupsByOwnerId, Set<ConfidentialGroup> confidGroups, Set<Folder> folders) {
     	this.userId = userId;
     	this.userName = userName;
     	this.givenName = givenName;
@@ -49,6 +53,7 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
     	this.taxonomicGroups = taxonomicGroups;
     	this.confidGroupsByOwnerId = confidGroupsByOwnerId;
     	this.confidGroups = confidGroups;
+    	this.setFolders(folders);
     }
 
     /** default constructor */
@@ -125,6 +130,14 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
 	
 	public void setConfidGroups(Set<ConfidentialGroup> confidGroups) {
 		this.confidGroups = confidGroups;
+	}
+
+	public Set<Folder> getFolders() {
+		return folders;
+	}
+	
+	public void setFolders(Set<Folder> folders) {
+		this.folders = folders;
 	}
 
 	public int compareTo(nz.cri.gns.fred.model.FrUserView arg0) {
