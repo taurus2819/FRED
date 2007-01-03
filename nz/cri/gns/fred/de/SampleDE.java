@@ -48,6 +48,7 @@ import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.FolderUtil;
 import nz.cri.gns.fred.util.PersonUtil;
 import nz.cri.gns.fred.util.SampleUtil;
+import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.intranet.Template;
 import nz.cri.gns.jsp.IconnedLink;
@@ -64,6 +65,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	private boolean outcropSample = false;
 
 	private SampleUtil sampleUtil;
+	private StageUtil stageUtil;
 	private DAOFactory factory;
 	private ContentProvider provider;
 	private UserFolder workingFolder;
@@ -79,6 +81,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
 	public SampleDE(Sample sample, int folderId, User user, DAOFactory factory, ContentProvider provider) throws InsufficientPrivelegesException, StorageAccessException {
 		sampleUtil = new SampleUtil(factory);
+		stageUtil = new StageUtil(factory);
 		initialise(sample, folderId, user, factory, provider);
 	}
 
@@ -538,18 +541,18 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			//Converts from dropdowns
 			Stage stage = sample.getInferredStage();
 			if (stage != null) {
-				if (stage.getStageLowerId() != null)
-					template.addSub("InferredAgeStart", stage.getStageLowerId().toString());
-				if (stage.getStageUpperId() != null)
-					template.addSub("InferredAgeStop", stage.getStageUpperId().toString());
+				if (stage.getLowerAgeView() != null)
+					template.addSub("InferredAgeStart", stage.getLowerAgeView().getAgeId().toString());
+				if (stage.getUpperAgeView() != null)
+					template.addSub("InferredAgeStop", stage.getUpperAgeView().getAgeId().toString());
 			}
 	
 			stage = sample.getKnownStage();
 			if (stage != null) {
-				if (stage.getStageLowerId() != null)
-					template.addSub("KnownAgeStart", stage.getStageLowerId().toString());
-				if (stage.getStageUpperId() != null)
-					template.addSub("KnownAgeStop", stage.getStageUpperId().toString());
+				if (stage.getLowerAgeView() != null)
+					template.addSub("InferredAgeStart", stage.getLowerAgeView().getAgeId().toString());
+				if (stage.getUpperAgeView() != null)
+					template.addSub("InferredAgeStop", stage.getUpperAgeView().getAgeId().toString());
 			}
 			
 			if (sample.getPrimaryGrainSize() != null)
@@ -770,14 +773,14 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         
 		//Work out the inferred stage
         try {
-            sample.setInferredStage(StageDEUtil.getStage(request, "Inf", sample.getInferredStage(), sampleUtil, "Inferred stage"));
+            sample.setInferredStage(StageDEUtil.getStage(request, "Inf", sample.getInferredStage(), stageUtil, "Inferred stage"));
         } catch (DataInputException e) {
             error.addAll(e.getError());
         }
 		
         //Work out the known stage
         try {
-            sample.setKnownStage(StageDEUtil.getStage(request, "Knw", sample.getKnownStage(), sampleUtil, "Known stage"));
+            sample.setKnownStage(StageDEUtil.getStage(request, "Knw", sample.getKnownStage(), stageUtil, "Known stage"));
         } catch (DataInputException e) {
             error.addAll(e.getError());
         }

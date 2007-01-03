@@ -10,6 +10,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FossilGroup;
+import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SentTo;
@@ -39,10 +40,10 @@ public class SampleTest extends FredHibernateTest {
 		samples.add(sample);
 		FossilGroup group = sampleUtil.getFossilGroup("microflora");
 		Person person = new PersonUtil(factory).findPerson("Adachi, M.");
-		int labId = 1;
+		Lab lab = null;
 		String comments = "La comments";
 		
-		SentTo sentTo = sampleUtil.findOrCreateSentTo(sample, group, person, labId, comments);
+		SentTo sentTo = sampleUtil.findOrCreateSentTo(sample, group, person, lab, comments);
 		HashSet<SentTo> st = new HashSet<SentTo>();
 		st.add(sentTo);
 		sample.setSentTos(st);
@@ -58,13 +59,13 @@ public class SampleTest extends FredHibernateTest {
 		SentTo savedSentTo = sample.getSentTos().iterator().next();
 		assertEquals(group, savedSentTo.getFossilGroup());
 		assertEquals(person, savedSentTo.getPerson());
-		assertEquals(labId, savedSentTo.getLab().getLabId().intValue());
+		assertEquals(lab, savedSentTo.getLab());
 		assertEquals(comments, savedSentTo.getComments());
 		
 		System.out.println("Original: " + sample.getSentTos().iterator().next());
 		
 		st = new HashSet<SentTo>();
-		sentTo = sampleUtil.findOrCreateSentTo(sample, group, person, labId, comments);
+		sentTo = sampleUtil.findOrCreateSentTo(sample, group, person, lab, comments);
 		System.out.println("New: " + sentTo);
 		st.add(sentTo);
 		sample.setSentTos(st);
@@ -86,12 +87,12 @@ public class SampleTest extends FredHibernateTest {
 		savedSentTo = sample.getSentTos().iterator().next();
 		assertEquals(group, savedSentTo.getFossilGroup());
 		assertEquals(person, savedSentTo.getPerson());
-		assertEquals(labId, savedSentTo.getLab().getLabId().intValue());
+		assertEquals(lab, savedSentTo.getLab());
 		assertEquals(comments, savedSentTo.getComments());
 		savedSentTo = sample2.getSentTos().iterator().next();
 		assertEquals(group, savedSentTo.getFossilGroup());
 		assertEquals(person, savedSentTo.getPerson());
-		assertEquals(labId, savedSentTo.getLab().getLabId().intValue());
+		assertEquals(lab, savedSentTo.getLab());
 		assertEquals(comments, savedSentTo.getComments());
 		
 		factory.closeSession();
