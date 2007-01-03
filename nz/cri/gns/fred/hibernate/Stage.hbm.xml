@@ -38,12 +38,6 @@
         column="STAGE_UPPER_MOD"
         length="16"
     />
-    <property
-        name="stageMod"
-        type="java.lang.String"
-        column="STAGE_MOD"
-        length="1"
-    />
 
     <!-- Associations -->
   
@@ -109,9 +103,6 @@
         name="lowerAgeView"
         class="nz.cri.gns.fred.hibernate.AgeView"
         not-null="false"
-        insert="false"
-        update="false"
-        cascade="none"
     >
         <column name="STAGE_LOWER_ID" />
     </many-to-one>
@@ -121,9 +112,6 @@
         name="upperAgeView"
         class="nz.cri.gns.fred.hibernate.AgeView"
         not-null="false"
-        insert="false"
-        update="false"
-        cascade="none"
     >
         <column name="STAGE_UPPER_ID" />
     </many-to-one>

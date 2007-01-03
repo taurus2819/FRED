@@ -22,9 +22,6 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
     /** nullable persistent field */
     private String stageUpperMod;
 
-    /** nullable persistent field */
-    private String stageMod;
-
     /** persistent field */
     private AgeView lowerAgeView;
     
@@ -44,10 +41,9 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
     private Set<Adoption> adoptions;
 
     /** full constructor */
-    public Stage(String stageLowerMod, String stageUpperMod, String stageMod, AgeView lowerAgeView, AgeView upperAgeView, Set<Sample> samplesByKnownStageId, Set<Sample> samplesByInferredStageId, Set<Paleontology> paleontologies, Set<Adoption> adoptions) {
+    public Stage(String stageLowerMod, String stageUpperMod, AgeView lowerAgeView, AgeView upperAgeView, Set<Sample> samplesByKnownStageId, Set<Sample> samplesByInferredStageId, Set<Paleontology> paleontologies, Set<Adoption> adoptions) {
         this.stageLowerMod = stageLowerMod;
         this.stageUpperMod = stageUpperMod;
-        this.stageMod = stageMod;
         this.setLowerAgeView(lowerAgeView);
         this.setUpperAgeView(upperAgeView);
         this.samplesByKnownStageId = samplesByKnownStageId;
@@ -90,14 +86,6 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
 
     public void setStageUpperMod(String stageUpperMod) {
         this.stageUpperMod = stageUpperMod;
-    }
-
-    public String getStageMod() {
-        return this.stageMod;
-    }
-
-    public void setStageMod(String stageMod) {
-        this.stageMod = stageMod;
     }
     
 	public AgeView getLowerAgeView() {
