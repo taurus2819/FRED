@@ -868,6 +868,14 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return sampleDAO.getCarbonate(id);
 	}
 
+	public List<FossilGroup> getFossilGroups() throws StorageAccessException {
+		return sampleDAO.getList("FROM FossilGroup AS f", FossilGroup.class);
+	}
+	
+	public List<Lab> getLabs() throws StorageAccessException {
+		return sampleDAO.getList("FROM Lab As l", Lab.class);
+	}
+	
 	public SedimentaryFeature createSedimentaryFeature(String sedFeature, boolean isAbundant) throws StorageAccessException {
 		SedimentaryFeature feature = sampleDAO.createNewSedimentaryFeature();
 		feature.setAbundant((isAbundant) ? "Y" : "N");
