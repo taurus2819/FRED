@@ -96,7 +96,7 @@ public class StageUtil extends ModelUtil {
 			}
 		}
 		
-		Stage stage = stageDAO.findStage(startAgeId, startUncertain, stopAgeId, stopUncertain);
+		Stage stage = stageDAO.findStage(startAge, startUncertain, stopAge, stopUncertain);
 		if (stage == null) {
 			stage = stageDAO.createNewStage();
 			stage.setLowerAgeView(startAge);

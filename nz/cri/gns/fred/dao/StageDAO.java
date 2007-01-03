@@ -19,7 +19,7 @@ public interface StageDAO {
 	 * stages (by id) and has uncertainty as specified. 
 	 *@return a Stage object or null if no such object exists
 	 */
-	public Stage findStage(String startStageId, boolean startUncertain, String stopStageId, boolean stopUncertain) throws StorageAccessException;
+	public Stage findStage(AgeView startStage, boolean startUncertain, AgeView stopStage, boolean stopUncertain) throws StorageAccessException;
 
 	/**
 	 * Creates a new, uninitialised Stage object

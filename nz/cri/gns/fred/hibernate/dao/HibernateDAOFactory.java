@@ -613,48 +613,18 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		return new nz.cri.gns.fred.hibernate.SentTo();
 	}
 
-	public Stage findStage(String startStageId, boolean startUncertain, String stopStageId, boolean stopUncertain) throws StorageAccessException {
+	public Stage findStage(AgeView startStage, boolean startUncertain, AgeView stopStage, boolean stopUncertain) throws StorageAccessException {
 		try {
-			StringBuffer query = new StringBuffer("FROM Stage AS s WHERE ");
-			HashMap<String, Integer> intData = new  HashMap<String, Integer>(2);
-			Vector<String> strData = new Vector<String>(2);
-			if (startStageId == null) {
-				query.append("s.stageLowerId IS NULL ");
-			} else {
-				query.append("s.stageLowerId = :lower ");
-				intData.put("lower", new Integer(startStageId));
-			}
-			if (startUncertain) {
-				query.append("AND s.stageLowerMod = :lmod ");
-				strData.add("lmod");
-			} else {
-				query.append("AND s.stageLowerMod IS NULL ");
-			}
-			if (stopStageId == null) {
-				query.append("AND s.stageUpperId IS NULL ");
-			} else {
-				query.append("AND s.stageUpperId = :upper ");
-				intData.put("upper", new Integer(stopStageId));
-			}
-			if (stopUncertain) {
-				query.append("AND s.stageUpperMod = :umod");
-				strData.add("umod");
-			} else {
-				query.append("AND s.stageUpperMod IS NULL");
-			}
-			
-            Session session = provider.currentSession();
-            Query hquery = session.createQuery(query.toString());
-            for (String str : strData) {
-            	hquery.setString(str, "?");
-            }
-            for (String str : intData.keySet()) {
-            	hquery.setInteger(str, intData.get(str));
-            }
-            List list = hquery.list();
-            if (list.size() == 0)
-            	return null;
-            return (Stage)list.get(0);
+			Session session = provider.currentSession();
+            Query query = session.createQuery("FROM Stage AS s WHERE s.lowerAgeView = :lower AND s.stageLowerMod = :lMod AND s.upperAgeView = :upper AND s.stageUpperMod = :uMod");
+            query.setEntity("lower", startStage);
+            query.setBoolean("lMod", startUncertain);
+            query.setEntity("upper", stopStage);
+            query.setBoolean("uMod", stopUncertain);
+            List list = query.list();
+			if (list.size() == 0)
+			    return null;
+			return (Stage)list.get(0);
         } catch (Exception e) {
             throw new StorageAccessException(e);
         }
