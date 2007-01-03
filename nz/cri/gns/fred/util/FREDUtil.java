@@ -154,7 +154,7 @@ public class FREDUtil {
 	public static Connection getConnection() throws NamingException, SQLException {
 		InitialContext context = new InitialContext();
 		DataSource source = (DataSource)context.lookup("java:comp/env/jdbc/fr");
-		System.out.println("FRED Connection request - count = " + connCount++);
+		System.out.println("FRED Connection request - count = " + connCount++ + " - " + new Date());
 		return source.getConnection();
 	}
 
