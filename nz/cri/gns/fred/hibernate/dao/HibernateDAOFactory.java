@@ -613,20 +613,49 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		return new nz.cri.gns.fred.hibernate.SentTo();
 	}
 
-	public Stage findStage(AgeView startStage, boolean startUncertain, AgeView stopStage, boolean stopUncertain) throws StorageAccessException {
+	public Stage findStage(AgeView lowerAge, boolean lowerUncertain, AgeView upperAge, boolean upperUncertain) throws StorageAccessException {
 		try {
-			Session session = provider.currentSession();
-            Query query = session.createQuery("FROM Stage AS s WHERE s.lowerAgeView = :lower AND s.stageLowerMod = :lMod AND s.upperAgeView = :upper AND s.stageUpperMod = :uMod");
-            query.setEntity("lower", startStage);
-            query.setString("lMod", (startUncertain) ? "?" : null);
-            query.setEntity("upper", stopStage);
-            query.setString("uMod", (stopUncertain) ? "?" : null);
-            List list = query.list();
-			if (list.size() == 0)
-			    return null;
-			return (Stage)list.get(0);
+			StringBuffer query = new StringBuffer("FROM Stage AS s WHERE ");
+			HashMap<String, AgeView> ageViewData = new  HashMap<String, AgeView>(2);
+			Vector<String> strData = new Vector<String>(2);
+			if (lowerAge == null) {
+				query.append("s.lowerAgeView IS NULL ");
+			} else {
+				query.append("s.lowerAgeView = :lower ");
+				ageViewData.put("lower", lowerAge);
+			}
+			if (lowerUncertain) {
+				query.append("AND s.stageLowerMod = :lmod ");
+				strData.add("lmod");
+			} else {
+				query.append("AND s.stageLowerMod IS NULL ");
+			}
+			if (upperAge == null) {
+				query.append("AND s.upperAgeView IS NULL ");
+			} else {
+				query.append("AND s.upperAgeView = :upper ");
+				ageViewData.put("upper", upperAge);
+			}
+			if (upperUncertain) {
+				query.append("AND s.stageUpperMod = :umod");
+				strData.add("umod");
+			} else {
+				query.append("AND s.stageUpperMod IS NULL");
+			}
+			
+            Session session = provider.currentSession();
+            Query hquery = session.createQuery(query.toString());
+            for (String str : strData) {
+            	hquery.setString(str, "?");
+            }
+            for (String str : ageViewData.keySet()) {
+            	hquery.setEntity(str, ageViewData.get(str));
+            }
+            List list = hquery.list();
+            if (list.size() == 0)
+            	return null;
+            return (Stage)list.get(0);
         } catch (Exception e) {
-        	e.printStackTrace();
             throw new StorageAccessException(e);
         }
 	}
