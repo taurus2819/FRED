@@ -192,65 +192,6 @@ public class DrillholeLocalityDE extends LocalityDE {
 		return "drillhole";
 	}
 
-	/*
-	 * Doesn't need to be overridden - LocalityDE version is fine. 
-	public int save() throws SQLException, IOException, InsufficientPrivelegesException {
-		//Piggyback the localityDE's save
-		if (!savedFlag) {
-			DBConnection conn = FREDUtils.getFREDConnection(state);
-			conn.getConnection().setAutoCommit(false);
-			try {
-				super.save();
-				QueryDescriptor qd = new QueryDescriptor("feature");
-				qd.addQueryColumn("person_id", Types.NUMERIC, ((personID != null) ? new Integer(personID) : null));
-				qd.addQueryColumn("start_date", Types.DATE ,((spudDate != null) ? spudDate.getDate() : null));
-				qd.addQueryColumn("start_date_rounding", Types.VARCHAR, ((spudDate != null) ? spudDate.getDateRounding() : null));
-				qd.addQueryColumn("finish_date", Types.DATE ,((compDate != null) ? compDate.getDate() : null));
-				qd.addQueryColumn("finish_date_rounding", Types.VARCHAR, ((compDate != null) ? compDate.getDateRounding() : null));
-				qd.addQueryColumn("drillhole_licence_name", Types.VARCHAR, fields[LICENCE_AREA]);
-				qd.addQueryColumn("datum_type", Types.VARCHAR, fields[DATUM_TYPE]);
-				qd.addQueryColumn("datum_elevation", Types.NUMERIC, ((fields[DATUM_ELEVATION] != null) ? new Double(fields[DATUM_ELEVATION]) : null));
-				qd.addQueryColumn("start_depth", Types.NUMERIC, ((fields[KICK_OFF_DEPTH] != null) ? new Double(fields[KICK_OFF_DEPTH]) : null));
-				qd.addQueryColumn("finish_depth", Types.NUMERIC, ((fields[TERMINATION_DEPTH] != null) ? new Double(fields[TERMINATION_DEPTH]) : null));
-				qd.addQueryColumn(QueryDescriptor.NOT_FOR_UPDATE, Types.NUMERIC, new Integer(feature.getFeatureID()));
-				DBUtils.doUpdate(qd, "feature_id = ?", conn);
-				conn.getConnection().commit();
-				conn.getConnection().setAutoCommit(true);
-				conn.releaseStatement();
-				savedFlag = true;
-				feature = new Feature(feature.getFeatureID(), user, state, true);
-				if (feature.getSampleCount() == 0) {
-					qd = new QueryDescriptor("sample");
-					qd.addQueryColumn("feature_id", Types.NUMERIC, new Integer(feature.getFeatureID()));
-					qd.addQueryColumn("audit_id", Types.NUMERIC, new Integer(feature.getAsInt(Feature.AUDIT_ID)));
-					DBUtils.doInsertUsingSequence(qd, "sample_id", "sample_seq", conn, false);
-					feature = new Feature(feature.getFeatureID(), user, state, true);
-				}
-				int sampleID = ((Integer) feature.getAsVector(Feature.SAMPLES).firstElement()).intValue();
-				sample = new Sample(sampleID, user, state, true);
-			} catch (SQLException e) {
-				conn.getConnection().rollback();
-				conn.getConnection().setAutoCommit(true);
-				conn.releaseStatement();
-				savedFlag = false;
-				throw e;
-			} catch (IOException e) {
-				conn.getConnection().rollback();
-				conn.getConnection().setAutoCommit(true);
-				conn.releaseStatement();
-				savedFlag = false;
-				throw e;
-			} catch (InsufficientPrivelegesException e) {
-				conn.getConnection().rollback();
-				conn.getConnection().setAutoCommit(true);
-				conn.releaseStatement();
-				savedFlag = false;
-				throw e;
-			}
-		}
-		return feature.getFeatureID();
-	}
-*/
 	public boolean usesCalendar() {
 		return true;
 	}
