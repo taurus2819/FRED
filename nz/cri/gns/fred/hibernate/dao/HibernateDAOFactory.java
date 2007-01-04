@@ -1213,7 +1213,7 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public List<String> getFrMapSheets() throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
-            Query query = session.createQuery("SELECT DISTINCT(fr.mapSheet) FROM FrNumber AS fr");
+            Query query = session.createQuery("SELECT DISTINCT fr.mapSheet FROM FrNumber AS fr");
     		List<String> list = query.list();
     		Collections.sort(list);
     		return list;
