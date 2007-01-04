@@ -1210,6 +1210,10 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		return HibernateUtils.getFirst(provider, "FROM StratigraphicUnit AS s WHERE s.name = ?", name, StratigraphicUnit.class);
 	}
 	
+	public RelationshipType findRelationshipType(String name) throws StorageAccessException {
+		return HibernateUtils.getFirst(provider, "FROM RelationshipType AS r WHERE r.name = ?", name, RelationshipType.class);
+	}
+	
 	public List<String> getFrMapSheets() throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
