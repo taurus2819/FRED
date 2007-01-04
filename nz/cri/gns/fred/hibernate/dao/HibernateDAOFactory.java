@@ -1210,4 +1210,17 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		return HibernateUtils.getFirst(provider, "FROM StratigraphicUnit AS s WHERE s.name = ?", name, StratigraphicUnit.class);
 	}
 	
+	public List<String> getFrMapSheets() throws StorageAccessException {
+		try {
+            Session session = provider.currentSession();
+            Query query = session.createQuery("SELECT DISTINCT(fr.mapSheet) FROM FrNumber AS fr");
+    		List<String> list = query.list();
+    		Collections.sort(list);
+    		return list;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new StorageAccessException(e);
+		}		
+	}
+	
 }
