@@ -4,16 +4,19 @@
 %><%@page import="nz.cri.gns.fred.model.FrNumber"
 %><%@page import="nz.cri.gns.fred.model.Lab"
 %><%@page import="nz.cri.gns.fred.model.Person"
+%><%@page import="nz.cri.gns.fred.model.RelationshipType"
+%><%@page import="nz.cri.gns.fred.model.SedimentaryFeatureType"
 %><%@page import="nz.cri.gns.fred.model.StratigraphicUnit"
+%><%@page import="nz.cri.gns.fred.model.TaxonomicGroup"
+%><%@page import="nz.cri.gns.fred.model.Taxon"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
-%><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.PersonUtil"
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
-%><%@page import="nz.cri.gns.db.ComboDescriptor"
+%><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
 %><%@page import="nz.cri.gns.core.SimpleNameableAndIdentifiable"
 %><%@page import="nz.cri.gns.html.select.SelectBox"
 %><%@page import="nz.cri.gns.html.Attributes"
@@ -28,13 +31,13 @@
 		return "FRED :: Data Entry Helper";
 	}
 %><%
-	ComboDescriptor cd;
 	User user = (User) getUser(session);
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	FeatureUtil featureUtil = new FeatureUtil(factory);
 	FolderUtil folderUtil = new FolderUtil(factory);
 	PersonUtil personUtil = new PersonUtil(factory);
 	SampleUtil sampleUtil = new SampleUtil(factory);
+	TaxonomicUtil taxaUtil = new TaxonomicUtil(factory);
 
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLogin(false);
@@ -431,14 +434,10 @@
 			<input type="text" name="Distance" value="<%=DBUtils.nvl(request.getParameter("Distance"))%>" />&nbsp;m&nbsp;-&nbsp;
 			<input type="text" name="DistRange" value="<%=DBUtils.nvl(request.getParameter("DistRange"))%>" />&nbsp;m</td></tr>
 			<tr><td class="heading">Relationship</td><td><%
-			cd = new ComboDescriptor("relationship_type", "name", "name");
-			cd.name = "Rel";
-			cd.prompt = "-- Choose --";
-			cd.orderBy = "reltype_id";
-			cd.join = "relation_type = 'Sample' AND name != 'nearby'";
-			if (request.getParameter("Rel") != null && !request.getParameter("Rel").equals("-"))
-				cd.selected = request.getParameter("Rel");
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+			SelectBox<RelationshipType> rSelectBox = new SelectBox<RelationshipType>(sampleUtil.getRelationshipTypes("Sample"));
+			rSelectBox.setNameNameFlag(true);
+			Attributes attributes = Attributes.createNameOnlyAttributes("Rel");
+			rSelectBox.writeBox(attributes, "-- Choose --", null, (request.getParameter("Rel") != null && !request.getParameter("Rel").equals("-")) ? sampleUtil.findRelationshipType(request.getParameter("Rel")) : null, new PrintWriter(out));
 			%></td></tr>
 			<tr><td class="heading">Localities in Folders</td><td>
 			<select name="WorkFeat">
@@ -455,10 +454,10 @@
 			%></select>
 			</td></tr>
 			<tr><td class="heading">Map Sheet</td><td><%
-			SelectBox<SimpleNameableAndIdentifiable> selectBox = new SelectBox<SimpleNameableAndIdentifiable>(featureUtil.getFrMapSheets());
-			Attributes attributes = Attributes.createNameOnlyAttributes("MapSheet");
+			SelectBox<SimpleNameableAndIdentifiable> mSelectBox = new SelectBox<SimpleNameableAndIdentifiable>(featureUtil.getFrMapSheets());
+			attributes = Attributes.createNameOnlyAttributes("MapSheet");
 			attributes.setAttribute("onChange", "form1.submit();");
-			selectBox.writeBox(attributes, "-- Choose --", null, (request.getParameter("MapSheet") != null  && !request.getParameter("MapSheet").equals("-")) ? new SimpleNameableAndIdentifiable(request.getParameter("MapSheet"), request.getParameter("MapSheet")) : null, new PrintWriter(out));
+			mSelectBox.writeBox(attributes, "-- Choose --", null, (request.getParameter("MapSheet") != null  && !request.getParameter("MapSheet").equals("-")) ? new SimpleNameableAndIdentifiable(request.getParameter("MapSheet"), request.getParameter("MapSheet")) : null, new PrintWriter(out));
 			if (request.getParameter("MapSheet") != null  && !request.getParameter("MapSheet").equals("-")) {
 				%>&nbsp;&nbsp;
 				<select name="SubFeat">
@@ -487,18 +486,16 @@
 			<input type="text" name="Distance" />&nbsp;m&nbsp;-&nbsp;
 			<input type="text" name="DistRange" />&nbsp;m</td></tr>
 			<tr><td class="heading">Relationship</td><td><%
-			cd = new ComboDescriptor("relationship_type", "name", "name");
-			cd.name = "Rel";
-			cd.prompt = "-- Choose --";
-			cd.orderBy = "reltype_id";
-			cd.join = "relation_type = 'Stratigraphic'";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+			SelectBox<RelationshipType> rSelectBox = new SelectBox<RelationshipType>(sampleUtil.getRelationshipTypes("Stratigraphic"));
+			rSelectBox.setNameNameFlag(true);
+			Attributes attributes = Attributes.createNameOnlyAttributes("Rel");
+			rSelectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
 			%><tr><td class="heading">NZ StratLex</td><td><%
-			SelectBox<StratigraphicUnit> selectBox = new SelectBox<StratigraphicUnit>(sampleUtil.getStratigraphicUnits());
-			selectBox.setNameNameFlag(true);
-			Attributes attributes = Attributes.createNameOnlyAttributes("StratLex");
+			SelectBox<StratigraphicUnit> slSelectBox = new SelectBox<StratigraphicUnit>(sampleUtil.getStratigraphicUnits());
+			slSelectBox.setNameNameFlag(true);
+			attributes = Attributes.createNameOnlyAttributes("StratLex");
 			attributes.setAttribute("onChange", "form1.StratName.value = parseDropDown(StratLex.value);");
-			selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
+			slSelectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
 			%></td></tr>
 			<tr><td class="heading">Stratigraphic Name</td><td><input type="text" name="StratName" size="40" /></td></tr>
 			</table>
@@ -512,11 +509,10 @@
 			<tr><td colspan="2">Please select a feature from the list.  Check the Abundant box to indicate the feature is abundant.<br />You may add multiple features by clicking the Add To Main Form icon between each feature and then Close to end.</td></tr>
 			<tr><td>&nbsp;</td></tr>
 			<tr><td class="heading">Feature</td><td><%
-			cd = new ComboDescriptor("sedimentary_feature_type", "Name", "Code || ': ' || Name");
-			cd.name = "Feat";
-			cd.prompt = "-- Choose --";
-			cd.orderBy = "Code";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+			SelectBox<SedimentaryFeatureType> selectBox = new SelectBox<SedimentaryFeatureType>(sampleUtil.getSedimentaryFeatureTypes());
+			selectBox.setNameNameFlag(true);
+			Attributes attributes = Attributes.createNameOnlyAttributes("Feat");
+			selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
 			%></td></tr>
 			<tr><td class="heading">Abundant</td><td><input type="checkbox" name="Abund" /></td></tr>
 			</table>
@@ -531,32 +527,25 @@
 			<tr><td colspan="2">Please select a Taxonomic Group from the drop-down list.  The Taxonomic Name List will then be filled with appropriate taxa.  Either choose from this list or enter a new name in the Taxonomic Name and Author (optional) boxes.<br />Note: new taxonomic names will be entered into the database as provisional and will be assesed by members of the taxonomic panel.  You will not be able to submit your record until the name has been approved.<br />You may add multiple taxa by clicking the Add To Main Form icon between each taxa and then Close to end.</td></tr>
 			<tr><td>&nbsp;</td></tr>
 			<tr><td class="heading">Group</td><td><%
-			cd = new ComboDescriptor("taxonomic_group", "group_id", "name");
-			cd.name = "Group";
-			cd.prompt = "-- Choose --";
-			cd.orderBy = "group_ID";
-			cd.tagParams = "onChange='form1.submit();'";
-			if (request.getParameter("Group") != null) {
-				groupID = request.getParameter("Group");
-				cd.selected = groupID;
+			SelectBox<TaxonomicGroup> tgSelectBox = new SelectBox<TaxonomicGroup>(taxaUtil.getTaxonomicGroups());
+			Attributes attributes = Attributes.createNameOnlyAttributes("Group");
+			attributes.setAttribute("onChange", "form1.submit();");
+			tgSelectBox.writeBox(attributes, "-- Choose --", null, (request.getParameter("Group") != null  && !request.getParameter("Group").equals("-")) ? taxaUtil.getTaxonomicGroup(Integer.parseInt(request.getParameter("Group"))) : null, new PrintWriter(out));
+			%></td></tr><%
+			if (request.getParameter("Group") != null  && !request.getParameter("Group").equals("-")) {
+				%><tr><td class="heading">Taxonomic&nbsp;Name&nbsp;List</td><td><%
+				SelectBox<Taxon> tSelectBox = new SelectBox<Taxon>(taxaUtil.getAppProvTaxa(request.getParameter("Group")));
+				attributes = Attributes.createNameOnlyAttributes("TaxaList");
+				attributes.setAttribute("onChange", "form1.TaxaName.value = parseDropDown(TaxaList.options[TaxaList.selectedIndex].text);");
+				tSelectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
+				%></td></tr>
+				<tr><td class="heading">Taxonomic Name</td><td><input type="text" name="TaxaName" size="40" /></td></tr>
+				<tr><td class="heading">Author</td><td><input type="text" name="Author" size="40" /></td></tr>
+				<tr><td class="heading">Specimen Count</td><td><input type="text" name="SpecCount" size="40" /></td></tr>
+				<tr><td class="heading">Specimen Coordinates</td><td><input type="text" name="SpecCoord" size="40" /></td></tr>
+				<tr><td class="heading">Comments</td><td><textarea name="Comm" cols="40" rows="3"></textarea></td></tr><%
 			}
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
-			%></td></tr>
-			<tr><td class="heading">Taxonomic&nbsp;Name&nbsp;List</td><td><%
-			cd = new ComboDescriptor("Taxonomic_Lookup", "Taxa_id", "Taxonomic_Name");
-			cd.name = "TaxaList";
-			cd.prompt = "-- Choose --";
-			cd.orderBy = "UPPER(taxonomic_name)";
-			cd.tagParams = "onChange='form1.TaxaName.value = parseDropDown(TaxaList.options[TaxaList.selectedIndex].text);'";
-			cd.join = "group_id = " + groupID + " AND status IN ('approved', 'provisional') AND taxonomic_name IS NOT NULL";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
-			%></td></tr>
-			<tr><td class="heading">Taxonomic Name</td><td><input type="text" name="TaxaName" size="40" /></td></tr>
-			<tr><td class="heading">Author</td><td><input type="text" name="Author" size="40" /></td></tr>
-			<tr><td class="heading">Specimen Count</td><td><input type="text" name="SpecCount" size="40" /></td></tr>
-			<tr><td class="heading">Specimen Coordinates</td><td><input type="text" name="SpecCoord" size="40" /></td></tr>
-			<tr><td class="heading">Comments</td><td><textarea name="Comm" cols="40" rows="3"></textarea></td></tr>
-			</table>
+			%></table>
 			<table border="0" cellspacing="2" cellpadding="0">
 			<tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
 			<tr><td><a href="#" onClick="saveData('Taxa');return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData('Taxa');return false;" class="heading">Add to Main Form</a></td></tr><%
