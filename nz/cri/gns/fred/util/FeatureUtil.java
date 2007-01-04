@@ -19,6 +19,7 @@ import javax.naming.NamingException;
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
+import nz.cri.gns.core.SimpleNameableAndIdentifiable;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
@@ -1176,6 +1177,16 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (FEET_UNIT.equals(unit))
 			d.append(" (").append(FREDUtil.formatDoubleForOutput(new Double(depth.doubleValue() * FT_TO_M), 3)).append(" m)");
 		return d.toString();
+	}
+	
+	public List<SimpleNameableAndIdentifiable> getFrMapSheets() throws StorageAccessException {
+		List<String> sheetsAsString = featureDAO.getFrMapSheets();
+		List<SimpleNameableAndIdentifiable> sheets = new Vector<SimpleNameableAndIdentifiable>();
+		for (String sheetAsString : sheetsAsString) {
+			SimpleNameableAndIdentifiable sheet = new SimpleNameableAndIdentifiable(sheetAsString, sheetAsString);
+			sheets.add(sheet);
+		}
+		return sheets;
 	}
 	
 	public List<Feature> getListFromQueryBuilder(String query) throws StorageAccessException {
