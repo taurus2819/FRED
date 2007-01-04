@@ -232,7 +232,7 @@
 				}
 			}
 		}
-
+		try {
 		if (request.getParameter("Type").equals("OpComp")) {
 			%><tr><td class="heading" colspan="2">Operating Company</td></tr>
 			<tr><td colspan="2">Select a person/company from the drop-down list.  New companies can be added to the list by filling out the First and Surnames (or Company name) and pressing the Add button.</td></tr>
@@ -549,6 +549,9 @@
 			<table border="0" cellspacing="2" cellpadding="0">
 			<tr><td><img src="images/blank.gif" width="1" height="5" /></td></tr>
 			<tr><td><a href="#" onClick="saveData('Taxa');return false;" title="Add"><img src="images/put.gif" height="20" width="20" border="0" /></a>&nbsp;&nbsp;</td><td><a href="#" onClick="saveData('Taxa');return false;" class="heading">Add to Main Form</a></td></tr><%
+		}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
