@@ -4,6 +4,7 @@
 %><%@page import="nz.cri.gns.fred.model.FrNumber"
 %><%@page import="nz.cri.gns.fred.model.Lab"
 %><%@page import="nz.cri.gns.fred.model.Person"
+%><%@page import="nz.cri.gns.fred.model.StratigraphicUnit"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
@@ -328,6 +329,12 @@
 			<tr><td colspan="2">Please enter a stratigraphic unit name in the text box.  You can select a unit from the NZ StratLex drop-down box if appropriate.<br />If you don't know the name of the unit tick the "unknown" box (please use sparingly)</td></tr>
 			<tr><td>&nbsp;</td></tr>
 			<tr><td class="heading">NZ StratLex</td><td><%
+			SelectBox<StratigraphicUnit> selectBox = new SelectBox<StratigraphicUnit>(sampleUtil.getStratigraphicUnits());
+			selectBox.setNameNameFlag(true);
+			Attributes attributes = Attributes.createNameOnlyAttributes("StratLex");
+			attributes.setAttribute("onChange", "form1.StratName.value = parseDropDown(StratLex.value);");
+			selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
+			
 			cd = new ComboDescriptor("SL.Strat_Unit", "SU_Name", "SU_Name");
 			cd.name = "StratLex";
 			cd.prompt = "-- Choose --";
