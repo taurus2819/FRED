@@ -3,6 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.SedimentaryFeature;
+
 /** @author Hibernate CodeGenerator */
 public class SedimentaryFeatureType implements Serializable, nz.cri.gns.fred.model.SedimentaryFeatureType {
 
@@ -18,10 +20,10 @@ public class SedimentaryFeatureType implements Serializable, nz.cri.gns.fred.mod
     private String code;
 
     /** persistent field */
-    private Set sedimentaryFeatures;
+    private Set<SedimentaryFeature> sedimentaryFeatures;
 
     /** full constructor */
-    public SedimentaryFeatureType(Integer sedfeatureTypeId, String name, String code, Set sedimentaryFeatures) {
+    public SedimentaryFeatureType(Integer sedfeatureTypeId, String name, String code, Set<SedimentaryFeature> sedimentaryFeatures) {
         this.sedfeatureTypeId = sedfeatureTypeId;
         this.name = name;
         this.code = code;
@@ -56,13 +58,25 @@ public class SedimentaryFeatureType implements Serializable, nz.cri.gns.fred.mod
         this.code = code;
     }
 
-    public Set getSedimentaryFeatures() {
+    public Set<SedimentaryFeature> getSedimentaryFeatures() {
         return this.sedimentaryFeatures;
     }
 
-    public void setSedimentaryFeatures(Set sedimentaryFeatures) {
+    public void setSedimentaryFeatures(Set<SedimentaryFeature> sedimentaryFeatures) {
         this.sedimentaryFeatures = sedimentaryFeatures;
     }
+
+	public int compareTo(nz.cri.gns.fred.model.SedimentaryFeatureType arg0) {
+		return name.compareTo(arg0.getName());
+	}
+
+	public String getUniqueIdentifier() {
+		return String.valueOf(sedfeatureTypeId);
+	}
+
+	public String getDisplayName() {
+		return code +  ": " + name;
+	}
 
 
 }

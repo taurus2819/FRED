@@ -2,23 +2,15 @@ package nz.cri.gns.fred.model;
 
 import java.util.Set;
 
-/**
- *
- */
-public interface SedimentaryFeatureType {
-	public abstract Integer getSedfeatureTypeId();
+import nz.cri.gns.core.NameableAndIdentifiable;
 
-	public abstract void setSedfeatureTypeId(Integer sedfeatureTypeId);
-
-	public abstract String getName();
-
-	public abstract void setName(String name);
-
-	public abstract String getCode();
-
-	public abstract void setCode(String code);
-
-	public abstract Set getSedimentaryFeatures();
-
-	public abstract void setSedimentaryFeatures(Set sedimentaryFeatures);
+public interface SedimentaryFeatureType extends Comparable<SedimentaryFeatureType>, NameableAndIdentifiable {
+	public Integer getSedfeatureTypeId();
+	public void setSedfeatureTypeId(Integer sedfeatureTypeId);
+	public String getName();
+	public void setName(String name);
+	public String getCode();
+	public void setCode(String code);
+	public Set<SedimentaryFeature> getSedimentaryFeatures();
+	public void setSedimentaryFeatures(Set<SedimentaryFeature> sedimentaryFeatures);
 }

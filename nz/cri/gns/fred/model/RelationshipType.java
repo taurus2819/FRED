@@ -2,24 +2,15 @@ package nz.cri.gns.fred.model;
 
 import java.util.Set;
 
-/**
- *
- */
-public interface RelationshipType {
-	public abstract Integer getReltypeId();
+import nz.cri.gns.core.NameableAndIdentifiable;
 
-	public abstract void setReltypeId(Integer reltypeId);
-
-	public abstract String getName();
-
-	public abstract void setName(String name);
-
-	public abstract nz.cri.gns.fred.model.RelationType getRelationType();
-
-	public abstract void setRelationType(
-			nz.cri.gns.fred.model.RelationType relationshipTypeType);
-
-	public abstract Set getRelationships();
-
-	public abstract void setRelationships(Set relationships);
+public interface RelationshipType extends Comparable<RelationshipType>, NameableAndIdentifiable {
+	public Integer getReltypeId();
+	public void setReltypeId(Integer reltypeId);
+	public String getName();
+	public void setName(String name);
+	public RelationType getRelationType();
+	public void setRelationType(RelationType relationshipTypeType);
+	public Set<Relationship> getRelationships();
+	public void setRelationships(Set<Relationship> relationships);
 }

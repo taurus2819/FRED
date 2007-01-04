@@ -3,6 +3,9 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.RelationType;
+import nz.cri.gns.fred.model.Relationship;
+
 /** @author Hibernate CodeGenerator */
 public class RelationshipType implements Serializable, nz.cri.gns.fred.model.RelationshipType {
 
@@ -15,13 +18,13 @@ public class RelationshipType implements Serializable, nz.cri.gns.fred.model.Rel
     private String name;
 
     /** persistent field */
-    private nz.cri.gns.fred.model.RelationType relationType;
+    private RelationType relationType;
 
     /** persistent field */
-    private Set relationships;
+    private Set<Relationship> relationships;
 
     /** full constructor */
-    public RelationshipType(Integer reltypeId, String name, nz.cri.gns.fred.hibernate.RelationType relationType, Set relationships) {
+    public RelationshipType(Integer reltypeId, String name, RelationType relationType, Set<Relationship> relationships) {
         this.reltypeId = reltypeId;
         this.name = name;
         this.relationType = relationType;
@@ -48,20 +51,32 @@ public class RelationshipType implements Serializable, nz.cri.gns.fred.model.Rel
         this.name = name;
     }
 
-    public nz.cri.gns.fred.model.RelationType getRelationType() {
+    public RelationType getRelationType() {
         return this.relationType;
     }
 
-    public void setRelationType(nz.cri.gns.fred.model.RelationType relationType) {
+    public void setRelationType(RelationType relationType) {
         this.relationType = relationType;
     }
 
-    public Set getRelationships() {
+    public Set<Relationship> getRelationships() {
         return this.relationships;
     }
 
-    public void setRelationships(Set relationships) {
+    public void setRelationships(Set<Relationship> relationships) {
         this.relationships = relationships;
     }
+
+	public int compareTo(nz.cri.gns.fred.model.RelationshipType arg0) {
+		return reltypeId.compareTo(arg0.getReltypeId());
+	}
+
+	public String getUniqueIdentifier() {
+		return String.valueOf(reltypeId);
+	}
+
+	public String getDisplayName() {
+		return name;
+	}
 
 }
