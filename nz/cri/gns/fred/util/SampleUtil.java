@@ -896,7 +896,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	
 	public List<RelationshipType> getRelationshipTypes(String relationType) throws StorageAccessException {
 		RelationType relType = sampleDAO.getRelationType(relationType);
-		return sampleDAO.getList("FROM RelationshipType AS r WHERE relationType = ?", RelationshipType.class, relType);
+		return sampleDAO.getList("FROM RelationshipType AS r WHERE r.relationType = ?", RelationshipType.class, relType);
 	}
 	
 	public RelationshipType findRelationshipType(String name) throws StorageAccessException {
