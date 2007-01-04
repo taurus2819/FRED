@@ -16,6 +16,7 @@ import javax.naming.NamingException;
 
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.UserAccount;
+import nz.cri.gns.core.NameableAndIdentifiable;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
@@ -872,21 +873,34 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	public Carbonate getCarbonate(Integer id) throws StorageAccessException {
 		return sampleDAO.getCarbonate(id);
 	}
-
+	
+	public List<SedimentaryFeatureType> getSedimentaryFeatureTypes() throws StorageAccessException {
+		return sampleDAO.getList("FROM SedimentaryFeatureType AS s", SedimentaryFeatureType.class);
+	}
+	
 	public List<FossilGroup> getFossilGroups() throws StorageAccessException {
 		return sampleDAO.getList("FROM FossilGroup AS f", FossilGroup.class);
 	}
 	
 	public List<Lab> getLabs() throws StorageAccessException {
-		return sampleDAO.getList("FROM Lab As l", Lab.class);
+		return sampleDAO.getList("FROM Lab AS l", Lab.class);
 	}
 	
 	public List<StratigraphicUnit> getStratigraphicUnits() throws StorageAccessException {
-		return sampleDAO.getList("FROM StratigraphicUnit", StratigraphicUnit.class);
+		return sampleDAO.getList("FROM StratigraphicUnit AS s", StratigraphicUnit.class);
 	}
 	
 	public StratigraphicUnit findStratigraphicUnit(String name) throws StorageAccessException {
 		return sampleDAO.findStratigraphicUnit(name);
+	}
+	
+	public List<RelationshipType> getRelationshipTypes(String relationType) throws StorageAccessException {
+		RelationType relType = sampleDAO.getRelationType(relationType);
+		return sampleDAO.getList("FROM RelationshipType AS r WHERE relationType = ?", RelationshipType.class, relType);
+	}
+	
+	public RelationshipType findRelationshipType(String name) throws StorageAccessException {
+		return sampleDAO.findRelationshipType(name);
 	}
 	
 	public SedimentaryFeature createSedimentaryFeature(String sedFeature, boolean isAbundant) throws StorageAccessException {

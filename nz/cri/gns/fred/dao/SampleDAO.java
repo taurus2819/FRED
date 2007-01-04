@@ -193,6 +193,8 @@ public interface SampleDAO {
 	public DrillType getDrillType(int drillTypeId) throws StorageAccessException;
 	
 	public StratigraphicUnit findStratigraphicUnit(String name) throws StorageAccessException;
+	
+	public RelationshipType findRelationshipType(String name) throws StorageAccessException;
 
     public void saveOrUpdate(Audit audit) throws StorageAccessException;
 
@@ -204,6 +206,6 @@ public interface SampleDAO {
 	
 	public void delete(Relationship rel) throws StorageAccessException;
 	
-	public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException;
+	public <T extends Comparable> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException;
 
 }

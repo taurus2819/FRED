@@ -53,6 +53,43 @@ public interface TaxonomicDAO {
      */
 	public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name) throws StorageAccessException;
 
+	public TaxonomicGroup getTaxonomicGroup(int groupId) throws StorageAccessException;
+	
+	public TaxonomicGroup save(TaxonomicGroup group) throws StorageAccessException;
+	
+	/*
+	public List<TaxonomicGroup> getTaxonomicGroupsIsPanelistOf(int userId) throws StorageAccessException;
+	*/
+	
+	/**
+	 *@return a count of provisional taxa within the given group
+	 * @throws StorageAccessException
+	 * @deprectaed use getTaxaCount
+	 */
+	public int getProvisionalCount(TaxonomicGroup group) throws StorageAccessException;
+
+	/**
+	 *@return a count of taxa within the given group with the given status
+	 * @throws StorageAccessException
+	 */
+	public int getTaxaCount(TaxonomicGroup group, String status) throws StorageAccessException;
+
+	/**
+	 *@return a list of taxa within the given group with the given status
+	 * @throws StorageAccessException
+	 */
+	public List<Taxon> getTaxa(TaxonomicGroup group, String status) throws StorageAccessException;
+	
+	/**
+	 * Returns the group with the given name
+	 * @throws StorageAccessException 
+	 */
+	public TaxonomicGroup findTaxonomicGroup(String groupName) throws StorageAccessException;
+
+	/*
+	public List<Integer> getPanelistsOfTaxonomicGroup(TaxonomicGroup group) throws StorageAccessException;
+	*/
+	
 	public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException;
 	
 }

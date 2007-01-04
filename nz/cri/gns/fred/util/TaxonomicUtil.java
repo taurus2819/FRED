@@ -13,7 +13,6 @@ import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.TaxonomicDAO;
-import nz.cri.gns.fred.dao.TaxonomicGroupDAO;
 import nz.cri.gns.fred.dao.UserDAO;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.model.FREDConstants;
@@ -27,19 +26,21 @@ import nz.cri.gns.fred.model.TaxonomicGroup;
  */
 public class TaxonomicUtil extends ModelUtil {
 
-	private TaxonomicGroupDAO groupDAO;
     private TaxonomicDAO taxonomicDAO;
 	private UserDAO userDAO;
     
 	public TaxonomicUtil(DAOFactory dao) {
         super(dao);
-		this.groupDAO = dao.getTaxonomicGroupDAO();
         this.taxonomicDAO = dao.getTaxonomicDAO();
         this.userDAO = dao.getUserDAO();
 	}
 	
 	public TaxonomicGroup getTaxonomicGroup(int groupId) throws StorageAccessException {
-		return groupDAO.getTaxonomicGroup(groupId);
+		return taxonomicDAO.getTaxonomicGroup(groupId);
+	}
+	
+	public List<TaxonomicGroup> getTaxonomicGroups() throws StorageAccessException {
+		return taxonomicDAO.getList("FROM TaxonomicGroup AS t", TaxonomicGroup.class);
 	}
 	
 	public Taxon getTaxon(int taxonId) throws StorageAccessException {
@@ -66,12 +67,12 @@ public class TaxonomicUtil extends ModelUtil {
 	
 	public void addPanelistToTaxonomicGroup(TaxonomicGroup group, FrUserView frUser) throws StorageAccessException {
 		group.getPanelists().add(frUser);
-		groupDAO.save(group);
+		taxonomicDAO.save(group);
 	}
 
 	public void removePanelistFromTaxonomicGroup(TaxonomicGroup group, FrUserView frUser) throws StorageAccessException {
 		group.getPanelists().remove(frUser);
-		groupDAO.save(group);
+		taxonomicDAO.save(group);
 	}
 	
 	public Taxon approveTaxon(Taxon taxon, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
@@ -117,21 +118,29 @@ public class TaxonomicUtil extends ModelUtil {
 	 * @deprecated use getTaxaCount
 	 */
 	public int getProvisionalCount(TaxonomicGroup group) throws StorageAccessException {
-		return groupDAO.getTaxaCount(group, FREDConstants.PROVISIONAL);
+		return taxonomicDAO.getTaxaCount(group, FREDConstants.PROVISIONAL);
 	}
 	
 	public int getTaxaCount(TaxonomicGroup group, String status) throws StorageAccessException {
-		return groupDAO.getTaxaCount(group, status);
+		return taxonomicDAO.getTaxaCount(group, status);
 	}
 
 	public List<Taxon> getTaxa(TaxonomicGroup group, String status) throws StorageAccessException {
-		List<Taxon> taxa = groupDAO.getTaxa(group, status);
+		List<Taxon> taxa = taxonomicDAO.getTaxa(group, status);
+		Collections.sort(taxa);
+		return taxa;
+	}
+	
+	public List<Taxon> getAppProvTaxa(String group) throws StorageAccessException {
+		TaxonomicGroup taxaGroup = getTaxonomicGroup(group);
+		List<Taxon> taxa = getTaxa(taxaGroup, FREDConstants.APPROVED);
+		taxa.addAll(getTaxa(taxaGroup, FREDConstants.PROVISIONAL));
 		Collections.sort(taxa);
 		return taxa;
 	}
 	
 	public TaxonomicGroup getTaxonomicGroup(String groupName) throws StorageAccessException {
-		return groupDAO.findTaxonomicGroup(groupName);
+		return taxonomicDAO.findTaxonomicGroup(groupName);
 	}
 
 	/**
