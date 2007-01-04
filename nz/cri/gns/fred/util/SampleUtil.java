@@ -1,6 +1,9 @@
 package nz.cri.gns.fred.util;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -14,6 +17,7 @@ import javax.naming.NamingException;
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
@@ -46,6 +50,7 @@ import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SedimentaryFeatureType;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.Stage;
+import nz.cri.gns.fred.model.StratigraphicUnit;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.model.Weathering;
 
@@ -530,7 +535,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		//Set the unit by name
 		relationship.setStratUnit(name);
 		try {
-			relationship.setStratUnitId(FREDUtil.getStratLexIdFor(name));
+			relationship.setStratUnitId(findStratigraphicUnit(name).getId());
 		} catch (Exception e) {
 			throw new StorageAccessException(e);
 		}
@@ -874,6 +879,14 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	
 	public List<Lab> getLabs() throws StorageAccessException {
 		return sampleDAO.getList("FROM Lab As l", Lab.class);
+	}
+	
+	public List<StratigraphicUnit> getStratigraphicUnits() throws StorageAccessException {
+		return sampleDAO.getList("FROM StratigraphicUnit", StratigraphicUnit.class);
+	}
+	
+	public StratigraphicUnit findStratigraphicUnit(String name) throws StorageAccessException {
+		return sampleDAO.findStratigraphicUnit(name);
 	}
 	
 	public SedimentaryFeature createSedimentaryFeature(String sedFeature, boolean isAbundant) throws StorageAccessException {

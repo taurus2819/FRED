@@ -335,24 +335,6 @@ public class FREDUtil {
 		return buffer.substring(0, buffer.length()-1);
 	}
 
-	public static Integer getStratLexIdFor(String name) throws NamingException, SQLException {
-		Connection conn = null;
-		try {
-			conn = getConnection();
-			Statement statement = conn.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT su_id FROM sl.strat_unit WHERE su_name = " + DBUtils.sqlEscape(name));
-			Integer id = (rs.next()) ? new Integer(rs.getInt(1)): null;
-			rs.close();
-			statement.close();
-			return id;
-		} finally {
-			if (conn != null) try {
-				conn.close();
-			} catch (Exception _e) {
-			}
-		}
-	}
-
     public static String getNames(Set<? extends PersonRelationship> persons, String separator) {
     	if (persons == null)
     		return "";

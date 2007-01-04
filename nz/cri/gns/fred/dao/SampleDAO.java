@@ -26,6 +26,7 @@ import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SedimentaryFeatureType;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.Stage;
+import nz.cri.gns.fred.model.StratigraphicUnit;
 import nz.cri.gns.fred.model.Weathering;
 
 /**
@@ -190,6 +191,8 @@ public interface SampleDAO {
 	public SedimentaryFeatureType getSedimentaryFeatureTypeWithName(String sedFeature) throws StorageAccessException;
 
 	public DrillType getDrillType(int drillTypeId) throws StorageAccessException;
+	
+	public StratigraphicUnit findStratigraphicUnit(String name) throws StorageAccessException;
 
     public void saveOrUpdate(Audit audit) throws StorageAccessException;
 
