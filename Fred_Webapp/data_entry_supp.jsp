@@ -14,6 +14,7 @@
 %><%@page import="nz.cri.gns.fred.util.PersonUtil"
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
 %><%@page import="nz.cri.gns.db.ComboDescriptor"
+%><%@page import="nz.cri.gns.core.SimpleNameableAndIdentifiable"
 %><%@page import="nz.cri.gns.html.select.SelectBox"
 %><%@page import="nz.cri.gns.html.Attributes"
 %><%@page import="java.io.PrintWriter"
@@ -394,6 +395,11 @@
 			%></select>
 			</td></tr>
 			<tr><td class="heading">Map Sheet</td><td><%
+			SelectBox<SimpleNameableAndIdentifiable> selectBox = new SelectBox<SimpleNameableAndIdentifiable>(featureUtil.getFrMapSheets());
+			Attributes attributes = Attributes.createNameOnlyAttributes("MapSheet");
+			attributes.setAttribute("onChange", "form1.submit();");
+			selectBox.writeBox(attributes, "-- Choose --", null, (request.getParameter("MapSheet") != null  && !request.getParameter("MapSheet").equals("-")) ? new SimpleNameableAndIdentifiable(request.getParameter("MapSheet"), request.getParameter("MapSheet")) : null, new PrintWriter(out));
+			
 			cd = new ComboDescriptor("fr_number", "map_sheet", "map_sheet");
 			cd.name = "MapSheet";
 			cd.prompt = "-- Choose --";
