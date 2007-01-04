@@ -334,12 +334,6 @@
 			Attributes attributes = Attributes.createNameOnlyAttributes("StratLex");
 			attributes.setAttribute("onChange", "form1.StratName.value = parseDropDown(StratLex.value);");
 			selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
-			
-			cd = new ComboDescriptor("SL.Strat_Unit", "SU_Name", "SU_Name");
-			cd.name = "StratLex";
-			cd.prompt = "-- Choose --";
-			cd.tagParams = "onChange='form1.StratName.value = parseDropDown(StratLex.value);'";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
 			%></td></tr>
 			<tr><td class="heading">Stratigraphic Name</td><td><input type="text" name="StratName" size="40" />
 			&nbsp;&nbsp;<input type="checkbox" name="Unk" />&nbsp;unknown
@@ -507,11 +501,11 @@
 			cd.join = "relation_type = 'Stratigraphic'";
 			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
 			%><tr><td class="heading">NZ StratLex</td><td><%
-			cd = new ComboDescriptor("SL.Strat_Unit", "SU_Name", "SU_Name");
-			cd.name = "StratLex";
-			cd.prompt = "-- Choose --";
-			cd.tagParams = "onChange='form1.StratName.value = parseDropDown(StratLex.value);'";
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+			SelectBox<StratigraphicUnit> selectBox = new SelectBox<StratigraphicUnit>(sampleUtil.getStratigraphicUnits());
+			selectBox.setNameNameFlag(true);
+			Attributes attributes = Attributes.createNameOnlyAttributes("StratLex");
+			attributes.setAttribute("onChange", "form1.StratName.value = parseDropDown(StratLex.value);");
+			selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
 			%></td></tr>
 			<tr><td class="heading">Stratigraphic Name</td><td><input type="text" name="StratName" size="40" /></td></tr>
 			</table>
