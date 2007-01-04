@@ -1205,5 +1205,9 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 	public AgeView getAgeView(int ageId) throws StorageAccessException {
 		return HibernateUtils.getFirst(provider, "FROM AgeView AS a WHERE a.ageId = ?", ageId, AgeView.class);
 	}
+
+	public StratigraphicUnit findStratigraphicUnit(String name) throws StorageAccessException {
+		return HibernateUtils.getFirst(provider, "FROM StratigraphicUnit AS s WHERE s.name = ?", name, StratigraphicUnit.class);
+	}
 	
 }
