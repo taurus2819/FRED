@@ -9,7 +9,6 @@ public interface DAOFactory {
 
 	public FolderDAO getFolderDAO();
 	public FolderTypeDAO getFolderTypeDAO();
-	public TaxonomicGroupDAO getTaxonomicGroupDAO();
 	public FeatureDAO getFeatureDAO();
 	public SampleDAO getSampleDAO();
 	public RecordDAO getRecordDAO();

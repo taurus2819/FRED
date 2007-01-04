@@ -35,7 +35,6 @@ import nz.cri.gns.fred.dao.SiteDAO;
 import nz.cri.gns.fred.dao.StageDAO;
 import nz.cri.gns.fred.dao.StratLexDAO;
 import nz.cri.gns.fred.dao.TaxonomicDAO;
-import nz.cri.gns.fred.dao.TaxonomicGroupDAO;
 import nz.cri.gns.fred.dao.UserDAO;
 import nz.cri.gns.fred.hibernate.AuditTable;
 import nz.cri.gns.fred.hibernate.FolderUser;
@@ -93,7 +92,7 @@ import nz.cri.gns.fred.model.Weathering;
 /**
  * @author iainm
  */
-public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, TaxonomicGroupDAO, AuditDAO, BacklogStatusDAO, StratLexDAO, UserDAO, StageDAO, SiteDAO {
+public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, AuditDAO, BacklogStatusDAO, StratLexDAO, UserDAO, StageDAO, SiteDAO {
 
 	private HibernateProvider provider;
 
@@ -252,10 +251,6 @@ public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO,
 		} catch (Exception e) {
 			throw new StorageAccessException(e);
 		}
-	}
-
-	public TaxonomicGroupDAO getTaxonomicGroupDAO() {
-		return this;
 	}
 
 	//TaxonomicDAO methods
