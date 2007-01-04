@@ -176,6 +176,14 @@ public class PaleontologyRecordDE extends RecordDE {
 			return taxonomicName.compareTo(arg0.getTaxonomicName());
 		}
 
+		public String getUniqueIdentifier() {
+			return null;
+		}
+
+		public String getDisplayName() {
+			return taxonomicName;
+		}
+
 	}
 	public class UnsavedListEntry implements PaleontologyListEntry {
 

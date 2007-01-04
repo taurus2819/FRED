@@ -92,7 +92,7 @@ import nz.cri.gns.fred.model.Weathering;
 /**
  * @author iainm
  */
-public class HibernateDAOFactory implements TaxonomicDAO, DAOFactory, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, AuditDAO, BacklogStatusDAO, StratLexDAO, UserDAO, StageDAO, SiteDAO {
+public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, AuditDAO, BacklogStatusDAO, StratLexDAO, UserDAO, StageDAO, SiteDAO {
 
 	private HibernateProvider provider;
 

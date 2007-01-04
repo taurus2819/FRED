@@ -26,7 +26,6 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.dao.TaxonomicDAO;
-import nz.cri.gns.fred.dao.TaxonomicGroupDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
@@ -67,12 +66,11 @@ public class TaxaReport {
 		Set<Sample> samples = new HashSet<Sample>();
 		
 		TaxonomicDAO dao = HibernateUtil.get().getDAOFactory().getTaxonomicDAO();
-		TaxonomicGroupDAO groupDAO = HibernateUtil.get().getDAOFactory().getTaxonomicGroupDAO();
 		
 		System.out.println("Gathering data");
 		for (String name : parseInputFile(args[1])) {
 			System.out.println(name);
-			Taxon taxonName = dao.getTaxon(groupDAO.findTaxonomicGroup(args[0]), name);
+			Taxon taxonName = dao.getTaxon(dao.findTaxonomicGroup(args[0]), name);
 			if (taxonName == null)
 				continue;
 			Set<PaleontologyListEntry> entries = taxonName.getListEntries();
