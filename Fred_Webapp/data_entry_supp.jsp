@@ -399,15 +399,6 @@
 			Attributes attributes = Attributes.createNameOnlyAttributes("MapSheet");
 			attributes.setAttribute("onChange", "form1.submit();");
 			selectBox.writeBox(attributes, "-- Choose --", null, (request.getParameter("MapSheet") != null  && !request.getParameter("MapSheet").equals("-")) ? new SimpleNameableAndIdentifiable(request.getParameter("MapSheet"), request.getParameter("MapSheet")) : null, new PrintWriter(out));
-			
-			cd = new ComboDescriptor("fr_number", "map_sheet", "map_sheet");
-			cd.name = "MapSheet";
-			cd.prompt = "-- Choose --";
-			cd.tagParams = "onChange='form1.submit();'";
-			cd.selectDistinct = true;
-			if (request.getParameter("MapSheet") != null  && !request.getParameter("MapSheet").equals("-"))
-				cd.selected = request.getParameter("MapSheet");
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
 			if (request.getParameter("MapSheet") != null  && !request.getParameter("MapSheet").equals("-")) {
 				%>&nbsp;&nbsp;
 				<select name="SubFeat">
@@ -464,14 +455,10 @@
 			%></select>
 			</td></tr>
 			<tr><td class="heading">Map Sheet</td><td><%
-			cd = new ComboDescriptor("fr_number", "map_sheet", "map_sheet");
-			cd.name = "MapSheet";
-			cd.prompt = "-- Choose --";
-			cd.tagParams = "onChange='form1.submit();'";
-			cd.selectDistinct = true;
-			if (request.getParameter("MapSheet") != null  && !request.getParameter("MapSheet").equals("-"))
-				cd.selected = request.getParameter("MapSheet");
-			FREDUtil.makeDropBox(new java.io.PrintWriter(out), cd);
+			SelectBox<SimpleNameableAndIdentifiable> selectBox = new SelectBox<SimpleNameableAndIdentifiable>(featureUtil.getFrMapSheets());
+			Attributes attributes = Attributes.createNameOnlyAttributes("MapSheet");
+			attributes.setAttribute("onChange", "form1.submit();");
+			selectBox.writeBox(attributes, "-- Choose --", null, (request.getParameter("MapSheet") != null  && !request.getParameter("MapSheet").equals("-")) ? new SimpleNameableAndIdentifiable(request.getParameter("MapSheet"), request.getParameter("MapSheet")) : null, new PrintWriter(out));
 			if (request.getParameter("MapSheet") != null  && !request.getParameter("MapSheet").equals("-")) {
 				%>&nbsp;&nbsp;
 				<select name="SubFeat">
