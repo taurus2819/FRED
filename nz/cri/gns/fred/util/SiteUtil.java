@@ -181,7 +181,7 @@ public class SiteUtil extends ModelUtil {
 		DatabaseApp2 app = null;
 		SiteRecord sr = null;
 		try {
-			conn = FREDUtil.getConnection();
+			conn = FREDUtil.getConnection("get siterecord");
 			app = new BasicDatabaseApp2(conn, "");
 			sr = SiteRecord.querySite(app, feature.getSiteId().intValue());
 		} finally {
@@ -212,7 +212,7 @@ public class SiteUtil extends ModelUtil {
 	public static List<DatumMethod> getSiteDatumMethods() throws NamingException, SQLException {
 		Connection conn = null;
 		try {
-			conn = FREDUtil.getConnection();
+			conn = FREDUtil.getConnection("get datum methods");
 			Statement statement = conn.createStatement();
 			ResultSet rs = statement.executeQuery("SELECT Method_ID, Method, Nom_Accuracy_XY, Nom_Accuracy_Z FROM SC.Method WHERE Nom_Accuracy_XY IS NOT NULL ORDER BY Nom_Accuracy_XY");
 			

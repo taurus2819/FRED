@@ -151,10 +151,10 @@ public class FREDUtil {
 	 * @throws NamingException
 	 * @throws SQLException
 	 */
-	public static Connection getConnection() throws NamingException, SQLException {
+	public static Connection getConnection(String why) throws NamingException, SQLException {
 		InitialContext context = new InitialContext();
 		DataSource source = (DataSource)context.lookup("java:comp/env/jdbc/fr");
-		System.out.println("FRED Connection request - count = " + connCount++ + " - " + new Date());
+		System.out.println("FRED Connection request for " + why + " - count = " + connCount++ + " - " + new Date());
 		return source.getConnection();
 	}
 
@@ -169,7 +169,7 @@ public class FREDUtil {
 	public static boolean checkEditSecurityClass(UserAccount user) {
 		Connection conn = null;
 		try {
-			conn = getConnection();
+			conn = getConnection("check edit securiry class");
 			BasicDatabaseApp2 app = new BasicDatabaseApp2(conn, user.getId());
 			SecurityClass sc = new SecurityClass(SECURITY_CLASS_FRED_EDIT, app);
 			SecurityClassAccess sca = new SecurityClassAccess(sc, Right.ANY_RIGHT);
@@ -239,7 +239,7 @@ public class FREDUtil {
 	}
 	
 	public static void makeDropBox(PrintWriter out, ComboDescriptor cd) throws SQLException, NamingException {
-		Connection conn = getConnection();
+		Connection conn = getConnection("make drop box");
 		Statement statement = conn.createStatement();
 		try {
 			HTMLUtils.makeDropBox(out, statement, cd);
@@ -276,7 +276,7 @@ public class FREDUtil {
 	public static String getMetaTitle(Meta meta) throws SQLException, NamingException {
 		Connection conn = null;
 		try {
-			conn = getConnection();
+			conn = getConnection("get meta title");
 			Statement statement = conn.createStatement();
 			ResultSet rs = statement.executeQuery("SELECT title FROM metacat.public_metacat_view WHERE meta_id = " + meta.getMetaId());
 			String title = (rs.next()) ? rs.getString(1) : "";
@@ -294,7 +294,7 @@ public class FREDUtil {
 
 	public static String getInstance() throws SQLException, NamingException {
 		if (instance == null) {
-			Connection conn = getConnection();
+			Connection conn = getConnection("get instance");
 			instance = DBUtils.getInstance(new BasicDatabaseApp2(conn, ""));
 			conn.close();
 		}
@@ -306,7 +306,7 @@ public class FREDUtil {
 			return null;
 		Connection conn = null;
 		try {
-			conn = getConnection();
+			conn = getConnection("get petroleum well name");
 			Statement statement = conn.createStatement();
 			ResultSet rs = statement.executeQuery("SELECT well_name FROM petroleum.petroleum_well WHERE UPPER(well_name) = '" + feature.getFeatureName().toUpperCase() + "'");
 			rs.next();
@@ -382,7 +382,7 @@ public class FREDUtil {
     }
 
 	public static DocumentAttacher getDocumentAttacher(String docType, PageState state) throws SQLException, DataException, IOException, NamingException {
-		Connection connection = getConnection();
+		Connection connection = getConnection("get document attacher");
 		docAttacherConnections.set(connection);
 		return new DocumentAttacher(state.getSession(),
 				state.getContext(),

@@ -223,7 +223,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>();
 		Connection conn;
 		try {
-			conn = FREDUtil.getConnection();
+			conn = FREDUtil.getConnection("get SQL for FREDQuery");
 			Statement statement = conn.createStatement();
 			ResultSet rs = statement.executeQuery(sql);
 			while (rs.next())
