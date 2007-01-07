@@ -1,9 +1,5 @@
 package nz.cri.gns.fred.util;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -12,17 +8,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import javax.naming.NamingException;
-
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.UserAccount;
-import nz.cri.gns.core.NameableAndIdentifiable;
 import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
-import nz.cri.gns.fred.dao.StageDAO;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.de.MandatoryFieldsMissingException;
 import nz.cri.gns.fred.model.Adoption;
@@ -50,7 +41,6 @@ import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SedimentaryFeatureType;
 import nz.cri.gns.fred.model.SentTo;
-import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.model.StratigraphicUnit;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.model.Weathering;
@@ -535,11 +525,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		String name = getCommonRelationshipPropertiesFromDescription(desc, relationship, sampleDAO.getRelationType("Stratigraphic"));
 		//Set the unit by name
 		relationship.setStratUnit(name);
-		try {
-			relationship.setStratUnitId(findStratigraphicUnit(name).getId());
-		} catch (Exception e) {
-			throw new StorageAccessException(e);
-		}
+		StratigraphicUnit stratUnit = findStratigraphicUnit(name);
+		relationship.setStratUnitId((stratUnit != null) ? stratUnit.getId() : null);
 		return relationship;
 	}
 	
