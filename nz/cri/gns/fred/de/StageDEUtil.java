@@ -40,14 +40,9 @@ public class StageDEUtil {
 
 	public static Stage getStage(HttpServletRequest request, String prefix, Stage existingStage, StageUtil stageUtil, String label) throws DataInputException {
 	    String startId = FREDUtil.decodeCombo(request.getParameter(prefix + "StageStart"));
-	    System.out.println("startId: " + startId);
 	    String startMod = FREDUtil.decodeCombo(request.getParameter(prefix + "StartMod"));
-	    System.out.println("startMod: " + startMod);
 	    String stopId = FREDUtil.decodeCombo(request.getParameter(prefix + "StageStop"));
-	    System.out.println("stopId: " + stopId);
 	    String stopMod = FREDUtil.decodeCombo(request.getParameter(prefix + "StopMod"));
-	    System.out.println("stopMod: " + stopMod);
-	    System.out.println("StageUtil: " + stageUtil);
 	    try {
 		    if (stageUtil.stageDiffers(existingStage, startId, startMod != null, stopId, stopMod != null)) {
 		    	try {
