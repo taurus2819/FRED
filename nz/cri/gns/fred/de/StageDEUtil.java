@@ -40,21 +40,26 @@ public class StageDEUtil {
 
 	public static Stage getStage(HttpServletRequest request, String prefix, Stage existingStage, StageUtil stageUtil, String label) throws DataInputException {
 	    String startId = FREDUtil.decodeCombo(request.getParameter(prefix + "StageStart"));
+	    System.out.println("startId: " + startId);
 	    String startMod = FREDUtil.decodeCombo(request.getParameter(prefix + "StartMod"));
+	    System.out.println("startMod: " + startMod);
 	    String stopId = FREDUtil.decodeCombo(request.getParameter(prefix + "StageStop"));
+	    System.out.println("stopId: " + stopId);
 	    String stopMod = FREDUtil.decodeCombo(request.getParameter(prefix + "StopMod"));
+	    System.out.println("stopMod: " + stopMod);
 	    
 	    try {
-	    if (stageUtil.stageDiffers(existingStage, startId, startMod != null, stopId, stopMod != null)) {
-	    	try {
-	    		return stageUtil.getStage(startId, startMod != null, stopId, stopMod != null);
-	    	} catch (Exception e) {
-	    		e.printStackTrace();
-	    		throw new DataInputException(label, e.getMessage());
-	    	}
-	    } else {
-	        return existingStage;
-	    } } catch (Exception e) {e.printStackTrace(); throw new DataInputException(label, e.getMessage());}
+		    if (stageUtil.stageDiffers(existingStage, startId, startMod != null, stopId, stopMod != null)) {
+		    	try {
+		    		return stageUtil.getStage(startId, startMod != null, stopId, stopMod != null);
+		    	} catch (Exception e) {
+		    		e.printStackTrace();
+		    		throw new DataInputException(label, e.getMessage());
+		    	}
+		    } else {
+		        return existingStage;
+		    }
+	    } catch (Exception e) {e.printStackTrace(); throw new DataInputException(label, e.getMessage());}
 	}
 
 }
