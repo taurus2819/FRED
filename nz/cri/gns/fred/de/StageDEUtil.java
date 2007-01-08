@@ -43,18 +43,16 @@ public class StageDEUtil {
 	    String startMod = FREDUtil.decodeCombo(request.getParameter(prefix + "StartMod"));
 	    String stopId = FREDUtil.decodeCombo(request.getParameter(prefix + "StageStop"));
 	    String stopMod = FREDUtil.decodeCombo(request.getParameter(prefix + "StopMod"));
-	    try {
-		    if (stageUtil.stageDiffers(existingStage, startId, startMod != null, stopId, stopMod != null)) {
-		    	try {
-		    		return stageUtil.getStage(startId, startMod != null, stopId, stopMod != null);
-		    	} catch (Exception e) {
-		    		e.printStackTrace();
-		    		throw new DataInputException(label, e.getMessage());
-		    	}
-		    } else {
-		        return existingStage;
-		    }
-	    } catch (Exception e) {e.printStackTrace(); throw new DataInputException(label, e.getMessage());}
+		if (stageUtil.stageDiffers(existingStage, startId, startMod != null, stopId, stopMod != null)) {
+		   	try {
+		   		return stageUtil.getStage(startId, startMod != null, stopId, stopMod != null);
+		   	} catch (Exception e) {
+		   		e.printStackTrace();
+		   		throw new DataInputException(label, e.getMessage());
+		   	}
+		} else {
+			return existingStage;
+		}
 	}
 
 }
