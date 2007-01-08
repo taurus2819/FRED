@@ -1025,7 +1025,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 				//Find it
 				boolean found = false;
 				for (SedimentaryFeature thisFeature : sedFeatures) {
-					if (thisFeature.getSedimentaryFeatureType().getName().equals(sedFeature) && !(DBUtils.nvl(thisFeature.getAbundant()).equals(FREDConstants.Y) ^ isAbundant)) {
+					if (((thisFeature.getSedimentaryFeatureType().getName().equals(sedFeature)
+							|| (thisFeature.getSedimentaryFeatureType().getCode() + ": " + thisFeature.getSedimentaryFeatureType().getName()).equals(sedFeature))
+							&& !(DBUtils.nvl(thisFeature.getAbundant()).equals(FREDConstants.Y) ^ isAbundant))) {
 						//It's a match
 						newFeatures.add(thisFeature);
 						found = true;

@@ -11,6 +11,7 @@ import java.util.Vector;
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
@@ -893,6 +894,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	public SedimentaryFeature createSedimentaryFeature(String sedFeature, boolean isAbundant) throws StorageAccessException {
 		SedimentaryFeature feature = sampleDAO.createNewSedimentaryFeature();
 		feature.setAbundant((isAbundant) ? "Y" : "N");
+		if (sedFeature.indexOf(":") >= 0)
+			sedFeature = sedFeature.substring(sedFeature.indexOf(":") + 1).trim();
 		SedimentaryFeatureType type = sampleDAO.getSedimentaryFeatureTypeWithName(sedFeature);
 		if (type == null)
 			throw new IllegalArgumentException("Invalid sedimentary feature type: " + sedFeature);
