@@ -47,10 +47,9 @@ public class StageDEUtil {
 	    System.out.println("stopId: " + stopId);
 	    String stopMod = FREDUtil.decodeCombo(request.getParameter(prefix + "StopMod"));
 	    System.out.println("stopMod: " + stopMod);
-	    
+	    System.out.println("StageUtil: " + stageUtil);
 	    try {
-		    //if (stageUtil.stageDiffers(existingStage, startId, startMod != null, stopId, stopMod != null)) {
-		    if (stageUtil.stageDiffers(new nz.cri.gns.fred.hibernate.Stage(), "81", true, "81", true)) {
+		    if (stageUtil.stageDiffers(existingStage, startId, startMod != null, stopId, stopMod != null)) {
 		    	try {
 		    		return stageUtil.getStage(startId, startMod != null, stopId, stopMod != null);
 		    	} catch (Exception e) {
