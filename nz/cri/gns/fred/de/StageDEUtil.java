@@ -50,7 +50,7 @@ public class StageDEUtil {
 	    
 	    try {
 		    //if (stageUtil.stageDiffers(existingStage, startId, startMod != null, stopId, stopMod != null)) {
-		    if (stageUtil.stageDiffers(existingStage, "81", true, "81", true)) {
+		    if (stageUtil.stageDiffers(new nz.cri.gns.hibernate.Stage(), "81", true, "81", true)) {
 		    	try {
 		    		return stageUtil.getStage(startId, startMod != null, stopId, stopMod != null);
 		    	} catch (Exception e) {
