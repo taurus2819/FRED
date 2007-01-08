@@ -49,7 +49,8 @@ public class StageDEUtil {
 	    System.out.println("stopMod: " + stopMod);
 	    
 	    try {
-		    if (stageUtil.stageDiffers(existingStage, startId, startMod != null, stopId, stopMod != null)) {
+		    //if (stageUtil.stageDiffers(existingStage, startId, startMod != null, stopId, stopMod != null)) {
+		    if (stageUtil.stageDiffers(existingStage, "81", startMod != null, "81", stopMod != null)) {
 		    	try {
 		    		return stageUtil.getStage(startId, startMod != null, stopId, stopMod != null);
 		    	} catch (Exception e) {
