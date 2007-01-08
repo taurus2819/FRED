@@ -76,12 +76,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 
 	public SampleDE(User user, Feature feature, int folderID, DAOFactory factory, ContentProvider content, boolean reuseFeatureAudit) throws StorageAccessException, InsufficientPrivelegesException {
-		initialise((sampleUtil = new SampleUtil(factory)).createSample(feature, folderID, reuseFeatureAudit, user), folderID, user, factory, content);
+		initialise(new SampleUtil(factory).createSample(feature, folderID, reuseFeatureAudit, user), folderID, user, factory, content);
 	}
 
 	public SampleDE(Sample sample, int folderId, User user, DAOFactory factory, ContentProvider provider) throws InsufficientPrivelegesException, StorageAccessException {
-		sampleUtil = new SampleUtil(factory);
-		stageUtil = new StageUtil(factory);
 		initialise(sample, folderId, user, factory, provider);
 	}
 
@@ -90,6 +88,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		this.user = user;
 		this.provider = content;
 		this.factory = factory;
+		this.sampleUtil = new SampleUtil(factory);
+		this.stageUtil = new StageUtil(factory);
 		
 		FolderUtil folderUtil = new FolderUtil(factory);
 		
