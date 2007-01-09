@@ -50,6 +50,8 @@ import nz.cri.gns.fred.util.PersonUtil;
 import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.website.ContentProvider;
+import nz.cri.gns.html.Attributes;
+import nz.cri.gns.html.select.SelectBox;
 import nz.cri.gns.intranet.Template;
 import nz.cri.gns.jsp.IconnedLink;
 
@@ -194,7 +196,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
         reinitialise(factory);
- 		ComboDescriptor cd;
+        ComboDescriptor cd;
 		
 		if (!outcropSample) {
             //This section is only relevant if this is _not_ an outcrop sample
@@ -218,12 +220,16 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 				try {
 					//drill type combo box
 					template.loadUntil(out, "{@drillTypeCombo}");
-					cd = new ComboDescriptor("drill_type", "drill_type_id", "Name");
-					cd.name = "DrillType";
-					cd.orderBy = "drill_type_id";
-					cd.prompt = " -- Choose -- ";
-					cd.selected = (sample.getDrillType() == null) ? null : String.valueOf(sample.getDrillType().getDrillTypeId());
-					FREDUtil.makeDropBox(out, cd);
+					//cd = new ComboDescriptor("drill_type", "drill_type_id", "Name");
+					//cd.name = "DrillType";
+					//cd.orderBy = "drill_type_id";
+					//cd.prompt = " -- Choose -- ";
+					//cd.selected = (sample.getDrillType() == null) ? null : String.valueOf(sample.getDrillType().getDrillTypeId());
+					//FREDUtil.makeDropBox(out, cd);
+					SelectBox<DrillType> selectBox = new SelectBox<DrillType>(sampleUtil.getDrillTypes());
+					Attributes attributes = Attributes.createNameOnlyAttributes("DrillType");
+					selectBox.writeBox(attributes, "-- Choose --", null, (sample.getDrillType() == null) ? null : sample.getDrillType(), out);
+
 				} catch (Exception e) {}
 			}
 			//comments
@@ -234,20 +240,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
             template.loadAll(out);
         }
-/*
-        out.write("<tr><td class='heading' colspan='2'>Security Setting</td><td>");
-			cd = new ComboDescriptor("security_class", "class_id", "Name");
-			cd.name = "SecType";
-			if (getField(SECURITY_TYPE) != null) {
-				cd.selected = getFieldForHTML(SECURITY_TYPE);
-			} else {
-				cd.selected = "21";
-			}
-			cd.orderBy = "class_ID";
-			HTMLUtils.makeDropBox(out, conn, cd);
-			out.write("</td></tr>\n");
-		}
-        */
 
 		try {
 	        Template template = provider.getContent("sample.de.form");

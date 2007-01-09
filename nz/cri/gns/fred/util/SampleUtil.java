@@ -862,6 +862,10 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return sampleDAO.getCarbonate(id);
 	}
 	
+	public List<DrillType> getDrillTypes() throws StorageAccessException {
+		return sampleDAO.getList("FROM DrillType AS t", DrillType.class);
+	}
+	
 	public List<SedimentaryFeatureType> getSedimentaryFeatureTypes() throws StorageAccessException {
 		return sampleDAO.getList("FROM SedimentaryFeatureType AS s", SedimentaryFeatureType.class);
 	}
