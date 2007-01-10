@@ -820,6 +820,10 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return rel.getRelationType().getName().equals(FREDConstants.SAMPLE)
 			&& rel.getRelationshipType().getName().equals(FREDConstants.NEARBY);
 	}
+
+	public boolean isStratigraphicRelationship(Relationship rel) {
+		return rel.getRelationType().getName().equals(FREDConstants.STRATIGRAPHIC);
+	}
 	
 	public GrainSize getGrainSize(Integer id) throws StorageAccessException {
 		return sampleDAO.getGrainSize(id);
@@ -829,10 +833,14 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return sampleDAO.getList("FROM GrainSize AS a", GrainSize.class);
 	}
 
-	public boolean isStratigraphicRelationship(Relationship rel) {
-		return rel.getRelationType().getName().equals(FREDConstants.STRATIGRAPHIC);
+	public BedThickness getBeddingThickness(Integer id) throws StorageAccessException {
+		return sampleDAO.getBeddingThickness(id);
 	}
-
+	
+	public List<BedThickness> getBeddingThicknesses() throws StorageAccessException {
+		return sampleDAO.getList("FROM BedThickness AS b", BedThickness.class);
+	}
+	
 	public Hardness getHardness(Integer id) throws StorageAccessException {
 		return sampleDAO.getHardness(id);
 	}
@@ -843,10 +851,6 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
 	public Bedding getBedding(Integer id) throws StorageAccessException {
 		return sampleDAO.getBedding(id);
-	}
-
-	public BedThickness getBeddingThickness(Integer id) throws StorageAccessException {
-		return sampleDAO.getBeddingThickness(id);
 	}
 
 	public DrillType getDrillType(Integer id) throws StorageAccessException {
