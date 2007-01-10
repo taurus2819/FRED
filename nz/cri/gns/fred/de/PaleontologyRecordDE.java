@@ -3,7 +3,6 @@ package nz.cri.gns.fred.de;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Date;
@@ -19,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.FREDConstants;
@@ -39,6 +37,8 @@ import nz.cri.gns.fred.util.RecordUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.util.TaxonomicUtil;
 import nz.cri.gns.fred.website.ContentProvider;
+import nz.cri.gns.html.Attributes;
+import nz.cri.gns.html.select.SelectBox;
 import nz.cri.gns.intranet.Template;
 
 public class PaleontologyRecordDE extends RecordDE {
@@ -457,7 +457,7 @@ public class PaleontologyRecordDE extends RecordDE {
             StageDEUtil.drawStageInputs(out, template, pal.getStage(), "stage", "Stage", new StageUtil(factory));
             template.loadUntil(out, "{@labArray}");
 
-            List<Lab> labs = recordUtil.getAllLabs();
+            List<Lab> labs = recordUtil.getLabs();
 
             for (Lab lab : labs) {
                 String arrayName = "a" + lab.getLabId();
@@ -472,13 +472,17 @@ public class PaleontologyRecordDE extends RecordDE {
             template.loadUntil(out, "{@lab}");
             
             //Create a select box for the labs
-			ComboDescriptor cd = new ComboDescriptor(null, null, null);
-			cd.name = "LabID";
-			cd.prompt = "-- Choose --";
-			cd.selected = (pal.getLabSection() == null) ? null : pal.getLabSection().getLab().getLabId().toString();
-			cd.tagParams = "onChange='swapSection(this.form)'";
-           
-			HTMLUtil.createSelect(out, cd, labs, Lab.class, "getLabId", "getName");
+			//ComboDescriptor cd = new ComboDescriptor(null, null, null);
+			//cd.name = "LabID";
+			//cd.prompt = "-- Choose --";
+			//cd.selected = (pal.getLabSection() == null) ? null : pal.getLabSection().getLab().getLabId().toString();
+			//cd.tagParams = "onChange='swapSection(this.form)'";
+			//HTMLUtil.createSelect(out, cd, labs, Lab.class, "getLabId", "getName");
+			SelectBox<Lab> selectBox = new SelectBox<Lab>(labs);
+			Attributes attributes = Attributes.createNameOnlyAttributes("LabID");
+			attributes.setAttribute("onChange", "swapSection(this.form)");
+			selectBox.writeBox(attributes, "-- Choose --", null, (pal.getLabSection() == null) ? null : pal.getLabSection().getLab(), out);
+
 
 			if (pal.getLabSection() != null)
 				template.addSub("SectID", pal.getLabSection().getLabSectionId().toString()); 
@@ -541,12 +545,6 @@ public class PaleontologyRecordDE extends RecordDE {
 		} catch (StorageAccessException e) {
 			e.printStackTrace();
 			throw new IOException("Could not access storage: " + e.getMessage());
-		} catch (NoSuchMethodException e) {
-			//Shouldn't never happen
-		} catch (IllegalAccessException e) {
-			//Shouldn't never happen
-		} catch (InvocationTargetException e) {
-			//Shouldn't never happen
 		}
 	}
 
