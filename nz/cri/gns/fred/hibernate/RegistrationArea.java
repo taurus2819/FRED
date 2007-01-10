@@ -3,6 +3,8 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.Feature;
+
 
 /** @author Hibernate CodeGenerator */
 public class RegistrationArea implements Serializable, nz.cri.gns.fred.model.RegistrationArea {
@@ -19,10 +21,10 @@ public class RegistrationArea implements Serializable, nz.cri.gns.fred.model.Reg
     private String code;
 
     /** persistent field */
-    private Set features;
+    private Set<Feature> features;
 
     /** full constructor */
-    public RegistrationArea(Integer regAreaId, String name, String code, Set features) {
+    public RegistrationArea(Integer regAreaId, String name, String code, Set<Feature> features) {
         this.regAreaId = regAreaId;
         this.name = name;
         this.code = code;
@@ -57,12 +59,24 @@ public class RegistrationArea implements Serializable, nz.cri.gns.fred.model.Reg
         this.code = code;
     }
 
-    public Set getFeatures() {
+    public Set<Feature> getFeatures() {
         return this.features;
     }
 
-    public void setFeatures(Set features) {
+    public void setFeatures(Set<Feature> features) {
         this.features = features;
     }
+
+	public int compareTo(nz.cri.gns.fred.model.RegistrationArea arg0) {
+		return regAreaId.compareTo(arg0.getRegAreaId());
+	}
+
+	public String getUniqueIdentifier() {
+		return String.valueOf(regAreaId);
+	}
+
+	public String getDisplayName() {
+		return name;
+	}
 
 }
