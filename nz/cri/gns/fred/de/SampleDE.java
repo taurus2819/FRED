@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.Audit;
@@ -196,7 +195,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
         reinitialise(factory);
-        ComboDescriptor cd;
 		
 		if (!outcropSample) {
             //This section is only relevant if this is _not_ an outcrop sample
@@ -258,78 +256,56 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
 			//Grain size...
 			template.loadUntil(out, "{@primaryGrainSize}");
-			SelectBox<GrainSize> gspSelectBox = new SelectBox<GrainSize>(sampleUtil.getGrainSizes());
+			SelectBox<GrainSize> gsSelectBox = new SelectBox<GrainSize>(sampleUtil.getGrainSizes());
 			Attributes attributes = Attributes.createNameOnlyAttributes("GrainSizeP");
-			gspSelectBox.writeBox(attributes, "-- Choose --", null, sample.getPrimaryGrainSize(), out);
+			gsSelectBox.writeBox(attributes, "-- Choose --", null, sample.getPrimaryGrainSize(), out);
 
 			template.loadUntil(out, "{@secondaryGrainSize}");
-			SelectBox<GrainSize> gssSelectBox = new SelectBox<GrainSize>(sampleUtil.getGrainSizes());
-			attributes = Attributes.createNameOnlyAttributes("GrainSizes");
-			gssSelectBox.writeBox(attributes, "-- Choose --", null, sample.getSecondaryGrainSize(), out);
+			attributes = Attributes.createNameOnlyAttributes("GrainSizeS");
+			gsSelectBox.writeBox(attributes, "-- Choose --", null, sample.getSecondaryGrainSize(), out);
 			
 			template.loadUntil(out, "{@beddingThickness}");
 			SelectBox<BedThickness> btSelectBox = new SelectBox<BedThickness>(sampleUtil.getBeddingThicknesses());
 			attributes = Attributes.createNameOnlyAttributes("BedThick");
 			btSelectBox.writeBox(attributes, "-- Choose --", null, sample.getBedThickness(), out);
 
-			
 			template.loadUntil(out, "{@primaryBedding}");
-			cd = new ComboDescriptor("bedding", "bedding_ID", "Code || ': ' || Name");
-			cd.name = "BeddingP";
-			cd.prompt = " -- Choose -- ";
-			cd.selected = (sample.getPrimaryBedding() == null) ? null : sample.getPrimaryBedding().getBeddingId().toString(); 
-			cd.orderBy = "Code";
-			FREDUtil.makeDropBox(out, cd);
+			SelectBox<Bedding> bSelectBox = new SelectBox<Bedding>(sampleUtil.getBeddings());
+			attributes = Attributes.createNameOnlyAttributes("BedingP");
+			bSelectBox.writeBox(attributes, "-- Choose --", null, sample.getPrimaryBedding(), out);
 			
 			template.loadUntil(out, "{@secondaryBedding}");
-			cd.name = "BeddingS";
-			cd.selected = (sample.getSecondaryBedding() == null) ? null : sample.getSecondaryBedding().getBeddingId().toString();
-			FREDUtil.makeDropBox(out, cd);
+			attributes = Attributes.createNameOnlyAttributes("BedingS");
+			bSelectBox.writeBox(attributes, "-- Choose --", null, sample.getSecondaryBedding(), out);
 			
 			template.loadUntil(out, "{@weathering}");
-			cd = new ComboDescriptor("weathering", "weathering_ID", "Code || ': ' || Name");
-			cd.name = "Weath";
-			cd.prompt = " -- Choose -- ";
-			cd.selected = (sample.getWeathering() == null) ? null : sample.getWeathering().getWeatheringId().toString();
-			cd.orderBy = "Code";
-			FREDUtil.makeDropBox(out, cd);
+			SelectBox<Weathering> wSelectBox = new SelectBox<Weathering>(sampleUtil.getWeatherings());
+			attributes = Attributes.createNameOnlyAttributes("Weath");
+			wSelectBox.writeBox(attributes, "-- Choose --", null, sample.getWeathering(), out);
 			
 			template.loadUntil(out, "{@hardness}");
-			cd = new ComboDescriptor("hardness", "hardness_ID", "Code || ': ' || Name");
-			cd.name = "Hard";
-			cd.prompt = " -- Choose -- ";
-			cd.selected = (sample.getHardness() == null) ? null : sample.getHardness().getHardnessId().toString();
-			cd.orderBy = "Code";
-			FREDUtil.makeDropBox(out, cd);
+			SelectBox<Hardness> hSelectBox = new SelectBox<Hardness>(sampleUtil.getHardnesses());
+			attributes = Attributes.createNameOnlyAttributes("Hard");
+			hSelectBox.writeBox(attributes, "-- Choose --", null, sample.getHardness(), out);
 			
 			template.loadUntil(out, "{@carbonate}");
-			cd = new ComboDescriptor("carbonate", "carbonate_ID", "Code || ': ' || Name");
-			cd.name = "Carb";
-			cd.prompt = " -- Choose -- ";
-			cd.selected = (sample.getCarbonate() == null) ? null : sample.getCarbonate().getCarbonateId().toString();
-			cd.orderBy = "Code";
-			FREDUtil.makeDropBox(out, cd);
+			SelectBox<Carbonate> cSelectBox = new SelectBox<Carbonate>(sampleUtil.getCarbonates());
+			attributes = Attributes.createNameOnlyAttributes("Carb");
+			cSelectBox.writeBox(attributes, "-- Choose --", null, sample.getCarbonate(), out);
 			
 			template.loadUntil(out, "{@ColMod}");
-			cd = new ComboDescriptor("colour_modifier", "modifier_ID", "Code || ': ' || Name");
-			cd.name = "ColMod";
-			cd.prompt = " -- Choose -- ";
-			cd.selected = (sample.getColourModifier() == null) ? null : sample.getColourModifier().getModifierId().toString();
-			cd.orderBy = "Code";
-			FREDUtil.makeDropBox(out, cd);
+			SelectBox<ColourModifier> cmSelectBox = new SelectBox<ColourModifier>(sampleUtil.getColourModifiers());
+			attributes = Attributes.createNameOnlyAttributes("ColMod");
+			cmSelectBox.writeBox(attributes, "-- Choose --", null, sample.getColourModifier(), out);
 			
 			template.loadUntil(out, "{@primaryColour}");
-			cd = new ComboDescriptor("rock_colour", "colour_id", "Code || ': ' || Name");
-			cd.name = "ColourP";
-			cd.prompt = " -- Choose -- ";
-			cd.selected = (sample.getPrimaryColour() == null) ? null : sample.getPrimaryColour().getColourId().toString();
-			cd.orderBy = "Code";
-			FREDUtil.makeDropBox(out, cd);
+			SelectBox<RockColour> clSelectBox = new SelectBox<RockColour>(sampleUtil.getRockColours());
+			attributes = Attributes.createNameOnlyAttributes("ColourP");
+			clSelectBox.writeBox(attributes, "-- Choose --", null, sample.getPrimaryColour(), out);
 			
 			template.loadUntil(out, "{@secondaryColour}");
-			cd.name = "ColourS";
-			cd.selected = (sample.getSecondaryColour() == null) ? null : sample.getSecondaryColour().getColourId().toString();
-			FREDUtil.makeDropBox(out, cd);
+			attributes = Attributes.createNameOnlyAttributes("ColourS");
+			clSelectBox.writeBox(attributes, "-- Choose --", null, sample.getSecondaryColour(), out);
 						
 			template.loadAll(out);
 

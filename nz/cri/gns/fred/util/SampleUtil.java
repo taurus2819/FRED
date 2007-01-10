@@ -825,6 +825,14 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return rel.getRelationType().getName().equals(FREDConstants.STRATIGRAPHIC);
 	}
 	
+	public DrillType getDrillType(Integer id) throws StorageAccessException {
+		return sampleDAO.getDrillType(id);
+	}
+	
+	public List<DrillType> getDrillTypes() throws StorageAccessException {
+		return sampleDAO.getList("FROM DrillType AS t", DrillType.class);
+	}
+	
 	public GrainSize getGrainSize(Integer id) throws StorageAccessException {
 		return sampleDAO.getGrainSize(id);
 	}
@@ -841,36 +849,52 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return sampleDAO.getList("FROM BedThickness AS b", BedThickness.class);
 	}
 	
+	public Bedding getBedding(Integer id) throws StorageAccessException {
+		return sampleDAO.getBedding(id);
+	}
+	
+	public List<Bedding> getBeddings() throws StorageAccessException {
+		return sampleDAO.getList("FROM Bedding AS b", Bedding.class);
+	}
+	
+	public Weathering getWeathering(Integer id) throws StorageAccessException {
+		return sampleDAO.getWeathering(id);
+	}
+	
+	public List<Weathering> getWeatherings() throws StorageAccessException {
+		return sampleDAO.getList("FROM Weathering AS w", Weathering.class);
+	}
+	
 	public Hardness getHardness(Integer id) throws StorageAccessException {
 		return sampleDAO.getHardness(id);
 	}
 
-	public Weathering getWeathering(Integer id) throws StorageAccessException {
-		return sampleDAO.getWeathering(id);
-	}
-
-	public Bedding getBedding(Integer id) throws StorageAccessException {
-		return sampleDAO.getBedding(id);
-	}
-
-	public DrillType getDrillType(Integer id) throws StorageAccessException {
-		return sampleDAO.getDrillType(id);
-	}
-	
-	public RockColour getRockColour(Integer id) throws StorageAccessException {
-		return sampleDAO.getRockColour(id);
-	}
-
-	public ColourModifier getColourModifier(Integer id) throws StorageAccessException {
-		return sampleDAO.getColourModifier(id);
+	public List<Hardness> getHardnesses() throws StorageAccessException {
+		return sampleDAO.getList("FROM Hardness AS h", Hardness.class);
 	}
 
 	public Carbonate getCarbonate(Integer id) throws StorageAccessException {
 		return sampleDAO.getCarbonate(id);
 	}
 	
-	public List<DrillType> getDrillTypes() throws StorageAccessException {
-		return sampleDAO.getList("FROM DrillType AS t", DrillType.class);
+	public List<Carbonate> getCarbonates() throws StorageAccessException {
+		return sampleDAO.getList("FROM Carbonate AS c", Carbonate.class);
+	}
+	
+	public ColourModifier getColourModifier(Integer id) throws StorageAccessException {
+		return sampleDAO.getColourModifier(id);
+	}
+	
+	public List<ColourModifier> getColourModifiers() throws StorageAccessException {
+		return sampleDAO.getList("FROM ColourModifier AS c", ColourModifier.class);
+	}
+	
+	public RockColour getRockColour(Integer id) throws StorageAccessException {
+		return sampleDAO.getRockColour(id);
+	}
+
+	public List<RockColour> getRockColours() throws StorageAccessException {
+		return sampleDAO.getList("FROM RockColour AS r", RockColour.class);
 	}
 	
 	public List<SedimentaryFeatureType> getSedimentaryFeatureTypes() throws StorageAccessException {
