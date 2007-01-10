@@ -52,6 +52,7 @@ import nz.cri.gns.fred.model.ColourModifier;
 import nz.cri.gns.fred.model.ConfidentialGroup;
 import nz.cri.gns.fred.model.Country;
 import nz.cri.gns.fred.model.DataOrigin;
+import nz.cri.gns.fred.model.DatumMethod;
 import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
@@ -1216,6 +1217,10 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 			e.printStackTrace();
 			throw new StorageAccessException(e);
 		}		
+	}
+	
+	public DatumMethod getSiteDatumMethod(int methodId) throws StorageAccessException {
+		return HibernateUtils.getFirst(provider, "FROM DatumMethod AS d WHERE d.methodId = ?", methodId, DatumMethod.class);
 	}
 	
 }
