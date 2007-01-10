@@ -470,19 +470,10 @@ public class PaleontologyRecordDE extends RecordDE {
             }
 				
             template.loadUntil(out, "{@lab}");
-            
-            //Create a select box for the labs
-			//ComboDescriptor cd = new ComboDescriptor(null, null, null);
-			//cd.name = "LabID";
-			//cd.prompt = "-- Choose --";
-			//cd.selected = (pal.getLabSection() == null) ? null : pal.getLabSection().getLab().getLabId().toString();
-			//cd.tagParams = "onChange='swapSection(this.form)'";
-			//HTMLUtil.createSelect(out, cd, labs, Lab.class, "getLabId", "getName");
 			SelectBox<Lab> selectBox = new SelectBox<Lab>(labs);
 			Attributes attributes = Attributes.createNameOnlyAttributes("LabID");
 			attributes.setAttribute("onChange", "swapSection(this.form)");
 			selectBox.writeBox(attributes, "-- Choose --", null, (pal.getLabSection() == null) ? null : pal.getLabSection().getLab(), out);
-
 
 			if (pal.getLabSection() != null)
 				template.addSub("SectID", pal.getLabSection().getLabSectionId().toString()); 
