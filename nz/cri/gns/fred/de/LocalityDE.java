@@ -240,7 +240,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			//cd.orderBy = "reg_area_id";
 			//FREDUtil.makeDropBox(out, cd);
 			SelectBox<RegistrationArea> raSelectBox = new SelectBox<RegistrationArea>(featureUtil.getRegistrationAreas());
-			Attributes attributes = Attributes.createNameOnlyAttributes("RegAreaID");
+			Attributes attributes = Attributes.createNameOnlyAttributes("RegAreaId");
 			raSelectBox.writeBox(attributes, "-- Choose --", null, feature.getRegistrationArea(), out);
 
 	
