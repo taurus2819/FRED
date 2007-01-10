@@ -12,16 +12,13 @@ import javax.servlet.http.HttpServletRequest;
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Sample;
-import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.PersonUtil;
-import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.intranet.Template;
@@ -37,43 +34,29 @@ public class AdoptionRecordDE extends RecordDE {
 	}
 
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
-		super.makeDataEntryHTML(out, factory);
-        
-        Template template = provider.getContent("adoption.de.form");
-        prepareTemplate(template, provider);
-        
-        Adoption adoption = record.getAdoption();
-        
-        template.addSub("AdoDate", FREDUtil.formatDateForDE(adoption.getAdoptionDate(), adoption.getDateRounding()));
-        template.addSub("Adoptor", FREDUtil.getNames(adoption.getAdopters(), "\n"));
-        template.addSub("Comm", adoption.getComments());
-        Stage stage = adoption.getStage();
-        if (stage != null && stage.getStageLowerMod() != null)
-            template.addSub("isStartUnc", "Yes");
-        if (stage != null && stage.getStageUpperMod() != null)
-            template.addSub("isStopUnc", "Yes");
-        
-        template.loadUntil(out, "{@StageStart}");
-        
-        try {
-            ComboDescriptor cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
-    		cd.name = "StageStart";
-    		cd.prompt = " -- Choose -- ";
-    		cd.selected = (stage != null && stage.getLowerAgeView() != null) ? adoption.getStage().getLowerAgeView().getAgeId().toString() : null;
-    		cd.orderBy = "Ag_Name";
-    		FREDUtil.makeDropBox(out, cd);
-    
-    
-            template.loadUntil(out, "{@StageStop}");
-            cd.name = "StageStop";
-            cd.selected = (stage != null && stage.getUpperAgeView() != null) ? adoption.getStage().getUpperAgeView().getAgeId().toString() : null;
-            FREDUtil.makeDropBox(out, cd);
-        } catch (Exception e) {
-            //TODO somehting...
-        }
-        template.loadAll(out);
-        
-		super.makeEndBitHTML(out);
+		try {
+			super.makeDataEntryHTML(out, factory);
+	        
+	        Template template = provider.getContent("adoption.de.form");
+	        prepareTemplate(template, provider);
+	        
+	        Adoption adoption = record.getAdoption();
+	        
+	        template.addSub("AdoDate", FREDUtil.formatDateForDE(adoption.getAdoptionDate(), adoption.getDateRounding()));
+	        template.addSub("Adoptor", FREDUtil.getNames(adoption.getAdopters(), "\n"));
+	        template.addSub("Comm", adoption.getComments());
+	        StageDEUtil.addStageSubs(template, adoption.getStage(), "Stage");
+	 
+	        StageDEUtil.drawStageInputs(out, template, adoption.getStage(), "stage", "Stage", new StageUtil(factory));
+	
+	        template.loadAll(out);
+	        
+			super.makeEndBitHTML(out);
+		} catch (StorageAccessException e) {
+			e.printStackTrace();
+			throw new IOException("Could not access storage: " + e.getMessage());
+
+		}
 	}
 
     public void makePostFormHTML(PrintWriter out) throws IOException {

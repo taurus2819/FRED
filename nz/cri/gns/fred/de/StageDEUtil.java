@@ -1,33 +1,30 @@
 package nz.cri.gns.fred.de;
 
+import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 
-import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 
-import nz.cri.gns.db.ComboDescriptor;
+import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.fred.model.AgeView;
 import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.StageUtil;
+import nz.cri.gns.html.Attributes;
+import nz.cri.gns.html.select.SelectBox;
 import nz.cri.gns.intranet.Template;
 
 public class StageDEUtil {
 
-    static void drawStageInputs(PrintWriter out, Template template, Stage stage, String comboMarkerPrefix, String parameterPrefix) throws SQLException, NamingException {
+    static void drawStageInputs(PrintWriter out, Template template, Stage stage, String comboMarkerPrefix, String parameterPrefix, StageUtil stageUtil) throws StorageAccessException, IOException {
         template.loadUntil(out, "{@" + comboMarkerPrefix + "Start}");
-        
-        ComboDescriptor cd = new ComboDescriptor("Age_View", "Ag_ID", "Ag_Name");
-        cd.name = parameterPrefix + "StageStart";
-        cd.prompt = " -- Choose -- ";
-        cd.selected = (stage != null && stage.getLowerAgeView() != null) ? stage.getLowerAgeView().getAgeId().toString() : null;
-        cd.orderBy = "Ag_Name";
-        FREDUtil.makeDropBox(out, cd);
+		SelectBox<AgeView> selectBox = new SelectBox<AgeView>(stageUtil.getAges());
+		Attributes attributes = Attributes.createNameOnlyAttributes(parameterPrefix + "StageStart");
+		selectBox.writeBox(attributes, "-- Choose --", null, (stage != null) ? stage.getLowerAgeView() : null, out);
                     
         template.loadUntil(out, "{@" + comboMarkerPrefix + "Stop}");
-        cd.name = parameterPrefix + "StageStop";
-        cd.selected = (stage != null && stage.getUpperAgeView() != null) ? stage.getUpperAgeView().getAgeId().toString() : null;
-        FREDUtil.makeDropBox(out, cd);
+		attributes = Attributes.createNameOnlyAttributes(parameterPrefix + "StageStop");
+		selectBox.writeBox(attributes, "-- Choose --", null, (stage != null) ? stage.getUpperAgeView() : null, out);
     }
 
     static void addStageSubs(Template template, Stage stage, String label) {

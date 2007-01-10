@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.cri.gns.auth.InsufficientPrivelegesException;
@@ -37,7 +36,6 @@ import nz.cri.gns.fred.model.UserView;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.PersonUtil;
 import nz.cri.gns.fred.util.RecordUtil;
-import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.util.TaxonomicUtil;
 import nz.cri.gns.fred.website.ContentProvider;
@@ -456,7 +454,7 @@ public class PaleontologyRecordDE extends RecordDE {
             StageDEUtil.addStageSubs(template, pal.getStage(), "Stage");
             template.addSub("StComm", pal.getStageComments());
      
-            StageDEUtil.drawStageInputs(out, template, pal.getStage(), "stage", "Stage");
+            StageDEUtil.drawStageInputs(out, template, pal.getStage(), "stage", "Stage", new StageUtil(factory));
             template.loadUntil(out, "{@labArray}");
 
             List<Lab> labs = recordUtil.getAllLabs();
@@ -549,8 +547,6 @@ public class PaleontologyRecordDE extends RecordDE {
 			//Shouldn't never happen
 		} catch (InvocationTargetException e) {
 			//Shouldn't never happen
-		} catch (NamingException e) {
-			throw new IOException("Could not access necessary resource: " + e.getMessage());
 		}
 	}
 
