@@ -30,6 +30,7 @@ import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.de.MandatoryFieldsMissingException;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
+import nz.cri.gns.fred.model.Country;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
@@ -878,6 +879,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return featureDAO.getRegistrationArea(regAreaId);
 	}
 
+	public List<RegistrationArea> getRegistrationAreas() throws StorageAccessException {
+		return featureDAO.getList("FROM RegistrationArea AS r", RegistrationArea.class);
+	}
+	
 	/**
 	 * Parses FR Number as string and returns FrNumber object
 	 * If FRNumber exists it is returned, or a new FRNumber object is created (if createNew is TRUE)
@@ -1177,6 +1182,14 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (FEET_UNIT.equals(unit))
 			d.append(" (").append(FREDUtil.formatDoubleForOutput(new Double(depth.doubleValue() * FT_TO_M), 3)).append(" m)");
 		return d.toString();
+	}
+	
+	public Country getCountry(String countryCode) throws StorageAccessException {
+		return featureDAO.getCountry(countryCode);
+	}
+	
+	public List<Country> getCountries() throws StorageAccessException {
+		return featureDAO.getList("FROM Country AS c", Country.class);
 	}
 	
 	public List<SimpleNameableAndIdentifiable> getFrMapSheets() throws StorageAccessException {
