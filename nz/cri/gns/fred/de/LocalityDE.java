@@ -17,12 +17,12 @@ import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
-import nz.cri.gns.db.site.DatumMethod;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.Country;
+import nz.cri.gns.fred.model.DatumMethod;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FrNumber;
@@ -272,16 +272,18 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			template.addSub("northingLabel", northingLabel);
 			template.addSub("eastingLabel", eastingLabel);
 			
+			SiteUtil siteUtil = new SiteUtil(factory);
+			
 			template.loadUntil(out, "{@datumMethodArray}");
-			List<DatumMethod> datums = SiteUtil.getSiteDatumMethods();
-			for (DatumMethod method : datums)
-				out.println("datumMethod[" + method.getKey() + "] = '" + method.getHorizontalAccuracy() + "';\n");
+			List<DatumMethod> methods = siteUtil.getSiteDatumMethods();
+			for (DatumMethod method : methods)
+				out.println("datumMethod[" + method.getMethodId() + "] = '" + method.getNomAccuracyXY() + "';\n");
 	
 			template.loadUntil(out, "{@methodCombo}");
-			for (DatumMethod method : datums) {
-				out.println("<option value=\"" + method.getKey() + "\"" + ((site != null && method.getKey().equals(String.valueOf(site.getMethod()))) ? " selected" : "")
-						+ ">" + method.getValue() + "</option>");
-			}
+			SelectBox<DatumMethod> dSelectBox = new SelectBox<DatumMethod>(methods);
+			attributes = Attributes.createNameOnlyAttributes("LocMethodID");
+			attributes.setAttribute("onChange", "setAccuracy(this.value, this.form)");
+			dSelectBox.writeBox(attributes, "-- Choose --", null, (site != null && !site.isNull(SiteRecord.H_METHOD_FIELD)) ? siteUtil.getSiteDatumMethod(site.getMethod()) : null, out);
 			
 			template.loadUntil(out, "{@countryCombo}");
 			SelectBox<Country> cSelectBox = new SelectBox<Country>(featureUtil.getCountries());
@@ -291,9 +293,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			template.addSub("coordComm", DBUtils.nvl(feature.getCoordComments()));
 			template.addSub("locComm", DBUtils.nvl(feature.getComments()));
 			
-		} catch (NamingException e) {
-			e.printStackTrace();
-			//Should never happen!
 		} catch (StorageAccessException e) {
 			e.printStackTrace();
 			throw new IOException("Could not access storage: " + e.getMessage());

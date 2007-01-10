@@ -89,10 +89,7 @@ function setAccuracy(datID, form) {
 }
 //--></script>
 <tr><td></td><td class="smallheading">Map Year</td><td><input type="text" name="MapYear" value="{@mapYear}"></td></tr>
-<tr><td></td><td class="smallheading">Method</td><td><select name="LocMethodID" onchange="setAccuracy(this.value, this.form)">
-<option value="-"> --Choose-- </option>
-{@methodCombo}
-</select></td></tr>
+<tr><td></td><td class="smallheading">Method</td><td>{@methodCombo}</td></tr>
 <tr><td></td><td class="smallheading">Accuracy</td><td><input type="text" name="Accuracy" value="{@accuracy}">&nbsp;m</td></tr>
 <tr><td></td><td class="smallheading" style="color: #FF0000">Locality<br />Description</td><td><textarea name="Loc" cols="40" rows="5">{@localityDesc}</textarea></td></tr>
 <tr><td></td><td class="smallheading">Country</td><td>{@countryCombo}</td></tr>
