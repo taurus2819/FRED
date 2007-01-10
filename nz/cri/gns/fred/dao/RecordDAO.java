@@ -8,16 +8,12 @@ import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.LabSection;
-import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Paleontology;
-import nz.cri.gns.fred.model.Person;
+import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RecordDetails;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 
-/**
- *
- */
 public interface RecordDAO {
 
 	/**
@@ -74,12 +70,6 @@ public interface RecordDAO {
 
     public void update(Record record) throws StorageAccessException;
 
-    /**
-     * Returns an (alphabetically ordered) list of all the labs that are relevant to FRED
-     * @throws StorageAccessException 
-     */
-	public List<Lab> getAllLabs() throws StorageAccessException;
-
 	public Lab findLab(String labName) throws StorageAccessException;
 	
 	/**
@@ -103,5 +93,7 @@ public interface RecordDAO {
 	public void update(RecordDetails details) throws StorageAccessException;
 
 	public void save(RecordDetails details) throws StorageAccessException;
+	
+	public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException;
 
 }

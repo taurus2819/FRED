@@ -336,14 +336,6 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		} catch (Exception e) {}         
     }
 
-    /**
-     * Returns an (alphabetically ordered) list of all the labs that are relevant to FRED
-     * @throws StorageAccessException 
-     */
-	public List<Lab> getAllLabs() throws StorageAccessException {
-		return recordDAO.getAllLabs();
-	}
-
 	/**
 	 * Returns all the groups that are appropriate for the given pal entry
 	 */
@@ -382,6 +374,10 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 
+	public List<Lab> getLabs() throws StorageAccessException {
+		return recordDAO.getList("SELECT DISTINCT l FROM LabSection AS ls INNER JOIN ls.lab AS l", Lab.class);
+	}
+	
     public LabSection getLabSection(int id) throws StorageAccessException {
         return recordDAO.getLabSection(id);
     }

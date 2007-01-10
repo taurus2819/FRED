@@ -785,15 +785,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
         HibernateUtils.update(provider, record);
     }
 
-	public List<Lab> getAllLabs() throws StorageAccessException {
-		try {
-            Session session = provider.currentSession();
-			return session.find("SELECT DISTINCT l FROM LabSection AS ls INNER JOIN ls.lab AS l ORDER BY l.name");
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-        }
-	}
-
 	public List<PaleontologyListEntry> getListEntries(Paleontology pal, TaxonomicGroup group) throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
