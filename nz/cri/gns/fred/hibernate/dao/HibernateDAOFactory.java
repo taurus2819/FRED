@@ -50,6 +50,7 @@ import nz.cri.gns.fred.model.Bedding;
 import nz.cri.gns.fred.model.Carbonate;
 import nz.cri.gns.fred.model.ColourModifier;
 import nz.cri.gns.fred.model.ConfidentialGroup;
+import nz.cri.gns.fred.model.Country;
 import nz.cri.gns.fred.model.DataOrigin;
 import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.FREDConstants;
@@ -1198,6 +1199,10 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 	
 	public RelationshipType findRelationshipType(String name) throws StorageAccessException {
 		return HibernateUtils.getFirst(provider, "FROM RelationshipType AS r WHERE r.name = ?", name, RelationshipType.class);
+	}
+	
+	public Country getCountry(String countryCode) throws StorageAccessException {
+		return HibernateUtils.getFirst(provider, "FROM Country AS c WHERE c.countryCode = ?", countryCode, Country.class);
 	}
 	
 	public List<String> getFrMapSheets() throws StorageAccessException {

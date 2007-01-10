@@ -7,6 +7,7 @@ import java.util.List;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
+import nz.cri.gns.fred.model.Country;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.Folder;
@@ -189,6 +190,8 @@ public interface FeatureDAO {
 	public int getTotalFeatureCount() throws StorageAccessException;
 	
 	public Date getLastFeatureApprovalDate() throws StorageAccessException;
+	
+	public Country getCountry(String countryCode) throws StorageAccessException;
 	
 	public List<String> getFrMapSheets() throws StorageAccessException;
 	
