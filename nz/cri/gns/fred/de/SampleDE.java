@@ -271,11 +271,11 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
 			template.loadUntil(out, "{@primaryBedding}");
 			SelectBox<Bedding> bSelectBox = new SelectBox<Bedding>(sampleUtil.getBeddings());
-			attributes = Attributes.createNameOnlyAttributes("BedingP");
+			attributes = Attributes.createNameOnlyAttributes("BeddingP");
 			bSelectBox.writeBox(attributes, "-- Choose --", null, sample.getPrimaryBedding(), out);
 			
 			template.loadUntil(out, "{@secondaryBedding}");
-			attributes = Attributes.createNameOnlyAttributes("BedingS");
+			attributes = Attributes.createNameOnlyAttributes("BeddingS");
 			bSelectBox.writeBox(attributes, "-- Choose --", null, sample.getSecondaryBedding(), out);
 			
 			template.loadUntil(out, "{@weathering}");
