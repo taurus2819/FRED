@@ -220,16 +220,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 				try {
 					//drill type combo box
 					template.loadUntil(out, "{@drillTypeCombo}");
-					//cd = new ComboDescriptor("drill_type", "drill_type_id", "Name");
-					//cd.name = "DrillType";
-					//cd.orderBy = "drill_type_id";
-					//cd.prompt = " -- Choose -- ";
-					//cd.selected = (sample.getDrillType() == null) ? null : String.valueOf(sample.getDrillType().getDrillTypeId());
-					//FREDUtil.makeDropBox(out, cd);
 					SelectBox<DrillType> selectBox = new SelectBox<DrillType>(sampleUtil.getDrillTypes());
 					Attributes attributes = Attributes.createNameOnlyAttributes("DrillType");
 					selectBox.writeBox(attributes, "-- Choose --", null, (sample.getDrillType() == null) ? null : sample.getDrillType(), out);
-
 				} catch (Exception e) {}
 			}
 			//comments
@@ -265,17 +258,23 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
 			//Grain size...
 			template.loadUntil(out, "{@primaryGrainSize}");
-			cd = new ComboDescriptor("grain_size", "grain_size_id", "Code || ': ' || Name");
-			cd.name = "GrainSizeP";
-			cd.prompt = " -- Choose -- ";
-			cd.selected = (sample.getPrimaryGrainSize() == null) ? null : sample.getPrimaryGrainSize().getGrainSizeId().toString();
-			cd.orderBy = "Code";
-			FREDUtil.makeDropBox(out, cd);
-			template.loadUntil(out, "{@secondaryGrainSize}");
-			cd.name = "GrainSizeS";
-			cd.selected = (sample.getSecondaryGrainSize() == null) ? null : sample.getSecondaryGrainSize().getGrainSizeId().toString();
-			FREDUtil.makeDropBox(out, cd);
+			//cd = new ComboDescriptor("grain_size", "grain_size_id", "Code || ': ' || Name");
+			//cd.name = "GrainSizeP";
+			//cd.prompt = " -- Choose -- ";
+			//cd.selected = (sample.getPrimaryGrainSize() == null) ? null : sample.getPrimaryGrainSize().getGrainSizeId().toString();
+			//cd.orderBy = "Code";
+			//FREDUtil.makeDropBox(out, cd);
+			SelectBox<GrainSize> gspSelectBox = new SelectBox<GrainSize>(sampleUtil.getGrainSizes());
+			Attributes attributes = Attributes.createNameOnlyAttributes("GrainSizeP");
+			gspSelectBox.writeBox(attributes, "-- Choose --", null, (sample.getPrimaryGrainSize() == null) ? null : sample.getPrimaryGrainSize(), out);
 
+			template.loadUntil(out, "{@secondaryGrainSize}");
+			//cd.name = "GrainSizeS";
+			//cd.selected = (sample.getSecondaryGrainSize() == null) ? null : sample.getSecondaryGrainSize().getGrainSizeId().toString();
+			//FREDUtil.makeDropBox(out, cd);
+			SelectBox<GrainSize> gssSelectBox = new SelectBox<GrainSize>(sampleUtil.getGrainSizes());
+			attributes = Attributes.createNameOnlyAttributes("GrainSizes");
+			gssSelectBox.writeBox(attributes, "-- Choose --", null, (sample.getSecondaryGrainSize() == null) ? null : sample.getSecondaryGrainSize(), out);
 			
 			template.loadUntil(out, "{@beddingThickness}");
 

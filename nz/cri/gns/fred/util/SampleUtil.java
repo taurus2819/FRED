@@ -11,7 +11,6 @@ import java.util.Vector;
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FolderDAO;
 import nz.cri.gns.fred.dao.SampleDAO;
@@ -817,13 +816,17 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return rel;
 	}
 
-	public GrainSize getGrainSize(Integer id) throws StorageAccessException {
-		return sampleDAO.getGrainSize(id);
-	}
-
 	public boolean isPreviousSampleRelationship(Relationship rel) {
 		return rel.getRelationType().getName().equals(FREDConstants.SAMPLE)
 			&& rel.getRelationshipType().getName().equals(FREDConstants.NEARBY);
+	}
+	
+	public GrainSize getGrainSize(Integer id) throws StorageAccessException {
+		return sampleDAO.getGrainSize(id);
+	}
+	
+	public List<GrainSize> getGrainSizes() throws StorageAccessException {
+		return sampleDAO.getList("FROM GrainSize AS a", GrainSize.class);
 	}
 
 	public boolean isStratigraphicRelationship(Relationship rel) {
