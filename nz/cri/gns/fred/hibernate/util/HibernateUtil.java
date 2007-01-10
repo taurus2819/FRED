@@ -22,6 +22,7 @@ import nz.cri.gns.fred.hibernate.ColourModifier;
 import nz.cri.gns.fred.hibernate.ConfidentialGroup;
 import nz.cri.gns.fred.hibernate.Country;
 import nz.cri.gns.fred.hibernate.DataOrigin;
+import nz.cri.gns.fred.hibernate.DatumMethod;
 import nz.cri.gns.fred.hibernate.DrillType;
 import nz.cri.gns.fred.hibernate.Feature;
 import nz.cri.gns.fred.hibernate.FeatureMeta;
@@ -125,6 +126,7 @@ public class HibernateUtil implements HibernateProvider {
 			ConfidentialGroup.class,
 			Country.class,
 			DataOrigin.class,
+			DatumMethod.class,
 			DrillType.class,
 			Feature.class,
 			FeatureMeta.class,

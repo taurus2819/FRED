@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.DatumMethod" 
+    table="SC.METHOD"
+>
+
+    <id
+        name="methodId"
+        type="int"
+        column="METHOD_ID"
+    >
+        <generator class="assigned" />
+    </id>
+
+   <property
+        name="method"
+        type="java.lang.String"
+        column="METHOD"
+        length="74"
+    />
+    <property
+        name="nomAccuracyXY"
+        type="double"
+        column="NOM_ACCURACY_XY"
+    />
+    <property
+        name="nomAccuracyZ"
+        type="double"
+        column="NOM_ACCURACY_Z"
+    />
+    
+</class>
+</hibernate-mapping>
