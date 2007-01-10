@@ -238,17 +238,6 @@ public class FREDUtil {
 		return f.format(dbl);
 	}
 	
-	public static void makeDropBox(PrintWriter out, ComboDescriptor cd) throws SQLException, NamingException {
-		Connection conn = getConnection("make drop box");
-		Statement statement = conn.createStatement();
-		try {
-			HTMLUtils.makeDropBox(out, statement, cd);
-			statement.close();
-		} finally {
-			conn.close();
-		}
-	}
-	
 	public static String formatDateForOutput(Date date) {
 		return formatDateForOutput(date, "Day");
 	}
