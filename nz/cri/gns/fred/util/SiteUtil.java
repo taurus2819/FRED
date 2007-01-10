@@ -2,26 +2,21 @@ package nz.cri.gns.fred.util;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.Vector;
 
 import javax.naming.NamingException;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.xml.sax.SAXException;
-
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.BasicDatabaseApp2;
 import nz.cri.gns.db.DatabaseApp2;
-import nz.cri.gns.db.site.DatumMethod;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.SiteDAO;
+import nz.cri.gns.fred.model.DatumMethod;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.fred.model.SiteView;
@@ -32,6 +27,8 @@ import nz.cri.gns.util.map.NZMS260;
 import nz.cri.gns.util.map.NorthingEasting;
 import nz.cri.gns.util.map.TruncNorthingEasting;
 import nz.cri.gns.util.map.Datum.Coordinate;
+
+import org.xml.sax.SAXException;
 
 public class SiteUtil extends ModelUtil {
 
@@ -209,26 +206,12 @@ public class SiteUtil extends ModelUtil {
 		return site.insert(FREDUtil.getInstance());
 	}
 	
-	public static List<DatumMethod> getSiteDatumMethods() throws NamingException, SQLException {
-		Connection conn = null;
-		try {
-			conn = FREDUtil.getConnection("get datum methods");
-			Statement statement = conn.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT Method_ID, Method, Nom_Accuracy_XY, Nom_Accuracy_Z FROM SC.Method WHERE Nom_Accuracy_XY IS NOT NULL ORDER BY Nom_Accuracy_XY");
-			
-			List<DatumMethod> list = new Vector<DatumMethod>();
-			while (rs.next()) {
-				list.add(new DatumMethod(rs.getString(1), rs.getString(2), rs.getFloat(3), rs.getFloat(4)));
-			}
-			rs.close();
-			statement.close();
-			return list;
-		} finally {
-			if (conn != null) try {
-				conn.close();
-			} catch (Exception _e) {
-			}
-		}
+	public DatumMethod getSiteDatumMethod(int methodId) throws StorageAccessException {
+		return siteDAO.getSiteDatumMethod(methodId);
+	}
+	
+	public List<DatumMethod> getSiteDatumMethods() throws StorageAccessException {
+		return siteDAO.getList("FROM DatumMethod AS d WHERE d.nomAccuracyXY IS NOT NULL", DatumMethod.class);
 	}
 	
 	public static Datum getFREDDatum(Feature feature) {
