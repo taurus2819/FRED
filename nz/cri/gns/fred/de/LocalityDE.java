@@ -233,12 +233,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			
 			//Registration area combo box
 			template.loadUntil(out, "{@regCombo}");
-			//ComboDescriptor cd = new ComboDescriptor("Registration_Area", "reg_area_ID", "Name");
-			//cd.name = "RegAreaId";
-			//if (feature.getRegistrationArea() != null)
-			//	cd.selected = feature.getRegistrationArea().getRegAreaId().toString();
-			//cd.orderBy = "reg_area_id";
-			//FREDUtil.makeDropBox(out, cd);
 			SelectBox<RegistrationArea> raSelectBox = new SelectBox<RegistrationArea>(featureUtil.getRegistrationAreas());
 			Attributes attributes = Attributes.createNameOnlyAttributes("RegAreaId");
 			raSelectBox.writeBox(attributes, "-- Choose --", null, feature.getRegistrationArea(), out);
@@ -290,13 +284,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			}
 			
 			template.loadUntil(out, "{@countryCombo}");
-			
-			//cd = new ComboDescriptor("MIS.Country", "Country_Code", "Country_Name");
-			//cd.name = "Country";
-			//cd.prompt = "-- Choose --";
-			//cd.orderBy = "Country_Name";
-			//cd.selected = (site == null) ? "NZ" : site.getCountry();
-			//FREDUtil.makeDropBox(out, cd);
 			SelectBox<Country> cSelectBox = new SelectBox<Country>(featureUtil.getCountries());
 			attributes = Attributes.createNameOnlyAttributes("Country");
 			cSelectBox.writeBox(attributes, "-- Choose --", null, featureUtil.getCountry((site == null) ? "NZ" : site.getCountry()), out);
