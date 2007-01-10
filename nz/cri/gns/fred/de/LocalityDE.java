@@ -16,16 +16,17 @@ import javax.servlet.http.HttpServletRequest;
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.db.ComboDescriptor;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.site.DatumMethod;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
+import nz.cri.gns.fred.model.Country;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FrNumber;
+import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.util.AuditUtil;
 import nz.cri.gns.fred.util.FREDUtil;
@@ -33,6 +34,8 @@ import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.FolderUtil;
 import nz.cri.gns.fred.util.SiteUtil;
 import nz.cri.gns.fred.website.ContentProvider;
+import nz.cri.gns.html.Attributes;
+import nz.cri.gns.html.select.SelectBox;
 import nz.cri.gns.intranet.Template;
 import nz.cri.gns.jsp.IconnedLink;
 import nz.cri.gns.util.map.ChathamIslandDatum;
@@ -230,12 +233,16 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			
 			//Registration area combo box
 			template.loadUntil(out, "{@regCombo}");
-			ComboDescriptor cd = new ComboDescriptor("Registration_Area", "reg_area_ID", "Name");
-			cd.name = "RegAreaId";
-			if (feature.getRegistrationArea() != null)
-				cd.selected = feature.getRegistrationArea().getRegAreaId().toString();
-			cd.orderBy = "reg_area_id";
-			FREDUtil.makeDropBox(out, cd);
+			//ComboDescriptor cd = new ComboDescriptor("Registration_Area", "reg_area_ID", "Name");
+			//cd.name = "RegAreaId";
+			//if (feature.getRegistrationArea() != null)
+			//	cd.selected = feature.getRegistrationArea().getRegAreaId().toString();
+			//cd.orderBy = "reg_area_id";
+			//FREDUtil.makeDropBox(out, cd);
+			SelectBox<RegistrationArea> raSelectBox = new SelectBox<RegistrationArea>(featureUtil.getRegistrationAreas());
+			Attributes attributes = Attributes.createNameOnlyAttributes("RegAreaID");
+			raSelectBox.writeBox(attributes, "-- Choose --", null, feature.getRegistrationArea(), out);
+
 	
 			//Metadata listing
 			//template.loadUntil(out, "{@metadataList}");
@@ -284,19 +291,25 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			
 			template.loadUntil(out, "{@countryCombo}");
 			
-			cd = new ComboDescriptor("MIS.Country", "Country_Code", "Country_Name");
-			cd.name = "Country";
-			cd.prompt = "-- Choose --";
-			cd.orderBy = "Country_Name";
-			cd.selected = (site == null) ? "NZ" : site.getCountry();
-			FREDUtil.makeDropBox(out, cd);
-			
+			//cd = new ComboDescriptor("MIS.Country", "Country_Code", "Country_Name");
+			//cd.name = "Country";
+			//cd.prompt = "-- Choose --";
+			//cd.orderBy = "Country_Name";
+			//cd.selected = (site == null) ? "NZ" : site.getCountry();
+			//FREDUtil.makeDropBox(out, cd);
+			SelectBox<Country> cSelectBox = new SelectBox<Country>(featureUtil.getCountries());
+			attributes = Attributes.createNameOnlyAttributes("Country");
+			cSelectBox.writeBox(attributes, "-- Choose --", null, featureUtil.getCountry((site == null) ? "NZ" : site.getCountry()), out);
+
 			template.addSub("coordComm", DBUtils.nvl(feature.getCoordComments()));
 			template.addSub("locComm", DBUtils.nvl(feature.getComments()));
 			
 		} catch (NamingException e) {
 			e.printStackTrace();
 			//Should never happen!
+		} catch (StorageAccessException e) {
+			e.printStackTrace();
+			throw new IOException("Could not access storage: " + e.getMessage());
 		}
 		template.loadAll(out);
 	}
