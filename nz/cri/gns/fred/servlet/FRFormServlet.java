@@ -20,7 +20,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.Adoption;
@@ -600,7 +599,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 						if (recordUtil.getListEntries(palRecord, taxaGroup).size() > 0) {
 						PDFUtil.addCells(taxaTable, new String[] {"Taxonomic Name", "Spec Count", "Spec Coord", "Comments"}, new Font[] {fonts[1], fonts[1], fonts[1], fonts[1], fonts[1]});
 							for (PaleontologyListEntry taxa : recordUtil.getListEntries(palRecord, taxaGroup)) {
-								PDFUtil.addCells(taxaTable, new Object[] {taxa.getTaxonomicName(), taxa.getSpecimenCount(), taxa.getSpecimenCoords(), taxa.getComments()},
+								PDFUtil.addCells(taxaTable, new Object[] {(taxa.getTaxonomicName() != null) ? taxa.getTaxonomicName() : "no taxa identified", taxa.getSpecimenCount(), taxa.getSpecimenCoords(), taxa.getComments()},
 										new Font[] {taxonomicNameFont, fonts[0], fonts[0], fonts[0]});
 							}
 						} else {

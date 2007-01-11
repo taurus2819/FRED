@@ -642,7 +642,7 @@ try {
 											}
 											%></tr><%
 											for (PaleontologyListEntry taxa : recordUtil.getListEntries(palRecord, taxaGroup)) {
-												%><tr><td><i><%=taxa.getTaxonomicName()%></i>&nbsp;&nbsp;</td><%
+												%><tr><td><i><%=(taxa.getTaxonomicName() != null) ? taxa.getTaxonomicName() : "no taxa identified"%></i>&nbsp;&nbsp;</td><%
 												if (authorChk) {
 													%><td><%=(taxa.getTaxon() != null) ? DBUtils.nvl(taxa.getTaxon().getAuthor()) : ""%>&nbsp;&nbsp;</td><%
 												}
