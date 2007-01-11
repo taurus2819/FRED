@@ -178,7 +178,7 @@ public class SiteUtil extends ModelUtil {
 		DatabaseApp2 app = null;
 		SiteRecord sr = null;
 		try {
-			conn = FREDUtil.getConnection("get siterecord");
+			conn = FREDUtil.getConnection();
 			app = new BasicDatabaseApp2(conn, "");
 			sr = SiteRecord.querySite(app, feature.getSiteId().intValue());
 		} finally {
