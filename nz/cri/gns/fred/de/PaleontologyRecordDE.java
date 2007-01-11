@@ -266,16 +266,12 @@ public class PaleontologyRecordDE extends RecordDE {
 			this.palListMetas = palListMetas;
 		}
 
-		public String getUniqueIdentifier() {
-			return String.valueOf(getPalListId());
-		}
-
-		public String getDisplayName() {
-			return getTaxonomicName();
-		}
-
 		public int compareTo(PaleontologyListEntry arg0) {
-			return getDisplayName().compareTo(arg0.getDisplayName());
+			if (taxonomicName == null)
+				return 1;
+			if (arg0.getTaxonomicName() == null)
+				return -1;
+			return taxonomicName.compareTo(arg0.getTaxonomicName());
 		}
 	}
 

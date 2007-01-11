@@ -4,11 +4,12 @@ import java.io.Serializable;
 import java.util.Set;
 
 import nz.cri.gns.fred.model.PalListMeta;
-import nz.cri.gns.fred.model.PaleontologyListEntry;
+import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.Taxon;
+import nz.cri.gns.fred.model.TaxonomicGroup;
 
 /** @author Hibernate CodeGenerator */
-public class PalList implements Serializable, PaleontologyListEntry {
+public class PalList implements Serializable, nz.cri.gns.fred.model.PaleontologyListEntry {
 
     private static final long serialVersionUID = 20050818L;
 
@@ -28,10 +29,10 @@ public class PalList implements Serializable, PaleontologyListEntry {
     private String taxonomicName;
 
     /** persistent field */
-    private nz.cri.gns.fred.model.TaxonomicGroup taxonomicGroup;
+    private TaxonomicGroup taxonomicGroup;
 
     /** persistent field */
-    private nz.cri.gns.fred.model.Paleontology paleontology;
+    private Paleontology paleontology;
 
     /** persistent field */
     private Taxon taxon;
@@ -40,7 +41,7 @@ public class PalList implements Serializable, PaleontologyListEntry {
     private Set<PalListMeta> palListMetas;
     
     /** full constructor */
-    public PalList(String comments, Integer specimenCount, String specimenCoords, String taxonomicName, nz.cri.gns.fred.model.TaxonomicGroup taxonomicGroup, nz.cri.gns.fred.model.Paleontology paleontology, nz.cri.gns.fred.model.Taxon taxonomicLookup, Set<PalListMeta> palListMetas) {
+    public PalList(String comments, Integer specimenCount, String specimenCoords, String taxonomicName, TaxonomicGroup taxonomicGroup, Paleontology paleontology, Taxon taxonomicLookup, Set<PalListMeta> palListMetas) {
         this.comments = comments;
         this.specimenCount = specimenCount;
         this.specimenCoords = specimenCoords;
@@ -56,7 +57,7 @@ public class PalList implements Serializable, PaleontologyListEntry {
     }
 
     /** minimal constructor */
-    public PalList(nz.cri.gns.fred.model.TaxonomicGroup taxonomicGroup, nz.cri.gns.fred.model.Paleontology paleontology, nz.cri.gns.fred.model.Taxon taxonomicLookup, Set<PalListMeta> palListMetas) {
+    public PalList(nz.cri.gns.fred.model.TaxonomicGroup taxonomicGroup, Paleontology paleontology, Taxon taxonomicLookup, Set<PalListMeta> palListMetas) {
         this.taxonomicGroup = taxonomicGroup;
         this.paleontology = paleontology;
         this.taxon = taxonomicLookup;
@@ -103,19 +104,19 @@ public class PalList implements Serializable, PaleontologyListEntry {
         this.taxonomicName = taxonomicName;
     }
 
-    public nz.cri.gns.fred.model.TaxonomicGroup getTaxonomicGroup() {
+    public TaxonomicGroup getTaxonomicGroup() {
         return this.taxonomicGroup;
     }
 
-    public void setTaxonomicGroup(nz.cri.gns.fred.model.TaxonomicGroup taxonomicGroup) {
+    public void setTaxonomicGroup(TaxonomicGroup taxonomicGroup) {
         this.taxonomicGroup = taxonomicGroup;
     }
 
-    public nz.cri.gns.fred.model.Paleontology getPaleontology() {
+    public Paleontology getPaleontology() {
         return this.paleontology;
     }
 
-    public void setPaleontology(nz.cri.gns.fred.model.Paleontology paleontology) {
+    public void setPaleontology(Paleontology paleontology) {
         this.paleontology = paleontology;
     }
 
@@ -135,16 +136,12 @@ public class PalList implements Serializable, PaleontologyListEntry {
         this.palListMetas = palListMetas;
     }
     
-	public String getUniqueIdentifier() {
-		return String.valueOf(getPalListId());
-	}
-
-	public String getDisplayName() {
-		return getTaxonomicName();
-	}
-
 	public int compareTo(nz.cri.gns.fred.model.PaleontologyListEntry arg0) {
-		return getDisplayName().compareTo(arg0.getDisplayName());
+		if (taxonomicName == null)
+			return 1;
+		if (arg0.getTaxonomicName() == null)
+			return -1;
+		return taxonomicName.compareTo(arg0.getTaxonomicName());
 	}
 	
 }

@@ -2,9 +2,7 @@ package nz.cri.gns.fred.model;
 
 import java.util.Set;
 
-import nz.cri.gns.core.NameableAndIdentifiable;
-
-public interface PaleontologyListEntry extends NameableAndIdentifiable, Comparable<PaleontologyListEntry> {
+public interface PaleontologyListEntry extends Comparable<PaleontologyListEntry> {
 
     public Integer getPalListId();
 
