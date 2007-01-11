@@ -1,11 +1,11 @@
 <%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
-%><%@page import="nz.cri.gns.fred.de.DataEntryUtils"
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.model.Sample"
 %><%@page import="nz.cri.gns.fred.de.DataEntryForm"
 %><%@page import="nz.cri.gns.fred.de.DataEntryFormFactory"
+%><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
@@ -13,7 +13,7 @@
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.jsp.JspUtils"
 %><%@page import="nz.cri.gns.jsp.PageState"
-%><%@page import="nz.cri.gns.intranet.DBConnection"
+%><%@page import="java.sql.Connection"
 %><%@page import="java.sql.ResultSet"
 %><%@page import="java.sql.Statement"
 %><%@page import="nz.cri.gns.auth.Authenticable"
@@ -35,8 +35,8 @@
 	if (listName != null) {
 	
 		PageState state = new PageState(request, response, getServletContext());
-		DBConnection connection = DataEntryUtils.getFREDConnection(state);
-		Statement statement = connection.statement;
+		Connection connection = FREDUtil.getConnection();
+		Statement statement = connection.createStatement();
 		
 		ResultSet rs = null;
 	

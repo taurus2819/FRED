@@ -10,12 +10,12 @@
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.jsp.PageState"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
-%><%@page import="nz.cri.gns.intranet.DBConnection"
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="java.util.List"
 %><%@page import="java.util.Vector"
 %><%@page import="java.net.URLEncoder"
+%><%@page import="java.sql.Connection"
 %><%@page import="java.sql.Statement"
 %><%@page import="java.sql.ResultSet"
 %><%!
@@ -26,8 +26,8 @@
 	}
 %><%
 	PageState state = new PageState(request, response, getServletContext());
-	DBConnection connection = DataEntryUtils.getFREDConnection(state);
-	Statement statement = connection.statement;
+	Connection connection = FREDUtil.getConnection();
+	Statement statement = connection.createStatement();
 	User user = (User)getUser(session);
 
 	String queryURL = request.getParameter("QueryURL");
@@ -72,7 +72,7 @@
 			}
 		} else {
 			features = new Vector<Feature>();
-			//System.out.println("SELECT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
+			System.out.println("SELECT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
 			ResultSet rs = statement.executeQuery("SELECT DISTINCT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
 			while (rs.next()) {
 				Feature feature = featureUtil.getFeature(rs.getInt(1));
