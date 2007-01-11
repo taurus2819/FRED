@@ -32,6 +32,7 @@ import nz.cri.gns.fred.model.Bedding;
 import nz.cri.gns.fred.model.Carbonate;
 import nz.cri.gns.fred.model.ColourModifier;
 import nz.cri.gns.fred.model.Folder;
+import nz.cri.gns.fred.model.FrUserView;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.LabSection;
@@ -58,7 +59,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	
 	private List<Person> people = null;
 	private List<AgeView> ages = null;
-	private List<KeyValueObject> frUsers = null;
+	private List<FrUserView> frUsers = null;
 	
 	public FREDQuery() {
 		
@@ -66,7 +67,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		
 		this.people = getValues("FROM Person AS p", Person.class);
 		this.ages = getValues("FROM AgeView AS a WHERE a.ageAbbrev <> 'nd' AND a.ageAbbrev <> 'nf'", AgeView.class);
-		this.frUsers = getSQLValues("SELECT pe_id, full_name FROM fr_user_view ORDER BY family_name, given_name");
+		this.frUsers = getValues("FROM FrUserView AS f", FrUserView.class);
 
 		//this is going to be tricky.  Need to handle multiple selections and the ORs in the individual fields
 		//Field[] f = new Field[4];
@@ -223,7 +224,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>();
 		Connection conn;
 		try {
-			conn = FREDUtil.getConnection("get SQL for FREDQuery");
+			conn = FREDUtil.getConnection();
 			Statement statement = conn.createStatement();
 			ResultSet rs = statement.executeQuery(sql);
 			while (rs.next())
