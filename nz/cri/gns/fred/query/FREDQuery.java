@@ -84,7 +84,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[2] = new PossibleValueField("f.masterFile", "Masterfile", getValues("FROM Folder AS f WHERE f.folderType.name='Admin'", Folder.class));
 		f[3] = new BasicTextField("f.siteView.nzmgSheet", "NZMS260 Sheet");
 		f[4] = new PossibleValueField("f.siteView.qmapSheet", "QMap Sheet", getQMapSheets());
-		f[5] = new PossibleValueField("f.siteView.countryName", "Country", getValues("FROM Country AS c", Country.class));
+		f[5] = new PossibleValueField("f.siteView.countryCode", "Country", getValues("FROM Country AS c", Country.class));
 		f[6] = new PossibleValueField("f.siteView.island", "Island", getSQLValues("SELECT DISTINCT name as n, name FROM sc.island ORDER BY UPPER(name)"));
 		f[7] = new BasicNumberField("f.siteView.nzmgEast", "NZMG Easting");
 		f[8] = new BasicNumberField("f.siteView.nzmgNorth", "NZMG Northing");
