@@ -118,14 +118,16 @@ public class DrillholeLocalityDE extends LocalityDE {
 			} catch (NumberFormatException e) {
 				error = new String[] {"Termination Depth", "Invalid depth entered"};
 			}
-    		if ("Bottom".equals(feature.getDatumType())) {
-        		if (startDepth.doubleValue() < finishDepth.doubleValue())
-        			error = new String[] {"Depths/Heights", "Top horizon < base horizon and datum = Bottom"};
-        	} else {
-        		if (startDepth.doubleValue() > finishDepth.doubleValue()) {
-        			error = new String[] {"Depths", "Top horizon/kickoff depth > base horizon/termination depth"};
-        		}
-        	}
+			if (request.getParameter("StartDepth").length() > 0) {
+	    		if ("Bottom".equals(feature.getDatumType())) {
+	        		if (startDepth.doubleValue() < finishDepth.doubleValue())
+	        			error = new String[] {"Depths/Heights", "Top horizon < base horizon and datum = Bottom"};
+	        	} else {
+	        		if (startDepth.doubleValue() > finishDepth.doubleValue()) {
+	        			error = new String[] {"Depths", "Top horizon/kickoff depth > base horizon/termination depth"};
+	        		}
+	        	}
+			}
 		}
 			
 		feature.setStartDepth(startDepth);
