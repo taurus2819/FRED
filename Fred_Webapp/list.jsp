@@ -35,10 +35,6 @@
 	if (listName != null) {
 	
 		PageState state = new PageState(request, response, getServletContext());
-		Connection connection = FREDUtil.getConnection();
-		Statement statement = connection.createStatement();
-		
-		ResultSet rs = null;
 	
 		DAOFactory factory = HibernateUtil.get().getDAOFactory();
 		FolderUtil folderUtil = new FolderUtil(factory);
@@ -195,48 +191,60 @@
 			<tr><td>Drillhole</td></tr>
 			<tr><td>Vertical Section</td></tr><%
 		} else {
-			if (listName.equals("bedding")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || bedding_id  FROM bedding ORDER BY code");
-			} else if (listName.equals("carbonate")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || carbonate_id  FROM carbonate ORDER BY code");
-			} else if (listName.equals("colour")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || colour_id  FROM rock_colour ORDER BY code");
-			} else if (listName.equals("colourMod")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || modifier_id  FROM colour_modifier ORDER BY code");
-			} else if (listName.equals("country")) {
-				rs = statement.executeQuery("SELECT country_name || '</td><td>' || country_code FROM mis.country ORDER BY country_name");
-			} else if (listName.equals("drillType")) {
-				rs = statement.executeQuery("SELECT name || '</td><td>' || drill_type_id FROM drill_type ORDER BY name");
-			} else if (listName.equals("fossilGroup")) {
-				rs = statement.executeQuery("SELECT name FROM fossil_group ORDER BY name");
-			} else if (listName.equals("grainSize")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || grain_size_id  FROM grain_size ORDER BY code");
-			} else if (listName.equals("hardness")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || hardness_id  FROM hardness ORDER BY code");
-			} else if (listName.equals("lab")) {
-				rs = statement.executeQuery("SELECT lab_name FROM sc.lab ORDER BY lab_name");
-			} else if (listName.equals("locMethod")) {
-				rs = statement.executeQuery("SELECT method || '</td><td>' || method_id || '</td><td>' || nom_accuracy_xy FROM sc.method WHERE nom_accuracy_xy IS NOT NULL ORDER BY nom_accuracy_xy");
-			} else if (listName.equals("person")) {
-				rs = statement.executeQuery("SELECT name FROM person_view ORDER BY family_name, given_name");
-			} else if (listName.equals("regArea")) {
-				rs = statement.executeQuery("SELECT name || '</td><td>' || reg_area_id FROM registration_area ORDER BY name");
-			} else if (listName.equals("thickness")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || thickness_id FROM bed_thickness ORDER BY code");
-			} else if (listName.equals("sedFeature")) {
-				rs = statement.executeQuery("SELECT name FROM sedimentary_feature_type ORDER BY code");
-			} else if (listName.equals("stageName")) {
-				rs = statement.executeQuery("SELECT ag_name || '</td><td>' || ag_id FROM age_view ORDER BY ag_name");
-			} else if (listName.equals("stratName")) {
-				rs = statement.executeQuery("SELECT su_name FROM sl.strat_unit ORDER BY su_name");
-			} else if (listName.equals("weathering")) {
-				rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || weathering_id FROM weathering ORDER BY code");
-			}
+			Connection conn = null;
 			try {
+				conn = FREDUtil.getConnection();
+				Statement statement = conn.createStatement();
+				ResultSet rs = null;
+				if (listName.equals("bedding")) {
+					rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || bedding_id  FROM bedding ORDER BY code");
+				} else if (listName.equals("carbonate")) {
+					rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || carbonate_id  FROM carbonate ORDER BY code");
+				} else if (listName.equals("colour")) {
+					rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || colour_id  FROM rock_colour ORDER BY code");
+				} else if (listName.equals("colourMod")) {
+					rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || modifier_id  FROM colour_modifier ORDER BY code");
+				} else if (listName.equals("country")) {
+					rs = statement.executeQuery("SELECT country_name || '</td><td>' || country_code FROM mis.country ORDER BY country_name");
+				} else if (listName.equals("drillType")) {
+					rs = statement.executeQuery("SELECT name || '</td><td>' || drill_type_id FROM drill_type ORDER BY name");
+				} else if (listName.equals("fossilGroup")) {
+					rs = statement.executeQuery("SELECT name FROM fossil_group ORDER BY name");
+				} else if (listName.equals("grainSize")) {
+					rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || grain_size_id  FROM grain_size ORDER BY code");
+				} else if (listName.equals("hardness")) {
+					rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || hardness_id  FROM hardness ORDER BY code");
+				} else if (listName.equals("lab")) {
+					rs = statement.executeQuery("SELECT lab_name FROM sc.lab ORDER BY lab_name");
+				} else if (listName.equals("locMethod")) {
+					rs = statement.executeQuery("SELECT method || '</td><td>' || method_id || '</td><td>' || nom_accuracy_xy FROM sc.method WHERE nom_accuracy_xy IS NOT NULL ORDER BY nom_accuracy_xy");
+				} else if (listName.equals("person")) {
+					rs = statement.executeQuery("SELECT name FROM person_view ORDER BY family_name, given_name");
+				} else if (listName.equals("regArea")) {
+					rs = statement.executeQuery("SELECT name || '</td><td>' || reg_area_id FROM registration_area ORDER BY name");
+				} else if (listName.equals("thickness")) {
+					rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || thickness_id FROM bed_thickness ORDER BY code");
+				} else if (listName.equals("sedFeature")) {
+					rs = statement.executeQuery("SELECT name FROM sedimentary_feature_type ORDER BY code");
+				} else if (listName.equals("stageName")) {
+					rs = statement.executeQuery("SELECT ag_name || '</td><td>' || ag_id FROM age_view ORDER BY ag_name");
+				} else if (listName.equals("stratName")) {
+					rs = statement.executeQuery("SELECT su_name FROM sl.strat_unit ORDER BY su_name");
+				} else if (listName.equals("weathering")) {
+					rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || weathering_id FROM weathering ORDER BY code");
+				}
 				while (rs.next()) {
 					%><tr><td><%=rs.getString(1).replaceAll(" ", "&nbsp;")%></td></tr><%
 				}
-			} catch (Exception e) {}
+				rs.close();
+				statement.close();
+				conn.close();
+			} finally {
+				if (conn != null) try {
+					conn.close();
+				} catch (Exception _e) {
+				}
+			}
 		}
 		
 		%></table><%

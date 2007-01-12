@@ -1,5 +1,4 @@
 <%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
-%><%@page import="nz.cri.gns.fred.de.DataEntryUtils"
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.query.FREDQuery"
@@ -26,8 +25,6 @@
 	}
 %><%
 	PageState state = new PageState(request, response, getServletContext());
-	Connection connection = FREDUtil.getConnection();
-	Statement statement = connection.createStatement();
 	User user = (User)getUser(session);
 
 	String queryURL = request.getParameter("QueryURL");
@@ -72,12 +69,25 @@
 			}
 		} else {
 			features = new Vector<Feature>();
-			System.out.println("SELECT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
-			ResultSet rs = statement.executeQuery("SELECT DISTINCT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
-			while (rs.next()) {
-				Feature feature = featureUtil.getFeature(rs.getInt(1));
-				if (feature.getAudit().getStatus().equals(FREDConstants.APPROVED))
-					features.add(feature);
+			//System.out.println("SELECT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
+			Connection conn = null;
+			try {
+				conn = FREDUtil.getConnection();
+				Statement statement = conn.createStatement();
+				ResultSet rs = statement.executeQuery("SELECT DISTINCT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
+				while (rs.next()) {
+					Feature feature = featureUtil.getFeature(rs.getInt(1));
+					if (feature.getAudit().getStatus().equals(FREDConstants.APPROVED))
+						features.add(feature);
+				}
+				rs.close();
+				statement.close();
+				conn.close();
+			} finally {
+				if (conn != null) try {
+					conn.close();
+				} catch (Exception _e) {
+				}
 			}
 		}
 		int numRecords = features.size();
