@@ -590,14 +590,12 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 
 				if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
 					confidFlag = confidFlag || recordUtil.isPalListConfidential(palRecord);
-					System.out.println("Should be printing " + recordUtil.getTaxonomicGroups(palRecord).size() + " groups");
 					for (TaxonomicGroup taxaGroup : recordUtil.getTaxonomicGroups(palRecord)) {
 						PdfPTable taxaTable = new PdfPTable(4);
 						taxaTable.setTotalWidth(bodyTableWidth);
 						taxaTable.setLockedWidth(true);
 						taxaTable.setWidths(new float[] {65 * MM_TO_PT, 25 * MM_TO_PT, 25 * MM_TO_PT, 60 * MM_TO_PT});
 						taxaTable.setSpacingAfter(3 * MM_TO_PT);
-						System.out.println("Printing taxonomic group : " + taxaGroup.getName());
 						PDFUtil.addCell(taxaTable, taxaGroup.getName(), fonts[1], PdfPCell.ALIGN_LEFT, 5);
 						if (recordUtil.getListEntries(palRecord, taxaGroup).size() > 0) {
 						PDFUtil.addCells(taxaTable, new String[] {"Taxonomic Name", "Spec Count", "Spec Coord", "Comments"}, new Font[] {fonts[1], fonts[1], fonts[1], fonts[1], fonts[1]});
@@ -610,7 +608,6 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 						}
 						document.add(taxaTable);
 					}
-					
 				} else {
 					PdfPTable taxaTable = new PdfPTable(4);
 					taxaTable.setTotalWidth(bodyTableWidth);
