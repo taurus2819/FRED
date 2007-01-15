@@ -340,14 +340,14 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * Returns all the groups that are appropriate for the given pal entry
 	 */
 	public List<TaxonomicGroup> getTaxonomicGroups(Paleontology pal) {
-		System.out.println("Getting taxonomic groups for pal record: " + pal.getRecordId());
 		if (pal.getListEntries() == null)
 			return new Vector<TaxonomicGroup>();
 		TreeSet<TaxonomicGroup> set = new TreeSet<TaxonomicGroup>();
 		for (PaleontologyListEntry entry : pal.getListEntries())
 			set.add(entry.getTaxonomicGroup());
-		System.out.println("Group count = " + set.size());
-		return new Vector<TaxonomicGroup>(set);
+		List<TaxonomicGroup> groups = new Vector<TaxonomicGroup>(set);
+		Collections.sort(groups);
+		return groups;
 	}
 
 	/**
