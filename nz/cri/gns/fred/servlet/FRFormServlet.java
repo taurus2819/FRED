@@ -594,7 +594,9 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				taxaTable.setSpacingAfter(3 * MM_TO_PT);
 				if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
 					confidFlag = confidFlag || recordUtil.isPalListConfidential(palRecord);
+					System.out.println("Should be printing " + recordUtil.getTaxonomicGroups(palRecord) + " groups");
 					for (TaxonomicGroup taxaGroup : recordUtil.getTaxonomicGroups(palRecord)) {
+						System.out.println("Printing taxonomic group : " + taxaGroup.getName());
 						PDFUtil.addCell(taxaTable, taxaGroup.getName(), fonts[1], PdfPCell.ALIGN_LEFT, 5);
 						if (recordUtil.getListEntries(palRecord, taxaGroup).size() > 0) {
 						PDFUtil.addCells(taxaTable, new String[] {"Taxonomic Name", "Spec Count", "Spec Coord", "Comments"}, new Font[] {fonts[1], fonts[1], fonts[1], fonts[1], fonts[1]});
