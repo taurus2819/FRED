@@ -587,15 +587,16 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				document.add(table);
 				
 				//taxa (Pal list)
-				PdfPTable taxaTable = new PdfPTable(4);
-				taxaTable.setTotalWidth(bodyTableWidth);
-				taxaTable.setLockedWidth(true);
-				taxaTable.setWidths(new float[] {65 * MM_TO_PT, 25 * MM_TO_PT, 25 * MM_TO_PT, 60 * MM_TO_PT});
-				taxaTable.setSpacingAfter(3 * MM_TO_PT);
+
 				if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
 					confidFlag = confidFlag || recordUtil.isPalListConfidential(palRecord);
-					System.out.println("Should be printing " + recordUtil.getTaxonomicGroups(palRecord) + " groups");
+					System.out.println("Should be printing " + recordUtil.getTaxonomicGroups(palRecord).size() + " groups");
 					for (TaxonomicGroup taxaGroup : recordUtil.getTaxonomicGroups(palRecord)) {
+						PdfPTable taxaTable = new PdfPTable(4);
+						taxaTable.setTotalWidth(bodyTableWidth);
+						taxaTable.setLockedWidth(true);
+						taxaTable.setWidths(new float[] {65 * MM_TO_PT, 25 * MM_TO_PT, 25 * MM_TO_PT, 60 * MM_TO_PT});
+						taxaTable.setSpacingAfter(3 * MM_TO_PT);
 						System.out.println("Printing taxonomic group : " + taxaGroup.getName());
 						PDFUtil.addCell(taxaTable, taxaGroup.getName(), fonts[1], PdfPCell.ALIGN_LEFT, 5);
 						if (recordUtil.getListEntries(palRecord, taxaGroup).size() > 0) {
@@ -611,6 +612,11 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 					}
 					
 				} else {
+					PdfPTable taxaTable = new PdfPTable(4);
+					taxaTable.setTotalWidth(bodyTableWidth);
+					taxaTable.setLockedWidth(true);
+					taxaTable.setWidths(new float[] {65 * MM_TO_PT, 25 * MM_TO_PT, 25 * MM_TO_PT, 60 * MM_TO_PT});
+					taxaTable.setSpacingAfter(3 * MM_TO_PT);
 					PDFUtil.addCell(taxaTable, "You do not have rights to view the taxonomic list for this record", fonts[1], PdfPCell.ALIGN_LEFT, 4);
 					document.add(taxaTable);					
 				}
