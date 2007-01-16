@@ -273,6 +273,14 @@ public class PaleontologyRecordDE extends RecordDE {
 				return -1;
 			return taxonomicName.compareTo(arg0.getTaxonomicName());
 		}
+
+		public String getUniqueIdentifier() {
+			return String.valueOf(getPalListId());
+		}
+
+		public String getDisplayName() {
+			return taxonomicName;
+		}
 	}
 
 	private Set<PaleontologyListEntry> badTaxaList;

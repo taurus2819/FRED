@@ -143,5 +143,13 @@ public class PalList implements Serializable, nz.cri.gns.fred.model.Paleontology
 			return -1;
 		return taxonomicName.compareTo(arg0.getTaxonomicName());
 	}
+
+	public String getUniqueIdentifier() {
+		return String.valueOf(palListId);
+	}
+
+	public String getDisplayName() {
+		return taxonomicName;
+	}
 	
 }
