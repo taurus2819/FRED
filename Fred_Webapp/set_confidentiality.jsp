@@ -170,7 +170,7 @@
 			
 			if (FREDConstants.PALEONTOLOGICAL.equals(recType)) {
 				%><tr><td>&nbsp;</td></tr>
-				<tr><td colspan="4" class="deHeading">Taxonimic List Confidentiality Options</td></tr>
+				<tr><td colspan="4" class="deHeading">Taxonomic List Confidentiality Options</td></tr>
 				<tr><td><input type="radio" name="palConfidType" value="open" <%=(palListAudit.getConfidentialFlag() == null || !palListAudit.getConfidentialFlag()) ? "checked" : ""%> /></td><td style="text-align:left" class="heading">Open</td></tr>
 				<tr><td><input type="radio" name="palConfidType" value="confid" <%=(palListAudit.getConfidentialFlag() != null && palListAudit.getConfidentialFlag()) ? "checked" : ""%> /></td><td style="text-align:left" class="heading">Confidential&nbsp;&nbsp;</td>
 				<td style="text-align:left" class="heading">Confidential Period:&nbsp;</td>
@@ -183,7 +183,7 @@
 				<option value="2"<%=(confidPeriod == 2) ? " selected" : ""%>>2 years</option>
 				<option value="5"<%=(confidPeriod == 5) ? " selected" : ""%>>5 years</option>
 				</select></td></tr>
-				<tr><td colspan="4">This taxonimic list will be restricted to me and the following groups</td></tr><%
+				<tr><td colspan="4">This taxonomic list will be restricted to me and the following groups</td></tr><%
 				for (ConfidentialGroup confidGroup : auditUtil.getConfidentialGroups(user)) {
 					%><tr><td><input type="checkbox" name="palConfidGroups" value="<%=confidGroup.getGroupId()%>"<%
 					if (!FREDUtil.isEmpty(palListAudit.getConfidGroups()) && palListAudit.getConfidGroups().contains(confidGroup)) {
