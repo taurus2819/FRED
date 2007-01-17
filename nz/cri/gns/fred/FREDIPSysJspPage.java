@@ -86,7 +86,13 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 		String htmlLink = "<img src=\"images\\blank.gif\" height=\"20\" width=\"10\" alt=\"\" /><form method=\"post\" action=\"locality\" name=\"FRNumJumpForm\" style=\"display: inline; margin: 0;\">"
 			+ "<input type=\"text\" size=\"10\" name=\"frNum\" style=\"border: 0; font-size: 10pt\" />&nbsp;"
 			+ "<input type=\"submit\" value=\"Go\" /></form>";
-		et.setButtons(new Link[] {new CustomHTMLLink(htmlLink), new IconnedLink("index.jsp", "images/home.gif", "FRED Home")});
+		et.setButtons(new Link[] {
+				new CustomHTMLLink(htmlLink)
+				, new IconnedLink("index.jsp", "images/home.gif", "FRED Home")
+				, new IconnedLink("folder_list.jsp", "images/edit.gif", "Data Entry")
+				, new IconnedLink("simple_query.jsp", "images/search.gif", "Simple Query")
+				, new IconnedLink("buildframe.jsp", "images/search.gif", "Advanced Query")
+		});
 		return et;
 	}
 
