@@ -143,6 +143,7 @@
 		<li><img src="images/drill.gif" border="0" height="20" width="20" alt="" /> to create a sample for this locality</li>
 		<li><img src="images/new_ado.gif" border="0" height="20" width="20" alt="" /> to create a new adoption record for this locality/sample</li>
 		<li><img src="images/new_pal.gif" border="0" height="20" width="20" alt="" /> to create a new paleontological record for this locality/sample</li>
+		<li><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="" /> to print the locality/sample/record</li>
 		</ul>
 		</ul>
 		</td></tr>
@@ -153,10 +154,10 @@
 		<p><%
 		startDETable(pageContext);
 		%><form name="FoldForm" method="put" action="folder_feature_detail.jsp">
-		<table border="0" width="550"><tr><td colspan="11" class="deHeading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></td></tr>
+		<table border="0" width="550"><tr><td colspan="12" class="deHeading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></td></tr>
 		<tr>
-		<th colspan="2">Name&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="7">Actions</th></tr>
-		<tr><td colspan="11"><img src="images/line.gif" height="3" width="550" /></td></tr>
+		<th colspan="2">Name&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="8">Actions</th></tr>
+		<tr><td colspan="12"><img src="images/line.gif" height="3" width="550" /></td></tr>
 		<%-- Feature --%>
 		<tr><td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_feature_detail.jsp?FoldID=" + folder.getFolderId() + "&FeatID=" + feature.getFeatureId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a>&nbsp;</td>
 		<td style="text-align: left" class="heading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%>&nbsp;&nbsp;<%
@@ -194,8 +195,11 @@
 				%><a href="de.jsp?Type=Sample&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/drill.gif" border="0" height="20" width="20" alt="New Sample" /></a>&nbsp;<%
 			}
 		}
-		%></td></tr>
-		<tr><td colspan="11"><img src="images/line.gif" height="3" width="550" /></td></tr><%
+		%></td><td></td>
+		<td style="text-align: left">
+		<a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" width="20" height="20" alt="Print Locality" /></a>&nbsp;
+		</td></tr>
+		<tr><td colspan="12"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 		
 		//samples
 		for (Iterator i = FeatureUtil.getSortedSamples(feature).iterator(); i.hasNext(); ) {
@@ -232,7 +236,9 @@
 					if (folder.isAllowedCreateLocalities()) {
 						%><a href="de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/new_pal.gif" border="0" height="20" width="20"  /></a><%
 					}
-					%></td></tr><%
+					%></td><td style="text-align: left">
+					<a href="frf/frf.pdf?SampIDs=<%=sample.getSampleId()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" width="20" height="20" alt="Print Locality" /></a>&nbsp;
+					</td></tr><%
 				}
 				
 				//Records
@@ -272,11 +278,14 @@
 							if (recordUtil.isAllowedSubmitRecord(user, record, folder)) {
 								%><a href="javascript:document.FoldForm.ActionType.value='SubmitRec';document.FoldForm.RecID.value='<%=record.getRecordId()%>';document.FoldForm.submit();"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Record" /></a><img src="images/blank.gif" height="20" width="2" /><%
 							}
-							%></td></tr><%
+							%></td><td></td><td></td>
+							<td style="text-align: left">
+							<a href="frf/frf.pdf?RecIDs=<%=record.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" width="20" height="20" alt="Print Locality" /></a>&nbsp;
+							</td></tr><%
 						}
 					}
 				}
-				%><tr><td colspan="11"><img src="images/line.gif" height="3" width="550" /></td></tr><%
+				%><tr><td colspan="12"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 			}
 		}
 		%><input type="hidden" name="ActionType" value="">
