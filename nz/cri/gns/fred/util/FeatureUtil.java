@@ -37,6 +37,7 @@ import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Person;
+import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
@@ -1206,5 +1207,15 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return featureDAO.getList(query, Feature.class);
 	}
 	
+	public String getFullLocalityPDFURL(Feature feature) {
+		StringBuffer sb = new StringBuffer("FeatIDs=").append(feature.getFeatureId());
+		for (Sample sample : feature.getSamples()) {
+			if (!FREDConstants.OUTCROP.equals(feature.getFeatureType()))
+				sb.append("&SampIDs=").append(sample.getSampleId());
+			for (Record record : sample.getRecords())
+				sb.append("&RecIDs=").append(record.getRecordId());
+		}
+		return sb.toString();
+	}
 	
 }
