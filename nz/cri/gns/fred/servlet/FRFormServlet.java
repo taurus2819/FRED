@@ -86,6 +86,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	private FrNumber currentFrNumber = null;
 	
 	private boolean confidFlag;
+	private boolean workingFlag;
 	
 	private static final float MM_TO_PT = 2.8346f;
 	
@@ -337,6 +338,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		table.setSpacingAfter(3 * MM_TO_PT);
 		
 		confidFlag = false;
+		workingFlag = FREDConstants.WORKING.equals(feature.getAudit().getStatus());
 		
 		if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
 			//Location Information
@@ -416,6 +418,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	
 	private void writeSample(Sample sample, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, StorageAccessException {
 		confidFlag = sampleUtil.isSampleConfidential(sample);
+		workingFlag = FREDConstants.WORKING.equals(sample.getAudit().getStatus());
 		if(sampleUtil.isAllowedReadSample(user, sample)) {
 			Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
 			
@@ -534,6 +537,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
 		
 		confidFlag = recordUtil.isRecordConfidential(record);
+		workingFlag = FREDConstants.WORKING.equals(record.getAudit().getStatus());
 		
 		//Locality information
 		PdfPTable table = new PdfPTable(2);
@@ -683,14 +687,23 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		
 		//watermark
 		if (confidFlag) {
-            PdfContentByte cb2 = writer.getDirectContentUnder();
-            cb2.saveState();
-            cb2.setRGBColorFill(255, 165, 165);
-            cb2.beginText();
-            cb2.setFontAndSize(baseFont, 80);
-            cb2.showTextAligned(Element.ALIGN_CENTER, "Confidential", document.getPageSize().width() / 2, document.getPageSize().height() / 2, 60);
-            cb2.endText();
-            cb2.restoreState();
+			PdfContentByte cb2 = writer.getDirectContentUnder();
+			cb2.saveState();
+			cb2.setRGBColorFill(255, 165, 165);
+			cb2.beginText();
+			cb2.setFontAndSize(baseFont, 80);
+			cb2.showTextAligned(Element.ALIGN_CENTER, "Confidential", document.getPageSize().width() / 2, document.getPageSize().height() / 2, 60);
+			cb2.endText();
+			cb2.restoreState();
+		} else if (workingFlag) {
+			PdfContentByte cb2 = writer.getDirectContentUnder();
+			cb2.saveState();
+			cb2.setRGBColorFill(255, 165, 165);
+			cb2.beginText();
+			cb2.setFontAndSize(baseFont, 80);
+			cb2.showTextAligned(Element.ALIGN_CENTER, "DRAFT", document.getPageSize().width() / 2, document.getPageSize().height() / 2, 60);
+			cb2.endText();
+			cb2.restoreState();
 		}
 	}
 
