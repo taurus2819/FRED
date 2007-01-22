@@ -214,7 +214,7 @@
 					%><a href="javascript:if (confirm('Are you sure you want to revoke this locality') == true) {document.FoldForm.ActionType.value='Revoke';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke Locality" /></a>&nbsp;<%
 				}
 				%></td><td style="text-align: left">
-				<a href="frf/frf.pdf?<%=featureUtil.getFullLocalityPDFURL(feature)%>" target="_blank"><img src="images/pdf_icon.gif" border="0" width="20" height="20" alt="Print Locality" /></a>&nbsp;
+				<a href="frf/frf.pdf?<%=featureUtil.getFullLocalityPDFURL(feature)%>&q=<%=Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" width="20" height="20" alt="Print Locality" /></a>&nbsp;
 				</td></tr>
 				<tr><td colspan="13"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 			}

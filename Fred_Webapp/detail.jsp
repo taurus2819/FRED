@@ -167,8 +167,10 @@ try {
 		if (backURL != null)
 			il.add(new IconnedLink(backURL, "images/back_arrow.gif", (backText != null) ? request.getParameter("backText") : "Back"));
 		il.add(new IconnedLink("locality_map.jsp?FeatID=" + feature.getFeatureId() + "&backURL=" + URLEncoder.encode("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr, "ISO-8859-1")+ "&backText=Back%20To%20Locality", "images/map.gif", "Locality Map"));
-		if (isAllowedReadFeature)
+		if (isAllowedReadFeature) {
 			il.add(new IconnedLink("audit_detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "FeatID=" + feature.getFeatureId()) + "&backURL=" + URLEncoder.encode("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr, "ISO-8859-1")+ "&backText=Back%20To%20Locality", "images/loc.gif", "Audit Details"));
+			il.add(new IconnedLink("frf/frf/pdf?" + featureUtil.getFullLocalityPDFURL(feature) + "&q=" + Math.random(), "images/pdf_icon.gif", "Print Full Locality"));
+		}
 		//Add to Folder link
 		if (isAllowedReadFeature && feature.getAudit().getStatus().equals(FREDConstants.APPROVED) && (new FolderUtil(factory)).getPersonalFolders(user).size() > 0) {		
 			StringBuffer customHTML = new StringBuffer("<form method=\"post\" action=\"detail.jsp\" name=\"FolderForm\" style=\"display: inline; margin: 0;\">");
