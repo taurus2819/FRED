@@ -43,9 +43,9 @@
 				String actionType = request.getParameter("ActionType");
 				Taxon taxon = taxaUtil.getTaxon(Integer.parseInt(request.getParameter("TaxonID")));
 				if (actionType.equals("Approve")) { //approve taxon
-					taxaUtil.approveTaxon(taxon, user);
+					taxaUtil.approveTaxon(taxon, user, request.getParameter("Comments"));
 				} else if (actionType.equals("Reject")) { //reject taxon
-					taxaUtil.rejectTaxon(taxon, user, request.getParameter("RejComments"));
+					taxaUtil.rejectTaxon(taxon, user, request.getParameter("Comments"));
 				} else if (actionType.equals("Delete")) {
 					taxaUtil.deleteTaxon(taxon, user);
 				} else if (actionType.equals("Obsolete")) {  //obsolete taxon
@@ -62,7 +62,7 @@
 					%><form name="taxonForm<%=taxon.getTaxaId()%>" method="post" action="taxa_group_detail.jsp">
 					<input type="hidden" name="ID" value="<%=group.getGroupId()%>" />
 					<input type="hidden" name="TaxonID" value="<%=taxon.getTaxaId()%>" />
-					<input type="hidden" name="ActionType" value="Reject" />
+					<input type="hidden" name="ActionType" value="" />
 					<tr>
 					<td class="heading" style="text-align: left"><%=taxon.getTaxonomicName()%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=DBUtils.nvl(taxon.getAuthor())%>&nbsp;&nbsp;</td>
@@ -79,9 +79,9 @@
 					} else {
 						%><td></td><%
 					}
-					%><td style="text-align: left"><a href="taxa_group_detail.jsp?ID=<%=group.getGroupId()%>&ActionType=Approve&TaxonID=<%=taxon.getTaxaId()%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="approve" /></a><br />
-						<textarea name="RejComments" cols="20" rows="3"></textarea>&nbsp;&nbsp;
-						<a href="#" onClick="taxonForm<%=taxon.getTaxaId()%>.submit();"><img src="images/cancel.gif" border="0" height="20" width="20" alt="Reject" /></a></td></tr>
+					%><td style="text-align: left"><a href="#" ocClick="taxonForm<%=taxon.getTaxaId()%>.ActionType.value='Approve';taxonForm<%=taxon.getTaxaId()%>.submit();"><img src="images/ok.gif" border="0" height="20" width="20" alt="approve" /></a>
+					    &nbsp;&nbsp;<a href="#" onClick="taxonForm<%=taxon.getTaxaId()%>.ActionType.value='Reject';taxonForm<%=taxon.getTaxaId()%>.submit();"><img src="images/cancel.gif" border="0" height="20" width="20" alt="Reject" /></a><br />
+						<textarea name="Comments" cols="20" rows="3"></textarea></td></tr>
 					</tr>
 					</form><%
 				}

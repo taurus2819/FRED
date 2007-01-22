@@ -75,37 +75,29 @@ public class TaxonomicUtil extends ModelUtil {
 		taxonomicDAO.save(group);
 	}
 	
-	public Taxon approveTaxon(Taxon taxon, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
-		if (!isUserPanelistOf(taxon.getTaxonomicGroup(), user))
-			throw new InsufficientPrivelegesException();
-		taxon.setStatus(FREDConstants.APPROVED);
-		taxon.setApprovedById(new Integer(user.getId()));
-		taxon.setApprovedDate(new Date());
-		taxonomicDAO.save(taxon);
-		return taxon;
+	public Taxon approveTaxon(Taxon taxon, UserAccount user, String comments) throws StorageAccessException, InsufficientPrivelegesException {
+		return approveRejectObsoleteTaxon(taxon, user, FREDConstants.APPROVED, comments);
 	}
 
 	public Taxon rejectTaxon(Taxon taxon, UserAccount user, String comments) throws StorageAccessException, InsufficientPrivelegesException {
+		return approveRejectObsoleteTaxon(taxon, user, FREDConstants.REJECTED, comments);
+	}
+	
+	public Taxon obsoleteTaxon(Taxon taxon, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+		return approveRejectObsoleteTaxon(taxon, user, FREDConstants.OBSOLETE, taxon.getPanelistComments());
+	}
+	
+	private Taxon approveRejectObsoleteTaxon(Taxon taxon, UserAccount user, String status, String comments) throws InsufficientPrivelegesException, StorageAccessException {
 		if (!isUserPanelistOf(taxon.getTaxonomicGroup(), user))
 			throw new InsufficientPrivelegesException();
-		taxon.setStatus(FREDConstants.REJECTED);
+		taxon.setStatus(status);
 		taxon.setApprovedById(new Integer(user.getId()));
 		taxon.setApprovedDate(new Date());
 		taxon.setPanelistComments(comments);
 		taxonomicDAO.save(taxon);
-		return taxon;
+		return taxon;		
 	}
-	
-	public Taxon obsoleteTaxon(Taxon taxon, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
-		if (!isUserPanelistOf(taxon.getTaxonomicGroup(), user))
-			throw new InsufficientPrivelegesException();
-		taxon.setStatus(FREDConstants.OBSOLETE);
-		taxon.setApprovedById(new Integer(user.getId()));
-		taxon.setApprovedDate(new Date());
-		taxonomicDAO.save(taxon);
-		return taxon;
-	}
-	
+
 	public void deleteTaxon(Taxon taxon, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
 		if (!isUserPanelistOf(taxon.getTaxonomicGroup(), user))
 			throw new InsufficientPrivelegesException();
