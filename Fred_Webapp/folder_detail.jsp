@@ -148,7 +148,7 @@
 			<li><img src="images/delete.gif" border="0" height="20" width="20" alt="" /> delete the locality</li>
 			<li><img src="images/submit.gif" border="0" height="20" width="20" alt="" /> submit the locality for entry to the masterfile</li>
 			<li><img src="images/revoke.gif" border="0" height="20" width="20" alt="" /> revoke the locality for entry from the masterfile</li>
-			<li><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="" /> to print the locality</li>
+			<li><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="" /> to print the locality and all samples (for drillhole and vertical sections) and paleontology and adopted age records</li>
 			</ul>
 			<li>Multiple localities may be selected by <i>ticking</i> the checkboxes on the left-hand side.  You can then use the tools in the <i>Selected Locality Actions</i> box</li>
 			</ul>
@@ -214,7 +214,7 @@
 					%><a href="javascript:if (confirm('Are you sure you want to revoke this locality') == true) {document.FoldForm.ActionType.value='Revoke';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke Locality" /></a>&nbsp;<%
 				}
 				%></td><td style="text-align: left">
-				<a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" width="20" height="20" alt="Print Locality" /></a>&nbsp;
+				<a href="frf/frf.pdf?<%=featureUtil.getFullLocalityPDFURL(feature)%>" target="_blank"><img src="images/pdf_icon.gif" border="0" width="20" height="20" alt="Print Locality" /></a>&nbsp;
 				</td></tr>
 				<tr><td colspan="13"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 			}
