@@ -42,15 +42,17 @@
 			if (request.getParameter("ActionType") != null && request.getParameter("TaxonID") != null) { //do something
 				String actionType = request.getParameter("ActionType");
 				Taxon taxon = taxaUtil.getTaxon(Integer.parseInt(request.getParameter("TaxonID")));
-				if (actionType.equals("Approve")) { //approve taxon
+				if (actionType.equals("Approve")) {
 					taxaUtil.approveTaxon(taxon, user, request.getParameter("Comments"));
-				} else if (actionType.equals("Reject")) { //reject taxon
+				} else if (actionType.equals("Reject")) {
 					taxaUtil.rejectTaxon(taxon, user, request.getParameter("Comments"));
 				} else if (actionType.equals("Delete")) {
 					taxaUtil.deleteTaxon(taxon, user);
-				} else if (actionType.equals("Obsolete")) {  //obsolete taxon
+				} else if (actionType.equals("Obsolete")) {
 					taxaUtil.obsoleteTaxon(taxon, user);
 				}
+				response.sendRedirect("taxa_group_detail.jsp?ID=" + request.getParameter("ID") + "&q=" + Math.random());
+				return;
 			}
 
 			if (taxaUtil.getTaxaCount(group, FREDConstants.PROVISIONAL) > 0) {
@@ -79,7 +81,7 @@
 					} else {
 						%><td></td><%
 					}
-					%><td style="text-align: left"><a href="#" ocClick="taxonForm<%=taxon.getTaxaId()%>.ActionType.value='Approve';taxonForm<%=taxon.getTaxaId()%>.submit();"><img src="images/ok.gif" border="0" height="20" width="20" alt="approve" /></a>
+					%><td style="text-align: left"><a href="#" onClick="taxonForm<%=taxon.getTaxaId()%>.ActionType.value='Approve';taxonForm<%=taxon.getTaxaId()%>.submit();"><img src="images/ok.gif" border="0" height="20" width="20" alt="approve" /></a>
 					    &nbsp;&nbsp;<a href="#" onClick="taxonForm<%=taxon.getTaxaId()%>.ActionType.value='Reject';taxonForm<%=taxon.getTaxaId()%>.submit();"><img src="images/cancel.gif" border="0" height="20" width="20" alt="Reject" /></a><br />
 						<textarea name="Comments" cols="20" rows="3"></textarea></td></tr>
 					</tr>
