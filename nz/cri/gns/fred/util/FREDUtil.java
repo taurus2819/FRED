@@ -184,6 +184,8 @@ public class FREDUtil {
 	 * Returns a string of a date with appropriate formatting 
 	 */
 	public static String formatDateForOutput(Date date, String rounding) {
+		if (date == null)
+			return "";
 		SimpleDateFormat yearFormatter = new SimpleDateFormat("yyyy");
 		SimpleDateFormat monthFormatter = new SimpleDateFormat("MMMM yyyy");
 		if (rounding == null) {
