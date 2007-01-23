@@ -33,7 +33,7 @@
 	try {
 			List<Sample> confidSamples = auditUtil.getConfidentialSamples(user);
 			List<Adoption> confidAdoptions = auditUtil.getConfidentialAdoptionRecords(user);
-			List<Paleontology> confidPals = auditUtil.getConfidentialPaleontologyRecords(user);
+			List<Paleontology> confidPaleontologies = auditUtil.getConfidentialPaleontologyRecords(user);
 			List<Paleontology> confidPalLists = auditUtil.getConfidentialPalLists(user);
 	
 			//List samples
@@ -41,7 +41,7 @@
 				%><p><%
 				startDETable(pageContext);
 				%><table border="0" cellspacing="0" cellpadding="2" width="550">
-				<tr><td colspan=5 class=deHeading>Confidential Drillhole/Vertical Section Samples</td></tr>
+				<tr><td colspan="3" class="deHeading">Confidential Drillhole/Vertical Section Samples</td></tr>
 				<!-- <tr><td colspan="2" style="text-align: left; color: #FF0000">This record contains provisional taxonomic entries. You must wait until these entries are approved before submitting the record</td></tr> -->
 				<tr><th style="text-align: left">Locality&nbsp;&nbsp;</th><th style="text-align: left">Sample&nbsp;&nbsp;</th></tr><%
 				for (Sample sample : confidSamples) {
@@ -58,13 +58,49 @@
 				%><p><%
 				startDETable(pageContext);
 				%><table border="0" cellspacing="0" cellpadding="2" width="550">
-				<tr><td colspan=5 class=deHeading>Confidential Drillhole/Vertical Section Samples</td></tr>
+				<tr><td colspan="3" class="deHeading">Confidential Adoption Records</td></tr>
 				<!-- <tr><td colspan="2" style="text-align: left; color: #FF0000">This record contains provisional taxonomic entries. You must wait until these entries are approved before submitting the record</td></tr> -->
 				<tr><th style="text-align: left">Locality&nbsp;&nbsp;</th><th style="text-align: left">Sample&nbsp;&nbsp;</th><th style="text-align: left">Adoption Record&nbsp;&nbsp;</th></tr><%
 				for (Adoption adoption : confidAdoptions) {
 					%><tr><td style="text-align: left"><%=FeatureUtil.getFeatureIdentifyingName(adoption.getRecord().getSample().getFeature())%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=SampleUtil.getDrillHoleDepthDescription(adoption.getRecord().getSample())%>&nbsp;&nbsp;</td>
 					<td style="text-align: left"><%=RecordUtil.getRecordName(adoption.getRecord())%>&nbsp;&nbsp;</td></tr><%
+				}
+				%></table><%
+				endDETable(pageContext);
+				%></p><%
+			}
+			
+			//List paleontologies
+			if (confidPaleontologies.size() > 0) {
+				%><p><%
+				startDETable(pageContext);
+				%><table border="0" cellspacing="0" cellpadding="2" width="550">
+				<tr><td colspan="3" class="deHeading">Confidential Paleontology Records</td></tr>
+				<!-- <tr><td colspan="2" style="text-align: left; color: #FF0000">This record contains provisional taxonomic entries. You must wait until these entries are approved before submitting the record</td></tr> -->
+				<tr><th style="text-align: left">Locality&nbsp;&nbsp;</th><th style="text-align: left">Sample&nbsp;&nbsp;</th><th style="text-align: left">Adoption Record&nbsp;&nbsp;</th></tr><%
+				for (Paleontology paleontology : confidPaleontologies) {
+					%><tr><td style="text-align: left"><%=FeatureUtil.getFeatureIdentifyingName(paleontology.getRecord().getSample().getFeature())%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=SampleUtil.getDrillHoleDepthDescription(paleontology.getRecord().getSample())%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=RecordUtil.getRecordName(paleontology.getRecord())%>&nbsp;&nbsp;</td></tr><%
+				}
+				%></table><%
+				endDETable(pageContext);
+				%></p><%
+			}
+			
+			//List pal lists
+			if (confidPalLists.size() > 0) {
+				%><p><%
+				startDETable(pageContext);
+				%><table border="0" cellspacing="0" cellpadding="2" width="550">
+				<tr><td colspan="3" class="deHeading">Confidential Paleontology Taxonomic Lists</td></tr>
+				<!-- <tr><td colspan="2" style="text-align: left; color: #FF0000">This record contains provisional taxonomic entries. You must wait until these entries are approved before submitting the record</td></tr> -->
+				<tr><th style="text-align: left">Locality&nbsp;&nbsp;</th><th style="text-align: left">Sample&nbsp;&nbsp;</th><th style="text-align: left">Adoption Record&nbsp;&nbsp;</th></tr><%
+				for (Paleontology paleontology : confidPalLists) {
+					%><tr><td style="text-align: left"><%=FeatureUtil.getFeatureIdentifyingName(paleontology.getRecord().getSample().getFeature())%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=SampleUtil.getDrillHoleDepthDescription(paleontology.getRecord().getSample())%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=RecordUtil.getRecordName(paleontology.getRecord())%>&nbsp;&nbsp;</td></tr><%
 				}
 				%></table><%
 				endDETable(pageContext);
