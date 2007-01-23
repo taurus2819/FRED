@@ -3,35 +3,19 @@ package nz.cri.gns.fred.model;
 import java.util.Date;
 import java.util.Set;
 
-/**
- *
- */
 public interface Adoption extends RecordDetails {
-	public abstract Integer getRecordId();
-
-	public abstract void setRecordId(Integer recordId);
-
-	public abstract Date getAdoptionDate();
-
-	public abstract void setAdoptionDate(Date adoptionDate);
-
-	public abstract String getDateRounding();
-
-	public abstract void setDateRounding(String dateRounding);
-
-	public abstract String getComments();
-
-	public abstract void setComments(String comments);
-
-	public abstract nz.cri.gns.fred.model.Record getRecord();
-
-	public abstract void setRecord(nz.cri.gns.fred.model.Record record);
-
-	public abstract nz.cri.gns.fred.model.Stage getStage();
-
-	public abstract void setStage(nz.cri.gns.fred.model.Stage stage);
-
-	public abstract Set<Person> getAdopters();
-
-	public abstract void setAdopters(Set<Person> adopters);
+	public Integer getRecordId();
+	public void setRecordId(Integer recordId);
+	public Date getAdoptionDate();
+	public void setAdoptionDate(Date adoptionDate);
+	public String getDateRounding();
+	public void setDateRounding(String dateRounding);
+	public String getComments();
+	public void setComments(String comments);
+	public Record getRecord();
+	public void setRecord(Record record);
+	public Stage getStage();
+	public void setStage(Stage stage);
+	public Set<Person> getAdopters();
+	public void setAdopters(Set<Person> adopters);
 }

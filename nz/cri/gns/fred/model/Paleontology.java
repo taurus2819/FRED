@@ -3,52 +3,27 @@ package nz.cri.gns.fred.model;
 import java.util.Date;
 import java.util.Set;
 
-/**
- *
- */
 public interface Paleontology extends RecordDetails {
-	public abstract Integer getRecordId();
-
-	public abstract void setRecordId(Integer recordId);
-
-	public abstract Date getIdentificationDate();
-
-	public abstract void setIdentificationDate(Date identificationDate);
-
-	public abstract String getDateRounding();
-
-	public abstract void setDateRounding(String dateRounding);
-
-	public abstract String getStageComments();
-
-	public abstract void setStageComments(String stageComments);
-
-	public abstract String getLabNumber();
-
-	public abstract void setLabNumber(String labNumber);
-
-	public abstract String getCollectionComments();
-
-	public abstract void setCollectionComments(String collectionComments);
-
-	public abstract nz.cri.gns.fred.model.Record getRecord();
-
-	public abstract void setRecord(nz.cri.gns.fred.model.Record record);
-
-	public abstract nz.cri.gns.fred.model.LabSection getLabSection();
-
-	public abstract void setLabSection(
-			nz.cri.gns.fred.model.LabSection labSection);
-
-	public abstract nz.cri.gns.fred.model.Stage getStage();
-
-	public abstract void setStage(nz.cri.gns.fred.model.Stage stage);
-
-	public abstract Set<PaleontologyListEntry> getListEntries();
-
-	public abstract void setListEntries(Set<PaleontologyListEntry> palLists);
-
-	public abstract Set<Person> getIdentifiers();
-
-	public abstract void setIdentifiers(Set<Person> identifiers);
+	public Integer getRecordId();
+	public void setRecordId(Integer recordId);
+	public Date getIdentificationDate();
+	public void setIdentificationDate(Date identificationDate);
+	public String getDateRounding();
+	public void setDateRounding(String dateRounding);
+	public String getStageComments();
+	public void setStageComments(String stageComments);
+	public String getLabNumber();
+	public void setLabNumber(String labNumber);
+	public String getCollectionComments();
+	public void setCollectionComments(String collectionComments);
+	public Record getRecord();
+	public void setRecord(Record record);
+	public LabSection getLabSection();
+	public void setLabSection(LabSection labSection);
+	public Stage getStage();
+	public void setStage(Stage stage);
+	public Set<PaleontologyListEntry> getListEntries();
+	public void setListEntries(Set<PaleontologyListEntry> palLists);
+	public Set<Person> getIdentifiers();
+	public void setIdentifiers(Set<Person> identifiers);
 }
