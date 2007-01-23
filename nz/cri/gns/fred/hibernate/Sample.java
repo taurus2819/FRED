@@ -605,13 +605,16 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     }
 
 	public int compareTo(nz.cri.gns.fred.model.Sample sample) {
-		if (getTopDepth() != null && sample.getTopDepth() != null) {
-			if (getMetricDepth(getTopDepth(), getDepthUnit()).equals(getMetricDepth(sample.getTopDepth(), sample.getDepthUnit())) && getBottomDepth() != null && sample.getBottomDepth() != null)
-				return getMetricDepth(getBottomDepth(), getDepthUnit()).compareTo(getMetricDepth(sample.getBottomDepth(), sample.getDepthUnit()));
-			return getMetricDepth(getTopDepth(), getDepthUnit()).compareTo(getMetricDepth(sample.getTopDepth(), sample.getDepthUnit()));
-		} 
-		//Anything undepthed goes to the end
-		return (getTopDepth() == null) ? 1 : -1;
+		if (feature.equals(sample.getFeature())) {
+			if (getTopDepth() != null && sample.getTopDepth() != null) {
+				if (getMetricDepth(getTopDepth(), getDepthUnit()).equals(getMetricDepth(sample.getTopDepth(), sample.getDepthUnit())) && getBottomDepth() != null && sample.getBottomDepth() != null)
+					return getMetricDepth(getBottomDepth(), getDepthUnit()).compareTo(getMetricDepth(sample.getBottomDepth(), sample.getDepthUnit()));
+				return getMetricDepth(getTopDepth(), getDepthUnit()).compareTo(getMetricDepth(sample.getTopDepth(), sample.getDepthUnit()));
+			} 
+			//Anything undepthed goes to the end
+			return (getTopDepth() == null) ? 1 : -1;
+		}
+		return feature.compareTo(sample.getFeature());
 	}
 	
 	private static Double getMetricDepth(Double depth, String unit) {
