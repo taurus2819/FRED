@@ -1,5 +1,6 @@
 <%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
+%><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="java.util.List"
 %><%@page import="java.util.Date"
@@ -33,6 +34,10 @@
 	
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
+	addButtons(et, new IconnedLink[] {
+			new IconnedLink("confid_list.jsp?q=" + Math.random(), "images/lock.gif", "Data Soon to be Open-File"),
+			new IconnedLink("confid_list.jsp?Type=All&q=" + Math.random(), "images/lock.gif", "All Data")
+		});
 
 	drawTop(out, et, request, response);
 	try {
