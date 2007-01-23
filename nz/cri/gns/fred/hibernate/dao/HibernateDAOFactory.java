@@ -89,6 +89,7 @@ import nz.cri.gns.fred.model.StratigraphicUnit;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.UserFolder;
+import nz.cri.gns.fred.model.UserView;
 import nz.cri.gns.fred.model.Weathering;
 
 /**
@@ -1133,6 +1134,10 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 
 	public FrUserView getFrUserView(Integer userId) throws StorageAccessException {
 		return HibernateUtils.getFirst(provider, "FROM FrUserView As f WHERE f.userId = ?", userId, FrUserView.class);	
+	}
+	
+	public UserView getUserView(Integer userId) throws StorageAccessException {
+		return HibernateUtils.getFirst(provider, "FROM UserView As u WHERE u.userId = ?", userId, UserView.class);	
 	}
 	
 	public FrUser getFrUser(Integer userId) throws StorageAccessException {

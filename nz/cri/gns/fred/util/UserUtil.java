@@ -9,6 +9,7 @@ import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.UserDAO;
 import nz.cri.gns.fred.model.FrUser;
 import nz.cri.gns.fred.model.FrUserView;
+import nz.cri.gns.fred.model.UserView;
 
 public class UserUtil extends ModelUtil {
 
@@ -27,6 +28,10 @@ public class UserUtil extends ModelUtil {
 		return userDAO.getFrUserView(userId);
 	}
 
+	public UserView getUserView(Integer userId) throws StorageAccessException {
+		return userDAO.getUserView(userId);
+	}
+	
 	public FrUser createNewFrUser() {
 		return userDAO.createNewFrUser();
 	}
