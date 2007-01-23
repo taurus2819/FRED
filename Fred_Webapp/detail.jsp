@@ -400,7 +400,7 @@ try {
 				//Sample
 				if (sample != null) {
 					if (sampleUtil.isAllowedReadSample(user, sample)) {
-						//Sample Property Data
+						//Sample Data
 						%><p><%
 						startDETable(pageContext);
 						%><table border="0" width="550">
@@ -410,13 +410,16 @@ try {
 							%>&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?SampIDs=<%=sample.getSampleId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a><%
 						}
 						%></td></tr><%
-						if (sample.getFrNumber() != null && !sample.getFrNumber().equals(feature.getFrNumber())) {
-							%><tr><td class="heading">Sample FR Number</td><td class="heading"><%=sample.getFrNumber().getFrNumber()%></td></tr><%
-						}
-						if (sample.getYardFrNumber() != null && !sample.getYardFrNumber().equals(feature.getYardFrNumber())) {
-							%><tr><td class="heading">Sample Yard FR Number</td><td><%=sample.getYardFrNumber().getFrNumber()%></td></tr><%
-						}
 						if (!featType.equals(FREDConstants.OUTCROP)) {
+							if (sampleUtil.isSampleConfidential(sample)) {
+								%><tr><td style="text-align: left; color: #FF0000" colspan="2">This sample has been marked as confidential and you can view it as you are either the <i>owner</i> or have been granted access to it by the <i>owner</i>.<%=(sample.getAudit().getConfidLapseDate() != null) ? " This sample will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(sample.getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
+							}
+							if (sample.getFrNumber() != null && !sample.getFrNumber().equals(feature.getFrNumber())) {
+								%><tr><td class="heading">Sample FR Number</td><td class="heading"><%=sample.getFrNumber().getFrNumber()%></td></tr><%
+							}
+							if (sample.getYardFrNumber() != null && !sample.getYardFrNumber().equals(feature.getYardFrNumber())) {
+								%><tr><td class="heading">Sample Yard FR Number</td><td><%=sample.getYardFrNumber().getFrNumber()%></td></tr><%
+							}
 							if (SampleUtil.getDrillHoleDepthDescription(sample) != null) {
 								%><tr><td class="heading">Sample Depth</td><td><%=SampleUtil.getDrillHoleDepthDescription(sample)%></td></tr><%
 							}
@@ -560,6 +563,9 @@ try {
 								%><p><%
 								startDETable(pageContext);
 								%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Adoption Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?RecIDs=<%=adoRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></td></tr><%
+								if (recordUtil.isRecordConfidential(adoRecord.getRecord())) {
+									%><tr><td style="text-align: left; color: #FF0000" colspan="2">This adoption record has been marked as confidential and you can view it as you are either the <i>owner</i> or have been granted access to it by the <i>owner</i>.<%=(adoRecord.getRecord().getAudit().getConfidLapseDate() != null) ? " This record will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(adoRecord.getRecord().getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
+								}
 								Object[] adoptors = adoRecord.getAdopters().toArray();
 								String[] adoptorsStr = new String[adoptors.length];
 								for (int j = 0; j < adoptors.length; j++)
@@ -602,6 +608,11 @@ try {
 								%><p><%
 								startDETable(pageContext);
 								%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Paleontology Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?RecIDs=<%=palRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></td></tr><%
+								if (recordUtil.isRecordConfidential(palRecord.getRecord())) {
+									%><tr><td style="text-align: left; color: #FF0000" colspan="2">This paleontology record has been marked as confidential and you can view it as you are either the <i>owner</i> or have been granted access to it by the <i>owner</i>.<%=(palRecord.getRecord().getAudit().getConfidLapseDate() != null) ? " This record will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(palRecord.getRecord().getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
+								} else if (recordUtil.isPalListConfidential(palRecord)) {
+									%><tr><td style="text-align: left; color: #FF0000" colspan="2">The taxonomic list in this paleontology record has been marked as confidential and you can view it as you are either the <i>owner</i> or have been granted access to it by the <i>owner</i>.<%=(palRecord.getRecord().getPalListAudit().getConfidLapseDate() != null) ? " This list will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(palRecord.getRecord().getPalListAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
+								}
 								Object[] identifiers = palRecord.getIdentifiers().toArray();
 								String[] identifiersStr = new String[identifiers.length];
 								for (int j = 0; j < identifiers.length; j++)
@@ -669,6 +680,8 @@ try {
 										%><tr><td>&nbsp;</td></tr><%
 									}
 									%></td></tr></table></td></tr><%
+								} else {
+									%><tr><td colspan="2">You do not have the rights to view the taxonomic list for this record</td></tr><%
 								}
 								//Image/Files
 								if (palRecord.getRecord().getRecordMetas().size() > 0) {
