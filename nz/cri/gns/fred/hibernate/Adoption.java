@@ -135,18 +135,21 @@ public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption, A
 	}
 
 	public int compareTo(RecordDetails arg0) {
-		Date thisDate = this.getDate();
-		Date thatDate = arg0.getDate();
-		if (FREDUtil.equals(thisDate, thatDate, true))
-			return RecordUtil.getRecordName(this).compareTo(RecordUtil.getRecordName(arg0));
-		else try {
-			return thisDate.compareTo(thatDate);
-		} catch (Exception e) {
-			if (thisDate != null)
-				return 1;
-			else
-				return -1;
+		if (record.getSample().equals(arg0.getRecord().getSample())) {
+			Date thisDate = this.getDate();
+			Date thatDate = arg0.getDate();
+			if (FREDUtil.equals(thisDate, thatDate, true))
+				return RecordUtil.getRecordName(this).compareTo(RecordUtil.getRecordName(arg0));
+			else try {
+				return thisDate.compareTo(thatDate);
+			} catch (Exception e) {
+				if (thisDate != null)
+					return 1;
+				else
+					return -1;
+			}
 		}
+		return record.getSample().compareTo(arg0.getRecord().getSample());
 	}
 
 }
