@@ -180,6 +180,11 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		return auditDAO.getList("FROM Sample AS s WHERE s.feature.featureType <> ? AND s.audit.confidentialFlag = ? AND s.audit.submittedBy = ?", Sample.class, FREDConstants.OUTCROP, true, userView);
 	}
 	
+	public List<Sample> getConfidentialSamples(UserAccount user, Date lapseDate) throws StorageAccessException {
+		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
+		return auditDAO.getList("FROM Sample AS s WHERE s.feature.featureType <> ? AND s.audit.confidentialFlag = ? AND s.audit.submittedBy = ? AND s.audit.confidLapseDate < ?", Sample.class, FREDConstants.OUTCROP, true, lapseDate, userView);
+	}
+	
 	public List<Paleontology> getConfidentialPaleontologyRecords(UserAccount user) throws StorageAccessException {
 		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
 		return auditDAO.getList("FROM Paleontology AS p WHERE p.record.audit.confidentialFlag = ? AND p.record.audit.submittedBy = ?", Paleontology.class, true, userView);
