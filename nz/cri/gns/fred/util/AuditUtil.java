@@ -177,22 +177,22 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	
 	public List<Sample> getConfidentialSamples(UserAccount user) throws StorageAccessException {
 		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
-		return auditDAO.getList("FROM Sample AS s WHERE s.audit.confidentialFlag = ? AND s.audit.submittedBy = ?", Sample.class, true, userView);
+		return auditDAO.getList("FROM Sample AS s WHERE s.feature.featureType <> ? AND s.audit.confidentialFlag = ? AND s.audit.submittedBy = ?", Sample.class, FREDConstants.OUTCROP, true, userView);
 	}
 	
 	public List<Paleontology> getConfidentialPaleontologyRecords(UserAccount user) throws StorageAccessException {
 		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
-		return auditDAO.getList("FROM Paleontology AS p WHERE p.record.audit.confidentialFlag = TRUE AND p.record.audit.submittedBy = ?", Paleontology.class, userView);
+		return auditDAO.getList("FROM Paleontology AS p WHERE p.record.audit.confidentialFlag = ? AND p.record.audit.submittedBy = ?", Paleontology.class, true, userView);
 	}
 	
 	public List<Paleontology> getConfidentialPalLists(UserAccount user) throws StorageAccessException {
 		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
-		return auditDAO.getList("FROM Paleontology AS p WHERE p.record.palListAudit.confidentialFlag = TRUE AND p.record.palListAudit.submittedBy = ?", Paleontology.class, userView);
+		return auditDAO.getList("FROM Paleontology AS p WHERE p.record.palListAudit.confidentialFlag = ? AND p.record.palListAudit.submittedBy = ?", Paleontology.class, true, userView);
 	}
 	
 	public List<Adoption> getConfidentialAdoptionRecords(UserAccount user) throws StorageAccessException {
 		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
-		return auditDAO.getList("FROM Adoption AS a WHERE a.record.audit.confidentialFlag = TRUE AND a.record.audit.submittedBy = ?", Adoption.class, userView);
+		return auditDAO.getList("FROM Adoption AS a WHERE a.record.audit.confidentialFlag = ? AND a.record.audit.submittedBy = ?", Adoption.class, true, userView);
 	}
 	
 }
