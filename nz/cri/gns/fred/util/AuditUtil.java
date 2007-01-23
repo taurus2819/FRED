@@ -177,7 +177,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	
 	public List<Sample> getConfidentialSamples(UserAccount user) throws StorageAccessException {
 		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
-		return auditDAO.getList("FROM Sample AS s WHERE s.audit.confidentialFlag = TRUE AND s.audit.submittedBy = ?", Sample.class, userView);
+		return auditDAO.getList("FROM Sample AS s WHERE s.audit.confidentialFlag = ? AND s.audit.submittedBy = ?", Sample.class, true, userView);
 	}
 	
 	public List<Paleontology> getConfidentialPaleontologyRecords(UserAccount user) throws StorageAccessException {
