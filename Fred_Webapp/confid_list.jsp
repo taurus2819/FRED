@@ -2,11 +2,15 @@
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="java.util.List"
+%><%@page import="java.util.Date"
+%><%@page import="java.util.Calendar"
+%><%@page import="java.util.GregorianCalendar"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.model.Adoption"
 %><%@page import="nz.cri.gns.fred.model.Paleontology"
 %><%@page import="nz.cri.gns.fred.model.Sample"
+%><%@page import="nz.cri.gns.fred.model.Record"
 %><%@page import="nz.cri.gns.fred.util.AuditUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
@@ -32,10 +36,24 @@
 
 	drawTop(out, et, request, response);
 	try {
-			List<Sample> confidSamples = auditUtil.getConfidentialSamples(user);
-			List<Adoption> confidAdoptions = auditUtil.getConfidentialAdoptionRecords(user);
-			List<Paleontology> confidPaleontologies = auditUtil.getConfidentialPaleontologyRecords(user);
-			List<Paleontology> confidPalLists = auditUtil.getConfidentialPalLists(user);
+		List<Sample> confidSamples;
+		List<Adoption> confidAdoptions;
+		List<Paleontology> confidPaleontologies;
+		List<Paleontology> confidPalLists;
+		if ("All".equals(request.getParameter("Type"))) {
+			confidSamples = auditUtil.getConfidentialSamples(user);
+			confidAdoptions = auditUtil.getConfidentialAdoptionRecords(user);
+			confidPaleontologies = auditUtil.getConfidentialPaleontologyRecords(user);
+			confidPalLists = auditUtil.getConfidentialPalLists(user);
+		} else {
+			GregorianCalendar cal = new GregorianCalendar();
+			cal.add(Calendar.DATE, 90);
+			Date lapseDate = cal.getTime();
+			confidSamples = auditUtil.getConfidentialSamples(user, lapseDate);
+			confidAdoptions = auditUtil.getConfidentialAdoptionRecords(user);
+			confidPaleontologies = auditUtil.getConfidentialPaleontologyRecords(user);
+			confidPalLists = auditUtil.getConfidentialPalLists(user);
+		}
 	
 			//List samples
 			if (confidSamples.size() > 0) {
@@ -61,14 +79,14 @@
 				%><p><%
 				startDETable(pageContext);
 				%><table border="0" cellspacing="0" cellpadding="2" width="550">
-				<tr><td colspan="4" class="deHeading">Confidential Adoption Records</td></tr>
+				<tr><td colspan="3" class="deHeading">Confidential Adoption Records</td></tr>
 				<!-- <tr><td colspan="2" style="text-align: left; color: #FF0000">This record contains provisional taxonomic entries. You must wait until these entries are approved before submitting the record</td></tr> -->
-				<tr><th style="text-align: left">Locality&nbsp;&nbsp;</th><th style="text-align: left">Sample&nbsp;&nbsp;</th><th style="text-align: left">Adoption Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date</th></tr><%
+				<tr><th style="text-align: left">Locality&nbsp;&nbsp;</th><th style="text-align: left">Adoption Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date</th></tr><%
 				for (Adoption adoption : confidAdoptions) {
-					%><tr><td style="text-align: left"><%=FeatureUtil.getFeatureIdentifyingName(adoption.getRecord().getSample().getFeature())%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=DBUtils.nvl(SampleUtil.getDrillHoleDepthDescription(adoption.getRecord().getSample()))%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=RecordUtil.getRecordName(adoption.getRecord())%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=FREDUtil.formatDateForOutput(adoption.getRecord().getAudit().getConfidLapseDate())%></td></tr><%
+					Record record = adoption.getRecord();
+					%><tr><td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=FeatureUtil.getFeatureIdentifyingName(record.getSample().getFeature())%><%=(SampleUtil.getDrillHoleDepthDescription(record.getSample()) != null) ? "<br />" + SampleUtil.getDrillHoleDepthDescription(record.getSample()) : ""%></a>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=RecordUtil.getRecordName(record)%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=FREDUtil.formatDateForOutput(record.getAudit().getConfidLapseDate())%></td></tr><%
 				}
 				%></table><%
 				endDETable(pageContext);
@@ -80,14 +98,14 @@
 				%><p><%
 				startDETable(pageContext);
 				%><table border="0" cellspacing="0" cellpadding="2" width="550">
-				<tr><td colspan="4" class="deHeading">Confidential Paleontology Records</td></tr>
+				<tr><td colspan="3" class="deHeading">Confidential Paleontology Records</td></tr>
 				<!-- <tr><td colspan="2" style="text-align: left; color: #FF0000">This record contains provisional taxonomic entries. You must wait until these entries are approved before submitting the record</td></tr> -->
-				<tr><th style="text-align: left">Locality&nbsp;&nbsp;</th><th style="text-align: left">Sample&nbsp;&nbsp;</th><th style="text-align: left">Paleontology Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date</th></tr><%
+				<tr><th style="text-align: left">Locality&nbsp;&nbsp;</th><th style="text-align: left">Paleontology Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date</th></tr><%
 				for (Paleontology paleontology : confidPaleontologies) {
-					%><tr><td style="text-align: left"><%=FeatureUtil.getFeatureIdentifyingName(paleontology.getRecord().getSample().getFeature())%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=DBUtils.nvl(SampleUtil.getDrillHoleDepthDescription(paleontology.getRecord().getSample()))%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=RecordUtil.getRecordName(paleontology.getRecord())%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=FREDUtil.formatDateForOutput(paleontology.getRecord().getAudit().getConfidLapseDate())%></td></tr><%
+					Record record = paleontology.getRecord();
+					%><tr><td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=FeatureUtil.getFeatureIdentifyingName(record.getSample().getFeature())%><%=(SampleUtil.getDrillHoleDepthDescription(record.getSample()) != null) ? "<br />" + SampleUtil.getDrillHoleDepthDescription(record.getSample()) : ""%></a>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=RecordUtil.getRecordName(record)%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=FREDUtil.formatDateForOutput(record.getAudit().getConfidLapseDate())%></td></tr><%
 				}
 				%></table><%
 				endDETable(pageContext);
@@ -99,14 +117,14 @@
 				%><p><%
 				startDETable(pageContext);
 				%><table border="0" cellspacing="0" cellpadding="2" width="550">
-				<tr><td colspan="4" class="deHeading">Confidential Paleontology Taxonomic Lists</td></tr>
+				<tr><td colspan="3" class="deHeading">Confidential Paleontology Taxonomic Lists</td></tr>
 				<!-- <tr><td colspan="2" style="text-align: left; color: #FF0000">This record contains provisional taxonomic entries. You must wait until these entries are approved before submitting the record</td></tr> -->
-				<tr><th style="text-align: left">Locality&nbsp;&nbsp;</th><th style="text-align: left">Sample&nbsp;&nbsp;</th><th style="text-align: left">Paleontology Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date</th></tr><%
+				<tr><th style="text-align: left">Locality&nbsp;&nbsp;</th><th style="text-align: left">Paleontology Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date</th></tr><%
 				for (Paleontology paleontology : confidPalLists) {
-					%><tr><td style="text-align: left"><%=FeatureUtil.getFeatureIdentifyingName(paleontology.getRecord().getSample().getFeature())%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=DBUtils.nvl(SampleUtil.getDrillHoleDepthDescription(paleontology.getRecord().getSample()))%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=RecordUtil.getRecordName(paleontology.getRecord())%>&nbsp;&nbsp;</td>
-					<td style="text-align: left"><%=FREDUtil.formatDateForOutput(paleontology.getRecord().getAudit().getConfidLapseDate())%></td></tr><%
+					Record record = paleontology.getRecord();
+					%><tr><td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=FeatureUtil.getFeatureIdentifyingName(record.getSample().getFeature())%><%=(SampleUtil.getDrillHoleDepthDescription(record.getSample()) != null) ? "<br />" + SampleUtil.getDrillHoleDepthDescription(record.getSample()) : ""%></a>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=RecordUtil.getRecordName(record)%>&nbsp;&nbsp;</td>
+					<td style="text-align: left"><%=FREDUtil.formatDateForOutput(record.getPalListAudit().getConfidLapseDate())%></td></tr><%
 				}
 				%></table><%
 				endDETable(pageContext);
