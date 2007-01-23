@@ -13,6 +13,7 @@ import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.AuditDAO;
 import nz.cri.gns.fred.dao.DAOFactory;
+import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.ConfidentialGroup;
@@ -20,6 +21,9 @@ import nz.cri.gns.fred.model.DataOrigin;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.FrUserView;
 import nz.cri.gns.fred.model.OrgView;
+import nz.cri.gns.fred.model.Paleontology;
+import nz.cri.gns.fred.model.Sample;
+import nz.cri.gns.fred.model.UserView;
 
 /**
  *
@@ -139,9 +143,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	
 	public List<ConfidentialGroup> getConfidentialGroups(UserAccount user) throws StorageAccessException {
 		FrUserView frUser = new UserUtil(factory).getFrUserView(new Integer(user.getId()));
-		List<ConfidentialGroup> confidGroups = auditDAO.getList("FROM ConfidentialGroup AS c WHERE c.owner IS NULL OR c.owner = ?", ConfidentialGroup.class, frUser);
-		Collections.sort(confidGroups);
-		return confidGroups;
+		return auditDAO.getList("FROM ConfidentialGroup AS c WHERE c.owner IS NULL OR c.owner = ?", ConfidentialGroup.class, frUser);
 	}
 	
 	public ConfidentialGroup getConfidentialGroup(Integer groupId) throws StorageAccessException {
@@ -171,6 +173,26 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	public void removeUserFromConfidGroup(ConfidentialGroup group, FrUserView frUser) throws StorageAccessException {
 		group.getUsers().remove(frUser);
 		auditDAO.save(group);
+	}
+	
+	public List<Sample> getConfidentialSamples(UserAccount user) throws StorageAccessException {
+		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
+		return auditDAO.getList("FROM Sample AS s WHERE s.audit.confidentialFlag = TRUE AND s.audit.submittedBy = ?", Sample.class, userView);
+	}
+	
+	public List<Paleontology> getConfidentialPaleontologyRecords(UserAccount user) throws StorageAccessException {
+		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
+		return auditDAO.getList("FROM Paleontology AS p WHERE p.record.audit.confidentialFlag = TRUE AND p.record.audit.submittedBy = ?", Paleontology.class, userView);
+	}
+	
+	public List<Paleontology> getConfidentialPalLists(UserAccount user) throws StorageAccessException {
+		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
+		return auditDAO.getList("FROM Paleontology AS p WHERE p.record.palListAudit.confidentialFlag = TRUE AND p.record.palListAudit.submittedBy = ?", Paleontology.class, userView);
+	}
+	
+	public List<Adoption> getConfidentialAdoptionRecords(UserAccount user) throws StorageAccessException {
+		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
+		return auditDAO.getList("FROM Adoption AS a WHERE a.record.audit.confidentialFlag = TRUE AND a.record.audit.submittedBy = ?", Adoption.class, userView);
 	}
 	
 }
