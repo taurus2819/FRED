@@ -43,14 +43,9 @@
 			audit.setConfidentialFlag(true);
 			audit.setConfidPeriod(new Double(confidPeriod));
 			audit.setConfidLapseEmail(confidLapseEmail);
-			if (FREDConstants.APPROVED.equals(audit.getStatus())) {
-				GregorianCalendar cal = new GregorianCalendar();
-				if (audit.getConfidPeriod().doubleValue() == 0.5)
-					cal.add(Calendar.MONTH, 6);
-				else
-					cal.add(Calendar.YEAR, audit.getConfidPeriod().intValue());
-				audit.setConfidLapseDate(cal.getTime());
-			} else
+			if (FREDConstants.APPROVED.equals(audit.getStatus()))
+				audit.setConfidLapseDate(AuditUtil.getLapseDate(audit.getConfidPeriod()));
+			else
 				audit.setConfidLapseDate(null);
 			audit.setConfidEmailFlag(false);
 			if (confidGroupIds != null) {
@@ -151,9 +146,11 @@
 			
 			<form name="confidForm" method="get" action="set_confidentiality.jsp">
 			<input type="hidden" name="ID" value="<%=id%>">
-			<input type="hidden" name="RecType" value="<%=recType%>">
-			<input type="hidden" name="FoldID" value="<%=folder.getFolderId()%>">
-			<input type="hidden" name="Action" value="Update">
+			<input type="hidden" name="RecType" value="<%=recType%>"><%
+			if (folder != null) {
+				%><input type="hidden" name="FoldID" value="<%=folder.getFolderId()%>"><%
+			}
+			%><input type="hidden" name="Action" value="Update">
 						
 			<p><%
 			startDETable(pageContext);
