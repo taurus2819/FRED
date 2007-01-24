@@ -141,8 +141,6 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (PALEONTOLOGICAL.equals(getRecordType(record))) {
 			audit = record.getPalListAudit();
 			audit.setStatus(APPROVED);
-			audit.setSubmittedById(new Integer(user.getId()));
-			audit.setSubmittedDate(new Date());
 			if (audit.getConfidentialFlag()) {
 				GregorianCalendar cal = new GregorianCalendar();
 				if (audit.getConfidPeriod().doubleValue() == 0.5)
@@ -223,6 +221,14 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
 		return userFolder.isAllowedEditLocalities();
     }
+    
+	public boolean isAllowedEditRecordConfid(UserAccount user, Record record, UserFolder userFolder) {
+		Audit audit = record.getAudit();
+		if (audit.getStatus().equals(APPROVED))
+			return audit.getCreatedBy().getUserId().toString().equals(user.getId());
+
+		return userFolder.isAllowedEditLocalities();		
+	}
 
 	public boolean isAllowedDeleteRecord(User user, Record record, UserFolder userFolder) throws StorageAccessException {
 		Audit audit = record.getAudit();

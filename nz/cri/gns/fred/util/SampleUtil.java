@@ -381,6 +381,17 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return userFolder.isAllowedSubmitLocalities();
 	}
 
+	public boolean isAllowedEditSampleConfid(UserAccount user, Sample sample, UserFolder userFolder) {
+		if (FREDConstants.OUTCROP.equals(sample.getFeature().getFeatureType()))
+			return false;
+		
+		Audit audit = sample.getAudit();
+		if (audit.getStatus().equals(APPROVED))
+			return audit.getCreatedBy().getUserId().toString().equals(user.getId());
+
+		return userFolder.isAllowedEditLocalities();		
+	}
+	
 	public Sample getSample(int sampleId) throws StorageAccessException {
 		return sampleDAO.getSample(sampleId);
 	}

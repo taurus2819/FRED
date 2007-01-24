@@ -8,6 +8,8 @@
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.model.Audit"
+%><%@page import="nz.cri.gns.fred.model.Sample"
+%><%@page import="nz.cri.gns.fred.model.Record"
 %><%@page import="nz.cri.gns.fred.model.ConfidentialGroup"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
@@ -85,25 +87,36 @@
 
 	drawTop(out, et, request, response);
 		
-	if (request.getParameter("ID") != null && request.getParameter("RecType") != null && request.getParameter("FoldID") != null) {
+	if (request.getParameter("ID") != null && request.getParameter("RecType") != null) {
 		int id = Integer.parseInt(request.getParameter("ID"));
 		String recType = request.getParameter("RecType");
-		UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("FoldID")), user);
+		UserFolder folder = null;
+		try {
+			folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("FoldID")), user);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		Audit audit = null;
 		Audit palListAudit = null;
 		String dataType = "";
 		if (FREDConstants.ADOPTION.equals(recType) || FREDConstants.PALEONTOLOGICAL.equals(recType)) {
-			audit = new RecordUtil(factory).getRecord(id).getAudit();
+			RecordUtil recordUtil = new RecordUtil(factory);
+			Record record = recordUtil.getRecord(id);
+			if (recordUtil.isAllowedEditRecordConfid(user, record, folder))
+				audit = record.getAudit();
 			dataType = "record";
 			if (FREDConstants.PALEONTOLOGICAL.equals(recType))
-				palListAudit = new RecordUtil(factory).getRecord(id).getPalListAudit();
+				palListAudit = record.getPalListAudit();
 		} else if ("SMP".equals(recType)) {
-			audit = new SampleUtil(factory).getSample(id).getAudit();
+			SampleUtil sampleUtil = new SampleUtil(factory);
+			Sample sample = sampleUtil.getSample(id);
+			if (sampleUtil.isAllowedEditSampleConfid(user, sample, folder))
+				audit = sample.getAudit();
 			dataType = "sample";
 		}
 
-		if (folder.isAllowedEditLocalities() && audit != null) {
+		if (audit != null) {
 					
 			if ("Update".equals(request.getParameter("Action"))) {
 				try {
