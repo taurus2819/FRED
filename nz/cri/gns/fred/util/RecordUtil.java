@@ -272,6 +272,20 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return isRecordConfidential(palRecord.getRecord());
 	}
 	
+	public String getRecordConfidAccessListDescription(Record record) {
+		String recDes = new AuditUtil(factory).getConfidAccessListDescription(record.getAudit());
+		if (recDes != null)
+			return recDes;
+		return new SampleUtil(factory).getSampleConfidAccessListDescription(record.getSample());
+	}
+	
+	public String getPalListConfidAccessListDescription(Paleontology palRecord) {
+		String palDes = new AuditUtil(factory).getConfidAccessListDescription(palRecord.getRecord().getPalListAudit());
+		if (palDes != null)
+			return palDes;
+		return getRecordConfidAccessListDescription(palRecord.getRecord());
+	}
+	
     /**
      * @deprecated use isAllowedReadRecord
      */

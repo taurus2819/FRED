@@ -33,7 +33,6 @@
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
-%><%@page import="nz.cri.gns.fred.util.AuditUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"
@@ -412,7 +411,7 @@ try {
 						%></td></tr><%
 						if (!featType.equals(FREDConstants.OUTCROP)) {
 							if (sampleUtil.isSampleConfidential(sample)) {
-								%><tr><td style="text-align: left; color: #FF0000" colspan="2">This sample has been marked as confidential and you can view it as you are either the <i>owner</i> or have been granted access to it by the <i>owner</i>.<%=(sample.getAudit().getConfidLapseDate() != null) ? " This sample will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(sample.getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
+								%><tr><td style="text-align: left; color: #FF0000" colspan="2">This sample has been marked as confidential.  The following people/groups have been granted access to this sample: <%=sampleUtil.getSampleConfidAccessListDescription(sample)%>.<%=(sample.getAudit().getConfidLapseDate() != null) ? " This sample will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(sample.getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
 							}
 							if (sample.getFrNumber() != null && !sample.getFrNumber().equals(feature.getFrNumber())) {
 								%><tr><td class="heading">Sample FR Number</td><td class="heading"><%=sample.getFrNumber().getFrNumber()%></td></tr><%
@@ -564,7 +563,7 @@ try {
 								startDETable(pageContext);
 								%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Adoption Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?RecIDs=<%=adoRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></td></tr><%
 								if (recordUtil.isRecordConfidential(adoRecord.getRecord())) {
-									%><tr><td style="text-align: left; color: #FF0000" colspan="2">This adoption record has been marked as confidential and you can view it as you are either the <i>owner</i> or have been granted access to it by the <i>owner</i>.<%=(adoRecord.getRecord().getAudit().getConfidLapseDate() != null) ? " This record will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(adoRecord.getRecord().getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
+									%><tr><td style="text-align: left; color: #FF0000" colspan="2">This adoption record has been marked as confidential. The following people/groups have been granted access to this record: <%=recordUtil.getRecordConfidAccessListDescription(adoRecord.getRecord())%>.<%=(adoRecord.getRecord().getAudit().getConfidLapseDate() != null) ? " This record will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(adoRecord.getRecord().getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
 								}
 								Object[] adoptors = adoRecord.getAdopters().toArray();
 								String[] adoptorsStr = new String[adoptors.length];
@@ -609,9 +608,9 @@ try {
 								startDETable(pageContext);
 								%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Paleontology Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?RecIDs=<%=palRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></td></tr><%
 								if (recordUtil.isRecordConfidential(palRecord.getRecord())) {
-									%><tr><td style="text-align: left; color: #FF0000" colspan="2">This paleontology record has been marked as confidential and you can view it as you are either the <i>owner</i> or have been granted access to it by the <i>owner</i>.<%=(palRecord.getRecord().getAudit().getConfidLapseDate() != null) ? " This record will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(palRecord.getRecord().getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
+									%><tr><td style="text-align: left; color: #FF0000" colspan="2">This paleontology record has been marked as confidential. The following people/groups have been granted access to this record: <%=recordUtil.getRecordConfidAccessListDescription(palRecord.getRecord())%>.<%=(palRecord.getRecord().getAudit().getConfidLapseDate() != null) ? " This record will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(palRecord.getRecord().getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
 								} else if (recordUtil.isPalListConfidential(palRecord)) {
-									%><tr><td style="text-align: left; color: #FF0000" colspan="2">The taxonomic list in this paleontology record has been marked as confidential and you can view it as you are either the <i>owner</i> or have been granted access to it by the <i>owner</i>.<%=(palRecord.getRecord().getPalListAudit().getConfidLapseDate() != null) ? " This list will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(palRecord.getRecord().getPalListAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
+									%><tr><td style="text-align: left; color: #FF0000" colspan="2">The taxonomic list in this paleontology record has been marked as confidential. The following people/groups have been granted access to this record: <%=recordUtil.getPalListConfidAccessListDescription(palRecord)%>.<%=(palRecord.getRecord().getPalListAudit().getConfidLapseDate() != null) ? " This list will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(palRecord.getRecord().getPalListAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
 								}
 								Object[] identifiers = palRecord.getIdentifiers().toArray();
 								String[] identifiersStr = new String[identifiers.length];

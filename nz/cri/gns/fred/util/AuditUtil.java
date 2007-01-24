@@ -242,4 +242,13 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		return auditDAO.getList("FROM Adoption AS a WHERE a.record.audit.confidentialFlag = ? AND a.record.audit.createdBy = ? AND a.record.audit.confidLapseDate <= ?", Adoption.class, true, userView, lapseDate);
 	}
 	
+	public String getConfidAccessListDescription(Audit audit) {
+		if (!audit.getConfidentialFlag())
+			return null;
+		StringBuffer sb = new StringBuffer(audit.getCreatedBy().getFullName());
+		for (ConfidentialGroup confidGroup : audit.getConfidGroups())
+			sb.append("/").append(confidGroup.getName());
+		return sb.toString();
+	}
+	
 }

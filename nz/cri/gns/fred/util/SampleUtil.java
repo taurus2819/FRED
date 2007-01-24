@@ -308,6 +308,10 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return sample.getAudit().getConfidentialFlag().booleanValue();
 	}
 	
+	public String getSampleConfidAccessListDescription(Sample sample) {
+		return new AuditUtil(factory).getConfidAccessListDescription(sample.getAudit());
+	}
+	
 	/**
 	 * Returns true if a user is allowed to view the locality
 	 */
