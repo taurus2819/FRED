@@ -26,7 +26,8 @@
 		
 		ExtranetTemplate et = getExtranetTemplate();
 		et.setDisplayLoadingMessage(true);
-		addButtons(et, new IconnedLink[] {new IconnedLink("javascript:doNewFolder();", "images/folder.gif", "New Folder")});
+		addButtons(et, new IconnedLink[] {new IconnedLink("javascript:doNewFolder();", "images/folder.gif", "New Folder"),
+				new IconnedLink("confid_list.jsp?q=" + Math.random(), "images/lock.gif", "Confidential Data List")});
 	
 		String error = null;
 		if (request.getParameter("ActionType") != null) { //do something
