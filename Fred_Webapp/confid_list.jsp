@@ -209,8 +209,8 @@
 		</td>
 		</tr>
 		<tr>
-		<td><a hef="javascript:document.confidForm.ActionType.value='ClearConfid';document.confidForm.submit();"><img src="images/lock_cancel.gif" border="0" height="20" width="20" alt="Clear Confidentiality" /></a></td>
-		<td class="heading" style="text-align: left"><a hef="javascript:document.confidForm.ActionType.value='ClearConfid';document.confidForm.submit();">Clear Confidentiality</a></td>
+		<td><a href="javascript:document.confidForm.ActionType.value='ClearConfid';document.confidForm.submit();"><img src="images/lock_cancel.gif" border="0" height="20" width="20" alt="Clear Confidentiality" /></a></td>
+		<td class="heading" style="text-align: left"><a href="javascript:document.confidForm.ActionType.value='ClearConfid';document.confidForm.submit();">Clear Confidentiality</a></td>
 		</tr>
 
 		</tr>		
