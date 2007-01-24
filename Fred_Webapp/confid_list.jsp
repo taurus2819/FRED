@@ -22,7 +22,7 @@
 %><%!
 	public String getName(HttpServletRequest request) {
 		try {
-			return "FRED :: Confidential List for " + ((User)getUser(request.getSession())).getFullName(); 
+			return "FRED :: Confidential Data List for " + ((User)getUser(request.getSession())).getFullName(); 
 		} catch (Exception e) {
 			return "FRED :: The Fossil Record Electronic Database";
 		}
@@ -42,6 +42,7 @@
 
 	if (request.getParameter("ActionType") != null) {
 		if ("EditLapseDate".equals(request.getParameter("ActionType"))) {
+			if (request.getParameterValues("AuditIDs") != null && !"-".equals(request.getParameter("ConfidPeriod")))
 			auditUtil.updateLapseDates(request.getParameterValues("AuditIDs"), new Double(request.getParameter("ConfidPeriod")));
 		}
 	}
@@ -59,7 +60,7 @@
 			confidPalLists = auditUtil.getConfidentialPalLists(user);
 		} else {
 			GregorianCalendar cal = new GregorianCalendar();
-			cal.add(Calendar.DATE, 90);
+			cal.add(Calendar.MONTH, 7);
 			Date lapseDate = cal.getTime();
 			confidSamples = auditUtil.getConfidentialSamples(user, lapseDate);
 			confidAdoptions = auditUtil.getConfidentialAdoptionRecords(user, lapseDate);
@@ -67,7 +68,27 @@
 			confidPalLists = auditUtil.getConfidentialPalLists(user, lapseDate);
 		}
 	
-		%><form name="confidForm" method="get" action="confid_list.jsp"><%
+		%><script><!--
+			function selectAll() {
+				if (document.confidForm.AuditIDs.length) {
+					for (var i=0; i<document.confidForm.AuditIDs.length; i++) {
+						document.confidForm.AuditIDs[i].checked = true;
+					}
+				} else {
+					document.confidForm.AuditIDs.checked = true;
+				}
+			}
+			function unselectAll() {
+				if (document.confidForm.AuditIDs.length) {
+					for (var i=0; i<document.confidForm.AuditIDs.length; i++) {
+						document.confidForm.AuditIDs[i].checked = false;
+					}
+				} else {
+					document.confidForm.AuditIDs.checked = false;
+				}
+			}
+			//--></script>
+			<form name="confidForm" method="get" action="confid_list.jsp"><%
 		
 		//List samples
 		if (confidSamples.size() > 0) {
@@ -85,7 +106,8 @@
 				<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=sample.getSampleId()%>&RecType=SMP"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
 				</tr><%
 			}
-			%></table><%
+			%><tr><td colspan="5" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
+			</table><%
 			endDETable(pageContext);
 			%></p><%
 		}
@@ -107,7 +129,8 @@
 				<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=record.getRecordId()%>&RecType=<%=FREDConstants.ADOPTION%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
 				</tr><%
 			}
-			%></table><%
+			%><tr><td colspan="5" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
+			</table><%
 			endDETable(pageContext);
 			%></p><%
 		}
@@ -129,7 +152,9 @@
 				<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=record.getRecordId()%>&RecType=<%=FREDConstants.PALEONTOLOGICAL%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
 				</tr><%
 			}
-			%></table><%
+			%>
+			<tr><td colspan="5" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
+			</table><%
 			endDETable(pageContext);
 			%></p><%
 		}
@@ -151,7 +176,8 @@
 				<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=record.getRecordId()%>&RecType=<%=FREDConstants.PALEONTOLOGICAL%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
 				</tr><%
 			}
-			%></table><%
+			%><tr><td colspan="5" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
+			</table><%
 			endDETable(pageContext);
 			%></p><%
 		}
