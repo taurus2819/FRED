@@ -3,8 +3,10 @@ package nz.cri.gns.fred.util;
 import java.beans.IntrospectionException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -37,12 +39,26 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		this.auditDAO = factory.getAuditDAO();
 	}
 
+	public Audit getAudit(int auditId) throws StorageAccessException {
+		return auditDAO.getAudit(auditId);
+	}
+	
 	public Audit save(Audit audit) throws StorageAccessException {
         return auditDAO.save(audit);
     }
 
     public Audit update(Audit audit) throws StorageAccessException {
         return auditDAO.update(audit);
+    }
+    
+    public void updateLapseDates(String[] auditIds, Double lapsePeriod) throws NumberFormatException, StorageAccessException {
+    	for (int i = 0; i < auditIds.length; i++)
+    		updateLapseDate(getAudit(Integer.parseInt(auditIds[i])), lapsePeriod);
+    }
+    
+    public void updateLapseDate(Audit audit, Double lapsePeriod) throws StorageAccessException {
+    	audit.setConfidLapseDate(getLapseDate(lapsePeriod));
+    	update(audit);
     }
     
     public Audit cloneAudit(Audit audit) throws IntrospectionException, StorageAccessException {
@@ -139,6 +155,17 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 			return false;
 		} else
 			return true;
+	}
+	
+	public static Date getLapseDate(Double confidPeriod) {
+		if (confidPeriod == null)
+			return null;
+		GregorianCalendar cal = new GregorianCalendar();
+		if (confidPeriod.doubleValue() == 0.5)
+			cal.add(Calendar.MONTH, 6);
+		else
+			cal.add(Calendar.YEAR, confidPeriod.intValue());
+		return cal.getTime();
 	}
 	
 	public List<ConfidentialGroup> getConfidentialGroups(UserAccount user) throws StorageAccessException {
