@@ -13,6 +13,8 @@ import nz.cri.gns.fred.model.DataOrigin;
  */
 public interface AuditDAO {
 
+	public Audit getAudit(int auditId) throws StorageAccessException;
+	
 	/**
 	 * @param audit
 	 * @throws StorageAccessException

@@ -329,6 +329,10 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		return audit;
 	}
 
+	public Audit getAudit(int auditId) throws StorageAccessException {
+		return HibernateUtils.getFirst(provider, "FROM Audit AS a WHERE s.auditId = ?", auditId, Audit.class);
+	}
+	
 	public Audit save(Audit audit) throws StorageAccessException {
 	    return HibernateUtils.save(provider, audit);
 	}
