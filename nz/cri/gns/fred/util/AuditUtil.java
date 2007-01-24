@@ -61,6 +61,20 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
     	update(audit);
     }
     
+    public void clearConfidentialites(String auditIds[]) throws NumberFormatException, StorageAccessException {
+    	for (int i = 0; i < auditIds.length; i++)
+    		clearConfidentiality(getAudit(Integer.parseInt(auditIds[i])));    	
+    }
+    
+    public void clearConfidentiality(Audit audit) throws StorageAccessException {
+    	audit.setConfidentialFlag(false);
+    	audit.setConfidGroups(null);
+    	audit.setConfidLapseDate(null);
+    	audit.setConfidPeriod(null);
+    	audit.setConfidLapseEmail(null);
+    	update(audit);
+    }
+    
     public Audit cloneAudit(Audit audit) throws IntrospectionException, StorageAccessException {
     	Audit newAudit = auditDAO.createNewAudit();
    		FREDUtil.beanCopy(audit, newAudit, new FREDUtil.ExcludeByName(FREDUtil.toVector(new String[] {"auditId", "features", "samples", "records", "recordByPalListAuditIds", "confidGroups", "auditEdits", "confidentialFlag", "confidPeriod",  "confidLapseDate",  "confidEmailFlag", "confidLapseEmail"})));
