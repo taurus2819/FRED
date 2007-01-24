@@ -40,10 +40,12 @@
 			new IconnedLink("confid_list.jsp?Type=All&q=" + Math.random(), "images/lock.gif", "All Data")
 		});
 
-	if (request.getParameter("ActionType") != null) {
+	if (request.getParameter("ActionType") != null && request.getParameterValues("AuditIDs") != null) {
 		if ("EditLapseDate".equals(request.getParameter("ActionType"))) {
-			if (request.getParameterValues("AuditIDs") != null && !"-".equals(request.getParameter("ConfidPeriod")))
+			if (!"-".equals(request.getParameter("ConfidPeriod")))
 			auditUtil.updateLapseDates(request.getParameterValues("AuditIDs"), new Double(request.getParameter("ConfidPeriod")));
+		} else if ("ClearConfid".equals(request.getParameter("ActionType"))) {
+			auditUtil.clearConfidentialites(request.getParameterValues("AuditIDs"));
 		}
 	}
 	
@@ -105,6 +107,7 @@
 				<td style="text-align: left"><%=FREDUtil.formatDateForOutput(sample.getAudit().getConfidLapseDate())%></td>
 				<td style="text-align: left"><%=auditUtil.getConfidAccessListDescription(sample.getAudit())%></td>
 				<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=sample.getSampleId()%>&RecType=SMP"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
+				<td style="text-align: left"><a href="confid_list.jsp?ActionType=ClearConfid<%=(request.getParameter("Type") != null) ? "&Type=" + request.getParameter("Type") : ""%>&AuditIDs=<%=sample.getAudit().getAuditId()%>&q=<%=Math.random()%>"><img src="images/lock_cancel.gif" border="0" height="20" width="20" alt="Clear Confidentiality" /></a></td>
 				</tr><%
 			}
 			%><tr><td colspan="5" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
@@ -129,6 +132,7 @@
 				<td style="text-align: left"><%=FREDUtil.formatDateForOutput(record.getAudit().getConfidLapseDate())%></td>
 				<td style="text-align: left"><%=auditUtil.getConfidAccessListDescription(record.getAudit())%></td>
 				<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=record.getRecordId()%>&RecType=<%=FREDConstants.ADOPTION%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
+				<td style="text-align: left"><a href="confid_list.jsp?ActionType=ClearConfid<%=(request.getParameter("Type") != null) ? "&Type=" + request.getParameter("Type") : ""%>&AuditIDs=<%=record.getAudit().getAuditId()%>&q=<%=Math.random()%>"><img src="images/lock_cancel.gif" border="0" height="20" width="20" alt="Clear Confidentiality" /></a></td>
 				</tr><%
 			}
 			%><tr><td colspan="5" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
@@ -142,7 +146,7 @@
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" cellspacing="0" cellpadding="2" width="550">
-			<tr><td colspan="6" class="deHeading">Confidential Paleontology Records</td></tr>
+			<tr><td colspan="7" class="deHeading">Confidential Paleontology Records</td></tr>
 			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Paleontology Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date&nbsp;&nbsp;</th><th style="text-align: left">Access List</th></tr><%
 			for (Paleontology paleontology : confidPaleontologies) {
 				Record record = paleontology.getRecord();
@@ -153,6 +157,7 @@
 				<td style="text-align: left"><%=FREDUtil.formatDateForOutput(record.getAudit().getConfidLapseDate())%></td>
 				<td style="text-align: left"><%=auditUtil.getConfidAccessListDescription(record.getAudit())%></td>
 				<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=record.getRecordId()%>&RecType=<%=FREDConstants.PALEONTOLOGICAL%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
+				<td style="text-align: left"><a href="confid_list.jsp?ActionType=ClearConfid<%=(request.getParameter("Type") != null) ? "&Type=" + request.getParameter("Type") : ""%>&AuditIDs=<%=record.getAudit().getAuditId()%>&q=<%=Math.random()%>"><img src="images/lock_cancel.gif" border="0" height="20" width="20" alt="Clear Confidentiality" /></a></td>
 				</tr><%
 			}
 			%>
@@ -167,7 +172,7 @@
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" cellspacing="0" cellpadding="2" width="550">
-			<tr><td colspan="6" class="deHeading">Confidential Paleontology Taxonomic Lists</td></tr>
+			<tr><td colspan="7" class="deHeading">Confidential Paleontology Taxonomic Lists</td></tr>
 			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Paleontology Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date&nbsp;&nbsp;</th><th style="text-align: left">Access List</th></th></tr><%
 			for (Paleontology paleontology : confidPalLists) {
 				Record record = paleontology.getRecord();
@@ -178,6 +183,7 @@
 				<td style="text-align: left"><%=FREDUtil.formatDateForOutput(record.getPalListAudit().getConfidLapseDate())%></td>
 				<td style="text-align: left"><%=auditUtil.getConfidAccessListDescription(record.getPalListAudit())%></td>
 				<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=record.getRecordId()%>&RecType=<%=FREDConstants.PALEONTOLOGICAL%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
+				<td style="text-align: left"><a href="confid_list.jsp?ActionType=ClearConfid<%=(request.getParameter("Type") != null) ? "&Type=" + request.getParameter("Type") : ""%>&AuditIDs=<%=record.getPalListAudit().getAuditId()%>&q=<%=Math.random()%>"><img src="images/lock_cancel.gif" border="0" height="20" width="20" alt="Clear Confidentiality" /></a></td>
 				</tr><%
 			}
 			%><tr><td colspan="5" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
