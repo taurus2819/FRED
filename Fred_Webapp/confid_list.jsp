@@ -95,14 +95,15 @@
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" cellspacing="0" cellpadding="2" width="550">
-			<tr><td colspan="5" class="deHeading">Confidential Drillhole/Vertical Section Samples</td></tr>
-			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Sample&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date</th></tr><%
+			<tr><td colspan="6" class="deHeading">Confidential Drillhole/Vertical Section Samples</td></tr>
+			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Sample&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date&nbsp;&nbsp;</th><th style="text-align: left">Access List</th></tr><%
 			for (Sample sample : confidSamples) {
 				%><tr>
 				<td style="text-align: left"><input type="checkbox" name="AuditIDs" value="<%=sample.getAudit().getAuditId()%>" /></td>
 				<td style="text-align: left"><a href="detail.jsp?FeatID=<%=sample.getFeature().getFeatureId()%>"><%=FeatureUtil.getFeatureIdentifyingName(sample.getFeature())%></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=sample.getSampleId()%>"><%=SampleUtil.getDrillHoleDepthDescription(sample)%></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=FREDUtil.formatDateForOutput(sample.getAudit().getConfidLapseDate())%></td>
+				<td style="text-align: left"><%=auditUtil.getConfidAccessListDescription(sample.getAudit())%></td>
 				<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=sample.getSampleId()%>&RecType=SMP"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
 				</tr><%
 			}
@@ -117,8 +118,8 @@
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" cellspacing="0" cellpadding="2" width="550">
-			<tr><td colspan="5" class="deHeading">Confidential Adoption Records</td></tr>
-			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Adoption Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date</th></tr><%
+			<tr><td colspan="6" class="deHeading">Confidential Adoption Records</td></tr>
+			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Adoption Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date&nbsp;&nbsp;</th><th style="text-align: left">Access List</th></tr><%
 			for (Adoption adoption : confidAdoptions) {
 				Record record = adoption.getRecord();
 				%><tr>
@@ -126,6 +127,7 @@
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=FeatureUtil.getFeatureIdentifyingName(record.getSample().getFeature())%><%=(SampleUtil.getDrillHoleDepthDescription(record.getSample()) != null) ? "<br />" + SampleUtil.getDrillHoleDepthDescription(record.getSample()) : ""%></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=RecordUtil.getRecordName(record)%></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=FREDUtil.formatDateForOutput(record.getAudit().getConfidLapseDate())%></td>
+				<td style="text-align: left"><%=auditUtil.getConfidAccessListDescription(record.getAudit())%></td>
 				<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=record.getRecordId()%>&RecType=<%=FREDConstants.ADOPTION%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
 				</tr><%
 			}
@@ -140,8 +142,8 @@
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" cellspacing="0" cellpadding="2" width="550">
-			<tr><td colspan="5" class="deHeading">Confidential Paleontology Records</td></tr>
-			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Paleontology Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date</th></tr><%
+			<tr><td colspan="6" class="deHeading">Confidential Paleontology Records</td></tr>
+			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Paleontology Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date&nbsp;&nbsp;</th><th style="text-align: left">Access List</th></tr><%
 			for (Paleontology paleontology : confidPaleontologies) {
 				Record record = paleontology.getRecord();
 				%><tr>
@@ -149,6 +151,7 @@
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=FeatureUtil.getFeatureIdentifyingName(record.getSample().getFeature())%><%=(SampleUtil.getDrillHoleDepthDescription(record.getSample()) != null) ? "<br />" + SampleUtil.getDrillHoleDepthDescription(record.getSample()) : ""%></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=RecordUtil.getRecordName(record)%></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=FREDUtil.formatDateForOutput(record.getAudit().getConfidLapseDate())%></td>
+				<td style="text-align: left"><%=auditUtil.getConfidAccessListDescription(record.getAudit())%></td>
 				<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=record.getRecordId()%>&RecType=<%=FREDConstants.PALEONTOLOGICAL%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
 				</tr><%
 			}
@@ -164,8 +167,8 @@
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" cellspacing="0" cellpadding="2" width="550">
-			<tr><td colspan="5" class="deHeading">Confidential Paleontology Taxonomic Lists</td></tr>
-			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Paleontology Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date</th></tr><%
+			<tr><td colspan="6" class="deHeading">Confidential Paleontology Taxonomic Lists</td></tr>
+			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Paleontology Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date&nbsp;&nbsp;</th><th style="text-align: left">Access List</th></th></tr><%
 			for (Paleontology paleontology : confidPalLists) {
 				Record record = paleontology.getRecord();
 				%><tr>
@@ -173,6 +176,7 @@
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=FeatureUtil.getFeatureIdentifyingName(record.getSample().getFeature())%><%=(SampleUtil.getDrillHoleDepthDescription(record.getSample()) != null) ? "<br />" + SampleUtil.getDrillHoleDepthDescription(record.getSample()) : ""%></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=RecordUtil.getRecordName(record)%>&nbsp;&nbsp;</a></td>
 				<td style="text-align: left"><%=FREDUtil.formatDateForOutput(record.getPalListAudit().getConfidLapseDate())%></td>
+				<td style="text-align: left"><%=auditUtil.getConfidAccessListDescription(record.getPalListAudit())%></td>
 				<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=record.getRecordId()%>&RecType=<%=FREDConstants.PALEONTOLOGICAL%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
 				</tr><%
 			}
