@@ -39,7 +39,7 @@
 		User user =(User) getUser(session);
 	
 		ExtranetTemplate et = getExtranetTemplate();
-		//et.setDisplayLoadingMessage(true);
+		et.setDisplayLoadingMessage(true);
 		addButtons(et, new IconnedLink[] {
 				new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to Folders"),
 				new IconnedLink("backlog_status.jsp", "images/map.gif", "Status")});
