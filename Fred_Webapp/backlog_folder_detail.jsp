@@ -39,7 +39,7 @@
 		User user =(User) getUser(session);
 	
 		ExtranetTemplate et = getExtranetTemplate();
-		et.setDisplayLoadingMessage(true);
+		//et.setDisplayLoadingMessage(true);
 		addButtons(et, new IconnedLink[] {
 				new IconnedLink("folder_list.jsp", "images/back_arrow.gif", "Back to Folders"),
 				new IconnedLink("backlog_status.jsp", "images/map.gif", "Status")});
@@ -64,7 +64,7 @@
 			}
 			//--></script>
 			
-			<form name="backlogForm" action="backlog_folder_detail.jsp" method="post">
+			<form name="backlogForm" action="backlog_folder_detail.jsp" method="get">
 			<input type="hidden" name="ID" value="<%=folder.getFolderId()%>">
 			<input type="hidden" name="sbmit" value="yes">
 			<p><div id="showInst">
