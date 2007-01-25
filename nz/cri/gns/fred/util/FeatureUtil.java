@@ -1119,6 +1119,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	
 	public static boolean isBacklogFeature(Feature feature) {
 		Folder folder = feature.getAudit().getFolder();
+		System.out.println(getFeatureIdentifyingName(feature) + " is a backlog feature: " + folder != null && folder.getFolderType().getName().equals(Folder.FOLDER_TYPE_BACKLOG));
 		return (folder != null && folder.getFolderType().getName().equals(Folder.FOLDER_TYPE_BACKLOG));
 	}
 

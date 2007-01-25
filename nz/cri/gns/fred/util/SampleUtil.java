@@ -280,14 +280,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			audit.setSubmittedDate(new Date());
 			audit.setWorkingComments(null);
 			audit.setFolder(null);
-			if (audit.getConfidentialFlag()) {
-				GregorianCalendar cal = new GregorianCalendar();
-				if (audit.getConfidPeriod().doubleValue() == 0.5)
-					cal.add(Calendar.MONTH, 6);
-				else
-					cal.add(Calendar.YEAR, audit.getConfidPeriod().intValue());
-				audit.setConfidLapseDate(cal.getTime());
-			}
+			if (audit.getConfidentialFlag())
+				audit.setConfidLapseDate(AuditUtil.getLapseDate(audit.getConfidPeriod()));
 			sampleDAO.update(audit);
 		}
 	}
