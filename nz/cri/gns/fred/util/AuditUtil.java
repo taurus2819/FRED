@@ -261,7 +261,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 			return null;
 		StringBuffer sb = new StringBuffer(audit.getCreatedBy().getFullName());
 		for (ConfidentialGroup confidGroup : audit.getConfidGroups())
-			sb.append("/").append(confidGroup.getName());
+			sb.append(", ").append(confidGroup.getName());
 		return sb.toString();
 	}
 	
