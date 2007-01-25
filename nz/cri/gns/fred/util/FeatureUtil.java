@@ -1121,7 +1121,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		Folder folder = feature.getAudit().getFolder();
 		System.out.println(getFeatureIdentifyingName(feature) + " is a backlog feature: " + (folder != null && folder.getFolderType().getName().equals(Folder.FOLDER_TYPE_BACKLOG)));
 		System.out.println("Folder is not null: " + folder != null);
-		System.out.println("FolderType: " + folder.getFolderType().getName());
+		if (folder != null) {
+			System.out.println("FolderType: " + folder.getFolderType().getName());
+		}
 		return (folder != null && folder.getFolderType().getName().equals(Folder.FOLDER_TYPE_BACKLOG));
 	}
 
