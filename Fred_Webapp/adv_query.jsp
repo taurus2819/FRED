@@ -78,7 +78,7 @@
 		<p><%
 	
 		startDETable(pageContext);
-		%><table style='margin-left:20px; width:550px;' border='0'><tr><td>
+		%><table style="margin-left:20px; width:550px;" border="0"><tr><td>
 		
 		<p><span style="color: #FF0000">Not all database fields are available to use.  Missing fields will be added progressively over the next few weeks.</span></p>
 			
