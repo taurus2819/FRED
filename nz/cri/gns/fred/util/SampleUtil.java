@@ -1,9 +1,7 @@
 package nz.cri.gns.fred.util;
 
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -26,6 +24,7 @@ import nz.cri.gns.fred.model.ColourModifier;
 import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
+import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
@@ -287,13 +286,18 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public static boolean isMandatoryFieldComplete(Sample sample) {
-		if (FeatureUtil.isBacklogFeature(sample.getFeature()))
+		if (isBacklogSample(sample))
 			return true;
 		if (FREDUtil.isEmpty(sample.getCollectors())
 				|| sample.getCollectionDate() == null || sample.getInPlace() == null
 				|| (FREDUtil.isEmpty(sample.getSentTos()) && FREDUtil.isEmpty(sample.getNotCollected())))
 			return false;
 		return true;
+	}
+	
+	public static boolean isBacklogSample(Sample sample) {
+		Folder folder = sample.getAudit().getFolder();
+		return (folder != null && folder.getFolderType().getName().equals(Folder.FOLDER_TYPE_BACKLOG));
 	}
 	
 	public boolean isSampleConfidential(Sample sample) {
