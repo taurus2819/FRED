@@ -64,7 +64,7 @@
 			}
 			//--></script>
 			
-			<form name="backlogForm" action="backlog_folder_detail.jsp" method="get">
+			<form name="backlogForm" action="backlog_folder_detail.jsp" method="post">
 			<input type="hidden" name="ID" value="<%=folder.getFolderId()%>">
 			<input type="hidden" name="sbmit" value="yes">
 			<p><div id="showInst">
