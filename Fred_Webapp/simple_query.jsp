@@ -9,7 +9,6 @@
 %><%@page import="java.io.PrintWriter"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.auth.Authenticable"
-%><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.html.select.SelectBox"
 %><%@page import="nz.cri.gns.html.Attributes"
 %><%!
@@ -22,8 +21,7 @@
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
-	addButtons(et, new IconnedLink[] {new IconnedLink("buildframe.jsp", "images/search.gif", "Advanced Query")});
-
+	
 	drawTop(out, et, request, response);
 
 	%><script language="JavaScript">

@@ -4,7 +4,6 @@
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.jsp.PageState"
-%><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%!
@@ -14,7 +13,6 @@
 %><%
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
-	addButtons(et, new IconnedLink[] {new IconnedLink("simple_query.jsp", "images/search.gif", "Simple Query")});
 	
 	drawTop(out, et, request, response, true);
 
