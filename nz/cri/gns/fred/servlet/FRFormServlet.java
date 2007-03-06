@@ -375,7 +375,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				PDFUtil.addCells(table, new String[] {"Converted Dec. Lat/Long", ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"}, bodyFonts);
 			}
 			PDFUtil.addCells(table, new Object[] {"Map Year", feature.getMapYear()}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {"Method", ((sv != null) ? sv.getHorizMethod() : null)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Method", ((sv != null) ? sv.getMethod() : null)}, bodyFonts);
 			PDFUtil.addCells(table, new String[] {"Accuracy", ((sv != null && sv.getAccuracy() != null) ? String.valueOf(sv.getAccuracy()) + " m" : null)}, bodyFonts);
 
 			if (featureUtil.isAllowedReadFeature(user, feature)) {

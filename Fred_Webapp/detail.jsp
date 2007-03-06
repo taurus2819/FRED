@@ -328,8 +328,8 @@ try {
 			if (feature.getMapYear() != null) {
 				%><tr><td class="heading">Map Year</td><td><%=DBUtils.nvl(feature.getMapYear())%></td></tr><%
 			}
-			if (sv != null && sv.getHorizMethod() != null) {
-				%><tr><td class="heading">Method</td><td><%=sv.getHorizMethod()%></td></tr><%
+			if (sv != null && sv.getMethod() != null) {
+				%><tr><td class="heading">Method</td><td><%=sv.getMethod()%></td></tr><%
 			}
 			if (sv != null && sv.getAccuracy() != null) {
 				%><tr><td class="heading">Accuracy</td><td>&#177;<%=String.valueOf(sv.getAccuracy())%> m</td></tr><%
