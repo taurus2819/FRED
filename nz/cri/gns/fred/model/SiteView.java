@@ -44,12 +44,12 @@ public interface SiteView {
 	public String getOrigCoord();
 	public void setHeight(Double height);
 	public Double getHeight();
-	public void setHorizMethodId(Integer hMethodId);
-	public Integer getHorizMethodId();
-	public void setHorizMethod(String horizMethod);
-	public String getHorizMethod();
-	public void setHorizAccuracy(Double horizAccuracy);
-	public Double getHorizAccuracy();
+	public void setHeightMethodId(Integer heightMethodId);
+	public Integer getHeightMethodId();
+	public void setHeightMethod(String heightMethod);
+	public String getHeightMethod();
+	public void setHeightAccuracy(Double heightAccuracy);
+	public Double getHeightAccuracy();
 	public void setOwnerId(Integer ownerId);
 	public Integer getOwnerId();
 	public void setOwner(String owner);

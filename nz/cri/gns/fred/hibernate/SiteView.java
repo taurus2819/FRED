@@ -70,13 +70,13 @@ public class SiteView implements Serializable, nz.cri.gns.fred.model.SiteView {
     private Double height;
 
     /** nullable persistent field */
-    private Integer horizMethodId;
+    private Integer heightMethodId;
 
     /** nullable persistent field */
-    private String horizMethod;
+    private String heightMethod;
     
     /** nullable persistent field */
-    private Double horizAccuracy;
+    private Double heightAccuracy;
 
     /** nullable persistent field */
     private Integer ownerId;
@@ -88,7 +88,7 @@ public class SiteView implements Serializable, nz.cri.gns.fred.model.SiteView {
     private Set<Feature> features;
 
     /** full constructor */
-    public SiteView(Integer siteId, String siteName, Double latitude, Double longitude, String countryCode, String countryName, String nzmgSheet, Double nzmgEast, Double nzmgNorth, String qmapSheet, String nzms262Sheet, String island, Integer methodId, String method, Double accuracy, String directions, Integer origSystemId, String coordSystem, String origCoord, Double height, Integer horizMethodId, String horizMethod, Double horizAccuracy, Integer ownerId, String owner) {
+    public SiteView(Integer siteId, String siteName, Double latitude, Double longitude, String countryCode, String countryName, String nzmgSheet, Double nzmgEast, Double nzmgNorth, String qmapSheet, String nzms262Sheet, String island, Integer methodId, String method, Double accuracy, String directions, Integer origSystemId, String coordSystem, String origCoord, Double height, Integer heightMethodId, String heightMethod, Double heightAccuracy, Integer ownerId, String owner) {
     	this.siteId = siteId;
     	this.siteName = siteName;
     	this.latitude = latitude;
@@ -109,9 +109,9 @@ public class SiteView implements Serializable, nz.cri.gns.fred.model.SiteView {
     	this.coordSystem = coordSystem;
     	this.origCoord = origCoord;
     	this.height = height;
-    	this.horizMethodId = horizMethodId; 
-    	this.horizMethod = horizMethod;
-    	this.horizAccuracy = horizAccuracy;
+    	this.heightMethodId = heightMethodId; 
+    	this.heightMethod = heightMethod;
+    	this.heightAccuracy = heightAccuracy;
     	this.ownerId = ownerId;
     	this.owner = owner;
     }
@@ -280,28 +280,28 @@ public class SiteView implements Serializable, nz.cri.gns.fred.model.SiteView {
 		return height;
 	}
 
-	public void setHorizMethodId(Integer horizMethodId) {
-		this.horizMethodId = horizMethodId;
+	public void setHeightMethodId(Integer horizMethodId) {
+		this.heightMethodId = horizMethodId;
 	}
 
-	public Integer getHorizMethodId() {
-		return horizMethodId;
+	public Integer getHeightMethodId() {
+		return heightMethodId;
 	}
 
-	public void setHorizMethod(String horizMethod) {
-		this.horizMethod = horizMethod;
+	public void setHeightMethod(String horizMethod) {
+		this.heightMethod = horizMethod;
 	}
 
-	public String getHorizMethod() {
-		return horizMethod;
+	public String getHeightMethod() {
+		return heightMethod;
 	}
 
-	public void setHorizAccuracy(Double horizAccuracy) {
-		this.horizAccuracy = horizAccuracy;
+	public void setHeightAccuracy(Double horizAccuracy) {
+		this.heightAccuracy = horizAccuracy;
 	}
 
-	public Double getHorizAccuracy() {
-		return horizAccuracy;
+	public Double getHeightAccuracy() {
+		return heightAccuracy;
 	}
 
 	public void setOwnerId(Integer ownerId) {

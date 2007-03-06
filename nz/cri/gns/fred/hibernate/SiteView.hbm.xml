@@ -134,18 +134,18 @@
 	        column="HEIGHT"
    		/>
 	    <property
-    	    name="horizMethodId"
+    	    name="heightMethodId"
         	type="int"
 	        column="H_METHOD_ID"
    		/>
 	    <property
-    	    name="horizMethod"
+    	    name="heightMethod"
         	type="java.lang.String"
 	        column="H_METHOD"
     	    length="64"
    		/>
 	    <property
-    	    name="horizAccuracy"
+    	    name="heightAccuracy"
         	type="double"
 	        column="H_ACCURACY"
    		/>
