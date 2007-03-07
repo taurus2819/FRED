@@ -280,16 +280,16 @@ public class SiteView implements Serializable, nz.cri.gns.fred.model.SiteView {
 		return height;
 	}
 
-	public void setHeightMethodId(Integer horizMethodId) {
-		this.heightMethodId = horizMethodId;
+	public void setHeightMethodId(Integer heightMethodId) {
+		this.heightMethodId = heightMethodId;
 	}
 
 	public Integer getHeightMethodId() {
 		return heightMethodId;
 	}
 
-	public void setHeightMethod(String horizMethod) {
-		this.heightMethod = horizMethod;
+	public void setHeightMethod(String heightMethod) {
+		this.heightMethod = heightMethod;
 	}
 
 	public String getHeightMethod() {
