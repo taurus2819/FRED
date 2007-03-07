@@ -141,7 +141,7 @@
 						%></tr>
 						<tr><td class="heading">Converted Dec. Lat/Long</td><td><%=ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"%></td></tr>
 						<tr><td class="heading">Map Year</td><td><%=DBUtils.nvl(feature.getMapYear())%></td></tr>
-						<tr><td class="heading">Method</td><td><%=((sv != null && sv.getHorizMethod() != null) ? sv.getHorizMethod() : "&nbsp;")%></td></tr>
+						<tr><td class="heading">Method</td><td><%=((sv != null && sv.getMethod() != null) ? sv.getMethod() : "&nbsp;")%></td></tr>
 						<tr><td class="heading">Accuracy</td><td><%=((sv != null && sv.getAccuracy() != null) ? "&#177;" + String.valueOf(sv.getAccuracy()) + " m" : "&nbsp;")%></td></tr><%
 						if (featureUtil.isAllowedReadFeature(user, feature)) {
 							%><tr><td class="heading">Locality</td><td><%=DBUtils.nvl(feature.getLocality())%></td></tr>
