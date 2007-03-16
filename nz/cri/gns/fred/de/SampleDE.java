@@ -505,9 +505,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			stage = sample.getKnownStage();
 			if (stage != null) {
 				if (stage.getLowerAgeView() != null)
-					template.addSub("InferredAgeStart", stage.getLowerAgeView().getAgeId().toString());
+					template.addSub("KnownAgeStart", stage.getLowerAgeView().getAgeId().toString());
 				if (stage.getUpperAgeView() != null)
-					template.addSub("InferredAgeStop", stage.getUpperAgeView().getAgeId().toString());
+					template.addSub("KnownAgeStop", stage.getUpperAgeView().getAgeId().toString());
 			}
 			
 			if (sample.getPrimaryGrainSize() != null)
