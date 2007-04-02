@@ -207,5 +207,12 @@ public interface FeatureDAO {
 	public void evict(Feature feature) throws StorageAccessException;
 
 	public Iterator<Feature> getFeatures(String hqlQuery) throws StorageAccessException;
+
+	/**
+	 * Cleans out the feature and also all its children objects
+	 * @param feature
+	 * @throws StorageAccessException
+	 */
+	public void evictComplete(Feature feature) throws StorageAccessException;
 	
 }

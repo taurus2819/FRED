@@ -1244,5 +1244,22 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 	public Iterator<Feature> getFeatures(String hqlQuery) throws StorageAccessException {
 		return HibernateUtils.iterate(provider, hqlQuery);
 	}
+
+	public void evictComplete(Feature feature) throws StorageAccessException {
+		for (Sample sample : feature.getSamples()) {
+			for (Record record : sample.getRecords()) {
+				if (record.getAdoption() != null)
+					HibernateUtils.evict(provider, record.getAdoption());
+				if (record.getPaleontology() != null) {
+					for (PaleontologyListEntry entry : record.getPaleontology().getListEntries())
+						HibernateUtils.evict(provider, entry);
+					HibernateUtils.evict(provider, record.getPaleontology());
+				}
+				HibernateUtils.evict(provider, record);
+			}
+			HibernateUtils.evict(provider, sample);
+		}
+		HibernateUtils.evict(provider, feature);
+	}
 	
 }
