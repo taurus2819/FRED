@@ -54,7 +54,7 @@ public class MolluscaExport extends FredHibernateTest {
 			Feature feature = features.next();
 			export.handleFeature(feature);
 			
-			factory.getFeatureDAO().evict(feature);
+			factory.getFeatureDAO().evictComplete(feature);
 		}
 		//Tests that the result contains the string 'FOSSIL RECORD NUMBER'
 		pw.flush();

@@ -4,8 +4,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import sun.security.krb5.internal.ktab.l;
-
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Sample;
