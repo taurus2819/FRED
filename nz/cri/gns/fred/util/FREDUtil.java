@@ -34,10 +34,14 @@ import nz.cri.gns.db.BasicDatabaseApp2;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.metadata.DocumentAttacher;
 import nz.cri.gns.fred.de.DataInputException;
+import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Meta;
+import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.PersonRelationship;
+import nz.cri.gns.fred.model.Record;
+import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.query.FREDQuery;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.PageState;
@@ -454,6 +458,24 @@ public class FREDUtil {
 	
 	public static boolean isEmpty(String str) {
 		return str == null || str.length() == 0;
+	}
+
+	public static Set<Adoption> getAdoptions(Sample sample) {
+		Set<Adoption> adoptions = new HashSet<Adoption>();
+		for (Record record : sample.getRecords()) {
+			if (record.getAdoption() != null)
+				adoptions.add(record.getAdoption());
+		}
+		return adoptions;
+	}
+
+	public static Set<Paleontology> getPaleontologies(Sample sample) {
+		Set<Paleontology> lists = new HashSet<Paleontology>();
+		for (Record record : sample.getRecords()) {
+			if (record.getPaleontology() != null)
+				lists.add(record.getPaleontology());
+		}
+		return lists;
 	}
 	
 }
