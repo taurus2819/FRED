@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -1230,6 +1231,18 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 	
 	public DatumMethod getSiteDatumMethod(int methodId) throws StorageAccessException {
 		return HibernateUtils.getFirst(provider, "FROM DatumMethod AS d WHERE d.methodId = ?", methodId, DatumMethod.class);
+	}
+
+	public Iterator<Feature> getAllFeatures() throws StorageAccessException {
+		return HibernateUtils.iterate(provider, "FROM Feature");
+	}
+
+	public void evict(Feature feature) throws StorageAccessException {
+		HibernateUtils.evict(provider, feature);
+	}
+
+	public Iterator<Feature> getFeatures(String hqlQuery) throws StorageAccessException {
+		return HibernateUtils.iterate(provider, hqlQuery);
 	}
 	
 }

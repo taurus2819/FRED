@@ -1,0 +1,126 @@
+package nz.cri.gns.fred.export;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.fred.abstractions.AgeRange;
+import nz.cri.gns.fred.model.AgeView;
+import nz.cri.gns.fred.model.Feature;
+import nz.cri.gns.fred.model.Paleontology;
+import nz.cri.gns.fred.model.PaleontologyListEntry;
+import nz.cri.gns.fred.model.Person;
+import nz.cri.gns.fred.model.Sample;
+import nz.cri.gns.fred.model.TaxonomicGroup;
+
+public class OldFormatFredExport extends DefaultFredExport {
+
+	private static final String EOL = "\r\n";
+	private int count;
+	private Writer writer;
+	
+	public OldFormatFredExport(Writer writer) {
+		this.count = 1;
+		this.writer = writer;
+	}
+
+	public void handleFeature(Feature feature) throws IOException {
+		for (Sample sample : feature.getSamples()) {
+			for (Paleontology list : getListsToExport(sample)) {
+				handleList(feature, sample, getAgeRange(sample, list), list);
+			}
+		}
+	}
+	
+	public void handleList(Feature feature, Sample sample, AgeRange age, Paleontology list) throws IOException {
+		//Don't export unapproved features
+		if (feature.getFrNumber() == null)
+			return;
+
+		writeHeader(feature, sample, age, list);
+		
+		writeLists(list);
+	}
+
+	private void writeLists(Paleontology list) throws IOException {
+		Set<TaxonomicGroup> groups = new HashSet<TaxonomicGroup>();
+		for (PaleontologyListEntry entry : list.getListEntries()) {
+			groups.add(entry.getTaxonomicGroup());
+		}
+		for (TaxonomicGroup group : groups) {
+			if (!groupRequired(group))
+				continue;
+			writer.write(" Group: " + group.getDisplayName() + EOL);
+			for (PaleontologyListEntry entry : list.getListEntries()) {
+				if (entry.getTaxonomicGroup().equals(group)) {
+					writer.write(" " + entry.getTaxonomicName() + " * " + DBUtils.nvl(entry.getComments()) + EOL);
+				}
+			}
+		}
+	}
+
+	protected boolean groupRequired(TaxonomicGroup group) {
+		return true;
+	}
+
+	protected void writeHeader(Feature feature, Sample sample, AgeRange age, Paleontology list) throws IOException {
+		//File starts with a blank line and then the Item number
+		writer.write(EOL);
+		writer.write("Item " + count++ + EOL);		
+		//Next line has a single space on it
+		writer.write(" " + EOL);
+		//Work out the fr number
+		String frSuffix = (feature.getSamples().size() > 1) ? ("(" + DBUtils.nvl(sample.getTopDepth()) + "-" + DBUtils.nvl(sample.getBottomDepth()) + ")") : "";
+		writer.write(" FOSSIL RECORD NUMBER -      " + feature.getFrNumber().getFrNumber() + frSuffix + EOL);
+		//Identifier
+		if (list.getIdentifiers().size() > 0) {
+			writer.write("    Identifier:  ");
+			for (Iterator<Person> identifiers = list.getIdentifiers().iterator(); identifiers.hasNext(); ) {
+				writer.write(identifiers.next().getDisplayName());
+				if (identifiers.hasNext())
+					writer.write(",");
+			}
+			writer.write(EOL);
+		}
+		//Date
+		if (list.getIdentificationDate() != null) {
+			writer.write("    Date:        " + new SimpleDateFormat("dd/MM/yyyy").format(list.getIdentificationDate()) + EOL);
+		}
+		//Stage
+		if (age != null && (age.getLower() != null || age.getUpper() != null)) {
+			writer.write("    Stage:       ");
+			//Stages:
+			boolean oneAge = age.getLower() == null || age.getUpper() == null || age.getLower().equals(age.getUpper());
+			if (age.getLower() != null && age.getLower().equals(age.getUpper())) {
+				oneAge = oneAge && !(age.isLowerCertain() ^ age.isUpperCertain());
+			}
+			DecimalFormat format = new DecimalFormat("0.0");
+			if (oneAge) {
+				AgeView ageV = age.getLower() == null ? age.getUpper() : age.getLower();
+				boolean ageU = age.getLower() == null ? age.isUpperCertain() : age.isLowerCertain();
+				
+				writer.write(ageV.getAgeAbbrev() + (ageU ? "" : "?") + "; ");
+				writer.write(format.format(ageV.getAgeStart()) + "-" + format.format(ageV.getAgeStop()));
+			} else {
+				writer.write(age.getLower().getAgeAbbrev() + (age.isLowerCertain() ? "" : "?")
+						+ "-" + age.getUpper().getAgeAbbrev() + (age.isUpperCertain() ? "" : "?")
+						+ "; " + format.format(age.getLower().getAgeStart()) + "-" + format.format(age.getUpper().getAgeStop()));
+			}
+			writer.write(EOL);
+			if (age.getComment() != null) {
+				writer.write("    Comment on stage determination: " + age.getComment() + EOL);
+			}
+		}
+		if (list.getLabNumber() != null) {
+			writer.write("    Lab. number: " + list.getLabNumber() + EOL);
+		}
+		if (list.getCollectionComments() != null) {
+			writer.write("    Comment on collection: " + list.getCollectionComments() + EOL);
+		}
+	}
+}
