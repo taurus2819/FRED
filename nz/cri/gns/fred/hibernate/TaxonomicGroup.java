@@ -89,4 +89,11 @@ public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
 		return name;
 	}
 
+	public int hashCode() {
+		return name.hashCode();
+	}
+	
+	public boolean equals(Object o) {
+		return groupId != null && o instanceof TaxonomicGroup && groupId.equals(((TaxonomicGroup)o).groupId);
+	}
 }
