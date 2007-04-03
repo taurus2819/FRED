@@ -5,9 +5,11 @@ import nz.cri.gns.fred.model.Stage;
 public class DefaultStageAgeRange extends StageAgeRange {
 
 	private Stage stage;
+	private String label;
 
-	public DefaultStageAgeRange(Stage stage) {
+	public DefaultStageAgeRange(Stage stage, String label) {
 		this.stage = stage;
+		this.label = label;
 	}
 
 	@Override
@@ -17,6 +19,10 @@ public class DefaultStageAgeRange extends StageAgeRange {
 
 	public String getComment() {
 		return null;
+	}
+
+	public String getAgeRangeType() {
+		return label;
 	}
 
 }

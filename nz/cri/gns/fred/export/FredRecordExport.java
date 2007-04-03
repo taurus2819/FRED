@@ -1,7 +1,7 @@
 package nz.cri.gns.fred.export;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 import nz.cri.gns.fred.abstractions.AgeRange;
 import nz.cri.gns.fred.model.Feature;
@@ -22,7 +22,7 @@ public interface FredRecordExport {
 	 * @param sample
 	 * @return
 	 */
-	List<Paleontology> getListsToExport(Sample sample);
+	Collection<Paleontology> getListsToExport(Sample sample);
 	
 	/**
 	 * Returns the AgeRange appropriate for the given fossil list

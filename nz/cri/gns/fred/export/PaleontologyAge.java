@@ -23,4 +23,9 @@ public class PaleontologyAge extends StageAgeRange implements AgeRange {
 		return pal.getStage();
 	}
 
+
+	public String getAgeRangeType() {
+		return "List";
+	}
+
 }

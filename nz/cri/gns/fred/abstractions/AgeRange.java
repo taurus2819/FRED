@@ -13,4 +13,9 @@ public interface AgeRange {
 	public boolean isUpperCertain();
 	
 	public String getComment();
+	
+	/**
+	 * Returns a name for this age range determination method.
+	 */
+	public String getAgeRangeType();
 }

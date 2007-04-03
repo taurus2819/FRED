@@ -1,11 +1,11 @@
 package nz.cri.gns.fred.export;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,7 +23,7 @@ public abstract class DefaultFredExport implements FredRecordExport {
 	/**
 	 * Returns the most recent list for each group, in no particular order
 	 */
-	public List<Paleontology> getListsToExport(Sample sample) {
+	public Collection<Paleontology> getListsToExport(Sample sample) {
 		return new ArrayList<Paleontology>(getMostRecentLists(sample));
 	}
 
@@ -55,10 +55,10 @@ public abstract class DefaultFredExport implements FredRecordExport {
 	 */
 	private AgeRange getAgeBySample(Sample sample) {
 		if (sample.getKnownStage() != null)
-			return new DefaultStageAgeRange(sample.getKnownStage());
+			return new DefaultStageAgeRange(sample.getKnownStage(), "FOF - Known Age");
 		
 		if (sample.getInferredStage() != null)
-			return new DefaultStageAgeRange(sample.getInferredStage());
+			return new DefaultStageAgeRange(sample.getInferredStage(), "FOF - Inferred Age");
 		
 		return null;
 	}
@@ -89,13 +89,11 @@ public abstract class DefaultFredExport implements FredRecordExport {
 				continue;
 			
 			Date date = pal.getDate();
-			if (date == null)
-				continue;
 			
 			for (PaleontologyListEntry entry : pal.getListEntries()) {
 				TaxonomicGroup group = entry.getTaxonomicGroup();
 				Date alreadyDate = chosenDate.get(group);
-				if (alreadyDate == null || date.after(alreadyDate))
+				if (alreadyDate == null || (date != null && date.after(alreadyDate)))
 					chosen.put(group, pal);
 			}
 		}

@@ -21,4 +21,8 @@ public class AdoptionAge extends StageAgeRange implements AgeRange {
 		return adoption.getStage();
 	}
 
+	public String getAgeRangeType() {
+		return "Adoption";
+	}
+
 }

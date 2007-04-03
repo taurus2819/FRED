@@ -3,19 +3,11 @@ package nz.cri.gns.fred.export.test;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.Iterator;
-import java.util.List;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.fred.abstractions.AgeRange;
-import nz.cri.gns.fred.export.OldFormatFredExport;
 import nz.cri.gns.fred.hibernate.test.FredHibernateTest;
 import nz.cri.gns.fred.model.Feature;
-import nz.cri.gns.fred.model.FolderType;
-import nz.cri.gns.fred.model.Paleontology;
-import nz.cri.gns.fred.model.Sample;
-import nz.cri.gns.fred.util.FREDUtil;
 
 public class MolluscaExport extends FredHibernateTest {
 

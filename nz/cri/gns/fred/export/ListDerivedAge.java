@@ -9,9 +9,12 @@ import nz.cri.gns.fred.model.Stage;
 public class ListDerivedAge extends SimpleAgeRange {
 
 	
+	private Type type;
+
 	public ListDerivedAge(Set<Paleontology> lists, Type type) {
 		super();
 		process(lists, type);
+		this.type = type;
 	}
 
 	private void process(Set<Paleontology> lists, Type type) {
@@ -59,6 +62,8 @@ public class ListDerivedAge extends SimpleAgeRange {
 	public static enum Type {
 		MINIMUM, MAXIMUM;
 	}
-	
-	
+
+	public String getAgeRangeType() {
+		return (type == Type.MINIMUM ? "Minimum" : "Maximum") + " overlap (list)";
+	}
 }

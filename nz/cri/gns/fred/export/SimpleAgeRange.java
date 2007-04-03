@@ -3,7 +3,7 @@ package nz.cri.gns.fred.export;
 import nz.cri.gns.fred.abstractions.AgeRange;
 import nz.cri.gns.fred.model.AgeView;
 
-public class SimpleAgeRange implements AgeRange {
+public abstract class SimpleAgeRange implements AgeRange {
 
 	protected AgeView lower;
 	protected AgeView upper;
@@ -41,5 +41,4 @@ public class SimpleAgeRange implements AgeRange {
 	public String getComment() {
 		return comment;
 	}
-
 }

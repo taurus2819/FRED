@@ -112,9 +112,11 @@ public class OldFormatFredExport extends DefaultFredExport {
 						+ "; " + format.format(age.getLower().getAgeStart()) + "-" + format.format(age.getUpper().getAgeStop()));
 			}
 			writer.write(EOL);
+			writer.write("    Comment on stage determination: [" + age.getAgeRangeType() + "]");
 			if (age.getComment() != null) {
-				writer.write("    Comment on stage determination: " + age.getComment() + EOL);
+				writer.write("; " + age.getComment());
 			}
+			writer.write(EOL);
 		}
 		if (list.getLabNumber() != null) {
 			writer.write("    Lab. number: " + list.getLabNumber() + EOL);

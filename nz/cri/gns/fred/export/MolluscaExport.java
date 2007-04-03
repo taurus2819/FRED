@@ -1,12 +1,14 @@
 package nz.cri.gns.fred.export;
 
+import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Set;
 
 import nz.cri.gns.fred.abstractions.AgeRange;
+import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
@@ -23,6 +25,7 @@ public class MolluscaExport extends OldFormatFredExport {
 	private static Set<String> groups;
 	private static Set<String> ageGroups;
 	private static Set<String> excludedIndentifiers;
+	private static double baseAge = 66.5;
 	static {
 		groups = new HashSet<String>(3);
 		groups.add("BIVALVIA");
@@ -64,25 +67,64 @@ public class MolluscaExport extends OldFormatFredExport {
 	}
 
 	@Override
-	public List<Paleontology> getListsToExport(Sample sample) {
-		List<Paleontology> listList = super.getListsToExport(sample);
-		List<Paleontology> newList = new ArrayList<Paleontology>(listList.size());
-		original: for (Paleontology list : listList) {
-			if (list.getIdentifiers().size() == 0)
-				continue original;
+	public Collection<Paleontology> getListsToExport(Sample sample) {
+		Set<Paleontology> listSet =  FREDUtil.getPaleontologies(sample);
+		original: for (Iterator<Paleontology> it = listSet.iterator(); it.hasNext(); ) {
+			Paleontology list = it.next();
 			for (Person identifier : list.getIdentifiers()) {
-				if (excludedIndentifiers.contains(identifier.getName()))
-					continue original;
-			}
-			for (PaleontologyListEntry entry : list.getListEntries()) {
-				if (groupRequired(entry.getTaxonomicGroup())) {
-					//Keep it!
-					newList.add(list);
+				if (excludedIndentifiers.contains(identifier.getName())) {
+					it.remove();
 					continue original;
 				}
 			}
+			boolean keep = false;
+			for (PaleontologyListEntry entry : list.getListEntries()) {
+				if (groupRequired(entry.getTaxonomicGroup())) {
+					//Keep it!
+					keep = true;
+					break;
+				}
+			}
+			if (!keep)
+				it.remove();
 		}
-		return newList;
+		return listSet;
+
+//		List<Paleontology> listList = super.getListsToExport(sample);
+//		List<Paleontology> newList = new ArrayList<Paleontology>(listList.size());
+//		original: for (Paleontology list : listList) {
+//			if (list.getIdentifiers().size() == 0)
+//				continue original;
+//			for (Person identifier : list.getIdentifiers()) {
+//				if (excludedIndentifiers.contains(identifier.getName()))
+//					continue original;
+//			}
+//			for (PaleontologyListEntry entry : list.getListEntries()) {
+//				if (groupRequired(entry.getTaxonomicGroup())) {
+//					//Keep it!
+//					newList.add(list);
+//					continue original;
+//				}
+//			}
+//		}
+//		return newList;
+	}
+
+	/**
+	 * This is overridden to skip non-cenozoic mollusca - done here because this is 
+	 * after the age is calculated.
+	 */
+	@Override
+	public void handleList(Feature feature, Sample sample, AgeRange age, Paleontology list) throws IOException {
+		//Reject anything that is unageable
+		if (age == null)
+			return;
+		//Reject anything that ends before the Cenozoic begins
+		System.out.println(age.getLower() + " -- " + age.getUpper());
+		if ((age.getUpper() == null && age.getLower() == null) || (age.getUpper() == null && age.getLower() != null && age.getLower().getAgeStop() > baseAge) || (age.getUpper() != null && age.getUpper().getAgeStop() > baseAge))
+			return;
+		System.out.println("OK");
+		super.handleList(feature, sample, age, list);
 	}
 
 	@Override
@@ -94,16 +136,16 @@ public class MolluscaExport extends OldFormatFredExport {
 		}
 		
 		Set<Paleontology> relevantPals = getMostRecentLists(sample);
-		for (Paleontology list : relevantPals) {
+		for (Iterator<Paleontology> it = relevantPals.iterator(); it.hasNext(); ) {
 			boolean keep = false;
-			for (PaleontologyListEntry entry : list.getListEntries()) {
+			for (PaleontologyListEntry entry : it.next().getListEntries()) {
 				if (groups.contains(entry.getTaxonomicGroup()) || ageGroups.contains(entry.getTaxonomicGroup())) {
 					keep = true;
 					break;
 				}
 			}
 			if (!keep)
-				relevantPals.remove(list);
+				it.remove();
 		}
 		return new ListDerivedAge(relevantPals, ListDerivedAge.Type.MINIMUM);
 	}
