@@ -78,7 +78,7 @@ public abstract class DefaultFredExport implements FredRecordExport {
 		return new ListDerivedAge(relevantPals, ListDerivedAge.Type.MINIMUM);
 	}
 
-	private Set<Paleontology> getMostRecentLists(Sample sample) {
+	protected Set<Paleontology> getMostRecentLists(Sample sample) {
 		//Collect the most recent list for each pal group
 		Map<TaxonomicGroup, Date> chosenDate = new HashMap<TaxonomicGroup, Date>();
 		Map<TaxonomicGroup, Paleontology> chosen = new HashMap<TaxonomicGroup, Paleontology>();

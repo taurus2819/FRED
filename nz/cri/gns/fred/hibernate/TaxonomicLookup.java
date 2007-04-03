@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
+import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.UserView;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.TaxonomicGroup;
@@ -206,5 +207,17 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
 
 	public String getDisplayName() {
 		return taxonomicName;
+	}
+	
+	public boolean equals(Object o) {
+		if (!(o instanceof Taxon))
+			return false;
+		Taxon taxon = (Taxon)o;
+		return taxon.getTaxonomicName().equals(taxonomicName) 
+			&& taxon.getTaxonomicGroup().equals(taxonomicGroup);
+	}
+	
+	public int hashCode() {
+		return taxonomicGroup.hashCode() + 1000 * taxonomicName.hashCode();
 	}
 }
