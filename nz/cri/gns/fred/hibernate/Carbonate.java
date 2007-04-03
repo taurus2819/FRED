@@ -81,4 +81,11 @@ public class Carbonate implements Serializable, nz.cri.gns.fred.model.Carbonate 
 		return this.code + ": " + this.name;
 	}
 
+	public boolean equals(Object o) {
+		return o instanceof Carbonate && ((Carbonate)o).carbonateId.equals(carbonateId);
+	}
+	
+	public int hashCode() {
+		return 966 * carbonateId;
+	}
 }

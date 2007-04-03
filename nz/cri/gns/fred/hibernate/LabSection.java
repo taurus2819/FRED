@@ -111,4 +111,11 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
 		return lab.getName() + " " + code;
 	}
 
+	public boolean equals(Object o) {
+		return o instanceof LabSection && ((LabSection)o).labSectionId.equals(labSectionId);
+	}
+	
+	public int hashCode() {
+		return 735 * labSectionId;
+	}
 }

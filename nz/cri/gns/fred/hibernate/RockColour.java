@@ -93,4 +93,11 @@ public class RockColour implements Serializable, nz.cri.gns.fred.model.RockColou
 		return this.code + ": " + this.name;
 	}
 
+	public boolean equals(Object o) {
+		return o instanceof RockColour && ((RockColour)o).colourId.equals(colourId);
+	}
+	
+	public int hashCode() {
+		return 243 * colourId;
+	}
 }

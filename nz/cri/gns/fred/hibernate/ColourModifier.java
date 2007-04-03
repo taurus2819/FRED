@@ -81,4 +81,11 @@ public class ColourModifier implements Serializable, nz.cri.gns.fred.model.Colou
 		return this.code + ": " + this.name;
 	}
 
+	public boolean equals(Object o) {
+		return o instanceof ColourModifier && ((ColourModifier)o).modifierId.equals(modifierId);
+	}
+	
+	public int hashCode() {
+		return 745 * modifierId;
+	}
 }

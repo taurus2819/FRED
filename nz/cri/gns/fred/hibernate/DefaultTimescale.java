@@ -27,4 +27,13 @@ public class DefaultTimescale implements Serializable {
     public void setTimescaleId(Integer timescaleId) {
         this.timescaleId = timescaleId;
     }
+    
+
+	public boolean equals(Object o) {
+		return o instanceof DefaultTimescale && ((DefaultTimescale)o).timescaleId.equals(timescaleId);
+	}
+	
+	public int hashCode() {
+		return 362 * timescaleId;
+	}
 }

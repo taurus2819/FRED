@@ -50,4 +50,12 @@ public class RelationType implements Serializable, nz.cri.gns.fred.model.Relatio
     public void setRelationships(Set relationships) {
         this.relationships = relationships;
     }
+    
+	public boolean equals(Object o) {
+		return o instanceof RelationType && ((RelationType)o).name.equals(name);
+	}
+	
+	public int hashCode() {
+		return name.hashCode();
+	}
 }

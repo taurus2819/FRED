@@ -176,4 +176,8 @@ public class Relationship implements Serializable, nz.cri.gns.fred.model.Relatio
     public String toString() {
     	return SampleUtil.getRelationshipDescription(this);
     }
+    
+    public int hashCode() {
+    	return 275 * relationshipId;
+    }
 }

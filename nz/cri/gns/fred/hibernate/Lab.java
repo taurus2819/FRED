@@ -108,4 +108,11 @@ public class Lab implements Serializable, nz.cri.gns.fred.model.Lab {
 		return name;
 	}
 
+	public boolean equals(Object o) {
+		return o instanceof Lab && ((Lab)o).labId.equals(labId);
+	}
+	
+	public int hashCode() {
+		return 825 * labId;
+	}
 }

@@ -80,4 +80,11 @@ public class Hardness implements Serializable, nz.cri.gns.fred.model.Hardness {
 		return this.code + ": " + this.name;
 	}
 
+	public boolean equals(Object o) {
+		return o instanceof Hardness && ((Hardness)o).hardnessId.equals(hardnessId);
+	}
+	
+	public int hashCode() {
+		return 362 * hardnessId;
+	}
 }

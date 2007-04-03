@@ -133,4 +133,12 @@ public class BacklogStatus implements Serializable, nz.cri.gns.fred.model.Backlo
 	public int compareTo(nz.cri.gns.fred.model.BacklogStatus arg0) {
 		return mapNumber.compareTo(((BacklogStatus)arg0).mapNumber);
 	}
+
+	public boolean equals(Object o) {
+		return o instanceof BacklogStatus && ((BacklogStatus)o).objectId.equals(objectId);
+	}
+	
+	public int hashCode() {
+		return 943 * objectId;
+	}
 }

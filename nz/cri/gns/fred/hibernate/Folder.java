@@ -153,4 +153,8 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
 	public String getDisplayName() {
 		return this.name;
 	}
+	
+	public int hashCode() {
+		return 271 * folderId;
+	}
 }

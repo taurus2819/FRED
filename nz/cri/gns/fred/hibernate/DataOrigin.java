@@ -77,4 +77,11 @@ public class DataOrigin implements nz.cri.gns.fred.model.DataOrigin, Serializabl
         return name;
     }
 
+	public boolean equals(Object o) {
+		return o instanceof DataOrigin && ((DataOrigin)o).originId.equals(originId);
+	}
+	
+	public int hashCode() {
+		return 527 * originId;
+	}
 }

@@ -202,5 +202,8 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
 		}
 		return record.getSample().compareTo(arg0.getRecord().getSample());
 	}
-	
+
+	public boolean equals(Object o) {
+		return recordId != null && o instanceof Paleontology && recordId.equals(((Paleontology)o).recordId);
+	}
 }

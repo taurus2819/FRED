@@ -73,4 +73,8 @@ public class FossilGroup implements Serializable, nz.cri.gns.fred.model.FossilGr
 	public String getDisplayName() {
 		return name;
 	}
+	
+	public int hashCode() {
+		return 483 * groupId;
+	}
 }

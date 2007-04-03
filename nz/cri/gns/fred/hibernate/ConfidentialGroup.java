@@ -103,4 +103,11 @@ public class ConfidentialGroup implements nz.cri.gns.fred.model.ConfidentialGrou
 		return name;
 	}
 
+	public boolean equals(Object o) {
+		return o instanceof ConfidentialGroup && ((ConfidentialGroup)o).groupId.equals(groupId);
+	}
+	
+	public int hashCode() {
+		return 893 * groupId;
+	}
 }

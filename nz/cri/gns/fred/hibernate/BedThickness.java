@@ -81,4 +81,11 @@ public class BedThickness implements Serializable, nz.cri.gns.fred.model.BedThic
 		return this.code + ": " + this.name;
 	}
 
+	public boolean equals(Object o) {
+		return o instanceof BedThickness && ((BedThickness)o).thicknessId.equals(thicknessId);
+	}
+	
+	public int hashCode() {
+		return 583 * thicknessId;
+	}
 }

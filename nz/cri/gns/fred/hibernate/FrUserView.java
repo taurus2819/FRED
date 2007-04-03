@@ -151,5 +151,12 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
 	public String getDisplayName() {
 		return fullName;
 	}
+
+	public boolean equals(Object o) {
+		return o instanceof FrUserView && ((FrUserView)o).userId.equals(userId);
+	}
 	
+	public int hashCode() {
+		return 261 * userId;
+	}
 }

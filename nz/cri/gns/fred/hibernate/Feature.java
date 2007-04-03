@@ -431,4 +431,8 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
 		String thatName = FeatureUtil.getFeatureIdentifyingName(arg0);
 		return thisName.compareTo(thatName);
 	}
+	
+	public int hashCode() {
+		return 217 * featureId;
+	}
 }

@@ -79,4 +79,11 @@ public class RelationshipType implements Serializable, nz.cri.gns.fred.model.Rel
 		return name;
 	}
 
+	public boolean equals(Object o) {
+		return o instanceof RelationshipType && ((RelationshipType)o).reltypeId.equals(reltypeId);
+	}
+	
+	public int hashCode() {
+		return 386 * reltypeId;
+	}
 }

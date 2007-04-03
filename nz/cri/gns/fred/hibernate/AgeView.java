@@ -118,4 +118,12 @@ public class AgeView implements Serializable, nz.cri.gns.fred.model.AgeView {
 	public boolean equals(Object o) {
 		return o instanceof AgeView && ((AgeView)o).ageId.equals(ageId);
 	}
+	
+	public String toString() {
+		return ageName + " [" + ageAbbrev + "; " + ageStart + "-" + ageStop + "]";
+	}
+	
+	public int hashCode() {
+		return (int)Math.floor(ageName.hashCode() + 765 * ageStart + 12 * ageStop);
+	}
 }

@@ -328,5 +328,12 @@ public class SiteView implements Serializable, nz.cri.gns.fred.model.SiteView {
 		return features;
 	}
 
+	public boolean equals(Object o) {
+		return o instanceof SiteView && ((SiteView)o).siteId.equals(siteId);
+	}
+	
+	public int hashCode() {
+		return 037 * siteId;
+	}
 
 }

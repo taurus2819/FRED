@@ -81,4 +81,11 @@ public class Weathering implements Serializable, nz.cri.gns.fred.model.Weatherin
 		return this.code + ": " + this.name;
 	}
 
+	public boolean equals(Object o) {
+		return o instanceof Weathering && ((Weathering)o).weatheringId.equals(weatheringId);
+	}
+	
+	public int hashCode() {
+		return 752 * weatheringId;
+	}
 }

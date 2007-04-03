@@ -93,4 +93,11 @@ public class Bedding implements Serializable, nz.cri.gns.fred.model.Bedding {
 		return this.code + ": " + this.name;
 	}
 
+	public boolean equals(Object o) {
+		return o instanceof Bedding && ((Bedding)o).beddingId.equals(beddingId);
+	}
+	
+	public int hashCode() {
+		return 184 * beddingId;
+	}
 }

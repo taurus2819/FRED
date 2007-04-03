@@ -61,5 +61,12 @@ public class FolderRight implements Serializable, nz.cri.gns.fred.model.FolderRi
 	public int getRightCode() {
 		return rightCode;
 	}
-    
+
+	public boolean equals(Object o) {
+		return o instanceof FolderRight && ((FolderRight)o).rightId.equals(rightId);
+	}
+	
+	public int hashCode() {
+		return 936 * rightId;
+	}
 }

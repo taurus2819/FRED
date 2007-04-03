@@ -50,5 +50,12 @@ public class FrUser implements Serializable, nz.cri.gns.fred.model.FrUser {
 	public String getDisplayName() {
 		return String.valueOf(userId);
 	}
+
+	public boolean equals(Object o) {
+		return o instanceof FrUser && ((FrUser)o).userId.equals(userId);
+	}
 	
+	public int hashCode() {
+		return 037 * userId;
+	}
 }

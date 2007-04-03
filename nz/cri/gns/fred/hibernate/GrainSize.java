@@ -93,4 +93,11 @@ public class GrainSize implements Serializable, nz.cri.gns.fred.model.GrainSize 
 		return this.code + ": " + this.name;
 	}
 
+	public boolean equals(Object o) {
+		return o instanceof GrainSize && ((GrainSize)o).grainSizeId.equals(grainSizeId);
+	}
+	
+	public int hashCode() {
+		return 856 * grainSizeId;
+	}
 }

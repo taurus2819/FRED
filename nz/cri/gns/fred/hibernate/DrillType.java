@@ -69,4 +69,11 @@ public class DrillType implements Serializable, nz.cri.gns.fred.model.DrillType 
 		return this.name;
 	}
 
+	public boolean equals(Object o) {
+		return o instanceof DrillType && ((DrillType)o).drillTypeId.equals(drillTypeId);
+	}
+	
+	public int hashCode() {
+		return 822 * drillTypeId;
+	}
 }

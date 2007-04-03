@@ -44,5 +44,12 @@ public class SecurityClass implements Serializable {
         return name;
     }
 
+	public boolean equals(Object o) {
+		return o instanceof SecurityClass && ((SecurityClass)o).classId.equals(classId);
+	}
+	
+	public int hashCode() {
+		return 935 * classId;
+	}
 
 }

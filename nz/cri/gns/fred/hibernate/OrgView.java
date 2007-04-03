@@ -90,5 +90,12 @@ public class OrgView implements Serializable, nz.cri.gns.fred.model.OrgView {
 	public String getDisplayName() {
 		return companyName;
 	}
+
+	public boolean equals(Object o) {
+		return o instanceof OrgView && ((OrgView)o).clientCode.equals(clientCode);
+	}
 	
+	public int hashCode() {
+		return 264 * clientCode;
+	}
 }
