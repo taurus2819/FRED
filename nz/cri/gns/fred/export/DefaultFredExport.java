@@ -85,6 +85,9 @@ public abstract class DefaultFredExport implements FredRecordExport {
 		}
 		
 		Set<Paleontology> relevantPals = getMostRecentLists(sample);
+		if (relevantPals.size() == 0)
+			return null;
+		
 		return new ListDerivedAge(relevantPals, ListDerivedAge.Type.MINIMUM);
 	}
 

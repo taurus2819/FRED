@@ -16,7 +16,6 @@ import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.TaxonomicGroup;
-import nz.cri.gns.fred.util.FREDUtil;
 
 public class MolluscaExport extends OldFormatFredExport {
 
@@ -27,7 +26,7 @@ public class MolluscaExport extends OldFormatFredExport {
 	private static Set<String> groups;
 	private static Set<String> ageGroups;
 	private static Set<String> excludedIndentifiers;
-	private static double baseAge = 66.5;
+	private static double baseAge = 65;
 	static {
 		groups = new HashSet<String>(3);
 		groups.add("BIVALVIA");
@@ -71,7 +70,9 @@ public class MolluscaExport extends OldFormatFredExport {
 	@Override
 	public Collection<Paleontology> getListsToExport(Sample sample) throws StorageAccessException {
 //		Date date = new Date();
+//		System.out.println("Start lists");
 		List<Paleontology> listSet =  Export.getFactory().getSampleDAO().getPaleontologies(sample);
+//		System.out.println("Finish lists");
 //		System.out.println("Pals: " + (new Date().getTime() - date.getTime()));
 //		date = new Date();
 		original: for (Iterator<Paleontology> it = listSet.iterator(); it.hasNext(); ) {
@@ -140,12 +141,12 @@ public class MolluscaExport extends OldFormatFredExport {
 			Paleontology list = lists.iterator().next();
 			return list.getStage() == null ? null : new PaleontologyAge(list);
 		}
-		
 		Set<Paleontology> relevantPals = getMostRecentLists(sample);
 		for (Iterator<Paleontology> it = relevantPals.iterator(); it.hasNext(); ) {
 			boolean keep = false;
 			for (PaleontologyListEntry entry : it.next().getListEntries()) {
-				if (groups.contains(entry.getTaxonomicGroup()) || ageGroups.contains(entry.getTaxonomicGroup())) {
+				String group = entry.getTaxonomicGroup().getName();
+				if (groups.contains(group) || ageGroups.contains(group)) {
 					keep = true;
 					break;
 				}
@@ -153,7 +154,10 @@ public class MolluscaExport extends OldFormatFredExport {
 			if (!keep)
 				it.remove();
 		}
-		return new ListDerivedAge(relevantPals, ListDerivedAge.Type.MINIMUM);
+		if (relevantPals.size() == 0)
+			return null;
+		else
+			return new ListDerivedAge(relevantPals, ListDerivedAge.Type.MINIMUM);
 //} finally {
 //	System.out.println("Age by all pal: " + (new Date().getTime() - date0.getTime()));
 //}
