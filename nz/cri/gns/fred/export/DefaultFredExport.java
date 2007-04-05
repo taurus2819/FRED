@@ -33,11 +33,9 @@ public abstract class DefaultFredExport implements FredRecordExport {
 		AgeRange age = getAgeByAdoption(sample);
 		if (age != null)
 			return age;
-	
 		age = getAgeByAllPaleontologies(sample);
 		if (age != null)
 			return age;
-		
 		age = getAgeByPaleontology(sample, list);
 		if (age != null)
 			return age;
