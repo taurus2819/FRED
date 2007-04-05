@@ -1,8 +1,10 @@
 package nz.cri.gns.fred.dao;
 
 import java.util.List;
+import java.util.Set;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.BedThickness;
@@ -16,6 +18,7 @@ import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.Lab;
+import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.RelationType;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.RelationshipType;
@@ -207,4 +210,7 @@ public interface SampleDAO {
 	
 	public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException;
 
+	public List<Paleontology> getPaleontologies(Sample sample) throws StorageAccessException;
+
+	public List<Adoption> getAdoptions(Sample sample) throws StorageAccessException;
 }

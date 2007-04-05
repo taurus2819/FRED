@@ -6,9 +6,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.abstractions.AgeRange;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Paleontology;
@@ -16,18 +18,18 @@ import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.TaxonomicGroup;
-import nz.cri.gns.fred.util.FREDUtil;
 
 public abstract class DefaultFredExport implements FredRecordExport {
 
 	/**
 	 * Returns the most recent list for each group, in no particular order
+	 * @throws StorageAccessException 
 	 */
-	public Collection<Paleontology> getListsToExport(Sample sample) {
+	public Collection<Paleontology> getListsToExport(Sample sample) throws StorageAccessException {
 		return new ArrayList<Paleontology>(getMostRecentLists(sample));
 	}
 
-	public AgeRange getAgeRange(Sample sample, Paleontology list) {
+	public AgeRange getAgeRange(Sample sample, Paleontology list) throws StorageAccessException {
 		AgeRange age = getAgeByAdoption(sample);
 		if (age != null)
 			return age;
@@ -54,6 +56,8 @@ public abstract class DefaultFredExport implements FredRecordExport {
 	 * @return
 	 */
 	private AgeRange getAgeBySample(Sample sample) {
+//Date date0 = new Date();
+//try {
 		if (sample.getKnownStage() != null)
 			return new DefaultStageAgeRange(sample.getKnownStage(), "FOF - Known Age");
 		
@@ -61,14 +65,22 @@ public abstract class DefaultFredExport implements FredRecordExport {
 			return new DefaultStageAgeRange(sample.getInferredStage(), "FOF - Inferred Age");
 		
 		return null;
+//} finally {
+//	System.out.println("Age by sample: " + (new Date().getTime() - date0.getTime()));
+//}
 	}
 
 	protected AgeRange getAgeByPaleontology(Sample sample, Paleontology list) {
+//Date date0 = new Date();
+//try {
 		return list.getStage() == null ? null : new PaleontologyAge(list);
+//} finally {
+//	System.out.println("Age by pal: " + (new Date().getTime() - date0.getTime()));
+//}
 	}
 
-	protected AgeRange getAgeByAllPaleontologies(Sample sample) {
-		Set<Paleontology> lists = FREDUtil.getPaleontologies(sample);
+	protected AgeRange getAgeByAllPaleontologies(Sample sample) throws StorageAccessException {
+		List<Paleontology> lists =  Export.getFactory().getSampleDAO().getPaleontologies(sample);
 		if (lists.size() == 1) {
 			Paleontology list = lists.iterator().next();
 			return list.getStage() == null ? null : new PaleontologyAge(list);
@@ -106,9 +118,12 @@ public abstract class DefaultFredExport implements FredRecordExport {
 	 * If there is exactly one adoption record, then returns it, otherwise if there are 
 	 * more than one adoptions, returns the most recent or if all adoption records are 
 	 * undated then returns any.  If there are no adoptions, returns null.
+	 * @throws StorageAccessException 
 	 */
-	protected AgeRange getAgeByAdoption(Sample sample) {
-		Set<Adoption> adoptions = FREDUtil.getAdoptions(sample);
+	protected AgeRange getAgeByAdoption(Sample sample) throws StorageAccessException {
+//		Date date0 = new Date();
+//try {
+		List<Adoption> adoptions = Export.getFactory().getSampleDAO().getAdoptions(sample);
 		if (adoptions.size() == 1)
 			return new AdoptionAge(adoptions.iterator().next());
 		else if (adoptions.size() > 0) {
@@ -129,6 +144,9 @@ public abstract class DefaultFredExport implements FredRecordExport {
 				return new AdoptionAge(adoptions.iterator().next());
 		}
 		return null;
+//} finally {
+//	System.out.println("Age by adoption: " + (new Date().getTime() - date0.getTime()));
+//}
 	}
 
 }

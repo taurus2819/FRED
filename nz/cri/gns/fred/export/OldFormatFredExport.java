@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.abstractions.AgeRange;
 import nz.cri.gns.fred.model.AgeView;
@@ -29,12 +30,21 @@ public class OldFormatFredExport extends DefaultFredExport {
 		this.writer = writer;
 	}
 
-	public void handleFeature(Feature feature) throws IOException {
-		for (Sample sample : feature.getSamples()) {
+	public void handleFeature(Feature feature) throws IOException, StorageAccessException {
+//		Date date0 = new Date();
+		Set<Sample> samples = feature.getSamples();
+		samples.size();
+//		System.out.println("Get samples: " + (new Date().getTime() - date0.getTime()));
+//		date0 = new Date();
+		System.out.println("Feature: " + feature.getFeatureId());
+		for (Sample sample : samples) {
 			for (Paleontology list : getListsToExport(sample)) {
+//				Date date = new Date();
 				handleList(feature, sample, getAgeRange(sample, list), list);
+//				System.out.println("List: " + (new Date().getTime() - date.getTime()));
 			}
 		}
+//		System.out.println("Handle Feature: " + (new Date().getTime() - date0.getTime()));
 	}
 	
 	public void handleList(Feature feature, Sample sample, AgeRange age, Paleontology list) throws IOException {

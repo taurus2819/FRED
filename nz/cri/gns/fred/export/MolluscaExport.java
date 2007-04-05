@@ -5,8 +5,10 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
+import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.abstractions.AgeRange;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Paleontology;
@@ -67,8 +69,11 @@ public class MolluscaExport extends OldFormatFredExport {
 	}
 
 	@Override
-	public Collection<Paleontology> getListsToExport(Sample sample) {
-		Set<Paleontology> listSet =  FREDUtil.getPaleontologies(sample);
+	public Collection<Paleontology> getListsToExport(Sample sample) throws StorageAccessException {
+//		Date date = new Date();
+		List<Paleontology> listSet =  Export.getFactory().getSampleDAO().getPaleontologies(sample);
+//		System.out.println("Pals: " + (new Date().getTime() - date.getTime()));
+//		date = new Date();
 		original: for (Iterator<Paleontology> it = listSet.iterator(); it.hasNext(); ) {
 			Paleontology list = it.next();
 			for (Person identifier : list.getIdentifiers()) {
@@ -88,6 +93,7 @@ public class MolluscaExport extends OldFormatFredExport {
 			if (!keep)
 				it.remove();
 		}
+//		System.out.println("Get lists to export: " + (new Date().getTime() - date.getTime()));
 		return listSet;
 
 //		List<Paleontology> listList = super.getListsToExport(sample);
@@ -120,16 +126,16 @@ public class MolluscaExport extends OldFormatFredExport {
 		if (age == null)
 			return;
 		//Reject anything that ends before the Cenozoic begins
-		System.out.println(age.getLower() + " -- " + age.getUpper());
 		if ((age.getUpper() == null && age.getLower() == null) || (age.getUpper() == null && age.getLower() != null && age.getLower().getAgeStop() > baseAge) || (age.getUpper() != null && age.getUpper().getAgeStop() > baseAge))
 			return;
-		System.out.println("OK");
 		super.handleList(feature, sample, age, list);
 	}
 
 	@Override
-	protected AgeRange getAgeByAllPaleontologies(Sample sample) {
-		Set<Paleontology> lists = FREDUtil.getPaleontologies(sample);
+	protected AgeRange getAgeByAllPaleontologies(Sample sample) throws StorageAccessException {
+//Date date0 = new Date();
+//try {
+		List<Paleontology> lists =  Export.getFactory().getSampleDAO().getPaleontologies(sample);
 		if (lists.size() == 1) {
 			Paleontology list = lists.iterator().next();
 			return list.getStage() == null ? null : new PaleontologyAge(list);
@@ -148,6 +154,9 @@ public class MolluscaExport extends OldFormatFredExport {
 				it.remove();
 		}
 		return new ListDerivedAge(relevantPals, ListDerivedAge.Type.MINIMUM);
+//} finally {
+//	System.out.println("Age by all pal: " + (new Date().getTime() - date0.getTime()));
+//}
 	}
 	
 	

@@ -460,6 +460,11 @@ public class FREDUtil {
 		return str == null || str.length() == 0;
 	}
 
+	/**
+	 * Warning...this method can be slow; consider SampleDAO.getAdoptions instead
+	 * @param sample
+	 * @return
+	 */
 	public static Set<Adoption> getAdoptions(Sample sample) {
 		Set<Adoption> adoptions = new HashSet<Adoption>();
 		for (Record record : sample.getRecords()) {
@@ -469,6 +474,11 @@ public class FREDUtil {
 		return adoptions;
 	}
 
+	/**
+	 * Warning...this method can be slow; consider SampleDAO.getPaleontologies instead
+	 * @param sample
+	 * @return
+	 */
 	public static Set<Paleontology> getPaleontologies(Sample sample) {
 		Set<Paleontology> lists = new HashSet<Paleontology>();
 		for (Record record : sample.getRecords()) {

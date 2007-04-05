@@ -1261,5 +1261,12 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		}
 		HibernateUtils.evict(provider, feature);
 	}
-	
+
+	public List<Paleontology> getPaleontologies(Sample sample) throws StorageAccessException {
+		return HibernateUtils.list(provider, "FROM Paleontology AS p WHERE p.record.sample = ?", Paleontology.class, sample);
+	}
+
+	public List<Adoption> getAdoptions(Sample sample) throws StorageAccessException {
+		return HibernateUtils.list(provider, "FROM Adoption AS a WHERE a.record.sample = ?", Adoption.class, sample);
+	}
 }

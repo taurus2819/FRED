@@ -213,6 +213,5 @@ public interface FeatureDAO {
 	 * @param feature
 	 * @throws StorageAccessException
 	 */
-	public void evictComplete(Feature feature) throws StorageAccessException;
-	
+	public void evictComplete(Feature feature) throws StorageAccessException;	
 }

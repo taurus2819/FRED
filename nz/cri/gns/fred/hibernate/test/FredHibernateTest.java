@@ -24,6 +24,7 @@ import nz.cri.gns.fred.hibernate.BedThickness;
 import nz.cri.gns.fred.hibernate.Bedding;
 import nz.cri.gns.fred.hibernate.Carbonate;
 import nz.cri.gns.fred.hibernate.ColourModifier;
+import nz.cri.gns.fred.hibernate.ConfidentialGroup;
 import nz.cri.gns.fred.hibernate.DataOrigin;
 import nz.cri.gns.fred.hibernate.DrillType;
 import nz.cri.gns.fred.hibernate.Feature;
@@ -39,6 +40,7 @@ import nz.cri.gns.fred.hibernate.GrainSize;
 import nz.cri.gns.fred.hibernate.Hardness;
 import nz.cri.gns.fred.hibernate.Lab;
 import nz.cri.gns.fred.hibernate.LabSection;
+import nz.cri.gns.fred.hibernate.OrgView;
 import nz.cri.gns.fred.hibernate.PalList;
 import nz.cri.gns.fred.hibernate.PalListMeta;
 import nz.cri.gns.fred.hibernate.Paleontology;
@@ -74,12 +76,12 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 	public void setUp() throws HibernateException, SQLException, InvalidCredentialsException, ClassNotFoundException {
 		Properties props = new Properties();
 		props.put("hibernate.connection.driver_class", "oracle.jdbc.OracleDriver");
-		props.put("hibernate.connection.url", "jdbc:oracle:thin:@raptor.gns.cri.nz:1521:dev");
+		props.put("hibernate.connection.url", "jdbc:oracle:thin:@gryphon.gns.cri.nz:1521:dev");
 		props.put("hibernate.connection.username", "fr");
 		props.put("hibernate.connection.password", "ossify");
 		props.put("hibernate.dialect", "net.sf.hibernate.dialect.Oracle9Dialect");
-		props.put("hibernate.show_sql", "true");
-		props.put("hibernate.cglib.use_reflection_optimizer", "false");
+		props.put("hibernate.show_sql", "false");
+		props.put("hibernate.cglib.use_reflection_optimizer", "true");
 	
 		Configuration cfg = new Configuration().setProperties(props);
 		cfg.setInterceptor(new FREDInterceptor());
@@ -112,6 +114,7 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 			BedThickness.class,
 			Carbonate.class,
 			ColourModifier.class,
+			ConfidentialGroup.class,
 			DataOrigin.class,
 			DrillType.class,
 			Feature.class,
@@ -127,6 +130,7 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 			Hardness.class,
 	        LabSection.class,
 	        Lab.class,
+	        OrgView.class,
 	        Paleontology.class,
 			PalList.class,
 			PalListMeta.class,
