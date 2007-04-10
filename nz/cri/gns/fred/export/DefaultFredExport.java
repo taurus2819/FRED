@@ -15,7 +15,6 @@ import nz.cri.gns.fred.abstractions.AgeRange;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
-import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 
@@ -91,16 +90,12 @@ public abstract class DefaultFredExport implements FredRecordExport {
 		return new ListDerivedAge(relevantPals, ListDerivedAge.Type.MINIMUM);
 	}
 
-	protected Set<Paleontology> getMostRecentLists(Sample sample) {
+	protected Set<Paleontology> getMostRecentLists(Sample sample) throws StorageAccessException {
 		//Collect the most recent list for each pal group
 		Map<TaxonomicGroup, Date> chosenDate = new HashMap<TaxonomicGroup, Date>();
 		Map<TaxonomicGroup, Paleontology> chosen = new HashMap<TaxonomicGroup, Paleontology>();
 		
-		for (Record record : sample.getRecords()) {
-			Paleontology pal = record.getPaleontology();
-			if (pal == null)
-				continue;
-			
+		for (Paleontology pal : Export.getFactory().getSampleDAO().getPaleontologies(sample)) {
 			Date date = pal.getDate();
 			
 			for (PaleontologyListEntry entry : pal.getListEntries()) {
