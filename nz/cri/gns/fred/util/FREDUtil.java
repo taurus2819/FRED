@@ -299,7 +299,7 @@ public class FREDUtil {
 			Statement statement = conn.createStatement();
 			ResultSet rs = statement.executeQuery("SELECT well_name FROM petroleum.petroleum_well WHERE UPPER(well_name) = '" + feature.getFeatureName().toUpperCase() + "'");
 			rs.next();
-			String link = "/psid/petwell.jsp?wellname=" + rs.getString(1);
+			String link = "http://data.gns.cri.nz/psid/petwell.jsp?wellname=" + rs.getString(1);
 			statement.close();
 			conn.close();
 			return link;
