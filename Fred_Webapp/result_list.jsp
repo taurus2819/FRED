@@ -13,6 +13,7 @@
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="java.util.List"
 %><%@page import="java.util.Vector"
+%><%@page import="java.util.Collections"
 %><%@page import="java.net.URLEncoder"
 %><%@page import="java.sql.Connection"
 %><%@page import="java.sql.Statement"
@@ -62,7 +63,6 @@
 				FREDQuery query = FREDUtil.getFREDQuery(state);
 				whereSQL = query.getHQLQuery();
 				queryString = query.getQueryAsString();
-				System.out.println("PET Query: " + whereSQL);
 				features = featureUtil.getListFromQueryBuilder(whereSQL);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -80,6 +80,7 @@
 					if (feature.getAudit().getStatus().equals(FREDConstants.APPROVED))
 						features.add(feature);
 				}
+				Collections.sort(features);
 				rs.close();
 				statement.close();
 				conn.close();
