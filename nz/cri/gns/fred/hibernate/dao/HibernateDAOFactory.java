@@ -562,13 +562,11 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 
 	public Sample createNewSample(Feature feature) {
 		nz.cri.gns.fred.hibernate.Sample sample = new nz.cri.gns.fred.hibernate.Sample();
-		System.out.println("sample null" + (sample == null));
 		sample.setFeature(feature);
 		if (feature.getSamples() != null)
 			feature.getSamples().add(sample);
 		else {
 			Set<Sample> samples = new HashSet<Sample>();
-			System.out.println("samples null" + (samples == null));
 			samples.add(sample);
 			feature.setSamples(samples);
 		}
