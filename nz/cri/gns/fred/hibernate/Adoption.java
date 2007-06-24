@@ -152,11 +152,11 @@ public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption, A
 		return record.getSample().compareTo(arg0.getRecord().getSample());
 	}
 
-	public boolean equals(Object o) {
+	/*public boolean equals(Object o) {
 		return recordId != null && o instanceof Adoption && recordId.equals(((Adoption)o).getRecordId());
 	}
 	
 	public int hashCode() {
 		return 764 * recordId;
-	}
+	}*/
 }

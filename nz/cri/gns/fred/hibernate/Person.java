@@ -130,14 +130,6 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
 		return getName();
 	}
 
-	public boolean equals(Object o) {
-		return o instanceof Person && personId != null && personId.equals(((Person)o).getPersonId());
-	}
-    
-    public int hashCode() {
-        return name.hashCode();
-    }
-    
     public String toString() {
     	return super.toString() + " {" + personId + ": " + name + "}";
     }
@@ -150,4 +142,11 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
 		return String.valueOf(personId);
 	}
 	
+	/*public boolean equals(Object o) {
+		return o instanceof Person && personId != null && personId.equals(((Person)o).getPersonId());
+	}
+    
+    public int hashCode() {
+        return name.hashCode();
+    }*/
 }

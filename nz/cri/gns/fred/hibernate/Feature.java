@@ -418,21 +418,21 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     	}
     }
     
-    public boolean equals(Object o) {
-    	if (!(o instanceof Feature))
-    		return false;
-    	if (featureId == null || ((Feature)o).featureId == null)
-    		return false;
-    	return featureId.equals(((Feature)o).featureId);
-    }
-
 	public int compareTo(nz.cri.gns.fred.model.Feature arg0) {
 		String thisName = FeatureUtil.getFeatureIdentifyingName(this);
 		String thatName = FeatureUtil.getFeatureIdentifyingName(arg0);
 		return thisName.compareTo(thatName);
 	}
 	
+   /* public boolean equals(Object o) {
+    	if (!(o instanceof Feature))
+    		return false;
+    	if (featureId == null || ((Feature)o).featureId == null)
+    		return false;
+    	return featureId.equals(((Feature)o).featureId);
+    }
+	
 	public int hashCode() {
 		return 217 * featureId;
-	}
+	}*/
 }

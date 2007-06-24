@@ -107,11 +107,11 @@ public class AuditEdit implements Serializable, Comparable<nz.cri.gns.fred.model
 			return editedDate.compareTo(o.getEditedDate());
 	}
 
-	public boolean equals(Object o) {
+	/*public boolean equals(Object o) {
 		return o instanceof AuditEdit && ((AuditEdit)o).auditEditId.equals(auditEditId);
 	}
 	
 	public int hashCode() {
 		return 128 * auditEditId;
-	}
+	}*/
 }

@@ -152,11 +152,11 @@ public class PalList implements Serializable, nz.cri.gns.fred.model.Paleontology
 		return taxonomicName;
 	}
 
-	public boolean equals(Object o) {
+	/*public boolean equals(Object o) {
 		return o instanceof PalList && ((PalList)o).palListId.equals(palListId);
 	}
 	
 	public int hashCode() {
 		return 765 * palListId;
-	}
+	}*/
 }

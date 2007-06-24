@@ -163,11 +163,11 @@ public class FrNumber implements Serializable, nz.cri.gns.fred.model.FrNumber {
 		return this.frNumber.compareTo(frNumber.getFrNumber());
 	}
 
-	public boolean equals(Object o) {
+	/*public boolean equals(Object o) {
 		return o instanceof FrNumber && ((FrNumber)o).frId.equals(frId);
 	}
 	
 	public int hashCode() {
 		return 353 * frId;
-	}
+	}*/
 }

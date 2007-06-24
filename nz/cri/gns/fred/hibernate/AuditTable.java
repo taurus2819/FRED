@@ -361,11 +361,11 @@ public class AuditTable implements Serializable, Audit {
 		this.confidGroups = confidGroups;
 	}
 
-	public boolean equals(Object o) {
+	/*public boolean equals(Object o) {
 		return o instanceof AuditTable && ((AuditTable)o).auditId.equals(auditId);
 	}
 	
 	public int hashCode() {
 		return 272 * auditId;
-	}
+	}*/
 }

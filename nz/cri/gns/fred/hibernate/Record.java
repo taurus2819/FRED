@@ -147,11 +147,11 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record {
 		}
 	}
 
-	public boolean equals(Object o) {
+	/*public boolean equals(Object o) {
 		return o instanceof Record && ((Record)o).recordId.equals(recordId);
 	}
 	
 	public int hashCode() {
 		return 845 * recordId;
-	}
+	}*/
 }
