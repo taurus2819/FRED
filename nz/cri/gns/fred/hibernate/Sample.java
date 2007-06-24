@@ -627,11 +627,11 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
 		return null;
 	}
 
-	public boolean equals(Object o) {
-		return o instanceof Sample && ((Sample)o).sampleId.equals(sampleId);
-	}
+	//public boolean equals(Object o) {
+	//	return o instanceof Sample && ((Sample)o).sampleId.equals(sampleId);
+	//}
 	
-	public int hashCode() {
-		return 286 * sampleId;
-	}
+	//public int hashCode() {
+	//	return 286 * sampleId;
+	//}
 }
