@@ -22,6 +22,7 @@ import nz.cri.gns.fred.model.ConfidentialGroup;
 import nz.cri.gns.fred.model.DataOrigin;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.FrUserView;
+import nz.cri.gns.fred.model.LogTable;
 import nz.cri.gns.fred.model.OrgView;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.Sample;
@@ -43,14 +44,10 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		return auditDAO.getAudit(auditId);
 	}
 	
-	public Audit save(Audit audit) throws StorageAccessException {
-        return auditDAO.save(audit);
+	public Audit saveOrUpdate(Audit audit) throws StorageAccessException {
+        return auditDAO.saveOrUpdate(audit);
     }
 
-    public Audit update(Audit audit) throws StorageAccessException {
-        return auditDAO.update(audit);
-    }
-    
     public void updateLapseDates(String[] auditIds, Double lapsePeriod) throws NumberFormatException, StorageAccessException {
     	for (int i = 0; i < auditIds.length; i++)
     		updateLapseDate(getAudit(Integer.parseInt(auditIds[i])), lapsePeriod);
@@ -58,7 +55,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
     
     public void updateLapseDate(Audit audit, Double lapsePeriod) throws StorageAccessException {
     	audit.setConfidLapseDate(getLapseDate(lapsePeriod));
-    	update(audit);
+    	saveOrUpdate(audit);
     }
     
     public void clearConfidentialites(String auditIds[]) throws NumberFormatException, StorageAccessException {
@@ -72,7 +69,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
     	audit.setConfidLapseDate(null);
     	audit.setConfidPeriod(null);
     	audit.setConfidLapseEmail(null);
-    	update(audit);
+    	saveOrUpdate(audit);
     }
     
     public Audit cloneAudit(Audit audit) throws IntrospectionException, StorageAccessException {
@@ -195,7 +192,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	    ConfidentialGroup group = auditDAO.createNewConfidentialGroup();
 	    group.setName(name);
 	    group.setOwner(new UserUtil(factory).getFrUserView(new Integer(user.getId())));
-	    auditDAO.save(group);
+	    auditDAO.saveOrUpdate(group);
 	    return group;
 	}
 	
@@ -208,12 +205,12 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	
 	public void addUserToConfidGroup(ConfidentialGroup group, FrUserView frUser) throws StorageAccessException {
 		group.getUsers().add(frUser);
-		auditDAO.save(group);
+		auditDAO.saveOrUpdate(group);
 	}
 
 	public void removeUserFromConfidGroup(ConfidentialGroup group, FrUserView frUser) throws StorageAccessException {
 		group.getUsers().remove(frUser);
-		auditDAO.save(group);
+		auditDAO.saveOrUpdate(group);
 	}
 	
 	public List<Sample> getConfidentialSamples(UserAccount user) throws StorageAccessException {
@@ -263,6 +260,13 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		for (ConfidentialGroup confidGroup : audit.getConfidGroups())
 			sb.append(" and ").append(confidGroup.getName());
 		return sb.toString();
+	}
+	
+	public void addLogEntry(String type) throws StorageAccessException {
+		LogTable log = auditDAO.createNewLog();
+		log.setLogDate(new Date());
+		log.setLogType(type);
+		auditDAO.saveOrUpdate(log);
 	}
 	
 }

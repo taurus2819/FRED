@@ -281,7 +281,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			audit.setFolder(null);
 			if (audit.getConfidentialFlag())
 				audit.setConfidLapseDate(AuditUtil.getLapseDate(audit.getConfidPeriod()));
-			sampleDAO.update(audit);
+			sampleDAO.saveOrUpdate(audit);
 		}
 	}
 	
@@ -693,20 +693,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return desc.toString();
 	}
 	
-	public Audit save(Audit audit) throws StorageAccessException {
-		return sampleDAO.save(audit);
-	}
-
-	public void save(Sample sample) throws StorageAccessException {
-		sampleDAO.save(sample);
-	}
-
-	public void update(Sample sample) throws StorageAccessException {
-		sampleDAO.update(sample);
-	}
-
-	public Audit update(Audit audit) throws StorageAccessException{
-		return sampleDAO.update(audit);
+	public Audit saveOrUpdate(Audit audit) throws StorageAccessException {
+		return sampleDAO.saveOrUpdate(audit);
 	}
 
 	public void delete(Sample sample) throws StorageAccessException {
@@ -804,7 +792,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		rel.setFeature(feature);
 		rel.setRelationType(sampleDAO.getRelationType(relationType));
 		rel.setRelationshipType(sampleDAO.getRelationshipType(rel.getRelationType(), relationshipType));
-		sampleDAO.save(rel);
+		sampleDAO.saveOrUpdate(rel);
 		return rel;
 	}
 
@@ -825,7 +813,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		rel.setSample(newRelationship.getSample());
 		rel.setStratUnit(newRelationship.getStratUnit());
 		rel.setStratUnitId(newRelationship.getStratUnitId());
-		sampleDAO.save(rel);
+		sampleDAO.saveOrUpdate(rel);
 		return rel;
 	}
 

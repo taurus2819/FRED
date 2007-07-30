@@ -35,13 +35,6 @@ public interface TaxonomicDAO {
      */
     public Taxon createNewTaxon();
 
-    /**
-     * Saves the taxon!
-     * @param taxon
-     * @throws StorageAccessException 
-     */
-	public Taxon save(Taxon taxon) throws StorageAccessException;
-
 	public void delete(Taxon taxon) throws StorageAccessException;
 	
     /**
@@ -54,12 +47,6 @@ public interface TaxonomicDAO {
 	public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name) throws StorageAccessException;
 
 	public TaxonomicGroup getTaxonomicGroup(int groupId) throws StorageAccessException;
-	
-	public TaxonomicGroup save(TaxonomicGroup group) throws StorageAccessException;
-	
-	/*
-	public List<TaxonomicGroup> getTaxonomicGroupsIsPanelistOf(int userId) throws StorageAccessException;
-	*/
 	
 	/**
 	 *@return a count of provisional taxa within the given group
@@ -89,6 +76,8 @@ public interface TaxonomicDAO {
 	/*
 	public List<Integer> getPanelistsOfTaxonomicGroup(TaxonomicGroup group) throws StorageAccessException;
 	*/
+	
+	public <T> T saveOrUpdate(T object) throws StorageAccessException;
 	
 	public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException;
 	

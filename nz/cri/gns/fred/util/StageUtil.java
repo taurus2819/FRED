@@ -103,7 +103,7 @@ public class StageUtil extends ModelUtil {
 			stage.setStageLowerMod((startUncertain) ? "?" : null);
 			stage.setUpperAgeView(stopAge);
 			stage.setStageUpperMod((stopUncertain) ? "?" : null);
-			stageDAO.save(stage);
+			stageDAO.saveOrUpdate(stage);
 		}
 		return stage;
 	}

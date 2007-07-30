@@ -69,7 +69,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		audit.setCreatedById(new Integer(user.getId()));
 		audit.setCreatedDate(new Date());
 		audit.setFolder(folder.getFolder());
-		featureDAO.save(audit);
+		featureDAO.saveOrUpdate(audit);
 		
 		Feature newFeature = featureDAO.cloneFeature(feature);
 		newFeature.setFeatureId(null);
@@ -99,7 +99,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		//Remove any samples that have come across
 		newFeature.setSamples(null);
 		//Save the new feature!
-		featureDAO.save(newFeature);
+		featureDAO.saveOrUpdate(newFeature);
 		
 		if (feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
 			//For outcrops we copy everything
@@ -117,7 +117,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			
 			//Save the new sample
 			try {
-			sampleDAO.save(newSample);
+			sampleDAO.saveOrUpdate(newSample);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -350,7 +350,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		Folder folder = userFolder.getFolder();
 		folder.getFeatures().remove(feature);
 		feature.getFolders().remove(folder);
-		featureDAO.update(feature);
+		featureDAO.saveOrUpdate(feature);
 	}
 	
 	public void submitFeatures(String[] featIds, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, DataInputException {
@@ -387,8 +387,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		audit.setSubmittedDate(new Date());
 		
 		feature.setMasterFile(folderDAO.getFolder(masterfile));
-		featureDAO.update(audit);
-		featureDAO.update(feature);		
+		featureDAO.saveOrUpdate(audit);
+		featureDAO.saveOrUpdate(feature);		
 	}
 	
 	public void revokeFeatures(String[] featIds, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException { 
@@ -406,10 +406,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		audit.setSubmittedById(null);
 		audit.setSubmittedDate(null);
 		
-		featureDAO.update(audit);
+		featureDAO.saveOrUpdate(audit);
 		
 		feature.setMasterFile(null);
-		featureDAO.update(feature);		
+		featureDAO.saveOrUpdate(feature);		
 	}
 
 	public void alterFeatureTypes(String[] featIDs, String newFeatureType, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
@@ -444,19 +444,19 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 					sample.setBottomDepth(null);
 					sample.setTopDepth(null);
 					sample.setDrillType(null);
-					sampleDAO.update(sample);
+					sampleDAO.saveOrUpdate(sample);
 				}
 			} else if (newFeatureType.equals(FREDConstants.DRILLHOLE)) {
 				for (Sample sample : samples) {
 					breakApartSampleAudit(sample);
-					sampleDAO.update(sample);
+					sampleDAO.saveOrUpdate(sample);
 				}
 			} else if (newFeatureType.equals(FREDConstants.VERTICAL_SECTION)) {
 				feature.setDrillholeLicenceName(null);
 				for (Sample sample : samples) {
 					breakApartSampleAudit(sample);
 					sample.setDrillType(null);
-					sampleDAO.update(sample);
+					sampleDAO.saveOrUpdate(sample);
 				}
 			}
 			AuditEdit edit = featureDAO.createNewAuditEdit();
@@ -464,10 +464,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			edit.setEditedById(Integer.parseInt(user.getId()));
 			edit.setEditedDate(new Date());
 			edit.setComments("Locality type changed from " + oldFeatureType + " to " + newFeatureType);
-			featureDAO.save(edit);
+			featureDAO.saveOrUpdate(edit);
 			
 			feature.setFeatureType(newFeatureType);
-			featureDAO.update(feature);
+			featureDAO.saveOrUpdate(feature);
 		}
 	}	
 
@@ -501,7 +501,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				//check audits - if same as feature then create new onw
 				if (sample.getAudit().equals(mergeFromFeature.getAudit())) {
 					Audit newAudit = new AuditUtil(factory).cloneAudit(sample.getAudit());
-					featureDAO.save(newAudit);
+					featureDAO.saveOrUpdate(newAudit);
 					sample.setAudit(newAudit);
 				}
 	
@@ -511,7 +511,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				edit.setEditedById(new Integer(user.getId()));
 				edit.setEditedDate(new Date());
 				edit.setComments("Sample merged into " + getFeatureIdentifyingName(mergeToFeature) + " from " + getFeatureIdentifyingName(mergeFromFeature));
-				featureDAO.save(edit);
+				featureDAO.saveOrUpdate(edit);
 	
 				//set sample FRNumber if currently null
 				if (sample.getFrNumber() == null && mergeFromFrNumber != null)
@@ -531,7 +531,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				sample.setFeature(mergeToFeature);
 				mergeToFeature.getSamples().add(sample);
 				mergeFromFeature.getSamples().remove(sample);
-				sampleDAO.update(sample);
+				sampleDAO.saveOrUpdate(sample);
 			}
 			
 			
@@ -547,7 +547,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				else {
 					relationship.setFeature(mergeToFeature);
 					mergeFromFeature.getRelationships().remove(relationship);
-					sampleDAO.save(relationship);
+					sampleDAO.saveOrUpdate(relationship);
 				}
 			}
 			mergeFromFeature.setRelationships(null);
@@ -761,7 +761,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		try {
 			feature.setFrNumber(frNumber);
 			feature.getFolders().add(audit.getFolder());
-			featureDAO.update(feature);
+			featureDAO.saveOrUpdate(feature);
 		} catch (Exception e) {
 		}
 		
@@ -772,7 +772,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		audit.setFolder(null);
 		audit.setWorkingComments(null);
 		audit.setCuratorComments(comments);
-		featureDAO.update(audit);
+		featureDAO.saveOrUpdate(audit);
 	}
 	
 	/**
@@ -809,8 +809,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			}
 		} catch (Exception e) {	}
 		feature.setMasterFile(folderDAO.getFolder(SiteUtil.getMasterfile(feature)));
-		featureDAO.update(audit);
-		featureDAO.update(feature);
+		featureDAO.saveOrUpdate(audit);
+		featureDAO.saveOrUpdate(feature);
 	}
 	
 	public void rejectLocality(Feature feature, String comments, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
@@ -820,7 +820,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		Audit audit = feature.getAudit();
 		audit.setStatus(REJECTED);
 		audit.setCuratorComments(comments);
-		featureDAO.update(audit);
+		featureDAO.saveOrUpdate(audit);
 	}
 	
 	public void addToFolder(Feature feature, int folderId, UserAccount user) throws StorageAccessException, DataInputException {
@@ -990,15 +990,15 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		//add first FRNumber (if one defined)
 		//sample.setFrNumber(FeatureUtil.getFrNumber(feature));
 		
-		sampleDAO.save(sample);
+		sampleDAO.saveOrUpdate(sample);
 	}
 
     public Audit update(Audit audit) throws StorageAccessException {
-        return featureDAO.update(audit);
+        return featureDAO.saveOrUpdate(audit);
     }
 
-    public Audit save(Audit audit) throws StorageAccessException {
-        return featureDAO.save(audit);
+    public Audit saveOrUpdate(Audit audit) throws StorageAccessException {
+        return featureDAO.saveOrUpdate(audit);
     }
     
     public static Collection<Sample> getSortedSamples(Feature feature) {
@@ -1032,14 +1032,14 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			edit.setEditedById(user.getPersonId());
 			edit.setEditedDate(new Date());
 			edit.setComments("Backlog data editing");
-			featureDAO.save(edit);
+			featureDAO.saveOrUpdate(edit);
 		} else if (audit.getStatus().equals(FREDConstants.APPROVED)) {
 			AuditEdit edit = featureDAO.createNewAuditEdit();
 			edit.setAudit(audit);
 			edit.setEditedById(user.getPersonId());
 			edit.setEditedDate(new Date());
 			edit.setComments(comments);
-			featureDAO.save(edit);
+			featureDAO.saveOrUpdate(edit);
 		}
         
 		featureDAO.saveOrUpdate(audit);
@@ -1050,7 +1050,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (!feature.getFeatureType().equals(FREDConstants.OUTCROP) && samples == null) {
 			SampleUtil sampleUtil = new SampleUtil(factory);
 			Sample sample = sampleUtil.createSample(feature, audit.getFolder().getFolderId(), false, user);
-			sampleUtil.save(sample);		
+			sampleUtil.saveOrUpdate(sample);		
 		}		
 		
 	}
@@ -1112,8 +1112,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			edit.setEditedById(new Integer(user.getId()));
 			edit.setEditedDate(new Date());
 			edit.setComments(BACKLOG_PREPARE_COMMENTS);
-			featureDAO.save(edit);
-			featureDAO.update(audit);
+			featureDAO.saveOrUpdate(edit);
+			featureDAO.saveOrUpdate(audit);
 		}
 	}
 	

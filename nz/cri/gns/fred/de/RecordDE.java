@@ -199,10 +199,10 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
             audit.setCreatedById(user.getPersonId());
             audit.setCreatedDate(new Date());
             audit.setDataOrigin((new AuditUtil(factory)).getDataOrigin(new Integer(dataOriginId)));
-            recordUtil.save(audit);
-            recordUtil.save(record);
+            recordUtil.saveOrUpdate(audit);
+            recordUtil.saveOrUpdate(record);
         } else {
-            recordUtil.update(record);
+            recordUtil.saveOrUpdate(record);
         }
 
         return record.getRecordId();

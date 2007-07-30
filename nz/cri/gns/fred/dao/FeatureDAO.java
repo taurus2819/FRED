@@ -15,18 +15,15 @@ import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.RegistrationArea;
 
-/**
- *
- */
 public interface FeatureDAO {
 
+	public <T> T saveOrUpdate(T object) throws StorageAccessException;
+	
 	/**
 	 * @return a new, blank, audit table entry
 	 */
 	public Audit createNewAudit();
 
-	public Audit save(Audit audit) throws StorageAccessException;
-	
 	public Feature cloneFeature(Feature feature);
 
 	/**
@@ -35,28 +32,10 @@ public interface FeatureDAO {
 	public FeatureMeta createNewFeatureMeta();
 
 	/**
-	 * @param newFeature
-	 * @throws StorageAccessException
-	 */
-	public Feature save(Feature newFeature) throws StorageAccessException;
-
-	/**
 	 * @param feature
 	 * @throws StorageAccessException
 	 */
 	public void delete(Feature feature) throws StorageAccessException;
-
-	/**
-	 * @param feature
-	 * @throws StorageAccessException
-	 */
-	public void update(Feature feature) throws StorageAccessException;
-
-	/**
-	 * @param audit
-	 * @throws StorageAccessException
-	 */
-	public Audit update(Audit audit) throws StorageAccessException;
 
 	public void delete(Audit audit) throws StorageAccessException;
 	
@@ -121,16 +100,8 @@ public interface FeatureDAO {
 	 */
 	public AuditEdit createNewAuditEdit() throws StorageAccessException;
 
-	public AuditEdit save(AuditEdit edit) throws StorageAccessException;
-
 	public void delete(AuditEdit edit) throws StorageAccessException;
 	
-	/**
-	 * Either saves or updates the given feature, depending on whether it is already stored.
-	 * @throws StorageAccessException 
-	 */
-	public void saveOrUpdate(Feature feature) throws StorageAccessException;
-
 	/**
 	 * Returns the frNumber entry with the given numbr
 	 */
@@ -145,12 +116,6 @@ public interface FeatureDAO {
 	 * Returns the first feature with the given name, or null if none exists.
 	 */
 	public Feature getFeatureWithName(String ident) throws StorageAccessException;
-
-    /**
-     * Either saves or updates the given audit entry, depending on whether it is already stored.
-     * @throws StorageAccessException 
-     */
-    public void saveOrUpdate(Audit audit) throws StorageAccessException;
 
     /**
      * Returns features in the given masterfile folder, with an approval date between 

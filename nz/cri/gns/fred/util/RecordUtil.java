@@ -136,7 +136,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 				cal.add(Calendar.YEAR, audit.getConfidPeriod().intValue());
 			audit.setConfidLapseDate(cal.getTime());
 		}
-		recordDAO.update(audit);
+		recordDAO.saveOrUpdate(audit);
 		
 		if (PALEONTOLOGICAL.equals(getRecordType(record))) {
 			audit = record.getPalListAudit();
@@ -149,7 +149,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 					cal.add(Calendar.YEAR, audit.getConfidPeriod().intValue());
 				audit.setConfidLapseDate(cal.getTime());
 			}
-			recordDAO.update(audit);
+			recordDAO.saveOrUpdate(audit);
 		}
 		
 	}
@@ -327,25 +327,14 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
 
-    public Audit save(Audit audit) throws StorageAccessException {
-        return recordDAO.save(audit);
+    public Audit saveOrUpdate(Audit audit) throws StorageAccessException {
+        return recordDAO.saveOrUpdate(audit);
     }
 
 
-    public void save(Record record) throws StorageAccessException {
-        recordDAO.save(record);
+    public void saveOrUpdate(Record record) throws StorageAccessException {
+        recordDAO.saveOrUpdate(record);
     }
-
-
-    public void update(Record record) throws StorageAccessException {
-        recordDAO.update(record);
-    }
-
-
-    public Audit update(Audit audit) throws StorageAccessException {
-        return recordDAO.update(audit);
-    }
-
 
     public void delete(Record record) throws StorageAccessException {
     	Audit audit = record.getAudit();
@@ -408,11 +397,8 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     	return recordDAO.findLab(labName);
     }
     
-	public void save(RecordDetails details) throws StorageAccessException {
-		recordDAO.save(details);
+	public void saveOrUpdate(RecordDetails details) throws StorageAccessException {
+		recordDAO.saveOrUpdate(details);
 	}
-	
-	public void update(RecordDetails details) throws StorageAccessException {
-		recordDAO.update(details);
-	}
+
 }

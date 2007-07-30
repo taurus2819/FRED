@@ -27,7 +27,7 @@ public class PersonUtil extends ModelUtil {
 			//Insert them
 			person = personDAO.createNewPerson();
 			person.setName(name);
-			personDAO.save(person);
+			personDAO.saveOrUpdate(person);
 		}
 		return person;
 	}

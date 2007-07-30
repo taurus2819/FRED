@@ -69,11 +69,11 @@ import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.LabSection;
+import nz.cri.gns.fred.model.LogTable;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Record;
-import nz.cri.gns.fred.model.RecordDetails;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.fred.model.RelationType;
 import nz.cri.gns.fred.model.Relationship;
@@ -157,10 +157,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 			return list;		
 	}
 	
-	public Folder save(Folder folder) throws StorageAccessException {
-	    return HibernateUtils.save(provider, folder);
-	}
-
     public void delete(Folder folder) throws StorageAccessException {
     	HibernateUtils.delete(provider, folder);
     }
@@ -307,10 +303,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		return HibernateUtils.getFirst(provider, "FROM TaxonomicGroup As g WHERE g.name = ?", groupName, TaxonomicGroup.class);
 	}
 	
-	public TaxonomicGroup save(TaxonomicGroup group) throws StorageAccessException {
-	    return HibernateUtils.save(provider, group);
-	}
-	
 	public void closeSession() throws StorageAccessException {
 		try {
 			provider.closeSession();
@@ -334,10 +326,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		return HibernateUtils.getFirst(provider, "FROM AuditTable AS a WHERE a.auditId = ?", auditId, Audit.class);
 	}
 	
-	public Audit save(Audit audit) throws StorageAccessException {
-	    return HibernateUtils.save(provider, audit);
-	}
-
 	public Feature cloneFeature(Feature feature) {
 		return (Feature)((nz.cri.gns.fred.hibernate.Feature)feature).clone();
 	}
@@ -346,23 +334,10 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		return new nz.cri.gns.fred.hibernate.FeatureMeta(false);
 	}
 
-	public Feature save(Feature newFeature) throws StorageAccessException {
-	    return HibernateUtils.save(provider, newFeature);
-	}
-
 	public void delete(Feature feature) throws StorageAccessException {
 		HibernateUtils.delete(provider, feature);
 	}
 	
-	public void update(Feature feature) throws StorageAccessException {
-		HibernateUtils.update(provider, feature);
-	}
-
-	public Audit update(Audit audit) throws StorageAccessException {
-		HibernateUtils.update(provider, audit);
-        return audit;
-	}
-
 	public void delete(Audit audit) throws StorageAccessException {
 		HibernateUtils.delete(provider, audit);
 	}	
@@ -418,18 +393,10 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		return new nz.cri.gns.fred.hibernate.AuditEdit();
 	}
 
-	public AuditEdit save(AuditEdit edit) throws StorageAccessException {
-		return HibernateUtils.save(provider, edit);
-	}
-
 	public void delete(AuditEdit edit) throws StorageAccessException {
 		HibernateUtils.delete(provider, edit);
 	}
 	
-	public void saveOrUpdate(Feature feature) throws StorageAccessException {
-		HibernateUtils.saveOrUpdate(provider, feature);
-	}
-
 	public FrNumber getFrNumber(String frNum) throws StorageAccessException {
 		return HibernateUtils.getFirst(provider, "FROM FrNumber AS f WHERE f.frNumber = ? AND f.obsolete IS NULL", frNum, FrNumber.class);
 	}
@@ -441,10 +408,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 	public Feature getFeatureWithName(String name) throws StorageAccessException {
 		return HibernateUtils.getFirst(provider, "FROM Feature AS f WHERE f.featureName = ?", name, Feature.class);
 	}
-
-    public void saveOrUpdate(Audit audit) throws StorageAccessException {
-        HibernateUtils.saveOrUpdate(provider, audit);
-    }
 
 	public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, Date startDate, Date endDate, String status) throws StorageAccessException {
 		try {
@@ -526,10 +489,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		return new nz.cri.gns.fred.hibernate.SampleMeta(false);
 	}
 
-	public Sample save(Sample newSample) throws StorageAccessException {
-	    return HibernateUtils.save(provider, newSample);
-	}
-
 	public Sample getSample(int sampleId) throws StorageAccessException {
 		return HibernateUtils.getFirst(provider, "FROM Sample as s WHERE s.sampleId = ?", sampleId, Sample.class);
 	}
@@ -538,10 +497,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		HibernateUtils.delete(provider, sample);
 	}
 	
-	public void update(Sample sample) throws StorageAccessException {
-		HibernateUtils.update(provider, sample);
-	}
-
 	public FrNumber createFRNumber() {
 		return new nz.cri.gns.fred.hibernate.FrNumber();
 	}
@@ -667,20 +622,8 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		return new nz.cri.gns.fred.hibernate.Stage();
 	}
 
-	public void save(SentTo sentTo) throws StorageAccessException {
-		HibernateUtils.save(provider, sentTo);
-	}
-	
-	public void save(Stage stage) throws StorageAccessException {
-		HibernateUtils.save(provider, stage);
-	}
-
 	public Relationship createNewRelationship() {
 		return new nz.cri.gns.fred.hibernate.Relationship();
-	}
-
-	public void save(Relationship rel) throws StorageAccessException {
-		HibernateUtils.save(provider, rel);
 	}
 
 	public GrainSize getGrainSize(Integer id) throws StorageAccessException {
@@ -727,10 +670,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		}
 	}
     
-    public void saveOrUpdate(Sample sample) throws StorageAccessException {
-        HibernateUtils.saveOrUpdate(provider, sample);
-    }
-
     public void attach(Object object) throws StorageAccessException {
         try {
             provider.currentSession().refresh(object);
@@ -785,14 +724,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
         return HibernateUtils.getFirst(provider, "SELECT f FROM Record AS r INNER JOIN r.sample AS s INNER JOIN s.feature AS feat INNER JOIN feat.masterFile AS f WHERE r.recordId = ?", record.getRecordId(), Folder.class);
     }
     
-    public void save(Record record) throws StorageAccessException {
-        HibernateUtils.save(provider, record);
-    }
-
-    public void update(Record record) throws StorageAccessException {
-        HibernateUtils.update(provider, record);
-    }
-
 	public List<PaleontologyListEntry> getListEntries(Paleontology pal, TaxonomicGroup group) throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
@@ -819,14 +750,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 
 	public Person createNewPerson() {
 		return new nz.cri.gns.fred.hibernate.Person();
-	}
-
-	public void save(Person person) throws StorageAccessException {
-		HibernateUtils.save(provider, person);
-		try {
-			provider.currentSession().flush();
-		} catch (Exception e) {
-		}
 	}
 
 	public Person getPerson(String name) throws StorageAccessException {
@@ -911,28 +834,12 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
         return new TaxonomicLookup();
     }
 
-	public Taxon save(Taxon taxon) throws StorageAccessException {
-		return HibernateUtils.save(provider, taxon);
-	}
-
 	public void delete(Taxon taxon) throws StorageAccessException {
 		HibernateUtils.delete(provider, taxon);
 	}
 	
-	public void save(RecordDetails details) throws StorageAccessException {
-		HibernateUtils.save(provider, details);
-	}
-
-	public void update(RecordDetails details) throws StorageAccessException {
-		HibernateUtils.update(provider, details);
-	}
-
 	public nz.cri.gns.fred.model.FolderUser createNewFolderUser() {
 		return new FolderUser(false);
-	}
-
-	public void save(nz.cri.gns.fred.model.FolderUser folderUser) throws StorageAccessException {
-		HibernateUtils.save(provider, folderUser);
 	}
 
 	public void delete(nz.cri.gns.fred.model.FolderUser user) throws StorageAccessException {
@@ -946,10 +853,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 	    }
 	}
 
-	public void update(nz.cri.gns.fred.model.FolderUser user) throws StorageAccessException {
-		HibernateUtils.update(provider, user);
-	}
-	
 	public AuditDAO getAuditDAO() {
 		return this;
 	}
@@ -1153,10 +1056,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		return new nz.cri.gns.fred.hibernate.FrUser();
 	}
 	
-	public FrUser save(FrUser frUser) throws StorageAccessException {
-		return HibernateUtils.save(provider, frUser);
-	}
-	
 	public StageDAO getStageDAO() {
 		return this;
 	}
@@ -1171,10 +1070,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 			e.printStackTrace();
 			throw new StorageAccessException(e);
 		}
-	}
-	
-	public ConfidentialGroup save(ConfidentialGroup group) throws StorageAccessException {
-		return HibernateUtils.save(provider, group);
 	}
 	
 	public void delete(ConfidentialGroup group) throws StorageAccessException {
@@ -1269,4 +1164,13 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 	public List<Adoption> getAdoptions(Sample sample) throws StorageAccessException {
 		return HibernateUtils.list(provider, "FROM Adoption AS a WHERE a.record.sample = ?", Adoption.class, sample);
 	}
+
+	public LogTable createNewLog() {
+		return new nz.cri.gns.fred.hibernate.LogTable();
+	}
+	
+	public <T> T saveOrUpdate(T object) throws StorageAccessException {
+		return HibernateUtils.saveOrUpdate(provider, object);
+	}
+	
 }

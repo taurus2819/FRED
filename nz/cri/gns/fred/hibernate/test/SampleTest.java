@@ -48,7 +48,7 @@ public class SampleTest extends FredHibernateTest {
 		st.add(sentTo);
 		sample.setSentTos(st);
 		
-		sampleUtil.save(sample);
+		sampleUtil.saveOrUpdate(sample);
 		
 		factory.closeSession();
 		

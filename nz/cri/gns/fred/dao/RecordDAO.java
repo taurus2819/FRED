@@ -11,7 +11,6 @@ import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Record;
-import nz.cri.gns.fred.model.RecordDetails;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 
 public interface RecordDAO {
@@ -28,12 +27,6 @@ public interface RecordDAO {
 	 * @throws StorageAccessException
 	 */
     public void delete(Record record) throws StorageAccessException;
-
-	/**
-	 * @param audit
-	 * @throws StorageAccessException
-	 */
-    public Audit update(Audit audit) throws StorageAccessException;
 
 	public void delete(Audit audit) throws StorageAccessException;	    
     
@@ -64,12 +57,6 @@ public interface RecordDAO {
      */
     public Folder getMasterfileFolder(Record record) throws StorageAccessException;
 
-    public Audit save(Audit audit) throws StorageAccessException;
-
-    public void save(Record record) throws StorageAccessException;
-
-    public void update(Record record) throws StorageAccessException;
-
 	public Lab findLab(String labName) throws StorageAccessException;
 	
 	/**
@@ -86,13 +73,7 @@ public interface RecordDAO {
      */
     public LabSection getLabSection(int id) throws StorageAccessException;
 
-    /**
-     * Updates the given object
-     * @throws StorageAccessException 
-     */
-	public void update(RecordDetails details) throws StorageAccessException;
-
-	public void save(RecordDetails details) throws StorageAccessException;
+	public <T> T saveOrUpdate(T object) throws StorageAccessException;
 	
 	public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException;
 

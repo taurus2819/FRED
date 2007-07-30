@@ -1,7 +1,6 @@
 package nz.cri.gns.fred.dao;
 
 import java.util.List;
-import java.util.Set;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.model.Adoption;
@@ -36,6 +35,8 @@ import nz.cri.gns.fred.model.Weathering;
  */
 public interface SampleDAO {
 
+	public <T> T saveOrUpdate(T object) throws StorageAccessException;
+	
 	/**
 	 * @param relationship
 	 * @return
@@ -60,12 +61,6 @@ public interface SampleDAO {
 	public SampleMeta createNewSampleMeta();
 
 	/**
-	 * @param newSample
-	 * @throws StorageAccessException
-	 */
-	public Sample save(Sample newSample) throws StorageAccessException;
-
-	/**
 	 * @param sampleId
 	 * @return
 	 * @throws StorageAccessException
@@ -77,18 +72,6 @@ public interface SampleDAO {
 	 * @throws StorageAccessException
 	 */
 	public void delete(Sample sample) throws StorageAccessException;
-
-	/**
-	 * @param audit
-	 * @throws StorageAccessException
-	 */
-	public Audit update(Audit audit) throws StorageAccessException;
-
-	/**
-	 * @param audit
-	 * @throws StorageAccessException
-	 */
-	public void update(Sample sample) throws StorageAccessException;
 
 	/**
 	 * @return a new FrNumber
@@ -132,8 +115,6 @@ public interface SampleDAO {
 	 */
 	public List<? extends Relationship> getRelationships(Sample sample, RelationshipType relationshipType) throws StorageAccessException;
 
-	public Audit save(Audit audit) throws StorageAccessException;
-
 	public void delete(Audit audit) throws StorageAccessException;	
 	
 	/**
@@ -155,20 +136,9 @@ public interface SampleDAO {
 	public SentTo createNewSentTo();
 
 	/**
-	 * Saves the given sentTo to persistent storage
-	 */
-	public void save(SentTo sentTo) throws StorageAccessException;
-	
-	/**
 	 * Creates a new, uninitialised SedimentaryFeature object
 	 */
 	public SedimentaryFeature createNewSedimentaryFeature();
-
-	/**
-	 * Saves the given relationship to persistent storage
-	 * @throws StorageAccessException 
-	 */
-	public void save(Relationship rel) throws StorageAccessException;
 
 	/**
 	 * Returns the GrainSize with the given id
@@ -197,10 +167,6 @@ public interface SampleDAO {
 	public StratigraphicUnit findStratigraphicUnit(String name) throws StorageAccessException;
 	
 	public RelationshipType findRelationshipType(String name) throws StorageAccessException;
-
-    public void saveOrUpdate(Audit audit) throws StorageAccessException;
-
-    public void saveOrUpdate(Sample sample) throws StorageAccessException;
 
     public void attach(Object o) throws StorageAccessException;
 

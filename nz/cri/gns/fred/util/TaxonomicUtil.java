@@ -67,12 +67,12 @@ public class TaxonomicUtil extends ModelUtil {
 	
 	public void addPanelistToTaxonomicGroup(TaxonomicGroup group, FrUserView frUser) throws StorageAccessException {
 		group.getPanelists().add(frUser);
-		taxonomicDAO.save(group);
+		taxonomicDAO.saveOrUpdate(group);
 	}
 
 	public void removePanelistFromTaxonomicGroup(TaxonomicGroup group, FrUserView frUser) throws StorageAccessException {
 		group.getPanelists().remove(frUser);
-		taxonomicDAO.save(group);
+		taxonomicDAO.saveOrUpdate(group);
 	}
 	
 	public Taxon approveTaxon(Taxon taxon, UserAccount user, String comments) throws StorageAccessException, InsufficientPrivelegesException {
@@ -94,7 +94,7 @@ public class TaxonomicUtil extends ModelUtil {
 		taxon.setApprovedById(new Integer(user.getId()));
 		taxon.setApprovedDate(new Date());
 		taxon.setPanelistComments(comments);
-		taxonomicDAO.save(taxon);
+		taxonomicDAO.saveOrUpdate(taxon);
 		return taxon;		
 	}
 
@@ -299,7 +299,7 @@ public class TaxonomicUtil extends ModelUtil {
 		taxon.setSubmittedDate(new Date());
 		try {
 			taxon = ensureCompatibleWithPersistenceLayer(taxon);
-			taxonomicDAO.save(taxon);
+			taxonomicDAO.saveOrUpdate(taxon);
 		} catch (StorageAccessException e) {
 			throw e;
 		} catch (Exception e) {

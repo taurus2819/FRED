@@ -97,7 +97,7 @@ public class FolderUtil extends ModelUtil {
 	    folder.setName(name);
 	    folder.setOwnerId(new Integer(user.getId()));
 	    folder.setFolderType(typeDAO.getFolderType(Folder.FOLDER_TYPE_PERSONAL));
-	    folderDAO.save(folder);
+	    folderDAO.saveOrUpdate(folder);
 	    return folder;
 	}
 	
@@ -106,7 +106,7 @@ public class FolderUtil extends ModelUtil {
 	    folder.setName(name);
 	    folder.setOwnerId(new Integer(user.getId()));
 	    folder.setFolderType(typeDAO.getFolderType(Folder.FOLDER_TYPE_BACKLOG));
-	    folderDAO.save(folder);
+	    folderDAO.saveOrUpdate(folder);
 	    return folder;
 	}
 	
@@ -152,7 +152,7 @@ public class FolderUtil extends ModelUtil {
 		folderUser.setUserRights(new Integer(permissions));
 		folderUser.setFolder(folder.getFolder());
 		folder.getFolder().getFolderUsers().add(folderUser);
-		folderDAO.save(folderUser);
+		folderDAO.saveOrUpdate(folderUser);
 	}
 
 	public void removeUserFromFolder(UserFolder folder, int userId) throws StorageAccessException {
@@ -170,7 +170,7 @@ public class FolderUtil extends ModelUtil {
 		for (FolderUser user : folder.getFolder().getFolderUsers()) {
 			if (user.getUserId().equals(userAsInteger)) {
 				user.setUserRights(new Integer(newRight ^ user.getUserRights().intValue()));
-				folderDAO.update(user);
+				folderDAO.saveOrUpdate(user);
 				return;
 			}
 		}

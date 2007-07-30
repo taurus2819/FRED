@@ -15,6 +15,8 @@ import nz.cri.gns.fred.model.UserFolder;
  * @author iainm
  */
 public interface FolderDAO {
+	
+	public <T> T saveOrUpdate(T object) throws StorageAccessException;
 
 	/**
 	 * Creates a new, unsaved folder
@@ -34,12 +36,6 @@ public interface FolderDAO {
 	 * @throws StorageAccessException
 	 */
 	public List<UserFolder> getAccessibleFolders(int userId, FolderType type) throws StorageAccessException;
-
-    /**
-     * Saves the given new folder to persistent storage
-     * @param folder
-     */
-    public Folder save(Folder folder) throws StorageAccessException;
 
     /**
      * Removes the current folder from persistent storage
@@ -102,23 +98,10 @@ public interface FolderDAO {
 	 */
 	public FolderUser createNewFolderUser();
 
-    /**
-     * Saves the given new folderUser to persistent storage
-     * @param folder
-     * @throws StorageAccessException 
-     */
-	public void save(FolderUser folderUser) throws StorageAccessException;
-
 	/**
 	 * Deletes the given folderUser from the DB
 	 * @throws StorageAccessException 
 	 */
 	public void delete(FolderUser user) throws StorageAccessException;
-
-	/**
-	 * Updates the given folderUser in the DB
-	 * @throws StorageAccessException 
-	 */
-	public void update(FolderUser user) throws StorageAccessException;
 	
 }

@@ -62,7 +62,7 @@
 			audit.setConfidLapseEmail(null);
 			audit.setConfidGroups(null);
 		}
-		auditUtil.update(audit);	
+		auditUtil.saveOrUpdate(audit);	
 	}
 %><%
 	PageState state = new PageState(request, response, getServletContext());
