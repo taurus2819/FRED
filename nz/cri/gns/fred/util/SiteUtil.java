@@ -86,7 +86,7 @@ public class SiteUtil extends ModelUtil {
 	}
 	
 	public SiteView getSiteView(int siteId) throws StorageAccessException {
-		return siteDAO.get(siteId, SiteView.class);
+		return siteDAO.get(siteId, nz.cri.gns.fred.hibernate.SiteView.class);
 	}
 	
 	public static int getMasterfile(Feature feature) throws SQLException, NamingException {
@@ -207,7 +207,7 @@ public class SiteUtil extends ModelUtil {
 	}
 	
 	public DatumMethod getSiteDatumMethod(int methodId) throws StorageAccessException {
-		return siteDAO.get(methodId, DatumMethod.class);
+		return siteDAO.get(methodId, nz.cri.gns.fred.hibernate.DatumMethod.class);
 	}
 	
 	public List<DatumMethod> getSiteDatumMethods() throws StorageAccessException {

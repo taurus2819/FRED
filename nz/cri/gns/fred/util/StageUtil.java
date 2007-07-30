@@ -60,7 +60,7 @@ public class StageUtil extends ModelUtil {
 	}
 	
 	public AgeView getAgeView(int ageId) throws StorageAccessException {
-		return stageDAO.get(ageId, AgeView.class);
+		return stageDAO.get(ageId, nz.cri.gns.fred.hibernate.AgeView.class);
 	}
 	
 	public List<AgeView> getAges() throws StorageAccessException {

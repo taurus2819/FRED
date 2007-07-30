@@ -25,11 +25,11 @@ public class UserUtil extends ModelUtil {
 	}
 	
 	public FrUserView getFrUserView(Integer userId) throws StorageAccessException {
-		return userDAO.get(userId, FrUserView.class);
+		return userDAO.get(userId, nz.cri.gns.fred.hibernate.FrUserView.class);
 	}
 
 	public UserView getUserView(Integer userId) throws StorageAccessException {
-		return userDAO.get(userId, UserView.class);
+		return userDAO.get(userId, nz.cri.gns.fred.hibernate.UserView.class);
 	}
 	
 	public FrUser createNewFrUser() {
@@ -37,7 +37,7 @@ public class UserUtil extends ModelUtil {
 	}
 	
 	public FrUser getFrUser(Integer userId) throws StorageAccessException {
-		return userDAO.get(userId, FrUser.class);
+		return userDAO.get(userId, nz.cri.gns.fred.hibernate.FrUser.class);
 	}
 	
 	public List<FrUserView> getFrUsersWithout(Set<FrUserView> excludeFrUsers) throws StorageAccessException {

@@ -30,7 +30,7 @@ public class FolderUtil extends ModelUtil {
 	}
 		
 	public Folder getFolder(int folderId) throws StorageAccessException {
-		return folderDAO.get(folderId, Folder.class);
+		return folderDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class);
 	}
 	
 	/**
@@ -114,7 +114,7 @@ public class FolderUtil extends ModelUtil {
 		UserFolder userFolder = getUserFolder(folderId, user);
 		if (!userFolder.isAllowedAdmin())
 			throw new IllegalStateException("Cannot delete folder as no admin rights");
-	    Folder folder = folderDAO.get(folderId, Folder.class);
+	    Folder folder = folderDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class);
 	    if (!FolderUtil.isFolderEmpty(folder))
 	    	throw new IllegalStateException("Cannot delete folder as it is not empty");
 	    folderDAO.delete(folder);

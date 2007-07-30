@@ -42,7 +42,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	}
 
 	public Audit getAudit(int auditId) throws StorageAccessException {
-		return auditDAO.get(auditId, Audit.class);
+		return auditDAO.get(auditId, nz.cri.gns.fred.hibernate.AuditTable.class);
 	}
 	
 	public Audit saveOrUpdate(Audit audit) throws StorageAccessException {
@@ -121,7 +121,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
     }
     
 	public DataOrigin getDataOrigin(Integer dataOriginId) throws StorageAccessException {
-		return auditDAO.get(dataOriginId,DataOrigin.class);
+		return auditDAO.get(dataOriginId, nz.cri.gns.fred.hibernate.DataOrigin.class);
 	}
     
 	public static String getStatusHTMLOutputStyle(String status, String[] extraStyles) {
@@ -186,7 +186,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	}
 	
 	public ConfidentialGroup getConfidentialGroup(Integer groupId) throws StorageAccessException {
-		return auditDAO.get(groupId, ConfidentialGroup.class);
+		return auditDAO.get(groupId, nz.cri.gns.fred.hibernate.ConfidentialGroup.class);
 	}
 	
 	public ConfidentialGroup addConfidentialGroup(String name, UserAccount user)  throws StorageAccessException {
@@ -198,7 +198,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	}
 	
 	public void deleteConfidentialGroup(int groupId, UserAccount user)  throws StorageAccessException {
-		ConfidentialGroup group = auditDAO.get(new Integer(groupId), ConfidentialGroup.class);
+		ConfidentialGroup group = getConfidentialGroup(new Integer(groupId));
 		if (!String.valueOf(group.getOwner().getUserId()).equals(user.getId()))
 			throw new IllegalStateException("Cannot delete group as not owner");
 	    auditDAO.delete(group);

@@ -395,7 +395,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public Sample getSample(int sampleId) throws StorageAccessException {
-		return sampleDAO.get(sampleId, Sample.class);
+		return sampleDAO.get(sampleId, nz.cri.gns.fred.hibernate.Sample.class);
 	}
 	
 	public AuditEdit getMostRecentEdit(Audit audit) throws StorageAccessException {
@@ -451,7 +451,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			audit = feature.getAudit();
 		else {
 			audit = sampleDAO.createNewAudit();
-			audit.setFolder(folderDAO.get(folderId, Folder.class));
+			audit.setFolder(folderDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class));
 			audit.setStatus(FREDConstants.WORKING);
 			audit.setCreatedDate(new Date());
 			audit.setCreatedById(new Integer(user.getId()));
@@ -827,7 +827,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public DrillType getDrillType(Integer id) throws StorageAccessException {
-		return sampleDAO.get(id, DrillType.class);
+		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.DrillType.class);
 	}
 	
 	public List<DrillType> getDrillTypes() throws StorageAccessException {
@@ -835,7 +835,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public GrainSize getGrainSize(Integer id) throws StorageAccessException {
-		return sampleDAO.get(id, GrainSize.class);
+		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.GrainSize.class);
 	}
 	
 	public List<GrainSize> getGrainSizes() throws StorageAccessException {
@@ -843,7 +843,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 
 	public BedThickness getBeddingThickness(Integer id) throws StorageAccessException {
-		return sampleDAO.get(id, BedThickness.class);
+		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.BedThickness.class);
 	}
 	
 	public List<BedThickness> getBeddingThicknesses() throws StorageAccessException {
@@ -851,7 +851,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public Bedding getBedding(Integer id) throws StorageAccessException {
-		return sampleDAO.get(id, Bedding.class);
+		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.Bedding.class);
 	}
 	
 	public List<Bedding> getBeddings() throws StorageAccessException {
@@ -859,7 +859,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public Weathering getWeathering(Integer id) throws StorageAccessException {
-		return sampleDAO.get(id, Weathering.class);
+		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.Weathering.class);
 	}
 	
 	public List<Weathering> getWeatherings() throws StorageAccessException {
@@ -867,7 +867,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public Hardness getHardness(Integer id) throws StorageAccessException {
-		return sampleDAO.get(id, Hardness.class);
+		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.Hardness.class);
 	}
 
 	public List<Hardness> getHardnesses() throws StorageAccessException {
@@ -875,7 +875,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 
 	public Carbonate getCarbonate(Integer id) throws StorageAccessException {
-		return sampleDAO.get(id, Carbonate.class);
+		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.Carbonate.class);
 	}
 	
 	public List<Carbonate> getCarbonates() throws StorageAccessException {
@@ -883,7 +883,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public ColourModifier getColourModifier(Integer id) throws StorageAccessException {
-		return sampleDAO.get(id, ColourModifier.class);
+		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.ColourModifier.class);
 	}
 	
 	public List<ColourModifier> getColourModifiers() throws StorageAccessException {
@@ -891,7 +891,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public RockColour getRockColour(Integer id) throws StorageAccessException {
-		return sampleDAO.get(id, RockColour.class);
+		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.RockColour.class);
 	}
 
 	public List<RockColour> getRockColours() throws StorageAccessException {
