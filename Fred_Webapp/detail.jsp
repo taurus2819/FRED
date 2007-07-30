@@ -33,6 +33,7 @@
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.util.AuditUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"
@@ -159,8 +160,11 @@ try {
 	session.setAttribute("FRED.CommChk", new Boolean(commChk));
 	
 	if (feature != null) {
-		
 		boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
+		if (isAllowedReadFeature) {
+			AuditUtil auditUtil = new AuditUtil(HibernateUtil.get().getDAOFactory());
+			auditUtil.addLogEntry(AuditUtil.DETAIL_LOG_TYPE);
+		}
 		
 		Vector<Link> il = new Vector<Link>();
 		if (backURL != null)

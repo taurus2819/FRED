@@ -3,6 +3,7 @@
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.query.FREDQuery"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
+%><%@page import="nz.cri.gns.fred.util.AuditUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.db.DBUtils"
@@ -33,6 +34,7 @@
 		queryURL = "simple_query.jsp";
 	
 	FeatureUtil featureUtil = new FeatureUtil(HibernateUtil.get().getDAOFactory());
+	AuditUtil auditUtil = new AuditUtil(HibernateUtil.get().getDAOFactory());
 	
 	int pageSize = 50;
 
@@ -64,6 +66,7 @@
 				whereSQL = query.getHQLQuery();
 				queryString = query.getQueryAsString();
 				features = featureUtil.getListFromQueryBuilder(whereSQL);
+				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -84,6 +87,7 @@
 				rs.close();
 				statement.close();
 				conn.close();
+				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE);
 			} finally {
 				if (conn != null) try {
 					conn.close();

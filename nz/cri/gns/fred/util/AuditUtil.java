@@ -28,12 +28,13 @@ import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.UserView;
 
-/**
- *
- */
 public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 
 	private AuditDAO auditDAO;
+	
+	public static final String QUERY_LOG_TYPE = "query";
+	public static final String DOWNLOAD_LOG_TYPE = "download";
+	public static final String DETAIL_LOG_TYPE = "detail";
 
 	public AuditUtil(DAOFactory factory) {
 		super(factory);
