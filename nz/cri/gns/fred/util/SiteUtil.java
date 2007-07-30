@@ -86,7 +86,7 @@ public class SiteUtil extends ModelUtil {
 	}
 	
 	public SiteView getSiteView(int siteId) throws StorageAccessException {
-		return siteDAO.getSiteView(siteId);
+		return siteDAO.get(siteId, SiteView.class);
 	}
 	
 	public static int getMasterfile(Feature feature) throws SQLException, NamingException {
@@ -207,7 +207,7 @@ public class SiteUtil extends ModelUtil {
 	}
 	
 	public DatumMethod getSiteDatumMethod(int methodId) throws StorageAccessException {
-		return siteDAO.getSiteDatumMethod(methodId);
+		return siteDAO.get(methodId, DatumMethod.class);
 	}
 	
 	public List<DatumMethod> getSiteDatumMethods() throws StorageAccessException {

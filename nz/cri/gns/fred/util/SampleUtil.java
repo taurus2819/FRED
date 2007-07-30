@@ -235,7 +235,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 *  
 	 */
 	public void deleteSample(int sampleId, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
-		Sample sample = sampleDAO.getSample(sampleId);
+		Sample sample = getSample(sampleId);
 		
 		if (!isAllowedDeleteSample(sample, folder, user))
 			throw new InsufficientPrivelegesException();
@@ -395,7 +395,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public Sample getSample(int sampleId) throws StorageAccessException {
-		return sampleDAO.getSample(sampleId);
+		return sampleDAO.get(sampleId, Sample.class);
 	}
 	
 	public AuditEdit getMostRecentEdit(Audit audit) throws StorageAccessException {
@@ -451,7 +451,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			audit = feature.getAudit();
 		else {
 			audit = sampleDAO.createNewAudit();
-			audit.setFolder(folderDAO.getFolder(folderId));
+			audit.setFolder(folderDAO.get(folderId, Folder.class));
 			audit.setStatus(FREDConstants.WORKING);
 			audit.setCreatedDate(new Date());
 			audit.setCreatedById(new Integer(user.getId()));
@@ -827,7 +827,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public DrillType getDrillType(Integer id) throws StorageAccessException {
-		return sampleDAO.getDrillType(id);
+		return sampleDAO.get(id, DrillType.class);
 	}
 	
 	public List<DrillType> getDrillTypes() throws StorageAccessException {
@@ -835,7 +835,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public GrainSize getGrainSize(Integer id) throws StorageAccessException {
-		return sampleDAO.getGrainSize(id);
+		return sampleDAO.get(id, GrainSize.class);
 	}
 	
 	public List<GrainSize> getGrainSizes() throws StorageAccessException {
@@ -843,7 +843,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 
 	public BedThickness getBeddingThickness(Integer id) throws StorageAccessException {
-		return sampleDAO.getBeddingThickness(id);
+		return sampleDAO.get(id, BedThickness.class);
 	}
 	
 	public List<BedThickness> getBeddingThicknesses() throws StorageAccessException {
@@ -851,7 +851,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public Bedding getBedding(Integer id) throws StorageAccessException {
-		return sampleDAO.getBedding(id);
+		return sampleDAO.get(id, Bedding.class);
 	}
 	
 	public List<Bedding> getBeddings() throws StorageAccessException {
@@ -859,7 +859,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public Weathering getWeathering(Integer id) throws StorageAccessException {
-		return sampleDAO.getWeathering(id);
+		return sampleDAO.get(id, Weathering.class);
 	}
 	
 	public List<Weathering> getWeatherings() throws StorageAccessException {
@@ -867,7 +867,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public Hardness getHardness(Integer id) throws StorageAccessException {
-		return sampleDAO.getHardness(id);
+		return sampleDAO.get(id, Hardness.class);
 	}
 
 	public List<Hardness> getHardnesses() throws StorageAccessException {
@@ -875,7 +875,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 
 	public Carbonate getCarbonate(Integer id) throws StorageAccessException {
-		return sampleDAO.getCarbonate(id);
+		return sampleDAO.get(id, Carbonate.class);
 	}
 	
 	public List<Carbonate> getCarbonates() throws StorageAccessException {
@@ -883,7 +883,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public ColourModifier getColourModifier(Integer id) throws StorageAccessException {
-		return sampleDAO.getColourModifier(id);
+		return sampleDAO.get(id, ColourModifier.class);
 	}
 	
 	public List<ColourModifier> getColourModifiers() throws StorageAccessException {
@@ -891,7 +891,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public RockColour getRockColour(Integer id) throws StorageAccessException {
-		return sampleDAO.getRockColour(id);
+		return sampleDAO.get(id, RockColour.class);
 	}
 
 	public List<RockColour> getRockColours() throws StorageAccessException {

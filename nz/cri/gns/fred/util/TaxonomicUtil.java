@@ -36,7 +36,7 @@ public class TaxonomicUtil extends ModelUtil {
 	}
 	
 	public TaxonomicGroup getTaxonomicGroup(int groupId) throws StorageAccessException {
-		return taxonomicDAO.getTaxonomicGroup(groupId);
+		return taxonomicDAO.get(groupId, TaxonomicGroup.class);
 	}
 	
 	public List<TaxonomicGroup> getTaxonomicGroups() throws StorageAccessException {
@@ -44,11 +44,11 @@ public class TaxonomicUtil extends ModelUtil {
 	}
 	
 	public Taxon getTaxon(int taxonId) throws StorageAccessException {
-		return taxonomicDAO.getTaxon(taxonId);
+		return taxonomicDAO.get(taxonId, Taxon.class);
 	}
 	
 	public List<TaxonomicGroup> getTaxonomicGroupsIsPanelistOf(UserAccount user) throws StorageAccessException {
-		FrUserView frUser = userDAO.getFrUserView(new Integer(user.getId()));
+		FrUserView frUser = userDAO.get(new Integer(user.getId()), FrUserView.class);
 		List<TaxonomicGroup> groups = new Vector<TaxonomicGroup>();
 		for (TaxonomicGroup group : frUser.getTaxonomicGroups())
 			groups.add(group);
@@ -260,7 +260,7 @@ public class TaxonomicUtil extends ModelUtil {
     }
     
     public PaleontologyListEntry getPaleontologyListEntry(int palListId) throws StorageAccessException {
-    	return taxonomicDAO.getPaleontologyListEntry(palListId);
+    	return taxonomicDAO.get(palListId, PaleontologyListEntry.class);
     }
 
     public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException {

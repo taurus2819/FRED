@@ -9,15 +9,13 @@ import nz.cri.gns.fred.model.TaxonomicGroup;
 
 public interface TaxonomicDAO {
 
-	public Taxon getTaxon(int taxonId) throws StorageAccessException;
+	public <T> T get(Integer id, Class<T> clazz);
 	
     /**
      * Creates a new, unsaved paleontological list entry
      * @return
      */
     public PaleontologyListEntry createNewPaleontologyListEntry();
-    
-    public PaleontologyListEntry getPaleontologyListEntry(int palListId) throws StorageAccessException;
 
     /**
      * Finds the taxon with the given parameters
@@ -35,8 +33,6 @@ public interface TaxonomicDAO {
      */
     public Taxon createNewTaxon();
 
-	public void delete(Taxon taxon) throws StorageAccessException;
-	
     /**
      * Finds the taxon with the given parameters
      * @param taxonomicGroup
@@ -45,8 +41,6 @@ public interface TaxonomicDAO {
      * @throws StorageAccessException 
      */
 	public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name) throws StorageAccessException;
-
-	public TaxonomicGroup getTaxonomicGroup(int groupId) throws StorageAccessException;
 	
 	/**
 	 *@return a count of provisional taxa within the given group
@@ -76,7 +70,7 @@ public interface TaxonomicDAO {
 	/*
 	public List<Integer> getPanelistsOfTaxonomicGroup(TaxonomicGroup group) throws StorageAccessException;
 	*/
-	
+	public void delete(Object object) throws StorageAccessException;
 	public <T> T saveOrUpdate(T object) throws StorageAccessException;
 	
 	public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException;

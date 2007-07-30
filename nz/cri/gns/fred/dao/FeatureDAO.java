@@ -13,12 +13,11 @@ import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FrNumber;
-import nz.cri.gns.fred.model.RegistrationArea;
 
 public interface FeatureDAO {
-
+	public void delete(Object object) throws StorageAccessException;
 	public <T> T saveOrUpdate(T object) throws StorageAccessException;
-	
+	public <T> T get(Integer id, Class<T> clazz);
 	/**
 	 * @return a new, blank, audit table entry
 	 */
@@ -32,21 +31,6 @@ public interface FeatureDAO {
 	public FeatureMeta createNewFeatureMeta();
 
 	/**
-	 * @param feature
-	 * @throws StorageAccessException
-	 */
-	public void delete(Feature feature) throws StorageAccessException;
-
-	public void delete(Audit audit) throws StorageAccessException;
-	
-	/**
-	 * @param featureId
-	 * @return
-	 * @throws StorageAccessException
-	 */
-	public Feature getFeature(int featureId) throws StorageAccessException;
-
-	/**
 	 * @param mapSheet
 	 * @return
 	 * @throws StorageAccessException
@@ -58,11 +42,6 @@ public interface FeatureDAO {
 	 */
 	public Feature createNewFeature() throws StorageAccessException;
 
-	/**
-	 * Returns the registration area with the given id
-	 */
-	public RegistrationArea getRegistrationArea(int regAreaId) throws StorageAccessException;
-	
 	/**
 	 * Returns all the features that have samples attached to the given audit.  The returned
 	 * collection will be equivalent to that produced by:
@@ -100,8 +79,6 @@ public interface FeatureDAO {
 	 */
 	public AuditEdit createNewAuditEdit() throws StorageAccessException;
 
-	public void delete(AuditEdit edit) throws StorageAccessException;
-	
 	/**
 	 * Returns the frNumber entry with the given numbr
 	 */
@@ -150,8 +127,6 @@ public interface FeatureDAO {
 	 * 
 	 */
 	public List<FrNumber> getFrNumbers(String mapSheet, int start, int end) throws StorageAccessException;
-	
-	public void delete(FrNumber frNumber) throws StorageAccessException;
 	
 	public int getTotalFeatureCount() throws StorageAccessException;
 	

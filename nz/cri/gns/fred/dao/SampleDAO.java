@@ -6,37 +6,25 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
-import nz.cri.gns.fred.model.BedThickness;
-import nz.cri.gns.fred.model.Bedding;
-import nz.cri.gns.fred.model.Carbonate;
-import nz.cri.gns.fred.model.ColourModifier;
-import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
-import nz.cri.gns.fred.model.GrainSize;
-import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.RelationType;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.RelationshipType;
-import nz.cri.gns.fred.model.RockColour;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SampleMeta;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SedimentaryFeatureType;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.StratigraphicUnit;
-import nz.cri.gns.fred.model.Weathering;
 
-/**
- *
- */
 public interface SampleDAO {
-
+	public void delete(Object object) throws StorageAccessException;
 	public <T> T saveOrUpdate(T object) throws StorageAccessException;
-	
+	public <T> T get(Integer id, Class<T> clazz);
 	/**
 	 * @param relationship
 	 * @return
@@ -59,19 +47,6 @@ public interface SampleDAO {
 	 * @return
 	 */
 	public SampleMeta createNewSampleMeta();
-
-	/**
-	 * @param sampleId
-	 * @return
-	 * @throws StorageAccessException
-	 */
-	public Sample getSample(int sampleId) throws StorageAccessException;
-
-	/**
-	 * @param sample
-	 * @throws StorageAccessException
-	 */
-	public void delete(Sample sample) throws StorageAccessException;
 
 	/**
 	 * @return a new FrNumber
@@ -115,8 +90,6 @@ public interface SampleDAO {
 	 */
 	public List<? extends Relationship> getRelationships(Sample sample, RelationshipType relationshipType) throws StorageAccessException;
 
-	public void delete(Audit audit) throws StorageAccessException;	
-	
 	/**
 	 * Return the fossil group with the given name or null if one doesn't exist
 	 * @throws StorageAccessException 
@@ -144,36 +117,15 @@ public interface SampleDAO {
 	 * Returns the GrainSize with the given id
 	 * @throws StorageAccessException 
 	 */
-	public GrainSize getGrainSize(Integer id) throws StorageAccessException;
-
-	public Hardness getHardness(Integer id) throws StorageAccessException;
-
-	public Weathering getWeathering(Integer id) throws StorageAccessException;
-
-	public Bedding getBedding(Integer id) throws StorageAccessException;
-
-	public BedThickness getBeddingThickness(Integer id) throws StorageAccessException;
-
-	public RockColour getRockColour(Integer id) throws StorageAccessException;
-
-	public ColourModifier getColourModifier(Integer id) throws StorageAccessException;
-
-	public Carbonate getCarbonate(Integer id) throws StorageAccessException;
 
 	public SedimentaryFeatureType getSedimentaryFeatureTypeWithName(String sedFeature) throws StorageAccessException;
 
-	public DrillType getDrillType(int drillTypeId) throws StorageAccessException;
-	
 	public StratigraphicUnit findStratigraphicUnit(String name) throws StorageAccessException;
 	
 	public RelationshipType findRelationshipType(String name) throws StorageAccessException;
 
     public void attach(Object o) throws StorageAccessException;
 
-	public void delete(SentTo sentTo) throws StorageAccessException;
-	
-	public void delete(Relationship rel) throws StorageAccessException;
-	
 	public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException;
 
 	public List<Paleontology> getPaleontologies(Sample sample) throws StorageAccessException;

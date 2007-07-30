@@ -11,13 +11,10 @@ import nz.cri.gns.fred.model.FolderType;
 import nz.cri.gns.fred.model.FolderUser;
 import nz.cri.gns.fred.model.UserFolder;
 
-/**
- * @author iainm
- */
 public interface FolderDAO {
-	
+	public void delete(Object object) throws StorageAccessException;
 	public <T> T saveOrUpdate(T object) throws StorageAccessException;
-
+	public <T> T get(Integer id, Class<T> clazz);
 	/**
 	 * Creates a new, unsaved folder
 	 */
@@ -38,21 +35,9 @@ public interface FolderDAO {
 	public List<UserFolder> getAccessibleFolders(int userId, FolderType type) throws StorageAccessException;
 
     /**
-     * Removes the current folder from persistent storage
-     * @param folder
-     */
-    public void delete(Folder folder) throws StorageAccessException;
-    
-    /**
      * Returns all folders of the given type
      */
 	public List<Folder> getFolders(FolderType type) throws HibernateException, StorageAccessException;
-
-		
-    /**
-     * Returns the folder with the given id
-     */
-    public Folder getFolder(int folderId) throws StorageAccessException;
 
 	/**
 	 * Returns a count of any features that are in the masterfile folder given, with a 'waiting' status
@@ -98,10 +83,5 @@ public interface FolderDAO {
 	 */
 	public FolderUser createNewFolderUser();
 
-	/**
-	 * Deletes the given folderUser from the DB
-	 * @throws StorageAccessException 
-	 */
-	public void delete(FolderUser user) throws StorageAccessException;
 	
 }

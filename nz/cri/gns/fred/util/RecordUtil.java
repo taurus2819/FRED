@@ -19,6 +19,7 @@ import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.FREDConstants;
+import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.Paleontology;
@@ -101,7 +102,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public void deleteRecord(int recordId, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
-		Record record = recordDAO.getRecord(recordId);
+		Record record = recordDAO.get(recordId, Record.class);
 				
 		if (!isAllowedDeleteRecord(record, folder, user))
 			throw new InsufficientPrivelegesException();
@@ -187,7 +188,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         record.setSample(sample);
         
         Audit audit = recordDAO.createNewAudit();
-		audit.setFolder(folderDAO.getFolder(folderId));
+		audit.setFolder(folderDAO.get(folderId, Folder.class));
 		audit.setStatus(FREDConstants.WORKING);
 		audit.setCreatedDate(new Date());
 		audit.setCreatedById(new Integer(user.getId()));
@@ -257,7 +258,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
 
     public Record getRecord(int recordId) throws StorageAccessException {
-       return recordDAO.getRecord(recordId);
+       return recordDAO.get(recordId, Record.class);
     }
 
 	public boolean isRecordConfidential(Record record) {
@@ -390,7 +391,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
     public LabSection getLabSection(int id) throws StorageAccessException {
-        return recordDAO.getLabSection(id);
+        return recordDAO.get(id, LabSection.class);
     }
 
     public Lab findLab(String labName) throws StorageAccessException {

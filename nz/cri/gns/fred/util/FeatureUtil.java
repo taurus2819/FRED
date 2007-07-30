@@ -31,6 +31,7 @@ import nz.cri.gns.fred.de.MandatoryFieldsMissingException;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.Country;
+import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FeatureMeta;
@@ -374,9 +375,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			}
 		}
 		
-		int masterfile = -1;
+		int masterfileId = -1;
 		try {
-			masterfile = SiteUtil.getMasterfile(feature);
+			masterfileId = SiteUtil.getMasterfile(feature);
 		} catch (Exception e) {
 			throw new StorageAccessException(e);
 		}
@@ -386,7 +387,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		audit.setSubmittedById(new Integer(user.getId()));
 		audit.setSubmittedDate(new Date());
 		
-		feature.setMasterFile(folderDAO.getFolder(masterfile));
+		feature.setMasterFile(folderDAO.get(masterfileId, Folder.class));
 		featureDAO.saveOrUpdate(audit);
 		featureDAO.saveOrUpdate(feature);		
 	}
@@ -558,7 +559,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}	
 	
 	public Feature getFeature(int featureId) throws StorageAccessException {
-		return featureDAO.getFeature(featureId);
+		return featureDAO.get(featureId, Feature.class);
 	}
 	
 	public boolean folderContainsFeature(UserFolder folder, Feature feature) throws StorageAccessException {
@@ -808,7 +809,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				}
 			}
 		} catch (Exception e) {	}
-		feature.setMasterFile(folderDAO.getFolder(SiteUtil.getMasterfile(feature)));
+		feature.setMasterFile(folderDAO.get(SiteUtil.getMasterfile(feature), Folder.class));
 		featureDAO.saveOrUpdate(audit);
 		featureDAO.saveOrUpdate(feature);
 	}
@@ -831,7 +832,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (!userFolder.isAllowedCreateLocalities())
 			throw new DataInputException("Folder", "Do not have appropriate rights to add to this folder");
 				
-		feature.getFolders().add(folderDAO.getFolder(folderId));
+		feature.getFolders().add(folderDAO.get(folderId, Folder.class));
 	}
 	
 	/**
@@ -868,7 +869,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		Feature feature = featureDAO.createNewFeature();
 		feature.setFeatureType(featureType);
 		Audit audit = featureDAO.createNewAudit();
-		audit.setFolder(folderDAO.getFolder(folderId));
+		audit.setFolder(folderDAO.get(folderId, Folder.class));
 		audit.setStatus(FREDConstants.WORKING);
 		audit.setCreatedDate(new Date());
 		audit.setCreatedById(new Integer(user.getId()));
@@ -877,7 +878,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 
 	public RegistrationArea getRegistrationArea(int regAreaId) throws StorageAccessException {
-		return featureDAO.getRegistrationArea(regAreaId);
+		return featureDAO.get(regAreaId, RegistrationArea.class);
 	}
 
 	public List<RegistrationArea> getRegistrationAreas() throws StorageAccessException {
@@ -985,7 +986,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		sample.setTopDepth(topDepth);
 		sample.setBottomDepth(bottomDepth);
 		if (drillTypeId != null)
-			sample.setDrillType(sampleDAO.getDrillType(drillTypeId.intValue()));
+			sample.setDrillType(sampleDAO.get(drillTypeId, DrillType.class));
 		
 		//add first FRNumber (if one defined)
 		//sample.setFrNumber(FeatureUtil.getFrNumber(feature));

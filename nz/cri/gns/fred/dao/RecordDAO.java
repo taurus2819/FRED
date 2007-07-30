@@ -7,7 +7,6 @@ import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.Lab;
-import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Record;
@@ -15,21 +14,6 @@ import nz.cri.gns.fred.model.TaxonomicGroup;
 
 public interface RecordDAO {
 
-	/**
-	 * @param recordId
-	 * @return
-	 * @throws StorageAccessException
-	 */
-    public Record getRecord(int recordId) throws StorageAccessException;
-
-	/**
-	 * @param record
-	 * @throws StorageAccessException
-	 */
-    public void delete(Record record) throws StorageAccessException;
-
-	public void delete(Audit audit) throws StorageAccessException;	    
-    
     /**
      * Creates a new empty Record
      */
@@ -65,16 +49,9 @@ public interface RecordDAO {
 	 */
 	public List<PaleontologyListEntry> getListEntries(Paleontology pal, TaxonomicGroup group) throws StorageAccessException;
 
-    /**
-     * Returns the lab section with the given lab section id
-     * @param id
-     * @return
-     * @throws StorageAccessException 
-     */
-    public LabSection getLabSection(int id) throws StorageAccessException;
-
+	public void delete(Object object) throws StorageAccessException;
 	public <T> T saveOrUpdate(T object) throws StorageAccessException;
-	
+	public <T> T get(Integer id, Class<T> clazz);
 	public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException;
 
 }

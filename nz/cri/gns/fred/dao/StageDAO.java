@@ -8,7 +8,7 @@ import nz.cri.gns.fred.model.Stage;
 
 public interface StageDAO {
 
-	public AgeView getAgeView(int ageId) throws StorageAccessException;
+	public <T> T get(Integer id, Class<T> clazz);
 	
 	public <T> T saveOrUpdate(T object) throws StorageAccessException;
 	

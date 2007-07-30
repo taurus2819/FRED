@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
 
-import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.cri.gns.auth.InsufficientPrivelegesException;
@@ -378,7 +377,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			if (registrationAreaId.equals("-"))
 				feature.setRegistrationArea(null);
 			else try {
-				feature.setRegistrationArea(factory.getFeatureDAO().getRegistrationArea(Integer.parseInt(registrationAreaId)));
+				feature.setRegistrationArea(new FeatureUtil(factory).getRegistrationArea(Integer.parseInt(registrationAreaId)));
 			} catch (StorageAccessException e) {
 				e.printStackTrace();
 				//Should never happen

@@ -13,6 +13,7 @@ import net.sf.hibernate.HibernateException;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.dataaccess.HibernateProvider;
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.util.FolderUtil;
 import nz.cri.gns.fred.util.TaxonomicUtil;
@@ -47,13 +48,13 @@ public class FolderUtilTest extends FredHibernateTest implements HibernateProvid
 	}
 	
 	public void testConcurrency() throws HibernateException, StorageAccessException {
-		nz.cri.gns.fred.model.Feature feature = factory.getFeatureDAO().getFeature(1);
+		nz.cri.gns.fred.model.Feature feature = factory.getFeatureDAO().get(1, Feature.class);
 		
 		System.out.println("Original: " + feature.getFeatureName());
 		
 		feature.setFeatureName("Bob");
 		
-		nz.cri.gns.fred.model.Feature feature1 = factory.getFeatureDAO().getFeature(1);
+		nz.cri.gns.fred.model.Feature feature1 = factory.getFeatureDAO().get(1, Feature.class);
 		
 		System.out.println("Changed: " + feature.getFeatureName());
 		System.out.println("Regot:" + feature1.getFeatureName());

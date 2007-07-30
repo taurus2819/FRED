@@ -60,7 +60,7 @@ public class StageUtil extends ModelUtil {
 	}
 	
 	public AgeView getAgeView(int ageId) throws StorageAccessException {
-		return stageDAO.getAgeView(ageId);
+		return stageDAO.get(ageId, AgeView.class);
 	}
 	
 	public List<AgeView> getAges() throws StorageAccessException {
@@ -77,8 +77,8 @@ public class StageUtil extends ModelUtil {
 		if (startAgeId == null)
 			throw new IllegalArgumentException("Start age is null");
 		
-		AgeView startAge = stageDAO.getAgeView(Integer.parseInt(startAgeId));
-		AgeView stopAge = (stopAgeId != null) ? stageDAO.getAgeView(Integer.parseInt(stopAgeId)) : null;
+		AgeView startAge = getAgeView(Integer.parseInt(startAgeId));
+		AgeView stopAge = (stopAgeId != null) ? getAgeView(Integer.parseInt(stopAgeId)) : null;
 
 		//check start/stop ages if both entered unless "not determined" or "no fossils"
 		if (stopAgeId != null
