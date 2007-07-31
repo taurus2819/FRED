@@ -128,7 +128,7 @@
 		<tr><td colspan="3">Use for entering/editing large amounts of data</td></tr>
 		<tr><td>&nbsp;</td></tr>
 		<tr><td colspan="2">Download the spreadsheet by clicking on the link below and then choosing "Save" when prompted by your browser. The spreadsheet will then need to be extracted using <a href="http://www.winzip.com" target="zip">WinZip</a> or similar.  The spreadsheet has been tested with Microsoft Excel 2002, but should work with all versions.  Full instructions are included in the spreadsheet.</td></tr>
-		<tr><td colspan="2" style="color: #ff0000;">This spreadsheet has been updated and old versions (prior to version 1.2) will no longer work properly.  If you have data in an old version please download the new version and use the <i>Get Locality</i> function to retrieve your data</td></tr>
+		<tr><td colspan="2" style="color: #ff0000;">1 August 2007: This spreadsheet has been updated and old versions (prior to version 1.3) will no longer work properly.  If you have data in an old version please download the new version and use the <i>Get Locality</i> function to retrieve your data</td></tr>
 		<tr><td><a href="images/FRED.zip" target="spreadsheet"><img src="images/excel.gif" border="0" width="20" height="20" alt="Data entry spreadsheet" /></a>&nbsp;&nbsp;</td>
 		<td class="heading"><a href="images/FRED.zip" target="spreadsheet">Download FRED.zip</a></td></tr>
 		</table><%
