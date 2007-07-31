@@ -165,6 +165,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		sample.setDipDirection(fromSample.getDipDirection());
 		sample.setStrike(fromSample.getStrike());
 		sample.setFacing(fromSample.getFacing());
+		sample.setStratComments(fromSample.getStratComments());
 		sample.setPrimaryGrainSize(fromSample.getPrimaryGrainSize());
 		sample.setSecondaryGrainSize(fromSample.getSecondaryGrainSize());
 		sample.setComparatorUsed(fromSample.getComparatorUsed());
@@ -334,6 +335,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		template.addSub("SentTo", getSentTos(sample.getSentTos(), newLineSeparator));
 		template.addSub("NotColl", sample.getNotCollected());
 		template.addSub("Sig", sample.getSignificance());
+		template.addSub("StratComm", sample.getStratComments());
 		
 		//Ages
         StageDEUtil.addStageSubs(template, sample.getInferredStage(), "Inferred");
@@ -939,6 +941,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 					error.add(new String[] {"Comparator Used", gsComp + " is not valid. Comparator Used must be either 'Y' or 'N'"});
 			}
 		}
+		
+		//StratComments
+		sample.setStratComments(request.getParameter("StratComm"));
 		
 		try {
 			sample.setBedThickness(getBeddingThickness(request.getParameter("BedThick")));

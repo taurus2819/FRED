@@ -117,6 +117,12 @@
         length="10"
     />
     <property
+        name="stratComments"
+        type="java.lang.String"
+        column="STRAT_COMMENTS"
+        length="512"
+    />
+    <property
         name="comparatorUsed"
         type="java.lang.String"
         column="COMPARATOR_USED"

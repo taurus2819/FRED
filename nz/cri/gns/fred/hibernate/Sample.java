@@ -79,6 +79,9 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     private String facing;
 
     /** nullable persistent field */
+    private String stratComments;
+    
+    /** nullable persistent field */
     private String comparatorUsed;
 
     /** nullable persistent field */
@@ -166,7 +169,7 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     private Set<Relationship> relationships;
 
     /** full constructor */
-    public Sample(Double topDepth, Double bottomDepth, String depthUnit, String comments, Date collectionDate, String dateRounding, String stratUnit, String inPlace, String notCollected, String significance, String columnMap, Integer dip, String dipDirection, Integer strike, String facing, String comparatorUsed, String wet, String rockNature, String depositionEnv, String correspondence, nz.cri.gns.fred.hibernate.ColourModifier colourModifier, nz.cri.gns.fred.hibernate.Hardness hardness, nz.cri.gns.fred.hibernate.Weathering weathering, nz.cri.gns.fred.hibernate.Carbonate carbonate, nz.cri.gns.fred.hibernate.RockColour rockColourBySecondaryColourId, nz.cri.gns.fred.hibernate.RockColour rockColourByPrimaryColourId, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.Bedding beddingByPrimaryBeddingId, nz.cri.gns.fred.hibernate.Bedding beddingBySecondaryBeddingId, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.FrNumber yardFrNumber, nz.cri.gns.fred.hibernate.DrillType drillType, nz.cri.gns.fred.hibernate.GrainSize grainSizeByPrimaryGrainsizeId, nz.cri.gns.fred.hibernate.GrainSize grainSizeBySecondaryGrainsizeId, nz.cri.gns.fred.hibernate.BedThickness bedThickness, nz.cri.gns.fred.hibernate.Stage stageByKnownStageId, nz.cri.gns.fred.hibernate.Stage stageByInferredStageId, Set<SedimentaryFeature> sedimentaryFeatures, Set<SampleMeta> sampleMetas, Set<Record> records, Set<SentTo> sentTos, Set<Person> collectors, Set<Relationship> relationships) {
+    public Sample(Double topDepth, Double bottomDepth, String depthUnit, String comments, Date collectionDate, String dateRounding, String stratUnit, String inPlace, String notCollected, String significance, String columnMap, Integer dip, String dipDirection, Integer strike, String facing, String stratComments, String comparatorUsed, String wet, String rockNature, String depositionEnv, String correspondence, nz.cri.gns.fred.hibernate.ColourModifier colourModifier, nz.cri.gns.fred.hibernate.Hardness hardness, nz.cri.gns.fred.hibernate.Weathering weathering, nz.cri.gns.fred.hibernate.Carbonate carbonate, nz.cri.gns.fred.hibernate.RockColour rockColourBySecondaryColourId, nz.cri.gns.fred.hibernate.RockColour rockColourByPrimaryColourId, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.Bedding beddingByPrimaryBeddingId, nz.cri.gns.fred.hibernate.Bedding beddingBySecondaryBeddingId, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.FrNumber yardFrNumber, nz.cri.gns.fred.hibernate.DrillType drillType, nz.cri.gns.fred.hibernate.GrainSize grainSizeByPrimaryGrainsizeId, nz.cri.gns.fred.hibernate.GrainSize grainSizeBySecondaryGrainsizeId, nz.cri.gns.fred.hibernate.BedThickness bedThickness, nz.cri.gns.fred.hibernate.Stage stageByKnownStageId, nz.cri.gns.fred.hibernate.Stage stageByInferredStageId, Set<SedimentaryFeature> sedimentaryFeatures, Set<SampleMeta> sampleMetas, Set<Record> records, Set<SentTo> sentTos, Set<Person> collectors, Set<Relationship> relationships) {
         this.topDepth = topDepth;
         this.bottomDepth = bottomDepth;
         this.depthUnit = depthUnit;
@@ -182,6 +185,7 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.dipDirection = dipDirection;
         this.strike = strike;
         this.facing = facing;
+        this.stratComments = stratComments;
         this.comparatorUsed = comparatorUsed;
         this.wet = wet;
         this.rockNature = rockNature;
@@ -372,7 +376,15 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.facing = facing;
     }
 
-    public String getComparatorUsed() {
+	public String getStratComments() {
+		return stratComments;
+	}
+	
+    public void setStratComments(String stratComments) {
+		this.stratComments = stratComments;
+	}
+
+	public String getComparatorUsed() {
         return this.comparatorUsed;
     }
 

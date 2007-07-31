@@ -491,7 +491,8 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
 			PDFUtil.addRepeatingCells(table, "Strat. Relationships", relationshipStr, bodyFonts, true);			
 			PDFUtil.addCells(table, new String[] {"Column/Map", sample.getColumnMap()}, bodyFonts);
-			PDFUtil.addCells(table, new String[] {"Dip/Strike", SampleUtil.getDipStrikeDescription(sample)}, bodyFonts);		
+			PDFUtil.addCells(table, new String[] {"Dip/Strike", SampleUtil.getDipStrikeDescription(sample)}, bodyFonts);
+			PDFUtil.addCells(table, new String[] {"Stratigraphy Comments", sample.getStratComments()}, bodyFonts);
 			document.add(table);
 
 			//Sedimentary Features

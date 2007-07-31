@@ -497,6 +497,9 @@ try {
 						if (dipStrike != null && dipStrike.length() > 0) {
 							%><tr><td class="heading">Dip/Strike</td><td><%=dipStrike%></td></tr><%
 						}
+						if (sample.getStratComments() != null) {
+							%><tr><td class="heading">Stratigraphy Comments</td><td><%=sample.getStratComments()%></td></tr><%
+						}
 						
 						%><tr><td>&nbsp;</td></tr>
 		

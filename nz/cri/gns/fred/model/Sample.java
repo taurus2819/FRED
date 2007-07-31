@@ -37,6 +37,8 @@ public interface Sample extends Audited, Comparable<Sample> {
 	public void setStrike(Integer strike);
 	public String getFacing();
 	public void setFacing(String facing);
+	public String getStratComments();
+    public void setStratComments(String stratComments);
 	public String getComparatorUsed();
 	public void setComparatorUsed(String comparatorUsed);
 	public String getWet();
