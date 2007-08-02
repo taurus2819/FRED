@@ -316,7 +316,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		out.write("<td>" + ((feature.getYardFrNumber() != null) ? feature.getYardFrNumber().getFrNumber() : "") + "</td>\n");
 		out.write("<td>" + feature.getFeatureType() + "</td>\n");
 		out.write("<td>" + DBUtils.nvl(feature.getFeatureName()) + "</td>\n");
-		out.write("<td>" + feature.getRegistrationArea().getRegAreaId() + "</td>\n");
+		out.write("<td>" + ((feature.getRegistrationArea() != null) ? feature.getRegistrationArea().getRegAreaId() : "") + "</td>\n");
 		String[] comms = FeatureUtil.splitWorkingComments(feature.getAudit().getWorkingComments());
 		out.write("<td>" + DBUtils.nvl(comms[1]) + "</td>\n");
 		out.write("<td>" + DBUtils.nvl(comms[0]) + "</td>\n");
