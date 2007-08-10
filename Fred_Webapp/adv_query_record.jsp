@@ -93,7 +93,7 @@
 			}
 			%></table><%
 		}
-		%><p><input type="button" onClick="parent.location.href='result_list_record.jsp?Type=Adv&QueryURL=<%=URLEncoder.encode("buildframe_record.jsp", "ISO-8859-1")%>'" value="Execute query" alt="Execute query" /></p>
+		%><p><input type="button" onClick="parent.location.href='confid_list.jsp?Type=Query'" value="Execute query" alt="Execute query" /></p>
 		</td></tr>
 		</td></tr>
 		<tr><td colspan="2" ></td></tr>

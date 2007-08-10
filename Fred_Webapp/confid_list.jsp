@@ -13,11 +13,13 @@
 %><%@page import="nz.cri.gns.fred.model.Paleontology"
 %><%@page import="nz.cri.gns.fred.model.Sample"
 %><%@page import="nz.cri.gns.fred.model.Record"
+%><%@page import="nz.cri.gns.fred.query.FREDRecordQuery"
 %><%@page import="nz.cri.gns.fred.util.AuditUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
+%><%@page import="nz.cri.gns.jsp.PageState"
 %><%@page import="nz.cri.gns.auth.User"
 %><%!
 	public String getName(HttpServletRequest request) {
@@ -31,7 +33,9 @@
 %><%
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 	User user = (User)getUser(session);
+	Integer userId = new Integer(user.getId());
 	AuditUtil auditUtil = new AuditUtil(factory);
+	RecordUtil recordUtil = new RecordUtil(factory);
 	
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
@@ -60,6 +64,16 @@
 			confidAdoptions = auditUtil.getConfidentialAdoptionRecords(user);
 			confidPaleontologies = auditUtil.getConfidentialPaleontologyRecords(user);
 			confidPalLists = auditUtil.getConfidentialPalLists(user);
+		} else if ("Query".equals(request.getParameter("Type"))) {
+			PageState state = new PageState(request, response, getServletContext());
+			FREDRecordQuery query = FREDUtil.getFREDRecordQuery(state);
+			String whereSQL = query.getHQLQuery();
+			System.out.println(whereSQL);
+			List<Record> records = recordUtil.getListFromQueryBuilder(whereSQL);
+			for (Record record : records) {
+				if (record.getSample().getAudit().getConfidentialFlag() && record.getSample().getAudit().getCreatedById().equals(userId))
+					confidSamples.add(record.getSample());
+			}			
 		} else {
 			GregorianCalendar cal = new GregorianCalendar();
 			cal.add(Calendar.MONTH, 7);
@@ -93,7 +107,7 @@
 			<form name="confidForm" method="get" action="confid_list.jsp"><%
 		
 		//List samples
-		if (confidSamples.size() > 0) {
+		if (confidSamples != null && confidSamples.size() > 0) {
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" cellspacing="0" cellpadding="2" width="550">
@@ -117,7 +131,7 @@
 		}
 	
 		//List adoptions
-		if (confidAdoptions.size() > 0) {
+		if (confidAdoptions != null && confidAdoptions.size() > 0) {
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" cellspacing="0" cellpadding="2" width="550">
@@ -142,7 +156,7 @@
 		}
 			
 		//List paleontologies
-		if (confidPaleontologies.size() > 0) {
+		if (confidPaleontologies != null && confidPaleontologies.size() > 0) {
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" cellspacing="0" cellpadding="2" width="550">
@@ -168,12 +182,12 @@
 		}
 			
 		//List pal lists
-		if (confidPalLists.size() > 0) {
+		if (confidPalLists != null && confidPalLists.size() > 0) {
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" cellspacing="0" cellpadding="2" width="550">
 			<tr><td colspan="7" class="deHeading">Confidential Paleontology Taxonomic Lists</td></tr>
-			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Paleontology Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date&nbsp;&nbsp;</th><th style="text-align: left">Access List</th></th></tr><%
+			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Paleontology Record&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date&nbsp;&nbsp;</th><th style="text-align: left">Access List</th></tr><%
 			for (Paleontology paleontology : confidPalLists) {
 				Record record = paleontology.getRecord();
 				%><tr>
@@ -212,8 +226,6 @@
 		<td><a href="javascript:document.confidForm.ActionType.value='ClearConfid';document.confidForm.submit();"><img src="images/lock_cancel.gif" border="0" height="20" width="20" alt="Clear Confidentiality" /></a></td>
 		<td class="heading" style="text-align: left"><a href="javascript:document.confidForm.ActionType.value='ClearConfid';document.confidForm.submit();">Clear Confidentiality</a></td>
 		</tr>
-
-		</tr>		
 		</table><%		
 		endDETable(pageContext);
 		%></p><%
