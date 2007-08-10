@@ -79,9 +79,6 @@
 	
 		startDETable(pageContext);
 		%><table style="margin-left:20px; width:550px;" border="0"><tr><td>
-		
-		<p><span style="color: #FF0000">Not all database fields are available to use.  Missing fields will be added progressively over the next few weeks.</span></p>
-			
 		<p>Use the menus above to make to your query.  The query will build up below as you go.  You can add and remove lines of the query,
 		but not modify them once they are in place.  When you have finished building the query click the Execute Query button to display the results or you can <a href="clearQuery.jsp" class="boldlink">clear</a> the query</p><%
 		if (query.queryElementCount() > 0) {
