@@ -141,7 +141,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		//need to add relationships
 		add(new TwoLevelField("Stratigraphic Fields", f));
 		
-		f = new Field[14];
+		f = new Field[15];
 		f[0] = new TableRequiredPossibleValueField("sample.primaryGrainSize", "Primary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), SAMPLE_TABLE, SAMPLE_JOIN);
 		f[1] = new TableRequiredPossibleValueField("sample.secondaryGrainSize", "Secondary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), SAMPLE_TABLE, SAMPLE_JOIN);
 		f[2] = new TableRequiredPossibleValueField("sample.comparatorUsed", "Comparator Used", getComparatorUsed(), SAMPLE_TABLE, SAMPLE_JOIN);
@@ -156,6 +156,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[11] = new TableRequiredPossibleValueField("sample.secondaryColour", "Secondary Colour", getValues("FROM RockColour AS r", RockColour.class), SAMPLE_TABLE, SAMPLE_JOIN);		
 		f[12] = new TableRequiredTextField("sample.depositionEnv", "Inferred Environment", SAMPLE_TABLE, SAMPLE_JOIN);
 		f[13] = new TableRequiredTextField("sample.rockNature", "Nature of Rock Unit", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[14] = new TableRequiredTextField("sample.stratComments", "Stratigraphy Comments", SAMPLE_TABLE, SAMPLE_JOIN);
 		//need to add additional features
 		add(new TwoLevelField("Sedimentary Feature Fields", f));
 		
