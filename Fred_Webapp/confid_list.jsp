@@ -2,7 +2,11 @@
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.db.DBUtils"
+%><%@page import="java.util.Collections"
 %><%@page import="java.util.List"
+%><%@page import="java.util.Set"
+%><%@page import="java.util.HashSet"
+%><%@page import="java.util.Vector"
 %><%@page import="java.util.Date"
 %><%@page import="java.util.Calendar"
 %><%@page import="java.util.GregorianCalendar"
@@ -40,6 +44,7 @@
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
 	addButtons(et, new IconnedLink[] {
+			new IconnedLink("buildframe_record.jsp", "images/search.gif", "Search for Confidential Data"),
 			new IconnedLink("confid_list.jsp?q=" + Math.random(), "images/lock.gif", "Data Soon to be Open-File"),
 			new IconnedLink("confid_list.jsp?Type=All&q=" + Math.random(), "images/lock.gif", "All Data")
 		});
@@ -55,10 +60,10 @@
 	
 	drawTop(out, et, request, response);
 	try {
-		List<Sample> confidSamples;
-		List<Adoption> confidAdoptions;
-		List<Paleontology> confidPaleontologies;
-		List<Paleontology> confidPalLists;
+		List<Sample> confidSamples = null;
+		List<Adoption> confidAdoptions = null;
+		List<Paleontology> confidPaleontologies = null;
+		List<Paleontology> confidPalLists = null;
 		if ("All".equals(request.getParameter("Type"))) {
 			confidSamples = auditUtil.getConfidentialSamples(user);
 			confidAdoptions = auditUtil.getConfidentialAdoptionRecords(user);
@@ -68,12 +73,32 @@
 			PageState state = new PageState(request, response, getServletContext());
 			FREDRecordQuery query = FREDUtil.getFREDRecordQuery(state);
 			String whereSQL = query.getHQLQuery();
-			System.out.println(whereSQL);
+			System.out.println("Query: " + whereSQL);
 			List<Record> records = recordUtil.getListFromQueryBuilder(whereSQL);
+			confidSamples = new Vector<Sample>();
+			Set<Sample> sampleSet = new HashSet<Sample>();
+			confidAdoptions = new Vector<Adoption>();
+			confidPaleontologies = new Vector<Paleontology>();
+			confidPalLists = new Vector<Paleontology>();
 			for (Record record : records) {
-				if (record.getSample().getAudit().getConfidentialFlag() && record.getSample().getAudit().getCreatedById().equals(userId))
-					confidSamples.add(record.getSample());
-			}			
+				sampleSet.add(record.getSample());
+				if (record.getAudit().getConfidentialFlag() && record.getAudit().getCreatedById().equals(userId)) {
+					if (RecordUtil.getRecordType(record).equals(FREDConstants.ADOPTION))
+						confidAdoptions.add(record.getAdoption());
+					else
+						confidPaleontologies.add(record.getPaleontology());	
+				}
+				if (record.getPalListAudit() != null && record.getPalListAudit().getConfidentialFlag() && record.getPalListAudit().getCreatedById().equals(userId))
+					confidPalLists.add(record.getPaleontology());
+			}
+			for (Sample sample : sampleSet) {
+				if (!FREDConstants.OUTCROP.equals(sample.getFeature().getFeatureType()) && sample.getAudit().getConfidentialFlag() && sample.getAudit().getCreatedById().equals(userId))
+					confidSamples.add(sample);
+			}
+			Collections.sort(confidSamples);
+			Collections.sort(confidAdoptions);
+			Collections.sort(confidPaleontologies);
+			Collections.sort(confidPalLists);
 		} else {
 			GregorianCalendar cal = new GregorianCalendar();
 			cal.add(Calendar.MONTH, 7);
