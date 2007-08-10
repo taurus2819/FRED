@@ -89,7 +89,7 @@
 			int count = 0;
 			for (Iterator it = query.queryElements(); it.hasNext(); count++) {
 				%><%=((QueryElement)it.next()).getElementInTable()%>
-				<td>&nbsp;<a href="removeElement.jsp?index=<%=count%>" class="boldlink">remove line</a></td></tr><%
+				<td>&nbsp;<a href="removeElement_record.jsp?index=<%=count%>" class="boldlink">remove line</a></td></tr><%
 			}
 			%></table><%
 		}

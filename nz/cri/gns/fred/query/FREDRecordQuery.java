@@ -91,14 +91,14 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 		f = new Field[10];
 		f[0] = new BasicTextField("r.sample.stratUnit", "Stratigraphic Name");
 		f[1] = new BasicAgeField("r.sample.inferredStage", "Inferred Stage", ages);
-		f[2] = new BasicNumericAgeField("sample.inferredStage", "Inferred Stage (numeric)");
-		f[3] = new BasicAgeField("sample.knownStage", "Known Stage", ages);
-		f[4] = new BasicNumericAgeField("sample.knownStage", "Known Stage (numeric)");
-		f[5] = new BasicTextField("sample.columnMap", "Column/Map");
-		f[6] = new BasicNumberField("sample.dip", "Dip");
-		f[7] = new PossibleValueField("sample.dipDirection", "Dip Direction", getDipDirection());
-		f[8] = new BasicNumberField("sample.strike", "Strike");
-		f[9] = new PossibleValueField("sample.facing", "Facing", getFacing());
+		f[2] = new BasicNumericAgeField("r.sample.inferredStage", "Inferred Stage (numeric)");
+		f[3] = new BasicAgeField("r.sample.knownStage", "Known Stage", ages);
+		f[4] = new BasicNumericAgeField("r.sample.knownStage", "Known Stage (numeric)");
+		f[5] = new BasicTextField("r.sample.columnMap", "Column/Map");
+		f[6] = new BasicNumberField("r.sample.dip", "Dip");
+		f[7] = new PossibleValueField("r.sample.dipDirection", "Dip Direction", getDipDirection());
+		f[8] = new BasicNumberField("r.sample.strike", "Strike");
+		f[9] = new PossibleValueField("r.sample.facing", "Facing", getFacing());
 		//need to add relationships
 		add(new TwoLevelField("Stratigraphic Fields", f));
 		
