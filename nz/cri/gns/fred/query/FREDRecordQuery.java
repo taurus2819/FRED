@@ -164,7 +164,7 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 	} 
 
 	public String getHQLQuery() throws InvalidOperatorException, InvalidValueException {
-		return super.getHQLQuery("SELECT DISTINCT r", "Record AS r", "r.audit.confidentialFlag = TRUE", null, null);
+		return super.getHQLQuery("SELECT DISTINCT r", "Record AS r", "r.audit.confidentialFlag = 1", null, null);
 	}
 
 }
