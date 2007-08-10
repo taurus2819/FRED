@@ -63,13 +63,13 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	protected List<FrUserView> frUsers = null;
 	
 	public FREDQuery() {
-		
-
-		
 		this.people = getValues("FROM Person AS p", Person.class);
 		this.ages = getValues("FROM AgeView AS a WHERE a.ageAbbrev <> 'nd' AND a.ageAbbrev <> 'nf'", AgeView.class);
 		this.frUsers = getValues("FROM FrUserView AS f", FrUserView.class);
+		addFields();
+	}
 
+	protected void addFields() {
 		//this is going to be tricky.  Need to handle multiple selections and the ORs in the individual fields
 		//Field[] f = new Field[4];
 		//f[0] = new FrNumberTextField("frNumber", "Fr Number");
@@ -201,7 +201,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[9] = new TableRequiredTextField("edit.comments", "Edit Comments", EDIT_TABLE, EDIT_JOIN);
 		add(new TwoLevelField("Audit Fields", f));
 	}
-
+	
 	public String getQuery() throws InvalidOperatorException, InvalidValueException {
 		return null;
 	}

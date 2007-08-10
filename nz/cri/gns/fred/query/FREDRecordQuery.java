@@ -9,11 +9,8 @@ import nz.cri.gns.db.querybuilder.InvalidValueException;
 import nz.cri.gns.db.querybuilder.advanced.NumberSource;
 import nz.cri.gns.db.querybuilder.advanced.PossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.TwoLevelField;
-import nz.cri.gns.fred.model.AgeView;
 import nz.cri.gns.fred.model.Country;
 import nz.cri.gns.fred.model.Folder;
-import nz.cri.gns.fred.model.FrUserView;
-import nz.cri.gns.fred.model.Person;
 
 public class FREDRecordQuery extends FREDQuery implements NumberSource {
 
@@ -30,10 +27,10 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 	*/
 	
 	public FREDRecordQuery() {
-		this.people = getValues("FROM Person AS p", Person.class);
-		this.ages = getValues("FROM AgeView AS a WHERE a.ageAbbrev <> 'nd' AND a.ageAbbrev <> 'nf'", AgeView.class);
-		this.frUsers = getValues("FROM FrUserView AS f", FrUserView.class);
-
+		super();
+	}
+	
+	protected void addFields() {
 		//this is going to be tricky.  Need to handle multiple selections and the ORs in the individual fields
 		//Field[] f = new Field[4];
 		//f[0] = new FrNumberTextField("frNumber", "Fr Number");
