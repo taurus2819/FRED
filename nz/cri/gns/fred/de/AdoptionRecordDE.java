@@ -43,7 +43,7 @@ public class AdoptionRecordDE extends RecordDE {
 	        Adoption adoption = record.getAdoption();
 	        
 	        template.addSub("AdoDate", FREDUtil.formatDateForDE(adoption.getAdoptionDate(), adoption.getDateRounding()));
-	        template.addSub("Adoptor", FREDUtil.getNames(adoption.getAdopters(), "\n"));
+	        template.addSub("Adoptor", FREDUtil.getNames(adoption.getAdoptors(), "\n"));
 	        template.addSub("Comm", adoption.getComments());
 	        StageDEUtil.addStageSubs(template, adoption.getStage(), "Stage");
 	 
@@ -86,7 +86,7 @@ public class AdoptionRecordDE extends RecordDE {
         
         //Adoptors
         try {
-            adoption.setAdopters(FREDUtil.getPersons(request.getParameter("Adoptor"), new PersonUtil(factory), "Adoptors", addIfNew));
+            adoption.setAdoptors(FREDUtil.getPersons(request.getParameter("Adoptor"), new PersonUtil(factory), "Adoptors", addIfNew));
         } catch (DataInputException e) {
             error.addAll(e.getError());
         }

@@ -572,7 +572,7 @@ try {
 								if (recordUtil.isRecordConfidential(adoRecord.getRecord())) {
 									%><tr><td style="text-align: left; color: #FF0000" colspan="2">This adoption record has been marked as confidential. The following people/groups have been granted access to this record: <%=recordUtil.getRecordConfidAccessListDescription(adoRecord.getRecord())%>.<%=(adoRecord.getRecord().getAudit().getConfidLapseDate() != null) ? " This record will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(adoRecord.getRecord().getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
 								}
-								Object[] adoptors = adoRecord.getAdopters().toArray();
+								Object[] adoptors = adoRecord.getAdoptors().toArray();
 								String[] adoptorsStr = new String[adoptors.length];
 								for (int j = 0; j < adoptors.length; j++)
 									adoptorsStr[j] = ((PersonRelationship) adoptors[j]).getDisplayName();

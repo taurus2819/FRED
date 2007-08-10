@@ -97,15 +97,15 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
             adoption.setDateRounding(fromAdoption.getDateRounding());
             adoption.setStage(fromAdoption.getStage());
             //Adoptors
-            Set<Person> adoptors = adoption.getAdopters(); 
+            Set<Person> adoptors = adoption.getAdoptors(); 
             if (adoptors == null) {
                 adoptors = new HashSet<Person>();
-                adoption.setAdopters(adoptors);
+                adoption.setAdoptors(adoptors);
             } else {
                 adoptors.clear();
             }
-            if (fromAdoption.getAdopters() != null)
-                adoptors.addAll(fromAdoption.getAdopters());
+            if (fromAdoption.getAdoptors() != null)
+                adoptors.addAll(fromAdoption.getAdoptors());
         } else {
             Paleontology fromPal = fromRecord.getPaleontology();
             Paleontology pal = record.getPaleontology();

@@ -16,6 +16,6 @@ public interface Adoption extends RecordDetails {
 	public void setRecord(Record record);
 	public Stage getStage();
 	public void setStage(Stage stage);
-	public Set<Person> getAdopters();
-	public void setAdopters(Set<Person> adopters);
+	public Set<Person> getAdoptors();
+	public void setAdoptors(Set<Person> adoptors);
 }

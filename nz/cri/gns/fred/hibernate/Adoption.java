@@ -6,7 +6,9 @@ import java.util.Set;
 
 import nz.cri.gns.fred.hibernate.dao.AssignedKeyed;
 import nz.cri.gns.fred.model.Person;
+import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RecordDetails;
+import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.RecordUtil;
 
@@ -28,23 +30,23 @@ public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption, A
     private String comments;
 
     /** nullable persistent field */
-    private nz.cri.gns.fred.model.Record record;
+    private Record record;
 
     /** persistent field */
-    private nz.cri.gns.fred.model.Stage stage;
+    private Stage stage;
 
     /** persistent field */
-    private Set<Person> adopters;
+    private Set<Person> adoptors;
 
     /** full constructor */
-    public Adoption(Integer recordId, Date adoptionDate, String dateRounding, String comments, nz.cri.gns.fred.hibernate.Record record, nz.cri.gns.fred.hibernate.Stage stage, Set<Person> adopters) {
+    public Adoption(Integer recordId, Date adoptionDate, String dateRounding, String comments, Record record, Stage stage, Set<Person> adoptors) {
         this.recordId = recordId;
         this.adoptionDate = adoptionDate;
         this.dateRounding = dateRounding;
         this.comments = comments;
         this.record = record;
         this.stage = stage;
-        this.adopters = adopters;
+        this.adoptors = adoptors;
     }
 
     /** default constructor */
@@ -52,10 +54,10 @@ public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption, A
     }
 
     /** minimal constructor */
-    public Adoption(Integer recordId, nz.cri.gns.fred.hibernate.Stage stage, Set<Person> adopters) {
+    public Adoption(Integer recordId, Stage stage, Set<Person> adoptors) {
         this.recordId = recordId;
         this.stage = stage;
-        this.adopters = adopters;
+        this.adoptors = adoptors;
     }
 
     public Integer getRecordId() {
@@ -90,11 +92,11 @@ public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption, A
         this.comments = comments;
     }
 
-    public nz.cri.gns.fred.model.Record getRecord() {
+    public Record getRecord() {
         return this.record;
     }
 
-    public void setRecord(nz.cri.gns.fred.model.Record record) {
+    public void setRecord(Record record) {
         this.record = record;
         if (record == null)
         	this.recordId = null;
@@ -102,20 +104,20 @@ public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption, A
         	this.recordId = record.getRecordId();
     }
 
-    public nz.cri.gns.fred.model.Stage getStage() {
+    public Stage getStage() {
         return this.stage;
     }
 
-    public void setStage(nz.cri.gns.fred.model.Stage stage) {
+    public void setStage(Stage stage) {
         this.stage = stage;
     }
 
-    public Set<Person> getAdopters() {
-        return this.adopters;
+    public Set<Person> getAdoptors() {
+        return this.adoptors;
     }
 
-    public void setAdopters(Set<Person> adopters) {
-        this.adopters = adopters;
+    public void setAdoptors(Set<Person> adoptors) {
+        this.adoptors = adoptors;
     }
 
 	public Date getDate() {
@@ -123,7 +125,7 @@ public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption, A
 	}
 
 	public Set<Person> getPersons() {
-		return getAdopters();
+		return getAdoptors();
 	}
 
 	public void updateKey() {

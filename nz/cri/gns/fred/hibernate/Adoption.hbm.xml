@@ -57,7 +57,7 @@
     />
     <!-- bi-directional many-to-many association to Person via Adoptor -->
     <set
-        name="adopters"
+        name="adoptors"
         table="ADOPTOR"
         lazy="true"
         inverse="false"

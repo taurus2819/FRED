@@ -632,7 +632,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				table.setSpacingAfter(3 * MM_TO_PT);
 				
 				PDFUtil.addCell(table, "Adopted Age", fonts[2], PdfPCell.ALIGN_LEFT, 2);
-				Object[] adoptors = adoRecord.getAdopters().toArray();
+				Object[] adoptors = adoRecord.getAdoptors().toArray();
 				String[] adoptorsStr = new String[adoptors.length];
 				for (int i = 0; i < adoptors.length; i++)
 					adoptorsStr[i] = ((PersonRelationship) adoptors[i]).getDisplayName();
