@@ -88,21 +88,21 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 		//need to add sent to
 //		add(new TwoLevelField("Collection Fields", f));
 		
-/*		f = new Field[10];
-		f[0] = new TableRequiredTextField("sample.stratUnit", "Stratigraphic Name", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[1] = new AgeField("sample.inferredStage", "Inferred Stage", ages, SAMPLE_TABLE, SAMPLE_JOIN);
-		f[2] = new NumericAgeField("sample.inferredStage", "Inferred Stage (numeric)", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[3] = new AgeField("sample.knownStage", "Known Stage", ages, SAMPLE_TABLE, SAMPLE_JOIN);
-		f[4] = new NumericAgeField("sample.knownStage", "Known Stage (numeric)", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[5] = new TableRequiredTextField("sample.columnMap", "Column/Map", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[6] = new TableRequiredNumberField("sample.dip", "Dip", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[7] = new TableRequiredPossibleValueField("sample.dipDirection", "Dip Direction", getDipDirection(), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[8] = new TableRequiredNumberField("sample.strike", "Strike", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[9] = new TableRequiredPossibleValueField("sample.facing", "Facing", getFacing(), SAMPLE_TABLE, SAMPLE_JOIN);
+		f = new Field[10];
+		f[0] = new BasicTextField("r.sample.stratUnit", "Stratigraphic Name");
+		f[1] = new BasicAgeField("r.sample.inferredStage", "Inferred Stage", ages);
+		f[2] = new BasicNumericAgeField("sample.inferredStage", "Inferred Stage (numeric)");
+		f[3] = new BasicAgeField("sample.knownStage", "Known Stage", ages);
+		f[4] = new BasicNumericAgeField("sample.knownStage", "Known Stage (numeric)");
+		f[5] = new BasicTextField("sample.columnMap", "Column/Map");
+		f[6] = new BasicNumberField("sample.dip", "Dip");
+		f[7] = new PossibleValueField("sample.dipDirection", "Dip Direction", getDipDirection());
+		f[8] = new BasicNumberField("sample.strike", "Strike");
+		f[9] = new PossibleValueField("sample.facing", "Facing", getFacing());
 		//need to add relationships
 		add(new TwoLevelField("Stratigraphic Fields", f));
 		
-		f = new Field[14];
+/*		f = new Field[14];
 		f[0] = new TableRequiredPossibleValueField("sample.primaryGrainSize", "Primary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), SAMPLE_TABLE, SAMPLE_JOIN);
 		f[1] = new TableRequiredPossibleValueField("sample.secondaryGrainSize", "Secondary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), SAMPLE_TABLE, SAMPLE_JOIN);
 		f[2] = new TableRequiredPossibleValueField("sample.comparatorUsed", "Comparator Used", getComparatorUsed(), SAMPLE_TABLE, SAMPLE_JOIN);

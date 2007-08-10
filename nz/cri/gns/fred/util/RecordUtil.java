@@ -397,5 +397,9 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	public void saveOrUpdate(RecordDetails details) throws StorageAccessException {
 		recordDAO.saveOrUpdate(details);
 	}
+	
+	public List<Record> getListFromQueryBuilder(String query) throws StorageAccessException {
+		return recordDAO.getList(query, Record.class);
+	}
 
 }
