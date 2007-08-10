@@ -43,6 +43,7 @@ import nz.cri.gns.fred.model.PersonRelationship;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.query.FREDQuery;
+import nz.cri.gns.fred.query.FREDRecordQuery;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.PageState;
 
@@ -120,6 +121,34 @@ public class FREDUtil {
 			if (query == null) {
 				query = new FREDQuery();
 				state.session.setAttribute(QUERY_ATTRIBUTE_NAME, query);
+			}
+			return query;
+		}
+	}
+	
+	private static final String RECORD_QUERY_ATTRIBUTE_NAME = "fred.Recordquery";
+	
+	/**
+	 * Stores the given query in the session under <code>QUERY_ATTRIBUTE_NAME</code>
+	 */
+	public static void setFREDRecordQuery(HttpSession session, FREDQuery query) {
+		synchronized(getSessionLock(session)) {
+			session.setAttribute(RECORD_QUERY_ATTRIBUTE_NAME, query);
+		}
+	}
+
+	/**
+	 * Retrieves the query from the session, where it is stored under <code>QUERY_ATTRIBUTE_NAME</code>.
+	 * This method is synchronized on <code>getSessionLock()</code> to alleviate concurrent access problems
+	 */
+	public static FREDRecordQuery getFREDRecordQuery(PageState state) throws IOException, SQLException {
+		//Synchronizing on the session will ensure that two frames don't have
+		//problems, whilst allowing other users to still run concurrently
+		synchronized(getSessionLock(state.session)) {
+			FREDRecordQuery query = (FREDRecordQuery)state.session.getAttribute(RECORD_QUERY_ATTRIBUTE_NAME);
+			if (query == null) {
+				query = new FREDRecordQuery();
+				state.session.setAttribute(RECORD_QUERY_ATTRIBUTE_NAME, query);
 			}
 			return query;
 		}

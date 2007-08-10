@@ -56,11 +56,11 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	private static final String EDIT_TABLE = "f.audit.auditEdits";
 	private static final HqlJoin EDIT_JOIN = new HqlJoin(false, "edit");
 	
-	private int lastUsedId = 900000;
+	protected int lastUsedId = 900000;
 	
-	private List<Person> people = null;
-	private List<AgeView> ages = null;
-	private List<FrUserView> frUsers = null;
+	protected List<Person> people = null;
+	protected List<AgeView> ages = null;
+	protected List<FrUserView> frUsers = null;
 	
 	public FREDQuery() {
 		
@@ -210,7 +210,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		return super.getHQLQuery("SELECT DISTINCT f", "Feature AS f", "f.audit.status = 'approved'", null, null);
 	}
 	
-	private <T extends Comparable<? super T>> List<T> getValues(String query, Class<T> clazz) {
+	protected <T extends Comparable<? super T>> List<T> getValues(String query, Class<T> clazz) {
 		FeatureDAO featureDAO = HibernateUtil.get().getDAOFactory().getFeatureDAO();
 		List<T> values = null;
 		try {
@@ -221,7 +221,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		return values;
 	}
 	
-	private List<KeyValueObject> getSQLValues(String sql) {
+	protected List<KeyValueObject> getSQLValues(String sql) {
 		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>();
 		Connection conn;
 		try {
@@ -236,7 +236,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		return options;
 	}
 	
-	private List<KeyValueObject> getFeatureTypes() {
+	protected List<KeyValueObject> getFeatureTypes() {
 		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>(3);
 		options.add(new KeyValueObject("Outcrop", "Outcrop"));
 		options.add(new KeyValueObject("Drillhole", "Drillhole"));
@@ -244,7 +244,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		return options;
 	}
 	
-	private List<KeyValueObject> getDrillholeDatumTypes() {
+	protected List<KeyValueObject> getDrillholeDatumTypes() {
 		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>(3);
 		options.add(new KeyValueObject("KB", "KB"));
 		options.add(new KeyValueObject("RT", "RT"));
@@ -252,14 +252,14 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		return options;		
 	}
 	
-	private List<KeyValueObject> getVertSectDatumTypes() {
+	protected List<KeyValueObject> getVertSectDatumTypes() {
 		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>(2);
 		options.add(new KeyValueObject("Top", "Top"));
 		options.add(new KeyValueObject("Bottom", "Bottom"));
 		return options;		
 	}
 	
-	private List<KeyValueObject> getQMapSheets() {
+	protected List<KeyValueObject> getQMapSheets() {
 		KeyValueObject[] o = new KeyValueObject[21];
 		o[0] = new KeyValueObject("Kaitaia", "Kaitaia");
 		o[1] = new KeyValueObject("Whangarei", "Whangarei");
@@ -289,7 +289,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		return options;
 	}
 	
-	private List<KeyValueObject> getInPlace() {
+	protected List<KeyValueObject> getInPlace() {
 		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>(3);
 		options.add(new KeyValueObject("Yes", "Yes"));
 		options.add(new KeyValueObject("No", "No"));
@@ -298,7 +298,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		return options;
 	}
 	
-	private List<KeyValueObject> getDipDirection() {
+	protected List<KeyValueObject> getDipDirection() {
 		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>(3);
 		options.add(new KeyValueObject("N", "N"));
 		options.add(new KeyValueObject("NE", "NE"));
@@ -311,14 +311,14 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		return options;
 	}
 	
-	private List<KeyValueObject> getFacing() {
+	protected List<KeyValueObject> getFacing() {
 		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>(3);
 		options.add(new KeyValueObject("Normal", "Normal"));
 		options.add(new KeyValueObject("Overturned", "Overturned"));
 		return options;
 	}
 	
-	private List<KeyValueObject> getComparatorUsed() {
+	protected List<KeyValueObject> getComparatorUsed() {
 		ArrayList<KeyValueObject> options = new ArrayList<KeyValueObject>(3);
 		options.add(new KeyValueObject("Y", "Yes"));
 		options.add(new KeyValueObject("N", "No"));
