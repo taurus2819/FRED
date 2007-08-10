@@ -140,23 +140,22 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 		f[2] = new BasicAgeField("r.adoption.stage", "Adopted Stage", ages);
 		f[3] = new BasicNumericAgeField("r.adoption.stage", "Adopted Stage (numeric)");
 		f[4] = new BasicTextField("r.adoption.comments", "Comments");
-		//need to add adoptors
 		add(new TwoLevelField("Adoption Fields", f));
 		
-		f = new Field[12];
-		f[0] = new BasicDateField("r.paleontology.identificationDate", "Identification Date");
-		f[1] = new BasicAgeField("r.paleontology.stage", "Stage", ages);
-		f[2] = new BasicNumericAgeField("r.paleontology.stage", "Stage (numeric)");
-		f[3] = new BasicTextField("r.paleontology.stageComments", "Stage Comments");
-		f[4] = new PossibleValueField("r.paleontology.labSection", "Laboratory", getValues("FROM LabSection AS ls", LabSection.class));
-		f[5] = new BasicTextField("r.paleontology.labNumber", "Lab Number");
-		f[6] = new BasicTextField("r.paleontology.collectionComments", "Collection Comments");
-		f[7] = new TableRequiredPossibleValueField("palList.taxonomicGroup", "Taxonomic Group", getValues("FROM TaxonomicGroup AS tg", TaxonomicGroup.class), PAL_LIST_TABLES, PAL_LIST_JOINS);
-		f[8] = new TableRequiredTextField("palList.taxonomicName", "Taxonomic Name", PAL_LIST_TABLES, PAL_LIST_JOINS);
-		f[9] = new TableRequiredNumberField("palList.specimenCount", "Specimen Count", PAL_LIST_TABLES, PAL_LIST_JOINS);
-		f[10] = new TableRequiredTextField("palList.specimenCoords", "Specimen Coordinates", PAL_LIST_TABLES, PAL_LIST_JOINS);
-		f[11] = new TableRequiredTextField("palList.comments", "Paleontology List Comments", PAL_LIST_TABLES, PAL_LIST_JOINS);
-		//need to add identifiers
+		f = new Field[13];
+		f[0] = new HqlUniqueSubTablePossibleValueField("identifier.personId", "Identifier", people, new String[] {"r.paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "identifier")});
+		f[1] = new BasicDateField("r.paleontology.identificationDate", "Identification Date");
+		f[2] = new BasicAgeField("r.paleontology.stage", "Stage", ages);
+		f[3] = new BasicNumericAgeField("r.paleontology.stage", "Stage (numeric)");
+		f[4] = new BasicTextField("r.paleontology.stageComments", "Stage Comments");
+		f[5] = new PossibleValueField("r.paleontology.labSection", "Laboratory", getValues("FROM LabSection AS ls", LabSection.class));
+		f[6] = new BasicTextField("r.paleontology.labNumber", "Lab Number");
+		f[7] = new BasicTextField("r.paleontology.collectionComments", "Collection Comments");
+		f[8] = new TableRequiredPossibleValueField("palList.taxonomicGroup", "Taxonomic Group", getValues("FROM TaxonomicGroup AS tg", TaxonomicGroup.class), PAL_LIST_TABLES, PAL_LIST_JOINS);
+		f[9] = new TableRequiredTextField("palList.taxonomicName", "Taxonomic Name", PAL_LIST_TABLES, PAL_LIST_JOINS);
+		f[10] = new TableRequiredNumberField("palList.specimenCount", "Specimen Count", PAL_LIST_TABLES, PAL_LIST_JOINS);
+		f[11] = new TableRequiredTextField("palList.specimenCoords", "Specimen Coordinates", PAL_LIST_TABLES, PAL_LIST_JOINS);
+		f[12] = new TableRequiredTextField("palList.comments", "Paleontology List Comments", PAL_LIST_TABLES, PAL_LIST_JOINS);
 		add(new TwoLevelField("Paleontology Fields", f));
 		
 /*		f = new Field[10];
