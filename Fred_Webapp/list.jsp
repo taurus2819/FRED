@@ -3,12 +3,14 @@
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.model.Sample"
+%><%@page import="nz.cri.gns.fred.model.Paleontology"
 %><%@page import="nz.cri.gns.fred.de.DataEntryForm"
 %><%@page import="nz.cri.gns.fred.de.DataEntryFormFactory"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
+%><%@page import="nz.cri.gns.fred.util.RecordUtil"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.jsp.JspUtils"
@@ -16,6 +18,7 @@
 %><%@page import="java.sql.Connection"
 %><%@page import="java.sql.ResultSet"
 %><%@page import="java.sql.Statement"
+%><%@page import="java.util.List"
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.fred.website.ContentProvider"
@@ -40,6 +43,7 @@
 		FolderUtil folderUtil = new FolderUtil(factory);
 		FeatureUtil featureUtil = new FeatureUtil(factory);
 		SampleUtil sampleUtil = new SampleUtil(factory);
+		RecordUtil recordUtil = new RecordUtil(factory);
 		
 		%><table><%
 		
@@ -93,6 +97,33 @@
 			}
 			if (dataEntryForm != null)
 				dataEntryForm.makeExcelImportHTML(new PrintWriter(out));
+		} else if (listName.equals("palList")) {
+			User user = null;
+			try {
+		   		user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
+		   	} catch (Exception e) {
+		   		%><tr><td>Error: Invalid username/password</td></td><%
+		   	}
+		   	try {
+			   	UserFolder userFolder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("folderID")), user);
+		   		Feature[] features = featureUtil.getFeaturesInFolder(userFolder);
+		   		if (features.length > 0) {
+					for (int i = 0; i < features.length; i++) {
+						List<Paleontology> palRecords = recordUtil.getPaleontologyRecords(features[i]);
+						for (Paleontology palRecord : palRecords) {
+							if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {
+								%><tr><td><%=RecordUtil.getRecordName(palRecord)%></td><td><%=palRecord.getRecordId()%></td></tr><%
+							}
+						}
+					}
+				} else {
+					%><tr><td>No records found in folder</td><td></td></tr><%
+				}
+			} catch (Exception e) {
+				%><tr><td>Error</td><td></td></tr><%
+			}
+		} else if (listName.equals("blankPalList")) {
+			%><tr><td>No records defined</td><td>-1</td></tr><%
 		} else if (listName.equals("sampleList")) {
 			User user = null;
 			try {

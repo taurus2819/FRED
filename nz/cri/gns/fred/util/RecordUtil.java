@@ -19,6 +19,7 @@ import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.FREDConstants;
+import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.Paleontology;
@@ -401,5 +402,13 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	public List<Record> getListFromQueryBuilder(String query) throws StorageAccessException {
 		return recordDAO.getList(query, Record.class);
 	}
+	
+	public List<Paleontology> getPaleontologyRecords(Feature feature) throws StorageAccessException {
+		return recordDAO.getList("FROM Paleontology AS p WHERE p.record.sample.feature = ?", Paleontology.class, feature);
+	}
 
+	public List<Adoption> getAdoptionRecords(Feature feature) throws StorageAccessException {
+		return recordDAO.getList("FROM Adoption AS a WHERE a.record.sample.feature = ?", Adoption.class, feature);
+	}
+	
 }
