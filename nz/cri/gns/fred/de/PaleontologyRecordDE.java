@@ -551,6 +551,9 @@ public class PaleontologyRecordDE extends RecordDE {
     }
 
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
+		super.makeExcelImportHTML(out);
+		Paleontology pal = record.getPaleontology();
+		out.write("<td>#" + FREDUtil.formatDateForDE(pal.getIdentificationDate(), pal.getDateRounding()) + "#</td>\n");
 	}
 	
 	protected void checkMandatoryFields() throws DataInputException {

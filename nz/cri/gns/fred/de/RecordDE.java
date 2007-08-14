@@ -3,6 +3,7 @@ package nz.cri.gns.fred.de;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.Date;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
@@ -188,6 +190,15 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         template.loadAll(out);
     }
 
+	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
+        out.write("<tr><td>" + record.getRecordId() + "</td>\n");
+        out.write("<td>" + FeatureUtil.getFeatureIdentifyingName(record.getSample().getFeature()) + ((!FREDConstants.OUTCROP.equals(record.getSample().getFeature().getFeatureType())) ? ": " + SampleUtil.getDrillHoleDepthDescription(record.getSample()) : "") + "</td>\n");
+		out.write("<td>" + ((workingFolder != null) ? workingFolder.getFolderId() : "") + "</td>\n");
+		out.write("<td>" + record.getAudit().getStatus() + "</td>\n");
+		out.write("<td>" + DBUtils.nvl(record.getAudit().getCuratorComments()) + "</td>\n");
+		out.write("<td>" + DBUtils.nvl(record.getAudit().getWorkingComments()) + "</td>\n");
+	}
+	
 	public int save(int dataOriginId) throws InsufficientPrivelegesException, StorageAccessException {
 		if (!isAllowedSave)
 			throw new InsufficientPrivelegesException("Insufficient rights to save this record");
