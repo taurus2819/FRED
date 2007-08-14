@@ -3,6 +3,7 @@
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.model.Sample"
+%><%@page import="nz.cri.gns.fred.model.Record"
 %><%@page import="nz.cri.gns.fred.model.Paleontology"
 %><%@page import="nz.cri.gns.fred.de.DataEntryForm"
 %><%@page import="nz.cri.gns.fred.de.DataEntryFormFactory"
@@ -90,6 +91,9 @@
 				} else if (request.getParameter("docType").equals("Sample")) {
 					Sample sample = sampleUtil.getSample(Integer.parseInt(request.getParameter("id")));
 					dataEntryForm = DataEntryFormFactory.getSampleDataEntryForm(sample.getSampleId().intValue(), folderID, user, factory, provider);
+				} else if (request.getParameter("docType").equals("Record")) {
+					Record record = recordUtil.getRecord(Integer.parseInt(request.getParameter("id")));
+					dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(record.getRecordId().intValue(), folderID, user, factory, provider);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -112,7 +116,11 @@
 						List<Paleontology> palRecords = recordUtil.getPaleontologyRecords(features[i]);
 						for (Paleontology palRecord : palRecords) {
 							if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {
-								%><tr><td><%=RecordUtil.getRecordName(palRecord)%></td><td><%=palRecord.getRecordId()%></td></tr><%
+								Sample sample = palRecord.getRecord().getSample();
+								String recName = FeatureUtil.getFeatureIdentifyingName(features[i]) + ": "
+									+ ((!FREDConstants.OUTCROP.equals(features[i].getFeatureType())) ? SampleUtil.getDrillHoleDepthDescription(sample) + ": " : "")
+									+ RecordUtil.getRecordName(palRecord);
+								%><tr><td><%=recName%></td><td><%=palRecord.getRecordId()%></td></tr><%
 							}
 						}
 					}
@@ -263,6 +271,8 @@
 					rs = statement.executeQuery("SELECT su_name FROM sl.strat_unit ORDER BY su_name");
 				} else if (listName.equals("weathering")) {
 					rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || weathering_id FROM weathering ORDER BY code");
+				} else if (listName.equals("labSection")) {
+					rs = statement.executeQuery("SELECT l.lab_name || DECODE(ls.code, NULL, NULL, ': ' || ls.code), ls.lab_section_id FROM lab_section ls, sc.lab l WHERE ls.lab_id = l.lab_id ORDER BY l.lab_name, ls.code"); 
 				}
 				while (rs.next()) {
 					%><tr><td><%=rs.getString(1).replaceAll(" ", "&nbsp;")%></td></tr><%
