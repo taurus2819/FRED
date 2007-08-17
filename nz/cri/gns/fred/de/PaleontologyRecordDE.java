@@ -28,6 +28,7 @@ import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Sample;
+import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.UserView;
@@ -554,6 +555,26 @@ public class PaleontologyRecordDE extends RecordDE {
 		super.makeExcelImportHTML(out);
 		Paleontology pal = record.getPaleontology();
 		out.write("<td>#" + FREDUtil.formatDateForDE(pal.getIdentificationDate(), pal.getDateRounding()) + "#</td>\n");
+		out.write("<td>" + FREDUtil.getNames(pal.getIdentifiers(), "#") + "</td>");
+		Stage stage = pal.getStage();
+		if (stage != null) {
+			if (stage.getLowerAgeView() != null)
+				out.write("<td>" + stage.getLowerAgeView().getAgeId().toString() + "</td>"
+						+ "<td>" + DBUtils.nvl(stage.getStageLowerMod()) + "</td>");	
+			else
+				out.write("<td></td><td></td>");
+			if (stage.getUpperAgeView() != null)
+				out.write("<td>" + stage.getUpperAgeView().getAgeId().toString() + "</td>"
+						+ "<td>" + DBUtils.nvl(stage.getStageUpperMod()) + "</td>");
+			else
+				out.write("<td></td><td></td>");
+		} else {
+			out.write("<td></td><td></td><td></td><td></td>");
+		}
+		out.write("<td>" + DBUtils.nvl(pal.getStageComments()) + "</td>");
+		out.write("<td>" + ((pal.getLabSection() != null) ? pal.getLabSection().getLabSectionId() : "") + "</td>");
+		out.write("<td>" + DBUtils.nvl(pal.getLabNumber()) + "</td>");
+		out.write("<td>" + DBUtils.nvl(pal.getCollectionComments()) + "</td>");
 	}
 	
 	protected void checkMandatoryFields() throws DataInputException {
