@@ -193,6 +193,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
         out.write("<tr><td>" + record.getRecordId() + "</td>\n");
         out.write("<td>" + FeatureUtil.getFeatureIdentifyingName(record.getSample().getFeature()) + ((!FREDConstants.OUTCROP.equals(record.getSample().getFeature().getFeatureType())) ? ": " + SampleUtil.getDrillHoleDepthDescription(record.getSample()) : "") + "</td>\n");
+        out.write("<td>" + record.getSample().getSampleId() + "</td>\n");
 		out.write("<td>" + ((workingFolder != null) ? workingFolder.getFolderId() : "") + "</td>\n");
 		out.write("<td>" + record.getAudit().getStatus() + "</td>\n");
 		out.write("<td>" + DBUtils.nvl(record.getAudit().getCuratorComments()) + "</td>\n");
