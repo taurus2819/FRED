@@ -575,6 +575,7 @@ public class PaleontologyRecordDE extends RecordDE {
 		out.write("<td>" + ((pal.getLabSection() != null) ? pal.getLabSection().getLabSectionId() : "") + "</td>");
 		out.write("<td>" + DBUtils.nvl(pal.getLabNumber()) + "</td>");
 		out.write("<td>" + DBUtils.nvl(pal.getCollectionComments()) + "</td>");
+		out.write("</tr>");
 	}
 	
 	protected void checkMandatoryFields() throws DataInputException {
