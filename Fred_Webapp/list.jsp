@@ -19,7 +19,9 @@
 %><%@page import="java.sql.Connection"
 %><%@page import="java.sql.ResultSet"
 %><%@page import="java.sql.Statement"
+%><%@page import="java.util.Collections"
 %><%@page import="java.util.List"
+%><%@page import="java.util.Vector"
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.fred.website.ContentProvider"
@@ -132,6 +134,36 @@
 			}
 		} else if (listName.equals("blankPalList")) {
 			%><tr><td>No records defined</td><td>-1</td></tr><%
+		} else if (listName.equals("locSampleList")) {
+			User user = null;
+			try {
+		   		user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
+		   	} catch (Exception e) {
+		   		%><tr><td>Error: Invalid username/password</td></td><%
+		   	}
+		   	try {
+			   	UserFolder userFolder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("folderID")), user);
+		   		Feature[] features = featureUtil.getFeaturesInFolder(userFolder);
+		   		if (features.length > 0) {
+					for (int i = 0; i < features.length; i++) {
+						if (featureUtil.isAllowedReadFeature(user, features[i])) {
+							List<Sample> samples = new Vector<Sample>();
+							samples.addAll(features[i].getSamples());
+							Collections.sort(samples);
+							for (Sample sample : samples) {
+								%><tr><td><%=FeatureUtil.getFeatureIdentifyingName(features[i])
+									+ ((!FREDConstants.OUTCROP.equals(features[i].getFeatureType())) ? ": " + SampleUtil.getDrillHoleDepthDescription(sample) : "")%></td><td><%=sample.getSampleId()%></td></tr><%
+							}
+						}
+					}
+				} else {
+					%><tr><td>No features found in folder</td><td></td></tr><%
+				}
+			} catch (Exception e) {
+				%><tr><td>Error</td><td></td></tr><%
+			}
+		} else if (listName.equals("blankLocSampleList")) {
+			%><tr><td>No samples defined</td><td>-1</td></tr><%
 		} else if (listName.equals("sampleList")) {
 			User user = null;
 			try {
@@ -272,7 +304,7 @@
 				} else if (listName.equals("weathering")) {
 					rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || weathering_id FROM weathering ORDER BY code");
 				} else if (listName.equals("labSection")) {
-					rs = statement.executeQuery("SELECT l.lab_name || DECODE(ls.code, NULL, NULL, ': ' || ls.code), ls.lab_section_id FROM lab_section ls, sc.lab l WHERE ls.lab_id = l.lab_id ORDER BY l.lab_name, ls.code"); 
+					rs = statement.executeQuery("SELECT l.lab_name || DECODE(ls.code, NULL, NULL, ': ' || ls.code) || '</td><td>' || ls.lab_section_id FROM lab_section ls, sc.lab l WHERE ls.lab_id = l.lab_id ORDER BY l.lab_name, ls.code"); 
 				}
 				while (rs.next()) {
 					%><tr><td><%=rs.getString(1).replaceAll(" ", "&nbsp;")%></td></tr><%
