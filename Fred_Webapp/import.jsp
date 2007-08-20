@@ -53,7 +53,7 @@
 			    		}
 						return DataEntryFormFactory.getSampleDataEntryForm(user, Integer.parseInt(featID), Integer.parseInt(foldID), factory, provider);
 					}
-				} else {
+				} else if (formType.equals("Record")) {
 					String recID = request.getParameter("RecID");
 					if (recID != null) { //editing
 						return DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(recID), Integer.parseInt(foldID), user, factory, provider);
