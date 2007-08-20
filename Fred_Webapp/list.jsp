@@ -103,6 +103,25 @@
 			}
 			if (dataEntryForm != null)
 				dataEntryForm.makeExcelImportHTML(new PrintWriter(out));
+		} else if (listName.equals("sampleId")) {
+			User user = null;
+			try {
+		   		user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
+		   	} catch (Exception e) {
+		   		%><tr><td>Error: Invalid username/password</td></td><%
+		   	}
+		   	if (user != null) {
+				Sample sample = sampleUtil.findSample(request.getParameter("localityName"));
+				if (sample != null) {
+					if (sampleUtil.isAllowedReadSample(user, sample)) {
+						%><tr><td><%=sample.getSampleId()%></td></tr><%
+					} else {
+						%><tr><td>Error: not allowed to read sample</td></tr><%
+					}
+				} else {
+					%><tr><td>Error: no locality found</td></tr><%	
+				}
+		   	}
 		} else if (listName.equals("palList")) {
 			User user = null;
 			try {

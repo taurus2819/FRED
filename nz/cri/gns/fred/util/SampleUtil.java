@@ -154,6 +154,25 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		this.folderDAO = factory.getFolderDAO();
 	}	
 
+	public Sample findSample(String localityName) throws StorageAccessException {
+		FeatureUtil featureUtil = new FeatureUtil(factory);
+		if (localityName.indexOf(":") < 0) {
+			Feature feature = featureUtil.getFeatureWithIdentifyingName(localityName);
+			if (feature != null && feature.getFeatureType().equals(OUTCROP))
+				return featureUtil.getOutcropSample(feature);
+			return null;
+		}
+		Feature feature = featureUtil.getFeatureWithIdentifyingName(localityName.substring(0, localityName.indexOf(":")).trim());
+		if (feature != null && !feature.getFeatureType().equals(OUTCROP)) {
+			String sampleName = localityName.substring(localityName.indexOf(":") + 1).trim();
+			for (Sample sample : feature.getSamples()) {
+				if (sampleName.equals(getDrillHoleDepthDescription(sample)))
+					return sample;
+			}
+		}
+		return null;
+	}
+	
 	 /** @param sample
 	 * @return
 	 */
