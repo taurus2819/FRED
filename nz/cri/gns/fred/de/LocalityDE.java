@@ -443,7 +443,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 				error.add(new String[] {"Accuracy", "Invalid value"});
 				site.setNull(SiteRecord.H_ACCURACY_FIELD);
 			}
+			
 			site.setDirections(request.getParameter("Loc"));
+			
 			site.setCountry(request.getParameter("Country"));
 			site.setOwner(user.getPersonId());
 		} else {
@@ -453,8 +455,15 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		}
 		
 		
-		//Also set the FRED locality
-		feature.setLocality(request.getParameter("Loc"));
+		//Also set the FRED locality - but first reject & and "
+		String loc = request.getParameter("Loc");
+		if (!FREDUtil.isEmpty(loc)) {
+			if (loc.indexOf("&") >= 0 || loc.indexOf("\"") >= 0)
+				error.add(new String[] {"Locality", "Contains & or \" characters"});
+			else
+				feature.setLocality(loc);
+		} else
+			feature.setLocality(null);
 
 		//set Map Year
 		try {
