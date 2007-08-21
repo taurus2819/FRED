@@ -93,7 +93,7 @@
 				} else if (request.getParameter("docType").equals("Sample")) {
 					Sample sample = sampleUtil.getSample(Integer.parseInt(request.getParameter("id")));
 					dataEntryForm = DataEntryFormFactory.getSampleDataEntryForm(sample.getSampleId().intValue(), folderID, user, factory, provider);
-				} else if (request.getParameter("docType").equals("Pal") || request.getParameter("docType").equals("Ado")) {
+				} else if (request.getParameter("docType").equals(FREDConstants.PALEONTOLOGICAL) || request.getParameter("docType").equals(FREDConstants.ADOPTION)) {
 					Record record = recordUtil.getRecord(Integer.parseInt(request.getParameter("id")));
 					dataEntryForm = DataEntryFormFactory.getRecordDataEntryForm(record.getRecordId().intValue(), folderID, user, factory, provider);
 				}
