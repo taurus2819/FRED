@@ -14,10 +14,15 @@
 	<target name="compile">
 		<javac debug="true" srcdir="." destdir=".">
 			<classpath>
-				<fileset dir="/opt/jdk/jre/lib/ext">
-					<include name="*.jar" />
+				<fileset dir="../lib">
+					<include name="itext-1.3.jar" />
+					<include name="junit.jar" />
+					<include name="hibernate2.jar" />
+					<include name="junit.jar" />
+					<include name="servlet-api.jar" />
+					<include name="cglib-full-2.0.2.jar" />
 				</fileset>
-				<fileset dir="/usr/local/build">
+				<fileset dir="..">
 					<include name="gol.jar" />
 					<include name="gol-db.jar" />
 					<include name="gol-core.jar" />
@@ -29,12 +34,6 @@
 					<include name="gol-dbimpl.jar" />
 					<include name="gol-web.jar" />
 					<include name="gol-querybuilder.jar" />
-					<include name="itext-1.3.jar" />
-					<include name="junit.jar" />
-					<include name="hibernate2.jar" />
-					<include name="junit.jar" />
-					<include name="servlet23.jar" />
-					<include name="cglib-full-2.0.2.jar" />
 				</fileset>
 			</classpath>
 		</javac>
