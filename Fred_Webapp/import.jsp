@@ -53,7 +53,7 @@
 			    		}
 						return DataEntryFormFactory.getSampleDataEntryForm(user, Integer.parseInt(featID), Integer.parseInt(foldID), factory, provider);
 					}
-				} else if (formType.equals("Paleontology") || formType.equals("Adoption")) {
+				} else if (formType.equals(FREDConstants.PALEONTOLOGICAL) || formType.equals(FREDConstants.ADOPTION)) {
 					String recID = request.getParameter("RecID");
 					if (recID != null && !recID.equals("")) { //editing
 						return DataEntryFormFactory.getRecordDataEntryForm(Integer.parseInt(recID), Integer.parseInt(foldID), user, factory, provider);
