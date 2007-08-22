@@ -324,6 +324,8 @@
 					rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || weathering_id FROM weathering ORDER BY code");
 				} else if (listName.equals("labSection")) {
 					rs = statement.executeQuery("SELECT l.lab_name || DECODE(ls.code, NULL, NULL, ': ' || ls.code) || '</td><td>' || ls.lab_section_id FROM lab_section ls, sc.lab l WHERE ls.lab_id = l.lab_id ORDER BY l.lab_name, ls.code"); 
+				} else if (listName.equals("taxaGroup")) {
+					rs = statement.executeQuery("SELECT name FROM taxonomic_group ORDER BY group_id"); 
 				}
 				while (rs.next()) {
 					%><tr><td><%=rs.getString(1).replaceAll(" ", "&nbsp;")%></td></tr><%
