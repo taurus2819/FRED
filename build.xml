@@ -20,6 +20,7 @@
 					<include name="hibernate2.jar" />
 					<include name="junit.jar" />
 					<include name="servlet-api.jar" />
+					<include name="jsp-api.jar" />
 					<include name="cglib-full-2.0.2.jar" />
 				</fileset>
 				<fileset dir="..">
