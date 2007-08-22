@@ -350,6 +350,7 @@ public class PaleontologyRecordDE extends RecordDE {
         
         //Taxa
         String taxa = request.getParameter("Taxa");
+        System.out.println(taxa);
         badTaxaList = new HashSet<PaleontologyListEntry>();
         Set<PaleontologyListEntry> taxaList = pal.getListEntries();
         if (taxaList == null) {
