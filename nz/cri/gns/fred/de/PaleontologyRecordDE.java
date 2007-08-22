@@ -576,6 +576,31 @@ public class PaleontologyRecordDE extends RecordDE {
 		out.write("<td>" + DBUtils.nvl(pal.getLabNumber()) + "</td>");
 		out.write("<td>" + DBUtils.nvl(pal.getCollectionComments()) + "</td>");
 		out.write("</tr>");
+
+		List<TaxonomicGroup> groups = recordUtil.getTaxonomicGroups(pal);
+		if (groups != null && groups.size() > 0) {
+			for (TaxonomicGroup group : groups) {
+				List<PaleontologyListEntry> list;
+				try {
+					list = recordUtil.getListEntries(pal, group);
+					if (list == null || list.size() == 0) {
+						out.write("<tr><td>" + group.getName() + "</td></tr>");
+					} else {
+						for (PaleontologyListEntry entry : list) {
+							Taxon taxon = entry.getTaxon();
+							out.write("<tr><td>" + group.getName() + "</td>" 
+									+ "<td>" + entry.getTaxonomicName() + "</td>" 
+									+ "<td>" + DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "</td>" 
+									+ "<td>" + DBUtils.nvl(entry.getSpecimenCount()) + "</td>" 
+									+ "<td>" + DBUtils.nvl(entry.getSpecimenCoords()) + "</td>" 
+									+ "<td>" + DBUtils.nvl(entry.getComments()) + "</td></tr>");
+						}
+					}
+				} catch (StorageAccessException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	protected void checkMandatoryFields() throws DataInputException {
