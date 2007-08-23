@@ -107,7 +107,10 @@
 	    		taxon.setTaxonomicName(TaxonomicUtil.getCleanedName(request.getParameter("TaxaName")));
 	    		taxon.setAuthor(request.getParameter("Author"));
 	    		entry.setTaxon(taxon);
+	    		entry.setTaxonomicGroup(taxaUtil.getTaxonomicGroup(request.getParameter("TaxaGroup")));
+	    		entry.setTaxonomicName(request.getParameter("TaxaName"));
 	    		taxaUtil.submitProvisional(user, entry);
+	    		status = "Submitted OK";
 	    	} else {
 		    	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 		    	DataEntryForm dataEntryForm = getDataEntryFormImpl(request, user);
