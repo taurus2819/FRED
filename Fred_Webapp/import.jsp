@@ -1,14 +1,19 @@
 <%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.de.DataEntryForm"
 %><%@page import="nz.cri.gns.fred.de.DataInputException"
+%><%@page import="nz.cri.gns.fred.de.TaxonomicListException"
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
+%><%@page import="nz.cri.gns.fred.model.PaleontologyListEntry"
+%><%@page import="nz.cri.gns.fred.model.UnsavedListEntry"
+%><%@page import="nz.cri.gns.fred.model.UnsavedTaxon"
 %><%@page import="nz.cri.gns.jsp.JspUtils"
 %><%@page import="nz.cri.gns.jsp.PageState"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
+%><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.auth.InsufficientPrivelegesException"
@@ -94,6 +99,15 @@
 	    		new FolderUtil(HibernateUtil.get().getDAOFactory()).addFolder(request.getParameter("FoldName"), user);
 	    		status = "Created OK";
 	    		message = "";
+	    	} else if (type.equals("Taxa")) {
+	    		TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
+	    		UnsavedListEntry entry = new UnsavedListEntry();
+				UnsavedTaxon taxon = new UnsavedTaxon();
+				taxon.setTaxonomicGroup(taxaUtil.getTaxonomicGroup(request.getParameter("TaxaGroup")));
+	    		taxon.setTaxonomicName(TaxonomicUtil.getCleanedName(request.getParameter("TaxaName")));
+	    		taxon.setAuthor(request.getParameter("Author"));
+	    		entry.setTaxon(taxon);
+	    		taxaUtil.submitProvisional(user, entry);
 	    	} else {
 		    	DAOFactory factory = HibernateUtil.get().getDAOFactory();
 		    	DataEntryForm dataEntryForm = getDataEntryFormImpl(request, user);
@@ -121,6 +135,12 @@
 		} catch (InsufficientPrivelegesException e) {
 			status = "AuthError";
 			message = "User not authorised";
+		} catch (TaxonomicListException e) {
+			status = "TaxaListError";
+			StringBuffer msg = new StringBuffer();
+			for (PaleontologyListEntry t : e.getTaxaList())
+				msg.append(t.getTaxonomicGroup().getName()).append("*").append(t.getTaxonomicName()).append("#");
+			message = msg.toString();
 	    } catch (DataInputException e) {
 	    	status = "Error";
 			String[] error = (String[])e.getError().firstElement();
