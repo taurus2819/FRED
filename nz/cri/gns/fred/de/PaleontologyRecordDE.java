@@ -350,7 +350,7 @@ public class PaleontologyRecordDE extends RecordDE {
 						for (PaleontologyListEntry entry : list) {
 							Taxon taxon = entry.getTaxon();
 							out.write("<tr><td>" + group.getName() + "</td>" 
-									+ "<td>" + entry.getTaxonomicName() + "</td>" 
+									+ "<td>" + DBUtils.nvl(entry.getTaxonomicName()) + "</td>" 
 									+ "<td>" + DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "</td>" 
 									+ "<td>" + DBUtils.nvl(entry.getSpecimenCount()) + "</td>" 
 									+ "<td>" + DBUtils.nvl(entry.getSpecimenCoords()) + "</td>" 
