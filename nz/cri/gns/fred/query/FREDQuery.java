@@ -32,6 +32,7 @@ import nz.cri.gns.fred.model.Bedding;
 import nz.cri.gns.fred.model.Carbonate;
 import nz.cri.gns.fred.model.ColourModifier;
 import nz.cri.gns.fred.model.Country;
+import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FrUserView;
 import nz.cri.gns.fred.model.GrainSize;
@@ -95,7 +96,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[13] = new BasicTextField("f.comments", "Locality Comments");
 		add(new TwoLevelField("Locality Fields", f));
 		
-		f = new Field[9];
+		f = new Field[10];
 		f[0] = new BasicTextField("f.featureName", "Drillhole Name");
 		f[1] = new PossibleValueField("f.person", "Operating Company", people);
 		f[2] = new BasicDateField("f.startDate", "Spud Date");
@@ -105,6 +106,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[6] = new BasicNumberField("f.datumElevation", "Datum Elevation (m)");
 		f[7] = new MetricDepthField("f.startDepth", "Kick-off Depth (m)", "f.depthUnit");
 		f[8] = new MetricDepthField("f.finishDepth", "Termination Depth (m)", "f.depthUnit");
+		f[9] = new TableRequiredPossibleValueField("sample.drillType", "Sample Type", getValues("FROM DrillType AS t", DrillType.class), SAMPLE_TABLE, SAMPLE_JOIN);
 		add(new TwoLevelField("Drillhole Fields", f));
 		
 		f = new Field[8];

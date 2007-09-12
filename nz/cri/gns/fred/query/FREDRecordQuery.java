@@ -19,6 +19,7 @@ import nz.cri.gns.fred.model.Bedding;
 import nz.cri.gns.fred.model.Carbonate;
 import nz.cri.gns.fred.model.ColourModifier;
 import nz.cri.gns.fred.model.Country;
+import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
@@ -65,7 +66,7 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 		f[13] = new BasicTextField("r.sample.feature.comments", "Locality Comments");
 		add(new TwoLevelField("Locality Fields", f));
 		
-		f = new Field[9];
+		f = new Field[10];
 		f[0] = new BasicTextField("r.sample.feature.featureName", "Drillhole Name");
 		f[1] = new PossibleValueField("r.sample.feature.person", "Operating Company", people);
 		f[2] = new BasicDateField("r.sample.feature.startDate", "Spud Date");
@@ -75,6 +76,7 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 		f[6] = new BasicNumberField("r.sample.feature.datumElevation", "Datum Elevation (m)");
 		f[7] = new MetricDepthField("r.sample.feature.startDepth", "Kick-off Depth (m)", "r.sample.feature.depthUnit");
 		f[8] = new MetricDepthField("r.sample.feature.finishDepth", "Termination Depth (m)", "r.sample.feature.depthUnit");
+		f[9] = new PossibleValueField("r.sample.drillType", "Sample Type", getValues("FROM DrillType AS t", DrillType.class));
 		add(new TwoLevelField("Drillhole Fields", f));
 		
 		f = new Field[8];
