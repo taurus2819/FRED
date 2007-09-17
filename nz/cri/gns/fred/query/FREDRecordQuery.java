@@ -13,7 +13,7 @@ import nz.cri.gns.db.querybuilder.advanced.TableRequiredPossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.TableRequiredTextField;
 import nz.cri.gns.db.querybuilder.advanced.TwoLevelField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlJoin;
-import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTablePossibleValueField;
+import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTableTextField;
 import nz.cri.gns.fred.model.BedThickness;
 import nz.cri.gns.fred.model.Bedding;
 import nz.cri.gns.fred.model.Carbonate;
@@ -68,7 +68,8 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 		
 		f = new Field[10];
 		f[0] = new BasicTextField("r.sample.feature.featureName", "Drillhole Name");
-		f[1] = new PossibleValueField("r.sample.feature.person", "Operating Company", people);
+		//f[1] = new PossibleValueField("r.sample.feature.person", "Operating Company", people);
+		f[1] = new BasicTextField("r.sample.feature.person", "Operating Company");
 		f[2] = new BasicDateField("r.sample.feature.startDate", "Spud Date");
 		f[3] = new BasicDateField("r.sample.feature.finishDate", "Completion Date");
 		f[4] = new BasicTextField("r.sample.feature.licenceArea", "Licence Area");
@@ -81,7 +82,8 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 		
 		f = new Field[8];
 		f[0] = new BasicTextField("r.sample.feature.featureName", "Vertical Section Name");
-		f[1] = new PossibleValueField("r.sample.feature.person", "Section Collector", people);
+		//f[1] = new PossibleValueField("r.sample.feature.person", "Section Collector", people);
+		f[1] = new BasicTextField("r.sample.feature.person", "Section Collector");
 		f[2] = new BasicDateField("r.sample.feature.startDate", "Sampling Start Date");
 		f[3] = new BasicDateField("r.sample.feature.finishDate", "Completion Date");
 		f[4] = new PossibleValueField("r.sample.feature.datumType", "Datum Type", getVertSectDatumTypes());
@@ -91,7 +93,8 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 		add(new TwoLevelField("Vertical Section Fields", f));
 		
 		f = new Field[5];
-		f[0] = new HqlUniqueSubTablePossibleValueField("collector.personId", "Collector", people, new String[] {"r.sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "collector")});
+		//f[0] = new HqlUniqueSubTablePossibleValueField("collector.personId", "Collector", people, new String[] {"r.sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "collector")});
+		f[0] = new HqlUniqueSubTableTextField("collector.personId", "Collector", new String[] {"r.sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "collector")});
 		f[1] = new BasicDateField("r.sample.collectionDate", "Collection Date");
 		f[2] = new PossibleValueField("r.sample.inPlace", "Fossils In Place", getInPlace());
 		f[3] = new BasicTextField("r.sample.notCollected", "Not Collected");
@@ -137,7 +140,8 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 		add(new TwoLevelField("Correspondence Fields", f));
 		
 		f = new Field[5];
-		f[0] = new HqlUniqueSubTablePossibleValueField("adoptor.personId", "Adoptor", people, new String[] {"r.adoption.adoptors"}, new HqlJoin[] {new HqlJoin(false, "adoptor")});
+		//f[0] = new HqlUniqueSubTablePossibleValueField("adoptor.personId", "Adoptor", people, new String[] {"r.adoption.adoptors"}, new HqlJoin[] {new HqlJoin(false, "adoptor")});
+		f[0] = new HqlUniqueSubTableTextField("adoptor.personId", "Adoptor", new String[] {"r.adoption.adoptors"}, new HqlJoin[] {new HqlJoin(false, "adoptor")});
 		f[1] = new BasicDateField("r.adoption.adoptionDate", "Adoption Date");
 		f[2] = new BasicAgeField("r.adoption.stage", "Adopted Stage", ages);
 		f[3] = new BasicNumericAgeField("r.adoption.stage", "Adopted Stage (numeric)");
@@ -145,7 +149,8 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 		add(new TwoLevelField("Adoption Fields", f));
 		
 		f = new Field[13];
-		f[0] = new HqlUniqueSubTablePossibleValueField("identifier.personId", "Identifier", people, new String[] {"r.paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "identifier")});
+		//f[0] = new HqlUniqueSubTablePossibleValueField("identifier.personId", "Identifier", people, new String[] {"r.paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "identifier")});
+		f[0] = new HqlUniqueSubTableTextField("identifier.personId", "Identifier", new String[] {"r.paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "identifier")});
 		f[1] = new BasicDateField("r.paleontology.identificationDate", "Identification Date");
 		f[2] = new BasicAgeField("r.paleontology.stage", "Stage", ages);
 		f[3] = new BasicNumericAgeField("r.paleontology.stage", "Stage (numeric)");
