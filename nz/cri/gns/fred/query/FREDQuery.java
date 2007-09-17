@@ -24,6 +24,7 @@ import nz.cri.gns.db.querybuilder.advanced.TwoLevelField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlJoin;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlQuery;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTablePossibleValueField;
+import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTableTextField;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.AgeView;
@@ -124,7 +125,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		
 		f = new Field[5];
 		//f[0] = new HqlUniqueSubTablePossibleValueField("collector.personId", "Collector", people, new String[] {"f.samples", "sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "collector")});
-		f[0] = new TableRequiredTextField("collector.name", "Collector", new String[] {"f.samples", "sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "collector")});
+		f[0] = new HqlUniqueSubTableTextField("collector.name", "Collector", new String[] {"f.samples", "sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "collector")});
 		f[1] = new TableRequiredDateField("sample.collectionDate", "Collection Date", SAMPLE_TABLE, SAMPLE_JOIN);
 		f[2] = new TableRequiredPossibleValueField("sample.inPlace", "Fossils In Place", getInPlace(), SAMPLE_TABLE, SAMPLE_JOIN);
 		f[3] = new TableRequiredTextField("sample.notCollected", "Not Collected", SAMPLE_TABLE, SAMPLE_JOIN);
