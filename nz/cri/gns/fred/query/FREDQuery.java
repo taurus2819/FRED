@@ -23,7 +23,6 @@ import nz.cri.gns.db.querybuilder.advanced.TableRequiredTextField;
 import nz.cri.gns.db.querybuilder.advanced.TwoLevelField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlJoin;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlQuery;
-import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTablePossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTableTextField;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
@@ -39,7 +38,6 @@ import nz.cri.gns.fred.model.FrUserView;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.LabSection;
-import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.RockColour;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.Weathering;
@@ -60,12 +58,12 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	
 	protected int lastUsedId = 900000;
 	
-	protected List<Person> people = null;
+	//protected List<Person> people = null;
 	protected List<AgeView> ages = null;
 	protected List<FrUserView> frUsers = null;
 	
 	public FREDQuery() {
-		this.people = getValues("FROM Person AS p", Person.class);
+		//this.people = getValues("FROM Person AS p", Person.class);
 		this.ages = getValues("FROM AgeView AS a WHERE a.ageAbbrev <> 'nd' AND a.ageAbbrev <> 'nf'", AgeView.class);
 		this.frUsers = getValues("FROM FrUserView AS f", FrUserView.class);
 		addFields();
@@ -171,7 +169,8 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		add(new TwoLevelField("Correspondence Fields", f));
 		
 		f = new Field[5];
-		f[0] = new HqlUniqueSubTablePossibleValueField("adoptor.personId", "Adoptor", people, new String[] {"f.samples", "sample.records", "record.adoption", "adoption.adoptors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "record"), new HqlJoin(false, "adoption"), new HqlJoin(false, "adoptor")});
+		//f[0] = new HqlUniqueSubTablePossibleValueField("adoptor.personId", "Adoptor", people, new String[] {"f.samples", "sample.records", "record.adoption", "adoption.adoptors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "record"), new HqlJoin(false, "adoption"), new HqlJoin(false, "adoptor")});
+		f[0] = new HqlUniqueSubTableTextField("adoptor.personId", "Adoptor", new String[] {"f.samples", "sample.records", "record.adoption", "adoption.adoptors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "record"), new HqlJoin(false, "adoption"), new HqlJoin(false, "adoptor")});
 		f[1] = new TableRequiredDateField("record.adoption.adoptionDate", "Adoption Date", RECORD_TABLES, RECORD_JOINS);
 		f[2] = new AgeField("record.adoption.stage", "Adopted Stage", ages, RECORD_TABLES, RECORD_JOINS);
 		f[3] = new NumericAgeField("record.adoption.stage", "Adopted Stage (numeric)", RECORD_TABLES, RECORD_JOINS);
@@ -179,7 +178,8 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		add(new TwoLevelField("Adoption Fields", f));
 		
 		f = new Field[13];
-		f[0] = new HqlUniqueSubTablePossibleValueField("identifier.personId", "Identifier", people, new String[] {"f.samples", "sample.records", "record.paleontology", "paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "record"), new HqlJoin(false, "paleontology"), new HqlJoin(false, "identifier")});
+		//f[0] = new HqlUniqueSubTablePossibleValueField("identifier.personId", "Identifier", people, new String[] {"f.samples", "sample.records", "record.paleontology", "paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "record"), new HqlJoin(false, "paleontology"), new HqlJoin(false, "identifier")});
+		f[0] = new HqlUniqueSubTableTextField("identifier.personId", "Identifier", new String[] {"f.samples", "sample.records", "record.paleontology", "paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "record"), new HqlJoin(false, "paleontology"), new HqlJoin(false, "identifier")});
 		f[1] = new TableRequiredDateField("record.paleontology.identificationDate", "Identification Date", RECORD_TABLES, RECORD_JOINS);
 		f[2] = new AgeField("record.paleontology.stage", "Stage", ages, RECORD_TABLES, RECORD_JOINS);
 		f[3] = new NumericAgeField("record.paleontology.stage", "Stage (numeric)", RECORD_TABLES, RECORD_JOINS);
