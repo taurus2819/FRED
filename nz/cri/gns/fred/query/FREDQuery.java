@@ -112,7 +112,8 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		
 		f = new Field[8];
 		f[0] = new BasicTextField("f.featureName", "Vertical Section Name");
-		f[1] = new PossibleValueField("f.person", "Section Collector", people);
+		//f[1] = new PossibleValueField("f.person", "Section Collector", people);
+		f[1] = new BasicTextField("f.person.name", "Section Collector");
 		f[2] = new BasicDateField("f.startDate", "Sampling Start Date");
 		f[3] = new BasicDateField("f.finishDate", "Completion Date");
 		f[4] = new PossibleValueField("f.datumType", "Datum Type", getVertSectDatumTypes());
@@ -122,7 +123,8 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		add(new TwoLevelField("Vertical Section Fields", f));
 		
 		f = new Field[5];
-		f[0] = new HqlUniqueSubTablePossibleValueField("collector.personId", "Collector", people, new String[] {"f.samples", "sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "collector")});
+		//f[0] = new HqlUniqueSubTablePossibleValueField("collector.personId", "Collector", people, new String[] {"f.samples", "sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "collector")});
+		f[0] = new TableRequiredTextField("collector.name", "Collector", new String[] {"f.samples", "sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "collector")});
 		f[1] = new TableRequiredDateField("sample.collectionDate", "Collection Date", SAMPLE_TABLE, SAMPLE_JOIN);
 		f[2] = new TableRequiredPossibleValueField("sample.inPlace", "Fossils In Place", getInPlace(), SAMPLE_TABLE, SAMPLE_JOIN);
 		f[3] = new TableRequiredTextField("sample.notCollected", "Not Collected", SAMPLE_TABLE, SAMPLE_JOIN);
