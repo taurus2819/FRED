@@ -64,6 +64,7 @@
 			try {
 				FREDQuery query = FREDUtil.getFREDQuery(state);
 				whereSQL = query.getHQLQuery();
+				System.out.println(whereSQL);
 				queryString = query.getQueryAsString();
 				features = featureUtil.getListFromQueryBuilder(whereSQL);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE);
