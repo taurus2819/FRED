@@ -98,7 +98,8 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		
 		f = new Field[10];
 		f[0] = new BasicTextField("f.featureName", "Drillhole Name");
-		f[1] = new PossibleValueField("f.person", "Operating Company", people);
+		//f[1] = new PossibleValueField("f.person", "Operating Company", people);
+		f[1] = new BasicTextField("f.person.name", "Operating Company");
 		f[2] = new BasicDateField("f.startDate", "Spud Date");
 		f[3] = new BasicDateField("f.finishDate", "Completion Date");
 		f[4] = new BasicTextField("f.licenceArea", "Licence Area");
