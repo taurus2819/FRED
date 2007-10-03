@@ -85,8 +85,8 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	private BaseFont baseFont;
 	private FrNumber currentFrNumber = null;
 	
-	private boolean confidFlag;
-	private boolean workingFlag;
+	/*private boolean confidFlag;
+	private boolean workingFlag; */
 	
 	private static final float MM_TO_PT = 2.8346f;
 	
@@ -337,8 +337,8 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		table.setWidths(bodyTableColWidths);
 		table.setSpacingAfter(3 * MM_TO_PT);
 		
-		confidFlag = false;
-		workingFlag = FREDConstants.WORKING.equals(feature.getAudit().getStatus()) || FREDConstants.REJECTED.equals(feature.getAudit().getStatus());
+		//confidFlag = false;
+		//workingFlag = FREDConstants.WORKING.equals(feature.getAudit().getStatus()) || FREDConstants.REJECTED.equals(feature.getAudit().getStatus());
 		
 		if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
 			//Location Information
@@ -417,8 +417,8 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	}
 	
 	private void writeSample(Sample sample, Document document, Font[] fonts) throws DocumentException, MalformedURLException, IOException, NamingException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, StorageAccessException {
-		confidFlag = sampleUtil.isSampleConfidential(sample);
-		workingFlag = FREDConstants.WORKING.equals(sample.getAudit().getStatus()) || FREDConstants.REJECTED.equals(sample.getAudit().getStatus());
+		//confidFlag = sampleUtil.isSampleConfidential(sample);
+		//workingFlag = FREDConstants.WORKING.equals(sample.getAudit().getStatus()) || FREDConstants.REJECTED.equals(sample.getAudit().getStatus());
 		if(sampleUtil.isAllowedReadSample(user, sample)) {
 			Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
 			
@@ -537,8 +537,8 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	private void writeRecord(Record record, Document document, Font[] fonts) throws StorageAccessException, DocumentException, NamingException, SQLException {
 		Font[] bodyFonts = new Font[] {fonts[1], fonts[0]};
 		
-		confidFlag = recordUtil.isRecordConfidential(record);
-		workingFlag = FREDConstants.WORKING.equals(record.getAudit().getStatus()) || FREDConstants.REJECTED.equals(record.getAudit().getStatus());
+		//confidFlag = recordUtil.isRecordConfidential(record);
+		//workingFlag = FREDConstants.WORKING.equals(record.getAudit().getStatus()) || FREDConstants.REJECTED.equals(record.getAudit().getStatus());
 		
 		//Locality information
 		PdfPTable table = new PdfPTable(2);
@@ -594,7 +594,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				//taxa (Pal list)
 
 				if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
-					confidFlag = confidFlag || recordUtil.isPalListConfidential(palRecord);
+					//confidFlag = confidFlag || recordUtil.isPalListConfidential(palRecord);
 					for (TaxonomicGroup taxaGroup : recordUtil.getTaxonomicGroups(palRecord)) {
 						PdfPTable taxaTable = new PdfPTable(4);
 						taxaTable.setTotalWidth(bodyTableWidth);
@@ -687,7 +687,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 		cb.restoreState();
 		
 		//watermark
-		if (confidFlag) {
+		/*if (confidFlag) {
 			PdfContentByte cb2 = writer.getDirectContentUnder();
 			cb2.saveState();
 			cb2.setRGBColorFill(255, 165, 165);
@@ -705,7 +705,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 			cb2.showTextAligned(Element.ALIGN_CENTER, "DRAFT", document.getPageSize().width() / 2, document.getPageSize().height() / 2, 60);
 			cb2.endText();
 			cb2.restoreState();
-		}
+		} */
 	}
 
 	public void onCloseDocument(PdfWriter writer, Document document) {
