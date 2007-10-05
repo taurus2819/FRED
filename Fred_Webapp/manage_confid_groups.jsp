@@ -109,7 +109,7 @@
 		SelectBox<FrUserView> selectBox = new SelectBox<FrUserView>(userUtil.getFrUsersWithout(group.getUsers()));
 		Attributes attributes = Attributes.createNameOnlyAttributes("UserID");
 		%><tr><td>&nbsp;</td></tr><tr><td style="text-align: left"><%
-		selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
+		selectBox.writeBox(attributes, "-- Choose --", null, (FrUserView)null, new PrintWriter(out));
 		%>&nbsp;&nbsp;</td><td style="text-align: left"><a href="#" onClick="AddForm.submit();"><img src="images/cancel.gif" border="0" height="20" width="20" alt="Add User" /></a></td></tr>
 		</table><%
 		endDETable(pageContext);

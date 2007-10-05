@@ -241,7 +241,7 @@
 				SelectBox<Person> selectBox = new SelectBox<Person>(personUtil.getPeople());
 				selectBox.setNameNameFlag(true);
 				Attributes attributes = Attributes.createNameOnlyAttributes("Person");
-				selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
+				selectBox.writeBox(attributes, "-- Choose --", null, (Person)null, new PrintWriter(out));
 				%></td></tr>
 				<tr><td class="heading" colspan="2">Add to Person List</td></tr>
 				<tr><td class="smallheading">Name</td><td><input type="text" name="PersonName" />&nbsp;&nbsp;

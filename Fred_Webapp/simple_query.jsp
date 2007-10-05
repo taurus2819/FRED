@@ -327,7 +327,7 @@
 	<tr><td class="heading">Collector&nbsp;&nbsp;</td><td></td><td colspan="3"><%	
 	SelectBox<Person> personSelectBox = new SelectBox<Person>(new PersonUtil(factory).getPeople());
 	Attributes attributes = Attributes.createNameOnlyAttributes("Coll");
-	personSelectBox.writeBox(attributes, "-- All --", null, null, new PrintWriter(out));
+	personSelectBox.writeBox(attributes, "-- All --", null, (Person)null, new PrintWriter(out));
 	%></td></tr>
 	<tr><td class="heading">Collection Date&nbsp;&nbsp;</td><td class="smallheading">Year</td><td><input type="text" name="YearFrom" size="10" /></td><td>to</td><td><input type="text" name="YearTo" size="10" /></td></tr>
 	<tr><td class="heading">Field Number&nbsp;&nbsp;</td><td></td><td colspan="3"><input type="text" name="FieldNum" size="20" /></td></tr>
@@ -338,10 +338,10 @@
 	<tr><td class="heading">Age&nbsp;&nbsp;</td><td class="smallheading">Stage Range</td><td><%
 	SelectBox<AgeView> ageSelectBox = new SelectBox<AgeView>(new StageUtil(factory).getAges());
 	attributes = Attributes.createNameOnlyAttributes("StageFrom");
-	ageSelectBox.writeBox(attributes, "-- All --", null, null, new PrintWriter(out));
+	ageSelectBox.writeBox(attributes, "-- All --", null, (AgeView)null, new PrintWriter(out));
 	%></td><td>&nbsp;to&nbsp;</td><td><%
 	attributes = Attributes.createNameOnlyAttributes("StageTo");
-	ageSelectBox.writeBox(attributes, "-- All --", null, null, new PrintWriter(out));
+	ageSelectBox.writeBox(attributes, "-- All --", null, (AgeView)null, new PrintWriter(out));
 	%></td></tr>
 	<tr><td></td><td class="smallheading">Numeric Range&nbsp;&nbsp;</td><td><input type="text" name="AgeFrom" size="10" /></td><td>&nbsp;to&nbsp;</td><td><input type="text" name="AgeTo" size="10" /></td></tr>
 	<tr><td></td><td class="smallheading">Options</td><td class="smallheading"><input type="checkbox" name="StratAge" checked />&nbsp;Collectors&nbsp;Inferred/Known&nbsp;Age<br><input type="checkbox" name="AdoAge" checked />&nbsp;Adopted&nbsp;Age<br><input type="checkbox" name="PalAge" checked />&nbsp;Paleontology&nbsp;Det&nbsp;Age</td><td></td><td class="smallheading"><input type="radio" name="AgeType" value="Narrow" checked />&nbsp;Narrow Search<br><input type="radio" name="AgeType" value="Wide" />&nbsp;Wide Search</td></tr>
