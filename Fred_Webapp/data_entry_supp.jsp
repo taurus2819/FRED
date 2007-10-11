@@ -260,7 +260,7 @@
 				SelectBox<Person> selectBox = new SelectBox<Person>(personUtil.getPeople());
 				selectBox.setNameNameFlag(true);
 				Attributes attributes = Attributes.createNameOnlyAttributes("Person");
-				selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
+				selectBox.writeBox(attributes, "-- Choose --", null, (Person)null, new PrintWriter(out));
 				%></td></tr>
 				<tr><td class="heading" colspan="2">Add to Person List</td></tr>
 				<tr><td class="smallheading">Name</td><td><input type="text" name="PersonName" />&nbsp;&nbsp;
@@ -279,7 +279,7 @@
 				SelectBox<Person> selectBox = new SelectBox<Person>(personUtil.getPeople());
 				selectBox.setNameNameFlag(true);
 				Attributes attributes = Attributes.createNameOnlyAttributes("Person");
-				selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
+				selectBox.writeBox(attributes, "-- Choose --", null, (Person)null, new PrintWriter(out));
 				%></td></tr>
 				<tr><td class="heading" colspan="2">Add to Person List</td></tr>
 				<tr><td class="smallheading">Name</td><td><input type="text" name="PersonName" />&nbsp;&nbsp;
@@ -298,7 +298,7 @@
 				SelectBox<Person> selectBox = new SelectBox<Person>(personUtil.getPeople());
 				selectBox.setNameNameFlag(true);
 				Attributes attributes = Attributes.createNameOnlyAttributes("Person");
-				selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
+				selectBox.writeBox(attributes, "-- Choose --", null, (Person)null, new PrintWriter(out));
 				%></td></tr>
 				<tr><td class="heading" colspan="2">Add to Person List</td></tr>
 				<tr><td class="smallheading">Name</td><td><input type="text" name="PersonName" />&nbsp;&nbsp;
@@ -317,7 +317,7 @@
 				SelectBox<Person> selectBox = new SelectBox<Person>(personUtil.getPeople());
 				selectBox.setNameNameFlag(true);
 				Attributes attributes = Attributes.createNameOnlyAttributes("Person");
-				selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
+				selectBox.writeBox(attributes, "-- Choose --", null, (Person)null, new PrintWriter(out));
 				%></td></tr>
 				<tr><td class="heading" colspan="2">Add to Person List</td></tr>
 				<tr><td class="smallheading">Name</td><td><input type="text" name="PersonName" />&nbsp;&nbsp;
@@ -337,7 +337,7 @@
 				selectBox.setNameNameFlag(true);
 				Attributes attributes = Attributes.createNameOnlyAttributes("StratLex");
 				attributes.setAttribute("onChange", "form1.StratName.value = parseDropDown(StratLex.value);");
-				selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
+				selectBox.writeBox(attributes, "-- Choose --", null, (StratigraphicUnit)null, new PrintWriter(out));
 				%></td></tr>
 				<tr><td class="heading">Stratigraphic Name</td><td><input type="text" name="StratName" size="40" />
 				&nbsp;&nbsp;<input type="checkbox" name="Unk" />&nbsp;unknown
@@ -356,19 +356,19 @@
 				SelectBox<FossilGroup> fgSelectBox = new SelectBox<FossilGroup>(sampleUtil.getFossilGroups());
 				fgSelectBox.setNameNameFlag(true);
 				Attributes attributes = Attributes.createNameOnlyAttributes("Group");
-				fgSelectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
+				fgSelectBox.writeBox(attributes, "-- Choose --", null, (FossilGroup)null, new PrintWriter(out));
 				%></td></tr>
 				<tr><td class="heading">Person</td><td><%
 				SelectBox<Person> pSelectBox = new SelectBox<Person>(personUtil.getPeople());
 				pSelectBox.setNameNameFlag(true);
 				attributes = Attributes.createNameOnlyAttributes("Person");
-				pSelectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
+				pSelectBox.writeBox(attributes, "-- Choose --", null, (Person)null, new PrintWriter(out));
 				%></td></tr>
 				<tr><td class="heading">Lab</td><td><%
 				SelectBox<Lab> lSelectBox = new SelectBox<Lab>(sampleUtil.getLabs());
 				lSelectBox.setNameNameFlag(true);
 				attributes = Attributes.createNameOnlyAttributes("Lab");
-				lSelectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
+				lSelectBox.writeBox(attributes, "-- Choose --", null, (Lab)null, new PrintWriter(out));
 				%><tr><td class="heading">Comments</td><td><textarea name="Comm" rows="3" cols="40"></textarea></td></tr>
 				<tr><td class="heading" colspan="2">Add to Person List</td></tr>
 				<tr><td class="smallheading">Name</td><td><input type="text" name="PersonName" />&nbsp;&nbsp;
@@ -489,13 +489,13 @@
 				SelectBox<RelationshipType> rSelectBox = new SelectBox<RelationshipType>(sampleUtil.getRelationshipTypes("Stratigraphic"));
 				rSelectBox.setNameNameFlag(true);
 				Attributes attributes = Attributes.createNameOnlyAttributes("Rel");
-				rSelectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
+				rSelectBox.writeBox(attributes, "-- Choose --", null, (RelationshipType)null, new PrintWriter(out));
 				%><tr><td class="heading">NZ StratLex</td><td><%
 				SelectBox<StratigraphicUnit> slSelectBox = new SelectBox<StratigraphicUnit>(sampleUtil.getStratigraphicUnits());
 				slSelectBox.setNameNameFlag(true);
 				attributes = Attributes.createNameOnlyAttributes("StratLex");
 				attributes.setAttribute("onChange", "form1.StratName.value = parseDropDown(StratLex.value);");
-				slSelectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
+				slSelectBox.writeBox(attributes, "-- Choose --", null, (StratigraphicUnit)null, new PrintWriter(out));
 				%></td></tr>
 				<tr><td class="heading">Stratigraphic Name</td><td><input type="text" name="StratName" size="40" /></td></tr>
 				</table>
@@ -512,7 +512,7 @@
 				SelectBox<SedimentaryFeatureType> selectBox = new SelectBox<SedimentaryFeatureType>(sampleUtil.getSedimentaryFeatureTypes());
 				selectBox.setNameNameFlag(true);
 				Attributes attributes = Attributes.createNameOnlyAttributes("Feat");
-				selectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
+				selectBox.writeBox(attributes, "-- Choose --", null, (SedimentaryFeatureType)null, new PrintWriter(out));
 				%></td></tr>
 				<tr><td class="heading">Abundant</td><td><input type="checkbox" name="Abund" /></td></tr>
 				</table>
@@ -538,7 +538,7 @@
 					SelectBox<Taxon> tSelectBox = new SelectBox<Taxon>(taxaUtil.getAppProvTaxa(request.getParameter("Group")));
 					attributes = Attributes.createNameOnlyAttributes("TaxaList");
 					attributes.setAttribute("onChange", "form1.TaxaName.value = parseDropDown(TaxaList.options[TaxaList.selectedIndex].text);");
-					tSelectBox.writeBox(attributes, "-- Choose --", null, null, new PrintWriter(out));
+					tSelectBox.writeBox(attributes, "-- Choose --", null, (Taxon)null, new PrintWriter(out));
 					%></td></tr>
 					<tr><td class="heading">Taxonomic Name</td><td><input type="text" name="TaxaName" size="40" /></td></tr>
 					<tr><td class="heading">Author</td><td><input type="text" name="Author" size="40" /></td></tr>
