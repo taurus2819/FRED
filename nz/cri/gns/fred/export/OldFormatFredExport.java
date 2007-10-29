@@ -109,7 +109,7 @@ public class OldFormatFredExport extends DefaultFredExport {
 			if (age.getLower() != null && age.getLower().equals(age.getUpper())) {
 				oneAge = oneAge && !(age.isLowerCertain() ^ age.isUpperCertain());
 			}
-			DecimalFormat format = new DecimalFormat("0.0");
+			DecimalFormat format = new DecimalFormat("0.0####");
 			if (oneAge) {
 				AgeView ageV = age.getLower() == null ? age.getUpper() : age.getLower();
 				boolean ageU = age.getLower() == null ? age.isUpperCertain() : age.isLowerCertain();
