@@ -145,4 +145,17 @@ public class StageUtil extends ModelUtil {
 		return new String[] {ageView.getAgeName(), ageView.getAgeAbbrev()};
 	}
 	
+	public double ageStart(Stage stage) {
+		AgeView age = stage.getLowerAgeView();
+		return age.getAgeStart();
+	}
+	
+	public double ageStop(Stage stage) {
+		AgeView age;
+		if (stage.getUpperAgeView() != null)
+			age = stage.getUpperAgeView();
+		else
+			 age = stage.getLowerAgeView();
+		return age.getAgeStop();
+	}
 }
