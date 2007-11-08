@@ -139,7 +139,7 @@
 								out.print(stageUtil.getAgeStart(stage) + "\t");
 								out.print(stageUtil.getAgeStop(stage) + "\t");
 							} else
-								out.print("\t\t\t\t");
+								out.print("\t\t\t\t\t\t");
 							if (sample.getKnownStage() != null) {
 								Stage stage = sample.getKnownStage();
 								out.print(((stage.getLowerAgeView() != null) ? stage.getLowerAgeView().getAgeName() : "") + "\t");
@@ -149,7 +149,7 @@
 								out.print(stageUtil.getAgeStart(stage) + "\t");
 								out.print(stageUtil.getAgeStop(stage) + "\t");
 							} else
-								out.print("\t\t\t\t");
+								out.print("\t\t\t\t\t\t");
 						}
 						
 						out.print("\n");
