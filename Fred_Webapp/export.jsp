@@ -2,6 +2,7 @@
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.fred.model.Person"
 %><%@page import="nz.cri.gns.fred.model.Sample"
+%><%@page import="nz.cri.gns.fred.model.Relationship"
 %><%@page import="nz.cri.gns.fred.model.SentTo"
 %><%@page import="nz.cri.gns.fred.model.Stage"
 %><%@page import="nz.cri.gns.fred.model.SiteView"
@@ -28,6 +29,7 @@
 		User user = (User) getUser(session);
 		FeatureUtil featureUtil = new FeatureUtil(HibernateUtil.get().getDAOFactory());
 		StageUtil stageUtil = new StageUtil(HibernateUtil.get().getDAOFactory());
+		SampleUtil sampleUtil = new SampleUtil(HibernateUtil.get().getDAOFactory());
 		
 		boolean localityFlag = (request.getParameter("locality") != null);
 		boolean collectionFlag = (request.getParameter("collection") != null);
@@ -54,8 +56,10 @@
 			
 			if (collectionFlag)
 				out.print("Collectors\tCollection Date\tFossils in Place\tSent To\tNot Collected\tSignificance/Comments\t");
-			if (stratigraphyFlag)
+			if (stratigraphyFlag) {
 				out.print("Stratigraphic Name\tInferred Stage Lower\tInferred Lower Modifier\tInferred Stage Upper\tInferred Upper Modifier\tInferred Age Start\tInferred Age Stop\tKnown Stage Lower\tKnown Lower Modifier\tKnown Stage Upper\tKnown Upper Modifier\tKnown Age Start\tKnown Age Stop\t");
+				out.print("Samples Nearby\tSample Relationships\tStratigraphic Relationships\tColumn/Map\tDip\tDip Direction\tStrike\tFacing\tStratigraphy Comments\t");	
+			}
 			
 			out.print("\n");
 		}
@@ -150,6 +154,23 @@
 								out.print(stageUtil.getAgeStop(stage) + "\t");
 							} else
 								out.print("\t\t\t\t\t\t");
+							List<? extends Relationship> nearbys = sampleUtil.getRelationships(sample, "Sample", "nearby");
+							if (nearbys != null && nearbys.size() > 0) {
+								for (Relationship rel : nearbys)
+									out.print(SampleUtil.getRelationshipDescription(rel) + ";");
+							}
+							out.print("\t");
+							List<? extends Relationship> sampRels = sampleUtil.getRelationships(sample, "Sample", new String[] {"above", "below"});
+							if (nearbys != null && sampRels.size() > 0) {
+								for (Relationship rel : sampRels)
+									out.print(SampleUtil.getRelationshipDescription(rel) + ";");
+							}
+							out.print("\t");
+							List<? extends Relationship> stratRels = sampleUtil.getRelationships(sample, "Stratigraphic", new String[] {"above top", "above base", "below top", "below base"});
+							if (nearbys != null && stratRels.size() > 0) {
+								for (Relationship rel : stratRels)
+									out.print(SampleUtil.getRelationshipDescription(rel) + ";");
+							}	
 						}
 						
 						out.print("\n");
