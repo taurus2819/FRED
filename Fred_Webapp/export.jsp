@@ -9,6 +9,7 @@
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.util.SiteUtil"
+%><%@page import="nz.cri.gns.fred.util.StageUtil"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
@@ -26,6 +27,7 @@
 	if (features != null && features.size() > 0) {
 		User user = (User) getUser(session);
 		FeatureUtil featureUtil = new FeatureUtil(HibernateUtil.get().getDAOFactory());
+		StageUtil stageUtil = new StageUtil(HibernateUtil.get().getDAOFactory());
 		
 		boolean localityFlag = (request.getParameter("locality") != null);
 		boolean collectionFlag = (request.getParameter("collection") != null);
@@ -53,7 +55,7 @@
 			if (collectionFlag)
 				out.print("Collectors\tCollection Date\tFossils in Place\tSent To\tNot Collected\tSignificance/Comments\t");
 			if (stratigraphyFlag)
-				out.print("Stratigraphic Name\tInferred Stage Lower\tInferred Lower Modifier\tInferred Stage Upper\tInferred Upper Modifier\tKnown Stage Lower\tKnown Lower Modifier\tKnown Stage Upper\tKnown Upper Modifier\t");
+				out.print("Stratigraphic Name\tInferred Stage Lower\tInferred Lower Modifier\tInferred Stage Upper\tInferred Upper Modifier\tInferred Age Start\tInferred Age Stop\tKnown Stage Lower\tKnown Lower Modifier\tKnown Stage Upper\tKnown Upper Modifier\tKnown Age Start\tKnown Age Stop\t");
 			
 			out.print("\n");
 		}
@@ -134,6 +136,8 @@
 								out.print(DBUtils.nvl(stage.getStageLowerMod()) + "\t");
 								out.print(((stage.getUpperAgeView() != null) ? stage.getUpperAgeView().getAgeName() : "") + "\t");
 								out.print(DBUtils.nvl(stage.getStageUpperMod()) + "\t");
+								out.print(stageUtil.getAgeStart(stage) + "\t");
+								out.print(stageUtil.getAgeStop(stage) + "\t");
 							} else
 								out.print("\t\t\t\t");
 							if (sample.getKnownStage() != null) {
@@ -142,6 +146,8 @@
 								out.print(DBUtils.nvl(stage.getStageLowerMod()) + "\t");
 								out.print(((stage.getUpperAgeView() != null) ? stage.getUpperAgeView().getAgeName() : "") + "\t");
 								out.print(DBUtils.nvl(stage.getStageUpperMod()) + "\t");
+								out.print(stageUtil.getAgeStart(stage) + "\t");
+								out.print(stageUtil.getAgeStop(stage) + "\t");
 							} else
 								out.print("\t\t\t\t");
 						}
