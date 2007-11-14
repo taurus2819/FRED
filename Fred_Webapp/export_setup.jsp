@@ -19,7 +19,7 @@
 	List<Feature> features = (List<Feature>) session.getAttribute("FRED.features");
 	if (features != null && features.size() > 0) {
 
-		%><form method="get" action="export.jsp">
+		%><form method="put" action="export.jsp">
 		<p><%
 		startDETable(pageContext);
 		%><table width="600" border="0">
