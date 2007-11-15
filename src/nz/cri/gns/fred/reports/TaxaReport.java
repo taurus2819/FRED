@@ -199,6 +199,16 @@ public class TaxaReport {
 			public Connection getConnection() throws SQLException {
 				return UnclosableConnection.create(conn);
 			}
+
+			@Override
+			public boolean isWrapperFor(Class<?> iface) throws SQLException {
+				return conn.isWrapperFor(iface);
+			}
+
+			@Override
+			public <T> T unwrap(Class<T> iface) throws SQLException {
+				return conn.unwrap(iface);
+			}
 		});
 	}
 
