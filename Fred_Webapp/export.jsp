@@ -5,7 +5,7 @@
 %><%@page import="nz.cri.gns.fred.model.Adoption"
 %><%@page import="nz.cri.gns.fred.model.Paleontology"
 %><%@page import="nz.cri.gns.fred.model.PaleontologyListEntry"
-%><%@page import="nz.cri.gns.fred.model.ReferencedTaxonomicName"
+%><%@page import="nz.cri.gns.fred.model.TaxonomicNameAndGroup"
 %><%@page import="nz.cri.gns.fred.model.Relationship"
 %><%@page import="nz.cri.gns.fred.model.SedimentaryFeature"
 %><%@page import="nz.cri.gns.fred.model.SentTo"
@@ -383,23 +383,24 @@
 							out.print(((paleontology.getRecord().getSample().getDrillType() != null) ? paleontology.getRecord().getSample().getDrillType().getName() : "") + "\t");
 						out.print("\n");
 						
-						List<ReferencedTaxonomicName> taxonomicNames = new Vector<ReferencedTaxonomicName>();
+						List<TaxonomicNameAndGroup> taxonomicNames = new Vector<TaxonomicNameAndGroup>();
 						for (Paleontology paleontology : pals) {
 							for (PaleontologyListEntry palList : paleontology.getListEntries()) {
-								ReferencedTaxonomicName refTaxaName = new ReferencedTaxonomicName(palList.getTaxonomicName(), palList.getTaxon());
-								out.println(refTaxaName.getTaxonomicName());
-								if (!taxonomicNames.contains(refTaxaName))
-									taxonomicNames.add(refTaxaName);
+								TaxonomicNameAndGroup nameAndGroup = new TaxonomicNameAndGroup(palList.getTaxonomicName(), palList.getTaxonomicGroup());
+								out.println(nameAndGroup.getTaxonomicGroup().getName() + ":" + nameAndGroup.getTaxonomicName());
+								if (!taxonomicNames.contains(nameAndGroup))
+									taxonomicNames.add(nameAndGroup);
 							}
 						}
 						//List<ReferencedTaxonomicName> sortedTaxonomicNames = new Vector<ReferencedTaxonomicName>();
 						//sortedTaxonomicNames.addAll(taxonomicNames);
 						Collections.sort(taxonomicNames);
-						for (ReferencedTaxonomicName taxonomicName : taxonomicNames) {
-							out.print(taxonomicName.getTaxon().getTaxonomicGroup().getName() + ": " + taxonomicName.getTaxonomicName() + "\t");
+						for (TaxonomicNameAndGroup nameAndGroup : taxonomicNames) {
+							out.print(nameAndGroup.getTaxonomicGroup().getName() + ": " + nameAndGroup.getTaxonomicName() + "\t");
 							for (Paleontology paleontology : pals) {
 								for (PaleontologyListEntry palList : paleontology.getListEntries()) {
-									if (palList.getTaxon().equals(taxonomicName.getTaxon()))
+									TaxonomicNameAndGroup check = new TaxonomicNameAndGroup(palList.getTaxonomicName(), palList.getTaxonomicGroup());
+									if (check.equals(nameAndGroup))
 										out.print("*");
 								}
 								out.print("\t");
