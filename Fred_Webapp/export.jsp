@@ -387,7 +387,6 @@
 						for (Paleontology paleontology : pals) {
 							for (PaleontologyListEntry palList : paleontology.getListEntries()) {
 								TaxonomicNameAndGroup nameAndGroup = new TaxonomicNameAndGroup(palList.getTaxonomicName(), palList.getTaxonomicGroup());
-								out.println(nameAndGroup.getTaxonomicGroup().getName() + ":" + nameAndGroup.getTaxonomicName());
 								if (!taxonomicNames.contains(nameAndGroup))
 									taxonomicNames.add(nameAndGroup);
 							}
