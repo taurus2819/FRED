@@ -38,4 +38,12 @@ public class ReferencedTaxonomicName implements Comparable<ReferencedTaxonomicNa
 		return 0;
 	}
 	
+	public boolean equals(Object o) {
+		if (!(o instanceof ReferencedTaxonomicName))
+			return false;
+		ReferencedTaxonomicName refTaxaName = (ReferencedTaxonomicName) o; 
+		return taxonomicName.equals(refTaxaName.getTaxonomicName())
+				&& taxon.equals(refTaxaName.getTaxon());
+	}
+	
 }
