@@ -4,11 +4,14 @@
 %><%@page import="nz.cri.gns.fred.model.Sample"
 %><%@page import="nz.cri.gns.fred.model.Adoption"
 %><%@page import="nz.cri.gns.fred.model.Paleontology"
+%><%@page import="nz.cri.gns.fred.model.PaleontologyListEntry"
+%><%@page import="nz.cri.gns.fred.model.ReferencedTaxonomicName"
 %><%@page import="nz.cri.gns.fred.model.Relationship"
 %><%@page import="nz.cri.gns.fred.model.SedimentaryFeature"
 %><%@page import="nz.cri.gns.fred.model.SentTo"
 %><%@page import="nz.cri.gns.fred.model.Stage"
 %><%@page import="nz.cri.gns.fred.model.SiteView"
+%><%@page import="nz.cri.gns.fred.model.Taxon"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"
@@ -19,7 +22,10 @@
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.auth.Authenticable"
+%><%@page import="java.util.Collections"
 %><%@page import="java.util.List"
+%><%@page import="java.util.Vector"
+%><%@page import="java.util.HashSet"
 %><%@page import="javax.servlet.jsp.JspWriter"
 %><%@page import="java.io.IOException"
 %><%@page import="nz.cri.gns.util.map.Datum"
@@ -32,7 +38,6 @@
 
 	public void writeLocalityHeader(JspWriter out) throws IOException {
 		out.print("FR Number\tYard FR Number\tLocality Type\tField Number/Drillhole Name\tDepth From\tDepth To\tDepth Unit\tDrill Type\t");
-
 	}
 
 	public void writeLocality(Sample sample, JspWriter out) throws IOException {
@@ -299,6 +304,105 @@
 				}
 				out.print("\n");
 			}
+			
+			if (palListFlag) {
+				out.println("********");
+				out.println("Paleontology List");
+				out.println("********");
+				
+				List<List<Paleontology>> paleontologyMasterList = new Vector<List<Paleontology>>();
+				List<Paleontology> paleontologies = new Vector<Paleontology>();
+				int i = 0;
+				for (Feature feature : features) {
+					HibernateUtil.get().currentSession().refresh(feature);
+					for (Paleontology paleontology : recordUtil.getPaleontologyRecords(feature)) {
+						if (recordUtil.isAllowedReadPalList(user, paleontology)) {
+							paleontologies.add(paleontology);
+							if (++i == 254) {
+								paleontologyMasterList.add(paleontologies);
+								paleontologies = new Vector<Paleontology>();
+								i =0;
+							}
+						}
+					}
+				}
+				if (paleontologies.size() > 0)
+					paleontologyMasterList.add(paleontologies);
+								
+				if (paleontologyMasterList.size() > 0) {
+					for (List<Paleontology> pals : paleontologyMasterList) {
+						
+						out.print("FR Number\t");
+						for (Paleontology paleontology : pals) {
+							Sample sample = paleontology.getRecord().getSample();
+							if (sample.getFrNumber() != null)
+								out.print(sample.getFrNumber().getFrNumber() + "\t");
+							else
+								out.print(sample.getFeature().getFrNumber().getFrNumber() + "\t");
+						}
+						out.print("\n");
+						
+						out.print("Yard FR Number\t");
+						for (Paleontology paleontology : pals) {
+							Sample sample = paleontology.getRecord().getSample();
+							if (sample.getYardFrNumber() != null)
+								out.print(sample.getYardFrNumber().getFrNumber() + "\t");	
+							else
+								out.print(((sample.getFeature().getYardFrNumber() != null) ? sample.getFeature().getYardFrNumber().getFrNumber() : "") + "\t");
+	
+						}
+						out.print("\n");
+						
+						out.print("Locality Type\t");
+						for (Paleontology paleontology : pals)
+							out.print(paleontology.getRecord().getSample().getFeature().getFeatureType() + "\t");
+						out.print("\n");
+						
+						out.print("Field Number/Drillhole Name\t");
+						for (Paleontology paleontology : pals)
+							out.print(DBUtils.nvl(paleontology.getRecord().getSample().getFeature().getFeatureName()) + "\t");
+						out.print("\n");
+	
+						out.print("Depth From\t");
+						for (Paleontology paleontology : pals)
+							out.print(DBUtils.nvl(paleontology.getRecord().getSample().getTopDepth()) + "\t");
+						out.print("\n");
+						
+						out.print("Depth To\t");
+						for (Paleontology paleontology : pals)
+							out.print(DBUtils.nvl(paleontology.getRecord().getSample().getBottomDepth()) + "\t");
+						out.print("\n");
+						
+						out.print("Depth Unit\t");
+						for (Paleontology paleontology : pals)
+							out.print(DBUtils.nvl(paleontology.getRecord().getSample().getDepthUnit()) + "\t");
+						out.print("\n");
+						
+						out.print("Drill Type\t");
+						for (Paleontology paleontology : pals)
+							out.print(((paleontology.getRecord().getSample().getDrillType() != null) ? paleontology.getRecord().getSample().getDrillType().getName() : "") + "\t");
+						out.print("\n");
+						
+						HashSet<ReferencedTaxonomicName> taxonomicNames = new HashSet<ReferencedTaxonomicName>();
+						for (Paleontology paleontology : pals) {
+							for (PaleontologyListEntry palList : paleontology.getListEntries()) {
+								taxonomicNames.add(new ReferencedTaxonomicName(palList.getTaxonomicName(), palList.getTaxon()));
+							}
+						}
+						List<ReferencedTaxonomicName> sortedTaxonomicNames = new Vector<ReferencedTaxonomicName>();
+						sortedTaxonomicNames.addAll(taxonomicNames);
+						Collections.sort(sortedTaxonomicNames);
+						for (ReferencedTaxonomicName taxonomicName : sortedTaxonomicNames) {
+							out.print(taxonomicName.getTaxon().getTaxonomicGroup().getName() + ": " + taxonomicName.getTaxonomicName());
+							out.print("\n");
+						}
+						
+						
+						out.print("\n");
+					}
+				}
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
