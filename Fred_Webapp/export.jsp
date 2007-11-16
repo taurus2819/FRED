@@ -44,7 +44,7 @@
 		if (sample.getFrNumber() != null)
 			out.print(sample.getFrNumber().getFrNumber() + "\t");
 		else
-			out.print(sample.getFeature().getFrNumber().getFrNumber() + "\t");
+			out.print(((sample.getFeature().getFrNumber() != null) ? sample.getFeature().getFrNumber().getFrNumber() : "") + "\t");
 		if (sample.getYardFrNumber() != null)
 			out.print(sample.getYardFrNumber().getFrNumber() + "\t");	
 		else
@@ -338,7 +338,7 @@
 							if (sample.getFrNumber() != null)
 								out.print(sample.getFrNumber().getFrNumber() + "\t");
 							else
-								out.print(sample.getFeature().getFrNumber().getFrNumber() + "\t");
+								out.print(((sample.getFeature().getFrNumber() != null) ? sample.getFeature().getFrNumber().getFrNumber() : "") + "\t");
 						}
 						out.print("\n");
 						
@@ -383,17 +383,27 @@
 							out.print(((paleontology.getRecord().getSample().getDrillType() != null) ? paleontology.getRecord().getSample().getDrillType().getName() : "") + "\t");
 						out.print("\n");
 						
-						HashSet<ReferencedTaxonomicName> taxonomicNames = new HashSet<ReferencedTaxonomicName>();
+						List<ReferencedTaxonomicName> taxonomicNames = new Vector<ReferencedTaxonomicName>();
 						for (Paleontology paleontology : pals) {
 							for (PaleontologyListEntry palList : paleontology.getListEntries()) {
-								taxonomicNames.add(new ReferencedTaxonomicName(palList.getTaxonomicName(), palList.getTaxon()));
+								ReferencedTaxonomicName refTaxaName = new ReferencedTaxonomicName(palList.getTaxonomicName(), palList.getTaxon());
+								out.println(refTaxaName.getTaxonomicName());
+								if (!taxonomicNames.contains(refTaxaName))
+									taxonomicNames.add(refTaxaName);
 							}
 						}
-						List<ReferencedTaxonomicName> sortedTaxonomicNames = new Vector<ReferencedTaxonomicName>();
-						sortedTaxonomicNames.addAll(taxonomicNames);
-						Collections.sort(sortedTaxonomicNames);
-						for (ReferencedTaxonomicName taxonomicName : sortedTaxonomicNames) {
-							out.print(taxonomicName.getTaxon().getTaxonomicGroup().getName() + ": " + taxonomicName.getTaxonomicName());
+						//List<ReferencedTaxonomicName> sortedTaxonomicNames = new Vector<ReferencedTaxonomicName>();
+						//sortedTaxonomicNames.addAll(taxonomicNames);
+						Collections.sort(taxonomicNames);
+						for (ReferencedTaxonomicName taxonomicName : taxonomicNames) {
+							out.print(taxonomicName.getTaxon().getTaxonomicGroup().getName() + ": " + taxonomicName.getTaxonomicName() + "\t");
+							for (Paleontology paleontology : pals) {
+								for (PaleontologyListEntry palList : paleontology.getListEntries()) {
+									if (palList.getTaxon().equals(taxonomicName.getTaxon()))
+										out.print("*");
+								}
+								out.print("\t");
+							}
 							out.print("\n");
 						}
 						
