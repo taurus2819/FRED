@@ -94,6 +94,8 @@ public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
 	}
 	
 	public boolean equals(Object o) {
-		return groupId != null && o instanceof TaxonomicGroup && groupId.equals(((TaxonomicGroup)o).groupId);
+		if (!(o instanceof nz.cri.gns.fred.model.TaxonomicGroup))
+			return false;
+		return groupId != null && groupId.equals(((nz.cri.gns.fred.model.TaxonomicGroup)o).getGroupId());
 	}
 }
