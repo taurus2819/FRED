@@ -40,13 +40,10 @@ public class ReferencedTaxonomicName implements Comparable<ReferencedTaxonomicNa
 	}
 	
 	public boolean equals(Object o) {
-		System.out.println("Checking for a ReferencedTaxonomicName match");
 		if (!(o instanceof ReferencedTaxonomicName))
 			return false;
 		ReferencedTaxonomicName refTaxaName = (ReferencedTaxonomicName) o; 
-		System.out.println("Checking " + taxonomicName + " equals " + refTaxaName.getTaxonomicName());
 		boolean test = taxonomicName.equals(refTaxaName.getTaxonomicName()) && taxon.equals(refTaxaName.getTaxon());
-		System.out.println("Result = " + test);
 		return test;
 	}
 	
