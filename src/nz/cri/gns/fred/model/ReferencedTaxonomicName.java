@@ -1,5 +1,7 @@
 package nz.cri.gns.fred.model;
 
+import nz.cri.gns.fred.util.FREDUtil;
+
 public class ReferencedTaxonomicName implements Comparable<ReferencedTaxonomicName>{
 
 	private String taxonomicName;
@@ -43,7 +45,8 @@ public class ReferencedTaxonomicName implements Comparable<ReferencedTaxonomicNa
 		if (!(o instanceof ReferencedTaxonomicName))
 			return false;
 		ReferencedTaxonomicName refTaxaName = (ReferencedTaxonomicName) o; 
-		return ((taxonomicName == null && refTaxaName.getTaxonomicName() == null) || taxonomicName.equals(refTaxaName.getTaxonomicName())) && taxon.equals(refTaxaName.getTaxon());
+		return FREDUtil.equals(taxonomicName, refTaxaName.getTaxonomicName(), true)
+			&& taxon.equals(refTaxaName.getTaxon());
 	}
 	
 }
