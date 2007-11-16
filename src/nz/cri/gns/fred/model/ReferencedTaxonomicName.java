@@ -31,7 +31,8 @@ public class ReferencedTaxonomicName implements Comparable<ReferencedTaxonomicNa
 
 	public int compareTo(ReferencedTaxonomicName arg0) {
 		if (taxon != null && arg0.getTaxon() != null && !taxon.equals(arg0.getTaxon()))
-			return taxon.compareTo(arg0.getTaxon());
+			if (!taxon.getTaxonomicGroup().equals(arg0.getTaxon().getTaxonomicGroup()))
+				return taxon.getTaxonomicGroup().compareTo(arg0.getTaxon().getTaxonomicGroup());
 		try {
 			return (taxonomicName.toUpperCase()).compareTo(arg0.getTaxonomicName().toUpperCase());
 		} catch (Exception e) {}
@@ -44,8 +45,7 @@ public class ReferencedTaxonomicName implements Comparable<ReferencedTaxonomicNa
 			return false;
 		ReferencedTaxonomicName refTaxaName = (ReferencedTaxonomicName) o; 
 		System.out.println("Checking " + taxonomicName + " equals " + refTaxaName.getTaxonomicName());
-		boolean test = taxonomicName.equals(refTaxaName.getTaxonomicName())
-				&& taxon.equals(refTaxaName.getTaxon());
+		boolean test = taxonomicName.equals(refTaxaName.getTaxonomicName()) && taxon.equals(refTaxaName.getTaxon());
 		System.out.println("Result = " + test);
 		return test;
 	}
