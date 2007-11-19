@@ -11,7 +11,6 @@
 %><%@page import="nz.cri.gns.fred.model.SentTo"
 %><%@page import="nz.cri.gns.fred.model.Stage"
 %><%@page import="nz.cri.gns.fred.model.SiteView"
-%><%@page import="nz.cri.gns.fred.model.Taxon"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"
@@ -25,9 +24,11 @@
 %><%@page import="java.util.Collections"
 %><%@page import="java.util.List"
 %><%@page import="java.util.Vector"
-%><%@page import="java.util.HashSet"
+%><%@page import="java.util.TreeSet"
+%><%@page import="java.util.Date"
 %><%@page import="javax.servlet.jsp.JspWriter"
 %><%@page import="java.io.IOException"
+%><%@page import="java.io.PrintWriter"
 %><%@page import="nz.cri.gns.util.map.Datum"
 %><%@page import="nz.cri.gns.util.map.Datum.Coordinate"
 %><%@page import="nz.cri.gns.util.map.Datum.LatLong"
@@ -56,6 +57,26 @@
 		out.print(DBUtils.nvl(sample.getDepthUnit()) + "\t");
 		out.print(((sample.getDrillType() != null) ? sample.getDrillType().getName() : "") + "\t");
 	}
+	
+	public String encodeTaxaString(PaleontologyListEntry palList) {
+		Integer specCount = palList.getSpecimenCount();
+		String specCoord = palList.getSpecimenCoords();
+		String comments = palList.getComments();
+		  
+		String enc = ((specCount != null) ? specCount.toString() : "") + "|" + specCoord + "|" + comments;
+		  
+		if (specCount == null && FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(comments))
+			enc = "*";
+		else if (specCount != null && !FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(comments))
+			enc = specCount.toString() + "|" + specCoord;
+		else if (specCount != null && FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(comments))
+			enc = specCount.toString();
+		else if (specCount == null && FREDUtil.isEmpty(specCoord) && !FREDUtil.isEmpty(comments))
+			enc = comments;
+		 
+		return enc;
+	}
+	
 %><%
 	List<Feature> features = (List<Feature>) session.getAttribute("FRED.features");
 	if (features != null && features.size() > 0) {
@@ -66,10 +87,10 @@
 			SampleUtil sampleUtil = new SampleUtil(HibernateUtil.get().getDAOFactory());
 			RecordUtil recordUtil = new RecordUtil(HibernateUtil.get().getDAOFactory());
 			
-			boolean localityFlag = (request.getParameter("locality") != null);
 			boolean collectionFlag = (request.getParameter("collection") != null);
 			boolean stratigraphyFlag = (request.getParameter("stratigraphy") != null);
 			boolean sedimentaryFlag = (request.getParameter("sedimentary") != null);
+			boolean localityFlag = collectionFlag || stratigraphyFlag || sedimentaryFlag;
 			boolean adoptionFlag = (request.getParameter("adoption") != null);
 			boolean paleontologyFlag = (request.getParameter("paleontology") != null);
 			boolean palListFlag = (request.getParameter("palList") != null);
@@ -79,8 +100,8 @@
 	
 			//file header
 			out.println("**************************************************************************************************************");
-			out.println("Data downloaded from FRED (http://www.fred.org.nz), the computer database for the NZ Fossil Record File (FRF).");
-			out.println("FRF is a nationally significant database administrated by GSNZ and GNS Science                                ");
+			out.println("Data downloaded from FRED (http://www.fred.org.nz) on " + FREDUtil.formatDateForOutput(new Date()));
+			out.println("FRED is the computer database for the NZ Fossil Record File (FRF), which is a nationally significant database administrated by GSNZ and GNS Science                                ");
 			out.println("Please acknowledge use of this data in publications, reports and presentations.                               ");
 			out.println("**************************************************************************************************************");
 			out.print("\n");
@@ -105,9 +126,9 @@
 				
 				out.print("\n");
 	
-				for (Feature feature : features) {
+				for (Feature featureInSession : features) {
+					Feature feature = featureUtil.getFeature(featureInSession.getFeatureId());
 					if (featureUtil.isAllowedReadFeature(user, feature)) {
-						HibernateUtil.get().currentSession().refresh(feature);
 						for (Sample sample : FeatureUtil.getSortedSamples(feature)) {
 							writeLocality(sample, out);
 							SiteView sv = feature.getSiteView();
@@ -237,8 +258,8 @@
 				writeLocalityHeader(out);
 				out.print("Adoptors\tAdoption Date\tAdopted Stage Lower\tAdopted Lower Modifier\tAdopted Stage Upper\tAdopted Upper Modifier\tAdopted Age Start\tAdopted Age Stop\tComments\n");
 				
-				for (Feature feature : features) {
-					HibernateUtil.get().currentSession().refresh(feature);
+				for (Feature featureInSession : features) {
+					Feature feature = featureUtil.getFeature(featureInSession.getFeatureId());
 					for (Adoption adoption : recordUtil.getAdoptionRecords(feature)) {
 						if (recordUtil.isAllowedReadRecord(user, adoption.getRecord())) {
 							writeLocality(adoption.getRecord().getSample(), out);
@@ -274,8 +295,8 @@
 				writeLocalityHeader(out);
 				out.print("Identifiers\tIdentification Date\tStage Lower\tLower Modifier\tStage Upper\tUpper Modifier\tAge Start\tAge Stop\tStage Comments\tnLab Number\tCollection Comments\n");
 				
-				for (Feature feature : features) {
-					HibernateUtil.get().currentSession().refresh(feature);
+				for (Feature featureInSession : features) {
+					Feature feature = featureUtil.getFeature(featureInSession.getFeatureId());
 					for (Paleontology paleontology : recordUtil.getPaleontologyRecords(feature)) {
 						if (recordUtil.isAllowedReadRecord(user, paleontology.getRecord())) {
 							writeLocality(paleontology.getRecord().getSample(), out);
@@ -313,12 +334,12 @@
 				List<List<Paleontology>> paleontologyMasterList = new Vector<List<Paleontology>>();
 				List<Paleontology> paleontologies = new Vector<Paleontology>();
 				int i = 0;
-				for (Feature feature : features) {
-					HibernateUtil.get().currentSession().refresh(feature);
+				for (Feature featureInSession : features) {
+					Feature feature = featureUtil.getFeature(featureInSession.getFeatureId());
 					for (Paleontology paleontology : recordUtil.getPaleontologyRecords(feature)) {
 						if (recordUtil.isAllowedReadPalList(user, paleontology)) {
 							paleontologies.add(paleontology);
-							if (++i == 254) {
+							if (++i == 250) {
 								paleontologyMasterList.add(paleontologies);
 								paleontologies = new Vector<Paleontology>();
 								i =0;
@@ -332,7 +353,7 @@
 				if (paleontologyMasterList.size() > 0) {
 					for (List<Paleontology> pals : paleontologyMasterList) {
 						
-						out.print("FR Number\t");
+						out.print("FR Number\t\t");
 						for (Paleontology paleontology : pals) {
 							Sample sample = paleontology.getRecord().getSample();
 							if (sample.getFrNumber() != null)
@@ -342,7 +363,7 @@
 						}
 						out.print("\n");
 						
-						out.print("Yard FR Number\t");
+						out.print("Yard FR Number\t\t");
 						for (Paleontology paleontology : pals) {
 							Sample sample = paleontology.getRecord().getSample();
 							if (sample.getYardFrNumber() != null)
@@ -353,54 +374,64 @@
 						}
 						out.print("\n");
 						
-						out.print("Locality Type\t");
+						out.print("Locality Type\t\t");
 						for (Paleontology paleontology : pals)
 							out.print(paleontology.getRecord().getSample().getFeature().getFeatureType() + "\t");
 						out.print("\n");
 						
-						out.print("Field Number/Drillhole Name\t");
+						out.print("Field Number/Drillhole Name\t\t");
 						for (Paleontology paleontology : pals)
 							out.print(DBUtils.nvl(paleontology.getRecord().getSample().getFeature().getFeatureName()) + "\t");
 						out.print("\n");
 	
-						out.print("Depth From\t");
+						out.print("Depth From\t\t");
 						for (Paleontology paleontology : pals)
 							out.print(DBUtils.nvl(paleontology.getRecord().getSample().getTopDepth()) + "\t");
 						out.print("\n");
 						
-						out.print("Depth To\t");
+						out.print("Depth To\t\t");
 						for (Paleontology paleontology : pals)
 							out.print(DBUtils.nvl(paleontology.getRecord().getSample().getBottomDepth()) + "\t");
 						out.print("\n");
 						
-						out.print("Depth Unit\t");
+						out.print("Depth Unit\t\t");
 						for (Paleontology paleontology : pals)
 							out.print(DBUtils.nvl(paleontology.getRecord().getSample().getDepthUnit()) + "\t");
 						out.print("\n");
 						
-						out.print("Drill Type\t");
+						out.print("Drill Type\t\t");
 						for (Paleontology paleontology : pals)
 							out.print(((paleontology.getRecord().getSample().getDrillType() != null) ? paleontology.getRecord().getSample().getDrillType().getName() : "") + "\t");
 						out.print("\n");
 						
-						List<TaxonomicNameAndGroup> taxonomicNames = new Vector<TaxonomicNameAndGroup>();
+						out.print("Identifier\t\t");
+						for (Paleontology paleontology : pals) {
+							if (!FREDUtil.isEmpty(paleontology.getIdentifiers())) {
+								for (Person person : paleontology.getIdentifiers())
+									out.print(person.getName() + "; ");
+							}
+							out.print("\t");
+						}
+						out.print("\n");
+						
+						TreeSet<TaxonomicNameAndGroup> taxonomicNames = new TreeSet<TaxonomicNameAndGroup>();
 						for (Paleontology paleontology : pals) {
 							for (PaleontologyListEntry palList : paleontology.getListEntries()) {
 								TaxonomicNameAndGroup nameAndGroup = new TaxonomicNameAndGroup(palList.getTaxonomicName(), palList.getTaxonomicGroup());
-								if (!taxonomicNames.contains(nameAndGroup))
+								//if (!taxonomicNames.contains(nameAndGroup))
 									taxonomicNames.add(nameAndGroup);
 							}
 						}
 						//List<ReferencedTaxonomicName> sortedTaxonomicNames = new Vector<ReferencedTaxonomicName>();
 						//sortedTaxonomicNames.addAll(taxonomicNames);
-						Collections.sort(taxonomicNames);
+						//Collections.sort(taxonomicNames);
 						for (TaxonomicNameAndGroup nameAndGroup : taxonomicNames) {
-							out.print(nameAndGroup.getTaxonomicGroup().getName() + ": " + nameAndGroup.getTaxonomicName() + "\t");
+							out.print(nameAndGroup.getTaxonomicGroup().getName() + "\t" + DBUtils.nvl(nameAndGroup.getTaxonomicName()) + "\t");
 							for (Paleontology paleontology : pals) {
 								for (PaleontologyListEntry palList : paleontology.getListEntries()) {
 									TaxonomicNameAndGroup check = new TaxonomicNameAndGroup(palList.getTaxonomicName(), palList.getTaxonomicGroup());
 									if (check.equals(nameAndGroup))
-										out.print("*");
+										out.print(encodeTaxaString(palList));
 								}
 								out.print("\t");
 							}
@@ -414,7 +445,7 @@
 			}
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(new PrintWriter(out));
 		}
 	} else {
 		ExtranetTemplate et = getExtranetTemplate();

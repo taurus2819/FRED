@@ -23,15 +23,29 @@
 		<p><%
 		startDETable(pageContext);
 		%><table width="600" border="0">
-		<tr><td class="deHeading" colspan="5">Fields to Download</td></tr>
-		<tr><td class="heading"><input type="checkbox" name="locality" />Locality Fields</td></tr>
-		<tr><td class="heading"><input type="checkbox" name="collection" />Collection Fields&nbsp;&nbsp;</td>
-		<td class="heading"><input type="checkbox" name="stratigraphy" />Stratigraphy Fields&nbsp;&nbsp;</td>
-		<td class="heading"><input type="checkbox" name="sedimentary" />Sedimentary Feature Fields&nbsp;&nbsp;</td></tr>
-		<tr><td class="heading"><input type="checkbox" name="adoption" />Adoption Fields</td></tr>
-		<tr><td class="heading"><input type="checkbox" name="paleontology" />Paleontology Fields</td></tr>
-		<tr><td class="heading"><input type="checkbox" name="palList" />Paleontology List Fields</td></tr>
-		<tr><td><input type="submit" value="Download" /></td></tr>
+		<tr>
+			<td class="deHeading" colspan="4">Fields to Download</td>
+		</tr>
+		<tr>
+			<td colspan="4">Select which types of fields you would like to download and then press the <i>Download</i> button.  A tab seperated text file will be generated and you can either open or save it.  If a large number of localities are selected the process may take a few minutes.</td>
+		<tr>
+			<td class="heading">Locality&nbsp;&nbsp;</td>
+			<td><input type="checkbox" name="collection" checked />Collection&nbsp;&nbsp;</td>
+			<td><input type="checkbox" name="stratigraphy" checked />Stratigraphy&nbsp;&nbsp;</td>
+			<td><input type="checkbox" name="sedimentary" checked />Sedimentary Feature&nbsp;&nbsp;</td>
+		<tr>
+		<tr>
+			<td class="heading">Adoption Records&nbsp;&nbsp;</td>
+			<td><input type="checkbox" name="adoption" checked />Adoption fields</td>
+		</tr>
+		<tr>
+			<td class="heading">Paleontology Records&nbsp;&nbsp;</td>
+			<td><input type="checkbox" name="paleontology" checked />Header only</td>
+			<td><input type="checkbox" name="palList" checked />Taxonomic list</td>
+		</tr>
+		<tr>
+			<td><input type="submit" value="Download" /></td>
+		</tr>
 		</table><%
 		endDETable(pageContext);
 		%></p>
