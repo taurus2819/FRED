@@ -9,4 +9,10 @@ public interface LogTable extends Comparable<LogTable> {
 	public String getLogType();
 	public void setLogDate(Date logDate);
 	public Date getLogDate();
+	public void setUserId(Integer userId);
+	public Integer getUserId();
+	public void setLocalityCount(Integer localityCount);
+	public Integer getLocalityCount();
+	public void setUser(UserView editedBy);
+	public UserView getUser();
 }

@@ -110,6 +110,20 @@
             class="nz.cri.gns.fred.hibernate.AuditEdit"
         />
     </set>
+    <!-- bi-directional one-to-many association to LogTable -->
+    <set
+        name="logs"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="USER_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.LogTable"
+        />
+    </set>
     <!-- bi-directional one-to-many association to TaxonomicLookup -->
     <set
         name="taxaBySubmittedById"

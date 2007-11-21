@@ -263,10 +263,13 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		return sb.toString();
 	}
 	
-	public void addLogEntry(String type) throws StorageAccessException {
+	public void addLogEntry(String type, UserAccount user, Integer localityCount) throws StorageAccessException {
 		LogTable log = auditDAO.createNewLog();
 		log.setLogDate(new Date());
 		log.setLogType(type);
+		if (user != null)
+			log.setUserId(new Integer(user.getId()));
+		log.setLocalityCount(localityCount);
 		auditDAO.saveOrUpdate(log);
 	}
 	

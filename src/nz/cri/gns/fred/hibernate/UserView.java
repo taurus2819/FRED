@@ -43,13 +43,16 @@ public class UserView implements Serializable, nz.cri.gns.fred.model.UserView {
     private Set<AuditEdit> auditEdits;
     
     /** persistent field */
+    private Set<LogTable> logs;
+    
+    /** persistent field */
     private Set<Taxon> taxaBySubmittedById;
     
     /** persistent field */
     private Set<Taxon> taxaByApprovedById;
     
     /** full constructor */
-    public UserView(Integer userId, String userName, String givenName, String familyName, String fullName, OrgView orgView, Set<Audit> auditsByCreatedById, Set<Audit> auditsBySubmittedById, Set<Audit> auditsByApprovedById, Set<AuditEdit> auditEdits, Set<Taxon> taxaBySubmittedById, Set<Taxon> taxaByApprovedById) {
+    public UserView(Integer userId, String userName, String givenName, String familyName, String fullName, OrgView orgView, Set<Audit> auditsByCreatedById, Set<Audit> auditsBySubmittedById, Set<Audit> auditsByApprovedById, Set<AuditEdit> auditEdits, Set<LogTable> logs, Set<Taxon> taxaBySubmittedById, Set<Taxon> taxaByApprovedById) {
     	this.userId = userId;
     	this.userName = userName;
     	this.givenName = givenName;
@@ -60,6 +63,7 @@ public class UserView implements Serializable, nz.cri.gns.fred.model.UserView {
     	this.auditsBySubmittedById = auditsBySubmittedById;
     	this.auditsByApprovedById = auditsByApprovedById;
     	this.auditEdits = auditEdits;
+    	this.logs = logs;
     	this.taxaBySubmittedById = taxaBySubmittedById;
     	this.taxaByApprovedById = taxaByApprovedById;
     }
@@ -146,6 +150,14 @@ public class UserView implements Serializable, nz.cri.gns.fred.model.UserView {
 
 	public Set<AuditEdit> getAuditEdits() {
 		return auditEdits;
+	}
+
+	public void setLogs(Set<LogTable> logs) {
+		this.logs = logs;
+	}
+
+	public Set<LogTable> getLogs() {
+		return logs;
 	}
 
 	public void setTaxaBySubmittedById(Set<Taxon> taxaBySubmittedById) {

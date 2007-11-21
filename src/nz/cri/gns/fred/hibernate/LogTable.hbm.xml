@@ -37,6 +37,27 @@
         type="java.util.Date"
         column="LOG_DATE"
     />
+    <property
+        name="userId"
+        type="java.lang.Integer"
+        column="USER_ID"
+    />
+    <property
+        name="localityCount"
+        type="java.lang.Integer"
+        column="LOCALITY_COUNT"
+    />
 
+    <!-- bi-directional many-to-one association to UserView -->
+    <many-to-one
+        name="user"
+        class="nz.cri.gns.fred.hibernate.UserView"
+        not-null="false"
+        insert="false"
+        update="false"
+    >
+        <column name="USER_ID" />
+    </many-to-one>
+    
 </class>
 </hibernate-mapping>

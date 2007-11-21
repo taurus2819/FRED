@@ -3,6 +3,7 @@ package nz.cri.gns.fred.model;
 import java.util.Set;
 
 import nz.cri.gns.core.NameableAndIdentifiable;
+import nz.cri.gns.fred.hibernate.LogTable;
 
 public interface UserView extends Comparable<UserView>, NameableAndIdentifiable {
 	public void setUserId(Integer userId);
@@ -25,6 +26,8 @@ public interface UserView extends Comparable<UserView>, NameableAndIdentifiable 
 	public Set<Audit> getAuditsByApprovedById();
 	public void setAuditEdits(Set<AuditEdit> auditEdits);
 	public Set<AuditEdit> getAuditEdits();
+	public void setLogs(Set<LogTable> logs);
+	public Set<LogTable> getLogs();
 	public void setTaxaBySubmittedById(Set<Taxon> taxaBySubmittedById);
 	public Set<Taxon> getTaxaBySubmittedById();
 	public void setTaxaByApprovedById(Set<Taxon> taxaByApprovedById);

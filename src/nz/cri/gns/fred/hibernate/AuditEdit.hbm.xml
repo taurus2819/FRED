@@ -28,7 +28,7 @@
 
     <property
         name="editedById"
-        type="int"
+        type="java.lang.Integer"
         column="EDITED_BY_ID"
         length="7"
     />
