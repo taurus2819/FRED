@@ -91,7 +91,7 @@
 				rs.close();
 				statement.close();
 				conn.close();
-				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE);
+				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, null);
 			} finally {
 				if (conn != null) try {
 					conn.close();
