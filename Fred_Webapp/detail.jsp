@@ -163,7 +163,7 @@ try {
 		boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
 		if (isAllowedReadFeature) {
 			AuditUtil auditUtil = new AuditUtil(HibernateUtil.get().getDAOFactory());
-			auditUtil.addLogEntry(AuditUtil.DETAIL_LOG_TYPE);
+			auditUtil.addLogEntry(AuditUtil.DETAIL_LOG_TYPE, user, null);
 		}
 		
 		Vector<Link> il = new Vector<Link>();

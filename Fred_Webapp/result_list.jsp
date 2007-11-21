@@ -70,7 +70,7 @@
 				//System.out.println(whereSQL);
 				queryString = query.getQueryAsString();
 				features = featureUtil.getListFromQueryBuilder(whereSQL);
-				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE);
+				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

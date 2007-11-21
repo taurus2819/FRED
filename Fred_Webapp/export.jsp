@@ -15,13 +15,13 @@
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
+%><%@page import="nz.cri.gns.fred.util.AuditUtil"
 %><%@page import="nz.cri.gns.fred.util.SiteUtil"
 %><%@page import="nz.cri.gns.fred.util.StageUtil"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.auth.Authenticable"
-%><%@page import="java.util.Collections"
 %><%@page import="java.util.List"
 %><%@page import="java.util.Vector"
 %><%@page import="java.util.TreeSet"
@@ -443,6 +443,7 @@
 					}
 				}
 			}
+			new AuditUtil(HibernateUtil.get().getDAOFactory()).addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
 			
 		} catch (Exception e) {
 			e.printStackTrace(new PrintWriter(out));
