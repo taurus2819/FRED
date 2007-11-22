@@ -170,6 +170,7 @@ try {
 		if (backURL != null)
 			il.add(new IconnedLink(backURL, "images/back_arrow.gif", (backText != null) ? request.getParameter("backText") : "Back"));
 		il.add(new IconnedLink("locality_map.jsp?FeatID=" + feature.getFeatureId() + "&backURL=" + URLEncoder.encode("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr, "ISO-8859-1")+ "&backText=Back%20To%20Locality", "images/map.gif", "Locality Map"));
+		il.add(new IconnedLink("export_setup.jsp?" + ((sample != null) ? "sampId=" + sample.getSampleId() : "featId=" + feature.getFeatureId()), "images/save.gif", "Download"));
 		if (isAllowedReadFeature) {
 			il.add(new IconnedLink("audit_detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "FeatID=" + feature.getFeatureId()) + "&backURL=" + URLEncoder.encode("detail.jsp?" + ((sample != null) ? "ID=" + sample.getSampleId() : "?FeatID=" + feature.getFeatureId()) + backStr, "ISO-8859-1")+ "&backText=Back%20To%20Locality", "images/loc.gif", "Audit Details"));
 			il.add(new IconnedLink("frf/frf/pdf?" + featureUtil.getFullLocalityPDFURL(feature) + "&q=" + Math.random(), "images/pdf_icon.gif", "Print Full Locality"));
