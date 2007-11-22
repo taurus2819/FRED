@@ -12,7 +12,6 @@
 %><%
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
-	//addButtons(et, new IconnedLink[] {new IconnedLink(queryURL, "images/search.gif", "Search Again")});
 
 	drawTop(out, et, request, response);
 
@@ -27,13 +26,17 @@
 			<td class="deHeading" colspan="4">Fields to Download</td>
 		</tr>
 		<tr>
-			<td colspan="4">Select which types of fields you would like to download and then press the <i>Download</i> button.  A tab seperated text file will be generated and you can either open or save it.  If a large number of localities are selected the process may take a few minutes.</td>
+			<td colspan="4">Slect which types of fields you would like to download and then press the <i>Download</i> button.  A tab seperated text file will be generated and you can either open or save it.  If a large number of localities are selected the process may take a few minutes.</td>
+		</tr>
+		<tr>
+			<td colspan="4">Please note: use of this download facility is logged</td>
+		</tr>
 		<tr>
 			<td class="heading">Locality&nbsp;&nbsp;</td>
 			<td><input type="checkbox" name="collection" checked />Collection&nbsp;&nbsp;</td>
 			<td><input type="checkbox" name="stratigraphy" checked />Stratigraphy&nbsp;&nbsp;</td>
 			<td><input type="checkbox" name="sedimentary" checked />Sedimentary Feature&nbsp;&nbsp;</td>
-		<tr>
+		</tr>
 		<tr>
 			<td class="heading">Adoption Records&nbsp;&nbsp;</td>
 			<td><input type="checkbox" name="adoption" checked />Adoption fields</td>

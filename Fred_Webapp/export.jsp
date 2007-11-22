@@ -128,7 +128,7 @@
 	
 				for (Feature featureInSession : features) {
 					Feature feature = featureUtil.getFeature(featureInSession.getFeatureId());
-					if (featureUtil.isAllowedReadFeature(user, feature)) {
+					if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
 						for (Sample sample : FeatureUtil.getSortedSamples(feature)) {
 							writeLocality(sample, out);
 							SiteView sv = feature.getSiteView();
@@ -155,93 +155,96 @@
 							out.print(DBUtils.nvl(feature.getMapYear()) + "\t");
 							out.print(((sv != null) ? DBUtils.nvl(sv.getMethod()) : "") + "\t");
 							out.print(((sv != null) ? DBUtils.nvl(sv.getAccuracy()) : "") + "\t");
-							out.print(DBUtils.nvl(feature.getLocality()) + "\t");
-							out.print(((sv != null) ? sv.getCountryName() : "") + "\t");
-							out.print(DBUtils.nvl(feature.getCoordComments()) + "\t");
-							out.print(DBUtils.nvl(feature.getComments()) + "\t");
-										
-							if (collectionFlag) {
-								if (!FREDUtil.isEmpty(sample.getCollectors())) {
-									for (Person collector : sample.getCollectors())
-										out.print(collector.getName() + "; ");
-								}
-								out.print("\t");
-								out.print(DBUtils.nvl(FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding())) + "\t");
-								out.print(DBUtils.nvl(sample.getInPlace()) + "\t");
-								if (!FREDUtil.isEmpty(sample.getSentTos())) {
-									for (SentTo sentTo : sample.getSentTos())
-										out.print(SampleUtil.getSentToDescription(sentTo) + "; ");
-								}
-								out.print("\t");
-								out.print(DBUtils.nvl(sample.getNotCollected()) + "\t");
-								out.print(DBUtils.nvl(sample.getSignificance()) + "\t");
-							}
 							
-							if (stratigraphyFlag) {
-								out.print(DBUtils.nvl(sample.getStratUnit()) + "\t");
-								if (sample.getInferredStage() != null) {
-									Stage stage = sample.getInferredStage();
-									out.print(((stage.getLowerAgeView() != null) ? stage.getLowerAgeView().getAgeName() : "") + "\t");
-									out.print(DBUtils.nvl(stage.getStageLowerMod()) + "\t");
-									out.print(((stage.getUpperAgeView() != null) ? stage.getUpperAgeView().getAgeName() : "") + "\t");
-									out.print(DBUtils.nvl(stage.getStageUpperMod()) + "\t");
-									out.print(stageUtil.getAgeStart(stage) + "\t");
-									out.print(stageUtil.getAgeStop(stage) + "\t");
-								} else
-									out.print("\t\t\t\t\t\t");
-								if (sample.getKnownStage() != null) {
-									Stage stage = sample.getKnownStage();
-									out.print(((stage.getLowerAgeView() != null) ? stage.getLowerAgeView().getAgeName() : "") + "\t");
-									out.print(DBUtils.nvl(stage.getStageLowerMod()) + "\t");
-									out.print(((stage.getUpperAgeView() != null) ? stage.getUpperAgeView().getAgeName() : "") + "\t");
-									out.print(DBUtils.nvl(stage.getStageUpperMod()) + "\t");
-									out.print(stageUtil.getAgeStart(stage) + "\t");
-									out.print(stageUtil.getAgeStop(stage) + "\t");
-								} else
-									out.print("\t\t\t\t\t\t");
-								List<? extends Relationship> nearbys = sampleUtil.getRelationships(sample, "Sample", "nearby");
-								if (nearbys != null && nearbys.size() > 0) {
-									for (Relationship rel : nearbys)
-										out.print(SampleUtil.getRelationshipDescription(rel) + "; ");
+							if (featureUtil.isAllowedReadFeature(user, feature)) {
+								out.print(DBUtils.nvl(feature.getLocality()) + "\t");
+								out.print(((sv != null) ? sv.getCountryName() : "") + "\t");
+								out.print(DBUtils.nvl(feature.getCoordComments()) + "\t");
+								out.print(DBUtils.nvl(feature.getComments()) + "\t");
+											
+								if (collectionFlag) {
+									if (!FREDUtil.isEmpty(sample.getCollectors())) {
+										for (Person collector : sample.getCollectors())
+											out.print(collector.getName() + "; ");
+									}
+									out.print("\t");
+									out.print(DBUtils.nvl(FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding())) + "\t");
+									out.print(DBUtils.nvl(sample.getInPlace()) + "\t");
+									if (!FREDUtil.isEmpty(sample.getSentTos())) {
+										for (SentTo sentTo : sample.getSentTos())
+											out.print(SampleUtil.getSentToDescription(sentTo) + "; ");
+									}
+									out.print("\t");
+									out.print(DBUtils.nvl(sample.getNotCollected()) + "\t");
+									out.print(DBUtils.nvl(sample.getSignificance()) + "\t");
 								}
-								out.print("\t");
-								List<? extends Relationship> sampRels = sampleUtil.getRelationships(sample, "Sample", new String[] {"above", "below"});
-								if (nearbys != null && sampRels.size() > 0) {
-									for (Relationship rel : sampRels)
-										out.print(SampleUtil.getRelationshipDescription(rel) + "; ");
+								
+								if (stratigraphyFlag) {
+									out.print(DBUtils.nvl(sample.getStratUnit()) + "\t");
+									if (sample.getInferredStage() != null) {
+										Stage stage = sample.getInferredStage();
+										out.print(((stage.getLowerAgeView() != null) ? stage.getLowerAgeView().getAgeName() : "") + "\t");
+										out.print(DBUtils.nvl(stage.getStageLowerMod()) + "\t");
+										out.print(((stage.getUpperAgeView() != null) ? stage.getUpperAgeView().getAgeName() : "") + "\t");
+										out.print(DBUtils.nvl(stage.getStageUpperMod()) + "\t");
+										out.print(stageUtil.getAgeStart(stage) + "\t");
+										out.print(stageUtil.getAgeStop(stage) + "\t");
+									} else
+										out.print("\t\t\t\t\t\t");
+									if (sample.getKnownStage() != null) {
+										Stage stage = sample.getKnownStage();
+										out.print(((stage.getLowerAgeView() != null) ? stage.getLowerAgeView().getAgeName() : "") + "\t");
+										out.print(DBUtils.nvl(stage.getStageLowerMod()) + "\t");
+										out.print(((stage.getUpperAgeView() != null) ? stage.getUpperAgeView().getAgeName() : "") + "\t");
+										out.print(DBUtils.nvl(stage.getStageUpperMod()) + "\t");
+										out.print(stageUtil.getAgeStart(stage) + "\t");
+										out.print(stageUtil.getAgeStop(stage) + "\t");
+									} else
+										out.print("\t\t\t\t\t\t");
+									List<? extends Relationship> nearbys = sampleUtil.getRelationships(sample, "Sample", "nearby");
+									if (nearbys != null && nearbys.size() > 0) {
+										for (Relationship rel : nearbys)
+											out.print(SampleUtil.getRelationshipDescription(rel) + "; ");
+									}
+									out.print("\t");
+									List<? extends Relationship> sampRels = sampleUtil.getRelationships(sample, "Sample", new String[] {"above", "below"});
+									if (nearbys != null && sampRels.size() > 0) {
+										for (Relationship rel : sampRels)
+											out.print(SampleUtil.getRelationshipDescription(rel) + "; ");
+									}
+									out.print("\t");
+									List<? extends Relationship> stratRels = sampleUtil.getRelationships(sample, "Stratigraphic", new String[] {"above top", "above base", "below top", "below base"});
+									if (nearbys != null && stratRels.size() > 0) {
+										for (Relationship rel : stratRels)
+											out.print(SampleUtil.getRelationshipDescription(rel) + "; ");
+									}
+									out.print("\t");
+									out.print(DBUtils.nvl(sample.getColumnMap()) + "\t");
+									out.print(DBUtils.nvl(sample.getDip()) + "\t");
+									out.print(DBUtils.nvl(sample.getDipDirection()) + "\t");
+									out.print(DBUtils.nvl(sample.getStrike()) + "\t");
+									out.print(DBUtils.nvl(sample.getFacing()) + "\t");
+									out.print(DBUtils.nvl(sample.getStratComments()) + "\t");
 								}
-								out.print("\t");
-								List<? extends Relationship> stratRels = sampleUtil.getRelationships(sample, "Stratigraphic", new String[] {"above top", "above base", "below top", "below base"});
-								if (nearbys != null && stratRels.size() > 0) {
-									for (Relationship rel : stratRels)
-										out.print(SampleUtil.getRelationshipDescription(rel) + "; ");
+								if (sedimentaryFlag) {
+									out.print(((sample.getPrimaryGrainSize() != null) ? sample.getPrimaryGrainSize().getName() : "") + "\t");
+									out.print(((sample.getSecondaryGrainSize() != null) ? sample.getSecondaryGrainSize().getName() : "") + "\t");
+									out.print(DBUtils.nvl(sample.getComparatorUsed()) + "\t");
+									out.print(((sample.getBedThickness() != null) ? sample.getBedThickness().getName() : "") + "\t");
+									out.print(SampleUtil.getBeddingDescription(sample) + "\t");
+									out.print(((sample.getWeathering() != null) ? sample.getWeathering().getName() : "") + "\t");
+									out.print(((sample.getHardness() != null) ? sample.getHardness().getName() : "") + "\t");
+									out.print(((sample.getCarbonate() != null) ? sample.getCarbonate().getName() : "") + "\t");
+									out.print(SampleUtil.getColourDescription(sample) + "\t");
+									if (!FREDUtil.isEmpty(sample.getSedimentaryFeatures())) {
+										for (SedimentaryFeature sedFeat : sample.getSedimentaryFeatures())
+											out.print(SampleUtil.getSedFeatureDescription(sedFeat) + "; ");
+									}
+									out.print("\t");
+									out.print(DBUtils.nvl(sample.getDepositionEnv()) + "\t");
+									out.print(DBUtils.nvl(sample.getRockNature()) + "\t");
+									out.print(DBUtils.nvl(sample.getCorrespondence()) + "\t");
 								}
-								out.print("\t");
-								out.print(DBUtils.nvl(sample.getColumnMap()) + "\t");
-								out.print(DBUtils.nvl(sample.getDip()) + "\t");
-								out.print(DBUtils.nvl(sample.getDipDirection()) + "\t");
-								out.print(DBUtils.nvl(sample.getStrike()) + "\t");
-								out.print(DBUtils.nvl(sample.getFacing()) + "\t");
-								out.print(DBUtils.nvl(sample.getStratComments()) + "\t");
-							}
-							if (sedimentaryFlag) {
-								out.print(((sample.getPrimaryGrainSize() != null) ? sample.getPrimaryGrainSize().getName() : "") + "\t");
-								out.print(((sample.getSecondaryGrainSize() != null) ? sample.getSecondaryGrainSize().getName() : "") + "\t");
-								out.print(DBUtils.nvl(sample.getComparatorUsed()) + "\t");
-								out.print(((sample.getBedThickness() != null) ? sample.getBedThickness().getName() : "") + "\t");
-								out.print(SampleUtil.getBeddingDescription(sample) + "\t");
-								out.print(((sample.getWeathering() != null) ? sample.getWeathering().getName() : "") + "\t");
-								out.print(((sample.getHardness() != null) ? sample.getHardness().getName() : "") + "\t");
-								out.print(((sample.getCarbonate() != null) ? sample.getCarbonate().getName() : "") + "\t");
-								out.print(SampleUtil.getColourDescription(sample) + "\t");
-								if (!FREDUtil.isEmpty(sample.getSedimentaryFeatures())) {
-									for (SedimentaryFeature sedFeat : sample.getSedimentaryFeatures())
-										out.print(SampleUtil.getSedFeatureDescription(sedFeat) + "; ");
-								}
-								out.print("\t");
-								out.print(DBUtils.nvl(sample.getDepositionEnv()) + "\t");
-								out.print(DBUtils.nvl(sample.getRockNature()) + "\t");
-								out.print(DBUtils.nvl(sample.getCorrespondence()) + "\t");
 							}
 							out.print("\n");
 						}
@@ -443,7 +446,7 @@
 					}
 				}
 			}
-			new AuditUtil(HibernateUtil.get().getDAOFactory()).addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
+			new AuditUtil(HibernateUtil.get().getDAOFactory()).addLogEntry(AuditUtil.DOWNLOAD_LOG_TYPE, user, features.size());
 			
 		} catch (Exception e) {
 			e.printStackTrace(new PrintWriter(out));
