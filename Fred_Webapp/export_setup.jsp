@@ -1,8 +1,6 @@
 <%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
-%><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.auth.Authenticable"
-%><%@page import="java.util.List"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%!
@@ -15,7 +13,7 @@
 
 	drawTop(out, et, request, response);
 
-	%><form method="put" action="export.jsp"><%
+	%><form method="get" action="export.jsp"><%
 	if (request.getParameter("featId") != null) {
 		%><input type="hidden" name="featId" value="<%=request.getParameter("featId")%>" /><%
 	} else if (request.getParameter("sampId") != null) {
