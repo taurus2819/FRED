@@ -85,18 +85,23 @@
 	RecordUtil recordUtil = new RecordUtil(HibernateUtil.get().getDAOFactory());
 
 	TreeSet<Sample> samples = new TreeSet<Sample>();
-	if (request.getParameter("featId") != null) {
-		Feature feature = featureUtil.getFeature(Integer.parseInt(request.getParameter("featId")));
-		for (Sample sample : feature.getSamples())
-			samples.add(sample);
-	} else if (request.getParameter("sampId") != null) {
-		samples.add(sampleUtil.getSample(Integer.parseInt(request.getParameter("sampId"))));
-	} else if (session.getAttribute("FRED.features") != null && ((List<Feature>) session.getAttribute("FRED.features")).size() > 0) {
-		List<Feature> features = (List<Feature>) session.getAttribute("FRED.features");
-		for (Feature feature : features) {
+	try {
+		if (request.getParameter("featId") != null) {
+			Feature feature = featureUtil.getFeature(Integer.parseInt(request.getParameter("featId")));
 			for (Sample sample : feature.getSamples())
 				samples.add(sample);
+		} else if (request.getParameter("sampId") != null) {
+			samples.add(sampleUtil.getSample(Integer.parseInt(request.getParameter("sampId"))));
+		} else if (session.getAttribute("FRED.features") != null && ((List<Feature>) session.getAttribute("FRED.features")).size() > 0) {
+			List<Feature> features = (List<Feature>) session.getAttribute("FRED.features");
+			for (Feature feature : features) {
+				HibernateUtil.get().currentSession().refresh(feature);
+				for (Sample sample : feature.getSamples())
+					samples.add(sample);
+			}
 		}
+	} catch (Exception e) {
+		e.printStackTrace(new PrintWriter(out));
 	}
 	
 	if (samples.size() > 0) {
@@ -163,17 +168,17 @@
 								out.print("\t\t");
 							}
 						} else {
-							out.print("\t\t\t\t");
+							out.print("\t\t\t\t\t");
 						}
 						out.print(DBUtils.nvl(feature.getMapYear()) + "\t");
 						out.print(((sv != null) ? DBUtils.nvl(sv.getMethod()) : "") + "\t");
 						out.print(((sv != null) ? DBUtils.nvl(sv.getAccuracy()) : "") + "\t");
 						
 						if (featureUtil.isAllowedReadFeature(user, feature)) {
-							out.print(DBUtils.nvl(feature.getLocality()) + "\t");
+							out.print(DBUtils.nvl(feature.getLocality()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
 							out.print(((sv != null) ? sv.getCountryName() : "") + "\t");
-							out.print(DBUtils.nvl(feature.getCoordComments()) + "\t");
-							out.print(DBUtils.nvl(feature.getComments()) + "\t");
+							out.print(DBUtils.nvl(feature.getCoordComments()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
+							out.print(DBUtils.nvl(feature.getComments()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
 										
 							if (collectionFlag) {
 								if (!FREDUtil.isEmpty(sample.getCollectors())) {
@@ -185,11 +190,11 @@
 								out.print(DBUtils.nvl(sample.getInPlace()) + "\t");
 								if (!FREDUtil.isEmpty(sample.getSentTos())) {
 									for (SentTo sentTo : sample.getSentTos())
-										out.print(SampleUtil.getSentToDescription(sentTo) + "; ");
+										out.print(SampleUtil.getSentToDescription(sentTo).replaceAll("\\s\\s+|\\n|\\r", " ") + "; ");
 								}
 								out.print("\t");
-								out.print(DBUtils.nvl(sample.getNotCollected()) + "\t");
-								out.print(DBUtils.nvl(sample.getSignificance()) + "\t");
+								out.print(DBUtils.nvl(sample.getNotCollected()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
+								out.print(DBUtils.nvl(sample.getSignificance()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
 							}
 							
 							if (stratigraphyFlag) {
@@ -237,7 +242,7 @@
 								out.print(DBUtils.nvl(sample.getDipDirection()) + "\t");
 								out.print(DBUtils.nvl(sample.getStrike()) + "\t");
 								out.print(DBUtils.nvl(sample.getFacing()) + "\t");
-								out.print(DBUtils.nvl(sample.getStratComments()) + "\t");
+								out.print(DBUtils.nvl(sample.getStratComments()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
 							}
 							if (sedimentaryFlag) {
 								out.print(((sample.getPrimaryGrainSize() != null) ? sample.getPrimaryGrainSize().getName() : "") + "\t");
@@ -254,9 +259,9 @@
 										out.print(SampleUtil.getSedFeatureDescription(sedFeat) + "; ");
 								}
 								out.print("\t");
-								out.print(DBUtils.nvl(sample.getDepositionEnv()) + "\t");
-								out.print(DBUtils.nvl(sample.getRockNature()) + "\t");
-								out.print(DBUtils.nvl(sample.getCorrespondence()) + "\t");
+								out.print(DBUtils.nvl(sample.getDepositionEnv()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
+								out.print(DBUtils.nvl(sample.getRockNature()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
+								out.print(DBUtils.nvl(sample.getCorrespondence()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
 							}
 						}
 						out.print("\n");
@@ -294,7 +299,7 @@
 								out.print(stageUtil.getAgeStop(stage) + "\t");
 							} else
 								out.print("\t\t\t\t\t\t");
-							out.print(DBUtils.nvl(adoption.getComments()) + "\t");
+							out.print(DBUtils.nvl(adoption.getComments()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
 							out.print("\n");	
 						}
 					}
@@ -331,9 +336,9 @@
 								out.print(stageUtil.getAgeStop(stage) + "\t");
 							} else
 								out.print("\t\t\t\t\t\t");
-							out.print(DBUtils.nvl(paleontology.getStageComments()) + "\t");
+							out.print(DBUtils.nvl(paleontology.getStageComments()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
 							out.print(DBUtils.nvl(RecordUtil.getLabNumberDescription(paleontology)) + "\t");
-							out.print(DBUtils.nvl(paleontology.getCollectionComments()) + "\t");
+							out.print(DBUtils.nvl(paleontology.getCollectionComments()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
 							out.print("\n");	
 						}
 					}
