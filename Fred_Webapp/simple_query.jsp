@@ -288,7 +288,8 @@
 	var ageStop = new Array(<%=(maxAgeId + 1)%>);<%
 	for (AgeView age : new StageUtil(factory).getAges()) {
 		%>ageStart[<%=age.getAgeId()%>] = <%=age.getAgeStart()%>;
-		ageStop[<%=age.getAgeId()%>] = <%=age.getAgeStop()%><%
+		ageStop[<%=age.getAgeId()%>] = <%=age.getAgeStop()%>;
+		<%
 	}
 	%></script>
 	
