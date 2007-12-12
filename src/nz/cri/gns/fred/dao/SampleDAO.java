@@ -25,6 +25,7 @@ public interface SampleDAO {
 	public void delete(Object object) throws StorageAccessException;
 	public <T> T saveOrUpdate(T object) throws StorageAccessException;
 	public <T> T get(Integer id, Class<T> clazz);
+	public <T> T getFirst(String query, Class<T> clazz, String parameter) throws StorageAccessException;
 	/**
 	 * @param relationship
 	 * @return

@@ -111,7 +111,7 @@
 		   		%><tr><td>Error: Invalid username/password</td></td><%
 		   	}
 		   	if (user != null) {
-				Sample sample = sampleUtil.findSample(request.getParameter("localityName"));
+				Sample sample = sampleUtil.findOrCreateSample(request.getParameter("localityName"), user);
 				if (sample != null) {
 					if (sampleUtil.isAllowedReadSample(user, sample)) {
 						%><tr><td><%=sample.getSampleId()%></td></tr><%

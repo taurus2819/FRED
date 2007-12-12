@@ -173,6 +173,31 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return null;
 	}
 	
+	public Sample findOrCreateSample(String localityName, UserAccount user) throws StorageAccessException {
+		if (localityName.indexOf(":") < 0)
+			return findSample(localityName);
+		FeatureUtil featureUtil = new FeatureUtil(factory);
+		Feature feature = featureUtil.getFeatureWithIdentifyingName(localityName.substring(0, localityName.indexOf(":")).trim());
+		if (feature != null && !feature.getFeatureType().equals(OUTCROP)) {
+			String sampleName = localityName.substring(localityName.indexOf(":") + 1).trim();
+			for (Sample sample : feature.getSamples()) {
+				if (sampleName.equals(getDrillHoleDepthDescription(sample)))
+					return sample;
+			}
+			if (featureUtil.isAllowedReadFeature(user, feature)) {
+				Sample sample = createSample(feature, null, false, user);
+				Object[] drillDepths = parseDrillHoleDepthDescription(sampleName);
+				sample.setTopDepth((Double) drillDepths[0]);
+				sample.setBottomDepth((Double) drillDepths[1]);
+				sample.setDepthUnit((String) drillDepths[4]);
+				sample.setDrillType((DrillType) drillDepths[3]);
+				saveOrUpdate(sample);
+				return sample;
+			}
+		}
+		return null;		
+	}
+	
 	 /** @param sample
 	 * @return
 	 */
@@ -211,6 +236,26 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		}
 		
 		return desc.toString();
+	}
+	
+	public Object[] parseDrillHoleDepthDescription(String desc) throws StorageAccessException {
+		Object[] depths = new Object[4];
+		if (desc.indexOf("-") < 0) {
+			String[] bits = desc.split(" ");
+			depths[0] = new Double(bits[0]);
+			depths[1] = null;
+			depths[2] = bits[1];
+			depths[3] = getDrillType(bits[2]);
+		} else {
+			String[] bits = desc.split("-");
+			String[] littleBits = bits[0].trim().split(" ");
+			depths[0] = new Double(littleBits[0]);
+			littleBits = bits[1].trim().split(" ");
+			depths[1] = new Double(littleBits[0]);
+			depths[2] = littleBits[1];
+			depths[3] = getDrillType(littleBits[2]);
+		}
+		return depths;
 	}
 	
 	public static boolean hasDepthInformation(Sample sample) {
@@ -463,14 +508,15 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * @param reuseFeatureAudit 
 	 * @throws StorageAccessException 
 	 */
-	public Sample createSample(Feature feature, int folderId, boolean reuseFeatureAudit, UserAccount user) throws StorageAccessException {
+	public Sample createSample(Feature feature, Integer folderId, boolean reuseFeatureAudit, UserAccount user) throws StorageAccessException {
 		Sample sample = sampleDAO.createNewSample(feature);
 		Audit audit = null;
 		if (reuseFeatureAudit)
 			audit = feature.getAudit();
 		else {
 			audit = sampleDAO.createNewAudit();
-			audit.setFolder(folderDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class));
+			if (folderId != null)
+				audit.setFolder(folderDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class));
 			audit.setStatus(FREDConstants.WORKING);
 			audit.setCreatedDate(new Date());
 			audit.setCreatedById(new Integer(user.getId()));
@@ -478,7 +524,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		sample.setAudit(audit);
 		return sample;
 	}
-
+	
 	/**
 	 * Copies the given SedimentaryFeature but assigns the new one to the 
 	 * given sample instead of the original
@@ -847,6 +893,10 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	
 	public DrillType getDrillType(Integer id) throws StorageAccessException {
 		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.DrillType.class);
+	}
+	
+	public DrillType getDrillType(String drillType) throws StorageAccessException {
+		return sampleDAO.getFirst("FROM DrillType AS t WHERE t.name = ?", DrillType.class, drillType);
 	}
 	
 	public List<DrillType> getDrillTypes() throws StorageAccessException {

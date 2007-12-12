@@ -875,6 +875,10 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		return items;
 	}
 	
+	public <T> T getFirst(String query, Class<T> clazz, String parameter) throws StorageAccessException {
+		return HibernateUtils.getFirst(provider, query, parameter, clazz);	
+	}
+	
 	public UserDAO getUserDAO() {
 		return this;
 	}
