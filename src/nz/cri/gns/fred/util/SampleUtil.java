@@ -189,7 +189,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 				Object[] drillDepths = parseDrillHoleDepthDescription(sampleName);
 				sample.setTopDepth((Double) drillDepths[0]);
 				sample.setBottomDepth((Double) drillDepths[1]);
-				sample.setDepthUnit((String) drillDepths[4]);
+				sample.setDepthUnit((String) drillDepths[2]);
 				sample.setDrillType((DrillType) drillDepths[3]);
 				saveOrUpdate(sample);
 				return sample;
