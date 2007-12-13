@@ -542,6 +542,10 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return sample;
 	}
 	
+	public Sample createSample(Feature feature, int folderId, boolean reuseFeatureAudit, UserAccount user) throws StorageAccessException {
+		return createSample(feature, new Integer(folderId), reuseFeatureAudit, user);
+	}
+	
 	/**
 	 * Copies the given SedimentaryFeature but assigns the new one to the 
 	 * given sample instead of the original
