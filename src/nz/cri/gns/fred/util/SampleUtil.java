@@ -173,7 +173,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return null;
 	}
 	
-	public Sample findOrCreateSample(String localityName, int folderId, UserAccount user) throws StorageAccessException, DataInputException, InsufficientPrivelegesException {
+	public Sample findOrCreateSample(String localityName, UserAccount user) throws StorageAccessException, DataInputException, InsufficientPrivelegesException {
 		if (localityName.indexOf(":") < 0)
 			return findSample(localityName);
 		FeatureUtil featureUtil = new FeatureUtil(factory);
@@ -185,14 +185,14 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 					return sample;
 			}
 			if (featureUtil.isAllowedReadFeature(user, feature)) {
-				Sample sample = createSample(feature, folderId, false, user);
+				Sample sample = createSample(feature, null, false, user);
+				setAuditApproved(sample, user);
 				Object[] drillDepths = parseDrillHoleDepthDescription(sampleName);
 				sample.setTopDepth((Double) drillDepths[0]);
 				sample.setBottomDepth((Double) drillDepths[1]);
 				sample.setDepthUnit((String) drillDepths[2]);
 				sample.setDrillType((DrillType) drillDepths[3]);
 				saveOrUpdate(sample);
-				submitSample(sample, new FolderUtil(factory).getUserFolder(folderId, user), user);
 				return sample;
 			}
 		}
@@ -350,16 +350,20 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			if (!isMandatoryFieldComplete(sample))
 				throw new MandatoryFieldsMissingException();
 			
-			Audit audit = sample.getAudit();
-			audit.setStatus(APPROVED);		//Samples don't need approval
-			audit.setSubmittedById(new Integer(user.getId()));
-			audit.setSubmittedDate(new Date());
-			audit.setWorkingComments(null);
-			audit.setFolder(null);
-			if (audit.getConfidentialFlag())
-				audit.setConfidLapseDate(AuditUtil.getLapseDate(audit.getConfidPeriod()));
-			sampleDAO.saveOrUpdate(audit);
+			setAuditApproved(sample, user);
 		}
+	}
+	
+	private void setAuditApproved(Sample sample, UserAccount user) throws StorageAccessException {
+		Audit audit = sample.getAudit();
+		audit.setStatus(APPROVED);		//Samples don't need approval
+		audit.setSubmittedById(new Integer(user.getId()));
+		audit.setSubmittedDate(new Date());
+		audit.setWorkingComments(null);
+		audit.setFolder(null);
+		if (audit.getConfidentialFlag())
+			audit.setConfidLapseDate(AuditUtil.getLapseDate(audit.getConfidPeriod()));
+		sampleDAO.saveOrUpdate(audit);
 	}
 	
 	public static boolean isMandatoryFieldComplete(Sample sample) {
@@ -521,14 +525,15 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * @param reuseFeatureAudit 
 	 * @throws StorageAccessException 
 	 */
-	public Sample createSample(Feature feature, int folderId, boolean reuseFeatureAudit, UserAccount user) throws StorageAccessException {
+	public Sample createSample(Feature feature, Integer folderId, boolean reuseFeatureAudit, UserAccount user) throws StorageAccessException {
 		Sample sample = sampleDAO.createNewSample(feature);
 		Audit audit = null;
 		if (reuseFeatureAudit)
 			audit = feature.getAudit();
 		else {
 			audit = sampleDAO.createNewAudit();
-			audit.setFolder(folderDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class));
+			if (folderId != null)
+				audit.setFolder(folderDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class));
 			audit.setStatus(FREDConstants.WORKING);
 			audit.setCreatedDate(new Date());
 			audit.setCreatedById(new Integer(user.getId()));

@@ -115,7 +115,7 @@
 		   	if (user != null) {
 		   		Sample sample = null;
 		   		try {
-					sample = sampleUtil.findOrCreateSample(request.getParameter("localityName"), Integer.parseInt(request.getParameter("folderId")), user);
+					sample = sampleUtil.findOrCreateSample(request.getParameter("localityName"), user);
 		   		} catch (DataInputException e) {
 		   			String[] error = (String[])e.getError().firstElement();
 			    	%><tr><td>Error:</td><td><%=error[0]%> - <%=error[1]%></td></tr><%
