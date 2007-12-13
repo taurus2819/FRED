@@ -25,6 +25,7 @@
 %><%@page import="java.util.Vector"
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.auth.User"
+%><%@page import="nz.cri.gns.auth.InsufficientPrivelegesException"
 %><%@page import="nz.cri.gns.fred.website.ContentProvider"
 %><%@page import="java.util.Iterator"
 %><%@page import="java.io.PrintWriter"
@@ -114,10 +115,12 @@
 		   	if (user != null) {
 		   		Sample sample = null;
 		   		try {
-					sample = sampleUtil.findOrCreateSample(request.getParameter("localityName"), user);
+					sample = sampleUtil.findOrCreateSample(request.getParameter("localityName"), Integer.parseInt(request.getParameter("folderId")), user);
 		   		} catch (DataInputException e) {
 		   			String[] error = (String[])e.getError().firstElement();
 			    	%><tr><td>Error:</td><td><%=error[0]%> - <%=error[1]%></td></tr><%
+		   		} catch (InsufficientPrivelegesException e) {
+			    	%><tr><td>Error:</td><td><%=e.getMessage()%></td></tr><%
 		   		}
 				if (sample != null) {
 					if (sampleUtil.isAllowedReadSample(user, sample)) {
