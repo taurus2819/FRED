@@ -173,7 +173,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return null;
 	}
 	
-	public Sample findOrCreateSample(String localityName, UserAccount user) throws StorageAccessException {
+	public Sample findOrCreateSample(String localityName, UserAccount user) throws StorageAccessException, DataInputException {
 		if (localityName.indexOf(":") < 0)
 			return findSample(localityName);
 		FeatureUtil featureUtil = new FeatureUtil(factory);
@@ -238,24 +238,36 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return desc.toString();
 	}
 	
-	public Object[] parseDrillHoleDepthDescription(String desc) throws StorageAccessException {
-		Object[] depths = new Object[4];
-		if (desc.indexOf("-") < 0) {
-			String[] bits = desc.split(" ");
-			depths[0] = new Double(bits[0]);
-			depths[1] = null;
-			depths[2] = bits[1];
-			depths[3] = getDrillType(bits[2]);
-		} else {
-			String[] bits = desc.split("-");
-			String[] littleBits = bits[0].trim().split(" ");
-			depths[0] = new Double(littleBits[0]);
-			littleBits = bits[1].trim().split(" ");
-			depths[1] = new Double(littleBits[0]);
-			depths[2] = littleBits[1];
-			depths[3] = getDrillType(littleBits[2]);
+	public Object[] parseDrillHoleDepthDescription(String desc) throws StorageAccessException, DataInputException {
+		try {
+			Object[] depths = new Object[4];
+			if (desc.indexOf("-") < 0) {
+				String[] bits = desc.split(" ");
+				depths[0] = new Double(bits[0]);
+				depths[1] = null;
+				depths[2] = bits[1];
+				if (bits.length > 2)
+					depths[3] = getDrillType(bits[2]);
+				else
+					depths[3] = null;
+			} else {
+				String[] bits = desc.split("-");
+				String[] littleBits = bits[0].trim().split(" ");
+				depths[0] = new Double(littleBits[0]);
+				littleBits = bits[1].trim().split(" ");
+				depths[1] = new Double(littleBits[0]);
+				depths[2] = littleBits[1];
+				if (littleBits.length > 2)
+					depths[3] = getDrillType(littleBits[2]);
+				else
+					depths[3] = null;
+			}
+			return depths;
+		} catch (StorageAccessException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new DataInputException("Drillhole Depth", "Incorrectly formatted");
 		}
-		return depths;
 	}
 	
 	public static boolean hasDepthInformation(Sample sample) {

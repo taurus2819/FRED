@@ -7,6 +7,7 @@
 %><%@page import="nz.cri.gns.fred.model.Paleontology"
 %><%@page import="nz.cri.gns.fred.de.DataEntryForm"
 %><%@page import="nz.cri.gns.fred.de.DataEntryFormFactory"
+%><%@page import="nz.cri.gns.fred.de.DataInputException"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
@@ -111,7 +112,13 @@
 		   		%><tr><td>Error: Invalid username/password</td></td><%
 		   	}
 		   	if (user != null) {
-				Sample sample = sampleUtil.findOrCreateSample(request.getParameter("localityName"), user);
+		   		Sample sample = null;
+		   		try {
+					sample = sampleUtil.findOrCreateSample(request.getParameter("localityName"), user);
+		   		} catch (DataInputException e) {
+		   			String[] error = (String[])e.getError().firstElement();
+			    	%><tr><td>Error:</td><td><%=error[0]%> - <%=error[1]%></td></tr><%
+		   		}
 				if (sample != null) {
 					if (sampleUtil.isAllowedReadSample(user, sample)) {
 						%><tr><td><%=sample.getSampleId()%></td></tr><%
