@@ -292,9 +292,9 @@ public class PaleontologyRecordDE extends RecordDE {
 						for (PaleontologyListEntry entry : list) {
 							Taxon taxon = entry.getTaxon();
 							out.println("addTaxa('" + group.getName() + ": "
-									+ entry.getTaxonomicName().replaceAll("'", "\'") + "', '"
-									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()).replaceAll("'", "\'") + "', '"
-									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)).replaceAll("'", "\'") + "');");
+									+ entry.getTaxonomicName().replaceAll("'", "\\'") + "', '"
+									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()).replaceAll("'", "\\'") + "', '"
+									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)).replaceAll("'", "\\'") + "');");
 							//out.println(group.getName() + "*" 
 							//		+ entry.getTaxonomicName() + "*" 
 							//		+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "*" 
@@ -309,9 +309,9 @@ public class PaleontologyRecordDE extends RecordDE {
 						if (entry.getTaxonomicGroup().equals(group) && entry.getTaxon() != null) {
 							Taxon taxon = entry.getTaxon();
 							out.println("addTaxa('" + group.getName() + ": "
-									+ entry.getTaxonomicName().replaceAll("'", "\'") + "', '"
-									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()).replaceAll("'", "\'") + "', '"
-									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)).replaceAll("'", "\'") + "');");
+									+ entry.getTaxonomicName().replaceAll("'", "\\'") + "', '"
+									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()).replaceAll("'", "\\'") + "', '"
+									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)).replaceAll("'", "\\'") + "');");
 							//out.println(group.getName() + "*" 
 							//		+ entry.getTaxonomicName() + "*" 
 							//		+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "*" 
@@ -328,9 +328,9 @@ public class PaleontologyRecordDE extends RecordDE {
 				if (entry.getTaxon() != null) {
 					Taxon taxon = entry.getTaxon();
 					out.println("addTaxa('" + taxon.getTaxonomicGroup().getName() + ": "
-							+ entry.getTaxonomicName().replaceAll("'", "\'") + "', '"
-							+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()).replaceAll("'", "\'") + "', '"
-							+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)).replaceAll("'", "\'") + "');");
+							+ entry.getTaxonomicName().replaceAll("'", "\\'") + "', '"
+							+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()).replaceAll("'", "\\'") + "', '"
+							+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)).replaceAll("'", "\\'") + "');");
 					//out.println(taxon.getTaxonomicGroup().getName() + "*" 
 					//		+ entry.getTaxonomicName() + "*" 
 					//		+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "*" 
