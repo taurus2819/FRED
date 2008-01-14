@@ -42,7 +42,6 @@ public class AJAXServlet extends HttpServlet {
 	public static enum Type {
 		Person,
 		Strat,
-		TaxonomicGroup,
 		TaxonomicName;
 	};
 	
@@ -72,12 +71,10 @@ public class AJAXServlet extends HttpServlet {
 						} catch (StorageAccessException e) {
 						}
 						break;
-					case TaxonomicGroup:
-						break;
 					case TaxonomicName:
 						TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
 						try {
-							List<Taxon> taxa = taxaUtil.getMatchingTaxa(start, null, Match.BEGINNING, 15);
+							List<Taxon> taxa = taxaUtil.getMatchingTaxa(start, null, Match.ANYWHERE, 25);
 							for (Taxon taxon : taxa) {
 								values.add(new NamedId(taxon.getTaxaId().toString(), taxon.getTaxonomicGroup().getName() + ": " + taxon.getTaxonomicName()));
 							}
