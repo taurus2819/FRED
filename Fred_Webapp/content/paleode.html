@@ -105,7 +105,7 @@ new ContextHint(
 
 var count = 0;
 
-function addTaxa() {
+function addTaxaFromForm() {
 	var taxaName = document.getElementById("TaxaName");
 	var author = document.getElementById("Author");
 	var comments = document.getElementById("Comments");
@@ -136,6 +136,7 @@ function addTaxa(taxaName, author, comments) {
 	removeLink.setAttribute("href", "javascript:removeTaxa(" + count + ");");
 	removeLink.appendChild(document.createTextNode("remove"));
 	removeTd.appendChild(removeLink);
+	
 	var hiddenData = document.createElement("input");
 	hiddenData.setAttribute("type", "hidden");
 	hiddenData.setAttribute("name", "Taxa2");
@@ -157,7 +158,7 @@ function removeTaxa(line) {
 <td><input type="text" id="Author" name="Author" /></td>
 <td><input type="text" id="Comments" name="Comments" />
 </td>
-<td>&nbsp;&nbsp;<a href="javascript:addTaxa();">Add</a></td>
+<td>&nbsp;&nbsp;<a href="javascript:addTaxaFromForm();">Add</a></td>
 </tr>
 </tbody>
 </table></td></tr>
