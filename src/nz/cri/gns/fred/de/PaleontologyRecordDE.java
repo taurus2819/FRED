@@ -168,7 +168,7 @@ public class PaleontologyRecordDE extends RecordDE {
                 	commentsStr = commentsBits[2];
                 }
                 
-            	Integer specCount = (specCountStr != null && specCountStr.length() == 0) ? null : new Integer(specCountStr);
+            	Integer specCount = (specCountStr == null || specCountStr.length() == 0) ? null : new Integer(specCountStr);
                 for (Iterator<PaleontologyListEntry> it = removedTaxaList.iterator(); it.hasNext(); ) {
                     PaleontologyListEntry entry = it.next();
                     if (taxonomicUtil.isMatchingEntry(entry, groupStr, nameStr, authorStr, specCount, specCoordStr, commentsStr)) {
