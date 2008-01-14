@@ -84,23 +84,71 @@ function swapSection(frm){
 </tr>
 
 <!-- testing new AJAX fields -->
-<tr><td class="heading" colspan="2">Taxonomic Name</td><td><input type="text" id="taxonName" name="taxonName" size="40" value="{@taxonName}" /></td></tr>
-
+<tr><td colspan="4"><table cellspacing="0" cellpadding="2">
+<tbody id="taxaTable">
+<tr><td class="heading">Taxonomic Name&nbsp;&nbsp;</td><td class="heading">Author&nbsp;&nbsp;</td><td class="heading">Comments</td></tr>
+<tr>
+<td><input type="text" id="TaxaName" name="TaxaName" />
 <script type="text/javascript" src="scripts/ajax.js"></script>
 <script type="text/javascript" src="scripts/locate.js"></script>
 <script type="text/javascript" src="scripts/fade.js"></script>
 <script type="text/javascript" src="scripts/contextHint.js"></script>
 <script><!--
 new ContextHint(
-	document.getElementById("TaxonName"),
+	document.getElementById("TaxaName"),
 	function generateURL(start) {
 		return "ajaxSupport.xml?action=List&type=TaxonomicName&start=" + start + "&q=" + Math.random();
 	},
 	null,
 	true
 );
-//--></script>
 
+var count = 0;
+
+function addTaxa() {
+	var taxaName = document.getElementById("TaxaName");
+	var author = document.getElementById("Author");
+	var comments = document.getElementById("Comments");
+
+	var body = document.getElementById("taxaTable");
+	var tr = document.createElement("tr");
+	tr.setAttribute("id", "row" + count++);
+	var taxaTd = document.createElement("td");
+	taxaTd.appendChild(document.createTextNode(taxaName.value + "\u00a0\u00a0"));
+	tr.appendChild(taxaTd);
+	var authorTd = document.createElement("td");
+	authorTd.appendChild(document.createTextNode(author.value + "\u00a0\u00a0"));
+	tr.appendChild(authorTd);
+	var commentsTd = document.createElement("td");
+	commentsTd.appendChild(document.createTextNode(comments.value));
+	tr.appendChild(commentsTd);
+	body.appendChild(tr);
+	
+	taxaName.value = '';
+	author.value = '';
+	comments.value = '';
+	
+	//Clear the old value
+	//var field = document.getElementById("CollectorField");
+	//field.focus();
+	//window.setTimeout("document.getElementById('CollectorField').value = ''", 100);
+}
+function removeCollector(uid) {
+	var tbl = document.getElementById("collTable");
+	var tr = document.getElementById(uid);
+	tbl.removeChild(tr);
+}
+
+//--></script>
+</td>
+<td><input type="text" id="Author" name="Author" /></td>
+<td><input type="text" id="Comments" name="Comments" />
+<input type="hidden" name="Taxa" id="Taxa" />
+</td>
+<td><a href="javascript:addTaxa();">Add</a></td>
+</tr>
+</tbody>
+</table></td></tr>
 
 <tr>
 <td colspan="3"><textarea name="Taxa" cols="80" rows="20">{@Taxa}</textarea></td>
