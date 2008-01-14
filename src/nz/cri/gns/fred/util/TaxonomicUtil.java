@@ -11,6 +11,7 @@ import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.TaxonomicDAO;
@@ -359,4 +360,16 @@ public class TaxonomicUtil extends ModelUtil {
 		return decode;
 	}
 	
+	public static String encodeTaxaComments(Integer specCount, String specCoord, String comments) {
+		if (specCount == null && FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(comments))
+			return null;
+		if (specCount == null) {
+			if (FREDUtil.isEmpty(specCoord))
+				return comments;
+			return "|" + specCoord + "|" + DBUtils.nvl(comments);
+		}
+		if (FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(comments))
+			return specCount.toString();
+		return specCount.toString() + "|" + DBUtils.nvl(specCoord) + "|" + DBUtils.nvl(comments);
+	}
 }
