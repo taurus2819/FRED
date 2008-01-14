@@ -168,14 +168,7 @@ public class PaleontologyRecordDE extends RecordDE {
                 	commentsStr = commentsBits[2];
                 }
                 
-            	System.out.println("Group: *" + groupStr + "*");
-            	System.out.println("Name: *" + nameStr + "*");
-            	System.out.println("Author: *" + authorStr + "*");
-            	System.out.println("SpecCount: *" + specCountStr + "*");
-            	System.out.println("SpecCoord: *" + specCoordStr + "*");
-            	System.out.println("Comments: *" + commentsStr + "*");     
-                
-            	Integer specCount = (specCountStr.length() == 0) ? null : new Integer(specCountStr);
+            	Integer specCount = (specCountStr != null && specCountStr.length() == 0) ? null : new Integer(specCountStr);
                 for (Iterator<PaleontologyListEntry> it = removedTaxaList.iterator(); it.hasNext(); ) {
                     PaleontologyListEntry entry = it.next();
                     if (taxonomicUtil.isMatchingEntry(entry, groupStr, nameStr, authorStr, specCount, specCoordStr, commentsStr)) {
