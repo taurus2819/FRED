@@ -216,7 +216,7 @@ public class PaleontologyRecordDE extends RecordDE {
                     entry.setTaxonomicGroup(taxonomicUtil.getTaxonomicGroup(groupStr));
                     entry.setTaxonomicName(nameStr);
                     entry.setTaxon(taxon);
-                    if (specCountStr.length() > 0)
+                    if (specCountStr != null && specCountStr.length() > 0)
                     	entry.setSpecimenCount(new Integer(specCountStr));
                     entry.setSpecimenCoords(specCoordStr);
                     entry.setComments(commentsStr);
