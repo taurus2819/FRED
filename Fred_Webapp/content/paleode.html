@@ -112,7 +112,7 @@ function addTaxa() {
 
 	var body = document.getElementById("taxaTable");
 	var tr = document.createElement("tr");
-	tr.setAttribute("id", "row" + count++);
+	tr.setAttribute("id", "taxaRow" + count);
 	var taxaTd = document.createElement("td");
 	taxaTd.appendChild(document.createTextNode(taxaName.value + "\u00a0\u00a0"));
 	tr.appendChild(taxaTd);
@@ -120,39 +120,45 @@ function addTaxa() {
 	authorTd.appendChild(document.createTextNode(author.value + "\u00a0\u00a0"));
 	tr.appendChild(authorTd);
 	var commentsTd = document.createElement("td");
-	commentsTd.appendChild(document.createTextNode(comments.value));
+	commentsTd.appendChild(document.createTextNode(comments.value + "\u00a0\u00a0"));
 	tr.appendChild(commentsTd);
+	var removeTd = document.createElement("td");
+	var removeLink = document.createElement("a");
+	removeLink.setAttribute("href", "javascript:removeTaxa(" + count + ");");
+	removeLink.appendChild(document.createTextNode("remove"));
+	removeTd.appendChild(removeLink);
+	var hiddenData = document.createElement("input");
+	hiddenData.setAttribute("type", "hidden");
+	hiddenData.setAttribute("name", "Taxa2");
+	hiddenData.setAttribute("value", taxaName.value.replace(": ", "*") + "*" + author.value + "*" + comments.value);
+	removeTd.appendChild(hiddenData);
+	tr.appendChild(removeTd);
 	body.appendChild(tr);
 	
 	taxaName.value = '';
 	author.value = '';
 	comments.value = '';
-	
-	//Clear the old value
-	//var field = document.getElementById("CollectorField");
-	//field.focus();
-	//window.setTimeout("document.getElementById('CollectorField').value = ''", 100);
+	taxaName.focus();
 }
-function removeCollector(uid) {
-	var tbl = document.getElementById("collTable");
-	var tr = document.getElementById(uid);
-	tbl.removeChild(tr);
+function removeTaxa(line) {
+	var tr = document.getElementById("taxaRow" + line);
+	tr.parentNode.removeChild(tr);
 }
 
 //--></script>
 </td>
 <td><input type="text" id="Author" name="Author" /></td>
 <td><input type="text" id="Comments" name="Comments" />
-<input type="hidden" name="Taxa" id="Taxa" />
 </td>
-<td><a href="javascript:addTaxa();">Add</a></td>
+<td>&nbsp;&nbsp;<a href="javascript:addTaxa();">Add</a></td>
 </tr>
 </tbody>
 </table></td></tr>
-
+<!-- 
 <tr>
 <td colspan="3"><textarea name="Taxa" cols="80" rows="20">{@Taxa}</textarea></td>
 <td><a href="javascript:var newWin=open('data_entry_supp.jsp?Type=Taxa', 'Supp', 'width=800,height=600');" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a></td>
 </tr>
+-->
 </table>
 {@endDETable}
