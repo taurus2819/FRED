@@ -638,13 +638,13 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		Criteria crit = provider.currentSession().createCriteria(nz.cri.gns.fred.hibernate.Person.class);
 		switch (matchType) {
 			case ANYWHERE:
-				crit.add(Expression.like("name", str, MatchMode.ANYWHERE));
+				crit.add(Expression.ilike("name", str, MatchMode.ANYWHERE));
 				break;
 			case BEGINNING:
-				crit.add(Expression.like("name", str, MatchMode.START));
+				crit.add(Expression.ilike("name", str, MatchMode.START));
 				break;
 			case END:
-				crit.add(Expression.like("name", str, MatchMode.END));
+				crit.add(Expression.ilike("name", str, MatchMode.END));
 				break;
 		}
 		crit.setMaxResults(maxMatches);
@@ -659,6 +659,31 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 				
 	}
 
+	public List<Taxon> getMatchingTaxa(String str, TaxonomicGroup group, Match matchType, int maxMatches) throws StorageAccessException {
+		Criteria crit = provider.currentSession().createCriteria(nz.cri.gns.fred.hibernate.TaxonomicLookup.class);
+		switch (matchType) {
+			case ANYWHERE:
+				crit.add(Expression.ilike("taxonomicName", str, MatchMode.ANYWHERE));
+				break;
+			case BEGINNING:
+				crit.add(Expression.ilike("taxonomicName", str, MatchMode.START));
+				break;
+			case END:
+				crit.add(Expression.ilike("taxonomicName", str, MatchMode.END));
+				break;
+		} if (group != null)
+			crit.add(Expression.eq("taxonomicGroup", group));
+		crit.setMaxResults(maxMatches);
+		crit.addOrder(Order.asc("taxonomicName"));
+		try {
+			@SuppressWarnings("unchecked")
+			List<Taxon> pp = crit.list();
+			return pp;
+		} catch (HibernateException e) {
+			throw new StorageAccessException(e);
+		}
+	}
+	
     public TaxonomicDAO getTaxonomicDAO() {
         return this;
     }

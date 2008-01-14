@@ -3,6 +3,7 @@ package nz.cri.gns.fred.dao;
 import java.util.List;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
@@ -67,6 +68,8 @@ public interface TaxonomicDAO {
 	 */
 	public TaxonomicGroup findTaxonomicGroup(String groupName) throws StorageAccessException;
 
+	public List<Taxon> getMatchingTaxa(String str, TaxonomicGroup group, Match matchType, int maxMatches) throws StorageAccessException;
+	
 	/*
 	public List<Integer> getPanelistsOfTaxonomicGroup(TaxonomicGroup group) throws StorageAccessException;
 	*/

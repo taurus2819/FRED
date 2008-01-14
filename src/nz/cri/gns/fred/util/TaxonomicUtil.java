@@ -11,6 +11,7 @@ import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.TaxonomicDAO;
 import nz.cri.gns.fred.dao.UserDAO;
@@ -331,4 +332,8 @@ public class TaxonomicUtil extends ModelUtil {
 		return FREDUtil.beanCopy(entry, newEntry, PaleontologyListEntry.class, new FREDUtil.ExcludeByType(Set.class));
 	}
 
+	public List<Taxon> getMatchingTaxa(String str, TaxonomicGroup group, Match matchType, int maxMatches) throws StorageAccessException {
+		return taxonomicDAO.getMatchingTaxa(str, group, matchType, maxMatches);
+	}
+	
 }

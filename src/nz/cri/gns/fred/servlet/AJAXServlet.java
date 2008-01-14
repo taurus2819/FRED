@@ -16,7 +16,9 @@ import nz.cri.gns.fred.dao.StratLexDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.StratigraphicUnit;
+import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.util.PersonUtil;
+import nz.cri.gns.fred.util.TaxonomicUtil;
 
 public class AJAXServlet extends HttpServlet {
 
@@ -39,7 +41,9 @@ public class AJAXServlet extends HttpServlet {
 
 	public static enum Type {
 		Person,
-		Strat;
+		Strat,
+		TaxonomicGroup,
+		TaxonomicName;
 	};
 	
 	public static enum Action {
@@ -64,6 +68,18 @@ public class AJAXServlet extends HttpServlet {
 							List<StratigraphicUnit> units = dao.getMatchingUnitNames(start, Match.BEGINNING, 15);
 							for (StratigraphicUnit unit : units) {
 								values.add(new NamedId(unit.getId().toString(), unit.getName()));
+							}
+						} catch (StorageAccessException e) {
+						}
+						break;
+					case TaxonomicGroup:
+						break;
+					case TaxonomicName:
+						TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
+						try {
+							List<Taxon> taxa = taxaUtil.getMatchingTaxa(start, null, Match.BEGINNING, 15);
+							for (Taxon taxon : taxa) {
+								values.add(new NamedId(taxon.getTaxaId().toString(), taxon.getTaxonomicGroup().getName() + ": " + taxon.getTaxonomicName()));
 							}
 						} catch (StorageAccessException e) {
 						}
