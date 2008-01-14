@@ -295,6 +295,10 @@ public class PaleontologyRecordDE extends RecordDE {
 									+ entry.getTaxonomicName().replaceAll("'", "\\'") + "', '"
 									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()).replaceAll("'", "\\'") + "', '"
 									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)).replaceAll("'", "\\'") + "');");
+							System.out.println("addTaxa('" + group.getName() + ": "
+									+ entry.getTaxonomicName().replaceAll("'", "\\'") + "', '"
+									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()).replaceAll("'", "\\'") + "', '"
+									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)).replaceAll("'", "\\'") + "');");
 							//out.println(group.getName() + "*" 
 							//		+ entry.getTaxonomicName() + "*" 
 							//		+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "*" 
