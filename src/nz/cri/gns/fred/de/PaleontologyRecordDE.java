@@ -110,7 +110,21 @@ public class PaleontologyRecordDE extends RecordDE {
         
         //Taxa
         String taxa = request.getParameter("Taxa");
-        System.out.println(taxa);
+        if (taxa != null) {
+        	dealWithTaxa(taxa.split("\\n"), pal, error);
+        } else {
+        	String[] taxa2 = request.getParameterValues("Taxa2");
+        	dealWithTaxa(taxa2, pal, error);
+        }
+		
+        if (error.size() > 0) 
+            throw new DataInputException(error);
+        
+		if (badTaxaList.size() > 0)
+			throw new TaxonomicListException(badTaxaList);
+	}
+	
+    private void dealWithTaxa(String[] taxa, Paleontology pal, Vector<String[]> error) {
         badTaxaList = new HashSet<PaleontologyListEntry>();
         Set<PaleontologyListEntry> taxaList = pal.getListEntries();
         if (taxaList == null) {
@@ -122,18 +136,42 @@ public class PaleontologyRecordDE extends RecordDE {
 
         //Mark it as ok ... for now
         nonApprovedTaxaFlag = false;
-        for (String taxaLine : taxa.split("\\n")) {
-		    taxaLine = taxaLine.trim();
+        
+        for (int i = 0; i < taxa.length; i++) {
+        	String taxaLine = taxa[i].trim();
             if (taxaLine.length() == 0)
             	continue;
 			try {
                 boolean found = false;
                 String[] bits = taxaLine.split("\\*", -1);
                 
-                Integer specCount = (bits[SPECIMEN_COUNT].length() == 0) ? null : new Integer(bits[SPECIMEN_COUNT]);
+                String groupStr = null;
+                String nameStr = null;
+                String authorStr = null;
+                String specCountStr = null;
+                String specCoordStr = null;
+                String commentsStr = null;
+                if (bits.length == 5) {
+                	groupStr = bits[GROUP];
+                	nameStr = bits[NAME];
+                	authorStr = bits[AUTHOR];
+                	specCountStr = bits[SPECIMEN_COUNT];
+                	specCoordStr = bits[SPECIMEN_COORD];
+                	commentsStr = bits[COMMENTS];
+                } else {
+                	groupStr = bits[GROUP];
+                	nameStr = bits[NAME];
+                	authorStr = bits[AUTHOR];
+                	String[] commentsBits = TaxonomicUtil.decodeTaxaComments(bits[SPECIMEN_COUNT]);
+                	specCountStr = commentsBits[0];
+                	specCoordStr = commentsBits[1];
+                	commentsStr = commentsBits[2];
+                }
+                	
+                Integer specCount = (specCountStr.length() == 0) ? null : new Integer(specCountStr);
                 for (Iterator<PaleontologyListEntry> it = removedTaxaList.iterator(); it.hasNext(); ) {
                     PaleontologyListEntry entry = it.next();
-                    if (taxonomicUtil.isMatchingEntry(entry, bits[GROUP], bits[NAME], bits[AUTHOR], specCount, bits[SPECIMEN_COORD], bits[COMMENTS])) {
+                    if (taxonomicUtil.isMatchingEntry(entry, groupStr, nameStr, authorStr, specCount, specCoordStr, commentsStr)) {
                         //It matches
                         it.remove();
                         found = true;
@@ -145,23 +183,23 @@ public class PaleontologyRecordDE extends RecordDE {
                 //Was not already in the list
                 if (!found) {
                 	//The group
-                	TaxonomicGroup group = taxonomicUtil.getTaxonomicGroup(bits[GROUP]);
+                	TaxonomicGroup group = taxonomicUtil.getTaxonomicGroup(groupStr);
                 	//clean TaxaName
-                    String cleanName = TaxonomicUtil.getCleanedName(bits[NAME]);
+                    String cleanName = TaxonomicUtil.getCleanedName(nameStr);
                     //Prepare for having an entry
                     PaleontologyListEntry entry = null;
                     //Is the taxonomic name valid?
-                    boolean blankTaxon = cleanName.length() == 0 && bits[NAME].length() > 0;
+                    boolean blankTaxon = cleanName.length() == 0 && nameStr.length() > 0;
                     	
                     Taxon taxon = (blankTaxon) 
                     	? null 
-                    	: taxonomicUtil.getTaxon(group, cleanName, bits[AUTHOR]);
+                    	: taxonomicUtil.getTaxon(group, cleanName, authorStr);
                     
                     if (taxon == null && !blankTaxon) {
                         //It's a new taxon - create a record...but don't save it yet!
                     	entry = new UnsavedListEntry(); 
                     	taxon = new UnsavedTaxon();
-                        taxon.setAuthor(bits[AUTHOR]);
+                        taxon.setAuthor(authorStr);
                         taxon.setStatus(FREDConstants.PROVISIONAL);
                         taxon.setTaxonomicGroup(group);
                         taxon.setTaxonomicName(cleanName);
@@ -175,13 +213,13 @@ public class PaleontologyRecordDE extends RecordDE {
                     }
                     
                     entry.setPaleontology(pal);
-                    entry.setTaxonomicGroup(taxonomicUtil.getTaxonomicGroup(bits[GROUP]));
-                    entry.setTaxonomicName(bits[NAME]);
+                    entry.setTaxonomicGroup(taxonomicUtil.getTaxonomicGroup(groupStr));
+                    entry.setTaxonomicName(nameStr);
                     entry.setTaxon(taxon);
-                    if (bits[SPECIMEN_COUNT].length() > 0)
-                    	entry.setSpecimenCount(new Integer(bits[SPECIMEN_COUNT]));
-                    entry.setSpecimenCoords(bits[SPECIMEN_COORD]);
-                    entry.setComments(bits[COMMENTS]);
+                    if (specCountStr.length() > 0)
+                    	entry.setSpecimenCount(new Integer(specCountStr));
+                    entry.setSpecimenCoords(specCoordStr);
+                    entry.setComments(commentsStr);
                     if (entry.getTaxon() != null && !entry.getTaxon().getStatus().equals(FREDConstants.APPROVED))
                     	nonApprovedTaxaFlag = true;
                 }
@@ -192,15 +230,8 @@ public class PaleontologyRecordDE extends RecordDE {
         }
         //Now remove any that remain in the 'removed' pile
         taxaList.removeAll(removedTaxaList);
-
-        if (error.size() > 0) 
-            throw new DataInputException(error);
-        
-		if (badTaxaList.size() > 0)
-			throw new TaxonomicListException(badTaxaList);
-		
-	}
-	
+    }
+    
     private static final int GROUP = 0;
     private static final int NAME = 1;
     private static final int AUTHOR = 2;

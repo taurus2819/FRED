@@ -336,4 +336,27 @@ public class TaxonomicUtil extends ModelUtil {
 		return taxonomicDAO.getMatchingTaxa(str, group, matchType, maxMatches);
 	}
 	
+	public static String[] decodeTaxaComments(String commentsStr) {
+		String[] decode = new String[3];
+		if (commentsStr == null || commentsStr.length() == 0)
+			return decode;
+		if (commentsStr.indexOf("|") < 0) {
+			try {
+				//if numeric then value goes in SPEC_COUNT else value goes in COMMENTS
+				Integer.parseInt(commentsStr);
+				decode[0] = commentsStr;
+				return decode;
+			} catch (Exception e) {
+				decode[2] = commentsStr;
+				return decode;
+			}
+		}
+		String[] bits = commentsStr.split("|");
+		decode[0] = bits[0];
+		decode[1] = bits[1];
+		if (bits.length == 3)
+			decode[2] = bits[2];
+		return decode;
+	}
+	
 }
