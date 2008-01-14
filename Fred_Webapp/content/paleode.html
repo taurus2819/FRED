@@ -109,18 +109,27 @@ function addTaxa() {
 	var taxaName = document.getElementById("TaxaName");
 	var author = document.getElementById("Author");
 	var comments = document.getElementById("Comments");
+	
+	addTaxa(taxaName.value, author.value, comments.value);
+	
+	taxaName.value = '';
+	author.value = '';
+	comments.value = '';
+	taxaName.focus();
+}
 
+function addTaxa(taxaName, author, comments) {
 	var body = document.getElementById("taxaTable");
 	var tr = document.createElement("tr");
 	tr.setAttribute("id", "taxaRow" + count);
 	var taxaTd = document.createElement("td");
-	taxaTd.appendChild(document.createTextNode(taxaName.value + "\u00a0\u00a0"));
+	taxaTd.appendChild(document.createTextNode(taxaName + "\u00a0\u00a0"));
 	tr.appendChild(taxaTd);
 	var authorTd = document.createElement("td");
-	authorTd.appendChild(document.createTextNode(author.value + "\u00a0\u00a0"));
+	authorTd.appendChild(document.createTextNode(author + "\u00a0\u00a0"));
 	tr.appendChild(authorTd);
 	var commentsTd = document.createElement("td");
-	commentsTd.appendChild(document.createTextNode(comments.value + "\u00a0\u00a0"));
+	commentsTd.appendChild(document.createTextNode(comments + "\u00a0\u00a0"));
 	tr.appendChild(commentsTd);
 	var removeTd = document.createElement("td");
 	var removeLink = document.createElement("a");
@@ -130,20 +139,18 @@ function addTaxa() {
 	var hiddenData = document.createElement("input");
 	hiddenData.setAttribute("type", "hidden");
 	hiddenData.setAttribute("name", "Taxa2");
-	hiddenData.setAttribute("value", taxaName.value.replace(": ", "*") + "*" + author.value + "*" + comments.value);
+	hiddenData.setAttribute("value", taxaName.replace(": ", "*") + "*" + author + "*" + comments);
 	removeTd.appendChild(hiddenData);
 	tr.appendChild(removeTd);
 	body.appendChild(tr);
-	
-	taxaName.value = '';
-	author.value = '';
-	comments.value = '';
-	taxaName.focus();
 }
+
 function removeTaxa(line) {
 	var tr = document.getElementById("taxaRow" + line);
 	tr.parentNode.removeChild(tr);
 }
+
+{@Taxa}
 
 //--></script>
 </td>

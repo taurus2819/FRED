@@ -360,7 +360,11 @@ public class TaxonomicUtil extends ModelUtil {
 		return decode;
 	}
 	
-	public static String encodeTaxaComments(Integer specCount, String specCoord, String comments) {
+	public static String encodeTaxaComments(PaleontologyListEntry palEntry) {
+		Integer specCount = palEntry.getSpecimenCount();
+		String specCoord = palEntry.getSpecimenCoords();
+		String comments = palEntry.getComments();
+		
 		if (specCount == null && FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(comments))
 			return null;
 		if (specCount == null) {

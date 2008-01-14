@@ -287,16 +287,20 @@ public class PaleontologyRecordDE extends RecordDE {
 				for (TaxonomicGroup group : groups) {
 					List<PaleontologyListEntry> list = recordUtil.getListEntries(pal, group);
 					if (list == null || list.size() == 0) {
-						out.println(group.getName() + "*****");
+						out.println("addTaxa('" + group.getName() + ": ', '', '');");
 					} else {
 						for (PaleontologyListEntry entry : list) {
 							Taxon taxon = entry.getTaxon();
-							out.println(group.getName() + "*" 
-									+ entry.getTaxonomicName() + "*" 
-									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "*" 
-									+ DBUtils.nvl(entry.getSpecimenCount()) + "*" 
-									+ DBUtils.nvl(entry.getSpecimenCoords()) + "*" 
-									+ DBUtils.nvl(entry.getComments()));
+							out.println("addTaxa('" + group.getName() + ": "
+									+ entry.getTaxonomicName() + "', '"
+									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "', '"
+									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "');");
+							//out.println(group.getName() + "*" 
+							//		+ entry.getTaxonomicName() + "*" 
+							//		+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "*" 
+							//		+ DBUtils.nvl(entry.getSpecimenCount()) + "*" 
+							//		+ DBUtils.nvl(entry.getSpecimenCoords()) + "*" 
+							//		+ DBUtils.nvl(entry.getComments()));
 						}
 					}
 					//Also check for bad taxa of this group
@@ -304,12 +308,16 @@ public class PaleontologyRecordDE extends RecordDE {
 						PaleontologyListEntry entry = it.next();
 						if (entry.getTaxonomicGroup().equals(group) && entry.getTaxon() != null) {
 							Taxon taxon = entry.getTaxon();
-							out.println(group.getName() + "*" 
-									+ entry.getTaxonomicName() + "*" 
-									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "*" 
-									+ DBUtils.nvl(entry.getSpecimenCount()) + "*" 
-									+ DBUtils.nvl(entry.getSpecimenCoords()) + "*" 
-									+ DBUtils.nvl(entry.getComments()));
+							out.println("addTaxa('" + group.getName() + ": "
+									+ entry.getTaxonomicName() + "', '"
+									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "', '"
+									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "');");
+							//out.println(group.getName() + "*" 
+							//		+ entry.getTaxonomicName() + "*" 
+							//		+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "*" 
+							//		+ DBUtils.nvl(entry.getSpecimenCount()) + "*" 
+							//		+ DBUtils.nvl(entry.getSpecimenCoords()) + "*" 
+							//		+ DBUtils.nvl(entry.getComments()));
 							it.remove();
 						}
 					}
@@ -319,12 +327,16 @@ public class PaleontologyRecordDE extends RecordDE {
 			for (PaleontologyListEntry entry : badTaxa) {
 				if (entry.getTaxon() != null) {
 					Taxon taxon = entry.getTaxon();
-					out.println(taxon.getTaxonomicGroup().getName() + "*" 
-							+ entry.getTaxonomicName() + "*" 
-							+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "*" 
-							+ DBUtils.nvl(entry.getSpecimenCount()) + "*" 
-							+ DBUtils.nvl(entry.getSpecimenCoords()) + "*" 
-							+ DBUtils.nvl(entry.getComments()));
+					out.println("addTaxa('" + taxon.getTaxonomicGroup().getName() + ": "
+							+ entry.getTaxonomicName() + "', '"
+							+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "', '"
+							+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "');");
+					//out.println(taxon.getTaxonomicGroup().getName() + "*" 
+					//		+ entry.getTaxonomicName() + "*" 
+					//		+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "*" 
+					//		+ DBUtils.nvl(entry.getSpecimenCount()) + "*" 
+					//		+ DBUtils.nvl(entry.getSpecimenCoords()) + "*" 
+					//		+ DBUtils.nvl(entry.getComments()));
 				}
 			}
 			
