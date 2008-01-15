@@ -17,6 +17,7 @@ import nz.cri.gns.fred.hibernate.util.HibernateUtil;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.StratigraphicUnit;
 import nz.cri.gns.fred.model.Taxon;
+import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.util.PersonUtil;
 import nz.cri.gns.fred.util.TaxonomicUtil;
 
@@ -104,15 +105,30 @@ public class AJAXServlet extends HttpServlet {
 		Confirm() {
 			public void process(Type type, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 				String name = request.getParameter("name");
-				boolean confirmation = false;
+				String status = "";
+				String moreData = null;
 				switch (type) {
 					case Person:
 						PersonUtil util = new PersonUtil(HibernateUtil.get().getDAOFactory());
 						try {
 							Person person = util.findPerson(name);
-							confirmation = person != null;
+							status = ((person != null) ? "Exists" : "Doesn't exist");
 						} catch (StorageAccessException e) {
 						}
+						break;
+					case TaxonomicName:
+						try {
+							TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
+							String[] bits = name.split(": ");
+							TaxonomicGroup group = taxaUtil.getTaxonomicGroup(bits[0]);
+							String cleanName = TaxonomicUtil.getCleanedName(bits[1]);
+							Taxon taxon = taxaUtil.getTaxon(group, cleanName, null);
+							if (taxon != null) {
+								status = taxon.getStatus();
+								moreData = "<author>" + taxon.getAuthor() + "</author>";
+							} else
+								status = "New";
+						} catch (Exception e) {}
 						break;
 				}
 				
@@ -123,7 +139,9 @@ public class AJAXServlet extends HttpServlet {
 				out.println("<?xml version=\"1.0\"?>");
 				out.println("<" + what + ">");
 				out.println("<name><![CDATA[" + name + "]]></name>");
-				out.println("<status>" + ((confirmation) ? "Exists" : "Doesn't exist") + "</status>");
+				out.println("<status>" + status + "</status>");
+				if (moreData != null)
+					out.println(moreData);
 				out.println("</" + what + ">");
 			}
 		},
