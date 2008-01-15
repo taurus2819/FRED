@@ -133,7 +133,7 @@ public class AJAXServlet extends HttpServlet {
 								author = request.getParameter("author");
 							}
 							moreData = "<author><![CDATA[" + DBUtils.nvl(author) + "]]></author>";
-							moreData = moreData + "<comments><![CDATA[" + request.getParameter("comments") + "]]></comments>";
+							moreData = moreData + "<comments><![CDATA[" + DBUtils.nvl(request.getParameter("comments")) + "]]></comments>";
 						} catch (Exception e) {}
 						break;
 				}
