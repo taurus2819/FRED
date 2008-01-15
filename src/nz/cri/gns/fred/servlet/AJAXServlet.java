@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.StratLexDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
@@ -123,11 +124,16 @@ public class AJAXServlet extends HttpServlet {
 							TaxonomicGroup group = taxaUtil.getTaxonomicGroup(bits[0]);
 							String cleanName = TaxonomicUtil.getCleanedName(bits[1]);
 							Taxon taxon = taxaUtil.getTaxon(group, cleanName, null);
+							String author;
 							if (taxon != null) {
 								status = taxon.getStatus();
-								moreData = "<author>" + taxon.getAuthor() + "</author>";
-							} else
+								author = taxon.getAuthor();
+							} else {
 								status = "New";
+								author = request.getParameter("author");
+							}
+							moreData = "<author><![CDATA[" + DBUtils.nvl(author) + "]]></author>";
+							moreData = moreData + "<comments><![CDATA[" + request.getParameter("comments") + "]]></comments>";
 						} catch (Exception e) {}
 						break;
 				}
