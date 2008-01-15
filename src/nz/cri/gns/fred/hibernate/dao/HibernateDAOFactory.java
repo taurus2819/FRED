@@ -673,6 +673,7 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 				break;
 		} if (group != null)
 			crit.add(Expression.eq("taxonomicGroup", group));
+		crit.add(Expression.in("status", new String[] {"approved", "provisional"}));
 		crit.setMaxResults(maxMatches);
 		crit.addOrder(Order.asc("taxonomicGroup.groupId"));
 		crit.addOrder(Order.asc("taxonomicName"));
