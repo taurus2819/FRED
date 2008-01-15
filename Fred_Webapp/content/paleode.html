@@ -123,32 +123,47 @@ function addTaxa(taxaName, author, comments) {
 	var tr = document.createElement("tr");
 	tr.setAttribute("id", "taxaRow" + count);
 	var taxaTd = document.createElement("td");
+	taxaTd.setAttribute("id", "taxaNameLine" + count);
 	taxaTd.appendChild(document.createTextNode(taxaName + "\u00a0\u00a0"));
 	tr.appendChild(taxaTd);
 	var authorTd = document.createElement("td");
+	authorTd.setAttribute("id", "authorLine" + count);
 	authorTd.appendChild(document.createTextNode(author + "\u00a0\u00a0"));
 	tr.appendChild(authorTd);
 	var commentsTd = document.createElement("td");
+	commentsTd.setAttribute("id", "commentsLine" + count);
 	commentsTd.appendChild(document.createTextNode(comments + "\u00a0\u00a0"));
 	tr.appendChild(commentsTd);
-	var removeTd = document.createElement("td");
+	var lastTd = document.createElement("td");
+	lastTd.appendChild(document.createTextNode("\u00a0\u00a0"));
+	var editLink = document.createElement("a");
+	editLink.setAttribute("href", "javascript:editTaxa(" + count + ");");
+	editLink.appendChild(document.createTextNode("Edit"));
+	lastTd.appendChild(editLink);
+	lastTd.appendChild(document.createTextNode("\u00a0\u00a0"));
 	var removeLink = document.createElement("a");
-	removeLink.setAttribute("href", "javascript:removeTaxa(" + count + ");");
-	removeLink.appendChild(document.createTextNode("remove"));
-	removeTd.appendChild(removeLink);
-	
+	removeLink.setAttribute("href", "javascript:removeTaxa(" + count++ + ");");
+	removeLink.appendChild(document.createTextNode("Remove"));
+	lastTd.appendChild(removeLink);
 	var hiddenData = document.createElement("input");
 	hiddenData.setAttribute("type", "hidden");
 	hiddenData.setAttribute("name", "Taxa2");
 	hiddenData.setAttribute("value", taxaName.replace(": ", "*") + "*" + author + "*" + comments);
-	removeTd.appendChild(hiddenData);
-	tr.appendChild(removeTd);
+	lastTd.appendChild(hiddenData);
+	tr.appendChild(lastTd);
 	body.appendChild(tr);
 }
 
 function removeTaxa(line) {
 	var tr = document.getElementById("taxaRow" + line);
 	tr.parentNode.removeChild(tr);
+}
+
+function editTaxa(line) {
+	document.getElementById("TaxaName").value = document.getElementById("taxaNameLine" + line).firstChild.nodeValue;
+	document.getElementById("Author").value = document.getElementById("authorLine" + line).firstChild.nodeValue;
+	document.getElementById("Comments").value = document.getElementById("commentsLine" + line).firstChild.nodeValue;
+	removeTaxa(line);
 }
 
 {@Taxa}
