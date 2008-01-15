@@ -123,11 +123,28 @@ function addTaxaFromForm() {
 }
 
 function addTaxa(taxaName, author, comments) {
+	if (taxaName.length == 0)
+		alert("Please enter a taxonomic name");
+	} else {
+		ajaxXML("ajaxSupport.xml?action=Confirm&type=TaxonomicName&name=" + taxaName + "&q=" + Math.random(), processAdd);
+	}
+}
+
+function processAdd(xmlDoc) {
+	var taxaNode = xmlDoc.getElementsByTagName("TaxonomicName")[0]
+	var taxaName = taxaNode.getElementsByTagName("name")[0].firstChild.nodeValue;
+	var status = taxaNode.getElementsByTagName("status")[0].firstChild.nodeValue;
+	var author = taxaNode.getElementsByTagName("author")[0].firstChild.nodeValue;
+	var comments = taxaNode.getElementsByTagName("comments")[0].firstChild.nodeValue;
+
 	var body = document.getElementById("taxaTable");
 	var tr = document.createElement("tr");
 	tr.setAttribute("id", "taxaRow" + lineId);
 	var taxaTd = document.createElement("td");
 	taxaTd.setAttribute("id", "taxaNameLine" + lineId);
+	if (status <> "approved") {
+		taxaTd.setAttribute("style", "color: #FF0000");
+	}
 	taxaTd.appendChild(document.createTextNode(taxaName + "\u00a0\u00a0"));
 	tr.appendChild(taxaTd);
 	var authorTd = document.createElement("td");
@@ -161,6 +178,7 @@ function addTaxa(taxaName, author, comments) {
 	countTd.removeChild(countTd.firstChild);
 	countTd.appendChild(document.createTextNode("Taxonomic Count: " + ++taxaCount));
 }
+
 
 function removeTaxa(line) {
 	var tr = document.getElementById("taxaRow" + line);
