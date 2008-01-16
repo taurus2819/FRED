@@ -698,6 +698,7 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 			case END:
 				crit.add(Expression.ilike("name", str, MatchMode.END));
 				break;
+		}
 		crit.setMaxResults(maxMatches);
 		crit.addOrder(Order.asc("groupId"));
 		try {

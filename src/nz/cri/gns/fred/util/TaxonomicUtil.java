@@ -337,6 +337,10 @@ public class TaxonomicUtil extends ModelUtil {
 		return taxonomicDAO.getMatchingTaxa(str, group, matchType, maxMatches);
 	}
 	
+	public List<TaxonomicGroup> getMatchingTaxonomicGroups(String str, Match matchType, int maxMatches) throws StorageAccessException {
+		return taxonomicDAO.getMatchingTaxonomicGroups(str, matchType, maxMatches);
+	}
+	
 	public static String[] decodeTaxaComments(String commentsStr) {
 		String[] decode = new String[3];
 		if (commentsStr == null || commentsStr.length() == 0)

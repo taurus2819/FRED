@@ -44,6 +44,7 @@ public class AJAXServlet extends HttpServlet {
 	public static enum Type {
 		Person,
 		Strat,
+		TaxonomicGroup,
 		TaxonomicName;
 	};
 	
@@ -73,12 +74,25 @@ public class AJAXServlet extends HttpServlet {
 						} catch (StorageAccessException e) {
 						}
 						break;
-					case TaxonomicName:
-						TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
+					case TaxonomicGroup:
 						try {
-							List<Taxon> taxa = taxaUtil.getMatchingTaxa(start, null, Match.ANYWHERE, 25);
+							List<TaxonomicGroup> groups = new TaxonomicUtil(HibernateUtil.get().getDAOFactory()).getMatchingTaxonomicGroups(start, Match.ANYWHERE, 25);
+							for (TaxonomicGroup group : groups) {
+								values.add(new NamedId(group.getGroupId().toString(), group.getName()));
+							}
+						} catch (StorageAccessException e) {
+						}
+						break;
+					case TaxonomicName:
+						try {
+							TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
+							TaxonomicGroup group = null;
+							if (request.getParameter("group") != null) try {
+								group = taxaUtil.getTaxonomicGroup(request.getParameter("group"));
+							} catch (Exception e) {}
+							List<Taxon> taxa = taxaUtil.getMatchingTaxa(start, group, Match.ANYWHERE, 25);
 							for (Taxon taxon : taxa) {
-								values.add(new NamedId(taxon.getTaxaId().toString(), taxon.getTaxonomicGroup().getName() + ": " + taxon.getTaxonomicName()));
+								values.add(new NamedId(taxon.getTaxaId().toString(), ((group != null) ? taxon.getTaxonomicGroup().getName() + ": " : "") + taxon.getTaxonomicName()));
 							}
 						} catch (StorageAccessException e) {
 						}
@@ -128,7 +142,7 @@ public class AJAXServlet extends HttpServlet {
 								status = taxon.getStatus();
 								moreData = "<author><![CDATA[" + DBUtils.nvl(taxon.getAuthor()) + "]]></author>";
 							} else
-								status = "New";
+								status = "new";
 						} catch (Exception e) {}
 						break;
 				}
