@@ -84,22 +84,29 @@ function swapSection(frm){
 <td><textarea name="CollComm" cols="40" rows="2">{@CollComm}</textarea></td>
 </tr>
 <tr>
-<td class="heading" colspan="3" style='color: #FF0000'>Taxonomic List{@@recordIdForUnapproved:<br /><span class="smallheading" style="color: #FF0000">Some taxonomic entries listed below have not been approved and this record can not be submitted.  Click <a href="record_taxa_list.jsp?RecID=@}{@recordIdForUnapproved}{@@recordIdForUnapproved:" target="taxaList">here</a> for more details</span>@}</td>
-</tr>
+<td class="heading" colspan="4" style="color: #ff0000">Taxonomic List</td></tr>
+<tr><td colspan="4" class="smalltext">If you know the group enter it in the <i>Group</i> box otherwise leave it blank.  For new entries (ie entries not in the database) please enter a <i>Group</i> and an <i>Author</i> if appropriate.</td></tr>
+<tr><td colspan="4" class="smalltext">Entries in the <i>Comments</i> box are interpreted in the following way:</td></tr>
+<tr><td>&nbsp;</td><td colspan="3" class="smalltext"><i>Numeric value</i> -&gt; <i>Specimen Count</i></td></tr>
+<tr><td>&nbsp;</td><td colspan="3" class="smalltext"><i>Non-numeric value</i> -&gt; <i>Comments</i></td></tr>
+<tr><td>&nbsp;</td><td colspan="3" class="smalltext"><i>x|y</i> -&gt; <i>Specimen Count</i> = x, <i>Specimen Coordinates</i> = y</td></tr>
+<tr><td>&nbsp;</td><td colspan="3" class="smalltext"><i>x|y|z</i> -&gt; <i>Specimen Count</i> = x, <i>Specimen Coordinates</i> = y, <i>Comments</i> = z</td></tr>
 <tr><td colspan="4"><table cellspacing="0" cellpadding="2">
-<tfoot>
-<tr><td id="taxaCount" colspan="3" class="heading">Taxonomic Count: 0</td></tr>
-</tfoot>
-<tbody id="taxaTable">
-<tr><td class="heading">Group&nbsp;&nbsp;</td><td class="heading">Taxonomic Name&nbsp;&nbsp;</td><td class="heading">Author&nbsp;&nbsp;</td><td class="heading">Comments&nbsp;&nbsp;</td><td class="heading">Status</td></tr>
+<thead>
+<tr><td colspan="5" class="smalltext">Taxonomic names listed below in <span style="color: #ff0000">red</span> have not yet been approved (or have been rejected) - place you mouse over these entries to see more details.  Records can't be submitted until all entries are approved.</td></tr>
+<tr><td class="heading">Group&nbsp;&nbsp;</td><td class="heading">Taxonomic Name&nbsp;&nbsp;</td><td class="heading">Author&nbsp;&nbsp;</td><td class="heading">Comments</td></tr>
 <tr>
 <td><input type="text" id="Group" name="Group" size="15" /></td>
 <td><input type="text" id="TaxaName" name="TaxaName" size="40" /></td>
 <td><input type="text" id="Author" name="Author" size="15" /></td>
 <td><input type="text" id="Comments" name="Comments" size="15" /></td>
-<td>&nbsp;</td>
 <td>&nbsp;&nbsp;<a href="javascript:addTaxaFromForm();">Add</a></td>
 </tr>
+</thead>
+<tfoot>
+<tr><td id="taxaCount" colspan="5" class="heading">Taxonomic Names Count: 0</td></tr>
+</tfoot>
+<tbody id="taxaTable">
 </tbody>
 </table></td></tr>
 </table>
@@ -173,10 +180,12 @@ function addTaxa(group, taxaName, author, comments) {
 	if (status == 'new') {
 		statusPopupString = 'not yet saved';
 	} else if (status == 'provisional') {
-		statusPopupString = 'Submitted By: ' + taxaNode.getElementsByTagName("submitted-by")[0].firstChild.nodeValue + '<br />'
+		statusPopupString = 'Status: ' + status + '<br />'
+			+ 'Submitted By: ' + taxaNode.getElementsByTagName("submitted-by")[0].firstChild.nodeValue + '<br />'
 			+ 'Submitted Date: ' + taxaNode.getElementsByTagName("submitted-date")[0].firstChild.nodeValue;
 	} else if (status == 'rejected') {
-		statusPopupString = 'Rejected By: ' + taxaNode.getElementsByTagName("rejected-by")[0].firstChild.nodeValue + '<br />'
+		statusPopupString = 'Status: ' + status + '<br />'
+			+ 'Rejected By: ' + taxaNode.getElementsByTagName("rejected-by")[0].firstChild.nodeValue + '<br />'
 			+ 'Rejected Date: ' + taxaNode.getElementsByTagName("rejected-date")[0].firstChild.nodeValue + '<br />'
 			+ 'Comments: ' + taxaNode.getElementsByTagName("rejected-comments")[0].firstChild.nodeValue;	
 	}
@@ -185,32 +194,40 @@ function addTaxa(group, taxaName, author, comments) {
 	var tr = document.createElement("tr");
 	tr.setAttribute("id", "taxaRow" + lineId);
 	if (status != 'approved') {
-		tr.setAttribute("style", "color: #FF0000");
+		tr.setAttribute("style", "color: #ff0000");
 	}
 	var groupTd = document.createElement("td");
 	groupTd.setAttribute("id", "groupLine" + lineId);
+		if (status != 'approved') {
+		groupTd.setAttribute("onmouseover", "return overlib('" + statusPopupString + "', CAPTION, '" + taxaName + "', WIDTH, 200);");
+		groupTd.setAttribute("onmouseout", "return nd();");
+	}
 	groupTd.appendChild(document.createTextNode(group + "\u00a0\u00a0"));
 	tr.appendChild(groupTd);
 	var taxaTd = document.createElement("td");
 	taxaTd.setAttribute("id", "taxaNameLine" + lineId);
+	if (status != 'approved') {
+		taxaTd.setAttribute("onmouseover", "return overlib('" + statusPopupString + "', CAPTION, '" + taxaName + "', WIDTH, 200);");
+		taxaTd.setAttribute("onmouseout", "return nd();");
+	}
 	taxaTd.appendChild(document.createTextNode(taxaName + "\u00a0\u00a0"));
 	tr.appendChild(taxaTd);
 	var authorTd = document.createElement("td");
 	authorTd.setAttribute("id", "authorLine" + lineId);
+	if (status != 'approved') {
+		authorTd.setAttribute("onmouseover", "return overlib('" + statusPopupString + "', CAPTION, '" + taxaName + "', WIDTH, 200);");
+		authorTd.setAttribute("onmouseout", "return nd();");
+	}
 	authorTd.appendChild(document.createTextNode(author + "\u00a0\u00a0"));
 	tr.appendChild(authorTd);
 	var commentsTd = document.createElement("td");
 	commentsTd.setAttribute("id", "commentsLine" + lineId);
+	if (status != 'approved') {
+		commentsTd.setAttribute("onmouseover", "return overlib('" + statusPopupString + "', CAPTION, '" + taxaName + "', WIDTH, 200);");
+		commentsTd.setAttribute("onmouseout", "return nd();");
+	}
 	commentsTd.appendChild(document.createTextNode(comments + "\u00a0\u00a0"));
 	tr.appendChild(commentsTd);
-	var statusTd = document.createElement("td");
-	statusTd.setAttribute("id", "statusLine" + lineId);
-	if (status != 'approved') {
-		statusTd.setAttribute("onmouseover", "return overlib('" + statusPopupString + "', CAPTION, 'Taxon Status', WIDTH, 200);");
-		statusTd.setAttribute("onmouseout", "return nd();");
-	}
-	statusTd.appendChild(document.createTextNode(status));
-	tr.appendChild(statusTd);
 	var lastTd = document.createElement("td");
 	lastTd.appendChild(document.createTextNode("\u00a0\u00a0"));
 	var editLink = document.createElement("a");
@@ -245,10 +262,10 @@ function removeTaxa(line) {
 }
 
 function editTaxa(line) {
-	document.getElementById("Group").value = document.getElementById("groupLine" + line).firstChild.nodeValue;
-	document.getElementById("TaxaName").value = document.getElementById("taxaNameLine" + line).firstChild.nodeValue;
-	document.getElementById("Author").value = document.getElementById("authorLine" + line).firstChild.nodeValue;
-	document.getElementById("Comments").value = document.getElementById("commentsLine" + line).firstChild.nodeValue;
+	document.getElementById("Group").value = document.getElementById("groupLine" + line).firstChild.nodeValue.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+	document.getElementById("TaxaName").value = document.getElementById("taxaNameLine" + line).firstChild.nodeValue.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+	document.getElementById("Author").value = document.getElementById("authorLine" + line).firstChild.nodeValue.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+	document.getElementById("Comments").value = document.getElementById("commentsLine" + line).firstChild.nodeValue.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 	removeTaxa(line);
 }
 
