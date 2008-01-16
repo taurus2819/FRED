@@ -111,11 +111,11 @@ function swapSection(frm){
 <script type="text/javascript" src="/online/scripts/ajax.js"></script>
 <script type="text/javascript" src="scripts/locate.js"></script>
 <script type="text/javascript" src="scripts/fade.js"></script>
-<script type="text/javascript" src="scripts/contextHint.js"></script>
 <script type="text/javascript" src="scripts/linkedContextHint.js"></script>
 <script><!--
-new ContextHint(
+new LinkedContextHint(
 	document.getElementById("Group"),
+	document.getElementById("TaxaName"),
 	function generateURL(start) {
 		return "ajaxSupport.xml?action=List&type=TaxonomicGroup&start=" + start + "&q=" + Math.random();
 	},
