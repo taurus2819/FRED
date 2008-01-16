@@ -170,14 +170,14 @@ function addTaxa(group, taxaName, author, comments) {
 	}
 	
 	var statusPopupString = "";
-	if (status = 'new') {
+	if (status == 'new') {
 		statusPopupString = 'not yet saved';
-	} else if (status = 'provisional') {
-		statusPopupString = 'Submitted By: ' + taxaNode.getElementsByTagName("submitted-by")[0].firstChild.nodeValue + '\n'
+	} else if (status == 'provisional') {
+		statusPopupString = 'Submitted By: ' + taxaNode.getElementsByTagName("submitted-by")[0].firstChild.nodeValue + '<br />'
 			+ 'Submitted Date: ' + taxaNode.getElementsByTagName("submitted-date")[0].firstChild.nodeValue;
-	} else if (status = 'rejected') {
-		statusPopupString = 'Rejected By: ' + taxaNode.getElementsByTagName("rejected-by")[0].firstChild.nodeValue + '\n'
-			+ 'Rejected Date: ' + taxaNode.getElementsByTagName("rejected-date")[0].firstChild.nodeValue + '\n'
+	} else if (status == 'rejected') {
+		statusPopupString = 'Rejected By: ' + taxaNode.getElementsByTagName("rejected-by")[0].firstChild.nodeValue + '<br />'
+			+ 'Rejected Date: ' + taxaNode.getElementsByTagName("rejected-date")[0].firstChild.nodeValue + '<br />'
 			+ 'Comments: ' + taxaNode.getElementsByTagName("rejected-comments")[0].firstChild.nodeValue;	
 	}
 
@@ -205,8 +205,10 @@ function addTaxa(group, taxaName, author, comments) {
 	tr.appendChild(commentsTd);
 	var statusTd = document.createElement("td");
 	statusTd.setAttribute("id", "statusLine" + lineId);
-	statusTd.setAttribute("onmouseover", "return overlib('" + statusPopupString + "', CAPTION, 'Taxon Status', WIDTH, 200);");
-	statusTd.setAttribute("onmouseout", "return nd();");
+	if (status != 'approved') {
+		statusTd.setAttribute("onmouseover", "return overlib('" + statusPopupString + "', CAPTION, 'Taxon Status', WIDTH, 200);");
+		statusTd.setAttribute("onmouseout", "return nd();");
+	}
 	statusTd.appendChild(document.createTextNode(status));
 	tr.appendChild(statusTd);
 	var lastTd = document.createElement("td");
