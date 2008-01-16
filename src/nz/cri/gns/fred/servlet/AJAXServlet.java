@@ -135,7 +135,7 @@ public class AJAXServlet extends HttpServlet {
 					case TaxonomicName:
 						try {
 							TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
-							TaxonomicGroup group = taxaUtil.getTaxonomicGroup(request.getParameter("TaxonomicGroup"));
+							TaxonomicGroup group = taxaUtil.getTaxonomicGroup(request.getParameter("TaxonomicGroup").trim());
 							String cleanName = TaxonomicUtil.getCleanedName(name);
 							Taxon taxon = taxaUtil.getTaxon(group, cleanName, null);
 							if (taxon != null) {
