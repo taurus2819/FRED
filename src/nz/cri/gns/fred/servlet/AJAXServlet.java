@@ -76,7 +76,7 @@ public class AJAXServlet extends HttpServlet {
 						break;
 					case TaxonomicGroup:
 						try {
-							List<TaxonomicGroup> groups = new TaxonomicUtil(HibernateUtil.get().getDAOFactory()).getMatchingTaxonomicGroups(start, Match.ANYWHERE, 25);
+							List<TaxonomicGroup> groups = new TaxonomicUtil(HibernateUtil.get().getDAOFactory()).getMatchingTaxonomicGroups(start, Match.BEGINNING, 5);
 							for (TaxonomicGroup group : groups) {
 								values.add(new NamedId(group.getGroupId().toString(), group.getName()));
 							}
@@ -92,7 +92,7 @@ public class AJAXServlet extends HttpServlet {
 							} catch (Exception e) {}
 							List<Taxon> taxa = taxaUtil.getMatchingTaxa(start, group, Match.ANYWHERE, 25);
 							for (Taxon taxon : taxa) {
-								values.add(new NamedId(taxon.getTaxaId().toString(), ((group != null) ? taxon.getTaxonomicGroup().getName() + ": " : "") + taxon.getTaxonomicName()));
+								values.add(new NamedId(taxon.getTaxaId().toString(), ((group == null) ? taxon.getTaxonomicGroup().getName() + ": " : "") + taxon.getTaxonomicName()));
 							}
 						} catch (StorageAccessException e) {
 						}
