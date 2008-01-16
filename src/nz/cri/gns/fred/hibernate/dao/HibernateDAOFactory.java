@@ -686,6 +686,29 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		}
 	}
 	
+	public List<TaxonomicGroup> getMatchingTaxonomicGroups(String str, Match matchType, int maxMatches) throws StorageAccessException {
+		Criteria crit = provider.currentSession().createCriteria(nz.cri.gns.fred.hibernate.TaxonomicLookup.class);
+		switch (matchType) {
+			case ANYWHERE:
+				crit.add(Expression.ilike("name", str, MatchMode.ANYWHERE));
+				break;
+			case BEGINNING:
+				crit.add(Expression.ilike("name", str, MatchMode.START));
+				break;
+			case END:
+				crit.add(Expression.ilike("name", str, MatchMode.END));
+				break;
+		crit.setMaxResults(maxMatches);
+		crit.addOrder(Order.asc("groupId"));
+		try {
+			@SuppressWarnings("unchecked")
+			List<TaxonomicGroup> pp = crit.list();
+			return pp;
+		} catch (HibernateException e) {
+			throw new StorageAccessException(e);
+		}
+	}
+	
     public TaxonomicDAO getTaxonomicDAO() {
         return this;
     }
