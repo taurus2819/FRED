@@ -161,7 +161,7 @@ function addTaxaFromForm() {
 			comments.value = '';
 			group.focus();
 		} else {
-			alert('Invalid entry');
+			alert('Invalid entry. Please enter a group and a name');
 		}
 	}
 }
@@ -179,6 +179,7 @@ function addTaxa(group, taxaName, author, comments) {
 	var statusPopupString = "";
 	if (status == 'new') {
 		statusPopupString = 'not yet saved';
+		alert('This taxonomic name is not in the FRED database.  When you click Save you will be given the option to submit the name for approval.  The record can not be submitted until all names have been approved.');
 	} else if (status == 'provisional') {
 		statusPopupString = 'Status: ' + status + '<br />'
 			+ 'Submitted By: ' + taxaNode.getElementsByTagName("submitted-by")[0].firstChild.nodeValue + '<br />'
