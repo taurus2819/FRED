@@ -19,6 +19,7 @@ import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.StratigraphicUnit;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
+import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.PersonUtil;
 import nz.cri.gns.fred.util.TaxonomicUtil;
 
@@ -140,6 +141,13 @@ public class AJAXServlet extends HttpServlet {
 							if (taxon != null) {
 								status = taxon.getStatus();
 								moreData = "<author><![CDATA[" + DBUtils.nvl(taxon.getAuthor()) + "]]></author>";
+								if (status.equals(Taxon.PROVISIONAL_STATUS))
+									moreData = moreData + "<submitted-by><![CDATA[" + taxon.getSubmittedBy().getFullName() + "]]></submitted-by>"
+										+ "<submitted-date>" + FREDUtil.formatDateForOutput(taxon.getSubmittedDate()) + "</submitted-date>";
+								else if (status.equals(Taxon.REJECTED_STATUS))
+									moreData = moreData + "<rejected-by><![CDATA[" + taxon.getApprovedBy().getFullName() + "]]></rejected-by>"
+									+ "<rejected-date>"	+ FREDUtil.formatDateForOutput(taxon.getApprovedDate()) + "</rejected-date>"
+									+ "<rejected-comments><![CDATA[" + taxon.getPanelistComments() + "]]></rejected-comments>";
 							} else
 								status = "new";
 						} catch (Exception e) {}
