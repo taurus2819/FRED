@@ -342,7 +342,6 @@ public class TaxonomicUtil extends ModelUtil {
 	}
 	
 	public static String[] decodeTaxaComments(String commentsStr) {
-		System.out.println("Decoding: " + commentsStr);
 		String[] decode = new String[3];
 		if (commentsStr == null || commentsStr.length() == 0)
 			return decode;
@@ -379,6 +378,8 @@ public class TaxonomicUtil extends ModelUtil {
 		}
 		if (FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(comments))
 			return specCount.toString();
+		if (FREDUtil.isEmpty(comments))
+			return specCount.toString() + "|" + DBUtils.nvl(specCoord);
 		return specCount.toString() + "|" + DBUtils.nvl(specCoord) + "|" + DBUtils.nvl(comments);
 	}
 }
