@@ -291,7 +291,7 @@ public class PaleontologyRecordDE extends RecordDE {
 					} else {
 						for (PaleontologyListEntry entry : list) {
 							Taxon taxon = entry.getTaxon();
-							out.println("addTaxa(\"" + group.getName() + ": "
+							out.println("addTaxa(\"" + group.getName() + "\", \""
 									+ entry.getTaxonomicName() + "\", \""
 									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
 									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
@@ -302,7 +302,7 @@ public class PaleontologyRecordDE extends RecordDE {
 						PaleontologyListEntry entry = it.next();
 						if (entry.getTaxonomicGroup().equals(group) && entry.getTaxon() != null) {
 							Taxon taxon = entry.getTaxon();
-							out.println("addTaxa(\"" + group.getName() + ": "
+							out.println("addTaxa(\"" + group.getName() + "\", \""
 									+ entry.getTaxonomicName() + "\", \""
 									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
 									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
@@ -315,7 +315,7 @@ public class PaleontologyRecordDE extends RecordDE {
 			for (PaleontologyListEntry entry : badTaxa) {
 				if (entry.getTaxon() != null) {
 					Taxon taxon = entry.getTaxon();
-					out.println("addTaxa(\"" + taxon.getTaxonomicGroup().getName() + ": "
+					out.println("addTaxa(\"" + taxon.getTaxonomicGroup().getName() + "\", \""
 							+ entry.getTaxonomicName() + "\", \""
 							+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
 							+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");

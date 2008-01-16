@@ -98,14 +98,6 @@ function swapSection(frm){
 </tr>
 </tbody>
 </table></td></tr>
-
-
-<!-- 
-<tr>
-<td colspan="3"><textarea name="Taxa" cols="80" rows="20">{@Taxa}</textarea></td>
-<td><a href="javascript:var newWin=open('data_entry_supp.jsp?Type=Taxa', 'Supp', 'width=800,height=600');" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a></td>
-</tr>
--->
 </table>
 
 <script type="text/javascript" src="/online/scripts/ajax.js"></script>
@@ -182,7 +174,7 @@ function addTaxa(group, taxaName, author, comments) {
 	var groupTd = document.createElement("td");
 	groupTd.setAttribute("id", "groupLine" + lineId);
 	groupTd.appendChild(document.createTextNode(group + "\u00a0\u00a0"));
-	tr.appendChild(taxaTd);
+	tr.appendChild(groupTd);
 	var taxaTd = document.createElement("td");
 	taxaTd.setAttribute("id", "taxaNameLine" + lineId);
 	taxaTd.appendChild(document.createTextNode(taxaName + "\u00a0\u00a0"));
