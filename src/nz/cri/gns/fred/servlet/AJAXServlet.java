@@ -120,7 +120,7 @@ public class AJAXServlet extends HttpServlet {
 		},
 		Confirm() {
 			public void process(Type type, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-				String name = request.getParameter("name");
+				String name = request.getParameter("name").trim();
 				String status = "";
 				String moreData = null;
 				switch (type) {
@@ -150,7 +150,9 @@ public class AJAXServlet extends HttpServlet {
 									+ "<rejected-comments><![CDATA[" + taxon.getPanelistComments() + "]]></rejected-comments>";
 							} else
 								status = "new";
-						} catch (Exception e) {}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 						break;
 				}
 				
