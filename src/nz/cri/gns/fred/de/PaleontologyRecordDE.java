@@ -168,6 +168,13 @@ public class PaleontologyRecordDE extends RecordDE {
                 	commentsStr = commentsBits[2];
                 }
                 
+                System.out.println("Group = " + groupStr);
+                System.out.println("Name = " + nameStr);
+                System.out.println("Author = " + authorStr);
+                System.out.println("SpecCount = " + specCountStr);
+                System.out.println("SpecCoord = " + specCoordStr);
+                System.out.println("Comments = " + commentsStr);
+                
             	Integer specCount = (specCountStr == null || specCountStr.length() == 0) ? null : new Integer(specCountStr);
                 for (Iterator<PaleontologyListEntry> it = removedTaxaList.iterator(); it.hasNext(); ) {
                     PaleontologyListEntry entry = it.next();
@@ -276,8 +283,6 @@ public class PaleontologyRecordDE extends RecordDE {
 				template.addSub("SectID", pal.getLabSection().getLabSectionId().toString()); 
 			template.addSub("LabNum", pal.getLabNumber());
 			template.addSub("CollComm", pal.getCollectionComments());
-			if (!RecordUtil.isTaxaApproved(record))
-				template.addSub("recordIdForUnapproved", record.getRecordId().toString());
 
 			template.loadUntil(out, "{@Taxa}");
 			

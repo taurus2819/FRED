@@ -342,6 +342,7 @@ public class TaxonomicUtil extends ModelUtil {
 	}
 	
 	public static String[] decodeTaxaComments(String commentsStr) {
+		System.out.println("Decoding: " + commentsStr);
 		String[] decode = new String[3];
 		if (commentsStr == null || commentsStr.length() == 0)
 			return decode;
