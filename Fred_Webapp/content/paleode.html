@@ -137,74 +137,87 @@ var taxaCount = 0;
 var lineId = 0;
 
 function addTaxaFromForm() {
+	var group = document.getElementById("Group");
 	var taxaName = document.getElementById("TaxaName");
 	var author = document.getElementById("Author");
 	var comments = document.getElementById("Comments");
 	
-	addTaxa(taxaName.value, author.value, comments.value);
-	
-	taxaName.value = '';
-	author.value = '';
-	comments.value = '';
-	taxaName.focus();
-}
-
-function addTaxa(taxaName, author, comments) {
-	if (taxaName.length == 0)
-		alert("Please enter a taxonomic name");
-	else {
-		var xmlDoc = sjaxXML("ajaxSupport.xml?action=Confirm&type=TaxonomicName&name=" + taxaName);
-		var taxaNode = xmlDoc.getElementsByTagName("TaxonomicName")[0];
-		var taxaName = taxaNode.getElementsByTagName("name")[0].firstChild.nodeValue;
-		var status = taxaNode.getElementsByTagName("status")[0].firstChild.nodeValue;
-		var authorNode = taxaNode.getElementsByTagName("author")[0]
-		if (authorNode != null) {
-			author = authorNode.firstChild.nodeValue;
+	if (group.value.length == 0) {
+		if (taxaName.value.indexOf(': ') > 0) {
+			addTaxa(taxaName.value.substring(0, taxaName.value.indexOf(': ')), taxaName.value.substring(taxaName.value.indexOf(': ') + 2), author.value, comments.value);
+			group.value = '';
+			taxaName.value = '';
+			author.value = '';
+			comments.value = '';
+			group.focus();		
+		} else {
+			alert('Invalid entry');
 		}
-	
-		var body = document.getElementById("taxaTable");
-		var tr = document.createElement("tr");
-		tr.setAttribute("id", "taxaRow" + lineId);
-		var taxaTd = document.createElement("td");
-		taxaTd.setAttribute("id", "taxaNameLine" + lineId);
-		if (status != 'approved') {
-			taxaTd.setAttribute("style", "color: #FF0000");
-		}
-		taxaTd.appendChild(document.createTextNode(taxaName + "\u00a0\u00a0"));
-		tr.appendChild(taxaTd);
-		var authorTd = document.createElement("td");
-		authorTd.setAttribute("id", "authorLine" + lineId);
-		authorTd.appendChild(document.createTextNode(author + "\u00a0\u00a0"));
-		tr.appendChild(authorTd);
-		var commentsTd = document.createElement("td");
-		commentsTd.setAttribute("id", "commentsLine" + lineId);
-		commentsTd.appendChild(document.createTextNode(comments + "\u00a0\u00a0"));
-		tr.appendChild(commentsTd);
-		var lastTd = document.createElement("td");
-		lastTd.appendChild(document.createTextNode("\u00a0\u00a0"));
-		var editLink = document.createElement("a");
-		editLink.setAttribute("href", "javascript:editTaxa(" + lineId + ");");
-		editLink.appendChild(document.createTextNode("Edit"));
-		lastTd.appendChild(editLink);
-		lastTd.appendChild(document.createTextNode("\u00a0\u00a0"));
-		var removeLink = document.createElement("a");
-		removeLink.setAttribute("href", "javascript:removeTaxa(" + lineId++ + ");");
-		removeLink.appendChild(document.createTextNode("Remove"));
-		lastTd.appendChild(removeLink);
-		var hiddenData = document.createElement("input");
-		hiddenData.setAttribute("type", "hidden");
-		hiddenData.setAttribute("name", "Taxa2");
-		hiddenData.setAttribute("value", taxaName.replace(": ", "*") + "*" + author + "*" + comments);
-		lastTd.appendChild(hiddenData);
-		tr.appendChild(lastTd);
-		body.appendChild(tr);
-		
-		var countTd = document.getElementById("taxaCount");
-		countTd.removeChild(countTd.firstChild);
-		countTd.appendChild(document.createTextNode("Taxonomic Count: " + ++taxaCount));
+	} else {
+		addTaxa(group.value, taxaName.value, author.value, comments.value);
+		group.value = '';
+		taxaName.value = '';
+		author.value = '';
+		comments.value = '';
+		group.focus();
 	}
 }
 
+function addTaxa(group, taxaName, author, comments) {
+	var xmlDoc = sjaxXML("ajaxSupport.xml?action=Confirm&type=TaxonomicName&name=" + taxaName + "&TaxonomicGroup=" + group);
+	var taxaNode = xmlDoc.getElementsByTagName("TaxonomicName")[0];
+	var taxaName = taxaNode.getElementsByTagName("name")[0].firstChild.nodeValue;
+	var status = taxaNode.getElementsByTagName("status")[0].firstChild.nodeValue;
+	var authorNode = taxaNode.getElementsByTagName("author")[0]
+	if (authorNode != null) {
+		author = authorNode.firstChild.nodeValue;
+	}
+
+	var body = document.getElementById("taxaTable");
+	var tr = document.createElement("tr");
+	tr.setAttribute("id", "taxaRow" + lineId);
+	if (status != 'approved') {
+		tr.setAttribute("style", "color: #FF0000");
+	}
+	var groupTd = document.createElement("td");
+	groupTd.setAttribute("id", "groupLine" + lineId);
+	groupTd.appendChild(document.createTextNode(group + "\u00a0\u00a0"));
+	tr.appendChild(taxaTd);
+	var taxaTd = document.createElement("td");
+	taxaTd.setAttribute("id", "taxaNameLine" + lineId);
+	taxaTd.appendChild(document.createTextNode(taxaName + "\u00a0\u00a0"));
+	tr.appendChild(taxaTd);
+	var authorTd = document.createElement("td");
+	authorTd.setAttribute("id", "authorLine" + lineId);
+	authorTd.appendChild(document.createTextNode(author + "\u00a0\u00a0"));
+	tr.appendChild(authorTd);
+	var commentsTd = document.createElement("td");
+	commentsTd.setAttribute("id", "commentsLine" + lineId);
+	commentsTd.appendChild(document.createTextNode(comments + "\u00a0\u00a0"));
+	tr.appendChild(commentsTd);
+	var lastTd = document.createElement("td");
+	lastTd.appendChild(document.createTextNode("\u00a0\u00a0"));
+	var editLink = document.createElement("a");
+	editLink.setAttribute("href", "javascript:editTaxa(" + lineId + ");");
+	editLink.appendChild(document.createTextNode("Edit"));
+	lastTd.appendChild(editLink);
+	lastTd.appendChild(document.createTextNode("\u00a0\u00a0"));
+	var removeLink = document.createElement("a");
+	removeLink.setAttribute("href", "javascript:removeTaxa(" + lineId++ + ");");
+	removeLink.appendChild(document.createTextNode("Remove"));
+	lastTd.appendChild(removeLink);
+	var hiddenData = document.createElement("input");
+	hiddenData.setAttribute("type", "hidden");
+	hiddenData.setAttribute("name", "Taxa2");
+	hiddenData.setAttribute("value", group + "*" + taxaName + "*" + author + "*" + comments);
+	lastTd.appendChild(hiddenData);
+	tr.appendChild(lastTd);
+	body.appendChild(tr);
+	
+	var countTd = document.getElementById("taxaCount");
+	countTd.removeChild(countTd.firstChild);
+	countTd.appendChild(document.createTextNode("Taxonomic Count: " + ++taxaCount));
+}
 
 function removeTaxa(line) {
 	var tr = document.getElementById("taxaRow" + line);
@@ -216,6 +229,7 @@ function removeTaxa(line) {
 }
 
 function editTaxa(line) {
+	document.getElementById("Group").value = document.getElementById("groupLine" + line).firstChild.nodeValue;
 	document.getElementById("TaxaName").value = document.getElementById("taxaNameLine" + line).firstChild.nodeValue;
 	document.getElementById("Author").value = document.getElementById("authorLine" + line).firstChild.nodeValue;
 	document.getElementById("Comments").value = document.getElementById("commentsLine" + line).firstChild.nodeValue;
