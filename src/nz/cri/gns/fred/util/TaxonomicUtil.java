@@ -357,7 +357,7 @@ public class TaxonomicUtil extends ModelUtil {
 				return decode;
 			}
 		}
-		String[] bits = commentsStr.split("|");
+		String[] bits = commentsStr.split("\\|");
 		decode[0] = bits[0];
 		decode[1] = bits[1];
 		if (bits.length == 3)
