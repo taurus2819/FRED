@@ -124,16 +124,11 @@ public class AJAXServlet extends HttpServlet {
 							TaxonomicGroup group = taxaUtil.getTaxonomicGroup(bits[0]);
 							String cleanName = TaxonomicUtil.getCleanedName(bits[1]);
 							Taxon taxon = taxaUtil.getTaxon(group, cleanName, null);
-							String author;
 							if (taxon != null) {
 								status = taxon.getStatus();
-								author = taxon.getAuthor();
-							} else {
+								moreData = "<author><![CDATA[" + DBUtils.nvl(taxon.getAuthor()) + "]]></author>";
+							} else
 								status = "New";
-								author = request.getParameter("author");
-							}
-							moreData = "<author><![CDATA[" + DBUtils.nvl(author) + "]]></author>";
-							moreData = moreData + "<comments><![CDATA[" + DBUtils.nvl(request.getParameter("comments")) + "]]></comments>";
 						} catch (Exception e) {}
 						break;
 				}
