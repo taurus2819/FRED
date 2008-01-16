@@ -82,25 +82,52 @@ function swapSection(frm){
 <tr>
 <td class="heading" colspan="3" style='color: #FF0000'>Taxonomic List{@@recordIdForUnapproved:<br /><span class="smallheading" style="color: #FF0000">Some taxonomic entries listed below have not been approved and this record can not be submitted.  Click <a href="record_taxa_list.jsp?RecID=@}{@recordIdForUnapproved}{@@recordIdForUnapproved:" target="taxaList">here</a> for more details</span>@}</td>
 </tr>
-
-<!-- testing new AJAX fields -->
 <tr><td colspan="4"><table cellspacing="0" cellpadding="2">
 <tfoot>
 <tr><td id="taxaCount" colspan="3" class="heading">Taxonomic Count: 0</td></tr>
 </tfoot>
 <tbody id="taxaTable">
-<tr><td class="heading">Taxonomic Name&nbsp;&nbsp;</td><td class="heading">Author&nbsp;&nbsp;</td><td class="heading">Comments</td></tr>
+<tr><td class="heading">Group&nbsp;&nbsp;</td><td class="heading">Taxonomic Name&nbsp;&nbsp;</td><td class="heading">Author&nbsp;&nbsp;</td><td class="heading">Comments</td></tr>
 <tr>
-<td><input type="text" id="TaxaName" name="TaxaName" size="40" />
+<td><input type="text" id="Group" name="Group" /></td>
+<td><input type="text" id="TaxaName" name="TaxaName" size="40" /></td>
+<td><input type="text" id="Author" name="Author" /></td>
+<td><input type="text" id="Comments" name="Comments" />
+</td>
+<td>&nbsp;&nbsp;<a href="javascript:addTaxaFromForm();">Add</a></td>
+</tr>
+</tbody>
+</table></td></tr>
+
+
+<!-- 
+<tr>
+<td colspan="3"><textarea name="Taxa" cols="80" rows="20">{@Taxa}</textarea></td>
+<td><a href="javascript:var newWin=open('data_entry_supp.jsp?Type=Taxa', 'Supp', 'width=800,height=600');" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a></td>
+</tr>
+-->
+</table>
+
 <script type="text/javascript" src="/online/scripts/ajax.js"></script>
 <script type="text/javascript" src="scripts/locate.js"></script>
 <script type="text/javascript" src="scripts/fade.js"></script>
 <script type="text/javascript" src="scripts/contextHint.js"></script>
+<script type="text/javascript" src="scripts/linkedContextHint.js"></script>
 <script><!--
 new ContextHint(
-	document.getElementById("TaxaName"),
+	document.getElementById("Group"),
 	function generateURL(start) {
-		return "ajaxSupport.xml?action=List&type=TaxonomicName&start=" + start + "&q=" + Math.random();
+		return "ajaxSupport.xml?action=List&type=TaxonomicGroup&start=" + start + "&q=" + Math.random();
+	},
+	null,
+	true
+);
+
+new LinkedContextHint(
+	document.getElementById("TaxaName"),
+	document.getElementById("Group"),
+	function generateURL(start, linkedVal) {
+		return "ajaxSupport.xml?action=List&type=TaxonomicName&start=" + start + "&group=" + linkedVal + "&q=" + Math.random();
 	},
 	null,
 	true
@@ -198,20 +225,4 @@ function editTaxa(line) {
 {@Taxa}
 
 //--></script>
-</td>
-<td><input type="text" id="Author" name="Author" /></td>
-<td><input type="text" id="Comments" name="Comments" />
-</td>
-<td>&nbsp;&nbsp;<a href="javascript:addTaxaFromForm();">Add</a></td>
-</tr>
-</tbody>
-</table></td></tr>
-
-<!-- 
-<tr>
-<td colspan="3"><textarea name="Taxa" cols="80" rows="20">{@Taxa}</textarea></td>
-<td><a href="javascript:var newWin=open('data_entry_supp.jsp?Type=Taxa', 'Supp', 'width=800,height=600');" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a></td>
-</tr>
--->
-</table>
 {@endDETable}
