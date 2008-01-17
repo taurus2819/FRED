@@ -663,13 +663,13 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		Criteria crit = provider.currentSession().createCriteria(nz.cri.gns.fred.hibernate.TaxonomicLookup.class);
 		switch (matchType) {
 			case ANYWHERE:
-				crit.add(Expression.ilike("taxonomicName", str, MatchMode.ANYWHERE));
+				crit.add(Expression.like("taxonomicName", str, MatchMode.ANYWHERE));
 				break;
 			case BEGINNING:
-				crit.add(Expression.ilike("taxonomicName", str, MatchMode.START));
+				crit.add(Expression.like("taxonomicName", str, MatchMode.START));
 				break;
 			case END:
-				crit.add(Expression.ilike("taxonomicName", str, MatchMode.END));
+				crit.add(Expression.like("taxonomicName", str, MatchMode.END));
 				break;
 		} if (group != null)
 			crit.add(Expression.eq("taxonomicGroup", group));

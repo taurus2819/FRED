@@ -91,7 +91,7 @@ public class AJAXServlet extends HttpServlet {
 							if (request.getParameter("group") != null) try {
 								group = taxaUtil.getTaxonomicGroup(request.getParameter("group"));
 							} catch (Exception e) {}
-							List<Taxon> taxa = taxaUtil.getMatchingTaxa(start, group, Match.ANYWHERE, 25);
+							List<Taxon> taxa = taxaUtil.getMatchingTaxa(start, group, Match.ANYWHERE, 30);
 							for (Taxon taxon : taxa) {
 								values.add(new NamedId(taxon.getTaxaId().toString(), ((group == null) ? taxon.getTaxonomicGroup().getName() + ": " : "") + taxon.getTaxonomicName()));
 							}
