@@ -375,9 +375,7 @@ public class PaleontologyRecordDE extends RecordDE {
 							out.write("<tr><td>" + group.getName() + "</td>" 
 									+ "<td>" + DBUtils.nvl(entry.getTaxonomicName()) + "</td>" 
 									+ "<td>" + DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "</td>" 
-									+ "<td>" + DBUtils.nvl(entry.getSpecimenCount()) + "</td>" 
-									+ "<td>" + DBUtils.nvl(entry.getSpecimenCoords()) + "</td>" 
-									+ "<td>" + DBUtils.nvl(entry.getComments()) + "</td></tr>");
+									+ "<td>" + ((TaxonomicUtil.encodeTaxaComments(entry) != null) ? TaxonomicUtil.encodeTaxaComments(entry) : "*") + "</td></tr>");
 						}
 					}
 				} catch (StorageAccessException e) {
