@@ -151,14 +151,14 @@ function addTaxaFromForm() {
 		taxaName.value = '';
 		author.value = '';
 		comments.value = '';
-		group.focus();		
+		taxaName.focus();		
 	} else {
 		if (group.value.length != 0) {
 			addTaxa(group.value, taxaName.value, author.value, comments.value);
 			taxaName.value = '';
 			author.value = '';
 			comments.value = '';
-			group.focus();
+			taxaName.focus();
 		} else {
 			alert('Invalid entry. Please enter a group and a name');
 		}
