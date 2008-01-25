@@ -34,7 +34,6 @@ import nz.cri.gns.fred.model.UnsavedListEntry;
 import nz.cri.gns.fred.model.UnsavedTaxon;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.PersonUtil;
-import nz.cri.gns.fred.util.RecordUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.util.TaxonomicUtil;
 import nz.cri.gns.fred.website.ContentProvider;

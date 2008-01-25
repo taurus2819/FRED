@@ -293,9 +293,10 @@ public class TaxonomicUtil extends ModelUtil {
 	public void submitProvisional(User user, PaleontologyListEntry entry) throws StorageAccessException {
 		if (user == null || entry == null || entry.getTaxonomicGroup() == null || entry.getTaxonomicName() == null || entry.getTaxonomicName().length() == 0 || entry.getTaxon() == null)
 			return;
-		
-		//Get the taxon
-		Taxon taxon = entry.getTaxon();
+		submitProvisional(user, entry.getTaxon());
+	}
+
+	public void submitProvisional(User user, Taxon taxon) throws StorageAccessException {
 		taxon.setStatus(FREDConstants.PROVISIONAL);
 		taxon.setSubmittedById(new Integer(user.getId()));
 		taxon.setSubmittedDate(new Date());
@@ -307,9 +308,8 @@ public class TaxonomicUtil extends ModelUtil {
 		} catch (Exception e) {
 			throw new StorageAccessException(e);
 		}
-		entry.setTaxon(taxon);
 	}
-
+	
 	/**
 	 * Ensures that the taxon is compatible with the persistence layer
 	 * @throws IntrospectionException 

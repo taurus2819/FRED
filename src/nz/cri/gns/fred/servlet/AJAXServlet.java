@@ -10,8 +10,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.cri.gns.auth.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.fred.FREDIPSysJspPage;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.StratLexDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
@@ -24,7 +26,7 @@ import nz.cri.gns.fred.util.PersonUtil;
 import nz.cri.gns.fred.util.TaxonomicUtil;
 
 public class AJAXServlet extends HttpServlet {
-
+	
 	public static class NamedId {
 		private String id;
 		private String name;
@@ -182,6 +184,25 @@ public class AJAXServlet extends HttpServlet {
 						} catch (StorageAccessException e) {
 						}
 						break;
+					case TaxonomicName:
+						try {
+						TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
+						TaxonomicGroup group = taxaUtil.getTaxonomicGroup(request.getParameter("TaxonomicGroup").trim());
+						String cleanName = TaxonomicUtil.getCleanedName(name);
+						String author = request.getParameter("Author");
+						Taxon taxon = taxaUtil.getTaxon(group, cleanName, null);
+						if (taxon == null) {
+							taxon = taxaUtil.createTaxon();
+							taxon.setTaxonomicGroup(group);
+							taxon.setTaxonomicName(cleanName);
+							taxon.setAuthor(author);
+							taxaUtil.submitProvisional((User)FREDIPSysJspPage.getUser(request.getSession()), taxon);
+							confirmation = true;
+						} else
+							confirmation = true;
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 				}
 				
 				PrintWriter out = response.getWriter();

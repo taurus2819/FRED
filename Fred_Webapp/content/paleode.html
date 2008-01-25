@@ -166,65 +166,87 @@ function addTaxaFromForm() {
 }
 
 function addTaxa(group, taxaName, author, comments) {
-	var xmlDoc = sjaxXML("ajaxSupport.xml?action=Confirm&type=TaxonomicName&name=" + taxaName + "&TaxonomicGroup=" + group);
+	var xmlDoc = sjaxXML("ajaxSupport.xml?action=Confirm&type=TaxonomicName&name=" + trim(taxaName) + "&TaxonomicGroup=" + trim(group));
 	var taxaNode = xmlDoc.getElementsByTagName("TaxonomicName")[0];
 	var taxaName = taxaNode.getElementsByTagName("name")[0].firstChild.nodeValue;
 	var status = taxaNode.getElementsByTagName("status")[0].firstChild.nodeValue;
-	var authorNode = taxaNode.getElementsByTagName("author")[0]
+	var authorNode = taxaNode.getElementsByTagName("author")[0];
 	if (authorNode != null) {
 		author = authorNode.firstChild.nodeValue;
 	}
-	
-	var statusPopupString = "";
+		
+	var statusPopupString = '';
 	if (status == 'new') {
-		statusPopupString = 'not yet saved';
-		alert('This taxonomic name is not in the FRED database.  When you click Save you will be given the option to submit the name for approval.  The record can not be submitted until all names have been approved.');
+		if (confirm(taxaName + " is not in the FRED database. Would you like to submit it?/n.  Continue?")) {
+			var insertXMLDoc = sjaxXML("ajaxSupport.xml?action=Add&type=TaxonomicName&name=" + trim(taxaName) + "&TaxonomicGroup=" + trim(group) + "&Author=" + trim(author));
+			var taxaNode = xmlDoc.getElementsByTagName("TaxonomicName")[0];
+			var status = taxaNode.getElementsByTagName("status")[0].firstChild.nodeValue;
+			if (status = 'Could not be created') {
+				alert("Error in adding name");
+				return;
+			} else {
+				addTaxa(group, taxaName, author, comments);
+				return;
+			}
+		} else {
+			return;
+		}
 	} else if (status == 'provisional') {
 		statusPopupString = 'Status: ' + status + '<br />'
-			+ 'Submitted By: ' + taxaNode.getElementsByTagName("submitted-by")[0].firstChild.nodeValue + '<br />'
-			+ 'Submitted Date: ' + taxaNode.getElementsByTagName("submitted-date")[0].firstChild.nodeValue;
+			+ 'Submitted By: ' + taxaNode.getElementsByTagName('submitted-by')[0].firstChild.nodeValue + '<br />'
+			+ 'Submitted Date: ' + taxaNode.getElementsByTagName('submitted-date')[0].firstChild.nodeValue;
 	} else if (status == 'rejected') {
 		statusPopupString = 'Status: ' + status + '<br />'
-			+ 'Rejected By: ' + taxaNode.getElementsByTagName("rejected-by")[0].firstChild.nodeValue + '<br />'
-			+ 'Rejected Date: ' + taxaNode.getElementsByTagName("rejected-date")[0].firstChild.nodeValue + '<br />'
-			+ 'Comments: ' + taxaNode.getElementsByTagName("rejected-comments")[0].firstChild.nodeValue;	
+			+ 'Rejected By: ' + taxaNode.getElementsByTagName('rejected-by')[0].firstChild.nodeValue + '<br />'
+			+ 'Rejected Date: ' + taxaNode.getElementsByTagName('rejected-date')[0].firstChild.nodeValue + '<br />'
+			+ 'Comments: ' + taxaNode.getElementsByTagName('rejected-comments')[0].firstChild.nodeValue;	
 	}
 
-	var body = document.getElementById("taxaTable");
-	var tr = document.createElement("tr");
+	var body = document.getElementById('taxaTable');
+	var tr = document.createElement('tr');
 	tr.setAttribute("id", "taxaRow" + lineId);
-	if (status != 'approved') {
-		tr.setAttribute("style", "color: #ff0000");
-	}
+	
 	var groupTd = document.createElement("td");
 	groupTd.setAttribute("id", "groupLine" + lineId);
-		if (status != 'approved') {
-		groupTd.setAttribute("onmouseover", "return overlib('" + statusPopupString + "', CAPTION, '" + taxaName + "', WIDTH, 200);");
-		groupTd.setAttribute("onmouseout", "return nd();");
+	if (status != 'approved') {
+		groupTd.setAttribute('style', 'color: #ff0000');
+		//and for IE :(
+		groupTd.style.cssText = "color: #ff0000";
+		groupTd.onmouseover = function() {return overlib(statusPopupString, CAPTION, taxaName, WIDTH, 200);}
+		groupTd.onmouseout = function() {return nd();}
 	}
 	groupTd.appendChild(document.createTextNode(group + "\u00a0\u00a0"));
 	tr.appendChild(groupTd);
 	var taxaTd = document.createElement("td");
 	taxaTd.setAttribute("id", "taxaNameLine" + lineId);
 	if (status != 'approved') {
-		taxaTd.setAttribute("onmouseover", "return overlib('" + statusPopupString + "', CAPTION, '" + taxaName + "', WIDTH, 200);");
-		taxaTd.setAttribute("onmouseout", "return nd();");
+		taxaTd.setAttribute("style", "color: #ff0000");
+		//and for IE :(
+		taxaTd.style.cssText = "color: #ff0000";
+		taxaTd.onmouseover = function() {return overlib(statusPopupString, CAPTION, taxaName, WIDTH, 200);}
+		taxaTd.onmouseout = function() {return nd();}
 	}
 	taxaTd.appendChild(document.createTextNode(taxaName + "\u00a0\u00a0"));
 	tr.appendChild(taxaTd);
 	var authorTd = document.createElement("td");
 	authorTd.setAttribute("id", "authorLine" + lineId);
 	if (status != 'approved') {
-		authorTd.setAttribute("onmouseover", "return overlib('" + statusPopupString + "', CAPTION, '" + taxaName + "', WIDTH, 200);");
-		authorTd.setAttribute("onmouseout", "return nd();");
+		authorTd.setAttribute("style", "color: #ff0000");
+		//and for IE :(
+		authorTd.style.cssText = "color: #ff0000";
+		authorTd.onmouseover = function() {return overlib(statusPopupString, CAPTION, taxaName, WIDTH, 200);}
+		authorTd.onmouseout = function() {return nd();}
 	}
 	authorTd.appendChild(document.createTextNode(author + "\u00a0\u00a0"));
 	tr.appendChild(authorTd);
 	var commentsTd = document.createElement("td");
 	commentsTd.setAttribute("id", "commentsLine" + lineId);
 	if (status != 'approved') {
-		commentsTd.setAttribute("onmouseover", "return overlib('" + statusPopupString + "', CAPTION, '" + taxaName + "', WIDTH, 200);");
-		commentsTd.setAttribute("onmouseout", "return nd();");
+		commentsTd.setAttribute("style", "color: #ff0000");
+		//and for IE :(
+		commentsTd.style.cssText = "color: #ff0000";
+		commentsTd.onmouseover = function() {return overlib(statusPopupString, CAPTION, taxaName, WIDTH, 200);}
+		commentsTd.onmouseout = function() {return nd();}
 	}
 	commentsTd.appendChild(document.createTextNode(comments + "\u00a0\u00a0"));
 	tr.appendChild(commentsTd);
@@ -242,7 +264,7 @@ function addTaxa(group, taxaName, author, comments) {
 	var hiddenData = document.createElement("input");
 	hiddenData.setAttribute("type", "hidden");
 	hiddenData.setAttribute("name", "Taxa2");
-	hiddenData.setAttribute("value", group + "*" + taxaName + "*" + author + "*" + comments);
+	hiddenData.setAttribute("value", trim(group) + "*" + trim(taxaName) + "*" + trim(author) + "*" + trim(comments));
 	lastTd.appendChild(hiddenData);
 	tr.appendChild(lastTd);
 	body.appendChild(tr);
@@ -262,11 +284,28 @@ function removeTaxa(line) {
 }
 
 function editTaxa(line) {
-	document.getElementById("Group").value = document.getElementById("groupLine" + line).firstChild.nodeValue.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-	document.getElementById("TaxaName").value = document.getElementById("taxaNameLine" + line).firstChild.nodeValue.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-	document.getElementById("Author").value = document.getElementById("authorLine" + line).firstChild.nodeValue.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-	document.getElementById("Comments").value = document.getElementById("commentsLine" + line).firstChild.nodeValue.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+	document.getElementById("Group").value = trim(document.getElementById("groupLine" + line).firstChild.nodeValue);
+	document.getElementById("TaxaName").value = trim(document.getElementById("taxaNameLine" + line).firstChild.nodeValue);
+	document.getElementById("Author").value = trim(document.getElementById("authorLine" + line).firstChild.nodeValue);
+	document.getElementById("Comments").value = trim(document.getElementById("commentsLine" + line).firstChild.nodeValue);
 	removeTaxa(line);
+}
+
+function trim(str) {
+	var whitespace = ' \n\r\t\f\x0b\xa0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000';
+	for (var i = 0; i < str.length; i++) {
+		if (whitespace.indexOf(str.charAt(i)) === -1) {
+			str = str.substring(i);
+			break;
+		}
+	}
+	for (i = str.length - 1; i > 0; i--) {
+		if (whitespace.indexOf(str.charAt(i)) === -1) {
+			str = str.substring(0, i + 1);
+			break;
+		}
+	}
+	return whitespace.indexOf(str.charAt(0)) === -1 ? str : '';
 }
 
 {@Taxa}
