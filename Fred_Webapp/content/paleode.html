@@ -200,6 +200,8 @@ function addTaxa(group, taxaName, author, comments) {
 			+ 'Rejected By: ' + taxaNode.getElementsByTagName('rejected-by')[0].firstChild.nodeValue + '<br />'
 			+ 'Rejected Date: ' + taxaNode.getElementsByTagName('rejected-date')[0].firstChild.nodeValue + '<br />'
 			+ 'Comments: ' + taxaNode.getElementsByTagName('rejected-comments')[0].firstChild.nodeValue;	
+	} else if (status == 'obsolete') {
+		statusPopupString = 'Status: ' + status + '<br />'
 	}
 
 	var body = document.getElementById('taxaTable');
