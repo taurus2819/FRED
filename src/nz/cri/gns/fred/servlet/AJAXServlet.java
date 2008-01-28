@@ -17,6 +17,7 @@ import nz.cri.gns.fred.FREDIPSysJspPage;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.StratLexDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
+import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.StratigraphicUnit;
 import nz.cri.gns.fred.model.Taxon;
@@ -139,19 +140,26 @@ public class AJAXServlet extends HttpServlet {
 							TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
 							TaxonomicGroup group = taxaUtil.getTaxonomicGroup(request.getParameter("TaxonomicGroup").trim());
 							String cleanName = TaxonomicUtil.getCleanedName(name);
-							Taxon taxon = taxaUtil.getTaxon(group, cleanName, null);
-							if (taxon != null) {
-								status = taxon.getStatus();
-								moreData = "<author><![CDATA[" + DBUtils.nvl(taxon.getAuthor()) + "]]></author>";
-								if (status.equals(Taxon.PROVISIONAL_STATUS))
-									moreData = moreData + "<submitted-by><![CDATA[" + taxon.getSubmittedBy().getFullName() + "]]></submitted-by>"
-										+ "<submitted-date>" + FREDUtil.formatDateForOutput(taxon.getSubmittedDate()) + "</submitted-date>";
-								else if (status.equals(Taxon.REJECTED_STATUS))
-									moreData = moreData + "<rejected-by><![CDATA[" + taxon.getApprovedBy().getFullName() + "]]></rejected-by>"
-									+ "<rejected-date>"	+ FREDUtil.formatDateForOutput(taxon.getApprovedDate()) + "</rejected-date>"
-									+ "<rejected-comments><![CDATA[" + taxon.getPanelistComments() + "]]></rejected-comments>";
-							} else
-								status = "new";
+							if (cleanName == null || cleanName.length() == 0) {
+								if (group != null)
+									status = FREDConstants.APPROVED;
+								else
+									status = "invalid";
+							} else {
+								Taxon taxon = taxaUtil.getTaxon(group, cleanName, null);
+								if (taxon != null) {
+									status = taxon.getStatus();
+									moreData = "<author><![CDATA[" + DBUtils.nvl(taxon.getAuthor()) + "]]></author>";
+									if (status.equals(Taxon.PROVISIONAL_STATUS))
+										moreData = moreData + "<submitted-by><![CDATA[" + taxon.getSubmittedBy().getFullName() + "]]></submitted-by>"
+											+ "<submitted-date>" + FREDUtil.formatDateForOutput(taxon.getSubmittedDate()) + "</submitted-date>";
+									else if (status.equals(Taxon.REJECTED_STATUS))
+										moreData = moreData + "<rejected-by><![CDATA[" + taxon.getApprovedBy().getFullName() + "]]></rejected-by>"
+										+ "<rejected-date>"	+ FREDUtil.formatDateForOutput(taxon.getApprovedDate()) + "</rejected-date>"
+										+ "<rejected-comments><![CDATA[" + taxon.getPanelistComments() + "]]></rejected-comments>";
+								} else
+									status = "new";
+							}
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
