@@ -125,11 +125,6 @@ public class PaleontologyRecordDE extends RecordDE {
 	}
 	
     private void dealWithTaxa(String[] taxa, Paleontology pal, Vector<String[]> error) {
-    	if (taxa == null || taxa.length == 0) {
-    		pal.setListEntries(null);
-    		return;
-    	}
-        
         Set<PaleontologyListEntry> taxaList = pal.getListEntries();
         if (taxaList == null) {
             taxaList = new HashSet<PaleontologyListEntry>();
@@ -140,98 +135,101 @@ public class PaleontologyRecordDE extends RecordDE {
 
         //Mark it as ok ... for now
         nonApprovedTaxaFlag = false;
-        
-        for (int i = 0; i < taxa.length; i++) {
-        	String taxaLine = taxa[i].trim();
-            if (taxaLine.length() == 0)
-            	continue;
-			try {
-                boolean found = false;
-                String[] bits = taxaLine.split("\\*", -1);
-                
-                String groupStr = null;
-                String nameStr = null;
-                String authorStr = null;
-                String specCountStr = null;
-                String specCoordStr = null;
-                String commentsStr = null;
-                if (bits.length == 6) {
-                	groupStr = bits[GROUP];
-                	nameStr = bits[NAME];
-                	authorStr = bits[AUTHOR];
-                	specCountStr = bits[SPECIMEN_COUNT];
-                	specCoordStr = bits[SPECIMEN_COORD];
-                	commentsStr = bits[COMMENTS];
-                } else {
-                	groupStr = bits[GROUP];
-                	nameStr = bits[NAME];
-                	authorStr = bits[AUTHOR];
-                	String[] commentsBits = TaxonomicUtil.decodeTaxaComments(bits[3]);
-                	specCountStr = commentsBits[0];
-                	specCoordStr = commentsBits[1];
-                	commentsStr = commentsBits[2];
-                }
-                
-            	Integer specCount = (specCountStr == null || specCountStr.length() == 0) ? null : new Integer(specCountStr);
-                for (Iterator<PaleontologyListEntry> it = removedTaxaList.iterator(); it.hasNext(); ) {
-                    PaleontologyListEntry entry = it.next();
-                    if (taxonomicUtil.isMatchingEntry(entry, groupStr, nameStr, authorStr, specCount, specCoordStr, commentsStr)) {
-                        //It matches
-                        it.remove();
-                        found = true;
-                        if (entry.getTaxon() != null && !entry.getTaxon().getStatus().equals(FREDConstants.APPROVED))
-                        	nonApprovedTaxaFlag = true;
-                        break;
-                    }
-                }
-                //Was not already in the list
-                if (!found) {
-                	//The group
-                	TaxonomicGroup group = taxonomicUtil.getTaxonomicGroup(groupStr);
-                	//clean TaxaName
-                    String cleanName = TaxonomicUtil.getCleanedName(nameStr);
-                    //Prepare for having an entry
-                    PaleontologyListEntry entry = null;
-                    //Is the taxonomic name valid?
-                    boolean blankTaxon = cleanName.length() == 0 && nameStr.length() > 0;
-                    	
-                    Taxon taxon = (blankTaxon) 
-                    	? null 
-                    	: taxonomicUtil.getTaxon(group, cleanName, authorStr);
-                    
-                    if (taxon == null && !blankTaxon) {
-                        //It's a new taxon - create a record...but don't save it yet!
-                    	entry = new UnsavedListEntry(); 
-                    	taxon = new UnsavedTaxon();
-                        taxon.setAuthor(authorStr);
-                        taxon.setStatus(FREDConstants.PROVISIONAL);
-                        taxon.setTaxonomicGroup(group);
-                        taxon.setTaxonomicName(cleanName);
-                        taxon.setSubmittedById(new Integer(user.getId()));
-                        taxon.setSubmittedDate(new Date());
-                        //Also add the entry to the bad list
-                        badTaxaList.add(entry);
-                    } else {
-                    	entry = taxonomicUtil.createPaleontologyListEntry();
-                    	taxaList.add(entry);
-                    }
-                    
-                    entry.setPaleontology(pal);
-                    entry.setTaxonomicGroup(taxonomicUtil.getTaxonomicGroup(groupStr));
-                    entry.setTaxonomicName(nameStr);
-                    entry.setTaxon(taxon);
-                    if (specCountStr != null && specCountStr.length() > 0)
-                    	entry.setSpecimenCount(new Integer(specCountStr));
-                    entry.setSpecimenCoords(specCoordStr);
-                    entry.setComments(commentsStr);
-                    if (entry.getTaxon() != null && !entry.getTaxon().getStatus().equals(FREDConstants.APPROVED))
-                    	nonApprovedTaxaFlag = true;
-                }
-			} catch (Exception e) {
-				e.printStackTrace();
-				error.add(new String[] {"Taxanomic List", taxaLine + " not valid"});
-			}
+
+        if (taxa != null && taxa.length > 0) {
+	        for (int i = 0; i < taxa.length; i++) {
+	        	String taxaLine = taxa[i].trim();
+	            if (taxaLine.length() == 0)
+	            	continue;
+				try {
+	                boolean found = false;
+	                String[] bits = taxaLine.split("\\*", -1);
+	                
+	                String groupStr = null;
+	                String nameStr = null;
+	                String authorStr = null;
+	                String specCountStr = null;
+	                String specCoordStr = null;
+	                String commentsStr = null;
+	                if (bits.length == 6) {
+	                	groupStr = bits[GROUP];
+	                	nameStr = bits[NAME];
+	                	authorStr = bits[AUTHOR];
+	                	specCountStr = bits[SPECIMEN_COUNT];
+	                	specCoordStr = bits[SPECIMEN_COORD];
+	                	commentsStr = bits[COMMENTS];
+	                } else {
+	                	groupStr = bits[GROUP];
+	                	nameStr = bits[NAME];
+	                	authorStr = bits[AUTHOR];
+	                	String[] commentsBits = TaxonomicUtil.decodeTaxaComments(bits[3]);
+	                	specCountStr = commentsBits[0];
+	                	specCoordStr = commentsBits[1];
+	                	commentsStr = commentsBits[2];
+	                }
+	                
+	            	Integer specCount = (specCountStr == null || specCountStr.length() == 0) ? null : new Integer(specCountStr);
+	                for (Iterator<PaleontologyListEntry> it = removedTaxaList.iterator(); it.hasNext(); ) {
+	                    PaleontologyListEntry entry = it.next();
+	                    if (taxonomicUtil.isMatchingEntry(entry, groupStr, nameStr, authorStr, specCount, specCoordStr, commentsStr)) {
+	                        //It matches
+	                        it.remove();
+	                        found = true;
+	                        if (entry.getTaxon() != null && !entry.getTaxon().getStatus().equals(FREDConstants.APPROVED))
+	                        	nonApprovedTaxaFlag = true;
+	                        break;
+	                    }
+	                }
+	                //Was not already in the list
+	                if (!found) {
+	                	//The group
+	                	TaxonomicGroup group = taxonomicUtil.getTaxonomicGroup(groupStr);
+	                	//clean TaxaName
+	                    String cleanName = TaxonomicUtil.getCleanedName(nameStr);
+	                    //Prepare for having an entry
+	                    PaleontologyListEntry entry = null;
+	                    //Is the taxonomic name valid?
+	                    boolean blankTaxon = cleanName.length() == 0 && nameStr.length() > 0;
+	                    	
+	                    Taxon taxon = (blankTaxon) 
+	                    	? null 
+	                    	: taxonomicUtil.getTaxon(group, cleanName, authorStr);
+	                    
+	                    if (taxon == null && !blankTaxon) {
+	                        //It's a new taxon - create a record...but don't save it yet!
+	                    	entry = new UnsavedListEntry(); 
+	                    	taxon = new UnsavedTaxon();
+	                        taxon.setAuthor(authorStr);
+	                        taxon.setStatus(FREDConstants.PROVISIONAL);
+	                        taxon.setTaxonomicGroup(group);
+	                        taxon.setTaxonomicName(cleanName);
+	                        taxon.setSubmittedById(new Integer(user.getId()));
+	                        taxon.setSubmittedDate(new Date());
+	                        //Also add the entry to the bad list
+	                        badTaxaList.add(entry);
+	                    } else {
+	                    	entry = taxonomicUtil.createPaleontologyListEntry();
+	                    	taxaList.add(entry);
+	                    }
+	                    
+	                    entry.setPaleontology(pal);
+	                    entry.setTaxonomicGroup(taxonomicUtil.getTaxonomicGroup(groupStr));
+	                    entry.setTaxonomicName(nameStr);
+	                    entry.setTaxon(taxon);
+	                    if (specCountStr != null && specCountStr.length() > 0)
+	                    	entry.setSpecimenCount(new Integer(specCountStr));
+	                    entry.setSpecimenCoords(specCoordStr);
+	                    entry.setComments(commentsStr);
+	                    if (entry.getTaxon() != null && !entry.getTaxon().getStatus().equals(FREDConstants.APPROVED))
+	                    	nonApprovedTaxaFlag = true;
+	                }
+				} catch (Exception e) {
+					e.printStackTrace();
+					error.add(new String[] {"Taxanomic List", taxaLine + " not valid"});
+				}
+	        }
         }
+        
         //Now remove any that remain in the 'removed' pile
         taxaList.removeAll(removedTaxaList);
     }
