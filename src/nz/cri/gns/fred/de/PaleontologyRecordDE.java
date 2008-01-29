@@ -125,8 +125,10 @@ public class PaleontologyRecordDE extends RecordDE {
 	}
 	
     private void dealWithTaxa(String[] taxa, Paleontology pal, Vector<String[]> error) {
-    	if (taxa == null || taxa.length == 0)
+    	if (taxa == null || taxa.length == 0) {
+    		pal.setListEntries(null);
     		return;
+    	}
         
         Set<PaleontologyListEntry> taxaList = pal.getListEntries();
         if (taxaList == null) {
