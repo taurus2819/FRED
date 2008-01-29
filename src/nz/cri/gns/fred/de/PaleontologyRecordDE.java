@@ -108,6 +108,7 @@ public class PaleontologyRecordDE extends RecordDE {
         pal.setCollectionComments(request.getParameter("CollComm"));
         
         //Taxa
+        badTaxaList = new HashSet<PaleontologyListEntry>();
         String taxa = request.getParameter("Taxa");
         if (taxa != null) {
         	dealWithTaxa(taxa.split("\\n"), pal, error);
@@ -126,7 +127,7 @@ public class PaleontologyRecordDE extends RecordDE {
     private void dealWithTaxa(String[] taxa, Paleontology pal, Vector<String[]> error) {
     	if (taxa == null || taxa.length == 0)
     		return;
-        badTaxaList = new HashSet<PaleontologyListEntry>();
+        
         Set<PaleontologyListEntry> taxaList = pal.getListEntries();
         if (taxaList == null) {
             taxaList = new HashSet<PaleontologyListEntry>();
