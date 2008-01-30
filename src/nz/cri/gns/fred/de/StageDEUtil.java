@@ -36,13 +36,14 @@ public class StageDEUtil {
 		    startMod = FREDUtil.decodeCombo(request.getParameter(prefix + "StartMod"));
 		    stopId = FREDUtil.decodeCombo(request.getParameter(prefix + "StageStop"));
 		    stopMod = FREDUtil.decodeCombo(request.getParameter(prefix + "StopMod"));
-	    } else if (request.getParameter(prefix + "StageStart2") != null) try {
+	    } else if (request.getParameter(prefix + "StageStart2") != null && request.getParameter(prefix + "StageStart2").length() > 0) try {
 	    	String start = request.getParameter(prefix + "StageStart2");
 	    	if (start.indexOf("?") >= 0) {
 	    		startMod = "?";
 	    		start = start.replace("?", "");
 	    	}
-	    	start = start.substring(0, start.indexOf("(")).trim();
+	    	if (start.indexOf("(") >= 0)
+	    		start = start.substring(0, start.indexOf("(")).trim();
 	    	AgeView ageStart = stageUtil.getAgeViewByName(start);
 	    	if (ageStart == null)
 	    		throw new DataInputException(label, "Stage start not valid: " + request.getParameter(prefix + "StageStart2"));
@@ -54,7 +55,8 @@ public class StageDEUtil {
 		    		stopMod = "?";
 		    		stop = stop.replace("?", "");
 		    	}
-		    	stop = stop.substring(0, stop.indexOf("(")).trim();
+		    	if (stop.indexOf("(") >= 0)
+		    		stop = stop.substring(0, stop.indexOf("(")).trim();
 		    	AgeView ageStop = stageUtil.getAgeViewByName(stop);
 		    	if (ageStop == null)
 		    		throw new DataInputException(label, "Stage stop not valid: " + request.getParameter(prefix + "StageStop2"));
