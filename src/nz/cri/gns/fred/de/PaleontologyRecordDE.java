@@ -254,6 +254,7 @@ public class PaleontologyRecordDE extends RecordDE {
             template.addSub("StComm", pal.getStageComments());
      
             //StageDEUtil.drawStageInputs(out, template, pal.getStage(), "stage", "Stage", new StageUtil(factory));
+            StageDEUtil.addStage2(template, pal.getStage(), "Stage");
             template.loadUntil(out, "{@labArray}");
 
             List<Lab> labs = recordUtil.getLabs();

@@ -34,6 +34,21 @@ public class StageDEUtil {
             template.addSub("is" + label + "StopUnc", "Yes");
     
     }
+    
+    public static void addStage2(Template template, Stage stage, String prefix) {
+    	if (stage != null) {
+    		String start = stage.getLowerAgeView().getAgeName() + "(" + stage.getLowerAgeView().getAgeAbbrev() + ")";
+    		if (stage.getStageLowerMod() != null)
+    			start = start + "?";
+    		template.addSub(prefix + "StageStart", start);
+    		if (stage.getUpperAgeView() != null) {
+        		String stop = stage.getUpperAgeView().getAgeName() + "(" + stage.getUpperAgeView().getAgeAbbrev() + ")";
+        		if (stage.getStageUpperMod() != null)
+        			stop = start + "?";
+        		template.addSub(prefix + "StageStop", stop);    			
+    		}
+    	}    	
+    }
 
 	public static Stage getStage(HttpServletRequest request, String prefix, Stage existingStage, StageUtil stageUtil, String label) throws DataInputException {
 	    String startId = null;
