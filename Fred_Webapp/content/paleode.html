@@ -22,17 +22,13 @@
 <tr>
 <td class="heading" colspan="2">Stage Limits</td>
 <td>
- <table border="0" cellspacing="0">
- <tr>
- <td><input type="text" id="StageStart" name="StageStart2" size="15" />&nbsp;&nbsp;</td>
- <td><input type="text" id="StageStop" name="StageStop2" size="15" /></td>
- </tr>
- </table>
- 
+<input type="text" id="StageStart" name="StageStart2" size="15" />&nbsp;&nbsp;to&nbsp;&nbsp;
+<input type="text" id="StageStop" name="StageStop2" size="15" />
+
 <script><!--
 new LinkedContextHint(
 	document.getElementById("StageStart"),
-	document.getElementById("SatgeStop"),
+	document.getElementById("StageStop"),
 	function generateURL(start) {
 		return "ajaxSupport.xml?action=List&type=Age&start=" + start + "&q=" + Math.random();
 	},
@@ -42,7 +38,7 @@ new LinkedContextHint(
 
 new LinkedContextHint(
 	document.getElementById("StageStop"),
-	document.getElementById("SatgeStart"),
+	document.getElementById("StageStart"),
 	function generateURL(start) {
 		return "ajaxSupport.xml?action=List&type=Age&start=" + start + "&q=" + Math.random();
 	},
