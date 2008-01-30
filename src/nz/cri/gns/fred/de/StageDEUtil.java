@@ -44,7 +44,7 @@ public class StageDEUtil {
     		if (stage.getUpperAgeView() != null) {
         		String stop = stage.getUpperAgeView().getAgeName() + " (" + stage.getUpperAgeView().getAgeAbbrev() + ")";
         		if (stage.getStageUpperMod() != null)
-        			stop = start + "?";
+        			stop = stop + "?";
         		template.addSub(prefix + "StageStop", stop);    			
     		}
     	}    	

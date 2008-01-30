@@ -333,7 +333,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		
 		//Ages
         StageDEUtil.addStage2(template, sample.getInferredStage(), "Inf");
-        StageDEUtil.addStage2(template, sample.getInferredStage(), "Knw");
+        StageDEUtil.addStage2(template, sample.getKnownStage(), "Knw");
 		
 		//Previous samples....
 		template.addSub("PrevSamp", getRelationshipsBrief(FREDConstants.SAMPLE, FREDConstants.NEARBY, semiColonSeparator));
