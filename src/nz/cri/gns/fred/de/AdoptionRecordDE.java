@@ -34,29 +34,20 @@ public class AdoptionRecordDE extends RecordDE {
 	}
 
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
-		try {
-			super.makeDataEntryHTML(out, factory);
+		super.makeDataEntryHTML(out, factory);
 	        
-	        Template template = provider.getContent("adoption.de.form");
-	        prepareTemplate(template, provider);
+        Template template = provider.getContent("adoption.de.form");
+        prepareTemplate(template, provider);
 	        
-	        Adoption adoption = record.getAdoption();
+        Adoption adoption = record.getAdoption();
 	        
-	        template.addSub("AdoDate", FREDUtil.formatDateForDE(adoption.getAdoptionDate(), adoption.getDateRounding()));
-	        template.addSub("Adoptor", FREDUtil.getNames(adoption.getAdoptors(), "\n"));
-	        template.addSub("Comm", adoption.getComments());
-	        StageDEUtil.addStageSubs(template, adoption.getStage(), "Stage");
-	 
-	        StageDEUtil.drawStageInputs(out, template, adoption.getStage(), "stage", "Stage", new StageUtil(factory));
-	
-	        template.loadAll(out);
-	        
-			super.makeEndBitHTML(out);
-		} catch (StorageAccessException e) {
-			e.printStackTrace();
-			throw new IOException("Could not access storage: " + e.getMessage());
-
-		}
+        template.addSub("AdoDate", FREDUtil.formatDateForDE(adoption.getAdoptionDate(), adoption.getDateRounding()));
+        template.addSub("Adoptor", FREDUtil.getNames(adoption.getAdoptors(), "\n"));
+        template.addSub("Comm", adoption.getComments());
+        StageDEUtil.addStage2(template, adoption.getStage(), "Stage");	
+        template.loadAll(out);
+        
+		super.makeEndBitHTML(out);
 	}
 
     public void makePostFormHTML(PrintWriter out) throws IOException {

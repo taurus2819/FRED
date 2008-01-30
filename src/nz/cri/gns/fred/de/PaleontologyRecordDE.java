@@ -250,10 +250,7 @@ public class PaleontologyRecordDE extends RecordDE {
             
             template.addSub("PalDate", FREDUtil.formatDateForDE(pal.getIdentificationDate(), pal.getDateRounding()));
             template.addSub("Identifier", FREDUtil.getNames(pal.getIdentifiers(), "\n"));
-            //StageDEUtil.addStageSubs(template, pal.getStage(), "Stage");
             template.addSub("StComm", pal.getStageComments());
-     
-            //StageDEUtil.drawStageInputs(out, template, pal.getStage(), "stage", "Stage", new StageUtil(factory));
             StageDEUtil.addStage2(template, pal.getStage(), "Stage");
             template.loadUntil(out, "{@labArray}");
 
