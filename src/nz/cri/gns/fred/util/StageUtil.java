@@ -6,6 +6,7 @@ import java.util.List;
 import javax.naming.NamingException;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.StageDAO;
 import nz.cri.gns.fred.model.AgeView;
@@ -61,6 +62,13 @@ public class StageUtil extends ModelUtil {
 	
 	public AgeView getAgeView(int ageId) throws StorageAccessException {
 		return stageDAO.get(ageId, nz.cri.gns.fred.hibernate.AgeView.class);
+	}
+	
+	public AgeView getAgeViewByName(String ageName) throws StorageAccessException {
+		List<AgeView> ages = stageDAO.getList("FROM AgeView AS A WHERE a.ageName = ?", AgeView.class, ageName);
+		if (ages != null && ages.size() > 0)
+			return ages.get(0);
+		return null;
 	}
 	
 	public List<AgeView> getAges() throws StorageAccessException {
@@ -158,4 +166,9 @@ public class StageUtil extends ModelUtil {
 			 age = stage.getLowerAgeView();
 		return age.getAgeStop();
 	}
+	
+	public List<AgeView> getMatchingAges(String str, Match matchType, int maxMatches) throws StorageAccessException {
+		return stageDAO.getMatchingAges(str, matchType, maxMatches);
+	}
+	
 }

@@ -3,6 +3,7 @@ package nz.cri.gns.fred.dao;
 import java.util.List;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.model.AgeView;
 import nz.cri.gns.fred.model.Stage;
 
@@ -27,5 +28,7 @@ public interface StageDAO {
 	 * Creates a new, uninitialised Stage object
 	 */
 	public Stage createNewStage();
+	
+	public List<AgeView> getMatchingAges(String str, Match matchType, int maxMatches) throws StorageAccessException;	
 	
 }

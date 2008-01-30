@@ -1,5 +1,8 @@
 {@startDETable}
-
+<script type="text/javascript" src="/online/scripts/ajax.js"></script>
+<script type="text/javascript" src="scripts/locate.js"></script>
+<script type="text/javascript" src="scripts/fade.js"></script>
+<script type="text/javascript" src="scripts/linkedContextHint.js"></script>
 <script type="text/javascript" src="/online/scripts/overlib.js"><!-- overLIB (c) Erik Bosrup --></script>
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
@@ -21,21 +24,33 @@
 <td>
  <table border="0" cellspacing="0">
  <tr>
- <td>{@stageStart}</td>
- <td><select name="StageStartMod">
- <option value="-"></option>
- <option value="?"{@@isStageStartUnc: selected@}>?</option>
- </select>
- </td>
- <td class="heading"> to </td>
- <td>{@stageStop}</td>
- <td><select name="StageStopMod">
- <option value="-"></option>
- <option value="?"{@@isStageStopUnc: selected@}>?</option>
- </select>
- </td>
+ <td><input type="text" id="StageStart" name="StageStart2" size="15" />&nbsp;&nbsp;</td>
+ <td><input type="text" id="StageStop" name="StageStop2" size="15" /></td>
  </tr>
  </table>
+ 
+<script><!--
+new LinkedContextHint(
+	document.getElementById("StageStart"),
+	document.getElementById("SatgeStop"),
+	function generateURL(start) {
+		return "ajaxSupport.xml?action=List&type=Age&start=" + start + "&q=" + Math.random();
+	},
+	null,
+	true
+);
+
+new LinkedContextHint(
+	document.getElementById("StageStop"),
+	document.getElementById("SatgeStart"),
+	function generateURL(start) {
+		return "ajaxSupport.xml?action=List&type=Age&start=" + start + "&q=" + Math.random();
+	},
+	null,
+	true
+);
+//--></script>
+ 
 </td>
 </tr>
 <tr>
@@ -110,11 +125,6 @@ function swapSection(frm){
 </tbody>
 </table></td></tr>
 </table>
-
-<script type="text/javascript" src="/online/scripts/ajax.js"></script>
-<script type="text/javascript" src="scripts/locate.js"></script>
-<script type="text/javascript" src="scripts/fade.js"></script>
-<script type="text/javascript" src="scripts/linkedContextHint.js"></script>
 <script><!--
 new LinkedContextHint(
 	document.getElementById("Group"),

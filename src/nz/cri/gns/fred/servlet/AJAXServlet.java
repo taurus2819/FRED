@@ -17,6 +17,7 @@ import nz.cri.gns.fred.FREDIPSysJspPage;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.StratLexDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
+import nz.cri.gns.fred.model.AgeView;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.StratigraphicUnit;
@@ -24,6 +25,7 @@ import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.PersonUtil;
+import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.util.TaxonomicUtil;
 
 public class AJAXServlet extends HttpServlet {
@@ -48,6 +50,7 @@ public class AJAXServlet extends HttpServlet {
 	public static enum Type {
 		Person,
 		Strat,
+		Age,
 		TaxonomicGroup,
 		TaxonomicName;
 	};
@@ -59,9 +62,9 @@ public class AJAXServlet extends HttpServlet {
 				List<NamedId> values = new ArrayList<NamedId>();
 				switch (type) {
 					case Person:
-						PersonUtil util = new PersonUtil(HibernateUtil.get().getDAOFactory());
+						PersonUtil personUtil = new PersonUtil(HibernateUtil.get().getDAOFactory());
 						try {
-							List<Person> people = util.getMatchingPersons(start, Match.BEGINNING, 15);
+							List<Person> people = personUtil.getMatchingPersons(start, Match.BEGINNING, 15);
 							for (Person person : people) {
 								values.add(new NamedId(person.getPersonId().toString(), person.getDisplayName()));
 							}
@@ -74,6 +77,16 @@ public class AJAXServlet extends HttpServlet {
 							List<StratigraphicUnit> units = dao.getMatchingUnitNames(start, Match.BEGINNING, 15);
 							for (StratigraphicUnit unit : units) {
 								values.add(new NamedId(unit.getId().toString(), unit.getName()));
+							}
+						} catch (StorageAccessException e) {
+						}
+						break;
+					case Age:
+						StageUtil stageUtil = new StageUtil(HibernateUtil.get().getDAOFactory());
+						try {
+							List<AgeView> ages = stageUtil.getMatchingAges(start, Match.BEGINNING, 15);	
+							for (AgeView age : ages) {
+								values.add(new NamedId(age.getAgeId().toString(), age.getAgeName() + " (" + age.getAgeAbbrev() + ")"));
 							}
 						} catch (StorageAccessException e) {
 						}

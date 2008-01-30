@@ -710,6 +710,37 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		}
 	}
 	
+	public List<AgeView> getMatchingAges(String str, Match matchType, int maxMatches) throws StorageAccessException {
+		Criteria crit = provider.currentSession().createCriteria(nz.cri.gns.fred.hibernate.AgeView.class);
+		switch (matchType) {
+			case ANYWHERE:
+				crit.add(Expression.or
+						(Expression.ilike("ageName", str, MatchMode.ANYWHERE)
+						, Expression.ilike("ageAbbrev", str, MatchMode.ANYWHERE)));
+				break;
+			case BEGINNING:
+				crit.add(Expression.or
+						(Expression.ilike("ageName", str, MatchMode.START)
+						, Expression.ilike("ageAbbrev", str, MatchMode.START)));
+				break;
+			case END:
+				crit.add(Expression.or
+						(Expression.ilike("ageName", str, MatchMode.END)
+						, Expression.ilike("ageAbbrev", str, MatchMode.END)));
+				break;
+		}
+		crit.setMaxResults(maxMatches);
+		crit.addOrder(Order.asc("ageStop"));
+		crit.addOrder(Order.asc("ageStart"));
+		try {
+			@SuppressWarnings("unchecked")
+			List<AgeView> pp = crit.list();
+			return pp;
+		} catch (HibernateException e) {
+			throw new StorageAccessException(e);
+		}
+	}
+	
     public TaxonomicDAO getTaxonomicDAO() {
         return this;
     }
