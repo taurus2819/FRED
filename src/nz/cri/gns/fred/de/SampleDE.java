@@ -250,10 +250,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	        }
 	        
 			//Ages...inferred...
-            StageDEUtil.drawStageInputs(out, template, sample.getInferredStage(), "inferredAge", "Inf", stageUtil);
+            StageDEUtil.addStage2(template, sample.getInferredStage(), "Inf");
 	
 			//...known...
-			StageDEUtil.drawStageInputs(out, template, sample.getKnownStage(), "knownAge", "Knw", stageUtil);
+            StageDEUtil.addStage2(template, sample.getInferredStage(), "Knw");
 
 			//Grain size...
 			template.loadUntil(out, "{@primaryGrainSize}");
