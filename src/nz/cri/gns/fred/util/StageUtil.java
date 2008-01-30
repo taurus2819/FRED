@@ -65,7 +65,7 @@ public class StageUtil extends ModelUtil {
 	}
 	
 	public AgeView getAgeViewByName(String ageName) throws StorageAccessException {
-		List<AgeView> ages = stageDAO.getList("FROM AgeView AS A WHERE a.ageName = ?", AgeView.class, ageName);
+		List<AgeView> ages = stageDAO.getList("FROM AgeView AS a WHERE a.ageName = ?", AgeView.class, ageName);
 		if (ages != null && ages.size() > 0)
 			return ages.get(0);
 		return null;
