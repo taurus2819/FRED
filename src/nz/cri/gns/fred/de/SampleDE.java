@@ -249,12 +249,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		        }
 	        }
 	        
-			//Ages...inferred...
-            StageDEUtil.addStage2(template, sample.getInferredStage(), "Inf");
-	
-			//...known...
-            StageDEUtil.addStage2(template, sample.getInferredStage(), "Knw");
-
 			//Grain size...
 			template.loadUntil(out, "{@primaryGrainSize}");
 			SelectBox<GrainSize> gsSelectBox = new SelectBox<GrainSize>(sampleUtil.getGrainSizes());
@@ -338,8 +332,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		template.addSub("StratComm", sample.getStratComments());
 		
 		//Ages
-        StageDEUtil.addStageSubs(template, sample.getInferredStage(), "Inferred");
-		StageDEUtil.addStageSubs(template, sample.getKnownStage(), "Known");
+        StageDEUtil.addStage2(template, sample.getInferredStage(), "Inf");
+        StageDEUtil.addStage2(template, sample.getInferredStage(), "Knw");
 		
 		//Previous samples....
 		template.addSub("PrevSamp", getRelationshipsBrief(FREDConstants.SAMPLE, FREDConstants.NEARBY, semiColonSeparator));
