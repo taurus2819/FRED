@@ -163,10 +163,10 @@ public class AJAXServlet extends HttpServlet {
 								if (taxon != null) {
 									status = taxon.getStatus();
 									moreData = "<author><![CDATA[" + DBUtils.nvl(taxon.getAuthor()) + "]]></author>";
-									if (status.equals(Taxon.PROVISIONAL_STATUS))
+									if (status.equals(FREDConstants.PROVISIONAL))
 										moreData = moreData + "<submitted-by><![CDATA[" + taxon.getSubmittedBy().getFullName() + "]]></submitted-by>"
 											+ "<submitted-date>" + FREDUtil.formatDateForOutput(taxon.getSubmittedDate()) + "</submitted-date>";
-									else if (status.equals(Taxon.REJECTED_STATUS))
+									else if (status.equals(FREDConstants.REJECTED))
 										moreData = moreData + "<rejected-by><![CDATA[" + taxon.getApprovedBy().getFullName() + "]]></rejected-by>"
 										+ "<rejected-date>"	+ FREDUtil.formatDateForOutput(taxon.getApprovedDate()) + "</rejected-date>"
 										+ "<rejected-comments><![CDATA[" + taxon.getPanelistComments() + "]]></rejected-comments>";
