@@ -1,7 +1,7 @@
 <Context path="/" docBase="fred" debug="1" reloadable="true">
 	<Resource name="jdbc/fr" auth="Container" type="javax.sql.DataSource" 
 		factory="nz.cri.gns.dbcp.GOLDataSourceFactory" driverClassName="oracle.jdbc.OracleDriver"
-		url="jdbc:oracle:thin:@raptor.gns.cri.nz:1521:dev" username="fr"
+		url="jdbc:oracle:thin:@gryphon.gns.cri.nz:1521:dev" username="fr"
 		rmiServer="condor" rmiBinding="OnlineUtils" maxActive="30" maxIdle="5" maxWait="1000" 
 		removeAbandoned="true" logAbandoned="true" /> 
 </Context>

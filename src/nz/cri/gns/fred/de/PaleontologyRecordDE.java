@@ -57,6 +57,7 @@ public class PaleontologyRecordDE extends RecordDE {
         taxonomicUtil = new TaxonomicUtil(factory);
     }
 
+    @Override
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
        reinitialise(factory);
        Vector<String[]> error = new Vector<String[]>();
@@ -241,6 +242,7 @@ public class PaleontologyRecordDE extends RecordDE {
     private static final int SPECIMEN_COORD = 4;
     private static final int COMMENTS = 5;
 
+    @Override
     public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
 		try {
 			super.makeDataEntryHTML(out, factory);
@@ -282,17 +284,31 @@ public class PaleontologyRecordDE extends RecordDE {
 			List<TaxonomicGroup> groups = recordUtil.getTaxonomicGroups(pal);
 			List<PaleontologyListEntry> badTaxa = (badTaxaList == null) ? new Vector<PaleontologyListEntry>() : new Vector<PaleontologyListEntry>(badTaxaList);
 			if (groups != null && groups.size() > 0) {
+				//set up the javascript array
+				out.println("operationalTaxa = new Array();");
 				for (TaxonomicGroup group : groups) {
 					List<PaleontologyListEntry> list = recordUtil.getListEntries(pal, group);
 					if (list == null || list.size() == 0) {
-						out.println("addTaxa('" + group.getName() + ": ', '', '');");
+						//create a taxon and add it to the array
+						out.println("thisTaxa = new Array();");
+						out.println("operationalTaxa[operationalTaxa.length] = thisTaxa;");
+						out.println("thisTaxa.group = '" + group.getName() + "';");
+						out.println("thisTaxa.taxaName = '';");
+						out.println("thisTaxa.author = '';");
+						out.println("thisTaxa.comments = '';");
 					} else {
 						for (PaleontologyListEntry entry : list) {
 							Taxon taxon = entry.getTaxon();
-							out.println("addTaxa(\"" + group.getName() + "\", \""
-									+ entry.getTaxonomicName() + "\", \""
-									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
-									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
+							out.println("thisTaxa = new Array();");
+							out.println("operationalTaxa[operationalTaxa.length] = thisTaxa;");
+							out.println("thisTaxa.group = '" + group.getName() + "';");
+							out.println("thisTaxa.taxaName = '" + entry.getTaxonomicName() + "';");
+							out.println("thisTaxa.author = '" + DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "';");
+							out.println("thisTaxa.comments = \"" + DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\";");
+//							out.println("addTaxa(\"" + group.getName() + "\", \""
+//									+ entry.getTaxonomicName() + "\", \""
+//									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
+//									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
 						}
 					}
 					//Also check for bad taxa of this group
@@ -300,14 +316,22 @@ public class PaleontologyRecordDE extends RecordDE {
 						PaleontologyListEntry entry = it.next();
 						if (entry.getTaxonomicGroup().equals(group) && entry.getTaxon() != null) {
 							Taxon taxon = entry.getTaxon();
-							out.println("addTaxa(\"" + group.getName() + "\", \""
-									+ entry.getTaxonomicName() + "\", \""
-									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
-									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
+							out.println("thisTaxa = new Array();");
+							out.println("operationalTaxa[operationalTaxa.length] = thisTaxa;");
+							out.println("thisTaxa.group = '" + group.getName() + "';");
+							out.println("thisTaxa.taxaName = '" + entry.getTaxonomicName() + "';");
+							out.println("thisTaxa.author = '" + DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "';");
+							out.println("thisTaxa.comments = \"" + DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\";");
+//							out.println("addTaxa(\"" + group.getName() + "\", \""
+//									+ entry.getTaxonomicName() + "\", \""
+//									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
+//									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
 							it.remove();
 						}
 					}
 				}
+				//Finally, actually call the script to add them
+				out.println("nextTaxon();");
 			}
 			//Finally check for any remaining bad taxa
 			for (PaleontologyListEntry entry : badTaxa) {
@@ -315,7 +339,7 @@ public class PaleontologyRecordDE extends RecordDE {
 					Taxon taxon = entry.getTaxon();
 					out.println("addTaxa(\"" + taxon.getTaxonomicGroup().getName() + "\", \""
 							+ entry.getTaxonomicName() + "\", \""
-							+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
+							+ DBUtils.nvl(taxon.getAuthor()) + "\", \""
 							+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
 				}
 			}
@@ -335,7 +359,8 @@ public class PaleontologyRecordDE extends RecordDE {
         template.loadAll(out);
     }
 
-	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
+	@Override
+    public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
 		super.makeExcelImportHTML(out);
 		Paleontology pal = record.getPaleontology();
 		out.write("<td>#" + FREDUtil.formatDateForDE(pal.getIdentificationDate(), pal.getDateRounding()) + "#</td>\n");
@@ -385,7 +410,8 @@ public class PaleontologyRecordDE extends RecordDE {
 		}
 	}
 	
-	protected void checkMandatoryFields() throws DataInputException {
+	@Override
+    protected void checkMandatoryFields() throws DataInputException {
 		if (badTaxaList.size() > 0 || nonApprovedTaxaFlag)
 			throw new DataInputException("Mandatory Fields", "Not all taxonomic entries are approved");
 	}
@@ -398,7 +424,8 @@ public class PaleontologyRecordDE extends RecordDE {
 		return "Edit paleontological record";
 	}
 	
-	public int save(int dataOriginId) throws InsufficientPrivelegesException, StorageAccessException {
+	@Override
+    public int save(int dataOriginId) throws InsufficientPrivelegesException, StorageAccessException {
 		int recordId = super.save(dataOriginId);
 		/*if (record.getPaleontology().getRecordId() == null)
 			recordUtil.save(record.getPaleontology());
@@ -423,7 +450,8 @@ public class PaleontologyRecordDE extends RecordDE {
 
 	}
 	
-	public void reinitialise(DAOFactory factory) {
+	@Override
+    public void reinitialise(DAOFactory factory) {
 		super.reinitialise(factory);
 	}
 }

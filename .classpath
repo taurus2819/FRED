@@ -18,5 +18,5 @@
 	<classpathentry kind="lib" path="C:/lib/gol.jar"/>
 	<classpathentry kind="lib" path="C:/lib/hibernate/cglib-full-2.0.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="output" path="Fred_Webapp/WEB-INF/classes"/>
 </classpath>
