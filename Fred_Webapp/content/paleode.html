@@ -170,37 +170,30 @@ function addTaxaFromForm() {
 	}
 }
 
-var operationalTaxon;
-var operationalTaxa;
-
 function addTaxa(group, taxaName, author, comments) {
-	if (operationalTaxon) {
-		alert("Please wait for the previous submission to finish!");
-		return;
-	}
-	operationalTaxon = new Array();
-	operationalTaxon.group = group;
-	operationalTaxon.taxaName = taxaName;
-	operationalTaxon.author = author;
-	operationalTaxon.comments = comments;
-	ajaxXML("ajaxSupport.xml?action=Confirm&type=TaxonomicName&name=" + trim(taxaName) + "&TaxonomicGroup=" + trim(group), addTaxa1);
-}
-function addTaxa1(xmlDoc) {
+	var xmlDoc = sjaxXML("ajaxSupport.xml?action=Confirm&type=TaxonomicName&name=" + trim(taxaName) + "&TaxonomicGroup=" + trim(group));
 	var taxaNode = xmlDoc.getElementsByTagName("TaxonomicName")[0];
 	var taxaName = taxaNode.getElementsByTagName("name")[0].firstChild.nodeValue;
 	var status = taxaNode.getElementsByTagName("status")[0].firstChild.nodeValue;
 	var authorNode = taxaNode.getElementsByTagName("author")[0];
 	if (authorNode != null) {
-		operationalTaxon.author = authorNode.firstChild.nodeValue;
+		author = authorNode.firstChild.nodeValue;
 	}
 		
 	var statusPopupString = '';
 	if (status == 'new') {
 		if (confirm(taxaName + " is not in the FRED database. Would you like to submit it?")) {
-			ajaxXML("ajaxSupport.xml?action=Add&type=TaxonomicName&name=" + trim(operationalTaxon.taxaName) + "&TaxonomicGroup=" + trim(operationalTaxon.group) + "&Author=" + trim(operationalTaxon.author), addTaxa2);
-			return;
+			var insertXMLDoc = sjaxXML("ajaxSupport.xml?action=Add&type=TaxonomicName&name=" + trim(taxaName) + "&TaxonomicGroup=" + trim(group) + "&Author=" + trim(author));
+			var taxaNode = xmlDoc.getElementsByTagName("TaxonomicName")[0];
+			var status = taxaNode.getElementsByTagName("status")[0].firstChild.nodeValue;
+			if (status == 'Could not be created') {
+				alert("Error in adding name");
+				return;
+			} else {
+				addTaxa(group, taxaName, author, comments);
+				return;
+			}
 		} else {
-			nextTaxon();
 			return;
 		}
 	} else if (status == 'provisional') {
@@ -229,7 +222,7 @@ function addTaxa1(xmlDoc) {
 		groupTd.onmouseover = function() {return overlib(statusPopupString, CAPTION, taxaName, WIDTH, 200);}
 		groupTd.onmouseout = function() {return nd();}
 	}
-	groupTd.appendChild(document.createTextNode(operationalTaxon.group + "\u00a0\u00a0"));
+	groupTd.appendChild(document.createTextNode(group + "\u00a0\u00a0"));
 	tr.appendChild(groupTd);
 	var taxaTd = document.createElement("td");
 	taxaTd.setAttribute("id", "taxaNameLine" + lineId);
@@ -240,7 +233,7 @@ function addTaxa1(xmlDoc) {
 		taxaTd.onmouseover = function() {return overlib(statusPopupString, CAPTION, taxaName, WIDTH, 200);}
 		taxaTd.onmouseout = function() {return nd();}
 	}
-	taxaTd.appendChild(document.createTextNode(operationalTaxon.taxaName + "\u00a0\u00a0"));
+	taxaTd.appendChild(document.createTextNode(taxaName + "\u00a0\u00a0"));
 	tr.appendChild(taxaTd);
 	var authorTd = document.createElement("td");
 	authorTd.setAttribute("id", "authorLine" + lineId);
@@ -251,7 +244,7 @@ function addTaxa1(xmlDoc) {
 		authorTd.onmouseover = function() {return overlib(statusPopupString, CAPTION, taxaName, WIDTH, 200);}
 		authorTd.onmouseout = function() {return nd();}
 	}
-	authorTd.appendChild(document.createTextNode(operationalTaxon.author + "\u00a0\u00a0"));
+	authorTd.appendChild(document.createTextNode(author + "\u00a0\u00a0"));
 	tr.appendChild(authorTd);
 	var commentsTd = document.createElement("td");
 	commentsTd.setAttribute("id", "commentsLine" + lineId);
@@ -262,7 +255,7 @@ function addTaxa1(xmlDoc) {
 		commentsTd.onmouseover = function() {return overlib(statusPopupString, CAPTION, taxaName, WIDTH, 200);}
 		commentsTd.onmouseout = function() {return nd();}
 	}
-	commentsTd.appendChild(document.createTextNode(operationalTaxon.comments + "\u00a0\u00a0"));
+	commentsTd.appendChild(document.createTextNode(comments + "\u00a0\u00a0"));
 	tr.appendChild(commentsTd);
 	var lastTd = document.createElement("td");
 	lastTd.appendChild(document.createTextNode("\u00a0\u00a0"));
@@ -278,7 +271,7 @@ function addTaxa1(xmlDoc) {
 	var hiddenData = document.createElement("input");
 	hiddenData.setAttribute("type", "hidden");
 	hiddenData.setAttribute("name", "Taxa2");
-	hiddenData.setAttribute("value", trim(operationalTaxon.group) + "*" + trim(operationalTaxon.taxaName) + "*" + trim(operationalTaxon.author) + "*" + trim(operationalTaxon.comments));
+	hiddenData.setAttribute("value", trim(group) + "*" + trim(taxaName) + "*" + trim(author) + "*" + trim(comments));
 	lastTd.appendChild(hiddenData);
 	tr.appendChild(lastTd);
 	body.appendChild(tr);
@@ -286,35 +279,8 @@ function addTaxa1(xmlDoc) {
 	var countTd = document.getElementById("taxaCount");
 	countTd.removeChild(countTd.firstChild);
 	countTd.appendChild(document.createTextNode("Taxonomic Count: " + ++taxaCount));
-	
-	nextTaxon();
 }
-function addTaxa2(xmlDoc) {
-	var taxaNode = xmlDoc.getElementsByTagName("TaxonomicName")[0];
-	var status = taxaNode.getElementsByTagName("status")[0].firstChild.nodeValue;
-	if (status == 'Could not be created') {
-		alert("Error in adding name");
-		nextTaxon();
-		return;
-	} else {
-		var wasOp = operationalTaxon;
-		operationalTaxon = null;
-		addTaxa(wasOp.group, wasOp.taxaName, wasOp.author, wasOp.comments);
-		return;
-	}
-}
-//Moves on to the next taxa if multiple or quits if single
-function nextTaxon() {
-	operationalTaxon = null;
-	if (operationalTaxa && operationalTaxa.length > 0) {
-		var taxon = operationalTaxa[0];
-		for (var i=1; i<operationalTaxa.length; i++) {
-			operationalTaxa[i-1] = operationalTaxa[i];
-		}
-		operationalTaxa.length = operationalTaxa.length-1;
-		addTaxa(taxon.group, taxon.taxaName, taxon.author, taxon.comments);
-	}
-}
+
 function removeTaxa(line) {
 	var tr = document.getElementById("taxaRow" + line);
 	tr.parentNode.removeChild(tr);
