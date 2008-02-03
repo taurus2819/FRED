@@ -154,7 +154,7 @@ this.processHint = function() {
 	if (val.length == 0)
 		this.hideDropout();
 	else
-		eval("callAJAX(urlGenerator(val, linkedVal), function() {showHints('" + this.key + "')});");
+		eval("callAJAX(urlGenerator(val, linkedVal), function() {showLinkedHints('" + this.key + "')});");
 };
 
 this.showHint = function() {
@@ -239,7 +239,7 @@ this.showIEFix = function() {
 
 this.hideDropout = function(immediate) {
 	if (this.isIE) {
-		window.setTimeout("hideDropoutIE('" + this.key + "')", 100);
+		window.setTimeout("hideLinkedDropoutIE('" + this.key + "')", 100);
 	} else if (immediate) {
 		this.hintDiv.style.visibility = "hidden";
 	} else {
@@ -277,11 +277,11 @@ function getLinkedContextHint(id) {
     return linkedContextHints[id];
 }
 
-function showHints(key) {
+function showLinkedHints(key) {
     getLinkedContextHint(key).showHint();
 }
 
-function hideDropoutIE(key) {
+function hideLinkedDropoutIE(key) {
 	getLinkedContextHint(key).hideDropoutForIE();
 }
 
