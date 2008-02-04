@@ -62,8 +62,8 @@ public String getName(HttpServletRequest request) {
 					for (Record record : records) {
 						if (RecordUtil.getRecordType(record).equals(FREDConstants.PALEONTOLOGICAL)) {
 							Paleontology pal = record.getPaleontology();
-							provTaxa.addAll(recordUtil.getTaxon(pal, Taxon.PROVISIONAL_STATUS));
-							rejTaxa.addAll(recordUtil.getTaxon(pal, Taxon.REJECTED_STATUS));
+							provTaxa.addAll(recordUtil.getTaxon(pal, FREDConstants.PROVISIONAL));
+							rejTaxa.addAll(recordUtil.getTaxon(pal, FREDConstants.REJECTED));
 						}
 					}
 				}
