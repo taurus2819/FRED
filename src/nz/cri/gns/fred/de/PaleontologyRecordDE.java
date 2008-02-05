@@ -284,31 +284,17 @@ public class PaleontologyRecordDE extends RecordDE {
 			List<TaxonomicGroup> groups = recordUtil.getTaxonomicGroups(pal);
 			List<PaleontologyListEntry> badTaxa = (badTaxaList == null) ? new Vector<PaleontologyListEntry>() : new Vector<PaleontologyListEntry>(badTaxaList);
 			if (groups != null && groups.size() > 0) {
-				//set up the javascript array
-				out.println("operationalTaxa = new Array();");
 				for (TaxonomicGroup group : groups) {
 					List<PaleontologyListEntry> list = recordUtil.getListEntries(pal, group);
 					if (list == null || list.size() == 0) {
-						//create a taxon and add it to the array
-						out.println("thisTaxa = new Array();");
-						out.println("operationalTaxa[operationalTaxa.length] = thisTaxa;");
-						out.println("thisTaxa.group = '" + group.getName() + "';");
-						out.println("thisTaxa.taxaName = '';");
-						out.println("thisTaxa.author = '';");
-						out.println("thisTaxa.comments = '';");
+						out.println("addTaxa('" + group.getName() + ": ', '', '');");
 					} else {
 						for (PaleontologyListEntry entry : list) {
 							Taxon taxon = entry.getTaxon();
-							out.println("thisTaxa = new Array();");
-							out.println("operationalTaxa[operationalTaxa.length] = thisTaxa;");
-							out.println("thisTaxa.group = '" + group.getName() + "';");
-							out.println("thisTaxa.taxaName = '" + entry.getTaxonomicName() + "';");
-							out.println("thisTaxa.author = '" + DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "';");
-							out.println("thisTaxa.comments = \"" + DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\";");
-//							out.println("addTaxa(\"" + group.getName() + "\", \""
-//									+ entry.getTaxonomicName() + "\", \""
-//									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
-//									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
+							out.println("addTaxa(\"" + group.getName() + "\", \""
+									+ entry.getTaxonomicName() + "\", \""
+									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
+									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
 						}
 					}
 					//Also check for bad taxa of this group
@@ -316,22 +302,14 @@ public class PaleontologyRecordDE extends RecordDE {
 						PaleontologyListEntry entry = it.next();
 						if (entry.getTaxonomicGroup().equals(group) && entry.getTaxon() != null) {
 							Taxon taxon = entry.getTaxon();
-							out.println("thisTaxa = new Array();");
-							out.println("operationalTaxa[operationalTaxa.length] = thisTaxa;");
-							out.println("thisTaxa.group = '" + group.getName() + "';");
-							out.println("thisTaxa.taxaName = '" + entry.getTaxonomicName() + "';");
-							out.println("thisTaxa.author = '" + DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "';");
-							out.println("thisTaxa.comments = \"" + DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\";");
-//							out.println("addTaxa(\"" + group.getName() + "\", \""
-//									+ entry.getTaxonomicName() + "\", \""
-//									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
-//									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
+							out.println("addTaxa(\"" + group.getName() + "\", \""
+									+ entry.getTaxonomicName() + "\", \""
+									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
+									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
 							it.remove();
 						}
 					}
 				}
-				//Finally, actually call the script to add them
-				out.println("nextTaxon();");
 			}
 			//Finally check for any remaining bad taxa
 			for (PaleontologyListEntry entry : badTaxa) {
@@ -339,7 +317,7 @@ public class PaleontologyRecordDE extends RecordDE {
 					Taxon taxon = entry.getTaxon();
 					out.println("addTaxa(\"" + taxon.getTaxonomicGroup().getName() + "\", \""
 							+ entry.getTaxonomicName() + "\", \""
-							+ DBUtils.nvl(taxon.getAuthor()) + "\", \""
+							+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
 							+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
 				}
 			}
