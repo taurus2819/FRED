@@ -45,6 +45,7 @@
 	
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
+	et.addScript("/online/scripts/ajax.js");
 	
 	if (folder != null && folder.isAllowedCreateLocalities()) {
 		IconnedLink[] iLink = new IconnedLink[((folder.isBacklogFolder()) ? 6 : 5)];
@@ -160,14 +161,18 @@
 			
 			<p><%
 			startDETable(pageContext);
-			%><table border="0" width="550"><tr><td colspan="14" class="deHeading">Localities</td></tr>
+			%><table border="0" width="550"><tr><td colspan="17" class="deHeading">Localities</td></tr>
 			<tr>
-			<th colspan="3">Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="7">Actions</th></tr>
-			<tr><td colspan="13"><img src="images/line.gif" height="3" width="550" /></td></tr>
+			<th colspan="4">Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="10">Actions</th></tr>
+			<tr><td colspan="17"><img src="images/line.gif" height="3" width="550" /></td></tr>
 	
 			<form name="FoldForm" method="post" action="folder_detail.jsp"><%
 			
 			//Display the features
+			
+			String backURL = URLEncoder.encode("folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1");
+			String backText = "Back%20To%20Folder";
+			
 			Feature[] features = featureUtil.getFeaturesInFolder(folder);
 			for (int i = 0; i < features.length; i++) {
 				Feature feature = features[i];
@@ -177,7 +182,8 @@
 				String featName = feature.getFeatureName();
 				%><tr>
 				<td style="text-align: left"><input type="checkbox" name="FeatIDs" value="<%=feature.getFeatureId()%>" /></td>	
-				<td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
+				<td id="plusMinus<%=feature.getFeatureId()%>" class="heading"><a href="javascript: getFeatureDetails('<%=feature.getFeatureId()%>');"><img src="images/plus.gif" border="0" /></a></td>
+				<td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=backURL%>&backText=<%=backText%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
 				<td style="text-align: left" class="heading"><a href="folder_feature_detail.jsp?FoldID=<%=folder.getFolderId()%>&FeatID=<%=feature.getFeatureId() + "&q=" + Math.random()%>"><%=name%></a>&nbsp;&nbsp;<%
 				if (featName != null && !featName.equals(name)) {
 					%><br />(<%=featName%>)&nbsp;&nbsp;<%
@@ -192,9 +198,10 @@
 				<td style="text-align: left"><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></td><%
 				if (featureUtil.isAllowedEditFeature(user, feature, folder)) {
 					%><td style="text-align: left"><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a>&nbsp;</td>
+					<td></td>
 					<td style="text-align: left"><a href="binary_data_entry.jsp?ID=<%=feature.getFeatureId()%>&RecType=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Add Image/File" /></a>&nbsp;</td><%
 				} else {
-					%><td></td><td></td><%
+					%><td></td><td></td><td></td><%
 				}
 				%><td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;</td>
 				<td style="text-align: left"><%
@@ -213,14 +220,20 @@
 				} else if (featureUtil.isAllowedRevokeFeature(user, feature, folder)) {
 					%><a href="javascript:if (confirm('Are you sure you want to revoke this locality') == true) {document.FoldForm.ActionType.value='Revoke';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke Locality" /></a>&nbsp;<%
 				}
-				%></td><td style="text-align: left">
+				%><td></td><td></td>
+				</td><td style="text-align: left">
 				<a href="frf/frf.pdf?<%=featureUtil.getFullLocalityPDFURL(feature)%>&q=<%=Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" width="20" height="20" alt="Print Locality" /></a>&nbsp;
 				</td></tr>
-				<tr><td colspan="13"><img src="images/line.gif" height="3" width="550" /></td></tr><%
+				<tbody id="featureDetails<%=feature.getFeatureId()%>"></tbody>
+				<tr><td colspan="17"><img src="images/line.gif" height="3" width="550" /></td></tr><%
 			}
 			%>
-			<tr><td colspan="13" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
-			<script><!--
+			<tr><td colspan="17" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
+			</table><%
+			endDETable(pageContext);
+			%></p>
+			
+			<script type="text/javascript"><!--
 			function selectAll() {
 				if (document.FoldForm.FeatIDs.length) {
 					for (var i=0; i<document.FoldForm.FeatIDs.length; i++) {
@@ -239,12 +252,158 @@
 					document.FoldForm.FeatIDs.checked = false;
 				}
 			}
-			//--></script>
-			</table><%
-			endDETable(pageContext);
-			%></p>
+
+		
+			function getFeatureDetails(featureId) {
+				ajaxXML("getFeatureDetails.jsp?FoldID=<%=folder.getFolderId()%>&FeatID=" + featureId, updatePage);
+			}
 			
+			function updatePage(xmlDoc) {
+				var featureNode = xmlDoc.getElementsByTagName("feature")[0];
+				var featureId = featureNode.getAttributeNode("id").nodeValue;
+				var featureType = featureNode.getElementsByTagName("feature-type")[0].firstChild.nodeValue;
+				var tbody = document.getElementById("featureDetails" + featureId);
+				var samplesNode = featureNode.getElementsByTagName("samples")[0];
+				for (i = 0; i < samplesNode.getElementsByTagName("sample").length; i++) {
+					var sampleNode = xmlDoc.getElementsByTagName("sample")[i];
+					if (featureType != '<%=FREDConstants.OUTCROP%>') {
+						var sampleId = sampleNode.getAttributeNode("id").nodeValue;
+						var statusStyleNode = sampleNode.getElementsByTagName("status-style")[0];
+		
+						var tr = document.createElement("tr");
+						tr.appendChild(document.createElement("td"));
+						tr.appendChild(document.createElement("td"));
+						var iconTd = document.createElement("td");
+						iconTd.appendChild(createIcon("images/drill.gif", "detail.jsp?ID=" + sampleId + "&backURL=<%=backURL%>&backText=<%=backText%>"));
+						tr.appendChild(iconTd);
+						var nameTd = document.createElement("td");
+						nameTd.appendChild(document.createTextNode(sampleNode.getElementsByTagName("sample-name")[0].firstChild.nodeValue));
+						tr.appendChild(nameTd);
+						var typeTd = document.createElement("td");
+						typeTd.appendChild(document.createTextNode("Sample"));
+						tr.appendChild(typeTd);
+						var statusTd = document.createElement("td");
+						statusTd.appendChild(document.createTextNode(sampleNode.getElementsByTagName("status")[0].firstChild.nodeValue));
+						if (statusStyleNode.firstChild != null)
+							statusTd.style.cssText = statusStyleNode.firstChild.nodeValue;
+						tr.appendChild(statusTd);
+						var createdTd = document.createElement("td");
+						createdTd.appendChild(document.createTextNode(sampleNode.getElementsByTagName("created-date")[0].firstChild.nodeValue));
+						tr.appendChild(createdTd);
+						if (sampleNode.getElementsByTagName("edit")[0].firstChild.nodeValue == 'TRUE') {
+							var td = document.createElement("td");
+							td.appendChild(createIcon("images/edit.gif", "de.jsp?Type=Sample&FoldID=<%=folder.getFolderId()%>&SampID=" + sampleId));
+							tr.appendChild(td);
+						} else {
+							tr.appendChild(document.createElement("td"));
+						}
+						if (sampleNode.getElementsByTagName("set-confidentiality")[0].firstChild.nodeValue == 'TRUE') {
+							var td = document.createElement("td");
+							td.appendChild(createIcon("images/lock.gif", "set_confidentiality.jsp?RecType=SMP&FoldID=<%=folder.getFolderId()%>&ID=" + sampleId));
+							tr.appendChild(td);
+						} else {
+							tr.appendChild(document.createElement("td"));
+						}
+						if (sampleNode.getElementsByTagName("edit-binary")[0].firstChild.nodeValue == 'TRUE') {
+							var td = document.createElement("td");
+							td.appendChild(createIcon("images/new_file.gif", "binary_data_entry.jsp?RecType=SMP&FoldID=<%=folder.getFolderId()%>&ID=" + sampleId));
+							tr.appendChild(td);
+						} else {
+							tr.appendChild(document.createElement("td"));
+						}
+						tr.appendChild(document.createElement("td"));
+						tr.appendChild(document.createElement("td"));
+						if (sampleNode.getElementsByTagName("delete")[0].firstChild.nodeValue == 'TRUE') {
+							var td = document.createElement("td");
+							td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to delete this sample') == true) {document.FoldForm.ActionType.value='DeleteSamp';document.FoldForm.SampID.value='" + sampleId + "';document.FoldForm.submit();}"));
+							tr.appendChild(td);
+						} else {
+							tr.appendChild(document.createElement("td"));
+						}
+						if (sampleNode.getElementsByTagName("submit")[0].firstChild.nodeValue == 'TRUE') {
+							var td = document.createElement("td");
+							td.appendChild(createIcon("images/submit.gif", "javascript:document.FoldForm.ActionType.value='SubmitSamp';document.FoldForm.SampID.value='" + sampleId + "';document.FoldForm.submit();"));
+							tr.appendChild(td);
+						} else {
+							tr.appendChild(document.createElement("td"));
+						}
+						if (sampleNode.getElementsByTagName("create-adoption")[0].firstChild.nodeValue == 'TRUE') {
+							var td = document.createElement("td");
+							td.appendChild(createIcon("images/new_ado.gif", "de.jsp?Type=<%=FREDConstants.ADOPTION%>&FoldID=<%=folder.getFolderId()%>&SampID=" + sampleId));
+							tr.appendChild(td);
+						} else {
+							tr.appendChild(document.createElement("td"));
+						}
+						if (sampleNode.getElementsByTagName("create-paleontology")[0].firstChild.nodeValue == 'TRUE') {
+							var td = document.createElement("td");
+							td.appendChild(createIcon("images/new_pal.gif", "de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=" + sampleId));
+							tr.appendChild(td);
+						} else {
+							tr.appendChild(document.createElement("td"));
+						}
+						var pdfTd = document.createElement("td");
+						pdfTd.appendChild(createIcon("images/pdf_icon.gif", "frf/frf.pdf?SampIDs=" + sampleId));
+						tr.appendChild(pdfTd);
+						tbody.appendChild(tr);
+					}
+					var recordsNode = sampleNode.getElementsByTagName("records")[0];
+					for (j = 0; j < recordsNode.getElementsByTagName("record").length; j++) {
+						var recordNode = xmlDoc.getElementsByTagName("record")[j];
+						var recordNameNode = recordNode.getElementsByTagName("record-name")[0];
+						var rectr = document.createElement("tr");
+						var rectd = document.createElement("td");
+						rectd.appendChild(document.createTextNode(recordNameNode.firstChild.nodeValue));
+						rectr.appendChild(rectd);
+						tbody.appendChild(rectr);					
+					}
+				}
+
+				var lnkCell = document.getElementById("plusMinus" + featureId);
+				while (lnkCell.firstChild) {
+				//The list is LIVE so it will re-index each call
+					lnkCell.removeChild(lnkCell.firstChild);
+				}
+				var img = document.createElement("img");
+				img.setAttribute("src", "images/minus.gif");
+				img.setAttribute("border", "0");
+				var lnk = document.createElement("a");
+				lnk.setAttribute("href", "javascript: removeFeatureDetails('" + featureId + "');");
+				lnk.appendChild(img);
+				lnkCell.appendChild(lnk);
+			}
 			
+			function createIcon(imageSrc, href) {
+				var anchor = document.createElement("a");
+				anchor.setAttribute("href", href);
+				var image = document.createElement("img");
+				image.setAttribute("src", imageSrc);
+				image.setAttribute("border", "0");
+				anchor.appendChild(image);
+				return anchor;
+			}
+			
+			function removeFeatureDetails(featureId) {
+				var tbody = document.getElementById("featureDetails" + featureId);
+				while (tbody.firstChild) {
+				//The list is LIVE so it will re-index each call
+					tbody.removeChild(tbody.firstChild);
+				}							    
+				var lnkCell = document.getElementById("plusMinus" + featureId);
+				while (lnkCell.firstChild) {
+				//The list is LIVE so it will re-index each call
+					lnkCell.removeChild(lnkCell.firstChild);
+				}
+				var img = document.createElement("img");
+				img.setAttribute("src", "images/plus.gif");
+				img.setAttribute("border", "0");
+				var lnk = document.createElement("a");
+				lnk.setAttribute("href", "javascript: getFeatureDetails('" + featureId + "');");
+				lnk.appendChild(img);
+				lnkCell.appendChild(lnk);
+			}
+		
+			//--></script>		
+
 			<p><%
 			//Selected Actions box
 			startDETable(pageContext);
