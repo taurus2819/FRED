@@ -103,11 +103,15 @@ public class AJAXServlet extends HttpServlet {
 					case TaxonomicName:
 						try {
 							TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
+							String cleanName = null;
 							TaxonomicGroup group = null;
 							if (request.getParameter("group") != null) try {
 								group = taxaUtil.getTaxonomicGroup(request.getParameter("group"));
 							} catch (Exception e) {}
-							List<Taxon> taxa = taxaUtil.getMatchingTaxa(start, group, Match.ANYWHERE, 30);
+							try {
+								cleanName = TaxonomicUtil.getCleanedName(start);
+							} catch (Exception e) {}							
+							List<Taxon> taxa = taxaUtil.getMatchingTaxa(cleanName, group, Match.ANYWHERE, 30);
 							for (Taxon taxon : taxa) {
 								values.add(new NamedId(taxon.getTaxaId().toString(), ((group == null) ? taxon.getTaxonomicGroup().getName() + ": " : "") + taxon.getTaxonomicName()));
 							}
@@ -164,14 +168,16 @@ public class AJAXServlet extends HttpServlet {
 									status = taxon.getStatus();
 									moreData = "<author><![CDATA[" + DBUtils.nvl(taxon.getAuthor()) + "]]></author>";
 									if (status.equals(FREDConstants.PROVISIONAL))
-										moreData = moreData + "<submitted-by><![CDATA[" + taxon.getSubmittedBy().getFullName() + "]]></submitted-by>"
+										moreData += "<submitted-by><![CDATA[" + taxon.getSubmittedBy().getFullName() + "]]></submitted-by>"
 											+ "<submitted-date>" + FREDUtil.formatDateForOutput(taxon.getSubmittedDate()) + "</submitted-date>";
 									else if (status.equals(FREDConstants.REJECTED))
-										moreData = moreData + "<rejected-by><![CDATA[" + taxon.getApprovedBy().getFullName() + "]]></rejected-by>"
+										moreData += "<rejected-by><![CDATA[" + taxon.getApprovedBy().getFullName() + "]]></rejected-by>"
 										+ "<rejected-date>"	+ FREDUtil.formatDateForOutput(taxon.getApprovedDate()) + "</rejected-date>"
 										+ "<rejected-comments><![CDATA[" + taxon.getPanelistComments() + "]]></rejected-comments>";
-								} else
+								} else {
 									status = "new";
+									moreData += "<clean-name>" + cleanName + "</clean-name>";
+								}
 							}
 						} catch (Exception e) {
 							e.printStackTrace();

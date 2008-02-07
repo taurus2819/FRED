@@ -182,8 +182,9 @@ function addTaxa(group, taxaName, author, comments) {
 		
 	var statusPopupString = '';
 	if (status == 'new') {
-		if (confirm(taxaName + " is not in the FRED database. Would you like to submit it?")) {
-			var insertXMLDoc = sjaxXML("ajaxSupport.xml?action=Add&type=TaxonomicName&name=" + trim(taxaName) + "&TaxonomicGroup=" + trim(group) + "&Author=" + trim(author));
+		var cleanName = taxaNode.getElementsByTagName("clean-name")[0].firstChild.nodeValue;
+		if (confirm(cleanName + " is not in the FRED database. Would you like to submit it?")) {
+			var insertXMLDoc = sjaxXML("ajaxSupport.xml?action=Add&type=TaxonomicName&name=" + trim(cleanName) + "&TaxonomicGroup=" + trim(group) + "&Author=" + trim(author));
 			var taxaNode = xmlDoc.getElementsByTagName("TaxonomicName")[0];
 			var status = taxaNode.getElementsByTagName("status")[0].firstChild.nodeValue;
 			if (status == 'Could not be created') {
