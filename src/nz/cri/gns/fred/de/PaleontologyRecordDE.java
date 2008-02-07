@@ -278,7 +278,7 @@ public class PaleontologyRecordDE extends RecordDE {
 				template.addSub("SectID", pal.getLabSection().getLabSectionId().toString()); 
 			template.addSub("LabNum", pal.getLabNumber());
 			template.addSub("CollComm", pal.getCollectionComments());
-
+/*
 			template.loadUntil(out, "{@Taxa}");
 			
 			List<TaxonomicGroup> groups = recordUtil.getTaxonomicGroups(pal);
@@ -321,7 +321,7 @@ public class PaleontologyRecordDE extends RecordDE {
 							+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
 				}
 			}
-			
+			*/
 			template.loadAll(out);
 			super.makeEndBitHTML(out);
 		} catch (StorageAccessException e) {
