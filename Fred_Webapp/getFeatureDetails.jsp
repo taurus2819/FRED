@@ -100,10 +100,11 @@ for (Sample sample : FeatureUtil.getSortedSamples(feature)) {
 				audit = record.getAudit();
 				status = audit.getStatus();
 				if (status.equals(FREDConstants.APPROVED) || (audit.getFolder() != null && audit.getFolder().equals(folder.getFolder()))) {
-					%><record>
+					%><record id="<%=record.getRecordId()%>">
 					<record-type><%=RecordUtil.getRecordType(record)%></record-type>
 					<record-name><%=RecordUtil.getRecordName(record)%></record-name>
 					<status><%=status%></status>
+					<status-style><%=getStatusColour(status)%></status-style>
 					<created-date><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></created-date><%
 					//Record Options
 					if (recordUtil.isAllowedEditRecord(user, record, folder)) {
