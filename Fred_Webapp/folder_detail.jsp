@@ -178,6 +178,22 @@
 				}
 			}
 
+			function submitFeature(featureId) {
+				ajaxXML("processFolderActions.jsp?FeatID=" + featureId + "&FoldID=<%=folder.getFolderId()%>&ActionType=Submit", updateAction);
+
+			function updateAction(xmlDoc) {
+				var featureNode = xmlDoc.getElementsByTagName("feature")[0];
+				if (featureNode != null) {
+					var errorNode = featureNode.getElementByTagName("error")[0];
+					if (errorNode == null) {
+						var featureId = featureNode.getAttributeNode("id").nodeValue;
+						var featureRow = document.getElementById("feature" + featureId);
+					} else {
+						alert(errorNode.firstChild.nodeValue);
+					}
+				}
+			}
+
 			function getFeatureDetails(featureId) {
 				ajaxXML("getFeatureDetails.jsp?FoldID=<%=folder.getFolderId()%>&FeatID=" + featureId, updatePage);
 			}
@@ -444,7 +460,7 @@
 				String status = audit.getStatus();
 				String name = FeatureUtil.getFeatureIdentifyingName(feature);
 				String featName = feature.getFeatureName();
-				%><tr>
+				%><tr id="feature<%=feature.getFeatureId()%>">
 				<td style="text-align: left"><input type="checkbox" name="FeatIDs" value="<%=feature.getFeatureId()%>" /></td>	
 				<td id="plusMinus<%=feature.getFeatureId()%>" class="heading"><a href="javascript: getFeatureDetails('<%=feature.getFeatureId()%>');"><img src="images/plus.gif" border="0" /></a></td>
 				<td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=backURL%>&backText=<%=backText%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
@@ -480,7 +496,7 @@
 				}
 				%></td><td style="text-align: left"><%
 				if (featureUtil.isAllowedSubmitFeature(user, feature, folder)) {
-					%><a href="javascript:if (confirm('Are you sure you want to submit this locality') == true) {document.FoldForm.ActionType.value='Submit';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Locality" /></a>&nbsp;<%
+					%><a href="javascript:if (confirm('Are you sure you want to submit this locality') == true) {submitFeature('<%=feature.getFeatureId()%>';}"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Locality" /></a>&nbsp;<%
 				} else if (featureUtil.isAllowedRevokeFeature(user, feature, folder)) {
 					%><a href="javascript:if (confirm('Are you sure you want to revoke this locality') == true) {document.FoldForm.ActionType.value='Revoke';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke Locality" /></a>&nbsp;<%
 				}

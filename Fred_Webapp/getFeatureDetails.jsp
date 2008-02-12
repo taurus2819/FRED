@@ -1,7 +1,5 @@
 <%@page contentType="text/xml"
-%><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="java.text.DateFormat"
-%><%@page import="java.util.Iterator"
 %><%@page import="java.util.Vector"
 %><%@page import="java.net.URLEncoder"
 %><%@page import="java.util.Collections"
