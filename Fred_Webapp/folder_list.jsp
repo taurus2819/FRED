@@ -128,7 +128,7 @@
 		<tr><td colspan="3">Use for entering/editing large amounts of data</td></tr>
 		<tr><td>&nbsp;</td></tr>
 		<tr><td colspan="2">Download the spreadsheet by clicking on the link below and then choosing "Save" when prompted by your browser. The spreadsheet has been tested with Microsoft Excel 2002, but should work with all versions.  Full instructions are included in the spreadsheet.</td></tr>
-		<tr><td colspan="2" style="color: #ff0000;">January 2008: A bug has been discovered in the code for saving taxonomic lists in version 2.1 of the spreadsheet.  Please use version 2.1.1 which you can download below.</td></tr>
+		<tr><td colspan="2" style="color: #ff0000;">January 2008: A bug has been discovered in the code for saving taxonomic lists in version 2.1 of the spreadsheet.  Please use the latest version which you can download below.</td></tr>
 		<tr><td><a href="FRED.xlt"><img src="images/excel.gif" border="0" width="20" height="20" alt="Data entry spreadsheet" /></a>&nbsp;&nbsp;</td>
 		<td class="heading"><a href="FRED.xlt">Download FRED Excel template</a></td></tr>
 		</table><%
