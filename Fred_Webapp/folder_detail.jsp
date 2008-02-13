@@ -84,40 +84,6 @@
 					if (actionType.equals("CopyFeat") && folder.isAllowedCreateLocalities()) {
 						featureUtil.copyFeature(feature, request.getParameter("NewFeatName"), folder, user);
 					}
-					 //Delete locality
-					else if (actionType.equals("DeleteFeat") && folder.isAllowedDeleteLocalities()) {
-						featureUtil.deleteFeature(feature, user);
-					}
-					//Remove locality
-					else if (actionType.equals("RemoveFeat")) {
-						featureUtil.removeFeature(feature, folder, user);
-					}
-					//submit locality
-					else if (actionType.equals("Submit") && folder.isAllowedSubmitLocalities()) {
-						featureUtil.submitFeature(feature, folder, user);
-					}
-					//revoke locality
-					else if (actionType.equals("Revoke") && folder.isAllowedSubmitLocalities()) {
-						featureUtil.revokeFeature(feature, folder, user);
-					}
-				} else if (!FREDUtil.isEmpty(request.getParameter("SampID"))) {
-					//submit sample
-					if (actionType.equals("SubmitSamp") && folder.isAllowedSubmitLocalities()) {
-						sampleUtil.submitSample(Integer.parseInt(request.getParameter("SampID")), folder, user);
-					}
-					//delete sample
-					else if (actionType.equals("DeleteSamp") && folder.isAllowedDeleteLocalities()) {
-						sampleUtil.deleteSample(Integer.parseInt(request.getParameter("SampID")), folder, user);
-					}
-				} else if (!FREDUtil.isEmpty(request.getParameter("RecID"))) {
-					//submit record
-					if (actionType.equals("SubmitRec") && folder.isAllowedSubmitLocalities()) {
-						recordUtil.submitRecord(Integer.parseInt(request.getParameter("RecID")), folder, user);
-					}
-					//delete record
-					else if (actionType.equals("DeleteRec") && folder.isAllowedDeleteLocalities()) {
-						recordUtil.deleteRecord(Integer.parseInt(request.getParameter("RecID")), folder, user);
-					}
 				} else if (request.getParameter("FeatIDs") != null) {
 					if (actionType.equals("SubmitFeatures")) {
 						featureUtil.submitFeatures(request.getParameterValues("FeatIDs"), folder, user);
@@ -178,19 +144,56 @@
 				}
 			}
 
-			function submitFeature(featureId) {
-				ajaxXML("processFolderActions.jsp?FeatID=" + featureId + "&FoldID=<%=folder.getFolderId()%>&ActionType=Submit", updateAction);
-
+			function featureAction(featureId, action) {
+				ajaxXML("processFolderActions.jsp?FeatID=" + featureId + "&FoldID=<%=folder.getFolderId()%>&ActionType=" + action, updateAction);
+			}
+			
+			function sampleAction(sampleId, action) {
+				ajaxXML("processFolderActions.jsp?SampID=" + sampleId + "&FoldID=<%=folder.getFolderId()%>&ActionType=" + action, updateAction);
+			}
+			
+			function recordAction(recordId, action) {
+				ajaxXML("processFolderActions.jsp?RecID=" + recordId + "&FoldID=<%=folder.getFolderId()%>&ActionType=" + action, updateAction);
+			}
+			
 			function updateAction(xmlDoc) {
-				var featureNode = xmlDoc.getElementsByTagName("feature")[0];
-				if (featureNode != null) {
-					var errorNode = featureNode.getElementByTagName("error")[0];
-					if (errorNode == null) {
-						var featureId = featureNode.getAttributeNode("id").nodeValue;
-						var featureRow = document.getElementById("feature" + featureId);
-					} else {
-						alert(errorNode.firstChild.nodeValue);
+				var errorNode = xmlDoc.getElementsByTagName("error")[0];
+				if (errorNode == null) {
+					var featureNode = xmlDoc.getElementsByTagName("feature")[0];
+					var sampleNode = xmlDoc.getElementsByTagName("sample")[0];
+					var recordNode = xmlDoc.getElementsByTagName("record")[0];
+				
+					if (featureNode != null) {
+						var featureTr = document.getElementById("feature" + featureNode.getAttributeNode("id").nodeValue);
+						if (featureNode.getElementsByTagName("deleted")[0] == null && featureNode.getElementsByTagName("removed")[0] == null) {
+							featureTr.parentNode.replaceChild(createFeatureRow(featureNode), featureTr);
+						}  else {
+							featureTr.parentNode.removeChild(featureTr);
+							var featureTBody = document.getElementById("featureDetails" + featureNode.getAttributeNode("id").nodeValue);
+							featureTBody.parentNode.removeChild(featureTBody);
+						}
+					} else if (sampleNode != null) {
+						var sampleTr = document.getElementById("sample" + sampleNode.getAttributeNode("id").nodeValue);
+						if (sampleNode.getElementsByTagName("deleted")[0] == null) {
+							sampleTr.parentNode.replaceChild(createSampleRow(sampleNode), sampleTr);
+						} else {
+							sampleTr.parentNode.removeChild(sampleTr);
+							for (i = 0; i < sampleNode.getElementsByTagName("delete-record").length; i++) {
+								var deleteRecordNode = sampleNode.getElementsByTagName("delete-record")[i];
+								var recordTr = document.getElementById("record" + deleteRecordNode.getAttributeNode("id").nodeValue);
+								recordTr.parentNode.removeChild(recordTr);
+							}
+						}
+					} else if (recordNode != null) {
+						var recordTr = document.getElementById("record" + recordNode.getAttributeNode("id").nodeValue);
+						if (recordNode.getElementsByTagName("deleted")[0] == null) {
+							recordTr.parentNode.replaceChild(createRecordRow(recordNode), recordTr);
+						} else {
+							recordTr.parentNode.removeChild(recordTr);
+						}						
 					}
+				} else {
+					alert("Error processing this request: " + errorNode.firstChild.nodeValue);
 				}
 			}
 
@@ -205,163 +208,14 @@
 				var tbody = document.getElementById("featureDetails" + featureId);
 				var samplesNode = featureNode.getElementsByTagName("samples")[0];
 				for (i = 0; i < samplesNode.getElementsByTagName("sample").length; i++) {
-					var sampleNode = xmlDoc.getElementsByTagName("sample")[i];
+					var sampleNode = samplesNode.getElementsByTagName("sample")[i];
 					if (featureType != '<%=FREDConstants.OUTCROP%>') {
-						var sampleId = sampleNode.getAttributeNode("id").nodeValue;
-						var statusStyleNode = sampleNode.getElementsByTagName("status-style")[0];
-		
-						var tr = document.createElement("tr");
-						tr.appendChild(document.createElement("td"));
-						tr.appendChild(document.createElement("td"));
-						var iconTd = document.createElement("td");
-						iconTd.appendChild(createIcon("images/drill.gif", "detail.jsp?ID=" + sampleId + "&backURL=<%=backURL%>&backText=<%=backText%>"));
-						tr.appendChild(iconTd);
-						var nameTd = document.createElement("td");
-						nameTd.appendChild(document.createTextNode(sampleNode.getElementsByTagName("sample-name")[0].firstChild.nodeValue + "\u00a0\u00a0"));
-						tr.appendChild(nameTd);
-						var typeTd = document.createElement("td");
-						typeTd.appendChild(document.createTextNode("Sample\u00a0\u00a0"));
-						tr.appendChild(typeTd);
-						var statusTd = document.createElement("td");
-						statusTd.appendChild(document.createTextNode(sampleNode.getElementsByTagName("status")[0].firstChild.nodeValue + "\u00a0\u00a0"));
-						if (statusStyleNode.firstChild != null)
-							statusTd.style.cssText = statusStyleNode.firstChild.nodeValue;
-						tr.appendChild(statusTd);
-						var createdTd = document.createElement("td");
-						createdTd.appendChild(document.createTextNode(sampleNode.getElementsByTagName("created-date")[0].firstChild.nodeValue + "\u00a0\u00a0"));
-						tr.appendChild(createdTd);
-						if (sampleNode.getElementsByTagName("edit")[0].firstChild.nodeValue == 'TRUE') {
-							var td = document.createElement("td");
-							td.appendChild(createIcon("images/edit.gif", "de.jsp?Type=Sample&FoldID=<%=folder.getFolderId()%>&SampID=" + sampleId, ""));
-							tr.appendChild(td);
-						} else {
-							tr.appendChild(document.createElement("td"));
-						}
-						if (sampleNode.getElementsByTagName("set-confidentiality")[0].firstChild.nodeValue == 'TRUE') {
-							var td = document.createElement("td");
-							td.appendChild(createIcon("images/lock.gif", "set_confidentiality.jsp?RecType=SMP&FoldID=<%=folder.getFolderId()%>&ID=" + sampleId, ""));
-							tr.appendChild(td);
-						} else {
-							tr.appendChild(document.createElement("td"));
-						}
-						if (sampleNode.getElementsByTagName("edit-binary")[0].firstChild.nodeValue == 'TRUE') {
-							var td = document.createElement("td");
-							td.appendChild(createIcon("images/new_file.gif", "binary_data_entry.jsp?RecType=SMP&FoldID=<%=folder.getFolderId()%>&ID=" + sampleId, ""));
-							tr.appendChild(td);
-						} else {
-							tr.appendChild(document.createElement("td"));
-						}
-						tr.appendChild(document.createElement("td"));
-						tr.appendChild(document.createElement("td"));
-						if (sampleNode.getElementsByTagName("delete")[0].firstChild.nodeValue == 'TRUE') {
-							var td = document.createElement("td");
-							td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to delete this sample') == true) {document.FoldForm.ActionType.value='DeleteSamp';document.FoldForm.SampID.value='" + sampleId + "';document.FoldForm.submit();}", ""));
-							tr.appendChild(td);
-						} else {
-							tr.appendChild(document.createElement("td"));
-						}
-						if (sampleNode.getElementsByTagName("submit")[0].firstChild.nodeValue == 'TRUE') {
-							var td = document.createElement("td");
-							td.appendChild(createIcon("images/submit.gif", "javascript:document.FoldForm.ActionType.value='SubmitSamp';document.FoldForm.SampID.value='" + sampleId + "';document.FoldForm.submit();", ""));
-							tr.appendChild(td);
-						} else {
-							tr.appendChild(document.createElement("td"));
-						}
-						if (sampleNode.getElementsByTagName("create-adoption")[0].firstChild.nodeValue == 'TRUE') {
-							var td = document.createElement("td");
-							td.appendChild(createIcon("images/new_ado.gif", "de.jsp?Type=<%=FREDConstants.ADOPTION%>&FoldID=<%=folder.getFolderId()%>&SampID=" + sampleId, ""));
-							tr.appendChild(td);
-						} else {
-							tr.appendChild(document.createElement("td"));
-						}
-						if (sampleNode.getElementsByTagName("create-paleontology")[0].firstChild.nodeValue == 'TRUE') {
-							var td = document.createElement("td");
-							td.appendChild(createIcon("images/new_pal.gif", "de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=" + sampleId, ""));
-							tr.appendChild(td);
-						} else {
-							tr.appendChild(document.createElement("td"));
-						}
-						var pdfTd = document.createElement("td");
-						pdfTd.appendChild(createIcon("images/pdf_icon.gif", "frf/frf.pdf?SampIDs=" + sampleId, "_blank"));
-						tr.appendChild(pdfTd);
-						tbody.appendChild(tr);
+						tbody.appendChild(createSampleRow(sampleNode));
 					}
 					var recordsNode = sampleNode.getElementsByTagName("records")[0];
 					for (j = 0; j < recordsNode.getElementsByTagName("record").length; j++) {
-						var recordNode = xmlDoc.getElementsByTagName("record")[j];
-						var recordId = recordNode.getAttributeNode("id").nodeValue;
-						var recordType = recordNode.getElementsByTagName("record-type")[0].firstChild.nodeValue;
-						var recStatusStyleNode = recordNode.getElementsByTagName("status-style")[0];
-				
-						var rectr = document.createElement("tr");
-						rectr.appendChild(document.createElement("td"));
-						rectr.appendChild(document.createElement("td"));
-						var iconTd = document.createElement("td");
-						var iconImg = document.createElement("img");
-						if (recordType == '<%=FREDConstants.ADOPTION%>') {
-							iconImg.setAttribute("src", "images/ado.gif");
-						} else {
-							iconImg.setAttribute("src", "images/pal.gif");
-						}
-						iconTd.appendChild(iconImg);
-						rectr.appendChild(iconTd);
-						var recNameTd = document.createElement("td");
-						recNameTd.appendChild(document.createTextNode(recordNode.getElementsByTagName("record-name")[0].firstChild.nodeValue + "\u00a0\u00a0"));
-						rectr.appendChild(recNameTd);
-						var recTypeTd = document.createElement("td");
-						recTypeTd.appendChild(document.createTextNode(recordType + "\u00a0\u00a0"))
-						rectr.appendChild(recTypeTd);
-						var recStatusTd = document.createElement("td");
-						recStatusTd.appendChild(document.createTextNode(recordNode.getElementsByTagName("status")[0].firstChild.nodeValue + "\u00a0\u00a0"));
-						if (recStatusStyleNode.firstChild != null)
-							recStatusTd.style.cssText = recStatusStyleNode.firstChild.nodeValue;
-						rectr.appendChild(recStatusTd);
-						var recDateTd = document.createElement("td");
-						recDateTd.appendChild(document.createTextNode(recordNode.getElementsByTagName("created-date")[0].firstChild.nodeValue + "\u00a0\u00a0"));
-						rectr.appendChild(recDateTd);
-						if (recordNode.getElementsByTagName("edit")[0].firstChild.nodeValue == 'TRUE') {
-							var td = document.createElement("td");
-							td.appendChild(createIcon("images/edit.gif", "de.jsp?Type=" + recordType + "&FoldID=<%=folder.getFolderId()%>&RecID=" + recordId, ""));
-							rectr.appendChild(td);
-						} else {
-							rectr.appendChild(document.createElement("td"));
-						}
-						if (recordNode.getElementsByTagName("set-confidentiality")[0].firstChild.nodeValue == 'TRUE') {
-							var td = document.createElement("td");
-							td.appendChild(createIcon("images/lock.gif", "set_confidentiality.jsp?RecType=" + recordType + "&FoldID=<%=folder.getFolderId()%>&ID=" + recordId, ""));
-							rectr.appendChild(td);
-						} else {
-							rectr.appendChild(document.createElement("td"));
-						}
-						if (recordNode.getElementsByTagName("edit-binary")[0].firstChild.nodeValue == 'TRUE') {
-							var td = document.createElement("td");
-							td.appendChild(createIcon("images/new_file.gif", "binary_data_entry.jsp?RecType=" + recordType + "&FoldID=<%=folder.getFolderId()%>&ID=" + recordId, ""));
-							rectr.appendChild(td);
-						} else {
-							rectr.appendChild(document.createElement("td"));
-						}
-						rectr.appendChild(document.createElement("td"));
-						rectr.appendChild(document.createElement("td"));
-						if (recordNode.getElementsByTagName("delete")[0].firstChild.nodeValue == 'TRUE') {
-							var td = document.createElement("td");
-							td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to delete this record') == true) {document.FoldForm.ActionType.value='DeleteRec';document.FoldForm.RecID.value='" + recordId + "';document.FoldForm.submit();}", ""));
-							rectr.appendChild(td);
-						} else {
-							rectr.appendChild(document.createElement("td"));
-						}
-						if (recordNode.getElementsByTagName("submit")[0].firstChild.nodeValue == 'TRUE') {
-							var td = document.createElement("td");
-							td.appendChild(createIcon("images/submit.gif", "javascript:document.FoldForm.ActionType.value='SubmitRec';document.FoldForm.RecID.value='" + recordId + "';document.FoldForm.submit();", ""));
-							rectr.appendChild(td);
-						} else {
-							rectr.appendChild(document.createElement("td"));
-						}
-						rectr.appendChild(document.createElement("td"));
-						rectr.appendChild(document.createElement("td"));
-						var recPdfTd = document.createElement("td");
-						recPdfTd.appendChild(createIcon("images/pdf_icon.gif", "frf/frf.pdf?RecIDs=" + recordId, "_blank"));
-						rectr.appendChild(recPdfTd);
-						tbody.appendChild(rectr);					
+						var recordNode = recordsNode.getElementsByTagName("record")[j];
+						tbody.appendChild(createRecordRow(recordNode));					
 					}
 				}
 
@@ -379,6 +233,287 @@
 				lnkCell.appendChild(lnk);
 			}
 			
+			function createFeatureRow(featureNode) {
+				var featureId = featureNode.getAttributeNode("id").nodeValue;
+				var featureType = featureNode.getElementsByTagName("feature-type")[0].firstChild.nodeValue;
+				var featureIdentName = featureNode.getElementsByTagName("feature-identifying-name")[0].firstChild.nodeValue;
+				var statusStyleNode = featureNode.getElementsByTagName("status-style")[0];
+				
+				var tr = document.createElement("tr");
+				tr.setAttribute("id", "feature" + featureId);
+				var checkTd = document.createElement("td");
+				var checkBox = document.createElement("input");
+				checkBox.setAttribute("type", "checkbox");
+				checkBox.setAttribute("name", "FeatIDs");
+				checkBox.setAttribute("value", featureId);
+				checkTd.appendChild(checkBox);
+				tr.appendChild(checkTd);
+				var plusMinusTd = document.createElement("td");
+				plusMinusTd.appendChild(createIcon("images/plus.gif", "javascript:getFeatureDetails('" + featureId + "');", ""));
+				plusMinusTd.setAttribute("id", "plusMinus" + featureId);
+				tr.appendChild(plusMinusTd);
+				var iconTd = document.createElement("td");
+				iconTd.appendChild(createIcon("images/loc.gif", "detail.jsp?FeatID=" + featureId + "&backURL=<%=backURL%>&backText=<%=backText%>"));
+				tr.appendChild(iconTd);
+				var nameTd = document.createElement("td");
+				nameTd.setAttribute("class", "heading");
+				nameTd.appendChild(document.createTextNode(featureIdentName));
+				if (featureNode.getElementsByTagName("feature-name")[0].firstChild != null && featureNode.getElementsByTagName("feature-name")[0].firstChild.nodeValue != featureIdentName) {
+					nameTd.appendChild(document.createElement("br"));
+					nameTd.appendChild(document.createTextNode("(" + featureNode.getElementsByTagName("feature-name")[0].firstChild.nodeValue + ")"));
+				}
+				nameTd.appendChild(document.createTextNode("\u00a0\u00a0"));
+				tr.appendChild(nameTd);
+				var typeTd = document.createElement("td");
+				typeTd.appendChild(document.createTextNode(featureType + "\u00a0\u00a0"));
+				tr.appendChild(typeTd);
+				var statusTd = document.createElement("td");
+				statusTd.appendChild(document.createTextNode(featureNode.getElementsByTagName("status")[0].firstChild.nodeValue + "\u00a0\u00a0"));
+				if (statusStyleNode.firstChild != null)
+					statusTd.style.cssText = statusStyleNode.firstChild.nodeValue;
+				tr.appendChild(statusTd);
+				var createdTd = document.createElement("td");
+				if (featureNode.getElementsByTagName("created-date")[0].firstChild != null) {
+					createdTd.appendChild(document.createTextNode(featureNode.getElementsByTagName("created-date")[0].firstChild.nodeValue + "\u00a0\u00a0"));
+				}
+				tr.appendChild(createdTd);				
+				if (featureNode.getElementsByTagName("edit")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/edit.gif", "de.jsp?Type=" + featureType + "&FoldID=<%=folder.getFolderId()%>&FeatID=" + featureId, ""));
+					tr.appendChild(td);
+				} else {
+					tr.appendChild(document.createElement("td"));
+				}				
+				tr.appendChild(document.createElement("td"));
+				if (featureNode.getElementsByTagName("edit-binary")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/new_file.gif", "binary_data_entry.jsp?RecType=" + featureType + "&FoldID=<%=folder.getFolderId()%>&ID=" + featureId, ""));
+					tr.appendChild(td);
+				} else {
+					tr.appendChild(document.createElement("td"));
+				}					
+				var mapTd = document.createElement("td");
+				mapTd.appendChild(createIcon("images/map.gif", "locality_map.jsp?FeatID=" + featureId + "&backURL=<%=backURL%>&backText=<%=backText%>", ""));
+				tr.appendChild(mapTd);
+				if (featureNode.getElementsByTagName("copy-locality")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/copy.gif", "javascript:prmpt=prompt('Please enter the new name', 'Copy of " + featureIdentName + "');if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value='CopyFeat';document.FoldForm.FeatID.value='" + featureId + "';document.FoldForm.submit();}", ""));
+					tr.appendChild(td);
+				} else {
+					tr.appendChild(document.createElement("td"));
+				}	
+				if (featureNode.getElementsByTagName("delete")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to delete this locality') == true) {featureAction('" + featureId + "', 'Delete');}", ""));
+					tr.appendChild(td);
+				} else if (featureNode.getElementsByTagName("remove")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to remove this locality from your folder') == true) {featureAction('" + featureId + "', 'Remove');}", ""));
+					tr.appendChild(td);
+				} else {
+					tr.appendChild(document.createElement("td"));
+				}	
+				if (featureNode.getElementsByTagName("submit")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/submit.gif", "javascript:if (confirm('Are you sure you want to submit this locality') == true) {featureAction('" + featureId + "', 'Submit');}", ""));
+					tr.appendChild(td);
+				} else if (featureNode.getElementsByTagName("revoke")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/revoke.gif", "javascript:if (confirm('Are you sure you want to revoke this locality') == true) {featureAction('" + featureId + "', 'Revoke');}", ""));
+					tr.appendChild(td);
+				} else {
+					tr.appendChild(document.createElement("td"));
+				}					
+				if (featureNode.getElementsByTagName("create-sample")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/drill.gif", "de.jsp?Type=Sample&FoldID=<%=folder.getFolderId()%>&FeatID=" + featureId, ""));
+					tr.appendChild(td);
+					tr.appendChild(document.createElement("td"));
+				} else {
+					if (featureNode.getElementsByTagName("create-adoption")[0].firstChild.nodeValue == 'TRUE') {
+						var td = document.createElement("td");
+						td.appendChild(createIcon("images/new_ado.gif", "de.jsp?Type=<%=FREDConstants.ADOPTION%>&FoldID=<%=folder.getFolderId()%>&SampID=" + featureNode.getElementsByTagName("sample-id")[0].firstChild.nodeValue, ""));
+						tr.appendChild(td);
+					} else {
+						tr.appendChild(document.createElement("td"));
+					}
+					if (featureNode.getElementsByTagName("create-paleontology")[0].firstChild.nodeValue == 'TRUE') {
+						var td = document.createElement("td");
+						td.appendChild(createIcon("images/new_pal.gif", "de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=" + featureNode.getElementsByTagName("sample-id")[0].firstChild.nodeValue, ""));
+						tr.appendChild(td);
+					} else {
+						tr.appendChild(document.createElement("td"));
+					}
+				}
+				var pdfTd = document.createElement("td");
+				pdfTd.appendChild(createIcon("images/pdf_icon.gif", "frf/frf.pdf?FeatIDs=" + featureId, "_blank"));
+				tr.appendChild(pdfTd);
+				return tr;
+			}
+			
+			function createSampleRow(sampleNode) {
+				var sampleId = sampleNode.getAttributeNode("id").nodeValue;
+				var statusStyleNode = sampleNode.getElementsByTagName("status-style")[0];
+		
+				var tr = document.createElement("tr");
+				tr.setAttribute("id", "sample" + sampleId);
+				tr.appendChild(document.createElement("td"));
+				tr.appendChild(document.createElement("td"));
+				var iconTd = document.createElement("td");
+				iconTd.appendChild(createIcon("images/drill.gif", "detail.jsp?ID=" + sampleId + "&backURL=<%=backURL%>&backText=<%=backText%>"));
+				tr.appendChild(iconTd);
+				var nameTd = document.createElement("td");
+				nameTd.appendChild(document.createTextNode(sampleNode.getElementsByTagName("sample-name")[0].firstChild.nodeValue + "\u00a0\u00a0"));
+				tr.appendChild(nameTd);
+				var typeTd = document.createElement("td");
+				typeTd.appendChild(document.createTextNode("Sample\u00a0\u00a0"));
+				tr.appendChild(typeTd);
+				var statusTd = document.createElement("td");
+				statusTd.appendChild(document.createTextNode(sampleNode.getElementsByTagName("status")[0].firstChild.nodeValue + "\u00a0\u00a0"));
+				if (statusStyleNode.firstChild != null)
+					statusTd.style.cssText = statusStyleNode.firstChild.nodeValue;
+				tr.appendChild(statusTd);
+				var createdTd = document.createElement("td");
+				if (sampleNode.getElementsByTagName("created-date")[0].firstChild != null) {
+					createdTd.appendChild(document.createTextNode(sampleNode.getElementsByTagName("created-date")[0].firstChild.nodeValue + "\u00a0\u00a0"));
+				}
+				tr.appendChild(createdTd);
+				if (sampleNode.getElementsByTagName("edit")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/edit.gif", "de.jsp?Type=Sample&FoldID=<%=folder.getFolderId()%>&SampID=" + sampleId, ""));
+					tr.appendChild(td);
+				} else {
+					tr.appendChild(document.createElement("td"));
+				}
+				if (sampleNode.getElementsByTagName("set-confidentiality")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/lock.gif", "set_confidentiality.jsp?RecType=SMP&FoldID=<%=folder.getFolderId()%>&ID=" + sampleId, ""));
+					tr.appendChild(td);
+				} else {
+					tr.appendChild(document.createElement("td"));
+				}
+				if (sampleNode.getElementsByTagName("edit-binary")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/new_file.gif", "binary_data_entry.jsp?RecType=SMP&FoldID=<%=folder.getFolderId()%>&ID=" + sampleId, ""));
+					tr.appendChild(td);
+				} else {
+					tr.appendChild(document.createElement("td"));
+				}
+				tr.appendChild(document.createElement("td"));
+				tr.appendChild(document.createElement("td"));
+				if (sampleNode.getElementsByTagName("delete")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to delete this sample') == true) {sampleAction('" + sampleId + "', 'Delete');}", ""));
+					tr.appendChild(td);
+				} else {
+					tr.appendChild(document.createElement("td"));
+				}
+				if (sampleNode.getElementsByTagName("submit")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/submit.gif", "javascript:sampleAction('" + sampleId + "', 'Submit');", ""));
+					tr.appendChild(td);
+				} else {
+					tr.appendChild(document.createElement("td"));
+				}
+				if (sampleNode.getElementsByTagName("create-adoption")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/new_ado.gif", "de.jsp?Type=<%=FREDConstants.ADOPTION%>&FoldID=<%=folder.getFolderId()%>&SampID=" + sampleId, ""));
+					tr.appendChild(td);
+				} else {
+					tr.appendChild(document.createElement("td"));
+				}
+				if (sampleNode.getElementsByTagName("create-paleontology")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/new_pal.gif", "de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=" + sampleId, ""));
+					tr.appendChild(td);
+				} else {
+					tr.appendChild(document.createElement("td"));
+				}
+				var pdfTd = document.createElement("td");
+				pdfTd.appendChild(createIcon("images/pdf_icon.gif", "frf/frf.pdf?SampIDs=" + sampleId, "_blank"));
+				tr.appendChild(pdfTd);
+				return tr;
+			}
+			
+			function createRecordRow(recordNode) {
+				var recordId = recordNode.getAttributeNode("id").nodeValue;
+				var recordType = recordNode.getElementsByTagName("record-type")[0].firstChild.nodeValue;
+				var recStatusStyleNode = recordNode.getElementsByTagName("status-style")[0];
+				
+				var tr = document.createElement("tr");
+				tr.setAttribute("id", "record" + recordId);
+				tr.appendChild(document.createElement("td"));
+				tr.appendChild(document.createElement("td"));
+				var iconTd = document.createElement("td");
+				var iconImg = document.createElement("img");
+				if (recordType == '<%=FREDConstants.ADOPTION%>') {
+					iconImg.setAttribute("src", "images/ado.gif");
+				} else {
+					iconImg.setAttribute("src", "images/pal.gif");
+				}
+				iconTd.appendChild(iconImg);
+				tr.appendChild(iconTd);
+				var recNameTd = document.createElement("td");
+				recNameTd.appendChild(document.createTextNode(recordNode.getElementsByTagName("record-name")[0].firstChild.nodeValue + "\u00a0\u00a0"));
+				tr.appendChild(recNameTd);
+				var recTypeTd = document.createElement("td");
+				recTypeTd.appendChild(document.createTextNode(recordType + "\u00a0\u00a0"))
+				tr.appendChild(recTypeTd);
+				var recStatusTd = document.createElement("td");
+				recStatusTd.appendChild(document.createTextNode(recordNode.getElementsByTagName("status")[0].firstChild.nodeValue + "\u00a0\u00a0"));
+				if (recStatusStyleNode.firstChild != null)
+					recStatusTd.style.cssText = recStatusStyleNode.firstChild.nodeValue;
+				tr.appendChild(recStatusTd);
+				var recDateTd = document.createElement("td");
+				if (recordNode.getElementsByTagName("created-date")[0].firstChild != null) {
+					recDateTd.appendChild(document.createTextNode(recordNode.getElementsByTagName("created-date")[0].firstChild.nodeValue + "\u00a0\u00a0"));
+				}
+				tr.appendChild(recDateTd);
+				if (recordNode.getElementsByTagName("edit")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/edit.gif", "de.jsp?Type=" + recordType + "&FoldID=<%=folder.getFolderId()%>&RecID=" + recordId, ""));
+					tr.appendChild(td);
+				} else {
+					tr.appendChild(document.createElement("td"));
+				}
+				if (recordNode.getElementsByTagName("set-confidentiality")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/lock.gif", "set_confidentiality.jsp?RecType=" + recordType + "&FoldID=<%=folder.getFolderId()%>&ID=" + recordId, ""));
+					tr.appendChild(td);
+				} else {
+					tr.appendChild(document.createElement("td"));
+				}
+				if (recordNode.getElementsByTagName("edit-binary")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/new_file.gif", "binary_data_entry.jsp?RecType=" + recordType + "&FoldID=<%=folder.getFolderId()%>&ID=" + recordId, ""));
+					tr.appendChild(td);
+				} else {
+					tr.appendChild(document.createElement("td"));
+				}
+				tr.appendChild(document.createElement("td"));
+				tr.appendChild(document.createElement("td"));
+				if (recordNode.getElementsByTagName("delete")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to delete this record') == true) {recordAction('" + recordId + "', 'Delete');}", ""));
+					tr.appendChild(td);
+				} else {
+					tr.appendChild(document.createElement("td"));
+				}
+				if (recordNode.getElementsByTagName("submit")[0].firstChild.nodeValue == 'TRUE') {
+					var td = document.createElement("td");
+					td.appendChild(createIcon("images/submit.gif", "javascript:recordAction('" + recordId + "', 'Submit');", ""));
+					tr.appendChild(td);
+				} else {
+					tr.appendChild(document.createElement("td"));
+				}
+				tr.appendChild(document.createElement("td"));
+				tr.appendChild(document.createElement("td"));
+				var recPdfTd = document.createElement("td");
+				recPdfTd.appendChild(createIcon("images/pdf_icon.gif", "frf/frf.pdf?RecIDs=" + recordId, "_blank"));
+				tr.appendChild(recPdfTd);
+				return tr;
+			}
+			
 			function createIcon(imageSrc, href, target) {
 				var anchor = document.createElement("a");
 				anchor.setAttribute("href", href);
@@ -393,10 +528,7 @@
 			
 			function removeFeatureDetails(featureId) {
 				var tbody = document.getElementById("featureDetails" + featureId);
-				while (tbody.firstChild) {
-				//The list is LIVE so it will re-index each call
-					tbody.removeChild(tbody.firstChild);
-				}							    
+				clearTBody(tbody);							    
 				var lnkCell = document.getElementById("plusMinus" + featureId);
 				while (lnkCell.firstChild) {
 				//The list is LIVE so it will re-index each call
@@ -409,6 +541,12 @@
 				lnk.setAttribute("href", "javascript: getFeatureDetails('" + featureId + "');");
 				lnk.appendChild(img);
 				lnkCell.appendChild(lnk);
+			}
+			
+			function clearTBody(tbody) {
+				while (tbody.firstChild) {
+					tbody.removeChild(tbody.firstChild);
+				}
 			}
 		
 			//--></script>	
@@ -483,22 +621,22 @@
 				} else {
 					%><td></td><td></td><td></td><%
 				}
-				%><td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;</td>
+				%><td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=backURL%>&backText=<%=backText%>"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;</td>
 				<td style="text-align: left"><%
 				if (folder.isAllowedCreateLocalities()) {
 					%><a href="javascript:prmpt=prompt('Please enter the new name', 'Copy of <%=FeatureUtil.getFeatureIdentifyingName(feature)%>');if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value='CopyFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/copy.gif" border="0" height="20" width="20" alt="Copy Locality" /></a>&nbsp;<%
 				}
 				%></td><td style="text-align: left"><%
 				if (!status.equals(FREDConstants.APPROVED) && featureUtil.isAllowedDeleteFeature(user, feature, folder)) {
-					%><a href="javascript:if (confirm('Are you sure you want to delete this locality') == true) {document.FoldForm.ActionType.value='DeleteFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete Locality" /></a>&nbsp;<%
+					%><a href="javascript:if (confirm('Are you sure you want to delete this locality') == true) {featureAction('<%=feature.getFeatureId()%>', 'Delete');}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete Locality" /></a>&nbsp;<%
 				} else if (status.equals(FREDConstants.APPROVED) && !FREDUtil.isEmpty(feature.getFolders())) {
-					%><a href="javascript:if (confirm('Are you sure you want to remove this locality from your folder') == true) {document.FoldForm.ActionType.value='RemoveFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Remove Locality" /></a>&nbsp;<%
+					%><a href="javascript:if (confirm('Are you sure you want to remove this locality from your folder') == true) {featureAction('<%=feature.getFeatureId()%>', 'Remove');}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Remove Locality" /></a>&nbsp;<%
 				}
 				%></td><td style="text-align: left"><%
 				if (featureUtil.isAllowedSubmitFeature(user, feature, folder)) {
-					%><a href="javascript:if (confirm('Are you sure you want to submit this locality') == true) {submitFeature('<%=feature.getFeatureId()%>';}"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Locality" /></a>&nbsp;<%
+					%><a href="javascript:if (confirm('Are you sure you want to submit this locality') == true) {featureAction('<%=feature.getFeatureId()%>', 'Submit');}"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Locality" /></a>&nbsp;<%
 				} else if (featureUtil.isAllowedRevokeFeature(user, feature, folder)) {
-					%><a href="javascript:if (confirm('Are you sure you want to revoke this locality') == true) {document.FoldForm.ActionType.value='Revoke';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke Locality" /></a>&nbsp;<%
+					%><a href="javascript:if (confirm('Are you sure you want to revoke this locality') == true) {featureAction('<%=feature.getFeatureId()%>', 'Revoke');}"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke Locality" /></a>&nbsp;<%
 				}
 				%></td>
 				<td style="text-align: left"><%
@@ -574,9 +712,6 @@
 			<input type="hidden" name="ActionType" value="" />
 			<input type="hidden" name="ID" value="<%=folder.getFolder().getFolderId()%>" />
 			<input type="hidden" name="FeatID" value="" />
-			<input type="hidden" name="SampID" value="">
-			<input type="hidden" name="RecID" value="">
-			<input type="hidden" name="NewFoldID" value="" />
 			<input type="hidden" name="NewFeatName" value="" />
 			<input type="hidden" name="q" value="<%=Math.random()%>" />
 			</table></p>

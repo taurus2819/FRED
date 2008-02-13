@@ -7,11 +7,14 @@
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.model.Feature"
+%><%@page import="nz.cri.gns.fred.model.Sample"
+%><%@page import="nz.cri.gns.fred.model.Record"
 %><%@page import="nz.cri.gns.fred.model.Audit"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
 %><%@page import="nz.cri.gns.db.DBUtils"
+%><%@page import="java.util.Vector"
 %><%!
 	public String getStatusColour(String status) {
 		if (status.equals(FREDConstants.WORKING))
@@ -31,19 +34,18 @@ RecordUtil recordUtil = new RecordUtil(factory);
 User user = (User)session.getAttribute(User.USER_ATTRIBUTE);
 UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("FoldID")), user);
 %><fred><%
-if (request.getParameter("ActionType") != null) { //do something
+if (request.getParameter("ActionType") != null) {
 	String actionType = request.getParameter("ActionType");
+	%><action><%=actionType%></action><%
 	try {
 		if (!FREDUtil.isEmpty(request.getParameter("FeatID"))) {
-			%><feature id="<%=request.getParameter("FeatID")%>">
-			<action><%=actionType%></action><%
-			//Get the feature
 			Feature feature = featureUtil.getFeature(Integer.parseInt(request.getParameter("FeatID")));
-			if ("DeleteFeat".equals(actionType) || "RemoveFeat".equals(actionType)) {
-				if (actionType.equals("DeleteFeat") && folder.isAllowedDeleteLocalities()) {
+			%><feature id="<%=feature.getFeatureId()%>"><%
+			if ("Delete".equals(actionType) || "Remove".equals(actionType)) {
+				if (actionType.equals("Delete") && folder.isAllowedDeleteLocalities()) {
 					featureUtil.deleteFeature(feature, user);
 					%><deleted /><%
-				} else if (actionType.equals("RemoveFeat")) {
+				} else if (actionType.equals("Remove")) {
 					featureUtil.removeFeature(feature, folder, user);
 					%><removed /><%
 				}
@@ -99,7 +101,9 @@ if (request.getParameter("ActionType") != null) { //do something
 				}
 				if (folder.isAllowedCreateLocalities()) {
 					if (feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
+						Sample sample = featureUtil.getOutcropSample(feature);
 						%><create-sample>FALSE</create-sample>
+						<sample-id><%=sample.getSampleId()%></sample-id>
 						<create-adoption>TRUE</create-adoption>
 						<create-paleontology>TRUE</create-paleontology><%
 					} else {
@@ -114,36 +118,105 @@ if (request.getParameter("ActionType") != null) { //do something
 				}
 			}
 		} else if (!FREDUtil.isEmpty(request.getParameter("SampID"))) {
-			%><sample id="<%=request.getParameter("SampID")%>">
-			<action><%=actionType%></action><%
+			Sample sample = sampleUtil.getSample(Integer.parseInt(request.getParameter("SampID")));
+			%><sample id="<%=sample.getSampleId()%>"><%
 			//submit sample
-			if (actionType.equals("SubmitSamp") && folder.isAllowedSubmitLocalities()) {
+			if (actionType.equals("Submit") && folder.isAllowedSubmitLocalities()) {
 				sampleUtil.submitSample(Integer.parseInt(request.getParameter("SampID")), folder, user);
-				%><status><%=FREDConstants.APPROVED%></status>
-				<status-stlye><%=getStatusColour(FREDConstants.APPROVED)%></status-stlye><%
-
+				Audit audit = sample.getAudit();
+				String status = audit.getStatus();
+				if (!sample.getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
+					%><sample-name><%=SampleUtil.getDrillHoleDepthDescription(sample)%></sample-name>
+					<status><%=status%></status>
+					<status-style><%=getStatusColour(status)%></status-style>
+					<created-date><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></created-date><%
+					if (sampleUtil.isAllowedEditSample(user, sample, folder)) {
+						%><edit>TRUE</edit>
+						<set-confidentiality>TRUE</set-confidentiality>
+						<edit-binary>TRUE</edit-binary><%
+					} else {
+						%><edit>FALSE</edit>
+						<set-confidentiality>FALSE</set-confidentiality>
+						<edit-binary>FALSE</edit-binary><%
+					}
+					if (sampleUtil.isAllowedDeleteSample(user, sample, folder)) {
+						%><delete>TRUE</delete><%
+					} else {
+						%><delete>FALSE</delete><%
+					}
+					if (sampleUtil.isAllowedSubmitSample(user, sample, folder)) {
+						%><submit>TRUE</submit><%
+					} else {
+						%><submit>FALSE</submit><%
+					}
+					if (folder.isAllowedCreateLocalities()) {
+						%><create-adoption>TRUE</create-adoption>
+						<create-paleontology>TRUE</create-paleontology><%
+					} else {
+						%><create-adoption>FALSE</create-adoption>
+						<create-paleontology>FALSE</create-paleontology><%
+					}
+				}
 			}
 			//delete sample
-			else if (actionType.equals("DeleteSamp") && folder.isAllowedDeleteLocalities()) {
+			else if (actionType.equals("Delete") && folder.isAllowedDeleteLocalities()) {
+				Vector<Integer> deleteIds = new Vector<Integer>();
+				for (Record record : sample.getRecords())
+					deleteIds.add(record.getRecordId());
 				sampleUtil.deleteSample(Integer.parseInt(request.getParameter("SampID")), folder, user);
+				%><deleted /><%
+				for (Integer deleteId : deleteIds) {
+					%><delete-record id="<%=deleteId%>" /><%
+				}
+				
 			}
 		} else if (!FREDUtil.isEmpty(request.getParameter("RecID"))) {
-			%><record id="<%=request.getParameter("RecID")%>">
-			<action><%=actionType%></action><%
+			Record record = recordUtil.getRecord(Integer.parseInt(request.getParameter("RecID")));
+			%><record id="<%=record.getRecordId()%>"><%
 			//submit record
-			if (actionType.equals("SubmitRec") && folder.isAllowedSubmitLocalities()) {
+			if (actionType.equals("Submit") && folder.isAllowedSubmitLocalities()) {
 				recordUtil.submitRecord(Integer.parseInt(request.getParameter("RecID")), folder, user);
-				%><status><%=FREDConstants.APPROVED%></status>
-				<status-stlye><%=getStatusColour(FREDConstants.APPROVED)%></status-stlye><%
-
+				Audit audit = record.getAudit();
+				String status = audit.getStatus();
+				boolean isAdoption = RecordUtil.getRecordType(record).equals(FREDConstants.ADOPTION);
+				boolean isPaleontology = !isAdoption;
+				%><record-type><%=RecordUtil.getRecordType(record)%></record-type>
+				<record-name><%=RecordUtil.getRecordName(record)%></record-name>
+				<status><%=status%></status>
+				<status-style><%=getStatusColour(status)%></status-style>
+				<created-date><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></created-date><%
+				//Record Options
+				if (recordUtil.isAllowedEditRecord(user, record, folder)) {
+					%><edit>TRUE</edit>
+					<set-confidentiality>TRUE</set-confidentiality>
+					<edit-binary>TRUE</edit-binary><%
+				} else {
+					%><edit>FALSE</edit>
+					<set-confidentiality>FALSE</set-confidentiality>
+					<edit-binary>FALSE</edit-binary><%
+				}
+				if (recordUtil.isAllowedDeleteRecord(user, record, folder)) {
+					%><delete>TRUE</delete><%
+				} else {
+					%><delete>FALSE</delete><%
+				}
+				if (recordUtil.isAllowedSubmitRecord(user, record, folder)) {
+					%><submit>TRUE</submit><%
+				} else {
+					%><submit>FALSE</submit><%
+				}
+				if (isPaleontology && !RecordUtil.isTaxaApproved(record)) {
+					%><bad-taxa />><%
+				}
 			}
 			//delete record
-			else if (actionType.equals("DeleteRec") && folder.isAllowedDeleteLocalities()) {
+			else if (actionType.equals("Delete") && folder.isAllowedDeleteLocalities()) {
 				recordUtil.deleteRecord(Integer.parseInt(request.getParameter("RecID")), folder, user);
+				%><deleted /><%
 			}
 		}
 	} catch (Exception e) {
-		%><error><![CDATA[e.printStackTrace()]]></error><%
+		%><error><![CDATA[<%=e.getMessage()%>]]></error><%
 	} finally {
 		if (!FREDUtil.isEmpty(request.getParameter("FeatID"))) {
 			%></feature><%
@@ -156,3 +229,5 @@ if (request.getParameter("ActionType") != null) { //do something
 }
 
 %></fred><%
+folderUtil.closeSession();
+%>

@@ -137,4 +137,6 @@ for (Sample sample : FeatureUtil.getSortedSamples(feature)) {
 }
 %></samples>
 </feature>
-</fred>
+</fred><%
+folderUtil.closeSession();
+%>
