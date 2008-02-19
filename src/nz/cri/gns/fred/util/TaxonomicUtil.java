@@ -373,7 +373,12 @@ public class TaxonomicUtil extends ModelUtil {
 			return null;
 		if (specCount == null) {
 			if (FREDUtil.isEmpty(specCoord))
-				return comments;
+				try {
+					Integer.parseInt(comments);
+					return "||" + comments;
+				} catch (Exception e) {
+					return comments;
+				}
 			return "|" + specCoord + "|" + DBUtils.nvl(comments);
 		}
 		if (FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(comments))
