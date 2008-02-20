@@ -878,7 +878,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		rel.setFeature(feature);
 		rel.setRelationType(sampleDAO.getRelationType(relationType));
 		rel.setRelationshipType(sampleDAO.getRelationshipType(rel.getRelationType(), relationshipType));
-		sampleDAO.saveOrUpdate(rel);
+		//sampleDAO.saveOrUpdate(rel);
 		return rel;
 	}
 
@@ -899,7 +899,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		rel.setSample(newRelationship.getSample());
 		rel.setStratUnit(newRelationship.getStratUnit());
 		rel.setStratUnitId(newRelationship.getStratUnitId());
-		sampleDAO.saveOrUpdate(rel);
+		//sampleDAO.saveOrUpdate(rel);
 		return rel;
 	}
 
