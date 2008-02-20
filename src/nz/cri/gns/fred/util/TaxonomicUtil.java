@@ -375,10 +375,8 @@ public class TaxonomicUtil extends ModelUtil {
 			if (FREDUtil.isEmpty(specCoord))
 				try {
 					Integer.parseInt(comments);
-					System.out.println("Comments numeric");
 					return "||" + comments;
 				} catch (Exception e) {
-					e.printStackTrace();
 					return comments;
 				}
 			return "|" + specCoord + "|" + DBUtils.nvl(comments);
