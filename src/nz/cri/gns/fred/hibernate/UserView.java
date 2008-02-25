@@ -5,73 +5,30 @@ import java.util.Set;
 
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
+import nz.cri.gns.fred.model.LogTable;
 import nz.cri.gns.fred.model.OrgView;
 import nz.cri.gns.fred.model.Taxon;
+import nz.cri.gns.fred.model.UserRightView;
 
 public class UserView implements Serializable, nz.cri.gns.fred.model.UserView {
 
     private static final long serialVersionUID = 20050818L;
 
-    /** identifier field */
     private Integer userId;
-
-    /** nullable persistent field */
     private String userName;
-    
-    /** nullable persistent field */
     private String givenName;
-
-    /** nullable persistent field */
     private String familyName;
-
-    /** nullable persistent field */
     private String fullName;
-    
-    /** persistent field */
     private OrgView orgView;
-    
-    /** persistent field */
     private Set<Audit> auditsByCreatedById;
-    
-    /** persistent field */
     private Set<Audit> auditsBySubmittedById;
-    
-    /** persistent field */
     private Set<Audit> auditsByApprovedById;
-    
-    /** persistent field */
     private Set<AuditEdit> auditEdits;
-    
-    /** persistent field */
     private Set<LogTable> logs;
-    
-    /** persistent field */
     private Set<Taxon> taxaBySubmittedById;
-    
-    /** persistent field */
     private Set<Taxon> taxaByApprovedById;
+    private Set<UserRightView> userRightViews;
     
-    /** full constructor */
-    public UserView(Integer userId, String userName, String givenName, String familyName, String fullName, OrgView orgView, Set<Audit> auditsByCreatedById, Set<Audit> auditsBySubmittedById, Set<Audit> auditsByApprovedById, Set<AuditEdit> auditEdits, Set<LogTable> logs, Set<Taxon> taxaBySubmittedById, Set<Taxon> taxaByApprovedById) {
-    	this.userId = userId;
-    	this.userName = userName;
-    	this.givenName = givenName;
-    	this.familyName = familyName;
-    	this.fullName = fullName;
-    	this.orgView = orgView;
-    	this.auditsByCreatedById = auditsByCreatedById;
-    	this.auditsBySubmittedById = auditsBySubmittedById;
-    	this.auditsByApprovedById = auditsByApprovedById;
-    	this.auditEdits = auditEdits;
-    	this.logs = logs;
-    	this.taxaBySubmittedById = taxaBySubmittedById;
-    	this.taxaByApprovedById = taxaByApprovedById;
-    }
-
-    /** default constructor */
-    public UserView() {
-    }
-
 	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
@@ -174,6 +131,14 @@ public class UserView implements Serializable, nz.cri.gns.fred.model.UserView {
 
 	public Set<Taxon> getTaxaByApprovedById() {
 		return taxaByApprovedById;
+	}
+
+	public void setUserRightViews(Set<UserRightView> userRightViews) {
+		this.userRightViews = userRightViews;
+	}
+
+	public Set<UserRightView> getUserRightViews() {
+		return userRightViews;
 	}
 
 	public int compareTo(nz.cri.gns.fred.model.UserView arg0) {

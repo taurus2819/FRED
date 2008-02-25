@@ -162,5 +162,20 @@
         <column name="PE_CLIENT_CODE" />
     </many-to-one>
     
+    <!-- bi-directional one-to-many association to UserRightView -->
+    <set
+        name="userRightViews"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="PERSON_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.UserRightView"
+        />
+    </set>
+    
 </class>
 </hibernate-mapping>
