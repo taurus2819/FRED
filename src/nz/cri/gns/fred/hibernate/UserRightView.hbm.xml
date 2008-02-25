@@ -66,6 +66,8 @@
         name="userView"
         class="nz.cri.gns.fred.hibernate.UserView"
         not-null="true"
+        insert="false"
+        update="false"
     >
         <column name="PERSON_ID" />
     </many-to-one>
