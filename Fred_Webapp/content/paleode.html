@@ -198,14 +198,24 @@ function addTaxa(group, taxaName, author, comments) {
 			return;
 		}
 	} else if (status == 'provisional') {
-		statusPopupString = 'Status: ' + status + '<br />'
-			+ 'Submitted By: ' + taxaNode.getElementsByTagName('submitted-by')[0].firstChild.nodeValue + '<br />'
-			+ 'Submitted Date: ' + taxaNode.getElementsByTagName('submitted-date')[0].firstChild.nodeValue;
+		statusPopupString = 'Status: ' + status;
+		try {
+			statusPopupString = statusPopupString + '<br />Submitted By: ' + taxaNode.getElementsByTagName('submitted-by')[0].firstChild.nodeValue;
+		} catch {}
+		try {
+			statusPopupString = statusPopupString + '<br />Submitted Date: ' + taxaNode.getElementsByTagName('submitted-date')[0].firstChild.nodeValue;
+		} catch {}
 	} else if (status == 'rejected') {
-		statusPopupString = 'Status: ' + status + '<br />'
-			+ 'Rejected By: ' + taxaNode.getElementsByTagName('rejected-by')[0].firstChild.nodeValue + '<br />'
-			+ 'Rejected Date: ' + taxaNode.getElementsByTagName('rejected-date')[0].firstChild.nodeValue + '<br />'
-			+ 'Comments: ' + taxaNode.getElementsByTagName('rejected-comments')[0].firstChild.nodeValue;	
+		statusPopupString = 'Status: ' + status;
+		try {
+			statusPopupString = statusPopupString + '<br />Rejected By: ' + taxaNode.getElementsByTagName('rejected-by')[0].firstChild.nodeValue;
+		} catch {}
+		try {
+			statusPopupString = statusPopupString + '<br />Rejected Date: ' + taxaNode.getElementsByTagName('rejected-date')[0].firstChild.nodeValue;
+		} catch {}
+		try {
+			statusPopupString = statusPopupString + '<br />Comments: ' + taxaNode.getElementsByTagName('rejected-comments')[0].firstChild.nodeValue;	
+		} catch ()
 	} else if (status == 'obsolete') {
 		statusPopupString = 'Status: ' + status + '<br />'
 	}
