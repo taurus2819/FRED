@@ -201,21 +201,21 @@ function addTaxa(group, taxaName, author, comments) {
 		statusPopupString = 'Status: ' + status;
 		try {
 			statusPopupString = statusPopupString + '<br />Submitted By: ' + taxaNode.getElementsByTagName('submitted-by')[0].firstChild.nodeValue;
-		} catch {}
+		} catch(err) {}
 		try {
 			statusPopupString = statusPopupString + '<br />Submitted Date: ' + taxaNode.getElementsByTagName('submitted-date')[0].firstChild.nodeValue;
-		} catch {}
+		} catch(err) {}
 	} else if (status == 'rejected') {
 		statusPopupString = 'Status: ' + status;
 		try {
 			statusPopupString = statusPopupString + '<br />Rejected By: ' + taxaNode.getElementsByTagName('rejected-by')[0].firstChild.nodeValue;
-		} catch {}
+		} catch(err) {}
 		try {
 			statusPopupString = statusPopupString + '<br />Rejected Date: ' + taxaNode.getElementsByTagName('rejected-date')[0].firstChild.nodeValue;
-		} catch {}
+		} catch(err) {}
 		try {
 			statusPopupString = statusPopupString + '<br />Comments: ' + taxaNode.getElementsByTagName('rejected-comments')[0].firstChild.nodeValue;	
-		} catch ()
+		} catch(err) {}
 	} else if (status == 'obsolete') {
 		statusPopupString = 'Status: ' + status + '<br />'
 	}
