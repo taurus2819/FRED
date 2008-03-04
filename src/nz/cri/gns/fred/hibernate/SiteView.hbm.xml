@@ -13,7 +13,8 @@
 
 <class 
     name="nz.cri.gns.fred.hibernate.SiteView" 
-    table="SC.SITE_VIEW"
+    table="SITE_VIEW"
+    schema="SC"
     mutable="false"
 >
 

@@ -14,6 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.RecordMeta" 
     table="RECORD_META"
+    schema="FR"
 >
 
     <composite-id name="comp_id" class="nz.cri.gns.fred.hibernate.RecordMetaPK">

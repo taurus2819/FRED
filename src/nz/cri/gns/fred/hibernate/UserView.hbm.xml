@@ -13,7 +13,8 @@
 
 <class 
     name="nz.cri.gns.fred.hibernate.UserView" 
-    table="IP.PERSON_VIEW"
+    table="PERSON_VIEW"
+    schema="IP"
     mutable="false"
 >
 

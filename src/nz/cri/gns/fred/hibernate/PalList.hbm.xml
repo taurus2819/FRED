@@ -14,6 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.PalList" 
     table="PAL_LIST"
+    schema="FR"
 >
 
     <id

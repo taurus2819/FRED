@@ -14,6 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.RegistrationArea" 
     table="REGISTRATION_AREA"
+    schema="FR"
 >
 
     <id

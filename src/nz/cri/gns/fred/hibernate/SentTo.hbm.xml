@@ -14,6 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.SentTo" 
     table="SENT_TO"
+    schema="FR"
 >
 
     <id
