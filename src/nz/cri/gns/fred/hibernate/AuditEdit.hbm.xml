@@ -14,6 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.AuditEdit" 
     table="AUDIT_EDIT"
+    schema="FR"
 >
 
     <id

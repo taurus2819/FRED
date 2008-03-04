@@ -14,6 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.Hardness" 
     table="HARDNESS"
+    schema="FR"
 >
 
     <id

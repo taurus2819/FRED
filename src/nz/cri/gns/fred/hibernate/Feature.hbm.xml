@@ -14,6 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.Feature" 
     table="FEATURE"
+    schema="FR"
 >
 
     <id

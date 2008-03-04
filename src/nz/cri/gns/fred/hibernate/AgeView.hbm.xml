@@ -14,6 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.AgeView" 
     table="AGE_VIEW"
+    schema="FR"
     mutable="false"
 >
 

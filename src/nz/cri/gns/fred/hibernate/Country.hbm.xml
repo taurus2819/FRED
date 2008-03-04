@@ -13,7 +13,8 @@
 
 <class 
     name="nz.cri.gns.fred.hibernate.Country" 
-    table="MIS.COUNTRY"
+    table="COUNTRY"
+    schema="MIS"
 >
 
     <id

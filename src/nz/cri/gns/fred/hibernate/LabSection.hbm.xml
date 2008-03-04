@@ -14,6 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.LabSection" 
     table="LAB_SECTION"
+    schema="FR"
 >
 
     <id

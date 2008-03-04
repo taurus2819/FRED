@@ -14,6 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.ColourModifier" 
     table="COLOUR_MODIFIER"
+    schema="FR"
 >
 
     <id

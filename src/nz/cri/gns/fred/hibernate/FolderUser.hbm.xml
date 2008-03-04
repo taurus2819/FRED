@@ -14,6 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.FolderUser" 
     table="FOLDER_USER"
+    schema="FR"
 >
 
     <composite-id name="comp_id" class="nz.cri.gns.fred.hibernate.FolderUserPK">

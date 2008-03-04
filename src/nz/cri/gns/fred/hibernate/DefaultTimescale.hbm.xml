@@ -14,6 +14,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.DefaultTimescale" 
     table="DEFAULT_TIMESCALE"
+    schema="FR"
 >
 
     <composite-id>

@@ -8,6 +8,7 @@
 <class 
     name="nz.cri.gns.fred.hibernate.BacklogStatus" 
     table="BACKLOG_STATUS"
+    schema="FR"
 >
 
     <id
