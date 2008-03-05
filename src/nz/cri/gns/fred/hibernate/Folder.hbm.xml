@@ -93,7 +93,8 @@
     <!-- bi-directional many-to-many association to Feature via FolderContent -->
     <set
         name="features"
-        table="folder_content"
+        table="FOLDER_CONTENT"
+		schema="FR"
         lazy="true"
         inverse="true"
 		cascade="none"

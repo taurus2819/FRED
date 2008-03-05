@@ -60,6 +60,7 @@
     <set
         name="adoptors"
         table="ADOPTOR"
+		schema="FR"
         lazy="true"
         inverse="false"
 		cascade="none"

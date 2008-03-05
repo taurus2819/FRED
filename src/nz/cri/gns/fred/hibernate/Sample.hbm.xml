@@ -257,6 +257,7 @@
     <set
         name="collectors"
         table="COLLECTOR"
+		schema="FR"
         lazy="true"
         inverse="false"
 		cascade="none"

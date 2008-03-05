@@ -58,6 +58,7 @@
     <set
         name="taxonomicGroups"
         table="TAXA_PANEL"
+		schema="FR"
         lazy="true"
         inverse="true"
 		cascade="none"
@@ -75,6 +76,7 @@
     <set
         name="confidGroups"
         table="CONFID_USER"
+		schema="FR"
         lazy="true"
         inverse="true"
 		cascade="none"

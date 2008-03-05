@@ -47,6 +47,7 @@
     <set
         name="adoptions"
         table="ADOPTOR"
+		schema="FR"
         lazy="true"
         inverse="true"
 		cascade="none"
@@ -63,6 +64,7 @@
     <set
         name="identifiedPaleontologies"
         table="IDENTIFIER"
+		schema="FR"
         lazy="true"
         inverse="true"
 		cascade="none"
@@ -109,6 +111,7 @@
     <set
         name="collectedSamples"
         table="COLLECTOR"
+		schema="FR"
         lazy="true"
         inverse="true"
 		cascade="none"

@@ -94,6 +94,7 @@
     <set
         name="identifiers"
         table="IDENTIFIER"
+		schema="FR"
         lazy="true"
         inverse="false"
 		cascade="none"

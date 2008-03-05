@@ -58,6 +58,7 @@
     <set
         name="audits"
         table="AUDIT_CONFID"
+		schema="FR"
         lazy="true"
         inverse="true"
 		cascade="none"
@@ -75,6 +76,7 @@
     <set
         name="users"
         table="CONFID_GROUP_USER"
+		schema="FR"
         lazy="true"
         inverse="false"
 		cascade="none"

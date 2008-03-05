@@ -236,6 +236,7 @@
     <set
         name="confidGroups"
         table="AUDIT_CONFID"
+		schema="FR"
         lazy="true"
         inverse="false"
 		cascade="none"

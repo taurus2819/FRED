@@ -53,6 +53,7 @@
     <set
         name="panelists"
         table="TAXA_PANEL"
+		schema="FR"
         lazy="true"
         inverse="false"
 		cascade="none"

@@ -207,7 +207,8 @@
     <!-- bi-directional many-to-many association to Folder via FolderContent -->
     <set
         name="folders"
-        table="folder_content"
+        table="FOLDER_CONTENT"
+		schema="FR"
         lazy="true"
         inverse="false"
 		cascade="none"
