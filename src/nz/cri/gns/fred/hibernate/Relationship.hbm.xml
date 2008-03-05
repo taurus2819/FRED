@@ -23,7 +23,7 @@
         column="RELATIONSHIP_ID"
     >
         <generator class="sequence">
-                <param name="sequence">RELATIONSHIP_SEQ</param>
+                <param name="sequence">FR.RELATIONSHIP_SEQ</param>
         </generator>
     </id>
 

@@ -23,7 +23,7 @@
         column="SENT_TO_ID"
     >
         <generator class="sequence">
-                <param name="sequence">SENT_TO_SEQ</param>
+                <param name="sequence">FR.SENT_TO_SEQ</param>
         </generator>
     </id>
 

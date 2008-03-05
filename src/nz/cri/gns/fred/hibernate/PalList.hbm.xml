@@ -23,7 +23,7 @@
         column="PAL_LIST_ID"
     >
         <generator class="sequence">
-                <param name="sequence">PAL_LIST_SEQ</param>
+                <param name="sequence">FR.PAL_LIST_SEQ</param>
         </generator>
     </id>
 

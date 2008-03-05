@@ -23,7 +23,7 @@
         column="GROUP_ID"
     >
         <generator class="sequence">
-                <param name="sequence">CONFIDENTIAL_GROUP_SEQ</param>
+                <param name="sequence">FR.CONFIDENTIAL_GROUP_SEQ</param>
         </generator>
     </id>
 

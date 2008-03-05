@@ -23,7 +23,7 @@
         column="AUDIT_EDIT_ID"
     >
         <generator class="sequence">
-                <param name="sequence">AUDIT_EDIT_SEQ</param>
+                <param name="sequence">FR.AUDIT_EDIT_SEQ</param>
         </generator>
    </id>
 

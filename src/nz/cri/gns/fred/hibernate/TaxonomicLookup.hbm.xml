@@ -23,7 +23,7 @@
         column="TAXA_ID"
     >
         <generator class="sequence">
-                <param name="sequence">TAXA_SEQ</param>
+                <param name="sequence">FR.TAXA_SEQ</param>
         </generator>
     </id>
 

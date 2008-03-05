@@ -23,7 +23,7 @@
         column="FOLDER_ID"
     >
         <generator class="sequence">
-                <param name="sequence">FOLDER_SEQ</param>
+                <param name="sequence">FR.FOLDER_SEQ</param>
         </generator>
     </id>
 

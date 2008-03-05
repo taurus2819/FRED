@@ -23,7 +23,7 @@
         column="RECORD_ID"
     >
         <generator class="sequence">
-                <param name="sequence">RECORD_SEQ</param>
+                <param name="sequence">FR.RECORD_SEQ</param>
         </generator>
     </id>
 

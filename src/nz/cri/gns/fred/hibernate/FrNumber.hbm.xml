@@ -23,7 +23,7 @@
         column="FR_ID"
     >
         <generator class="sequence">
-                <param name="sequence">FR_SEQ</param>
+                <param name="sequence">FR.FR_SEQ</param>
         </generator>
     </id>
 
