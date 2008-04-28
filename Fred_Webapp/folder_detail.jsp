@@ -84,8 +84,9 @@
 					if (actionType.equals("CopyFeat") && folder.isAllowedCreateLocalities()) {
 						featureUtil.copyFeature(feature, request.getParameter("NewFeatName"), folder, user);
 					}
-				} else if (request.getParameter("FeatIDs") != null) {
-					if (actionType.equals("SubmitFeatures")) {
+				}
+				if (request.getParameter("FeatIDs") != null) {
+					if (actionType.equals("Submit")) {
 						featureUtil.submitFeatures(request.getParameterValues("FeatIDs"), folder, user);
 					} else if (actionType.equals("RevokeFeatures")) {
 						featureUtil.revokeFeatures(request.getParameterValues("FeatIDs"), folder, user);
@@ -96,6 +97,20 @@
 						featureUtil.mergeFeatures(mergeToFeature, request.getParameterValues("FeatIDs"), folder, user);
 					} else if (actionType.equals("AlterType")) {
 						featureUtil.alterFeatureTypes(request.getParameterValues("FeatIDs"), request.getParameter("NewFeatType"), folder, user);
+					}
+				}
+				if (request.getParameter("SampIDs") != null) {
+					if (actionType.equals("Submit")) {
+						sampleUtil.submitSamples(request.getParameterValues("SampIDs"), folder, user);
+					} else if (actionType.equals("DeleteFeatures")) {
+						featureUtil.deleteRemoveFeatures(request.getParameterValues("FeatIDs"), folder, user);
+					}
+				}
+				if (request.getParameter("RecIDs") != null) {
+					if (actionType.equals("Submit")) {
+						recordUtil.submitRecords(request.getParameterValues("RecIDs"), folder, user);
+					} else if (actionType.equals("DeleteFeatures")) {
+						featureUtil.deleteRemoveFeatures(request.getParameterValues("FeatIDs"), folder, user);
 					}
 				}
 			} catch (MandatoryFieldsMissingException e) {
