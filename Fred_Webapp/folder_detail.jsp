@@ -198,6 +198,14 @@
 			}
 
 			function getFeatureDetails(featureId) {
+				var tbody = document.getElementById("featureDetails" + featureId);
+				clearTBody(tbody);
+				var tr = document.createElement("tr");
+				var td = document.createElement("td");
+				td.appendChild(document.createTextNode("Loading..."));
+				td.setAttribute("colspan", "15");
+				tr.appendChild(td);
+				tbody.appendChild(tr);
 				ajaxXML("getFeatureDetails.jsp?FoldID=<%=folder.getFolderId()%>&FeatID=" + featureId, updatePage);
 			}
 			
@@ -206,6 +214,7 @@
 				var featureId = featureNode.getAttributeNode("id").nodeValue;
 				var featureType = featureNode.getElementsByTagName("feature-type")[0].firstChild.nodeValue;
 				var tbody = document.getElementById("featureDetails" + featureId);
+				clearTBody(tbody);
 				var samplesNode = featureNode.getElementsByTagName("samples")[0];
 				for (i = 0; i < samplesNode.getElementsByTagName("sample").length; i++) {
 					var sampleNode = samplesNode.getElementsByTagName("sample")[i];
