@@ -212,7 +212,7 @@
 			</form><%
 		} 
 		else {
-			%><p><span class="subhead">Access denied</span></p>You don't have sufficient rights in this folder.  Click <a href="index.jsp" class="heading">here</a> to return to the FRED home page.<%
+			%><p><span class="subhead">Access denied</span></p>You don't have sufficient rights to edit the confidentiality - only the person who created the record can edit the confidentiality.  Click <a href="index.jsp" class="heading">here</a> to return to the FRED home page.<%
 		}
 	}
 
