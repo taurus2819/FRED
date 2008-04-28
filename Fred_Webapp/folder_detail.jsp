@@ -144,6 +144,46 @@
 				}
 			}
 
+			function selectAllSamples() {
+				if (document.FoldForm.SampIDs.length) {
+					for (var i=0; i<document.FoldForm.SampIDs.length; i++) {
+						document.FoldForm.SampIDs[i].checked = true;
+					}
+				} else {
+					document.FoldForm.SampIDs.checked = true;
+				}
+			}
+			
+			function unselectAllSamples() {
+				if (document.FoldForm.SampIDs.length) {
+					for (var i=0; i<document.FoldForm.SampIDs.length; i++) {
+						document.FoldForm.SampIDs[i].checked = false;
+					}
+				} else {
+					document.FoldForm.SampIDs.checked = false;
+				}
+			}
+			
+			function selectAllRecords() {
+				if (document.FoldForm.RecIDs.length) {
+					for (var i=0; i<document.FoldForm.RecIDs.length; i++) {
+						document.FoldForm.RecIDs[i].checked = true;
+					}
+				} else {
+					document.FoldForm.RecIDs.checked = true;
+				}
+			}
+			
+			function unselectAllRecords() {
+				if (document.FoldForm.RecIDs.length) {
+					for (var i=0; i<document.FoldForm.RecIDs.length; i++) {
+						document.FoldForm.RecIDs[i].checked = false;
+					}
+				} else {
+					document.FoldForm.RecIDs.checked = false;
+				}
+			}
+
 			function featureAction(featureId, action) {
 				ajaxXML("processFolderActions.jsp?FeatID=" + featureId + "&FoldID=<%=folder.getFolderId()%>&ActionType=" + action, updateAction);
 			}
@@ -367,7 +407,13 @@
 				var tr = document.createElement("tr");
 				tr.setAttribute("id", "sample" + sampleId);
 				tr.appendChild(document.createElement("td"));
-				tr.appendChild(document.createElement("td"));
+				var checkTd = document.createElement("td");
+				var check = document.createElement("input");
+				check.setAttribute("type", "checkbox");
+				check.setAttribute("name", "SampIDs");
+				check.setAttribute("value", sampleId);
+				checkTd.appendChild(check);
+				tr.appendChild(checkTd);
 				var iconTd = document.createElement("td");
 				iconTd.appendChild(createIcon("images/drill.gif", "detail.jsp?ID=" + sampleId + "&backURL=<%=backURL%>&backText=<%=backText%>"));
 				tr.appendChild(iconTd);
@@ -452,7 +498,13 @@
 				var tr = document.createElement("tr");
 				tr.setAttribute("id", "record" + recordId);
 				tr.appendChild(document.createElement("td"));
-				tr.appendChild(document.createElement("td"));
+				var checkTd = document.createElement("td");
+				var check = document.createElement("input");
+				check.setAttribute("type", "checkbox");
+				check.setAttribute("name", "RecIDs");
+				check.setAttribute("value", recordId);
+				checkTd.appendChild(check);
+				tr.appendChild(checkTd);
 				var iconTd = document.createElement("td");
 				var iconImg = document.createElement("img");
 				if (recordType == '<%=FREDConstants.ADOPTION%>') {
@@ -607,9 +659,9 @@
 				String status = audit.getStatus();
 				String name = FeatureUtil.getFeatureIdentifyingName(feature);
 				String featName = feature.getFeatureName();
-				%><tr id="feature<%=feature.getFeatureId()%>">
-				<td style="text-align: left"><input type="checkbox" name="FeatIDs" value="<%=feature.getFeatureId()%>" /></td>	
-				<td id="plusMinus<%=feature.getFeatureId()%>" class="heading"><a href="javascript: getFeatureDetails('<%=feature.getFeatureId()%>');"><img src="images/plus.gif" border="0" /></a></td>
+				%><tr id="feature<%=feature.getFeatureId()%>">	
+				<td style="text-align: left" id="plusMinus<%=feature.getFeatureId()%>" class="heading"><a href="javascript: getFeatureDetails('<%=feature.getFeatureId()%>');"><img src="images/plus.gif" border="0" /></a></td>
+				<td style="text-align: left"><input type="checkbox" name="FeatIDs" value="<%=feature.getFeatureId()%>" /></td>
 				<td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=backURL%>&backText=<%=backText%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
 				<td style="text-align: left" class="heading"><%=name%>&nbsp;&nbsp;<%
 				if (featName != null && !featName.equals(name)) {
@@ -666,7 +718,7 @@
 				<tr><td colspan="17"><img src="images/line.gif" height="3" width="650" /></td></tr><%
 			}
 			%>
-			<tr><td colspan="17" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
+			<tr><td colspan="17" style="text-align: left">Localities: <a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a>&nbsp;&nbsp;|&nbsp;&nbsp;Samples: <a href="javascript:selectAllSamples()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAllSamples()">Unselect All</a>&nbsp;&nbsp;|&nbsp;&nbsp;Records: <a href="javascript:selectAllRecords()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAllRecords()">Unselect All</a></td></tr>
 			</table><%
 			endDETable(pageContext);
 			%></p>
