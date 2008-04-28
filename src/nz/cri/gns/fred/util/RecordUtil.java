@@ -149,7 +149,12 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			}
 			recordDAO.saveOrUpdate(audit);
 		}
-		
+	}
+	
+	public void submitRecords(String[] recIDs, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, DataInputException {
+		for (int i = 0; i < recIDs.length; i++) {
+			submitRecord(getRecord(Integer.parseInt(recIDs[i])), folder, user);
+		}
 	}
 
 	

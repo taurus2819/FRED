@@ -354,6 +354,12 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		}
 	}
 	
+	public void submitSamples(String[] sampIds, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, DataInputException {
+		for (int i = 0; i < sampIds.length; i++) {
+			submitSample(getSample(Integer.parseInt(sampIds[i])), folder, user);
+		}
+	}
+	
 	private void setAuditApproved(Sample sample, UserAccount user) throws StorageAccessException {
 		Audit audit = sample.getAudit();
 		audit.setStatus(APPROVED);		//Samples don't need approval
