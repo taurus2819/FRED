@@ -742,7 +742,7 @@
 			//Selected Actions box
 			startDETable(pageContext);
 			%><table border="0" width="550">
-			<tr><td colspan="11" class="deHeading">Selected Locality Actions</td></tr>
+			<tr><td colspan="11" class="deHeading">Selected Actions</td></tr>
 			<tr>
 			<td><a href="javascript:document.FoldForm.ActionType.value='Submit';document.FoldForm.submit();"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit" /></a></td>
 			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='Submit';document.FoldForm.submit();">Submit</a></td>
@@ -761,7 +761,7 @@
 			</tr>
 			<tr>
 			<td><a href="javascript:document.FoldForm.action='set_confidentiality.jsp';document.FoldForm.method='get';document.FoldForm.submit();"><img src="images/lock.gif" border="0" height="20" width="20" alt="set Confidentiality" /></a></td>
-			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.action='set_confidentiality.jsp';document.FoldForm.method='get';document.FoldForm.submit();">set Confidentiality</a>&nbsp;&nbsp;Note: You can only set samples and records (that you have created) as confidential.</td>
+			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.action='set_confidentiality.jsp';document.FoldForm.submit();">set Confidentiality</a>&nbsp;&nbsp;<span style="font-weight: normal">Note: Only samples and records that you have created</span></td>
 			</tr>
 			<tr>
 			<td><a href="javascript:document.FoldForm.ActionType.value='MergeFeatures';document.FoldForm.submit();"><img src="images/edit.gif" border="0" height="20" width="20" alt="Merge" /></a></td>
@@ -791,6 +791,7 @@
 			
 			<input type="hidden" name="ActionType" value="" />
 			<input type="hidden" name="ID" value="<%=folder.getFolder().getFolderId()%>" />
+			<input type="hidden" name="FoldID" value="<%=folder.getFolder().getFolderId()%>" />
 			<input type="hidden" name="FeatID" value="" />
 			<input type="hidden" name="NewFeatName" value="" />
 			<input type="hidden" name="q" value="<%=Math.random()%>" />

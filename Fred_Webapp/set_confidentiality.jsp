@@ -60,7 +60,7 @@
 			if (request.getParameter("PalListAuditIDs") != null) {
 				auditUtil.updateConfidentiality(request.getParameterValues("PalListAuditIDs"), request.getParameter("palConfidType"), request.getParameter("palConfidPeriod"), request.getParameter("palConfidLapseEmail"), request.getParameterValues("palConfidGroups"));
 			}
-			//response.sendRedirect((String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "&q=" + Math.random());
+			response.sendRedirect((String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "&q=" + Math.random());
 			return;
 		} catch (Exception e) {
 			System.out.println("********** FRED confidentiality error: " + new java.util.Date());
@@ -77,20 +77,23 @@
 		} catch (Exception e) {	}
 		List<Audit> audits = new Vector<Audit>();
 		List<Audit> palListAudits = new Vector<Audit>();
-		for (String sampId : request.getParameterValues("SampIDs")) {
-			Sample sample = sampleUtil.getSample(Integer.parseInt(sampId));
-			if (sampleUtil.isAllowedEditSampleConfid(user, sample, folder))
-				audits.add(sample.getAudit());
-		}
-		for (String recId : request.getParameterValues("RecIDs")) {
-			Record record = recordUtil.getRecord(Integer.parseInt(recId));
-			if (recordUtil.isAllowedEditRecordConfid(user, record, folder)) {
-				audits.add(record.getAudit());
-				if (RecordUtil.getRecordType(record).equals(FREDConstants.PALEONTOLOGICAL))
-					palListAudits.add(record.getPalListAudit());
+		if (request.getParameter("SampIDs") != null) {
+			for (String sampId : request.getParameterValues("SampIDs")) {
+				Sample sample = sampleUtil.getSample(Integer.parseInt(sampId));
+				if (sampleUtil.isAllowedEditSampleConfid(user, sample, folder))
+					audits.add(sample.getAudit());
 			}
 		}
-
+		if (request.getParameter("RecIDs") != null) {
+			for (String recId : request.getParameterValues("RecIDs")) {
+				Record record = recordUtil.getRecord(Integer.parseInt(recId));
+				if (recordUtil.isAllowedEditRecordConfid(user, record, folder)) {
+					audits.add(record.getAudit());
+					if (RecordUtil.getRecordType(record).equals(FREDConstants.PALEONTOLOGICAL))
+						palListAudits.add(record.getPalListAudit());
+				}
+			}
+		}
 		
 		if (audits.size() > 0) {
 			Audit audit = audits.get(0);
@@ -113,15 +116,15 @@
 			endDETable(pageContext);
 			%></p>
 			
-			<form name="confidForm" method="get" action="set_confidentiality.jsp"><%
+			<form name="confidForm" method="post" action="set_confidentiality.jsp"><%
 			for (Audit a : audits) {
-				%><input type="hidden" name="AuditIDs" value=<%=a.getAuditId()%>" /><%
+				%><input type="hidden" name="AuditIDs" value="<%=a.getAuditId()%>" /><%
 			}
 			for (Audit a : palListAudits) {
-				%><input type="hidden" name="PalListAuditIDs" value=<%=a.getAuditId()%>" /><%
+				%><input type="hidden" name="PalListAuditIDs" value="<%=a.getAuditId()%>" /><%
 			}			
 			if (folder != null) {
-				%><input type="hidden" name="FoldID" value="<%=folder.getFolderId()%>"><%
+				%><input type="hidden" name="FoldID" value="<%=folder.getFolderId()%>" /><%
 			}
 			%><input type="hidden" name="Action" value="Update">
 						
