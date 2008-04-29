@@ -98,9 +98,25 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return desc.toString();			
 	}
 	
+	public void deleteRecords(String[] featIDs, UserFolder folder, UserAccount user) {
+		boolean errFlag = false;
+		for (int i = 0; i < featIDs.length; i++) {
+			try {
+				deleteRecord(getRecord(Integer.parseInt(featIDs[i])), folder, user);
+			} catch (Exception e) {
+				errFlag = true;
+			}
+		}
+		if (errFlag)
+			throw new IllegalStateException("An error has occured. Not all localities have been removed/deleted");
+	}
+	
 	public void deleteRecord(int recordId, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
 		Record record = recordDAO.get(recordId, nz.cri.gns.fred.hibernate.Record.class);
-				
+		deleteRecord(record, folder, user);
+	}
+	
+	public void deleteRecord(Record record, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
 		if (!isAllowedDeleteRecord(record, folder, user))
 			throw new InsufficientPrivelegesException();
 		

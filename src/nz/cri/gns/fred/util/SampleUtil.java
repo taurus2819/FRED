@@ -307,13 +307,25 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return (hasDepthInformation(belowSample) ? belowSample : null);
 	}
 	
-	/**
-	 * @throws DataInputException 
-	 *  
-	 */
+	public void deleteSamples(String[] sampIds, UserFolder folder, UserAccount user) {
+		boolean errFlag = false;
+		for (int i = 0; i < sampIds.length; i++) {
+			try {
+				deleteSample(getSample(Integer.parseInt(sampIds[i])), folder, user);
+			} catch (Exception e) {
+				errFlag = true;
+			}
+		}
+		if (errFlag)
+			throw new IllegalStateException("An error has occured. Not all localities have been removed/deleted");
+	}
+	
 	public void deleteSample(int sampleId, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
 		Sample sample = getSample(sampleId);
-		
+		deleteSample(sample, folder, user);
+	}
+	
+	public void deleteSample(Sample sample, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
 		if (!isAllowedDeleteSample(sample, folder, user))
 			throw new InsufficientPrivelegesException();
 		
