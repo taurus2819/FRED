@@ -144,7 +144,7 @@
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=sample.getSampleId()%>"><%=SampleUtil.getDrillHoleDepthDescription(sample)%></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=FREDUtil.formatDateForOutput(sample.getAudit().getConfidLapseDate())%></td>
 				<td style="text-align: left"><%=auditUtil.getConfidAccessListDescription(sample.getAudit())%></td>
-				<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=sample.getSampleId()%>&RecType=SMP"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
+				<td style="text-align: left"><a href="set_confidentiality.jsp?SampIDs=<%=sample.getSampleId()%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
 				<td style="text-align: left"><a href="confid_list.jsp?ActionType=ClearConfid<%=(request.getParameter("Type") != null) ? "&Type=" + request.getParameter("Type") : ""%>&AuditIDs=<%=sample.getAudit().getAuditId()%>&q=<%=Math.random()%>"><img src="images/lock_cancel.gif" border="0" height="20" width="20" alt="Clear Confidentiality" /></a></td>
 				</tr><%
 			}
@@ -169,7 +169,7 @@
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=RecordUtil.getRecordName(record)%></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=FREDUtil.formatDateForOutput(record.getAudit().getConfidLapseDate())%></td>
 				<td style="text-align: left"><%=auditUtil.getConfidAccessListDescription(record.getAudit())%></td>
-				<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=record.getRecordId()%>&RecType=<%=FREDConstants.ADOPTION%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
+				<td style="text-align: left"><a href="set_confidentiality.jsp?RecIDs=<%=record.getRecordId()%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
 				<td style="text-align: left"><a href="confid_list.jsp?ActionType=ClearConfid<%=(request.getParameter("Type") != null) ? "&Type=" + request.getParameter("Type") : ""%>&AuditIDs=<%=record.getAudit().getAuditId()%>&q=<%=Math.random()%>"><img src="images/lock_cancel.gif" border="0" height="20" width="20" alt="Clear Confidentiality" /></a></td>
 				</tr><%
 			}
@@ -194,7 +194,7 @@
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=RecordUtil.getRecordName(record)%></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=FREDUtil.formatDateForOutput(record.getAudit().getConfidLapseDate())%></td>
 				<td style="text-align: left"><%=auditUtil.getConfidAccessListDescription(record.getAudit())%></td>
-				<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=record.getRecordId()%>&RecType=<%=FREDConstants.PALEONTOLOGICAL%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
+				<td style="text-align: left"><a href="set_confidentiality.jsp?RecIDs=<%=record.getRecordId()%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
 				<td style="text-align: left"><a href="confid_list.jsp?ActionType=ClearConfid<%=(request.getParameter("Type") != null) ? "&Type=" + request.getParameter("Type") : ""%>&AuditIDs=<%=record.getAudit().getAuditId()%>&q=<%=Math.random()%>"><img src="images/lock_cancel.gif" border="0" height="20" width="20" alt="Clear Confidentiality" /></a></td>
 				</tr><%
 			}
@@ -220,7 +220,7 @@
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=RecordUtil.getRecordName(record)%>&nbsp;&nbsp;</a></td>
 				<td style="text-align: left"><%=FREDUtil.formatDateForOutput(record.getPalListAudit().getConfidLapseDate())%></td>
 				<td style="text-align: left"><%=auditUtil.getConfidAccessListDescription(record.getPalListAudit())%></td>
-				<td style="text-align: left"><a href="set_confidentiality.jsp?ID=<%=record.getRecordId()%>&RecType=<%=FREDConstants.PALEONTOLOGICAL%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
+				<td style="text-align: left"><a href="set_confidentiality.jsp?RecIDs=<%=record.getRecordId()%>"><img src="images/lock.gif" border="0" height="20" width="20" alt="Edit Confidentiality" /></a></td>
 				<td style="text-align: left"><a href="confid_list.jsp?ActionType=ClearConfid<%=(request.getParameter("Type") != null) ? "&Type=" + request.getParameter("Type") : ""%>&AuditIDs=<%=record.getPalListAudit().getAuditId()%>&q=<%=Math.random()%>"><img src="images/lock_cancel.gif" border="0" height="20" width="20" alt="Clear Confidentiality" /></a></td>
 				</tr><%
 			}

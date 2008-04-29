@@ -7,8 +7,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import nz.cri.gns.auth.UserAccount;
@@ -178,6 +180,38 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		else
 			cal.add(Calendar.YEAR, confidPeriod.intValue());
 		return cal.getTime();
+	}
+	
+	public void updateConfidentiality(String[] auditIds, String confidType, String confidPeriod, String confidLapseEmail, String[] confidGroupIds) throws StorageAccessException {
+		for (String auditId : auditIds)
+			updateConfidentiality(getAudit(Integer.parseInt(auditId)), confidType, confidPeriod, confidLapseEmail, confidGroupIds);
+	}
+	
+	public void updateConfidentiality(Audit audit, String confidType, String confidPeriod, String confidLapseEmail, String[] confidGroupIds) throws StorageAccessException {
+		if ("confid".equals(confidType)) {
+			audit.setConfidentialFlag(true);
+			audit.setConfidPeriod(new Double(confidPeriod));
+			audit.setConfidLapseEmail(confidLapseEmail);
+			if (FREDConstants.APPROVED.equals(audit.getStatus()))
+				audit.setConfidLapseDate(getLapseDate(audit.getConfidPeriod()));
+			else
+				audit.setConfidLapseDate(null);
+			audit.setConfidEmailFlag(false);
+			if (confidGroupIds != null) {
+				Set<ConfidentialGroup> confidGroups = new HashSet<ConfidentialGroup>();
+				for (int i = 0; i < confidGroupIds.length; i++)
+					confidGroups.add(getConfidentialGroup(new Integer(confidGroupIds[i])));
+				audit.setConfidGroups(confidGroups);
+			}
+		} else {
+			audit.setConfidentialFlag(false);
+			audit.setConfidLapseDate(null);
+			audit.setConfidPeriod(null);
+			audit.setConfidEmailFlag(null);
+			audit.setConfidLapseEmail(null);
+			audit.setConfidGroups(null);
+		}
+		saveOrUpdate(audit);	
 	}
 	
 	public List<ConfidentialGroup> getConfidentialGroups(UserAccount user) throws StorageAccessException {

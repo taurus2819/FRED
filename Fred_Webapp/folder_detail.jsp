@@ -90,7 +90,7 @@
 						featureUtil.submitFeatures(request.getParameterValues("FeatIDs"), folder, user);
 					} else if (actionType.equals("RevokeFeatures")) {
 						featureUtil.revokeFeatures(request.getParameterValues("FeatIDs"), folder, user);
-					} else if (actionType.equals("DeleteFeatures")) {
+					} else if (actionType.equals("Delete")) {
 						featureUtil.deleteRemoveFeatures(request.getParameterValues("FeatIDs"), folder, user);
 					} else if (actionType.equals("MergeFeatures")) {
 						Feature mergeToFeature = featureUtil.getFeature(Integer.parseInt(request.getParameter("MergeToFeatID")));
@@ -102,15 +102,15 @@
 				if (request.getParameter("SampIDs") != null) {
 					if (actionType.equals("Submit")) {
 						sampleUtil.submitSamples(request.getParameterValues("SampIDs"), folder, user);
-					} else if (actionType.equals("DeleteFeatures")) {
-						featureUtil.deleteRemoveFeatures(request.getParameterValues("FeatIDs"), folder, user);
+					} else if (actionType.equals("Delete")) {
+						sampleUtil.deleteSamples(request.getParameterValues("SampIDs"), folder, user);
 					}
 				}
 				if (request.getParameter("RecIDs") != null) {
 					if (actionType.equals("Submit")) {
 						recordUtil.submitRecords(request.getParameterValues("RecIDs"), folder, user);
-					} else if (actionType.equals("DeleteFeatures")) {
-						featureUtil.deleteRemoveFeatures(request.getParameterValues("FeatIDs"), folder, user);
+					} else if (actionType.equals("Delete")) {
+						recordUtil.deleteRecords(request.getParameterValues("RecIDs"), folder, user);
 					}
 				}
 			} catch (MandatoryFieldsMissingException e) {
@@ -457,7 +457,7 @@
 				}
 				if (sampleNode.getElementsByTagName("set-confidentiality")[0].firstChild.nodeValue == 'TRUE') {
 					var td = document.createElement("td");
-					td.appendChild(createIcon("images/lock.gif", "set_confidentiality.jsp?RecType=SMP&FoldID=<%=folder.getFolderId()%>&ID=" + sampleId, ""));
+					td.appendChild(createIcon("images/lock.gif", "set_confidentiality.jsp?FoldID=<%=folder.getFolderId()%>&SampIDs=" + sampleId, ""));
 					tr.appendChild(td);
 				} else {
 					tr.appendChild(document.createElement("td"));
@@ -554,7 +554,7 @@
 				}
 				if (recordNode.getElementsByTagName("set-confidentiality")[0].firstChild.nodeValue == 'TRUE') {
 					var td = document.createElement("td");
-					td.appendChild(createIcon("images/lock.gif", "set_confidentiality.jsp?RecType=" + recordType + "&FoldID=<%=folder.getFolderId()%>&ID=" + recordId, ""));
+					td.appendChild(createIcon("images/lock.gif", "set_confidentiality.jsp?FoldID=<%=folder.getFolderId()%>&RecIDs=" + recordId, ""));
 					tr.appendChild(td);
 				} else {
 					tr.appendChild(document.createElement("td"));
@@ -744,8 +744,8 @@
 			%><table border="0" width="550">
 			<tr><td colspan="11" class="deHeading">Selected Locality Actions</td></tr>
 			<tr>
-			<td><a href="javascript:document.FoldForm.ActionType.value='SubmitFeatures';document.FoldForm.submit();"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit" /></a></td>
-			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='SubmitFeatures';document.FoldForm.submit();">Submit</a></td>
+			<td><a href="javascript:document.FoldForm.ActionType.value='Submit';document.FoldForm.submit();"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit" /></a></td>
+			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='Submit';document.FoldForm.submit();">Submit</a></td>
 			</tr>
 			<tr>
 			<td><a href="javascript:document.FoldForm.ActionType.value='RevokeFeatures';document.FoldForm.submit();"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke" /></a></td>
@@ -756,8 +756,12 @@
 			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.action='frf/frf.pdf';document.FoldForm.method='get';document.FoldForm.target='_blank';document.FoldForm.submit();">Print</a></td>
 			</tr>
 			<tr>
-			<td><a href="javascript:document.FoldForm.ActionType.value='DeleteFeatures';document.FoldForm.submit();"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete/Remove" /></a></td>
-			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='DeleteFeatures';document.FoldForm.submit();">Delete/Remove</a></td>
+			<td><a href="javascript:document.FoldForm.ActionType.value='Delete';document.FoldForm.submit();"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete/Remove" /></a></td>
+			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='Delete';document.FoldForm.submit();">Delete/Remove</a></td>
+			</tr>
+			<tr>
+			<td><a href="javascript:document.FoldForm.action='set_confidentiality.jsp';document.FoldForm.method='get';document.FoldForm.submit();"><img src="images/lock.gif" border="0" height="20" width="20" alt="set Confidentiality" /></a></td>
+			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.action='set_confidentiality.jsp';document.FoldForm.method='get';document.FoldForm.submit();">set Confidentiality</a>&nbsp;&nbsp;Note: You can only set samples and records (that you have created) as confidential.</td>
 			</tr>
 			<tr>
 			<td><a href="javascript:document.FoldForm.ActionType.value='MergeFeatures';document.FoldForm.submit();"><img src="images/edit.gif" border="0" height="20" width="20" alt="Merge" /></a></td>

@@ -27,8 +27,8 @@
 %><%@page import="java.util.Date"
 %><%@page import="java.util.Calendar"
 %><%@page import="java.util.GregorianCalendar"
-%><%@page import="java.util.Set"
-%><%@page import="java.util.HashSet"
+%><%@page import="java.util.List"
+%><%@page import="java.util.Vector"
 %><%@page import="java.io.PrintWriter"
 %><%@page import="java.net.URLEncoder"
 %><%!
@@ -36,34 +36,6 @@
 		return "FRED :: Set Confidentiality";
 	}
 
-%><%!
-	public void updateConfidentiality(Audit audit, String confidType, String confidPeriod, String confidLapseEmail, String[] confidGroupIds) throws StorageAccessException {
-		AuditUtil auditUtil = new AuditUtil(HibernateUtil.get().getDAOFactory());
-		if ("confid".equals(confidType)) {
-			audit.setConfidentialFlag(true);
-			audit.setConfidPeriod(new Double(confidPeriod));
-			audit.setConfidLapseEmail(confidLapseEmail);
-			if (FREDConstants.APPROVED.equals(audit.getStatus()))
-				audit.setConfidLapseDate(AuditUtil.getLapseDate(audit.getConfidPeriod()));
-			else
-				audit.setConfidLapseDate(null);
-			audit.setConfidEmailFlag(false);
-			if (confidGroupIds != null) {
-				Set<ConfidentialGroup> confidGroups = new HashSet<ConfidentialGroup>();
-				for (int i = 0; i < confidGroupIds.length; i++)
-					confidGroups.add(auditUtil.getConfidentialGroup(new Integer(confidGroupIds[i])));
-				audit.setConfidGroups(confidGroups);
-			}
-		} else {
-			audit.setConfidentialFlag(false);
-			audit.setConfidLapseDate(null);
-			audit.setConfidPeriod(null);
-			audit.setConfidEmailFlag(null);
-			audit.setConfidLapseEmail(null);
-			audit.setConfidGroups(null);
-		}
-		auditUtil.saveOrUpdate(audit);	
-	}
 %><%
 	PageState state = new PageState(request, response, getServletContext());
 	DAOFactory factory = HibernateUtil.get().getDAOFactory();
@@ -82,71 +54,72 @@
 
 	drawTop(out, et, request, response);
 		
-	if (request.getParameter("ID") != null && request.getParameter("RecType") != null) {
-		int id = Integer.parseInt(request.getParameter("ID"));
-		String recType = request.getParameter("RecType");
+	if (request.getParameter("AuditIDs") != null && "Update".equals(request.getParameter("Action"))) {
+		try {
+			auditUtil.updateConfidentiality(request.getParameterValues("AuditIDs"), request.getParameter("confidType"), request.getParameter("confidPeriod"), request.getParameter("confidLapseEmail"), request.getParameterValues("confidGroups"));
+			if (request.getParameter("PalListAuditIDs") != null) {
+				auditUtil.updateConfidentiality(request.getParameterValues("PalListAuditIDs"), request.getParameter("palConfidType"), request.getParameter("palConfidPeriod"), request.getParameter("palConfidLapseEmail"), request.getParameterValues("palConfidGroups"));
+			}
+			//response.sendRedirect((String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "&q=" + Math.random());
+			return;
+		} catch (Exception e) {
+			System.out.println("********** FRED confidentiality error: " + new java.util.Date());
+			e.printStackTrace();
+		}
+	}
+	
+	if (request.getParameter("SampIDs") != null || request.getParameter("RecIDs") != null) {
+		SampleUtil sampleUtil = new SampleUtil(factory);
+		RecordUtil recordUtil = new RecordUtil(factory);
 		UserFolder folder = null;
 		try {
 			folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("FoldID")), user);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		Audit audit = null;
-		Audit palListAudit = null;
-		String dataType = "";
-		if (FREDConstants.ADOPTION.equals(recType) || FREDConstants.PALEONTOLOGICAL.equals(recType)) {
-			RecordUtil recordUtil = new RecordUtil(factory);
-			Record record = recordUtil.getRecord(id);
-			if (recordUtil.isAllowedEditRecordConfid(user, record, folder))
-				audit = record.getAudit();
-			dataType = "record";
-			if (FREDConstants.PALEONTOLOGICAL.equals(recType))
-				palListAudit = record.getPalListAudit();
-		} else if ("SMP".equals(recType)) {
-			SampleUtil sampleUtil = new SampleUtil(factory);
-			Sample sample = sampleUtil.getSample(id);
+		} catch (Exception e) {	}
+		List<Audit> audits = new Vector<Audit>();
+		List<Audit> palListAudits = new Vector<Audit>();
+		for (String sampId : request.getParameterValues("SampIDs")) {
+			Sample sample = sampleUtil.getSample(Integer.parseInt(sampId));
 			if (sampleUtil.isAllowedEditSampleConfid(user, sample, folder))
-				audit = sample.getAudit();
-			dataType = "sample";
+				audits.add(sample.getAudit());
+		}
+		for (String recId : request.getParameterValues("RecIDs")) {
+			Record record = recordUtil.getRecord(Integer.parseInt(recId));
+			if (recordUtil.isAllowedEditRecordConfid(user, record, folder)) {
+				audits.add(record.getAudit());
+				if (RecordUtil.getRecordType(record).equals(FREDConstants.PALEONTOLOGICAL))
+					palListAudits.add(record.getPalListAudit());
+			}
 		}
 
-		if (audit != null) {
-					
-			if ("Update".equals(request.getParameter("Action"))) {
-				try {
-					updateConfidentiality(audit, request.getParameter("confidType"), request.getParameter("confidPeriod"), request.getParameter("confidLapseEmail"), request.getParameterValues("confidGroups"));
-					if (FREDConstants.PALEONTOLOGICAL.equals(recType))
-						updateConfidentiality(palListAudit, request.getParameter("palConfidType"), request.getParameter("palConfidPeriod"), request.getParameter("palConfidLapseEmail"), request.getParameterValues("palConfidGroups"));
-					response.sendRedirect((String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "&q=" + Math.random());
-					return;
-				} catch (Exception e) {
-					System.out.println("********** FRED confidentiality error: " + new java.util.Date());
-					e.printStackTrace();
-				}
-			}
-				
+		
+		if (audits.size() > 0) {
+			Audit audit = audits.get(0);
+			Audit palListAudit = (palListAudits.size() > 0) ? palListAudits.get(0) : null;
 			%><p><%
 			startDETable(pageContext);
 			%><table border="0" width="550">
 			<tr><td class="deHeading">Instructions</td></tr>
-			<tr><td>You may set this <%=dataType%> to be <i>Open</i> or <i>Confidential</i>.<%
-			if (FREDConstants.PALEONTOLOGICAL.equals(recType)) {
-				%>  You may set the confidentiality of the taxonomic list seperately to the rest of the paleontology record.<%
+			<tr><td>You may set this data to be <i>Open</i> or <i>Confidential</i>.<%
+			if (palListAudits.size() > 0) {
+				%>  You may set the confidentiality of the taxonomic lists seperately.<%
 			}
 			%><ul>
-			<li>If set to <i>Open</i> any registered user will be able to view it (after it has been submitted/approved).</li>
-			<li>If set to <i>Confidential</i> only you (the submitter) plus any member of the groups you have selected will be able to view it.  You must also select a time period that the <%=dataType%> will remain confidential.  At the end of this period you will be notified and may increase the period or the <%=dataType%> will automatically become <i>open</i>.</li>
+			<li>If set to <i>Open</i> any registered user will be able to view the data (after it has been submitted/approved).</li>
+			<li>If set to <i>Confidential</i> only you (the submitter) plus any member of the groups you have selected will be able to view the data.  You must also select a time period that the data will remain confidential.  At the end of this period you will be notified and may increase the period or the data will automatically become <i>open</i>.</li>
 			</ul>
-			Note: Confidentiality can be set at locality, sample (for drillholes and vertical sections), record and taxonomic list levels.  Confidentiality is inherited down the levels, so for example setting a locality as confidential will also mean any records for that locality will also be confidential.  You can increase the level of confidentiality down the levels, but not decrease it - for example you can set a locality to be open, and a particular paleontology record to be confidential, but not the other way around.
+			Note: Confidentiality can be set at sample (for drillholes and vertical sections), record and taxonomic list levels.  Locality data can not be set to confidential, but is only accessible to logged in users.  Confidentiality is inherited down the levels, so for example setting a sample as confidential will also mean any records for that sample will also be confidential.  You can increase the level of confidentiality down the levels, but not decrease it - for example you can set a sample to be open, and a particular paleontology record to be confidential, but not the other way around.
 			</td></tr>
 			</table><%
 			endDETable(pageContext);
 			%></p>
 			
-			<form name="confidForm" method="get" action="set_confidentiality.jsp">
-			<input type="hidden" name="ID" value="<%=id%>">
-			<input type="hidden" name="RecType" value="<%=recType%>"><%
+			<form name="confidForm" method="get" action="set_confidentiality.jsp"><%
+			for (Audit a : audits) {
+				%><input type="hidden" name="AuditIDs" value=<%=a.getAuditId()%>" /><%
+			}
+			for (Audit a : palListAudits) {
+				%><input type="hidden" name="PalListAuditIDs" value=<%=a.getAuditId()%>" /><%
+			}			
 			if (folder != null) {
 				%><input type="hidden" name="FoldID" value="<%=folder.getFolderId()%>"><%
 			}
@@ -168,7 +141,7 @@
 			<option value="2"<%=(confidPeriod == 2) ? " selected" : ""%>>2 years</option>
 			<option value="5"<%=(confidPeriod == 5) ? " selected" : ""%>>5 years</option>
 			</select></td></tr>
-			<tr><td colspan="4">This <%=dataType%> will be restricted to me and the following groups</td></tr><%
+			<tr><td colspan="4">This data will be restricted to me and the following groups</td></tr><%
 			for (ConfidentialGroup confidGroup : auditUtil.getConfidentialGroups(user)) {
 				%><tr><td><input type="checkbox" name="confidGroups" value="<%=confidGroup.getGroupId()%>"<%
 				if (!FREDUtil.isEmpty(audit.getConfidGroups()) && audit.getConfidGroups().contains(confidGroup)) {
@@ -178,7 +151,7 @@
 			}
 			%><tr><td colspan="4" class="heading">Alternative email address (to notify when confidentiality is expiring)&nbsp;&nbsp;&nbsp;<input type="text" name="confidLapseEmail" value="<%=DBUtils.nvl(audit.getConfidLapseEmail())%>" /></td></tr><%
 			
-			if (FREDConstants.PALEONTOLOGICAL.equals(recType)) {
+			if (palListAudits.size() > 0) {
 				%><tr><td>&nbsp;</td></tr>
 				<tr><td colspan="4" class="deHeading">Taxonomic List Confidentiality Options</td></tr>
 				<tr><td><input type="radio" name="palConfidType" value="open" <%=(palListAudit.getConfidentialFlag() == null || !palListAudit.getConfidentialFlag()) ? "checked" : ""%> /></td><td style="text-align:left" class="heading">Open</td></tr>
