@@ -140,63 +140,75 @@
 			}
 						
 			function selectAll() {
-				if (document.FoldForm.FeatIDs.length) {
-					for (var i=0; i<document.FoldForm.FeatIDs.length; i++) {
-						document.FoldForm.FeatIDs[i].checked = true;
+				try {
+					if (document.FoldForm.FeatIDs.length) {
+						for (var i=0; i<document.FoldForm.FeatIDs.length; i++) {
+							document.FoldForm.FeatIDs[i].checked = true;
+						}
+					} else {
+						document.FoldForm.FeatIDs.checked = true;
 					}
-				} else {
-					document.FoldForm.FeatIDs.checked = true;
-				}
+				} catch (e) {}
 			}
 			
 			function unselectAll() {
-				if (document.FoldForm.FeatIDs.length) {
-					for (var i=0; i<document.FoldForm.FeatIDs.length; i++) {
-						document.FoldForm.FeatIDs[i].checked = false;
+				try {
+					if (document.FoldForm.FeatIDs.length) {
+						for (var i=0; i<document.FoldForm.FeatIDs.length; i++) {
+							document.FoldForm.FeatIDs[i].checked = false;
+						}
+					} else {
+						document.FoldForm.FeatIDs.checked = false;
 					}
-				} else {
-					document.FoldForm.FeatIDs.checked = false;
-				}
+				} catch (e) {}
 			}
 
 			function selectAllSamples() {
-				if (document.FoldForm.SampIDs.length) {
-					for (var i=0; i<document.FoldForm.SampIDs.length; i++) {
-						document.FoldForm.SampIDs[i].checked = true;
+				try {
+					if (document.FoldForm.SampIDs.length) {
+						for (var i=0; i<document.FoldForm.SampIDs.length; i++) {
+							document.FoldForm.SampIDs[i].checked = true;
+						}
+					} else {
+						document.FoldForm.SampIDs.checked = true;
 					}
-				} else {
-					document.FoldForm.SampIDs.checked = true;
-				}
+				} catch (e) {}
 			}
 			
 			function unselectAllSamples() {
-				if (document.FoldForm.SampIDs.length) {
-					for (var i=0; i<document.FoldForm.SampIDs.length; i++) {
-						document.FoldForm.SampIDs[i].checked = false;
+				try {
+					if (document.FoldForm.SampIDs.length) {
+						for (var i=0; i<document.FoldForm.SampIDs.length; i++) {
+							document.FoldForm.SampIDs[i].checked = false;
+						}
+					} else {
+						document.FoldForm.SampIDs.checked = false;
 					}
-				} else {
-					document.FoldForm.SampIDs.checked = false;
-				}
+				} catch (e) {}
 			}
 			
 			function selectAllRecords() {
-				if (document.FoldForm.RecIDs.length) {
-					for (var i=0; i<document.FoldForm.RecIDs.length; i++) {
-						document.FoldForm.RecIDs[i].checked = true;
+				try {
+					if (document.FoldForm.RecIDs.length) {
+						for (var i=0; i<document.FoldForm.RecIDs.length; i++) {
+							document.FoldForm.RecIDs[i].checked = true;
+						}
+					} else {
+						document.FoldForm.RecIDs.checked = true;
 					}
-				} else {
-					document.FoldForm.RecIDs.checked = true;
-				}
+				} catch (e) {}
 			}
 			
 			function unselectAllRecords() {
-				if (document.FoldForm.RecIDs.length) {
-					for (var i=0; i<document.FoldForm.RecIDs.length; i++) {
-						document.FoldForm.RecIDs[i].checked = false;
+				try {
+					if (document.FoldForm.RecIDs.length) {
+						for (var i=0; i<document.FoldForm.RecIDs.length; i++) {
+							document.FoldForm.RecIDs[i].checked = false;
+						}
+					} else {
+						document.FoldForm.RecIDs.checked = false;
 					}
-				} else {
-					document.FoldForm.RecIDs.checked = false;
-				}
+				} catch (e) {}
 			}
 
 			function featureAction(featureId, action) {
@@ -306,9 +318,8 @@
 				var tr = document.createElement("tr");
 				tr.setAttribute("id", "feature" + featureId);
 				var checkTd = document.createElement("td");
-				var checkBox = document.createElement("input");
+				var checkBox = createNamedElement("input", "FeatIDs");
 				checkBox.setAttribute("type", "checkbox");
-				checkBox.setAttribute("name", "FeatIDs");
 				checkBox.setAttribute("value", featureId);
 				checkTd.appendChild(checkBox);
 				tr.appendChild(checkTd);
@@ -423,9 +434,8 @@
 				tr.setAttribute("id", "sample" + sampleId);
 				tr.appendChild(document.createElement("td"));
 				var checkTd = document.createElement("td");
-				var check = document.createElement("input");
+				var check = createNamedElement("input", "SampIDs");
 				check.setAttribute("type", "checkbox");
-				check.setAttribute("name", "SampIDs");
 				check.setAttribute("value", sampleId);
 				checkTd.appendChild(check);
 				tr.appendChild(checkTd);
@@ -514,9 +524,8 @@
 				tr.setAttribute("id", "record" + recordId);
 				tr.appendChild(document.createElement("td"));
 				var checkTd = document.createElement("td");
-				var check = document.createElement("input");
+				var check = createNamedElement("input", "RecIDs");
 				check.setAttribute("type", "checkbox");
-				check.setAttribute("name", "RecIDs");
 				check.setAttribute("value", recordId);
 				checkTd.appendChild(check);
 				tr.appendChild(checkTd);
@@ -600,6 +609,21 @@
 				image.setAttribute("border", "0");
 				anchor.appendChild(image);
 				return anchor;
+			}
+			
+			function createNamedElement(type, name) {
+			   var element = null;
+			   // Try the IE way; this fails on standards-compliant browsers
+			   try {
+			      element = document.createElement('<'+type+' name="'+name+'">');
+			   } catch (e) {
+			   }
+			   if (!element || element.nodeName != type.toUpperCase()) {
+			      // Non-IE browser; use canonical method to create named element
+			      element = document.createElement(type);
+			      element.name = name;
+			   }
+			   return element;
 			}
 			
 			function removeFeatureDetails(featureId) {
