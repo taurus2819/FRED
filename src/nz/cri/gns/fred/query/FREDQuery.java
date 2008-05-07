@@ -23,7 +23,6 @@ import nz.cri.gns.db.querybuilder.advanced.TableRequiredTextField;
 import nz.cri.gns.db.querybuilder.advanced.TwoLevelField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlJoin;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlQuery;
-import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTableFilteredTextField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTablePossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTableTextField;
 import nz.cri.gns.fred.dao.FeatureDAO;
@@ -147,7 +146,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[7] = new TableRequiredPossibleValueField("sample.dipDirection", "Dip Direction", getDipDirection(), SAMPLE_TABLE, SAMPLE_JOIN);
 		f[8] = new TableRequiredNumberField("sample.strike", "Strike", SAMPLE_TABLE, SAMPLE_JOIN);
 		f[9] = new TableRequiredPossibleValueField("sample.facing", "Facing", getFacing(), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[10] = new HqlUniqueSubTableFilteredTextField("relationship.stratUnit", "Strat Relationship - Unit", "relationship.relationType.name = 'Stratigraphic'", new String[] {"f.samples", "sample.relationships"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "relationship")});
+		f[10] = new HqlUniqueSubTableTextField("relationship.stratUnit.name", "Strat Relationship - Unit", new String[] {"f.samples", "sample.relationships"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "relationship")});
 		add(new TwoLevelField("Stratigraphic Fields", f));
 		
 		f = new Field[15];
