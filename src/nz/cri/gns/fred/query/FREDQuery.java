@@ -135,7 +135,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[8] = new TableRequiredTextField("sample.significance", "Significance/Comments", SAMPLE_TABLE, SAMPLE_JOIN);
 		add(new TwoLevelField("Collection Fields", f));
 		
-		f = new Field[11];
+		f = new Field[12];
 		f[0] = new TableRequiredTextField("sample.stratUnit", "Stratigraphic Name", SAMPLE_TABLE, SAMPLE_JOIN);
 		f[1] = new AgeField("sample.inferredStage", "Inferred Stage", ages, SAMPLE_TABLE, SAMPLE_JOIN);
 		f[2] = new NumericAgeField("sample.inferredStage", "Inferred Stage (numeric)", SAMPLE_TABLE, SAMPLE_JOIN);
@@ -146,7 +146,8 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[7] = new TableRequiredPossibleValueField("sample.dipDirection", "Dip Direction", getDipDirection(), SAMPLE_TABLE, SAMPLE_JOIN);
 		f[8] = new TableRequiredNumberField("sample.strike", "Strike", SAMPLE_TABLE, SAMPLE_JOIN);
 		f[9] = new TableRequiredPossibleValueField("sample.facing", "Facing", getFacing(), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[10] = new HqlUniqueSubTableTextField("relationship.stratUnit", "Strat Relationship - Unit", new String[] {"f.samples", "sample.relationships"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "relationship")});
+		f[10] = new HqlUniqueSubTableTextField("relationship.feature.frNumber.frNumber", "Sample Relationship - FR Number", new String[] {"f.samples", "sample.relationships"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "relationship")});
+		f[11] = new HqlUniqueSubTableTextField("relationship.stratUnit", "Strat Relationship - Unit", new String[] {"f.samples", "sample.relationships"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "relationship")});
 		add(new TwoLevelField("Stratigraphic Fields", f));
 		
 		f = new Field[15];
