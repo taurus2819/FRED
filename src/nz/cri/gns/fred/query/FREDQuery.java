@@ -23,6 +23,7 @@ import nz.cri.gns.db.querybuilder.advanced.TableRequiredTextField;
 import nz.cri.gns.db.querybuilder.advanced.TwoLevelField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlJoin;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlQuery;
+import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTablePossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTableTextField;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
@@ -34,6 +35,7 @@ import nz.cri.gns.fred.model.ColourModifier;
 import nz.cri.gns.fred.model.Country;
 import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.Folder;
+import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrUserView;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
@@ -121,14 +123,16 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[7] = new MetricDepthField("f.finishDepth", "Base Horizon (m)", "f.depthUnit");
 		add(new TwoLevelField("Vertical Section Fields", f));
 		
-		f = new Field[5];
-		//f[0] = new HqlUniqueSubTablePossibleValueField("collector.personId", "Collector", people, new String[] {"f.samples", "sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "collector")});
-		f[0] = new HqlUniqueSubTableTextField("collector.name", "Collector", new String[] {"f.samples", "sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "collector")});
+		f = new Field[9];
+		f[0] = new HqlUniqueSubTableTextField("person.name", "Collector", new String[] {"f.samples", "sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "person")});
 		f[1] = new TableRequiredDateField("sample.collectionDate", "Collection Date", SAMPLE_TABLE, SAMPLE_JOIN);
 		f[2] = new TableRequiredPossibleValueField("sample.inPlace", "Fossils In Place", getInPlace(), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[3] = new TableRequiredTextField("sample.notCollected", "Not Collected", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[4] = new TableRequiredTextField("sample.significance", "Significance/Comments", SAMPLE_TABLE, SAMPLE_JOIN);
-		//need to add sent to
+		f[3] = new HqlUniqueSubTablePossibleValueField("sentTo.fossilGroup", "Sent To Group", getValues("FROM FossilGroup AS f", FossilGroup.class), new String[] {"f.samples", "sample.sentTos"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "sentTo")});
+		f[4] = new HqlUniqueSubTableTextField("sentTo.person.name", "Sent To Person", new String[] {"f.samples", "sample.sentTos"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "sentTo")});
+		f[5] = new HqlUniqueSubTableTextField("sentTo.lab.name", "Sent To Lab", new String[] {"f.samples", "sample.sentTos"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "sentTo")});
+		f[6] = new HqlUniqueSubTableTextField("sentTo.comments", "Sent To Comments", new String[] {"f.samples", "sample.sentTos"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "sentTo")});
+		f[7] = new TableRequiredTextField("sample.notCollected", "Not Collected", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[8] = new TableRequiredTextField("sample.significance", "Significance/Comments", SAMPLE_TABLE, SAMPLE_JOIN);
 		add(new TwoLevelField("Collection Fields", f));
 		
 		f = new Field[10];
@@ -169,7 +173,6 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		add(new TwoLevelField("Correspondence Fields", f));
 		
 		f = new Field[5];
-		//f[0] = new HqlUniqueSubTablePossibleValueField("adoptor.personId", "Adoptor", people, new String[] {"f.samples", "sample.records", "record.adoption", "adoption.adoptors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "record"), new HqlJoin(false, "adoption"), new HqlJoin(false, "adoptor")});
 		f[0] = new HqlUniqueSubTableTextField("adoptor.personId", "Adoptor", new String[] {"f.samples", "sample.records", "record.adoption", "adoption.adoptors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "record"), new HqlJoin(false, "adoption"), new HqlJoin(false, "adoptor")});
 		f[1] = new TableRequiredDateField("record.adoption.adoptionDate", "Adoption Date", RECORD_TABLES, RECORD_JOINS);
 		f[2] = new AgeField("record.adoption.stage", "Adopted Stage", ages, RECORD_TABLES, RECORD_JOINS);
@@ -178,7 +181,6 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		add(new TwoLevelField("Adoption Fields", f));
 		
 		f = new Field[13];
-		//f[0] = new HqlUniqueSubTablePossibleValueField("identifier.personId", "Identifier", people, new String[] {"f.samples", "sample.records", "record.paleontology", "paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "record"), new HqlJoin(false, "paleontology"), new HqlJoin(false, "identifier")});
 		f[0] = new HqlUniqueSubTableTextField("identifier.personId", "Identifier", new String[] {"f.samples", "sample.records", "record.paleontology", "paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "record"), new HqlJoin(false, "paleontology"), new HqlJoin(false, "identifier")});
 		f[1] = new TableRequiredDateField("record.paleontology.identificationDate", "Identification Date", RECORD_TABLES, RECORD_JOINS);
 		f[2] = new AgeField("record.paleontology.stage", "Stage", ages, RECORD_TABLES, RECORD_JOINS);
