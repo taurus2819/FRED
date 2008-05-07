@@ -146,7 +146,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[7] = new TableRequiredPossibleValueField("sample.dipDirection", "Dip Direction", getDipDirection(), SAMPLE_TABLE, SAMPLE_JOIN);
 		f[8] = new TableRequiredNumberField("sample.strike", "Strike", SAMPLE_TABLE, SAMPLE_JOIN);
 		f[9] = new TableRequiredPossibleValueField("sample.facing", "Facing", getFacing(), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[10] = new HqlUniqueSubTableTextField("relationship.stratUnit.name", "Strat Relationship - Unit", new String[] {"f.samples", "sample.relationships"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "relationship")});
+		f[10] = new HqlUniqueSubTableTextField("relationship.stratUnit", "Strat Relationship - Unit", new String[] {"f.samples", "sample.relationships"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "relationship")});
 		add(new TwoLevelField("Stratigraphic Fields", f));
 		
 		f = new Field[15];
