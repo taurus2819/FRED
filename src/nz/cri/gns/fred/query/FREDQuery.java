@@ -136,7 +136,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[8] = new TableRequiredTextField("sample.significance", "Significance/Comments", SAMPLE_TABLE, SAMPLE_JOIN);
 		add(new TwoLevelField("Collection Fields", f));
 		
-		f = new Field[10];
+		f = new Field[11];
 		f[0] = new TableRequiredTextField("sample.stratUnit", "Stratigraphic Name", SAMPLE_TABLE, SAMPLE_JOIN);
 		f[1] = new AgeField("sample.inferredStage", "Inferred Stage", ages, SAMPLE_TABLE, SAMPLE_JOIN);
 		f[2] = new NumericAgeField("sample.inferredStage", "Inferred Stage (numeric)", SAMPLE_TABLE, SAMPLE_JOIN);
