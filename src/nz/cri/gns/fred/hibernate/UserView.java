@@ -145,6 +145,10 @@ public class UserView implements Serializable, nz.cri.gns.fred.model.UserView {
 		return (familyName + " " + givenName).compareTo(arg0.getFamilyName() + " " + arg0.getGivenName());
 	}
 
+	public String toString() {
+		return fullName;
+	}
+	
 	public String getUniqueIdentifier() {
 		return String.valueOf(userId);
 	}
