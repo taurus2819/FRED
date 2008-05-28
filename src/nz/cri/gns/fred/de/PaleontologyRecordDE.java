@@ -377,7 +377,8 @@ public class PaleontologyRecordDE extends RecordDE {
 							Taxon taxon = entry.getTaxon();
 							out.write("<tr><td>" + group.getName() + "</td>" 
 									+ "<td>" + DBUtils.nvl(entry.getTaxonomicName()) + "</td>" 
-									+ "<td>" + DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "</td>" 
+									+ "<td>" + DBUtils.nvl((taxon != null) ? taxon.getAuthor() : null) + "</td>"
+									+ "<td>" + ((taxon != null) ? taxon.getStatus() : "new") + "</td>"
 									+ "<td>" + ((TaxonomicUtil.encodeTaxaComments(entry) != null) ? TaxonomicUtil.encodeTaxaComments(entry) : "*") + "</td></tr>");
 						}
 					}
