@@ -150,7 +150,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 	public List<IconnedLink> getNavigation() {
         List<IconnedLink> links = new Vector<IconnedLink>(4);
         try {
-            String args = "?FoldID=" + workingFolder.getFolderId() 
+            String args = ((workingFolder == null) ? "?q" : ("?FoldID=" + workingFolder.getFolderId())) 
                 + ((record.getRecordId() == null) ? "" : ("&RecID=" + record.getRecordId()))
                 + "&RecType=" + URLEncoder.encode(RecordUtil.getRecordType(record), "ISO-8859-1");     
             links.add(new IconnedLink("load_record.jsp" + args, "images/load.gif", "Copy From"));
