@@ -168,6 +168,7 @@ public class PaleontologyRecordDE extends RecordDE {
 	                	specCoordStr = commentsBits[1];
 	                	commentsStr = commentsBits[2];
 	                }
+	                nameStr = nameStr.replaceAll("\"", "'");
 	                
 	            	Integer specCount = (specCountStr == null || specCountStr.length() == 0) ? null : new Integer(specCountStr);
 	                for (Iterator<PaleontologyListEntry> it = removedTaxaList.iterator(); it.hasNext(); ) {
