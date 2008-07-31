@@ -16,7 +16,7 @@ public abstract class FREDStaticIPSysJspPage extends FREDIPSysJspPage{
 		NewExtranetTemplate et = FREDIPSysJspPage.getFREDTemplate();
 		
 		//add nav
-		IconnedLink[] il = new IconnedLink[10];
+		IconnedLink[] il = new IconnedLink[9];
 		il[0] = new IconnedLink("quick_start.jsp", "images/book.gif", "Quick Start");
 		il[1] = new IconnedLink("about.jsp", "images/book.gif", "About");
 		il[2] = new IconnedLink("contacts.jsp", "images/register.gif", "Contacts");
@@ -24,9 +24,8 @@ public abstract class FREDStaticIPSysJspPage extends FREDIPSysJspPage{
 		il[4] = new IconnedLink("whats_new.jsp", "images/book.gif", "Whats New");
 		il[5] = new IconnedLink("http://data.gns.cri.nz/register/user_reg.jsp?DBase=FRED", "images/register.gif", "Register for FRED account");
 		il[6] = new IconnedLink("conditions.jsp", "images/tc.gif", "Conditions of Use");
-		il[7] = new IconnedLink("http://maps.gns.cri.nz/website/fred/index.html", "images/map.gif", "Interactive Map");
-		il[8] = new IconnedLink("download.jsp", "images/save.gif", "Downloads");
-		il[9] = new IconnedLink("http://data.gns.cri.nz/staff/email.jsp?id=frf@subject=FRF%20Feeedback", "images/register.gif", "Feedback");
+		il[7] = new IconnedLink("download.jsp", "images/save.gif", "Downloads");
+		il[8] = new IconnedLink("http://data.gns.cri.nz/staff/email.jsp?id=frf@subject=FRF%20Feeedback", "images/register.gif", "Feedback");
 		addButtons(et, il);
 		
 		return et;
