@@ -199,9 +199,6 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return null;		
 	}
 	
-	 /** @param sample
-	 * @return
-	 */
 	public static String getDrillHoleDepthDescription(Sample sample) {
 		Feature feature = sample.getFeature();
 		
@@ -212,28 +209,33 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (!hasDepthInformation(sample))
 			return DEPTH_NOT_SPECIFIED;
 		
-		String unit = sample.getDepthUnit();
-		
+		return getDrillHoleDepthDescription(sample.getTopDepth(), sample.getBottomDepth(), sample.getDepthUnit(), sample.getDrillType());
+	}
+	
+	 /** @param sample
+	 * @return
+	 */
+	public static String getDrillHoleDepthDescription(Double topDepth, Double bottomDepth, String unit, DrillType drillType) {
 		StringBuffer desc = new StringBuffer();
 		
-		if (sample.getTopDepth() != null)
-			desc.append(FREDUtil.formatDoubleForOutput(sample.getTopDepth(), 3)).append(" ").append(unit);
-		if (sample.getBottomDepth() != null) {
-			desc.append(" - ").append(FREDUtil.formatDoubleForOutput(sample.getBottomDepth(), 3)).append(" ").append(unit);
+		if (topDepth != null)
+			desc.append(FREDUtil.formatDoubleForOutput(topDepth, 3)).append(" ").append(unit);
+		if (bottomDepth != null) {
+			desc.append(" - ").append(FREDUtil.formatDoubleForOutput(bottomDepth, 3)).append(" ").append(unit);
 		}
 		
 		if (FEET_UNIT.equals(unit)) {
 			desc.append(" (");
-			if (sample.getTopDepth() != null)
-				desc.append(FREDUtil.formatDoubleForOutput(new Double(sample.getTopDepth().doubleValue() * FT_TO_M), 3)).append(" m");
-			if (sample.getBottomDepth() != null) {
-				desc.append(" - ").append(FREDUtil.formatDoubleForOutput(new Double(sample.getBottomDepth().doubleValue() * FT_TO_M), 3)).append(" m");
+			if (topDepth != null)
+				desc.append(FREDUtil.formatDoubleForOutput(new Double(topDepth * FT_TO_M), 3)).append(" m");
+			if (bottomDepth != null) {
+				desc.append(" - ").append(FREDUtil.formatDoubleForOutput(new Double(bottomDepth * FT_TO_M), 3)).append(" m");
 			}
 			desc.append(")");
 		}
 		
-		if (sample.getDrillType() != null) {
-			desc.append(" ").append(sample.getDrillType().getName());
+		if (drillType != null) {
+			desc.append(" ").append(drillType.getName());
 		}
 		
 		return desc.toString();
