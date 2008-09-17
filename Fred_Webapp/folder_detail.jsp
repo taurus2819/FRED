@@ -653,16 +653,21 @@
 			
 			<form name="FoldForm" method="post" action="folder_detail.jsp">
 			
-			<div id="showInst"><table border="0" width="550" style="border: none; width: 550px"><tr><td style="text-al`ign: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr></table></div><div id="inst" style="visibilty: hidden; display: none"><%
-			startDETable(pageContext);
-			%><table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
-			<tr><td class="deHeading">Folder Instructions</td></tr>
-			<tr><td style="text-align: left">
+			<div id="showInst">
+			<table border="0" width="550" style="border: none; width: 550px">
+			<tr><td style="text-align: left"><a href="javascript:showHide('inst', 'showInst');">Instructions...</a></td></tr>
+			</table>
+			</div>
+			
+			<div id="inst" style="visibilty: hidden; display: none">
+			<table border="0" cellpadding="3" cellspacing="2" width="650">
+			<tr class="midColour"><th>Folder Instructions</th></tr>
+			<tr class="lightColour"><td>
 			<ul>
 			<li>Listed below are the localities you have added to this folder.</li>
 			<li>To create a new locality click on the New: Outcrop, Drillhole or V. Section links above.</li>
 			<li>Working localities are named with their field number or drillhole name until they are allocated a Fossil Record Number.</li>
-			<li>Click on the <i>Plus</i> icon to show/edit drillhole/vertical section samples, and paleontology and adopted age data records</li>
+			<li>Click on the <i>Plus</i> icon to show/edit drillhole/vertical section samples, and paleontology and adopted age data records
 			<ul>
 			<li><img src="images/edit.gif" border="0" height="20" width="20" alt="" /> edit the locality</li>
 			<li><img src="images/lock.gif" border="0" height="20" width="20" alt="" /> set the confidentiality of the sample/record. <i>Note: localities are always open</i></li>
@@ -676,21 +681,19 @@
 			<li><img src="images/new_ado.gif" border="0" height="20" width="20" alt="" /> to create a new adoption record for this locality/sample</li>
 			<li><img src="images/new_pal.gif" border="0" height="20" width="20" alt="" /> to create a new paleontological record for this locality/sample</li>
 			<li><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="" /> to print the locality/sample/record</li>
-			</ul>
+			</ul></li>
 			<li>Multiple localities may be selected by <i>ticking</i> the checkboxes on the left-hand side.  You can then use the tools in the <i>Selected Locality Actions</i> box</li>
 			</ul>
 			</td></tr>
-			<tr><td><a href="http://www.adobe.com/products/acrobat/readstep2.html" target="getAcrobat"><img src="images/get_adobe_reader.gif" border="0" alt="Get Adobe Reader" /></a>&nbsp;&nbsp;Adobe reader is required to print localities</td></tr>
-			<tr><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr></table><%
-			endDETable(pageContext);
-			%></div>
-			
-			<p><%
-			startDETable(pageContext);
-			%><table border="0" width="550"><tr><td colspan="17" class="deHeading">Localities</td></tr>
-			<tr>
-			<th colspan="4">Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="10">Actions</th></tr>
-			<tr><td colspan="17"><img src="images/line.gif" height="3" width="650" /></td></tr><%
+			<tr class="lightColour"><td><a href="http://www.adobe.com/products/acrobat/readstep2.html" target="getAcrobat"><img src="images/get_adobe_reader.gif" border="0" alt="Get Adobe Reader" /></a>&nbsp;&nbsp;Adobe reader is required to print localities</td></tr>
+			<tr class="lightColour"><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr>
+			</table>
+			</div>
+						
+			<p>
+			<table border="0" cellpadding="3" cellspacing="2" width="650">
+			<tr class="midColour"><th colspan="17">Localities</th></tr>
+			<tr class="midColour"><th colspan="4">Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="10">Actions</th></tr><%
 			
 			//Display the features
 			for (Feature feature : featureUtil.getFeaturesInFolder(folder)) {
@@ -698,7 +701,7 @@
 				String status = audit.getStatus();
 				String name = FeatureUtil.getFeatureIdentifyingName(feature);
 				String featName = feature.getFeatureName();
-				%><tr id="feature<%=feature.getFeatureId()%>">	
+				%><tr id="feature<%=feature.getFeatureId()%>" class="lightColour">	
 				<td style="text-align: left" id="plusMinus<%=feature.getFeatureId()%>" class="heading"><a href="javascript: getFeatureDetails('<%=feature.getFeatureId()%>');"><img src="images/plus.gif" border="0" /></a></td>
 				<td style="text-align: left"><input type="checkbox" name="FeatIDs" value="<%=feature.getFeatureId()%>" /></td>
 				<td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=backURL%>&backText=<%=backText%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
@@ -753,41 +756,37 @@
 				<td style="text-align: left">
 				<a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId()%>&q=<%=Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" width="20" height="20" alt="Print Locality" /></a>&nbsp;
 				</td></tr>
-				<tbody id="featureDetails<%=feature.getFeatureId()%>"></tbody>
-				<tr><td colspan="17"><img src="images/line.gif" height="3" width="650" /></td></tr><%
+				<tbody id="featureDetails<%=feature.getFeatureId()%>"></tbody><%
 			}
 			%>
-			<tr><td colspan="17" style="text-align: left">Localities: <a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a>&nbsp;&nbsp;|&nbsp;&nbsp;Samples: <a href="javascript:selectAllSamples()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAllSamples()">Unselect All</a>&nbsp;&nbsp;|&nbsp;&nbsp;Records: <a href="javascript:selectAllRecords()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAllRecords()">Unselect All</a></td></tr>
-			</table><%
-			endDETable(pageContext);
-			%></p>
+			<tr class="midColour"><td colspan="17" style="text-align: left">Localities:&nbsp;<a href="javascript:selectAll()">Select&nbsp;All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect&nbsp;All</a>&nbsp;&nbsp;|&nbsp;&nbsp;Samples:&nbsp;<a href="javascript:selectAllSamples()">Select&nbsp;All</a>&nbsp;&nbsp;<a href="javascript:unselectAllSamples()">Unselect&nbsp;All</a>&nbsp;&nbsp;|&nbsp;&nbsp;Records:&nbsp;<a href="javascript:selectAllRecords()">Select&nbsp;All</a>&nbsp;&nbsp;<a href="javascript:unselectAllRecords()">Unselect&nbsp;All</a></td></tr>
+			</table>
+			</p>
 			
-			<p><%
-			//Selected Actions box
-			startDETable(pageContext);
-			%><table border="0" width="550">
-			<tr><td colspan="11" class="deHeading">Selected Actions</td></tr>
-			<tr>
+			<p>
+			<table border="0" cellpadding="3" cellspacing="2" width="650">
+			<tr class="midColour"><th colspan="2">Selected Actions</th></tr>
+			<tr class="lightColour">
 			<td><a href="javascript:document.FoldForm.ActionType.value='Submit';document.FoldForm.submit();"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit" /></a></td>
 			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='Submit';document.FoldForm.submit();">Submit</a></td>
 			</tr>
-			<tr>
+			<tr class="lightColour">
 			<td><a href="javascript:document.FoldForm.ActionType.value='RevokeFeatures';document.FoldForm.submit();"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke" /></a></td>
 			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='RevokeFeatures';document.FoldForm.submit();">Revoke</a></td>
 			</tr>
-			<tr>
+			<tr class="lightColour">
 			<td><a href="javascript:document.FoldForm.action='frf/frf.pdf';document.FoldForm.method='get';document.FoldForm.target='_blank';document.FoldForm.submit();"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print" /></a></td>
 			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.action='frf/frf.pdf';document.FoldForm.method='get';document.FoldForm.target='_blank';document.FoldForm.submit();">Print</a></td>
 			</tr>
-			<tr>
+			<tr class="lightColour">
 			<td><a href="javascript:document.FoldForm.ActionType.value='Delete';document.FoldForm.submit();"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete/Remove" /></a></td>
 			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='Delete';document.FoldForm.submit();">Delete/Remove</a></td>
 			</tr>
-			<tr>
+			<tr class="lightColour">
 			<td><a href="javascript:document.FoldForm.action='set_confidentiality.jsp';document.FoldForm.method='get';document.FoldForm.submit();"><img src="images/lock.gif" border="0" height="20" width="20" alt="set Confidentiality" /></a></td>
 			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.action='set_confidentiality.jsp';document.FoldForm.submit();">set Confidentiality</a>&nbsp;&nbsp;<span style="font-weight: normal">Note: Only samples and records that you have created</span></td>
 			</tr>
-			<tr>
+			<tr class="lightColour">
 			<td><a href="javascript:document.FoldForm.ActionType.value='MergeFeatures';document.FoldForm.submit();"><img src="images/edit.gif" border="0" height="20" width="20" alt="Merge" /></a></td>
 			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='MergeFeatures';document.FoldForm.submit();">Merge To:</a>&nbsp;
 			<select name="MergeToFeatID"><option value="-">-- Choose --</option><%
@@ -799,7 +798,7 @@
 			%></select>
 			</td>
 			</tr>
-			<tr>
+			<tr class="lightColour">
 			<td><a href="javascript:document.FoldForm.ActionType.value='AlterType';document.FoldForm.submit();"><img src="images/edit.gif" border="0" height="20" width="20" alt="Alter Type" /></a></td>
 			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='AlterType';document.FoldForm.submit();">Alter Locality Type To:</a>&nbsp;
 			<select name="NewFeatType"><option value="-">-- Choose --</option>
@@ -809,9 +808,8 @@
 			</select>
 			</td>
 			</tr>		
-			</table><%		
-			endDETable(pageContext);
-			%></p>
+			</table>
+			</p>
 			
 			<input type="hidden" name="ActionType" value="" />
 			<input type="hidden" name="ID" value="<%=folder.getFolder().getFolderId()%>" />
@@ -819,8 +817,6 @@
 			<input type="hidden" name="FeatID" value="" />
 			<input type="hidden" name="NewFeatName" value="" />
 			<input type="hidden" name="q" value="<%=Math.random()%>" />
-			</table></p>
-			</td></tr></table>
 			</form><%
 			
 		} catch (Exception e) {
@@ -833,7 +829,8 @@
 	}
 	
 	drawBottom(out, et);
-	
-	//Close the session
-	folderUtil.closeSession();
+	try {
+		HibernateUtil.get().getDAOFactory().closeSession();
+	} catch (Exception e) {
+	}
 %>
