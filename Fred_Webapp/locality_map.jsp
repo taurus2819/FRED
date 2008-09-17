@@ -119,11 +119,10 @@
 						}
 						
 						//details
-						%><p><%
-						startDETable(pageContext);
-						%><table border="0" width="600">
-						<tr><td colspan="2" class="deHeading">Locality Details</td></tr>
-						<tr><td class="heading">Original Grid Reference</td><%
+						%><p>
+						<table border="0" cellpadding="3" cellspacing="2" width="620">
+						<tr class="midColour"><th colspan="2">Locality Details</th></tr>
+						<tr class="lightColour"><td class="heading">Original Grid Reference</td><%
 						if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
 							Datum datum = SiteUtil.getFREDDatum(feature);
 							Coordinate coord = SiteUtil.getFREDCoordinate(feature);
@@ -133,24 +132,24 @@
 									Datum nzmgDatum = DatumFactory.createDatum("NZMG");
 									Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
 									if (nzmgDatum.coordinateAcceptable(nzmgCoord)) {
-										%></tr><tr><td class="heading">Converted Grid Reference</td><td><%=nzmgDatum.getHumanStringFor(nzmgCoord)%></td><%
+										%></tr>
+										<tr class="lightColour"><td class="heading">Converted Grid Reference</td><td><%=nzmgDatum.getHumanStringFor(nzmgCoord)%></td><%
 									}
 								} catch (Exception e) { }
 							}
 						}
 						%></tr>
-						<tr><td class="heading">Converted Dec. Lat/Long</td><td><%=ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"%></td></tr>
-						<tr><td class="heading">Map Year</td><td><%=DBUtils.nvl(feature.getMapYear())%></td></tr>
-						<tr><td class="heading">Method</td><td><%=((sv != null && sv.getMethod() != null) ? sv.getMethod() : "&nbsp;")%></td></tr>
-						<tr><td class="heading">Accuracy</td><td><%=((sv != null && sv.getAccuracy() != null) ? "&#177;" + String.valueOf(sv.getAccuracy()) + " m" : "&nbsp;")%></td></tr><%
+						<tr class="lightColour"><td class="heading">Converted Dec. Lat/Long</td><td><%=ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"%></td></tr>
+						<tr class="lightColour"><td class="heading">Map Year</td><td><%=DBUtils.nvl(feature.getMapYear())%></td></tr>
+						<tr class="lightColour"><td class="heading">Method</td><td><%=((sv != null && sv.getMethod() != null) ? sv.getMethod() : "&nbsp;")%></td></tr>
+						<tr class="lightColour"><td class="heading">Accuracy</td><td><%=((sv != null && sv.getAccuracy() != null) ? "&#177;" + String.valueOf(sv.getAccuracy()) + " m" : "&nbsp;")%></td></tr><%
 						if (featureUtil.isAllowedReadFeature(user, feature)) {
-							%><tr><td class="heading">Locality</td><td><%=DBUtils.nvl(feature.getLocality())%></td></tr>
-							<tr><td class="heading">Country</td><td><%=((sv != null && sv.getCountryName() != null) ? sv.getCountryName() : "&nbsp;")%></td></tr>
-							<tr><td class="heading">Coordinate Comments</td><td><%=DBUtils.nvl(feature.getCoordComments())%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Locality</td><td><%=DBUtils.nvl(feature.getLocality())%></td></tr>
+							<tr class="lightColour"><td class="heading">Country</td><td><%=((sv != null && sv.getCountryName() != null) ? sv.getCountryName() : "&nbsp;")%></td></tr>
+							<tr class="lightColour"><td class="heading">Coordinate Comments</td><td><%=DBUtils.nvl(feature.getCoordComments())%></td></tr><%
 						}
-						%></table><%
-						endDETable(pageContext);
-						%></p><%
+						%></table>
+						</p><%
 						
 						
 					} catch (Exception e) {

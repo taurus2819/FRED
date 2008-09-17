@@ -127,26 +127,23 @@
 			}
 
 			//list matching localities
-			%><p><%
-			startDETable(pageContext);
-			%><table width="600" border="0">
-			<tr><td class="deHeading" colspan="5">Matching Localities</td></tr>
-			<tr><td colspan="5">Search Criteria: <em><%=queryString%></em></td></tr><%
+			%><table border="0" cellpadding="3" cellspacing="2" width="550">
+			<tr class="midColour"><th colspan="5">Matching Localities</th></tr>
+			<tr class="midColour"><td colspan="5">Search Criteria: <em><%=queryString%></em></td></tr><%
 			if (maxRangePage > 1) {
-				%><tr><td></td></tr>
-				<tr><td class="heading" colspan="4">Displaying records <%=startIndex%> to <%=endIndex%> of <%=numRecords%></td>
-				<td style="text-align: right"><%
+				%><tr class="midColour"><td class="heading" colspan="3">Displaying records <%=startIndex%> to <%=endIndex%> of <%=numRecords%></td>
+				<td style="text-align: right" colspan="2"><%
 				for (int i = minRangePage; i <= maxRangePage; i++) {
 					%>&nbsp;<a href="result_list.jsp?Page=<%=i%>"<%=((i == pageNum) ? " class=\"heading\"" : "")%>><%=i%></a><%
 				}
 			}
 			%></td></tr>
 
-			<tr><th>FR Number&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Yard FR Number&nbsp;&nbsp;</th><th>Name&nbsp;&nbsp;</th><th>Actions</th></tr><%
+			<tr class="midColour"><th>FR Number&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Yard FR Number&nbsp;&nbsp;</th><th>Name&nbsp;&nbsp;</th><th>Actions</th></tr><%
 			int j = 1;
 			for (Feature feature : features) {
 				if (j >= startIndex && j <= endIndex) {
-					%><tr><td class="heading"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></a>&nbsp;&nbsp;</td>
+					%><tr class="lightColour"><td class="heading"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></a>&nbsp;&nbsp;</td>
 					<td><%=feature.getFeatureType()%>&nbsp;&nbsp;</td><td><%=((feature.getYardFrNumber() != null) ? feature.getYardFrNumber().getFrNumber() : "")%>&nbsp;&nbsp;</td>
 					<td><%=DBUtils.nvl(feature.getFeatureName())%>&nbsp;&nbsp;</td>
 					<td><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;&nbsp;<%
@@ -160,23 +157,22 @@
 			}
 
 			if (maxRangePage > 1) {
-				%><tr><td></td></tr>
-				<tr><td class="heading" colspan="4">Displaying records <%=startIndex%> to <%=endIndex%> of <%=numRecords%></td>
-				<td align="right"><%
+				%><tr class="midColour"><td class="heading" colspan="3">Displaying records <%=startIndex%> to <%=endIndex%> of <%=numRecords%></td>
+				<td style="text-align: right" colspan="2"><%
 				for (int i = minRangePage; i <= maxRangePage; i++) {
 					%>&nbsp;<a href="result_list.jsp?Page=<%=i%>"<%=((i == pageNum) ? " class=\"heading\"" : "")%>><%=i%></a><%
 				}
 			}
 			%></td></tr>
 			</table><%
-			endDETable(pageContext);
-			%></p><%
 		} else {
 			%><p>No records found matching your search criteria</p><%
 		}
 	}
 	
-	%></td></tr></table><%
 	drawBottom(out, et);
-
+	try {
+		HibernateUtil.get().getDAOFactory().closeSession();
+	} catch (Exception e) {
+	}
 %>

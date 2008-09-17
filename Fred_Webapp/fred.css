@@ -66,11 +66,24 @@
 	color:#000000;
 	font-size:14px;
 }
+th {
+	text-align: left;	
+}
+
 .heading {
 	font-weight:bold;
 	color:#666666;
 	font-size:12px;
 }
+
+.lightColour {
+	background-color: #EDE6BF;
+}
+
+.midColour {
+	background-color: #DCCE80;
+}
+
 .smallheading {			/* added by Ben */
 	font-weight:bold;
 	color:#666666;

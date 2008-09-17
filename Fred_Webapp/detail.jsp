@@ -68,9 +68,10 @@
 	public static void addRepeatingCells(PrintWriter out, String heading, Object[] text, boolean newLines) {
 		if (text.length > 0) {
 			if (newLines) {
-				out.println("<tr><td class=\"heading\">" + heading + "</td><td>" + DBUtils.nvl(text[0]) + "</td></tr>");
+				out.println("<tr class=\"lightColour\"><td class=\"heading\">" + heading + "</td><td>" + DBUtils.nvl(text[0]));
 				for (int i = 1; i < text.length; i++)
-					out.println("<tr><td>&nbsp;</td><td>" + DBUtils.nvl(text[i]) + "</td></tr>");
+					out.println("<br/>" + DBUtils.nvl(text[i]));
+				out.println("</td></tr>");
 			} else {
 				StringBuffer textLine = new StringBuffer();
 				for (int i = 0; i < text.length; i++) {
@@ -78,7 +79,7 @@
 					if (i < text.length - 1)
 						textLine.append("; ");
 				}
-				out.println("<tr><td class=\"heading\">" + heading + "</td><td>" + textLine.toString() + "</td></tr>");
+				out.println("<tr class=\"lightColour\"><td class=\"heading\">" + heading + "</td><td>" + textLine.toString() + "</td></tr>");
 			}
 		}
 	}
@@ -244,9 +245,8 @@ try {
 				String[] comms = FeatureUtil.splitWorkingComments(feature.getAudit().getWorkingComments());
 				String workComm = comms[0];
 				String recoll = comms[1];
-				%><p><%
-				startDETable(pageContext);
-				%><form name="RevForm" method="post" action="detail.jsp"><%
+				%><p>
+				<form name="RevForm" method="post" action="detail.jsp"><%
 				if (sample != null) {
 					%><input type="hidden" name="ID" value="<%=sample.getSampleId()%>" /><%
 				} else {
@@ -259,40 +259,41 @@ try {
 					}
 				}
 				%><input type="hidden" name="ActionType" value="" />
-				<table border="0" width="550">
-				<tr><td colspan="4" class="deHeading">Masterfile Curator Options</td></tr>
-				<tr><td colspan="4" class="heading">User Comments</td></tr>
-				<tr><td colspan="4"><%=DBUtils.nvl(workComm)%></td></tr><%
-				if (recoll != null) {
-					%><tr><td colspan="4">The submitter has indicated that this record is a recollection of <%=recoll%>.</td></tr><%
+				<table border="0" cellpadding="3" cellspacing="2" width="550">
+				<tr class="midColour"><th colspan="4">Masterfile Curator Options</th></tr><%
+				if (workComm != null) {
+					%><tr class="lightColour"><td colspan="4" class="heading">User Comments</td></tr>
+					<tr class="lightColour"><td colspan="4"><%=DBUtils.nvl(workComm)%></td></tr><%
 				}
-				%><tr><td><img src="images/blank.gif" height="5" width="1" /></td></tr>
-				<tr><td colspan="4" class="heading">FR Number</td></tr>
-				<tr><td colspan="4">
+				if (recoll != null) {
+					%><tr class="lightColour"><td colspan="4">The submitter has indicated that this record is a recollection of <%=recoll%>.</td></tr><%
+				}
+				%><tr class="lightColour"><td colspan="4"><img src="images/blank.gif" height="5" width="1" /></td></tr>
+				<tr class="lightColour"><td colspan="4" class="heading">FR Number</td></tr>
+				<tr class="lightColour"><td colspan="4">
 				<input type="text" name="MapSheet" size="8" value="<%=frNumber.getMapSheet()%>" />&nbsp;
 				/f&nbsp;<input type="text" name="SerialNum" size="3" value="<%=frNumber.getSerialNumber()%>" />&nbsp;
 				<input type="text" name="RecollNum" size="1" value="" />
 				</td></tr>
-				<tr><td colspan="4" class="heading">Curator Comments</td></tr>
-				<tr><td colspan="4"><textarea name="CurComm" rows="2" cols="80"><%=DBUtils.nvl(audit.getCuratorComments())%></textarea></td></tr>
-				<tr><td><a href="#" onClick="document.RevForm.ActionType.value='Approve';document.RevForm.submit();"><img src="images/ok.gif" width="20" height="20" border="0" alt="Approve" /></a></td><td class="heading" style="text-align: left">Approve</td>
+				<tr class="lightColour"><td colspan="4" class="heading">Curator Comments</td></tr>
+				<tr class="lightColour"><td colspan="4"><textarea name="CurComm" rows="2" cols="80"><%=DBUtils.nvl(audit.getCuratorComments())%></textarea></td></tr>
+				<tr class="lightColour"><td><a href="#" onClick="document.RevForm.ActionType.value='Approve';document.RevForm.submit();"><img src="images/ok.gif" width="20" height="20" border="0" alt="Approve" /></a></td><td class="heading" style="text-align: left">Approve</td>
 				<td><a href="#" onClick="document.RevForm.ActionType.value='Reject';document.RevForm.submit();"><img src="images/cancel.gif" width="20" height="20" border="0" alt="reject" /></a></td><td class="heading" style="text-align: left">Reject</td></tr>
+				</table>
 				</form>
-				</table><%
-				endDETable(pageContext);
-				%></p><%
+				</p><%
 			}						
 			
 			//Locality Data
-			%><p><%
-			startDETable(pageContext);
-			%><table border="0" width="550"><tr><td colspan="2" class="deHeading">Locality Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr>
-			<tr><td class="heading">FR Number</td><td class="heading"><%=((feature.getFrNumber() != null) ? feature.getFrNumber().getFrNumber() : "not yet allocated")%></td></tr><%
+			%><p>
+			<table border="0" cellpadding="3" cellspacing="2" width="550">
+			<tr class="midColour"><th colspan="2">Locality Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></th></tr>
+			<tr class="lightColour"><td class="heading">FR Number</td><td class="heading"><%=((feature.getFrNumber() != null) ? feature.getFrNumber().getFrNumber() : "not yet allocated")%></td></tr><%
 			if (feature.getYardFrNumber() != null) {
-				%><tr><td class="heading">Yard FR Number</td><td><%=feature.getYardFrNumber().getFrNumber()%></td></tr><%
+				%><tr class="lightColour"><td class="heading">Yard FR Number</td><td><%=feature.getYardFrNumber().getFrNumber()%></td></tr><%
 			}
-			%><tr><td class="heading">Masterfile</td><td><%=((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : "undefined")%></td></tr>
-			<tr><td class="heading">Locality Type</td><td><%=featType%></td></tr><%
+			%><tr class="lightColour"><td class="heading">Masterfile</td><td><%=((feature.getMasterFile() != null) ? feature.getMasterFile().getName() : "undefined")%></td></tr>
+			<tr class="lightColour"><td class="heading">Locality Type</td><td><%=featType%></td></tr><%
 			if (feature.getFeatureName() != null) {
 				String featTypeLbl, linkStart = "", linkStop = "", petWellLink = null;
 				if (featType.equals(FREDConstants.OUTCROP)) {
@@ -307,84 +308,84 @@ try {
 					linkStart = "<a href=\"detail.jsp?FeatID=" + feature.getFeatureId() + backStr + "\">";
 					linkStop = "</a>";
 				}
-				%><tr><td class="heading"><%=featTypeLbl%></td><td><%=linkStart + DBUtils.nvl(feature.getFeatureName()) + linkStop%>
+				%><tr class="lightColour"><td class="heading"><%=featTypeLbl%></td><td><%=linkStart + DBUtils.nvl(feature.getFeatureName()) + linkStop%>
 				<%=((petWellLink != null) ? "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"" + petWellLink + "\" target=\"_blank\" class=\"boldlink\">Open GNS Petroleum Wells Database</a>" : "")%></td></tr><%
 			}
 			SiteView sv = null;
 			if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
 				Datum datum = SiteUtil.getFREDDatum(feature);
 				Coordinate coord = SiteUtil.getFREDCoordinate(feature);
-				%><tr><td class="heading">Original Grid Reference</td><td><%=datum.getHumanStringFor(coord).replaceAll("Geographic ", "")%></td></tr><%
+				%><tr class="lightColour"><td class="heading">Original Grid Reference</td><td><%=datum.getHumanStringFor(coord).replaceAll("Geographic ", "")%></td></tr><%
 				if (!datum.getName().equals("NZMG")) {
 					try {
 						Datum nzmgDatum = DatumFactory.createDatum("NZMG");
 						Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
 						if (nzmgDatum.coordinateAcceptable(nzmgCoord)) {
-							%><tr><td class="heading">Converted Grid Reference</td><td><%=nzmgDatum.getHumanStringFor(nzmgCoord)%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Converted Grid Reference</td><td><%=nzmgDatum.getHumanStringFor(nzmgCoord)%></td></tr><%
 						}
 					} catch (Exception e) { }
 				}
 				if (feature.getSiteView() != null) {
 					sv = feature.getSiteView();
 					LatLong ll = SiteUtil.getSiteLatLong(sv);
-					%><tr><td class="heading">Converted Dec. Lat/Long</td><td><%=ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"%></td></tr><%
+					%><tr class="lightColour"><td class="heading">Converted Dec. Lat/Long</td><td><%=ll.getLatAsDecDegree(5) + " " + ll.getLongAsDecDegree(5) + " (NZGD49)"%></td></tr><%
 				}	
 			}
 			if (feature.getMapYear() != null) {
-				%><tr><td class="heading">Map Year</td><td><%=DBUtils.nvl(feature.getMapYear())%></td></tr><%
+				%><tr class="lightColour"><td class="heading">Map Year</td><td><%=DBUtils.nvl(feature.getMapYear())%></td></tr><%
 			}
 			if (sv != null && sv.getMethod() != null) {
-				%><tr><td class="heading">Method</td><td><%=sv.getMethod()%></td></tr><%
+				%><tr class="lightColour"><td class="heading">Method</td><td><%=sv.getMethod()%></td></tr><%
 			}
 			if (sv != null && sv.getAccuracy() != null) {
-				%><tr><td class="heading">Accuracy</td><td>&#177;<%=String.valueOf(sv.getAccuracy())%> m</td></tr><%
+				%><tr class="lightColour"><td class="heading">Accuracy</td><td>&#177;<%=String.valueOf(sv.getAccuracy())%> m</td></tr><%
 			}
 			if (isAllowedReadFeature) {
 				if (feature.getLocality() != null) {
-					%><tr><td class="heading">Locality</td><td><%=feature.getLocality()%></td></tr><%
+					%><tr class="lightColour"><td class="heading">Locality</td><td><%=feature.getLocality()%></td></tr><%
 				}
 				if (sv != null && sv.getCountryName() != null) {
-					%><tr><td class="heading">Country</td><td><%=sv.getCountryName()%></td></tr><%
+					%><tr class="lightColour"><td class="heading">Country</td><td><%=sv.getCountryName()%></td></tr><%
 				}
 				if (feature.getCoordComments() != null) {
-					%><tr><td class="heading">Coordinate Comments</td><td><%=DBUtils.nvl(feature.getCoordComments())%></td></tr><%
+					%><tr class="lightColour"><td class="heading">Coordinate Comments</td><td><%=DBUtils.nvl(feature.getCoordComments())%></td></tr><%
 				}
 
 				//Drillhole/Vert Sect fields
 				if (!featType.equals(FREDConstants.OUTCROP)) {
 					if (feature.getPerson() != null) {
-					%><tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector")%></td><td><%=feature.getPerson().getName()%></td></tr><%
+					%><tr class="lightColour"><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Operating Company" : "Section Collector")%></td><td><%=feature.getPerson().getName()%></td></tr><%
 					}
 					if (feature.getStartDate() != null) {
-						%><tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date")%></td><td><%=FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding())%></td></tr><%
+						%><tr class="lightColour"><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Spud Date" : "Sampling Start Date")%></td><td><%=FREDUtil.formatDateForOutput(feature.getStartDate(), feature.getStartDateRounding())%></td></tr><%
 					}
 					if (feature.getFinishDate() != null) {
-						%><tr><td class="heading">Completion Date</td><td><%=FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding())%></td></tr><%
+						%><tr class="lightColour"><td class="heading">Completion Date</td><td><%=FREDUtil.formatDateForOutput(feature.getFinishDate(), feature.getFinishDateRounding())%></td></tr><%
 					}
 					if (featType.equals(FREDConstants.DRILLHOLE) && feature.getDrillholeLicenceName() != null) {
-						%><tr><td class="heading">Licence Area</td><td><%=feature.getDrillholeLicenceName()%></td></tr><%
+						%><tr class="lightColour"><td class="heading">Licence Area</td><td><%=feature.getDrillholeLicenceName()%></td></tr><%
 					}
 					if (feature.getDatumType() != null) {
-						%><tr><td class="heading">Datum Type</td><td><%=feature.getDatumType()%></td></tr><%
+						%><tr class="lightColour"><td class="heading">Datum Type</td><td><%=feature.getDatumType()%></td></tr><%
 					}
 					if (feature.getDatumElevation() != null) {
-						%><tr><td class="heading">Datum Elevation</td><td><%=FeatureUtil.formatDepthForOutput(feature.getDatumElevation(), feature.getDepthUnit())%> asl</td></tr><%
+						%><tr class="lightColour"><td class="heading">Datum Elevation</td><td><%=FeatureUtil.formatDepthForOutput(feature.getDatumElevation(), feature.getDepthUnit())%> asl</td></tr><%
 					}
 					if (feature.getStartDepth() != null) {
-						%><tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon")%></td><td><%=FeatureUtil.formatDepthForOutput(feature.getStartDepth(), feature.getDepthUnit())%></td></tr><%
+						%><tr class="lightColour"><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Kick-off Depth" : "Top Horizon")%></td><td><%=FeatureUtil.formatDepthForOutput(feature.getStartDepth(), feature.getDepthUnit())%></td></tr><%
 					}
 					if (feature.getFinishDepth() != null) {
-						%><tr><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon")%></td><td><%=FeatureUtil.formatDepthForOutput(feature.getFinishDepth(), feature.getDepthUnit())%></td></tr><%
+						%><tr class="lightColour"><td class="heading"><%=((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon")%></td><td><%=FeatureUtil.formatDepthForOutput(feature.getFinishDepth(), feature.getDepthUnit())%></td></tr><%
 					}
 				}
 				if (feature.getComments() != null) {
-					%><tr><td class="heading">Locality Comments</td><td><%=feature.getComments()%></td></tr><%
+					%><tr class="lightColour"><td class="heading">Locality Comments</td><td><%=feature.getComments()%></td></tr><%
 				}
 			
 				//Image/Files
 				if (feature.getFeatureMetas().size() > 0) {
-					%><tr><td colspan="2" class="heading">Images/Files</td></tr>
-					<tr><td colspan="2"><table border="0" cellspacing="0" width="600"><%
+					%><tr class="lightColour"><td colspan="2" class="heading">Images/Files</td></tr>
+					<tr class="lightColour"><td colspan="2"><table border="0" cellspacing="0" width="550"><%
 					int y = 1;
 					%><tr><%
 					for (Meta meta : feature.getFeatureMetas()) {
@@ -397,49 +398,43 @@ try {
 					%></td></tr></table></td></tr><%
 				}
 
-				%></table><%
-				endDETable(pageContext);
-				%></p><%
+				%><tr><td>&nbsp;</td></tr><%
 
 				//Sample
 				if (sample != null) {
 					if (sampleUtil.isAllowedReadSample(user, sample)) {
 						//Sample Data
-						%><p><%
-						startDETable(pageContext);
-						%><table border="0" width="550">
-						<tr><td colspan="2" class="deHeading">Sample Information<%
+						%><tr class="midColour"><th colspan="2">Sample Information<%
 						if (!featType.equals(FREDConstants.OUTCROP)) {
 							//add PDF link
 							%>&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?SampIDs=<%=sample.getSampleId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a><%
 						}
-						%></td></tr><%
+						%></th></tr><%
 						if (!featType.equals(FREDConstants.OUTCROP)) {
 							if (sampleUtil.isSampleConfidential(sample)) {
-								%><tr><td style="text-align: left; color: #FF0000" colspan="2">This sample has been marked as confidential.  The following people/groups have been granted access to this sample: <%=sampleUtil.getSampleConfidAccessListDescription(sample)%>.<%=(sample.getAudit().getConfidLapseDate() != null) ? " This sample will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(sample.getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
+								%><tr class="lightColour"><td style="text-align: left; color: #FF0000" colspan="2">This sample has been marked as confidential.  The following people/groups have been granted access to this sample: <%=sampleUtil.getSampleConfidAccessListDescription(sample)%>.<%=(sample.getAudit().getConfidLapseDate() != null) ? " This sample will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(sample.getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
 							}
 							if (sample.getFrNumber() != null && !sample.getFrNumber().equals(feature.getFrNumber())) {
-								%><tr><td class="heading">Sample FR Number</td><td class="heading"><%=sample.getFrNumber().getFrNumber()%></td></tr><%
+								%><tr class="lightColour"><td class="heading">Sample FR Number</td><td class="heading"><%=sample.getFrNumber().getFrNumber()%></td></tr><%
 							}
 							if (sample.getYardFrNumber() != null && !sample.getYardFrNumber().equals(feature.getYardFrNumber())) {
-								%><tr><td class="heading">Sample Yard FR Number</td><td><%=sample.getYardFrNumber().getFrNumber()%></td></tr><%
+								%><tr class="lightColour"><td class="heading">Sample Yard FR Number</td><td><%=sample.getYardFrNumber().getFrNumber()%></td></tr><%
 							}
 							if (SampleUtil.getDrillHoleDepthDescription(sample) != null) {
-								%><tr><td class="heading">Sample Depth</td><td><%=SampleUtil.getDrillHoleDepthDescription(sample)%></td></tr><%
+								%><tr class="lightColour"><td class="heading">Sample Depth</td><td><%=SampleUtil.getDrillHoleDepthDescription(sample)%></td></tr><%
 							}
 							//check for samples above and below current one
 							Sample sampleAbove = SampleUtil.getSampleAbove(sample);
 							if (sampleAbove != null && sampleUtil.isAllowedReadSample(user, sampleAbove)) {
-								%><tr><td class="heading">Sample Above</td><td><a href="detail.jsp?ID=<%=sampleAbove.getSampleId() + backStr%>"><%=SampleUtil.getDrillHoleDepthDescription(sampleAbove)%></a></td></tr><%
+								%><tr class="lightColour"><td class="heading">Sample Above</td><td><a href="detail.jsp?ID=<%=sampleAbove.getSampleId() + backStr%>"><%=SampleUtil.getDrillHoleDepthDescription(sampleAbove)%></a></td></tr><%
 							}
 							Sample sampleBelow = SampleUtil.getSampleBelow(sample);
 							if (sampleBelow != null && sampleUtil.isAllowedReadSample(user, sampleBelow)) {
-								%><tr><td class="heading">Sample Below</td><td><a href="detail.jsp?ID=<%=sampleBelow.getSampleId() + backStr%>"><%=SampleUtil.getDrillHoleDepthDescription(sampleBelow)%></a></td></tr><%
+								%><tr class="lightColour"><td class="heading">Sample Below</td><td><a href="detail.jsp?ID=<%=sampleBelow.getSampleId() + backStr%>"><%=SampleUtil.getDrillHoleDepthDescription(sampleBelow)%></a></td></tr><%
 							}
 						}
-						%><tr><td>&nbsp;</td></tr>
 						
-						<tr><td class="bigheading" colspan="2">Collection Information</td></tr><%
+						%><tr class="midColour"><th colspan="2">Collection Information</th></tr><%
 						Object[] collectors = sample.getCollectors().toArray();
 						Arrays.sort(collectors);
 						String[] collectorStr = new String[collectors.length];
@@ -447,10 +442,10 @@ try {
 							collectorStr[i] = ((PersonRelationship) collectors[i]).getDisplayName();
 						addRepeatingCells(new PrintWriter(out), "Collectors", collectorStr, false);
 						if (sample.getCollectionDate() != null) {
-							%><tr><td class="heading">Collection Date</td><td><%=FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding())%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Collection Date</td><td><%=FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding())%></td></tr><%
 						}
 						if (sample.getInPlace() != null) {
-							%><tr><td class="heading">Fossils in Place</td><td><%=sample.getInPlace()%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Fossils in Place</td><td><%=sample.getInPlace()%></td></tr><%
 						}
 						Object[] sentTos = sample.getSentTos().toArray();
 						String[] sentToStr = new String[sentTos.length];
@@ -458,23 +453,21 @@ try {
 							sentToStr[i] = SampleUtil.getSentToDescription((SentTo) sentTos[i]);
 						addRepeatingCells(new PrintWriter(out), "Sent To", sentToStr, true);
 						if (sample.getNotCollected() != null) {
-							%><tr><td class="heading">Not Collected</td><td><%=sample.getNotCollected()%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Not Collected</td><td><%=sample.getNotCollected()%></td></tr><%
 						}
 						if (sample.getSignificance() != null) {
-							%><tr><td class="heading">Significance/Comments</td><td><%=sample.getSignificance()%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Significance/Comments</td><td><%=sample.getSignificance()%></td></tr><%
 						}
 		
-						%><tr><td>&nbsp;</td></tr>
-		
-						<tr><td class="bigheading" colspan="2">Stratigraphy</td></tr><%
+						%><tr class="midColour"><th colspan="2">Stratigraphy</th></tr><%
 						if (sample.getStratUnit() != null) {
-							%><tr><td class="heading">Stratigraphic Name</td><td><%=sample.getStratUnit()%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Stratigraphic Name</td><td><%=sample.getStratUnit()%></td></tr><%
 						}
 						if (sample.getInferredStage() != null) {
-							%><tr><td class="heading">Inferred Stage</td><td><%=StageUtil.getStageDescription(sample.getInferredStage())%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Inferred Stage</td><td><%=StageUtil.getStageDescription(sample.getInferredStage())%></td></tr><%
 						}
 						if (sample.getKnownStage() != null) {
-							%><tr><td class="heading">Known Stage</td><td><%=StageUtil.getStageDescription(sample.getKnownStage())%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Known Stage</td><td><%=StageUtil.getStageDescription(sample.getKnownStage())%></td></tr><%
 						}
 						Object[] relationships = sampleUtil.getRelationships(sample, "Sample", "nearby").toArray();
 						String[] relationshipStr = new String[relationships.length];
@@ -492,42 +485,40 @@ try {
 							relationshipStr[i] = SampleUtil.getRelationshipDescription((Relationship) relationships[i]);
 						addRepeatingCells(new PrintWriter(out), "Strat. Relationships", relationshipStr, true);
 						if (sample.getColumnMap() != null) {
-							%><tr><td class="heading">Column/Map</td><td><%=sample.getColumnMap()%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Column/Map</td><td><%=sample.getColumnMap()%></td></tr><%
 						}
 						String dipStrike = SampleUtil.getDipStrikeDescription(sample);
 						if (dipStrike != null && dipStrike.length() > 0) {
-							%><tr><td class="heading">Dip/Strike</td><td><%=dipStrike%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Dip/Strike</td><td><%=dipStrike%></td></tr><%
 						}
 						if (sample.getStratComments() != null) {
-							%><tr><td class="heading">Stratigraphy Comments</td><td><%=sample.getStratComments()%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Stratigraphy Comments</td><td><%=sample.getStratComments()%></td></tr><%
 						}
-						
-						%><tr><td>&nbsp;</td></tr>
 		
-						<tr><td class="bigheading" colspan="2">Sedimentary Features</td></tr><%
+						%><tr class="midColour"><th colspan="2">Sedimentary Features</th></tr><%
 						String grainSize = SampleUtil.getGrainSizeDescription(sample);
 						if (grainSize != null && grainSize.length() > 0) {
-							%><tr><td class="heading">Grain Size</td><td><%=grainSize%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Grain Size</td><td><%=grainSize%></td></tr><%
 						}
 						if (sample.getBedThickness() != null) {
-							%><tr><td class="heading">Bedding Thickness</td><td><%=sample.getBedThickness().getName()%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Bedding Thickness</td><td><%=sample.getBedThickness().getName()%></td></tr><%
 						}
 						String bedDesc = SampleUtil.getBeddingDescription(sample);
 						if (bedDesc != null && bedDesc.length() > 0) {
-							%><tr><td class="heading">Bedding Features</td><td><%=bedDesc%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Bedding Features</td><td><%=bedDesc%></td></tr><%
 						}
 						if (sample.getWeathering() != null) {
-							%><tr><td class="heading">Weathering</td><td><%=sample.getWeathering().getName()%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Weathering</td><td><%=sample.getWeathering().getName()%></td></tr><%
 						}
 						if (sample.getHardness() != null) {
-							%><tr><td class="heading">Hardness</td><td><%=sample.getHardness().getName()%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Hardness</td><td><%=sample.getHardness().getName()%></td></tr><%
 						}
 						if (sample.getCarbonate() != null) {
-							%><tr><td class="heading">Carbonate</td><td><%=sample.getCarbonate().getName()%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Carbonate</td><td><%=sample.getCarbonate().getName()%></td></tr><%
 						}
 						String colourDesc = SampleUtil.getColourDescription(sample);
 						if (colourDesc != null && colourDesc.length() > 0) {
-							%><tr><td class="heading">Colour</td><td><%=colourDesc%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Colour</td><td><%=colourDesc%></td></tr><%
 						}
 						Object[] sedFeatures = sample.getSedimentaryFeatures().toArray();
 						String[] sedFeaturesStr = new String[sedFeatures.length];
@@ -535,19 +526,19 @@ try {
 							sedFeaturesStr[i] = SampleUtil.getSedFeatureDescription((SedimentaryFeature) sedFeatures[i]);
 						addRepeatingCells(new PrintWriter(out), "Additional Features", sedFeaturesStr, false);
 						if (sample.getDepositionEnv() != null) {
-							%><tr><td class="heading">Inferred Environment</td><td><%=sample.getDepositionEnv()%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Inferred Environment</td><td><%=sample.getDepositionEnv()%></td></tr><%
 						}
 						if (sample.getRockNature() != null) {
-							%><tr><td class="heading">Nature of Rock Unit</td><td><%=sample.getRockNature()%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Nature of Rock Unit</td><td><%=sample.getRockNature()%></td></tr><%
 						}
 						if (sample.getCorrespondence() != null) {
-							%><tr><td class="heading">Correspondence</td><td><%=sample.getCorrespondence()%></td></tr><%
+							%><tr class="lightColour"><td class="heading">Correspondence</td><td><%=sample.getCorrespondence()%></td></tr><%
 						}
 						
 						//Image/Files
 						if (sample.getSampleMetas().size() > 0) {
-							%><tr><td colspan="2" class="heading">Images/Files</td></tr>
-							<tr><td colspan="2"><table border="0" cellspacing="0" width="600"><%
+							%><tr class="lightColour"><td colspan="2" class="heading">Images/Files</td></tr>
+							<tr class="lightColour"><td colspan="2"><table border="0" cellspacing="0" width="550"><%
 							int y = 1;
 							%><tr><%
 							for (Meta meta : sample.getSampleMetas()) {
@@ -560,18 +551,14 @@ try {
 							%></td></tr></table></td></tr><%
 						}
 		
-						%></table><%
-						endDETable(pageContext);
-						%></p><%
+						%><tr><td>&nbsp;</td></tr><%
 						
 						//Adoption
 						for (Adoption adoRecord : sampleUtil.getAdoptionRecords(sample)) {
 							if (recordUtil.isAllowedReadRecord(user, adoRecord.getRecord())) {
-								%><p><%
-								startDETable(pageContext);
-								%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Adoption Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?RecIDs=<%=adoRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></td></tr><%
+								%><tr class="midColour"><th colspan="2">Adoption Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?RecIDs=<%=adoRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></th></tr><%
 								if (recordUtil.isRecordConfidential(adoRecord.getRecord())) {
-									%><tr><td style="text-align: left; color: #FF0000" colspan="2">This adoption record has been marked as confidential. The following people/groups have been granted access to this record: <%=recordUtil.getRecordConfidAccessListDescription(adoRecord.getRecord())%>.<%=(adoRecord.getRecord().getAudit().getConfidLapseDate() != null) ? " This record will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(adoRecord.getRecord().getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
+									%><tr class="lightColour"><td style="text-align: left; color: #FF0000" colspan="2">This adoption record has been marked as confidential. The following people/groups have been granted access to this record: <%=recordUtil.getRecordConfidAccessListDescription(adoRecord.getRecord())%>.<%=(adoRecord.getRecord().getAudit().getConfidLapseDate() != null) ? " This record will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(adoRecord.getRecord().getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
 								}
 								Object[] adoptors = adoRecord.getAdoptors().toArray();
 								String[] adoptorsStr = new String[adoptors.length];
@@ -579,19 +566,19 @@ try {
 									adoptorsStr[j] = ((PersonRelationship) adoptors[j]).getDisplayName();
 								addRepeatingCells(new PrintWriter(out), "Adoptors", adoptorsStr, false);
 								if (adoRecord.getAdoptionDate() != null) {
-									%><tr><td class="heading">Adoption Date</td><td><%=FREDUtil.formatDateForOutput(adoRecord.getAdoptionDate(), adoRecord.getDateRounding())%></td></tr><%
+									%><tr class="lightColour"><td class="heading">Adoption Date</td><td><%=FREDUtil.formatDateForOutput(adoRecord.getAdoptionDate(), adoRecord.getDateRounding())%></td></tr><%
 								}
 								if (adoRecord.getStage() != null) {
-									%><tr><td class="heading">Adopted Stage</td><td><%=StageUtil.getStageDescription(adoRecord.getStage())%></td></tr><%
+									%><tr class="lightColour"><td class="heading">Adopted Stage</td><td><%=StageUtil.getStageDescription(adoRecord.getStage())%></td></tr><%
 								}
 								if (adoRecord.getComments() != null) {
-									%><tr><td class="heading">Comments</td><td><%=adoRecord.getComments()%></td></tr><%
+									%><tr class="lightColour"><td class="heading">Comments</td><td><%=adoRecord.getComments()%></td></tr><%
 								}
 								
 								//Image/Files
 								if (adoRecord.getRecord().getRecordMetas().size() > 0) {
-									%><tr><td colspan="2" class="heading">Images/Files</td></tr>
-									<tr><td colspan="2"><table border="0" cellspacing="0" width="600"><%
+									%><tr class="lightColour"><td colspan="2" class="heading">Images/Files</td></tr>
+									<tr class="lightColour"><td colspan="2"><table border="0" cellspacing="0" width="600"><%
 									int y = 1;
 									%><tr><%
 									for (Meta meta : adoRecord.getRecord().getRecordMetas()) {
@@ -603,22 +590,18 @@ try {
 									}
 									%></td></tr></table></td></tr><%
 								}
-								%></table><%
-								endDETable(pageContext);
-								%></p><%
+								%><tr><td>&nbsp;</td></tr><%
 							}
 						}
 			
 						//Paleontology
 						for (Paleontology palRecord : sampleUtil.getPaleontologyRecords(sample)) {
 							if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {
-								%><p><%
-								startDETable(pageContext);
-								%><table border="0" width="550"><tr><td colspan="3" class="deHeading">Paleontology Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?RecIDs=<%=palRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></td></tr><%
+								%><tr class="midColour"><th colspan="2">Paleontology Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?RecIDs=<%=palRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></th></tr><%
 								if (recordUtil.isRecordConfidential(palRecord.getRecord())) {
-									%><tr><td style="text-align: left; color: #FF0000" colspan="2">This paleontology record has been marked as confidential. The following people/groups have been granted access to this record: <%=recordUtil.getRecordConfidAccessListDescription(palRecord.getRecord())%>.<%=(palRecord.getRecord().getAudit().getConfidLapseDate() != null) ? " This record will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(palRecord.getRecord().getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
+									%><tr class="lightColour"><td style="text-align: left; color: #FF0000" colspan="2">This paleontology record has been marked as confidential. The following people/groups have been granted access to this record: <%=recordUtil.getRecordConfidAccessListDescription(palRecord.getRecord())%>.<%=(palRecord.getRecord().getAudit().getConfidLapseDate() != null) ? " This record will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(palRecord.getRecord().getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
 								} else if (recordUtil.isPalListConfidential(palRecord)) {
-									%><tr><td style="text-align: left; color: #FF0000" colspan="2">The taxonomic list in this paleontology record has been marked as confidential. The following people/groups have been granted access to this record: <%=recordUtil.getPalListConfidAccessListDescription(palRecord)%>.<%=(palRecord.getRecord().getPalListAudit().getConfidLapseDate() != null) ? " This list will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(palRecord.getRecord().getPalListAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
+									%><tr class="lightColour"><td style="text-align: left; color: #FF0000" colspan="2">The taxonomic list in this paleontology record has been marked as confidential. The following people/groups have been granted access to this record: <%=recordUtil.getPalListConfidAccessListDescription(palRecord)%>.<%=(palRecord.getRecord().getPalListAudit().getConfidLapseDate() != null) ? " This list will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(palRecord.getRecord().getPalListAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
 								}
 								Object[] identifiers = palRecord.getIdentifiers().toArray();
 								String[] identifiersStr = new String[identifiers.length];
@@ -626,43 +609,45 @@ try {
 									identifiersStr[j] = ((PersonRelationship) identifiers[j]).getDisplayName();
 								addRepeatingCells(new PrintWriter(out), "Identifiers", identifiersStr, false);
 								if (palRecord.getIdentificationDate() != null) {
-									%><tr><td class="heading">Identification Date</td><td><%=FREDUtil.formatDateForOutput(palRecord.getIdentificationDate(), palRecord.getDateRounding())%></td></tr><%
+									%><tr class="lightColour"><td class="heading">Identification Date</td><td><%=FREDUtil.formatDateForOutput(palRecord.getIdentificationDate(), palRecord.getDateRounding())%></td></tr><%
 								}
 								if (palRecord.getStage() != null) {
-									%><tr><td class="heading">Stage</td><td><%=StageUtil.getStageDescription(palRecord.getStage())%></td></tr><%
+									%><tr class="lightColour"><td class="heading">Stage</td><td><%=StageUtil.getStageDescription(palRecord.getStage())%></td></tr><%
 								}
 								if (palRecord.getStageComments() != null) {
-									%><tr><td class="heading">Stage Comments</td><td><%=palRecord.getStageComments()%></td></tr><%
+									%><tr class="lightColour"><td class="heading">Stage Comments</td><td><%=palRecord.getStageComments()%></td></tr><%
 								}
 								if (palRecord.getLabNumber() != null) {
-									%><tr><td class="heading">Lab Number</td><td><%=RecordUtil.getLabNumberDescription(palRecord)%></td></tr><%
+									%><tr class="lightColour"><td class="heading">Lab Number</td><td><%=RecordUtil.getLabNumberDescription(palRecord)%></td></tr><%
 								}
 								if (palRecord.getCollectionComments() != null) {
-									%><tr><td class="heading">Collection Comments</td><td><%=palRecord.getCollectionComments()%></td></tr><%
+									%><tr class="lightColour"><td class="heading">Collection Comments</td><td><%=palRecord.getCollectionComments()%></td></tr><%
 								}
 				
 								//taxa (Pal list)
 								if (recordUtil.isAllowedReadPalList(user, palRecord) && palRecord.getListEntries() != null) {
-									%><tr><td colspan="2"><table border="0" cellspacing="0" cellpadding="2"><%
+									%><tr><td colspan="2"><table border="0" cellpadding="3" cellspacing="2" width="100%"><%
 									for (TaxonomicGroup taxaGroup : recordUtil.getTaxonomicGroups(palRecord)) {
-										%><tr><td colspan="5" class="heading"><%=taxaGroup.getName()%></td></tr><%
+										%><tr class="midColour"><th colspan="6"><%=taxaGroup.getName()%></th></tr><%
 										if (recordUtil.getListEntries(palRecord, taxaGroup).size() > 0) {
-											%><tr class="heading"><td>Taxonomic Name&nbsp;&nbsp;</td><%
+											%><tr class="midColour">
+											<td class="heading">Taxonomic Name&nbsp;&nbsp;</td><%
 											if (authorChk) {
-												%><td>Author&nbsp;&nbsp;</td><%
+												%><td class="heading">Author&nbsp;&nbsp;</td><%
 											}
 											if (sCountChk) {
-												%><td>Spec Count&nbsp;&nbsp;</td><%
+												%><td class="heading">Spec Count&nbsp;&nbsp;</td><%
 											}
 											if (sCoordChk) {
-												%><td>Spec Coord&nbsp;&nbsp;</td><%
+												%><td class="heading">Spec Coord&nbsp;&nbsp;</td><%
 											}
 											if (commChk) {
-												%><td>Comments&nbsp;&nbsp;</td><%
+												%><td class="heading">Comments&nbsp;&nbsp;</td><%
 											}
-											%></tr><%
+											%><td>&nbsp;</td>
+											</tr><%
 											for (PaleontologyListEntry taxa : recordUtil.getListEntries(palRecord, taxaGroup)) {
-												%><tr><td><i><%=(taxa.getTaxonomicName() != null) ? taxa.getTaxonomicName() : "no taxa identified"%></i>&nbsp;&nbsp;</td><%
+												%><tr class="lightColour"><td><i><%=(taxa.getTaxonomicName() != null) ? taxa.getTaxonomicName() : "no taxa identified"%></i>&nbsp;&nbsp;</td><%
 												if (authorChk) {
 													%><td><%=(taxa.getTaxon() != null) ? DBUtils.nvl(taxa.getTaxon().getAuthor()) : ""%>&nbsp;&nbsp;</td><%
 												}
@@ -679,21 +664,21 @@ try {
 												for (Meta meta : taxa.getPalListMetas()) {
 													%><a href="/online/DigitalDocument?src=<%=meta.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=meta.getMetaId()%>" alt="FRED Digital Document" /><br /><%=FREDUtil.getMetaTitle(meta)%></a><br /><%
 												}
-												%></td></tr><%
+												%></td>
+												</tr><%
 											}
 										} else {
-											%><tr><td colspan="4">No fossils listed</td></tr><%
+											%><tr class="lightColour"><td colspan="4">No fossils listed</td></tr><%
 										}
-										%><tr><td>&nbsp;</td></tr><%
 									}
-									%></td></tr></table></td></tr><%
+									%></table></td></tr><%
 								} else {
 									%><tr><td colspan="2">You do not have the rights to view the taxonomic list for this record</td></tr><%
 								}
 								//Image/Files
 								if (palRecord.getRecord().getRecordMetas().size() > 0) {
-									%><tr><td colspan="2" class="heading">Images/Files</td></tr>
-									<tr><td colspan="2"><table border="0" cellspacing="0" width="600"><%
+									%><tr class="lightColour"><td colspan="2" class="heading">Images/Files</td></tr>
+									<tr class="lightColour"><td colspan="2"><table border="0" cellspacing="0" width="600"><%
 									int y = 1;
 									%><tr><%
 									for (Meta meta : palRecord.getRecord().getRecordMetas()) {
@@ -705,40 +690,31 @@ try {
 									}
 									%></td></tr></table></td></tr><%
 								}
-								%></table><%
-								endDETable(pageContext);
-								%></p><%
 							}
 						}
 					}
 				} else  {
 					//Sample List
-					%><p><%
-					startDETable(pageContext);
-					%><table border="0" width="550">
-					<tr><td colspan="3" class="deHeading"><%=featType%> Samples</td></tr>
-					<tr class="heading"><td>Sample</td></tr><%
+					%></table>
+					<table border="0" cellpadding="3" cellspacing="2" width="550">
+					<tr class="midColour"><th colspan="2"><%=featType%> Samples</th></tr><%
 					for (Sample locSample : FeatureUtil.getSortedSamples(feature)) {
 						if (sampleUtil.isAllowedReadSample(user, locSample)) {
-							%><tr><td><a href="detail.jsp?ID=<%=locSample.getSampleId() + backStr%>"><%=SampleUtil.getDrillHoleDepthDescription(locSample) + ((locSample.getFrNumber() != null && !locSample.getFrNumber().equals(feature.getFrNumber())) ? " (" + locSample.getFrNumber().getFrNumber() + ")" : "")%></a>&nbsp;&nbsp;</td>
-							<td><a href="frf/frf.pdf?SampIDs=<%=locSample.getSampleId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td></tr><%
+							%><tr class="lightColour">
+							<td><a href="detail.jsp?ID=<%=locSample.getSampleId() + backStr%>"><%=SampleUtil.getDrillHoleDepthDescription(locSample) + ((locSample.getFrNumber() != null && !locSample.getFrNumber().equals(feature.getFrNumber())) ? " (" + locSample.getFrNumber().getFrNumber() + ")" : "")%></a>&nbsp;&nbsp;</td>
+							<td><a href="frf/frf.pdf?SampIDs=<%=locSample.getSampleId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td>
+							</tr><%
 						}
 					}
-					%></table><%
-					endDETable(pageContext);
-					%></p><%
 				}
 			} else {
 				//didn't pass isAllowedReadFeature()
 				if (user ==  null) {
-					%><tr><td>&nbsp;</td></tr>
-					<tr><td colspan="2">More data may be available for this locality for <a href="<%=this.getLoginURL() + "?loginpage=" + java.net.URLEncoder.encode(request.getRequestURI(), "ISO-8859-1")%>" class="boldlink">logged</a> in users</td></tr><%
+					%><tr class="lightColour"><td colspan="2">&nbsp;</td></tr>
+					<tr class="lightColour"><td colspan="2">More data may be available for this locality for <a href="<%=this.getLoginURL() + "?loginpage=" + java.net.URLEncoder.encode(request.getRequestURI(), "ISO-8859-1")%>" class="boldlink">logged</a> in users</td></tr><%
 				}
-				%></table><%
-				endDETable(pageContext);
-				%></p><%
 			}
-			%></td></tr></table><%
+			%></table></p><%
 		} else {
 			//didn't pass isAllowedReadFeatureSite()
 			drawTop(out, et, request, response);
@@ -747,7 +723,7 @@ try {
 			if (user == null) {
 				%><tr><td colspan="2">You may be able to view it if you <a href="<%=this.getLoginURL() + "?loginpage=" + java.net.URLEncoder.encode(request.getRequestURI(), "ISO-8859-1")%>" class="boldlink">login</a></td></tr><%
 			}
-			%></table><%
+			%></table></p><%
 		}
 	} 
 	else {
