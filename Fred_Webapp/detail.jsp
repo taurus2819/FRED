@@ -618,7 +618,15 @@ try {
 									%><tr class="lightColour"><td class="heading">Stage Comments</td><td><%=palRecord.getStageComments()%></td></tr><%
 								}
 								if (palRecord.getLabNumber() != null) {
-									%><tr class="lightColour"><td class="heading">Lab Number</td><td><%=RecordUtil.getLabNumberDescription(palRecord)%></td></tr><%
+									%><tr class="lightColour"><td class="heading">Lab Number</td><td><%
+									if (palRecord.getLabSection() != null && palRecord.getLabSection().getLab().getName().equals("GNS")) {
+										%><a href="http://data.gns.cri.nz/npc/number/<%=palRecord.getLabSection().getCode()%>/<%=palRecord.getLabNumber()%>" target="npc"><%
+									}
+									%><%=RecordUtil.getLabNumberDescription(palRecord)%><%
+									if (palRecord.getLabSection() != null && palRecord.getLabSection().getLab().getName().equals("GNS")) {
+										%></a><%
+									}
+									%></td></tr><%
 								}
 								if (palRecord.getCollectionComments() != null) {
 									%><tr class="lightColour"><td class="heading">Collection Comments</td><td><%=palRecord.getCollectionComments()%></td></tr><%
