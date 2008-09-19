@@ -81,19 +81,16 @@
 			drawTop(out, et, request, response);
 
 			List<FolderRight> rightTypes = folderUtil.getRightTypesForDisplay(folder);
-			%><p><%
-			startDETable(pageContext);
-			%><table border="0" width="550"><tr><td colspan="19" class="deHeading"><%=folder.getFolderName()%> users</td></tr><%
-try {
+			%><p>
+			<table border="0" cellpadding="3" cellspacing="2" width="550"><%
+		try {
 			if (folder.getFolder().getFolderType().getName().equals(UserFolder.FOLDER_TYPE_PERSONAL) || folder.getFolder().getFolderType().getName().equals(UserFolder.FOLDER_TYPE_BACKLOG)) {
-				%><tr><td class="heading" colspan="19">Folder Owner: <%=(folder.getFolder().getFrUserView() != null) ? folder.getFolder().getFrUserView().getFullName() : ""%></span></td></tr>
-				<tr><td>&nbsp;</td></tr><%
+				%><tr class="midColour"><td class="heading" colspan="99">Folder Owner: <%=(folder.getFolder().getFrUserView() != null) ? folder.getFolder().getFrUserView().getFullName() : ""%></span></td></tr><%
 			}
-			%><tr><td colspan="19">The users listed below have rights to this folder.  Users can be added or deleted from this list and their rights altered by clicking on the <img src="images/ok.gif" width="20" height="20" border="0" /> or <img src="images/cancel.gif" width="20" height="20" border="0" /> icons.</td></tr>
-			<tr><td>&nbsp;</td></tr>
-			<tr><td class="heading">User&nbsp;&nbsp;</td><td width="60" class="heading" style="width=60px; text-align=center">Read</td><%
+			%><tr class="midColour"><td colspan="99">The users listed below have rights to this folder.  Users can be added or deleted from this list and their rights altered by clicking on the <img src="images/ok.gif" width="20" height="20" border="0" /> or <img src="images/cancel.gif" width="20" height="20" border="0" /> icons.</td></tr>
+			<tr class="midColour"><th>User&nbsp;&nbsp;</th><th width="60" style="width=60px; text-align=center">Read</th><%
 			for (FolderRight rightType : rightTypes) {
-				%><td width="60" class="heading" style="width=60px; text-align=center"><%=rightType.getRightDescription()%></td><%
+				%><th width="60" style="width=60px; text-align=center"><%=rightType.getRightDescription()%></th><%
 			}
 			Set<FrUserView> excludeFrUsers = new HashSet<FrUserView>();
 			if (folder.getFolder().getOwnerId() != null)
@@ -101,7 +98,7 @@ try {
 			for (FolderUser folderUser : folder.getFolder().getFolderUsers()) {
 				FrUserView frUser = userUtil.getFrUserView(folderUser.getUserId());
 				excludeFrUsers.add(frUser);
-				%><tr><td><%=frUser.getFullName()%>&nbsp;&nbsp;</td>
+				%><tr class="lightColour"><td><%=frUser.getFullName()%>&nbsp;&nbsp;</td>
 				<td style="text-align: center;"><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&ActionType=DeleteUser&UserID=<%=frUser.getUserId()%>"><img src="images/ok.gif" width="20" height="20" border="0" alt="Delete User" /></a></td><%
 				for (FolderRight rightType : rightTypes) {
 					%><td style="text-align: center;"><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&ActionType=ChangeRight&UserID=<%=frUser.getUserId()%>&Right=<%=rightType.getRightCode()%>"><%
@@ -118,20 +115,22 @@ try {
 			%><form name="UserForm" method="post" action="folder_user.jsp">
 			<input type="hidden" name="FoldID" value="<%=folder.getFolder().getFolderId()%>" />
 			<input type="hidden" name="ActionType" value="AddUser" />
-			<tr><td><%
+			<tr class="lightColour"><td><%
 			SelectBox<FrUserView> selectBox = new SelectBox<FrUserView>(userUtil.getFrUsersWithout(excludeFrUsers));
 			Attributes attributes = Attributes.createNameOnlyAttributes("UserID");
 			selectBox.writeBox(attributes, "-- Choose --", null, (FrUserView)null, new PrintWriter(out));
-			%>&nbsp;&nbsp;</td><td style="text-align: center;"><a href="#" onClick="UserForm.submit();"><img src="images/cancel.gif" width="20" height="20" border="0" alt="Add User" /></a></td></tr>
+			%>&nbsp;&nbsp;</td><td style="text-align: center;"><a href="#" onClick="UserForm.submit();"><img src="images/cancel.gif" width="20" height="20" border="0" alt="Add User" /></a></td><%
+			for (int i = 0; i < rightTypes.size(); i++) {
+				%><td>&nbsp;</td><%
+			}
+			%></tr>
 			</form>
 			
-			</table><%
-			endDETable(pageContext);
-			%></td></tr></table></p><%
-} catch (Exception e) {
-	out.println("Error");
-	e.printStackTrace();
-}
+			</table>
+			</p><%
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		}
 		else { //no rights
 			%><p>Access denied</p>Either there is no folder matching the ID you entered or you have insufficient rights to edit the folder.  Click <a href='index.jsp' class='fname'>here</a> to return to the FRED home page.<%
