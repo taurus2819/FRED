@@ -12,53 +12,16 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
 
     private static final long serialVersionUID = 20050818L;
 
-    /** identifier field */
     private Integer userId;
-
-    /** nullable persistent field */
     private String userName;
-    
-    /** nullable persistent field */
     private String givenName;
-
-    /** nullable persistent field */
     private String familyName;
-
-    /** nullable persistent field */
     private String fullName;
-    
-    /** persistent field */
     private OrgView orgView;
-    
-    /** persistent field */
     private Set<TaxonomicGroup> taxonomicGroups;
-    
-    /** persistent field */
     private Set<ConfidentialGroup> confidGroupsByOwnerId;
-    
-    /** persistent field */
     private Set<ConfidentialGroup> confidGroups;
-
-    /** persistent field */
     private Set<Folder> folders;
-    
-    /** full constructor */
-    public FrUserView(Integer userId, String userName, String givenName, String familyName, String fullName, OrgView orgView, Set<TaxonomicGroup> taxonomicGroups, Set<ConfidentialGroup> confidGroupsByOwnerId, Set<ConfidentialGroup> confidGroups, Set<Folder> folders) {
-    	this.userId = userId;
-    	this.userName = userName;
-    	this.givenName = givenName;
-    	this.familyName = familyName;
-    	this.fullName = fullName;
-    	this.orgView = orgView;
-    	this.taxonomicGroups = taxonomicGroups;
-    	this.confidGroupsByOwnerId = confidGroupsByOwnerId;
-    	this.confidGroups = confidGroups;
-    	this.setFolders(folders);
-    }
-
-    /** default constructor */
-    public FrUserView() {
-    }
 
 	public void setUserId(Integer userId) {
 		this.userId = userId;

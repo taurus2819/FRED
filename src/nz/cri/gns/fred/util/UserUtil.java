@@ -40,6 +40,10 @@ public class UserUtil extends ModelUtil {
 		return userDAO.get(userId, nz.cri.gns.fred.hibernate.FrUser.class);
 	}
 	
+	public List<FrUserView> getFrUsers() throws StorageAccessException {
+		return userDAO.getList("FROM FrUserView AS f", FrUserView.class);
+	}
+	
 	public List<FrUserView> getFrUsersWithout(Set<FrUserView> excludeFrUsers) throws StorageAccessException {
 		List<FrUserView> frUsers = userDAO.getList("FROM FrUserView AS f", FrUserView.class);
 		frUsers.removeAll(excludeFrUsers);
