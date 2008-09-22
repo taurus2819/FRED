@@ -94,6 +94,7 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 				, new IconnedLink("simple_query.jsp", "images/search.gif", "Simple Query")
 				, new IconnedLink("buildframe.jsp", "images/search.gif", "Advanced Query")
 				, new IconnedLink("javascript:var x=window.open('http://basilisk.gns.cri.nz/website/fred_nz/o_index.htm', 'fred', 'toolbar=no,menu=no,resizable=yes,address=no');x.focus();", "images/map.gif", "Interactive Map")
+				, new IconnedLink("admin.jsp", "images/edit.gif", "FRED Admin")
 		});
 		return et;
 	}
@@ -110,10 +111,11 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 	public void addButtons(ExtranetTemplate et, Link[] links) {
 		Link[] buttons = et.getButtons();
 		Link[] l = new Link[buttons.length + links.length];
-		for (int i = 0; i < buttons.length; i++)
+		for (int i = 0; i < buttons.length - 1; i++)
 			l[i] = buttons[i];
 		for (int i = 0; i < links.length; i++)
-			l[i + buttons.length] = links[i];
+			l[i + buttons.length - 1] = links[i];
+		l[buttons.length + links.length - 1] = buttons[buttons.length -1];
 		et.setButtons(l);
 	}
 	
