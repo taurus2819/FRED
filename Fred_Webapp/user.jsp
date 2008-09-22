@@ -21,7 +21,7 @@
 	<tr class="midColour"><th>Name&nbsp;&nbsp;</th><th>Last Access</th></tr><%
 	for (FrUserView frUserView : userUtil.getFrUsers()) {
 		FrUser frUser = userUtil.getFrUser(frUserView.getUserId());
-		%><tr class="lightColour"><td><%=frUserView.getFullName()%>&nbsp;&nbsp;</td><td><%=FREDUtil.formatDateForOutput(frUser.getLastLogin())%></td></tr><%
+		%><tr class="lightColour"><td><%=frUserView.getFullName()%>&nbsp;&nbsp;</td><td><%=(frUser != null) ? FREDUtil.formatDateForOutput(frUser.getLastLogin()) : ""%></td></tr><%
 	}
 	%></table></p><%
 	
