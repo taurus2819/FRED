@@ -17,11 +17,15 @@
 	drawTop(out, et, request, response);
 
 	%><p><table border="0" cellpadding="3" cellspacing="2" width="550">
-	<tr class="midColour"><td colspan="2">Current FRED Users</td></tr>
-	<tr class="midColour"><th>Name&nbsp;&nbsp;</th><th>Last Access</th></tr><%
+	<tr class="midColour"><th colspan="3">Current FRED Users</th></tr>
+	<tr class="midColour"><th>Name&nbsp;&nbsp;</th><th>Organisation&nbsp;&nbsp;<th>Last Access</th></tr><%
 	for (FrUserView frUserView : userUtil.getFrUsers()) {
 		FrUser frUser = userUtil.getFrUser(frUserView.getUserId());
-		%><tr class="lightColour"><td><%=frUserView.getFullName()%>&nbsp;&nbsp;</td><td><%=(frUser != null) ? FREDUtil.formatDateForOutput(frUser.getLastLogin()) : ""%></td></tr><%
+		%><tr class="lightColour">
+		<td><%=frUserView.getFullName()%>&nbsp;&nbsp;</td>
+		<td><%=frUserView.getOrgView().getCompanyName()%>&nbsp;&nbsp;</td>
+		<td><%=(frUser != null) ? FREDUtil.formatDateForOutput(frUser.getLastLogin()) : ""%></td>
+		</tr><%
 	}
 	%></table></p><%
 	
