@@ -44,6 +44,7 @@ import nz.cri.gns.fred.model.RockColour;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.Weathering;
 import nz.cri.gns.fred.util.FREDUtil;
+import nz.cri.gns.fred.util.UserUtil;
 
 public class FREDQuery extends HqlQuery implements NumberSource {
 
@@ -67,7 +68,9 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	public FREDQuery() {
 		//this.people = getValues("FROM Person AS p", Person.class);
 		this.ages = getValues("FROM AgeView AS a WHERE a.ageAbbrev <> 'nd' AND a.ageAbbrev <> 'nf'", AgeView.class);
-		this.frUsers = getValues("FROM FrUserView AS f", FrUserView.class);
+		try {
+			this.frUsers = new UserUtil(HibernateUtil.get().getDAOFactory()).getFrWriters();
+		} catch (Exception e) {}
 		addFields();
 	}
 
