@@ -30,10 +30,11 @@ public class FREDUser extends User {
 			if (frUser == null) {
 				System.out.println("Creating new FrUser for " + getId());
 				frUser = userUtil.createNewFrUser();
-				frUser.setUserId(new Integer(getId()));				
+				frUser.setUserId(new Integer(getId()));
+				userUtil.save(frUser);
 			}
 			frUser.setLastLogin(new Date());
-			userUtil.save(frUser);
+			userUtil.saveOrUpdate(frUser);
 		} catch (Exception e) {
 			System.out.println("**** User logging exception : " + new Date() + " ****");
 			e.printStackTrace();
