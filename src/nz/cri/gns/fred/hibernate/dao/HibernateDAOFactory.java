@@ -93,6 +93,10 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		return HibernateUtils.saveOrUpdate(provider, object);
 	}
 	
+	public <T> T save(T object) throws StorageAccessException {
+		return HibernateUtils.save(provider, object);
+	}
+	
 	public void delete(Object object) throws StorageAccessException {
 		HibernateUtils.delete(provider, object);
 	}

@@ -28,7 +28,6 @@ public class FREDUser extends User {
 			UserUtil userUtil = new UserUtil(HibernateUtil.get().getDAOFactory());
 			FrUser frUser = userUtil.getFrUser(new Integer(getId()));
 			if (frUser == null) {
-				System.out.println("Creating new FrUser for " + getId());
 				frUser = userUtil.createNewFrUser();
 				frUser.setUserId(new Integer(getId()));
 				userUtil.save(frUser);

@@ -51,7 +51,12 @@ public class UserUtil extends ModelUtil {
 		return frUsers;
 	}
 		
-	public FrUser save(FrUser frUser) throws StorageAccessException {
+	public FrUser saveOrUpdate(FrUser frUser) throws StorageAccessException {
 		return userDAO.saveOrUpdate(frUser);
 	}
+	
+	public FrUser save(FrUser frUser) throws StorageAccessException {
+		return userDAO.save(frUser);
+	}
+	
 }
