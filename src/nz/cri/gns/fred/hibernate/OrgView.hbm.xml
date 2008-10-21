@@ -31,7 +31,12 @@
         	column="CL_COMPANY_NAME"
         	length="90"
 	    />
-   		   		   		
+	    <property
+    	    name="deleted"
+        	type="java.lang.Boolean"
+        	column="CL_DELETED"
+	    />
+	       		   		   		
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to ConfidentialGroup -->
