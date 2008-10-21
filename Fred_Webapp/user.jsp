@@ -19,7 +19,7 @@
 	%><p><table border="0" cellpadding="3" cellspacing="2" width="550">
 	<tr class="midColour"><th colspan="3">Current FRED Users</th></tr>
 	<tr class="midColour"><th>Name&nbsp;&nbsp;</th><th>Organisation&nbsp;&nbsp;<th>Last Access</th></tr><%
-	for (FrUserView frUserView : userUtil.getFrUsers()) {
+	for (FrUserView frUserView : userUtil.getActiveFrUsers()) {
 		FrUser frUser = userUtil.getFrUser(frUserView.getUserId());
 		%><tr class="lightColour">
 		<td><%=frUserView.getFullName()%>&nbsp;&nbsp;</td>

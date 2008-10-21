@@ -106,7 +106,7 @@
 			%><tr><td style="text-align: left"><%=frUser.getFullName()%>&nbsp;&nbsp;</td><td style="text-align: left"><a href="manage_confid_groups.jsp?GroupID=<%=group.getGroupId()%>&ActionType=Delete&UserID=<%=frUser.getUserId()%>&backURL=<%=URLEncoder.encode(backURL, "ISO-8859-1")%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="Delete User" /></a></td></tr><%
 		}
 		%><tr><td style="text-align: left"><%
-		SelectBox<FrUserView> selectBox = new SelectBox<FrUserView>(userUtil.getFrUsersWithout(group.getUsers()));
+		SelectBox<FrUserView> selectBox = new SelectBox<FrUserView>(userUtil.getActiveFrWritersWithout(group.getUsers()));
 		Attributes attributes = Attributes.createNameOnlyAttributes("UserID");
 		%><tr><td>&nbsp;</td></tr><tr><td style="text-align: left"><%
 		selectBox.writeBox(attributes, "-- Choose --", null, (FrUserView)null, new PrintWriter(out));

@@ -13,10 +13,11 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
     private static final long serialVersionUID = 20050818L;
 
     private Integer userId;
-    private String userName;
     private String givenName;
     private String familyName;
     private String fullName;
+    private Integer irId;
+    private Boolean deleted;
     private OrgView orgView;
     private Set<TaxonomicGroup> taxonomicGroups;
     private Set<ConfidentialGroup> confidGroupsByOwnerId;
@@ -31,14 +32,6 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
 		return userId;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
-	public String getUserName() {
-		return userName;
-	}
-	
 	public void setGivenName(String givenName) {
 		this.givenName = givenName;
 	}
@@ -63,6 +56,22 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
 		return fullName;
 	}
 	
+	public void setIrId(Integer irId) {
+		this.irId = irId;
+	}
+
+	public Integer getIrId() {
+		return irId;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
 	public void setOrgView(OrgView orgView) {
 		this.orgView = orgView;
 	}

@@ -28,12 +28,6 @@
     </id>
 
 	    <property
-    	    name="userName"
-        	type="java.lang.String"
-        	column="GRANTEE"
-        	length="30"
-	    />
-	    <property
     	    name="givenName"
         	type="java.lang.String"
         	column="GIVEN_NAME"
@@ -50,6 +44,16 @@
         	type="java.lang.String"
         	column="FULL_NAME"
         	length="91"
+	    />
+	    <property
+    	    name="irId"
+        	type="java.lang.Integer"
+        	column="IR_ID"
+	    />
+	    <property
+    	    name="deleted"
+        	type="java.lang.Boolean"
+        	column="DELETED"
 	    />
    		   		   		
     <!-- Associations -->

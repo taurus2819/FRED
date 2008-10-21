@@ -116,7 +116,7 @@
 			<input type="hidden" name="FoldID" value="<%=folder.getFolder().getFolderId()%>" />
 			<input type="hidden" name="ActionType" value="AddUser" />
 			<tr class="lightColour"><td><%
-			SelectBox<FrUserView> selectBox = new SelectBox<FrUserView>(userUtil.getFrUsersWithout(excludeFrUsers));
+			SelectBox<FrUserView> selectBox = new SelectBox<FrUserView>(userUtil.getActiveFrWritersWithout(excludeFrUsers));
 			Attributes attributes = Attributes.createNameOnlyAttributes("UserID");
 			selectBox.writeBox(attributes, "-- Choose --", null, (FrUserView)null, new PrintWriter(out));
 			%>&nbsp;&nbsp;</td><td style="text-align: center;"><a href="#" onClick="UserForm.submit();"><img src="images/cancel.gif" width="20" height="20" border="0" alt="Add User" /></a></td><%

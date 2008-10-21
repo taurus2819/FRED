@@ -52,7 +52,7 @@
 				%><tr><td style="text-align: left"><%=panelist.getFullName()%>&nbsp;&nbsp;</td><td style="text-align: left"><a href="taxa_panelist.jsp?GroupID=<%=group.getGroupId()%>&ActionType=Delete&UserID=<%=panelist.getUserId().intValue()%>"><img src="images/ok.gif" border="0" height="20" width="20" alt="Delete User" /></a></td></tr><%
 			}
 			%><tr><td style="text-align: left"><%
-			SelectBox<FrUserView> selectBox = new SelectBox<FrUserView>(userUtil.getFrUsersWithout(group.getPanelists()));
+			SelectBox<FrUserView> selectBox = new SelectBox<FrUserView>(userUtil.getActiveFrWritersWithout(group.getPanelists()));
 			Attributes attributes = Attributes.createNameOnlyAttributes("UserID");
 			%><tr><td>&nbsp;</td></tr><tr><td style="text-align: left"><%
 			selectBox.writeBox(attributes, "-- Choose --", null, (FrUserView)null, new PrintWriter(out));
