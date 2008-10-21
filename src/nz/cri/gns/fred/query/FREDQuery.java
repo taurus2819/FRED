@@ -62,12 +62,12 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	
 	//protected List<Person> people = null;
 	protected List<AgeView> ages = null;
-	//protected List<FrUserView> frUsers = null;
+	protected List<FrUserView> frUsers = null;
 	
 	public FREDQuery() {
 		//this.people = getValues("FROM Person AS p", Person.class);
 		this.ages = getValues("FROM AgeView AS a WHERE a.ageAbbrev <> 'nd' AND a.ageAbbrev <> 'nf'", AgeView.class);
-		//this.frUsers = getValues("FROM FrUserView AS f", FrUserView.class);
+		this.frUsers = getValues("FROM FrUserView AS f", FrUserView.class);
 		addFields();
 	}
 
@@ -198,7 +198,6 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		//need to add identifiers
 		add(new TwoLevelField("Paleontology Fields", f));
 		
-		/*
 		f = new Field[10];
 		f[0] = new PossibleValueField("f.audit.createdById", "Created By", frUsers);
 		f[1] = new BasicDateField("f.audit.createdDate", "Created Date");
@@ -211,7 +210,6 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f[8] = new TableRequiredDateField("edit.editedDate", "Edited Date", EDIT_TABLE, EDIT_JOIN);
 		f[9] = new TableRequiredTextField("edit.comments", "Edit Comments", EDIT_TABLE, EDIT_JOIN);
 		add(new TwoLevelField("Audit Fields", f));
-		*/
 	}
 	
 	public String getQuery() throws InvalidOperatorException, InvalidValueException {
