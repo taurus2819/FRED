@@ -47,10 +47,6 @@ public class UserUtil extends ModelUtil {
 		return userDAO.getList("FROM FrUserView AS f WHERE f.irId = ? AND f.deleted = ?", FrUserView.class, FRED_WRITE, false);
 	}
 	
-	public List<FrUserView> getActiveFrReaders() throws StorageAccessException {
-		return userDAO.getList("FROM FrUserView AS f WHERE f.irId = ? AND f.deleted = ?", FrUserView.class, FRED_READ, false);
-	}
-	
 	public List<FrUserView> getActiveFrUsers() throws StorageAccessException {
 		return userDAO.getList("FROM FrUserView AS f WHERE f.deleted = ?", FrUserView.class, false);
 	}
