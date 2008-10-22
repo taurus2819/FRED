@@ -166,7 +166,8 @@ public class AJAXServlet extends HttpServlet {
 								Taxon taxon = taxaUtil.getTaxon(group, cleanName, null);
 								if (taxon != null) {
 									status = taxon.getStatus();
-									moreData = "<author><![CDATA[" + DBUtils.nvl(taxon.getAuthor()) + "]]></author>";
+									moreData = "<taxa-id>" + taxon.getTaxaId() + "</taxa-id>";
+									moreData += "<author><![CDATA[" + DBUtils.nvl(taxon.getAuthor()) + "]]></author>";
 									if (status.equals(FREDConstants.PROVISIONAL))
 										moreData += "<submitted-by><![CDATA[" + taxon.getSubmittedBy().getFullName() + "]]></submitted-by>"
 											+ "<submitted-date>" + FREDUtil.formatDateForOutput(taxon.getSubmittedDate()) + "</submitted-date>";
