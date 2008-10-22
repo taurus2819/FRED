@@ -31,7 +31,9 @@
 			%><tr class="lightColour">
 			<td><%=frUserView.getFullName()%>&nbsp;&nbsp;</td>
 			<td><%=(frUserView.getFullName().equals(frUserView.getOrgView().getCompanyName())) ? "" : frUserView.getOrgView().getCompanyName()%>&nbsp;&nbsp;</td>
-			<td><%=(frUserView.getIrId().intValue() == UserUtil.FRED_WRITE.intValue()) ? "Read/Write" : "Read"%>&nbsp;&nbsp;</td><%
+			<td><a href="http://gns-a.gns.cri.nz/online/ipreg/process_access.jsp?PersonID=<%=frUserView.getUserId()%>&Schema=FR">
+				<%=(frUserView.getIrId().intValue() == UserUtil.FRED_WRITE.intValue()) ? "Read/Write" : "Read"%>
+			</a>&nbsp;&nbsp;</td><%
 			if (frUser != null) {
 				%><td<%=(frUser.getLastLogin().before(twoYearsAgo)) ? " style=\"color: #ff0000\"" : "" %>><%=FREDUtil.formatDateForOutput(frUser.getLastLogin())%><%
 			} else {
