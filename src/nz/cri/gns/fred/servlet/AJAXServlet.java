@@ -203,6 +203,7 @@ public class AJAXServlet extends HttpServlet {
 			public void process(Type type, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 				String name = request.getParameter("name");
 				boolean confirmation = false;
+				String moreData = null;
 				switch (type) {
 					case Person:
 						PersonUtil util = new PersonUtil(HibernateUtil.get().getDAOFactory());
@@ -214,20 +215,21 @@ public class AJAXServlet extends HttpServlet {
 						break;
 					case TaxonomicName:
 						try {
-						TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
-						TaxonomicGroup group = taxaUtil.getTaxonomicGroup(request.getParameter("TaxonomicGroup").trim());
-						String cleanName = TaxonomicUtil.getCleanedName(name);
-						String author = request.getParameter("Author");
-						Taxon taxon = taxaUtil.getTaxon(group, cleanName, null);
-						if (taxon == null) {
-							taxon = taxaUtil.createTaxon();
-							taxon.setTaxonomicGroup(group);
-							taxon.setTaxonomicName(cleanName);
-							taxon.setAuthor(author);
-							taxaUtil.submitProvisional((User)FREDIPSysJspPage.getUser(request.getSession()), taxon);
-							confirmation = true;
-						} else
-							confirmation = true;
+							TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
+							TaxonomicGroup group = taxaUtil.getTaxonomicGroup(request.getParameter("TaxonomicGroup").trim());
+							String cleanName = TaxonomicUtil.getCleanedName(name);
+							String author = request.getParameter("Author");
+							Taxon taxon = taxaUtil.getTaxon(group, cleanName, null);
+							if (taxon == null) {
+								taxon = taxaUtil.createTaxon();
+								taxon.setTaxonomicGroup(group);
+								taxon.setTaxonomicName(cleanName);
+								taxon.setAuthor(author);
+								taxaUtil.submitProvisional((User)FREDIPSysJspPage.getUser(request.getSession()), taxon);
+								confirmation = true;
+							} else
+								confirmation = true;
+							moreData = "<taxa-id>" + taxon.getTaxaId() + "</taxa-id>";
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -241,6 +243,8 @@ public class AJAXServlet extends HttpServlet {
 				out.println("<" + what + ">");
 				out.println("<name><![CDATA[" + name + "]]></name>");
 				out.println("<status>" + ((confirmation) ? "Exists" : "Could not be created") + "</status>");
+				if (moreData != null)
+					out.println(moreData);
 				out.println("</" + what + ">");
 			}
 		};
