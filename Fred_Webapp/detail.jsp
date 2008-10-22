@@ -42,6 +42,7 @@
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.de.DataInputException"
+%><%@page import="nz.cri.gns.intranet.ServletUtils"
 %><%!	
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { 
 		return new Authenticable[0]; 
@@ -99,6 +100,10 @@ try {
 	String featID = request.getParameter("FeatID");
 	Feature feature =  null;
 	Sample sample = null;
+	
+	int site = ServletUtils.getSite(session, request);
+	if (request.getRemoteAddr().equals("127.0.0.1"))
+		site = 1;
 	
 	String backURL = request.getParameter("backURL");
 	if (backURL != null && backURL.length() == 0)
@@ -619,11 +624,11 @@ try {
 								}
 								if (palRecord.getLabNumber() != null) {
 									%><tr class="lightColour"><td class="heading">Lab Number</td><td><%
-									if (palRecord.getLabSection() != null && palRecord.getLabSection().getLab().getName().equals("GNS")) {
+									if (site != 0 && palRecord.getLabSection() != null && palRecord.getLabSection().getLab().getName().equals("GNS")) {
 										%><a href="http://data.gns.cri.nz/npc/number/<%=palRecord.getLabSection().getCode()%>/<%=palRecord.getLabNumber()%>" target="npc"><%
 									}
 									%><%=RecordUtil.getLabNumberDescription(palRecord)%><%
-									if (palRecord.getLabSection() != null && palRecord.getLabSection().getLab().getName().equals("GNS")) {
+									if (site != 0 && palRecord.getLabSection() != null && palRecord.getLabSection().getLab().getName().equals("GNS")) {
 										%></a><%
 									}
 									%></td></tr><%
