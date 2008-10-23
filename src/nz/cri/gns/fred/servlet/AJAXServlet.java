@@ -170,6 +170,7 @@ public class AJAXServlet extends HttpServlet {
 								if (taxon != null) {
 									status = taxon.getStatus();
 									moreData = "<taxa-id>" + taxon.getTaxaId() + "</taxa-id>";
+									moreData += "<taxonomic-group>" + taxon.getTaxonomicGroup().getName() + "</taxonomic-group>";
 									moreData += "<author><![CDATA[" + DBUtils.nvl(taxon.getAuthor()) + "]]></author>";
 									if (status.equals(FREDConstants.PROVISIONAL))
 										moreData += "<submitted-by><![CDATA[" + taxon.getSubmittedBy().getFullName() + "]]></submitted-by>"
