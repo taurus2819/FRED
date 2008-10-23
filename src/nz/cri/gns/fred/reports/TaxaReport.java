@@ -35,6 +35,7 @@ import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.SiteUtil;
 import nz.cri.gns.fred.util.StageUtil;
+import nz.cri.gns.fred.util.TaxonomicUtil;
 import nz.cri.gns.util.NullOutputStream;
 
 public class TaxaReport {
@@ -70,7 +71,7 @@ public class TaxaReport {
 		System.out.println("Gathering data");
 		for (String name : parseInputFile(args[1])) {
 			System.out.println(name);
-			Taxon taxonName = dao.getTaxon(dao.findTaxonomicGroup(args[0]), name);
+			Taxon taxonName = new TaxonomicUtil(HibernateUtil.get().getDAOFactory()).getTaxon(dao.findTaxonomicGroup(args[0]), name, null);
 			if (taxonName == null)
 				continue;
 			Set<PaleontologyListEntry> entries = taxonName.getListEntries();
