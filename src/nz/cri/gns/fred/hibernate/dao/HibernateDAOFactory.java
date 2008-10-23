@@ -14,6 +14,7 @@ import net.sf.hibernate.Criteria;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.Query;
 import net.sf.hibernate.Session;
+import net.sf.hibernate.expression.Criterion;
 import net.sf.hibernate.expression.Expression;
 import net.sf.hibernate.expression.MatchMode;
 import net.sf.hibernate.expression.Order;
@@ -753,39 +754,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
         return new PalList();
     }
 
-    public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException {
-        try {
-        	//We do have an author
-            Query query = provider.currentSession().createQuery("FROM TaxonomicLookup AS t WHERE t.taxonomicGroup = :grp AND t.taxonomicName = :name AND t.author = :author");
-            query.setEntity("grp", taxonomicGroup);
-            query.setString("name", name);
-            query.setString("author", author);
-            List list = query.list();
-            if (list == null || list.size() == 0) {
-           		return null;
-
-            }
-            return (Taxon)list.get(0);
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-        }
-    }
-
-    public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name) throws StorageAccessException {
-        try {
-            Query query = provider.currentSession().createQuery("FROM TaxonomicLookup AS t WHERE t.taxonomicGroup = :grp AND t.taxonomicName = :name");
-            query.setEntity("grp", taxonomicGroup);
-            query.setString("name", name);
-            List list = query.list();
-            if (list == null || list.size() == 0) {
-	        	return null;
-            }
-            return (Taxon)list.get(0);
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-        }
-    }
-    
     public Taxon createNewTaxon() {
         return new TaxonomicLookup();
     }
@@ -959,6 +927,20 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		List<T> items = HibernateUtils.list(provider, query, clazz, parameters);
 		Collections.sort(items);
 		return items;
+	}
+	
+	public <T extends Comparable<? super T>> List<T> getList(Class<T> clazz, List<Criterion> criteria) throws StorageAccessException {
+		Criteria crit = provider.currentSession().createCriteria(clazz);
+		for (Criterion criterion : criteria)
+			crit.add(criterion);
+		try {
+			@SuppressWarnings("unchecked")
+			List<T> l = crit.list();
+			Collections.sort(l);
+			return l;
+		} catch (HibernateException e) {
+			throw new StorageAccessException(e);
+		}
 	}
 	
 	public <T> T getFirst(String query, Class<T> clazz, String parameter) throws StorageAccessException {

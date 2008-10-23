@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import net.sf.hibernate.expression.Criterion;
+import net.sf.hibernate.expression.Expression;
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
@@ -266,24 +268,20 @@ public class TaxonomicUtil extends ModelUtil {
     }
 
     public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException {
-    	//No author, don't include it in the search
-    	if (author == null || author.length() == 0)
-    		return taxonomicDAO.getTaxon(taxonomicGroup, name);
-    	
-    	//Get the record with all things defined...
-        Taxon taxon = taxonomicDAO.getTaxon(taxonomicGroup, name, author);
-        if (taxon == null) {
-        	//Try without author
-        	taxon = taxonomicDAO.getTaxon(taxonomicGroup, name);
-        	if (taxon != null && (taxon.getAuthor() == null || taxon.getAuthor().length() == 0)) {
+		List<Criterion> criteria = new Vector<Criterion>();
+		if (taxonomicGroup != null)
+			criteria.add(Expression.eq("taxonomicGroup", taxonomicGroup));
+		criteria.add(Expression.eq("taxonomicName", name));
+		List<Taxon> taxa = taxonomicDAO.getList(Taxon.class, criteria);
+		if (taxa.size() > 0) {
+			Taxon taxon = taxa.get(0);
+        	if (author != null && (taxon.getAuthor() == null || taxon.getAuthor().length() == 0)) {
         		//If no author then fill in the gap.
         		taxon.setAuthor(author);
-        	} else {
-        		//But if it does have an author, then it's not valid.
-        		return null;
         	}
-        }
-        return taxon;
+			return taxon;
+		}
+		return null;
     }
 
     public Taxon createTaxon() {
