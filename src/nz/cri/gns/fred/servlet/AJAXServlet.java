@@ -170,6 +170,7 @@ public class AJAXServlet extends HttpServlet {
 								if (taxon != null) {
 									status = taxon.getStatus();
 									moreData = "<taxa-id>" + taxon.getTaxaId() + "</taxa-id>";
+									moreData += "<clean-name>" + cleanName + "</clean-name>";
 									moreData += "<taxonomic-group>" + taxon.getTaxonomicGroup().getName() + "</taxonomic-group>";
 									moreData += "<author><![CDATA[" + DBUtils.nvl(taxon.getAuthor()) + "]]></author>";
 									if (status.equals(FREDConstants.PROVISIONAL))
@@ -181,7 +182,7 @@ public class AJAXServlet extends HttpServlet {
 										+ "<rejected-comments><![CDATA[" + taxon.getPanelistComments() + "]]></rejected-comments>";
 								} else {
 									status = "new";
-									moreData += "<clean-name>" + cleanName + "</clean-name>";
+									moreData = "<clean-name>" + cleanName + "</clean-name>";
 								}
 							}
 						} catch (Exception e) {
