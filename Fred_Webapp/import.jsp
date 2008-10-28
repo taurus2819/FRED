@@ -50,6 +50,8 @@
 			    			FolderUtil folderUtil = new FolderUtil(factory);
 			    			UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(foldID), user);
 			    			try {
+			    				System.out.println("Feature Name = " + request.getParameter("featName"));
+			    				System.out.println("Folder = " + folder);
 				    			Feature feature = featureUtil.getFeatureWithName(request.getParameter("featName"), folder);
 				    			featID = String.valueOf(feature.getFeatureId());
 			    			} catch (Exception e) {
