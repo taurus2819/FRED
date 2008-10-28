@@ -9,62 +9,19 @@ import nz.cri.gns.fred.model.FolderType;
 import nz.cri.gns.fred.model.FolderUser;
 import nz.cri.gns.fred.model.FrUserView;
 
-/** @author Hibernate CodeGenerator */
 public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
 
     private static final long serialVersionUID = 20050818L;
     
-    /** identifier field */
     private Integer folderId;
-
-    /** persistent field */
     private String name;
-
-    /** nullable persistent field */
     private FolderType folderType;
-
-    /** nullable persistent field */
     private Integer ownerId;
-
-    /** nullable persistent field */
     private FrUserView frUserView;
-    
-    /** persistent field */
     private Set<Audit> auditTables;
-
-    /** persistent field */
     private Set<Feature> masterfileFeatures;
-
-    /** persistent field */
     private Set<Feature> features;
-
-    /** persistent field */
     private Set<FolderUser> folderUsers;
-
-    /** full constructor */
-    public Folder(String name, FolderType folderType, Integer ownerId, FrUserView frUserView, Set<Audit> auditTables, Set<Feature> masterfileFeatures, Set<Feature> features, Set<FolderUser> folderUsers) {
-        this.name = name;
-        this.folderType = folderType;
-        this.ownerId = ownerId;
-        this.frUserView = frUserView;
-        this.auditTables = auditTables;
-        this.masterfileFeatures = masterfileFeatures;
-        this.features = features;
-        this.folderUsers = folderUsers;
-    }
-
-    /** default constructor */
-    public Folder() {
-    }
-
-    /** minimal constructor */
-    public Folder(String name, Set<Audit> auditTables, Set<Feature> masterfileFeatures, Set<Feature> features, Set<FolderUser> folderUsers) {
-        this.name = name;
-        this.auditTables = auditTables;
-        this.masterfileFeatures = masterfileFeatures;
-        this.features = features;
-        this.folderUsers = folderUsers;
-    }
 
     public Integer getFolderId() {
         return this.folderId;
