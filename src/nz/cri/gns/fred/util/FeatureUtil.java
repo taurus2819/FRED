@@ -1081,15 +1081,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 * @throws StorageAccessException 
 	 */
 	public Feature getFeatureWithName(String ident, UserFolder folder) throws StorageAccessException {
-		System.out.println("Finding feature name = " + ident + " in folder " + folder);
 		if (ident == null)
 			return null;
 		for (Feature feature : getFeaturesInFolder(folder)) {
-			System.out.println("Checking: " + feature.getFeatureName());
-			if (ident.equals(feature.getFeatureName())) {
-				System.out.println("match!");
+			if (ident.equals(feature.getFeatureName()))
 				return feature;
-			}
 		}
 		return null;
 	}
