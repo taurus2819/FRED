@@ -1,6 +1,5 @@
 package nz.cri.gns.fred.model;
 
-
 public class UserFolder implements Comparable<UserFolder> {
 
 	public static final int FOLDER_READ_RIGHT = 1;
@@ -86,4 +85,9 @@ public class UserFolder implements Comparable<UserFolder> {
 	public boolean isBacklogFolder() {
 		return folder.getFolderType().getName().equals(FOLDER_TYPE_BACKLOG);
 	}
+	
+	public String toString() {
+		return getFolderName();
+	}
+	
 }
