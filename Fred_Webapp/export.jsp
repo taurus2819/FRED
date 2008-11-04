@@ -279,8 +279,7 @@
 				out.print("Adoptors\tAdoption Date\tAdopted Stage Lower\tAdopted Lower Modifier\tAdopted Stage Upper\tAdopted Upper Modifier\tAdopted Age Start\tAdopted Age Stop\tComments\n");
 				
 				for (Sample sample : samples) {
-					Feature feature = sample.getFeature();
-					for (Adoption adoption : recordUtil.getAdoptionRecords(feature)) {
+					for (Adoption adoption : recordUtil.getAdoptionRecords(sample)) {
 						if (recordUtil.isAllowedReadRecord(user, adoption.getRecord())) {
 							writeLocality(adoption.getRecord().getSample(), out);
 							if (!FREDUtil.isEmpty(adoption.getAdoptors())) {
@@ -316,8 +315,7 @@
 				out.print("Identifiers\tIdentification Date\tStage Lower\tLower Modifier\tStage Upper\tUpper Modifier\tAge Start\tAge Stop\tStage Comments\tnLab Number\tCollection Comments\n");
 				
 				for (Sample sample : samples) {
-					Feature feature = sample.getFeature();
-					for (Paleontology paleontology : recordUtil.getPaleontologyRecords(feature)) {
+					for (Paleontology paleontology : recordUtil.getPaleontologyRecords(sample)) {
 						if (recordUtil.isAllowedReadRecord(user, paleontology.getRecord())) {
 							writeLocality(paleontology.getRecord().getSample(), out);
 							if (!FREDUtil.isEmpty(paleontology.getIdentifiers())) {
@@ -355,8 +353,7 @@
 				List<Paleontology> paleontologies = new Vector<Paleontology>();
 				int i = 0;
 				for (Sample sample : samples) {
-					Feature feature = sample.getFeature();
-					for (Paleontology paleontology : recordUtil.getPaleontologyRecords(feature)) {
+					for (Paleontology paleontology : recordUtil.getPaleontologyRecords(sample)) {
 						if (recordUtil.isAllowedReadPalList(user, paleontology)) {
 							paleontologies.add(paleontology);
 							if (++i == 250) {

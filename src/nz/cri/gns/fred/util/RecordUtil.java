@@ -428,8 +428,16 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return recordDAO.getList("FROM Paleontology AS p WHERE p.record.sample.feature = ?", Paleontology.class, feature);
 	}
 
+	public List<Paleontology> getPaleontologyRecords(Sample sample) throws StorageAccessException {
+		return recordDAO.getList("FROM Paleontology AS p WHERE p.record.sample = ?", Paleontology.class, sample);
+	}
+	
 	public List<Adoption> getAdoptionRecords(Feature feature) throws StorageAccessException {
 		return recordDAO.getList("FROM Adoption AS a WHERE a.record.sample.feature = ?", Adoption.class, feature);
+	}
+	
+	public List<Adoption> getAdoptionRecords(Sample sample) throws StorageAccessException {
+		return recordDAO.getList("FROM Adoption AS a WHERE a.record.sample = ?", Adoption.class, sample);
 	}
 	
 }
