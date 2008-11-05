@@ -185,9 +185,11 @@ public class DrillholeLocalityDE extends LocalityDE {
 
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
 		super.makeExcelImportHTML(out);
-		PrintWriter pw = new PrintWriter(out);
-		loadTemplate(provider.getContent(getContentPrefix() + ".de.excel"), pw);
-		pw.flush();
+		loadTemplate(provider.getContent(getContentPrefix() + ".de.excel"), new PrintWriter(out));
+		//add whole lot of empty cells to wipe-out any samples
+		for (int i = 0; i < 46; i++)
+			out.write("<td></td>\n");
+		out.write("</tr>\n");
 	}
 	
 	protected String getContentPrefix() {
