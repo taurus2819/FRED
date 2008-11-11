@@ -9,81 +9,24 @@ import nz.cri.gns.fred.model.UserView;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 
-/** @author Hibernate CodeGenerator */
 public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxon {
 
     private static final long serialVersionUID = 20050818L;
 
-    /** identifier field */
     private Integer taxaId;
-
-    /** persistent field */
     private String taxonomicName;
-
-    /** nullable persistent field */
     private String author;
-
-    /** persistent field */
     private String status;
-
-    /** nullable persistent field */
     private Integer submittedById;
-
-    /** nullable persistent field */
     private Date submittedDate;
-
-    /** nullable persistent field */
     private Integer approvedById;
-
-    /** nullable persistent field */
     private Date approvedDate;
-
-    /** nullable persistent field */
     private String panelistComments;
-    
-    /** nullable persistent field */
     private String sendMessage;
-
-    /** persistent field */
     private UserView submittedBy;
-    
-    /** persistent field */
     private UserView approvedBy;
-    
-    /** persistent field */
     private TaxonomicGroup taxonomicGroup;
-
-    /** persistent field */
     private Set<PaleontologyListEntry> palLists;
-
-    /** full constructor */
-    public TaxonomicLookup(String taxonomicName, String author, String status, Integer submittedById, Date submittedDate, Integer approvedById, Date approvedDate, String panelistComments, String sendMessage, UserView submittedBy, UserView approvedBy, TaxonomicGroup taxonomicGroup, Set<PaleontologyListEntry> palLists) {
-        this.taxonomicName = taxonomicName;
-        this.author = author;
-        this.status = status;
-        this.submittedById = submittedById;
-        this.submittedDate = submittedDate;
-        this.approvedById = approvedById;
-        this.approvedDate = approvedDate;
-        this.panelistComments = panelistComments;
-        this.sendMessage = sendMessage;
-        this.submittedBy = submittedBy;
-        this.approvedBy = approvedBy;
-        this.taxonomicGroup = taxonomicGroup;
-        this.palLists = palLists;
-    }
-
-    /** default constructor */
-    public TaxonomicLookup() {
-    }
-
-    /** minimal constructor */
-    public TaxonomicLookup(String taxonomicName, String status, nz.cri.gns.fred.hibernate.TaxonomicGroup taxonomicGroup, Set<PaleontologyListEntry> palLists) {
-        this.taxonomicName = taxonomicName;
-        this.status = status;
-        this.taxonomicGroup = taxonomicGroup;
-        this.palLists = palLists;
-    }
 
     public Integer getTaxaId() {
         return this.taxaId;

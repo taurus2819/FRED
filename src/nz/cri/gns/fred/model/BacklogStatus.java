@@ -1,47 +1,25 @@
 package nz.cri.gns.fred.model;
 
-
-/**
- *
- */
 public interface BacklogStatus extends Comparable<BacklogStatus> {
 	
-	public abstract Integer getObjectId();
-
-	public abstract void setObjectId(Integer objectId);
-
-	public abstract String getMapNumber();
-
-	public abstract void setMapNumber(String mapNumber);
-
-	public abstract String getMapName();
-
-	public abstract void setMapName(String mapName);
-
-	public abstract String getStatus();
-
-	public abstract void setStatus(String status);
-	
-	public abstract Integer getMasterfileId();
-
-	public abstract void setMasterfileId(Integer masterfileId);
-
-	public abstract Integer getLocalityCount();
-
-	public abstract void setLocalityCount(Integer localityCount);
-	
-	public abstract Integer getProcessingCount();
-
-	public abstract void setProcessingCount(Integer processingCount);
-	
-	public abstract Integer getCompletedCount();
-
-	public abstract void setCompletedCount(Integer completedCount);
-	
-	public abstract Integer getNewCount();
-
-	public abstract void setNewCount(Integer newCount);
-	
-	public abstract Integer getNotStartedCount();
+	public Integer getObjectId();
+	public void setObjectId(Integer objectId);
+	public String getMapNumber();
+	public void setMapNumber(String mapNumber);
+	public String getMapName();
+	public void setMapName(String mapName);
+	public String getStatus();
+	public void setStatus(String status);
+	public Integer getMasterfileId();
+	public void setMasterfileId(Integer masterfileId);
+	public Integer getLocalityCount();
+	public void setLocalityCount(Integer localityCount);
+	public Integer getProcessingCount();
+	public void setProcessingCount(Integer processingCount);
+	public Integer getCompletedCount();
+	public void setCompletedCount(Integer completedCount);
+	public Integer getNewCount();
+	public void setNewCount(Integer newCount);
+	public Integer getNotStartedCount();
 	
 }
