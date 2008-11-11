@@ -54,25 +54,22 @@ try {
 	if (folder.isAllowedReadLocalities()) {
 		List<UserFolder> personalFolders = folderUtil.getBacklogFolders(user);
 		%><form name="addForm" action="backlog_setup.jsp" method="post">
-		<input type="hidden" name="ID" value="<%=folder.getFolderId()%>"><%
-		startDETable(pageContext);
-		%><table border="0" width="550">
-		<tr><td colspan="2" class="deHeading">Localities to Add to Backlog Folder</td></tr>
-		<tr><td colspan="2">&nbsp;</td></tr>
-		<tr><td>Folder</td><td><select name="folderTo"><%
+		<input type="hidden" name="ID" value="<%=folder.getFolderId()%>">
+		<p><table border="0" cellpadding="3" cellspacing="2" width="550">
+		<tr class="midColour"><th colspan="2">Localities to Add to Backlog Folder</th></tr>
+		<tr class="lightColour"><td class="heading">Folder:&nbsp;&nbsp;</td><td><select name="folderTo"><%
 		for (UserFolder userFolder : personalFolders) {
 			if (userFolder.isAllowedEditLocalities()) {
 				%><option value="<%=userFolder.getFolderId()%>"><%=userFolder.getFolderName()%></option><%
 			}
 		}
 		%></select></td></tr>
-		<tr><td>Map sheet</td><td><input name="mapSheet" maxlength="3" ></td></tr>
-		<tr><td>Start FR number</td><td>f<input name="start" maxlength="4"></td></tr>
-		<tr><td>End FR number</td><td>f<input name="end" maxlength="4"></td></tr>
-		<tr><td colspan="2" style="text-align: right"><input type="submit" value="Add to backlog folder"></td></tr>
-		</table><%
-		endDETable(pageContext);
-		%></form><%
+		<tr class="lightColour"><td class="heading">Map sheet:&nbsp;&nbsp;</td><td><input name="mapSheet" /></td></tr>
+		<tr class="lightColour"><td class="heading">Start FR number:&nbsp;&nbsp;</td><td><b>f</b>&nbsp;<input name="start" /></td></tr>
+		<tr class="lightColour"><td class="heading">End FR number:&nbsp;&nbsp;</td><td><b>f</b>&nbsp;<input name="end" /></td></tr>
+		<tr class="lightColour"><td colspan="2"><input type="submit" value="Add to backlog folder"></td></tr>
+		</table></p>
+		</form><%
 	}
 	else { //no record found
 		out.println("No folder found");
