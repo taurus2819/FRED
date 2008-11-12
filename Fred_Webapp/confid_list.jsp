@@ -73,7 +73,7 @@
 			PageState state = new PageState(request, response, getServletContext());
 			FREDRecordQuery query = FREDUtil.getFREDRecordQuery(state);
 			String whereSQL = query.getHQLQuery();
-			System.out.println(whereSQL);
+			//System.out.println(whereSQL);
 			List<Record> records = recordUtil.getListFromQueryBuilder(whereSQL);
 			confidSamples = new Vector<Sample>();
 			Set<Sample> sampleSet = new HashSet<Sample>();
@@ -110,22 +110,30 @@
 		}
 	
 		%><script><!--
-			function selectAll() {
+			function selectAll(type) {
 				if (document.confidForm.AuditIDs.length) {
 					for (var i=0; i<document.confidForm.AuditIDs.length; i++) {
-						document.confidForm.AuditIDs[i].checked = true;
+						if (document.confidForm.AuditIDs[i].id.indexOf(type) >= 0) {
+							document.confidForm.AuditIDs[i].checked = true;
+						}
 					}
 				} else {
-					document.confidForm.AuditIDs.checked = true;
+					if (document.confidForm.AuditIDs.id.indexOf(type) >= 0) {
+						document.confidForm.AuditIDs.checked = true;
+					}
 				}
 			}
-			function unselectAll() {
+			function unselectAll(type) {
 				if (document.confidForm.AuditIDs.length) {
 					for (var i=0; i<document.confidForm.AuditIDs.length; i++) {
-						document.confidForm.AuditIDs[i].checked = false;
+						if (document.confidForm.AuditIDs[i].id.indexOf(type) >= 0) {
+							document.confidForm.AuditIDs[i].checked = false;
+						}
 					}
 				} else {
-					document.confidForm.AuditIDs.checked = false;
+					if (document.confidForm.AuditIDs.id.indexOf(type) >= 0) {
+						document.confidForm.AuditIDs.checked = false;
+					}
 				}
 			}
 			//--></script>
@@ -140,7 +148,7 @@
 			<tr><th style="text-align: left" colspan="2">Locality&nbsp;&nbsp;</th><th style="text-align: left">Sample&nbsp;&nbsp;</th><th style="text-align: left">Lapse Date&nbsp;&nbsp;</th><th style="text-align: left">Access List</th></tr><%
 			for (Sample sample : confidSamples) {
 				%><tr>
-				<td style="text-align: left"><input type="checkbox" name="AuditIDs" value="<%=sample.getAudit().getAuditId()%>" /></td>
+				<td style="text-align: left"><input type="checkbox" name="AuditIDs" id="Samp<%=sample.getAudit().getAuditId()%>" value="<%=sample.getAudit().getAuditId()%>" /></td>
 				<td style="text-align: left"><a href="detail.jsp?FeatID=<%=sample.getFeature().getFeatureId()%>"><%=FeatureUtil.getFeatureIdentifyingName(sample.getFeature())%></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=sample.getSampleId()%>"><%=SampleUtil.getDrillHoleDepthDescription(sample)%></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=FREDUtil.formatDateForOutput(sample.getAudit().getConfidLapseDate())%></td>
@@ -149,7 +157,7 @@
 				<td style="text-align: left"><a href="confid_list.jsp?ActionType=ClearConfid<%=(request.getParameter("Type") != null) ? "&Type=" + request.getParameter("Type") : ""%>&AuditIDs=<%=sample.getAudit().getAuditId()%>&q=<%=Math.random()%>"><img src="images/lock_cancel.gif" border="0" height="20" width="20" alt="Clear Confidentiality" /></a></td>
 				</tr><%
 			}
-			%><tr><td colspan="5" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
+			%><tr><td colspan="5" style="text-align: left"><a href="javascript:selectAll('Samp')">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll('Samp')">Unselect All</a></td></tr>
 			</table><%
 			endDETable(pageContext);
 			%></p><%
@@ -165,7 +173,7 @@
 			for (Adoption adoption : confidAdoptions) {
 				Record record = adoption.getRecord();
 				%><tr>
-				<td style="text-align: left"><input type="checkbox" name="AuditIDs" value="<%=record.getAudit().getAuditId()%>" /></td>
+				<td style="text-align: left"><input type="checkbox" name="AuditIDs" id="Ado<%=record.getAudit().getAuditId()%>" value="<%=record.getAudit().getAuditId()%>" /></td>
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=FeatureUtil.getFeatureIdentifyingName(record.getSample().getFeature())%><%=(SampleUtil.getDrillHoleDepthDescription(record.getSample()) != null) ? "<br />" + SampleUtil.getDrillHoleDepthDescription(record.getSample()) : ""%></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=RecordUtil.getRecordName(record)%></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=FREDUtil.formatDateForOutput(record.getAudit().getConfidLapseDate())%></td>
@@ -174,7 +182,7 @@
 				<td style="text-align: left"><a href="confid_list.jsp?ActionType=ClearConfid<%=(request.getParameter("Type") != null) ? "&Type=" + request.getParameter("Type") : ""%>&AuditIDs=<%=record.getAudit().getAuditId()%>&q=<%=Math.random()%>"><img src="images/lock_cancel.gif" border="0" height="20" width="20" alt="Clear Confidentiality" /></a></td>
 				</tr><%
 			}
-			%><tr><td colspan="5" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
+			%><tr><td colspan="5" style="text-align: left"><a href="javascript:selectAll('Ado')">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll('Ado')">Unselect All</a></td></tr>
 			</table><%
 			endDETable(pageContext);
 			%></p><%
@@ -190,7 +198,7 @@
 			for (Paleontology paleontology : confidPaleontologies) {
 				Record record = paleontology.getRecord();
 				%><tr>
-				<td style="text-align: left"><input type="checkbox" name="AuditIDs" value="<%=record.getAudit().getAuditId()%>" /></td>
+				<td style="text-align: left"><input type="checkbox" name="AuditIDs" id="Pal<%=record.getAudit().getAuditId()%>" value="<%=record.getAudit().getAuditId()%>" /></td>
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=FeatureUtil.getFeatureIdentifyingName(record.getSample().getFeature())%><%=(SampleUtil.getDrillHoleDepthDescription(record.getSample()) != null) ? "<br />" + SampleUtil.getDrillHoleDepthDescription(record.getSample()) : ""%></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=RecordUtil.getRecordName(record)%></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=FREDUtil.formatDateForOutput(record.getAudit().getConfidLapseDate())%></td>
@@ -200,7 +208,7 @@
 				</tr><%
 			}
 			%>
-			<tr><td colspan="5" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
+			<tr><td colspan="5" style="text-align: left"><a href="javascript:selectAll('Pal')">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll('Pal')">Unselect All</a></td></tr>
 			</table><%
 			endDETable(pageContext);
 			%></p><%
@@ -216,7 +224,7 @@
 			for (Paleontology paleontology : confidPalLists) {
 				Record record = paleontology.getRecord();
 				%><tr>
-				<td style="text-align: left"><input type="checkbox" name="AuditIDs" value="<%=record.getAudit().getAuditId()%>" /></td>
+				<td style="text-align: left"><input type="checkbox" name="AuditIDs" id="PList<%=record.getPalListAudit().getAuditId()%>" value="<%=record.getPalListAudit().getAuditId()%>" /></td>
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=FeatureUtil.getFeatureIdentifyingName(record.getSample().getFeature())%><%=(SampleUtil.getDrillHoleDepthDescription(record.getSample()) != null) ? "<br />" + SampleUtil.getDrillHoleDepthDescription(record.getSample()) : ""%></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><a href="detail.jsp?ID=<%=record.getSample().getSampleId()%>"><%=RecordUtil.getRecordName(record)%>&nbsp;&nbsp;</a></td>
 				<td style="text-align: left"><%=FREDUtil.formatDateForOutput(record.getPalListAudit().getConfidLapseDate())%></td>
@@ -225,7 +233,7 @@
 				<td style="text-align: left"><a href="confid_list.jsp?ActionType=ClearConfid<%=(request.getParameter("Type") != null) ? "&Type=" + request.getParameter("Type") : ""%>&AuditIDs=<%=record.getPalListAudit().getAuditId()%>&q=<%=Math.random()%>"><img src="images/lock_cancel.gif" border="0" height="20" width="20" alt="Clear Confidentiality" /></a></td>
 				</tr><%
 			}
-			%><tr><td colspan="5" style="text-align: left"><a href="javascript:selectAll()">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect All</a></td></tr>
+			%><tr><td colspan="5" style="text-align: left"><a href="javascript:selectAll('PList')">Select All</a>&nbsp;&nbsp;<a href="javascript:unselectAll('PList')">Unselect All</a></td></tr>
 			</table><%
 			endDETable(pageContext);
 			%></p><%
