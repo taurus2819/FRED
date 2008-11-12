@@ -114,6 +114,7 @@ for (Sample sample : FeatureUtil.getSortedSamples(feature)) {
 						<set-confidentiality>FALSE</set-confidentiality>
 						<edit-binary>FALSE</edit-binary><%
 					}
+					System.out.println("about to start checking record delete for " + record);
 					if (recordUtil.isAllowedDeleteRecord(user, record, folder)) {
 						%><delete>TRUE</delete><%
 					} else {
