@@ -174,21 +174,9 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 
 	
-	/**
-	 * @param record
-	 * @param folder
-	 * @param user
-	 * @return
-	 * @throws StorageAccessException
-	 * @throws NumberFormatException
-	 */
 	private boolean isAllowedDeleteRecord(Record record, UserFolder folder, UserAccount user) throws StorageAccessException {
-		// TODO I made this up cos it wasn't checked before...is it right?
 		Audit audit = record.getAudit();
-		if (audit.getStatus().equals(APPROVED))
-			return false;
-
-		if (audit.getStatus().equals(WAITING))
+		if (audit.getStatus().equals(WAITING) || audit.getStatus().equals(APPROVED))
 			return FeatureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_DELETE_RIGHT, folderDAO);
 
 		return folder.isAllowedDeleteLocalities();
