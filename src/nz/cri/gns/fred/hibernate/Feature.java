@@ -315,7 +315,7 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
 	}
 	
 	public String toString() {
-		return featureName;
+		return FeatureUtil.getFeatureIdentifyingName(this);
 	}
 	
    /* public boolean equals(Object o) {
