@@ -117,7 +117,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public void deleteRecord(Record record, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
-		if (!isAllowedDeleteRecord(record, folder, user))
+		if (!isAllowedDeleteRecord(user, record, folder))
 			throw new InsufficientPrivelegesException();
 		
 		//Get the sample
@@ -173,24 +173,6 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		}
 	}
 
-	
-	private boolean isAllowedDeleteRecord(Record record, UserFolder folder, UserAccount user) throws StorageAccessException {
-		System.out.println("Checking can delete record " + record);
-		Audit audit = record.getAudit();
-		System.out.println("Audit status = " + audit.getStatus());
-
-		if (audit.getStatus().equals(WAITING) || audit.getStatus().equals(APPROVED)) {
-			System.out.println("Checking masterfile rights");
-			boolean ok = FeatureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, folderDAO) ||
-				FREDUtil.checkEditSecurityClass(user);
-			System.out.println("masterfile rights = " + FeatureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, folderDAO));
-			System.out.println("edit sc = " + FREDUtil.checkEditSecurityClass(user));
-			System.out.println("ok = " + ok);
-			return ok;
-		}
-		return folder.isAllowedDeleteLocalities();
-	}
-
 	/**
      * Creates a new record entry of the given type and returns it.
      * @param sample the sample to which the record belongs
@@ -229,7 +211,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
 
-    public boolean isAllowedEditRecord(User user, Record record, UserFolder userFolder) throws StorageAccessException {
+    public boolean isAllowedEditRecord(UserAccount user, Record record, UserFolder userFolder) throws StorageAccessException {
 		Audit audit = record.getAudit();
 		if (audit.getStatus().equals(APPROVED))
 			return FeatureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, folderDAO) ||
@@ -246,15 +228,15 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return userFolder.isAllowedEditLocalities();		
 	}
 
-	public boolean isAllowedDeleteRecord(User user, Record record, UserFolder userFolder) throws StorageAccessException {
+	public boolean isAllowedDeleteRecord(UserAccount user, Record record, UserFolder userFolder) throws StorageAccessException {
 		Audit audit = record.getAudit();
 		if (audit.getStatus().equals(APPROVED))
-			return false;
+			return FeatureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, folderDAO);
 
 		return userFolder.isAllowedDeleteLocalities();
 	}
 
-    public boolean isAllowedSubmitRecord(User user, Record record, UserFolder userFolder) throws StorageAccessException {
+    public boolean isAllowedSubmitRecord(UserAccount user, Record record, UserFolder userFolder) throws StorageAccessException {
     	//check if pal record has non-approved taxa
         if (record.getPaleontology() != null && !RecordUtil.isTaxaApproved(record))
         	return false;
@@ -267,7 +249,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     }
 
 
-    public boolean hasMasterfileEditRights(User user, Record record) throws StorageAccessException {
+    public boolean hasMasterfileEditRights(UserAccount user, Record record) throws StorageAccessException {
         return FeatureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, folderDAO);
     }
 
