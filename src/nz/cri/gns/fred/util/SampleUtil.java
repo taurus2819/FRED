@@ -2,7 +2,6 @@ package nz.cri.gns.fred.util;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -505,16 +504,16 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	
 	public int getPaleontologyRecordCount(Sample sample) {
 		int count = 0;
-		for (Iterator it = sample.getRecords().iterator(); it.hasNext(); ) {
-			count += (((Record)it.next()).getPaleontology() != null) ? 1 : 0;
+		for (Record record : sample.getRecords()) {
+			count += (record.getPaleontology() != null) ? 1 : 0;
 		}
 		return count;
 	}
 	
 	public int getAdoptionRecordCount(Sample sample) {
 		int count = 0;
-		for (Iterator it = sample.getRecords().iterator(); it.hasNext(); ) {
-			count += (((Record)it.next()).getAdoption() != null) ? 1 : 0;
+		for (Record record : sample.getRecords()) {
+			count += (record.getAdoption() != null) ? 1 : 0;
 		}
 		return count;
 	}
@@ -531,8 +530,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
 	public List<Adoption> getAdoptionRecords(Sample sample) {
 		List<Adoption> adoRecords = new Vector<Adoption>();
-		for (Iterator it = sample.getRecords().iterator(); it.hasNext(); ) {
-			Record record = (Record) it.next();
+		for (Record record : sample.getRecords()) {
 			if (record.getAdoption() != null)
 				adoRecords.add(record.getAdoption());
 		}
