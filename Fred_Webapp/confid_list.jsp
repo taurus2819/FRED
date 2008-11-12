@@ -73,6 +73,7 @@
 			PageState state = new PageState(request, response, getServletContext());
 			FREDRecordQuery query = FREDUtil.getFREDRecordQuery(state);
 			String whereSQL = query.getHQLQuery();
+			System.out.println(whereSQL);
 			List<Record> records = recordUtil.getListFromQueryBuilder(whereSQL);
 			confidSamples = new Vector<Sample>();
 			Set<Sample> sampleSet = new HashSet<Sample>();

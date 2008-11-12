@@ -150,7 +150,8 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 		
 		f = new Field[13];
 		//f[0] = new HqlUniqueSubTablePossibleValueField("identifier.personId", "Identifier", people, new String[] {"r.paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "identifier")});
-		f[0] = new HqlUniqueSubTableTextField("identifier.personId", "Identifier", new String[] {"r.paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "identifier")});
+		//f[0] = new HqlUniqueSubTableTextField("identifier.personId", "Identifier", new String[] {"r.paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "identifier")});
+		f[0] = new HqlUniqueSubTableTextField("person.name", "Identifier", new String[] {"r.paleontology", "paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "paleontology"), new HqlJoin(false, "person")});
 		f[1] = new BasicDateField("r.paleontology.identificationDate", "Identification Date");
 		f[2] = new BasicAgeField("r.paleontology.stage", "Stage", ages);
 		f[3] = new BasicNumericAgeField("r.paleontology.stage", "Stage (numeric)");
