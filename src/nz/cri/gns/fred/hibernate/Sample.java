@@ -7,6 +7,7 @@ import java.util.Set;
 import nz.cri.gns.fred.model.ColourModifier;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.Bedding;
+import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.Weathering;
@@ -30,223 +31,52 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
 
     private static final long serialVersionUID = 20050818L;
 
-	/** identifier field */
     private Integer sampleId;
-
-    /** nullable persistent field */
     private Double topDepth;
-
-    /** nullable persistent field */
     private Double bottomDepth;
-
-    /** nullable persistent field */
     private String depthUnit;
-    
-    /** nullable persistent field */
     private String comments;
-
-    /** nullable persistent field */
     private Date collectionDate;
-
-    /** nullable persistent field */
     private String dateRounding;
-
-    /** nullable persistent field */
     private String stratUnit;
-
-    /** nullable persistent field */
     private String inPlace;
-
-    /** nullable persistent field */
     private String notCollected;
-
-    /** nullable persistent field */
     private String significance;
-
-    /** nullable persistent field */
     private String columnMap;
-
-    /** nullable persistent field */
     private Integer dip;
-
-    /** nullable persistent field */
     private String dipDirection;
-
-    /** nullable persistent field */
     private Integer strike;
-
-    /** nullable persistent field */
     private String facing;
-
-    /** nullable persistent field */
     private String stratComments;
-    
-    /** nullable persistent field */
     private String comparatorUsed;
-
-    /** nullable persistent field */
     private String wet;
-
-    /** nullable persistent field */
     private String rockNature;
-
-    /** nullable persistent field */
     private String depositionEnv;
-
-    /** nullable persistent field */
     private String correspondence;
-
-    /** persistent field */
     private ColourModifier colourModifier;
-
-    /** persistent field */
     private Hardness hardness;
-
-    /** persistent field */
     private Weathering weathering;
-
-    /** persistent field */
     private Carbonate carbonate;
-
-    /** persistent field */
     private RockColour rockColourBySecondaryColourId;
-
-    /** persistent field */
     private RockColour rockColourByPrimaryColourId;
-
-    /** persistent field */
     private Feature feature;
-
-    /** persistent field */
     private Audit auditTable;
-
-    /** persistent field */
     private Bedding beddingByPrimaryBeddingId;
-
-    /** persistent field */
     private Bedding beddingBySecondaryBeddingId;
-
-    /** persistent field */
     private FrNumber frNumber;
-
-    /** persistent field */
     private FrNumber yardFrNumber;
-    
-    /** persistent field */
     private DrillType drillType;
-
-    /** persistent field */
     private GrainSize grainSizeByPrimaryGrainsizeId;
-
-    /** persistent field */
     private GrainSize grainSizeBySecondaryGrainsizeId;
-
-    /** persistent field */
     private BedThickness bedThickness;
-
-    /** persistent field */
     private Stage stageByKnownStageId;
-
-    /** persistent field */
     private Stage stageByInferredStageId;
-
-    /** persistent field */
     private Set<SedimentaryFeature> sedimentaryFeatures;
-
-    /** persistent field */
     private Set<SampleMeta> sampleMetas;
-
-    /** persistent field */
     private Set<Record> records;
-
-    /** persistent field */
     private Set<SentTo> sentTos;
-
-    /** persistent field */
     private Set<Person> collectors;
-
-    /** persistent field */
     private Set<Relationship> relationships;
-
-    /** full constructor */
-    public Sample(Double topDepth, Double bottomDepth, String depthUnit, String comments, Date collectionDate, String dateRounding, String stratUnit, String inPlace, String notCollected, String significance, String columnMap, Integer dip, String dipDirection, Integer strike, String facing, String stratComments, String comparatorUsed, String wet, String rockNature, String depositionEnv, String correspondence, nz.cri.gns.fred.hibernate.ColourModifier colourModifier, nz.cri.gns.fred.hibernate.Hardness hardness, nz.cri.gns.fred.hibernate.Weathering weathering, nz.cri.gns.fred.hibernate.Carbonate carbonate, nz.cri.gns.fred.hibernate.RockColour rockColourBySecondaryColourId, nz.cri.gns.fred.hibernate.RockColour rockColourByPrimaryColourId, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.Bedding beddingByPrimaryBeddingId, nz.cri.gns.fred.hibernate.Bedding beddingBySecondaryBeddingId, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.FrNumber yardFrNumber, nz.cri.gns.fred.hibernate.DrillType drillType, nz.cri.gns.fred.hibernate.GrainSize grainSizeByPrimaryGrainsizeId, nz.cri.gns.fred.hibernate.GrainSize grainSizeBySecondaryGrainsizeId, nz.cri.gns.fred.hibernate.BedThickness bedThickness, nz.cri.gns.fred.hibernate.Stage stageByKnownStageId, nz.cri.gns.fred.hibernate.Stage stageByInferredStageId, Set<SedimentaryFeature> sedimentaryFeatures, Set<SampleMeta> sampleMetas, Set<Record> records, Set<SentTo> sentTos, Set<Person> collectors, Set<Relationship> relationships) {
-        this.topDepth = topDepth;
-        this.bottomDepth = bottomDepth;
-        this.depthUnit = depthUnit;
-        this.comments = comments;
-        this.collectionDate = collectionDate;
-        this.dateRounding = dateRounding;
-        this.stratUnit = stratUnit;
-        this.inPlace = inPlace;
-        this.notCollected = notCollected;
-        this.significance = significance;
-        this.columnMap = columnMap;
-        this.dip = dip;
-        this.dipDirection = dipDirection;
-        this.strike = strike;
-        this.facing = facing;
-        this.stratComments = stratComments;
-        this.comparatorUsed = comparatorUsed;
-        this.wet = wet;
-        this.rockNature = rockNature;
-        this.depositionEnv = depositionEnv;
-        this.correspondence = correspondence;
-        this.colourModifier = colourModifier;
-        this.hardness = hardness;
-        this.weathering = weathering;
-        this.carbonate = carbonate;
-        this.rockColourBySecondaryColourId = rockColourBySecondaryColourId;
-        this.rockColourByPrimaryColourId = rockColourByPrimaryColourId;
-        this.feature = feature;
-        this.auditTable = auditTable;
-        this.beddingByPrimaryBeddingId = beddingByPrimaryBeddingId;
-        this.beddingBySecondaryBeddingId = beddingBySecondaryBeddingId;
-        this.frNumber = frNumber;
-        this.yardFrNumber = yardFrNumber;
-        this.drillType = drillType;
-        this.grainSizeByPrimaryGrainsizeId = grainSizeByPrimaryGrainsizeId;
-        this.grainSizeBySecondaryGrainsizeId = grainSizeBySecondaryGrainsizeId;
-        this.bedThickness = bedThickness;
-        this.stageByKnownStageId = stageByKnownStageId;
-        this.stageByInferredStageId = stageByInferredStageId;
-        this.sedimentaryFeatures = sedimentaryFeatures;
-        this.sampleMetas = sampleMetas;
-        this.records = records;
-        this.sentTos = sentTos;
-        this.collectors = collectors;
-        this.relationships = relationships;
-    }
-
-    /** default constructor */
-    public Sample() {
-    }
-
-    /** minimal constructor */
-    public Sample(nz.cri.gns.fred.hibernate.ColourModifier colourModifier, nz.cri.gns.fred.hibernate.Hardness hardness, nz.cri.gns.fred.hibernate.Weathering weathering, nz.cri.gns.fred.hibernate.Carbonate carbonate, nz.cri.gns.fred.hibernate.RockColour rockColourBySecondaryColourId, nz.cri.gns.fred.hibernate.RockColour rockColourByPrimaryColourId, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.AuditTable auditTable, nz.cri.gns.fred.hibernate.Bedding beddingByPrimaryBeddingId, nz.cri.gns.fred.hibernate.Bedding beddingBySecondaryBeddingId, nz.cri.gns.fred.hibernate.FrNumber frNumber, nz.cri.gns.fred.hibernate.DrillType drillType, nz.cri.gns.fred.hibernate.GrainSize grainSizeByPrimaryGrainsizeId, nz.cri.gns.fred.hibernate.GrainSize grainSizeBySecondaryGrainsizeId, nz.cri.gns.fred.hibernate.BedThickness bedThickness, nz.cri.gns.fred.hibernate.Stage stageByKnownStageId, nz.cri.gns.fred.hibernate.Stage stageByInferredStageId, Set<SedimentaryFeature> sedimentaryFeatures, Set<SampleMeta> sampleMetas, Set<Record> records, Set<SentTo> sentTos, Set<Person> collectors, Set<Relationship> relationships) {
-        this.colourModifier = colourModifier;
-        this.hardness = hardness;
-        this.weathering = weathering;
-        this.carbonate = carbonate;
-        this.rockColourBySecondaryColourId = rockColourBySecondaryColourId;
-        this.rockColourByPrimaryColourId = rockColourByPrimaryColourId;
-        this.feature = feature;
-        this.auditTable = auditTable;
-        this.beddingByPrimaryBeddingId = beddingByPrimaryBeddingId;
-        this.beddingBySecondaryBeddingId = beddingBySecondaryBeddingId;
-        this.frNumber = frNumber;
-        this.drillType = drillType;
-        this.grainSizeByPrimaryGrainsizeId = grainSizeByPrimaryGrainsizeId;
-        this.grainSizeBySecondaryGrainsizeId = grainSizeBySecondaryGrainsizeId;
-        this.bedThickness = bedThickness;
-        this.stageByKnownStageId = stageByKnownStageId;
-        this.stageByInferredStageId = stageByInferredStageId;
-        this.sedimentaryFeatures = sedimentaryFeatures;
-        this.sampleMetas = sampleMetas;
-        this.records = records;
-        this.sentTos = sentTos;
-        this.collectors = collectors;
-        this.relationships = relationships;
-    }
 
     public Integer getSampleId() {
         return this.sampleId;
@@ -639,6 +469,10 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
 		return null;
 	}
 
+	public String toString() {
+		return feature.toString() + ((!feature.getFeatureType().equals(FREDConstants.OUTCROP)) ? ": " + SampleUtil.getDrillHoleDepthDescription(this) : "");
+	}
+	
 	//public boolean equals(Object o) {
 	//	return o instanceof Sample && ((Sample)o).sampleId.equals(sampleId);
 	//}

@@ -18,46 +18,13 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record {
 
     private static final long serialVersionUID = 20050818L;
 
-    /** identifier field */
     private Integer recordId;
-
-    /** nullable persistent field */
     private Paleontology paleontology;
-
-    /** nullable persistent field */
     private Adoption adoption;
-
-    /** persistent field */
     private Sample sample;
-
-    /** persistent field */
     private Audit audit;
-    
-    /** persistent field */
     private Audit palListAudit;
-
-    /** persistent field */
     private Set<RecordMeta> recordMetas;
-    
-    /** full constructor */
-    public Record(Paleontology paleontology, Adoption adoption, Sample sample, AuditTable audit, AuditTable palListAudit, Set<RecordMeta> recordMetas) {
-        this.paleontology = paleontology;
-        this.adoption = adoption;
-        this.sample = sample;
-        this.audit = audit;
-        this.recordMetas = recordMetas;
-    }
-
-    /** default constructor */
-    public Record() {
-    }
-
-    /** minimal constructor */
-    public Record(Sample sample, AuditTable auditTable, Set<RecordMeta> recordMetas) {
-        this.sample = sample;
-        this.audit = auditTable;
-        this.recordMetas = recordMetas;
-    }
 
     public Integer getRecordId() {
         return this.recordId;
@@ -65,12 +32,6 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record {
 
     public void setRecordId(Integer recordId) {
         this.recordId = recordId;
-/*        if (paleontology != null) {
-        	paleontology.setRecordId(recordId);
-        }
-        if (adoption != null) {
-        	adoption.setRecordId(recordId);
-        }*/
     }
 
     public Paleontology getPaleontology() {
@@ -147,6 +108,10 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record {
 		}
 	}
 
+	public String toString() {
+		return sample.toString() + ": " + RecordUtil.getRecordName(this);
+	}
+	
 	/*public boolean equals(Object o) {
 		return o instanceof Record && ((Record)o).recordId.equals(recordId);
 	}
