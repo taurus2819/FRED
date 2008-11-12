@@ -93,8 +93,7 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 		add(new TwoLevelField("Vertical Section Fields", f));
 		
 		f = new Field[5];
-		//f[0] = new HqlUniqueSubTablePossibleValueField("collector.personId", "Collector", people, new String[] {"r.sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "collector")});
-		f[0] = new HqlUniqueSubTableTextField("collector.personId", "Collector", new String[] {"r.sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "collector")});
+		f[0] = new HqlUniqueSubTableTextField("person.name", "Collector", new String[] {"r.sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "person")});
 		f[1] = new BasicDateField("r.sample.collectionDate", "Collection Date");
 		f[2] = new PossibleValueField("r.sample.inPlace", "Fossils In Place", getInPlace());
 		f[3] = new BasicTextField("r.sample.notCollected", "Not Collected");
@@ -140,8 +139,7 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 		add(new TwoLevelField("Correspondence Fields", f));
 		
 		f = new Field[5];
-		//f[0] = new HqlUniqueSubTablePossibleValueField("adoptor.personId", "Adoptor", people, new String[] {"r.adoption.adoptors"}, new HqlJoin[] {new HqlJoin(false, "adoptor")});
-		f[0] = new HqlUniqueSubTableTextField("adoptor.personId", "Adoptor", new String[] {"r.adoption.adoptors"}, new HqlJoin[] {new HqlJoin(false, "adoptor")});
+		f[0] = new HqlUniqueSubTableTextField("person.name", "Adoptor", new String[] {"r.adoption", "adoption.adoptors"}, new HqlJoin[] {new HqlJoin(false, "adoption"), new HqlJoin(false, "person")});
 		f[1] = new BasicDateField("r.adoption.adoptionDate", "Adoption Date");
 		f[2] = new BasicAgeField("r.adoption.stage", "Adopted Stage", ages);
 		f[3] = new BasicNumericAgeField("r.adoption.stage", "Adopted Stage (numeric)");
@@ -149,8 +147,6 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 		add(new TwoLevelField("Adoption Fields", f));
 		
 		f = new Field[13];
-		//f[0] = new HqlUniqueSubTablePossibleValueField("identifier.personId", "Identifier", people, new String[] {"r.paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "identifier")});
-		//f[0] = new HqlUniqueSubTableTextField("identifier.personId", "Identifier", new String[] {"r.paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "identifier")});
 		f[0] = new HqlUniqueSubTableTextField("person.name", "Identifier", new String[] {"r.paleontology", "paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "paleontology"), new HqlJoin(false, "person")});
 		f[1] = new BasicDateField("r.paleontology.identificationDate", "Identification Date");
 		f[2] = new BasicAgeField("r.paleontology.stage", "Stage", ages);
