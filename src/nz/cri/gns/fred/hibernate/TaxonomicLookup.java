@@ -146,6 +146,10 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
 		return (taxonomicName.toUpperCase()).compareTo(arg0.getTaxonomicName().toUpperCase());
 	}
 
+	public String toString() {
+		return taxonomicName;
+	}
+	
 	public String getUniqueIdentifier() {
 		return String.valueOf(taxaId);
 	}
