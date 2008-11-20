@@ -12,7 +12,7 @@
 -->
 
 <class 
-    name="nz.cri.gns.fred.hibernate.PaleoName" 
+    name="nz.cri.gns.fred.hibernate.NpcPaleoName" 
     table="PALEO_NAME"
     schema="NPC"
     mutable="false"
