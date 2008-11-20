@@ -108,20 +108,6 @@
             class="nz.cri.gns.fred.hibernate.PalList"
         />
     </set>
-    <!-- bi-directional one-to-many association to PalList -->
-    <set
-        name="npcPaleoNames"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <key>
-            <column name="TAXA_ID" />
-        </key>
-        <one-to-many 
-            class="nz.cri.gns.paleo.npc.hibernate.PaleoName"
-        />
-    </set>
     <!-- bi-directional many-to-one association to UserView -->
     <many-to-one
         name="submittedBy"
