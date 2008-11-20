@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import nz.cri.gns.fred.model.Taxon;
 
-public class NpcPaleoName implements Serializable, nz.cri.gns.fred.model.NpcPaleoName {
+public class PaleoName implements Serializable, nz.cri.gns.fred.model.PaleoName {
 
     private static final long serialVersionUID = 20050818L;
 
@@ -40,7 +40,7 @@ public class NpcPaleoName implements Serializable, nz.cri.gns.fred.model.NpcPale
         return name;
     }
 
-	public int compareTo(nz.cri.gns.fred.model.NpcPaleoName arg0) {
+	public int compareTo(nz.cri.gns.fred.model.PaleoName arg0) {
 		return name.compareTo(arg0.getName());
 	}
 

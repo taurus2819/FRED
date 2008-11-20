@@ -119,7 +119,7 @@
             <column name="TAXA_ID" />
         </key>
         <one-to-many 
-            class="nz.cri.gns.fred.hibernate.NpcPaleoName"
+            class="nz.cri.gns.fred.hibernate.PaleoName"
         />
     </set>
     <!-- bi-directional many-to-one association to UserView -->

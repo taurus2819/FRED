@@ -1,6 +1,6 @@
 package nz.cri.gns.fred.model;
 
-public interface NpcPaleoName extends Comparable<NpcPaleoName> {
+public interface PaleoName extends Comparable<PaleoName> {
 	public Integer getNameId();
     public void setNameId(Integer nameId); 
     public String getName();
