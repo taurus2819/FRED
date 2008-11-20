@@ -13,6 +13,7 @@
 %><%@page import="nz.cri.gns.fred.model.SiteView"
 %><%@page import="nz.cri.gns.fred.model.SentTo"
 %><%@page import="nz.cri.gns.fred.model.SedimentaryFeature"
+%><%@page import="nz.cri.gns.fred.model.Taxon"
 %><%@page import="nz.cri.gns.fred.model.TaxonomicGroup"
 %><%@page import="nz.cri.gns.fred.model.Meta"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
@@ -660,9 +661,18 @@ try {
 											%><td>&nbsp;</td>
 											</tr><%
 											for (PaleontologyListEntry taxa : recordUtil.getListEntries(palRecord, taxaGroup)) {
-												%><tr class="lightColour"><td><i><%=(taxa.getTaxonomicName() != null) ? taxa.getTaxonomicName() : "no taxa identified"%></i>&nbsp;&nbsp;</td><%
+												Taxon taxon = taxa.getTaxon();
+												%><tr class="lightColour"><td><%
+												if (taxon != null && !FREDUtil.isEmpty(taxon.getNpcPaleoNames())) {
+													%><a href="http://data.gns.cri.nz/npc/catalogue/taxon.jsp?taxonId=<%=taxon.getTaxaId()%>"><%
+												}
+												%><i><%=(taxa.getTaxonomicName() != null) ? taxa.getTaxonomicName() : "no taxa identified"%></i><%
+												if (taxon != null && !FREDUtil.isEmpty(taxon.getNpcPaleoNames())) {
+													%></a><%
+												}
+												%>&nbsp;&nbsp;</td><%
 												if (authorChk) {
-													%><td><%=(taxa.getTaxon() != null) ? DBUtils.nvl(taxa.getTaxon().getAuthor()) : ""%>&nbsp;&nbsp;</td><%
+													%><td><%=(taxon != null) ? DBUtils.nvl(taxa.getTaxon().getAuthor()) : ""%>&nbsp;&nbsp;</td><%
 												}
 												if (sCountChk) {
 													%><td><%=DBUtils.nvl(taxa.getSpecimenCount())%>&nbsp;&nbsp;</td><%
