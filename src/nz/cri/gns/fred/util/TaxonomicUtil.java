@@ -1,11 +1,22 @@
 package nz.cri.gns.fred.util;
 
 import java.beans.IntrospectionException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
 
 import net.sf.hibernate.expression.Criterion;
 import net.sf.hibernate.expression.Expression;
@@ -384,5 +395,21 @@ public class TaxonomicUtil extends ModelUtil {
 		if (FREDUtil.isEmpty(comments))
 			return specCount.toString() + "|" + DBUtils.nvl(specCoord);
 		return specCount.toString() + "|" + DBUtils.nvl(specCoord) + "|" + DBUtils.nvl(comments);
+	}
+	
+	public static boolean isTaxonInNpc(Taxon taxon) {
+		if (taxon == null)
+			return false;
+		InputSource xml;
+		try {
+			xml = new InputSource(new URL("http://data.gns.cri.nz/npc/catalogue/taxonCheck.jsp?taxonId=" + taxon.getTaxaId()).openStream());
+			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			Document doc = db.parse(xml);
+			Node existsNode = doc.getElementsByTagName("exists").item(0);
+			return (existsNode != null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

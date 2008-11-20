@@ -41,6 +41,7 @@
 %><%@page import="nz.cri.gns.fred.util.StageUtil"
 %><%@page import="nz.cri.gns.fred.util.SiteUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
+%><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.de.DataInputException"
 %><%@page import="nz.cri.gns.intranet.ServletUtils"
@@ -663,11 +664,11 @@ try {
 											for (PaleontologyListEntry taxa : recordUtil.getListEntries(palRecord, taxaGroup)) {
 												Taxon taxon = taxa.getTaxon();
 												%><tr class="lightColour"><td><%
-												if (taxon != null) {
+												if (TaxonomicUtil.isTaxonInNpc(taxon)) {
 													%><a href="http://data.gns.cri.nz/npc/catalogue/taxon.jsp?taxonId=<%=taxon.getTaxaId()%>"><%
 												}
 												%><i><%=(taxa.getTaxonomicName() != null) ? taxa.getTaxonomicName() : "no taxa identified"%></i><%
-												if (taxon != null) {
+												if (TaxonomicUtil.isTaxonInNpc(taxon)) {
 													%></a><%
 												}
 												%>&nbsp;&nbsp;</td><%
