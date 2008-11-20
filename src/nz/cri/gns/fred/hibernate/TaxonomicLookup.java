@@ -4,10 +4,11 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
-import nz.cri.gns.fred.model.Taxon;
-import nz.cri.gns.fred.model.UserView;
+import nz.cri.gns.fred.model.NpcPaleoName;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
+import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
+import nz.cri.gns.fred.model.UserView;
 
 public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxon {
 
@@ -27,6 +28,7 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
     private UserView approvedBy;
     private TaxonomicGroup taxonomicGroup;
     private Set<PaleontologyListEntry> palLists;
+    private Set<NpcPaleoName> npcPaleoNames;
 
     public Integer getTaxaId() {
         return this.taxaId;
@@ -140,6 +142,14 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
         this.palLists = palLists;
     }
     
+	public void setNpcPaleoNames(Set<NpcPaleoName> npcPaleoNames) {
+		this.npcPaleoNames = npcPaleoNames;
+	}
+
+	public Set<NpcPaleoName> getNpcPaleoNames() {
+		return npcPaleoNames;
+	}
+
 	public int compareTo(nz.cri.gns.fred.model.Taxon arg0) {
 		if (!taxonomicGroup.equals(arg0.getTaxonomicGroup()))
 			return taxonomicGroup.compareTo(arg0.getTaxonomicGroup());

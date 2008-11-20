@@ -35,5 +35,6 @@ public interface Taxon extends Comparable<Taxon>, NameableAndIdentifiable {
 	public void setApprovedBy(UserView approvedBy);
     public Set<PaleontologyListEntry> getListEntries();
     public void setListEntries(Set<PaleontologyListEntry> palLists);
-
+	public void setNpcPaleoNames(Set<NpcPaleoName> npcPaleoNames);
+	public Set<NpcPaleoName> getNpcPaleoNames();
 }

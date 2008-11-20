@@ -44,7 +44,5 @@
         <column name="TAXA_ID" />
     </many-to-one>
 
-    </set>
-
 </class>
 </hibernate-mapping>
