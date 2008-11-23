@@ -665,7 +665,7 @@ try {
 												Taxon taxon = taxa.getTaxon();
 												%><tr class="lightColour"><td><%
 												if (TaxonomicUtil.isTaxonInNpc(taxon)) {
-													%><a href="http://data.gns.cri.nz/npc/catalogue/taxon.jsp?taxonId=<%=taxon.getTaxaId()%>"><%
+													%><a href="http://data.gns.cri.nz/npc/catalogue/taxon.jsp?taxonId=<%=taxon.getTaxaId()%>" target="npc"><%
 												}
 												%><i><%=(taxa.getTaxonomicName() != null) ? taxa.getTaxonomicName() : "no taxa identified"%></i><%
 												if (TaxonomicUtil.isTaxonInNpc(taxon)) {
