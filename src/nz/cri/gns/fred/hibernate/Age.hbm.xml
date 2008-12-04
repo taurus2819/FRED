@@ -46,7 +46,7 @@
 	    <property
     	    name="topAge"
         	type="java.lang.Double"
-        	column="topAge"
+        	column="TOP_AGE"
 	    />
 	    <property
     	    name="obsoleteFlag"
