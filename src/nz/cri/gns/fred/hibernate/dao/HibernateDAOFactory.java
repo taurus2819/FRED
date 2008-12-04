@@ -734,7 +734,7 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 						, Expression.ilike("code", str, MatchMode.END)));
 				break;
 		}
-		crit.add(Expression.eq("obsoleteFlag", "false"));
+		crit.add(Expression.eq("obsoleteFlag", false));
 		crit.setMaxResults(maxMatches);
 		crit.addOrder(Order.asc("baseAge"));
 		crit.addOrder(Order.asc("topAge"));
