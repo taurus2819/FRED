@@ -27,7 +27,7 @@ import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTablePossibleValueFie
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlUniqueSubTableTextField;
 import nz.cri.gns.fred.dao.FeatureDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
-import nz.cri.gns.fred.model.AgeView;
+import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.BedThickness;
 import nz.cri.gns.fred.model.Bedding;
 import nz.cri.gns.fred.model.Carbonate;
@@ -62,12 +62,12 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	protected int lastUsedId = 900000;
 	
 	//protected List<Person> people = null;
-	protected List<AgeView> ages = null;
+	protected List<Age> ages = null;
 	protected List<FrUserView> frUsers = null;
 	
 	public FREDQuery() {
 		//this.people = getValues("FROM Person AS p", Person.class);
-		this.ages = getValues("FROM AgeView AS a WHERE a.ageAbbrev <> 'nd' AND a.ageAbbrev <> 'nf'", AgeView.class);
+		this.ages = getValues("FROM Age AS a WHERE a.code <> 'nd' AND a.code <> 'nf' AND a.obsoleteFlag = false", Age.class);
 		try {
 			this.frUsers = new UserUtil(HibernateUtil.get().getDAOFactory()).getFrWriters();
 		} catch (Exception e) {}

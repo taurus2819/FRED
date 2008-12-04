@@ -9,10 +9,10 @@ public interface Stage {
 	public void setStageLowerMod(String stageLowerMod);
 	public String getStageUpperMod();
 	public void setStageUpperMod(String stageUpperMod);
-	public AgeView getLowerAgeView();
-    public void setLowerAgeView(AgeView lowerAgeView);
-	public AgeView getUpperAgeView();
-	public void setUpperAgeView(AgeView upperAgeView);
+	public Age getLowerAge();
+    public void setLowerAge(Age lowerAge);
+	public Age getUpperAge();
+	public void setUpperAge(Age upperAge);
 	public Set<Sample> getSamplesByKnownStageId();
 	public void setSamplesByKnownStageId(Set<Sample> samplesByKnownStageId);
 	public Set<Sample> getSamplesByInferredStageId();

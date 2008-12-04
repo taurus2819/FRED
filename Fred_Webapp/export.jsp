@@ -201,9 +201,9 @@
 								out.print(DBUtils.nvl(sample.getStratUnit()) + "\t");
 								if (sample.getInferredStage() != null) {
 									Stage stage = sample.getInferredStage();
-									out.print(((stage.getLowerAgeView() != null) ? stage.getLowerAgeView().getAgeName() : "") + "\t");
+									out.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : "") + "\t");
 									out.print(DBUtils.nvl(stage.getStageLowerMod()) + "\t");
-									out.print(((stage.getUpperAgeView() != null) ? stage.getUpperAgeView().getAgeName() : "") + "\t");
+									out.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : "") + "\t");
 									out.print(DBUtils.nvl(stage.getStageUpperMod()) + "\t");
 									out.print(stageUtil.getAgeStart(stage) + "\t");
 									out.print(stageUtil.getAgeStop(stage) + "\t");
@@ -211,9 +211,9 @@
 									out.print("\t\t\t\t\t\t");
 								if (sample.getKnownStage() != null) {
 									Stage stage = sample.getKnownStage();
-									out.print(((stage.getLowerAgeView() != null) ? stage.getLowerAgeView().getAgeName() : "") + "\t");
+									out.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : "") + "\t");
 									out.print(DBUtils.nvl(stage.getStageLowerMod()) + "\t");
-									out.print(((stage.getUpperAgeView() != null) ? stage.getUpperAgeView().getAgeName() : "") + "\t");
+									out.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : "") + "\t");
 									out.print(DBUtils.nvl(stage.getStageUpperMod()) + "\t");
 									out.print(stageUtil.getAgeStart(stage) + "\t");
 									out.print(stageUtil.getAgeStop(stage) + "\t");
@@ -290,9 +290,9 @@
 							out.print(DBUtils.nvl(FREDUtil.formatDateForOutput(adoption.getAdoptionDate(), adoption.getDateRounding())) + "\t");
 							if (adoption.getStage() != null) {
 								Stage stage = adoption.getStage();
-								out.print(((stage.getLowerAgeView() != null) ? stage.getLowerAgeView().getAgeName() : "") + "\t");
+								out.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : "") + "\t");
 								out.print(DBUtils.nvl(stage.getStageLowerMod()) + "\t");
-								out.print(((stage.getUpperAgeView() != null) ? stage.getUpperAgeView().getAgeName() : "") + "\t");
+								out.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : "") + "\t");
 								out.print(DBUtils.nvl(stage.getStageUpperMod()) + "\t");
 								out.print(stageUtil.getAgeStart(stage) + "\t");
 								out.print(stageUtil.getAgeStop(stage) + "\t");
@@ -326,9 +326,9 @@
 							out.print(DBUtils.nvl(FREDUtil.formatDateForOutput(paleontology.getIdentificationDate(), paleontology.getDateRounding())) + "\t");
 							if (paleontology.getStage() != null) {
 								Stage stage = paleontology.getStage();
-								out.print(((stage.getLowerAgeView() != null) ? stage.getLowerAgeView().getAgeName() : "") + "\t");
+								out.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : "") + "\t");
 								out.print(DBUtils.nvl(stage.getStageLowerMod()) + "\t");
-								out.print(((stage.getUpperAgeView() != null) ? stage.getUpperAgeView().getAgeName() : "") + "\t");
+								out.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : "") + "\t");
 								out.print(DBUtils.nvl(stage.getStageUpperMod()) + "\t");
 								out.print(stageUtil.getAgeStart(stage) + "\t");
 								out.print(stageUtil.getAgeStop(stage) + "\t");

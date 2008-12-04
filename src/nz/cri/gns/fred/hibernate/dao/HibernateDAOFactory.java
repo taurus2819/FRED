@@ -43,7 +43,7 @@ import nz.cri.gns.fred.hibernate.FolderUser;
 import nz.cri.gns.fred.hibernate.PalList;
 import nz.cri.gns.fred.hibernate.TaxonomicLookup;
 import nz.cri.gns.fred.model.Adoption;
-import nz.cri.gns.fred.model.AgeView;
+import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.BacklogStatus;
@@ -528,16 +528,16 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		return new nz.cri.gns.fred.hibernate.SentTo();
 	}
 
-	public Stage findStage(AgeView lowerAge, boolean lowerUncertain, AgeView upperAge, boolean upperUncertain) throws StorageAccessException {
+	public Stage findStage(Age lowerAge, boolean lowerUncertain, Age upperAge, boolean upperUncertain) throws StorageAccessException {
 		try {
 			StringBuffer query = new StringBuffer("FROM Stage AS s WHERE ");
-			HashMap<String, AgeView> ageViewData = new  HashMap<String, AgeView>(2);
+			HashMap<String, Age> ageData = new  HashMap<String, Age>(2);
 			Vector<String> strData = new Vector<String>(2);
 			if (lowerAge == null) {
-				query.append("s.lowerAgeView IS NULL ");
+				query.append("s.lowerAge IS NULL ");
 			} else {
-				query.append("s.lowerAgeView = :lower ");
-				ageViewData.put("lower", lowerAge);
+				query.append("s.lowerAge = :lower ");
+				ageData.put("lower", lowerAge);
 			}
 			if (lowerUncertain) {
 				query.append("AND s.stageLowerMod = :lmod ");
@@ -546,10 +546,10 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 				query.append("AND s.stageLowerMod IS NULL ");
 			}
 			if (upperAge == null) {
-				query.append("AND s.upperAgeView IS NULL ");
+				query.append("AND s.upperAge IS NULL ");
 			} else {
-				query.append("AND s.upperAgeView = :upper ");
-				ageViewData.put("upper", upperAge);
+				query.append("AND s.upperAge = :upper ");
+				ageData.put("upper", upperAge);
 			}
 			if (upperUncertain) {
 				query.append("AND s.stageUpperMod = :umod");
@@ -563,8 +563,8 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
             for (String str : strData) {
             	hquery.setString(str, "?");
             }
-            for (String str : ageViewData.keySet()) {
-            	hquery.setEntity(str, ageViewData.get(str));
+            for (String str : ageData.keySet()) {
+            	hquery.setEntity(str, ageData.get(str));
             }
             List list = hquery.list();
             if (list.size() == 0)
@@ -715,8 +715,8 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		}
 	}
 	
-	public List<AgeView> getMatchingAges(String str, Match matchType, int maxMatches) throws StorageAccessException {
-		Criteria crit = provider.currentSession().createCriteria(nz.cri.gns.fred.hibernate.AgeView.class);
+	public List<Age> getMatchingAges(String str, Match matchType, int maxMatches) throws StorageAccessException {
+		Criteria crit = provider.currentSession().createCriteria(nz.cri.gns.fred.hibernate.Age.class);
 		switch (matchType) {
 			case ANYWHERE:
 				crit.add(Expression.or
@@ -739,7 +739,7 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		crit.addOrder(Order.asc("ageStart"));
 		try {
 			@SuppressWarnings("unchecked")
-			List<AgeView> pp = crit.list();
+			List<Age> pp = crit.list();
 			return pp;
 		} catch (HibernateException e) {
 			throw new StorageAccessException(e);
@@ -966,7 +966,7 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 	public int getMaxAgeId() throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
-            Query query = session.createQuery("SELECT MAX(a.ageId) FROM AgeView AS a");
+            Query query = session.createQuery("SELECT MAX(a.ageId) FROM Age AS a");
     		List list = query.list();
     		return ((Integer)list.get(0)).intValue();
 		} catch (Exception e) {

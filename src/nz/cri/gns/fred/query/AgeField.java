@@ -9,16 +9,16 @@ import nz.cri.gns.db.querybuilder.Operator;
 import nz.cri.gns.db.querybuilder.Value;
 import nz.cri.gns.db.querybuilder.advanced.TableRequiredPossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.hql.HqlJoin;
-import nz.cri.gns.fred.model.AgeView;
+import nz.cri.gns.fred.model.Age;
 
 public class AgeField extends TableRequiredPossibleValueField {
 
 	private static final long serialVersionUID = 20061026L;
 	
-	private List<AgeView> ages;
+	private List<Age> ages;
 	private NumericAgeField numericField;
 	
-	public AgeField(String databaseName, String humanName, List<AgeView> values, String[] tables, HqlJoin[] joins) {
+	public AgeField(String databaseName, String humanName, List<Age> values, String[] tables, HqlJoin[] joins) {
 		super(databaseName, humanName, values, tables, joins);
 		this.ages = values;
 		this.numericField = new NumericAgeField(databaseName, humanName, tables, joins);
@@ -27,7 +27,7 @@ public class AgeField extends TableRequiredPossibleValueField {
 	/**
 	 * Convenience constructor for when there is only one joining table
 	 */
-	public AgeField(String databaseName, String humanName, List<AgeView> values, String table, HqlJoin join) {
+	public AgeField(String databaseName, String humanName, List<Age> values, String table, HqlJoin join) {
 		super(databaseName, humanName, values, table, join);
 		this.ages = values;
 		this.numericField = new NumericAgeField(databaseName, humanName, table, join);
@@ -44,7 +44,7 @@ public class AgeField extends TableRequiredPossibleValueField {
 	public void checkValue(Operator operator, Value value) throws InvalidOperatorException, InvalidValueException {
 		if (operator.equals(Operator.EQUALS) || operator.equals(Operator.GREATER_THAN) || operator.equals(Operator.GREATER_THAN_EQUAL) || operator.equals(Operator.LESS_THAN) || operator.equals(Operator.LESS_THAN_EQUAL)) {
 			String key = value.toString();
-			for (AgeView thisValue : ages) {
+			for (Age thisValue : ages) {
 				if (thisValue.getUniqueIdentifier().equals(key))
 					return;
 			}
@@ -59,19 +59,19 @@ public class AgeField extends TableRequiredPossibleValueField {
 		if (operator.equals(Operator.NULL) || operator.equals(Operator.NOT_NULL)) {
 			return dbName + " " + operator.getDatabaseOperator();
 		} else {
-			AgeView age = null;
+			Age age = null;
 			String key = value.toString();
-			for (AgeView thisValue : ages) {
+			for (Age thisValue : ages) {
 				if (thisValue.getUniqueIdentifier().equals(key))
 					age = thisValue;
 			}
 			if (operator.equals(Operator.EQUALS))
-				return "(" + numericField.getJoin(Operator.GREATER_THAN_EQUAL, new BasicValue(String.valueOf(age.getAgeStop())))
-					+ " AND " + numericField.getJoin(Operator.LESS_THAN_EQUAL, new BasicValue(String.valueOf(age.getAgeStart()))) + ")";
+				return "(" + numericField.getJoin(Operator.GREATER_THAN_EQUAL, new BasicValue(String.valueOf(age.getTopAge())))
+					+ " AND " + numericField.getJoin(Operator.LESS_THAN_EQUAL, new BasicValue(String.valueOf(age.getBaseAge()))) + ")";
 			else if (operator.equals(Operator.GREATER_THAN) || operator.equals(Operator.LESS_THAN_EQUAL))
-				return numericField.getJoin(operator, new BasicValue(String.valueOf(age.getAgeStart())));
+				return numericField.getJoin(operator, new BasicValue(String.valueOf(age.getBaseAge())));
 			else
-				return numericField.getJoin(operator, new BasicValue(String.valueOf(age.getAgeStop())));
+				return numericField.getJoin(operator, new BasicValue(String.valueOf(age.getTopAge())));
 		}
 	}
 

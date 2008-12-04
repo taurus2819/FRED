@@ -99,22 +99,22 @@
         />
     </set>
     
-    <!-- bi-directional many-to-one association to AgeView -->
+    <!-- bi-directional many-to-one association to Age -->
     <many-to-one
-        name="lowerAgeView"
-        class="nz.cri.gns.fred.hibernate.AgeView"
+        name="lowerAge"
+        class="nz.cri.gns.fred.hibernate.Age"
         not-null="false"
     >
-        <column name="STAGE_LOWER_ID" />
+        <column name="AGE_LOWER_ID" />
     </many-to-one>
     
-    <!-- bi-directional many-to-one association to AgeView -->
+    <!-- bi-directional many-to-one association to Age -->
     <many-to-one
-        name="upperAgeView"
-        class="nz.cri.gns.fred.hibernate.AgeView"
+        name="upperAge"
+        class="nz.cri.gns.fred.hibernate.Age"
         not-null="false"
     >
-        <column name="STAGE_UPPER_ID" />
+        <column name="AGE_UPPER_ID" />
     </many-to-one>
 </class>
 </hibernate-mapping>

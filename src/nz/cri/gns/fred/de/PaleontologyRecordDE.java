@@ -346,13 +346,13 @@ public class PaleontologyRecordDE extends RecordDE {
 		out.write("<td>" + FREDUtil.getNames(pal.getIdentifiers(), "#") + "</td>");
 		Stage stage = pal.getStage();
 		if (stage != null) {
-			if (stage.getLowerAgeView() != null)
-				out.write("<td>" + stage.getLowerAgeView().getAgeId().toString() + "</td>"
+			if (stage.getLowerAge() != null)
+				out.write("<td>" + stage.getLowerAge().getAgeId().toString() + "</td>"
 						+ "<td>" + DBUtils.nvl(stage.getStageLowerMod()) + "</td>");	
 			else
 				out.write("<td></td><td></td>");
-			if (stage.getUpperAgeView() != null)
-				out.write("<td>" + stage.getUpperAgeView().getAgeId().toString() + "</td>"
+			if (stage.getUpperAge() != null)
+				out.write("<td>" + stage.getUpperAge().getAgeId().toString() + "</td>"
 						+ "<td>" + DBUtils.nvl(stage.getStageUpperMod()) + "</td>");
 			else
 				out.write("<td></td><td></td>");

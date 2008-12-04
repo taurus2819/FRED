@@ -2,7 +2,7 @@ package nz.cri.gns.fred.de;
 
 import javax.servlet.http.HttpServletRequest;
 
-import nz.cri.gns.fred.model.AgeView;
+import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.StageUtil;
@@ -12,12 +12,12 @@ public class StageDEUtil {
     
     public static void addStage2(Template template, Stage stage, String prefix) {
     	if (stage != null) {
-    		String start = stage.getLowerAgeView().getAgeName() + " (" + stage.getLowerAgeView().getAgeAbbrev() + ")";
+    		String start = stage.getLowerAge().getName() + " (" + stage.getLowerAge().getCode() + ")";
     		if (stage.getStageLowerMod() != null)
     			start = start + "?";
     		template.addSub(prefix + "StageStart", start);
-    		if (stage.getUpperAgeView() != null) {
-        		String stop = stage.getUpperAgeView().getAgeName() + " (" + stage.getUpperAgeView().getAgeAbbrev() + ")";
+    		if (stage.getUpperAge() != null) {
+        		String stop = stage.getUpperAge().getName() + " (" + stage.getUpperAge().getCode() + ")";
         		if (stage.getStageUpperMod() != null)
         			stop = stop + "?";
         		template.addSub(prefix + "StageStop", stop);    			
@@ -44,7 +44,7 @@ public class StageDEUtil {
 	    	}
 	    	if (start.indexOf("(") >= 0)
 	    		start = start.substring(0, start.indexOf("(")).trim();
-	    	AgeView ageStart = stageUtil.getAgeViewByName(start);
+	    	Age ageStart = stageUtil.getAgeByName(start);
 	    	if (ageStart == null)
 	    		throw new DataInputException(label, "Stage start not valid: " + request.getParameter(prefix + "StageStart2"));
 	    	startId = ageStart.getAgeId().toString();
@@ -57,7 +57,7 @@ public class StageDEUtil {
 		    	}
 		    	if (stop.indexOf("(") >= 0)
 		    		stop = stop.substring(0, stop.indexOf("(")).trim();
-		    	AgeView ageStop = stageUtil.getAgeViewByName(stop);
+		    	Age ageStop = stageUtil.getAgeByName(stop);
 		    	if (ageStop == null)
 		    		throw new DataInputException(label, "Stage stop not valid: " + request.getParameter(prefix + "StageStop2"));
 		    	stopId = ageStop.getAgeId().toString();

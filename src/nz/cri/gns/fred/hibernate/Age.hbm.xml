@@ -4,64 +4,67 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
     
 <hibernate-mapping>
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
-
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
 
 <class 
-    name="nz.cri.gns.fred.hibernate.AgeView" 
-    table="AGE_VIEW"
+    name="nz.cri.gns.fred.hibernate.Age" 
+    table="AGE"
     schema="FR"
     mutable="false"
 >
 
     <id
         name="ageId"
-        type="int"
-        column="AG_ID"
+        type="java.lang.Integer"
+        column="AGE_ID"
     >
-        <generator class="sequence">
-                <param name="sequence">FR.AGE_SEQ</param>
-        </generator>
+        <generator class="assigned" />
     </id>
 
 	    <property
-    	    name="ageName"
+    	    name="name"
         	type="java.lang.String"
-        	column="AG_NAME"
-        	length="60"
+        	column="NAME"
+        	length="64"
 	    />
 	    <property
-    	    name="ageAbbrev"
+    	    name="code"
         	type="java.lang.String"
-        	column="AG_ABBREV"
-        	length="6"
+        	column="CODE"
+        	length="16"
 	    />
 	    <property
-    	    name="ageStop"
-        	type="double"
-        	column="TA_AGE_STOP"
+    	    name="period"
+        	type="java.lang.String"
+        	column="PERIOD"
+        	length="16"
 	    />
 	    <property
-    	    name="ageStart"
-        	type="double"
-        	column="TA_AGE_START"
+    	    name="baseAge"
+        	type="java.lang.Double"
+        	column="BASE_AGE"
+	    />
+	    <property
+    	    name="topAge"
+        	type="java.lang.Double"
+        	column="topAge"
+	    />
+	    <property
+    	    name="obsoleteFlag"
+        	type="java.lang.Boolean"
+        	column="OBSOLETE_FLAG"
 	    />
    		   		   		
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to Stage -->
     <set
-        name="stagesByStageLowerId"
+        name="stagesByAgeLowerId"
         lazy="true"
         inverse="true"
 		cascade="none"
     >
         <key>
-            <column name="STAGE_LOWER_ID" />
+            <column name="AGE_LOWER_ID" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.Stage"
@@ -70,13 +73,13 @@
 
     <!-- bi-directional one-to-many association to Stage -->
     <set
-        name="stagesByStageUpperId"
+        name="stagesByAgeUpperId"
         lazy="true"
         inverse="true"
 		cascade="none"
     >
         <key>
-            <column name="STAGE_UPPER_ID" />
+            <column name="AGE_UPPER_ID" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.Stage"

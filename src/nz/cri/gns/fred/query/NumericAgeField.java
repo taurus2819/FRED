@@ -40,13 +40,13 @@ public class NumericAgeField extends TableRequiredNumberField {
 		} else if (op.equals(Operator.NULL) || op.equals(Operator.NOT_NULL))
 			return dbName + " " + op.getDatabaseOperator();
 		else if (op.equals(Operator.EQUALS))
-			return "((" + dbName + ".upperAgeView.ageStop <= " + value + " OR " + dbName + ".lowerAgeView.ageStop <= " + value
-				+ ") AND " + dbName + ".lowerAgeView.ageStart >= " + value + ")";
+			return "((" + dbName + ".upperAge.topAge <= " + value + " OR " + dbName + ".lowerAge.topAge <= " + value
+				+ ") AND " + dbName + ".lowerAge.baseAge >= " + value + ")";
 		else if (op.equals(Operator.GREATER_THAN) || op.equals(Operator.GREATER_THAN_EQUAL))
-			return dbName + ".lowerAgeView.ageStart " + op.getDatabaseOperator() + " " + value;
+			return dbName + ".lowerAge.baseAge " + op.getDatabaseOperator() + " " + value;
 		else if (op.equals(Operator.LESS_THAN) || op.equals(Operator.LESS_THAN_EQUAL))
-			return "(" + dbName + ".upperAgeView.ageStop " + op.getDatabaseOperator() + " " + value + " OR "
-				+ dbName + ".lowerAgeView.ageStop " + op.getDatabaseOperator() + " " + value + ")";
+			return "(" + dbName + ".upperAge.topAge " + op.getDatabaseOperator() + " " + value + " OR "
+				+ dbName + ".lowerAge.topAge " + op.getDatabaseOperator() + " " + value + ")";
 		else
 			return dbName + " " + op.getDatabaseOperator() + " " + value;
 		

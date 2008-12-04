@@ -1,14 +1,14 @@
 package nz.cri.gns.fred.abstractions;
 
-import nz.cri.gns.fred.model.AgeView;
+import nz.cri.gns.fred.model.Age;
 
 public interface AgeRange {
 
-	public AgeView getLower();
+	public Age getLower();
 	
 	public boolean isLowerCertain();
 	
-	public AgeView getUpper();
+	public Age getUpper();
 	
 	public boolean isUpperCertain();
 	

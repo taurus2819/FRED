@@ -11,7 +11,7 @@ import java.util.Set;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.abstractions.AgeRange;
-import nz.cri.gns.fred.model.AgeView;
+import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
@@ -111,15 +111,15 @@ public class OldFormatFredExport extends DefaultFredExport {
 			}
 			DecimalFormat format = new DecimalFormat("0.0####");
 			if (oneAge) {
-				AgeView ageV = age.getLower() == null ? age.getUpper() : age.getLower();
+				Age ageV = age.getLower() == null ? age.getUpper() : age.getLower();
 				boolean ageU = age.getLower() == null ? age.isUpperCertain() : age.isLowerCertain();
 				
-				writer.write(ageV.getAgeAbbrev() + (ageU ? "" : "?") + "; ");
-				writer.write(format.format(ageV.getAgeStart()) + "-" + format.format(ageV.getAgeStop()));
+				writer.write(ageV.getCode() + (ageU ? "" : "?") + "; ");
+				writer.write(format.format(ageV.getBaseAge()) + "-" + format.format(ageV.getTopAge()));
 			} else {
-				writer.write(age.getLower().getAgeAbbrev() + (age.isLowerCertain() ? "" : "?")
-						+ "-" + age.getUpper().getAgeAbbrev() + (age.isUpperCertain() ? "" : "?")
-						+ "; " + format.format(age.getLower().getAgeStart()) + "-" + format.format(age.getUpper().getAgeStop()));
+				writer.write(age.getLower().getCode() + (age.isLowerCertain() ? "" : "?")
+						+ "-" + age.getUpper().getCode() + (age.isUpperCertain() ? "" : "?")
+						+ "; " + format.format(age.getLower().getBaseAge()) + "-" + format.format(age.getUpper().getTopAge()));
 			}
 			writer.write(EOL);
 			writer.write("    Comment on stage determination: [" + age.getAgeRangeType() + "]");

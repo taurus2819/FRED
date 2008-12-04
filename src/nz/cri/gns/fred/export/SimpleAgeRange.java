@@ -1,17 +1,17 @@
 package nz.cri.gns.fred.export;
 
 import nz.cri.gns.fred.abstractions.AgeRange;
-import nz.cri.gns.fred.model.AgeView;
+import nz.cri.gns.fred.model.Age;
 
 public abstract class SimpleAgeRange implements AgeRange {
 
-	protected AgeView lower;
-	protected AgeView upper;
+	protected Age lower;
+	protected Age upper;
 	protected boolean lowerCertain;
 	protected boolean upperCertain;
 	protected String comment;
 
-	public SimpleAgeRange(AgeView lower, boolean lowerCertain, AgeView upper, boolean upperCertain, String comment) {
+	public SimpleAgeRange(Age lower, boolean lowerCertain, Age upper, boolean upperCertain, String comment) {
 		this.lower = lower;
 		this.upper = upper;
 		this.lowerCertain = lowerCertain;
@@ -22,7 +22,7 @@ public abstract class SimpleAgeRange implements AgeRange {
 	protected SimpleAgeRange() {
 	}
 	
-	public AgeView getLower() {
+	public Age getLower() {
 		return lower;
 	}
 
@@ -30,7 +30,7 @@ public abstract class SimpleAgeRange implements AgeRange {
 		return lowerCertain;
 	}
 
-	public AgeView getUpper() {
+	public Age getUpper() {
 		return upper;
 	}
 

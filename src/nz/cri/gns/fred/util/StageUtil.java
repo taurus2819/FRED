@@ -9,7 +9,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.StageDAO;
-import nz.cri.gns.fred.model.AgeView;
+import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.Stage;
 
 public class StageUtil extends ModelUtil {
@@ -44,13 +44,13 @@ public class StageUtil extends ModelUtil {
 	
 	private static String getStageDesc(Stage stage, int nameType) throws NamingException, SQLException {
 		StringBuffer desc = new StringBuffer();
-		if (stage.getLowerAgeView() != null) {
-			String[] lowerAge = getStageAgeName(stage.getLowerAgeView());
+		if (stage.getLowerAge() != null) {
+			String[] lowerAge = getStageAgeName(stage.getLowerAge());
 			desc.append(lowerAge[nameType]);
 			if (stage.getStageLowerMod() != null)
 				desc.append(stage.getStageLowerMod());
-			if (stage.getUpperAgeView() != null) {
-				String[] upperAge = getStageAgeName(stage.getUpperAgeView());
+			if (stage.getUpperAge() != null) {
+				String[] upperAge = getStageAgeName(stage.getUpperAge());
 				desc.append(" - ");
 				desc.append(upperAge[nameType]);
 				if (stage.getStageUpperMod() != null)
@@ -60,19 +60,19 @@ public class StageUtil extends ModelUtil {
 		return desc.toString();		
 	}
 	
-	public AgeView getAgeView(int ageId) throws StorageAccessException {
-		return stageDAO.get(ageId, nz.cri.gns.fred.hibernate.AgeView.class);
+	public Age getAge(int ageId) throws StorageAccessException {
+		return stageDAO.get(ageId, nz.cri.gns.fred.hibernate.Age.class);
 	}
 	
-	public AgeView getAgeViewByName(String ageName) throws StorageAccessException {
-		List<AgeView> ages = stageDAO.getList("FROM AgeView AS a WHERE a.ageName = ?", AgeView.class, ageName);
+	public Age getAgeByName(String ageName) throws StorageAccessException {
+		List<Age> ages = stageDAO.getList("FROM Age AS a WHERE a.name = ?", Age.class, ageName);
 		if (ages != null && ages.size() > 0)
 			return ages.get(0);
 		return null;
 	}
 	
-	public List<AgeView> getAges() throws StorageAccessException {
-		return stageDAO.getList("FROM AgeView AS A", AgeView.class);
+	public List<Age> getAges() throws StorageAccessException {
+		return stageDAO.getList("FROM Age AS A", Age.class);
 	}
 
 	public int getMaxAgeId() throws StorageAccessException {
@@ -85,8 +85,8 @@ public class StageUtil extends ModelUtil {
 		if (startAgeId == null)
 			throw new IllegalArgumentException("Start age is null");
 		
-		AgeView startAge = getAgeView(Integer.parseInt(startAgeId));
-		AgeView stopAge = (stopAgeId != null) ? getAgeView(Integer.parseInt(stopAgeId)) : null;
+		Age startAge = getAge(Integer.parseInt(startAgeId));
+		Age stopAge = (stopAgeId != null) ? getAge(Integer.parseInt(stopAgeId)) : null;
 
 		//check start/stop ages if both entered unless "not determined" or "no fossils"
 		if (stopAgeId != null
@@ -96,8 +96,8 @@ public class StageUtil extends ModelUtil {
 				|| stopAgeId.equals(NO_FOSSILS_STAGE))) {
 
 			if (startAge != null && stopAge != null) {
-				if (startAge.getAgeStart().doubleValue() < stopAge.getAgeStart().doubleValue()
-						|| startAge.getAgeStop().doubleValue() < stopAge.getAgeStop().doubleValue())
+				if (startAge.getBaseAge().doubleValue() < stopAge.getBaseAge().doubleValue()
+						|| startAge.getTopAge().doubleValue() < stopAge.getTopAge().doubleValue())
 					throw new IllegalArgumentException("Stop age is older than start age");
 			} else {
 				throw new IllegalArgumentException("Invalid stage(s)");
@@ -107,9 +107,9 @@ public class StageUtil extends ModelUtil {
 		Stage stage = stageDAO.findStage(startAge, startUncertain, stopAge, stopUncertain);
 		if (stage == null) {
 			stage = stageDAO.createNewStage();
-			stage.setLowerAgeView(startAge);
+			stage.setLowerAge(startAge);
 			stage.setStageLowerMod((startUncertain) ? "?" : null);
-			stage.setUpperAgeView(stopAge);
+			stage.setUpperAge(stopAge);
 			stage.setStageUpperMod((stopUncertain) ? "?" : null);
 			stageDAO.saveOrUpdate(stage);
 		}
@@ -124,16 +124,16 @@ public class StageUtil extends ModelUtil {
 		if (stage == null)
 			return (startId != null || stopId != null);
 		
-		if (stage.getLowerAgeView() == null ^ startId == null)
+		if (stage.getLowerAge() == null ^ startId == null)
 			return true;
 		
-		if (stage.getUpperAgeView() == null ^ stopId == null)
+		if (stage.getUpperAge() == null ^ stopId == null)
 			return true;
 		
-		if (startId != null && !new Integer(startId).equals(stage.getLowerAgeView().getAgeId()))
+		if (startId != null && !new Integer(startId).equals(stage.getLowerAge().getAgeId()))
 			return true;
 		
-		if (stopId != null && !new Integer(stopId).equals(stage.getUpperAgeView().getAgeId()))
+		if (stopId != null && !new Integer(stopId).equals(stage.getUpperAge().getAgeId()))
 			return true;
 		
 		//If we're still here then all the stages are the same - check uncertainties
@@ -147,27 +147,27 @@ public class StageUtil extends ModelUtil {
 	 * Returns an array of Strings representing the name of the given ageId.
 	 * First item is the full name and the second item is the age code
 	 */
-	private static String[] getStageAgeName(AgeView ageView) throws NamingException, SQLException {
-		if (ageView == null)
+	private static String[] getStageAgeName(Age age) throws NamingException, SQLException {
+		if (age == null)
 			return null;
-		return new String[] {ageView.getAgeName(), ageView.getAgeAbbrev()};
+		return new String[] {age.getName(), age.getCode()};
 	}
 	
 	public double getAgeStart(Stage stage) {
-		AgeView age = stage.getLowerAgeView();
-		return age.getAgeStart();
+		Age age = stage.getLowerAge();
+		return age.getBaseAge();
 	}
 	
 	public double getAgeStop(Stage stage) {
-		AgeView age;
-		if (stage.getUpperAgeView() != null)
-			age = stage.getUpperAgeView();
+		Age age;
+		if (stage.getUpperAge() != null)
+			age = stage.getUpperAge();
 		else
-			 age = stage.getLowerAgeView();
-		return age.getAgeStop();
+			 age = stage.getLowerAge();
+		return age.getTopAge();
 	}
 	
-	public List<AgeView> getMatchingAges(String str, Match matchType, int maxMatches) throws StorageAccessException {
+	public List<Age> getMatchingAges(String str, Match matchType, int maxMatches) throws StorageAccessException {
 		return stageDAO.getMatchingAges(str, matchType, maxMatches);
 	}
 	

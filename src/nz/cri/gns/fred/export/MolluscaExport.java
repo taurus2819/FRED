@@ -127,7 +127,7 @@ public class MolluscaExport extends OldFormatFredExport {
 		if (age == null)
 			return;
 		//Reject anything that ends before the Cenozoic begins
-		if ((age.getUpper() == null && age.getLower() == null) || (age.getUpper() == null && age.getLower() != null && age.getLower().getAgeStop() > baseAge) || (age.getUpper() != null && age.getUpper().getAgeStop() > baseAge))
+		if ((age.getUpper() == null && age.getLower() == null) || (age.getUpper() == null && age.getLower() != null && age.getLower().getTopAge() > baseAge) || (age.getUpper() != null && age.getUpper().getTopAge() > baseAge))
 			return;
 		super.handleList(feature, sample, age, list);
 	}

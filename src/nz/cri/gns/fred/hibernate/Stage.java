@@ -4,65 +4,23 @@ import java.io.Serializable;
 import java.util.Set;
 
 import nz.cri.gns.fred.model.Adoption;
-import nz.cri.gns.fred.model.AgeView;
+import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.Sample;
 
-/** @author Hibernate CodeGenerator */
 public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
 
     private static final long serialVersionUID = 20050818L;
 
-    /** identifier field */
     private Integer stageId;
-
-    /** nullable persistent field */
     private String stageLowerMod;
-
-    /** nullable persistent field */
     private String stageUpperMod;
-
-    /** persistent field */
-    private AgeView lowerAgeView;
-    
-    /** persistent field */
-    private AgeView upperAgeView;
-    
-    /** persistent field */
+    private Age lowerAge;
+    private Age upperAge;
     private Set<Sample> samplesByKnownStageId;
-
-    /** persistent field */
     private Set<Sample> samplesByInferredStageId;
-
-    /** persistent field */
     private Set<Paleontology> paleontologies;
-
-    /** persistent field */
     private Set<Adoption> adoptions;
-
-    /** full constructor */
-    public Stage(String stageLowerMod, String stageUpperMod, AgeView lowerAgeView, AgeView upperAgeView, Set<Sample> samplesByKnownStageId, Set<Sample> samplesByInferredStageId, Set<Paleontology> paleontologies, Set<Adoption> adoptions) {
-        this.stageLowerMod = stageLowerMod;
-        this.stageUpperMod = stageUpperMod;
-        this.setLowerAgeView(lowerAgeView);
-        this.setUpperAgeView(upperAgeView);
-        this.samplesByKnownStageId = samplesByKnownStageId;
-        this.samplesByInferredStageId = samplesByInferredStageId;
-        this.paleontologies = paleontologies;
-        this.adoptions = adoptions;
-    }
-
-    /** default constructor */
-    public Stage() {
-    }
-
-    /** minimal constructor */
-    public Stage(Set<Sample> samplesByKnownStageId, Set<Sample> samplesByInferredStageId, Set<Paleontology> paleontologies, Set<Adoption> adoptions) {
-        this.samplesByKnownStageId = samplesByKnownStageId;
-        this.samplesByInferredStageId = samplesByInferredStageId;
-        this.paleontologies = paleontologies;
-        this.adoptions = adoptions;
-    }
 
     public Integer getStageId() {
         return this.stageId;
@@ -88,20 +46,20 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
         this.stageUpperMod = stageUpperMod;
     }
     
-	public AgeView getLowerAgeView() {
-		return lowerAgeView;
+	public Age getLowerAge() {
+		return lowerAge;
 	}
 
-    public void setLowerAgeView(AgeView lowerAgeView) {
-		this.lowerAgeView = lowerAgeView;
+    public void setLowerAge(Age lowerAge) {
+		this.lowerAge = lowerAge;
 	}
 
-	public AgeView getUpperAgeView() {
-		return upperAgeView;
+	public Age getUpperAge() {
+		return upperAge;
 	}
 	
-	public void setUpperAgeView(AgeView upperAgeView) {
-		this.upperAgeView = upperAgeView;
+	public void setUpperAge(Age upperAge) {
+		this.upperAge = upperAge;
 	}
 
 	public Set<Sample> getSamplesByKnownStageId() {

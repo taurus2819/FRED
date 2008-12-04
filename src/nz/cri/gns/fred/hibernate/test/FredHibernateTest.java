@@ -17,7 +17,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.BasicDatabaseApp2;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.Adoption;
-import nz.cri.gns.fred.hibernate.AgeView;
+import nz.cri.gns.fred.hibernate.Age;
 import nz.cri.gns.fred.hibernate.AuditEdit;
 import nz.cri.gns.fred.hibernate.AuditTable;
 import nz.cri.gns.fred.hibernate.BedThickness;
@@ -107,7 +107,7 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 	private Class[] getHibernateClasses() {
 		return new Class[] {
 			Adoption.class,
-			AgeView.class,
+			Age.class,
 			AuditEdit.class,
 			AuditTable.class,
 			Bedding.class,

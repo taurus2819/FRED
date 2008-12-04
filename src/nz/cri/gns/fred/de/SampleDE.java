@@ -493,18 +493,18 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			//Converts from dropdowns
 			Stage stage = sample.getInferredStage();
 			if (stage != null) {
-				if (stage.getLowerAgeView() != null)
-					template.addSub("InferredAgeStart", stage.getLowerAgeView().getAgeId().toString());
-				if (stage.getUpperAgeView() != null)
-					template.addSub("InferredAgeStop", stage.getUpperAgeView().getAgeId().toString());
+				if (stage.getLowerAge() != null)
+					template.addSub("InferredAgeStart", stage.getLowerAge().getAgeId().toString());
+				if (stage.getUpperAge() != null)
+					template.addSub("InferredAgeStop", stage.getUpperAge().getAgeId().toString());
 			}
 	
 			stage = sample.getKnownStage();
 			if (stage != null) {
-				if (stage.getLowerAgeView() != null)
-					template.addSub("KnownAgeStart", stage.getLowerAgeView().getAgeId().toString());
-				if (stage.getUpperAgeView() != null)
-					template.addSub("KnownAgeStop", stage.getUpperAgeView().getAgeId().toString());
+				if (stage.getLowerAge() != null)
+					template.addSub("KnownAgeStart", stage.getLowerAge().getAgeId().toString());
+				if (stage.getUpperAge() != null)
+					template.addSub("KnownAgeStop", stage.getUpperAge().getAgeId().toString());
 			}
 			
 			if (sample.getPrimaryGrainSize() != null)

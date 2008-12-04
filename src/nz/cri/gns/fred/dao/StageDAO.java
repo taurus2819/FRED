@@ -4,7 +4,7 @@ import java.util.List;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.Match;
-import nz.cri.gns.fred.model.AgeView;
+import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.Stage;
 
 public interface StageDAO {
@@ -22,13 +22,13 @@ public interface StageDAO {
 	 * stages (by id) and has uncertainty as specified. 
 	 *@return a Stage object or null if no such object exists
 	 */
-	public Stage findStage(AgeView startStage, boolean startUncertain, AgeView stopStage, boolean stopUncertain) throws StorageAccessException;
+	public Stage findStage(Age startStage, boolean startUncertain, Age stopStage, boolean stopUncertain) throws StorageAccessException;
 
 	/**
 	 * Creates a new, uninitialised Stage object
 	 */
 	public Stage createNewStage();
 	
-	public List<AgeView> getMatchingAges(String str, Match matchType, int maxMatches) throws StorageAccessException;	
+	public List<Age> getMatchingAges(String str, Match matchType, int maxMatches) throws StorageAccessException;	
 	
 }

@@ -17,7 +17,7 @@ import nz.cri.gns.fred.FREDIPSysJspPage;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.StratLexDAO;
 import nz.cri.gns.fred.hibernate.util.HibernateUtil;
-import nz.cri.gns.fred.model.AgeView;
+import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.StratigraphicUnit;
@@ -84,9 +84,9 @@ public class AJAXServlet extends HttpServlet {
 					case Age:
 						StageUtil stageUtil = new StageUtil(HibernateUtil.get().getDAOFactory());
 						try {
-							List<AgeView> ages = stageUtil.getMatchingAges(start, Match.BEGINNING, 15);	
-							for (AgeView age : ages) {
-								values.add(new NamedId(age.getAgeId().toString(), age.getAgeName() + " (" + age.getAgeAbbrev() + ")"));
+							List<Age> ages = stageUtil.getMatchingAges(start, Match.BEGINNING, 15);	
+							for (Age age : ages) {
+								values.add(new NamedId(age.getAgeId().toString(), age.getName() + " (" + age.getCode() + ")"));
 							}
 						} catch (StorageAccessException e) {
 						}
