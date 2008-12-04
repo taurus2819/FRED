@@ -720,24 +720,24 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		switch (matchType) {
 			case ANYWHERE:
 				crit.add(Expression.or
-						(Expression.ilike("ageName", str, MatchMode.ANYWHERE)
-						, Expression.ilike("ageAbbrev", str, MatchMode.ANYWHERE)));
+						(Expression.ilike("name", str, MatchMode.ANYWHERE)
+						, Expression.ilike("code", str, MatchMode.ANYWHERE)));
 				break;
 			case BEGINNING:
 				crit.add(Expression.or
-						(Expression.ilike("ageName", str, MatchMode.START)
-						, Expression.ilike("ageAbbrev", str, MatchMode.START)));
+						(Expression.ilike("name", str, MatchMode.START)
+						, Expression.ilike("code", str, MatchMode.START)));
 				break;
 			case END:
 				crit.add(Expression.or
-						(Expression.ilike("ageName", str, MatchMode.END)
-						, Expression.ilike("ageAbbrev", str, MatchMode.END)));
+						(Expression.ilike("name", str, MatchMode.END)
+						, Expression.ilike("code", str, MatchMode.END)));
 				break;
 		}
 		crit.add(Expression.eq("obsoleteFlag", "false"));
 		crit.setMaxResults(maxMatches);
-		crit.addOrder(Order.asc("ageStop"));
-		crit.addOrder(Order.asc("ageStart"));
+		crit.addOrder(Order.asc("baseAge"));
+		crit.addOrder(Order.asc("topAge"));
 		try {
 			@SuppressWarnings("unchecked")
 			List<Age> pp = crit.list();
