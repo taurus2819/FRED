@@ -89,6 +89,7 @@ public class AJAXServlet extends HttpServlet {
 								values.add(new NamedId(age.getAgeId().toString(), age.getName() + " (" + age.getCode() + ")"));
 							}
 						} catch (StorageAccessException e) {
+							e.printStackTrace();
 						}
 						break;
 					case TaxonomicGroup:
