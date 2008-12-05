@@ -31,7 +31,6 @@ import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.Country;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
-import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Person;
@@ -39,7 +38,6 @@ import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RegistrationArea;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Sample;
-import nz.cri.gns.fred.model.SampleMeta;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.UserFolder;
@@ -76,20 +74,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		newFeature.setFolders(null);
 		
 		//Copy feature images
-		Set images = feature.getFeatureMetas();
-		if (images != null && images.size() > 0) {
-			HashSet<FeatureMeta> newImages = new HashSet<FeatureMeta>();
-			for (Iterator it = images.iterator(); it.hasNext(); ) {
-				FeatureMeta meta = (FeatureMeta)it.next();
-				FeatureMeta newMeta = fredDAO.createNewFeatureMeta();
-				newMeta.setMetaId(meta.getMetaId());
-				newMeta.setFeature(newFeature);
-				newImages.add(newMeta);
-			}
-			newFeature.setFeatureMetas(newImages);
-		} else {
-			newFeature.setFeatureMetas(null);
-		}
+		Set images = feature.getMetaCats();
+		newFeature.setMetaCats(feature.getMetaCats());
+
 		//Clear out relationships pointing _to_ it
 		newFeature.setRelationships(null);
 		//Remove any samples that have come across
@@ -283,18 +270,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		}
 		
 		//Copy sample images
-		images = sample.getSampleMetas();
-		if (images != null && images.size() > 0) {
-			HashSet<SampleMeta> newImages = new HashSet<SampleMeta>();
-			for (Iterator it = images.iterator(); it.hasNext(); ) {
-				SampleMeta meta = (SampleMeta)it.next();
-				SampleMeta newMeta = fredDAO.createNewSampleMeta();
-				newMeta.setMetaId(meta.getMetaId());
-				newMeta.setSample(newSample);
-				newImages.add(newMeta);
-			}
-			newSample.setSampleMetas(newImages);
-		}
+		newSample.setMetaCats(sample.getMetaCats());
 		return newSample;
 	}
 

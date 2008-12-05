@@ -33,7 +33,6 @@ import nz.cri.gns.fred.model.ConfidentialGroup;
 import nz.cri.gns.fred.model.Country;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
-import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FolderRight;
 import nz.cri.gns.fred.model.FolderType;
@@ -52,7 +51,6 @@ import nz.cri.gns.fred.model.RelationType;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.RelationshipType;
 import nz.cri.gns.fred.model.Sample;
-import nz.cri.gns.fred.model.SampleMeta;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SedimentaryFeatureType;
 import nz.cri.gns.fred.model.SentTo;
@@ -225,12 +223,6 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 	}
 
 
-	public FeatureMeta createNewFeatureMeta() {
-		return new nz.cri.gns.fred.hibernate.FeatureMeta(false);
-	}
-
-
-
 	public Feature createNewFeature() {
 		return new nz.cri.gns.fred.hibernate.Feature();
 	}
@@ -262,10 +254,6 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 		sedF.setAbundant(sedFeature.getAbundant());
 		sedF.setSedimentaryFeatureType(sedFeature.getSedimentaryFeatureType());
 		return sedF;
-	}
-
-	public SampleMeta createNewSampleMeta() {
-		return new nz.cri.gns.fred.hibernate.SampleMeta(false);
 	}
 	
 	public FrNumber createFRNumber() {

@@ -13,6 +13,6 @@ public interface Record extends Audited, Comparable<Record> {
 	public void setSample(Sample sample);
 	public Audit getPalListAudit();
     public void setPalListAudit(Audit palListAudit);
-    public Set<RecordMeta> getRecordMetas();
-	public void setRecordMetas(Set<RecordMeta> recordMetas);
+	public Set<MetaCat> getMetaCats();
+    public void setMetaCats(Set<MetaCat> metaCats);
 }

@@ -410,5 +410,22 @@
         <column name="INFERRED_STAGE_ID" />
     </many-to-one>
 
+    <!-- bi-directional many-to-many association to MetaCat -->
+    <set
+        name="metaCats"
+        lazy="true"
+		cascade="none"
+        table="SAMPLE_META"
+    >
+        <key>
+            <column name="SAMPLE_ID" />
+        </key>
+        <many-to-many
+            class="nz.cri.gns.fred.hibernate.MetaCat"
+        >
+            <column name="META_ID" />
+        </many-to-many>
+    </set>
+    
 </class>
 </hibernate-mapping>

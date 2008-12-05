@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.expression.Criterion;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.Match;
@@ -15,7 +14,6 @@ import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.ConfidentialGroup;
 import nz.cri.gns.fred.model.Country;
 import nz.cri.gns.fred.model.Feature;
-import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FolderRight;
 import nz.cri.gns.fred.model.FolderType;
@@ -34,7 +32,6 @@ import nz.cri.gns.fred.model.RelationType;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.RelationshipType;
 import nz.cri.gns.fred.model.Sample;
-import nz.cri.gns.fred.model.SampleMeta;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SedimentaryFeatureType;
 import nz.cri.gns.fred.model.SentTo;
@@ -42,7 +39,6 @@ import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.model.StratigraphicUnit;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
-import nz.cri.gns.fred.model.UserFolder;
 
 public interface FredDAO {
     public Audit createNewAudit();
@@ -59,7 +55,6 @@ public interface FredDAO {
 	public <T extends Comparable<? super T>> List<T> getList(Class<T> clazz, List<Criterion> criteria) throws StorageAccessException;
 	
 	//create
-	public FeatureMeta createNewFeatureMeta();
 	public Feature createNewFeature() throws StorageAccessException;
 	
 	//to be rationalised
@@ -201,10 +196,6 @@ public interface FredDAO {
 	 */
 	public SedimentaryFeature cloneSedimentaryFeature(SedimentaryFeature sedFeature);
 
-	/**
-	 * @return
-	 */
-	public SampleMeta createNewSampleMeta();
 
 	/**
 	 * @return a new FrNumber

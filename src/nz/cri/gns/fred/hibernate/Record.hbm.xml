@@ -36,20 +36,7 @@
 		cascade="all"
 		outer-join="auto"
     />
-    <!-- bi-directional one-to-many association to RecordMeta -->
-    <set
-        name="recordMetas"
-        lazy="true"
-        inverse="true"
-		cascade="all-delete-orphan"
-    >
-        <key>
-            <column name="RECORD_ID" />
-        </key>
-        <one-to-many 
-            class="nz.cri.gns.fred.hibernate.RecordMeta"
-        />
-    </set>
+
     <!-- bi-directional one-to-one association to Adoption -->
     <one-to-one
         name="adoption"
@@ -84,6 +71,22 @@
         <column name="PAL_LIST_AUDIT_ID" />
     </many-to-one>
 
+    <!-- bi-directional many-to-many association to MetaCat -->
+    <set
+        name="metaCats"
+        lazy="true"
+		cascade="none"
+        table="RECORD_META"
+    >
+        <key>
+            <column name="RECORD_ID" />
+        </key>
+        <many-to-many
+            class="nz.cri.gns.fred.hibernate.MetaCat"
+        >
+            <column name="META_ID" />
+        </many-to-many>
+    </set>
 
 </class>
 </hibernate-mapping>

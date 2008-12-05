@@ -20,7 +20,7 @@ import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Record;
-import nz.cri.gns.fred.model.SampleMeta;
+import nz.cri.gns.fred.model.MetaCat;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.Stage;
@@ -72,7 +72,7 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     private Stage stageByKnownStageId;
     private Stage stageByInferredStageId;
     private Set<SedimentaryFeature> sedimentaryFeatures;
-    private Set<SampleMeta> sampleMetas;
+    private Set<MetaCat> metaCats;
     private Set<Record> records;
     private Set<SentTo> sentTos;
     private Set<Person> collectors;
@@ -406,12 +406,12 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.sedimentaryFeatures = sedimentaryFeatures;
     }
 
-    public Set<SampleMeta> getSampleMetas() {
-        return this.sampleMetas;
+    public Set<MetaCat> getMetaCats() {
+        return this.metaCats;
     }
 
-    public void setSampleMetas(Set<SampleMeta> sampleMetas) {
-        this.sampleMetas = sampleMetas;
+    public void setMetaCats(Set<MetaCat> metaCats) {
+        this.metaCats = metaCats;
     }
 
     public Set<Record> getRecords() {

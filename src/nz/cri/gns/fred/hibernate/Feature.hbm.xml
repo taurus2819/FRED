@@ -235,20 +235,7 @@
             class="nz.cri.gns.fred.hibernate.Relationship"
         />
     </set>
-    <!-- bi-directional one-to-many association to FeatureMeta -->
-    <set
-        name="featureMetas"
-        lazy="true"
-        inverse="true"
-		cascade="all-delete-orphan"
-    >
-        <key>
-            <column name="FEATURE_ID" />
-        </key>
-        <one-to-many 
-            class="nz.cri.gns.fred.hibernate.FeatureMeta"
-        />
-    </set>
+
     <!-- bi-directional many-to-one association to AuditTable -->
     <many-to-one
         name="audit"
@@ -266,6 +253,23 @@
     >
         <column name="REG_AREA_ID" />
     </many-to-one>
+
+    <!-- bi-directional many-to-many association to MetaCat -->
+    <set
+        name="metaCats"
+        lazy="true"
+		cascade="none"
+        table="FEATURE_META"
+    >
+        <key>
+            <column name="FEATURE_ID" />
+        </key>
+        <many-to-many
+            class="nz.cri.gns.fred.hibernate.MetaCat"
+        >
+            <column name="META_ID" />
+        </many-to-many>
+    </set>
 
 </class>
 </hibernate-mapping>

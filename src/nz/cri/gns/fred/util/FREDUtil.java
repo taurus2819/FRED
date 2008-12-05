@@ -36,7 +36,6 @@ import nz.cri.gns.db.metadata.DocumentAttacher;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Feature;
-import nz.cri.gns.fred.model.Meta;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.PersonRelationship;
@@ -289,25 +288,6 @@ public class FREDUtil {
 		if (date.length() == 7)
 			return "Month";
 		return null;//"Day";
-	}
-
-	public static String getMetaTitle(Meta meta) throws SQLException, NamingException {
-		Connection conn = null;
-		try {
-			conn = getConnection();
-			Statement statement = conn.createStatement();
-			ResultSet rs = statement.executeQuery("SELECT title FROM metacat.public_metacat_view WHERE meta_id = " + meta.getMetaId());
-			String title = (rs.next()) ? rs.getString(1) : "";
-			rs.close();
-			statement.close();
-			conn.close();
-			return title;
-		} finally {
-			if (conn != null) try {
-				conn.close();
-			} catch (Exception _e) {
-			}
-		}
 	}
 
 	public static String getInstance() throws SQLException, NamingException {

@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.Set;
 
 import nz.cri.gns.fred.model.Audit;
-import nz.cri.gns.fred.model.FeatureMeta;
+import nz.cri.gns.fred.model.MetaCat;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Person;
@@ -49,7 +49,7 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
     private Set<Sample> samples;
     private Set<Folder> folders;
     private Set<Relationship> relationships;
-    private Set<FeatureMeta> featureMetas;
+    private Set<MetaCat> metaCats;
 
     public Integer getFeatureId() {
         return this.featureId;
@@ -291,12 +291,12 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
         this.relationships = relationships;
     }
 
-    public Set<FeatureMeta> getFeatureMetas() {
-        return this.featureMetas;
+    public Set<MetaCat> getMetaCats() {
+        return this.metaCats;
     }
 
-    public void setFeatureMetas(Set<FeatureMeta> featureMetas) {
-        this.featureMetas = featureMetas;
+    public void setMetaCats(Set<MetaCat> metaCats) {
+        this.metaCats = metaCats;
     }
 
     public Object clone() { 

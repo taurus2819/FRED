@@ -21,6 +21,6 @@ public interface PaleontologyListEntry extends Comparable<PaleontologyListEntry>
     public void setPaleontology(Paleontology paleontology);
     public Taxon getTaxon();
     public void setTaxon(Taxon taxon);
-    public Set<PalListMeta> getPalListMetas();
-    public void setPalListMetas(Set<PalListMeta> palListMeta);
+    public Set<MetaCat> getMetaCats();
+    public void setMetaCats(Set<MetaCat> metaCats);
 }

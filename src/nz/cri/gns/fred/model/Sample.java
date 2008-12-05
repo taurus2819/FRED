@@ -85,8 +85,8 @@ public interface Sample extends Audited, Comparable<Sample> {
 	public void setInferredStage(Stage stageByInferredStageId);
 	public Set<SedimentaryFeature> getSedimentaryFeatures();
 	public void setSedimentaryFeatures(Set<SedimentaryFeature> sedimentaryFeatures);
-	public Set<SampleMeta> getSampleMetas();
-	public void setSampleMetas(Set<SampleMeta> sampleMetas);
+    public Set<MetaCat> getMetaCats();
+    public void setMetaCats(Set<MetaCat> metaCats);
 	public Set<Record> getRecords();
 	public void setRecords(Set<Record> records);
 	public Set<SentTo> getSentTos();

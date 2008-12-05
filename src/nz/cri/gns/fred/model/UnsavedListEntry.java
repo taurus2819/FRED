@@ -11,7 +11,7 @@ public class UnsavedListEntry implements PaleontologyListEntry {
 	private TaxonomicGroup taxonomicGroup;
 	private Paleontology paleontology;
 	private Taxon taxon;
-	private Set<PalListMeta> palListMetas;
+	private Set<MetaCat> metaCats;
 	
 	public Integer getPalListId() {
 		return null;
@@ -77,12 +77,12 @@ public class UnsavedListEntry implements PaleontologyListEntry {
 		this.taxonomicName = taxonomicName;
 	}
 
-	public Set<PalListMeta> getPalListMetas() {
-		return palListMetas;
+	public Set<MetaCat> getMetaCats() {
+		return metaCats;
 	}
 
-	public void setPalListMetas(Set<PalListMeta> palListMetas) {
-		this.palListMetas = palListMetas;
+	public void setMetaCats(Set<MetaCat> metaCats) {
+		this.metaCats = metaCats;
 	}
 
 	public int compareTo(PaleontologyListEntry arg0) {

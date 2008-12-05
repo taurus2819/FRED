@@ -397,7 +397,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 					PDFUtil.addCells(table, new String[] {((featType.equals(FREDConstants.DRILLHOLE)) ? "Termination Depth" : "Base Horizon"),
 							((feature.getFinishDepth() != null) ? FeatureUtil.formatDepthForOutput(feature.getFinishDepth(), feature.getDepthUnit()) : null)}, bodyFonts);
 				}
-				if (!FREDUtil.isEmpty(feature.getFeatureMetas()))
+				if (!FREDUtil.isEmpty(feature.getMetaCats()))
 					PDFUtil.addCells(table, new Object[] {"Attached Images", "Images have been attached to this locality and can be viewed online"}, bodyFonts);
 			} else {
 				PDFUtil.addCell(table, "", fonts[1], PdfPCell.ALIGN_LEFT, 2);
@@ -526,7 +526,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 			
 			PDFUtil.addCells(table, new String[] {"Correspondence", sample.getCorrespondence()}, new Font[] {fonts[2], fonts[0]});
 			
-			if (!FREDUtil.isEmpty(sample.getSampleMetas()))
+			if (!FREDUtil.isEmpty(sample.getMetaCats()))
 				PDFUtil.addCells(table, new Object[] {"Attached Images", "Images have been attached to this sample and can be viewed online"}, bodyFonts);
 			
 			document.add(table);
@@ -585,7 +585,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				PDFUtil.addCells(table, new String[] {"Lab Number", ((palRecord.getLabNumber() != null) ? RecordUtil.getLabNumberDescription(palRecord) : null)}, bodyFonts);
 				PDFUtil.addCells(table, new String[] {"Collection Comments", palRecord.getCollectionComments()}, bodyFonts);
 				
-				if (!FREDUtil.isEmpty(record.getRecordMetas()))
+				if (!FREDUtil.isEmpty(record.getMetaCats()))
 					PDFUtil.addCells(table, new String[] {"Attached Images", "Images have been attached to this record and can be viewed online"}, bodyFonts);
 
 				document.add(table);
@@ -640,7 +640,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				PDFUtil.addCells(table, new String[] {"Stage", ((adoRecord.getStage() != null) ? StageUtil.getStageDescription(adoRecord.getStage()) : null)}, bodyFonts);
 				PDFUtil.addCells(table, new String[] {"Comments", adoRecord.getComments()}, bodyFonts);
 				
-				if (!FREDUtil.isEmpty(record.getRecordMetas()))
+				if (!FREDUtil.isEmpty(record.getMetaCats()))
 					PDFUtil.addCells(table, new String[] {"Attached Images", "Images have been attached to this record and can be viewed online"}, bodyFonts);
 
 				document.add(table);				

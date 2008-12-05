@@ -28,7 +28,6 @@ import nz.cri.gns.fred.hibernate.ConfidentialGroup;
 import nz.cri.gns.fred.hibernate.DataOrigin;
 import nz.cri.gns.fred.hibernate.DrillType;
 import nz.cri.gns.fred.hibernate.Feature;
-import nz.cri.gns.fred.hibernate.FeatureMeta;
 import nz.cri.gns.fred.hibernate.Folder;
 import nz.cri.gns.fred.hibernate.FolderRight;
 import nz.cri.gns.fred.hibernate.FolderType;
@@ -42,18 +41,15 @@ import nz.cri.gns.fred.hibernate.Lab;
 import nz.cri.gns.fred.hibernate.LabSection;
 import nz.cri.gns.fred.hibernate.OrgView;
 import nz.cri.gns.fred.hibernate.PalList;
-import nz.cri.gns.fred.hibernate.PalListMeta;
 import nz.cri.gns.fred.hibernate.Paleontology;
 import nz.cri.gns.fred.hibernate.Person;
 import nz.cri.gns.fred.hibernate.Record;
-import nz.cri.gns.fred.hibernate.RecordMeta;
 import nz.cri.gns.fred.hibernate.RegistrationArea;
 import nz.cri.gns.fred.hibernate.RelationType;
 import nz.cri.gns.fred.hibernate.Relationship;
 import nz.cri.gns.fred.hibernate.RelationshipType;
 import nz.cri.gns.fred.hibernate.RockColour;
 import nz.cri.gns.fred.hibernate.Sample;
-import nz.cri.gns.fred.hibernate.SampleMeta;
 import nz.cri.gns.fred.hibernate.SecurityClass;
 import nz.cri.gns.fred.hibernate.SedimentaryFeatureType;
 import nz.cri.gns.fred.hibernate.SentTo;
@@ -118,7 +114,6 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 			DataOrigin.class,
 			DrillType.class,
 			Feature.class,
-			FeatureMeta.class,
 			Folder.class,
 			FolderRight.class, 
 			FolderType.class,
@@ -133,17 +128,14 @@ public class FredHibernateTest extends TestCase implements HibernateProvider {
 	        OrgView.class,
 	        Paleontology.class,
 			PalList.class,
-			PalListMeta.class,
 			Person.class,
 			Record.class,
-			RecordMeta.class,
 			RegistrationArea.class,
 			Relationship.class,
 			RelationshipType.class,
 			RelationType.class,
 			RockColour.class,
 			Sample.class,
-			SampleMeta.class,
 			SecurityClass.class,
 			//SedimentaryFeature.class,
 			SedimentaryFeatureType.class,
