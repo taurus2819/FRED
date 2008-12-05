@@ -3,7 +3,7 @@
 %><%@page import="nz.cri.gns.fred.de.DataEntryForm"
 %><%@page import="nz.cri.gns.fred.de.DataEntryFormFactory"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.website.ContentProvider"
 %><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
@@ -32,7 +32,7 @@
 		if (request.getParameter("Err") != null || request.getParameter("CopyID") != null) {
 			return (DataEntryForm) session.getAttribute(WebsiteConstants.DATA_ENTRY_FORM);
 		} else {
-			DAOFactory factory = HibernateUtil.get().getDAOFactory();
+			DAOFactory factory = FredHibernate.get().getDAOFactory();
 			try {
 				User user = (User)getUser(session);
 				String formType = request.getParameter("Type");
@@ -70,7 +70,7 @@
 	}
 %><%
 	ExtranetTemplate et = getExtranetTemplate();
-	DAOFactory factory = HibernateUtil.get().getDAOFactory();
+	DAOFactory factory = FredHibernate.get().getDAOFactory();
 	DataEntryForm dataEntryForm = null;
 	try {
 		dataEntryForm = getDataEntryForm(request);

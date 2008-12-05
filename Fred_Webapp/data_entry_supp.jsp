@@ -11,7 +11,7 @@
 %><%@page import="nz.cri.gns.fred.model.Taxon"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.PersonUtil"
@@ -32,7 +32,7 @@
 	}
 %><%
 	User user = (User) getUser(session);
-	DAOFactory factory = HibernateUtil.get().getDAOFactory();
+	DAOFactory factory = FredHibernate.get().getDAOFactory();
 	FeatureUtil featureUtil = new FeatureUtil(factory);
 	FolderUtil folderUtil = new FolderUtil(factory);
 	PersonUtil personUtil = new PersonUtil(factory);
@@ -227,7 +227,7 @@
 				Person person = personUtil.findOrCreatePerson(request.getParameter("PersonName"));
 				%><script language="JavaScript">alert("<%=person.getName()%> added to list.  Please now select from drop-down list to add to form");</script><%
 				try {
-					HibernateUtil.get().getDAOFactory().closeSession();
+					FredHibernate.get().getDAOFactory().closeSession();
 				} catch (Exception e) {
 				}
 			}

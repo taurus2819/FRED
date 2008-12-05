@@ -18,7 +18,7 @@
 %><%@page import="nz.cri.gns.fred.util.AuditUtil"
 %><%@page import="nz.cri.gns.fred.util.SiteUtil"
 %><%@page import="nz.cri.gns.fred.util.StageUtil"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.auth.Authenticable"
@@ -79,10 +79,10 @@
 	
 %><%
 	User user = (User) getUser(session);
-	FeatureUtil featureUtil = new FeatureUtil(HibernateUtil.get().getDAOFactory());
-	StageUtil stageUtil = new StageUtil(HibernateUtil.get().getDAOFactory());
-	SampleUtil sampleUtil = new SampleUtil(HibernateUtil.get().getDAOFactory());
-	RecordUtil recordUtil = new RecordUtil(HibernateUtil.get().getDAOFactory());
+	FeatureUtil featureUtil = new FeatureUtil(FredHibernate.get().getDAOFactory());
+	StageUtil stageUtil = new StageUtil(FredHibernate.get().getDAOFactory());
+	SampleUtil sampleUtil = new SampleUtil(FredHibernate.get().getDAOFactory());
+	RecordUtil recordUtil = new RecordUtil(FredHibernate.get().getDAOFactory());
 
 	TreeSet<Sample> samples = new TreeSet<Sample>();
 	try {
@@ -95,7 +95,7 @@
 		} else if (session.getAttribute("FRED.features") != null && ((List<Feature>) session.getAttribute("FRED.features")).size() > 0) {
 			List<Feature> features = (List<Feature>) session.getAttribute("FRED.features");
 			for (Feature feature : features) {
-				HibernateUtil.get().currentSession().refresh(feature);
+				FredHibernate.get().currentSession().refresh(feature);
 				for (Sample sample : feature.getSamples())
 					samples.add(sample);
 			}
@@ -459,7 +459,7 @@
 				}
 			}
 			
-			new AuditUtil(HibernateUtil.get().getDAOFactory()).addLogEntry(AuditUtil.DOWNLOAD_LOG_TYPE, user, samples.size());
+			new AuditUtil(FredHibernate.get().getDAOFactory()).addLogEntry(AuditUtil.DOWNLOAD_LOG_TYPE, user, samples.size());
 			
 		} catch (Exception e) {
 			e.printStackTrace(new PrintWriter(out));

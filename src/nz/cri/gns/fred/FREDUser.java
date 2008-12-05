@@ -8,7 +8,7 @@ import javax.servlet.http.HttpSession;
 import nz.cri.gns.auth.InvalidCredentialsException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.db.DatabaseApp2;
-import nz.cri.gns.fred.hibernate.util.HibernateUtil;
+import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.model.FrUser;
 import nz.cri.gns.fred.util.UserUtil;
 
@@ -25,7 +25,7 @@ public class FREDUser extends User {
 		
 		//log login
 		try {
-			UserUtil userUtil = new UserUtil(HibernateUtil.get().getDAOFactory());
+			UserUtil userUtil = new UserUtil(FredHibernate.get().getDAOFactory());
 			FrUser frUser = userUtil.getFrUser(new Integer(getId()));
 			if (frUser == null) {
 				frUser = userUtil.createNewFrUser();

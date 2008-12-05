@@ -5,7 +5,7 @@
 %><%@page import="nz.cri.gns.fred.model.ConfidentialGroup"
 %><%@page import="nz.cri.gns.fred.util.AuditUtil"
 %><%@page import="nz.cri.gns.fred.util.UserUtil"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.html.select.SelectBox"
 %><%@page import="nz.cri.gns.html.Attributes"
@@ -16,15 +16,15 @@
 		if (request.getParameter("GroupID") == null)
 			return "FRED :: Manage User Groups";
 		try {
-			ConfidentialGroup group = new AuditUtil(HibernateUtil.get().getDAOFactory()).getConfidentialGroup(new Integer(request.getParameter("GroupID")));
+			ConfidentialGroup group = new AuditUtil(FredHibernate.get().getDAOFactory()).getConfidentialGroup(new Integer(request.getParameter("GroupID")));
 			return "FRED :: Manage " + group.getName();
 		} catch (Exception e) {
 			return "FRED :: Manage User Groups"; 
 		}
 	}
 %><%
-	UserUtil userUtil = new UserUtil(HibernateUtil.get().getDAOFactory());
-	AuditUtil auditUtil = new AuditUtil(HibernateUtil.get().getDAOFactory());
+	UserUtil userUtil = new UserUtil(FredHibernate.get().getDAOFactory());
+	AuditUtil auditUtil = new AuditUtil(FredHibernate.get().getDAOFactory());
 	User user = (User)getUser(session);
 	String backURL = request.getParameter("backURL");
 

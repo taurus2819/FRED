@@ -4,7 +4,7 @@
 %><%@page import="nz.cri.gns.fred.util.PersonUtil"
 %><%@page import="nz.cri.gns.fred.util.StageUtil"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.html.Attributes"
 %><%@page import="java.io.PrintWriter"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
@@ -18,7 +18,7 @@
 		return "FRED :: Simple Query Form";
 	}
 %><%
-	DAOFactory factory = HibernateUtil.get().getDAOFactory();
+	DAOFactory factory = FredHibernate.get().getDAOFactory();
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
 	

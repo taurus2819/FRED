@@ -2,7 +2,7 @@
 %><%@page import="nz.cri.gns.jsp.NewExtranetTemplate"
 %><%@page import="nz.cri.gns.fred.util.UserUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.fred.model.FrUserView"
 %><%@page import="nz.cri.gns.fred.model.FrUser"
 %><%@page import="java.util.Date"
@@ -13,7 +13,7 @@
 	}
 	
 %><%
-	UserUtil userUtil = new UserUtil(HibernateUtil.get().getDAOFactory());
+	UserUtil userUtil = new UserUtil(FredHibernate.get().getDAOFactory());
 
 	NewExtranetTemplate et = getExtranetTemplate();
 	drawTop(out, et, request, response);

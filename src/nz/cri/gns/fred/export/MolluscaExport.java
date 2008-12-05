@@ -71,7 +71,7 @@ public class MolluscaExport extends OldFormatFredExport {
 	public Collection<Paleontology> getListsToExport(Sample sample) throws StorageAccessException {
 //		Date date = new Date();
 //		System.out.println("Start lists");
-		List<Paleontology> listSet =  Export.getFactory().getSampleDAO().getPaleontologies(sample);
+		List<Paleontology> listSet =  Export.getFactory().getFredDAO().getPaleontologies(sample);
 //		System.out.println("Finish lists");
 //		System.out.println("Pals: " + (new Date().getTime() - date.getTime()));
 //		date = new Date();
@@ -136,7 +136,7 @@ public class MolluscaExport extends OldFormatFredExport {
 	protected AgeRange getAgeByAllPaleontologies(Sample sample) throws StorageAccessException {
 //Date date0 = new Date();
 //try {
-		List<Paleontology> lists =  Export.getFactory().getSampleDAO().getPaleontologies(sample);
+		List<Paleontology> lists =  Export.getFactory().getFredDAO().getPaleontologies(sample);
 		if (lists.size() == 1) {
 			Paleontology list = lists.iterator().next();
 			return list.getStage() == null ? null : new PaleontologyAge(list);

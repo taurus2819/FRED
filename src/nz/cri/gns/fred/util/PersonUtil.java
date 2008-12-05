@@ -5,16 +5,16 @@ import java.util.List;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.dao.PersonDAO;
+import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.model.Person;
 
 public class PersonUtil extends ModelUtil {
 
-	private PersonDAO personDAO;
+	private FredDAO fredDAO;
 	
 	public PersonUtil(DAOFactory factory) {
 		super(factory);
-		this.personDAO = factory.getPersonDAO();
+		this.fredDAO = factory.getFredDAO();
 	}
     
     /**
@@ -22,12 +22,12 @@ public class PersonUtil extends ModelUtil {
      * @throws StorageAccessException
      */
 	public Person findOrCreatePerson(String name) throws StorageAccessException {
-		Person person = personDAO.getPerson(name);
+		Person person = fredDAO.getPerson(name);
 		if (person == null) {
 			//Insert them
-			person = personDAO.createNewPerson();
+			person = fredDAO.createNewPerson();
 			person.setName(name);
-			personDAO.saveOrUpdate(person);
+			fredDAO.saveOrUpdate(person);
 		}
 		return person;
 	}
@@ -37,15 +37,15 @@ public class PersonUtil extends ModelUtil {
      * @throws StorageAccessException
      */
 	public Person findPerson(String name) throws StorageAccessException {
-		return personDAO.getPerson(name);
+		return fredDAO.getPerson(name);
 	}
 
 	public List<Person> getMatchingPersons(String str, Match matchType, int maxMatches) throws StorageAccessException {
-		return personDAO.getMatchingPersons(str, matchType, maxMatches);
+		return fredDAO.getMatchingPersons(str, matchType, maxMatches);
 	}
 	
 	public List<Person> getPeople() throws StorageAccessException {
-		return personDAO.getList("FROM Person AS P", Person.class);
+		return fredDAO.getList("FROM Person AS P", Person.class);
 	}
 	
 }

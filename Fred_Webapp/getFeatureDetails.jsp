@@ -22,7 +22,7 @@
 %><%@page import="nz.cri.gns.fred.model.Sample"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.model.util.ByCreationDateComparator"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%!
 	public String getStatusColour(String status) {
@@ -35,7 +35,7 @@
 		return "";
 	}
 %><?xml version="1.0" encoding="UTF-8"?><%
-DAOFactory factory = HibernateUtil.get().getDAOFactory();
+DAOFactory factory = FredHibernate.get().getDAOFactory();
 FolderUtil folderUtil = new FolderUtil(factory);
 FeatureUtil featureUtil = new FeatureUtil(factory);
 SampleUtil sampleUtil = new SampleUtil(factory);

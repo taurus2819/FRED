@@ -2,7 +2,7 @@
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="java.net.URL"
 %><%@page import="nz.cri.gns.auth.Authenticable"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.model.BacklogStatus"
 %><%@page import="nz.cri.gns.fred.model.Folder"
@@ -21,7 +21,7 @@
 		if (request.getParameter("ID") == null || request.getParameter("ID").equals("-1"))
 			return "FRED :: Backlog Processing Status Summary";
 		try {
-			DAOFactory factory = HibernateUtil.get().getDAOFactory();
+			DAOFactory factory = FredHibernate.get().getDAOFactory();
 			FolderUtil folderUtil = new FolderUtil(factory);
 			Folder folder = folderUtil.getFolder(Integer.parseInt(request.getParameter("ID")));
 			return "FRED :: Backlog Processing Status for " + folder.getName() + " masterfile";
@@ -70,7 +70,7 @@
 	public static final String[] STATUS_COLOUR = new String[] {"#00FF00", "#FF0000", "#000000"};
 %><%
 
-	DAOFactory factory = HibernateUtil.get().getDAOFactory();
+	DAOFactory factory = FredHibernate.get().getDAOFactory();
 	BacklogStatusUtil bsUtil = new BacklogStatusUtil(factory);
 	FolderUtil folderUtil = new FolderUtil(factory);
 
@@ -307,7 +307,7 @@
 	drawBottom(out, et);
 	
 	try {
-		HibernateUtil.get().getDAOFactory().closeSession();
+		FredHibernate.get().getDAOFactory().closeSession();
 	} catch (Exception e) {
 	}
 %>

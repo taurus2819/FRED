@@ -5,7 +5,7 @@
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.AuditUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.jsp.PageState"
@@ -33,8 +33,8 @@
 	if (queryURL == null)
 		queryURL = "simple_query.jsp";
 	
-	FeatureUtil featureUtil = new FeatureUtil(HibernateUtil.get().getDAOFactory());
-	AuditUtil auditUtil = new AuditUtil(HibernateUtil.get().getDAOFactory());
+	FeatureUtil featureUtil = new FeatureUtil(FredHibernate.get().getDAOFactory());
+	AuditUtil auditUtil = new AuditUtil(FredHibernate.get().getDAOFactory());
 	
 	int pageSize = 50;
 
@@ -172,7 +172,7 @@
 	
 	drawBottom(out, et);
 	try {
-		HibernateUtil.get().getDAOFactory().closeSession();
+		FredHibernate.get().getDAOFactory().closeSession();
 	} catch (Exception e) {
 	}
 %>

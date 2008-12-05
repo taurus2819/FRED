@@ -1,6 +1,5 @@
 package nz.cri.gns.fred.hibernate.dao;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,20 +23,8 @@ import nz.cri.gns.dataaccess.HibernateProvider;
 import nz.cri.gns.dataaccess.HibernateUtils;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.Match;
-import nz.cri.gns.fred.dao.AuditDAO;
-import nz.cri.gns.fred.dao.BacklogStatusDAO;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.dao.FeatureDAO;
-import nz.cri.gns.fred.dao.FolderDAO;
-import nz.cri.gns.fred.dao.FolderTypeDAO;
-import nz.cri.gns.fred.dao.PersonDAO;
-import nz.cri.gns.fred.dao.RecordDAO;
-import nz.cri.gns.fred.dao.SampleDAO;
-import nz.cri.gns.fred.dao.SiteDAO;
-import nz.cri.gns.fred.dao.StageDAO;
-import nz.cri.gns.fred.dao.StratLexDAO;
-import nz.cri.gns.fred.dao.TaxonomicDAO;
-import nz.cri.gns.fred.dao.UserDAO;
+import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.hibernate.AuditTable;
 import nz.cri.gns.fred.hibernate.FolderUser;
 import nz.cri.gns.fred.hibernate.PalList;
@@ -46,7 +33,6 @@ import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
-import nz.cri.gns.fred.model.BacklogStatus;
 import nz.cri.gns.fred.model.ConfidentialGroup;
 import nz.cri.gns.fred.model.Country;
 import nz.cri.gns.fred.model.FREDConstants;
@@ -79,15 +65,16 @@ import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.UserFolder;
 
-/**
- * @author iainm
- */
-public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO, RecordDAO, SampleDAO, FolderDAO, FolderTypeDAO, FeatureDAO, AuditDAO, BacklogStatusDAO, StratLexDAO, UserDAO, StageDAO, SiteDAO {
+public class HibernateDAOFactory implements DAOFactory, FredDAO {
 
 	private HibernateProvider provider;
 
 	public HibernateDAOFactory(HibernateProvider provider) {
 		this.provider = provider;
+	}
+	
+	public FredDAO getFredDAO() {
+		return this;
 	}
 	
 	public <T> T saveOrUpdate(T object) throws StorageAccessException {
@@ -110,11 +97,15 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		}
 		return null;
 	}
-	
-	public FolderDAO getFolderDAO() {
-		return this;
-	}
 
+	public <T> T getFirst(String query, Class<T> clazz, String parameter) throws StorageAccessException {
+		return HibernateUtils.getFirst(provider, query, parameter, clazz);	
+	}
+	
+	public <T> T getFirst(String query, Class<T> clazz, int parameter) throws StorageAccessException {
+		return HibernateUtils.getFirst(provider, query, parameter, clazz);	
+	}
+	
 	public Folder createNewFolder() {
 		return new nz.cri.gns.fred.hibernate.Folder();
 	}
@@ -225,10 +216,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		}
 	}
 
-	public FolderTypeDAO getFolderTypeDAO() {
-		return this;
-	}
-
 	public FolderType getFolderType(String label) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
@@ -300,10 +287,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		}
 	}
 
-	public FeatureDAO getFeatureDAO() {
-		return this;
-	}
-
 	//FeatureDAO methods
 	public Audit createNewAudit() {
 		Audit audit = new AuditTable();
@@ -311,128 +294,29 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 		return audit;
 	}
 
-	public Feature cloneFeature(Feature feature) {
-		return (Feature)((nz.cri.gns.fred.hibernate.Feature)feature).clone();
-	}
 
 	public FeatureMeta createNewFeatureMeta() {
 		return new nz.cri.gns.fred.hibernate.FeatureMeta(false);
 	}
 
-	public int getNextAvailableSerialNumber(String mapSheet) throws StorageAccessException {
-		try {
-            Session session = provider.currentSession();
-			List list = session.find("SELECT max(fr.serialNumber) FROM FrNumber AS fr WHERE fr.serialNumber < 6000 AND fr.obsolete IS NULL AND fr.mapSheet = ?", mapSheet, new StringType());
-			if (list.size() == 0 || list.get(0) == null)
-			    return 1;
-			return ((Integer)list.get(0)).intValue() + 1;
-        } catch (Exception e) {
-        	e.printStackTrace();
-            throw new StorageAccessException(e);
-        }
-	}
+
 
 	public Feature createNewFeature() {
 		return new nz.cri.gns.fred.hibernate.Feature();
 	}
 
-	public Collection<? extends Feature> getFeaturesBySample(Audit audit) throws StorageAccessException {
-		try {
-            Session session = provider.currentSession();
-			Query query = session.createQuery("SELECT ftre FROM Sample AS smple INNER JOIN smple.feature AS ftre WHERE smple.audit = :adt");
-			query.setEntity("adt", audit);
-			return query.list();
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-        }
-	}
-	
-	public Collection<? extends Feature> getFeaturesByRecord(Audit audit) throws StorageAccessException {
-		try {
-            Session session = provider.currentSession();
-			Query query = session.createQuery("SELECT ftre FROM Record AS rec INNER JOIN rec.sample AS smple INNER JOIN smple.feature AS ftre WHERE rec.audit = :adt");
-			query.setEntity("adt", audit);
-			return query.list();
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-        }
-	}
 	
 	public AuditEdit createNewAuditEdit() throws StorageAccessException {
 		return new nz.cri.gns.fred.hibernate.AuditEdit();
 	}
 	
-	public FrNumber getFrNumber(String frNum) throws StorageAccessException {
-		return HibernateUtils.getFirst(provider, "FROM FrNumber AS f WHERE f.frNumber = ? AND f.obsolete IS NULL", frNum, FrNumber.class);
-	}
 
-	public FrNumber getYardFrNumber(String frNum) throws StorageAccessException {
-		return HibernateUtils.getFirst(provider, "FROM FrNumber AS f WHERE f.frNumber = ? AND f.obsolete IS NOT NULL", frNum, FrNumber.class);
-	}
 	
-	public Feature getFeatureWithName(String name) throws StorageAccessException {
-		return HibernateUtils.getFirst(provider, "FROM Feature AS f WHERE f.featureName = ?", name, Feature.class);
-	}
 
-	public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, Date startDate, Date endDate, String status) throws StorageAccessException {
-		try {
-            Session session = provider.currentSession();
-            Query query = session.createQuery("SELECT feat FROM Feature as feat INNER JOIN feat.audit AS audit WHERE feat.masterFile = :folder AND "
-            		+ (status.equals(FREDConstants.WAITING) ? "audit.submittedDate" : "audit.approvedDate")
-            		+ " BETWEEN :start AND :end AND audit.status = :status");
-            query.setEntity("folder", masterfileFolder);
-            query.setTimestamp("start", startDate);
-            query.setTimestamp("end", endDate);
-            query.setString("status", status);
-            return query.list();
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-        }
-	}
 
-	public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, String status) throws StorageAccessException {
-		try {
-            Session session = provider.currentSession();
-            Query query = session.createQuery("SELECT feat FROM Feature as feat INNER JOIN feat.audit AS audit WHERE feat.masterFile = :folder AND audit.status = :status");
-            query.setEntity("folder", masterfileFolder);
-            query.setString("status", status);
-            return query.list();
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-        }
-	}
 
-	public List<FrNumber> getFrNumbers(String mapSheet) throws StorageAccessException {
-		try {
-			Session session = provider.currentSession();
-            Query query = session.createQuery("FROM FrNumber as num WHERE num.mapSheet = :map AND num.obsolete IS NULL");
-            query.setString("map", mapSheet);
-            List<FrNumber> frNums = query.list();
-            Collections.sort(frNums);
-            return frNums;
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-        }
-	}
-	
-	public List<FrNumber> getFrNumbers(String mapSheet, int start, int end) throws StorageAccessException {
-		try {
-			Session session = provider.currentSession();
-            Query query = session.createQuery("FROM FrNumber as num WHERE num.mapSheet = :map AND num.serialNumber BETWEEN :start AND :end AND num.obsolete IS NULL");
-            query.setString("map", mapSheet);
-            query.setInteger("start", start);
-            query.setInteger("end", end);
-            List<FrNumber> frNums = query.list();
-            Collections.sort(frNums);
-            return frNums;
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-        }
-	}
 
-	public SampleDAO getSampleDAO() {
-		return this;
-	}
+
 
 	//SampleDAO methods
 	public Relationship cloneRelationship(Relationship relationship) {
@@ -595,10 +479,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
         }
     }
 
-	public RecordDAO getRecordDAO() {
-		return this;
-	}
-
     public Record createNewRecord() {
         return new nz.cri.gns.fred.hibernate.Record();
     }
@@ -625,10 +505,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
         } catch (Exception e) {
             throw new StorageAccessException(e);
         }
-	}
-    
-    public PersonDAO getPersonDAO() {
-		return this;
 	}
 
 	public Person createNewPerson() {
@@ -746,10 +622,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 			throw new StorageAccessException(e);
 		}
 	}
-	
-    public TaxonomicDAO getTaxonomicDAO() {
-        return this;
-    }
 
     public PaleontologyListEntry createNewPaleontologyListEntry() {
         return new PalList();
@@ -762,141 +634,7 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 	public nz.cri.gns.fred.model.FolderUser createNewFolderUser() {
 		return new FolderUser(false);
 	}
-
-	public AuditDAO getAuditDAO() {
-		return this;
-	}
-
-	public BacklogStatusDAO getBacklogStatusDAO() {
-		return this;
-	}
 	
-	public BacklogStatus getBacklogStatus(String mapNumber) throws StorageAccessException {
-		BacklogStatus bs;
-		try {
-			 bs = HibernateUtils.getFirst(provider, "FROM BacklogStatus AS bs WHERE bs.mapNumber = ?", mapNumber, BacklogStatus.class);
-		} catch (Exception e) {
-			e.printStackTrace();
-			bs = null;
-		}
-		return bs;
-	}
-
-	public List<BacklogStatus> getBacklogStatusInMasterfile(int masterfileId) throws StorageAccessException {
-		try {
-            Session session = provider.currentSession();
-            Query query = session.createQuery("FROM BacklogStatus AS bs WHERE bs.masterfileId = :mfId");
-            query.setInteger("mfId", masterfileId);
-            return query.list();
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-        }
-	}
-	
-	public int getSumLocalityCount() throws StorageAccessException {
-		try {
-            Session session = provider.currentSession();
-            Query query = session.createQuery("SELECT sum(bs.localityCount) FROM BacklogStatus AS bs");
-    		List list = query.list();
-    		return ((Integer)list.get(0)).intValue();
-		} catch (Exception e) {
-			throw new StorageAccessException(e);
-		}
-	}
-	
-	public int getSumLocalityCount(int masterfileId) throws StorageAccessException {
-		try {
-			Session session = provider.currentSession();
-			Query query = session.createQuery("SELECT sum(bs.localityCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = :mfId");
-			query.setInteger("mfId", masterfileId);
-			List list = query.list();
-			if (list.get(0) != null)
-				return ((Integer)list.get(0)).intValue();
-			return 0;
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-		}		
-	}
-
-	public int getSumProcessingCount() throws StorageAccessException {
-		try {
-            Session session = provider.currentSession();
-            Query query = session.createQuery("SELECT sum(bs.processingCount) FROM BacklogStatus AS bs");
-    		List list = query.list();
-    		return ((Integer)list.get(0)).intValue();
-		} catch (Exception e) {
-			throw new StorageAccessException(e);
-		}
-	}
-	
-	public int getSumProcessingCount(int masterfileId) throws StorageAccessException {
-		try {
-			Session session = provider.currentSession();
-			Query query = session.createQuery("SELECT sum(bs.processingCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = :mfId");
-			query.setInteger("mfId", masterfileId);
-			List list = query.list();
-			if (list.get(0) != null)
-				return ((Integer)list.get(0)).intValue();
-			return 0;
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-		}		
-	}
-	
-	public int getSumCompletedCount() throws StorageAccessException {
-		try {
-            Session session = provider.currentSession();
-            Query query = session.createQuery("SELECT sum(bs.completedCount) FROM BacklogStatus AS bs");
-    		List list = query.list();
-    		return ((Integer)list.get(0)).intValue();
-		} catch (Exception e) {
-			throw new StorageAccessException(e);
-		}
-	}
-	
-	public int getSumCompletedCount(int masterfileId) throws StorageAccessException {
-		try {
-			Session session = provider.currentSession();
-			Query query = session.createQuery("SELECT sum(bs.completedCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = :mfId");
-			query.setInteger("mfId", masterfileId);
-			List list = query.list();
-			if (list.get(0) != null)
-				return ((Integer)list.get(0)).intValue();
-			return 0;
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-		}		
-	}
-
-	public int getSumNewCount() throws StorageAccessException {
-		try {
-            Session session = provider.currentSession();
-            Query query = session.createQuery("SELECT sum(bs.newCount) FROM BacklogStatus AS bs");
-    		List list = query.list();
-    		return ((Integer)list.get(0)).intValue();
-		} catch (Exception e) {
-			throw new StorageAccessException(e);
-		}
-	}
-	
-	public int getSumNewCount(int masterfileId) throws StorageAccessException {
-		try {
-			Session session = provider.currentSession();
-			Query query = session.createQuery("SELECT sum(bs.newCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = :mfId");
-			query.setInteger("mfId", masterfileId);
-			List list = query.list();
-			if (list.get(0) != null)
-				return ((Integer)list.get(0)).intValue();
-			return 0;
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-		}		
-	}
-	
-	public StratLexDAO getStratLexDAO() {
-		return this;
-	}
-
 	public List<StratigraphicUnit> getMatchingUnitNames(String start, Match matchType, int maxResults) throws StorageAccessException {
 		return HibernateUtils.list(provider, "FROM StratigraphicUnit unit WHERE lower(unit.name) LIKE ? ORDER BY unit.name", maxResults, StratigraphicUnit.class, matchType.getQueryRepresentation(start.toLowerCase()));
 	}
@@ -931,9 +669,15 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 	}
 	
 	public <T extends Comparable<? super T>> List<T> getList(Class<T> clazz, List<Criterion> criteria) throws StorageAccessException {
+		return getList(clazz, criteria, null);
+	}
+	
+	public <T extends Comparable<? super T>> List<T> getList(Class<T> clazz, List<Criterion> criteria, Integer matches) throws StorageAccessException {
 		Criteria crit = provider.currentSession().createCriteria(clazz);
 		for (Criterion criterion : criteria)
 			crit.add(criterion);
+		if (matches != null)
+			crit.setMaxResults(matches);
 		try {
 			@SuppressWarnings("unchecked")
 			List<T> l = crit.list();
@@ -943,14 +687,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 			throw new StorageAccessException(e);
 		}
 	}
-	
-	public <T> T getFirst(String query, Class<T> clazz, String parameter) throws StorageAccessException {
-		return HibernateUtils.getFirst(provider, query, parameter, clazz);	
-	}
-	
-	public UserDAO getUserDAO() {
-		return this;
-	}
 
 	public FrUserView getFrUserView(String userName) throws StorageAccessException {
 		return HibernateUtils.getFirst(provider, "FROM FrUserView As f WHERE f.userName = ?", userName, FrUserView.class);	
@@ -958,10 +694,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 
 	public FrUser createNewFrUser() {
 		return new nz.cri.gns.fred.hibernate.FrUser();
-	}
-	
-	public StageDAO getStageDAO() {
-		return this;
 	}
 	
 	public int getMaxAgeId() throws StorageAccessException {
@@ -978,10 +710,6 @@ public class HibernateDAOFactory implements DAOFactory, TaxonomicDAO, PersonDAO,
 
 	public ConfidentialGroup createNewConfidentialGroup() throws StorageAccessException {
 		return new nz.cri.gns.fred.hibernate.ConfidentialGroup();
-	}
-	
-	public SiteDAO getSiteDAO() {
-		return this;
 	}
 
 	public Lab findLab(String labName) throws StorageAccessException {

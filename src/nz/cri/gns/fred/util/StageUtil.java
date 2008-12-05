@@ -8,7 +8,7 @@ import javax.naming.NamingException;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.dao.StageDAO;
+import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.Stage;
 
@@ -17,11 +17,11 @@ public class StageUtil extends ModelUtil {
 	private static String NOT_DETERMINED_STAGE = "166";
 	private static String NO_FOSSILS_STAGE = "167";
 	
-	private StageDAO stageDAO;
+	private FredDAO fredDAO;
 	
     public StageUtil(DAOFactory factory) {
 		super(factory);
-		this.stageDAO = factory.getStageDAO();
+		this.fredDAO = factory.getFredDAO();
 	}
 
 	/**
@@ -61,22 +61,22 @@ public class StageUtil extends ModelUtil {
 	}
 	
 	public Age getAge(int ageId) throws StorageAccessException {
-		return stageDAO.get(ageId, nz.cri.gns.fred.hibernate.Age.class);
+		return fredDAO.get(ageId, nz.cri.gns.fred.hibernate.Age.class);
 	}
 	
 	public Age getAgeByName(String ageName) throws StorageAccessException {
-		List<Age> ages = stageDAO.getList("FROM Age AS a WHERE a.name = ?", Age.class, ageName);
+		List<Age> ages = fredDAO.getList("FROM Age AS a WHERE a.name = ?", Age.class, ageName);
 		if (ages != null && ages.size() > 0)
 			return ages.get(0);
 		return null;
 	}
 	
 	public List<Age> getAges() throws StorageAccessException {
-		return stageDAO.getList("FROM Age AS A", Age.class);
+		return fredDAO.getList("FROM Age AS A", Age.class);
 	}
 
 	public int getMaxAgeId() throws StorageAccessException {
-		return stageDAO.getMaxAgeId();
+		return fredDAO.getMaxAgeId();
 	}
 	
 	public Stage getStage(String startAgeId, boolean startUncertain, String stopAgeId, boolean stopUncertain) throws StorageAccessException, NamingException, SQLException {
@@ -104,14 +104,14 @@ public class StageUtil extends ModelUtil {
 			}
 		}
 		
-		Stage stage = stageDAO.findStage(startAge, startUncertain, stopAge, stopUncertain);
+		Stage stage = fredDAO.findStage(startAge, startUncertain, stopAge, stopUncertain);
 		if (stage == null) {
-			stage = stageDAO.createNewStage();
+			stage = fredDAO.createNewStage();
 			stage.setLowerAge(startAge);
 			stage.setStageLowerMod((startUncertain) ? "?" : null);
 			stage.setUpperAge(stopAge);
 			stage.setStageUpperMod((stopUncertain) ? "?" : null);
-			stageDAO.saveOrUpdate(stage);
+			fredDAO.saveOrUpdate(stage);
 		}
 		return stage;
 	}
@@ -168,7 +168,7 @@ public class StageUtil extends ModelUtil {
 	}
 	
 	public List<Age> getMatchingAges(String str, Match matchType, int maxMatches) throws StorageAccessException {
-		return stageDAO.getMatchingAges(str, matchType, maxMatches);
+		return fredDAO.getMatchingAges(str, matchType, maxMatches);
 	}
 	
 }

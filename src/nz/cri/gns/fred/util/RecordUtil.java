@@ -13,8 +13,7 @@ import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.dao.FolderDAO;
-import nz.cri.gns.fred.dao.RecordDAO;
+import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
@@ -34,14 +33,11 @@ import nz.cri.gns.fred.model.UserFolder;
 
 public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 
-	private RecordDAO recordDAO;
-	private FolderDAO folderDAO;
-
+	private FredDAO fredDAO;
 
 	public RecordUtil(DAOFactory factory) {
 		super(factory);
-		this.recordDAO = factory.getRecordDAO();
-		this.folderDAO = factory.getFolderDAO();
+		this.fredDAO = factory.getFredDAO();
 	}
 	
 
@@ -112,7 +108,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public void deleteRecord(int recordId, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
-		Record record = recordDAO.get(recordId, nz.cri.gns.fred.hibernate.Record.class);
+		Record record = fredDAO.get(recordId, nz.cri.gns.fred.hibernate.Record.class);
 		deleteRecord(record, folder, user);
 	}
 	
@@ -125,7 +121,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		//Remove it from the sample
 		sample.getRecords().remove(record);
 		//And delete it
-		recordDAO.delete(record);
+		fredDAO.delete(record);
 	}
 
 	public void submitRecord(int recordId, UserFolder folder, UserAccount user) throws DataInputException, InsufficientPrivelegesException, StorageAccessException {
@@ -150,7 +146,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 				cal.add(Calendar.YEAR, audit.getConfidPeriod().intValue());
 			audit.setConfidLapseDate(cal.getTime());
 		}
-		recordDAO.saveOrUpdate(audit);
+		fredDAO.saveOrUpdate(audit);
 		
 		if (PALEONTOLOGICAL.equals(getRecordType(record))) {
 			audit = record.getPalListAudit();
@@ -163,7 +159,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 					cal.add(Calendar.YEAR, audit.getConfidPeriod().intValue());
 				audit.setConfidLapseDate(cal.getTime());
 			}
-			recordDAO.saveOrUpdate(audit);
+			fredDAO.saveOrUpdate(audit);
 		}
 	}
 	
@@ -181,27 +177,27 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * @throws StorageAccessException 
 	 */
     public Record createRecord(Sample sample, String recordType, int folderId, UserAccount user) throws StorageAccessException {
-        Record record = recordDAO.createNewRecord();
+        Record record = fredDAO.createNewRecord();
         record.setSample(sample);
         
-        Audit audit = recordDAO.createNewAudit();
-		audit.setFolder(folderDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class));
+        Audit audit = fredDAO.createNewAudit();
+		audit.setFolder(fredDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class));
 		audit.setStatus(FREDConstants.WORKING);
 		audit.setCreatedDate(new Date());
 		audit.setCreatedById(new Integer(user.getId()));
         record.setAudit(audit);
 
         if (recordType.equals(PALEONTOLOGICAL)) {
-        	audit = recordDAO.createNewAudit();
+        	audit = fredDAO.createNewAudit();
     		audit.setStatus(FREDConstants.WORKING);
     		audit.setCreatedDate(new Date());
     		audit.setCreatedById(new Integer(user.getId()));
         	record.setPalListAudit(audit);
-            Paleontology pal = recordDAO.createNewPaleontology();
+            Paleontology pal = fredDAO.createNewPaleontology();
         	record.setPaleontology(pal);
         	pal.setRecord(record);
         } else if (recordType.equals(ADOPTION)) {
-            Adoption adoption = recordDAO.createNewAdoption();
+            Adoption adoption = fredDAO.createNewAdoption();
         	record.setAdoption(adoption);
             adoption.setRecord(record);
         } else 
@@ -214,7 +210,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     public boolean isAllowedEditRecord(UserAccount user, Record record, UserFolder userFolder) throws StorageAccessException {
 		Audit audit = record.getAudit();
 		if (audit.getStatus().equals(APPROVED))
-			return FeatureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, folderDAO) ||
+			return FeatureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO) ||
 				FREDUtil.checkEditSecurityClass(user);
 
 		return userFolder.isAllowedEditLocalities();
@@ -231,7 +227,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	public boolean isAllowedDeleteRecord(UserAccount user, Record record, UserFolder userFolder) throws StorageAccessException {
 		Audit audit = record.getAudit();
 		if (audit.getStatus().equals(APPROVED))
-			return FeatureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, folderDAO);
+			return FeatureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO);
 
 		return userFolder.isAllowedDeleteLocalities();
 	}
@@ -250,12 +246,12 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
 
     public boolean hasMasterfileEditRights(UserAccount user, Record record) throws StorageAccessException {
-        return FeatureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, folderDAO);
+        return FeatureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO);
     }
 
 
     public Record getRecord(int recordId) throws StorageAccessException {
-       return recordDAO.get(recordId, nz.cri.gns.fred.hibernate.Record.class);
+       return fredDAO.get(recordId, nz.cri.gns.fred.hibernate.Record.class);
     }
 
 	public boolean isRecordConfidential(Record record) {
@@ -326,20 +322,20 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
 
     public Audit saveOrUpdate(Audit audit) throws StorageAccessException {
-        return recordDAO.saveOrUpdate(audit);
+        return fredDAO.saveOrUpdate(audit);
     }
 
 
     public void saveOrUpdate(Record record) throws StorageAccessException {
-        recordDAO.saveOrUpdate(record);
+        fredDAO.saveOrUpdate(record);
     }
 
     public void delete(Record record) throws StorageAccessException {
     	Audit audit = record.getAudit();
-        recordDAO.delete(record);
+        fredDAO.delete(record);
 		//try and delete audit record (if can't then probably also used by feature) so just ignore error
 		try {
-			recordDAO.delete(audit);
+			fredDAO.delete(audit);
 		} catch (Exception e) {}         
     }
 
@@ -362,7 +358,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * @throws StorageAccessException 
 	 */
 	public List<PaleontologyListEntry> getListEntries(Paleontology pal, TaxonomicGroup group) throws StorageAccessException {
-		List<PaleontologyListEntry> entries = recordDAO.getListEntries(pal, group);
+		List<PaleontologyListEntry> entries = fredDAO.getListEntries(pal, group);
 		Collections.sort(entries);
 		return entries;
 	}
@@ -384,39 +380,39 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	
 
 	public List<Lab> getLabs() throws StorageAccessException {
-		return recordDAO.getList("SELECT DISTINCT l FROM LabSection AS ls INNER JOIN ls.lab AS l", Lab.class);
+		return fredDAO.getList("SELECT DISTINCT l FROM LabSection AS ls INNER JOIN ls.lab AS l", Lab.class);
 	}
 	
     public LabSection getLabSection(int id) throws StorageAccessException {
-        return recordDAO.get(id, nz.cri.gns.fred.hibernate.LabSection.class);
+        return fredDAO.get(id, nz.cri.gns.fred.hibernate.LabSection.class);
     }
 
     public Lab findLab(String labName) throws StorageAccessException {
-    	return recordDAO.findLab(labName);
+    	return fredDAO.findLab(labName);
     }
     
 	public void saveOrUpdate(RecordDetails details) throws StorageAccessException {
-		recordDAO.saveOrUpdate(details);
+		fredDAO.saveOrUpdate(details);
 	}
 	
 	public List<Record> getListFromQueryBuilder(String query) throws StorageAccessException {
-		return recordDAO.getList(query, Record.class);
+		return fredDAO.getList(query, Record.class);
 	}
 	
 	public List<Paleontology> getPaleontologyRecords(Feature feature) throws StorageAccessException {
-		return recordDAO.getList("FROM Paleontology AS p WHERE p.record.sample.feature = ?", Paleontology.class, feature);
+		return fredDAO.getList("FROM Paleontology AS p WHERE p.record.sample.feature = ?", Paleontology.class, feature);
 	}
 
 	public List<Paleontology> getPaleontologyRecords(Sample sample) throws StorageAccessException {
-		return recordDAO.getList("FROM Paleontology AS p WHERE p.record.sample = ?", Paleontology.class, sample);
+		return fredDAO.getList("FROM Paleontology AS p WHERE p.record.sample = ?", Paleontology.class, sample);
 	}
 	
 	public List<Adoption> getAdoptionRecords(Feature feature) throws StorageAccessException {
-		return recordDAO.getList("FROM Adoption AS a WHERE a.record.sample.feature = ?", Adoption.class, feature);
+		return fredDAO.getList("FROM Adoption AS a WHERE a.record.sample.feature = ?", Adoption.class, feature);
 	}
 	
 	public List<Adoption> getAdoptionRecords(Sample sample) throws StorageAccessException {
-		return recordDAO.getList("FROM Adoption AS a WHERE a.record.sample = ?", Adoption.class, sample);
+		return fredDAO.getList("FROM Adoption AS a WHERE a.record.sample = ?", Adoption.class, sample);
 	}
 	
 }

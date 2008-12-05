@@ -11,7 +11,7 @@
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.jsp.PageState"
 %><%@page import="nz.cri.gns.auth.User"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.db.metadata.DocumentAttacher"
 %><%@page import="nz.cri.gns.db.metadata.MetadataRecord"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
@@ -25,7 +25,7 @@
 
 %><%
 	PageState state = new PageState(request, response, getServletContext());
-	DAOFactory factory = HibernateUtil.get().getDAOFactory();
+	DAOFactory factory = FredHibernate.get().getDAOFactory();
 	User user = (User)getUser(session);
 	FolderUtil folderUtil = new FolderUtil(factory);
 	RecordUtil recordUtil = new RecordUtil(factory);

@@ -14,7 +14,7 @@ import nz.cri.gns.auth.IPRightAccess;
 import nz.cri.gns.auth.Right;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.KeyValueObject;
-import nz.cri.gns.fred.hibernate.util.HibernateUtil;
+import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.jsp.CustomHTMLLink;
 import nz.cri.gns.jsp.ExtranetTemplate;
@@ -137,7 +137,7 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 			super.service(request, response);
 		} finally {
 			try {
-				HibernateUtil.get().getDAOFactory().closeSession();
+				FredHibernate.get().getDAOFactory().closeSession();
 			} catch (StorageAccessException e) {
 			}
 		}

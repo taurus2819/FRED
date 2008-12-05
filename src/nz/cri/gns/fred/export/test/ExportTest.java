@@ -45,12 +45,12 @@ public class ExportTest extends FredHibernateTest {
 		OldFormatFredExport offe = new OldFormatFredExport(pw);
 		
 		//Sends feature 51060 and 1651 to it
-		Feature feature = factory.getFeatureDAO().get(51060, Feature.class);
+		Feature feature = factory.getFredDAO().get(51060, Feature.class);
 		Sample sample = feature.getSamples().iterator().next();
 		Paleontology list = sample.getRecords().iterator().next().getPaleontology();
 		AgeRange age = offe.getAgeRange(sample, list);
 		offe.handleList(feature, sample, age, list);
-		feature = factory.getFeatureDAO().get(1651, Feature.class);
+		feature = factory.getFredDAO().get(1651, Feature.class);
 		sample = feature.getSamples().iterator().next();
 		list = sample.getRecords().iterator().next().getPaleontology();
 		age = offe.getAgeRange(sample, list);

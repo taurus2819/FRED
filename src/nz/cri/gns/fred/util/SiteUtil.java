@@ -15,7 +15,7 @@ import nz.cri.gns.db.BasicDatabaseApp2;
 import nz.cri.gns.db.DatabaseApp2;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.dao.SiteDAO;
+import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.model.DatumMethod;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.RegistrationArea;
@@ -32,7 +32,7 @@ import org.xml.sax.SAXException;
 
 public class SiteUtil extends ModelUtil {
 
-	private SiteDAO siteDAO;
+	private FredDAO fredDAO;
 
 	public static final int REG_MAINLAND_NZ = 400;
 	public static final int REG_CHATHAM_ISLANDS = 401;
@@ -82,11 +82,11 @@ public class SiteUtil extends ModelUtil {
 	
 	public SiteUtil(DAOFactory factory) {
 		super(factory);
-		this.siteDAO = factory.getSiteDAO();
+		this.fredDAO = factory.getFredDAO();
 	}
 	
 	public SiteView getSiteView(int siteId) throws StorageAccessException {
-		return siteDAO.get(siteId, nz.cri.gns.fred.hibernate.SiteView.class);
+		return fredDAO.get(siteId, nz.cri.gns.fred.hibernate.SiteView.class);
 	}
 	
 	public static int getMasterfile(Feature feature) throws SQLException, NamingException {
@@ -207,11 +207,11 @@ public class SiteUtil extends ModelUtil {
 	}
 	
 	public DatumMethod getSiteDatumMethod(int methodId) throws StorageAccessException {
-		return siteDAO.get(methodId, nz.cri.gns.fred.hibernate.DatumMethod.class);
+		return fredDAO.get(methodId, nz.cri.gns.fred.hibernate.DatumMethod.class);
 	}
 	
 	public List<DatumMethod> getSiteDatumMethods() throws StorageAccessException {
-		return siteDAO.getList("FROM DatumMethod AS d WHERE d.nomAccuracyXY IS NOT NULL", DatumMethod.class);
+		return fredDAO.getList("FROM DatumMethod AS d WHERE d.nomAccuracyXY IS NOT NULL", DatumMethod.class);
 	}
 	
 	public static Datum getFREDDatum(Feature feature) {

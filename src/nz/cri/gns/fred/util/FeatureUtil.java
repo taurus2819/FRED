@@ -23,9 +23,7 @@ import nz.cri.gns.core.SimpleNameableAndIdentifiable;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.dao.FeatureDAO;
-import nz.cri.gns.fred.dao.FolderDAO;
-import nz.cri.gns.fred.dao.SampleDAO;
+import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.de.MandatoryFieldsMissingException;
 import nz.cri.gns.fred.model.Audit;
@@ -48,30 +46,26 @@ import nz.cri.gns.fred.model.UserFolder;
 
 public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
-	private FeatureDAO featureDAO;
-	private SampleDAO sampleDAO;
-	private FolderDAO folderDAO;
-	
+	private FredDAO fredDAO;
+
 	private static String BACKLOG_PREPARE_COMMENTS = "Locality prepared for backlog editing";
 	
 	public FeatureUtil(DAOFactory factory) {
 		super(factory);
-		this.featureDAO = factory.getFeatureDAO();
-		this.sampleDAO = factory.getSampleDAO();
-		this.folderDAO = factory.getFolderDAO();
+		this.fredDAO = factory.getFredDAO();
 	}
 	
 	public Feature copyFeature(Feature feature, String newName, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
 		if (!folder.isAllowedCreateLocalities())
 			throw new InsufficientPrivelegesException();
-		Audit audit = featureDAO.createNewAudit();
+		Audit audit = fredDAO.createNewAudit();
 		audit.setStatus(FREDConstants.WORKING);
 		audit.setCreatedById(new Integer(user.getId()));
 		audit.setCreatedDate(new Date());
 		audit.setFolder(folder.getFolder());
-		featureDAO.saveOrUpdate(audit);
+		fredDAO.saveOrUpdate(audit);
 		
-		Feature newFeature = featureDAO.cloneFeature(feature);
+		Feature newFeature = (Feature)((nz.cri.gns.fred.hibernate.Feature)feature).clone();
 		newFeature.setFeatureId(null);
 		newFeature.setFeatureName(newName);
 		newFeature.setAudit(audit);
@@ -85,7 +79,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			HashSet<FeatureMeta> newImages = new HashSet<FeatureMeta>();
 			for (Iterator it = images.iterator(); it.hasNext(); ) {
 				FeatureMeta meta = (FeatureMeta)it.next();
-				FeatureMeta newMeta = featureDAO.createNewFeatureMeta();
+				FeatureMeta newMeta = fredDAO.createNewFeatureMeta();
 				newMeta.setMetaId(meta.getMetaId());
 				newMeta.setFeature(newFeature);
 				newImages.add(newMeta);
@@ -99,7 +93,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		//Remove any samples that have come across
 		newFeature.setSamples(null);
 		//Save the new feature!
-		featureDAO.saveOrUpdate(newFeature);
+		fredDAO.saveOrUpdate(newFeature);
 		
 		if (feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
 			//For outcrops we copy everything
@@ -117,7 +111,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			
 			//Save the new sample
 			try {
-			sampleDAO.saveOrUpdate(newSample);
+			fredDAO.saveOrUpdate(newSample);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -235,7 +229,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
 	public Sample cloneSample(Feature newFeature, Sample sample) throws StorageAccessException, IntrospectionException {
 		Set images;
-		Sample newSample = sampleDAO.createNewSample(newFeature);
+		Sample newSample = fredDAO.createNewSample(newFeature);
 		FREDUtil.beanCopy(sample, newSample, 
 				new FREDUtil.ExcludeByType(Set.class, 
 				new FREDUtil.ExcludeByName(FREDUtil.toVector("audit", "sampleId", "feature", "frNumber")))
@@ -246,7 +240,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (relationships != null && relationships.size() > 0) {
 			HashSet<Relationship> newRels = new HashSet<Relationship>();
 			for (Relationship rel : relationships) {
-				Relationship newRel = sampleDAO.createNewRelationship();
+				Relationship newRel = fredDAO.createNewRelationship();
 				FREDUtil.beanCopy(rel, newRel, new FREDUtil.ExcludeByName(FREDUtil.toVector("relationshipId", "sample")));
 				newRel.setSample(newSample);
 				newRels.add(newRel);
@@ -258,7 +252,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (sentTos != null && sentTos.size() > 0) {
 			HashSet<SentTo> newSent = new HashSet<SentTo>();
 			for (SentTo sentTo : sentTos) {
-				SentTo newSentTo = sampleDAO.createNewSentTo();
+				SentTo newSentTo = fredDAO.createNewSentTo();
 				FREDUtil.beanCopy(sentTo, newSentTo, new FREDUtil.ExcludeByName(FREDUtil.toVector("sentToId", "sample")));
 				newSentTo.setSample(newSample);
 				newSent.add(newSentTo);
@@ -271,7 +265,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (!FREDUtil.isEmpty(sedFeatures)) {
 			HashSet<SedimentaryFeature> newSedFeatures = new HashSet<SedimentaryFeature>();
 			for (SedimentaryFeature sedFeature : sedFeatures) {
-				SedimentaryFeature newSedFeature = sampleDAO.createNewSedimentaryFeature();
+				SedimentaryFeature newSedFeature = fredDAO.createNewSedimentaryFeature();
 				FREDUtil.beanCopy(sedFeature, newSedFeature, new FREDUtil.CopyAll());
 				newSedFeatures.add(newSedFeature);
 			}
@@ -292,7 +286,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			HashSet<SampleMeta> newImages = new HashSet<SampleMeta>();
 			for (Iterator it = images.iterator(); it.hasNext(); ) {
 				SampleMeta meta = (SampleMeta)it.next();
-				SampleMeta newMeta = sampleDAO.createNewSampleMeta();
+				SampleMeta newMeta = fredDAO.createNewSampleMeta();
 				newMeta.setMetaId(meta.getMetaId());
 				newMeta.setSample(newSample);
 				newImages.add(newMeta);
@@ -324,7 +318,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (folder == null)
 			folder = feature.getMasterFile();
 		
-		UserFolder userFolder = folderDAO.getUserFolder(folder.getFolderId(), Integer.parseInt(user.getId()));
+		UserFolder userFolder = fredDAO.getUserFolder(folder.getFolderId(), Integer.parseInt(user.getId()));
 		
 		if (!userFolder.isAllowedDeleteLocalities())
 			throw new InsufficientPrivelegesException();
@@ -338,7 +332,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			}
 		}
 		
-		featureDAO.delete(feature);
+		fredDAO.delete(feature);
 	}
 	
 	public void removeFeature(Feature feature, UserFolder userFolder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
@@ -350,7 +344,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		Folder folder = userFolder.getFolder();
 		folder.getFeatures().remove(feature);
 		feature.getFolders().remove(folder);
-		featureDAO.saveOrUpdate(feature);
+		fredDAO.saveOrUpdate(feature);
 	}
 	
 	public void submitFeatures(String[] featIds, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, DataInputException {
@@ -386,9 +380,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		audit.setSubmittedById(new Integer(user.getId()));
 		audit.setSubmittedDate(new Date());
 		
-		feature.setMasterFile(folderDAO.get(masterfileId, nz.cri.gns.fred.hibernate.Folder.class));
-		featureDAO.saveOrUpdate(audit);
-		featureDAO.saveOrUpdate(feature);		
+		feature.setMasterFile(fredDAO.get(masterfileId, nz.cri.gns.fred.hibernate.Folder.class));
+		fredDAO.saveOrUpdate(audit);
+		fredDAO.saveOrUpdate(feature);		
 	}
 	
 	public void revokeFeatures(String[] featIds, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException { 
@@ -406,10 +400,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		audit.setSubmittedById(null);
 		audit.setSubmittedDate(null);
 		
-		featureDAO.saveOrUpdate(audit);
+		fredDAO.saveOrUpdate(audit);
 		
 		feature.setMasterFile(null);
-		featureDAO.saveOrUpdate(feature);		
+		fredDAO.saveOrUpdate(feature);		
 	}
 
 	public void alterFeatureTypes(String[] featIDs, String newFeatureType, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
@@ -444,30 +438,30 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 					sample.setBottomDepth(null);
 					sample.setTopDepth(null);
 					sample.setDrillType(null);
-					sampleDAO.saveOrUpdate(sample);
+					fredDAO.saveOrUpdate(sample);
 				}
 			} else if (newFeatureType.equals(FREDConstants.DRILLHOLE)) {
 				for (Sample sample : samples) {
 					breakApartSampleAudit(sample);
-					sampleDAO.saveOrUpdate(sample);
+					fredDAO.saveOrUpdate(sample);
 				}
 			} else if (newFeatureType.equals(FREDConstants.VERTICAL_SECTION)) {
 				feature.setDrillholeLicenceName(null);
 				for (Sample sample : samples) {
 					breakApartSampleAudit(sample);
 					sample.setDrillType(null);
-					sampleDAO.saveOrUpdate(sample);
+					fredDAO.saveOrUpdate(sample);
 				}
 			}
-			AuditEdit edit = featureDAO.createNewAuditEdit();
+			AuditEdit edit = fredDAO.createNewAuditEdit();
 			edit.setAudit(feature.getAudit());
 			edit.setEditedById(Integer.parseInt(user.getId()));
 			edit.setEditedDate(new Date());
 			edit.setComments("Locality type changed from " + oldFeatureType + " to " + newFeatureType);
-			featureDAO.saveOrUpdate(edit);
+			fredDAO.saveOrUpdate(edit);
 			
 			feature.setFeatureType(newFeatureType);
-			featureDAO.saveOrUpdate(feature);
+			fredDAO.saveOrUpdate(feature);
 		}
 	}	
 
@@ -501,17 +495,17 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				//check audits - if same as feature then create new onw
 				if (sample.getAudit().equals(mergeFromFeature.getAudit())) {
 					Audit newAudit = new AuditUtil(factory).cloneAudit(sample.getAudit());
-					featureDAO.saveOrUpdate(newAudit);
+					fredDAO.saveOrUpdate(newAudit);
 					sample.setAudit(newAudit);
 				}
 	
 				//add comments
-				AuditEdit edit = featureDAO.createNewAuditEdit();
+				AuditEdit edit = fredDAO.createNewAuditEdit();
 				edit.setAudit(sample.getAudit());
 				edit.setEditedById(new Integer(user.getId()));
 				edit.setEditedDate(new Date());
 				edit.setComments("Sample merged into " + getFeatureIdentifyingName(mergeToFeature) + " from " + getFeatureIdentifyingName(mergeFromFeature));
-				featureDAO.saveOrUpdate(edit);
+				fredDAO.saveOrUpdate(edit);
 	
 				//set sample FRNumber if currently null
 				if (sample.getFrNumber() == null && mergeFromFrNumber != null)
@@ -524,14 +518,14 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				for (Relationship relationship : relationships) {
 					if (relationship.getFeature() != null && relationship.getFeature().equals(mergeToFeature)) {
 						sample.getRelationships().remove(relationship);
-						sampleDAO.delete(relationship);
+						fredDAO.delete(relationship);
 					}
 				}
 				
 				sample.setFeature(mergeToFeature);
 				mergeToFeature.getSamples().add(sample);
 				mergeFromFeature.getSamples().remove(sample);
-				sampleDAO.saveOrUpdate(sample);
+				fredDAO.saveOrUpdate(sample);
 			}
 			
 			
@@ -543,11 +537,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			Set<Relationship> relationships = mergeFromFeature.getRelationships();
 			for (Relationship relationship : relationships) {
 				if (relationship.getSample().getFeature().equals(mergeToFeature))
-					sampleDAO.delete(relationship);
+					fredDAO.delete(relationship);
 				else {
 					relationship.setFeature(mergeToFeature);
 					mergeFromFeature.getRelationships().remove(relationship);
-					sampleDAO.saveOrUpdate(relationship);
+					fredDAO.saveOrUpdate(relationship);
 				}
 			}
 			mergeFromFeature.setRelationships(null);
@@ -558,7 +552,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}	
 	
 	public Feature getFeature(int featureId) throws StorageAccessException {
-		return featureDAO.get(featureId, nz.cri.gns.fred.hibernate.Feature.class);
+		return fredDAO.get(featureId, nz.cri.gns.fred.hibernate.Feature.class);
 	}
 	
 	public boolean folderContainsFeature(UserFolder folder, Feature feature) throws StorageAccessException {
@@ -579,7 +573,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			features.addAll(featuresToAdd);
 		
 		//Get from audit
-		List<Audit> audits = folderDAO.getAuditsFor(folder.getFolder());
+		List<Audit> audits = fredDAO.getAuditsFor(folder.getFolder());
 		
 		for (Audit audit : audits) {
 			// - features
@@ -588,12 +582,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				features.addAll(featuresToAdd);
 			
 			//- samples
-			featuresToAdd = featureDAO.getFeaturesBySample(audit);
+			featuresToAdd = getFeaturesBySample(audit);
 			if (featuresToAdd != null)
 				features.addAll(featuresToAdd);
 			
 			//- records
-			featuresToAdd = featureDAO.getFeaturesByRecord(audit);
+			featuresToAdd = getFeaturesByRecord(audit);
 			if (featuresToAdd != null)
 				features.addAll(featuresToAdd);
 		}
@@ -601,6 +595,14 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		Feature[] featuresArray = features.toArray(new Feature[features.size()]); 
 		Arrays.sort(featuresArray);
 		return featuresArray;
+	}
+	
+	public List<Feature> getFeaturesBySample(Audit audit) throws StorageAccessException {
+		return fredDAO.getList("SELECT s.feature FROM Sample AS s WHERE s.audit = ?", Feature.class, audit);
+	}
+	
+	public List<Feature> getFeaturesByRecord(Audit audit) throws StorageAccessException {
+		return fredDAO.getList("SELECT r.sample.feature FROM Record AS r WHERE r.audit = ?", Feature.class, audit);
 	}
 	
 	public static Feature[] getOrderedFeaturesInMasterfile(Folder masterfile) {
@@ -616,15 +618,27 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		cal.add(Calendar.DATE, -7);
 		Date then = cal.getTime();
 		
-		List<Feature> features = featureDAO.getFeaturesInMasterfile(masterfile.getFolder(), then, now, FREDConstants.APPROVED);
+		List<Feature> features = getFeaturesInMasterfile(masterfile.getFolder(), then, now, FREDConstants.APPROVED);
 		Collections.sort(features);
 		return features.toArray(new Feature[features.size()]);
 	}
 	
 	public Feature[] getWaitingFeatures(UserFolder masterfile) throws StorageAccessException {
-		List<Feature> features = featureDAO.getFeaturesInMasterfile(masterfile.getFolder(), FREDConstants.WAITING);
+		List<Feature> features = getFeaturesInMasterfile(masterfile.getFolder(), FREDConstants.WAITING);
 		Collections.sort(features);
 		return features.toArray(new Feature[features.size()]);
+	}
+	
+	public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, Date startDate, Date endDate, String status) throws StorageAccessException {
+        return fredDAO.getList("FROM Feature as f WHERE f.masterFile = ? AND "
+           		+ (status.equals(FREDConstants.WAITING) ? "f.audit.submittedDate" : "f.audit.approvedDate")
+           		+ " BETWEEN ? AND ? AND f.audit.status = ?"
+           		, Feature.class, masterfileFolder, startDate, endDate, status);
+	}
+
+	public List<Feature> getFeaturesInMasterfile(Folder masterfileFolder, String status) throws StorageAccessException {
+        return fredDAO.getList("FROM Feature as f WHERE f.masterFile = ? AND f.audit.status = ?"
+           		, Feature.class, masterfileFolder, status);
 	}
 	
 	/**
@@ -639,7 +653,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			UserFolder folder = new FolderUtil(factory).getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), user);
 			UserFolder mfFolder = null;
 			if (feature.getMasterFile() != null)
-				mfFolder = folderDAO.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
+				mfFolder = fredDAO.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
 			return ((folder != null && folder.isAllowedReadLocalities()) || (mfFolder != null && mfFolder.isAllowedReadLocalities()));
 		}
 		return true;
@@ -654,10 +668,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (!status.equals(FREDConstants.APPROVED)) {
 			if (user == null)
 				return false;
-			UserFolder folder = folderDAO.getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), Integer.parseInt(user.getId()));
+			UserFolder folder = fredDAO.getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), Integer.parseInt(user.getId()));
 			UserFolder mfFolder = null;
 			if (feature.getMasterFile() != null)
-				mfFolder = folderDAO.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
+				mfFolder = fredDAO.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
 			return ((folder != null && folder.isAllowedReadLocalities()) || (mfFolder != null && mfFolder.isAllowedReadLocalities()));
 		}
 		return true;
@@ -698,7 +712,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (audit.getStatus().equals(APPROVED))
 			return false;
 		if (audit.getStatus().equals(WAITING))
-			return FeatureUtil.hasMasterfileRights(user, feature, UserFolder.FOLDER_DELETE_RIGHT, folderDAO);
+			return FeatureUtil.hasMasterfileRights(user, feature, UserFolder.FOLDER_DELETE_RIGHT, fredDAO);
 
 		return userFolder.isAllowedDeleteLocalities();
 	}
@@ -708,7 +722,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 */
 	public boolean isAllowedApproveFeature(UserAccount user, Feature feature) throws StorageAccessException {
 		if (WAITING.equals(feature.getAudit().getStatus())) {
-			UserFolder folder = folderDAO.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
+			UserFolder folder = fredDAO.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
 			if (folder != null)
 				return folder.isAllowedApproveLocalities();
 		}
@@ -721,15 +735,15 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 * @throws 
 	 */
 	public boolean hasMasterfileRights(UserAccount user, Feature feature, int right) throws StorageAccessException {
-		return hasMasterfileRights(user, feature, right, folderDAO);
+		return hasMasterfileRights(user, feature, right, fredDAO);
 	}
 	
-	static boolean hasMasterfileRights(UserAccount user, Feature feature, int right, FolderDAO folderDAO) throws NumberFormatException, StorageAccessException {
+	static boolean hasMasterfileRights(UserAccount user, Feature feature, int right, FredDAO fredDAO) throws NumberFormatException, StorageAccessException {
 		Folder masterfile = feature.getMasterFile();
 		if (masterfile == null)
 			return false;
 		
-		UserFolder masterfileFolder = folderDAO.getUserFolder(masterfile.getFolderId().intValue(), Integer.parseInt(user.getId()));
+		UserFolder masterfileFolder = fredDAO.getUserFolder(masterfile.getFolderId().intValue(), Integer.parseInt(user.getId()));
 		
 		return (masterfileFolder == null) ? false : (masterfileFolder.getRights() & right) > 0;
 	}
@@ -761,7 +775,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		try {
 			feature.setFrNumber(frNumber);
 			feature.getFolders().add(audit.getFolder());
-			featureDAO.saveOrUpdate(feature);
+			fredDAO.saveOrUpdate(feature);
 		} catch (Exception e) {
 		}
 		
@@ -772,7 +786,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		audit.setFolder(null);
 		audit.setWorkingComments(null);
 		audit.setCuratorComments(comments);
-		featureDAO.saveOrUpdate(audit);
+		fredDAO.saveOrUpdate(audit);
 	}
 	
 	/**
@@ -808,9 +822,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				}
 			}
 		} catch (Exception e) {	}
-		feature.setMasterFile(folderDAO.get(SiteUtil.getMasterfile(feature), nz.cri.gns.fred.hibernate.Folder.class));
-		featureDAO.saveOrUpdate(audit);
-		featureDAO.saveOrUpdate(feature);
+		feature.setMasterFile(fredDAO.get(SiteUtil.getMasterfile(feature), nz.cri.gns.fred.hibernate.Folder.class));
+		fredDAO.saveOrUpdate(audit);
+		fredDAO.saveOrUpdate(feature);
 	}
 	
 	public void rejectLocality(Feature feature, String comments, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
@@ -820,7 +834,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		Audit audit = feature.getAudit();
 		audit.setStatus(REJECTED);
 		audit.setCuratorComments(comments);
-		featureDAO.saveOrUpdate(audit);
+		fredDAO.saveOrUpdate(audit);
 	}
 	
 	public void addToFolder(Feature feature, int folderId, UserAccount user) throws StorageAccessException, DataInputException {
@@ -831,7 +845,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (!userFolder.isAllowedCreateLocalities())
 			throw new DataInputException("Folder", "Do not have appropriate rights to add to this folder");
 				
-		feature.getFolders().add(folderDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class));
+		feature.getFolders().add(fredDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class));
 	}
 	
 	/**
@@ -848,13 +862,20 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 * @param mapSheet
 	 */
 	public FrNumber getNextAvailableFrNumber(String mapSheet) throws StorageAccessException {
-		int nextAvailable = featureDAO.getNextAvailableSerialNumber(mapSheet);
-		FrNumber frNum = sampleDAO.createFRNumber();
+		int nextAvailable = getNextAvailableSerialNumber(mapSheet);
+		FrNumber frNum = fredDAO.createFRNumber();
 		frNum.setMapSheet(mapSheet);
-		frNum.setSerialNumber(new Integer(nextAvailable));
+		frNum.setSerialNumber(nextAvailable);
 		return frNum;
 	}
 
+	public Integer getNextAvailableSerialNumber(String mapSheet) throws StorageAccessException {
+		Integer maxNum = fredDAO.getFirst("SELECT max(fr.serialNumber) FROM FrNumber AS fr WHERE fr.serialNumber < 6000 AND fr.obsolete IS NULL AND fr.mapSheet = ?", Integer.class, mapSheet);
+		if (maxNum == null)
+			return 1;
+		return maxNum;
+	}
+	
 	/**
 	 * Creates a blank feature of the given type, in the given folder.  The
 	 * feature and its associated entries are _not_ committed to persistent
@@ -865,10 +886,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (!(featureType.equals(FREDConstants.OUTCROP) 
 				|| featureType.equals(FREDConstants.DRILLHOLE) || featureType.equals(FREDConstants.VERTICAL_SECTION))) 
 			throw new IllegalArgumentException("Invalid feature type given: " + featureType);
-		Feature feature = featureDAO.createNewFeature();
+		Feature feature = fredDAO.createNewFeature();
 		feature.setFeatureType(featureType);
-		Audit audit = featureDAO.createNewAudit();
-		audit.setFolder(folderDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class));
+		Audit audit = fredDAO.createNewAudit();
+		audit.setFolder(fredDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class));
 		audit.setStatus(FREDConstants.WORKING);
 		audit.setCreatedDate(new Date());
 		audit.setCreatedById(new Integer(user.getId()));
@@ -877,11 +898,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 
 	public RegistrationArea getRegistrationArea(int regAreaId) throws StorageAccessException {
-		return featureDAO.get(regAreaId, nz.cri.gns.fred.hibernate.RegistrationArea.class);
+		return fredDAO.get(regAreaId, nz.cri.gns.fred.hibernate.RegistrationArea.class);
 	}
 
 	public List<RegistrationArea> getRegistrationAreas() throws StorageAccessException {
-		return featureDAO.getList("FROM RegistrationArea AS r", RegistrationArea.class);
+		return fredDAO.getList("FROM RegistrationArea AS r", RegistrationArea.class);
 	}
 	
 	/**
@@ -924,9 +945,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				serialNumStr = "0" + serialNumStr;
 			FrNumber frNumber = null;
 			if (yard)
-				frNumber = featureDAO.getYardFrNumber(mapSheet + "/f" + serialNumStr + ((recollectionNumber != null) ? recollectionNumber : ""));
+				frNumber = getYardFrNumber(mapSheet + "/f" + serialNumStr + ((recollectionNumber != null) ? recollectionNumber : ""));
 			else
-				frNumber = featureDAO.getFrNumber(mapSheet + "/f" + serialNumStr + ((recollectionNumber != null) ? recollectionNumber : ""));
+				frNumber = getFrNumber(mapSheet + "/f" + serialNumStr + ((recollectionNumber != null) ? recollectionNumber : ""));
 			if (frNumber == null && createNew) {
 				frNumber = new nz.cri.gns.fred.hibernate.FrNumber();
 				frNumber.setMapSheet(mapSheet);
@@ -985,20 +1006,20 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		sample.setTopDepth(topDepth);
 		sample.setBottomDepth(bottomDepth);
 		if (drillTypeId != null)
-			sample.setDrillType(sampleDAO.get(drillTypeId, nz.cri.gns.fred.hibernate.DrillType.class));
+			sample.setDrillType(fredDAO.get(drillTypeId, nz.cri.gns.fred.hibernate.DrillType.class));
 		
 		//add first FRNumber (if one defined)
 		//sample.setFrNumber(FeatureUtil.getFrNumber(feature));
 		
-		sampleDAO.saveOrUpdate(sample);
+		fredDAO.saveOrUpdate(sample);
 	}
 
     public Audit update(Audit audit) throws StorageAccessException {
-        return featureDAO.saveOrUpdate(audit);
+        return fredDAO.saveOrUpdate(audit);
     }
 
     public Audit saveOrUpdate(Audit audit) throws StorageAccessException {
-        return featureDAO.saveOrUpdate(audit);
+        return fredDAO.saveOrUpdate(audit);
     }
     
     public static Collection<Sample> getSortedSamples(Feature feature) {
@@ -1027,23 +1048,23 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			audit.setDataOrigin((new AuditUtil(factory)).getDataOrigin(new Integer(dataOriginId)));
 		} else if (FeatureUtil.isBacklogFeature(feature)) {
 			//Backlog editing feature
-			AuditEdit edit = featureDAO.createNewAuditEdit();
+			AuditEdit edit = fredDAO.createNewAuditEdit();
 			edit.setAudit(audit);
 			edit.setEditedById(user.getPersonId());
 			edit.setEditedDate(new Date());
 			edit.setComments("Backlog data editing");
-			featureDAO.saveOrUpdate(edit);
+			fredDAO.saveOrUpdate(edit);
 		} else if (audit.getStatus().equals(FREDConstants.APPROVED)) {
-			AuditEdit edit = featureDAO.createNewAuditEdit();
+			AuditEdit edit = fredDAO.createNewAuditEdit();
 			edit.setAudit(audit);
 			edit.setEditedById(user.getPersonId());
 			edit.setEditedDate(new Date());
 			edit.setComments(comments);
-			featureDAO.saveOrUpdate(edit);
+			fredDAO.saveOrUpdate(edit);
 		}
         
-		featureDAO.saveOrUpdate(audit);
-		featureDAO.saveOrUpdate(feature);
+		fredDAO.saveOrUpdate(audit);
+		fredDAO.saveOrUpdate(feature);
 		
 		//add blank sample if one drillhole or vert section and one doesn't exist 
 		Set<Sample> samples = feature.getSamples();
@@ -1070,10 +1091,14 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 * @throws StorageAccessException 
 	 */
 	public Feature getFeatureWithIdentifyingName(String ident) throws StorageAccessException {
-		FrNumber frNum = featureDAO.getFrNumber(ident);
+		FrNumber frNum = getFrNumber(ident);
 		if (frNum != null) 
 			return getFeature(frNum);	
-		return featureDAO.getFeatureWithName(ident);
+		return getFeatureWithName(ident);
+	}
+	
+	public Feature getFeatureWithName(String name) throws StorageAccessException {
+		return fredDAO.getFirst("FROM Feature AS f WHERE f.featureName = ?", Feature.class, name);
 	}
 	
 	/**
@@ -1090,6 +1115,16 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return null;
 	}
 	
+
+	
+	public FrNumber getFrNumber(String frNum) throws StorageAccessException {
+		return fredDAO.getFirst("FROM FrNumber AS f WHERE f.frNumber = ? AND f.obsolete IS NULL", FrNumber.class, frNum);
+	}
+
+	public FrNumber getYardFrNumber(String frNum) throws StorageAccessException {
+		return fredDAO.getFirst("FROM FrNumber AS f WHERE f.frNumber = ? AND f.obsolete IS NOT NULL", FrNumber.class, frNum);
+	}
+	
 	/**
 	 * Backlog method
 	 * @throws StorageAccessException 
@@ -1097,7 +1132,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	public void addToBacklog(UserFolder folderToAddTo, String mapSheet, int start, int end, UserFolder masterFile, UserAccount user) throws StorageAccessException {
 		if (!masterFile.isAllowedReadLocalities())
 			return;
-		List<FrNumber> numbers = featureDAO.getFrNumbers(mapSheet.toUpperCase(), start, end);
+		List<FrNumber> numbers = getFrNumbers(mapSheet.toUpperCase(), start, end);
 		Folder folder = folderToAddTo.getFolder();
 		Folder masterFileFolder = masterFile.getFolder();
 		for (FrNumber num : numbers) {
@@ -1109,13 +1144,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			Audit audit = feature.getAudit();
 			audit.setFolder(folder);
 			audit.setStatus(WORKING);
-			AuditEdit edit = featureDAO.createNewAuditEdit();
+			AuditEdit edit = fredDAO.createNewAuditEdit();
 			edit.setAudit(audit);
 			edit.setEditedById(new Integer(user.getId()));
 			edit.setEditedDate(new Date());
 			edit.setComments(BACKLOG_PREPARE_COMMENTS);
-			featureDAO.saveOrUpdate(edit);
-			featureDAO.saveOrUpdate(audit);
+			fredDAO.saveOrUpdate(edit);
+			fredDAO.saveOrUpdate(audit);
 		}
 	}
 	
@@ -1128,15 +1163,15 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		String serialNum = String.valueOf(serialNumber);
 		while (serialNum.length() < 4)
 			serialNum = "0" + serialNum;
-		return featureDAO.getFrNumber(mapSheet + "/f" + serialNum + DBUtils.nvl(recollectionNumber));		
+		return getFrNumber(mapSheet + "/f" + serialNum + DBUtils.nvl(recollectionNumber));		
 	}
 	
 	public List<FrNumber> getFrNumbers(String mapSheet) throws StorageAccessException {
-		return featureDAO.getFrNumbers(mapSheet);
+		return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.obsolete IS NULL", FrNumber.class, mapSheet);
 	}
 	
-	public List<FrNumber> getFrNumbers(String mapSheet, int start, int end) throws StorageAccessException {
-		return featureDAO.getFrNumbers(mapSheet, start, end);
+	public List<FrNumber> getFrNumbers(String mapSheet, Integer start, Integer end) throws StorageAccessException {
+		return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN :start AND :end AND f.obsolete IS NULL", FrNumber.class, mapSheet, start, end);
 	}
 	
 	private static String RECOLL_COMMENTS = "*Recoll:";
@@ -1166,7 +1201,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	
 	public int getTotalFeatureCount() {
 		try {
-			return featureDAO.getTotalFeatureCount();
+			return fredDAO.getTotalFeatureCount();
 		} catch (Exception e) {
 			return 90000;
 		}
@@ -1174,7 +1209,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	
 	public Date getLastFeatureApprovalDate() {
 		try {
-			return featureDAO.getLastFeatureApprovalDate();
+			return fredDAO.getLastFeatureApprovalDate();
 		} catch (Exception e) {
 			return null;
 		}
@@ -1188,15 +1223,15 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	public Country getCountry(String countryCode) throws StorageAccessException {
-		return featureDAO.getCountry(countryCode);
+		return fredDAO.getCountry(countryCode);
 	}
 	
 	public List<Country> getCountries() throws StorageAccessException {
-		return featureDAO.getList("FROM Country AS c", Country.class);
+		return fredDAO.getList("FROM Country AS c", Country.class);
 	}
 	
 	public List<SimpleNameableAndIdentifiable> getFrMapSheets() throws StorageAccessException {
-		List<String> sheetsAsString = featureDAO.getFrMapSheets();
+		List<String> sheetsAsString = fredDAO.getFrMapSheets();
 		List<SimpleNameableAndIdentifiable> sheets = new Vector<SimpleNameableAndIdentifiable>();
 		for (String sheetAsString : sheetsAsString) {
 			SimpleNameableAndIdentifiable sheet = new SimpleNameableAndIdentifiable(sheetAsString, sheetAsString);
@@ -1206,7 +1241,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	public List<Feature> getListFromQueryBuilder(String query) throws StorageAccessException {
-		return featureDAO.getList(query, Feature.class);
+		return fredDAO.getList(query, Feature.class);
 	}
 	
 	public String getFullLocalityPDFURL(Feature feature) {

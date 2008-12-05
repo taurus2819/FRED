@@ -1,9 +1,6 @@
 package nz.cri.gns.fred.util;
 
 import java.beans.IntrospectionException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
@@ -14,10 +11,6 @@ import java.util.Vector;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
-
 import net.sf.hibernate.expression.Criterion;
 import net.sf.hibernate.expression.Expression;
 import nz.cri.gns.auth.InsufficientPrivelegesException;
@@ -27,8 +20,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.dao.TaxonomicDAO;
-import nz.cri.gns.fred.dao.UserDAO;
+import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.FrUserView;
@@ -36,34 +28,33 @@ import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 
-/**
- * @author iainm
- */
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
+
 public class TaxonomicUtil extends ModelUtil {
 
-    private TaxonomicDAO taxonomicDAO;
-	private UserDAO userDAO;
+    private FredDAO fredDAO;
     
 	public TaxonomicUtil(DAOFactory dao) {
         super(dao);
-        this.taxonomicDAO = dao.getTaxonomicDAO();
-        this.userDAO = dao.getUserDAO();
+        this.fredDAO = dao.getFredDAO();
 	}
 	
 	public TaxonomicGroup getTaxonomicGroup(int groupId) throws StorageAccessException {
-		return taxonomicDAO.get(groupId, nz.cri.gns.fred.hibernate.TaxonomicGroup.class);
+		return fredDAO.get(groupId, nz.cri.gns.fred.hibernate.TaxonomicGroup.class);
 	}
 	
 	public List<TaxonomicGroup> getTaxonomicGroups() throws StorageAccessException {
-		return taxonomicDAO.getList("FROM TaxonomicGroup AS t", TaxonomicGroup.class);
+		return fredDAO.getList("FROM TaxonomicGroup AS t", TaxonomicGroup.class);
 	}
 	
 	public Taxon getTaxon(int taxonId) throws StorageAccessException {
-		return taxonomicDAO.get(taxonId, nz.cri.gns.fred.hibernate.TaxonomicLookup.class);
+		return fredDAO.get(taxonId, nz.cri.gns.fred.hibernate.TaxonomicLookup.class);
 	}
 	
 	public List<TaxonomicGroup> getTaxonomicGroupsIsPanelistOf(UserAccount user) throws StorageAccessException {
-		FrUserView frUser = userDAO.get(new Integer(user.getId()), nz.cri.gns.fred.hibernate.FrUserView.class);
+		FrUserView frUser = fredDAO.get(new Integer(user.getId()), nz.cri.gns.fred.hibernate.FrUserView.class);
 		List<TaxonomicGroup> groups = new Vector<TaxonomicGroup>();
 		for (TaxonomicGroup group : frUser.getTaxonomicGroups())
 			groups.add(group);
@@ -82,12 +73,12 @@ public class TaxonomicUtil extends ModelUtil {
 	
 	public void addPanelistToTaxonomicGroup(TaxonomicGroup group, FrUserView frUser) throws StorageAccessException {
 		group.getPanelists().add(frUser);
-		taxonomicDAO.saveOrUpdate(group);
+		fredDAO.saveOrUpdate(group);
 	}
 
 	public void removePanelistFromTaxonomicGroup(TaxonomicGroup group, FrUserView frUser) throws StorageAccessException {
 		group.getPanelists().remove(frUser);
-		taxonomicDAO.saveOrUpdate(group);
+		fredDAO.saveOrUpdate(group);
 	}
 	
 	public Taxon approveTaxon(Taxon taxon, UserAccount user, String comments) throws StorageAccessException, InsufficientPrivelegesException {
@@ -109,7 +100,7 @@ public class TaxonomicUtil extends ModelUtil {
 		taxon.setApprovedById(new Integer(user.getId()));
 		taxon.setApprovedDate(new Date());
 		taxon.setPanelistComments(comments);
-		taxonomicDAO.saveOrUpdate(taxon);
+		fredDAO.saveOrUpdate(taxon);
 		return taxon;		
 	}
 
@@ -118,22 +109,22 @@ public class TaxonomicUtil extends ModelUtil {
 			throw new InsufficientPrivelegesException();
 		if (!FREDUtil.isEmpty(taxon.getListEntries()))
 			throw new IllegalStateException("Cannot delete as referenced in a Paleontology list");
-		taxonomicDAO.delete(taxon);
+		fredDAO.delete(taxon);
 	}
 	
 	/**
 	 * @deprecated use getTaxaCount
 	 */
 	public int getProvisionalCount(TaxonomicGroup group) throws StorageAccessException {
-		return taxonomicDAO.getTaxaCount(group, FREDConstants.PROVISIONAL);
+		return fredDAO.getTaxaCount(group, FREDConstants.PROVISIONAL);
 	}
 	
 	public int getTaxaCount(TaxonomicGroup group, String status) throws StorageAccessException {
-		return taxonomicDAO.getTaxaCount(group, status);
+		return fredDAO.getTaxaCount(group, status);
 	}
 
 	public List<Taxon> getTaxa(TaxonomicGroup group, String status) throws StorageAccessException {
-		List<Taxon> taxa = taxonomicDAO.getTaxa(group, status);
+		List<Taxon> taxa = fredDAO.getTaxa(group, status);
 		Collections.sort(taxa);
 		return taxa;
 	}
@@ -147,7 +138,7 @@ public class TaxonomicUtil extends ModelUtil {
 	}
 	
 	public TaxonomicGroup getTaxonomicGroup(String groupName) throws StorageAccessException {
-		return taxonomicDAO.findTaxonomicGroup(groupName);
+		return fredDAO.findTaxonomicGroup(groupName);
 	}
 
 	/**
@@ -271,11 +262,11 @@ public class TaxonomicUtil extends ModelUtil {
     }
 
     public PaleontologyListEntry createPaleontologyListEntry() {
-       return taxonomicDAO.createNewPaleontologyListEntry();
+       return fredDAO.createNewPaleontologyListEntry();
     }
     
     public PaleontologyListEntry getPaleontologyListEntry(int palListId) throws StorageAccessException {
-    	return taxonomicDAO.get(palListId, nz.cri.gns.fred.hibernate.PalList.class);
+    	return fredDAO.get(palListId, nz.cri.gns.fred.hibernate.PalList.class);
     }
 
     public Taxon getTaxon(TaxonomicGroup taxonomicGroup, String name, String author) throws StorageAccessException {
@@ -283,7 +274,7 @@ public class TaxonomicUtil extends ModelUtil {
 		if (taxonomicGroup != null)
 			criteria.add(Expression.eq("taxonomicGroup", taxonomicGroup));
 		criteria.add(Expression.eq("taxonomicName", name));
-		List<Taxon> taxa = taxonomicDAO.getList(Taxon.class, criteria);
+		List<Taxon> taxa = fredDAO.getList(Taxon.class, criteria);
 		if (taxa.size() > 0) {
 			Taxon taxon = taxa.get(0);
         	if (author != null && (taxon.getAuthor() == null || taxon.getAuthor().length() == 0)) {
@@ -296,7 +287,7 @@ public class TaxonomicUtil extends ModelUtil {
     }
 
     public Taxon createTaxon() {
-        return taxonomicDAO.createNewTaxon();
+        return fredDAO.createNewTaxon();
     }
     
 	public void submitProvisional(User user, PaleontologyListEntry entry) throws StorageAccessException {
@@ -311,7 +302,7 @@ public class TaxonomicUtil extends ModelUtil {
 		taxon.setSubmittedDate(new Date());
 		try {
 			taxon = ensureCompatibleWithPersistenceLayer(taxon);
-			taxonomicDAO.saveOrUpdate(taxon);
+			fredDAO.saveOrUpdate(taxon);
 		} catch (StorageAccessException e) {
 			throw e;
 		} catch (Exception e) {
@@ -324,7 +315,7 @@ public class TaxonomicUtil extends ModelUtil {
 	 * @throws IntrospectionException 
 	 */
 	private Taxon ensureCompatibleWithPersistenceLayer(Taxon taxon) throws IntrospectionException {
-		Taxon newTaxon = taxonomicDAO.createNewTaxon();
+		Taxon newTaxon = fredDAO.createNewTaxon();
 		if (newTaxon.getClass().equals(taxon.getClass()))
 			//Same class, assume they're compatible
 			return taxon;
@@ -343,11 +334,11 @@ public class TaxonomicUtil extends ModelUtil {
 	}
 
 	public List<Taxon> getMatchingTaxa(String str, TaxonomicGroup group, Match matchType, int maxMatches) throws StorageAccessException {
-		return taxonomicDAO.getMatchingTaxa(str, group, matchType, maxMatches);
+		return fredDAO.getMatchingTaxa(str, group, matchType, maxMatches);
 	}
 	
 	public List<TaxonomicGroup> getMatchingTaxonomicGroups(String str, Match matchType, int maxMatches) throws StorageAccessException {
-		return taxonomicDAO.getMatchingTaxonomicGroups(str, matchType, maxMatches);
+		return fredDAO.getMatchingTaxonomicGroups(str, matchType, maxMatches);
 	}
 	
 	public static String[] decodeTaxaComments(String commentsStr) {

@@ -48,13 +48,13 @@ public class FolderUtilTest extends FredHibernateTest implements HibernateProvid
 	}
 	
 	public void testConcurrency() throws HibernateException, StorageAccessException {
-		nz.cri.gns.fred.model.Feature feature = factory.getFeatureDAO().get(1, Feature.class);
+		nz.cri.gns.fred.model.Feature feature = factory.getFredDAO().get(1, Feature.class);
 		
 		System.out.println("Original: " + feature.getFeatureName());
 		
 		feature.setFeatureName("Bob");
 		
-		nz.cri.gns.fred.model.Feature feature1 = factory.getFeatureDAO().get(1, Feature.class);
+		nz.cri.gns.fred.model.Feature feature1 = factory.getFredDAO().get(1, Feature.class);
 		
 		System.out.println("Changed: " + feature.getFeatureName());
 		System.out.println("Regot:" + feature1.getFeatureName());

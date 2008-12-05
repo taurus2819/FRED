@@ -11,7 +11,7 @@
 %><%@page import="java.util.Calendar"
 %><%@page import="java.util.GregorianCalendar"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.model.Adoption"
 %><%@page import="nz.cri.gns.fred.model.Paleontology"
@@ -35,7 +35,7 @@
 	}
 	
 %><%
-	DAOFactory factory = HibernateUtil.get().getDAOFactory();
+	DAOFactory factory = FredHibernate.get().getDAOFactory();
 	User user = (User)getUser(session);
 	Integer userId = new Integer(user.getId());
 	AuditUtil auditUtil = new AuditUtil(factory);
@@ -277,7 +277,7 @@
 
 	
 	try {
-		HibernateUtil.get().getDAOFactory().closeSession();
+		FredHibernate.get().getDAOFactory().closeSession();
 	} catch (Exception e) {
 	}
 

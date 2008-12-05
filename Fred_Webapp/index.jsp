@@ -2,13 +2,13 @@
 %><%@page import="nz.cri.gns.fred.util.BacklogStatusUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%
 	ExtranetTemplate et = getExtranetTemplate();
 	
-	FeatureUtil featureUtil = new FeatureUtil(HibernateUtil.get().getDAOFactory());
-	BacklogStatusUtil bsUtil = new BacklogStatusUtil(HibernateUtil.get().getDAOFactory());
+	FeatureUtil featureUtil = new FeatureUtil(FredHibernate.get().getDAOFactory());
+	BacklogStatusUtil bsUtil = new BacklogStatusUtil(FredHibernate.get().getDAOFactory());
 	
 	drawTop(out, et, request, response);
 

@@ -1,7 +1,7 @@
 <%@page extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.db.DBUtils"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.model.FrNumber"
 %><%@page import="nz.cri.gns.fred.model.Feature"
@@ -19,7 +19,7 @@
 		return "FRED :: Backlog Processing Status for Sheet " + DBUtils.nvl(request.getParameter("Sheet"));
 	}
 %><%
-	DAOFactory factory = HibernateUtil.get().getDAOFactory();
+	DAOFactory factory = FredHibernate.get().getDAOFactory();
 	FeatureUtil featureUtil = new FeatureUtil(factory);
 	AuditUtil auditUtil = new AuditUtil(factory);
 
@@ -72,7 +72,7 @@
 	drawBottom(out, et);
 	
 	try {
-		HibernateUtil.get().getDAOFactory().closeSession();
+		FredHibernate.get().getDAOFactory().closeSession();
 	} catch (Exception e) {
 	}
 %>

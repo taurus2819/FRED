@@ -13,7 +13,7 @@
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.fred.model.SiteView"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
@@ -27,7 +27,7 @@
 	public String getName(HttpServletRequest request) {
 		try {
 			String featID = request.getParameter("FeatID");
-			DAOFactory factory = HibernateUtil.get().getDAOFactory();
+			DAOFactory factory = FredHibernate.get().getDAOFactory();
 			if (featID != null) {
 				Feature feature = new FeatureUtil(factory).getFeature(Integer.parseInt(featID));
 				return "FRED :: Locality Map for " + FeatureUtil.getFeatureIdentifyingName(feature);
@@ -39,7 +39,7 @@
 	}
 %><%
 	User user = (User) getUser(session);
-	DAOFactory factory = HibernateUtil.get().getDAOFactory();
+	DAOFactory factory = FredHibernate.get().getDAOFactory();
 	FeatureUtil featureUtil = new FeatureUtil(factory);
 	String featId = request.getParameter("FeatID");
 	int distance = 2500;
@@ -176,7 +176,7 @@
 	%></p><%
 	drawBottom(out, et);
 	try {
-		HibernateUtil.get().getDAOFactory().closeSession();
+		FredHibernate.get().getDAOFactory().closeSession();
 	} catch (Exception e) {
 	}
 %>

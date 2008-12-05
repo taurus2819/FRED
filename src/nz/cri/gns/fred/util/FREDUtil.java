@@ -490,7 +490,7 @@ public class FREDUtil {
 	}
 
 	/**
-	 * Warning...this method can be slow; consider SampleDAO.getAdoptions instead
+	 * Warning...this method can be slow; consider FredDAO.getAdoptions instead
 	 * @param sample
 	 * @return
 	 */
@@ -504,7 +504,7 @@ public class FREDUtil {
 	}
 
 	/**
-	 * Warning...this method can be slow; consider SampleDAO.getPaleontologies instead
+	 * Warning...this method can be slow; consider FredDAO.getPaleontologies instead
 	 * @param sample
 	 * @return
 	 */

@@ -8,7 +8,7 @@
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.dataaccess.StorageAccessException"
 %><%@page import="nz.cri.gns.fred.de.MandatoryFieldsMissingException"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
 %><%@page import="nz.cri.gns.fred.model.Audit"
 %><%@page import="nz.cri.gns.fred.model.Feature"
@@ -26,7 +26,7 @@
 %><%!
 	public String getName(HttpServletRequest request) {
 		try {
-			FolderUtil folderUtil = new FolderUtil(HibernateUtil.get().getDAOFactory());
+			FolderUtil folderUtil = new FolderUtil(FredHibernate.get().getDAOFactory());
 			UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("ID")), getUser(request.getSession()));
 			return "FRED :: " + folder.getFolder().getName();
 		} catch (Exception e) {
@@ -34,7 +34,7 @@
 		}
 	}	
 %><%
-	DAOFactory factory = HibernateUtil.get().getDAOFactory();
+	DAOFactory factory = FredHibernate.get().getDAOFactory();
 	if (request.getParameter("ID") == null) {
 		factory.closeSession();
 		response.sendRedirect("folder_list.jsp");
@@ -830,7 +830,7 @@
 	
 	drawBottom(out, et);
 	try {
-		HibernateUtil.get().getDAOFactory().closeSession();
+		FredHibernate.get().getDAOFactory().closeSession();
 	} catch (Exception e) {
 	}
 %>

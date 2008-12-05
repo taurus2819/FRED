@@ -60,7 +60,7 @@ public class MolluscaExport extends FredHibernateTest {
 		int counter = 0;
 		while (rs.next()) {
 //			System.out.println("Start feature");
-			final Feature feature = factory.getFeatureDAO().get(rs.getInt(1), Feature.class);
+			final Feature feature = factory.getFredDAO().get(rs.getInt(1), Feature.class);
 //			System.out.println("Finish feature");
 //			new java.util.Date();
 			export.handleFeature(feature);

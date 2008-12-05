@@ -1,31 +1,28 @@
 package nz.cri.gns.fred.util;
 
-import java.util.Collections;
 import java.util.List;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.fred.dao.BacklogStatusDAO;
 import nz.cri.gns.fred.dao.DAOFactory;
+import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.model.BacklogStatus;
 import nz.cri.gns.fred.model.FREDConstants;
 
 public class BacklogStatusUtil extends ModelUtil {
 
-	private BacklogStatusDAO backlogStatusDAO;
+	private FredDAO fredDAO;
 	
 	public BacklogStatusUtil(DAOFactory factory) {
 		super(factory);
-		this.backlogStatusDAO = factory.getBacklogStatusDAO();
+		this.fredDAO = factory.getFredDAO();
 	}
 
 	public BacklogStatus getBacklogStatus(String mapNumber) throws StorageAccessException {
-		return backlogStatusDAO.getBacklogStatus(mapNumber);
+		return fredDAO.getFirst("FROM BacklogStatus AS bs WHERE bs.mapNumber = ?", BacklogStatus.class, mapNumber);
 	}
 
 	public List<BacklogStatus> getBacklogStatusInMasterfile(int masterfileId) throws StorageAccessException {
-		List<BacklogStatus> bss = backlogStatusDAO.getBacklogStatusInMasterfile(masterfileId);
-		Collections.sort(bss);
-		return bss;
+		return fredDAO.getList("FROM BacklogStatus AS bs WHERE bs.masterfileId = ?", BacklogStatus.class, masterfileId);
 	}
 
 	public String getStatus() throws StorageAccessException {
@@ -49,35 +46,51 @@ public class BacklogStatusUtil extends ModelUtil {
 	}
 	
 	public int getSumLocalityCount() throws StorageAccessException {
-		return backlogStatusDAO.getSumLocalityCount();
-	}
+   		List<Integer> list = fredDAO.getList("SELECT sum(bs.localityCount) FROM BacklogStatus AS bs", Integer.class);
+    	return list.get(0);
+    }
 	
-	public int getSumLocalityCount(int masterfileId) throws StorageAccessException {
-		return backlogStatusDAO.getSumLocalityCount(masterfileId);
+	public int getSumLocalityCount(Integer masterfileId) throws StorageAccessException {
+		List<Integer> list = fredDAO.getList("SELECT sum(bs.localityCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = ?", Integer.class, masterfileId);
+		if (list.get(0) != null)
+			return list.get(0);
+		return 0;
 	}
 
 	public int getSumProcessingCount() throws StorageAccessException {
-		return backlogStatusDAO.getSumProcessingCount();
+   		List<Integer> list = fredDAO.getList("SELECT sum(bs.processingCount) FROM BacklogStatus AS bs", Integer.class);
+    	return list.get(0);
 	}
 	
 	public int getSumProcessingCount(int masterfileId) throws StorageAccessException {
-		return backlogStatusDAO.getSumProcessingCount(masterfileId);
+		List<Integer> list = fredDAO.getList("SELECT sum(bs.processingCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = ?", Integer.class, masterfileId);
+		if (list.get(0) != null)
+			return list.get(0);
+		return 0;
 	}
 	
 	public int getSumCompletedCount() throws StorageAccessException {
-		return backlogStatusDAO.getSumCompletedCount();
+   		List<Integer> list = fredDAO.getList("SELECT sum(bs.completedCount) FROM BacklogStatus AS bs", Integer.class);
+    	return list.get(0);
 	}
 	
 	public int getSumCompletedCount(int masterfileId) throws StorageAccessException {
-		return backlogStatusDAO.getSumCompletedCount(masterfileId);
+		List<Integer> list = fredDAO.getList("SELECT sum(bs.completedCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = ?", Integer.class, masterfileId);
+		if (list.get(0) != null)
+			return list.get(0);
+		return 0;
 	}
 	
 	public int getSumNewCount() throws StorageAccessException {
-		return backlogStatusDAO.getSumNewCount();
+   		List<Integer> list = fredDAO.getList("SELECT sum(bs.newCount) FROM BacklogStatus AS bs", Integer.class);
+    	return list.get(0);
 	}
 	
 	public int getSumNewCount(int masterfileId) throws StorageAccessException {
-		return backlogStatusDAO.getSumNewCount(masterfileId);
+		List<Integer> list = fredDAO.getList("SELECT sum(bs.newCount) FROM BacklogStatus AS bs WHERE bs.masterfileId = ?", Integer.class, masterfileId);
+		if (list.get(0) != null)
+			return list.get(0);
+		return 0;
 	}
-	
+
 }

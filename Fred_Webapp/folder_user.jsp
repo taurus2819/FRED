@@ -7,7 +7,7 @@
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.UserUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="java.io.PrintWriter"
 %><%@page import="java.util.List"
 %><%@page import="java.util.HashSet"
@@ -20,7 +20,7 @@
 %><%!
 	public String getName(HttpServletRequest request) {
 		try {
-			FolderUtil folderUtil = new FolderUtil(HibernateUtil.get()
+			FolderUtil folderUtil = new FolderUtil(FredHibernate.get()
 					.getDAOFactory());
 			UserFolder folder = folderUtil.getUserFolder(Integer
 					.parseInt(request.getParameter("FoldID")), getUser(request
@@ -32,8 +32,8 @@
 	}
 
 %><%
-	FolderUtil folderUtil = new FolderUtil(HibernateUtil.get().getDAOFactory());
-	UserUtil userUtil = new UserUtil(HibernateUtil.get().getDAOFactory());
+	FolderUtil folderUtil = new FolderUtil(FredHibernate.get().getDAOFactory());
+	UserUtil userUtil = new UserUtil(FredHibernate.get().getDAOFactory());
 	User user = (User)getUser(session);
 
 	ExtranetTemplate et = getExtranetTemplate();

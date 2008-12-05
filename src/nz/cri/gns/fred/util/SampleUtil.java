@@ -9,8 +9,7 @@ import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.dao.FolderDAO;
-import nz.cri.gns.fred.dao.SampleDAO;
+import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.de.MandatoryFieldsMissingException;
 import nz.cri.gns.fred.model.Adoption;
@@ -144,13 +143,11 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		}
 	}
 
-	private SampleDAO sampleDAO;
-	private FolderDAO folderDAO;
+	private FredDAO fredDAO;
 
 	public SampleUtil(DAOFactory factory) {
 		super(factory);
-		this.sampleDAO = factory.getSampleDAO();
-		this.folderDAO = factory.getFolderDAO();
+		this.fredDAO = factory.getFredDAO();
 	}	
 
 	public Sample findSample(String localityName) throws StorageAccessException {
@@ -343,11 +340,11 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		Audit audit = sample.getAudit();
 		
 		//And then delete it from DB
-		sampleDAO.delete(sample);
+		fredDAO.delete(sample);
 		
 		//try and delete audit record (if can't then probably also used by feature) so just ignore error
 		try {
-			sampleDAO.delete(audit);
+			fredDAO.delete(audit);
 		} catch (Exception e) {}
 	}
 
@@ -382,7 +379,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		audit.setFolder(null);
 		if (audit.getConfidentialFlag())
 			audit.setConfidLapseDate(AuditUtil.getLapseDate(audit.getConfidPeriod()));
-		sampleDAO.saveOrUpdate(audit);
+		fredDAO.saveOrUpdate(audit);
 	}
 	
 	public static boolean isMandatoryFieldComplete(Sample sample) {
@@ -447,7 +444,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			return false;
 
 		if (audit.getStatus().equals(WAITING))
-			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_DELETE_RIGHT, folderDAO);
+			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_DELETE_RIGHT, fredDAO);
 
 		return folder.isAllowedDeleteLocalities();
 	}
@@ -455,10 +452,10 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	public boolean isAllowedEditSample(UserAccount user, Sample sample, UserFolder userFolder) throws StorageAccessException {
 		Audit audit = sample.getAudit();
 		if (audit.getStatus().equals(APPROVED))
-			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_EDIT_RIGHT, folderDAO) ||
+			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO) ||
 				FREDUtil.checkEditSecurityClass(user);
 		if (audit.getStatus().equals(WAITING))
-			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_EDIT_RIGHT, folderDAO);
+			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO);
 
 		return userFolder.isAllowedEditLocalities();
 	}
@@ -468,7 +465,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (audit.getStatus().equals(APPROVED))
 			return false;
 		if (audit.getStatus().equals(WAITING))
-			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_DELETE_RIGHT, folderDAO);
+			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_DELETE_RIGHT, fredDAO);
 
 		return userFolder.isAllowedDeleteLocalities();
 	}
@@ -478,7 +475,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (audit.getStatus().equals(APPROVED))
 			return false;	
 		if (audit.getStatus().equals(WAITING))
-			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_SUBMIT_RIGHT, folderDAO);
+			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_SUBMIT_RIGHT, fredDAO);
 		
 		return userFolder.isAllowedSubmitLocalities();
 	}
@@ -495,11 +492,11 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public Sample getSample(int sampleId) throws StorageAccessException {
-		return sampleDAO.get(sampleId, nz.cri.gns.fred.hibernate.Sample.class);
+		return fredDAO.get(sampleId, nz.cri.gns.fred.hibernate.Sample.class);
 	}
 	
 	public AuditEdit getMostRecentEdit(Audit audit) throws StorageAccessException {
-		return sampleDAO.getMostRecentEdit(audit);
+		return fredDAO.getMostRecentEdit(audit);
 	}
 	
 	public int getPaleontologyRecordCount(Sample sample) {
@@ -544,14 +541,14 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * @throws StorageAccessException 
 	 */
 	public Sample createSample(Feature feature, Integer folderId, boolean reuseFeatureAudit, UserAccount user) throws StorageAccessException {
-		Sample sample = sampleDAO.createNewSample(feature);
+		Sample sample = fredDAO.createNewSample(feature);
 		Audit audit = null;
 		if (reuseFeatureAudit)
 			audit = feature.getAudit();
 		else {
-			audit = sampleDAO.createNewAudit();
+			audit = fredDAO.createNewAudit();
 			if (folderId != null)
-				audit.setFolder(folderDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class));
+				audit.setFolder(fredDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class));
 			audit.setStatus(FREDConstants.WORKING);
 			audit.setCreatedDate(new Date());
 			audit.setCreatedById(new Integer(user.getId()));
@@ -570,26 +567,26 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * @throws StorageAccessException 
 	 */
 	public SedimentaryFeature copyFor(SedimentaryFeature sedFeature, Sample sample) throws StorageAccessException {
-		SedimentaryFeature feature = sampleDAO.createNewSedimentaryFeature();
+		SedimentaryFeature feature = fredDAO.createNewSedimentaryFeature();
 		feature.setAbundant(sedFeature.getAbundant());
 		feature.setSedimentaryFeatureType(sedFeature.getSedimentaryFeatureType());
 		return feature;
 	}
 
 	public List<? extends Relationship> getRelationships(Sample sample, String relationTypeName, String relationshipTypeName) throws StorageAccessException {
-		RelationType relationType = sampleDAO.getRelationType(relationTypeName);
+		RelationType relationType = fredDAO.getRelationType(relationTypeName);
 		return getRelationships(sample, relationType, relationshipTypeName);
 	}
 	
 	public List<? extends Relationship> getRelationships(Sample sample, RelationType relationType, String relationshipTypeName) throws StorageAccessException {
-		RelationshipType relationshipType = sampleDAO.getRelationshipType(relationType, relationshipTypeName);
+		RelationshipType relationshipType = fredDAO.getRelationshipType(relationType, relationshipTypeName);
 		
-		return sampleDAO.getRelationships(sample, relationshipType);
+		return fredDAO.getRelationships(sample, relationshipType);
 	}
 
 	public List<? extends Relationship> getRelationships(Sample sample, String relationTypeName, String[] relationshipTypes) throws StorageAccessException {
 		List<Relationship> relationships = new Vector<Relationship>();
-		RelationType relationType = sampleDAO.getRelationType(relationTypeName);
+		RelationType relationType = fredDAO.getRelationType(relationTypeName);
 		
 		for (String typeName : relationshipTypes) {
 			relationships.addAll(getRelationships(sample, relationType, typeName));
@@ -632,14 +629,14 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	
 	public Relationship decodeSampleRelationshipDescription(String desc) throws StorageAccessException {
 		NoIdRelationship relationship = new NoIdRelationship();
-		String name = getCommonRelationshipPropertiesFromDescription(desc, relationship, sampleDAO.getRelationType("Sample"));
+		String name = getCommonRelationshipPropertiesFromDescription(desc, relationship, fredDAO.getRelationType("Sample"));
 		relationship.setFeature(new FeatureUtil(factory).getFeatureWithIdentifyingName(name));
 		return relationship;
 	}
 
 	public Relationship decodeStratigraphicRelationshipDescription(String desc) throws StorageAccessException {
 		NoIdRelationship relationship = new NoIdRelationship();
-		String name = getCommonRelationshipPropertiesFromDescription(desc, relationship, sampleDAO.getRelationType("Stratigraphic"));
+		String name = getCommonRelationshipPropertiesFromDescription(desc, relationship, fredDAO.getRelationType("Stratigraphic"));
 		//Set the unit by name
 		relationship.setStratUnit(name);
 		StratigraphicUnit stratUnit = findStratigraphicUnit(name);
@@ -689,9 +686,9 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
 		
 		//Allow one or two word relationships
-		RelationshipType relType = sampleDAO.getRelationshipType(relationType, parts[where++]);
+		RelationshipType relType = fredDAO.getRelationshipType(relationType, parts[where++]);
 		if (relType == null) {
-			relType = sampleDAO.getRelationshipType(relationType, parts[where-1] + " " + parts[where++]);
+			relType = fredDAO.getRelationshipType(relationType, parts[where-1] + " " + parts[where++]);
 			if (relType == null)
 				throw new IllegalArgumentException("Relationship description is invalid");
 		}
@@ -798,11 +795,11 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public Audit saveOrUpdate(Audit audit) throws StorageAccessException {
-		return sampleDAO.saveOrUpdate(audit);
+		return fredDAO.saveOrUpdate(audit);
 	}
 
 	public void delete(Sample sample) throws StorageAccessException {
-		sampleDAO.delete(sample);
+		fredDAO.delete(sample);
 	}
 
 	public SentTo findOrCreateSentTo(Sample sample, FossilGroup group, Person person, Lab lab, String comments) throws StorageAccessException {
@@ -837,7 +834,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 				return sentTo;
 			}
 		}
-		SentTo sentTo = sampleDAO.createNewSentTo();
+		SentTo sentTo = fredDAO.createNewSentTo();
 		sentTo.setSample(sample);
 		sentTo.setFossilGroup(group);
 		sentTo.setPerson(person);
@@ -851,11 +848,11 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * @throws StorageAccessException 
 	 */
 	public FossilGroup getFossilGroup(String name) throws StorageAccessException {
-		return sampleDAO.getFossilGroup(name);
+		return fredDAO.getFossilGroup(name);
 	}
 
     public Lab findLab(String labName) throws StorageAccessException {
-    	return sampleDAO.findLab(labName);
+    	return fredDAO.findLab(labName);
     }
 
 	/**
@@ -891,11 +888,11 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * @throws StorageAccessException 
 	 */
 	public Relationship createRelationship(Sample sample, Feature feature, String relationType, String relationshipType) throws StorageAccessException {
-		Relationship rel = sampleDAO.createNewRelationship();
+		Relationship rel = fredDAO.createNewRelationship();
 		rel.setSample(sample);
 		rel.setFeature(feature);
-		rel.setRelationType(sampleDAO.getRelationType(relationType));
-		rel.setRelationshipType(sampleDAO.getRelationshipType(rel.getRelationType(), relationshipType));
+		rel.setRelationType(fredDAO.getRelationType(relationType));
+		rel.setRelationshipType(fredDAO.getRelationshipType(rel.getRelationType(), relationshipType));
 		//sampleDAO.saveOrUpdate(rel);
 		return rel;
 	}
@@ -906,7 +903,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * @throws StorageAccessException 
 	 */
 	public Relationship cloneRelationship(Relationship newRelationship) throws StorageAccessException {
-		Relationship rel = sampleDAO.createNewRelationship();
+		Relationship rel = fredDAO.createNewRelationship();
 		rel.setSample(newRelationship.getSample());
 		rel.setFeature(newRelationship.getFeature());
 		rel.setDistance(newRelationship.getDistance());
@@ -931,116 +928,116 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public DrillType getDrillType(Integer id) throws StorageAccessException {
-		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.DrillType.class);
+		return fredDAO.get(id, nz.cri.gns.fred.hibernate.DrillType.class);
 	}
 	
 	public DrillType getDrillType(String drillType) throws StorageAccessException {
-		return sampleDAO.getFirst("FROM DrillType AS t WHERE t.name = ?", DrillType.class, drillType);
+		return fredDAO.getFirst("FROM DrillType AS t WHERE t.name = ?", DrillType.class, drillType);
 	}
 	
 	public List<DrillType> getDrillTypes() throws StorageAccessException {
-		return sampleDAO.getList("FROM DrillType AS t", DrillType.class);
+		return fredDAO.getList("FROM DrillType AS t", DrillType.class);
 	}
 	
 	public GrainSize getGrainSize(Integer id) throws StorageAccessException {
-		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.GrainSize.class);
+		return fredDAO.get(id, nz.cri.gns.fred.hibernate.GrainSize.class);
 	}
 	
 	public List<GrainSize> getGrainSizes() throws StorageAccessException {
-		return sampleDAO.getList("FROM GrainSize AS a", GrainSize.class);
+		return fredDAO.getList("FROM GrainSize AS a", GrainSize.class);
 	}
 
 	public BedThickness getBeddingThickness(Integer id) throws StorageAccessException {
-		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.BedThickness.class);
+		return fredDAO.get(id, nz.cri.gns.fred.hibernate.BedThickness.class);
 	}
 	
 	public List<BedThickness> getBeddingThicknesses() throws StorageAccessException {
-		return sampleDAO.getList("FROM BedThickness AS b", BedThickness.class);
+		return fredDAO.getList("FROM BedThickness AS b", BedThickness.class);
 	}
 	
 	public Bedding getBedding(Integer id) throws StorageAccessException {
-		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.Bedding.class);
+		return fredDAO.get(id, nz.cri.gns.fred.hibernate.Bedding.class);
 	}
 	
 	public List<Bedding> getBeddings() throws StorageAccessException {
-		return sampleDAO.getList("FROM Bedding AS b", Bedding.class);
+		return fredDAO.getList("FROM Bedding AS b", Bedding.class);
 	}
 	
 	public Weathering getWeathering(Integer id) throws StorageAccessException {
-		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.Weathering.class);
+		return fredDAO.get(id, nz.cri.gns.fred.hibernate.Weathering.class);
 	}
 	
 	public List<Weathering> getWeatherings() throws StorageAccessException {
-		return sampleDAO.getList("FROM Weathering AS w", Weathering.class);
+		return fredDAO.getList("FROM Weathering AS w", Weathering.class);
 	}
 	
 	public Hardness getHardness(Integer id) throws StorageAccessException {
-		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.Hardness.class);
+		return fredDAO.get(id, nz.cri.gns.fred.hibernate.Hardness.class);
 	}
 
 	public List<Hardness> getHardnesses() throws StorageAccessException {
-		return sampleDAO.getList("FROM Hardness AS h", Hardness.class);
+		return fredDAO.getList("FROM Hardness AS h", Hardness.class);
 	}
 
 	public Carbonate getCarbonate(Integer id) throws StorageAccessException {
-		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.Carbonate.class);
+		return fredDAO.get(id, nz.cri.gns.fred.hibernate.Carbonate.class);
 	}
 	
 	public List<Carbonate> getCarbonates() throws StorageAccessException {
-		return sampleDAO.getList("FROM Carbonate AS c", Carbonate.class);
+		return fredDAO.getList("FROM Carbonate AS c", Carbonate.class);
 	}
 	
 	public ColourModifier getColourModifier(Integer id) throws StorageAccessException {
-		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.ColourModifier.class);
+		return fredDAO.get(id, nz.cri.gns.fred.hibernate.ColourModifier.class);
 	}
 	
 	public List<ColourModifier> getColourModifiers() throws StorageAccessException {
-		return sampleDAO.getList("FROM ColourModifier AS c", ColourModifier.class);
+		return fredDAO.getList("FROM ColourModifier AS c", ColourModifier.class);
 	}
 	
 	public RockColour getRockColour(Integer id) throws StorageAccessException {
-		return sampleDAO.get(id, nz.cri.gns.fred.hibernate.RockColour.class);
+		return fredDAO.get(id, nz.cri.gns.fred.hibernate.RockColour.class);
 	}
 
 	public List<RockColour> getRockColours() throws StorageAccessException {
-		return sampleDAO.getList("FROM RockColour AS r", RockColour.class);
+		return fredDAO.getList("FROM RockColour AS r", RockColour.class);
 	}
 	
 	public List<SedimentaryFeatureType> getSedimentaryFeatureTypes() throws StorageAccessException {
-		return sampleDAO.getList("FROM SedimentaryFeatureType AS s", SedimentaryFeatureType.class);
+		return fredDAO.getList("FROM SedimentaryFeatureType AS s", SedimentaryFeatureType.class);
 	}
 	
 	public List<FossilGroup> getFossilGroups() throws StorageAccessException {
-		return sampleDAO.getList("FROM FossilGroup AS f", FossilGroup.class);
+		return fredDAO.getList("FROM FossilGroup AS f", FossilGroup.class);
 	}
 	
 	public List<Lab> getLabs() throws StorageAccessException {
-		return sampleDAO.getList("FROM Lab AS l", Lab.class);
+		return fredDAO.getList("FROM Lab AS l", Lab.class);
 	}
 	
 	public List<StratigraphicUnit> getStratigraphicUnits() throws StorageAccessException {
-		return sampleDAO.getList("FROM StratigraphicUnit AS s", StratigraphicUnit.class);
+		return fredDAO.getList("FROM StratigraphicUnit AS s", StratigraphicUnit.class);
 	}
 	
 	public StratigraphicUnit findStratigraphicUnit(String name) throws StorageAccessException {
-		return sampleDAO.findStratigraphicUnit(name);
+		return fredDAO.findStratigraphicUnit(name);
 	}
 	
 	public List<RelationshipType> getRelationshipTypes(String relationType) throws StorageAccessException {
-		RelationType relType = sampleDAO.getRelationType(relationType);
-		return sampleDAO.getList("FROM RelationshipType AS r WHERE r.relationType = ?", RelationshipType.class, relType);
+		RelationType relType = fredDAO.getRelationType(relationType);
+		return fredDAO.getList("FROM RelationshipType AS r WHERE r.relationType = ?", RelationshipType.class, relType);
 	}
 	
 	public RelationshipType findRelationshipType(String name) throws StorageAccessException {
-		return sampleDAO.findRelationshipType(name);
+		return fredDAO.findRelationshipType(name);
 	}
 	
 	public SedimentaryFeature createSedimentaryFeature(String sedFeature, boolean isAbundant) throws StorageAccessException {
-		SedimentaryFeature feature = sampleDAO.createNewSedimentaryFeature();
+		SedimentaryFeature feature = fredDAO.createNewSedimentaryFeature();
 		feature.setAbundant((isAbundant) ? "Y" : "N");
 		if (sedFeature.indexOf(":") >= 0)
 			sedFeature = sedFeature.substring(sedFeature.indexOf(":") + 1).trim();
-		SedimentaryFeatureType type = sampleDAO.getSedimentaryFeatureTypeWithName(sedFeature);
+		SedimentaryFeatureType type = fredDAO.getSedimentaryFeatureTypeWithName(sedFeature);
 		if (type == null)
 			throw new IllegalArgumentException("Invalid sedimentary feature type: " + sedFeature);
 		
@@ -1052,8 +1049,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     	if (sample.getAudit() == null) {
     		throw new IllegalStateException("Cannot save a sample without an audit");
     	}
-        sampleDAO.saveOrUpdate(sample.getAudit());
-        sampleDAO.saveOrUpdate(sample);
+        fredDAO.saveOrUpdate(sample.getAudit());
+        fredDAO.saveOrUpdate(sample);
     }
 
     /**
@@ -1062,7 +1059,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
      * @throws StorageAccessException 
      */
     public void attach(Sample sample) throws StorageAccessException {
-        sampleDAO.attach(sample);
+        fredDAO.attach(sample);
     }
 
     /**
@@ -1072,15 +1069,15 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
      * @throws StorageAccessException 
      */
     public void attach(Audit audit) throws StorageAccessException {
-        sampleDAO.attach(audit);
+        fredDAO.attach(audit);
     }
 
 	public void delete(SentTo sentTo) throws StorageAccessException {
-		sampleDAO.delete(sentTo);
+		fredDAO.delete(sentTo);
 	}
 	
 	public void delete(Relationship rel)  throws StorageAccessException {
-		sampleDAO.delete(rel);
+		fredDAO.delete(rel);
 	}
 
 }

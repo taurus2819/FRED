@@ -8,7 +8,7 @@
 %><%@page import="java.io.IOException"
 %><%@page import="java.sql.SQLException"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
 %><%@page import="nz.cri.gns.auth.InsufficientPrivelegesException"
 %><%@page import="nz.cri.gns.dataaccess.StorageAccessException"
@@ -27,7 +27,7 @@
 	if (request.getParameter("SaveType") != null) {
 		DataEntryForm dataEntryForm = (DataEntryForm) session.getAttribute(WebsiteConstants.DATA_ENTRY_FORM);
 		try {
-			DAOFactory factory = HibernateUtil.get().getDAOFactory();
+			DAOFactory factory = FredHibernate.get().getDAOFactory();
 			dataEntryForm.updateFromRequest(request, factory, false);
 			
 			if (request.getParameter("SaveType").equals("Submit")) {
@@ -128,7 +128,7 @@
 	}
 	drawBottom(out, et);
 	try {
-		HibernateUtil.get().getDAOFactory().closeSession();
+		FredHibernate.get().getDAOFactory().closeSession();
 	} catch (Exception e) {
 	}
 %>

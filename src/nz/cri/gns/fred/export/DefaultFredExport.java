@@ -77,7 +77,7 @@ public abstract class DefaultFredExport implements FredRecordExport {
 	}
 
 	protected AgeRange getAgeByAllPaleontologies(Sample sample) throws StorageAccessException {
-		List<Paleontology> lists =  Export.getFactory().getSampleDAO().getPaleontologies(sample);
+		List<Paleontology> lists =  Export.getFactory().getFredDAO().getPaleontologies(sample);
 		if (lists.size() == 1) {
 			Paleontology list = lists.iterator().next();
 			return list.getStage() == null ? null : new PaleontologyAge(list);
@@ -95,7 +95,7 @@ public abstract class DefaultFredExport implements FredRecordExport {
 		Map<TaxonomicGroup, Date> chosenDate = new HashMap<TaxonomicGroup, Date>();
 		Map<TaxonomicGroup, Paleontology> chosen = new HashMap<TaxonomicGroup, Paleontology>();
 		
-		for (Paleontology pal : Export.getFactory().getSampleDAO().getPaleontologies(sample)) {
+		for (Paleontology pal : Export.getFactory().getFredDAO().getPaleontologies(sample)) {
 			Date date = pal.getDate();
 			
 			for (PaleontologyListEntry entry : pal.getListEntries()) {
@@ -119,7 +119,7 @@ public abstract class DefaultFredExport implements FredRecordExport {
 	protected AgeRange getAgeByAdoption(Sample sample) throws StorageAccessException {
 //		Date date0 = new Date();
 //try {
-		List<Adoption> adoptions = Export.getFactory().getSampleDAO().getAdoptions(sample);
+		List<Adoption> adoptions = Export.getFactory().getFredDAO().getAdoptions(sample);
 		if (adoptions.size() == 1)
 			return new AdoptionAge(adoptions.iterator().next());
 		else if (adoptions.size() > 0) {

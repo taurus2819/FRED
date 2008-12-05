@@ -3,7 +3,7 @@
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.fred.model.UserFolder"
 %><%@page import="nz.cri.gns.fred.model.TaxonomicGroup"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
@@ -18,7 +18,7 @@
 %><%
 	User user = (User)getUser(session);
 	
-	DAOFactory factory = HibernateUtil.get().getDAOFactory();
+	DAOFactory factory = FredHibernate.get().getDAOFactory();
 	FolderUtil folderUtil = new FolderUtil(factory);
 	TaxonomicUtil taxaUtil = new TaxonomicUtil(factory);
 		
@@ -200,7 +200,7 @@
 	%></table></p><%
 	drawBottom(out, et);
 	try {
-		HibernateUtil.get().getDAOFactory().closeSession();
+		FredHibernate.get().getDAOFactory().closeSession();
 	} catch (Exception e) {
 	}
 %>

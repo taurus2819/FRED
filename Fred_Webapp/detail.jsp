@@ -33,7 +33,7 @@
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.fred.util.AuditUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
@@ -54,7 +54,7 @@
 		try {
 			String sampID = request.getParameter("ID");
 			String featID = request.getParameter("FeatID");
-			DAOFactory factory = HibernateUtil.get().getDAOFactory();
+			DAOFactory factory = FredHibernate.get().getDAOFactory();
 			if (featID != null) {
 				Feature feature = new FeatureUtil(factory).getFeature(Integer.parseInt(featID));
 				return "FRED :: Locality Detail for " + FeatureUtil.getFeatureIdentifyingName(feature);
@@ -89,7 +89,7 @@
 %><%
 try {
 	User user = (User) getUser(session);
-	DAOFactory factory = HibernateUtil.get().getDAOFactory();
+	DAOFactory factory = FredHibernate.get().getDAOFactory();
 	SampleUtil sampleUtil = new SampleUtil(factory);
 	FeatureUtil featureUtil = new FeatureUtil(factory);
 	RecordUtil recordUtil = new RecordUtil(factory);
@@ -170,7 +170,7 @@ try {
 	if (feature != null) {
 		boolean isAllowedReadFeature = featureUtil.isAllowedReadFeature(user, feature);
 		if (isAllowedReadFeature) {
-			AuditUtil auditUtil = new AuditUtil(HibernateUtil.get().getDAOFactory());
+			AuditUtil auditUtil = new AuditUtil(FredHibernate.get().getDAOFactory());
 			auditUtil.addLogEntry(AuditUtil.DETAIL_LOG_TYPE, user, null);
 		}
 		
@@ -764,7 +764,7 @@ try {
 }
 	
 try {
-	HibernateUtil.get().getDAOFactory().closeSession();
+	FredHibernate.get().getDAOFactory().closeSession();
 } catch (Exception e) {
 }
 %>

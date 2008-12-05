@@ -10,7 +10,7 @@
 %><%@page import="nz.cri.gns.jsp.JspUtils"
 %><%@page import="nz.cri.gns.jsp.PageState"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
@@ -27,7 +27,7 @@
 	}
 %><%!	
 	private DataEntryForm getDataEntryFormImpl(HttpServletRequest request, User user) {
-		DAOFactory factory = HibernateUtil.get().getDAOFactory();
+		DAOFactory factory = FredHibernate.get().getDAOFactory();
 			try {
 				String formType = request.getParameter("Type");
 				String foldID = request.getParameter("FoldID");
@@ -96,11 +96,11 @@
 	if (type != null && !type.equals("") && user != null) {
 	    try {
 	    	if (type.equals("NewFold")) {
-	    		new FolderUtil(HibernateUtil.get().getDAOFactory()).addFolder(request.getParameter("FoldName"), user);
+	    		new FolderUtil(FredHibernate.get().getDAOFactory()).addFolder(request.getParameter("FoldName"), user);
 	    		status = "Created OK";
 	    		message = "";
 	    	} else if (type.equals("Taxa")) {
-	    		TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
+	    		TaxonomicUtil taxaUtil = new TaxonomicUtil(FredHibernate.get().getDAOFactory());
 	    		UnsavedListEntry entry = new UnsavedListEntry();
 				UnsavedTaxon taxon = new UnsavedTaxon();
 				taxon.setTaxonomicGroup(taxaUtil.getTaxonomicGroup(request.getParameter("TaxaGroup")));
@@ -112,7 +112,7 @@
 	    		taxaUtil.submitProvisional(user, entry);
 	    		status = "Submitted OK";
 	    	} else {
-		    	DAOFactory factory = HibernateUtil.get().getDAOFactory();
+		    	DAOFactory factory = FredHibernate.get().getDAOFactory();
 		    	DataEntryForm dataEntryForm = getDataEntryFormImpl(request, user);
 		    	if (dataEntryForm != null) {
 			    	dataEntryForm.updateFromRequest(request, factory, true);
@@ -157,7 +157,7 @@
 	}
 
 	try {
-		HibernateUtil.get().getDAOFactory().closeSession();
+		FredHibernate.get().getDAOFactory().closeSession();
 	} catch (Exception e) {
 	}
 %>

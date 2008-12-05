@@ -4,7 +4,7 @@
 %><%@page import="java.util.Set"
 %><%@page import="java.util.Iterator"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
 %><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
 %><%@page import="nz.cri.gns.auth.User"
@@ -12,7 +12,7 @@
 	User user = (User)getUser(session);
 
 	PaleontologyRecordDE dataEntryForm = (PaleontologyRecordDE) session.getAttribute(WebsiteConstants.DATA_ENTRY_FORM);
-	DAOFactory factory = HibernateUtil.get().getDAOFactory();
+	DAOFactory factory = FredHibernate.get().getDAOFactory();
 	Set tL = (Set) session.getAttribute(WebsiteConstants.BAD_TAXA_LIST);
 	if (tL != null) {
 		TaxonomicUtil util = new TaxonomicUtil(factory);
@@ -29,7 +29,7 @@
 	else
 		response.sendRedirect(whereTo + "&q=" + Math.random());
 	try {
-		HibernateUtil.get().getDAOFactory().closeSession();
+		FredHibernate.get().getDAOFactory().closeSession();
 	} catch (Exception e) {
 	}
 %>

@@ -101,8 +101,8 @@ public class SampleTest extends FredHibernateTest {
 	public void tearDown() throws HibernateException {
 		try {
 			for (Sample sample : samples)
-				factory.getSampleDAO().delete(sample);
-			factory.getFeatureDAO().delete(feature);
+				factory.getFredDAO().delete(sample);
+			factory.getFredDAO().delete(feature);
 		} catch (Exception e) {
 			//throw (HibernateException)e.getCause();
 		}

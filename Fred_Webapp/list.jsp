@@ -14,7 +14,7 @@
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
-%><%@page import="nz.cri.gns.fred.hibernate.util.HibernateUtil"
+%><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.jsp.JspUtils"
 %><%@page import="nz.cri.gns.jsp.PageState"
 %><%@page import="java.sql.Connection"
@@ -44,7 +44,7 @@
 	
 		PageState state = new PageState(request, response, getServletContext());
 	
-		DAOFactory factory = HibernateUtil.get().getDAOFactory();
+		DAOFactory factory = FredHibernate.get().getDAOFactory();
 		FolderUtil folderUtil = new FolderUtil(factory);
 		FeatureUtil featureUtil = new FeatureUtil(factory);
 		SampleUtil sampleUtil = new SampleUtil(factory);
@@ -355,7 +355,7 @@
 	}
 	
 	try {
-		HibernateUtil.get().getDAOFactory().closeSession();
+		FredHibernate.get().getDAOFactory().closeSession();
 	} catch (Exception e) {
 	}
 	
