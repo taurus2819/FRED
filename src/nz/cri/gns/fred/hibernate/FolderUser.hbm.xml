@@ -40,8 +40,7 @@
     <many-to-one
         name="folder"
 	    class="nz.cri.gns.fred.hibernate.Folder"
-	    update="false"
-	    insert="false"
+	    not-null="true"
 	>
     	<column name="FOLDER_ID" />
 	</many-to-one>
@@ -49,14 +48,10 @@
     <many-to-one
         name="user"
         class="nz.cri.gns.fred.hibernate.FrUserView"
-	    update="false"
-	    insert="false"
+        not-null="true"
 	>
     	<column name="USER_ID" />
 	</many-to-one>
 		
-    <!-- end of derived association(s) -->
-  
-
 </class>
 </hibernate-mapping>
