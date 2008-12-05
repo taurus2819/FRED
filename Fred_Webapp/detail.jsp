@@ -15,7 +15,7 @@
 %><%@page import="nz.cri.gns.fred.model.SedimentaryFeature"
 %><%@page import="nz.cri.gns.fred.model.Taxon"
 %><%@page import="nz.cri.gns.fred.model.TaxonomicGroup"
-%><%@page import="nz.cri.gns.fred.model.Meta"
+%><%@page import="nz.cri.gns.fred.model.MetaCat"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
@@ -390,17 +390,17 @@ try {
 				}
 			
 				//Image/Files
-				if (feature.getFeatureMetas().size() > 0) {
+				if (feature.getMetaCats().size() > 0) {
 					%><tr class="lightColour"><td colspan="2" class="heading">Images/Files</td></tr>
 					<tr class="lightColour"><td colspan="2"><table border="0" cellspacing="0" width="550"><%
 					int y = 1;
 					%><tr><%
-					for (Meta meta : feature.getFeatureMetas()) {
+					for (MetaCat metaCat : feature.getMetaCats()) {
 						if (y++ == 5) {
 							%></tr><tr><%
 							y = 2;
 						}
-						%><td width="150" align="center" class="smalltext"><a href="/online/DigitalDocument?src=<%=meta.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=meta.getMetaId()%>" alt="FRED Digital Document" /><br /><%=FREDUtil.getMetaTitle(meta)%></a></td><%
+						%><td width="150" align="center" class="smalltext"><a href="/online/DigitalDocument?src=<%=metaCat.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=metaCat.getMetaId()%>" alt="FRED Digital Document" /><br /><%=metaCat.getTitle()%></a></td><%
 					}
 					%></td></tr></table></td></tr><%
 				}
@@ -543,17 +543,17 @@ try {
 						}
 						
 						//Image/Files
-						if (sample.getSampleMetas().size() > 0) {
+						if (sample.getMetaCats().size() > 0) {
 							%><tr class="lightColour"><td colspan="2" class="heading">Images/Files</td></tr>
 							<tr class="lightColour"><td colspan="2"><table border="0" cellspacing="0" width="550"><%
 							int y = 1;
 							%><tr><%
-							for (Meta meta : sample.getSampleMetas()) {
+							for (MetaCat metaCat : sample.getMetaCats()) {
 								if (y++ == 5) {
 									%></tr><tr><%
 									y = 2;
 								}
-								%><td width="150" align="center" class="smalltext"><a href="/online/DigitalDocument?src=<%=meta.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=meta.getMetaId()%>" alt="FRED Digital Document" /><br /><%=FREDUtil.getMetaTitle(meta)%></a></td><%
+								%><td width="150" align="center" class="smalltext"><a href="/online/DigitalDocument?src=<%=metaCat.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=metaCat.getMetaId()%>" alt="FRED Digital Document" /><br /><%=metaCat.getTitle()%></a></td><%
 							}
 							%></td></tr></table></td></tr><%
 						}
@@ -583,17 +583,17 @@ try {
 								}
 								
 								//Image/Files
-								if (adoRecord.getRecord().getRecordMetas().size() > 0) {
+								if (adoRecord.getRecord().getMetaCats().size() > 0) {
 									%><tr class="lightColour"><td colspan="2" class="heading">Images/Files</td></tr>
 									<tr class="lightColour"><td colspan="2"><table border="0" cellspacing="0" width="600"><%
 									int y = 1;
 									%><tr><%
-									for (Meta meta : adoRecord.getRecord().getRecordMetas()) {
+									for (MetaCat metaCat : adoRecord.getRecord().getMetaCats()) {
 										if (y++ == 5) {
 											%></tr><tr><%
 											y = 2;
 										}
-										%><td width="150" align="center" class="smalltext"><a href="/online/DigitalDocument?src=<%=meta.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=meta.getMetaId()%>" alt="FRED Digital Document" /><br /><%=FREDUtil.getMetaTitle(meta)%></a></td><%
+										%><td width="150" align="center" class="smalltext"><a href="/online/DigitalDocument?src=<%=metaCat.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=metaCat.getMetaId()%>" alt="FRED Digital Document" /><br /><%=metaCat.getTitle()%></a></td><%
 									}
 									%></td></tr></table></td></tr><%
 								}
@@ -685,8 +685,8 @@ try {
 													%><td><%=DBUtils.nvl(taxa.getComments())%>&nbsp;&nbsp;</td><%
 												}
 												%><td><%
-												for (Meta meta : taxa.getPalListMetas()) {
-													%><a href="/online/DigitalDocument?src=<%=meta.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=meta.getMetaId()%>" alt="FRED Digital Document" /><br /><%=FREDUtil.getMetaTitle(meta)%></a><br /><%
+												for (MetaCat metaCat : taxa.getMetaCats()) {
+													%><a href="/online/DigitalDocument?src=<%=metaCat.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=metaCat.getMetaId()%>" alt="FRED Digital Document" /><br /><%=metaCat.getTitle()%></a><br /><%
 												}
 												%></td>
 												</tr><%
@@ -700,17 +700,17 @@ try {
 									%><tr><td colspan="2">You do not have the rights to view the taxonomic list for this record</td></tr><%
 								}
 								//Image/Files
-								if (palRecord.getRecord().getRecordMetas().size() > 0) {
+								if (palRecord.getRecord().getMetaCats().size() > 0) {
 									%><tr class="lightColour"><td colspan="2" class="heading">Images/Files</td></tr>
 									<tr class="lightColour"><td colspan="2"><table border="0" cellspacing="0" width="600"><%
 									int y = 1;
 									%><tr><%
-									for (Meta meta : palRecord.getRecord().getRecordMetas()) {
+									for (MetaCat metaCat : palRecord.getRecord().getMetaCats()) {
 										if (y++ == 5) {
 											%></tr><tr><%
 											y = 2;
 										}
-										%><td width="150" align="center" class="smalltext"><a href="/online/DigitalDocument?src=<%=meta.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=meta.getMetaId()%>" alt="FRED Digital Document" /><br /><%=FREDUtil.getMetaTitle(meta)%></a></td><%
+										%><td width="150" align="center" class="smalltext"><a href="/online/DigitalDocument?src=<%=metaCat.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=metaCat.getMetaId()%>" alt="FRED Digital Document" /><br /><%=metaCat.getTitle()%></a></td><%
 									}
 									%></td></tr></table></td></tr><%
 								}

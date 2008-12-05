@@ -210,20 +210,7 @@
 		</many-to-one>   
     	</composite-element>
     </set>
-    <!-- bi-directional one-to-many association to SampleMeta -->
-    <set
-        name="sampleMetas"
-        lazy="true"
-        inverse="true"
-		cascade="all-delete-orphan"
-    >
-        <key>
-            <column name="SAMPLE_ID" />
-        </key>
-        <one-to-many 
-            class="nz.cri.gns.fred.hibernate.SampleMeta"
-        />
-    </set>
+
     <!-- bi-directional one-to-many association to Record -->
     <set
         name="records"
