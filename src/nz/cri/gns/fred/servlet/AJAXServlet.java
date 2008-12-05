@@ -15,8 +15,8 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.FREDIPSysJspPage;
 import nz.cri.gns.fred.Match;
-import nz.cri.gns.fred.dao.StratLexDAO;
-import nz.cri.gns.fred.hibernate.util.HibernateUtil;
+import nz.cri.gns.fred.dao.FredDAO;
+import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Person;
@@ -62,7 +62,7 @@ public class AJAXServlet extends HttpServlet {
 				List<NamedId> values = new ArrayList<NamedId>();
 				switch (type) {
 					case Person:
-						PersonUtil personUtil = new PersonUtil(HibernateUtil.get().getDAOFactory());
+						PersonUtil personUtil = new PersonUtil(FredHibernate.get().getDAOFactory());
 						try {
 							List<Person> people = personUtil.getMatchingPersons(start, Match.BEGINNING, 15);
 							for (Person person : people) {
@@ -72,7 +72,7 @@ public class AJAXServlet extends HttpServlet {
 						}
 						break;
 					case Strat:
-						StratLexDAO dao = HibernateUtil.get().getDAOFactory().getStratLexDAO();
+						FredDAO dao = FredHibernate.get().getDAOFactory().getFredDAO();
 						try {
 							List<StratigraphicUnit> units = dao.getMatchingUnitNames(start, Match.BEGINNING, 15);
 							for (StratigraphicUnit unit : units) {
@@ -82,7 +82,7 @@ public class AJAXServlet extends HttpServlet {
 						}
 						break;
 					case Age:
-						StageUtil stageUtil = new StageUtil(HibernateUtil.get().getDAOFactory());
+						StageUtil stageUtil = new StageUtil(FredHibernate.get().getDAOFactory());
 						try {
 							List<Age> ages = stageUtil.getMatchingAges(start, Match.BEGINNING, 15);	
 							for (Age age : ages) {
@@ -94,7 +94,7 @@ public class AJAXServlet extends HttpServlet {
 						break;
 					case TaxonomicGroup:
 						try {
-							List<TaxonomicGroup> groups = new TaxonomicUtil(HibernateUtil.get().getDAOFactory()).getMatchingTaxonomicGroups(start, Match.BEGINNING, 5);
+							List<TaxonomicGroup> groups = new TaxonomicUtil(FredHibernate.get().getDAOFactory()).getMatchingTaxonomicGroups(start, Match.BEGINNING, 5);
 							for (TaxonomicGroup group : groups) {
 								values.add(new NamedId(group.getGroupId().toString(), group.getName()));
 							}
@@ -103,7 +103,7 @@ public class AJAXServlet extends HttpServlet {
 						break;
 					case TaxonomicName:
 						try {
-							TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
+							TaxonomicUtil taxaUtil = new TaxonomicUtil(FredHibernate.get().getDAOFactory());
 							String cleanName = null;
 							TaxonomicGroup group = null;
 							if (request.getParameter("group") != null) try {
@@ -146,7 +146,7 @@ public class AJAXServlet extends HttpServlet {
 				String moreData = null;
 				switch (type) {
 					case Person:
-						PersonUtil util = new PersonUtil(HibernateUtil.get().getDAOFactory());
+						PersonUtil util = new PersonUtil(FredHibernate.get().getDAOFactory());
 						try {
 							Person person = util.findPerson(name);
 							status = ((person != null) ? "Exists" : "Doesn't exist");
@@ -155,7 +155,7 @@ public class AJAXServlet extends HttpServlet {
 						break;
 					case TaxonomicName:
 						try {
-							TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
+							TaxonomicUtil taxaUtil = new TaxonomicUtil(FredHibernate.get().getDAOFactory());
 							TaxonomicGroup group = null;
 							if (request.getParameter("TaxonomicGroup") != null) try {
 								group = taxaUtil.getTaxonomicGroup(request.getParameter("TaxonomicGroup").trim());
@@ -212,7 +212,7 @@ public class AJAXServlet extends HttpServlet {
 				String moreData = null;
 				switch (type) {
 					case Person:
-						PersonUtil util = new PersonUtil(HibernateUtil.get().getDAOFactory());
+						PersonUtil util = new PersonUtil(FredHibernate.get().getDAOFactory());
 						try {
 							util.findOrCreatePerson(name);
 							confirmation = true;
@@ -221,7 +221,7 @@ public class AJAXServlet extends HttpServlet {
 						break;
 					case TaxonomicName:
 						try {
-							TaxonomicUtil taxaUtil = new TaxonomicUtil(HibernateUtil.get().getDAOFactory());
+							TaxonomicUtil taxaUtil = new TaxonomicUtil(FredHibernate.get().getDAOFactory());
 							TaxonomicGroup group = taxaUtil.getTaxonomicGroup(request.getParameter("TaxonomicGroup").trim());
 							String cleanName = TaxonomicUtil.getCleanedName(name);
 							String author = request.getParameter("Author");

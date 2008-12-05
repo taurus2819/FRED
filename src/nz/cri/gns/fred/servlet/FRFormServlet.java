@@ -21,7 +21,7 @@ import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.hibernate.util.HibernateUtil;
+import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
@@ -95,7 +95,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
 			this.response = response;
-			this.factory = HibernateUtil.get().getDAOFactory();
+			this.factory = FredHibernate.get().getDAOFactory();
 			this.recordUtil = new RecordUtil(factory);
 			this.sampleUtil = new SampleUtil(factory);
 			this.featureUtil = new FeatureUtil(factory);

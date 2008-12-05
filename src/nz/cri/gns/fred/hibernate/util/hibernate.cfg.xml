@@ -12,7 +12,7 @@
 	
 		<!-- mapping files -->
 		<mapping resource="nz/cri/gns/fred/hibernate/Adoption.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/AgeView.hbm.xml"/>
+		<mapping resource="nz/cri/gns/fred/hibernate/Age.hbm.xml"/>
 		<mapping resource="nz/cri/gns/fred/hibernate/AuditEdit.hbm.xml"/>
 		<mapping resource="nz/cri/gns/fred/hibernate/AuditTable.hbm.xml"/>
 		<mapping resource="nz/cri/gns/fred/hibernate/BacklogStatus.hbm.xml"/>

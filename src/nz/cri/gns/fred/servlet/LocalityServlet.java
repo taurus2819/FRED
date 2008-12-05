@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.hibernate.util.HibernateUtil;
+import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Sample;
@@ -33,7 +33,7 @@ public class LocalityServlet extends HttpServlet {
 	
 	private void redirect(String frNum, String baseUrl, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		DAOFactory factory = null;
-		factory = HibernateUtil.get().getDAOFactory();
+		factory = FredHibernate.get().getDAOFactory();
 		FrNumber num = null;
 		FrNumber yardNum = null;
 		HashSet<Feature> features = new HashSet<Feature>();
