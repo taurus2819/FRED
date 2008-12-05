@@ -12,6 +12,7 @@ import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FolderRight;
 import nz.cri.gns.fred.model.FolderUser;
+import nz.cri.gns.fred.model.FrUserView;
 import nz.cri.gns.fred.model.UserFolder;
 
 public class FolderUtil extends ModelUtil {
@@ -140,34 +141,34 @@ public class FolderUtil extends ModelUtil {
 			: fredDAO.getFolderRightList("code NOT IN ('1', '4', '8', '16')", "TO_NUMBER(code)");
 	}
 	
-	public void addUserToFolder(UserFolder folder, int userId, int permissions) throws StorageAccessException {
+	public void addUserToFolder(UserFolder folder, Integer userId, Integer permissions) throws StorageAccessException {
+		UserUtil userUtil = new UserUtil(factory);
 		FolderUser folderUser = fredDAO.createNewFolderUser();
-		folderUser.setUserId(new Integer(userId));
+		folderUser.setUser(userUtil.getFrUserView(userId));
 		folderUser.setUserRights(new Integer(permissions));
 		folderUser.setFolder(folder.getFolder());
 		folder.getFolder().getFolderUsers().add(folderUser);
 		fredDAO.saveOrUpdate(folderUser);
 	}
 
-	public void removeUserFromFolder(UserFolder folder, int userId) throws StorageAccessException {
-		Integer userAsInteger = new Integer(userId);
-		for (FolderUser user : folder.getFolder().getFolderUsers()) {
-			if (user.getUserId().equals(userAsInteger)) {
-				folder.getFolder().getFolderUsers().remove(user);
-				return;
-			}
-		}
+	public void removeUserFromFolder(UserFolder folder, Integer userId) throws StorageAccessException {
+		UserUtil userUtil = new UserUtil(factory);
+		FolderUser fu = getFolderUser(folder, userUtil.getFrUserView(userId));
+		fredDAO.delete(fu);
 	}
 
 	public void toggleUserFolderRights(UserFolder folder, int userId, int newRight) throws StorageAccessException {
-		Integer userAsInteger = new Integer(userId);
-		for (FolderUser user : folder.getFolder().getFolderUsers()) {
-			if (user.getUserId().equals(userAsInteger)) {
-				user.setUserRights(new Integer(newRight ^ user.getUserRights().intValue()));
-				fredDAO.saveOrUpdate(user);
-				return;
-			}
-		}
+		UserUtil userUtil = new UserUtil(factory);
+		FolderUser fu = getFolderUser(folder, userUtil.getFrUserView(userId));
+		fu.setUserRights(new Integer(newRight ^ fu.getUserRights().intValue()));
+		fredDAO.saveOrUpdate(fu);
+	}
+	
+	public FolderUser getFolderUser(UserFolder folder, FrUserView user) throws StorageAccessException {
+		List<FolderUser> fus = fredDAO.getList("FROM FolderUser AS f WHERE f.folder = ? AND f.user = ?", FolderUser.class, folder.getFolder(), user);
+		if (fus.size() > 0)
+			return fus.get(0);
+		return null;
 	}
 	
 	public static boolean isFolderEmpty(Folder folder) {

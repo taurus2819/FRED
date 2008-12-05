@@ -25,10 +25,6 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
-import nz.cri.gns.fred.hibernate.AuditTable;
-import nz.cri.gns.fred.hibernate.FolderUser;
-import nz.cri.gns.fred.hibernate.PalList;
-import nz.cri.gns.fred.hibernate.TaxonomicLookup;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.Audit;
@@ -41,6 +37,7 @@ import nz.cri.gns.fred.model.FeatureMeta;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FolderRight;
 import nz.cri.gns.fred.model.FolderType;
+import nz.cri.gns.fred.model.FolderUser;
 import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.FrUser;
@@ -289,7 +286,7 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 
 	//FeatureDAO methods
 	public Audit createNewAudit() {
-		Audit audit = new AuditTable();
+		Audit audit = new nz.cri.gns.fred.hibernate.AuditTable();
 		audit.setConfidentialFlag(false);
 		return audit;
 	}
@@ -624,15 +621,15 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 	}
 
     public PaleontologyListEntry createNewPaleontologyListEntry() {
-        return new PalList();
+        return new nz.cri.gns.fred.hibernate.PalList();
     }
 
     public Taxon createNewTaxon() {
-        return new TaxonomicLookup();
+        return new nz.cri.gns.fred.hibernate.TaxonomicLookup();
     }
 	
-	public nz.cri.gns.fred.model.FolderUser createNewFolderUser() {
-		return new FolderUser(false);
+	public FolderUser createNewFolderUser() {
+		return new nz.cri.gns.fred.hibernate.FolderUser();
 	}
 	
 	public List<StratigraphicUnit> getMatchingUnitNames(String start, Match matchType, int maxResults) throws StorageAccessException {
