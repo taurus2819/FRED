@@ -16,8 +16,7 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
     private Integer folderId;
     private String name;
     private FolderType folderType;
-    private Integer ownerId;
-    private FrUserView frUserView;
+    private FrUserView owner;
     private Set<Audit> auditTables;
     private Set<Feature> masterfileFeatures;
     private Set<Feature> features;
@@ -47,20 +46,12 @@ public class Folder implements Serializable, nz.cri.gns.fred.model.Folder {
         this.folderType = folderType;
     }
 
-    public Integer getOwnerId() {
-        return this.ownerId;
-    }
-
-    public void setOwnerId(Integer ownerId) {
-        this.ownerId = ownerId;
-    }
-
-	public FrUserView getFrUserView() {
-		return frUserView;
+	public FrUserView getOwner() {
+		return owner;
 	}
 	
-    public void setFrUserView(FrUserView frUserView) {
-		this.frUserView = frUserView;
+    public void setOwner(FrUserView owner) {
+		this.owner = owner;
 	}
 
 	public Set<Audit> getAudits() {

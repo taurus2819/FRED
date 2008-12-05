@@ -34,12 +34,6 @@
         not-null="true"
         length="32"
     />
-    <property
-        name="ownerId"
-        type="int"
-        column="OWNER_ID"
-        length="5"
-    />
 
     <!-- Associations -->
     <!-- bi-directional many-to-one association to FolderType -->
@@ -53,10 +47,8 @@
 
     <!-- bi-directional many-to-one association to FrUserView -->
     <many-to-one
-        name="frUserView"
+        name="owner"
         class="nz.cri.gns.fred.hibernate.FrUserView"
-        insert="false"
-        update="false"
         cascade="none"
     >
         <column name="OWNER_ID" />

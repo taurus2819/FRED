@@ -99,24 +99,7 @@ public interface FredDAO {
 	 */
 	public Folder createNewFolder();
 	
-	/**
-	 * Returns a list of all <code>UserFolder</code>s of the given type representing the 
-	 * folders owned by the person
-	 * @throws StorageAccessException
-	 */
-	public List<UserFolder> getOwnedFolders(int ownerId, FolderType type) throws StorageAccessException;
-	
-	/**
-	 * Returns a list of <code>UserFolder</code>s of the given type to which the user has access 
-	 * but does not (necessarily?) own.
-	 * @throws StorageAccessException
-	 */
-	public List<UserFolder> getAccessibleFolders(int userId, FolderType type) throws StorageAccessException;
 
-    /**
-     * Returns all folders of the given type
-     */
-	public List<Folder> getFolders(FolderType type) throws HibernateException, StorageAccessException;
 
 	/**
 	 * Returns a count of any features that are in the masterfile folder given, with a 'waiting' status

@@ -25,10 +25,8 @@ public interface Folder extends Comparable<Folder>, NameableAndIdentifiable {
 	public void setName(String name);
 	public FolderType getFolderType();
 	public void setFolderType(FolderType folderType);
-	public Integer getOwnerId();
-	public void setOwnerId(Integer ownerId);
-	public FrUserView getFrUserView();
-    public void setFrUserView(FrUserView frUserView);
+	public FrUserView getOwner();
+    public void setOwner(FrUserView owner);
 	public Set<Audit> getAudits();
 	public void setAudits(Set<Audit> audits);
 	public Set<Feature> getMasterfileFeatures();

@@ -107,50 +107,7 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 		return new nz.cri.gns.fred.hibernate.Folder();
 	}
 
-	public List<UserFolder> getOwnedFolders(int ownerId, FolderType type) throws StorageAccessException {
-		try {
-			Session session = provider.currentSession();
-			//List list = session.find("from Folder as folder where folder.ownerId = ?", new Integer(ownerId), new IntegerType());
-			Query query = session.createQuery("FROM Folder as folder where folder.ownerId = :owner and folder.folderType = :type");
-			query.setInteger("owner", ownerId);
-			query.setEntity("type", type);
-			List list = query.list();
-			for (int i=0; i<list.size(); i++) {
-				Folder folder = (Folder)list.get(i);
-				list.set(i, UserFolder.getOwnedUserFolder(folder));
-			}
-			return list;
-		} catch (Exception e) {
-			throw new StorageAccessException(e);
-		}
-	}
-	
-	public List<UserFolder> getAccessibleFolders(int userId, FolderType type) throws StorageAccessException {
-		try {
-			Session session = provider.currentSession();
-			Query query = session.createQuery("FROM FolderUser as fu INNER JOIN fu.folder_ AS f WHERE f.folderType = :type AND fu.comp_id.userId = :user");
-			query.setEntity("type", type);
-			query.setInteger("user", userId);
-			List list = query.list();
-			for (int i=0; i<list.size(); i++) {
-				Object[] parts = (Object[])list.get(i);
-				Folder folder = (Folder)parts[1];
-				FolderUser rights = (FolderUser)parts[0];
-				list.set(i, UserFolder.getAccessibleUserFolder(folder, rights.getUserRights().intValue()));
-			}
-			return list;
-		} catch (Exception e) {
-			throw new StorageAccessException(e);
-		}
-	}
 
-	public List<Folder> getFolders(FolderType type) throws HibernateException, StorageAccessException {
-		Session session = provider.currentSession();
-		Query query = session.createQuery("FROM Folder as f WHERE f.folderType = :type");
-			query.setEntity("type", type);
-			List list = query.list();
-			return list;		
-	}
 	
 	public int getWaitingMasterfileFeatureCount(Folder folder) throws StorageAccessException {
 		try {
@@ -173,7 +130,7 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 				return null;
 			
 			Folder folder = (Folder)list.get(0);
-			if (folder.getOwnerId() != null && folder.getOwnerId().intValue() == userId) {
+			if (folder.getOwner() != null && folder.getOwner().getUserId().intValue() == userId) {
 				return UserFolder.getOwnedUserFolder(folder);
 			}
 			

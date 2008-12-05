@@ -72,7 +72,7 @@ public class FolderUtilTest extends FredHibernateTest implements HibernateProvid
 		UserFolder folder = null;
 		do {
 			folder = it.next();
-		} while (folder.getFolder().getOwnerId().intValue() != user.getDatabaseId());
+		} while (folder.getFolder().getOwner().getUserId().intValue() != user.getDatabaseId());
 		
 		folderUtil.addUserToFolder(folder, 1840, UserFolder.FOLDER_READ_RIGHT);
 		folderUtil.toggleUserFolderRights(folder, 1840, UserFolder.FOLDER_CREATE_RIGHT);

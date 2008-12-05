@@ -5,12 +5,15 @@ import java.util.List;
 import java.util.Vector;
 
 import net.sf.hibernate.HibernateException;
+import net.sf.hibernate.Query;
+import net.sf.hibernate.Session;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FolderRight;
+import nz.cri.gns.fred.model.FolderType;
 import nz.cri.gns.fred.model.FolderUser;
 import nz.cri.gns.fred.model.FrUserView;
 import nz.cri.gns.fred.model.UserFolder;
@@ -19,9 +22,12 @@ public class FolderUtil extends ModelUtil {
 
 	private FredDAO fredDAO;
 	
+	private UserUtil userUtil;
+	
 	public FolderUtil(DAOFactory dao) {
 		super(dao);
 		this.fredDAO = dao.getFredDAO();
+		this.userUtil = new UserUtil(factory);
 	}
 		
 	public Folder getFolder(int folderId) throws StorageAccessException {
@@ -35,8 +41,8 @@ public class FolderUtil extends ModelUtil {
 	 */
 	public List<UserFolder> getPersonalFolders(UserAccount user) throws StorageAccessException {
 		Vector<UserFolder> folders = new Vector<UserFolder>();
-		folders.addAll(fredDAO.getOwnedFolders(Integer.parseInt(user.getId()), fredDAO.getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
-		folders.addAll(fredDAO.getAccessibleFolders(Integer.parseInt(user.getId()), fredDAO.getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
+		folders.addAll(getOwnedFolders(Integer.parseInt(user.getId()), fredDAO.getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
+		folders.addAll(getAccessibleFolders(Integer.parseInt(user.getId()), fredDAO.getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
 		Collections.sort(folders);
 		return folders;
 	}
@@ -46,13 +52,13 @@ public class FolderUtil extends ModelUtil {
 	 * admin folders to which the given user has access
 	 */
 	public List<UserFolder> getAdminFolders(UserAccount user) throws StorageAccessException {
-		List<UserFolder> folders = fredDAO.getAccessibleFolders(Integer.parseInt(user.getId()), fredDAO.getFolderType(Folder.FOLDER_TYPE_ADMIN));
+		List<UserFolder> folders = getAccessibleFolders(Integer.parseInt(user.getId()), fredDAO.getFolderType(Folder.FOLDER_TYPE_ADMIN));
 		Collections.sort(folders);
 		return folders;
 	}
 
 	public List<Folder> getAdminFolders() throws HibernateException, StorageAccessException {
-		List<Folder> folders = fredDAO.getFolders(fredDAO.getFolderType(Folder.FOLDER_TYPE_ADMIN));
+		List<Folder> folders = getFolders(fredDAO.getFolderType(Folder.FOLDER_TYPE_ADMIN));
 		Collections.sort(folders);
 		return folders;
 	}
@@ -62,7 +68,7 @@ public class FolderUtil extends ModelUtil {
 	 * backlog admin folders to which the given user has access
 	 */
 	public List<UserFolder> getBacklogAdminFolders(UserAccount user) throws StorageAccessException {
-		List<UserFolder> folders = fredDAO.getAccessibleFolders(Integer.parseInt(user.getId()), fredDAO.getFolderType(Folder.FOLDER_TYPE_BACKLOG_ADMIN));
+		List<UserFolder> folders = getAccessibleFolders(Integer.parseInt(user.getId()), fredDAO.getFolderType(Folder.FOLDER_TYPE_BACKLOG_ADMIN));
 		Collections.sort(folders);
 		return folders;
 	}
@@ -74,11 +80,33 @@ public class FolderUtil extends ModelUtil {
 	 */
 	public List<UserFolder> getBacklogFolders(UserAccount user) throws StorageAccessException {
 		Vector<UserFolder> folders = new Vector<UserFolder>();
-		folders.addAll(fredDAO.getOwnedFolders(Integer.parseInt(user.getId()), fredDAO.getFolderType(Folder.FOLDER_TYPE_BACKLOG)));
-		folders.addAll(fredDAO.getAccessibleFolders(Integer.parseInt(user.getId()), fredDAO.getFolderType(Folder.FOLDER_TYPE_BACKLOG)));
+		folders.addAll(getOwnedFolders(Integer.parseInt(user.getId()), fredDAO.getFolderType(Folder.FOLDER_TYPE_BACKLOG)));
+		folders.addAll(getAccessibleFolders(Integer.parseInt(user.getId()), fredDAO.getFolderType(Folder.FOLDER_TYPE_BACKLOG)));
 		Collections.sort(folders);
 		return folders;
 	}	
+	
+	public List<UserFolder> getOwnedFolders(Integer ownerId, FolderType type) throws StorageAccessException {
+		List<UserFolder> userFolders = new Vector<UserFolder>();
+		FrUserView owner = userUtil.getFrUserView(ownerId);
+		List<Folder> folders = fredDAO.getList("FROM Folder as f where f.owner = ? and f.folderType = ?", Folder.class, owner, type);
+		for (Folder folder : folders)
+			userFolders.add(UserFolder.getOwnedUserFolder(folder));
+		return userFolders;
+	}
+	
+	public List<UserFolder> getAccessibleFolders(int userId, FolderType type) throws StorageAccessException {
+		List<UserFolder> userFolders = new Vector<UserFolder>();
+		FrUserView user = userUtil.getFrUserView(userId);
+		List<FolderUser> fus = fredDAO.getList("FROM FolderUser as f where f.user = ? and f.folder.folderType = ?", FolderUser.class, user, type);
+		for (FolderUser fu : fus)
+			userFolders.add(UserFolder.getAccessibleUserFolder(fu.getFolder(), fu.getUserRights()));
+		return userFolders;
+	}
+
+	public List<Folder> getFolders(FolderType type) throws HibernateException, StorageAccessException {
+		return fredDAO.getList("FROM Folder as f WHERE f.folderType = ?", Folder.class, type);		
+	}
 	
 	public List<UserFolder> getPersonalPlusBacklogFolders(UserAccount user) throws StorageAccessException {
 		List<UserFolder> folders = getPersonalFolders(user);
@@ -90,7 +118,7 @@ public class FolderUtil extends ModelUtil {
 	public Folder addFolder(String name, UserAccount user)  throws StorageAccessException {
 	    Folder folder = fredDAO.createNewFolder();
 	    folder.setName(name);
-	    folder.setOwnerId(new Integer(user.getId()));
+	    folder.setOwner(userUtil.getFrUserView(user.getId()));
 	    folder.setFolderType(fredDAO.getFolderType(Folder.FOLDER_TYPE_PERSONAL));
 	    fredDAO.saveOrUpdate(folder);
 	    return folder;
@@ -99,7 +127,7 @@ public class FolderUtil extends ModelUtil {
 	public Folder addBacklogFolder(String name, UserAccount user)  throws StorageAccessException {
 	    Folder folder = fredDAO.createNewFolder();
 	    folder.setName(name);
-	    folder.setOwnerId(new Integer(user.getId()));
+	    folder.setOwner(userUtil.getFrUserView(user.getId()));
 	    folder.setFolderType(fredDAO.getFolderType(Folder.FOLDER_TYPE_BACKLOG));
 	    fredDAO.saveOrUpdate(folder);
 	    return folder;
