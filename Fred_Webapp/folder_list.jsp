@@ -95,7 +95,7 @@
 		for (UserFolder folder : personalFolders) {
 			%><tr class="lightColour">
 			<td style="text-align: left"><a href="folder_detail.jsp?ID=<%=folder.getFolder().getFolderId()%>&q=<%=Math.random()%>" class="heading"><%=folder.getFolder().getName()%></a>&nbsp;&nbsp;</td>
-			<td style="text-align: left"><%=(folder.getFolder().getFrUserView() != null) ? folder.getFolder().getFrUserView().getFullName() : ""%>&nbsp;&nbsp;</td>
+			<td style="text-align: left"><%=(folder.getFolder().getOwner() != null) ? folder.getFolder().getOwner().getFullName() : ""%>&nbsp;&nbsp;</td>
 			<td style="text-align: left"><%
 			if (folder.isAllowedAdmin()) {
 				%><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a>&nbsp;&nbsp;&nbsp;<%
@@ -131,7 +131,7 @@
 		for (UserFolder folder : backlogFolders) {
 			%><tr class="lightColour">
 			<td style="text-align: left"><a href="folder_detail.jsp?ID=<%=folder.getFolder().getFolderId()%>&q=<%=Math.random()%>" class="heading"><%=folder.getFolder().getName()%></a>&nbsp;&nbsp;</td>
-			<td style="text-align: left"><%=(folder.getFolder().getFrUserView() != null) ? folder.getFolder().getFrUserView().getFullName() : ""%>&nbsp;&nbsp;</td>
+			<td style="text-align: left"><%=(folder.getFolder().getOwner() != null) ? folder.getFolder().getOwner().getFullName() : ""%>&nbsp;&nbsp;</td>
 			<td style="text-align: left"><%
 			if (folder.isAllowedAdmin()) {
 				%><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a>&nbsp;&nbsp;&nbsp;<%

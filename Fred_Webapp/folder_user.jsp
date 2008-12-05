@@ -46,7 +46,7 @@
 
 		boolean canEdit = 
 			//User is owner
-			(folder.getFolder().getOwnerId() != null && folder.getFolder().getOwnerId().toString().equals(user.getId()))
+			(folder.getFolder().getOwner() != null && folder.getFolder().getOwner().getUserId().toString().equals(user.getId()))
 			//User has admin rights
 			|| folder.isAllowedAdmin();
 		
@@ -85,7 +85,7 @@
 			<table border="0" cellpadding="3" cellspacing="2" width="550"><%
 		try {
 			if (folder.getFolder().getFolderType().getName().equals(UserFolder.FOLDER_TYPE_PERSONAL) || folder.getFolder().getFolderType().getName().equals(UserFolder.FOLDER_TYPE_BACKLOG)) {
-				%><tr class="midColour"><td class="heading" colspan="99">Folder Owner: <%=(folder.getFolder().getFrUserView() != null) ? folder.getFolder().getFrUserView().getFullName() : ""%></span></td></tr><%
+				%><tr class="midColour"><td class="heading" colspan="99">Folder Owner: <%=(folder.getFolder().getOwner() != null) ? folder.getFolder().getOwner().getFullName() : ""%></span></td></tr><%
 			}
 			%><tr class="midColour"><td colspan="99">The users listed below have rights to this folder.  Users can be added or deleted from this list and their rights altered by clicking on the <img src="images/ok.gif" width="20" height="20" border="0" /> or <img src="images/cancel.gif" width="20" height="20" border="0" /> icons.</td></tr>
 			<tr class="midColour"><th>User&nbsp;&nbsp;</th><th width="60" style="width=60px; text-align=center">Read</th><%
@@ -93,15 +93,14 @@
 				%><th width="60" style="width=60px; text-align=center"><%=rightType.getRightDescription()%></th><%
 			}
 			Set<FrUserView> excludeFrUsers = new HashSet<FrUserView>();
-			if (folder.getFolder().getOwnerId() != null)
-				excludeFrUsers.add(userUtil.getFrUserView(folder.getFolder().getOwnerId()));
+			if (folder.getFolder().getOwner() != null)
+				excludeFrUsers.add(folder.getFolder().getOwner());
 			for (FolderUser folderUser : folder.getFolder().getFolderUsers()) {
-				FrUserView frUser = userUtil.getFrUserView(folderUser.getUserId());
-				excludeFrUsers.add(frUser);
-				%><tr class="lightColour"><td><%=frUser.getFullName()%>&nbsp;&nbsp;</td>
-				<td style="text-align: center;"><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&ActionType=DeleteUser&UserID=<%=frUser.getUserId()%>"><img src="images/ok.gif" width="20" height="20" border="0" alt="Delete User" /></a></td><%
+				excludeFrUsers.add(folderUser.getUser());
+				%><tr class="lightColour"><td><%=folderUser.getUser().getFullName()%>&nbsp;&nbsp;</td>
+				<td style="text-align: center;"><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&ActionType=DeleteUser&UserID=<%=folderUser.getUser().getUserId()%>"><img src="images/ok.gif" width="20" height="20" border="0" alt="Delete User" /></a></td><%
 				for (FolderRight rightType : rightTypes) {
-					%><td style="text-align: center;"><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&ActionType=ChangeRight&UserID=<%=frUser.getUserId()%>&Right=<%=rightType.getRightCode()%>"><%
+					%><td style="text-align: center;"><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&ActionType=ChangeRight&UserID=<%=folderUser.getUser().getUserId()%>&Right=<%=rightType.getRightCode()%>"><%
 					if ((folderUser.getUserRights().intValue() & rightType.getRightCode()) != 0) {
 						%><img src="images/ok.gif" alt="Remove Right"height="20" width="20" border="0"  /><%
 					} else {
