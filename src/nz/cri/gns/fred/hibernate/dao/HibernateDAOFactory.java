@@ -122,30 +122,6 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 		}
 	}
 	
-	public UserFolder getUserFolder(int folderId, int userId) throws StorageAccessException {
-		try {
-			Session session = provider.currentSession();
-			List list = session.find("FROM Folder AS f WHERE f.folderId = ?", new Integer(folderId), new IntegerType());
-			if (list.size() == 0)
-				return null;
-			
-			Folder folder = (Folder)list.get(0);
-			if (folder.getOwner() != null && folder.getOwner().getUserId().intValue() == userId) {
-				return UserFolder.getOwnedUserFolder(folder);
-			}
-			
-			Query query = session.createQuery("FROM FolderUser AS fu WHERE fu.folder_ = :folder AND fu.comp_id.userId = :user");
-			query.setEntity("folder", folder);
-			query.setInteger("user", userId);
-			list = query.list();
-			if (list.size() == 0)
-				return null;
-			return UserFolder.getAccessibleUserFolder(folder, ((FolderUser)list.get(0)).getUserRights().intValue());
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-		}
-	}
-
 	public List<Audit> getAuditsFor(Folder folder, String status) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();

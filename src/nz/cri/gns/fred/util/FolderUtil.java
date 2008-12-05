@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Vector;
 
 import net.sf.hibernate.HibernateException;
-import net.sf.hibernate.Query;
-import net.sf.hibernate.Session;
 import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
@@ -151,8 +149,22 @@ public class FolderUtil extends ModelUtil {
 	}
 	
 	public UserFolder getUserFolder(int folderId, UserAccount user) throws StorageAccessException {
-		return fredDAO.getUserFolder(folderId, Integer.parseInt(user.getId()));
-}
+		return getUserFolder(folderId, Integer.parseInt(user.getId()));
+	}
+	
+	public UserFolder getUserFolder(int folderId, int userId) throws StorageAccessException {
+		Folder folder = fredDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class);
+		if (folder == null)
+			return null;
+
+		if (folder.getOwner() != null && folder.getOwner().getUserId().intValue() == userId)
+			return UserFolder.getOwnedUserFolder(folder);
+		
+		FolderUser fu = getFolderUser(folder, userUtil.getFrUserView(userId));
+		if (fu == null)
+			return null;
+		return UserFolder.getAccessibleUserFolder(folder, fu.getUserRights().intValue());
+	}
 	
 	/**
 	 * Returns a list of right types in the appropriate order and omitting any
@@ -193,7 +205,11 @@ public class FolderUtil extends ModelUtil {
 	}
 	
 	public FolderUser getFolderUser(UserFolder folder, FrUserView user) throws StorageAccessException {
-		List<FolderUser> fus = fredDAO.getList("FROM FolderUser AS f WHERE f.folder = ? AND f.user = ?", FolderUser.class, folder.getFolder(), user);
+		return getFolderUser(folder.getFolder(), user);
+	}
+	
+	public FolderUser getFolderUser(Folder folder, FrUserView user) throws StorageAccessException {
+		List<FolderUser> fus = fredDAO.getList("FROM FolderUser AS f WHERE f.folder = ? AND f.user = ?", FolderUser.class, folder, user);
 		if (fus.size() > 0)
 			return fus.get(0);
 		return null;

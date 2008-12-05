@@ -144,10 +144,12 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 
 	private FredDAO fredDAO;
+	private FeatureUtil featureUtil;
 
 	public SampleUtil(DAOFactory factory) {
 		super(factory);
 		this.fredDAO = factory.getFredDAO();
+		featureUtil = new FeatureUtil(factory);
 	}	
 
 	public Sample findSample(String localityName) throws StorageAccessException {
@@ -444,7 +446,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			return false;
 
 		if (audit.getStatus().equals(WAITING))
-			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_DELETE_RIGHT, fredDAO);
+			return featureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_DELETE_RIGHT, fredDAO);
 
 		return folder.isAllowedDeleteLocalities();
 	}
@@ -452,10 +454,10 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	public boolean isAllowedEditSample(UserAccount user, Sample sample, UserFolder userFolder) throws StorageAccessException {
 		Audit audit = sample.getAudit();
 		if (audit.getStatus().equals(APPROVED))
-			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO) ||
+			return featureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO) ||
 				FREDUtil.checkEditSecurityClass(user);
 		if (audit.getStatus().equals(WAITING))
-			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO);
+			return featureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO);
 
 		return userFolder.isAllowedEditLocalities();
 	}
@@ -465,7 +467,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (audit.getStatus().equals(APPROVED))
 			return false;
 		if (audit.getStatus().equals(WAITING))
-			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_DELETE_RIGHT, fredDAO);
+			return featureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_DELETE_RIGHT, fredDAO);
 
 		return userFolder.isAllowedDeleteLocalities();
 	}
@@ -475,7 +477,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (audit.getStatus().equals(APPROVED))
 			return false;	
 		if (audit.getStatus().equals(WAITING))
-			return FeatureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_SUBMIT_RIGHT, fredDAO);
+			return featureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_SUBMIT_RIGHT, fredDAO);
 		
 		return userFolder.isAllowedSubmitLocalities();
 	}

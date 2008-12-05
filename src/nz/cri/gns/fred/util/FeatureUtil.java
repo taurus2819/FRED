@@ -47,12 +47,14 @@ import nz.cri.gns.fred.model.UserFolder;
 public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
 	private FredDAO fredDAO;
+	private FolderUtil folderUtil;
 
 	private static String BACKLOG_PREPARE_COMMENTS = "Locality prepared for backlog editing";
 	
 	public FeatureUtil(DAOFactory factory) {
 		super(factory);
 		this.fredDAO = factory.getFredDAO();
+		this.folderUtil = new FolderUtil(factory);
 	}
 	
 	public Feature copyFeature(Feature feature, String newName, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
@@ -318,7 +320,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (folder == null)
 			folder = feature.getMasterFile();
 		
-		UserFolder userFolder = fredDAO.getUserFolder(folder.getFolderId(), Integer.parseInt(user.getId()));
+		UserFolder userFolder = folderUtil.getUserFolder(folder.getFolderId(), Integer.parseInt(user.getId()));
 		
 		if (!userFolder.isAllowedDeleteLocalities())
 			throw new InsufficientPrivelegesException();
@@ -653,7 +655,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			UserFolder folder = new FolderUtil(factory).getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), user);
 			UserFolder mfFolder = null;
 			if (feature.getMasterFile() != null)
-				mfFolder = fredDAO.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
+				mfFolder = folderUtil.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
 			return ((folder != null && folder.isAllowedReadLocalities()) || (mfFolder != null && mfFolder.isAllowedReadLocalities()));
 		}
 		return true;
@@ -668,10 +670,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (!status.equals(FREDConstants.APPROVED)) {
 			if (user == null)
 				return false;
-			UserFolder folder = fredDAO.getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), Integer.parseInt(user.getId()));
+			UserFolder folder = folderUtil.getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), Integer.parseInt(user.getId()));
 			UserFolder mfFolder = null;
 			if (feature.getMasterFile() != null)
-				mfFolder = fredDAO.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
+				mfFolder = folderUtil.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
 			return ((folder != null && folder.isAllowedReadLocalities()) || (mfFolder != null && mfFolder.isAllowedReadLocalities()));
 		}
 		return true;
@@ -712,7 +714,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (audit.getStatus().equals(APPROVED))
 			return false;
 		if (audit.getStatus().equals(WAITING))
-			return FeatureUtil.hasMasterfileRights(user, feature, UserFolder.FOLDER_DELETE_RIGHT, fredDAO);
+			return hasMasterfileRights(user, feature, UserFolder.FOLDER_DELETE_RIGHT, fredDAO);
 
 		return userFolder.isAllowedDeleteLocalities();
 	}
@@ -722,7 +724,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 */
 	public boolean isAllowedApproveFeature(UserAccount user, Feature feature) throws StorageAccessException {
 		if (WAITING.equals(feature.getAudit().getStatus())) {
-			UserFolder folder = fredDAO.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
+			UserFolder folder = folderUtil.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
 			if (folder != null)
 				return folder.isAllowedApproveLocalities();
 		}
@@ -738,12 +740,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return hasMasterfileRights(user, feature, right, fredDAO);
 	}
 	
-	static boolean hasMasterfileRights(UserAccount user, Feature feature, int right, FredDAO fredDAO) throws NumberFormatException, StorageAccessException {
+	public boolean hasMasterfileRights(UserAccount user, Feature feature, int right, FredDAO fredDAO) throws NumberFormatException, StorageAccessException {
 		Folder masterfile = feature.getMasterFile();
 		if (masterfile == null)
 			return false;
 		
-		UserFolder masterfileFolder = fredDAO.getUserFolder(masterfile.getFolderId().intValue(), Integer.parseInt(user.getId()));
+		UserFolder masterfileFolder = folderUtil.getUserFolder(masterfile.getFolderId().intValue(), Integer.parseInt(user.getId()));
 		
 		return (masterfileFolder == null) ? false : (masterfileFolder.getRights() & right) > 0;
 	}

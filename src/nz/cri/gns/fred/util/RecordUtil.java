@@ -34,10 +34,12 @@ import nz.cri.gns.fred.model.UserFolder;
 public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 
 	private FredDAO fredDAO;
+	private FeatureUtil featureUtil;
 
 	public RecordUtil(DAOFactory factory) {
 		super(factory);
 		this.fredDAO = factory.getFredDAO();
+		featureUtil = new FeatureUtil(factory);
 	}
 	
 
@@ -210,7 +212,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     public boolean isAllowedEditRecord(UserAccount user, Record record, UserFolder userFolder) throws StorageAccessException {
 		Audit audit = record.getAudit();
 		if (audit.getStatus().equals(APPROVED))
-			return FeatureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO) ||
+			return featureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO) ||
 				FREDUtil.checkEditSecurityClass(user);
 
 		return userFolder.isAllowedEditLocalities();
@@ -227,7 +229,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	public boolean isAllowedDeleteRecord(UserAccount user, Record record, UserFolder userFolder) throws StorageAccessException {
 		Audit audit = record.getAudit();
 		if (audit.getStatus().equals(APPROVED))
-			return FeatureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO);
+			return featureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO);
 
 		return userFolder.isAllowedDeleteLocalities();
 	}
@@ -246,7 +248,7 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
 
     public boolean hasMasterfileEditRights(UserAccount user, Record record) throws StorageAccessException {
-        return FeatureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO);
+        return featureUtil.hasMasterfileRights(user, record.getSample().getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO);
     }
 
 

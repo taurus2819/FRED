@@ -108,13 +108,6 @@ public interface FredDAO {
 	public int getWaitingMasterfileFeatureCount(Folder folder) throws StorageAccessException;
 
 	/**
-	 * @return the folder with the given id, initialised for the given user
-	 * or null if the user has no rights to the given folder
-	 * @throws StorageAccessException
-	 */
-	public UserFolder getUserFolder(int folderId, int userId) throws StorageAccessException;
-
-	/**
 	 * Returns all audits with the given folder as their working folder
 	 * @param folder
 	 * @return
