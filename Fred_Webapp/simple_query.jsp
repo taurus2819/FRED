@@ -165,9 +165,9 @@
 				whereSQL = whereSQL + "(";
 				if (StratAge.checked) {
 					if (AgeType[0].checked) { //narrow search
-						whereSQL = whereSQL + "(stv1.age_start <= " + aStart + " AND stv1.age_stop >= " + aStop + ") OR (stv2.age_start <= " + aStart + " AND stv2.age_stop >= " + aStop + ") OR ";
+						whereSQL = whereSQL + "(stv1.base_age <= " + aStart + " AND stv1.top_age >= " + aStop + ") OR (stv2.base_age <= " + aStart + " AND stv2.top_age >= " + aStop + ") OR ";
 					} else {
-						whereSQL = whereSQL + "(stv1.age_start >= " + aStop + " AND stv1.age_stop <= " + aStart + ") OR (stv2.age_start >= " + aStop + " AND stv2.age_stop <= " + aStart + ") OR ";
+						whereSQL = whereSQL + "(stv1.base_age >= " + aStop + " AND stv1.top_age <= " + aStart + ") OR (stv2.base_age >= " + aStop + " AND stv2.top_age <= " + aStart + ") OR ";
 					}
 					queryString = queryString + "Collectors/";
 					tableName = tableName + ", Stage_View stv1, Stage_View stv2";
@@ -176,9 +176,9 @@
 				}
 				if (AdoAge.checked) {
 					if (AgeType[0].checked) { //narrow search
-						whereSQL = whereSQL + "(stv3.age_start <= " + aStart + " AND stv3.age_stop >= " + aStop + ") OR ";
+						whereSQL = whereSQL + "(stv3.base_age <= " + aStart + " AND stv3.top_age >= " + aStop + ") OR ";
 					} else {
-						whereSQL = whereSQL + "(stv3.age_start >= " + aStop + " AND stv3.age_stop <= " + aStart + ") OR ";
+						whereSQL = whereSQL + "(stv3.base_age >= " + aStop + " AND stv3.top_age <= " + aStart + ") OR ";
 					}
 					queryString = queryString + "Adopted/";
 					tableName = tableName + ", Stage_View stv3";
@@ -187,9 +187,9 @@
 				}
 				if (PalAge.checked) {
 					if (AgeType[0].checked) { //narrow search
-						whereSQL = whereSQL + "(stv4.age_start <= " + aStart + " AND stv4.age_stop >= " + aStop + ") OR ";
+						whereSQL = whereSQL + "(stv4.base_age <= " + aStart + " AND stv4.top_age >= " + aStop + ") OR ";
 					} else {
-						whereSQL = whereSQL + "(stv4.age_start >= " + aStop + " AND stv4.age_stop <= " + aStart + ") OR ";
+						whereSQL = whereSQL + "(stv4.base_age >= " + aStop + " AND stv4.top_age <= " + aStart + ") OR ";
 					}
 					queryString = queryString + "Paleontology/";
 					tableName = tableName + ", Stage_View stv4";

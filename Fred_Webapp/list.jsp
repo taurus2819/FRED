@@ -319,7 +319,7 @@
 				} else if (listName.equals("locMethod")) {
 					rs = statement.executeQuery("SELECT method || '</td><td>' || method_id || '</td><td>' || nom_accuracy_xy FROM sc.method WHERE nom_accuracy_xy IS NOT NULL ORDER BY nom_accuracy_xy");
 				} else if (listName.equals("person")) {
-					rs = statement.executeQuery("SELECT name FROM person_view ORDER BY family_name, given_name");
+					rs = statement.executeQuery("SELECT name FROM person ORDER BY name");
 				} else if (listName.equals("regArea")) {
 					rs = statement.executeQuery("SELECT name || '</td><td>' || reg_area_id FROM registration_area ORDER BY name");
 				} else if (listName.equals("thickness")) {
