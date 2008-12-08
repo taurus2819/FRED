@@ -398,7 +398,7 @@
 				%></select>
 				</td></tr>
 				<tr><td class="heading">Map Sheet</td><td><%
-				SelectBox<SimpleNameableAndIdentifiable> selectBox = new SelectBox<SimpleNameableAndIdentifiable>(featureUtil.getFrMapSheets());
+				SelectBox<SimpleNameableAndIdentifiable> selectBox = new SelectBox<SimpleNameableAndIdentifiable>(featureUtil.getFrMapSheetsAsNameable());
 				Attributes attributes = Attributes.createNameOnlyAttributes("MapSheet");
 				attributes.setAttribute("onChange", "form1.submit();");
 				selectBox.writeBox(attributes, "-- Choose --", null, (request.getParameter("MapSheet") != null  && !request.getParameter("MapSheet").equals("-")) ? new SimpleNameableAndIdentifiable(request.getParameter("MapSheet"), request.getParameter("MapSheet")) : null, new PrintWriter(out));
@@ -454,7 +454,7 @@
 				%></select>
 				</td></tr>
 				<tr><td class="heading">Map Sheet</td><td><%
-				SelectBox<SimpleNameableAndIdentifiable> mSelectBox = new SelectBox<SimpleNameableAndIdentifiable>(featureUtil.getFrMapSheets());
+				SelectBox<SimpleNameableAndIdentifiable> mSelectBox = new SelectBox<SimpleNameableAndIdentifiable>(featureUtil.getFrMapSheetsAsNameable());
 				attributes = Attributes.createNameOnlyAttributes("MapSheet");
 				attributes.setAttribute("onChange", "form1.submit();");
 				mSelectBox.writeBox(attributes, "-- Choose --", null, (request.getParameter("MapSheet") != null  && !request.getParameter("MapSheet").equals("-")) ? new SimpleNameableAndIdentifiable(request.getParameter("MapSheet"), request.getParameter("MapSheet")) : null, new PrintWriter(out));
