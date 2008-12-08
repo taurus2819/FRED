@@ -5,7 +5,6 @@ import nz.cri.gns.dataaccess.HibernateConfiguration;
 import nz.cri.gns.dataaccess.HibernateProvider;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.hibernate.dao.HibernateDAOFactory;
 
 public class FredHibernate implements HibernateProvider {
 

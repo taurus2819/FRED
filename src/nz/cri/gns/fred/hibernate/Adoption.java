@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
-import nz.cri.gns.fred.hibernate.dao.AssignedKeyed;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RecordDetails;
@@ -13,52 +12,17 @@ import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.RecordUtil;
 
 /** @author Hibernate CodeGenerator */
-public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption, AssignedKeyed {
+public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption {
 
 	private static final long serialVersionUID = 20050818L;
 	
-	/** identifier field */
     private Integer recordId;
-
-    /** nullable persistent field */
     private Date adoptionDate;
-
-    /** nullable persistent field */
     private String dateRounding;
-
-    /** nullable persistent field */
     private String comments;
-
-    /** nullable persistent field */
     private Record record;
-
-    /** persistent field */
     private Stage stage;
-
-    /** persistent field */
     private Set<Person> adoptors;
-
-    /** full constructor */
-    public Adoption(Integer recordId, Date adoptionDate, String dateRounding, String comments, Record record, Stage stage, Set<Person> adoptors) {
-        this.recordId = recordId;
-        this.adoptionDate = adoptionDate;
-        this.dateRounding = dateRounding;
-        this.comments = comments;
-        this.record = record;
-        this.stage = stage;
-        this.adoptors = adoptors;
-    }
-
-    /** default constructor */
-    public Adoption() {
-    }
-
-    /** minimal constructor */
-    public Adoption(Integer recordId, Stage stage, Set<Person> adoptors) {
-        this.recordId = recordId;
-        this.stage = stage;
-        this.adoptors = adoptors;
-    }
 
     public Integer getRecordId() {
         return this.recordId;
@@ -98,10 +62,6 @@ public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption, A
 
     public void setRecord(Record record) {
         this.record = record;
-        if (record == null)
-        	this.recordId = null;
-        else
-        	this.recordId = record.getRecordId();
     }
 
     public Stage getStage() {

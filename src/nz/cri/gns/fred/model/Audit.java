@@ -3,7 +3,7 @@ package nz.cri.gns.fred.model;
 import java.util.Date;
 import java.util.Set;
 
-public interface Audit {
+public interface Audit extends Comparable<Audit> {
     public Integer getAuditId();
     public void setAuditId(Integer auditId);
     public String getStatus();

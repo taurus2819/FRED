@@ -32,6 +32,10 @@ public class FolderUtil extends ModelUtil {
 		return fredDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class);
 	}
 	
+	public FolderType getFolderType(String label) throws StorageAccessException {
+		return fredDAO.getFirst("FROM FolderType AS f WHERE f.name = ?", FolderType.class, label);
+	}
+	
 	/**
 	 * Returns a list of <code>UserFolder</code>s representing
 	 * personal folders belonging to the given user,
@@ -39,8 +43,8 @@ public class FolderUtil extends ModelUtil {
 	 */
 	public List<UserFolder> getPersonalFolders(UserAccount user) throws StorageAccessException {
 		Vector<UserFolder> folders = new Vector<UserFolder>();
-		folders.addAll(getOwnedFolders(Integer.parseInt(user.getId()), fredDAO.getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
-		folders.addAll(getAccessibleFolders(Integer.parseInt(user.getId()), fredDAO.getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
+		folders.addAll(getOwnedFolders(Integer.parseInt(user.getId()), getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
+		folders.addAll(getAccessibleFolders(Integer.parseInt(user.getId()), getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
 		Collections.sort(folders);
 		return folders;
 	}
@@ -50,13 +54,13 @@ public class FolderUtil extends ModelUtil {
 	 * admin folders to which the given user has access
 	 */
 	public List<UserFolder> getAdminFolders(UserAccount user) throws StorageAccessException {
-		List<UserFolder> folders = getAccessibleFolders(Integer.parseInt(user.getId()), fredDAO.getFolderType(Folder.FOLDER_TYPE_ADMIN));
+		List<UserFolder> folders = getAccessibleFolders(Integer.parseInt(user.getId()), getFolderType(Folder.FOLDER_TYPE_ADMIN));
 		Collections.sort(folders);
 		return folders;
 	}
 
 	public List<Folder> getAdminFolders() throws HibernateException, StorageAccessException {
-		List<Folder> folders = getFolders(fredDAO.getFolderType(Folder.FOLDER_TYPE_ADMIN));
+		List<Folder> folders = getFolders(getFolderType(Folder.FOLDER_TYPE_ADMIN));
 		Collections.sort(folders);
 		return folders;
 	}
@@ -66,7 +70,7 @@ public class FolderUtil extends ModelUtil {
 	 * backlog admin folders to which the given user has access
 	 */
 	public List<UserFolder> getBacklogAdminFolders(UserAccount user) throws StorageAccessException {
-		List<UserFolder> folders = getAccessibleFolders(Integer.parseInt(user.getId()), fredDAO.getFolderType(Folder.FOLDER_TYPE_BACKLOG_ADMIN));
+		List<UserFolder> folders = getAccessibleFolders(Integer.parseInt(user.getId()), getFolderType(Folder.FOLDER_TYPE_BACKLOG_ADMIN));
 		Collections.sort(folders);
 		return folders;
 	}
@@ -78,8 +82,8 @@ public class FolderUtil extends ModelUtil {
 	 */
 	public List<UserFolder> getBacklogFolders(UserAccount user) throws StorageAccessException {
 		Vector<UserFolder> folders = new Vector<UserFolder>();
-		folders.addAll(getOwnedFolders(Integer.parseInt(user.getId()), fredDAO.getFolderType(Folder.FOLDER_TYPE_BACKLOG)));
-		folders.addAll(getAccessibleFolders(Integer.parseInt(user.getId()), fredDAO.getFolderType(Folder.FOLDER_TYPE_BACKLOG)));
+		folders.addAll(getOwnedFolders(Integer.parseInt(user.getId()), getFolderType(Folder.FOLDER_TYPE_BACKLOG)));
+		folders.addAll(getAccessibleFolders(Integer.parseInt(user.getId()), getFolderType(Folder.FOLDER_TYPE_BACKLOG)));
 		Collections.sort(folders);
 		return folders;
 	}	
@@ -117,7 +121,7 @@ public class FolderUtil extends ModelUtil {
 	    Folder folder = fredDAO.createNewFolder();
 	    folder.setName(name);
 	    folder.setOwner(userUtil.getFrUserView(user.getId()));
-	    folder.setFolderType(fredDAO.getFolderType(Folder.FOLDER_TYPE_PERSONAL));
+	    folder.setFolderType(getFolderType(Folder.FOLDER_TYPE_PERSONAL));
 	    fredDAO.saveOrUpdate(folder);
 	    return folder;
 	}
@@ -126,7 +130,7 @@ public class FolderUtil extends ModelUtil {
 	    Folder folder = fredDAO.createNewFolder();
 	    folder.setName(name);
 	    folder.setOwner(userUtil.getFrUserView(user.getId()));
-	    folder.setFolderType(fredDAO.getFolderType(Folder.FOLDER_TYPE_BACKLOG));
+	    folder.setFolderType(getFolderType(Folder.FOLDER_TYPE_BACKLOG));
 	    fredDAO.saveOrUpdate(folder);
 	    return folder;
 	}
@@ -144,8 +148,12 @@ public class FolderUtil extends ModelUtil {
 	public boolean getUserHasAdminRights(UserFolder folder) {
 	    return (folder.getRights() & Folder.FOLDER_ADMIN_RIGHT) > 0;
 	}
-	public int getMasterfileFolderFeatureCount(Folder folder) throws StorageAccessException {
-		return fredDAO.getWaitingMasterfileFeatureCount(folder);
+	public Integer getMasterfileFolderFeatureCount(Folder folder) throws StorageAccessException {
+		try {
+			return fredDAO.getList("", Integer.class, folder, AuditUtil.WAITING).get(0);
+		} catch (Exception e) {
+			throw new StorageAccessException(e);
+		}
 	}
 	
 	public UserFolder getUserFolder(int folderId, UserAccount user) throws StorageAccessException {
@@ -177,8 +185,8 @@ public class FolderUtil extends ModelUtil {
 	public List<FolderRight> getRightTypesForDisplay(UserFolder folder) throws StorageAccessException {
 		return (folder.getFolder().getFolderType().getName().equals(Folder.FOLDER_TYPE_PERSONAL)
 			|| folder.getFolder().getFolderType().getName().equals(Folder.FOLDER_TYPE_BACKLOG)) 
-			? fredDAO.getFolderRightList("code NOT IN ('1', '64')", "TO_NUMBER(code)") 
-			: fredDAO.getFolderRightList("code NOT IN ('1', '4', '8', '16')", "TO_NUMBER(code)");
+			? fredDAO.getList("FROM FolderRight AS f WHERE f.code NOT IN (1, 64)", FolderRight.class) 
+			: fredDAO.getList("FROM FolderRight AS f WHERE f.code NOT IN (1, 4, 8, 16)", FolderRight.class);
 	}
 	
 	public void addUserToFolder(UserFolder folder, Integer userId, Integer permissions) throws StorageAccessException {

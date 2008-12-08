@@ -4,78 +4,31 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
-import nz.cri.gns.fred.hibernate.dao.AssignedKeyed;
+import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
+import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RecordDetails;
+import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.RecordUtil;
 
 /** @author Hibernate CodeGenerator */
-public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleontology, AssignedKeyed {
+public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleontology {
 
     private static final long serialVersionUID = 20050818L;
 
-    /** identifier field */
     private Integer recordId;
-
-    /** nullable persistent field */
     private Date identificationDate;
-
-    /** nullable persistent field */
     private String dateRounding;
-
-    /** nullable persistent field */
     private String stageComments;
-
-    /** nullable persistent field */
     private String labNumber;
-
-    /** nullable persistent field */
     private String collectionComments;
-
-    /** persistent field */
-    private nz.cri.gns.fred.model.Record record;
-
-    /** persistent field */
-    private nz.cri.gns.fred.model.LabSection labSection;
-
-    /** persistent field */
-    private nz.cri.gns.fred.model.Stage stage;
-
-    /** persistent field */
+    private Record record;
+    private LabSection labSection;
+    private Stage stage;
     private Set<PaleontologyListEntry> palLists;
-
-    /** persistent field */
     private Set<Person> identifiers;
-
-    /** full constructor */
-    public Paleontology(Integer recordId, Date identificationDate, String dateRounding, String stageComments, String labNumber, String collectionComments, nz.cri.gns.fred.hibernate.Record record, nz.cri.gns.fred.hibernate.LabSection labSection, nz.cri.gns.fred.hibernate.Stage stage, Set<PaleontologyListEntry> palLists, Set<Person> identifiers) {
-        this.recordId = recordId;
-        this.identificationDate = identificationDate;
-        this.dateRounding = dateRounding;
-        this.stageComments = stageComments;
-        this.labNumber = labNumber;
-        this.collectionComments = collectionComments;
-        this.record = record;
-        this.labSection = labSection;
-        this.stage = stage;
-        this.palLists = palLists;
-        this.identifiers = identifiers;
-    }
-
-    /** default constructor */
-    public Paleontology() {
-    }
-
-    /** minimal constructor */
-    public Paleontology(Integer recordId, nz.cri.gns.fred.hibernate.LabSection labSection, nz.cri.gns.fred.hibernate.Stage stage, Set<PaleontologyListEntry> palLists, Set<Person> identifiers) {
-        this.recordId = recordId;
-        this.labSection = labSection;
-        this.stage = stage;
-        this.palLists = palLists;
-        this.identifiers = identifiers;
-    }
 
     public Integer getRecordId() {
         return this.recordId;
@@ -129,27 +82,23 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
         return this.record;
     }
 
-    public void setRecord(nz.cri.gns.fred.model.Record record) {
+    public void setRecord(Record record) {
         this.record = record;
-        if (record == null)
-        	this.recordId = null;
-        else
-        	this.recordId = record.getRecordId();
     }
 
-    public nz.cri.gns.fred.model.LabSection getLabSection() {
+    public LabSection getLabSection() {
         return this.labSection;
     }
 
-    public void setLabSection(nz.cri.gns.fred.model.LabSection labSection) {
+    public void setLabSection(LabSection labSection) {
         this.labSection = labSection;
     }
 
-    public nz.cri.gns.fred.model.Stage getStage() {
+    public Stage getStage() {
         return this.stage;
     }
 
-    public void setStage(nz.cri.gns.fred.model.Stage stage) {
+    public void setStage(Stage stage) {
         this.stage = stage;
     }
 

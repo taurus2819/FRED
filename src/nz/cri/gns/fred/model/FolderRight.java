@@ -1,10 +1,7 @@
 package nz.cri.gns.fred.model;
 
-public interface FolderRight {
-
+public interface FolderRight extends Comparable<FolderRight> {
 	public String getRightDescription();
-	
 	public Integer getRightId();
-	
-	public int getRightCode();
+	public Integer getCode();
 }

@@ -74,7 +74,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		newFeature.setFolders(null);
 		
 		//Copy feature images
-		Set images = feature.getMetaCats();
 		newFeature.setMetaCats(feature.getMetaCats());
 
 		//Clear out relationships pointing _to_ it
@@ -217,7 +216,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 
 	public Sample cloneSample(Feature newFeature, Sample sample) throws StorageAccessException, IntrospectionException {
-		Set images;
 		Sample newSample = fredDAO.createNewSample(newFeature);
 		FREDUtil.beanCopy(sample, newSample, 
 				new FREDUtil.ExcludeByType(Set.class, 
@@ -551,7 +549,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			features.addAll(featuresToAdd);
 		
 		//Get from audit
-		List<Audit> audits = fredDAO.getAuditsFor(folder.getFolder());
+		List<Audit> audits = getAuditsFor(folder.getFolder());
 		
 		for (Audit audit : audits) {
 			// - features
@@ -573,6 +571,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		Feature[] featuresArray = features.toArray(new Feature[features.size()]); 
 		Arrays.sort(featuresArray);
 		return featuresArray;
+	}
+	
+	public List<Audit> getAuditsFor(Folder folder) throws StorageAccessException {
+		return fredDAO.getList("FROM AuditTable as a WHERE a.folder = ?", Audit.class, folder);
 	}
 	
 	public List<Feature> getFeaturesBySample(Audit audit) throws StorageAccessException {
@@ -1177,22 +1179,18 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		}
 	}
 	
-	public int getTotalFeatureCount() {
-		try {
-			return fredDAO.getTotalFeatureCount();
-		} catch (Exception e) {
-			return 90000;
-		}
+	public Integer getTotalFeatureCount() throws StorageAccessException {
+		return fredDAO.getFirst("SELECT COUNT(*) FROM Feature AS f WHERE f.audit.status=?", Integer.class, AuditUtil.APPROVED);
 	}
 	
-	public Date getLastFeatureApprovalDate() {
+	public Date getLastFeatureApprovalDate() throws StorageAccessException {
 		try {
-			return fredDAO.getLastFeatureApprovalDate();
+			return fredDAO.getList("SELECT MAX(f.audit.approvedDate) FROM Feature AS f", Date.class).get(0);
 		} catch (Exception e) {
 			return null;
 		}
 	}
-	
+		
 	public static String formatDepthForOutput(Double depth, String unit) {
 		StringBuffer d = new StringBuffer(FREDUtil.formatDoubleForOutput(depth, 3)).append(" ").append(unit);
 		if (FEET_UNIT.equals(unit))
@@ -1201,15 +1199,15 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	public Country getCountry(String countryCode) throws StorageAccessException {
-		return fredDAO.getCountry(countryCode);
+		return fredDAO.getFirst("FROM Country AS c WHERE c.countryCode = ?", Country.class, countryCode);
 	}
 	
 	public List<Country> getCountries() throws StorageAccessException {
 		return fredDAO.getList("FROM Country AS c", Country.class);
 	}
 	
-	public List<SimpleNameableAndIdentifiable> getFrMapSheets() throws StorageAccessException {
-		List<String> sheetsAsString = fredDAO.getFrMapSheets();
+	public List<SimpleNameableAndIdentifiable> getFrMapSheetsAsNameable() throws StorageAccessException {
+		List<String> sheetsAsString = getFrMapSheets();
 		List<SimpleNameableAndIdentifiable> sheets = new Vector<SimpleNameableAndIdentifiable>();
 		for (String sheetAsString : sheetsAsString) {
 			SimpleNameableAndIdentifiable sheet = new SimpleNameableAndIdentifiable(sheetAsString, sheetAsString);
@@ -1217,6 +1215,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		}
 		return sheets;
 	}
+	
+	public List<String> getFrMapSheets() throws StorageAccessException {
+	       return fredDAO.getList("SELECT DISTINCT fr.mapSheet FROM FrNumber AS fr", String.class);
+		}
 	
 	public List<Feature> getListFromQueryBuilder(String query) throws StorageAccessException {
 		return fredDAO.getList(query, Feature.class);

@@ -56,26 +56,15 @@ public interface FredDAO {
 	public Folder createNewFolder();
 	public FolderUser createNewFolderUser();
 	public Person createNewPerson();
-	
+    public Record createNewRecord();
+    public Paleontology createNewPaleontology();
+    public Adoption createNewAdoption();
+    
+    
 	//to be rationalised
 
 
-	   /**
-     * Creates a new empty Record
-     */
-    public Record createNewRecord();
 
-
-
-   /**
-    * Creates a new empty Paleontology
-    */
-    public Paleontology createNewPaleontology();
-
-   /**
-    * Creates a new empty Adoption
-    */
-    public Adoption createNewAdoption();
 
     /**
      * Returns the masterfile folder of this record.  Provided to bypass having to instantiate

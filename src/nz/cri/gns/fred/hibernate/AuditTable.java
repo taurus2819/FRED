@@ -262,6 +262,14 @@ public class AuditTable implements Serializable, Audit {
 		this.confidGroups = confidGroups;
 	}
 
+	public int compareTo(Audit arg0) {
+		try {
+			return submittedDate.compareTo(arg0.getSubmittedDate());
+		} catch (Exception e) {
+			return auditId.compareTo(arg0.getAuditId());
+		}
+	}
+
 	/*public boolean equals(Object o) {
 		return o instanceof AuditTable && ((AuditTable)o).auditId.equals(auditId);
 	}

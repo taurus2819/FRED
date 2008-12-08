@@ -1,7 +1,11 @@
 package nz.cri.gns.fred.util;
 
 import java.util.List;
+import java.util.Vector;
 
+import net.sf.hibernate.expression.Criterion;
+import net.sf.hibernate.expression.Expression;
+import net.sf.hibernate.expression.MatchMode;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
@@ -22,7 +26,7 @@ public class PersonUtil extends ModelUtil {
      * @throws StorageAccessException
      */
 	public Person findOrCreatePerson(String name) throws StorageAccessException {
-		Person person = fredDAO.getPerson(name);
+		Person person = fredDAO.getFirst("FROM Person As p WHERE p.name = ?", Person.class, name);
 		if (person == null) {
 			//Insert them
 			person = fredDAO.createNewPerson();
@@ -37,11 +41,23 @@ public class PersonUtil extends ModelUtil {
      * @throws StorageAccessException
      */
 	public Person findPerson(String name) throws StorageAccessException {
-		return fredDAO.getPerson(name);
+		return fredDAO.getFirst("FROM Person As p WHERE p.name = ?", Person.class, name);
 	}
 
-	public List<Person> getMatchingPersons(String str, Match matchType, int maxMatches) throws StorageAccessException {
-		return fredDAO.getMatchingPersons(str, matchType, maxMatches);
+	public List<Person> getMatchingPersons(String str, Match matchType, Integer maxMatches) throws StorageAccessException {
+		List<Criterion> crit = new Vector<Criterion>();
+		switch (matchType) {
+		case ANYWHERE:
+			crit.add(Expression.ilike("name", str, MatchMode.ANYWHERE));
+			break;
+		case BEGINNING:
+			crit.add(Expression.ilike("name", str, MatchMode.START));
+			break;
+		case END:
+			crit.add(Expression.ilike("name", str, MatchMode.END));
+			break;
+		}
+		return fredDAO.getList(Person.class, crit, maxMatches);
 	}
 	
 	public List<Person> getPeople() throws StorageAccessException {

@@ -34,11 +34,8 @@
     />
     <property
         name="code"
-        type="java.lang.String"
+        type="java.lang.Integer"
         column="CODE"
-        not-null="true"
-        unique="true"
-        length="8"
     />
 
     <!-- Associations -->
