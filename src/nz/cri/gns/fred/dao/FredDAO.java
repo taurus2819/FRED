@@ -246,7 +246,6 @@ public interface FredDAO {
 	public List<Integer> getPanelistsOfTaxonomicGroup(TaxonomicGroup group) throws StorageAccessException;
 	*/
 
-	public FrUserView getFrUserView(String userName) throws StorageAccessException;
 	public FrUser createNewFrUser();
 	
 }

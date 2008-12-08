@@ -23,10 +23,6 @@ public class UserUtil extends ModelUtil {
 		this.fredDAO = factory.getFredDAO();
 	}
     
-	public FrUserView getFrUserView(String userName) throws StorageAccessException {
-		return fredDAO.getFrUserView(userName);
-	}
-	
 	public FrUserView getFrUserView(Integer userId) throws StorageAccessException {
 		return fredDAO.get(userId, nz.cri.gns.fred.hibernate.FrUserView.class);
 	}

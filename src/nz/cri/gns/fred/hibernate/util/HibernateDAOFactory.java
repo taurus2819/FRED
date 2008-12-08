@@ -502,10 +502,6 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 		}
 	}
 
-	public FrUserView getFrUserView(String userName) throws StorageAccessException {
-		return HibernateUtils.getFirst(provider, "FROM FrUserView As f WHERE f.userName = ?", userName, FrUserView.class);	
-	}
-
 	public FrUser createNewFrUser() {
 		return new nz.cri.gns.fred.hibernate.FrUser();
 	}

@@ -120,7 +120,7 @@ public class FolderUtil extends ModelUtil {
 	public Folder addFolder(String name, UserAccount user)  throws StorageAccessException {
 	    Folder folder = fredDAO.createNewFolder();
 	    folder.setName(name);
-	    folder.setOwner(userUtil.getFrUserView(user.getId()));
+	    folder.setOwner(userUtil.getFrUserView(new Integer(user.getId())));
 	    folder.setFolderType(getFolderType(Folder.FOLDER_TYPE_PERSONAL));
 	    fredDAO.saveOrUpdate(folder);
 	    return folder;
@@ -129,7 +129,7 @@ public class FolderUtil extends ModelUtil {
 	public Folder addBacklogFolder(String name, UserAccount user)  throws StorageAccessException {
 	    Folder folder = fredDAO.createNewFolder();
 	    folder.setName(name);
-	    folder.setOwner(userUtil.getFrUserView(user.getId()));
+	    folder.setOwner(userUtil.getFrUserView(new Integer(user.getId())));
 	    folder.setFolderType(getFolderType(Folder.FOLDER_TYPE_BACKLOG));
 	    fredDAO.saveOrUpdate(folder);
 	    return folder;
