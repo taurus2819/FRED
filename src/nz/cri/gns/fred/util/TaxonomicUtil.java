@@ -398,9 +398,7 @@ public class TaxonomicUtil extends ModelUtil {
 			Document doc = db.parse(xml);
 			Node existsNode = doc.getElementsByTagName("exists").item(0);
 			return (existsNode != null);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		} catch (Exception e) {	}
 		return false;
 	}
 }
