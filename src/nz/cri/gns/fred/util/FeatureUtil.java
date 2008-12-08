@@ -1151,7 +1151,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	public List<FrNumber> getFrNumbers(String mapSheet, Integer start, Integer end) throws StorageAccessException {
-		return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN :start AND :end AND f.obsolete IS NULL", FrNumber.class, mapSheet, start, end);
+		return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ? AND f.obsolete IS NULL", FrNumber.class, mapSheet, start, end);
 	}
 	
 	private static String RECOLL_COMMENTS = "*Recoll:";

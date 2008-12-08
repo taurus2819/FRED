@@ -45,7 +45,7 @@
 	try {
 		query.makeHTMLForQueryPanel(out, false);
 	} catch (Exception e) {
-		e.printStackTrace(new java.io.PrintWriter(out));
+		e.printStackTrace();
 	}
 	%></table></td></tr>
 	<tr><td><input name="button" type="button" value="Add Line" onClick="doTransfer(this.form);" /></td></tr>
