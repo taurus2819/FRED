@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.KeyValueObject;
 import nz.cri.gns.db.querybuilder.BasicDateField;
 import nz.cri.gns.db.querybuilder.BasicNumberField;
@@ -67,7 +68,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	
 	public FREDQuery() {
 		//this.people = getValues("FROM Person AS p", Person.class);
-		this.ages = getValues("FROM Age AS a WHERE a.code <> 'nd' AND a.code <> 'nf' AND a.obsoleteFlag = false", Age.class);
+		this.ages = getValues("FROM Age AS a WHERE a.code NOT IN (?, ?) AND a.obsoleteFlag = ?", Age.class, "nd", "nf", false);
 		try {
 			this.frUsers = new UserUtil(FredHibernate.get().getDAOFactory()).getFrWriters();
 		} catch (Exception e) {}
@@ -223,15 +224,14 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		return super.getHQLQuery("SELECT DISTINCT f", "Feature AS f", "f.audit.status = 'approved'", null, null);
 	}
 	
-	protected <T extends Comparable<? super T>> List<T> getValues(String query, Class<T> clazz) {
+	protected <T extends Comparable<? super T>> List<T> getValues(String query, Class<T> clazz, Object ... parameters) {
 		FredDAO featureDAO = FredHibernate.get().getDAOFactory().getFredDAO();
-		List<T> values = null;
 		try {
-			values = featureDAO.getList(query, clazz);
-		} catch (Exception e) {
+			return featureDAO.getList(query, clazz, parameters);
+		} catch (StorageAccessException e) {
 			e.printStackTrace();
 		}
-		return values;
+		return new Vector<T>();
 	}
 	
 	protected List<KeyValueObject> getSQLValues(String sql) {
