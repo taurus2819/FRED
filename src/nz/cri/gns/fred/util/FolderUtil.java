@@ -151,7 +151,7 @@ public class FolderUtil extends ModelUtil {
 	
 	public Integer getMasterfileFolderFeatureCount(Folder folder) throws StorageAccessException {
 		try {
-			return fredDAO.getList("SELECT COUNT(*) FROM Feature AS f WHERE f.masterFile = ? AND f.auditTable.status = ?", Integer.class, folder, AuditUtil.WAITING).get(0);
+			return fredDAO.getList("SELECT COUNT(*) FROM Feature AS f WHERE f.masterFile = ? AND f.audit.status = ?", Integer.class, folder, AuditUtil.WAITING).get(0);
 		} catch (Exception e) {
 			throw new StorageAccessException(e);
 		}
