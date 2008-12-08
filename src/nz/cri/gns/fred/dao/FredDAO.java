@@ -1,7 +1,5 @@
 package nz.cri.gns.fred.dao;
 
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import net.sf.hibernate.expression.Criterion;
@@ -12,11 +10,8 @@ import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
 import nz.cri.gns.fred.model.ConfidentialGroup;
-import nz.cri.gns.fred.model.Country;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Folder;
-import nz.cri.gns.fred.model.FolderRight;
-import nz.cri.gns.fred.model.FolderType;
 import nz.cri.gns.fred.model.FolderUser;
 import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
@@ -49,101 +44,21 @@ public interface FredDAO {
 	public <T> T getFirst(String query, Class<T> clazz, int parameter) throws StorageAccessException;
 	public <T> T getFirst(String query, Class<T> clazz, String parameter) throws StorageAccessException;
 	public void delete(Object object) throws StorageAccessException;
+	public void evict(Object object) throws StorageAccessException;
 	public <T> T saveOrUpdate(T object) throws StorageAccessException;
 	public <T> T save(T object) throws StorageAccessException;
 	public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException;
 	public <T extends Comparable<? super T>> List<T> getList(Class<T> clazz, List<Criterion> criteria) throws StorageAccessException;
+	public <T extends Comparable<? super T>> List<T> getList(Class<T> clazz, List<Criterion> criteria, Integer matches) throws StorageAccessException;
 	
 	//create
 	public Feature createNewFeature() throws StorageAccessException;
+	public Folder createNewFolder();
+	public FolderUser createNewFolderUser();
+	public Person createNewPerson();
 	
 	//to be rationalised
 
-
-
-	
-	public int getTotalFeatureCount() throws StorageAccessException;
-	
-	public Date getLastFeatureApprovalDate() throws StorageAccessException;
-	
-	public Country getCountry(String countryCode) throws StorageAccessException;
-	
-	public List<String> getFrMapSheets() throws StorageAccessException;
-	
-	
-	public Iterator<Feature> getAllFeatures() throws StorageAccessException;
-
-	/**
-	 * Cleans out resources related to this feature
-	 * @param feature
-	 */
-	public void evict(Feature feature) throws StorageAccessException;
-
-	public Iterator<Feature> getFeatures(String hqlQuery) throws StorageAccessException;
-
-	/**
-	 * Cleans out the feature and also all its children objects
-	 * @param feature
-	 * @throws StorageAccessException
-	 */
-	public void evictComplete(Feature feature) throws StorageAccessException;
-	
-
-	/**
-	 * Creates a new, unsaved folder
-	 */
-	public Folder createNewFolder();
-	
-
-
-	/**
-	 * Returns a count of any features that are in the masterfile folder given, with a 'waiting' status
-	 * @throws StorageAccessException
-	 */
-	public int getWaitingMasterfileFeatureCount(Folder folder) throws StorageAccessException;
-
-	/**
-	 * Returns all audits with the given folder as their working folder
-	 * @param folder
-	 * @return
-	 * @throws StorageAccessException
-	 */
-	public List<Audit> getAuditsFor(Folder folder) throws StorageAccessException;
-
-	/**
-	 * Returns all audits of the given status with the given folder as their working folder
-	 * @param folder
-	 * @return
-	 * @throws StorageAccessException
-	 */
-	public List<Audit> getAuditsFor(Folder folder, String status) throws StorageAccessException;
-
-	/**
-	 * Returns the folder rights which satisfy the given join, in the given order.  A query might look like
-	 * WHERE &lt;join&gt; ORDER BY &lt;order&gt;
-	 * @param join
-	 * @param order
-	 * @return
-	 * @throws StorageAccessException
-	 */
-	public List<FolderRight> getFolderRightList(String join, String order) throws StorageAccessException;
-
-	/**
-	 * Creates a new, unsaved folder user
-	 */
-	public FolderUser createNewFolderUser();
-	
-	public FolderType getFolderType(String label) throws StorageAccessException;
-	
-	public Person createNewPerson();
-
-	/**
-	 * If one exists in the database a person with the full name given. 
-	 * @throws StorageAccessException 
-	 */
-	public Person getPerson(String name) throws StorageAccessException;
-
-	public List<Person> getMatchingPersons(String str, Match matchType, int maxMatches) throws StorageAccessException;
 
 	   /**
      * Creates a new empty Record
