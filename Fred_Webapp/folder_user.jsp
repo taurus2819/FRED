@@ -100,8 +100,8 @@
 				%><tr class="lightColour"><td><%=folderUser.getUser().getFullName()%>&nbsp;&nbsp;</td>
 				<td style="text-align: center;"><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&ActionType=DeleteUser&UserID=<%=folderUser.getUser().getUserId()%>"><img src="images/ok.gif" width="20" height="20" border="0" alt="Delete User" /></a></td><%
 				for (FolderRight rightType : rightTypes) {
-					%><td style="text-align: center;"><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&ActionType=ChangeRight&UserID=<%=folderUser.getUser().getUserId()%>&Right=<%=rightType.getRightCode()%>"><%
-					if ((folderUser.getUserRights().intValue() & rightType.getRightCode()) != 0) {
+					%><td style="text-align: center;"><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&ActionType=ChangeRight&UserID=<%=folderUser.getUser().getUserId()%>&Right=<%=rightType.getCode()%>"><%
+					if ((folderUser.getUserRights().intValue() & rightType.getCode()) != 0) {
 						%><img src="images/ok.gif" alt="Remove Right"height="20" width="20" border="0"  /><%
 					} else {
 						%><img src="images/cancel.gif" alt="Add Right"height="20" width="20" border="0"  /><%
