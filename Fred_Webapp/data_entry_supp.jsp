@@ -25,7 +25,6 @@
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.db.DBUtils"
-%><%@page import="java.util.Iterator"
 %><%!
 	public String getName(HttpServletRequest request) {
 		return "FRED :: Data Entry Helper";
@@ -386,8 +385,7 @@
 				<tr><td class="heading">Localities in Folders</td><td>
 				<select name="WorkFeat">
 				<option value="-">-- Choose --</option><%
-				for (Iterator i = folderUtil.getPersonalPlusBacklogFolders(user).iterator(); i.hasNext();) {
-					UserFolder folder = (UserFolder) i.next();
+				for (UserFolder folder : folderUtil.getPersonalPlusBacklogFolders(user)) {
 					String foldName = folder.getFolderName();
 					Feature[] features = featureUtil.getFeaturesInFolder(folder);
 					for (int j = 0; j < features.length; j++) {
@@ -406,8 +404,7 @@
 					%>&nbsp;&nbsp;
 					<select name="SubFeat">
 					<option value="-">-- Choose --</option><%
-					for (Iterator i = featureUtil.getFrNumbers(request.getParameter("MapSheet")).iterator(); i.hasNext();) {
-						FrNumber frNumber = (FrNumber) i.next();
+					for (FrNumber frNumber : featureUtil.getFrNumbers(request.getParameter("MapSheet"))) {
 						%><option value="<%=frNumber.getFrNumber()%>"><%=frNumber.getFrNumber()%></option><%
 					}
 					%></select><%
@@ -442,8 +439,7 @@
 				<tr><td class="heading">Localities in Folders</td><td>
 				<select name="WorkFeat">
 				<option value="-">-- Choose --</option><%
-				for (Iterator i = folderUtil.getPersonalPlusBacklogFolders(user).iterator(); i.hasNext();) {
-					UserFolder folder = (UserFolder) i.next();
+				for (UserFolder folder : folderUtil.getPersonalPlusBacklogFolders(user)) {
 					String foldName = folder.getFolderName();
 					Feature[] features = featureUtil.getFeaturesInFolder(folder);
 					for (int j = 0; j < features.length; j++) {
@@ -462,8 +458,7 @@
 					%>&nbsp;&nbsp;
 					<select name="SubFeat">
 					<option value="-">-- Choose --</option><%
-					for (Iterator i = featureUtil.getFrNumbers(request.getParameter("MapSheet")).iterator(); i.hasNext();) {
-						FrNumber frNumber = (FrNumber) i.next();
+					for (FrNumber frNumber : featureUtil.getFrNumbers(request.getParameter("MapSheet"))) {
 						%><option value="<%=frNumber.getFrNumber()%>"><%=frNumber.getFrNumber()%></option><%
 					}
 					%></select><%
