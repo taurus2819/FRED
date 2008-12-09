@@ -760,7 +760,9 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			//Go through all the new ones
 			for (String previous : request.getParameter("PrevSamp").split(";")) try {
 				previous = previous.trim();
+				System.out.println("Adding previous sample: " + previous);
 				Feature feature = featureUtil.getFeatureWithIdentifyingName(previous);
+				System.out.println("Matched with feature: " + feature);
 				boolean found = false;
 				for (Iterator<Relationship> it = previousSample.iterator(); it.hasNext(); ) {
 					Relationship rel = it.next();
