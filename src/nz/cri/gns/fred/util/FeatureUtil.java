@@ -892,6 +892,27 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return fredDAO.getList("FROM RegistrationArea AS r", RegistrationArea.class);
 	}
 	
+	public List<FrNumber> parseFrNumbers(String frNumStr) throws DataInputException, StorageAccessException {
+		System.out.println("Parsing " + frNumStr);
+		try {
+			if (frNumStr.indexOf("-") > 0) {
+				FrNumber startFrNum = parseFrNumber(frNumStr.substring(0, frNumStr.indexOf("-")), false);
+				if (startFrNum == null)
+					startFrNum = parseYardFrNumber(frNumStr.substring(0, frNumStr.indexOf("-")), false);
+				Integer endSerialNum = new Integer(frNumStr.substring(frNumStr.indexOf("-") + 1));
+				return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ? AND ", FrNumber.class, startFrNum.getMapSheet(), startFrNum.getSerialNumber(), endSerialNum);
+			} else {
+				List<FrNumber> frNumbers = new Vector<FrNumber>();
+				frNumbers.add(parseFrNumber(frNumStr, false));
+				frNumbers.add(parseYardFrNumber(frNumStr, false));
+				return frNumbers;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	/**
 	 * Parses FR Number as string and returns FrNumber object
 	 * If FRNumber exists it is returned, or a new FRNumber object is created (if createNew is TRUE)
@@ -957,11 +978,17 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			return (Feature) frNum.getFeatures().iterator().next();
 		} catch (Exception e) {}
 		try {
+			return (Feature) frNum.getFeaturesByYard().iterator().next();
+		} catch (Exception e) {}
+		try {
 			Sample sample = (Sample) frNum.getSamples().iterator().next();
 			return sample.getFeature();
-		} catch (Exception e) {
-			return null;
-		}
+		} catch (Exception e) {}
+		try {
+			Sample sample = (Sample) frNum.getSamplesByYard().iterator().next();
+			return sample.getFeature();
+		} catch (Exception e) {}
+		return null;
 	}
 
 	public void addSample(Feature feature, String topDepthAsString, String bottomDepthAsString, String drillTypeIdAsString, int folderId, UserAccount user) throws StorageAccessException, DataInputException {
@@ -1080,7 +1107,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		try {
 			FrNumber frNum = parseFrNumber(ident, false);
 			if (frNum == null)
-				frNum = parseFrNumber(ident, false, true);
+				frNum = parseYardFrNumber(ident, false);
 			if (frNum != null) 
 				return getFeature(frNum);
 		} catch (Exception e) {}

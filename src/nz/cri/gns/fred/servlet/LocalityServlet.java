@@ -2,6 +2,7 @@ package nz.cri.gns.fred.servlet;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -34,29 +35,24 @@ public class LocalityServlet extends HttpServlet {
 	private void redirect(String frNum, String baseUrl, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		DAOFactory factory = null;
 		factory = FredHibernate.get().getDAOFactory();
-		FrNumber num = null;
-		FrNumber yardNum = null;
+		List<FrNumber> nums = null;
 		HashSet<Feature> features = new HashSet<Feature>();
 		try {
-			num = new FeatureUtil(factory).parseFrNumber(frNum, false);
+			nums = new FeatureUtil(factory).parseFrNumbers(frNum);
 		} catch (Exception e) {}
-		try {
-			yardNum = new FeatureUtil(factory).parseYardFrNumber(frNum, false);
-		} catch (Exception e) {
-		}
 		
 		try {
-			if (num != null) {
-				if (!FREDUtil.isEmpty(num.getFeatures()))
-					features.addAll(num.getFeatures());
-				for (Sample sample : num.getSamples())
-					features.add(sample.getFeature());
-			}
-			if (yardNum != null) {
-				if (!FREDUtil.isEmpty(yardNum.getFeaturesByYard()))
-					features.addAll(yardNum.getFeaturesByYard());
-				for (Sample sample : yardNum.getSamplesByYard())
-					features.add(sample.getFeature());
+			if (nums != null && nums.size() > 0) {
+				for (FrNumber num : nums) {
+					if (!FREDUtil.isEmpty(num.getFeatures()))
+						features.addAll(num.getFeatures());
+					for (Sample sample : num.getSamples())
+						features.add(sample.getFeature());
+					if (!FREDUtil.isEmpty(num.getFeaturesByYard()))
+						features.addAll(num.getFeaturesByYard());
+					for (Sample sample : num.getSamplesByYard())
+						features.add(sample.getFeature());
+				}
 			}
 			if (features.size() == 1) {
 				response.sendRedirect(baseUrl + "detail.jsp?FeatID=" + features.iterator().next().getFeatureId());
