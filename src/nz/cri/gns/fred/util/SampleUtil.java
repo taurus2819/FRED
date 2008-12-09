@@ -634,11 +634,16 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return desc.toString();
 	}
 	
-	public Relationship decodeSampleRelationshipDescription(String desc) throws StorageAccessException {
+	public Relationship decodeSampleRelationshipDescription(String desc) throws StorageAccessException, DataInputException {
 		NoIdRelationship relationship = new NoIdRelationship();
 		String name = getCommonRelationshipPropertiesFromDescription(desc, relationship, fredDAO.getRelationType("Sample"));
-		relationship.setFeature(new FeatureUtil(factory).getFeatureWithIdentifyingName(name));
-		return relationship;
+		Feature feature = new FeatureUtil(factory).getFeatureWithIdentifyingName(name);
+		if (feature != null) {
+			relationship.setFeature(feature);
+			return relationship;
+		} else {
+			throw new DataInputException("Sample Relationships", "Feature " + name + " not found");
+		}
 	}
 
 	public Relationship decodeStratigraphicRelationshipDescription(String desc) throws StorageAccessException {
