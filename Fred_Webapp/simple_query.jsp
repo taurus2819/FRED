@@ -70,21 +70,17 @@
 				queryString = queryString + "FR Number = " + trim(FRNum.value) + " AND ";
 			}
 			if (Map.value.length > 0) {
-				whereSQL = whereSQL + "st.nzmg_sheet = '" + Map.value.toUpperCase() + "' AND ";
+				whereSQL = whereSQL + "s.feature.siteView.nzmgSheet = '" + Map.value.toUpperCase() + "' AND ";
 				queryString = queryString + "NZMG Sheet = " + Map.value.toUpperCase() + " AND ";
-				siteFlag = true;
 			}
 			if (QMap.value != "-") {
-				whereSQL = whereSQL + "st.qmap_sheet = '" + QMap.value + "' AND ";
+				whereSQL = whereSQL + "s.feature.siteView.qmapSheet = '" + QMap.value + "' AND ";
 				queryString = queryString + "QMAP Sheet = " + QMap.value + " AND ";
-				siteFlag = true;
 			}
 			if (Coll.value != "-") {
-				whereSQL = whereSQL + "c.person_id = " + Coll.value + " AND ";
+				whereSQL = whereSQL + "person.personId = " + Coll.value + " AND ";
 				queryString = queryString + "Collector = " + Coll.options[Coll.options.selectedIndex].text + " AND ";
-				tableName = tableName + ", collector c";
-				tableJoin = tableJoin + "c.sample_id = s.sample_id AND ";
-				sampFlag = true;
+				tableName = tableName + " JOIN s.collectors AS person";
 			}
 			if (YearFrom.value.length > 0) {
 				if (isNaN(YearFrom.value) || YearFrom.value.length != 4) {

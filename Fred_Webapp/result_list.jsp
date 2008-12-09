@@ -71,8 +71,8 @@
 			try {
 				FREDQuery query = FREDUtil.getFREDQuery(state);
 				queryString = query.getQueryAsString();
-				samples = sampleUtil.getListFromHQL(query.getHQLQuery());
-				features = featureUtil.getFeatures(samples);
+				features = sampleUtil.getListFromHQL(query.getHQLQuery(), Feature.class);
+				//features = featureUtil.getFeatures(samples);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -82,10 +82,10 @@
 			String tableName = request.getParameter("TableName");
 			queryString = request.getParameter("QueryString");
 			try {
-				String hql = "SELECT DISTINCT s.sampleId FROM " + tableName + " WHERE " + whereSQL;
-				List<Integer> sampleIds = sampleUtil.getListFromHQL(hql, Integer.class);
-				//features = featureUtil.getFeatures(samples);
-				//auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
+				String sampHql = "SELECT DISTINCT FROM " + tableName + " WHERE " + whereSQL;
+				samples = sampleUtil.getListFromHQL(sampHql, Sample.class);
+				features = featureUtil.getFeatures(samples);
+				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
