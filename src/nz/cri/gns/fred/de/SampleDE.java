@@ -760,9 +760,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			//Go through all the new ones
 			for (String previous : request.getParameter("PrevSamp").split(";")) try {
 				previous = previous.trim();
-				System.out.println("Adding previous sample: " + previous);
 				Feature feature = featureUtil.getFeatureWithIdentifyingName(previous);
-				System.out.println("Matched with feature: " + feature);
 				if (feature != null) {
 					boolean found = false;
 					for (Iterator<Relationship> it = previousSample.iterator(); it.hasNext(); ) {
@@ -815,9 +813,11 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 					//Wasn't in the old set, so add it
 					relationships.add(sampleUtil.cloneRelationship(newRelationship));
 				}
-			} catch (Exception e) {
+			} catch (StorageAccessException e) {
 				e.printStackTrace();
 				error.add(new String[] {"Sample relationships", e.getMessage()});
+			} catch (DataInputException e) {
+				error.addAll(e.getError());
 			}
 		}
 		//Remove any that are still in the old set
