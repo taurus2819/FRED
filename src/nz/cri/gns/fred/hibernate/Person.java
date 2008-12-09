@@ -9,59 +9,19 @@ import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SentTo;
 
-/** @author Hibernate CodeGenerator */
 public class Person implements Serializable, nz.cri.gns.fred.model.Person {
 
 	private static final long serialVersionUID = 20050818L;
 
-	/** identifier field */
     private Integer personId;
-
-    /** persistent field */
     private String name;
-
-    /** nullable persistent field */
     private Integer stCode;
-
-    /** persistent field */
     private Set<Adoption> adoptions;
-
-    /** persistent field */
     private Set<Paleontology> identifiedPaleontologies;
-
-    /** persistent field */
     private Set<Feature> features;
-
-    /** persistent field */
     private Set<Sample> collectedSamples;
-
-    /** persistent field */
     private Set<SentTo> sentTos;
     
-    /** full constructor */
-    public Person(String name, Integer stCode, Set<Adoption> adoptions, Set<Paleontology> identifiedPaleontologies, Set<Feature> features, Set<Sample> collectedSamples, Set<SentTo> sentTos) {
-        this.name = name;
-        this.stCode = stCode;
-        this.adoptions = adoptions;
-        this.identifiedPaleontologies = identifiedPaleontologies;
-        this.features = features;
-        this.collectedSamples = collectedSamples;
-        this.sentTos = sentTos;
-    }
-
-    /** default constructor */
-    public Person() {
-    }
-
-    /** minimal constructor */
-    public Person(String name, Set<Adoption> adoptions, Set<Paleontology> identifiedPaleontologies, Set<Feature> features, Set<Sample> collectedSamples) {
-        this.name = name;
-        this.adoptions = adoptions;
-        this.identifiedPaleontologies = identifiedPaleontologies;
-        this.features = features;
-        this.collectedSamples = collectedSamples;
-    }
-
     public Integer getPersonId() {
         return this.personId;
     }
@@ -142,11 +102,4 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
 		return String.valueOf(personId);
 	}
 	
-	/*public boolean equals(Object o) {
-		return o instanceof Person && personId != null && personId.equals(((Person)o).getPersonId());
-	}
-    
-    public int hashCode() {
-        return name.hashCode();
-    }*/
 }
