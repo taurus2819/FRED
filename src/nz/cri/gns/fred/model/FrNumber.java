@@ -2,51 +2,27 @@ package nz.cri.gns.fred.model;
 
 import java.util.Set;
 
-/**
- *
- */
 public interface FrNumber extends Comparable<FrNumber> {
-	public abstract Integer getFrId();
-
-	public abstract void setFrId(Integer frId);
-
-	public abstract String getMapSheet();
-
-	public abstract void setMapSheet(String mapSheet);
-
-	public abstract Integer getSerialNumber();
-
-	public abstract void setSerialNumber(Integer serialNumber);
-
-	public abstract String getRecollectionNumber();
-
-	public abstract void setRecollectionNumber(String recollectionNumber);
-
-	public abstract String getFrnumComments();
-
-	public abstract void setFrnumComments(String frnumComments);
-
-	public abstract String getFrNumber();
-
-	public abstract void setFrNumber(String frNumber);
-	
-	public abstract String getObsolete();
-
-	public abstract void setObsolete(String obsolete);
-
-	public abstract Set<Feature> getFeatures();
-
-	public abstract void setFeatures(Set<Feature> features);
-	
-    public abstract Set<Feature> getFeaturesByYard();
-
-    public abstract void setFeaturesByYard(Set<Feature> featuresByYard);
-	
-	public abstract Set<Sample> getSamples();
-
-	public abstract void setSamples(Set<Sample> samples);
-	
-    public abstract Set<Sample> getSamplesByYard();
-
-    public abstract void setSamplesByYard(Set<Sample> samplesByYard);
+	public Integer getFrId();
+	public void setFrId(Integer frId);
+	public String getMapSheet();
+	public void setMapSheet(String mapSheet);
+	public Integer getSerialNumber();
+	public void setSerialNumber(Integer serialNumber);
+	public String getRecollectionNumber();
+	public void setRecollectionNumber(String recollectionNumber);
+	public String getFrnumComments();
+	public void setFrnumComments(String frnumComments);
+	public String getFrNumber();
+	public void setFrNumber(String frNumber);
+	public String getObsolete();
+	public void setObsolete(String obsolete);
+	public Set<Feature> getFeatures();
+	public void setFeatures(Set<Feature> features);
+    public Set<Feature> getFeaturesByYard();
+    public void setFeaturesByYard(Set<Feature> featuresByYard);
+	public Set<Sample> getSamples();
+	public void setSamples(Set<Sample> samples);
+    public Set<Sample> getSamplesByYard();
+    public void setSamplesByYard(Set<Sample> samplesByYard);
 }
