@@ -66,7 +66,7 @@
 					alert("FR Number field incorrectly formatted");
 					return false;
 				}
-				whereSQL = "((" + frNum + ") OR (" + parseFRNum(trim(FRNum.value), "yardFrNumber") + ") OR (" + parseFRNum(trim(FRNum.value), "feature.frNumber") + ") OR (" + parseFRNum(trim(FRNum.value), "feature.yardfrNumber") + ")) AND ";
+				whereSQL = "((" + frNum + ") OR (" + parseFRNum(trim(FRNum.value), "yardFrNumber") + ") OR (" + parseFRNum(trim(FRNum.value), "feature.frNumber") + ") OR (" + parseFRNum(trim(FRNum.value), "feature.yardFrNumber") + ")) AND ";
 				queryString = queryString + "FR Number = " + trim(FRNum.value) + " AND ";
 			}
 			if (Map.value.length > 0) {

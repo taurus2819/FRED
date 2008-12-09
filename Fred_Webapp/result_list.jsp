@@ -82,10 +82,10 @@
 			String tableName = request.getParameter("TableName");
 			queryString = request.getParameter("QueryString");
 			try {
-				String hql = "FROM " + tableName + " WHERE " + whereSQL;
-				samples = sampleUtil.getListFromHQL(hql);
-				features = featureUtil.getFeatures(samples);
-				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
+				String hql = "SELECT DISTINCT s.sampleId FROM " + tableName + " WHERE " + whereSQL;
+				List<Integer> sampleIds = sampleUtil.getListFromHQL(hql, Integer.class);
+				//features = featureUtil.getFeatures(samples);
+				//auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
