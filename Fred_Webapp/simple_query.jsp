@@ -60,15 +60,6 @@
 		var palFlag = false;
 		var siteFlag = false;
 		with (form) {
-			if (FRNum.value.length > 0) {
-				frNum = parseFRNum(trim(FRNum.value), "frNumber");
-				if (frNum == "false") {
-					alert("FR Number field incorrectly formatted");
-					return false;
-				}
-				whereSQL = "((" + frNum + ") OR (" + parseFRNum(trim(FRNum.value), "yardFrNumber") + ") OR (" + parseFRNum(trim(FRNum.value), "feature.frNumber") + ") OR (" + parseFRNum(trim(FRNum.value), "feature.yardFrNumber") + ")) AND ";
-				queryString = queryString + "FR Number = " + trim(FRNum.value) + " AND ";
-			}
 			if (Map.value.length > 0) {
 				whereSQL = whereSQL + "s.feature.siteView.nzmgSheet = '" + Map.value.toUpperCase() + "' AND ";
 				queryString = queryString + "NZMG Sheet = " + Map.value.toUpperCase() + " AND ";
@@ -77,9 +68,9 @@
 				whereSQL = whereSQL + "s.feature.siteView.qmapSheet = '" + QMap.value + "' AND ";
 				queryString = queryString + "QMAP Sheet = " + QMap.value + " AND ";
 			}
-			if (Coll.value != "-") {
-				whereSQL = whereSQL + "person.personId = " + Coll.value + " AND ";
-				queryString = queryString + "Collector = " + Coll.options[Coll.options.selectedIndex].text + " AND ";
+			if (Coll.value.length > 0) {
+				whereSQL = whereSQL + "UPPER(person.name) LIKE '%" + replaceSingleQuote(Coll.value.toUpperCase()) + "%' AND ";
+				queryString = queryString + "Collector = " + Coll.value + " AND ";
 				tableName = tableName + " JOIN s.collectors AS person";
 			}
 			if (YearFrom.value.length > 0) {
@@ -92,37 +83,32 @@
 						alert("Year must be numeric and 4 digits");
 						return false;
 					}
-					whereSQL = whereSQL + "s.collection_date BETWEEN '01-JAN-" + YearFrom.value + "' AND '31-DEC-" + YearTo.value + "' AND ";
+					whereSQL = whereSQL + "s.collectionDate BETWEEN '01-JAN-" + YearFrom.value + "' AND '31-DEC-" + YearTo.value + "' AND ";
 					queryString = queryString + "Collection Date BETWEEN " + YearFrom.value + " AND " + YearTo.value + " AND ";
 				} else {
-					whereSQL = whereSQL + "s.collection_date BETWEEN '01-JAN-" + YearFrom.value + "' AND '31-DEC-" + YearFrom.value + "' AND ";
+					whereSQL = whereSQL + "s.collectionDate BETWEEN '01-JAN-" + YearFrom.value + "' AND '31-DEC-" + YearFrom.value + "' AND ";
 					queryString = queryString + "Collection Date = " + YearFrom.value + " AND ";
 				}
-				sampFlag = true;
 			}
 			if (FieldNum.value.length > 0) {
-				whereSQL = whereSQL + "UPPER(fv.feature_name) LIKE '%" + replaceSingleQuote(FieldNum.value.toUpperCase()) + "%' AND ";
+				whereSQL = whereSQL + "UPPER(s.feature.featureName) LIKE '%" + replaceSingleQuote(FieldNum.value.toUpperCase()) + "%' AND ";
 				queryString = queryString + "Field Number = " + FieldNum.value + " AND ";
 			}
 			if (StratName.value.length > 0) {
-				whereSQL = whereSQL + "UPPER(s.strat_unit) LIKE '%" + replaceSingleQuote(StratName.value.toUpperCase()) + "%' AND ";
+				whereSQL = whereSQL + "UPPER(s.stratUnit) LIKE '%" + replaceSingleQuote(StratName.value.toUpperCase()) + "%' AND ";
 				queryString = queryString + "Stratigraphic Name = " + StratName.value + " AND ";
-				sampFlag = true;
 			}
 			if (StratAtt.checked) {
-				whereSQL = whereSQL + "(s.dip IS NOT NULL OR s.dip_direction IS NOT NULL OR s.strike IS NOT NULL) AND ";
+				whereSQL = whereSQL + "(s.dip IS NOT NULL OR s.dipDirection IS NOT NULL OR s.strike IS NOT NULL) AND ";
 				queryString = queryString + "Stratal Attitude present AND ";
-				sampFlag = true;
 			}
 			if (RockNat.value.length > 0) {
-				whereSQL = whereSQL + "UPPER(s.rock_nature) LIKE '%" + replaceSingleQuote(RockNat.value.toUpperCase()) + "%' AND ";
+				whereSQL = whereSQL + "UPPER(s.rockNature) LIKE '%" + replaceSingleQuote(RockNat.value.toUpperCase()) + "%' AND ";
 				queryString = queryString + "Nature of Rock Unit = " + RockNat.value + " AND ";
-				sampFlag = true;
 			}
 			if (DepEnv.value.length > 0) {
-				whereSQL = whereSQL + "UPPER(s.deposition_env) LIKE '%" + replaceSingleQuote(DepEnv.value.toUpperCase()) + "%' AND ";
+				whereSQL = whereSQL + "UPPER(s.depositionEnv) LIKE '%" + replaceSingleQuote(DepEnv.value.toUpperCase()) + "%' AND ";
 				queryString = queryString + "Deposition Environment = " + DepEnv.value + " AND ";
-				sampFlag = true;
 			}
 			//check only stage name or numeric values entered
 			if (StageFrom.value != "-" && AgeFrom.value.length > 0) {
@@ -221,14 +207,6 @@
 				tableJoin = tableJoin + "r.sample_id = s.sample_id AND ";
 				sampFlag = true;
 			}
-			if (sampFlag) {
-				tableName = tableName + ", sample s";
-				tableJoin = tableJoin + "s.feature_id = fv.feature_id AND ";
-			}
-			if (siteFlag) {
-				tableName = tableName + ", sc.site_view st";
-				tableJoin = tableJoin + "st.site_id = fv.site_id AND ";
-			}
 			if (whereSQL.length > 0)
 			whereSQL = whereSQL.substring(0, whereSQL.length - 5);
 			if (tableJoin.length > 0)
@@ -248,44 +226,6 @@
 		return true;
 	}
 	
-	function parseFRNum(frNum, prefix) {
-		var x, y = "", z;
-		x = trim(frNum);
-		if (x.substring(x.length - 1, x.length) != ",") { x = x + ","; }
-		while (x.indexOf(",") > 0) {
-			z = parseIndivFRNum(trim(x.substring(0, x.indexOf(","))), prefix);
-			if (z == "false") { return "false"; }
-			y = y + z + " OR ";
-			x = trim(x.substring(x.indexOf(",") + 1, x.length));
-		}
-		y = y.substring(0, y.length - 4);
-		return y
-	}
-	
-	function parseIndivFRNum(frNum, prefix) {
-		var sheet, serial
-		if (frNum.indexOf("/f") == -1) { return "false"; }
-		sheet = frNum.substring(0, frNum.indexOf("/f")).toUpperCase();
-		serial = parseSerialNum(frNum.substring(frNum.indexOf("/f") + 2, frNum.length), prefix);
-		if (serial == "false") { return "false"; }
-		return "(s." + prefix + ".mapSheet = '" + sheet + "' AND " + serial + ")";
-	}
-	
-	function parseSerialNum(serialNum, prefix) {
-		var x, y;
-		if (serialNum.indexOf("-") > 0) {
-			x = trim(serialNum.substring(0, serialNum.indexOf("-")));
-			y = trim(serialNum.substring(serialNum.indexOf("-") + 1, serialNum.length));
-			if (isNaN(x) || isNaN(y)) { return "false"; }
-			return "s." + prefix + ".serialNumber BETWEEN " + parseInt(x, 10) + " AND " + parseInt(y, 10);
-		} else if (isNaN(serialNum.substring(serialNum.length - 1, serialNum.length)) && !isNaN(serialNum.substring(0, serialNum.length - 1))) {
-			return "s." + prefix + ".serialNumber = " + parseInt(serialNum.substring(0, serialNum.length - 1), 10) + " AND s." + prefix + ".recollectionNumber = '" + serialNum.substring(serialNum.length - 1, serialNum.length).toUpperCase() + "'";
-		} else if (isNaN(serialNum)) {
-			return "false";
-		}
-		return "s." + prefix + ".serialNumber = " + parseInt(serialNum, 10);
-	}
-	
 	</script><%
 
 	//build array of stage ages
@@ -300,12 +240,10 @@
 	%></script>
 	
 	<form name="QueryForm" method="post" action="result_list.jsp" onsubmit="return generateSQL(this)">
-	<table border="0" cellspacing="0" cellpadding="3" width="600">
-	<tr><td style="color: #FF0000" colspan="5">A new <i>Advanced Query Builder</i> is now available and can be used to generate more complex queries than this form.</td></tr>
-	<tr><td>&nbsp;</td></tr>
-	<tr><td class="heading">Fossil Record No.&nbsp;&nbsp;</td><td></td><td colspan="3"><input type="text" name="FRNum" size="30" /></td></tr> 
-	<tr><td class="heading">NZMG Sheet&nbsp;&nbsp;</td><td></td><td colspan="3"><input type="text" name="Map" size="10" /></td></tr>
-	<tr><td class="heading">QMap Sheet&nbsp;&nbsp;</td><td></td><td colspan="3">
+	<p><table border="0" cellpadding="3" cellspacing="2" width="600">
+	<tr class="midColour"><th colspan="2">Sample Fields</th></tr>
+	<tr class="lightColour"><td class="heading">NZMG Sheet&nbsp;&nbsp;</td><td><input type="text" name="Map" size="10" /></td></tr>
+	<tr class="lightColour"><td class="heading">QMap Sheet&nbsp;&nbsp;</td><td>
 	<select name="QMap">
 		<option value="-">-- All --</option>
 		<option value="Kaitaia">Kaitaia</option>
@@ -331,33 +269,37 @@
 		<option value="Dunedin">Dunedin</option>
 	</select>
 	</td></tr>
-	<tr><td class="heading">Collector&nbsp;&nbsp;</td><td></td><td colspan="3"><%	
-	SelectBox<Person> personSelectBox = new SelectBox<Person>(new PersonUtil(factory).getPeople());
-	Attributes attributes = Attributes.createNameOnlyAttributes("Coll");
-	personSelectBox.writeBox(attributes, "-- All --", null, (Person)null, new PrintWriter(out));
-	%></td></tr>
-	<tr><td class="heading">Collection Date&nbsp;&nbsp;</td><td class="smallheading">Year</td><td><input type="text" name="YearFrom" size="10" /></td><td>to</td><td><input type="text" name="YearTo" size="10" /></td></tr>
-	<tr><td class="heading">Field Number&nbsp;&nbsp;</td><td></td><td colspan="3"><input type="text" name="FieldNum" size="20" /></td></tr>
-	<tr><td class="heading">Stratigraphic Name&nbsp;&nbsp;</td><td></td><td colspan="3"><input type="text" name="StratName" size="20" /></td></tr>
-	<tr><td class="heading">Stratal Attitude&nbsp;&nbsp;</td><td class="smallheading">Presence of dip/strike</td><td colspan="3"><input type="checkbox" name="StratAtt" /></td></tr>
-	<tr><td class="heading">Nature of Rock Unit&nbsp;&nbsp;</td><td></td><td colspan="3"><input type="text" name="RockNat" size="20" /></td></tr>
-	<tr><td class="heading">Deposition Environment&nbsp;&nbsp;</td><td></td><td colspan="3"><input type="text" name="DepEnv" size="20" /></td></tr>
-	<tr><td class="heading">Age&nbsp;&nbsp;</td><td class="smallheading">Stage Range</td><td><%
+	<tr class="lightColour"><td class="heading">Collector&nbsp;&nbsp;</td><td><input type="text" name="Coll" size="30" /></td></tr>
+	<tr class="lightColour"><td class="heading">Collection Year&nbsp;&nbsp;</td><td><input type="text" name="YearFrom" size="10" />&nbsp;<b>to</b>&nbsp;<input type="text" name="YearTo" size="10" /></td></tr>
+	<tr class="lightColour"><td class="heading">Field Number&nbsp;&nbsp;</td><td><input type="text" name="FieldNum" size="30" /></td></tr>
+	<tr class="lightColour"><td class="heading">Stratigraphic Name&nbsp;&nbsp;</td><td><input type="text" name="StratName" size="30" /></td></tr>
+	<tr class="lightColour"><td class="heading">Stratal Attitude&nbsp;&nbsp;</td><td><input type="checkbox" name="StratAtt" />&nbsp;Presence of dip/strike</td></tr>
+	<tr class="lightColour"><td class="heading">Nature of Rock Unit&nbsp;&nbsp;</td><td><input type="text" name="RockNat" size="30" /></td></tr>
+	<tr class="lightColour"><td class="heading">Deposition Environment&nbsp;&nbsp;</td><td><input type="text" name="DepEnv" size="30" /></td></tr>
+	<tr><td>&nbsp;</td></tr>
+	
+	<tr class="midColour"><th colspan="2">Ages</th></tr>
+	<tr class="lightColour"><td class="heading">Stage Range</td><td><%
 	SelectBox<Age> ageSelectBox = new SelectBox<Age>(new StageUtil(factory).getAges());
-	attributes = Attributes.createNameOnlyAttributes("StageFrom");
+	Attributes attributes = Attributes.createNameOnlyAttributes("StageFrom");
 	ageSelectBox.writeBox(attributes, "-- All --", null, (Age)null, new PrintWriter(out));
-	%></td><td>&nbsp;to&nbsp;</td><td><%
+	%>&nbsp;<b>to</b>&nbsp;<%
 	attributes = Attributes.createNameOnlyAttributes("StageTo");
 	ageSelectBox.writeBox(attributes, "-- All --", null, (Age)null, new PrintWriter(out));
 	%></td></tr>
-	<tr><td></td><td class="smallheading">Numeric Range&nbsp;&nbsp;</td><td><input type="text" name="AgeFrom" size="10" /></td><td>&nbsp;to&nbsp;</td><td><input type="text" name="AgeTo" size="10" /></td></tr>
-	<tr><td></td><td class="smallheading">Options</td><td class="smallheading"><input type="checkbox" name="StratAge" checked />&nbsp;Collectors&nbsp;Inferred/Known&nbsp;Age<br><input type="checkbox" name="AdoAge" checked />&nbsp;Adopted&nbsp;Age<br><input type="checkbox" name="PalAge" checked />&nbsp;Paleontology&nbsp;Det&nbsp;Age</td><td></td><td class="smallheading"><input type="radio" name="AgeType" value="Narrow" checked />&nbsp;Narrow Search<br><input type="radio" name="AgeType" value="Wide" />&nbsp;Wide Search</td></tr>
-	</table>
+	<tr class="lightColour"><td class="heading">Numeric Range&nbsp;&nbsp;</td><td><input type="text" name="AgeFrom" size="10" />&nbsp;<b>to</b>&nbsp;<input type="text" name="AgeTo" size="10" /></td></tr>
+	<tr class="lightColour"><td class="heading">Search Fields&nbsp;&nbsp;</td><td><input type="checkbox" name="StratAge" checked />&nbsp;Collectors&nbsp;Inferred/Known&nbsp;Age<br><input type="checkbox" name="AdoAge" checked />&nbsp;Adopted&nbsp;Age<br><input type="checkbox" name="PalAge" checked />&nbsp;Paleontology&nbsp;Det&nbsp;Age</td></tr>
+	<tr class="lightColour"><td class="heading">Search Type&nbsp;&nbsp;</td><td><input type="radio" name="AgeType" value="Narrow" checked />&nbsp;Narrow Search<br /><input type="radio" name="AgeType" value="Wide" />&nbsp;Wide Search</td></tr>
+	</table></p>
 	<input type="hidden" name="WhereSQL" value="" />
 	<input type="hidden" name="QueryString" value="" />
 	<input type="hidden" name="TableName" value="" />
 	<p><input type="submit" value="Submit Query" /></p>
-	</form>
-	</td></tr></table><%
+	</form><%
+	
 	drawBottom(out, et);
+	try {
+		FredHibernate.get().getDAOFactory().closeSession();
+	} catch (Exception e) {
+	}
 %>

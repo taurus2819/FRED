@@ -82,7 +82,7 @@
 			String tableName = request.getParameter("TableName");
 			queryString = request.getParameter("QueryString");
 			try {
-				String sampHql = "SELECT DISTINCT FROM " + tableName + " WHERE " + whereSQL;
+				String sampHql = "SELECT DISTINCT s FROM " + tableName + " WHERE " + whereSQL;
 				samples = sampleUtil.getListFromHQL(sampHql, Sample.class);
 				features = featureUtil.getFeatures(samples);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
