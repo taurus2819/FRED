@@ -955,13 +955,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	public Feature getFeature(FrNumber frNum) {
 		try {
 			return (Feature) frNum.getFeatures().iterator().next();
+		} catch (Exception e) {}
+		try {
+			Sample sample = (Sample) frNum.getSamples().iterator().next();
+			return sample.getFeature();
 		} catch (Exception e) {
-			try {
-				Sample sample = (Sample) frNum.getSamples().iterator().next();
-				return sample.getFeature();
-			} catch (Exception e1) {
-				return null;
-			}
+			return null;
 		}
 	}
 
@@ -1078,9 +1077,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 * @throws StorageAccessException 
 	 */
 	public Feature getFeatureWithIdentifyingName(String ident) throws StorageAccessException {
-		FrNumber frNum = getFrNumber(ident);
-		if (frNum != null) 
-			return getFeature(frNum);	
+		try {
+			FrNumber frNum = parseFrNumber(ident, false);
+			if (frNum == null)
+				frNum = parseFrNumber(ident, false, true);
+			if (frNum != null) 
+				return getFeature(frNum);
+		} catch (Exception e) {}
 		return getFeatureWithName(ident);
 	}
 	
