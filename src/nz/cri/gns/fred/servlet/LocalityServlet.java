@@ -54,12 +54,13 @@ public class LocalityServlet extends HttpServlet {
 						features.add(sample.getFeature());
 				}
 			}
-			if (features.size() == 1) {
-				response.sendRedirect(baseUrl + "detail.jsp?FeatID=" + features.iterator().next().getFeatureId());
-			} else if (features.size() == 0) {
+			List<Feature> featureList = FREDUtil.getSortedList(features);
+			if (featureList.size() == 1) {
+				response.sendRedirect(baseUrl + "detail.jsp?FeatID=" + featureList.get(0).getFeatureId());
+			} else if (featureList.size() == 0) {
 				response.sendRedirect(baseUrl + "detail.jsp?FeatID=-1");
 			} else {
-				request.getSession().setAttribute("FRED.features", features);
+				request.getSession().setAttribute("FRED.features", featureList);
 				request.getSession().setAttribute("FRED.queryString", frNum);
 				response.sendRedirect(baseUrl + "result_list.jsp?Page=1");
 			}
