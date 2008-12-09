@@ -893,7 +893,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	public List<FrNumber> parseFrNumbers(String frNumStr) throws DataInputException, StorageAccessException {
-		System.out.println("Parsing " + frNumStr);
 		try {
 			if (frNumStr.indexOf("-") > 0) {
 				FrNumber startFrNum = parseFrNumber(frNumStr.substring(0, frNumStr.indexOf("-")), false);
@@ -911,9 +910,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 					frNumbers.add(frNum);
 				return frNumbers;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		} catch (Exception e) {}
 		return null;
 	}
 	
