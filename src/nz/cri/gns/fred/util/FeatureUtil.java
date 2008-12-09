@@ -903,8 +903,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ? AND ", FrNumber.class, startFrNum.getMapSheet(), startFrNum.getSerialNumber(), endSerialNum);
 			} else {
 				List<FrNumber> frNumbers = new Vector<FrNumber>();
-				frNumbers.add(parseFrNumber(frNumStr, false));
-				frNumbers.add(parseYardFrNumber(frNumStr, false));
+				FrNumber frNum = parseFrNumber(frNumStr, false);
+				if (frNum != null)
+					frNumbers.add(frNum);
+				frNum = parseYardFrNumber(frNumStr, false);
+				if (frNum != null)
+					frNumbers.add(frNum);
 				return frNumbers;
 			}
 		} catch (Exception e) {
