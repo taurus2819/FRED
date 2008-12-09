@@ -197,6 +197,11 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return null;		
 	}
 	
+	public List<Sample> getListFromHQL(String query) throws StorageAccessException {
+		System.out.println(query);
+		return fredDAO.getList(query, Sample.class);
+	}
+	
 	public static String getDrillHoleDepthDescription(Sample sample) {
 		Feature feature = sample.getFeature();
 		

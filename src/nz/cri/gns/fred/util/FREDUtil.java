@@ -13,6 +13,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -72,7 +73,6 @@ public class FREDUtil {
 		public boolean include(PropertyDescriptor prop) {
 			return !names.contains(prop.getName()) && (instruction == null || instruction.include(prop));
 		}
-
 	}
 
 	public static interface Instruction {
@@ -497,4 +497,10 @@ public class FREDUtil {
 		return lists;
 	}
 	
+	public static <T extends Comparable<? super T>> List<T> getSortedList(Set<T> set) {
+		List<T> list = new Vector<T>();
+		list.addAll(set);
+		Collections.sort(list);
+		return list;
+	}
 }

@@ -1,7 +1,9 @@
 <%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
+%><%@page import="nz.cri.gns.fred.model.Sample"
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.query.FREDQuery"
+%><%@page import="nz.cri.gns.fred.util.SampleUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.AuditUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
@@ -33,6 +35,7 @@
 	if (queryURL == null)
 		queryURL = "simple_query.jsp";
 	
+	SampleUtil sampleUtil = new SampleUtil(FredHibernate.get().getDAOFactory());
 	FeatureUtil featureUtil = new FeatureUtil(FredHibernate.get().getDAOFactory());
 	AuditUtil auditUtil = new AuditUtil(FredHibernate.get().getDAOFactory());
 	
@@ -48,9 +51,8 @@
 	drawTop(out, et, request, response);
 
 	if ((request.getParameter("WhereSQL") != null && request.getParameter("TableName") != null && request.getParameter("QueryString") != null) || request.getParameter("Page") != null || request.getParameter("Type") != null) {
-		String whereSQL = request.getParameter("WhereSQL");
-		String tableName = request.getParameter("TableName");
-		String queryString = request.getParameter("QueryString");
+
+		String queryString = "";
 		
 		int pageNum = 1;
 		if (request.getParameter("Page") != null)
@@ -59,50 +61,40 @@
 
 		session.setAttribute("dataEntryRedirect", "result_list.jsp?Page=" + pageNum);
 
+		List<Sample> samples = null;
 		List<Feature> features = null;
 		if (useStored) {
+			samples = (List<Sample>) session.getAttribute("FRED.samples");
 			features = (List<Feature>) session.getAttribute("FRED.features");
 			queryString = (String) session.getAttribute("FRED.queryString");
 		} else 	if ("Adv".equals(request.getParameter("Type"))) {
 			try {
 				FREDQuery query = FREDUtil.getFREDQuery(state);
-				whereSQL = query.getHQLQuery();
-				//System.out.println(whereSQL);
 				queryString = query.getQueryAsString();
-				features = featureUtil.getListFromQueryBuilder(whereSQL);
+				samples = sampleUtil.getListFromHQL(query.getHQLQuery());
+				features = featureUtil.getFeatures(samples);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		} else {
-			features = new Vector<Feature>();
-			//System.out.println("SELECT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
-			Connection conn = null;
+			String whereSQL = request.getParameter("WhereSQL");
+			String tableName = request.getParameter("TableName");
+			queryString = request.getParameter("QueryString");
 			try {
-				conn = FREDUtil.getConnection();
-				Statement statement = conn.createStatement();
-				ResultSet rs = statement.executeQuery("SELECT DISTINCT fv.feature_id FROM " + tableName + " WHERE " + whereSQL);
-				while (rs.next()) {
-					Feature feature = featureUtil.getFeature(rs.getInt(1));
-					if (feature.getAudit().getStatus().equals(FREDConstants.APPROVED))
-						features.add(feature);
-				}
-				Collections.sort(features);
-				rs.close();
-				statement.close();
-				conn.close();
+				String hql = "FROM " + tableName + " WHERE " + whereSQL;
+				samples = sampleUtil.getListFromHQL(hql);
+				features = featureUtil.getFeatures(samples);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
-			} finally {
-				if (conn != null) try {
-					conn.close();
-				} catch (Exception _e) {
-				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 		int numRecords = features.size();
 		if (numRecords > 0) {
 
 			//save QueryRes vector
+			session.setAttribute("FRED.samples", samples);
 			session.setAttribute("FRED.features", features);
 			session.setAttribute("FRED.queryString", queryString);
 

@@ -585,6 +585,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return fredDAO.getList("SELECT r.sample.feature FROM Record AS r WHERE r.audit = ?", Feature.class, audit);
 	}
 	
+	public List<Feature> getFeatures(List<Sample> samples) {
+		Set<Feature> features = new HashSet<Feature>();
+		for (Sample sample : samples)
+			features.add(sample.getFeature());
+		return FREDUtil.getSortedList(features);
+	}
+	
 	public static Feature[] getOrderedFeaturesInMasterfile(Folder masterfile) {
 		Set<Feature> features = masterfile.getMasterfileFeatures();
 		Feature[] featuresArray = features.toArray(new Feature[features.size()]); 
@@ -1219,10 +1226,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	public List<String> getFrMapSheets() throws StorageAccessException {
 	       return fredDAO.getList("SELECT DISTINCT fr.mapSheet FROM FrNumber AS fr", String.class);
 		}
-	
-	public List<Feature> getListFromQueryBuilder(String query) throws StorageAccessException {
-		return fredDAO.getList(query, Feature.class);
-	}
 	
 	public String getFullLocalityPDFURL(Feature feature) {
 		StringBuffer sb = new StringBuffer("FeatIDs=").append(feature.getFeatureId());

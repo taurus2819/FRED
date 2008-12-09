@@ -46,16 +46,27 @@
 	}
 	
 	function generateSQL(form) {
-		var queryString = "", whereSQL = "fv.feature_status = 'approved' AND ", tableName = "feature_view fv", tableJoin = "", frNum, aStart = "", aStop = "", aQuery;
-		var recFlag = false, sampFlag = false, adoFlag = false, palFlag = false, siteFlag = false;
+		var queryString = "";
+		var whereSQL = "s.audit.status = 'approved' AND s.feature.audit.status = 'approved' AND ";
+		var tableName = "Sample AS s";
+		var tableJoin = "";
+		var frNum;
+		var aStart = "";
+		var aStop = "";
+		var aQuery;
+		var recFlag = false;
+		var sampFlag = false;
+		var adoFlag = false;
+		var palFlag = false;
+		var siteFlag = false;
 		with (form) {
 			if (FRNum.value.length > 0) {
-				frNum = parseFRNum(trim(FRNum.value), "");
+				frNum = parseFRNum(trim(FRNum.value), "frNumber");
 				if (frNum == "false") {
 					alert("FR Number field incorrectly formatted");
 					return false;
 				}
-				whereSQL = "((" + frNum + ") OR (" + parseFRNum(trim(FRNum.value), "yard_") + ") OR (" + parseFRNum(trim(FRNum.value), "sample_") + ") OR (" + parseFRNum(trim(FRNum.value), "s_yard_") + ")) AND ";
+				whereSQL = "((" + frNum + ") OR (" + parseFRNum(trim(FRNum.value), "yardFrNumber") + ") OR (" + parseFRNum(trim(FRNum.value), "feature.frNumber") + ") OR (" + parseFRNum(trim(FRNum.value), "feature.yardfrNumber") + ")) AND ";
 				queryString = queryString + "FR Number = " + trim(FRNum.value) + " AND ";
 			}
 			if (Map.value.length > 0) {
@@ -261,7 +272,7 @@
 		sheet = frNum.substring(0, frNum.indexOf("/f")).toUpperCase();
 		serial = parseSerialNum(frNum.substring(frNum.indexOf("/f") + 2, frNum.length), prefix);
 		if (serial == "false") { return "false"; }
-		return "(fv." + prefix + "map_sheet = '" + sheet + "' AND " + serial + ")";
+		return "(s." + prefix + ".mapSheet = '" + sheet + "' AND " + serial + ")";
 	}
 	
 	function parseSerialNum(serialNum, prefix) {
@@ -270,13 +281,13 @@
 			x = trim(serialNum.substring(0, serialNum.indexOf("-")));
 			y = trim(serialNum.substring(serialNum.indexOf("-") + 1, serialNum.length));
 			if (isNaN(x) || isNaN(y)) { return "false"; }
-			return "fv." + prefix + "serial_number BETWEEN " + parseInt(x, 10) + " AND " + parseInt(y, 10);
+			return "s." + prefix + ".serialNumber BETWEEN " + parseInt(x, 10) + " AND " + parseInt(y, 10);
 		} else if (isNaN(serialNum.substring(serialNum.length - 1, serialNum.length)) && !isNaN(serialNum.substring(0, serialNum.length - 1))) {
-			return "fv." + prefix + "serial_number = " + parseInt(serialNum.substring(0, serialNum.length - 1), 10) + " AND fv." + prefix + "recollection_number = '" + serialNum.substring(serialNum.length - 1, serialNum.length).toUpperCase() + "'";
+			return "s." + prefix + ".serialNumber = " + parseInt(serialNum.substring(0, serialNum.length - 1), 10) + " AND s." + prefix + ".recollectionNumber = '" + serialNum.substring(serialNum.length - 1, serialNum.length).toUpperCase() + "'";
 		} else if (isNaN(serialNum)) {
 			return "false";
 		}
-		return "fv." + prefix + "serial_number = " + parseInt(serialNum, 10);
+		return "s." + prefix + ".serialNumber = " + parseInt(serialNum, 10);
 	}
 	
 	</script><%
