@@ -763,18 +763,22 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 				System.out.println("Adding previous sample: " + previous);
 				Feature feature = featureUtil.getFeatureWithIdentifyingName(previous);
 				System.out.println("Matched with feature: " + feature);
-				boolean found = false;
-				for (Iterator<Relationship> it = previousSample.iterator(); it.hasNext(); ) {
-					Relationship rel = it.next();
-					if (sampleUtil.isMatchingRelationship(rel, feature, FREDConstants.SAMPLE, FREDConstants.NEARBY)) {
-						//Remove it from the old set
-						it.remove();
-						found = true;
+				if (feature != null) {
+					boolean found = false;
+					for (Iterator<Relationship> it = previousSample.iterator(); it.hasNext(); ) {
+						Relationship rel = it.next();
+						if (sampleUtil.isMatchingRelationship(rel, feature, FREDConstants.SAMPLE, FREDConstants.NEARBY)) {
+							//Remove it from the old set
+							it.remove();
+							found = true;
+						}
 					}
-				}
-				if (!found) {
-					//Wasn't in the old set, so add it 
-					relationships.add(sampleUtil.createRelationship(sample, feature, FREDConstants.SAMPLE, FREDConstants.NEARBY));
+					if (!found) {
+						//Wasn't in the old set, so add it 
+						relationships.add(sampleUtil.createRelationship(sample, feature, FREDConstants.SAMPLE, FREDConstants.NEARBY));
+					}
+				} else {
+					error.add(new String[] {"Previous sample", "Feature " + previous + " not found"});
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
