@@ -900,7 +900,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				if (startFrNum == null)
 					startFrNum = parseYardFrNumber(frNumStr.substring(0, frNumStr.indexOf("-")), false);
 				Integer endSerialNum = new Integer(frNumStr.substring(frNumStr.indexOf("-") + 1));
-				return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ? AND ", FrNumber.class, startFrNum.getMapSheet(), startFrNum.getSerialNumber(), endSerialNum);
+				return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ?", FrNumber.class, startFrNum.getMapSheet(), startFrNum.getSerialNumber(), endSerialNum);
 			} else {
 				List<FrNumber> frNumbers = new Vector<FrNumber>();
 				FrNumber frNum = parseFrNumber(frNumStr, false);
