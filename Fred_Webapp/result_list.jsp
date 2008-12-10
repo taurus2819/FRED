@@ -42,7 +42,7 @@
 	int pageSize = 50;
 
 	ExtranetTemplate et = getExtranetTemplate();
-	et.setDisplayLoadingMessage(true);
+	//et.setDisplayLoadingMessage(true);
 	addButtons(et, new IconnedLink[] {
 			new IconnedLink(queryURL, "images/search.gif", "Search Again"),
 			new IconnedLink("export_setup.jsp", "images/save.gif", "Download Results")
@@ -131,21 +131,36 @@
 			}
 			%></td></tr>
 
-			<tr class="midColour"><th>FR Number&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Yard FR Number&nbsp;&nbsp;</th><th>Name&nbsp;&nbsp;</th><th>Actions</th></tr><%
+			<tr class="midColour"><th colspan="2">FR Number&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Name&nbsp;&nbsp;</th><th>Actions</th></tr><%
 			int j = 1;
 			for (Feature feature : features) {
 				if (j >= startIndex && j <= endIndex) {
-					%><tr class="lightColour"><td class="heading"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></a>&nbsp;&nbsp;</td>
-					<td><%=feature.getFeatureType()%>&nbsp;&nbsp;</td><td><%=((feature.getYardFrNumber() != null) ? feature.getYardFrNumber().getFrNumber() : "")%>&nbsp;&nbsp;</td>
+					%><tr class="lightColour">
+					<td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a>&nbsp;&nbsp;</td>
+					<td class="heading"><%=feature.getFrNumber() + ((feature.getYardFrNumber() != null) ? "<br />(" + feature.getYardFrNumber() + ")" : "")%>&nbsp;&nbsp;</td>
+					<td><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 					<td><%=DBUtils.nvl(feature.getFeatureName())%>&nbsp;&nbsp;</td>
 					<td><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;&nbsp;<%
 					if (user != null && featureUtil.isAllowedEditApprovedFeature(user, feature)) {
 						%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=feature.getMasterFile().getFolderId()%>"><img src="images/edit.gif" height="20" width="20" border="0" alt="Edit" /></a><%
 					}
-					%></td><%
+					%></td>
+					</tr><%
+					if (!FeatureUtil.OUTCROP.equals(feature.getFeatureType())) {
+						for (Sample sample : feature.getSamples()) {
+							if (samples.contains(sample)) {
+								%><tr class="lightColour">
+								<td><a href="detail.jsp?ID=<%=sample.getSampleId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List"><img src="images/drill.gif" border="0" height="20" width="20" alt="View Sample" /></a>&nbsp;&nbsp;</td>
+								<td class="heading"><%=SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td>
+								<td>Sample&nbsp;&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								</tr><%
+							}
+						}
+					}
 				}
 				j++;
-				%></tr><%
 			}
 
 			if (maxRangePage > 1) {
