@@ -591,13 +591,13 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			System.out.println("Found " + samples.size() + " samples");
 		}*/
 		
-		samples.addAll(fredDAO.getList("SELECT DISTINCT FROM Sample AS s WHERE s.inferredStage.baseAge >= ? AND s.inferredStage.topAge <= ?", Sample.class, stopAge, startAge));
+		samples.addAll(fredDAO.getList("SELECT DISTINCT s FROM Sample AS s WHERE s.inferredStage.baseAge >= ? AND s.inferredStage.topAge <= ?", Sample.class, stopAge, startAge));
 		System.out.println("Found " + samples.size() + " samples");
-		samples.addAll(fredDAO.getList("SELECT DISTINCT FROM Sample AS s WHERE s.knownStage.baseAge >= ? AND s.knownStage.topAge <= ?", Sample.class, stopAge, startAge));
+		samples.addAll(fredDAO.getList("SELECT DISTINCT s FROM Sample AS s WHERE s.knownStage.baseAge >= ? AND s.knownStage.topAge <= ?", Sample.class, stopAge, startAge));
 		System.out.println("Found " + samples.size() + " samples");
-		samples.addAll(fredDAO.getList("SELECT DISTINCT FROM Sample AS s JOIN s.records AS record WHERE record.adoption.stage.baseAge >= ? AND record.adoption.stage.topAge <= ?", Sample.class, stopAge, startAge));
+		samples.addAll(fredDAO.getList("SELECT DISTINCT s FROM Sample AS s JOIN s.records AS record WHERE record.adoption.stage.baseAge >= ? AND record.adoption.stage.topAge <= ?", Sample.class, stopAge, startAge));
 		System.out.println("Found " + samples.size() + " samples");
-		samples.addAll(fredDAO.getList("SELECT DISTINCT FROM Sample AS s JOIN s.records AS record WHERE record.paleontology.stage.baseAge >= ? AND record.paleontology.stage.topAge <= ?", Sample.class, stopAge, startAge));
+		samples.addAll(fredDAO.getList("SELECT DISTINCT s FROM Sample AS s JOIN s.records AS record WHERE record.paleontology.stage.baseAge >= ? AND record.paleontology.stage.topAge <= ?", Sample.class, stopAge, startAge));
 		System.out.println("Found " + samples.size() + " samples");
 		
 		return FREDUtil.getSortedList(samples);
