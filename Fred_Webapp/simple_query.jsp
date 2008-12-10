@@ -171,24 +171,24 @@
 				whereSQL = whereSQL + "(";
 				if (StratAge.checked) {
 					if (AgeType[0].checked) { //narrow search
-						whereSQL = whereSQL + "(s.inferredStage.baseAge <= " + aStart + " AND s.inferredStage.topAge >= " + aStop + ") OR (s.knownStage.baseAge <= " + aStart + " AND s.knownStage.topAge >= " + aStop + ") OR ";
+						whereSQL = whereSQL + "(s.inferredStage.lowerAge.baseAge <= " + aStart + " AND ((s.inferredStage.upperAge IS NOT NULL AND s.inferredStage.upperAge.topAge >= " + aStop + ") OR (s.inferredStage.upperAge IS NULL AND s.inferredStage.lowerAge.topAge >= " + aStop + "))) OR (s.knownStage.lowerAge.baseAge <= " + aStart + " AND ((s.knownStage.upperAge IS NOT NULL AND s.knownStage.upperAge.topAge >= " + aStop + ") OR (s.knownStage.upperAge IS NULL AND s.knownStage.lowerAge.topAge >= " + aStop + "))) OR ";
 					} else {
-						whereSQL = whereSQL + "(s.inferredStage.baseAge >= " + aStop + " AND s.inferredStage.topAge <= " + aStart + ") OR (s.knownStage.baseAge >= " + aStop + " AND s.knownStage.topAge <= " + aStart + ") OR ";
+						whereSQL = whereSQL + "(s.inferredStage.lowerAge.baseAge >= " + aStop + " AND s.inferredStage.topAge <= " + aStart + ") OR (s.knownStage.baseAge >= " + aStop + " AND s.knownStage.topAge <= " + aStart + ") OR ";
 					}
 					queryString = queryString + "Collectors/";
 				}
 				if (AdoAge.checked) {
 					if (AgeType[0].checked) { //narrow search
-						whereSQL = whereSQL + "(record.adoption.stage.baseAge <= " + aStart + " AND record.adoption.stage.topAge >= " + aStop + ") OR ";
+						whereSQL = whereSQL + "(record.adoption.stage.lowerAge.baseAge <= " + aStart + " AND record.adoption.stage.topAge >= " + aStop + ") OR ";
 					} else {
-						whereSQL = whereSQL + "(record.adoption.stage.baseAge >= " + aStop + " AND record.adoption.stage.topAge <= " + aStart + ") OR ";
+						whereSQL = whereSQL + "(record.adoption.stage.lowerAge.baseAge >= " + aStop + " AND record.adoption.stage.topAge <= " + aStart + ") OR ";
 					}
 					queryString = queryString + "Adopted/";
 					recFlag = true;
 				}
 				if (PalAge.checked) {
 					if (AgeType[0].checked) { //narrow search
-						whereSQL = whereSQL + "(record.paleontology.stage.baseAge <= " + aStart + " AND record.paleontology.stage.topAge >= " + aStop + ") OR ";
+						whereSQL = whereSQL + "(record.paleontology.stage.lowerAge.baseAge <= " + aStart + " AND record.paleontology.stage.topAge >= " + aStop + ") OR ";
 					} else {
 						whereSQL = whereSQL + "(record.paleontology.stage.baseAge >= " + aStop + " AND record.paleontology.stage.topAge <= " + aStart + ") OR ";
 					}
