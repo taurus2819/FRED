@@ -9,6 +9,10 @@ public interface Stage {
 	public void setStageLowerMod(String stageLowerMod);
 	public String getStageUpperMod();
 	public void setStageUpperMod(String stageUpperMod);
+	public void setBaseAge(Double baseAge);
+	public Double getBaseAge();
+	public void setTopAge(Double topAge);
+	public Double getTopAge();
 	public Age getLowerAge();
     public void setLowerAge(Age lowerAge);
 	public Age getUpperAge();

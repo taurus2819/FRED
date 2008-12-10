@@ -15,6 +15,8 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
     private Integer stageId;
     private String stageLowerMod;
     private String stageUpperMod;
+    private Double baseAge;
+    private Double topAge;
     private Age lowerAge;
     private Age upperAge;
     private Set<Sample> samplesByKnownStageId;
@@ -46,6 +48,22 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
         this.stageUpperMod = stageUpperMod;
     }
     
+	public void setBaseAge(Double baseAge) {
+		this.baseAge = baseAge;
+	}
+
+	public Double getBaseAge() {
+		return baseAge;
+	}
+
+	public void setTopAge(Double topAge) {
+		this.topAge = topAge;
+	}
+
+	public Double getTopAge() {
+		return topAge;
+	}
+
 	public Age getLowerAge() {
 		return lowerAge;
 	}

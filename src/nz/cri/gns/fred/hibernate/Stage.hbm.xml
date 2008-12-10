@@ -39,6 +39,16 @@
         column="STAGE_UPPER_MOD"
         length="16"
     />
+    <property
+        name="baseAge"
+        type="java.lang.Double"
+        column="BASE_AGE"
+    />
+    <property
+        name="topAge"
+        type="java.lang.Double"
+        column="TOP_AGE"
+    />
 
     <!-- Associations -->
   
