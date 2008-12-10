@@ -61,6 +61,7 @@ public class LocalityServlet extends HttpServlet {
 				response.sendRedirect(baseUrl + "detail.jsp?FeatID=-1");
 			} else {
 				request.getSession().setAttribute("FRED.features", featureList);
+				request.getSession().setAttribute("FRED.samples", null);
 				request.getSession().setAttribute("FRED.queryString", frNum);
 				response.sendRedirect(baseUrl + "result_list.jsp?Page=1");
 			}
