@@ -86,7 +86,7 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 		//set FRNumber lik
 		String htmlLink = "<img src=\"images\\blank.gif\" height=\"20\" width=\"10\" alt=\"\" /><form method=\"post\" action=\"locality\" name=\"FRNumJumpForm\" style=\"display: inline; margin: 0;\">"
 			+ "<input type=\"text\" size=\"10\" name=\"frNum\" style=\"border: 0; font-size: 10pt\" />&nbsp;"
-			+ "<input type=\"submit\" value=\"Go\" /></form><br />Enter FrNumber or a range";
+			+ "<input type=\"submit\" value=\"Go\" /></form><br /><img src=\"images\\blank.gif\" height=\"1\" width=\"10\" alt=\"\" />Enter FrNumber or a range";
 		et.setButtons(new Link[] {
 				new CustomHTMLLink(htmlLink)
 				, new IconnedLink("index.jsp", "images/home.gif", "FRED Home")
