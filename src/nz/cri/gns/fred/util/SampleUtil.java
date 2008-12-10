@@ -571,7 +571,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return createSample(feature, new Integer(folderId), reuseFeatureAudit, user);
 	}
 	
-	public List<Sample> getSamplesByAge(Integer startAge, Integer stopAge) throws StorageAccessException {
+	public List<Sample> getSamplesByAge(Double startAge, Double stopAge) throws StorageAccessException {
 		Set<Sample> samples = new HashSet<Sample>();
 		List<Stage> stages = fredDAO.getList("FROM Stage AS s WHERE s.baseAge >= ? AND s.topAge <= ?", Stage.class, stopAge, startAge);
 		for (Stage stage : stages) {

@@ -66,9 +66,6 @@
 		List<Feature> features = null;
 		if (useStored) {
 			samples = (List<Sample>) session.getAttribute("FRED.samples");
-			for (Sample sample : samples) {
-				System.out.println(sample);
-			}
 			features = (List<Feature>) session.getAttribute("FRED.features");
 			queryString = (String) session.getAttribute("FRED.queryString");
 		} else 	if ("Adv".equals(request.getParameter("Type"))) {
@@ -86,11 +83,13 @@
 			String tableName = request.getParameter("TableName");
 			queryString = request.getParameter("QueryString");
 			try {
-				String sampHql = "SELECT DISTINCT s FROM " + tableName + " WHERE " + whereSQL;
-				samples = sampleUtil.getListFromHQL(sampHql, Sample.class);
+				if (!FREDUtil.isEmpty(whereSQL)) {
+					String sampHql = "SELECT DISTINCT s FROM " + tableName + " WHERE " + whereSQL;
+					samples = sampleUtil.getListFromHQL(sampHql, Sample.class);
+				}
 				if (!FREDUtil.isEmpty(request.getParameter("startAge"))) {
-					List<Sample> samplesByAge = sampleUtil.getSamplesByAge(new Integer(request.getParameter("startAge")), new Integer(request.getParameter("stopAge")));
-					if (samples.size() == 0)
+					List<Sample> samplesByAge = sampleUtil.getSamplesByAge(new Double(request.getParameter("startAge")), new Double(request.getParameter("stopAge")));
+					if (samples == null || samples.size() == 0)
 						samples = samplesByAge;
 					else {
 						HashSet<Sample> sampleSet = new HashSet<Sample>(samples);
