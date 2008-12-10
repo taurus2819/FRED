@@ -26,7 +26,6 @@ import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.util.SampleUtil;
 
-/** @author Hibernate CodeGenerator */
 public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Cloneable {
 
     private static final long serialVersionUID = 20050818L;
@@ -473,9 +472,11 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
 		return feature.toString() + ((!feature.getFeatureType().equals(FREDConstants.OUTCROP)) ? ": " + SampleUtil.getDrillHoleDepthDescription(this) : "");
 	}
 	
-	//public boolean equals(Object o) {
-	//	return o instanceof Sample && ((Sample)o).sampleId.equals(sampleId);
-	//}
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Sample)) 
+			return false;
+		return (sampleId.intValue() == ((Sample)obj).getSampleId().intValue());
+	}
 	
 	//public int hashCode() {
 	//	return 286 * sampleId;
