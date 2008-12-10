@@ -181,7 +181,7 @@
 					if (AgeType[0].checked) { //narrow search
 						whereSQL = whereSQL + "(record.adoption.stage.baseAge <= " + aStart + " AND record.adoption.stage.topAge >= " + aStop + ") OR ";
 					} else {
-						whereSQL = whereSQL + "(record.adoption.stage.lowerAge.baseAge >= " + aStop + " AND record.adoption.stage.topAge <= " + aStart + ") OR ";
+						whereSQL = whereSQL + "(record.adoption.stage.baseAge >= " + aStop + " AND record.adoption.stage.topAge <= " + aStart + ") OR ";
 					}
 					queryString = queryString + "Adopted/";
 					recFlag = true;

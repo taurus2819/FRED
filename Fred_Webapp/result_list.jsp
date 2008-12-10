@@ -42,7 +42,7 @@
 	int pageSize = 50;
 
 	ExtranetTemplate et = getExtranetTemplate();
-	//et.setDisplayLoadingMessage(true);
+	et.setDisplayLoadingMessage(true);
 	addButtons(et, new IconnedLink[] {
 			new IconnedLink(queryURL, "images/search.gif", "Search Again"),
 			new IconnedLink("export_setup.jsp", "images/save.gif", "Download Results")
