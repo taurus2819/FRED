@@ -16,6 +16,7 @@
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="java.util.List"
 %><%@page import="java.util.Vector"
+%><%@page import="java.util.HashSet"
 %><%@page import="java.util.Collections"
 %><%@page import="java.net.URLEncoder"
 %><%@page import="java.sql.Connection"
@@ -87,6 +88,16 @@
 			try {
 				String sampHql = "SELECT DISTINCT s FROM " + tableName + " WHERE " + whereSQL;
 				samples = sampleUtil.getListFromHQL(sampHql, Sample.class);
+				if (!FREDUtil.isEmpty(request.getParameter("startAge"))) {
+					List<Sample> samplesByAge = sampleUtil.getSamplesByAge(new Integer(request.getParameter("startAge")), new Integer(request.getParameter("stopAge")));
+					if (samples.size() == 0)
+						samples = samplesByAge;
+					else {
+						HashSet<Sample> sampleSet = new HashSet<Sample>(samples);
+						sampleSet.retainAll(samplesByAge);
+						samples = FREDUtil.getSortedList(sampleSet);
+					}
+				}
 				features = featureUtil.getFeatures(samples);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
 			} catch (Exception e) {

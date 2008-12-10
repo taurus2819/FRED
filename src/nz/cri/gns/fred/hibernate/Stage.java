@@ -119,4 +119,10 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
 	public int hashCode() {
 		return 487 * stageId;
 	}
+
+	public int compareTo(nz.cri.gns.fred.model.Stage arg0) {
+		if (baseAge.equals(arg0.getBaseAge()))
+			return topAge.compareTo(arg0.getTopAge());
+		return baseAge.compareTo(arg0.getBaseAge());
+	}
 }

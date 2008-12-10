@@ -2,7 +2,9 @@ package nz.cri.gns.fred.util;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import nz.cri.gns.auth.InsufficientPrivelegesException;
@@ -38,6 +40,7 @@ import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SedimentaryFeatureType;
 import nz.cri.gns.fred.model.SentTo;
+import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.model.StratigraphicUnit;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.model.Weathering;
@@ -566,6 +569,20 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	
 	public Sample createSample(Feature feature, int folderId, boolean reuseFeatureAudit, UserAccount user) throws StorageAccessException {
 		return createSample(feature, new Integer(folderId), reuseFeatureAudit, user);
+	}
+	
+	public List<Sample> getSamplesByAge(Integer startAge, Integer stopAge) throws StorageAccessException {
+		Set<Sample> samples = new HashSet<Sample>();
+		List<Stage> stages = fredDAO.getList("FROM Stage AS s WHERE s.baseAge >= ? AND s.topAge <= ?", Stage.class, stopAge, startAge);
+		for (Stage stage : stages) {
+			samples.addAll(stage.getSamplesByInferredStageId());
+			samples.addAll(stage.getSamplesByKnownStageId());
+			for (Adoption ado : stage.getAdoptions())
+				samples.add(ado.getRecord().getSample());
+			for (Paleontology pal : stage.getPaleontologies())
+				samples.add(pal.getRecord().getSample());
+		}
+		return FREDUtil.getSortedList(samples);
 	}
 	
 	/**

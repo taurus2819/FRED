@@ -50,11 +50,6 @@
 		var whereSQL = "s.audit.status = 'approved' AND s.feature.audit.status = 'approved' AND ";
 		var tableName = "Sample AS s";
 		var frNum;
-		var aStart = "";
-		var aStop = "";
-		var aQuery;
-		var recFlag = false;
-		var palListFlag = false;
 		with (form) {
 			if (Map.value.length > 0) {
 				whereSQL = whereSQL + "s.feature.siteView.nzmgSheet = '" + Map.value.toUpperCase() + "' AND ";
@@ -108,8 +103,8 @@
 			}
 			
 			if (Taxon.value.length > 0) {
-				whereSQL = whereSQL + "UPPER(pal.taxon.taxonomicName) LIKE '%" + replaceSingleQuote(Taxon.value.toUpperCase()) + "%' AND ";
-				palListFlag = true;
+				whereSQL = whereSQL + "record.audit.status = 'approved' AND UPPER(pal.taxon.taxonomicName) LIKE '%" + replaceSingleQuote(Taxon.value.toUpperCase()) + "%' AND ";
+				tableName = tableName + " JOIN s.records AS record JOIN record.paleontology.listEntries AS pal";
 			}
 			
 			//check only stage name or numeric values entered
@@ -129,13 +124,13 @@
 					  alert ("Stage Names are the wrong way around"); StageFrom.select();
 					  return false;
 					}
-					aStart = ageStart[StageFrom.value];
-					aStop = ageStop[StageTo.value];
-					aQuery = StageFrom.options[StageFrom.options.selectedIndex].text + " to " + StageTo.options[StageTo.options.selectedIndex].text;
+					startAge = ageStart[StageFrom.value];
+					stopAge = ageStop[StageTo.value];
+					queryString = queryString + "Age = " + StageFrom.options[StageFrom.options.selectedIndex].text + " to " + StageTo.options[StageTo.options.selectedIndex].text + " AND ";
 				} else {
-					aStart = ageStart[StageFrom.value];
-					aStop = ageStop[StageFrom.value];
-					aQuery = StageFrom.options[StageFrom.options.selectedIndex].text;
+					startAge = ageStart[StageFrom.value];
+					stopAge = ageStop[StageFrom.value];
+					queryString = queryString + "Age = " + StageFrom.options[StageFrom.options.selectedIndex].text + " AND ";
 				}
 			} else if (StageTo.value != "-") {
 				alert ("From stage not selected");
@@ -154,63 +149,20 @@
 					  AgeFrom.select();
 					  return false;
 					}
-					aStart = AgeFrom.value;
-					aStop = AgeTo.value;
-					aQuery = AgeFrom.value + " to " + AgeTo.value;
+					startAge = AgeFrom.value;
+					stopAge = AgeTo.value;
+					queryString = queryString + "Age = " + AgeFrom.value + " to " + AgeTo.value + " AND ";
 				} else {
-					aStart = AgeFrom.value;
-					aStop = AgeFrom.value;
-					aQuery = AgeFrom.value;
+					startAge = AgeFrom.value;
+					stopAge = AgeFrom.value;
+					queryString = queryString + "Age = " + AgeFrom.value + " AND ";
 				}
 			} else if (AgeTo.value.length > 0) {
 				alert ("From Age not entered");
 				AgeFrom.select();
 				return false;
 			}
-			if (aStart != "") {
-				whereSQL = whereSQL + "(";
-				if (StratAge.checked) {
-					if (AgeType[0].checked) { //narrow search
-						whereSQL = whereSQL + "(s.inferredStage.baseAge <= " + aStart + " AND s.inferredStage.topAge >= " + aStop + ") OR (s.knownStage.baseAge <= " + aStart + " AND s.knownStage.topAge >= " + aStop + ") OR ";
-					} else {
-						whereSQL = whereSQL + "(s.inferredStage.baseAge >= " + aStop + " AND s.inferredStage.topAge <= " + aStart + ") OR (s.knownStage.baseAge >= " + aStop + " AND s.knownStage.topAge <= " + aStart + ") OR ";
-					}
-					queryString = queryString + "Collectors/";
-				}
-				if (AdoAge.checked) {
-					if (AgeType[0].checked) { //narrow search
-						whereSQL = whereSQL + "(record.adoption.stage.baseAge <= " + aStart + " AND record.adoption.stage.topAge >= " + aStop + ") OR ";
-					} else {
-						whereSQL = whereSQL + "(record.adoption.stage.baseAge >= " + aStop + " AND record.adoption.stage.topAge <= " + aStart + ") OR ";
-					}
-					queryString = queryString + "Adopted/";
-					recFlag = true;
-				}
-				if (PalAge.checked) {
-					if (AgeType[0].checked) { //narrow search
-						whereSQL = whereSQL + "(record.paleontology.stage.baseAge <= " + aStart + " AND record.paleontology.stage.topAge >= " + aStop + ") OR ";
-					} else {
-						whereSQL = whereSQL + "(record.paleontology.stage.baseAge >= " + aStop + " AND record.paleontology.stage.topAge <= " + aStart + ") OR ";
-					}
-					queryString = queryString + "Paleontology/";
-					recFlag = true;
-				}
-				whereSQL = whereSQL.substring(0, whereSQL.length - 4) + ") AND ";
-				queryString = queryString.substring(0, queryString.length - 1) + " Age = " + aQuery + " AND ";
-			}
-			
-			
-			if (recFlag) {
-				whereSQL = whereSQL + "record.audit.status = 'approved' AND ";
-				tableName = tableName + " JOIN s.records AS record";
-			}
-			if (palListFlag) {
-				if (!recFlag) {
-					whereSQL = whereSQL + "record.audit.status = 'approved' AND ";
-					tableName = tableName + " JOIN s.records AS record";
-				}
-				tableName = tableName + " JOIN record.paleontology.listEntries AS pal";
-			}
+
 
 			if (whereSQL.length > 0)
 			whereSQL = whereSQL.substring(0, whereSQL.length - 5);
@@ -277,7 +229,7 @@
 	<tr><td>&nbsp;</td></tr>
 	
 	<tr class="midColour"><th colspan="2">Ages</th></tr>
-	<tr class="lightColour"><td class="heading">Stage Range</td><td><%
+	<tr class="lightColour"><td><span class="heading">Stage Range</span>&nbsp;&nbsp;&nbsp;<a href="age.jsp" target="ages">more</a></td><td><%
 	SelectBox<Age> ageSelectBox = new SelectBox<Age>(new StageUtil(factory).getAges());
 	Attributes attributes = Attributes.createNameOnlyAttributes("StageFrom");
 	ageSelectBox.writeBox(attributes, "-- All --", null, (Age)null, new PrintWriter(out));
@@ -297,6 +249,8 @@
 	<input type="hidden" name="WhereSQL" value="" />
 	<input type="hidden" name="QueryString" value="" />
 	<input type="hidden" name="TableName" value="" />
+	<input type="hidden" name="startAge" value="" />
+	<input type="hidden" name="stopAge" value="" />
 	<p><input type="submit" value="Submit Query" /></p>
 	</form><%
 	

@@ -2,7 +2,7 @@ package nz.cri.gns.fred.model;
 
 import java.util.Set;
 
-public interface Stage {
+public interface Stage extends Comparable<Stage> {
 	public Integer getStageId();
 	public void setStageId(Integer stageId);
 	public String getStageLowerMod();
