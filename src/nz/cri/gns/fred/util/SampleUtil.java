@@ -572,15 +572,21 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public List<Sample> getSamplesByAge(Double startAge, Double stopAge) throws StorageAccessException {
+		System.out.println("Finding samples with ages between " + startAge + " AND " + stopAge);
 		Set<Sample> samples = new HashSet<Sample>();
 		List<Stage> stages = fredDAO.getList("FROM Stage AS s WHERE s.baseAge >= ? AND s.topAge <= ?", Stage.class, stopAge, startAge);
+		System.out.println("Found " + stages.size() + " matching stages");
 		for (Stage stage : stages) {
 			samples.addAll(stage.getSamplesByInferredStageId());
+			System.out.println("Found " + samples.size() + " samples by inferred id");
 			samples.addAll(stage.getSamplesByKnownStageId());
+			System.out.println("Found " + samples.size() + " samples by inferred id + known id");
 			for (Adoption ado : stage.getAdoptions())
 				samples.add(ado.getRecord().getSample());
+			System.out.println("Found " + samples.size() + " samples by inferred id + known id + adoption");
 			for (Paleontology pal : stage.getPaleontologies())
 				samples.add(pal.getRecord().getSample());
+			System.out.println("Found " + samples.size() + " samples by inferred id + known id + adoption + paleontology");
 		}
 		return FREDUtil.getSortedList(samples);
 	}
