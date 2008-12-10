@@ -65,6 +65,9 @@
 		List<Feature> features = null;
 		if (useStored) {
 			samples = (List<Sample>) session.getAttribute("FRED.samples");
+			for (Sample sample : samples) {
+				System.out.println(sample);
+			}
 			features = (List<Feature>) session.getAttribute("FRED.features");
 			queryString = (String) session.getAttribute("FRED.queryString");
 		} else 	if ("Adv".equals(request.getParameter("Type"))) {
@@ -119,7 +122,7 @@
 			}
 
 			//list matching localities
-			%><table border="0" cellpadding="3" cellspacing="2" width="550">
+			%><table border="0" cellpadding="3" cellspacing="2" width="600">
 			<tr class="midColour"><th colspan="5">Matching Localities</th></tr>
 			<tr class="midColour"><td colspan="5">Search Criteria: <em><%=queryString%></em></td></tr><%
 			if (maxRangePage > 1) {
@@ -136,8 +139,8 @@
 			for (Feature feature : features) {
 				if (j >= startIndex && j <= endIndex) {
 					%><tr class="lightColour">
-					<td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a>&nbsp;&nbsp;</td>
-					<td class="heading"><%=feature.getFrNumber() + ((feature.getYardFrNumber() != null) ? "<br />(" + feature.getYardFrNumber() + ")" : "")%>&nbsp;&nbsp;</td>
+					<td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
+					<td class="heading"><%=feature.getFrNumber()%> <%=(feature.getYardFrNumber() != null) ? "(" + feature.getYardFrNumber() + ")" : ""%>&nbsp;&nbsp;</td>
 					<td><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 					<td><%=DBUtils.nvl(feature.getFeatureName())%>&nbsp;&nbsp;</td>
 					<td><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;&nbsp;<%
@@ -147,11 +150,12 @@
 					%></td>
 					</tr><%
 					if (!FeatureUtil.OUTCROP.equals(feature.getFeatureType())) {
-						for (Sample sample : feature.getSamples()) {
-							if (samples.contains(sample)) {
+						feature = featureUtil.getFeature(feature.getFeatureId());
+						for (Sample sample : FREDUtil.getSortedList(feature.getSamples())) {
+							if (samples == null || samples.contains(sample)) {
 								%><tr class="lightColour">
-								<td><a href="detail.jsp?ID=<%=sample.getSampleId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List"><img src="images/drill.gif" border="0" height="20" width="20" alt="View Sample" /></a>&nbsp;&nbsp;</td>
-								<td class="heading"><%=SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td>
+								<td><a href="detail.jsp?ID=<%=sample.getSampleId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List"><img src="images/drill.gif" border="0" height="20" width="20" alt="View Sample" /></a></td>
+								<td class="heading">&nbsp;&nbsp;&nbsp;<%=SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td>
 								<td>Sample&nbsp;&nbsp;</td>
 								<td>&nbsp;</td>
 								<td>&nbsp;</td>
