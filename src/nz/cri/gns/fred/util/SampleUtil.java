@@ -40,7 +40,6 @@ import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SedimentaryFeatureType;
 import nz.cri.gns.fred.model.SentTo;
-import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.model.StratigraphicUnit;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.model.Weathering;
@@ -143,6 +142,19 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	    }
 		public String toString() {
 			return SampleUtil.getRelationshipDescription(this);
+		}
+		
+		@Override
+		public int compareTo(Relationship arg0) {
+			try {
+				if (sample.equals(arg0.getSample())) {
+					if (relationshipType.equals(arg0.getRelationshipType()))
+						return distance.compareTo(arg0.getDistance());
+					return relationshipType.compareTo(arg0.getRelationshipType());
+				}
+				return sample.compareTo(arg0.getSample());
+			} catch (Exception e) {}
+			return 0;
 		}
 	}
 
@@ -615,20 +627,19 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return feature;
 	}
 
-	public List<? extends Relationship> getRelationships(Sample sample, String relationTypeName, String relationshipTypeName) throws StorageAccessException {
-		RelationType relationType = fredDAO.getRelationType(relationTypeName);
+	public List<Relationship> getRelationships(Sample sample, String relationTypeName, String relationshipTypeName) throws StorageAccessException {
+		RelationType relationType = getRelationType(relationTypeName);
 		return getRelationships(sample, relationType, relationshipTypeName);
 	}
 	
-	public List<? extends Relationship> getRelationships(Sample sample, RelationType relationType, String relationshipTypeName) throws StorageAccessException {
-		RelationshipType relationshipType = fredDAO.getRelationshipType(relationType, relationshipTypeName);
-		
-		return fredDAO.getRelationships(sample, relationshipType);
+	public List<Relationship> getRelationships(Sample sample, RelationType relationType, String relationshipTypeName) throws StorageAccessException {
+		RelationshipType relationshipType = getRelationshipType(relationType, relationshipTypeName);
+		return getRelationships(sample, relationshipType);
 	}
 
-	public List<? extends Relationship> getRelationships(Sample sample, String relationTypeName, String[] relationshipTypes) throws StorageAccessException {
+	public List<Relationship> getRelationships(Sample sample, String relationTypeName, String[] relationshipTypes) throws StorageAccessException {
 		List<Relationship> relationships = new Vector<Relationship>();
-		RelationType relationType = fredDAO.getRelationType(relationTypeName);
+		RelationType relationType = getRelationType(relationTypeName);
 		
 		for (String typeName : relationshipTypes) {
 			relationships.addAll(getRelationships(sample, relationType, typeName));
@@ -671,7 +682,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	
 	public Relationship decodeSampleRelationshipDescription(String desc) throws StorageAccessException, DataInputException {
 		NoIdRelationship relationship = new NoIdRelationship();
-		String name = getCommonRelationshipPropertiesFromDescription(desc, relationship, fredDAO.getRelationType("Sample"));
+		String name = getCommonRelationshipPropertiesFromDescription(desc, relationship, getRelationType("Sample"));
 		Feature feature = new FeatureUtil(factory).getFeatureWithIdentifyingName(name);
 		if (feature != null) {
 			relationship.setFeature(feature);
@@ -683,7 +694,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
 	public Relationship decodeStratigraphicRelationshipDescription(String desc) throws StorageAccessException {
 		NoIdRelationship relationship = new NoIdRelationship();
-		String name = getCommonRelationshipPropertiesFromDescription(desc, relationship, fredDAO.getRelationType("Stratigraphic"));
+		String name = getCommonRelationshipPropertiesFromDescription(desc, relationship, getRelationType("Stratigraphic"));
 		//Set the unit by name
 		relationship.setStratUnit(name);
 		StratigraphicUnit stratUnit = findStratigraphicUnit(name);
@@ -733,9 +744,9 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 
 		
 		//Allow one or two word relationships
-		RelationshipType relType = fredDAO.getRelationshipType(relationType, parts[where++]);
+		RelationshipType relType = getRelationshipType(relationType, parts[where++]);
 		if (relType == null) {
-			relType = fredDAO.getRelationshipType(relationType, parts[where-1] + " " + parts[where++]);
+			relType = getRelationshipType(relationType, parts[where-1] + " " + parts[where++]);
 			if (relType == null)
 				throw new IllegalArgumentException("Relationship description is invalid");
 		}
@@ -744,6 +755,21 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		
 		return FREDUtil.join(parts, where);
 		
+	}
+	
+	public RelationType getRelationType(String relationTypeName) throws StorageAccessException {
+		return fredDAO.getFirst("FROM RelationType AS rt WHERE rt.name = ?", RelationType.class, relationTypeName);
+	}
+
+	public RelationshipType getRelationshipType(RelationType relationType, String relationshipTypeName) throws StorageAccessException {
+		try {
+            return fredDAO.getList("FROM RelationshipType AS r WHERE r.relationType = ? AND r.name = ?", RelationshipType.class, relationType, relationshipTypeName).get(0);
+        } catch (Exception e) {}
+        return null;
+	}
+
+	public List<Relationship> getRelationships(Sample sample, RelationshipType relationshipType) throws StorageAccessException {
+		return fredDAO.getList("FROM Relationship AS r WHERE r.relationshipType = ? AND r.sample = ?", Relationship.class, relationshipType, sample);
 	}
 		
 	public static String getDipStrikeDescription(Sample sample) {
@@ -938,8 +964,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		Relationship rel = fredDAO.createNewRelationship();
 		rel.setSample(sample);
 		rel.setFeature(feature);
-		rel.setRelationType(fredDAO.getRelationType(relationType));
-		rel.setRelationshipType(fredDAO.getRelationshipType(rel.getRelationType(), relationshipType));
+		rel.setRelationType(getRelationType(relationType));
+		rel.setRelationshipType(getRelationshipType(rel.getRelationType(), relationshipType));
 		//sampleDAO.saveOrUpdate(rel);
 		return rel;
 	}
@@ -1071,7 +1097,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public List<RelationshipType> getRelationshipTypes(String relationType) throws StorageAccessException {
-		RelationType relType = fredDAO.getRelationType(relationType);
+		RelationType relType = getRelationType(relationType);
 		return fredDAO.getList("FROM RelationshipType AS r WHERE r.relationType = ?", RelationshipType.class, relType);
 	}
 	

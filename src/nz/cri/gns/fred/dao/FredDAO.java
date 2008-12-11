@@ -120,23 +120,6 @@ public interface FredDAO {
 	 */
 	public Sample createNewSample(Feature feature) throws StorageAccessException;
 
-	/**
-	 * Retrieves the so-named relation type
-	 * @throws StorageAccessException 
-	 */
-	public RelationType getRelationType(String relationTypeName) throws StorageAccessException;
-
-	/**
-	 * Retrieves the so-named relationship type relevant to the given relation type
-	 * @throws StorageAccessException 
-	 */
-	public RelationshipType getRelationshipType(RelationType relationType, String relationshipTypeName) throws StorageAccessException;
-
-	/**
-	 * Returns all relationships of the given sample with the given type.
-	 * @throws StorageAccessException 
-	 */
-	public List<? extends Relationship> getRelationships(Sample sample, RelationshipType relationshipType) throws StorageAccessException;
 
 	/**
 	 * Return the fossil group with the given name or null if one doesn't exist

@@ -2,69 +2,27 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 
+import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.RelationType;
+import nz.cri.gns.fred.model.RelationshipType;
+import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.SampleUtil;
 
-/** @author Hibernate CodeGenerator */
 public class Relationship implements Serializable, nz.cri.gns.fred.model.Relationship, Cloneable {
 
    private static final long serialVersionUID = 20050818L;
 
-	/** identifier field */
     private Integer relationshipId;
-
-    /** persistent field */
     private RelationType relationType;
-
-    /** nullable persistent field */
     private Integer stratUnitId;
-
-    /** nullable persistent field */
     private String stratUnit;
-
-    /** nullable persistent field */
     private Double distance;
-
-    /** nullable persistent field */
     private String distanceMod;
-
-    /** nullable persistent field */
     private Double distanceRange;
-
-    /** persistent field */
-    private nz.cri.gns.fred.model.Sample sample;
-
-    /** persistent field */
-    private nz.cri.gns.fred.model.Feature feature;
-
-    /** persistent field */
-    private nz.cri.gns.fred.model.RelationshipType relationshipType;
-
-    /** full constructor */
-    public Relationship(RelationType relationType, Integer stratUnitId, String stratUnit, Double distance, String distanceMod, Double distanceRange, nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.RelationshipType relationshipType) {
-        this.relationType = relationType;
-        this.stratUnitId = stratUnitId;
-        this.stratUnit = stratUnit;
-        this.distance = distance;
-        this.distanceMod = distanceMod;
-        this.distanceRange = distanceRange;
-        this.sample = sample;
-        this.feature = feature;
-        this.relationshipType = relationshipType;
-    }
-
-    /** default constructor */
-    public Relationship() {
-    }
-
-    /** minimal constructor */
-    public Relationship(RelationType relationType, nz.cri.gns.fred.hibernate.Sample sample, nz.cri.gns.fred.hibernate.Feature feature, nz.cri.gns.fred.hibernate.RelationshipType relationshipType) {
-        this.relationType = relationType;
-        this.sample = sample;
-        this.feature = feature;
-        this.relationshipType = relationshipType;
-    }
+    private Sample sample;
+    private Feature feature;
+    private RelationshipType relationshipType;
 
     public Integer getRelationshipId() {
         return this.relationshipId;
@@ -122,27 +80,27 @@ public class Relationship implements Serializable, nz.cri.gns.fred.model.Relatio
         this.distanceRange = distanceRange;
     }
 
-    public nz.cri.gns.fred.model.Sample getSample() {
+    public Sample getSample() {
         return this.sample;
     }
 
-    public void setSample(nz.cri.gns.fred.model.Sample sample) {
+    public void setSample(Sample sample) {
         this.sample = sample;
     }
 
-    public nz.cri.gns.fred.model.Feature getFeature() {
+    public Feature getFeature() {
         return this.feature;
     }
 
-    public void setFeature(nz.cri.gns.fred.model.Feature feature) {
+    public void setFeature(Feature feature) {
         this.feature = feature;
     }
 
-    public nz.cri.gns.fred.model.RelationshipType getRelationshipType() {
+    public RelationshipType getRelationshipType() {
         return this.relationshipType;
     }
 
-    public void setRelationshipType(nz.cri.gns.fred.model.RelationshipType relationshipType) {
+    public void setRelationshipType(RelationshipType relationshipType) {
         this.relationshipType = relationshipType;
     }
     
@@ -176,6 +134,19 @@ public class Relationship implements Serializable, nz.cri.gns.fred.model.Relatio
     public String toString() {
     	return SampleUtil.getRelationshipDescription(this);
     }
+
+	@Override
+	public int compareTo(nz.cri.gns.fred.model.Relationship arg0) {
+		try {
+			if (sample.equals(arg0.getSample())) {
+				if (relationshipType.equals(arg0.getRelationshipType()))
+					return distance.compareTo(arg0.getDistance());
+				return relationshipType.compareTo(arg0.getRelationshipType());
+			}
+			return sample.compareTo(arg0.getSample());
+		} catch (Exception e) {}
+		return 0;
+	}
     
     /*public int hashCode() {
     	return 275 * relationshipId;

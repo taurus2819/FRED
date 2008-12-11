@@ -33,14 +33,12 @@ import nz.cri.gns.fred.model.FolderUser;
 import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.FrUser;
-import nz.cri.gns.fred.model.FrUserView;
 import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.LogTable;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Record;
-import nz.cri.gns.fred.model.RelationType;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.RelationshipType;
 import nz.cri.gns.fred.model.Sample;
@@ -235,37 +233,6 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 
 	public SedimentaryFeature createNewSedimentaryFeature() {
 		return new nz.cri.gns.fred.hibernate.SedimentaryFeature();
-	}
-
-	public RelationType getRelationType(String relationTypeName) throws StorageAccessException {
-		return HibernateUtils.getFirst(provider, "FROM RelationType AS rt WHERE rt.name = ?", relationTypeName, RelationType.class);
-	}
-
-	public RelationshipType getRelationshipType(RelationType relationType, String relationshipTypeName) throws StorageAccessException {
-		try {
-            Session session = provider.currentSession();
-            Query query = session.createQuery("FROM RelationshipType AS rel WHERE rel.relationType = :reltype AND rel.name = :name");
-            query.setEntity("reltype", relationType);
-            query.setString("name", relationshipTypeName);
-            List list = query.list();
-			if (list.size() == 0)
-			    return null;
-			return (RelationshipType)list.get(0);
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-        }
-	}
-
-	public List<? extends Relationship> getRelationships(Sample sample, RelationshipType relationshipType) throws StorageAccessException {
-		try {
-            Session session = provider.currentSession();
-            Query query = session.createQuery("FROM Relationship AS rel WHERE rel.relationshipType = :reltype AND rel.sample = :samp");
-            query.setEntity("reltype", relationshipType);
-            query.setEntity("samp", sample);
-            return query.list();
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-        }
 	}
 
 	public FossilGroup getFossilGroup(String name) throws StorageAccessException {
