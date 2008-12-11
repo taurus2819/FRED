@@ -816,6 +816,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 			} catch (StorageAccessException e) {
 				e.printStackTrace();
 				error.add(new String[] {"Sample relationships", e.getMessage()});
+			} catch (IllegalArgumentException e) {
+				error.add(new String[] {"Sample relationships", e.getMessage()});
 			} catch (DataInputException e) {
 				error.addAll(e.getError());
 			}
