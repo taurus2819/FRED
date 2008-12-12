@@ -117,11 +117,7 @@
 				StageFrom.focus();
 				return false;
 			}
-			if (!(StratAge.checked || AdoAge.checked || PalAge.checked)) {
-				alert("Please select an age to search - eg Collectors Age");
-				StratAge.select();
-				return false;
-			}
+
 			if (StageFrom.value != "-") {
 				if (StageTo.value != "-") {
 					if (ageStart[StageTo.value] > ageStart[StageFrom.value] || ageStop[StageFrom.value] < ageStop[StageTo.value]) {
@@ -181,7 +177,7 @@
 			QueryString.value = queryString;
 			TableName.value = tableName;
 		}
-		return false;
+		return true;
 	}
 	
 	</script><%
