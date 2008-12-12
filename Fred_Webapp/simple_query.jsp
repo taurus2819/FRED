@@ -49,23 +49,24 @@
 		var queryString = "";
 		var whereSQL = "s.audit.status = 'approved' AND s.feature.audit.status = 'approved' AND ";
 		var tableName = "Sample AS s";
-		var queryFlag = false;
+		var frNum;
+		var aStart = "";
+		var aStop = "";
+		var aQuery = "";
+		var palListFlag = false;
 		with (form) {
 			if (Map.value.length > 0) {
 				whereSQL = whereSQL + "s.feature.siteView.nzmgSheet = '" + Map.value.toUpperCase() + "' AND ";
 				queryString = queryString + "NZMG Sheet = " + Map.value.toUpperCase() + " AND ";
-				queryFlag = true;
 			}
 			if (QMap.value != "-") {
 				whereSQL = whereSQL + "s.feature.siteView.qmapSheet = '" + QMap.value + "' AND ";
 				queryString = queryString + "QMAP Sheet = " + QMap.value + " AND ";
-				queryFlag = true;
 			}
 			if (Coll.value.length > 0) {
 				whereSQL = whereSQL + "UPPER(person.name) LIKE '%" + replaceSingleQuote(Coll.value.toUpperCase()) + "%' AND ";
 				queryString = queryString + "Collector = " + Coll.value + " AND ";
 				tableName = tableName + " JOIN s.collectors AS person";
-				queryFlag = true;
 			}
 			if (YearFrom.value.length > 0) {
 				if (isNaN(YearFrom.value) || YearFrom.value.length != 4) {
@@ -79,43 +80,35 @@
 					}
 					whereSQL = whereSQL + "s.collectionDate BETWEEN '01-JAN-" + YearFrom.value + "' AND '31-DEC-" + YearTo.value + "' AND ";
 					queryString = queryString + "Collection Date BETWEEN " + YearFrom.value + " AND " + YearTo.value + " AND ";
-					queryFlag = true;
 				} else {
 					whereSQL = whereSQL + "s.collectionDate BETWEEN '01-JAN-" + YearFrom.value + "' AND '31-DEC-" + YearFrom.value + "' AND ";
 					queryString = queryString + "Collection Date = " + YearFrom.value + " AND ";
-					queryFlag = true;
 				}
 			}
 			if (FieldNum.value.length > 0) {
 				whereSQL = whereSQL + "UPPER(s.feature.featureName) LIKE '%" + replaceSingleQuote(FieldNum.value.toUpperCase()) + "%' AND ";
 				queryString = queryString + "Field Number = " + FieldNum.value + " AND ";
-				queryFlag = true;
 			}
 			if (StratName.value.length > 0) {
 				whereSQL = whereSQL + "UPPER(s.stratUnit) LIKE '%" + replaceSingleQuote(StratName.value.toUpperCase()) + "%' AND ";
 				queryString = queryString + "Stratigraphic Name = " + StratName.value + " AND ";
-				queryFlag = true;
 			}
 			if (StratAtt.checked) {
 				whereSQL = whereSQL + "(s.dip IS NOT NULL OR s.dipDirection IS NOT NULL OR s.strike IS NOT NULL) AND ";
 				queryString = queryString + "Stratal Attitude present AND ";
-				queryFlag = true;
 			}
 			if (RockNat.value.length > 0) {
 				whereSQL = whereSQL + "UPPER(s.rockNature) LIKE '%" + replaceSingleQuote(RockNat.value.toUpperCase()) + "%' AND ";
 				queryString = queryString + "Nature of Rock Unit = " + RockNat.value + " AND ";
-				queryFlag = true;
 			}
 			if (DepEnv.value.length > 0) {
 				whereSQL = whereSQL + "UPPER(s.depositionEnv) LIKE '%" + replaceSingleQuote(DepEnv.value.toUpperCase()) + "%' AND ";
 				queryString = queryString + "Deposition Environment = " + DepEnv.value + " AND ";
-				queryFlag = true;
 			}
 			
 			if (Taxon.value.length > 0) {
 				whereSQL = whereSQL + "record.audit.status = 'approved' AND UPPER(pal.taxon.taxonomicName) LIKE '%" + replaceSingleQuote(Taxon.value.toUpperCase()) + "%' AND ";
 				tableName = tableName + " JOIN s.records AS record JOIN record.paleontology.listEntries AS pal";
-				queryFlag = true;
 			}
 			
 			//check only stage name or numeric values entered
@@ -124,19 +117,24 @@
 				StageFrom.focus();
 				return false;
 			}
+			if (!(StratAge.checked || AdoAge.checked || PalAge.checked)) {
+				alert("Please select an age to search - eg Collectors Age");
+				StratAge.select();
+				return false;
+			}
 			if (StageFrom.value != "-") {
 				if (StageTo.value != "-") {
 					if (ageStart[StageTo.value] > ageStart[StageFrom.value] || ageStop[StageFrom.value] < ageStop[StageTo.value]) {
 					  alert ("Stage Names are the wrong way around"); StageFrom.select();
 					  return false;
 					}
-					startAge.value = ageStart[StageFrom.value];
-					stopAge.value = ageStop[StageTo.value];
-					queryString = queryString + "Age = " + StageFrom.options[StageFrom.options.selectedIndex].text + " to " + StageTo.options[StageTo.options.selectedIndex].text + " AND ";
+					aStart = ageStart[StageFrom.value];
+					aStop = ageStop[StageTo.value];
+					aQuery = StageFrom.options[StageFrom.options.selectedIndex].text + " to " + StageTo.options[StageTo.options.selectedIndex].text;
 				} else {
-					startAge.value = ageStart[StageFrom.value];
-					stopAge.value = ageStop[StageFrom.value];
-					queryString = queryString + "Age = " + StageFrom.options[StageFrom.options.selectedIndex].text + " AND ";
+					aStart = ageStart[StageFrom.value];
+					aStop = ageStop[StageFrom.value];
+					aQuery = StageFrom.options[StageFrom.options.selectedIndex].text;
 				}
 			} else if (StageTo.value != "-") {
 				alert ("From stage not selected");
@@ -155,32 +153,33 @@
 					  AgeFrom.select();
 					  return false;
 					}
-					startAge.value = AgeFrom.value;
-					stopAge.value = AgeTo.value;
-					queryString = queryString + "Age = " + AgeFrom.value + " to " + AgeTo.value + " AND ";
+					aStart = AgeFrom.value;
+					aStop = AgeTo.value;
+					aQuery = AgeFrom.value + " to " + AgeTo.value;
 				} else {
-					startAge.value = AgeFrom.value;
-					stopAge.value = AgeFrom.value;
-					queryString = queryString + "Age = " + AgeFrom.value + " AND ";
+					aStart = AgeFrom.value;
+					aStop = AgeFrom.value;
+					aQuery = AgeFrom.value;
 				}
 			} else if (AgeTo.value.length > 0) {
 				alert ("From Age not entered");
 				AgeFrom.select();
 				return false;
 			}
-
-			if (queryFlag) {
-				if (whereSQL.length > 0)
-				whereSQL = whereSQL.substring(0, whereSQL.length - 5);
-				WhereSQL.value = whereSQL;
-				if (queryString.length > 0)	{
-					queryString = queryString.substring(0, queryString.length - 5);
-				}
-				TableName.value = tableName;
+			if (aStart != "") {
+				whereSQL = whereSQL + "(sampleStageView.baseAge >= " + aStop + " AND sampleStageView.topAge <= " + aStart + ") AND ";
+				tableName = tableName + " JOIN s.sampleStageViews AS sampleStageView";
+				queryString = queryString + "Age= " + aQuery + " AND ";
 			}
-			
+
+			if (whereSQL.length > 0)
+			whereSQL = whereSQL.substring(0, whereSQL.length - 5);
+			WhereSQL.value = whereSQL;
+			if (queryString.length > 0)	{
+				queryString = queryString.substring(0, queryString.length - 5);
+			}
 			QueryString.value = queryString;
-			
+			TableName.value = tableName;
 		}
 		return true;
 	}
@@ -198,7 +197,7 @@
 	}
 	%></script>
 	
-	<form name="QueryForm" method="get" action="result_list.jsp" onsubmit="return generateSQL(this)">
+	<form name="QueryForm" method="post" action="result_list.jsp" onsubmit="return generateSQL(this)">
 	<p><table border="0" cellpadding="3" cellspacing="2" width="600">
 	<tr class="midColour"><th colspan="2">Sample Fields</th></tr>
 	<tr class="lightColour"><td class="heading">NZMG Sheet&nbsp;&nbsp;</td><td><input type="text" name="Map" size="10" /></td></tr>
@@ -238,7 +237,7 @@
 	<tr><td>&nbsp;</td></tr>
 	
 	<tr class="midColour"><th colspan="2">Ages</th></tr>
-	<tr class="lightColour"><td><span class="heading">Stage Range</span>&nbsp;&nbsp;&nbsp;<a href="age.jsp" target="ages">stage help</a></td><td><%
+	<tr class="lightColour"><td class="heading">Stage Range</td><td><%
 	SelectBox<Age> ageSelectBox = new SelectBox<Age>(new StageUtil(factory).getAges());
 	Attributes attributes = Attributes.createNameOnlyAttributes("StageFrom");
 	ageSelectBox.writeBox(attributes, "-- All --", null, (Age)null, new PrintWriter(out));
@@ -256,8 +255,6 @@
 	<input type="hidden" name="WhereSQL" value="" />
 	<input type="hidden" name="QueryString" value="" />
 	<input type="hidden" name="TableName" value="" />
-	<input type="hidden" name="startAge" value="" />
-	<input type="hidden" name="stopAge" value="" />
 	<p><input type="submit" value="Submit Query" /></p>
 	</form><%
 	
