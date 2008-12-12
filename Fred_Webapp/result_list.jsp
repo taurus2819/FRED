@@ -83,11 +83,11 @@
 			String tableName = request.getParameter("TableName");
 			queryString = request.getParameter("QueryString");
 			try {
-				System.out.println(tableName);
-				System.out.println(whereSQL);
 				String sampHql = "SELECT DISTINCT s FROM " + tableName + " WHERE " + whereSQL;
-				samples = sampleUtil.getListFromHQL(sampHql, Sample.class);	
+				samples = sampleUtil.getListFromHQL(sampHql, Sample.class);
+				System.out.println("Got samples now");
 				features = featureUtil.getFeatures(samples);
+				System.out.println("Got features now");
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
 			} catch (Exception e) {
 				e.printStackTrace();

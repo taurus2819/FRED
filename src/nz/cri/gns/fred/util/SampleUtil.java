@@ -213,7 +213,6 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	}
 	
 	public <T extends Comparable<? super T>> List<T> getListFromHQL(String query, Class<T> clazz) throws StorageAccessException {
-		System.out.println(query);
 		return fredDAO.getList(query, clazz);
 	}
 	
