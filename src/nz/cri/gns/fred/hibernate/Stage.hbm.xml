@@ -109,6 +109,21 @@
         />
     </set>
     
+    <!-- bi-directional one-to-many association to SampleStageView -->
+    <set
+        name="sampleStageViews"
+        lazy="true"
+        inverse="true"
+		cascade="all"
+    >
+        <key>
+            <column not-null="true" name="SAMPLE_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.SampleStageView"
+        />
+    </set>
+    
     <!-- bi-directional many-to-one association to Age -->
     <many-to-one
         name="lowerAge"

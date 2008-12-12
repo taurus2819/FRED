@@ -52,6 +52,7 @@
 		<mapping resource="nz/cri/gns/fred/hibernate/RelationType.hbm.xml"/>
 		<mapping resource="nz/cri/gns/fred/hibernate/RockColour.hbm.xml"/>
 		<mapping resource="nz/cri/gns/fred/hibernate/Sample.hbm.xml"/>
+		<mapping resource="nz/cri/gns/fred/hibernate/SampleStageView.hbm.xml"/>
 		<mapping resource="nz/cri/gns/fred/hibernate/SecurityClass.hbm.xml"/>
 		<mapping resource="nz/cri/gns/fred/hibernate/SedimentaryFeatureType.hbm.xml"/>
 		<mapping resource="nz/cri/gns/fred/hibernate/SentTo.hbm.xml"/>
