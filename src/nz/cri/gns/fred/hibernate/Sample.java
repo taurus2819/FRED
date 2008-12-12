@@ -21,6 +21,7 @@ import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Relationship;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.MetaCat;
+import nz.cri.gns.fred.model.SampleStageView;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.Stage;
@@ -76,6 +77,7 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     private Set<SentTo> sentTos;
     private Set<Person> collectors;
     private Set<Relationship> relationships;
+    private Set<SampleStageView> sampleStageViews;
 
     public Integer getSampleId() {
         return this.sampleId;
@@ -444,6 +446,14 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     public void setRelationships(Set<Relationship> relationships) {
         this.relationships = relationships;
     }
+
+	public void setSampleStageViews(Set<SampleStageView> sampleStageViews) {
+		this.sampleStageViews = sampleStageViews;
+	}
+
+	public Set<SampleStageView> getSampleStageViews() {
+		return sampleStageViews;
+	}
 
 	public int compareTo(nz.cri.gns.fred.model.Sample sample) {
 		if (feature.equals(sample.getFeature())) {

@@ -25,4 +25,6 @@ public interface Stage extends Comparable<Stage> {
 	public void setPaleontologies(Set<Paleontology> paleontologies);
 	public Set<Adoption> getAdoptions();
 	public void setAdoptions(Set<Adoption> adoptions);
+	public void setSampleStageViews(Set<SampleStageView> sampleStageViews);
+	public Set<SampleStageView> getSampleStageViews();
 }

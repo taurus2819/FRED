@@ -7,6 +7,7 @@ import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.Sample;
+import nz.cri.gns.fred.model.SampleStageView;
 
 public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
 
@@ -23,6 +24,7 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
     private Set<Sample> samplesByInferredStageId;
     private Set<Paleontology> paleontologies;
     private Set<Adoption> adoptions;
+    private Set<SampleStageView> sampleStageViews;
 
     public Integer getStageId() {
         return this.stageId;
@@ -111,6 +113,14 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
     public void setAdoptions(Set<Adoption> adoptions) {
         this.adoptions = adoptions;
     }
+
+	public void setSampleStageViews(Set<SampleStageView> sampleStageViews) {
+		this.sampleStageViews = sampleStageViews;
+	}
+
+	public Set<SampleStageView> getSampleStageViews() {
+		return sampleStageViews;
+	}
 
 	public boolean equals(Object o) {
 		return o instanceof Stage && ((Stage)o).stageId.equals(stageId);

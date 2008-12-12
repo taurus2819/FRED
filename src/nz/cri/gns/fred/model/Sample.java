@@ -95,5 +95,6 @@ public interface Sample extends Audited, Comparable<Sample> {
 	public void setCollectors(Set<Person> collectors);
 	public Set<Relationship> getRelationships();
 	public void setRelationships(Set<Relationship> relationships);
-	
+	public void setSampleStageViews(Set<SampleStageView> sampleStageViews);
+	public Set<SampleStageView> getSampleStageViews();
 }
