@@ -197,7 +197,7 @@
 	}
 	%></script>
 	
-	<form name="QueryForm" method="post" action="result_list.jsp" onsubmit="return generateSQL(this)">
+	<form name="QueryForm" method="get" action="result_list.jsp" onsubmit="return generateSQL(this)">
 	<p><table border="0" cellpadding="3" cellspacing="2" width="600">
 	<tr class="midColour"><th colspan="2">Sample Fields</th></tr>
 	<tr class="lightColour"><td class="heading">NZMG Sheet&nbsp;&nbsp;</td><td><input type="text" name="Map" size="10" /></td></tr>
