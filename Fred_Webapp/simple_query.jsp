@@ -181,7 +181,7 @@
 			QueryString.value = queryString;
 			TableName.value = tableName;
 		}
-		return true;
+		return false;
 	}
 	
 	</script><%
