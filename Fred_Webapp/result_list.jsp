@@ -83,20 +83,10 @@
 			String tableName = request.getParameter("TableName");
 			queryString = request.getParameter("QueryString");
 			try {
-				if (!FREDUtil.isEmpty(whereSQL)) {
-					String sampHql = "SELECT DISTINCT s FROM " + tableName + " WHERE " + whereSQL;
-					samples = sampleUtil.getListFromHQL(sampHql, Sample.class);
-				}
-				if (!FREDUtil.isEmpty(request.getParameter("startAge"))) {
-					List<Sample> samplesByAge = sampleUtil.getSamplesByAge(new Double(request.getParameter("startAge")), new Double(request.getParameter("stopAge")));
-					if (samples == null || samples.size() == 0)
-						samples = samplesByAge;
-					else {
-						HashSet<Sample> sampleSet = new HashSet<Sample>(samples);
-						sampleSet.retainAll(samplesByAge);
-						samples = FREDUtil.getSortedList(sampleSet);
-					}
-				}
+				System.out.println(tableName);
+				System.out.println(whereSQL);
+				String sampHql = "SELECT DISTINCT s FROM " + tableName + " WHERE " + whereSQL;
+				samples = sampleUtil.getListFromHQL(sampHql, Sample.class);	
 				features = featureUtil.getFeatures(samples);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
 			} catch (Exception e) {
