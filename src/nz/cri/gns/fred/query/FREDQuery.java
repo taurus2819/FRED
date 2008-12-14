@@ -51,13 +51,11 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 
 	private static final long serialVersionUID = 20060120L;
 	
-	private static final String SAMPLE_TABLE = "f.samples";
-	private static final HqlJoin SAMPLE_JOIN = new HqlJoin(false, "sample");
-	private static final String[] RECORD_TABLES = new String[] {"f.samples", "sample.records"};
-	private static final HqlJoin[] RECORD_JOINS = {new HqlJoin(false, "sample"), new HqlJoin(false, "record")};
-	private static final String[] PAL_LIST_TABLES = new String[] {"f.samples", "sample.records", "record.paleontology.listEntries"};
-	private static final HqlJoin[] PAL_LIST_JOINS = {new HqlJoin(false, "sample"), new HqlJoin(false, "record"), new HqlJoin(false, "palList")};
-	private static final String EDIT_TABLE = "f.audit.auditEdits";
+	private static final String[] RECORD_TABLES = new String[] {"s.records"};
+	private static final HqlJoin[] RECORD_JOINS = {new HqlJoin(false, "record")};
+	private static final String[] PAL_LIST_TABLES = new String[] {"s.records", "record.paleontology.listEntries"};
+	private static final HqlJoin[] PAL_LIST_JOINS = {new HqlJoin(false, "record"), new HqlJoin(false, "palList")};
+	private static final String EDIT_TABLE = "s.audit.auditEdits";
 	private static final HqlJoin EDIT_JOIN = new HqlJoin(false, "edit");
 	
 	protected int lastUsedId = 900000;
@@ -85,100 +83,99 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		//add(new TwoLevelField("FR Number Fields", f));
 		
 		Field[] f = new Field[14];
-		f[0] = new BasicTextField("f.featureName", "Feature Name");
-		f[1] = new PossibleValueField("f.featureType", "Feature Type", getFeatureTypes());
-		f[2] = new PossibleValueField("f.masterFile", "Masterfile", getValues("FROM Folder AS f WHERE f.folderType.name='Admin'", Folder.class));
-		f[3] = new BasicTextField("f.siteView.nzmgSheet", "NZMS260 Sheet");
-		f[4] = new PossibleValueField("f.siteView.qmapSheet", "QMap Sheet", getQMapSheets());
-		f[5] = new PossibleValueField("f.siteView.countryCode", "Country", getValues("FROM Country AS c", Country.class));
-		f[6] = new PossibleValueField("f.siteView.island", "Island", getSQLValues("SELECT DISTINCT name as n, name FROM sc.island ORDER BY UPPER(name)"));
-		f[7] = new BasicNumberField("f.siteView.nzmgEast", "NZMG Easting");
-		f[8] = new BasicNumberField("f.siteView.nzmgNorth", "NZMG Northing");
-		f[9] = new BasicNumberField("f.siteView.latitude", "Latitude");
-		f[10] = new BasicNumberField("f.siteView.longitude", "Longitude");
-		f[11] = new BasicTextField("f.locality", "Locality");
-		f[12] = new BasicTextField("f.coordComments", "Coordinate Comments");
-		f[13] = new BasicTextField("f.comments", "Locality Comments");
+		f[0] = new BasicTextField("s.feature.featureName", "Feature Name");
+		f[1] = new PossibleValueField("s.feature.featureType", "Feature Type", getFeatureTypes());
+		f[2] = new PossibleValueField("s.feature.masterFile", "Masterfile", getValues("FROM Folder AS f WHERE f.folderType.name='Admin'", Folder.class));
+		f[3] = new BasicTextField("s.feature.siteView.nzmgSheet", "NZMS260 Sheet");
+		f[4] = new PossibleValueField("s.feature.siteView.qmapSheet", "QMap Sheet", getQMapSheets());
+		f[5] = new PossibleValueField("s.feature.siteView.countryCode", "Country", getValues("FROM Country AS c", Country.class));
+		f[6] = new PossibleValueField("s.feature.siteView.island", "Island", getSQLValues("SELECT DISTINCT name as n, name FROM sc.island ORDER BY UPPER(name)"));
+		f[7] = new BasicNumberField("s.feature.siteView.nzmgEast", "NZMG Easting");
+		f[8] = new BasicNumberField("s.feature.siteView.nzmgNorth", "NZMG Northing");
+		f[9] = new BasicNumberField("s.feature.siteView.latitude", "Latitude");
+		f[10] = new BasicNumberField("s.feature.siteView.longitude", "Longitude");
+		f[11] = new BasicTextField("s.feature.locality", "Locality");
+		f[12] = new BasicTextField("s.feature.coordComments", "Coordinate Comments");
+		f[13] = new BasicTextField("s.feature.comments", "Locality Comments");
 		add(new TwoLevelField("Locality Fields", f));
 		
 		f = new Field[10];
-		f[0] = new BasicTextField("f.featureName", "Drillhole Name");
-		//f[1] = new PossibleValueField("f.person", "Operating Company", people);
-		f[1] = new BasicTextField("f.person.name", "Operating Company");
-		f[2] = new BasicDateField("f.startDate", "Spud Date");
-		f[3] = new BasicDateField("f.finishDate", "Completion Date");
-		f[4] = new BasicTextField("f.licenceArea", "Licence Area");
-		f[5] = new PossibleValueField("f.datumType", "Datum Type", getDrillholeDatumTypes());
-		f[6] = new BasicNumberField("f.datumElevation", "Datum Elevation (m)");
-		f[7] = new MetricDepthField("f.startDepth", "Kick-off Depth (m)", "f.depthUnit");
-		f[8] = new MetricDepthField("f.finishDepth", "Termination Depth (m)", "f.depthUnit");
-		f[9] = new TableRequiredPossibleValueField("sample.drillType", "Sample Type", getValues("FROM DrillType AS t", DrillType.class), SAMPLE_TABLE, SAMPLE_JOIN);
+		f[0] = new BasicTextField("s.feature.featureName", "Drillhole Name");
+		f[1] = new BasicTextField("s.feature.person.name", "Operating Company");
+		f[2] = new BasicDateField("s.feature.startDate", "Spud Date");
+		f[3] = new BasicDateField("s.feature.finishDate", "Completion Date");
+		f[4] = new BasicTextField("s.feature.licenceArea", "Licence Area");
+		f[5] = new PossibleValueField("s.feature.datumType", "Datum Type", getDrillholeDatumTypes());
+		f[6] = new BasicNumberField("s.feature.datumElevation", "Datum Elevation (m)");
+		f[7] = new MetricDepthField("s.feature.startDepth", "Kick-off Depth (m)", "f.depthUnit");
+		f[8] = new MetricDepthField("s.feature.finishDepth", "Termination Depth (m)", "f.depthUnit");
+		f[9] = new PossibleValueField("s.drillType", "Sample Type", getValues("FROM DrillType AS t", DrillType.class));
 		add(new TwoLevelField("Drillhole Fields", f));
 		
 		f = new Field[8];
-		f[0] = new BasicTextField("f.featureName", "Vertical Section Name");
+		f[0] = new BasicTextField("s.feature.featureName", "Vertical Section Name");
 		//f[1] = new PossibleValueField("f.person", "Section Collector", people);
-		f[1] = new BasicTextField("f.person.name", "Section Collector");
-		f[2] = new BasicDateField("f.startDate", "Sampling Start Date");
-		f[3] = new BasicDateField("f.finishDate", "Completion Date");
-		f[4] = new PossibleValueField("f.datumType", "Datum Type", getVertSectDatumTypes());
-		f[5] = new BasicNumberField("f.datumElevation", "Datum Elevation (m)");
-		f[6] = new MetricDepthField("f.startDepth", "Top Horizon (m)", "f.depthUnit");
-		f[7] = new MetricDepthField("f.finishDepth", "Base Horizon (m)", "f.depthUnit");
+		f[1] = new BasicTextField("s.feature.person.name", "Section Collector");
+		f[2] = new BasicDateField("s.feature.startDate", "Sampling Start Date");
+		f[3] = new BasicDateField("s.feature.finishDate", "Completion Date");
+		f[4] = new PossibleValueField("s.feature.datumType", "Datum Type", getVertSectDatumTypes());
+		f[5] = new BasicNumberField("s.feature.datumElevation", "Datum Elevation (m)");
+		f[6] = new MetricDepthField("s.feature.startDepth", "Top Horizon (m)", "f.depthUnit");
+		f[7] = new MetricDepthField("s.feature.finishDepth", "Base Horizon (m)", "f.depthUnit");
 		add(new TwoLevelField("Vertical Section Fields", f));
 		
 		f = new Field[9];
-		f[0] = new HqlUniqueSubTableTextField("person.name", "Collector", new String[] {"f.samples", "sample.collectors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "person")});
-		f[1] = new TableRequiredDateField("sample.collectionDate", "Collection Date", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[2] = new TableRequiredPossibleValueField("sample.inPlace", "Fossils In Place", getInPlace(), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[3] = new HqlUniqueSubTablePossibleValueField("sentTo.fossilGroup", "Sent To Group", getValues("FROM FossilGroup AS f", FossilGroup.class), new String[] {"f.samples", "sample.sentTos"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "sentTo")});
-		f[4] = new HqlUniqueSubTableTextField("sentTo.person.name", "Sent To Person", new String[] {"f.samples", "sample.sentTos"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "sentTo")});
-		f[5] = new HqlUniqueSubTableTextField("sentTo.lab.name", "Sent To Lab", new String[] {"f.samples", "sample.sentTos"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "sentTo")});
-		f[6] = new HqlUniqueSubTableTextField("sentTo.comments", "Sent To Comments", new String[] {"f.samples", "sample.sentTos"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "sentTo")});
-		f[7] = new TableRequiredTextField("sample.notCollected", "Not Collected", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[8] = new TableRequiredTextField("sample.significance", "Significance/Comments", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[0] = new HqlUniqueSubTableTextField("person.name", "Collector", new String[] {"s.collectors"}, new HqlJoin[] {new HqlJoin(false, "person")});
+		f[1] = new BasicDateField("s.collectionDate", "Collection Date");
+		f[2] = new PossibleValueField("s.inPlace", "Fossils In Place", getInPlace());
+		f[3] = new HqlUniqueSubTablePossibleValueField("sentTo.fossilGroup", "Sent To Group", getValues("FROM FossilGroup AS f", FossilGroup.class), new String[] {"s.sentTos"}, new HqlJoin[] {new HqlJoin(false, "sentTo")});
+		f[4] = new HqlUniqueSubTableTextField("sentTo.person.name", "Sent To Person", new String[] {"s.sentTos"}, new HqlJoin[] {new HqlJoin(false, "sentTo")});
+		f[5] = new HqlUniqueSubTableTextField("sentTo.lab.name", "Sent To Lab", new String[] {"s.sentTos"}, new HqlJoin[] {new HqlJoin(false, "sentTo")});
+		f[6] = new HqlUniqueSubTableTextField("sentTo.comments", "Sent To Comments", new String[] {"s.sentTos"}, new HqlJoin[] {new HqlJoin(false, "sentTo")});
+		f[7] = new BasicTextField("s.notCollected", "Not Collected");
+		f[8] = new BasicTextField("s.significance", "Significance/Comments");
 		add(new TwoLevelField("Collection Fields", f));
 		
 		f = new Field[12];
-		f[0] = new TableRequiredTextField("sample.stratUnit", "Stratigraphic Name", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[1] = new AgeField("sample.inferredStage", "Inferred Stage", ages, SAMPLE_TABLE, SAMPLE_JOIN);
-		f[2] = new NumericAgeField("sample.inferredStage", "Inferred Stage (numeric)", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[3] = new AgeField("sample.knownStage", "Known Stage", ages, SAMPLE_TABLE, SAMPLE_JOIN);
-		f[4] = new NumericAgeField("sample.knownStage", "Known Stage (numeric)", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[5] = new TableRequiredTextField("sample.columnMap", "Column/Map", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[6] = new TableRequiredNumberField("sample.dip", "Dip", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[7] = new TableRequiredPossibleValueField("sample.dipDirection", "Dip Direction", getDipDirection(), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[8] = new TableRequiredNumberField("sample.strike", "Strike", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[9] = new TableRequiredPossibleValueField("sample.facing", "Facing", getFacing(), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[10] = new HqlUniqueSubTableTextField("relationship.feature.frNumber.frNumber", "Sample Relationship - FR Number", new String[] {"f.samples", "sample.relationships"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "relationship")});
-		f[11] = new HqlUniqueSubTableTextField("relationship.stratUnit", "Strat Relationship - Unit", new String[] {"f.samples", "sample.relationships"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "relationship")});
+		f[0] = new BasicTextField("s.stratUnit", "Stratigraphic Name");
+		f[1] = new BasicAgeField("s.inferredStage", "Inferred Stage", ages);
+		f[2] = new BasicNumericAgeField("s.inferredStage", "Inferred Stage (numeric)");
+		f[3] = new BasicAgeField("s.knownStage", "Known Stage", ages);
+		f[4] = new BasicNumericAgeField("s.knownStage", "Known Stage (numeric)");
+		f[5] = new BasicTextField("s.columnMap", "Column/Map");
+		f[6] = new BasicNumberField("s.dip", "Dip");
+		f[7] = new PossibleValueField("s.dipDirection", "Dip Direction", getDipDirection());
+		f[8] = new BasicNumberField("s.strike", "Strike");
+		f[9] = new PossibleValueField("s.facing", "Facing", getFacing());
+		f[10] = new HqlUniqueSubTableTextField("relationship.feature.frNumber.frNumber", "Sample Relationship - FR Number", new String[] {"s.relationships"}, new HqlJoin[] {new HqlJoin(false, "relationship")});
+		f[11] = new HqlUniqueSubTableTextField("relationship.stratUnit", "Strat Relationship - Unit", new String[] {"s.relationships"}, new HqlJoin[] {new HqlJoin(false, "relationship")});
 		add(new TwoLevelField("Stratigraphic Fields", f));
 		
 		f = new Field[15];
-		f[0] = new TableRequiredPossibleValueField("sample.primaryGrainSize", "Primary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[1] = new TableRequiredPossibleValueField("sample.secondaryGrainSize", "Secondary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[2] = new TableRequiredPossibleValueField("sample.comparatorUsed", "Comparator Used", getComparatorUsed(), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[3] = new TableRequiredPossibleValueField("sample.bedThickness", "Bedding Thickness", getValues("FROM BedThickness AS b", BedThickness.class), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[4] = new TableRequiredPossibleValueField("sample.primaryBedding", "Primary Bedding", getValues("FROM Bedding AS b", Bedding.class), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[5] = new TableRequiredPossibleValueField("sample.secondaryBedding", "Secondary Bedding", getValues("FROM Bedding AS b", Bedding.class), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[6] = new TableRequiredPossibleValueField("sample.weathering", "Weathering", getValues("FROM Weathering AS w", Weathering.class), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[7] = new TableRequiredPossibleValueField("sample.hardness", "Hardness", getValues("FROM Hardness AS h", Hardness.class), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[8] = new TableRequiredPossibleValueField("sample.carbonate", "Carbonate", getValues("FROM Carbonate AS c", Carbonate.class), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[9] = new TableRequiredPossibleValueField("sample.colourModifier", "Colour Modifier", getValues("FROM ColourModifier AS c", ColourModifier.class), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[10] = new TableRequiredPossibleValueField("sample.primaryColour", "Primary Colour", getValues("FROM RockColour AS r", RockColour.class), SAMPLE_TABLE, SAMPLE_JOIN);
-		f[11] = new TableRequiredPossibleValueField("sample.secondaryColour", "Secondary Colour", getValues("FROM RockColour AS r", RockColour.class), SAMPLE_TABLE, SAMPLE_JOIN);		
-		f[12] = new TableRequiredTextField("sample.depositionEnv", "Inferred Environment", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[13] = new TableRequiredTextField("sample.rockNature", "Nature of Rock Unit", SAMPLE_TABLE, SAMPLE_JOIN);
-		f[14] = new TableRequiredTextField("sample.stratComments", "Stratigraphy Comments", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[0] = new PossibleValueField("s.primaryGrainSize", "Primary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class));
+		f[1] = new PossibleValueField("s.secondaryGrainSize", "Secondary Grain Size", getValues("FROM GrainSize AS g", GrainSize.class));
+		f[2] = new PossibleValueField("s.comparatorUsed", "Comparator Used", getComparatorUsed());
+		f[3] = new PossibleValueField("s.bedThickness", "Bedding Thickness", getValues("FROM BedThickness AS b", BedThickness.class));
+		f[4] = new PossibleValueField("s.primaryBedding", "Primary Bedding", getValues("FROM Bedding AS b", Bedding.class));
+		f[5] = new PossibleValueField("s.secondaryBedding", "Secondary Bedding", getValues("FROM Bedding AS b", Bedding.class));
+		f[6] = new PossibleValueField("s.weathering", "Weathering", getValues("FROM Weathering AS w", Weathering.class));
+		f[7] = new PossibleValueField("s.hardness", "Hardness", getValues("FROM Hardness AS h", Hardness.class));
+		f[8] = new PossibleValueField("s.carbonate", "Carbonate", getValues("FROM Carbonate AS c", Carbonate.class));
+		f[9] = new PossibleValueField("s.colourModifier", "Colour Modifier", getValues("FROM ColourModifier AS c", ColourModifier.class));
+		f[10] = new PossibleValueField("s.primaryColour", "Primary Colour", getValues("FROM RockColour AS r", RockColour.class));
+		f[11] = new PossibleValueField("s.secondaryColour", "Secondary Colour", getValues("FROM RockColour AS r", RockColour.class));		
+		f[12] = new BasicTextField("s.depositionEnv", "Inferred Environment");
+		f[13] = new BasicTextField("s.rockNature", "Nature of Rock Unit");
+		f[14] = new BasicTextField("s.stratComments", "Stratigraphy Comments");
 		//need to add additional features
 		add(new TwoLevelField("Sedimentary Feature Fields", f));
 		
 		f = new Field[1];
-		f[0] = new TableRequiredTextField("sample.correspondence", "Correspondence", SAMPLE_TABLE, SAMPLE_JOIN);
+		f[0] = new BasicTextField("s.correspondence", "Correspondence");
 		add(new TwoLevelField("Correspondence Fields", f));
 		
 		f = new Field[5];
-		f[0] = new HqlUniqueSubTableTextField("person.name", "Adoptor", new String[] {"f.samples", "sample.records", "record.adoption", "adoption.adoptors"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "record"), new HqlJoin(false, "adoption"), new HqlJoin(false, "person")});
+		f[0] = new HqlUniqueSubTableTextField("person.name", "Adoptor", new String[] {"s.records", "record.adoption", "adoption.adoptors"}, new HqlJoin[] {new HqlJoin(false, "record"), new HqlJoin(false, "adoption"), new HqlJoin(false, "person")});
 		f[1] = new TableRequiredDateField("record.adoption.adoptionDate", "Adoption Date", RECORD_TABLES, RECORD_JOINS);
 		f[2] = new AgeField("record.adoption.stage", "Adopted Stage", ages, RECORD_TABLES, RECORD_JOINS);
 		f[3] = new NumericAgeField("record.adoption.stage", "Adopted Stage (numeric)", RECORD_TABLES, RECORD_JOINS);
@@ -186,7 +183,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		add(new TwoLevelField("Adoption Fields", f));
 		
 		f = new Field[13];
-		f[0] = new HqlUniqueSubTableTextField("person.name", "Identifier", new String[] {"f.samples", "sample.records", "record.paleontology", "paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "sample"), new HqlJoin(false, "record"), new HqlJoin(false, "paleontology"), new HqlJoin(false, "person")});
+		f[0] = new HqlUniqueSubTableTextField("person.name", "Identifier", new String[] {"s.records", "record.paleontology", "paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "record"), new HqlJoin(false, "paleontology"), new HqlJoin(false, "person")});
 		f[1] = new TableRequiredDateField("record.paleontology.identificationDate", "Identification Date", RECORD_TABLES, RECORD_JOINS);
 		f[2] = new AgeField("record.paleontology.stage", "Stage", ages, RECORD_TABLES, RECORD_JOINS);
 		f[3] = new NumericAgeField("record.paleontology.stage", "Stage (numeric)", RECORD_TABLES, RECORD_JOINS);
@@ -203,13 +200,13 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		add(new TwoLevelField("Paleontology Fields", f));
 		
 		f = new Field[10];
-		f[0] = new PossibleValueField("f.audit.createdById", "Created By", frUsers);
-		f[1] = new BasicDateField("f.audit.createdDate", "Created Date");
-		f[2] = new PossibleValueField("f.audit.submittedById", "Submitted By", frUsers);
-		f[3] = new BasicDateField("f.audit.submittedDate", "Submitted Date");
-		f[4] = new PossibleValueField("f.audit.approvedById", "Approved By", frUsers);
-		f[5] = new BasicDateField("f.audit.approvedDate", "Approved Date");
-		f[6] = new BasicTextField("f.audit.curatorComments", "Curator Comments");
+		f[0] = new PossibleValueField("s.audit.createdById", "Created By", frUsers);
+		f[1] = new BasicDateField("s.audit.createdDate", "Created Date");
+		f[2] = new PossibleValueField("s.audit.submittedById", "Submitted By", frUsers);
+		f[3] = new BasicDateField("s.audit.submittedDate", "Submitted Date");
+		f[4] = new PossibleValueField("s.audit.approvedById", "Approved By", frUsers);
+		f[5] = new BasicDateField("s.audit.approvedDate", "Approved Date");
+		f[6] = new BasicTextField("s.audit.curatorComments", "Curator Comments");
 		f[7] = new TableRequiredPossibleValueField("edit.editedById", "Edited By", frUsers, EDIT_TABLE, EDIT_JOIN);
 		f[8] = new TableRequiredDateField("edit.editedDate", "Edited Date", EDIT_TABLE, EDIT_JOIN);
 		f[9] = new TableRequiredTextField("edit.comments", "Edit Comments", EDIT_TABLE, EDIT_JOIN);
@@ -221,7 +218,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	}
 
 	public String getHQLQuery() throws InvalidOperatorException, InvalidValueException {
-		return super.getHQLQuery("SELECT DISTINCT f", "Feature AS f", "f.audit.status = 'approved'", null, null);
+		return super.getHQLQuery("SELECT DISTINCT s", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
 	}
 	
 	protected <T extends Comparable<? super T>> List<T> getValues(String query, Class<T> clazz, Object ... parameters) {
@@ -346,5 +343,3 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		lastUsedId++;
 	}
 }
-
-

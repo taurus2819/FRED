@@ -195,7 +195,6 @@
 	
 	<form name="QueryForm" method="post" action="result_list.jsp" onsubmit="return generateSQL(this)">
 	<p><table border="0" cellpadding="3" cellspacing="2" width="600">
-	<tr class="midColour"><th colspan="2">Sample Fields</th></tr>
 	<tr class="lightColour"><td class="heading">NZMG Sheet&nbsp;&nbsp;</td><td><input type="text" name="Map" size="10" /></td></tr>
 	<tr class="lightColour"><td class="heading">QMap Sheet&nbsp;&nbsp;</td><td>
 	<select name="QMap">
@@ -230,10 +229,7 @@
 	<tr class="lightColour"><td class="heading">Stratal Attitude&nbsp;&nbsp;</td><td><input type="checkbox" name="StratAtt" />&nbsp;Presence of dip/strike</td></tr>
 	<tr class="lightColour"><td class="heading">Nature of Rock Unit&nbsp;&nbsp;</td><td><input type="text" name="RockNat" size="30" /></td></tr>
 	<tr class="lightColour"><td class="heading">Deposition Environment&nbsp;&nbsp;</td><td><input type="text" name="DepEnv" size="30" /></td></tr>
-	<tr><td>&nbsp;</td></tr>
-	
-	<tr class="midColour"><th colspan="2">Ages</th></tr>
-	<tr class="lightColour"><td class="heading">Stage Range</td><td><%
+	<tr class="lightColour"><td class="heading"><a href="age.jsp">Age (by Stage)</a>&nbsp;&nbsp;</td><td><%
 	SelectBox<Age> ageSelectBox = new SelectBox<Age>(new StageUtil(factory).getAges());
 	Attributes attributes = Attributes.createNameOnlyAttributes("StageFrom");
 	ageSelectBox.writeBox(attributes, "-- All --", null, (Age)null, new PrintWriter(out));
@@ -241,10 +237,7 @@
 	attributes = Attributes.createNameOnlyAttributes("StageTo");
 	ageSelectBox.writeBox(attributes, "-- All --", null, (Age)null, new PrintWriter(out));
 	%></td></tr>
-	<tr class="lightColour"><td class="heading">Numeric Range&nbsp;&nbsp;</td><td><input type="text" name="AgeFrom" size="10" />&nbsp;<b>to</b>&nbsp;<input type="text" name="AgeTo" size="10" /></td></tr>
-	<tr><td>&nbsp;</td></tr>
-	
-	<tr class="midColour"><th colspan="2">Paleontology</th></tr>
+	<tr class="lightColour"><td class="heading">Age (numeric)&nbsp;&nbsp;</td><td><input type="text" name="AgeFrom" size="10" />&nbsp;<b>to</b>&nbsp;<input type="text" name="AgeTo" size="10" /></td></tr>
 	<tr class="lightColour"><td class="heading">Taxonomic Name&nbsp;&nbsp;</td><td><input type="text" name="Taxon" size="30" /></td></tr>
 	
 	</table></p>
