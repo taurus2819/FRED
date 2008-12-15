@@ -163,7 +163,7 @@
 				return false;
 			}
 			if (aStart != "") {
-				whereSQL = whereSQL + "(sampleStageView.baseAge >= " + aStop + " AND sampleStageView.topAge <= " + aStart + ") AND ";
+				whereSQL = whereSQL + "(sampleStageView.baseAge > " + aStop + " AND sampleStageView.topAge < " + aStart + ") AND ";
 				tableName = tableName + " JOIN s.sampleStageViews AS sampleStageView";
 				queryString = queryString + "Age= " + aQuery + " AND ";
 			}

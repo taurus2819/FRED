@@ -35,7 +35,7 @@ public class BasicNumericAgeField extends BasicNumberField {
 		} else if (op.equals(Operator.NULL) || op.equals(Operator.NOT_NULL))
 			return "sampleStageView.baseAge " + op.getDatabaseOperator();
 		else if (op.equals(Operator.EQUALS))
-			return "(sampleStageView.topAge <= " + value + " AND sampleStageView.baseAge >= " + value + " AND sampleStageView.type = '" + type + "')";
+			return "(sampleStageView.topAge < " + value + " AND sampleStageView.baseAge > " + value + " AND sampleStageView.type = '" + type + "')";
 		else if (op.equals(Operator.GREATER_THAN) || op.equals(Operator.GREATER_THAN_EQUAL))
 			return "(sampleStageView.baseAge " + op.getDatabaseOperator() + " " + value + " AND sampleStageView.type = '" + type + "')";
 		else if (op.equals(Operator.LESS_THAN) || op.equals(Operator.LESS_THAN_EQUAL))
