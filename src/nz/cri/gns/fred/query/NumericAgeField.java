@@ -12,15 +12,18 @@ public class NumericAgeField extends TableRequiredNumberField {
 
 	private static final long serialVersionUID = 20061026L;
 	
-	public NumericAgeField(String databaseName, String humanName, String[] tables, HqlJoin[] joins) {
-		super(databaseName, humanName, tables, joins);
+	private String type;
+	
+	public NumericAgeField(String humanName, String[] tables, HqlJoin[] joins, String type) {
+		super("sampleStageView", humanName, tables, joins);
+		this.type = type;
 	}
 
 	/**
 	 * Convenience constructor for when there is only one joining table
 	 */
-	public NumericAgeField(String databaseName, String humanName, String table, HqlJoin join) {
-		super(databaseName, humanName, table, join);
+	public NumericAgeField(String humanName, String table, HqlJoin join, String type) {
+		super("sampleStageView", humanName, table, join);
 	}
 	
 	//Bean methods
@@ -38,16 +41,15 @@ public class NumericAgeField extends TableRequiredNumberField {
 			Value rightValue = ((BetweenValue)value).getRightValue();
 			return "(" + getJoin(Operator.EQUALS, leftValue) + " OR " + getJoin(Operator.EQUALS, rightValue) + ")";
 		} else if (op.equals(Operator.NULL) || op.equals(Operator.NOT_NULL))
-			return dbName + " " + op.getDatabaseOperator();
+			return "sampleStageView.baseAge " + op.getDatabaseOperator();
 		else if (op.equals(Operator.EQUALS))
-			return "(" + dbName + ".topAge <= " + value + " AND " + dbName + ".baseAge >= " + value + ")";
+			return "(sampleStageView.topAge <= " + value + " AND sampleStageView.baseAge >= " + value + " AND sampleStageView.type = '" + type + "')";
 		else if (op.equals(Operator.GREATER_THAN) || op.equals(Operator.GREATER_THAN_EQUAL))
-			return dbName + ".baseAge " + op.getDatabaseOperator() + " " + value;
+			return "(sampleStageView.baseAge " + op.getDatabaseOperator() + " " + value + " AND sampleStageView.type = '" + type + "')";
 		else if (op.equals(Operator.LESS_THAN) || op.equals(Operator.LESS_THAN_EQUAL))
-			return dbName + ".topAge " + op.getDatabaseOperator() + " " + value;
+			return "(sampleStageView.topAge " + op.getDatabaseOperator() + " " + value + " AND sampleStageView.type = '" + type + "')";
 		else
-			return dbName + " " + op.getDatabaseOperator() + " " + value;
-		
+			return "(sampleStageView.baseAge " + op.getDatabaseOperator() + " " + value + " AND sampleStageView.type = '" + type + "')";
 	}
 
 }

@@ -32,6 +32,8 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 
 	private static final long serialVersionUID = 20060120L;
 	
+	private static final String SAMPLE_STAGE_VIEW_TABLE = "r.sample.sampleStageViews";
+	private static final HqlJoin SAMPLE_STAGE_VIEW_JOIN = new HqlJoin(false, "sampleStageView");
 	private static final String[] PAL_LIST_TABLES = new String[] {"r.paleontology.listEntries"};
 	private static final HqlJoin[] PAL_LIST_JOINS = {new HqlJoin(false, "palList")};
 
@@ -103,10 +105,10 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 		
 		f = new Field[10];
 		f[0] = new BasicTextField("r.sample.stratUnit", "Stratigraphic Name");
-		f[1] = new BasicAgeField("r.sample.inferredStage", "Inferred Stage", ages);
-		f[2] = new BasicNumericAgeField("r.sample.inferredStage", "Inferred Stage (numeric)");
-		f[3] = new BasicAgeField("r.sample.knownStage", "Known Stage", ages);
-		f[4] = new BasicNumericAgeField("r.sample.knownStage", "Known Stage (numeric)");
+		f[1] = new AgeField("Inferred Stage", ages, SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "inferred");
+		f[2] = new NumericAgeField("Inferred Stage (numeric)", SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "inferred");
+		f[3] = new AgeField("Known Stage", ages, SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "known");
+		f[4] = new NumericAgeField("Known Stage (numeric)", SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "known");
 		f[5] = new BasicTextField("r.sample.columnMap", "Column/Map");
 		f[6] = new BasicNumberField("r.sample.dip", "Dip");
 		f[7] = new PossibleValueField("r.sample.dipDirection", "Dip Direction", getDipDirection());
@@ -141,16 +143,16 @@ public class FREDRecordQuery extends FREDQuery implements NumberSource {
 		f = new Field[5];
 		f[0] = new HqlUniqueSubTableTextField("person.name", "Adoptor", new String[] {"r.adoption", "adoption.adoptors"}, new HqlJoin[] {new HqlJoin(false, "adoption"), new HqlJoin(false, "person")});
 		f[1] = new BasicDateField("r.adoption.adoptionDate", "Adoption Date");
-		f[2] = new BasicAgeField("r.adoption.stage", "Adopted Stage", ages);
-		f[3] = new BasicNumericAgeField("r.adoption.stage", "Adopted Stage (numeric)");
+		f[2] = new AgeField("Adopted Stage", ages, SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "adoption");
+		f[3] = new NumericAgeField("Adopted Stage (numeric)", SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "adoption");
 		f[4] = new BasicTextField("r.adoption.comments", "Comments");
 		add(new TwoLevelField("Adoption Fields", f));
 		
 		f = new Field[13];
 		f[0] = new HqlUniqueSubTableTextField("person.name", "Identifier", new String[] {"r.paleontology", "paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "paleontology"), new HqlJoin(false, "person")});
 		f[1] = new BasicDateField("r.paleontology.identificationDate", "Identification Date");
-		f[2] = new BasicAgeField("r.paleontology.stage", "Stage", ages);
-		f[3] = new BasicNumericAgeField("r.paleontology.stage", "Stage (numeric)");
+		f[2] = new AgeField("Stage", ages, SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "paleontology");
+		f[3] = new NumericAgeField("Stage (numeric)", SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "paleontology");
 		f[4] = new BasicTextField("r.paleontology.stageComments", "Stage Comments");
 		f[5] = new PossibleValueField("r.paleontology.labSection", "Laboratory", getValues("FROM LabSection AS ls", LabSection.class));
 		f[6] = new BasicTextField("r.paleontology.labNumber", "Lab Number");

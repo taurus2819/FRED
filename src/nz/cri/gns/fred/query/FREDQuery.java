@@ -55,6 +55,8 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	private static final HqlJoin[] RECORD_JOINS = {new HqlJoin(false, "record")};
 	private static final String[] PAL_LIST_TABLES = new String[] {"s.records", "record.paleontology.listEntries"};
 	private static final HqlJoin[] PAL_LIST_JOINS = {new HqlJoin(false, "record"), new HqlJoin(false, "palList")};
+	private static final String SAMPLE_STAGE_VIEW_TABLE = "s.sampleStageViews";
+	private static final HqlJoin SAMPLE_STAGE_VIEW_JOIN = new HqlJoin(false, "sampleStageView");
 	private static final String EDIT_TABLE = "s.audit.auditEdits";
 	private static final HqlJoin EDIT_JOIN = new HqlJoin(false, "edit");
 	
@@ -138,10 +140,10 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		
 		f = new Field[12];
 		f[0] = new BasicTextField("s.stratUnit", "Stratigraphic Name");
-		f[1] = new BasicAgeField("s.inferredStage", "Inferred Stage", ages);
-		f[2] = new BasicNumericAgeField("s.inferredStage", "Inferred Stage (numeric)");
-		f[3] = new BasicAgeField("s.knownStage", "Known Stage", ages);
-		f[4] = new BasicNumericAgeField("s.knownStage", "Known Stage (numeric)");
+		f[1] = new AgeField("Inferred Stage", ages, SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "inferred");
+		f[2] = new NumericAgeField("Inferred Stage (numeric)", SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "inferred");
+		f[3] = new AgeField("Known Stage", ages, SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "known");
+		f[4] = new NumericAgeField("Known Stage (numeric)", SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "known");
 		f[5] = new BasicTextField("s.columnMap", "Column/Map");
 		f[6] = new BasicNumberField("s.dip", "Dip");
 		f[7] = new PossibleValueField("s.dipDirection", "Dip Direction", getDipDirection());
@@ -177,16 +179,16 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		f = new Field[5];
 		f[0] = new HqlUniqueSubTableTextField("person.name", "Adoptor", new String[] {"s.records", "record.adoption", "adoption.adoptors"}, new HqlJoin[] {new HqlJoin(false, "record"), new HqlJoin(false, "adoption"), new HqlJoin(false, "person")});
 		f[1] = new TableRequiredDateField("record.adoption.adoptionDate", "Adoption Date", RECORD_TABLES, RECORD_JOINS);
-		f[2] = new AgeField("record.adoption.stage", "Adopted Stage", ages, RECORD_TABLES, RECORD_JOINS);
-		f[3] = new NumericAgeField("record.adoption.stage", "Adopted Stage (numeric)", RECORD_TABLES, RECORD_JOINS);
+		f[2] = new AgeField("Adopted Stage", ages, SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "adoption");
+		f[3] = new NumericAgeField("Adopted Stage (numeric)", SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "adoption");
 		f[4] = new TableRequiredTextField("record.adoption.comments", "Comments", RECORD_TABLES, RECORD_JOINS);
 		add(new TwoLevelField("Adoption Fields", f));
 		
 		f = new Field[13];
 		f[0] = new HqlUniqueSubTableTextField("person.name", "Identifier", new String[] {"s.records", "record.paleontology", "paleontology.identifiers"}, new HqlJoin[] {new HqlJoin(false, "record"), new HqlJoin(false, "paleontology"), new HqlJoin(false, "person")});
 		f[1] = new TableRequiredDateField("record.paleontology.identificationDate", "Identification Date", RECORD_TABLES, RECORD_JOINS);
-		f[2] = new AgeField("record.paleontology.stage", "Stage", ages, RECORD_TABLES, RECORD_JOINS);
-		f[3] = new NumericAgeField("record.paleontology.stage", "Stage (numeric)", RECORD_TABLES, RECORD_JOINS);
+		f[2] = new AgeField("Stage", ages, SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "paleontology");
+		f[3] = new NumericAgeField("Stage (numeric)", SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "paleontology");
 		f[4] = new TableRequiredTextField("record.paleontology.stageComments", "Stage Comments", RECORD_TABLES, RECORD_JOINS);
 		f[5] = new TableRequiredPossibleValueField("record.paleontology.labSection", "Laboratory", getValues("FROM LabSection AS ls", LabSection.class), RECORD_TABLES, RECORD_JOINS);
 		f[6] = new TableRequiredTextField("record.paleontology.labNumber", "Lab Number", RECORD_TABLES, RECORD_JOINS);

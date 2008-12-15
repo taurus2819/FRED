@@ -18,19 +18,19 @@ public class AgeField extends TableRequiredPossibleValueField {
 	private List<Age> ages;
 	private NumericAgeField numericField;
 	
-	public AgeField(String databaseName, String humanName, List<Age> values, String[] tables, HqlJoin[] joins) {
-		super(databaseName, humanName, values, tables, joins);
+	public AgeField(String humanName, List<Age> values, String[] tables, HqlJoin[] joins, String type) {
+		super("sampleStageView", humanName, values, tables, joins);
 		this.ages = values;
-		this.numericField = new NumericAgeField(databaseName, humanName, tables, joins);
+		this.numericField = new NumericAgeField(humanName, tables, joins, type);
 	}
 
 	/**
 	 * Convenience constructor for when there is only one joining table
 	 */
-	public AgeField(String databaseName, String humanName, List<Age> values, String table, HqlJoin join) {
-		super(databaseName, humanName, values, table, join);
+	public AgeField(String humanName, List<Age> values, String table, HqlJoin join, String type) {
+		super("sampleStageView", humanName, values, table, join);
 		this.ages = values;
-		this.numericField = new NumericAgeField(databaseName, humanName, table, join);
+		this.numericField = new NumericAgeField(humanName, table, join, type);
 	}
 	
 	//Bean methods

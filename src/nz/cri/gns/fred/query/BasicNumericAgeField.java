@@ -11,8 +11,11 @@ public class BasicNumericAgeField extends BasicNumberField {
 
 	private static final long serialVersionUID = 20061026L;
 	
-	public BasicNumericAgeField(String databaseName, String humanName) {
-		super(databaseName, humanName);
+	private String type;
+	
+	public BasicNumericAgeField(String humanName, String type) {
+		super("sampleStageView", humanName);
+		this.type = type;
 	}
 
 	//Bean methods
@@ -30,15 +33,15 @@ public class BasicNumericAgeField extends BasicNumberField {
 			Value rightValue = ((BetweenValue)value).getRightValue();
 			return "(" + getJoin(Operator.EQUALS, leftValue) + " OR " + getJoin(Operator.EQUALS, rightValue) + ")";
 		} else if (op.equals(Operator.NULL) || op.equals(Operator.NOT_NULL))
-			return dbName + " " + op.getDatabaseOperator();
+			return "sampleStageView.baseAge " + op.getDatabaseOperator();
 		else if (op.equals(Operator.EQUALS))
-			return "((" + dbName + ".topAge <= " + value + " AND " + dbName + ".baseAge >= " + value + ")";
+			return "(sampleStageView.topAge <= " + value + " AND sampleStageView.baseAge >= " + value + " AND sampleStageView.type = '" + type + "')";
 		else if (op.equals(Operator.GREATER_THAN) || op.equals(Operator.GREATER_THAN_EQUAL))
-			return dbName + ".baseAge " + op.getDatabaseOperator() + " " + value;
+			return "(sampleStageView.baseAge " + op.getDatabaseOperator() + " " + value + " AND sampleStageView.type = '" + type + "')";
 		else if (op.equals(Operator.LESS_THAN) || op.equals(Operator.LESS_THAN_EQUAL))
-			return dbName + ".topAge " + op.getDatabaseOperator() + " " + value;
+			return "(sampleStageView.topAge " + op.getDatabaseOperator() + " " + value + " AND sampleStageView.type = '" + type + "')";
 		else
-			return dbName + " " + op.getDatabaseOperator() + " " + value;
+			return "(sampleStageView.baseAge " + op.getDatabaseOperator() + " " + value + " AND sampleStageView.type = '" + type + "')";
 	}
 
 }

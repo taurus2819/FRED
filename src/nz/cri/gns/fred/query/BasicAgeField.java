@@ -17,10 +17,10 @@ public class BasicAgeField extends PossibleValueField {
 	private List<Age> ages;
 	private BasicNumericAgeField numericField;
 	
-	public BasicAgeField(String databaseName, String humanName, List<Age> values) {
-		super(databaseName, humanName, values);
+	public BasicAgeField(String humanName, List<Age> values, String type) {
+		super("sampleStageView", humanName, values);
 		this.ages = values;
-		this.numericField = new BasicNumericAgeField(databaseName, humanName);
+		this.numericField = new BasicNumericAgeField(humanName, type);
 	}
 
 	//Bean methods
@@ -47,7 +47,7 @@ public class BasicAgeField extends PossibleValueField {
 	public String getJoin(Operator operator, Value value) throws InvalidOperatorException, InvalidValueException {
 		checkValue(operator, value);
 		if (operator.equals(Operator.NULL) || operator.equals(Operator.NOT_NULL)) {
-			return dbName + " " + operator.getDatabaseOperator();
+			return "sampleStageView.baseAge " + operator.getDatabaseOperator();
 		} else {
 			Age age = null;
 			String key = value.toString();
@@ -59,7 +59,7 @@ public class BasicAgeField extends PossibleValueField {
 				return "(" + numericField.getJoin(Operator.GREATER_THAN_EQUAL, new BasicValue(String.valueOf(age.getTopAge())))
 					+ " AND " + numericField.getJoin(Operator.LESS_THAN_EQUAL, new BasicValue(String.valueOf(age.getBaseAge()))) + ")";
 			else if (operator.equals(Operator.GREATER_THAN) || operator.equals(Operator.LESS_THAN_EQUAL))
-				return numericField.getJoin(operator, new BasicValue(String.valueOf(age.getTopAge())));
+				return numericField.getJoin(operator, new BasicValue(String.valueOf(age.getBaseAge())));
 			else
 				return numericField.getJoin(operator, new BasicValue(String.valueOf(age.getTopAge())));
 		}
