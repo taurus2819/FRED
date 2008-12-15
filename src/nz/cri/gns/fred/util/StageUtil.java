@@ -55,7 +55,8 @@ public class StageUtil extends ModelUtil {
 				desc.append(upperAge[nameType]);
 				if (stage.getStageUpperMod() != null)
 					desc.append(stage.getStageUpperMod());
-			}	
+			}
+			desc.append(" (").append(stage.getTopAge()).append(" - ").append(stage.getBaseAge()).append(")");
 		}
 		return desc.toString();		
 	}
