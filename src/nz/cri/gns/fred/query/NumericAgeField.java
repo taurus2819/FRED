@@ -24,6 +24,7 @@ public class NumericAgeField extends TableRequiredNumberField {
 	 */
 	public NumericAgeField(String humanName, String table, HqlJoin join, String type) {
 		super("sampleStageView", humanName, table, join);
+		this.type = type;
 	}
 	
 	//Bean methods
