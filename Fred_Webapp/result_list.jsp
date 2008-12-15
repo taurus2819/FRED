@@ -72,7 +72,7 @@
 			try {
 				FREDQuery query = FREDUtil.getFREDQuery(state);
 				queryString = query.getQueryAsString();
-				System.out.println(queryString);
+				System.out.println(query.getHQLQuery());
 				samples = sampleUtil.getListFromHQL(query.getHQLQuery(), Sample.class);
 				features = featureUtil.getFeatures(samples);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
