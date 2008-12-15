@@ -57,7 +57,7 @@ public class AgeField extends TableRequiredPossibleValueField {
 	public String getJoin(Operator operator, Value value) throws InvalidOperatorException, InvalidValueException {
 		checkValue(operator, value);
 		if (operator.equals(Operator.NULL) || operator.equals(Operator.NOT_NULL)) {
-			return dbName + " " + operator.getDatabaseOperator();
+			return numericField.getJoin(operator, new BasicValue("0"));
 		} else {
 			Age age = null;
 			String key = value.toString();
@@ -68,11 +68,16 @@ public class AgeField extends TableRequiredPossibleValueField {
 			if (operator.equals(Operator.EQUALS))
 				return "(" + numericField.getJoin(Operator.GREATER_THAN, new BasicValue(String.valueOf(age.getTopAge())))
 					+ " AND " + numericField.getJoin(Operator.LESS_THAN, new BasicValue(String.valueOf(age.getBaseAge()))) + ")";
-			else if (operator.equals(Operator.GREATER_THAN) || operator.equals(Operator.LESS_THAN_EQUAL))
+			else if (operator.equals(Operator.GREATER_THAN))
+				return numericField.getJoin(Operator.GREATER_THAN_EQUAL, new BasicValue(String.valueOf(age.getBaseAge())));
+			else if(operator.equals(Operator.LESS_THAN))
+				return numericField.getJoin(Operator.LESS_THAN_EQUAL, new BasicValue(String.valueOf(age.getTopAge())));
+			else if (operator.equals(Operator.LESS_THAN_EQUAL))
 				return numericField.getJoin(operator, new BasicValue(String.valueOf(age.getBaseAge())));
-			else
+			else if(operator.equals(Operator.GREATER_THAN_EQUAL))
 				return numericField.getJoin(operator, new BasicValue(String.valueOf(age.getTopAge())));
 		}
+		return null;
 	}
 
 }
