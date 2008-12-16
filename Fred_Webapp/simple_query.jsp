@@ -244,7 +244,7 @@
 	<tr class="lightColour"><td class="heading">Nature of Rock Unit&nbsp;&nbsp;</td><td><input type="text" name="RockNat" size="30" />&nbsp;&nbsp;</td><td><i>Enter part of rock unit description</i></td></tr>
 	<tr class="lightColour"><td class="heading">Deposition Environment&nbsp;&nbsp;</td><td><input type="text" name="DepEnv" size="30" />&nbsp;&nbsp;</td><td><i>Enter part of deposition environment description</i></td></tr>
 	<tr class="lightColour"><td class="heading">Age (by Stage)&nbsp;&nbsp;</td><td><%
-	SelectBox<Age> ageSelectBox = new SelectBox<Age>(new StageUtil(factory).getAges());
+	SelectBox<Age> ageSelectBox = new SelectBox<Age>(new StageUtil(factory).getNonDuplicateAges());
 	Attributes attributes = Attributes.createNameOnlyAttributes("StageFrom");
 	ageSelectBox.writeBox(attributes, "-- All --", null, (Age)null, new PrintWriter(out));
 	%>&nbsp;<b>to</b>&nbsp;<%

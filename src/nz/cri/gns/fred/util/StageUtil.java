@@ -2,9 +2,13 @@ package nz.cri.gns.fred.util;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Vector;
 
 import javax.naming.NamingException;
 
+import net.sf.hibernate.expression.Criterion;
+import net.sf.hibernate.expression.Expression;
+import net.sf.hibernate.expression.MatchMode;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
@@ -14,8 +18,10 @@ import nz.cri.gns.fred.model.Stage;
 
 public class StageUtil extends ModelUtil {
 	
-	private static String NOT_DETERMINED_STAGE = "166";
-	private static String NO_FOSSILS_STAGE = "167";
+	private static String NOT_DETERMINED_STAGE_ID = "154";
+	private static String NO_FOSSILS_STAGE_ID = "153";
+	private static String NOT_DETERMINED_STAGE_CODE = "nd";
+	private static String NO_FOSSILS_STAGE_CODE = "nf";
 	
 	private FredDAO fredDAO;
 	
@@ -73,9 +79,17 @@ public class StageUtil extends ModelUtil {
 	}
 	
 	public List<Age> getAges() throws StorageAccessException {
-		return fredDAO.getList("FROM Age AS A", Age.class);
+		return fredDAO.getList("FROM Age AS a", Age.class);
 	}
 
+	public List<Age> getActiveAges() throws StorageAccessException {
+		return fredDAO.getList("FROM Age AS a WHERE a.obsoleteFlag = ? AND a.code NOT IN (?, ?)", Age.class, false, NOT_DETERMINED_STAGE_CODE, NO_FOSSILS_STAGE_CODE);
+	}
+	
+	public List<Age> getNonDuplicateAges() throws StorageAccessException {
+		return fredDAO.getList("FROM Age AS a WHERE a.duplicateFlag = ? AND a.code NOT IN (?, ?)", Age.class, false, NOT_DETERMINED_STAGE_CODE, NO_FOSSILS_STAGE_CODE);
+	}
+	
 	public int getMaxAgeId() throws StorageAccessException {
 		return fredDAO.getMaxAgeId();
 	}
@@ -91,10 +105,10 @@ public class StageUtil extends ModelUtil {
 
 		//check start/stop ages if both entered unless "not determined" or "no fossils"
 		if (stopAgeId != null
-				&& !(startAgeId.equals(NOT_DETERMINED_STAGE)
-				|| startAgeId.equals(NO_FOSSILS_STAGE)
-				|| stopAgeId.equals(NOT_DETERMINED_STAGE)
-				|| stopAgeId.equals(NO_FOSSILS_STAGE))) {
+				&& !(startAgeId.equals(NOT_DETERMINED_STAGE_ID)
+				|| startAgeId.equals(NO_FOSSILS_STAGE_ID)
+				|| stopAgeId.equals(NOT_DETERMINED_STAGE_ID)
+				|| stopAgeId.equals(NO_FOSSILS_STAGE_ID))) {
 
 			if (startAge != null && stopAge != null) {
 				if (startAge.getBaseAge().doubleValue() < stopAge.getBaseAge().doubleValue()
@@ -168,8 +182,12 @@ public class StageUtil extends ModelUtil {
 		return age.getTopAge();
 	}
 	
-	public List<Age> getMatchingAges(String str, Match matchType, int maxMatches) throws StorageAccessException {
-		return fredDAO.getMatchingAges(str, matchType, maxMatches);
+	public List<Age> getMatchingAges(String str, int maxMatches) throws StorageAccessException {
+		List<Criterion> criteria = new Vector<Criterion>();
+		criteria.add(Expression.or
+				(Expression.ilike("name", str, MatchMode.START)
+				, Expression.ilike("code", str, MatchMode.START)));
+		return fredDAO.getList(Age.class, criteria, maxMatches);
 	}
 	
 }

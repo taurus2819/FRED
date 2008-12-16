@@ -49,11 +49,22 @@
         	column="TOP_AGE"
 	    />
 	    <property
+    	    name="comments"
+        	type="java.lang.String"
+        	column="COMMENTS"
+        	length="128"
+	    />
+	    <property
     	    name="obsoleteFlag"
         	type="java.lang.Boolean"
         	column="OBSOLETE_FLAG"
 	    />
-   		   		   		
+	    <property
+    	    name="duplicateFlag"
+        	type="java.lang.Boolean"
+        	column="DUPLICATE_FLAG"
+	    />
+	       		   		   		
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to Stage -->

@@ -17,8 +17,12 @@ public interface Age extends Comparable<Age>, NameableAndIdentifiable {
 	public Double getBaseAge();
 	public void setTopAge(Double topAge);
 	public Double getTopAge();
+	public void setComments(String comments);
+	public String getComments();
 	public void setObsoleteFlag(Boolean obsoleteFlag);
 	public Boolean getObsoleteFlag();
+	public void setDuplicateFlag(Boolean duplicateFlag);
+	public Boolean getDuplicateFlag();
 	public void setStagesByAgeLowerId(Set<Stage> stagesByAgeLowerId);
 	public Set<Stage> getStagesByAgeLowerId();
 	public void setStagesByAgeUpperId(Set<Stage> stagesByAgeUpperId);

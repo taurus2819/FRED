@@ -15,7 +15,9 @@ public class Age implements Serializable, nz.cri.gns.fred.model.Age {
     private String period;
     private Double baseAge;
     private Double topAge;
+    private String comments;
     private Boolean obsoleteFlag;
+    private Boolean duplicateFlag;
     private Set<Stage> stagesByAgeLowerId;
     private Set<Stage> stagesByAgeUpperId;
 
@@ -67,12 +69,28 @@ public class Age implements Serializable, nz.cri.gns.fred.model.Age {
 		return topAge;
 	}
 
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
+
+	public String getComments() {
+		return comments;
+	}
+
 	public void setObsoleteFlag(Boolean obsoleteFlag) {
 		this.obsoleteFlag = obsoleteFlag;
 	}
 
 	public Boolean getObsoleteFlag() {
 		return obsoleteFlag;
+	}
+
+	public void setDuplicateFlag(Boolean duplicateFlag) {
+		this.duplicateFlag = duplicateFlag;
+	}
+
+	public Boolean getDuplicateFlag() {
+		return duplicateFlag;
 	}
 
 	public void setStagesByAgeLowerId(Set<Stage> stagesByAgeLowerId) {

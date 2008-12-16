@@ -84,7 +84,7 @@ public class AJAXServlet extends HttpServlet {
 					case Age:
 						StageUtil stageUtil = new StageUtil(FredHibernate.get().getDAOFactory());
 						try {
-							List<Age> ages = stageUtil.getMatchingAges(start, Match.BEGINNING, 15);	
+							List<Age> ages = stageUtil.getMatchingAges(start, 15);	
 							for (Age age : ages) {
 								values.add(new NamedId(age.getAgeId().toString(), age.getName() + " (" + age.getCode() + ")"));
 							}
