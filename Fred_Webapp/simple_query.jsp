@@ -13,6 +13,7 @@
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.html.select.SelectBox"
 %><%@page import="nz.cri.gns.html.Attributes"
+%><%@page import="nz.cri.gns.auth.User"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%!
@@ -23,6 +24,8 @@
 	DAOFactory factory = FredHibernate.get().getDAOFactory();
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
+	
+	User user = (User) getUser(session);
 	
 	drawTop(out, et, request, response);
 
@@ -65,7 +68,13 @@
 				whereSQL = whereSQL + "s.feature.siteView.qmapSheet = '" + QMap.value + "' AND ";
 				queryString = queryString + "QMAP Sheet = " + QMap.value + " AND ";
 			}
-			if (Coll.value.length > 0) {
+			if (FieldNum.value.length > 0) {
+				whereSQL = whereSQL + "UPPER(s.feature.featureName) LIKE '%" + replaceSingleQuote(FieldNum.value.toUpperCase()) + "%' AND ";
+				queryString = queryString + "Field Number = " + FieldNum.value + " AND ";
+			}<%
+			
+		if (user != null) {
+			%>if (Coll.value.length > 0) {
 				whereSQL = whereSQL + "UPPER(person.name) LIKE '%" + replaceSingleQuote(Coll.value.toUpperCase()) + "%' AND ";
 				queryString = queryString + "Collector = " + Coll.value + " AND ";
 				tableName = tableName + " JOIN s.collectors AS person";
@@ -86,10 +95,6 @@
 					whereSQL = whereSQL + "s.collectionDate BETWEEN '01-JAN-" + YearFrom.value + "' AND '31-DEC-" + YearFrom.value + "' AND ";
 					queryString = queryString + "Collection Date = " + YearFrom.value + " AND ";
 				}
-			}
-			if (FieldNum.value.length > 0) {
-				whereSQL = whereSQL + "UPPER(s.feature.featureName) LIKE '%" + replaceSingleQuote(FieldNum.value.toUpperCase()) + "%' AND ";
-				queryString = queryString + "Field Number = " + FieldNum.value + " AND ";
 			}
 			if (StratName.value.length > 0) {
 				whereSQL = whereSQL + "UPPER(s.stratUnit) LIKE '%" + replaceSingleQuote(StratName.value.toUpperCase()) + "%' AND ";
@@ -180,9 +185,9 @@
 			if (palListFlag) {
 				whereSQL = whereSQL + "record.audit.status = 'approved' AND ";
 				tableName = tableName + " JOIN s.records AS record JOIN record.paleontology.listEntries AS pal";
-			}
-			
-			if (whereSQL.length > 0)
+			}<%
+		}
+			%>if (whereSQL.length > 0)
 			whereSQL = whereSQL.substring(0, whereSQL.length - 5);
 			WhereSQL.value = whereSQL;
 			if (queryString.length > 0)	{
@@ -196,18 +201,20 @@
 	
 	</script><%
 
-	//build array of stage ages
-	int maxAgeId = new StageUtil(factory).getMaxAgeId();
-	%><script language="JavaScript">
-	var ageStart = new Array(<%=(maxAgeId + 1)%>);
-	var ageStop = new Array(<%=(maxAgeId + 1)%>);<%
-	for (Age age : new StageUtil(factory).getAges()) {
-		%>ageStart[<%=age.getAgeId()%>] = <%=age.getBaseAge()%>;
-		ageStop[<%=age.getAgeId()%>] = <%=age.getTopAge()%>;<%
+	if (user != null) {
+		//build array of stage ages
+		int maxAgeId = new StageUtil(factory).getMaxAgeId();
+		%><script language="JavaScript">
+		var ageStart = new Array(<%=(maxAgeId + 1)%>);
+		var ageStop = new Array(<%=(maxAgeId + 1)%>);<%
+		for (Age age : new StageUtil(factory).getAges()) {
+			%>ageStart[<%=age.getAgeId()%>] = <%=age.getBaseAge()%>;
+			ageStop[<%=age.getAgeId()%>] = <%=age.getTopAge()%>;<%
+		}
+		%></script><%
 	}
-	%></script>
 	
-	<form name="QueryForm" method="post" action="result_list.jsp" onsubmit="return generateSQL(this)">
+	%><form name="QueryForm" method="post" action="result_list.jsp" onsubmit="return generateSQL(this)">
 	<p><table border="0" cellpadding="3" cellspacing="2" width="600">
 	<tr class="lightColour"><td class="heading">NZMS260 Sheet&nbsp;&nbsp;</td><td><input type="text" name="Map" size="10" />&nbsp;&nbsp;</td><td><i>Enter a <a href="http://www.linz.govt.nz/topography/topo-maps/nz-med-scale-maps/index.aspx" target="_blank">NZ 1:50,000 map</a> sheet</i></td></tr>
 	<tr class="lightColour"><td class="heading">QMap Sheet&nbsp;&nbsp;</td><td>
@@ -236,30 +243,35 @@
 		<option value="Dunedin">Dunedin</option>
 	</select>
 	&nbsp;&nbsp;</td><td><i>Select a <a href="http://www.gns.cri.nz/research/qmap/aboutqmap.html" target="_blank">QMap</a> sheet</i></td></tr>
-	<tr class="lightColour"><td class="heading">Collector&nbsp;&nbsp;</td><td><input type="text" name="Coll" size="30" />&nbsp;&nbsp;</td><td><i>Enter part of a collectors name</i></td></tr>
-	<tr class="lightColour"><td class="heading">Collection Year&nbsp;&nbsp;</td><td><input type="text" name="YearFrom" size="10" />&nbsp;<b>to</b>&nbsp;<input type="text" name="YearTo" size="10" />&nbsp;&nbsp;</td><td><i>Enter a single year or a range</i></td></tr>
-	<tr class="lightColour"><td class="heading">Field Number/Drillhole Name&nbsp;&nbsp;</td><td><input type="text" name="FieldNum" size="30" />&nbsp;&nbsp;<td><i>Enter part of a field number or drillhole name</i></td></tr>
-	<tr class="lightColour"><td class="heading">Stratigraphic Name&nbsp;&nbsp;</td><td><input type="text" name="StratName" size="30" />&nbsp;&nbsp;<td><i>Enter part of a stratigraphic name</i></td></tr>
-	<tr class="lightColour"><td class="heading">Stratal Attitude&nbsp;&nbsp;</td><td><input type="checkbox" name="StratAtt" />&nbsp;&nbsp;</td><td><i>Tick for presence of dip/strike</i></td></tr>
-	<tr class="lightColour"><td class="heading">Nature of Rock Unit&nbsp;&nbsp;</td><td><input type="text" name="RockNat" size="30" />&nbsp;&nbsp;</td><td><i>Enter part of rock unit description</i></td></tr>
-	<tr class="lightColour"><td class="heading">Deposition Environment&nbsp;&nbsp;</td><td><input type="text" name="DepEnv" size="30" />&nbsp;&nbsp;</td><td><i>Enter part of deposition environment description</i></td></tr>
-	<tr class="lightColour"><td class="heading">Age (by Stage)&nbsp;&nbsp;</td><td><%
-	SelectBox<Age> ageSelectBox = new SelectBox<Age>(new StageUtil(factory).getNonDuplicateAges());
-	Attributes attributes = Attributes.createNameOnlyAttributes("StageFrom");
-	ageSelectBox.writeBox(attributes, "-- All --", null, (Age)null, new PrintWriter(out));
-	%>&nbsp;<b>to</b>&nbsp;<%
-	attributes = Attributes.createNameOnlyAttributes("StageTo");
-	ageSelectBox.writeBox(attributes, "-- All --", null, (Age)null, new PrintWriter(out));
-	%>&nbsp;&nbsp;</td><td><i>Select a <a href="age.jsp" target=_blank">NZ stage name</a> (or range). Sample, adopted and paleontological ages will be searched</i></td></tr>
-	<tr class="lightColour"><td class="heading">Age (numeric)&nbsp;&nbsp;</td><td><input type="text" name="AgeFrom" size="10" />&nbsp;<b>to</b>&nbsp;<input type="text" name="AgeTo" size="10" />&nbsp;&nbsp;</td><td><i>Enter a numeric age (or range). Sample, adopted and paleontological ages will be searched</i></td></tr>
-	<tr class="lightColour"><td class="heading">Taxonomic Group&nbsp;&nbsp;</td><td><%
-	SelectBox<TaxonomicGroup> tGroupSelectBox = new SelectBox<TaxonomicGroup>(new TaxonomicUtil(factory).getTaxonomicGroups());
-	attributes = Attributes.createNameOnlyAttributes("TaxonomicGroup");
-	tGroupSelectBox.setNameNameFlag(true);
-	tGroupSelectBox.writeBox(attributes, "-- All --", null, (TaxonomicGroup)null, new PrintWriter(out));
-	%>&nbsp;&nbsp;</td><td><i>Select a taxonomic group</i></td></tr>
-	<tr class="lightColour"><td class="heading">Taxonomic Name&nbsp;&nbsp;</td><td><input type="text" name="Taxon" size="30" />&nbsp;&nbsp;</td><td><i>Enter part of a taxonomic name</i></td></tr>
-	</table></p>
+	<tr class="lightColour"><td class="heading">Field Number/Drillhole Name&nbsp;&nbsp;</td><td><input type="text" name="FieldNum" size="30" />&nbsp;&nbsp;<td><i>Enter part of a field number or drillhole name</i></td></tr><%
+	
+	if (user != null) {
+		%><tr class="lightColour"><td class="heading">Collector&nbsp;&nbsp;</td><td><input type="text" name="Coll" size="30" />&nbsp;&nbsp;</td><td><i>Enter part of a collectors name</i></td></tr>
+		<tr class="lightColour"><td class="heading">Collection Year&nbsp;&nbsp;</td><td><input type="text" name="YearFrom" size="10" />&nbsp;<b>to</b>&nbsp;<input type="text" name="YearTo" size="10" />&nbsp;&nbsp;</td><td><i>Enter a single year or a range</i></td></tr>
+		<tr class="lightColour"><td class="heading">Stratigraphic Name&nbsp;&nbsp;</td><td><input type="text" name="StratName" size="30" />&nbsp;&nbsp;<td><i>Enter part of a stratigraphic name</i></td></tr>
+		<tr class="lightColour"><td class="heading">Stratal Attitude&nbsp;&nbsp;</td><td><input type="checkbox" name="StratAtt" />&nbsp;&nbsp;</td><td><i>Tick for presence of dip/strike</i></td></tr>
+		<tr class="lightColour"><td class="heading">Nature of Rock Unit&nbsp;&nbsp;</td><td><input type="text" name="RockNat" size="30" />&nbsp;&nbsp;</td><td><i>Enter part of rock unit description</i></td></tr>
+		<tr class="lightColour"><td class="heading">Deposition Environment&nbsp;&nbsp;</td><td><input type="text" name="DepEnv" size="30" />&nbsp;&nbsp;</td><td><i>Enter part of deposition environment description</i></td></tr>
+		<tr class="lightColour"><td class="heading">Age (by Stage)&nbsp;&nbsp;</td><td><%
+		SelectBox<Age> ageSelectBox = new SelectBox<Age>(new StageUtil(factory).getNonDuplicateAges());
+		Attributes attributes = Attributes.createNameOnlyAttributes("StageFrom");
+		ageSelectBox.writeBox(attributes, "-- All --", null, (Age)null, new PrintWriter(out));
+		%>&nbsp;<b>to</b>&nbsp;<%
+		attributes = Attributes.createNameOnlyAttributes("StageTo");
+		ageSelectBox.writeBox(attributes, "-- All --", null, (Age)null, new PrintWriter(out));
+		%>&nbsp;&nbsp;</td><td><i>Select a <a href="age.jsp" target=_blank">NZ stage name</a> (or range). Sample, adopted and paleontological ages will be searched</i></td></tr>
+		<tr class="lightColour"><td class="heading">Age (numeric)&nbsp;&nbsp;</td><td><input type="text" name="AgeFrom" size="10" />&nbsp;<b>to</b>&nbsp;<input type="text" name="AgeTo" size="10" />&nbsp;&nbsp;</td><td><i>Enter a numeric age (or range). Sample, adopted and paleontological ages will be searched</i></td></tr>
+		<tr class="lightColour"><td class="heading">Taxonomic Group&nbsp;&nbsp;</td><td><%
+		SelectBox<TaxonomicGroup> tGroupSelectBox = new SelectBox<TaxonomicGroup>(new TaxonomicUtil(factory).getTaxonomicGroups());
+		attributes = Attributes.createNameOnlyAttributes("TaxonomicGroup");
+		tGroupSelectBox.setNameNameFlag(true);
+		tGroupSelectBox.writeBox(attributes, "-- All --", null, (TaxonomicGroup)null, new PrintWriter(out));
+		%>&nbsp;&nbsp;</td><td><i>Select a taxonomic group</i></td></tr>
+		<tr class="lightColour"><td class="heading">Taxonomic Name&nbsp;&nbsp;</td><td><input type="text" name="Taxon" size="30" />&nbsp;&nbsp;</td><td><i>Enter part of a taxonomic name</i></td></tr><%
+	} else {
+		%><tr class="lightColour"><td colspan="3">More query fields are available to logged in users</td></tr><%
+	}
+	%></table></p>
 	<input type="hidden" name="WhereSQL" value="" />
 	<input type="hidden" name="QueryString" value="" />
 	<input type="hidden" name="TableName" value="" />

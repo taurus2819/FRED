@@ -5,8 +5,6 @@
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.jsp.PageState"
 %><%!
-	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
-%><%!
 	public String getName(HttpServletRequest request) {
 		return "FRED :: Advanced Query Builder (Record)";
 	}
