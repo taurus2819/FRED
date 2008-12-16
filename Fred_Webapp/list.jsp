@@ -327,7 +327,7 @@
 				} else if (listName.equals("sedFeature")) {
 					rs = statement.executeQuery("SELECT name FROM sedimentary_feature_type ORDER BY code");
 				} else if (listName.equals("stageName")) {
-					rs = statement.executeQuery("SELECT ag_name || '</td><td>' || ag_id FROM age_view ORDER BY ag_name");
+					rs = statement.executeQuery("SELECT name || '</td><td>' || age_id FROM age ORDER BY base_age, top_age");
 				} else if (listName.equals("stratName")) {
 					rs = statement.executeQuery("SELECT su_name FROM sl.strat_unit ORDER BY su_name");
 				} else if (listName.equals("weathering")) {
