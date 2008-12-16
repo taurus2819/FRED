@@ -395,38 +395,6 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 		}
 	}
 	
-	public List<Age> getMatchingAges(String str, Match matchType, int maxMatches) throws StorageAccessException {
-		Criteria crit = provider.currentSession().createCriteria(nz.cri.gns.fred.hibernate.Age.class);
-		switch (matchType) {
-			case ANYWHERE:
-				crit.add(Expression.or
-						(Expression.ilike("name", str, MatchMode.ANYWHERE)
-						, Expression.ilike("code", str, MatchMode.ANYWHERE)));
-				break;
-			case BEGINNING:
-				crit.add(Expression.or
-						(Expression.ilike("name", str, MatchMode.START)
-						, Expression.ilike("code", str, MatchMode.START)));
-				break;
-			case END:
-				crit.add(Expression.or
-						(Expression.ilike("name", str, MatchMode.END)
-						, Expression.ilike("code", str, MatchMode.END)));
-				break;
-		}
-		crit.add(Expression.eq("obsoleteFlag", false));
-		crit.setMaxResults(maxMatches);
-		crit.addOrder(Order.asc("baseAge"));
-		crit.addOrder(Order.asc("topAge"));
-		try {
-			@SuppressWarnings("unchecked")
-			List<Age> pp = crit.list();
-			return pp;
-		} catch (HibernateException e) {
-			throw new StorageAccessException(e);
-		}
-	}
-
     public PaleontologyListEntry createNewPaleontologyListEntry() {
         return new nz.cri.gns.fred.hibernate.PalList();
     }

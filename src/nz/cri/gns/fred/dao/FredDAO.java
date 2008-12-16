@@ -175,8 +175,7 @@ public interface FredDAO {
 	 * Creates a new, uninitialised Stage object
 	 */
 	public Stage createNewStage();
-	
-	public List<Age> getMatchingAges(String str, Match matchType, int maxMatches) throws StorageAccessException;	
+
 	
 	/**
 	 * Return a list of units whose names start with the given string, case
