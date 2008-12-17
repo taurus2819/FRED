@@ -739,9 +739,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (!feature.getFeatureType().equals(FREDConstants.OUTCROP))
 			throw new IllegalArgumentException("Feature is not an outcrop");
 		
-		Set samples = feature.getSamples();
-		Iterator it = samples.iterator();
-		return (Sample)it.next();
+		return new Vector<Sample>(feature.getSamples()).get(0);
 	}
 	
 	public void approveFeature(Feature feature, String mapSheet, Integer serialNumber, String recollectionNumber, String comments, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
@@ -892,20 +890,18 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return fredDAO.getList("FROM RegistrationArea AS r", RegistrationArea.class);
 	}
 	
-	public List<FrNumber> parseFrNumbers(String frNumStr) throws DataInputException, StorageAccessException {
+	public List<FrNumber> getFrNumbersByString(String frNumStr) throws DataInputException, StorageAccessException {
 		try {
 			if (frNumStr.indexOf("-") > 0) {
-				FrNumber startFrNum = parseFrNumber(frNumStr.substring(0, frNumStr.indexOf("-")), false);
-				if (startFrNum == null)
-					startFrNum = parseYardFrNumber(frNumStr.substring(0, frNumStr.indexOf("-")), false);
+				Object[] frNumBits = parseFrNumber(frNumStr.substring(0, frNumStr.indexOf("-")));
 				Integer endSerialNum = new Integer(frNumStr.substring(frNumStr.indexOf("-") + 1));
-				return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ?", FrNumber.class, startFrNum.getMapSheet(), startFrNum.getSerialNumber(), endSerialNum);
+				return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ?", FrNumber.class, (String)frNumBits[0], (Integer)frNumBits[1], endSerialNum);
 			} else {
 				List<FrNumber> frNumbers = new Vector<FrNumber>();
-				FrNumber frNum = parseFrNumber(frNumStr, false);
+				FrNumber frNum = getMetricFrNumberByString(frNumStr, false);
 				if (frNum != null)
 					frNumbers.add(frNum);
-				frNum = parseYardFrNumber(frNumStr, false);
+				frNum = getYardFrNumberByString(frNumStr, false);
 				if (frNum != null)
 					frNumbers.add(frNum);
 				return frNumbers;
@@ -914,25 +910,40 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return null;
 	}
 	
-	/**
-	 * Parses FR Number as string and returns FrNumber object
-	 * If FRNumber exists it is returned, or a new FRNumber object is created (if createNew is TRUE)
-	 * @throws StorageAccessException 
-	 */
-	public FrNumber parseFrNumber(String frNumStr, boolean createNew) throws DataInputException, StorageAccessException {
-		return parseFrNumber(frNumStr, createNew, false);
+	public FrNumber getMetricFrNumberByString(String frNumStr, boolean createNew) throws DataInputException, StorageAccessException {
+		return getFrNumberByString(frNumStr, createNew, false);
+	}
+	
+	public FrNumber getYardFrNumberByString(String frNumStr, boolean createNew) throws DataInputException, StorageAccessException {
+		return getFrNumberByString(frNumStr, createNew, true);
+	}
+	
+	private FrNumber getFrNumberByString(String frNumStr, boolean createNew, boolean yard) throws DataInputException, StorageAccessException {
+		Object[] frNumBits = parseFrNumber(frNumStr);
+		FrNumber frNumber = null;
+		if (yard)
+			frNumber = getYardFrNumber(frNumBits[0] + "/f" + frNumBits[1] + ((frNumBits[2] != null) ? frNumBits[2] : ""));
+		else
+			frNumber = getFrNumber(frNumBits[0] + "/f" + frNumBits[1] + ((frNumBits[2] != null) ? frNumBits[2] : ""));
+		if (frNumber == null && createNew) {
+			frNumber = new nz.cri.gns.fred.hibernate.FrNumber();
+			frNumber.setMapSheet((String)frNumBits[0]);
+			frNumber.setSerialNumber((Integer)frNumBits[1]);
+			frNumber.setRecollectionNumber((String)frNumBits[2]);
+			if (yard)
+				frNumber.setObsolete("Y");
+		}
+		return frNumber;	
 	}
 	
 	/**
-	 * Parses FR Number as string and returns FrNumber object
-	 * If FRNumber exists it is returned, or a new FRNumber object is created (if createNew is TRUE)
-	 * @throws StorageAccessException 
+	* returns array containing
+	* 0. Map Sheet (String)
+	* 1. Serial Number (Integer)
+	* 2. Recollection Number (String)
+	 * @throws DataInputException 
 	 */
-	public FrNumber parseYardFrNumber(String frNumStr, boolean createNew) throws DataInputException, StorageAccessException {
-		return parseFrNumber(frNumStr, createNew, true);
-	}
-	
-	private FrNumber parseFrNumber(String frNumStr, boolean createNew, boolean yard) throws DataInputException, StorageAccessException {
+	public Object[] parseFrNumber(String frNumStr) throws DataInputException {
 		if (frNumStr != null && frNumStr.indexOf("/f") > 0) {
 			String recollectionNumber;
 			Integer serialNumber;
@@ -952,23 +963,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			String serialNumStr = String.valueOf(serialNumber);
 			while (serialNumStr.length() < 4)
 				serialNumStr = "0" + serialNumStr;
-			FrNumber frNumber = null;
-			if (yard)
-				frNumber = getYardFrNumber(mapSheet + "/f" + serialNumStr + ((recollectionNumber != null) ? recollectionNumber : ""));
-			else
-				frNumber = getFrNumber(mapSheet + "/f" + serialNumStr + ((recollectionNumber != null) ? recollectionNumber : ""));
-			if (frNumber == null && createNew) {
-				frNumber = new nz.cri.gns.fred.hibernate.FrNumber();
-				frNumber.setMapSheet(mapSheet);
-				frNumber.setSerialNumber(serialNumber);
-				frNumber.setRecollectionNumber(recollectionNumber);
-				if (yard)
-					frNumber.setObsolete("Y");
-			}
-			return frNumber;
+			
+			Object[] frNumBits = {mapSheet, serialNumber, recollectionNumber};
+			return frNumBits;
 		} else {
 			throw new DataInputException("FR Number", "Badly formed or missing FR Number");
-		}		
+		}
 	}
 	
 	/**
@@ -1106,9 +1106,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 */
 	public Feature getFeatureWithIdentifyingName(String ident) throws StorageAccessException {
 		try {
-			FrNumber frNum = parseFrNumber(ident, false);
+			FrNumber frNum = getMetricFrNumberByString(ident, false);
 			if (frNum == null)
-				frNum = parseYardFrNumber(ident, false);
+				frNum = getYardFrNumberByString(ident, false);
 			if (frNum != null) 
 				return getFeature(frNum);
 		} catch (Exception e) {}

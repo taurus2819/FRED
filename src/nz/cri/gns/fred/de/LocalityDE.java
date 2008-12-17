@@ -346,7 +346,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         	   		if (frNumberStr.indexOf("/f") < 0)
         	   			frNumber = featureUtil.getNextAvailableFrNumber(frNumberStr);
         	   		else
-        	   			frNumber = featureUtil.parseFrNumber(frNumberStr, true);
+        	   			frNumber = featureUtil.getMetricFrNumberByString(frNumberStr, true);
         	   		if (featureUtil.getFrNumber(frNumber.getMapSheet(), frNumber.getSerialNumber(), frNumber.getRecollectionNumber()) != null)
         	   			error.add(new String[] {"FR Number", "FR Number already defined in database"});
         	   		else
@@ -360,7 +360,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			}
 			if (!FREDUtil.isEmpty(request.getParameter("YardFRNumber"))) {
 				try {
-					feature.setYardFrNumber(featureUtil.parseYardFrNumber(request.getParameter("YardFRNumber"), true));
+					feature.setYardFrNumber(featureUtil.getYardFrNumberByString(request.getParameter("YardFRNumber"), true));
 				} catch (Exception e) {
 					error.add(new String[] {"Yard FR Number", e.getMessage()});
 				}

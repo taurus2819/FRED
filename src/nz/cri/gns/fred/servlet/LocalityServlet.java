@@ -38,7 +38,7 @@ public class LocalityServlet extends HttpServlet {
 		List<FrNumber> nums = null;
 		HashSet<Feature> features = new HashSet<Feature>();
 		try {
-			nums = new FeatureUtil(factory).parseFrNumbers(frNum);
+			nums = new FeatureUtil(factory).getFrNumbersByString(frNum);
 		} catch (Exception e) {}
 		
 		try {
