@@ -53,7 +53,8 @@ public class DrillType implements Serializable, nz.cri.gns.fred.model.DrillType 
         this.samples = samples;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return name;
     }
     
@@ -69,10 +70,12 @@ public class DrillType implements Serializable, nz.cri.gns.fred.model.DrillType 
 		return this.name;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof DrillType && ((DrillType)o).drillTypeId.equals(drillTypeId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 822 * drillTypeId;
 	}

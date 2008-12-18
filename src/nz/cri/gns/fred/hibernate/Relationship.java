@@ -104,7 +104,8 @@ public class Relationship implements Serializable, nz.cri.gns.fred.model.Relatio
         this.relationshipType = relationshipType;
     }
     
-    public Object clone() { 
+    @Override
+	public Object clone() { 
     	try {
     		return super.clone();
     	} catch (CloneNotSupportedException e) {
@@ -113,7 +114,8 @@ public class Relationship implements Serializable, nz.cri.gns.fred.model.Relatio
     	}
     }
 
-    public boolean equals(Object o) {
+    @Override
+	public boolean equals(Object o) {
     	if (!(o instanceof nz.cri.gns.fred.model.Relationship))
     		return false;
     	nz.cri.gns.fred.model.Relationship rel = (nz.cri.gns.fred.model.Relationship)o;
@@ -131,7 +133,8 @@ public class Relationship implements Serializable, nz.cri.gns.fred.model.Relatio
 		 && FREDUtil.equals(relationshipId, rel.getRelationshipId(), true);
     }
     
-    public String toString() {
+    @Override
+	public String toString() {
     	return SampleUtil.getRelationshipDescription(this);
     }
 

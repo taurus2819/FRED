@@ -8,10 +8,12 @@ import nz.cri.gns.jsp.NewExtranetTemplate;
 
 public abstract class FREDStaticIPSysJspPage extends FREDIPSysJspPage{
 
+	@Override
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		return new Authenticable[0];
 	}
 	
+	@Override
 	protected NewExtranetTemplate getExtranetTemplate() {
 		NewExtranetTemplate et = FREDIPSysJspPage.getFREDTemplate();
 		

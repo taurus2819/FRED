@@ -115,6 +115,7 @@ public class TaxonomicUtil extends ModelUtil {
 	/**
 	 * @deprecated use getTaxaCount
 	 */
+	@Deprecated
 	public int getProvisionalCount(TaxonomicGroup group) throws StorageAccessException {
 		return fredDAO.getTaxaCount(group, FREDConstants.PROVISIONAL);
 	}

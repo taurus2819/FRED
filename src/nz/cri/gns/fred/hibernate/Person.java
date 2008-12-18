@@ -90,7 +90,8 @@ public class Person implements Serializable, nz.cri.gns.fred.model.Person {
 		return getName();
 	}
 
-    public String toString() {
+    @Override
+	public String toString() {
     	return super.toString() + " {" + personId + ": " + name + "}";
     }
     

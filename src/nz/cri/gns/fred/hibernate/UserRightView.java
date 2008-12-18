@@ -97,10 +97,12 @@ public class UserRightView implements Serializable, nz.cri.gns.fred.model.UserRi
 		return fullName;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof UserRightView && ((UserRightView)o).userId.equals(userId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 453 * userId;
 	}

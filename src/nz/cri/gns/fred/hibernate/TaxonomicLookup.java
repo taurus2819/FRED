@@ -146,6 +146,7 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
 		return (taxonomicName.toUpperCase()).compareTo(arg0.getTaxonomicName().toUpperCase());
 	}
 
+	@Override
 	public String toString() {
 		return taxonomicName;
 	}
@@ -158,6 +159,7 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
 		return taxonomicName;
 	}
 	
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof Taxon))
 			return false;
@@ -166,6 +168,7 @@ public class TaxonomicLookup implements Serializable, nz.cri.gns.fred.model.Taxo
 			&& taxon.getTaxonomicGroup().equals(taxonomicGroup);
 	}
 	
+	@Override
 	public int hashCode() {
 		return taxonomicGroup.hashCode() + 1000 * taxonomicName.hashCode();
 	}

@@ -39,6 +39,7 @@ public class DrillholeLocalityDE extends LocalityDE {
 			throw new DataInputException("Feature Type", "Invalid");
 	}
 
+	@Override
 	protected void getFromDatabase(Feature fromFeature) throws InsufficientPrivelegesException {
 		super.getFromDatabase(feature);
 		//set drillhole or vs fields fields
@@ -55,6 +56,7 @@ public class DrillholeLocalityDE extends LocalityDE {
 		feature.setDepthUnit(fromFeature.getDepthUnit());
 	}
 
+	@Override
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
 		super.updateFromRequest(request, factory, addIfNew);
 		
@@ -142,6 +144,7 @@ public class DrillholeLocalityDE extends LocalityDE {
 			throw new DataInputException(error[0], error[1]);
 	}
 
+	@Override
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
 		super.makeDataEntryHTML(out, factory);
 	
@@ -183,6 +186,7 @@ public class DrillholeLocalityDE extends LocalityDE {
 		template.loadAll(out);
 	}
 
+	@Override
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
 		super.makeExcelImportHTML(out);
 		loadTemplate(provider.getContent(getContentPrefix() + ".de.excel"), new PrintWriter(out));
@@ -196,10 +200,12 @@ public class DrillholeLocalityDE extends LocalityDE {
 		return "drillhole";
 	}
 
+	@Override
 	public boolean usesCalendar() {
 		return true;
 	}
 	
+	@Override
 	public void makePostFormHTML(PrintWriter out) throws IOException {
 		Template template = provider.getContent("calendar.script");
 		template.addSub("inputField", "StartDate");

@@ -285,7 +285,8 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
     /**
      * @deprecated use isAllowedReadRecord
      */
-    public boolean isAllowedViewRecord(User user, Record fromRecord) throws StorageAccessException {
+    @Deprecated
+	public boolean isAllowedViewRecord(User user, Record fromRecord) throws StorageAccessException {
     	return isAllowedReadRecord(user, fromRecord);
     }
 

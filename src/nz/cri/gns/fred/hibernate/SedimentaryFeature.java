@@ -40,7 +40,8 @@ public class SedimentaryFeature implements Serializable, nz.cri.gns.fred.model.S
         this.sedimentaryFeatureType = sedimentaryFeatureType;
     }
 
-    public boolean equals(Object other) {
+    @Override
+	public boolean equals(Object other) {
         if ( (this == other ) ) return true;
         if ( !(other instanceof SedimentaryFeature) ) return false;
         SedimentaryFeature castOther = (SedimentaryFeature) other;
@@ -49,10 +50,12 @@ public class SedimentaryFeature implements Serializable, nz.cri.gns.fred.model.S
         	;
     }
 	
-    public int hashCode() {
+    @Override
+	public int hashCode() {
 		return sedimentaryFeatureType.hashCode();
 	}
 	
+	@Override
 	public Object clone() { 
     	try {
     		SedimentaryFeature sedf = (SedimentaryFeature) super.clone();

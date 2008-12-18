@@ -45,10 +45,12 @@ public class StratigraphicUnit implements Serializable, nz.cri.gns.fred.model.St
 		return name;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof StratigraphicUnit && ((StratigraphicUnit)o).name.equals(name);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 198 * name.hashCode();
 	}

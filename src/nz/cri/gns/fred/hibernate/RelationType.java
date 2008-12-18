@@ -51,10 +51,12 @@ public class RelationType implements Serializable, nz.cri.gns.fred.model.Relatio
         this.relationships = relationships;
     }
     
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof RelationType && ((RelationType)o).name.equals(name);
 	}
 	
+	@Override
 	public int hashCode() {
 		return name.hashCode();
 	}

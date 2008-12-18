@@ -77,7 +77,8 @@ public class GrainSize implements Serializable, nz.cri.gns.fred.model.GrainSize 
         this.samplesBySecondaryGrainsizeId = samplesBySecondaryGrainsizeId;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return name;
     }
 
@@ -93,10 +94,12 @@ public class GrainSize implements Serializable, nz.cri.gns.fred.model.GrainSize 
 		return this.code + ": " + this.name;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof GrainSize && ((GrainSize)o).grainSizeId.equals(grainSizeId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 856 * grainSizeId;
 	}

@@ -75,10 +75,12 @@ public class DatumMethod implements Serializable, nz.cri.gns.fred.model.DatumMet
 		return method;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof DatumMethod && ((DatumMethod)o).methodId.equals(methodId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 856 * methodId;
 	}

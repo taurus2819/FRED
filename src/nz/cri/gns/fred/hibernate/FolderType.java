@@ -53,14 +53,17 @@ public class FolderType implements Serializable, nz.cri.gns.fred.model.FolderTyp
         this.folders = folders;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return name;
     }
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof FolderType && ((FolderType)o).folderTypeId.equals(folderTypeId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 262 * folderTypeId;
 	}

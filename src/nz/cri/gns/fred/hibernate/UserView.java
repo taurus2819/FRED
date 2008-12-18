@@ -145,6 +145,7 @@ public class UserView implements Serializable, nz.cri.gns.fred.model.UserView {
 		return (familyName + " " + givenName).compareTo(arg0.getFamilyName() + " " + arg0.getGivenName());
 	}
 
+	@Override
 	public String toString() {
 		return fullName;
 	}
@@ -157,10 +158,12 @@ public class UserView implements Serializable, nz.cri.gns.fred.model.UserView {
 		return fullName;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof UserView && ((UserView)o).userId.equals(userId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 453 * userId;
 	}

@@ -65,7 +65,8 @@ public class BedThickness implements Serializable, nz.cri.gns.fred.model.BedThic
         this.samples = samples;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return name;
     }
 
@@ -81,10 +82,12 @@ public class BedThickness implements Serializable, nz.cri.gns.fred.model.BedThic
 		return this.code + ": " + this.name;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof BedThickness && ((BedThickness)o).thicknessId.equals(thicknessId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 583 * thicknessId;
 	}

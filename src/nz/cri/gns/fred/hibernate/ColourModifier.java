@@ -65,7 +65,8 @@ public class ColourModifier implements Serializable, nz.cri.gns.fred.model.Colou
         this.samples = samples;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return name;
     }
     
@@ -81,10 +82,12 @@ public class ColourModifier implements Serializable, nz.cri.gns.fred.model.Colou
 		return this.code + ": " + this.name;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof ColourModifier && ((ColourModifier)o).modifierId.equals(modifierId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 745 * modifierId;
 	}

@@ -95,7 +95,8 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
         this.paleontologies = paleontologies;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
     	return lab.getName() + " " + code;
     }
     
@@ -111,10 +112,12 @@ public class LabSection implements Serializable, nz.cri.gns.fred.model.LabSectio
 		return lab.getName() + " " + code;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof LabSection && ((LabSection)o).labSectionId.equals(labSectionId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 735 * labSectionId;
 	}

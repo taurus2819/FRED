@@ -123,10 +123,12 @@ public class Age implements Serializable, nz.cri.gns.fred.model.Age {
 		return name;
 	}
 	
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof Age && ((Age)o).ageId.equals(ageId);
 	}
 	
+	@Override
 	public String toString() {
 		return name + " [" + code + "; " + baseAge + "-" + topAge + "]";
 	}

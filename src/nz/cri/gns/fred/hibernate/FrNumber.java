@@ -113,6 +113,7 @@ public class FrNumber implements Serializable, nz.cri.gns.fred.model.FrNumber {
 		return this.frNumber.compareTo(frNumber.getFrNumber());
 	}
 
+	@Override
 	public String toString() {
 		return frNumber;
 	}

@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -87,11 +86,11 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			//For outcrops we copy everything
 			
 			//Copy sample (should be only one!)
-			Set samples = feature.getSamples();
+			Set<Sample> samples = feature.getSamples();
 			if (samples.size() != 1) {
 				throw new IllegalStateException("Outcrop does not have a singleton sample"); 
 			}
-			Sample sample = (Sample)samples.iterator().next();
+			Sample sample = samples.iterator().next();
 			//Copy sample - collectors clone is OK as it's many-to-many
 			Sample newSample = cloneSample(newFeature, sample);
 			//set newSample's audit to be same as newFeature
@@ -301,7 +300,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		
 		if (!FREDUtil.isEmpty(feature.getRelationships())) {
 			try {
-				Feature relFeature = ((Relationship)feature.getRelationships().iterator().next()).getSample().getFeature();
+				Feature relFeature = (feature.getRelationships().iterator().next()).getSample().getFeature();
 				throw new IllegalStateException("Cannot delete this locality as it is referenced in a relationship by " + getFeatureIdentifyingName(relFeature));
 			} catch (Exception e) {
 				throw new IllegalStateException("Cannot delete this locality as it is referenced in a relationship");
@@ -823,14 +822,17 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	public void addToFolder(Feature feature, int folderId, UserAccount user) throws StorageAccessException, DataInputException {
+		System.out.println("Adding " + feature + " to folderId = " + folderId);
 		if (!feature.getAudit().getStatus().equals(APPROVED))
 			throw new DataInputException("Folder", "Cannot add a working locality");
 		
 		UserFolder userFolder = new FolderUtil(factory).getUserFolder(folderId, user);
+		System.out.println("Folder = " + userFolder);
 		if (!userFolder.isAllowedCreateLocalities())
 			throw new DataInputException("Folder", "Do not have appropriate rights to add to this folder");
 				
 		feature.getFolders().add(fredDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class));
+		fredDAO.saveOrUpdate(feature);
 	}
 	
 	/**
@@ -895,7 +897,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			if (frNumStr.indexOf("-") > 0) {
 				Object[] frNumBits = parseFrNumber(frNumStr.substring(0, frNumStr.indexOf("-")));
 				Integer endSerialNum = new Integer(frNumStr.substring(frNumStr.indexOf("-") + 1));
-				return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ?", FrNumber.class, (String)frNumBits[0], (Integer)frNumBits[1], endSerialNum);
+				return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ?", FrNumber.class, frNumBits[0], frNumBits[1], endSerialNum);
 			} else {
 				List<FrNumber> frNumbers = new Vector<FrNumber>();
 				FrNumber frNum = getMetricFrNumberByString(frNumStr, false);
@@ -976,10 +978,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 */
 	public Feature getFeature(FrNumber frNum) {
 		try {
-			return (Feature) frNum.getFeatures().iterator().next();
+			return frNum.getFeatures().iterator().next();
 		} catch (Exception e) {}
 		try {
-			return (Feature) frNum.getFeaturesByYard().iterator().next();
+			return frNum.getFeaturesByYard().iterator().next();
 		} catch (Exception e) {}
 		try {
 			Sample sample = (Sample) frNum.getSamples().iterator().next();

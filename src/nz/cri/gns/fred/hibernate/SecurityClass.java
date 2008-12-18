@@ -40,14 +40,17 @@ public class SecurityClass implements Serializable {
         this.name = name;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return name;
     }
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof SecurityClass && ((SecurityClass)o).classId.equals(classId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 935 * classId;
 	}

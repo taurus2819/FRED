@@ -79,10 +79,12 @@ public class RegistrationArea implements Serializable, nz.cri.gns.fred.model.Reg
 		return name;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof RegistrationArea && ((RegistrationArea)o).regAreaId.equals(regAreaId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 542 * regAreaId;
 	}

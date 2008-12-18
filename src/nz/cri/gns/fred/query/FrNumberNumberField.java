@@ -29,6 +29,7 @@ public class FrNumberNumberField extends TableRequiredNumberField {
 		this.imperialSampleFrNumberField = new TableRequiredNumberField("sample.yardFrNumber." + databaseName, humanName, SAMPLE_TABLE, SAMPLE_JOIN);
 	}
 
+	@Override
 	public String getJoin(Operator op, Value value) throws InvalidOperatorException, InvalidValueException {
 		return "(" + metricFrNumberField.getJoin(op, value) + " OR " + imperialFrNumberField.getJoin(op, value)
 			+ " OR " + metricSampleFrNumberField.getJoin(op, value) + " OR " + imperialSampleFrNumberField.getJoin(op, value) + ")";

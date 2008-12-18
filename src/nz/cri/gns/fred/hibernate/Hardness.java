@@ -64,7 +64,8 @@ public class Hardness implements Serializable, nz.cri.gns.fred.model.Hardness {
     public void setSamples(Set<Sample> samples) {
         this.samples = samples;
     }
-    public String toString() {
+    @Override
+	public String toString() {
         return name;
     }
 
@@ -80,10 +81,12 @@ public class Hardness implements Serializable, nz.cri.gns.fred.model.Hardness {
 		return this.code + ": " + this.name;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof Hardness && ((Hardness)o).hardnessId.equals(hardnessId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 362 * hardnessId;
 	}

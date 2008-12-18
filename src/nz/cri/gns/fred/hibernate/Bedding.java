@@ -77,7 +77,8 @@ public class Bedding implements Serializable, nz.cri.gns.fred.model.Bedding {
         this.samplesBySecondaryBeddingId = samplesBySecondaryBeddingId;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return name;
     }
 
@@ -93,10 +94,12 @@ public class Bedding implements Serializable, nz.cri.gns.fred.model.Bedding {
 		return this.code + ": " + this.name;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof Bedding && ((Bedding)o).beddingId.equals(beddingId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 184 * beddingId;
 	}

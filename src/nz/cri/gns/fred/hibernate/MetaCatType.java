@@ -37,7 +37,8 @@ public class MetaCatType implements Serializable, nz.cri.gns.fred.model.MetaCatT
         this.metaCats = metaCats;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return this.name;
     }
 

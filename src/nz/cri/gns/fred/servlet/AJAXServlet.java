@@ -27,6 +27,7 @@ import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.PersonUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.util.TaxonomicUtil;
+import nz.cri.gns.jsp.IPSysJspPage;
 
 public class AJAXServlet extends HttpServlet {
 	
@@ -57,6 +58,7 @@ public class AJAXServlet extends HttpServlet {
 	
 	public static enum Action {
 		List() {
+			@Override
 			public void process(Type type, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 				String start = request.getParameter("start");
 				List<NamedId> values = new ArrayList<NamedId>();
@@ -140,6 +142,7 @@ public class AJAXServlet extends HttpServlet {
 			}
 		},
 		Confirm() {
+			@Override
 			public void process(Type type, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 				String name = request.getParameter("name").trim();
 				String status = "";
@@ -206,6 +209,7 @@ public class AJAXServlet extends HttpServlet {
 			}
 		},
 		Add() {
+			@Override
 			public void process(Type type, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 				String name = request.getParameter("name");
 				boolean confirmation = false;
@@ -231,7 +235,7 @@ public class AJAXServlet extends HttpServlet {
 								taxon.setTaxonomicGroup(group);
 								taxon.setTaxonomicName(cleanName);
 								taxon.setAuthor(author);
-								taxaUtil.submitProvisional((User)FREDIPSysJspPage.getUser(request.getSession()), taxon);
+								taxaUtil.submitProvisional((User)IPSysJspPage.getUser(request.getSession()), taxon);
 								confirmation = true;
 							} else
 								confirmation = true;

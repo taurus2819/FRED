@@ -43,7 +43,7 @@ public class UserFolder implements Comparable<UserFolder> {
 	}
 
 	public int compareTo(UserFolder arg0) {
-		return folder.compareTo(((UserFolder)arg0).folder);
+		return folder.compareTo((arg0).folder);
 	} 
 	
 	public boolean isAllowedReadLocalities() {
@@ -86,6 +86,7 @@ public class UserFolder implements Comparable<UserFolder> {
 		return folder.getFolderType().getName().equals(FOLDER_TYPE_BACKLOG);
 	}
 	
+	@Override
 	public String toString() {
 		return getFolderName();
 	}

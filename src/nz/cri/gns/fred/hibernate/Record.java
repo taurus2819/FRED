@@ -108,6 +108,7 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record {
 		}
 	}
 
+	@Override
 	public String toString() {
 		return sample.toString() + ": " + RecordUtil.getRecordName(this);
 	}

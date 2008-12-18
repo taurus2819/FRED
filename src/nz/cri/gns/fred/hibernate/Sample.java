@@ -473,15 +473,17 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
 			if ("m".equals(unit))
 				return depth;
 			else if ("ft".equals(unit))
-				return new Double(depth.doubleValue() * SampleUtil.FT_TO_M);
+				return new Double(depth.doubleValue() * FREDConstants.FT_TO_M);
 		} catch (Exception e) {}
 		return null;
 	}
 
+	@Override
 	public String toString() {
 		return feature.toString() + ((!feature.getFeatureType().equals(FREDConstants.OUTCROP)) ? ": " + SampleUtil.getDrillHoleDepthDescription(this) : "");
 	}
 	
+	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Sample)) 
 			return false;

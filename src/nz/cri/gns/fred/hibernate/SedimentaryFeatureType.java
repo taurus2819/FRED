@@ -78,10 +78,12 @@ public class SedimentaryFeatureType implements Serializable, nz.cri.gns.fred.mod
 		return code +  ": " + name;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof SedimentaryFeatureType && ((SedimentaryFeatureType)o).sedfeatureTypeId.equals(sedfeatureTypeId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 306 * sedfeatureTypeId;
 	}

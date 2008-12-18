@@ -63,10 +63,12 @@ public class Country implements Serializable, nz.cri.gns.fred.model.Country {
 		return name;
 	}
 	
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof Country && ((Country)o).countryCode.equals(countryCode);
 	}
 	
+	@Override
 	public int hashCode() {
 		return countryCode.hashCode();
 	}

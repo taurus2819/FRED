@@ -33,6 +33,7 @@ public class AdoptionRecordDE extends RecordDE {
 		super(record, folderId, user, factory, provider);
 	}
 
+	@Override
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
 		super.makeDataEntryHTML(out, factory);
 	        
@@ -57,10 +58,12 @@ public class AdoptionRecordDE extends RecordDE {
         template.loadAll(out);
     }
 
+	@Override
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
 	}
 
-    public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
+    @Override
+	public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
         Vector<String[]> error = new Vector<String[]>();
         
         super.updateFromRequest(request, factory, addIfNew);
@@ -105,6 +108,7 @@ public class AdoptionRecordDE extends RecordDE {
 		return "Edit adoption record";
 	}
 	
+	@Override
 	public int save(int dataOriginId) throws InsufficientPrivelegesException, StorageAccessException {
 		int recordId = super.save(dataOriginId);
 		if (record.getAdoption().getRecordId() == null)

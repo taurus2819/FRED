@@ -64,6 +64,7 @@ public class SampleStageView implements Serializable, nz.cri.gns.fred.model.Samp
 		return stage;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof SampleStageView && ((SampleStageView)o).id.equals(id);
 	}

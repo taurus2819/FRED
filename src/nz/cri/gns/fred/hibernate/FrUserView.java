@@ -124,10 +124,12 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
 		return fullName;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof FrUserView && ((FrUserView)o).userId.equals(userId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 261 * userId;
 	}

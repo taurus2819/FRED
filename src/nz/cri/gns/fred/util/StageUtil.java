@@ -10,7 +10,6 @@ import net.sf.hibernate.expression.Criterion;
 import net.sf.hibernate.expression.Expression;
 import net.sf.hibernate.expression.MatchMode;
 import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.model.Age;

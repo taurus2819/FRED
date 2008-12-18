@@ -54,11 +54,13 @@ public class FossilGroup implements Serializable, nz.cri.gns.fred.model.FossilGr
         this.sentTos = sentTos;
     }
     
-    public String toString() {
+    @Override
+	public String toString() {
         return name;
     }
 
-    public boolean equals(Object o) {
+    @Override
+	public boolean equals(Object o) {
     	return o instanceof FossilGroup && groupId != null && groupId.equals(((FossilGroup)o).groupId);
     }
 
@@ -74,6 +76,7 @@ public class FossilGroup implements Serializable, nz.cri.gns.fred.model.FossilGr
 		return name;
 	}
 	
+	@Override
 	public int hashCode() {
 		return 483 * groupId;
 	}

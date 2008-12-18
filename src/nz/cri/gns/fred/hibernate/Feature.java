@@ -299,7 +299,8 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
         this.metaCats = metaCats;
     }
 
-    public Object clone() { 
+    @Override
+	public Object clone() { 
     	try {
     		return super.clone();
     	} catch (CloneNotSupportedException e) {
@@ -314,6 +315,7 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
 		return thisName.compareTo(thatName);
 	}
 	
+	@Override
 	public String toString() {
 		return FeatureUtil.getFeatureIdentifyingName(this);
 	}

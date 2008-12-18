@@ -77,7 +77,8 @@ public class RockColour implements Serializable, nz.cri.gns.fred.model.RockColou
         this.samplesByPrimaryColourId = samplesByPrimaryColourId;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return name;
     }
 
@@ -93,10 +94,12 @@ public class RockColour implements Serializable, nz.cri.gns.fred.model.RockColou
 		return this.code + ": " + this.name;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof RockColour && ((RockColour)o).colourId.equals(colourId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 243 * colourId;
 	}

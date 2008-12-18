@@ -58,6 +58,7 @@ public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
 		return groupId.compareTo(arg0.getGroupId());
 	}
 
+	@Override
 	public String toString() {
 		return name;
 	}
@@ -70,10 +71,12 @@ public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
 		return name;
 	}
 
+	@Override
 	public int hashCode() {
 		return name.hashCode();
 	}
 	
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof nz.cri.gns.fred.model.TaxonomicGroup))
 			return false;

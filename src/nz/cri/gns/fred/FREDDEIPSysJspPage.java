@@ -11,6 +11,7 @@ public abstract class FREDDEIPSysJspPage extends FREDIPSysJspPage{
 
 	private static Authenticable[] deRights;
 
+	@Override
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		if (deRights == null) try {
 			deRights = new Authenticable[] { 

@@ -37,23 +37,26 @@ public class OutcropLocalityDE extends LocalityDE {
 			throw new DataInputException("Feature Type", "Invalid");
 		if (FREDUtil.isEmpty(feature.getSamples()))
 			throw new DataInputException("Outcrop Locality", "Sample data has become corrupted");
-		sampleDE = new SampleDE((Sample)feature.getSamples().iterator().next(), folderId, user, factory, provider);
+		sampleDE = new SampleDE(feature.getSamples().iterator().next(), folderId, user, factory, provider);
 		sampleDE.setOutcropSample(true);
 	}
 
+	@Override
 	public void copyFrom(int featureId) throws InsufficientPrivelegesException, StorageAccessException {
 		super.copyFrom(featureId);
 		Feature copyFeature = featureUtil.getFeature(featureId);
-		Sample copySample = (Sample)copyFeature.getSamples().iterator().next();
+		Sample copySample = copyFeature.getSamples().iterator().next();
 		sampleDE.copyFrom(copySample.getSampleId());
 	}
 
+	@Override
 	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
 		super.makeDataEntryHTML(out, factory);
 		sampleDE.makeDataEntryHTML(out, factory);
 		super.makeEndBitHTML(out);
 	}
 
+	@Override
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
 		super.makeExcelImportHTML(out);
 		out.write("<td></td>");
@@ -68,12 +71,14 @@ public class OutcropLocalityDE extends LocalityDE {
 		out.write("</tr>\n");
 	}
 	
+	@Override
 	public int save(int dataOriginId) throws SQLException, IOException, StorageAccessException, InsufficientPrivelegesException {
 		super.save(dataOriginId);
 		sampleDE.save(dataOriginId);
 		return feature.getFeatureId();
 	}
 	
+	@Override
 	public int submit(int dataOriginId) throws SQLException, IOException, DataInputException, InsufficientPrivelegesException, StorageAccessException {
 		super.submit(dataOriginId);
 		sampleDE.submit(dataOriginId);

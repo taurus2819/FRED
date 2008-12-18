@@ -123,6 +123,7 @@ public class SentTo implements nz.cri.gns.fred.model.SentTo, Serializable {
 		this.lab = lab;
 	}
 
+	@Override
 	public String toString() {
         return super.toString() + "{" + getFossilGroup() + "}";
     }
@@ -131,6 +132,7 @@ public class SentTo implements nz.cri.gns.fred.model.SentTo, Serializable {
 		return (person == null) ? "" : person.getDisplayName();
 	}
 
+	@Override
 	public Object clone() { 
     	try {
     		SentTo sento = (SentTo) super.clone();
@@ -141,6 +143,7 @@ public class SentTo implements nz.cri.gns.fred.model.SentTo, Serializable {
     	}
     }
 	
+	@Override
 	public boolean equals(Object o) {
 		if (o == this)
 			return true;
@@ -156,6 +159,7 @@ public class SentTo implements nz.cri.gns.fred.model.SentTo, Serializable {
 			;
 	}
 	
+	@Override
 	public int hashCode() {
 		return (fossilGroup == null) ? 0 : fossilGroup.hashCode();
 	}

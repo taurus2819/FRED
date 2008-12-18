@@ -28,14 +28,17 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 
 	private static Authenticable[] fredRights;
 
+	@Override
 	public String getName(HttpServletRequest request) {
 		return "FRED :: The Fossil Record Electronic Database";
 	}
 
+	@Override
 	public String getTitle(HttpServletRequest request) {
 		return "FRED :: The Fossil Record Electronic Database";
 	}
 
+	@Override
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {
 		if (fredRights == null) try {
 			fredRights = new Authenticable[] {

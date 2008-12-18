@@ -40,6 +40,7 @@ public class TaxonomicNameAndGroup implements Comparable<TaxonomicNameAndGroup>{
 		return 0;
 	}
 	
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof TaxonomicNameAndGroup))
 			return false;

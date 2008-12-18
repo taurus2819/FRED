@@ -3,22 +3,24 @@ package nz.cri.gns.fred.util;
 import nz.cri.gns.db.DBUtils;
 
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
 import com.lowagie.text.Font;
 import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 
 public class PDFUtil {
 
 	public static void addCell(PdfPTable table, Object text, Font font) {
-		addCell(table, text, font, PdfPCell.ALIGN_LEFT, 1);
+		addCell(table, text, font, Element.ALIGN_LEFT, 1);
 	}
 	
 	public static void addCell(PdfPTable table, Object text, Font font, int align, int colSpan) {
 		PdfPCell cell = new PdfPCell(new Phrase(DBUtils.nvl(text), font));
 		cell.setHorizontalAlignment(align);
-		cell.setBorder(PdfPCell.NO_BORDER);
-		cell.setVerticalAlignment(PdfPCell.ALIGN_TOP);
+		cell.setBorder(Rectangle.NO_BORDER);
+		cell.setVerticalAlignment(Element.ALIGN_TOP);
 		if (colSpan > 1)
 			cell.setColspan(colSpan);
 		table.addCell(cell);
@@ -26,7 +28,7 @@ public class PDFUtil {
 	
 	public static void addCells(PdfPTable table, Object[] text, Font[] fonts) {
 		for (int i = 0; i < text.length; i++)
-			addCell(table, text[i], fonts[i], PdfPCell.ALIGN_LEFT, 1);
+			addCell(table, text[i], fonts[i], Element.ALIGN_LEFT, 1);
 	}
 	
 	public static void addCells(PdfPTable table, Object[] text, Font[] fonts, int[] align) {
@@ -62,7 +64,7 @@ public class PDFUtil {
 		for (int i = 0; i < text.length; i++)
 			addCell(insertTable, text[i], fonts[i]);
 		PdfPCell cell = new PdfPCell(insertTable);
-		cell.setBorder(PdfPCell.NO_BORDER);
+		cell.setBorder(Rectangle.NO_BORDER);
 		cell.setColspan(colspan);
 		table.addCell(cell);
 	}

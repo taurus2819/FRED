@@ -65,7 +65,8 @@ public class Carbonate implements Serializable, nz.cri.gns.fred.model.Carbonate 
         this.samples = samples;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return name;
     }
 
@@ -81,10 +82,12 @@ public class Carbonate implements Serializable, nz.cri.gns.fred.model.Carbonate 
 		return this.code + ": " + this.name;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof Carbonate && ((Carbonate)o).carbonateId.equals(carbonateId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 966 * carbonateId;
 	}

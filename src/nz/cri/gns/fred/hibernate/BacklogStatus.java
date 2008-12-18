@@ -126,7 +126,8 @@ public class BacklogStatus implements Serializable, nz.cri.gns.fred.model.Backlo
 		return new Integer(this.localityCount.intValue() - this.processingCount.intValue() - this.completedCount.intValue() - this.newCount.intValue());
 	}
 	
-    public String toString() {
+    @Override
+	public String toString() {
         return mapNumber;
     }
 
@@ -134,10 +135,12 @@ public class BacklogStatus implements Serializable, nz.cri.gns.fred.model.Backlo
 		return mapNumber.compareTo(((BacklogStatus)arg0).mapNumber);
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof BacklogStatus && ((BacklogStatus)o).objectId.equals(objectId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 943 * objectId;
 	}

@@ -21,10 +21,12 @@ public class LocalityServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 20060714L;
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		redirect(request.getParameter("frNum"), "", request, response);
 	}
 	
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String url = request.getRequestURI();
 		String[] bits = url.split("/");

@@ -122,10 +122,12 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
 		return sampleStageViews;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		return o instanceof Stage && ((Stage)o).stageId.equals(stageId);
 	}
 	
+	@Override
 	public int hashCode() {
 		return 487 * stageId;
 	}

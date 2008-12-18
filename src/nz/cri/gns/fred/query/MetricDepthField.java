@@ -22,6 +22,7 @@ public class MetricDepthField extends BasicNumberField {
 		this.imperialField = new FilteredFactoredNumberField(databaseName, humanName, 1 / FREDConstants.FT_TO_M, unitField + " = 'ft'");
 	}
 
+	@Override
 	public String getJoin(Operator op, Value value) throws InvalidOperatorException, InvalidValueException {
 		return "(" + metricField.getJoin(op, value) + " OR " + imperialField.getJoin(op, value) + ")";
 	}

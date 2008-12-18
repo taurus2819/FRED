@@ -38,9 +38,10 @@ public class DataInputException extends Exception {
         return auxData;
     }
     
-    public String getMessage() {
+    @Override
+	public String getMessage() {
     	if (error.size() > 0)
-    		return ((String[])error.firstElement())[1];
+    		return (error.firstElement())[1];
    		return super.getMessage();
     }
 }
