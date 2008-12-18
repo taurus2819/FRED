@@ -822,12 +822,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	public void addToFolder(Feature feature, int folderId, UserAccount user) throws StorageAccessException, DataInputException {
-		System.out.println("Adding " + feature + " to folderId = " + folderId);
 		if (!feature.getAudit().getStatus().equals(APPROVED))
 			throw new DataInputException("Folder", "Cannot add a working locality");
 		
 		UserFolder userFolder = new FolderUtil(factory).getUserFolder(folderId, user);
-		System.out.println("Folder = " + userFolder);
 		if (!userFolder.isAllowedCreateLocalities())
 			throw new DataInputException("Folder", "Do not have appropriate rights to add to this folder");
 				
