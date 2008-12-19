@@ -26,6 +26,8 @@ import nz.cri.gns.jsp.PageState;
 
 public abstract class FREDIPSysJspPage extends IPSysJspPage {
 
+    private static final long serialVersionUID = 20050818L;
+	
 	private static Authenticable[] fredRights;
 
 	@Override
@@ -88,7 +90,7 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 		
 		//set FRNumber lik
 		String htmlLink = "<img src=\"images\\blank.gif\" height=\"20\" width=\"10\" alt=\"\" /><form method=\"post\" action=\"locality\" name=\"FRNumJumpForm\" style=\"display: inline; margin: 0;\">"
-			+ "<input type=\"text\" size=\"10\" id=\"frTBox\" name=\"frNum\" style=\"border: 0; font-size: 10pt; color: #666666;\" value=\"Enter FR Num\" onFocus=\"clearTextBox('frTBox','Enter FR Num');\" onBlur=\"showDefaultText('frTBox','Enter FR Num');\" />&nbsp;"
+			+ "<input type=\"text\" size=\"10\" id=\"frTBox\" name=\"frNum\" style=\"border: 0; font-size: 10pt; color: #666666;\" value=\"Enter FR Num\" onFocus=\"clearTextbox('frTBox','Enter FR Num');\" onBlur=\"showDefaultText('frTBox','Enter FR Num');\" />&nbsp;"
 			+ "<input type=\"submit\" value=\"Go\" /></form>";
 		et.setButtons(new Link[] {
 				new CustomHTMLLink(htmlLink)
