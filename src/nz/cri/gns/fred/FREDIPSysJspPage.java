@@ -88,7 +88,7 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 		
 		//set FRNumber lik
 		String htmlLink = "<img src=\"images\\blank.gif\" height=\"20\" width=\"10\" alt=\"\" /><form method=\"post\" action=\"locality\" name=\"FRNumJumpForm\" style=\"display: inline; margin: 0;\">"
-			+ "<input type=\"text\" size=\"10\" name=\"frNum\" style=\"border: 0; font-size: 10pt; color: #666666;\" value=\"Enter FrNum\" />&nbsp;"
+			+ "<input type=\"text\" size=\"10\" name=\"frNum\" style=\"border: 0; font-size: 10pt; color: #666666;\" onFocus=\"clearTextBox('frTBox','Enter FR Num')'\" onBlur=\"showDefaultText('frTBox','Enter FR Num');\" />&nbsp;"
 			+ "<input type=\"submit\" value=\"Go\" /></form>";
 		et.setButtons(new Link[] {
 				new CustomHTMLLink(htmlLink)
@@ -99,6 +99,7 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 				, new IconnedLink("javascript:var x=window.open('http://basilisk.gns.cri.nz/website/fred_nz/o_index.htm', 'fred', 'toolbar=no,menu=no,resizable=yes,address=no');x.focus();", "images/map.gif", "Interactive Map")
 				, new IconnedLink("admin.jsp", "images/edit.gif", "FRED Admin")
 		});
+		et.addScript("scripts/watermark.js");
 		return et;
 	}
 
