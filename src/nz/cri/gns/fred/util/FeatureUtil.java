@@ -893,9 +893,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	public List<FrNumber> getFrNumbersByString(String frNumStr) throws DataInputException, StorageAccessException {
 		try {
 			if (frNumStr.indexOf("-") > 0) {
-				Object[] frNumBits = parseFrNumber(frNumStr.substring(0, frNumStr.indexOf("-")));
+				String[] frNumBits = parseFrNumber(frNumStr.substring(0, frNumStr.indexOf("-")));
 				Integer endSerialNum = new Integer(frNumStr.substring(frNumStr.indexOf("-") + 1));
-				return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ?", FrNumber.class, frNumBits[0], frNumBits[1], endSerialNum);
+				return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ?", FrNumber.class, frNumBits[0], new Integer(frNumBits[1]), endSerialNum);
 			} else {
 				List<FrNumber> frNumbers = new Vector<FrNumber>();
 				FrNumber frNum = getMetricFrNumberByString(frNumStr, false);
@@ -920,7 +920,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	
 	private FrNumber getFrNumberByString(String frNumStr, boolean createNew, boolean yard) throws DataInputException, StorageAccessException {
 		System.out.println("Getting FRNumber = " + frNumStr);
-		Object[] frNumBits = parseFrNumber(frNumStr);
+		String[] frNumBits = parseFrNumber(frNumStr);
 		System.out.println("Parsed FrNum = " + frNumBits[0] + "/f" + frNumBits[1] + ((frNumBits[2] != null) ? frNumBits[2] : ""));
 		FrNumber frNumber = null;
 		if (yard)
@@ -930,9 +930,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (frNumber == null && createNew) {
 			System.out.println("No matching FR Number is database, creating new one");
 			frNumber = new nz.cri.gns.fred.hibernate.FrNumber();
-			frNumber.setMapSheet((String)frNumBits[0]);
-			frNumber.setSerialNumber((Integer)frNumBits[1]);
-			frNumber.setRecollectionNumber((String)frNumBits[2]);
+			frNumber.setMapSheet(frNumBits[0]);
+			frNumber.setSerialNumber(new Integer(frNumBits[1]));
+			frNumber.setRecollectionNumber(frNumBits[2]);
 			if (yard)
 				frNumber.setObsolete("Y");
 		}
@@ -941,12 +941,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	
 	/**
 	* returns array containing
-	* 0. Map Sheet (String)
-	* 1. Serial Number (Integer)
-	* 2. Recollection Number (String)
+	* 0. Map Sheet
+	* 1. Serial Number (with leading zeros)
+	* 2. Recollection Number
 	 * @throws DataInputException 
 	 */
-	public Object[] parseFrNumber(String frNumStr) throws DataInputException {
+	public String[] parseFrNumber(String frNumStr) throws DataInputException {
 		if (frNumStr != null && frNumStr.indexOf("/f") > 0) {
 			String recollectionNumber;
 			Integer serialNumber;
@@ -967,7 +967,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			while (serialNumStr.length() < 4)
 				serialNumStr = "0" + serialNumStr;
 			
-			Object[] frNumBits = {mapSheet, serialNumber, recollectionNumber};
+			String[] frNumBits = {mapSheet, serialNumStr, recollectionNumber};
 			return frNumBits;
 		} else {
 			throw new DataInputException("FR Number", "Badly formed or missing FR Number");
