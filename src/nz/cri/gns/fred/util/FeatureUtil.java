@@ -919,13 +919,16 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 	
 	private FrNumber getFrNumberByString(String frNumStr, boolean createNew, boolean yard) throws DataInputException, StorageAccessException {
+		System.out.println("Getting FRNumber = " + frNumStr);
 		Object[] frNumBits = parseFrNumber(frNumStr);
+		System.out.println("Parsed FrNum = " + frNumBits[0] + "/f" + frNumBits[1] + ((frNumBits[2] != null) ? frNumBits[2] : ""));
 		FrNumber frNumber = null;
 		if (yard)
 			frNumber = getYardFrNumber(frNumBits[0] + "/f" + frNumBits[1] + ((frNumBits[2] != null) ? frNumBits[2] : ""));
 		else
 			frNumber = getFrNumber(frNumBits[0] + "/f" + frNumBits[1] + ((frNumBits[2] != null) ? frNumBits[2] : ""));
 		if (frNumber == null && createNew) {
+			System.out.println("No matching FR Number is database, creating new one");
 			frNumber = new nz.cri.gns.fred.hibernate.FrNumber();
 			frNumber.setMapSheet((String)frNumBits[0]);
 			frNumber.setSerialNumber((Integer)frNumBits[1]);

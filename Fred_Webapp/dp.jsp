@@ -113,6 +113,7 @@
 			<tr><td>A Database error has occured: <%=e.getMessage()%></td></tr><%
 			%></table><%
 			endDETable(pageContext);
+			e.printStackTrace();
 			%></p><%
 		}
 	}
