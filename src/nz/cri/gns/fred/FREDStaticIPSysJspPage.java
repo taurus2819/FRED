@@ -7,6 +7,8 @@ import nz.cri.gns.jsp.IconnedLink;
 import nz.cri.gns.jsp.NewExtranetTemplate;
 
 public abstract class FREDStaticIPSysJspPage extends FREDIPSysJspPage{
+	
+    private static final long serialVersionUID = 20050818L;
 
 	@Override
 	public Authenticable[] getRequiredRights(HttpServletRequest request) {

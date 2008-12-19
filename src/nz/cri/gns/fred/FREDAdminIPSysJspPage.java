@@ -9,6 +9,8 @@ import nz.cri.gns.auth.Right;
 
 public abstract class FREDAdminIPSysJspPage extends FREDIPSysJspPage{
 
+    private static final long serialVersionUID = 20050818L;
+    
 	private static Authenticable[] deRights;
 
 	@Override

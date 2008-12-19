@@ -8,6 +8,8 @@ import nz.cri.gns.auth.IPRightAccess;
 import nz.cri.gns.auth.Right;
 
 public abstract class FREDDEIPSysJspPage extends FREDIPSysJspPage{
+	
+    private static final long serialVersionUID = 20050818L;
 
 	private static Authenticable[] deRights;
 
