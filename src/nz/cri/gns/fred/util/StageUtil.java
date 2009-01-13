@@ -13,6 +13,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.model.Age;
+import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.Stage;
 
 public class StageUtil extends ModelUtil {
@@ -29,6 +30,10 @@ public class StageUtil extends ModelUtil {
 		this.fredDAO = factory.getFredDAO();
 	}
 
+	public Age saveOrUpdate(Age age) throws StorageAccessException {
+		return fredDAO.saveOrUpdate(age);
+	}
+	
 	/**
 	 * Returns string representing a Stage
 	 * @throws SQLException 

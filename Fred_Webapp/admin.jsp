@@ -13,6 +13,7 @@
 	%><p>
 	<ul>
 	<li><a href="user.jsp">User Management</a></li>
+	<li><a href="age_edit.jsp">Edit Ages</a></li>
 	</ul>
 	</p><%
 	
