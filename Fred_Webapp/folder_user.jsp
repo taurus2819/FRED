@@ -10,8 +10,10 @@
 %><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="java.io.PrintWriter"
 %><%@page import="java.util.List"
+%><%@page import="java.util.Vector"
 %><%@page import="java.util.HashSet"
 %><%@page import="java.util.Set"
+%><%@page import="java.util.Collections"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.html.select.SelectBox"
@@ -95,7 +97,9 @@
 			Set<FrUserView> excludeFrUsers = new HashSet<FrUserView>();
 			if (folder.getFolder().getOwner() != null)
 				excludeFrUsers.add(folder.getFolder().getOwner());
-			for (FolderUser folderUser : folder.getFolder().getFolderUsers()) {
+			List<FolderUser> folderUsers = new Vector<FolderUser>(folder.getFolder().getFolderUsers());
+			Collections.sort(folderUsers);
+			for (FolderUser folderUser : folderUsers) {
 				excludeFrUsers.add(folderUser.getUser());
 				%><tr class="lightColour"><td><%=folderUser.getUser().getFullName()%>&nbsp;&nbsp;</td>
 				<td style="text-align: center;"><a href="folder_user.jsp?FoldID=<%=folder.getFolder().getFolderId()%>&ActionType=DeleteUser&UserID=<%=folderUser.getUser().getUserId()%>"><img src="images/ok.gif" width="20" height="20" border="0" alt="Delete User" /></a></td><%
