@@ -29,7 +29,7 @@ public abstract class FREDStaticIPSysJspPage extends FREDIPSysJspPage{
 		il[5] = new IconnedLink("http://data.gns.cri.nz/register/user_reg.jsp?DBase=FRED", "images/register.gif", "Register for FRED account");
 		il[6] = new IconnedLink("conditions.jsp", "images/tc.gif", "Conditions of Use");
 		il[7] = new IconnedLink("download.jsp", "images/save.gif", "Downloads");
-		il[8] = new IconnedLink("http://data.gns.cri.nz/staff/email.jsp?id=frf@subject=FRF%20Feeedback", "images/register.gif", "Feedback");
+		il[8] = new IconnedLink("http://data.gns.cri.nz/staff/email.jsp?id=frf&subject=FRF%20Feeedback", "images/register.gif", "Feedback");
 		addButtons(et, il);
 		
 		return et;
