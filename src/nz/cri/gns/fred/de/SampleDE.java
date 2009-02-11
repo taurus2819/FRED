@@ -600,6 +600,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
+		System.out.println("Update from Request. Feature = " + sample.getFeature());
         reinitialise(factory);
 
         Vector<String[]> error = new Vector<String[]>();
@@ -1047,6 +1048,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
      * @param factory
      */
     private void reinitialise(DAOFactory factory) {
+    	System.out.println("Reinitialising. Feature = " + sample.getFeature());
         sampleUtil = new SampleUtil(factory);
         if (sample.getSampleId() != null) try {
             sample = sampleUtil.getSample(sample.getSampleId().intValue());
@@ -1057,6 +1059,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println("Reinitialisied. Feature = " + sample.getFeature());
     }
 
 	private DrillType getDrillType(String parameter) throws NumberFormatException, StorageAccessException {

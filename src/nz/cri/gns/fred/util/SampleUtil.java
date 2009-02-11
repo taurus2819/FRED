@@ -575,7 +575,6 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			audit.setCreatedById(new Integer(user.getId()));
 		}
 		sample.setAudit(audit);
-		System.out.println("New sample created. Feature = " + sample.getFeature());
 		return sample;
 	}
 	
