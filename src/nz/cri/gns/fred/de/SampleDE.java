@@ -199,22 +199,26 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         reinitialise(factory);
 		
 		if (!outcropSample) {
+			System.out.println("1 sampleId = " + sample.getSampleId());
             //This section is only relevant if this is _not_ an outcrop sample
             Template template = provider.getContent("sample.no.outcrop.de.form");
             prepareTemplate(template, provider);
             template.addSub("featureName", sample.getFeature().getFeatureName());
-            
+            System.out.println("2 sampleId = " + sample.getSampleId());
             if ("Bottom".equals(sample.getFeature().getDatumType()))
             	template.addSub("depthName", "Height");
             else
             	template.addSub("depthName", "Depth");
+            System.out.println("3 sampleId = " + sample.getSampleId());
             template.addSub("topDepth", ((sample.getTopDepth() != null) ? String.valueOf(sample.getTopDepth()) : ""));
+            System.out.println("4 sampleId = " + sample.getSampleId());
             template.addSub("bottomDepth", ((sample.getBottomDepth() != null) ? String.valueOf(sample.getBottomDepth()) : ""));
+            System.out.println("5 sampleId = " + sample.getSampleId());
             if ("ft".equals(sample.getDepthUnit()))
             	template.addSub("depthft", "checked ");
             else
             	template.addSub("depthm", "checked ");
-            
+            System.out.println("6 sampleId = " + sample.getSampleId());
 			if (sample.getFeature().getFeatureType().equals(FREDConstants.DRILLHOLE)) {
 				template.addSub("isDrillhole", "yes");
 				try {
@@ -225,6 +229,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 					selectBox.writeBox(attributes, "-- Choose --", null, (sample.getDrillType() == null) ? null : sample.getDrillType(), out);
 				} catch (Exception e) {}
 			}
+			System.out.println("7 sampleId = " + sample.getSampleId());
 			//comments
 			if (sample.getSampleId() != null)
 				template.addSub("sampleId", sample.getSampleId().toString());
