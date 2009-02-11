@@ -1049,6 +1049,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
      */
     private void reinitialise(DAOFactory factory) {
     	System.out.println("Reinitialising. Feature = " + sample.getFeature());
+    	System.out.println("Sample id = " + sample.getSampleId());
         sampleUtil = new SampleUtil(factory);
         if (sample.getSampleId() != null) try {
             sample = sampleUtil.getSample(sample.getSampleId().intValue());
@@ -1059,6 +1060,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println("Sample = " + sample);
         System.out.println("Reinitialisied. Feature = " + sample.getFeature());
     }
 
