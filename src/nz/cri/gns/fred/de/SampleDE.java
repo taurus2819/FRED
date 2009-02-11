@@ -220,14 +220,19 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             	template.addSub("depthm", "checked ");
             System.out.println("6 sampleId = " + sample.getSampleId());
 			if (sample.getFeature().getFeatureType().equals(FREDConstants.DRILLHOLE)) {
+				System.out.println("6a sampleId = " + sample.getSampleId());
 				template.addSub("isDrillhole", "yes");
 				try {
 					//drill type combo box
 					template.loadUntil(out, "{@drillTypeCombo}");
 					SelectBox<DrillType> selectBox = new SelectBox<DrillType>(sampleUtil.getDrillTypes());
+					System.out.println("6b sampleId = " + sample.getSampleId());
 					Attributes attributes = Attributes.createNameOnlyAttributes("DrillType");
 					selectBox.writeBox(attributes, "-- Choose --", null, (sample.getDrillType() == null) ? null : sample.getDrillType(), out);
-				} catch (Exception e) {}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				System.out.println("6c sampleId = " + sample.getSampleId());
 			}
 			System.out.println("7 sampleId = " + sample.getSampleId());
 			//comments
