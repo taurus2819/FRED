@@ -601,6 +601,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
 		System.out.println("Update from Request. Feature = " + sample.getFeature());
+		System.out.println("Update from Request. Sample id = " + sample.getSampleId());
         reinitialise(factory);
 
         Vector<String[]> error = new Vector<String[]>();
