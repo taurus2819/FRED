@@ -604,7 +604,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         Vector<String[]> error = new Vector<String[]>();
         
         //Drillhole/Vert Section depths
-        if (!sample.getFeature().getFeatureType().equals(FREDConstants.OUTCROP)) {
+        if (!outcropSample) {
         	Double topDepth = null;
         	Double bottomDepth = null;
         	if (request.getParameter("TopDepth").length() > 0) try {
