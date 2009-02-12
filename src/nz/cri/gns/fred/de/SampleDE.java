@@ -1063,10 +1063,13 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     	System.out.println("Sample id = " + sample.getSampleId());
         sampleUtil = new SampleUtil(factory);
         if (sample.getSampleId() != null) try {
-            sample = sampleUtil.getSample(sample.getSampleId().intValue());
-            if (copySample != null) {
-            	getFromDatabase(copySample);
-            	copySample = null;
+            Sample sampInDb = sampleUtil.getSample(sample.getSampleId().intValue());
+            if (sampInDb != null) {
+            	sample = sampInDb;
+	            if (copySample != null) {
+	            	getFromDatabase(copySample);
+	            	copySample = null;
+	            }
             }
         } catch (Exception e) {
             e.printStackTrace();
