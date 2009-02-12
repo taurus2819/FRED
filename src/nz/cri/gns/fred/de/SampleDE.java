@@ -224,11 +224,11 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 				template.addSub("isDrillhole", "yes");
 				try {
 					//drill type combo box
-					template.loadUntil(out, "{@drillTypeCombo}");
-					SelectBox<DrillType> selectBox = new SelectBox<DrillType>(sampleUtil.getDrillTypes());
-					System.out.println("6b sampleId = " + sample.getSampleId());
-					Attributes attributes = Attributes.createNameOnlyAttributes("DrillType");
-					selectBox.writeBox(attributes, "-- Choose --", null, (sample.getDrillType() == null) ? null : sample.getDrillType(), out);
+					//template.loadUntil(out, "{@drillTypeCombo}");
+					//SelectBox<DrillType> selectBox = new SelectBox<DrillType>(sampleUtil.getDrillTypes());
+					//System.out.println("6b sampleId = " + sample.getSampleId());
+					//Attributes attributes = Attributes.createNameOnlyAttributes("DrillType");
+					//selectBox.writeBox(attributes, "-- Choose --", null, (sample.getDrillType() == null) ? null : sample.getDrillType(), out);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -260,12 +260,16 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		        }
 	        }
 	        
+	        System.out.println("8 sampleId = " + sample.getSampleId());
+	        
 			//Grain size...
 			template.loadUntil(out, "{@primaryGrainSize}");
 			SelectBox<GrainSize> gsSelectBox = new SelectBox<GrainSize>(sampleUtil.getGrainSizes());
 			Attributes attributes = Attributes.createNameOnlyAttributes("GrainSizeP");
 			gsSelectBox.writeBox(attributes, "-- Choose --", null, sample.getPrimaryGrainSize(), out);
 
+			System.out.println("9 sampleId = " + sample.getSampleId());
+			
 			template.loadUntil(out, "{@secondaryGrainSize}");
 			attributes = Attributes.createNameOnlyAttributes("GrainSizeS");
 			gsSelectBox.writeBox(attributes, "-- Choose --", null, sample.getSecondaryGrainSize(), out);
@@ -610,8 +614,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	}
 
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
-		System.out.println("Update from Request. Feature = " + sample.getFeature());
-		System.out.println("Update from Request. Sample id = " + sample.getSampleId());
         reinitialise(factory);
 
         Vector<String[]> error = new Vector<String[]>();
@@ -1059,23 +1061,16 @@ public class SampleDE extends DETemplate implements DataEntryForm {
      * @param factory
      */
     private void reinitialise(DAOFactory factory) {
-    	System.out.println("Reinitialising. Feature = " + sample.getFeature());
-    	System.out.println("Sample id = " + sample.getSampleId());
         sampleUtil = new SampleUtil(factory);
         if (sample.getSampleId() != null) try {
-            Sample sampInDb = sampleUtil.getSample(sample.getSampleId().intValue());
-            if (sampInDb != null) {
-            	sample = sampInDb;
-	            if (copySample != null) {
-	            	getFromDatabase(copySample);
-	            	copySample = null;
-	            }
+            sample = sampleUtil.getSample(sample.getSampleId().intValue());
+            if (copySample != null) {
+            	getFromDatabase(copySample);
+            	copySample = null;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("Sample = " + sample);
-        System.out.println("Reinitialisied. Feature = " + sample.getFeature());
     }
 
 	private DrillType getDrillType(String parameter) throws NumberFormatException, StorageAccessException {
