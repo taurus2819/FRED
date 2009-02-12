@@ -567,6 +567,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (reuseFeatureAudit)
 			audit = feature.getAudit();
 		else {
+			System.out.println("Making new audit record");
 			audit = fredDAO.createNewAudit();
 			if (folderId != null)
 				audit.setFolder(fredDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class));
@@ -576,10 +577,6 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		}
 		sample.setAudit(audit);
 		return sample;
-	}
-	
-	public Sample createSample(Feature feature, int folderId, boolean reuseFeatureAudit, UserAccount user) throws StorageAccessException {
-		return createSample(feature, new Integer(folderId), reuseFeatureAudit, user);
 	}
 	
 	public List<Sample> getSamplesByAge(Double startAge, Double stopAge) throws StorageAccessException {
