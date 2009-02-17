@@ -52,7 +52,7 @@ UserFolder folder = folderUtil.getUserFolder(Integer.parseInt(request.getParamet
 for (Sample sample : FeatureUtil.getSortedSamples(feature)) {
 	Audit audit = sample.getAudit();
 	String status = audit.getStatus();
-	if (status.equals(FREDConstants.APPROVED) || (audit.getFolder() != null && audit.getFolder().equals(folder.getFolder()))) {
+	if (sampleUtil.isAllowedReadSample(user, sample) && status.equals(FREDConstants.APPROVED) || (audit.getFolder() != null && audit.getFolder().equals(folder.getFolder()))) {
 		%><sample id="<%=sample.getSampleId()%>"><%
 		if (!feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
 			%><sample-name><%=SampleUtil.getDrillHoleDepthDescription(sample)%></sample-name>
@@ -97,7 +97,7 @@ for (Sample sample : FeatureUtil.getSortedSamples(feature)) {
 				boolean isPaleontology = !isAdoption;
 				audit = record.getAudit();
 				status = audit.getStatus();
-				if (status.equals(FREDConstants.APPROVED) || (audit.getFolder() != null && audit.getFolder().equals(folder.getFolder()))) {
+				if (recordUtil.isAllowedReadRecord(user, record) && status.equals(FREDConstants.APPROVED) || (audit.getFolder() != null && audit.getFolder().equals(folder.getFolder()))) {
 					%><record id="<%=record.getRecordId()%>">
 					<record-type><%=RecordUtil.getRecordType(record)%></record-type>
 					<record-name><%=RecordUtil.getRecordName(record)%></record-name>
