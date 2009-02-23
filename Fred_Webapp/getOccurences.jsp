@@ -9,7 +9,7 @@
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.util.PiPUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
-%><%@page import="nz.cri.gns.fred.util.FolderUtil"
+%><%@page import="nz.cri.gns.fred.util.StageUtil"
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"
 %><%@page import="nz.cri.gns.fred.util.SampleUtil"
 %><%@page import="nz.cri.gns.dataaccess.StorageAccessException"
@@ -30,6 +30,7 @@
 	RecordUtil recordUtil = new RecordUtil(FredHibernate.get().getDAOFactory());
 	SampleUtil sampleUtil = new SampleUtil(FredHibernate.get().getDAOFactory());
 	FeatureUtil featureUtil = new FeatureUtil(FredHibernate.get().getDAOFactory());
+	StageUtil stageUtil = new StageUtil(FredHibernate.get().getDAOFactory());
 
 	String country = request.getParameter("country");
 	if (country != null && country.trim().length() == 0)
@@ -57,14 +58,12 @@
 		<collection_name><![CDATA[<%=sampleName%>]]></collection_name>
 		<formation><![CDATA[<%=sample.getStratUnit()%>]]></formation>
 		<country><%=sv.getCountryName()%></country>
-		<taxon_name><![CDATA[<%=palList.getTaxonomicName()%>]]></taxon_name>
-		<age-max><%=stage.getBaseAge()%></age-max>
-		<age-min><%=stage.getTopAge()%></age-min>
-		<time_period_max><%=stage.getUpperAge().getPeriod()%></time_period_max>
-		<time_period_min><%=stage.getLowerAge().getPeriod()%></time_period_min>
-		<time_stage_max><%=stage.getUpperAge().getName()%></time_stage_max>
-		<time_stage_min><%=stage.getLowerAge().getName()%></time_stage_min>
-		</occurence><%
+		<taxon_name><![CDATA[<%=palList.getTaxonomicName()%>]]></taxon_name><%
+		if (stage != null) {
+			%><age-max><%=stageUtil.getAgeStart(stage)%></age-max>
+			<age-min><%=stageUtil.getAgeStop(stage)%></age-min><%
+		}
+		%></occurence><%
 	}
 	%></occurences><%
 %>

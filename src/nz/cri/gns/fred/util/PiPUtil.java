@@ -34,7 +34,7 @@ public class PiPUtil extends ModelUtil {
 			crit.add(or);
 		}
 		return fredDAO.getList(PaleontologyListEntry.class, crit, limit);*/
-		String query = "FROM PaleontologyListEntry AS p WHERE ";
+		String query = "FROM PalList AS p WHERE ";
 		List<Object> params = new Vector<Object>();
 		if (country != null) {
 			query += "p.paleontology.record.sample.feature.siteView.countryName = ? AND ";
@@ -42,7 +42,7 @@ public class PiPUtil extends ModelUtil {
 		}
 		if (taxon != null) {
 			query += "UPPER(p.taxonomicName) LIKE ? AND ";
-			params.add(taxon);
+			params.add(taxon.toUpperCase());
 		}
 		if (query.length() > 38) {
 			query = query.substring(0, query.length() - 4).trim();
