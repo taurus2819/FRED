@@ -27,6 +27,7 @@ import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.RecordDetails;
 import nz.cri.gns.fred.model.Sample;
+import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.UserFolder;
@@ -416,6 +417,18 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	
 	public List<Adoption> getAdoptionRecords(Sample sample) throws StorageAccessException {
 		return fredDAO.getList("FROM Adoption AS a WHERE a.record.sample = ?", Adoption.class, sample);
+	}
+	
+	public Stage getStage(Paleontology pal) {
+		if (pal.getStage() != null)
+			return pal.getStage();
+		return new SampleUtil(factory).getStage(pal.getRecord().getSample());
+	}
+	
+	public Stage getStage(Adoption ado) {
+		if (ado.getStage() != null)
+			return ado.getStage();
+		return new SampleUtil(factory).getStage(ado.getRecord().getSample());
 	}
 	
 }

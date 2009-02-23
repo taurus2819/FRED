@@ -40,6 +40,7 @@ import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SedimentaryFeatureType;
 import nz.cri.gns.fred.model.SentTo;
+import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.model.StratigraphicUnit;
 import nz.cri.gns.fred.model.UserFolder;
 import nz.cri.gns.fred.model.Weathering;
@@ -567,7 +568,6 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (reuseFeatureAudit)
 			audit = feature.getAudit();
 		else {
-			System.out.println("Making new audit record");
 			audit = fredDAO.createNewAudit();
 			if (folderId != null)
 				audit.setFolder(fredDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class));
@@ -1126,4 +1126,24 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		fredDAO.delete(rel);
 	}
 
+	public Stage getStage(Sample sample) {
+		List<Adoption> adoRecords = getAdoptionRecords(sample);
+		if (adoRecords != null && adoRecords.size() > 0) {
+			for (int i = adoRecords.size() -1; i >= 0; i--) {
+				if (adoRecords.get(i).getStage() != null)
+					return adoRecords.get(i).getStage();
+			}
+		}
+		List<Paleontology> palRecords = getPaleontologyRecords(sample);
+		if (palRecords != null && palRecords.size() > 0) {
+			for (int i = palRecords.size() -1; i >= 0; i--) {
+				if (palRecords.get(i).getStage() != null)
+					return palRecords.get(i).getStage();
+			}
+		}
+		if (sample.getKnownStage() != null)
+			return sample.getKnownStage();
+		return sample.getInferredStage();
+	}
+	
 }
