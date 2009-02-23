@@ -123,6 +123,7 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 	/**
 	 * @deprectaed use getTaxaCount
 	 */
+	@SuppressWarnings("unchecked")
 	public int getProvisionalCount(TaxonomicGroup group) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
@@ -136,6 +137,7 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public int getTaxaCount(TaxonomicGroup group, String status) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
@@ -149,6 +151,7 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 		}
 	}	
 	
+	@SuppressWarnings("unchecked")
 	public List<Taxon> getTaxa(TaxonomicGroup group, String status) throws StorageAccessException {
 		try {
 			Session session = provider.currentSession();
@@ -204,6 +207,7 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 		return new nz.cri.gns.fred.hibernate.FrNumber();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public AuditEdit getMostRecentEdit(Audit audit) throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
@@ -243,6 +247,7 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 		return new nz.cri.gns.fred.hibernate.SentTo();
 	}
 
+	@SuppressWarnings("unchecked")
 	public Stage findStage(Age lowerAge, boolean lowerUncertain, Age upperAge, boolean upperUncertain) throws StorageAccessException {
 		try {
 			StringBuffer query = new StringBuffer("FROM Stage AS s WHERE ");
@@ -326,6 +331,7 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
         return HibernateUtils.getFirst(provider, "SELECT f FROM Record AS r INNER JOIN r.sample AS s INNER JOIN s.feature AS feat INNER JOIN feat.masterFile AS f WHERE r.recordId = ?", record.getRecordId(), Folder.class);
     }
     
+	@SuppressWarnings("unchecked")
 	public List<PaleontologyListEntry> getListEntries(Paleontology pal, TaxonomicGroup group) throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
@@ -441,6 +447,7 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 		return new nz.cri.gns.fred.hibernate.FrUser();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public int getMaxAgeId() throws StorageAccessException {
 		try {
             Session session = provider.currentSession();
