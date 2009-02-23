@@ -10,6 +10,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
+import nz.cri.gns.fred.model.Record;
 
 public class PiPUtil extends ModelUtil {
 
@@ -20,7 +21,7 @@ public class PiPUtil extends ModelUtil {
 		this.fredDAO = factory.getFredDAO();
 	}
 	
-	public List<PaleontologyListEntry> getPiPSamples(String country, String taxon, Integer maxAge, Integer MinAge, Integer limit) throws StorageAccessException {
+	public List<PaleontologyListEntry> getPiPSamples(String country, String taxon, Integer maxAge, Integer minAge, Integer limit) throws StorageAccessException {
 		/*List<Criterion> crit = new Vector<Criterion>();
 		if (country != null)
 			crit.add(Expression.eq("paleontology.record.sample.feature.siteView.countryName", country));
@@ -34,25 +35,53 @@ public class PiPUtil extends ModelUtil {
 			crit.add(or);
 		}
 		return fredDAO.getList(PaleontologyListEntry.class, crit, limit);*/
-		String query = "FROM PalList AS p WHERE ";
-		List<Object> params = new Vector<Object>();
+		String palQuery = "FROM PalList AS p WHERE ";
+		List<Object> palParams = new Vector<Object>();
 		if (country != null) {
-			query += "p.paleontology.record.sample.feature.siteView.countryName = ? AND ";
-			params.add(country);
+			palQuery += "p.paleontology.record.sample.feature.siteView.countryName = ? AND ";
+			palParams.add(country);
 		}
 		if (taxon != null) {
-			query += "UPPER(p.taxonomicName) LIKE ? AND ";
-			params.add(taxon.toUpperCase());
+			palQuery += "UPPER(p.taxonomicName) LIKE ? AND ";
+			palParams.add(taxon.toUpperCase());
 		}
-		if (query.length() > 38) {
-			query = query.substring(0, query.length() - 4).trim();
-			System.out.println(query);
-			List<PaleontologyListEntry> palLists = fredDAO.getList(query, PaleontologyListEntry.class, params.toArray());
-			if (limit == null || palLists.size() <= limit)
-				return palLists;
-			return palLists.subList(0, limit);
+		List<PaleontologyListEntry> palLists = null;
+		if (palQuery.length() > 38) {
+			palQuery = palQuery.substring(0, palQuery.length() - 4).trim();
+			palLists = fredDAO.getList(palQuery, PaleontologyListEntry.class, palParams.toArray());
 		}
-		return null;
+		
+		String stageQuery = "SELECT DISTINCT r.record FROM RecordStageView AS r WHERE ";
+		List<Object> stageParams = new Vector<Object>();
+		if (maxAge != null) {
+			stageQuery = "r.topAge <= ? AND ";
+			stageParams.add(maxAge);
+		}
+		if (minAge != null) {
+			stageQuery = "r.baseAge >= ? AND ";
+			stageParams.add(minAge);
+		}
+		List<PaleontologyListEntry> stagePalLists = null;
+		if (stageQuery.length() > 57) {
+			stagePalLists = new Vector<PaleontologyListEntry>();
+			stageQuery = stageQuery.substring(0, stageQuery.length() - 4).trim();
+			List<Record> records = fredDAO.getList(stageQuery, Record.class, stageParams.toArray());
+			for (Record record : records) {
+				for (PaleontologyListEntry palList : record.getPaleontology().getListEntries())
+					stagePalLists.add(palList);
+			}
+		}
+		
+		if (palLists == null)
+			palLists = stagePalLists;
+		else {
+			if (stagePalLists != null)
+				palLists.retainAll(stagePalLists);
+		}
+		
+		if (limit == null || palLists == null || palLists.size() <= limit)
+			return palLists;
+		return palLists.subList(0, limit);
 	}
 	
 }
