@@ -46,6 +46,7 @@
 		<mapping resource="nz/cri/gns/fred/hibernate/PalList.hbm.xml"/>
 		<mapping resource="nz/cri/gns/fred/hibernate/Person.hbm.xml"/>
 		<mapping resource="nz/cri/gns/fred/hibernate/Record.hbm.xml"/>
+		<mapping resource="nz/cri/gns/fred/hibernate/RecordStageView.hbm.xml"/>
 		<mapping resource="nz/cri/gns/fred/hibernate/RegistrationArea.hbm.xml"/>
 		<mapping resource="nz/cri/gns/fred/hibernate/Relationship.hbm.xml"/>
 		<mapping resource="nz/cri/gns/fred/hibernate/RelationshipType.hbm.xml"/>

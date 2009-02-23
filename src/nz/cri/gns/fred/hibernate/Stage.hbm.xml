@@ -114,13 +114,28 @@
         name="sampleStageViews"
         lazy="true"
         inverse="true"
-		cascade="all"
+		cascade="none"
     >
         <key>
-            <column not-null="true" name="SAMPLE_ID" />
+            <column not-null="true" name="STAGE_ID" />
         </key>
         <one-to-many 
             class="nz.cri.gns.fred.hibernate.SampleStageView"
+        />
+    </set>
+    
+    <!-- bi-directional one-to-many association to RecordStageView -->
+    <set
+        name="recordStageViews"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column not-null="true" name="STAGE_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.RecordStageView"
         />
     </set>
     

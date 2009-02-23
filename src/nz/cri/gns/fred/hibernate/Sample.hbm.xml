@@ -402,7 +402,7 @@
         name="sampleStageViews"
         lazy="true"
         inverse="true"
-		cascade="all"
+		cascade="none"
     >
         <key>
             <column not-null="true" name="SAMPLE_ID" />

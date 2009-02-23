@@ -88,5 +88,20 @@
         </many-to-many>
     </set>
 
+    <!-- bi-directional one-to-many association to RecordStageView -->
+    <set
+        name="recordStageViews"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column not-null="true" name="RECORD_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.RecordStageView"
+        />
+    </set>
+    
 </class>
 </hibernate-mapping>

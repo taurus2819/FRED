@@ -10,6 +10,7 @@ import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.RecordDetails;
 import nz.cri.gns.fred.model.MetaCat;
+import nz.cri.gns.fred.model.RecordStageView;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.RecordUtil;
 
@@ -25,6 +26,7 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record {
     private Audit audit;
     private Audit palListAudit;
     private Set<MetaCat> metaCats;
+    private Set<RecordStageView> recordStageViews;
 
     public Integer getRecordId() {
         return this.recordId;
@@ -81,6 +83,14 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record {
     public void setMetaCats(Set<MetaCat> metaCats) {
         this.metaCats = metaCats;
     }
+    
+	public void setRecordStageViews(Set<RecordStageView> recordStageViews) {
+		this.recordStageViews = recordStageViews;
+	}
+
+	public Set<RecordStageView> getRecordStageViews() {
+		return recordStageViews;
+	}
     
 	public int compareTo(nz.cri.gns.fred.model.Record arg0) {
 		//first compare record types

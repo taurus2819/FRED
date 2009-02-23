@@ -15,4 +15,6 @@ public interface Record extends Audited, Comparable<Record> {
     public void setPalListAudit(Audit palListAudit);
 	public Set<MetaCat> getMetaCats();
     public void setMetaCats(Set<MetaCat> metaCats);
+	public void setRecordStageViews(Set<RecordStageView> recordStageViews);
+	public Set<RecordStageView> getRecordStageViews();
 }
