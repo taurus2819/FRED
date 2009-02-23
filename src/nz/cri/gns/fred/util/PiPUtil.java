@@ -54,15 +54,15 @@ public class PiPUtil extends ModelUtil {
 		String stageQuery = "SELECT DISTINCT r.record FROM RecordStageView AS r WHERE ";
 		List<Object> stageParams = new Vector<Object>();
 		if (maxAge != null) {
-			stageQuery = "r.topAge <= ? AND ";
+			stageQuery += "r.topAge <= ? AND ";
 			stageParams.add(maxAge);
 		}
 		if (minAge != null) {
-			stageQuery = "r.baseAge >= ? AND ";
+			stageQuery += "r.baseAge >= ? AND ";
 			stageParams.add(minAge);
 		}
 		List<PaleontologyListEntry> stagePalLists = null;
-		if (stageQuery.length() > 56) {
+		if (stageQuery.length() > 57) {
 			stagePalLists = new Vector<PaleontologyListEntry>();
 			stageQuery = stageQuery.substring(0, stageQuery.length() - 4).trim();
 			System.out.println(stageQuery);
