@@ -62,9 +62,12 @@ public class PiPUtil extends ModelUtil {
 			stageParams.add(minAge);
 		}
 		List<PaleontologyListEntry> stagePalLists = null;
+		System.out.println(stageQuery);
+		System.out.println("Length = " + stageQuery.length());
 		if (stageQuery.length() > 57) {
 			stagePalLists = new Vector<PaleontologyListEntry>();
 			stageQuery = stageQuery.substring(0, stageQuery.length() - 4).trim();
+			System.out.println(stageQuery);
 			List<Record> records = fredDAO.getList(stageQuery, Record.class, stageParams.toArray());
 			for (Record record : records) {
 				for (PaleontologyListEntry palList : record.getPaleontology().getListEntries())
