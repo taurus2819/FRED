@@ -21,7 +21,7 @@ public class PiPUtil extends ModelUtil {
 	}
 	
 	public List<PaleontologyListEntry> getPiPSamples(String country, String taxon, Integer maxAge, Integer MinAge, Integer limit) throws StorageAccessException {
-		List<Criterion> crit = new Vector<Criterion>();
+		/*List<Criterion> crit = new Vector<Criterion>();
 		if (country != null)
 			crit.add(Expression.eq("paleontology.record.sample.feature.siteView.countryName", country));
 		if (taxon != null)
@@ -33,8 +33,26 @@ public class PiPUtil extends ModelUtil {
 			or.add(Expression.le("paleontology.record.sample.stageByInferredStageId.topAge", maxAge));
 			crit.add(or);
 		}
-		return fredDAO.getList(PaleontologyListEntry.class, crit, limit);
+		return fredDAO.getList(PaleontologyListEntry.class, crit, limit);*/
+		String query = "FROM PaleontologyListEntry AS p WHERE ";
+		List<Object> params = new Vector<Object>();
+		if (country != null) {
+			query += "p.paleontology.record.sample.feature.siteView.countryName = ? AND ";
+			params.add(country);
+		}
+		if (taxon != null) {
+			query += "UPPER(p.taxonomicName) LIKE ? AND ";
+			params.add(taxon);
+		}
+		if (query.length() > 38) {
+			query = query.substring(0, query.length() - 4).trim();
+			System.out.println(query);
+			List<PaleontologyListEntry> palLists = fredDAO.getList(query, PaleontologyListEntry.class, params.toArray());
+			if (limit == null || palLists.size() <= limit)
+				return palLists;
+			return palLists.subList(0, limit);
+		}
+		return null;
 	}
-	
 	
 }
