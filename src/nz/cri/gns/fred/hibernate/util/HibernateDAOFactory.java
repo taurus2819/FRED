@@ -418,7 +418,11 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 	}
 
 	public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException {
-		List<T> items = HibernateUtils.list(provider, query, clazz, parameters);
+		return getList(query, null, clazz, parameters);
+	}
+	
+	public <T extends Comparable<? super T>> List<T> getList(String query, Integer maxResults, Class<T> clazz, Object ... parameters) throws StorageAccessException {
+		List<T> items = HibernateUtils.list(provider, query, maxResults, clazz, parameters);
 		Collections.sort(items);
 		return items;
 	}
