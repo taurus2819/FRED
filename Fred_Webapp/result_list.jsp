@@ -72,7 +72,7 @@
 			try {
 				FREDQuery query = FREDUtil.getFREDQuery(state);
 				queryString = query.getQueryAsString();
-				//System.out.println(query.getHQLQuery());
+				System.out.println(query.getHQLQuery());
 				samples = sampleUtil.getListFromHQL(query.getHQLQuery(), Sample.class);
 				features = featureUtil.getFeatures(samples);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
@@ -85,7 +85,7 @@
 			queryString = request.getParameter("QueryString");
 			try {
 				String sampHql = "SELECT DISTINCT s FROM " + tableName + " WHERE " + whereSQL;
-				//System.out.println(sampHql);
+				System.out.println(sampHql);
 				samples = sampleUtil.getListFromHQL(sampHql, Sample.class);
 				features = featureUtil.getFeatures(samples);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());

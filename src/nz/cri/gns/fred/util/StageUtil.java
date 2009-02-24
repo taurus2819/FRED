@@ -13,7 +13,6 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.model.Age;
-import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.Stage;
 
 public class StageUtil extends ModelUtil {
@@ -172,18 +171,22 @@ public class StageUtil extends ModelUtil {
 		return new String[] {age.getName(), age.getCode()};
 	}
 	
-	public double getAgeStart(Stage stage) {
-		Age age = stage.getLowerAge();
-		return age.getBaseAge();
+	public Age getAgeStart(Stage stage) {
+		return stage.getLowerAge();
 	}
 	
-	public double getAgeStop(Stage stage) {
-		Age age;
+	public Age getAgeStop(Stage stage) {
 		if (stage.getUpperAge() != null)
-			age = stage.getUpperAge();
-		else
-			 age = stage.getLowerAge();
-		return age.getTopAge();
+			return stage.getUpperAge();
+		return stage.getLowerAge();
+	}
+	
+	public double getNumericAgeStart(Stage stage) {
+		return getAgeStart(stage).getBaseAge();
+	}
+	
+	public double getNumericAgeStop(Stage stage) {
+		return getAgeStop(stage).getTopAge();
 	}
 	
 	public List<Age> getMatchingAges(String str, int maxMatches) throws StorageAccessException {

@@ -205,8 +205,8 @@
 									out.print(DBUtils.nvl(stage.getStageLowerMod()) + "\t");
 									out.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : "") + "\t");
 									out.print(DBUtils.nvl(stage.getStageUpperMod()) + "\t");
-									out.print(stageUtil.getAgeStart(stage) + "\t");
-									out.print(stageUtil.getAgeStop(stage) + "\t");
+									out.print(stageUtil.getNumericAgeStart(stage) + "\t");
+									out.print(stageUtil.getNumericAgeStop(stage) + "\t");
 								} else
 									out.print("\t\t\t\t\t\t");
 								if (sample.getKnownStage() != null) {
@@ -215,8 +215,8 @@
 									out.print(DBUtils.nvl(stage.getStageLowerMod()) + "\t");
 									out.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : "") + "\t");
 									out.print(DBUtils.nvl(stage.getStageUpperMod()) + "\t");
-									out.print(stageUtil.getAgeStart(stage) + "\t");
-									out.print(stageUtil.getAgeStop(stage) + "\t");
+									out.print(stageUtil.getNumericAgeStart(stage) + "\t");
+									out.print(stageUtil.getNumericAgeStop(stage) + "\t");
 								} else
 									out.print("\t\t\t\t\t\t");
 								List<? extends Relationship> nearbys = sampleUtil.getRelationships(sample, "Sample", "nearby");
@@ -294,8 +294,8 @@
 								out.print(DBUtils.nvl(stage.getStageLowerMod()) + "\t");
 								out.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : "") + "\t");
 								out.print(DBUtils.nvl(stage.getStageUpperMod()) + "\t");
-								out.print(stageUtil.getAgeStart(stage) + "\t");
-								out.print(stageUtil.getAgeStop(stage) + "\t");
+								out.print(stageUtil.getNumericAgeStart(stage) + "\t");
+								out.print(stageUtil.getNumericAgeStop(stage) + "\t");
 							} else
 								out.print("\t\t\t\t\t\t");
 							out.print(DBUtils.nvl(adoption.getComments()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
@@ -330,8 +330,8 @@
 								out.print(DBUtils.nvl(stage.getStageLowerMod()) + "\t");
 								out.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : "") + "\t");
 								out.print(DBUtils.nvl(stage.getStageUpperMod()) + "\t");
-								out.print(stageUtil.getAgeStart(stage) + "\t");
-								out.print(stageUtil.getAgeStop(stage) + "\t");
+								out.print(stageUtil.getNumericAgeStart(stage) + "\t");
+								out.print(stageUtil.getNumericAgeStop(stage) + "\t");
 							} else
 								out.print("\t\t\t\t\t\t");
 							out.print(DBUtils.nvl(paleontology.getStageComments()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");

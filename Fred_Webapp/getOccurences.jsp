@@ -53,6 +53,7 @@
 		%><occurence>
 		<occurence_no><%=palList.getPalListId()%></occurence_no>
 		<collection_no><%=sample.getSampleId()%></collection_no>
+		<url><![CDATA[http://www.fred.org.nz/detail.jsp?ID=<%=sample.getSampleId()%>]]></url>
 		<latitude><%=sv.getLatitude()%></latitude>
 		<longitude><%=sv.getLongitude()%></longitude>
 		<collection_name><![CDATA[<%=sampleName%>]]></collection_name>
@@ -60,8 +61,12 @@
 		<country><%=sv.getCountryName()%></country>
 		<taxon_name><![CDATA[<%=palList.getTaxonomicName()%>]]></taxon_name><%
 		if (stage != null) {
-			%><age-max><%=stageUtil.getAgeStart(stage)%></age-max>
-			<age-min><%=stageUtil.getAgeStop(stage)%></age-min><%
+			%><age_max><%=stageUtil.getNumericAgeStart(stage)%></age_max>
+			<age_min><%=stageUtil.getNumericAgeStop(stage)%></age_min>
+			<time_period_max><%=stageUtil.getAgeStart(stage).getPeriod()%></time_period_max>
+			<time_period_min><%=stageUtil.getAgeStop(stage).getPeriod()%></time_period_min>
+			<time_stage_max><%=stageUtil.getAgeStart(stage).getName()%></time_stage_max>
+			<time_stage_min><%=stageUtil.getAgeStop(stage).getName()%></time_stage_min><%
 		}
 		%></occurence><%
 	}
