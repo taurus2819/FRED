@@ -41,7 +41,7 @@ public class PiPUtil extends ModelUtil {
 		String query = "SELECT DISTINCT p FROM PalList AS p ";
 		if (maxAge != null || minAge != null)
 			query += "JOIN p.paleontology.record.recordStageViews AS r ";
-		query += "WHERE ";
+		query += "WHERE p.paleontology.record.audit.confidentialFlag = FALSE AND p.paleontology.record.palListAudit.confidentialFlag = FALSE AND p.paleontology.record.sample.audit.confidentialFlag = FALSE AND ";
 		
 		List<Object> params = new Vector<Object>();
 		if (country != null) {
