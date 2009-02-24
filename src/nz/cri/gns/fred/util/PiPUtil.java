@@ -45,8 +45,8 @@ public class PiPUtil extends ModelUtil {
 		
 		List<Object> params = new Vector<Object>();
 		if (country != null) {
-			query += "UPPER(p.paleontology.record.sample.feature.siteView.countryName) = ? AND ";
-			params.add(country.toUpperCase());
+			query += "p.paleontology.record.sample.feature.siteView.countryName = ? AND ";
+			params.add(country);
 			doSearch = true;
 		}
 		if (taxon != null) {
@@ -69,13 +69,11 @@ public class PiPUtil extends ModelUtil {
 		if (doSearch) {
 			query = query.substring(0, query.length() - 4).trim();
 			System.out.println(query);
-			palLists = fredDAO.getList(query, PaleontologyListEntry.class, params.toArray());
+			palLists = fredDAO.getList(query, limit, PaleontologyListEntry.class, params.toArray());
 			System.out.println("Pal Lists size = " + palLists.size());
 		}
 		
-		if (limit == null || palLists == null || palLists.size() <= limit)
-			return palLists;
-		return palLists.subList(0, limit);
+		return palLists;
 	}
 	
 }
