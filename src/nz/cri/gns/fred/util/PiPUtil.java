@@ -51,7 +51,7 @@ public class PiPUtil extends ModelUtil {
 		}
 		if (taxon != null) {
 			query += "UPPER(p.taxonomicName) LIKE ? AND ";
-			params.add(taxon.toUpperCase());
+			params.add("%" + taxon.toUpperCase() + "%");
 			doSearch = true;
 		}
 		if (maxAge != null) {
@@ -70,6 +70,7 @@ public class PiPUtil extends ModelUtil {
 			query = query.substring(0, query.length() - 4).trim();
 			System.out.println(query);
 			palLists = fredDAO.getList(query, PaleontologyListEntry.class, params.toArray());
+			System.out.println("Pal Lists size = " + palLists.size());
 		}
 		
 		if (limit == null || palLists == null || palLists.size() <= limit)
