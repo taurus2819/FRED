@@ -35,49 +35,41 @@ public class PiPUtil extends ModelUtil {
 			crit.add(or);
 		}
 		return fredDAO.getList(PaleontologyListEntry.class, crit, limit);*/
-		String palQuery = "FROM PalList AS p WHERE ";
-		List<Object> palParams = new Vector<Object>();
+		
+		boolean doSearch = false;
+		
+		String query = "SELECT DISTINCT p FROM PalList AS p ";
+		if (maxAge != null || minAge != null)
+			query += "JOIN p.paleontology.record.recordStageViews AS r ";
+		query += "WHERE ";
+		
+		List<Object> params = new Vector<Object>();
 		if (country != null) {
-			palQuery += "p.paleontology.record.sample.feature.siteView.countryName = ? AND ";
-			palParams.add(country);
+			query += "UPPER(p.paleontology.record.sample.feature.siteView.countryName) = ? AND ";
+			params.add(country.toUpperCase());
+			doSearch = true;
 		}
 		if (taxon != null) {
-			palQuery += "UPPER(p.taxonomicName) LIKE ? AND ";
-			palParams.add(taxon.toUpperCase());
+			query += "UPPER(p.taxonomicName) LIKE ? AND ";
+			params.add(taxon.toUpperCase());
+			doSearch = true;
 		}
-		List<PaleontologyListEntry> palLists = null;
-		if (palQuery.length() > 38) {
-			palQuery = palQuery.substring(0, palQuery.length() - 4).trim();
-			palLists = fredDAO.getList(palQuery, PaleontologyListEntry.class, palParams.toArray());
-		}
-		
-		String stageQuery = "SELECT DISTINCT r.record FROM RecordStageView AS r WHERE ";
-		List<Object> stageParams = new Vector<Object>();
 		if (maxAge != null) {
-			stageQuery += "r.topAge <= ? AND ";
-			stageParams.add(maxAge);
+			query += "r.baseAge <= ? AND ";
+			params.add(maxAge);
+			doSearch = true;
 		}
 		if (minAge != null) {
-			stageQuery += "r.baseAge >= ? AND ";
-			stageParams.add(minAge);
-		}
-		List<PaleontologyListEntry> stagePalLists = null;
-		if (stageQuery.length() > 57) {
-			stagePalLists = new Vector<PaleontologyListEntry>();
-			stageQuery = stageQuery.substring(0, stageQuery.length() - 4).trim();
-			System.out.println(stageQuery);
-			List<Record> records = fredDAO.getList(stageQuery, Record.class, stageParams.toArray());
-			for (Record record : records) {
-				for (PaleontologyListEntry palList : record.getPaleontology().getListEntries())
-					stagePalLists.add(palList);
-			}
+			query += "r.topAge >= ? AND ";
+			params.add(minAge);
+			doSearch = true;
 		}
 		
-		if (palLists == null)
-			palLists = stagePalLists;
-		else {
-			if (stagePalLists != null)
-				palLists.retainAll(stagePalLists);
+		List<PaleontologyListEntry> palLists = null;
+		if (doSearch) {
+			query = query.substring(0, query.length() - 4).trim();
+			System.out.println(query);
+			palLists = fredDAO.getList(query, PaleontologyListEntry.class, params.toArray());
 		}
 		
 		if (limit == null || palLists == null || palLists.size() <= limit)
