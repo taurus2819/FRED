@@ -21,7 +21,7 @@ public class PiPUtil extends ModelUtil {
 		this.fredDAO = factory.getFredDAO();
 	}
 	
-	public List<PaleontologyListEntry> getPiPSamples(String country, String taxon, Integer maxAge, Integer minAge, Integer limit) throws StorageAccessException {
+	public List<PaleontologyListEntry> getPiPSamples(String country, String taxon, Double maxAge, Double minAge, Integer limit) throws StorageAccessException {
 		/*List<Criterion> crit = new Vector<Criterion>();
 		if (country != null)
 			crit.add(Expression.eq("paleontology.record.sample.feature.siteView.countryName", country));
