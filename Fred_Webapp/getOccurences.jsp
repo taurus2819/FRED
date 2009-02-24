@@ -38,8 +38,8 @@
 	String taxon = request.getParameter("taxon_name");
 	if (taxon != null && taxon.trim().length() == 0)
 		taxon = null;	
-	Integer maxAge = (request.getParameter("max_age") != null && request.getParameter("max-age").trim().length() > 0) ? new Integer(request.getParameter("max_age")) : null;
-	Integer minAge = (request.getParameter("min_age") != null && request.getParameter("mmin-age").trim().length() > 0) ? new Integer(request.getParameter("min_age")) : null;
+	Integer maxAge = (request.getParameter("max_age") != null && request.getParameter("max_age").trim().length() > 0) ? new Integer(request.getParameter("max_age")) : null;
+	Integer minAge = (request.getParameter("min_age") != null && request.getParameter("min_age").trim().length() > 0) ? new Integer(request.getParameter("min_age")) : null;
 	Integer limit = (request.getParameter("limit") != null && request.getParameter("limit").trim().length() > 0) ? new Integer(request.getParameter("limit")) : null;
 	
 	List<PaleontologyListEntry> palLists = pipUtil.getPiPSamples(country, taxon, maxAge, minAge, limit);

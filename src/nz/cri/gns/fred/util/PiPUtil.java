@@ -37,13 +37,15 @@ public class PiPUtil extends ModelUtil {
 		return fredDAO.getList(PaleontologyListEntry.class, crit, limit);*/
 		
 		boolean doSearch = false;
-		
+		List<Object> params = new Vector<Object>();
 		String query = "SELECT DISTINCT p FROM PalList AS p ";
 		if (maxAge != null || minAge != null)
 			query += "JOIN p.paleontology.record.recordStageViews AS r ";
-		query += "WHERE p.paleontology.record.audit.confidentialFlag = FALSE AND p.paleontology.record.palListAudit.confidentialFlag = FALSE AND p.paleontology.record.sample.audit.confidentialFlag = FALSE AND ";
+		query += "WHERE p.paleontology.record.audit.confidentialFlag = ? AND p.paleontology.record.palListAudit.confidentialFlag = ? AND p.paleontology.record.sample.audit.confidentialFlag = ? AND ";
+		params.add(false);
+		params.add(false);
+		params.add(false);
 		
-		List<Object> params = new Vector<Object>();
 		if (country != null) {
 			query += "p.paleontology.record.sample.feature.siteView.countryName = ? AND ";
 			params.add(country);
