@@ -57,12 +57,12 @@ public class PiPUtil extends ModelUtil {
 			doSearch = true;
 		}
 		if (maxAge != null) {
-			query += "r.baseAge <= ? AND ";
+			query += "r.topAge <= ? AND ";
 			params.add(maxAge);
 			doSearch = true;
 		}
 		if (minAge != null) {
-			query += "r.topAge >= ? AND ";
+			query += "r.baseAge >= ? AND ";
 			params.add(minAge);
 			doSearch = true;
 		}
