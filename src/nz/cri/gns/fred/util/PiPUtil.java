@@ -3,14 +3,10 @@ package nz.cri.gns.fred.util;
 import java.util.List;
 import java.util.Vector;
 
-import net.sf.hibernate.expression.Criterion;
-import net.sf.hibernate.expression.Disjunction;
-import net.sf.hibernate.expression.Expression;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
-import nz.cri.gns.fred.model.Record;
 
 public class PiPUtil extends ModelUtil {
 
@@ -22,29 +18,19 @@ public class PiPUtil extends ModelUtil {
 	}
 	
 	public List<PaleontologyListEntry> getPiPSamples(String country, String taxon, Double maxAge, Double minAge, Integer limit) throws StorageAccessException {
-		/*List<Criterion> crit = new Vector<Criterion>();
-		if (country != null)
-			crit.add(Expression.eq("paleontology.record.sample.feature.siteView.countryName", country));
-		if (taxon != null)
-			crit.add(Expression.ilike("taxonomicName", taxon));
-		if (maxAge != null) {
-			Disjunction or = new Disjunction();
-			or.add(Expression.le("paleontology.stage.topAge", maxAge));
-			or.add(Expression.le("paleontology.record.sample.stageByKnownStageId.topAge", maxAge));
-			or.add(Expression.le("paleontology.record.sample.stageByInferredStageId.topAge", maxAge));
-			crit.add(or);
-		}
-		return fredDAO.getList(PaleontologyListEntry.class, crit, limit);*/
-		
 		boolean doSearch = false;
 		List<Object> params = new Vector<Object>();
 		String query = "SELECT DISTINCT p FROM PalList AS p ";
 		if (maxAge != null || minAge != null)
 			query += "JOIN p.paleontology.record.recordStageViews AS r ";
 		query += "WHERE p.paleontology.record.audit.confidentialFlag = ? AND p.paleontology.record.palListAudit.confidentialFlag = ? AND p.paleontology.record.sample.audit.confidentialFlag = ? AND ";
+		query += "AND p.paleontology.record.audit.status = ? AND p.paleontology.record.sample.audit.status = ? AND p.paleontology.record.sample.feature.audit.status = ? AND ";
 		params.add(false);
 		params.add(false);
 		params.add(false);
+		params.add(AuditUtil.APPROVED);
+		params.add(AuditUtil.APPROVED);
+		params.add(AuditUtil.APPROVED);		
 		
 		if (country != null) {
 			query += "p.paleontology.record.sample.feature.siteView.countryName = ? AND ";
