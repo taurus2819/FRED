@@ -858,7 +858,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		Integer maxNum = fredDAO.getFirst("SELECT max(fr.serialNumber) FROM FrNumber AS fr WHERE fr.serialNumber < 6000 AND fr.obsolete IS NULL AND fr.mapSheet = ?", Integer.class, mapSheet);
 		if (maxNum == null)
 			return 1;
-		return maxNum;
+		return maxNum + 1;
 	}
 	
 	/**
