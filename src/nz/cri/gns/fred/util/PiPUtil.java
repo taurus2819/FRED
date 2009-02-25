@@ -24,7 +24,7 @@ public class PiPUtil extends ModelUtil {
 		if (maxAge != null || minAge != null)
 			query += "JOIN p.paleontology.record.recordStageViews AS r ";
 		query += "WHERE p.paleontology.record.audit.confidentialFlag = ? AND p.paleontology.record.palListAudit.confidentialFlag = ? AND p.paleontology.record.sample.audit.confidentialFlag = ? AND ";
-		query += "AND p.paleontology.record.audit.status = ? AND p.paleontology.record.sample.audit.status = ? AND p.paleontology.record.sample.feature.audit.status = ? AND ";
+		query += "p.paleontology.record.audit.status = ? AND p.paleontology.record.sample.audit.status = ? AND p.paleontology.record.sample.feature.audit.status = ? AND ";
 		params.add(false);
 		params.add(false);
 		params.add(false);
