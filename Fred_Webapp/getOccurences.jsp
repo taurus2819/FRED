@@ -53,18 +53,20 @@
 		%><occurence>
 		<occurence_no><%=palList.getPalListId()%></occurence_no>
 		<collection_no><%=sample.getSampleId()%></collection_no>
-		<url><![CDATA[http://www.fred.org.nz/detail.jsp?ID=<%=sample.getSampleId()%>]]></url>
-		<latitude><%=sv.getLatitude()%></latitude>
-		<longitude><%=sv.getLongitude()%></longitude>
-		<collection_name><![CDATA[<%=sampleName%>]]></collection_name>
-		<formation><![CDATA[<%=sample.getStratUnit()%>]]></formation>
-		<country><%=sv.getCountryName()%></country>
+		<url><![CDATA[http://www.fred.org.nz/detail.jsp?ID=<%=sample.getSampleId()%>]]></url><%
+		if (sv != null) {
+			%><latitude><%=sv.getLatitude()%></latitude>
+			<longitude><%=sv.getLongitude()%></longitude>
+			<country><%=sv.getCountryName()%></country><%
+		}
+		%><collection_name><![CDATA[<%=sampleName%>]]></collection_name>
+		<formation><![CDATA[<%=DBUtils.nvl(sample.getStratUnit())%>]]></formation>
 		<taxon_name><![CDATA[<%=palList.getTaxonomicName()%>]]></taxon_name><%
 		if (stage != null) {
 			%><age_max><%=stageUtil.getNumericAgeStart(stage)%></age_max>
 			<age_min><%=stageUtil.getNumericAgeStop(stage)%></age_min>
-			<time_period_max><%=stageUtil.getAgeStart(stage).getPeriod()%></time_period_max>
-			<time_period_min><%=stageUtil.getAgeStop(stage).getPeriod()%></time_period_min>
+			<time_period_max><%=DBUtils.nvl(stageUtil.getAgeStart(stage).getPeriod())%></time_period_max>
+			<time_period_min><%=DBUtils.nvl(stageUtil.getAgeStop(stage).getPeriod())%></time_period_min>
 			<time_stage_max><%=stageUtil.getAgeStart(stage).getName()%></time_stage_max>
 			<time_stage_min><%=stageUtil.getAgeStop(stage).getName()%></time_stage_min><%
 		}
