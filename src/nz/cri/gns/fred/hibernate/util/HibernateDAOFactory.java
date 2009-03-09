@@ -223,7 +223,7 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 	}
 
 	public Sample createNewSample(Feature feature) {
-		nz.cri.gns.fred.hibernate.Sample sample = new nz.cri.gns.fred.hibernate.Sample();
+		Sample sample = new nz.cri.gns.fred.hibernate.Sample();
 		sample.setFeature(feature);
 		if (feature.getSamples() != null)
 			feature.getSamples().add(sample);
