@@ -627,7 +627,7 @@ try {
 								if (palRecord.getLabNumber() != null) {
 									%><tr class="lightColour"><td class="heading">Lab Number</td><td><%
 									if (site != 0 && palRecord.getLabSection() != null && palRecord.getLabSection().getLab().getName().equals("GNS")) {
-										%><a href="http://data.gns.cri.nz/npc/number/<%=palRecord.getLabSection().getCode()%>/<%=palRecord.getLabNumber()%>" target="npc"><%
+										%><a href="http://data.gns.cri.nz/npc/manage/number/<%=palRecord.getLabSection().getCode()%>/<%=palRecord.getLabNumber()%>" target="npc"><%
 									}
 									%><%=RecordUtil.getLabNumberDescription(palRecord)%><%
 									if (site != 0 && palRecord.getLabSection() != null && palRecord.getLabSection().getLab().getName().equals("GNS")) {
