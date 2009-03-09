@@ -3,5 +3,5 @@
 		factory="nz.cri.gns.dbcp.GOLDataSourceFactory" driverClassName="oracle.jdbc.OracleDriver"
 		url="jdbc:oracle:thin:@gryphon.gns.cri.nz:1521:dev" username="fr"
 		rmiServer="rmi" rmiBinding="OnlineUtils" maxActive="30" maxIdle="5" maxWait="1000" 
-		removeAbandoned="true" logAbandoned="true" /> 
+		removeAbandoned="true" logAbandoned="true" />
 </Context>
