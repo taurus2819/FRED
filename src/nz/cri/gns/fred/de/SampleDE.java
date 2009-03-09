@@ -103,8 +103,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		try {
 			isAllowedSave = outcropSample || sampleUtil.isAllowedEditSample(user, sample, workingFolder);
 			isAllowedSubmit = outcropSample || sampleUtil.isAllowedSubmitSample(user, sample, workingFolder);
-		} catch (Exception e) {}
-		System.out.println("Sample DE initialised. Feature = " + sample.getFeature());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Sample DE initialised. SampleId = " + sample.getSampleId() + ", Feature = " + sample.getFeature());
 	}
 
 	public void copyFrom(int sampleId) throws StorageAccessException  {
