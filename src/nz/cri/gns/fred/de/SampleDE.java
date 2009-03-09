@@ -224,11 +224,11 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 				template.addSub("isDrillhole", "yes");
 				try {
 					//drill type combo box
-					//template.loadUntil(out, "{@drillTypeCombo}");
-					//SelectBox<DrillType> selectBox = new SelectBox<DrillType>(sampleUtil.getDrillTypes());
-					//System.out.println("6b sampleId = " + sample.getSampleId());
-					//Attributes attributes = Attributes.createNameOnlyAttributes("DrillType");
-					//selectBox.writeBox(attributes, "-- Choose --", null, (sample.getDrillType() == null) ? null : sample.getDrillType(), out);
+					template.loadUntil(out, "{@drillTypeCombo}");
+					SelectBox<DrillType> selectBox = new SelectBox<DrillType>(sampleUtil.getDrillTypes());
+					System.out.println("6b sampleId = " + sample.getSampleId());
+					Attributes attributes = Attributes.createNameOnlyAttributes("DrillType");
+					selectBox.writeBox(attributes, "-- Choose --", null, sample.getDrillType(), out);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -613,6 +613,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		template.loadAll(out);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
         reinitialise(factory);
 
