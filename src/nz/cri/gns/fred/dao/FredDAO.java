@@ -113,14 +113,6 @@ public interface FredDAO {
 	 */
 	public AuditEdit getMostRecentEdit(Audit audit) throws StorageAccessException;
 
-
-	/**
-	 * Creates a new empty sample object
-	 * @return
-	 */
-	public Sample createNewSample(Feature feature) throws StorageAccessException;
-
-
 	/**
 	 * Return the fossil group with the given name or null if one doesn't exist
 	 * @throws StorageAccessException 

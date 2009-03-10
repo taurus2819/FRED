@@ -106,7 +106,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("Sample DE initialised. SampleId = " + sample.getSampleId() + ", Feature = " + sample.getFeature());
 	}
 
 	public void copyFrom(int sampleId) throws StorageAccessException  {
@@ -201,42 +200,32 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         reinitialise(factory);
 		
 		if (!outcropSample) {
-			System.out.println("1 sampleId = " + sample.getSampleId());
             //This section is only relevant if this is _not_ an outcrop sample
             Template template = provider.getContent("sample.no.outcrop.de.form");
             prepareTemplate(template, provider);
             template.addSub("featureName", sample.getFeature().getFeatureName());
-            System.out.println("2 sampleId = " + sample.getSampleId());
             if ("Bottom".equals(sample.getFeature().getDatumType()))
             	template.addSub("depthName", "Height");
             else
             	template.addSub("depthName", "Depth");
-            System.out.println("3 sampleId = " + sample.getSampleId());
             template.addSub("topDepth", ((sample.getTopDepth() != null) ? String.valueOf(sample.getTopDepth()) : ""));
-            System.out.println("4 sampleId = " + sample.getSampleId());
             template.addSub("bottomDepth", ((sample.getBottomDepth() != null) ? String.valueOf(sample.getBottomDepth()) : ""));
-            System.out.println("5 sampleId = " + sample.getSampleId());
             if ("ft".equals(sample.getDepthUnit()))
             	template.addSub("depthft", "checked ");
             else
             	template.addSub("depthm", "checked ");
-            System.out.println("6 sampleId = " + sample.getSampleId());
 			if (sample.getFeature().getFeatureType().equals(FREDConstants.DRILLHOLE)) {
-				System.out.println("6a sampleId = " + sample.getSampleId());
 				template.addSub("isDrillhole", "yes");
 				try {
 					//drill type combo box
 					template.loadUntil(out, "{@drillTypeCombo}");
 					SelectBox<DrillType> selectBox = new SelectBox<DrillType>(sampleUtil.getDrillTypes());
-					System.out.println("6b sampleId = " + sample.getSampleId());
 					Attributes attributes = Attributes.createNameOnlyAttributes("DrillType");
 					selectBox.writeBox(attributes, "-- Choose --", null, sample.getDrillType(), out);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				System.out.println("6c sampleId = " + sample.getSampleId());
 			}
-			System.out.println("7 sampleId = " + sample.getSampleId());
 			//comments
 			if (sample.getSampleId() != null)
 				template.addSub("sampleId", sample.getSampleId().toString());
@@ -262,16 +251,12 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 		        }
 	        }
 	        
-	        System.out.println("8 sampleId = " + sample.getSampleId());
-	        
 			//Grain size...
 			template.loadUntil(out, "{@primaryGrainSize}");
 			SelectBox<GrainSize> gsSelectBox = new SelectBox<GrainSize>(sampleUtil.getGrainSizes());
 			Attributes attributes = Attributes.createNameOnlyAttributes("GrainSizeP");
 			gsSelectBox.writeBox(attributes, "-- Choose --", null, sample.getPrimaryGrainSize(), out);
 
-			System.out.println("9 sampleId = " + sample.getSampleId());
-			
 			template.loadUntil(out, "{@secondaryGrainSize}");
 			attributes = Attributes.createNameOnlyAttributes("GrainSizeS");
 			gsSelectBox.writeBox(attributes, "-- Choose --", null, sample.getSecondaryGrainSize(), out);

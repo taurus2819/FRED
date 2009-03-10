@@ -2,9 +2,7 @@ package nz.cri.gns.fred.hibernate.util;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import net.sf.hibernate.Criteria;
@@ -224,19 +222,6 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 	
 	public Sample createNewSample() {
 		return new nz.cri.gns.fred.hibernate.Sample();
-	}
-
-	public Sample createNewSample(Feature feature) {
-		Sample sample = new nz.cri.gns.fred.hibernate.Sample();
-		sample.setFeature(feature);
-		if (feature.getSamples() != null)
-			feature.getSamples().add(sample);
-		else {
-			Set<Sample> samples = new HashSet<Sample>();
-			samples.add(sample);
-			feature.setSamples(samples);
-		}
-		return sample;
 	}
 
 	public SedimentaryFeature createNewSedimentaryFeature() {

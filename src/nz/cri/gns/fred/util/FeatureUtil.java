@@ -215,7 +215,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	}
 
 	public Sample cloneSample(Feature newFeature, Sample sample) throws StorageAccessException, IntrospectionException {
-		Sample newSample = fredDAO.createNewSample(newFeature);
+		Sample newSample = fredDAO.createNewSample();
+		sample.setFeature(newFeature);
 		FREDUtil.beanCopy(sample, newSample, 
 				new FREDUtil.ExcludeByType(Set.class, 
 				new FREDUtil.ExcludeByName(FREDUtil.toVector("audit", "sampleId", "feature", "frNumber")))
