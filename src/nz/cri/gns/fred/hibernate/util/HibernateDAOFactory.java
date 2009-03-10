@@ -221,6 +221,10 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
             throw new StorageAccessException(e);
         }
 	}
+	
+	public Sample createNewSample() {
+		return new nz.cri.gns.fred.hibernate.Sample();
+	}
 
 	public Sample createNewSample(Feature feature) {
 		Sample sample = new nz.cri.gns.fred.hibernate.Sample();

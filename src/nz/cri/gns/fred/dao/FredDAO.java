@@ -56,6 +56,7 @@ public interface FredDAO {
 	public FolderUser createNewFolderUser();
 	public Person createNewPerson();
     public Record createNewRecord();
+    public Sample createNewSample();
     public Paleontology createNewPaleontology();
     public Adoption createNewAdoption();
     

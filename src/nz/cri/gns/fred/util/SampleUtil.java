@@ -563,8 +563,9 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * @throws StorageAccessException 
 	 */
 	public Sample createSample(Feature feature, Integer folderId, boolean reuseFeatureAudit, UserAccount user) throws StorageAccessException {
-		Sample sample = fredDAO.createNewSample(feature);
+		Sample sample = fredDAO.createNewSample();
 		System.out.println("Sample created. Id = " + sample.getSampleId() + ", feature = " + feature);
+		sample.setFeature(feature);
 		Audit audit = null;
 		if (reuseFeatureAudit)
 			audit = feature.getAudit();
@@ -577,6 +578,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			audit.setCreatedById(new Integer(user.getId()));
 		}
 		sample.setAudit(audit);
+		System.out.println("Sample created. Id = " + sample.getSampleId() + ", feature = " + feature);
 		return sample;
 	}
 	
