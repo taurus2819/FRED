@@ -419,18 +419,19 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 		
 		if (coord != null) {
 			if (!datum.coordinateAcceptable(coord))
-				error.add(new String[] {"Coordinate", "Invalid value"});
+				error.add(new String[] {"Coordinate", "Coordinates not of correct type"});
 		
 			if (site == null) 
 				site = new SiteRecord();
 			
 			try {
 				site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
+				datum.convertToNZGD49(coord);
 				//Also set the FRED copied SITE fields
 				feature.setOrigSystemId(datum.getDatabaseId());
 				feature.setOrigCoord(datum.getStringFor(coord));
 			} catch (Exception e) {
-				error.add(new String[] {"Coordinate", "Invalid coordinates specified"});
+				error.add(new String[] {"Coordinate", "Invalid coordinates specified. Ensure you enter the correct number of digits for the selected coordinate system"});
 			}
 			try {
 				site.setMethod(Integer.parseInt(request.getParameter("LocMethodID")));
