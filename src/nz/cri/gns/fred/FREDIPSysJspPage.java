@@ -96,7 +96,7 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 		et.setButtons(new Link[] {
 				new CustomHTMLLink(htmlLink)
 				, new IconnedLink("index.jsp", "images/home.gif", "FRED Home")
-				, new IconnedLink("index.jsp", "images/home.gif", "NPC Database")
+				, new IconnedLink("http://data.gns.cri.nz/npc/index.jsp", "images/home.gif", "NPC Database")
 				, new IconnedLink("folder_list.jsp", "images/edit.gif", "Data Entry")
 				, new IconnedLink("simple_query.jsp", "images/search.gif", "Simple Query")
 				, new IconnedLink("buildframe.jsp", "images/search.gif", "Advanced Query")
