@@ -42,6 +42,7 @@
 				<li>geological opinions about stratigraphic age</li>
 			</ul>
 			<p>FRED now contains <%=featureUtil.getTotalFeatureCount()%> locality records and was last updated on <%=FREDUtil.formatDateForOutput(featureUtil.getLastFeatureApprovalDate())%>.  A programme to enter full collection data for all registered sites is underway and currently <%=((bsUtil.getSumCompletedCount() * 100) / (bsUtil.getSumLocalityCount() - bsUtil.getSumNewCount()))%>% of localities have been processed.  More detailed statistics and working areas can be viewed <a href="backlog_status.jsp">here</a>.</p>
+			<p>Some samples collected from FRF localities are stored in the <a href="http://data.gns.cri.nz/npc">National Paleontological Collection (NPC)</a> at GNS Science.  Researchers may access these samples either through an on-site visit or by requesting a loan.</p>
 			<p>Geographic coordinates can be queried and downloaded by anyone free of charge.  Access to detailed information, and capability to contribute new site records or other data requires a username and password - registered users agree to abide by accepted <a href="conditions.jsp">Conditions of Use</a>.</p>
 			<p>If you are a new user please see the <a href="quick_start.jsp">Quick Start Guide</a>.</p>
 			<p><span class="smalltext">Macintosh users: webmaps require Safari or Netscape 7+ browsers</span></p>

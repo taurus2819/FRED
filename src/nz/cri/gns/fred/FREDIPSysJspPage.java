@@ -73,11 +73,12 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 		et.addStyleSheet("fred.css");
         et.addScript("showhide.js");
         et.setGoogleAnalyticsCode("UA-3641432-1");
-		KeyValueObject links[] = new KeyValueObject[4];
+		KeyValueObject links[] = new KeyValueObject[5];
 		links[0] = new KeyValueObject("index.jsp", "FRED Home");
-		links[1] = new KeyValueObject("simple_query.jsp", "Query");
-		links[2] = new KeyValueObject("http://maps.gns.cri.nz/website/fred", "Map");
-		links[3] = new KeyValueObject("folder_list.jsp", "Data Entry");
+		links[1] = new KeyValueObject("http://data.gns.cri.nz/npc/index.jsp", "NPC Database");
+		links[2] = new KeyValueObject("simple_query.jsp", "Query");
+		links[3] = new KeyValueObject("http://maps.gns.cri.nz/website/fred", "Map");
+		links[4] = new KeyValueObject("folder_list.jsp", "Data Entry");
 		et.setLinks(links);
 		et.setImageBase("images/fred.gif");
 		et.setNavListHeading("FRED");
