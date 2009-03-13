@@ -664,11 +664,12 @@ try {
 											for (PaleontologyListEntry taxa : recordUtil.getListEntries(palRecord, taxaGroup)) {
 												Taxon taxon = taxa.getTaxon();
 												%><tr class="lightColour"><td><%
-												if (TaxonomicUtil.isTaxonInNpc(taxon)) {
+												boolean taxonInNpc = TaxonomicUtil.isTaxonInNpc(taxon);
+												if (taxonInNpc) {
 													%><a href="http://data.gns.cri.nz/npc/catalogue/taxon.jsp?taxonId=<%=taxon.getTaxaId()%>" target="npc"><%
 												}
 												%><i><%=(taxa.getTaxonomicName() != null) ? taxa.getTaxonomicName() : "no taxa identified"%></i><%
-												if (TaxonomicUtil.isTaxonInNpc(taxon)) {
+												if (taxonInNpc) {
 													%></a><%
 												}
 												%>&nbsp;&nbsp;</td><%
