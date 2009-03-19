@@ -10,6 +10,7 @@ public class MetaCat implements Serializable, nz.cri.gns.fred.model.MetaCat {
 
     private Integer metaId;
     private String title;
+    private Integer sizeKb;
     private MetaCatType metaCatType;
 
 	public Integer getMetaId() {
@@ -26,6 +27,14 @@ public class MetaCat implements Serializable, nz.cri.gns.fred.model.MetaCat {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public void setSizeKb(Integer sizeKb) {
+		this.sizeKb = sizeKb;
+	}
+
+	public Integer getSizeKb() {
+		return sizeKb;
 	}
 
 	public MetaCatType getMetaCatType() {

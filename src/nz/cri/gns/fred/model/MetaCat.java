@@ -5,6 +5,8 @@ public interface MetaCat extends Comparable<MetaCat> {
 	public Integer getMetaId();
 	public void setTitle(String title);
 	public String getTitle();
+	public void setSizeKb(Integer sizeKb);
+	public Integer getSizeKb();
 	public MetaCatType getMetaCatType();
 	public void setMetaCatType(MetaCatType metaCatType);
 }
