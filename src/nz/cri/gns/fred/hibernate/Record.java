@@ -99,23 +99,8 @@ public class Record implements Serializable, nz.cri.gns.fred.model.Record {
 		if (!thisType.equals(thatType))
 			return thisType.compareTo(thatType);
 		
-		//record types match so compare date and then person
-		RecordDetails thisDetails = RecordUtil.getRecordDetails(this);
-		RecordDetails thatDetails = RecordUtil.getRecordDetails(arg0);
-		
-		Date thisDate = thisDetails.getDate();
-		Date thatDate = thatDetails.getDate();
-		if (FREDUtil.equals(thisDate, thatDate, true)) {
-			return RecordUtil.getRecordName(thisDetails).compareTo(RecordUtil.getRecordName(thatDetails));
-		}
-		else try {
-			return thisDate.compareTo(thatDate);
-		} catch (Exception e) {
-			if (thisDate != null)
-				return -1;
-			else
-				return 1;
-		}
+		//record types match so compare name
+		return RecordUtil.getRecordName(this).compareTo(RecordUtil.getRecordName(arg0));
 	}
 
 	@Override

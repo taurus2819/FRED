@@ -66,6 +66,11 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		if (details == null)
 			return "Unnamed Record";
 		
+		String labNumStr = "";
+		try {
+			labNumStr = getLabNumberDescription(details.getRecord().getPaleontology());
+		} catch (Exception e) {}
+		
 		String personStr = "";
 		if (!FREDUtil.isEmpty(details.getPersons())) {
 			List<Person> persons = new Vector<Person>();
@@ -76,11 +81,27 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 				personStr = person.getName();
 		}
 
-		String date = "";
+		String dateStr = "";
 		if (details.getDate() != null)
-			date = FREDUtil.formatDateForOutput(details.getDate(), details.getDateRounding());
+			dateStr = FREDUtil.formatDateForOutput(details.getDate(), details.getDateRounding());
 		
-		return ((personStr.length() + date.length() > 0) ? personStr + ((personStr.length() > 0 && date.length() > 0) ? ", " : "") + date : "Unnamed Record");
+		//return ((personStr.length() + date.length() > 0) ? personStr + ((personStr.length() > 0 && date.length() > 0) ? ", " : "") + date : "Unnamed Record");
+		if (labNumStr.length() > 0 || personStr.length() > 0 || dateStr.length() > 0) {
+			String recordName = labNumStr;
+			if (personStr.length() > 0) {
+				if (recordName.length() > 0)
+					recordName += "; ";
+				recordName += personStr;
+			}
+			if (dateStr.length() > 0) {
+				if (recordName.length() > 0)
+					recordName += "; ";
+				recordName += dateStr;
+			}
+			return recordName;
+		}
+		return "Unnamed Record";
+		
 	}
 	
 	public static String getLabNumberDescription(Paleontology pal) {
