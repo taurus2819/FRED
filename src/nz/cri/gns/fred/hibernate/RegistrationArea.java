@@ -23,18 +23,6 @@ public class RegistrationArea implements Serializable, nz.cri.gns.fred.model.Reg
     /** persistent field */
     private Set<Feature> features;
 
-    /** full constructor */
-    public RegistrationArea(Integer regAreaId, String name, String code, Set<Feature> features) {
-        this.regAreaId = regAreaId;
-        this.name = name;
-        this.code = code;
-        this.features = features;
-    }
-
-    /** default constructor */
-    public RegistrationArea() {
-    }
-
     public Integer getRegAreaId() {
         return this.regAreaId;
     }
@@ -68,7 +56,7 @@ public class RegistrationArea implements Serializable, nz.cri.gns.fred.model.Reg
     }
 
 	public int compareTo(nz.cri.gns.fred.model.RegistrationArea arg0) {
-		return regAreaId.compareTo(arg0.getRegAreaId());
+		return name.compareTo(arg0.getName());
 	}
 
 	public String getUniqueIdentifier() {

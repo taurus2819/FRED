@@ -54,6 +54,8 @@ public class SiteUtil extends ModelUtil {
 	public static final int REG_ANTIPODES_ISLANDS = 417;
 	public static final int REG_MACQUARIE_ISLAND = 418;
 	public static final int REG_OTHER = 419;
+	public static final int REG_VANUATU = 420;
+	public static final int REG_PAPUA_NEW_GUINEA = 421;
 	
 	public static final int MASTERFILE_NTH_NI = 1;
 	public static final int MASTERFILE_CEN_NI = 2;
@@ -128,6 +130,8 @@ public class SiteUtil extends ModelUtil {
 			case REG_KERMADEC_ISLANDS :
 			case REG_BOUNTY_ISLANDS :
 			case REG_MACQUARIE_ISLAND :
+			case REG_VANUATU :
+			case REG_PAPUA_NEW_GUINEA :
 				return (isBacklog) ? MASTERFILE_PACIFIC_ISLANDS_BACKLOG : MASTERFILE_PACIFIC_ISLANDS;
 			case REG_NEW_CALEDONIA :
 				return (isBacklog) ? MASTERFILE_NEW_CALEDONIA_BACKLOG : MASTERFILE_NEW_CALEDONIA;
@@ -212,6 +216,10 @@ public class SiteUtil extends ModelUtil {
 	
 	public List<DatumMethod> getSiteDatumMethods() throws StorageAccessException {
 		return fredDAO.getList("FROM DatumMethod AS d WHERE d.nomAccuracyXY IS NOT NULL", DatumMethod.class);
+	}
+	
+	public RegistrationArea getRegistrationArea(int id) throws StorageAccessException {
+		return fredDAO.get(id, nz.cri.gns.fred.hibernate.RegistrationArea.class);
 	}
 	
 	public static Datum getFREDDatum(Feature feature) {

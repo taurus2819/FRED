@@ -234,7 +234,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 			template.loadUntil(out, "{@regCombo}");
 			SelectBox<RegistrationArea> raSelectBox = new SelectBox<RegistrationArea>(featureUtil.getRegistrationAreas());
 			Attributes attributes = Attributes.createNameOnlyAttributes("RegAreaId");
-			raSelectBox.writeBox(attributes, "-- Choose --", null, feature.getRegistrationArea(), out);
+			raSelectBox.writeBox(attributes, "-- Choose --", null, (feature.getRegistrationArea() != null) ? feature.getRegistrationArea() : new SiteUtil(factory).getRegistrationArea(SiteUtil.REG_MAINLAND_NZ), out);
 
 	
 			//Metadata listing
