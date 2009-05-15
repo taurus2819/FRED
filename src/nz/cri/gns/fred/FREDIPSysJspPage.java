@@ -100,7 +100,7 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 				, new IconnedLink("folder_list.jsp", "images/edit.gif", "Data Entry")
 				, new IconnedLink("simple_query.jsp", "images/search.gif", "Simple Query")
 				, new IconnedLink("buildframe.jsp", "images/search.gif", "Advanced Query")
-				, new IconnedLink("javascript:var x=window.open('http://basilisk.gns.cri.nz/website/fred_nz/o_index.htm', 'fred', 'toolbar=no,menu=no,resizable=yes,address=no');x.focus();", "images/map.gif", "Interactive Map")
+				, new IconnedLink("javascript:var x=window.open('http://firedrake.gns.cri.nz/website/fred_nz/o_index.htm', 'fred', 'toolbar=no,menu=no,resizable=yes,address=no');x.focus();", "images/map.gif", "Interactive Map")
 				, new IconnedLink("admin.jsp", "images/edit.gif", "FRED Admin")
 		});
 		et.addScript("scripts/watermark.js");
