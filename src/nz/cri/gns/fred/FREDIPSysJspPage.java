@@ -73,13 +73,6 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 		et.addStyleSheet("fred.css");
         et.addScript("showhide.js");
         et.setGoogleAnalyticsCode("UA-3641432-1");
-		KeyValueObject links[] = new KeyValueObject[5];
-		links[0] = new KeyValueObject("index.jsp", "FRED Home");
-		links[1] = new KeyValueObject("http://data.gns.cri.nz/npc/index.jsp", "NPC Database");
-		links[2] = new KeyValueObject("simple_query.jsp", "Query");
-		links[3] = new KeyValueObject("http://maps.gns.cri.nz/website/fred", "Map");
-		links[4] = new KeyValueObject("folder_list.jsp", "Data Entry");
-		et.setLinks(links);
 		et.setImageBase("images/fred.gif");
 		et.setNavListHeading("FRED");
 		et.setNewTemplateImage("images/fred_banner.jpg");
@@ -100,7 +93,7 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
 				, new IconnedLink("folder_list.jsp", "images/edit.gif", "Data Entry")
 				, new IconnedLink("simple_query.jsp", "images/search.gif", "Simple Query")
 				, new IconnedLink("buildframe.jsp", "images/search.gif", "Advanced Query")
-				, new IconnedLink("javascript:var x=window.open('http://firedrake.gns.cri.nz/website/fred_nz/o_index.htm', 'fred', 'toolbar=no,menu=no,resizable=yes,address=no');x.focus();", "images/map.gif", "Interactive Map")
+				, new IconnedLink("javascript:var x=window.open('http://maps.gns.cri.nz/website/fred_nz/o_index.htm', 'fred', 'toolbar=no,menu=no,resizable=yes,address=no');x.focus();", "images/map.gif", "Interactive Map")
 				, new IconnedLink("admin.jsp", "images/edit.gif", "FRED Admin")
 		});
 		et.addScript("scripts/watermark.js");
