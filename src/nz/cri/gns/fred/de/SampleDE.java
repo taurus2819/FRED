@@ -247,7 +247,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 	        Set<Person> collectors = sample.getCollectors();
 	        if (collectors != null) {
 		        for (Person collector : collectors) {
-		        	out.println("collArray[collArray.length] = '" + collector.getDisplayName() + "';");
+		        	out.println("collArray[collArray.length] = '" + collector.getDisplayName().replaceAll("'", "&quot;") + "';");
 		        }
 	        }
 	        
