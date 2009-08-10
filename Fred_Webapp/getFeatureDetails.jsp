@@ -55,7 +55,7 @@ for (Sample sample : FeatureUtil.getSortedSamples(feature)) {
 	if (sampleUtil.isAllowedReadSample(user, sample) && status.equals(FREDConstants.APPROVED) || (audit.getFolder() != null && audit.getFolder().equals(folder.getFolder()))) {
 		%><sample id="<%=sample.getSampleId()%>"><%
 		if (!feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
-			%><sample-name><%=SampleUtil.getDrillHoleDepthDescription(sample)%></sample-name>
+			%><sample-name><![CDATA[<%=SampleUtil.getDrillHoleDepthDescription(sample)%>]]></sample-name>
 			<status><%=status%></status>
 			<status-style><%=getStatusColour(status)%></status-style>
 			<created-date><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></created-date><%
@@ -100,7 +100,7 @@ for (Sample sample : FeatureUtil.getSortedSamples(feature)) {
 				if (recordUtil.isAllowedReadRecord(user, record) && status.equals(FREDConstants.APPROVED) || (audit.getFolder() != null && audit.getFolder().equals(folder.getFolder()))) {
 					%><record id="<%=record.getRecordId()%>">
 					<record-type><%=RecordUtil.getRecordType(record)%></record-type>
-					<record-name><%=RecordUtil.getRecordName(record)%></record-name>
+					<record-name><![CDATA[<%=RecordUtil.getRecordName(record)%>]]></record-name>
 					<status><%=status%></status>
 					<status-style><%=getStatusColour(status)%></status-style>
 					<created-date><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></created-date><%
