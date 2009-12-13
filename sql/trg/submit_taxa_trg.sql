@@ -1,0 +1,8 @@
+CREATE OR REPLACE TRIGGER Submit_Taxa_Trg
+BEFORE INSERT OR UPDATE OF Status ON Taxonomic_Lookup
+FOR EACH ROW
+DECLARE
+BEGIN
+  :NEW.Send_Message := 'Y';
+END;
+/

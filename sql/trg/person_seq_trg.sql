@@ -1,0 +1,17 @@
+CREATE OR REPLACE TRIGGER Person_Seq_Trg
+BEFORE INSERT ON Person
+REFERENCING NEW AS new
+FOR EACH ROW
+WHEN (new.Person_ID IS NULL)
+DECLARE
+  ok INTEGER;
+  newID NUMBER;
+BEGIN
+  ok := 1;
+  WHILE ok > 0 LOOP
+    SELECT Person_Seq.NEXTVAL INTO newID FROM DUAL;
+    SELECT COUNT(*) INTO ok FROM Person WHERE Person_ID = newID;
+  END LOOP;
+  :NEW.Person_ID := newID;
+END;
+/
