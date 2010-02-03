@@ -47,12 +47,10 @@
 	%><script language="JavaScript">
 	
 	function replaceSingleQuote(str1) {
-		while(str1.indexOf("'") != -1) {
+		while(str1.indexOf("'") != -1)
 			str1 = str1.replace("'", "&quot");
-		}
-		while(str1.indexOf("&quot") != -1) {
+		while(str1.indexOf("&quot") != -1)
 			str1 = str1.replace("&quot", "''");
-		}
 		return str1;
 	}
 	
@@ -74,81 +72,72 @@
 	function saveData(type) {
 		with (document.form1) {
 			if (type == "FeatPer") {
-				window.opener.form1.Person.value = parseDropDown(Person.value);
+				window.opener.document.form1.Person.value = parseDropDown(Person.value);
 				window.close();
 			}
-			else if (type == "Coll") {
-				window.opener.form1.Coll.value = window.opener.form1.Coll.value + parseDropDown(Person.value) + "\n";
-			}
-			else if (type == "Adoptor") {
-				window.opener.form1.Adoptor.value = window.opener.form1.Adoptor.value + parseDropDown(Person.value) + "\n";
-			}
-			else if (type == "Identifier") {
-				window.opener.form1.Identifier.value = window.opener.form1.Identifier.value + parseDropDown(Person.value) + "\n";
-			}
+			else if (type == "Coll")
+				window.opener.document.form1.Coll.value = window.opener.document.form1.Coll.value + parseDropDown(Person.value) + "\n";
+			else if (type == "Adoptor")
+				window.opener.document.form1.Adoptor.value = window.opener.document.form1.Adoptor.value + parseDropDown(Person.value) + "\n";
+			else if (type == "Identifier")
+				window.opener.document.form1.Identifier.value = window.opener.document.form1.Identifier.value + parseDropDown(Person.value) + "\n";
 			else if (type == "StratName") {
-				if (Unk.checked == true && StratName.value != "") {
+				if (Unk.checked == true && StratName.value != "")
 					alert("Please don't enter a value for Stratigraphic Name and check the Unknown box");
-				} else if (Unk.checked == false) {
-					window.opener.form1.StratName.value = StratName.value;
+				else if (Unk.checked == false) {
+					window.opener.document.form1.StratName.value = StratName.value;
 					window.close();
 				} else {
-					window.opener.form1.StratName.value = "unknown";
+					window.opener.document.form1.StratName.value = "unknown";
 					window.close();
 				}
 			}
-			else if (type == "SentTo") {
-				window.opener.form1.SentTo.value = window.opener.form1.SentTo.value + parseDropDown(Group.value) + "*" + parseDropDown(Person.value) + "*" + parseDropDown(Lab.value) + "*" + Comm.value + "\n";
-			}
+			else if (type == "SentTo")
+				window.opener.document.form1.SentTo.value = window.opener.document.form1.SentTo.value + parseDropDown(Group.value) + "*" + parseDropDown(Person.value) + "*" + parseDropDown(Lab.value) + "*" + Comm.value + "\n";
 			else if (type == "PrevSamp") {
-				if (SubFeat.value == "-" && WorkFeat.value == "-") {
+				if (SubFeat.value == "-" && WorkFeat.value == "-")
 					alert("Please select a sample");
-				} else if (SubFeat.value != "-" && WorkFeat.value != "-") {
+				else if (SubFeat.value != "-" && WorkFeat.value != "-")
 					alert("Please only select one sample");
-				} else if (SubFeat.value != "-") {
-					window.opener.form1.PrevSamp.value = window.opener.form1.PrevSamp.value + parseDropDown(SubFeat.value) + ";";
-				} else {
-					window.opener.form1.PrevSamp.value = window.opener.form1.PrevSamp.value + parseDropDown(WorkFeat.value) + ";";
-				}
+				else if (SubFeat.value != "-")
+					window.opener.document.form1.PrevSamp.value = window.opener.document.form1.PrevSamp.value + parseDropDown(SubFeat.value) + ";";
+				else
+					window.opener.document.form1.PrevSamp.value = window.opener.document.form1.PrevSamp.value + parseDropDown(WorkFeat.value) + ";";
 			}
 			else if (type == "SampRel") {
 				if (checkRel("Samp") == 1) {
-					window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + parseDropDown(DistMod.value) + Distance.value + " m";
-					if (DistRange.value != "") {
-						window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + " - " + DistRange.value + " m";
-					}
-					window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + " " + parseDropDown(Rel.value) + " ";
-					if (SubFeat.value == "-" && WorkFeat.value == "-") {
+					window.opener.document.form1.SampRel.value = window.opener.document.form1.SampRel.value + parseDropDown(DistMod.value) + Distance.value + " m";
+					if (DistRange.value != "")
+						window.opener.document.form1.SampRel.value = window.opener.document.form1.SampRel.value + " - " + DistRange.value + " m";
+					window.opener.document.form1.SampRel.value = window.opener.document.form1.SampRel.value + " " + parseDropDown(Rel.value) + " ";
+					if (SubFeat.value == "-" && WorkFeat.value == "-")
 						alert("Please select a sample");
-					} else if (SubFeat.value != "-" && WorkFeat.value != "-") {
+					else if (SubFeat.value != "-" && WorkFeat.value != "-")
 						alert("Please only select one sample");
-					} else if (SubFeat.value != "-") {
-						window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + parseDropDown(SubFeat.value) + "\n";
-					} else {
-						window.opener.form1.SampRel.value = window.opener.form1.SampRel.value + parseDropDown(WorkFeat.value) + "\n";
-					}
+					else if (SubFeat.value != "-")
+						window.opener.document.form1.SampRel.value = window.opener.document.form1.SampRel.value + parseDropDown(SubFeat.value) + "\n";
+					else
+						window.opener.document.form1.SampRel.value = window.opener.document.form1.SampRel.value + parseDropDown(WorkFeat.value) + "\n";
 				}
 			}
 			else if (type == "StratRel") {
 				if (checkRel("Strat") == 1) {
-					window.opener.form1.StratRel.value = window.opener.form1.StratRel.value + parseDropDown(DistMod.value) + Distance.value + " m";
-					if (DistRange.value != "") {
-						window.opener.form1.StratRel.value = window.opener.form1.StratRel.value + " - " + DistRange.value + " m";
-					}
-					window.opener.form1.StratRel.value = window.opener.form1.StratRel.value + " " + parseDropDown(Rel.value) + " " + StratName.value + "\n";
+					window.opener.document.form1.StratRel.value = window.opener.document.form1.StratRel.value + parseDropDown(DistMod.value) + Distance.value + " m";
+					if (DistRange.value != "")
+						window.opener.document.form1.StratRel.value = window.opener.document.form1.StratRel.value + " - " + DistRange.value + " m";
+					window.opener.document.form1.StratRel.value = window.opener.document.form1.StratRel.value + " " + parseDropDown(Rel.value) + " " + StratName.value + "\n";
 				}
 			}
 			else if (type == "SedFeat") {
 				if (Feat.value != "-") {
-					window.opener.form1.SedFeat.value = window.opener.form1.SedFeat.value + parseDropDown(Feat.value);
-					if (Abund.checked) { window.opener.form1.SedFeat.value = window.opener.form1.SedFeat.value + "*"; }
-					window.opener.form1.SedFeat.value = window.opener.form1.SedFeat.value + ";";
+					window.opener.document.form1.SedFeat.value = window.opener.document.form1.SedFeat.value + parseDropDown(Feat.value);
+					if (Abund.checked) { window.opener.document.form1.SedFeat.value = window.opener.document.form1.SedFeat.value + "*"; }
+					window.opener.document.form1.SedFeat.value = window.opener.document.form1.SedFeat.value + ";";
 				}
 			}
 			else if (type == "Taxa") {
-				if (checkTaxa() == 1) {
-					window.opener.form1.Taxa.value = window.opener.form1.Taxa.value + parseDropDown(Group.options[Group.selectedIndex].text) + "*" + TaxaName.value + "*" + Author.value + "*" + SpecCount.value + "*" + SpecCoord.value + "*" + Comm.value + "\n";
-				}
+				if (checkTaxa() == 1)
+					window.opener.document.form1.Taxa.value = window.opener.document.form1.Taxa.value + parseDropDown(Group.options[Group.selectedIndex].text) + "*" + TaxaName.value + "*" + Author.value + "*" + SpecCount.value + "*" + SpecCoord.value + "*" + Comm.value + "\n";
 			}
 		}
 	}
