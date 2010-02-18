@@ -455,11 +455,18 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
 		return sampleStageViews;
 	}
 
+	/**
+	 * Compares by top depth then by bottom depth then by object id. Comparing by object id if all else is equal, 
+	 * is important here so that this method is consistent with the .equals method.
+	 */
 	public int compareTo(nz.cri.gns.fred.model.Sample sample) {
 		if (feature.equals(sample.getFeature())) {
 			if (getTopDepth() != null && sample.getTopDepth() != null) {
-				if (getMetricDepth(getTopDepth(), getDepthUnit()).equals(getMetricDepth(sample.getTopDepth(), sample.getDepthUnit())) && getBottomDepth() != null && sample.getBottomDepth() != null)
+				if (getMetricDepth(getTopDepth(), getDepthUnit()).equals(getMetricDepth(sample.getTopDepth(), sample.getDepthUnit())) && getBottomDepth() != null && sample.getBottomDepth() != null){
+					if (getMetricDepth(getBottomDepth(), getDepthUnit()).equals(getMetricDepth(sample.getBottomDepth(), sample.getDepthUnit())))
+						return (sampleId.intValue() - sample.getSampleId().intValue()); // to be consistent with .equals
 					return getMetricDepth(getBottomDepth(), getDepthUnit()).compareTo(getMetricDepth(sample.getBottomDepth(), sample.getDepthUnit()));
+				}
 				return getMetricDepth(getTopDepth(), getDepthUnit()).compareTo(getMetricDepth(sample.getTopDepth(), sample.getDepthUnit()));
 			} 
 			//Anything undepthed goes to the end
