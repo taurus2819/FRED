@@ -467,6 +467,8 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
 						return (sampleId.intValue() - sample.getSampleId().intValue()); // to be consistent with .equals
 					return getMetricDepth(getBottomDepth(), getDepthUnit()).compareTo(getMetricDepth(sample.getBottomDepth(), sample.getDepthUnit()));
 				}
+				if (getMetricDepth(getTopDepth(), getDepthUnit()).equals(getMetricDepth(sample.getTopDepth(), sample.getDepthUnit())))
+					return (sampleId.intValue() - sample.getSampleId().intValue()); // to be consistent with .equals				
 				return getMetricDepth(getTopDepth(), getDepthUnit()).compareTo(getMetricDepth(sample.getTopDepth(), sample.getDepthUnit()));
 			} 
 			//Anything undepthed goes to the end
