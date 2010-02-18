@@ -87,6 +87,8 @@
 				String sampHql = "SELECT DISTINCT s FROM " + tableName + " WHERE " + whereSQL;
 				System.out.println(sampHql);
 				samples = sampleUtil.getListFromHQL(sampHql, Sample.class);
+				System.out.println("SAMPLES: " + samples); // TEST CODE TODO REMOVE
+				System.out.println("FEATURES: " + features); // TEST CODE TODO REMOVE
 				features = featureUtil.getFeatures(samples);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
 			} catch (Exception e) {
