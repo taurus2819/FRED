@@ -114,7 +114,7 @@
 			boolean paleontologyFlag = (request.getParameter("paleontology") != null);
 			boolean palListFlag = (request.getParameter("palList") != null);
 			
-			response.setHeader("Content-Disposition", "filename=\"FRED_download.txt\"");
+			response.setHeader("Content-Disposition", "attachment; filename=\"FRED_download.txt\"");
 			response.setContentType("application/x-octet-stream");
 	
 			//file header
