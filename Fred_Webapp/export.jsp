@@ -447,8 +447,11 @@
 							for (Paleontology paleontology : pals) {
 								for (PaleontologyListEntry palList : paleontology.getListEntries()) {
 									TaxonomicNameAndGroup check = new TaxonomicNameAndGroup(palList.getTaxonomicName(), palList.getTaxonomicGroup());
-									if (check.equals(nameAndGroup))
+									if (check.equals(nameAndGroup)){
 										out.print(encodeTaxaString(palList));
+										break;
+									}
+									
 								}
 								out.print("\t");
 							}
