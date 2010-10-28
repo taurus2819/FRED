@@ -22,6 +22,13 @@
 %><%@page import="java.sql.Connection"
 %><%@page import="java.sql.Statement"
 %><%@page import="java.sql.ResultSet"
+%><%@page import="nz.cri.gns.fred.util.FolderUtil"
+%><%@page import="nz.cri.gns.fred.dao.DAOFactory"
+%><%@page import="nz.cri.gns.fred.model.UserFolder"
+%><%@page import="nz.cri.gns.jsp.Link"
+%><%@page import="nz.cri.gns.jsp.CustomHTMLLink"
+%><%@page import="java.util.Set"
+%><%@page import="java.util.Arrays"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %><%!
@@ -29,26 +36,97 @@
 		return "FRED :: Search Results";
 	}
 %><%
+
+
+
+	// Define page variables and initialise head
+	
+	// Define Util classes
+	DAOFactory factory = FredHibernate.get().getDAOFactory();
+	SampleUtil sampleUtil = new SampleUtil(factory);
+	FeatureUtil featureUtil = new FeatureUtil(factory);
+	AuditUtil auditUtil = new AuditUtil(factory);
+	
+	// Define HTTP state variables
 	PageState state = new PageState(request, response, getServletContext());
 	User user = (User)getUser(session);
 
+	// Define other page variables
 	String queryURL = request.getParameter("QueryURL");
 	if (queryURL == null)
-		queryURL = "simple_query.jsp";
-	
-	SampleUtil sampleUtil = new SampleUtil(FredHibernate.get().getDAOFactory());
-	FeatureUtil featureUtil = new FeatureUtil(FredHibernate.get().getDAOFactory());
-	AuditUtil auditUtil = new AuditUtil(FredHibernate.get().getDAOFactory());
-	
+		queryURL = "simple_query.jsp";	
 	int pageSize = 50;
 
-	ExtranetTemplate et = getExtranetTemplate();
+	// Define the extranet template for this page
+	ExtranetTemplate et = getExtranetTemplate();	
 	et.setDisplayLoadingMessage(true);
-	addButtons(et, new IconnedLink[] {
-			new IconnedLink(queryURL, "images/search.gif", "Search Again"),
-			new IconnedLink("export_setup.jsp", "images/save.gif", "Download Results")
-		});
-
+	
+	// Define a vector of links
+	Vector<Link> il = new Vector<Link>();	
+	il.add(new IconnedLink(queryURL, "images/search.gif", "Search Again"));
+	il.add(new IconnedLink("export_setup.jsp", "images/save.gif", "Download Results"));	
+	
+	
+	// Add to Folder link
+	if (user != null && new FolderUtil(factory).getPersonalFolders(user).size() > 0) {		
+		StringBuffer customHTML = new StringBuffer("<form method=\"post\" onsubmit=\"addFeaturesToActionURL(this)\" action=\"result_list.jsp?Page=" + ((request.getParameter("Page") == null) ? "1" : request.getParameter("Page")) + "\" name=\"FolderForm\" style=\"display: inline; margin: 0;\">");
+		customHTML.append("<input type=\"hidden\" name=\"ActionType\" value=\"AddtoFold\" />");
+		customHTML.append("<img src=\"images\\blank.gif\" height=\"20\" width=\"10\" alt=\"\" /><select name=\"FoldID\">");
+		customHTML.append("<option value=\"-\">-- Choose --</option>");
+		for (UserFolder folder : (new FolderUtil(factory)).getPersonalFolders(user)) {
+			String folderName = folder.getFolderName();
+			if (folderName.length() > 17)
+				folderName = folderName.substring(0, 14) + "...";
+			customHTML.append("<option value=\"").append(folder.getFolderId()).append("\">").append(folderName).append("</option>");
+		}
+		customHTML.append("</select><br />");
+		customHTML.append("<img src=\"images\\blank.gif\" height=\"20\" width=\"10\" alt=\"\" /><input type=\"submit\" value=\"Add to Folder\" />");
+		customHTML.append("</form>");
+		il.add(new CustomHTMLLink(customHTML.toString()));
+	}
+	
+	
+	// Adds all the links in the array to the extranet template
+	addButtons(et, il.toArray(new Link[il.size()]));
+	
+	// Execute any actions
+	String actionType = request.getParameter("ActionType");
+	String foldId = request.getParameter("FoldID");
+	if (user != null && actionType != null && foldId != null && actionType.equals("AddtoFold") && !foldId.equals("-")) {
+		String[] featureIdsStr = request.getParameterValues("fid");
+		for (int i = 0; i < featureIdsStr.length; i++) {
+			try {
+				int featureId = Integer.parseInt(featureIdsStr[i]);
+				Feature feature = featureUtil.getFeature(featureId);
+				if (featureUtil.isAllowedReadFeature(user, feature)) {
+					featureUtil.addToFolder(feature, Integer.parseInt(request.getParameter("FoldID")), user);%>
+					
+					<script language="JavaScript"><!--				
+						var featureDesc = <%="\"" + feature.toString() + "\""%>;
+						alert("Locality, " + featureDesc + " Added to Folder.");
+					//-->
+					</script>
+					<%
+				} else {%>
+					<script language="JavaScript"><!--
+						var featureDesc = <%="\"" + feature.toString() + "\""%>;
+						alert("Locality, " + featureDesc + " Not Added to Folder. User does not have read rights for this record.");
+					//-->
+					</script><%
+				}
+			} catch (NumberFormatException nfe){
+				nfe.printStackTrace();
+			}
+		}		
+	}
+	
+	// Add scripts to extranet template
+	et.addScript("scripts/resultList.js");	
+	et.setBodyTag("onload=\"updateMasterCheckbox()\"");
+	
+	
+	
+	// Start drawing page from the extranet template defined	
 	drawTop(out, et, request, response);
 
 	if ((request.getParameter("WhereSQL") != null && request.getParameter("TableName") != null && request.getParameter("QueryString") != null) || request.getParameter("Page") != null || request.getParameter("Type") != null) {
@@ -122,70 +200,124 @@
 			}
 
 			//list matching localities
-			%><table border="0" cellpadding="3" cellspacing="2" width="600">
-			<tr class="midColour"><th colspan="5">Matching Localities</th></tr>
-			<tr class="midColour"><td colspan="5">Search Criteria: <em><%=queryString%></em></td></tr><%
-			if (maxRangePage > 1) {
-				%><tr class="midColour"><td class="heading" colspan="3">Displaying records <%=startIndex%> to <%=endIndex%> of <%=numRecords%></td>
-				<td style="text-align: right" colspan="2"><%
-				for (int i = minRangePage; i <= maxRangePage; i++) {
-					%>&nbsp;<a href="result_list.jsp?Page=<%=i%>"<%=((i == pageNum) ? " class=\"heading\"" : "")%>><%=i%></a><%
-				}
-			}
-			%></td></tr>
-
-			<tr class="midColour"><th colspan="2">FR Number&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Name&nbsp;&nbsp;</th><th>Actions</th></tr><%
-			int j = 1;
-			for (Feature feature : features) {
-				if (j >= startIndex && j <= endIndex) {
-					feature = featureUtil.getFeature(feature.getFeatureId());
-					if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
-						%><tr class="lightColour">
-						<td><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
-						<td class="heading"><%=feature.getFrNumber()%> <%=(feature.getYardFrNumber() != null) ? "(" + feature.getYardFrNumber() + ")" : ""%>&nbsp;&nbsp;</td>
-						<td><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
-						<td><%=DBUtils.nvl(feature.getFeatureName())%>&nbsp;&nbsp;</td>
-						<td><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;&nbsp;<%
-						if (user != null && featureUtil.isAllowedEditApprovedFeature(user, feature)) {
-							%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=feature.getMasterFile().getFolderId()%>"><img src="images/edit.gif" height="20" width="20" border="0" alt="Edit" /></a><%
+			%>
+			<form method="post" id="resultsForm" action="result_list.jsp">
+				<table border="0" cellpadding="3" cellspacing="2" width="600">
+					<tr class="midColour">
+						<th colspan="6">Matching Localities</th>
+					</tr>
+					<tr class="midColour">
+						<td colspan="6">
+							Search Criteria: <em><%=queryString%></em>
+						</td>
+					</tr><%
+						if (maxRangePage > 1) {%>
+							<tr class="midColour">
+								<td class="heading" colspan="4">
+									Displaying records <%=startIndex%> to <%=endIndex%> of <%=numRecords%>
+								</td>
+								<td style="text-align: right" colspan="2"><%
+									for (int i = minRangePage; i <= maxRangePage; i++) {
+										%>&nbsp;<a href="result_list.jsp?Page=<%=i%>"<%=((i == pageNum) ? " class=\"heading\"" : "")%>><%=i%></a><%
+									}%>
+								</td>
+							</tr><%
 						}
-						%></td>
-						</tr><%
-						if (!FeatureUtil.OUTCROP.equals(feature.getFeatureType())) {
-							for (Sample sample : FREDUtil.getSortedList(feature.getSamples())) {
-								if (samples == null || samples.contains(sample) && sampleUtil.isAllowedReadSample(user, sample)) {
-									%><tr class="lightColour">
-									<td><a href="detail.jsp?ID=<%=sample.getSampleId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List"><img src="images/drill.gif" border="0" height="20" width="20" alt="View Sample" /></a></td>
-									<td class="heading">&nbsp;&nbsp;&nbsp;<%=SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td>
-									<td>Sample&nbsp;&nbsp;</td>
-									<td>&nbsp;</td>
-									<td>&nbsp;</td>
-									</tr><%
+					%>
+					<tr class="midColour">
+						<th>
+							<input type="checkbox" name="MasterCheckbox" onchange="updateAllCheckBoxes(this.checked);" />
+						</th>
+						<th colspan="2">FR Number&nbsp;&nbsp;</th>
+						<th>Type&nbsp;&nbsp;</th>
+						<th>Name&nbsp;&nbsp;</th>
+						<th>Actions</th>
+					</tr><%
+					
+					// Obtains feature ids from GET
+					Set<String> fids;
+					if (request.getParameterValues("fid") == null)
+						fids = new HashSet<String>();
+					else					
+						fids = new HashSet<String>(Arrays.asList(request.getParameterValues("fid")));
+					
+					int j = 1;
+					for (Feature feature : features) {
+						if (j >= startIndex && j <= endIndex) {
+							feature = featureUtil.getFeature(feature.getFeatureId());
+							if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
+								String checkedText = ""; // default un-checked
+								if (!fids.isEmpty() && fids.contains(feature.getFeatureId().toString()))
+									checkedText = "checked=\"checked\"";
+							%>
+								<tr class="lightColour">
+									<td>
+										<input type="checkbox" name="FeatIDs" <%= checkedText %> onchange="updateMasterCheckbox()" value="<%=feature.getFeatureId()%>" />
+									</td>
+									<td>
+										<a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a>
+									</td>
+									<td class="heading"><%=feature.getFrNumber()%> <%=(feature.getYardFrNumber() != null) ? "(" + feature.getYardFrNumber() + ")" : ""%>&nbsp;&nbsp;</td>
+									<td><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
+									<td><%=DBUtils.nvl(feature.getFeatureName())%>&nbsp;&nbsp;</td>
+									<td>
+										<a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List">
+											<img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" />
+										</a>&nbsp;&nbsp;<%
+										if (user != null && featureUtil.isAllowedEditApprovedFeature(user, feature)) {
+											%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=feature.getMasterFile().getFolderId()%>">
+												<img src="images/edit.gif" height="20" width="20" border="0" alt="Edit" />
+											</a><%
+										}%>
+									</td>						
+								</tr><%
+								if (!FeatureUtil.OUTCROP.equals(feature.getFeatureType())) {
+									for (Sample sample : FREDUtil.getSortedList(feature.getSamples())) {
+										if (samples == null || samples.contains(sample) && sampleUtil.isAllowedReadSample(user, sample)) {%>
+											<tr class="lightColour">
+												<td></td>
+												<td>
+													<a href="detail.jsp?ID=<%=sample.getSampleId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List">
+														<img src="images/drill.gif" border="0" height="20" width="20" alt="View Sample" />
+													</a>
+												</td>
+												<td class="heading">&nbsp;&nbsp;&nbsp;<%=SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td>
+												<td>Sample&nbsp;&nbsp;</td>
+												<td>&nbsp;</td>
+												<td>&nbsp;</td>
+											</tr><%
+										}
+									}
 								}
 							}
 						}
+						j++;
 					}
-				}
-				j++;
-			}
-
-			if (maxRangePage > 1) {
-				%><tr class="midColour"><td class="heading" colspan="3">Displaying records <%=startIndex%> to <%=endIndex%> of <%=numRecords%></td>
-				<td style="text-align: right" colspan="2"><%
-				for (int i = minRangePage; i <= maxRangePage; i++) {
-					%>&nbsp;<a href="result_list.jsp?Page=<%=i%>"<%=((i == pageNum) ? " class=\"heading\"" : "")%>><%=i%></a><%
-				}
-			}
-			%></td></tr>
-			</table><%
+										
+		
+					if (maxRangePage > 1) {
+						%><tr class="midColour">
+							<td class="heading" colspan="3">
+								Displaying records <%=startIndex%> to <%=endIndex%> of <%=numRecords%>
+							</td>
+							<td style="text-align: right" colspan="2"><%
+							for (int i = minRangePage; i <= maxRangePage; i++) {
+								%>&nbsp;<a href="result_list.jsp?Page=<%=i%>"<%=((i == pageNum) ? " class=\"heading\"" : "")%>><%=i%></a><%
+							}%>
+							</td></tr><%
+					 }%>			
+				</table>
+			</form><%				
 		} else {
 			%><p>No records found matching your search criteria</p><%
 		}
 	}
-	
+		
 	drawBottom(out, et);
 	try {
-		FredHibernate.get().getDAOFactory().closeSession();
+		factory.closeSession();
 	} catch (Exception e) {
 	}
+	
+
 %>
