@@ -90,37 +90,33 @@
 	addButtons(et, il.toArray(new Link[il.size()]));
 	
 	// Execute any actions
+	String alertText = "";
 	String actionType = request.getParameter("ActionType");
 	String foldId = request.getParameter("FoldID");
-	if (user != null && actionType != null && foldId != null && actionType.equals("AddtoFold") && !foldId.equals("-")) {
-		String[] featureIdsStr = request.getParameterValues("fid");
+	String[] featureIdsStr = request.getParameterValues("fid");
+	if (user != null && actionType != null && foldId != null && actionType.equals("AddtoFold") && !foldId.equals("-") && featureIdsStr != null) {
 		for (int i = 0; i < featureIdsStr.length; i++) {
 			try {
 				int featureId = Integer.parseInt(featureIdsStr[i]);
 				Feature feature = featureUtil.getFeature(featureId);
+				
 				if (featureUtil.isAllowedReadFeature(user, feature)) {
-					featureUtil.addToFolder(feature, Integer.parseInt(request.getParameter("FoldID")), user);%>
-					
-					<script language="JavaScript"><!--				
-						var featureDesc = <%="\"" + feature.toString() + "\""%>;
-						alert("Locality, " + featureDesc + " Added to Folder.");
-					//-->
-					</script>
-					<%
-				} else {%>
-					<script language="JavaScript"><!--
-						var featureDesc = <%="\"" + feature.toString() + "\""%>;
-						alert("Locality, " + featureDesc + " Not Added to Folder. User does not have read rights for this record.");
-					//-->
-					</script><%
+					featureUtil.addToFolder(feature, Integer.parseInt(request.getParameter("FoldID")), user);					
+					alertText += "Locality, " + feature + " Added to Folder.\\n";
+				} else {
+					alertText += "Locality, " + feature + " Not Added to Folder. User does not have read rights for this record.\\n";
 				}
 			} catch (NumberFormatException nfe){
 				nfe.printStackTrace();
 			}
-		}		
+		}%>	
+		<script type="text/javascript"><!--
+			alert(<%= "\"" + alertText + " \"" %>);
+		//-->
+		</script><%
 	}
 	
-	// Add scripts to extranet template
+	// Add scripts to extranet template 
 	et.addScript("scripts/resultList.js");	
 	et.setBodyTag("onload=\"updateMasterCheckbox()\"");
 	
