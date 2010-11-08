@@ -4,12 +4,11 @@
 		<ant dir=".." target="db-check">
 			<property name="build.webxml" value="FRED/Fred_Webapp/WEB-INF/web.xml FRED/Fred_Webapp/META-INF/context.xml" />
 		</ant>
-		<war warfile="../ROOT.war" basedir="Fred_Webapp" webxml="Fred_Webapp/WEB-INF/web.xml" excludes="WEB-INF,WEB-INF/**/*">
+		<war warfile="../fred.war" basedir="Fred_Webapp" webxml="Fred_Webapp/WEB-INF/web.xml" excludes="WEB-INF,WEB-INF/**/*">
 			<lib dir=".">
 				<include name="fred.jar" />
 			</lib>
 		</war>
-		<war warfile="../fred.war" basedir="Redirect_Webapp" webxml="Redirect_Webapp/WEB-INF/web.xml" excludes="WEB-INF,WEB-INF/**/*" />
 	</target>
 	<target name="compile">
 		<javac debug="true" srcdir="src" destdir="src">
