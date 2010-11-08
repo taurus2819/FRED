@@ -289,10 +289,23 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		return new ArrayList<Sample>(samples);
 	}
 	
+	/**
+	 * Retrieves all confidential samples with lapse date before specified one where either the user has created it 
+	 * or the fred user is an owner of a confidential group encompassing the sample.
+	 * 
+	 * @param user
+	 * @param lapseDate
+	 * @return
+	 * @throws StorageAccessException
+	 */
 	public List<Sample> getConfidentialSamples(UserAccount user, Date lapseDate) throws StorageAccessException {
+		if (lapseDate == null)
+			return getConfidentialSamples(user);
+		
 		List<Sample> samples = new ArrayList<Sample>();
-		for (Sample sample : this.getConfidentialSamples(user)){
-			if (sample.getAudit().getConfidLapseDate().before(lapseDate))
+		for (Sample sample : this.getConfidentialSamples(user)){	
+			Date sampleLapseDate = sample.getAudit().getConfidLapseDate();
+			if (sampleLapseDate != null && sampleLapseDate.before(lapseDate))
 				samples.add(sample);
 		}	
 		return samples;
@@ -311,7 +324,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 				"JOIN record.paleontology paleo " +
 				"WHERE audit.confidentialFlag = ? " +
 				"AND fr = ? "
-				, Paleontology.class, FREDConstants.OUTCROP, true, frUser));		
+				, Paleontology.class, true, frUser));		
 		paleontologies.addAll(fredDAO.getList(
 				"FROM Paleontology AS p " +
 				"WHERE p.record.audit.confidentialFlag = ? " +
@@ -322,37 +335,94 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	
 	// TODO test
 	public List<Paleontology> getConfidentialPaleontologyRecords(UserAccount user, Date lapseDate) throws StorageAccessException {
+		if (lapseDate == null)
+			return getConfidentialPaleontologyRecords(user);
+		
 		List<Paleontology> paleontologies = new ArrayList<Paleontology>();
 		for (Paleontology paleontology : this.getConfidentialPaleontologyRecords(user)){
-			if (paleontology.getRecord().getAudit().getConfidLapseDate().before(lapseDate))
+			Date paleoLapseDate = paleontology.getRecord().getAudit().getConfidLapseDate();
+			if (paleoLapseDate != null && paleoLapseDate.before(lapseDate))
 				paleontologies.add(paleontology);
 		}	
 		return paleontologies;
 	}
 	
-	// TODO upgrade 
+	// TODO test 
 	public List<Paleontology> getConfidentialPalLists(UserAccount user) throws StorageAccessException {
-		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
-		return fredDAO.getList("FROM Paleontology AS p WHERE p.record.palListAudit.confidentialFlag = ? AND p.record.palListAudit.createdBy = ?", Paleontology.class, true, userView);
+		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));	
+		FrUserView frUser = new UserUtil(factory).getFrUserView(new Integer(user.getId()));
+		
+		Set<Paleontology> paleontologies = new HashSet<Paleontology>(fredDAO.getList(
+				"SELECT paleo FROM FrUserView fr " +
+				"JOIN fr.confidGroupsByOwnerId confidGroup " +
+				"JOIN confidGroup.audits audit " +
+				"JOIN audit.recordByPalListAuditIds record " +
+				"JOIN record.paleontology paleo " +
+				"WHERE audit.confidentialFlag = ? " +
+				"AND fr = ? "
+				, Paleontology.class, true, frUser));		
+		paleontologies.addAll(fredDAO.getList(
+				"FROM Paleontology AS p " +
+				"WHERE p.record.palListAudit.confidentialFlag = ? " +
+				"AND p.record.palListAudit.createdBy = ?"
+				, Paleontology.class, true, userView));	
+		return new ArrayList<Paleontology>(paleontologies);
 	}
 	
-	// TODO upgrade 
+	// TODO test 
 	public List<Paleontology> getConfidentialPalLists(UserAccount user, Date lapseDate) throws StorageAccessException {
-		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
-		return fredDAO.getList("FROM Paleontology AS p WHERE p.record.palListAudit.confidentialFlag = ? AND p.record.palListAudit.createdBy = ? AND p.record.palListAudit.confidLapseDate <= ?", Paleontology.class, true, userView, lapseDate);
+		if (lapseDate == null)
+			return getConfidentialPalLists(user);
+		
+		List<Paleontology> paleontologies = new ArrayList<Paleontology>();
+		for (Paleontology paleontology : this.getConfidentialPalLists(user)){
+			Date paleoLapseDate = paleontology.getRecord().getPalListAudit().getConfidLapseDate();
+			if (paleoLapseDate != null && paleoLapseDate.before(lapseDate))
+				paleontologies.add(paleontology);
+		}	
+		return paleontologies;
 	}
 	
-	// TODO upgrade
+	// TODO test
 	public List<Adoption> getConfidentialAdoptionRecords(UserAccount user) throws StorageAccessException {
-		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
-		return fredDAO.getList("FROM Adoption AS a WHERE a.record.audit.confidentialFlag = ? AND a.record.audit.createdBy = ?", Adoption.class, true, userView);
+		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));	
+		FrUserView frUser = new UserUtil(factory).getFrUserView(new Integer(user.getId()));
+		
+		Set<Adoption> adoptions = new HashSet<Adoption>(fredDAO.getList(
+				"SELECT adoption FROM FrUserView fr " +
+				"JOIN fr.confidGroupsByOwnerId confidGroup " +
+				"JOIN confidGroup.audits audit " +
+				"JOIN audit.records record " +
+				"JOIN record.adoption adoption " +
+				"WHERE audit.confidentialFlag = ? " +
+				"AND fr = ? "
+				, Adoption.class, true, frUser));		
+		adoptions.addAll(fredDAO.getList(
+				"FROM Adoption AS a " +
+				"WHERE a.record.audit.confidentialFlag = ? " +
+				"AND a.record.audit.createdBy = ?"
+				, Adoption.class, true, userView));	
+		return new ArrayList<Adoption>(adoptions);
 	}
 	
-	// TODO upgrade 
+	// TODO test 
 	public List<Adoption> getConfidentialAdoptionRecords(UserAccount user, Date lapseDate) throws StorageAccessException {
-		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
-		return fredDAO.getList("FROM Adoption AS a WHERE a.record.audit.confidentialFlag = ? AND a.record.audit.createdBy = ? AND a.record.audit.confidLapseDate <= ?", Adoption.class, true, userView, lapseDate);
+		if (lapseDate == null)
+			return getConfidentialAdoptionRecords(user);
+		
+		List<Adoption> adoptions = new ArrayList<Adoption>();
+		for (Adoption adoption : this.getConfidentialAdoptionRecords(user)){
+			Date adoptionLapseDate = adoption.getRecord().getPalListAudit().getConfidLapseDate();
+			if (adoptionLapseDate != null && adoptionLapseDate.before(lapseDate))
+				adoptions.add(adoption);
+		}	
+		return adoptions;
 	}
+	
+	
+	
+	
+	
 	
 	public String getConfidAccessListDescription(Audit audit) {
 		if (!audit.getConfidentialFlag())
