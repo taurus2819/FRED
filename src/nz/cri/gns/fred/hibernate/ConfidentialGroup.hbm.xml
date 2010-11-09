@@ -44,15 +44,23 @@
     >
         <column name="ORG_ID" />
     </many-to-one>
-
-    <!-- bi-directional many-to-one association to FrUserView -->
-    <many-to-one
-        name="owner"
-        class="nz.cri.gns.fred.hibernate.FrUserView"
-        not-null="true"
+    
+    <set
+        name="owners"
+        table="CONFID_GROUP_OWNERS"
+		schema="FR"
+        lazy="true"
+        inverse="false"
+		cascade="none"
     >
-        <column name="OWNER_ID" />
-    </many-to-one>
+        <key>
+            <column name="GROUP_ID" />
+        </key>
+        <many-to-many 
+			column="USER_ID"
+            class="nz.cri.gns.fred.hibernate.FrUserView"
+        />
+    </set>
        
     <!-- bi-directional many-to-many association to AuditTable via AuditConfid -->
     <set
