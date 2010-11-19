@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -17,8 +18,10 @@ import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Audit;
+import nz.cri.gns.fred.model.ConfidentialGroup;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
+import nz.cri.gns.fred.model.FrUserView;
 import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.Paleontology;
@@ -240,11 +243,23 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return userFolder.isAllowedEditLocalities();
     }
     
-	public boolean isAllowedEditRecordConfid(UserAccount user, Record record, UserFolder userFolder) {
+	public boolean isAllowedEditRecordConfid(UserAccount user, Record record, UserFolder userFolder) throws StorageAccessException {
+		FrUserView frUser = new UserUtil(factory).getFrUserView(new Integer(user.getId()));	
 		Audit audit = record.getAudit();
-		if (audit.getStatus().equals(APPROVED))
-			return audit.getCreatedBy().getUserId().toString().equals(user.getId());
-
+		
+		// If approved check if user created record or is an owner of a group containing it
+		if (audit.getStatus().equals(APPROVED)){
+			if (audit.getCreatedBy().getUserId().toString().equals(user.getId()))
+				return true;
+			
+			Set<ConfidentialGroup> confidGroups = frUser.getConfidGroupsByOwnerId();
+			for (ConfidentialGroup confidentialGroup : confidGroups){
+				if (audit.getConfidGroups().contains(confidentialGroup))
+					return true;
+			}
+		}
+		
+		// Otherwise, check folder edit rights
 		return userFolder.isAllowedEditLocalities();		
 	}
 
