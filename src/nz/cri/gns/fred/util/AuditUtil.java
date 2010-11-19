@@ -258,45 +258,17 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		fredDAO.saveOrUpdate(group);
 	}
 	
-
-	/**
-	 * Retrieves all confidential samples where either the user has created it or the fred user 
-	 * is an owner of a confidential group encompassing the sample.
-	 * 
-	 * @param user
-	 * @return
-	 * @throws StorageAccessException
-	 */
-	public List<Sample> getConfidentialSamples(UserAccount user) throws StorageAccessException {
-		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
-		FrUserView frUser = new UserUtil(factory).getFrUserView(new Integer(user.getId()));
-		
-		Set<Sample> samples = new HashSet<Sample>(fredDAO.getList(
-				"SELECT sampleByConfidGroupOwner FROM FrUserView fr " +
-				"JOIN fr.confidGroupsByOwnerId confidGroup " +
-				"JOIN confidGroup.audits audit " +
-				"JOIN audit.samples sampleByConfidGroupOwner " +
-				"WHERE sampleByConfidGroupOwner.feature.featureType <> ? " +
-				"AND audit.confidentialFlag = ? " +
-				"AND fr = ? "
-				, Sample.class, FREDConstants.OUTCROP, true, frUser));		
-		samples.addAll(fredDAO.getList(
-				"FROM Sample s " +
-				"WHERE s.feature.featureType <> ? " +
-				"AND s.audit.confidentialFlag = ? " +
-				"AND s.audit.createdBy = ?"
-				, Sample.class, FREDConstants.OUTCROP, true, userView));		
-		return new ArrayList<Sample>(samples);
-	}
+	
 	
 	/**
-	 * Retrieves all confidential samples with lapse date before specified one where either the user has created it 
-	 * or the fred user is an owner of a confidential group encompassing the sample.
+	 * Retrieves all confidential samples with lapse date before specified one where the user has created it
 	 * 
 	 * @param user
 	 * @param lapseDate
 	 * @return
 	 * @throws StorageAccessException
+	 * @throws HibernateException 
+	 * @throws SQLException 
 	 */
 	public List<Sample> getConfidentialSamples(UserAccount user, Date lapseDate) throws StorageAccessException {
 		if (lapseDate == null)
@@ -311,44 +283,32 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		return samples;
 	}
 	
+	
 	/**
-	 * Retrieves all paleontology records where either the user has created it or the fred user 
-	 * is an owner of a confidential group encompassing the record.
+	 * Retrieves all confidential samples where either the user has created it
 	 * 
 	 * @param user
 	 * @return
 	 * @throws StorageAccessException
+	 * @throws HibernateException 
+	 * @throws SQLException 
 	 */
-	public List<Paleontology> getConfidentialPaleontologyRecords(UserAccount user) throws StorageAccessException {
-		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));	
-		FrUserView frUser = new UserUtil(factory).getFrUserView(new Integer(user.getId()));
-		
-		Set<Paleontology> paleontologies = new HashSet<Paleontology>(fredDAO.getList(
-				"SELECT paleo FROM FrUserView fr " +
-				"JOIN fr.confidGroupsByOwnerId confidGroup " +
-				"JOIN confidGroup.audits audit " +
-				"JOIN audit.records record " +
-				"JOIN record.paleontology paleo " +
-				"WHERE audit.confidentialFlag = ? " +
-				"AND fr = ? "
-				, Paleontology.class, true, frUser));		
-		paleontologies.addAll(fredDAO.getList(
-				"FROM Paleontology AS p " +
-				"WHERE p.record.audit.confidentialFlag = ? " +
-				"AND p.record.audit.createdBy = ?"
-				, Paleontology.class, true, userView));	
-		return new ArrayList<Paleontology>(paleontologies);
+	public List<Sample> getConfidentialSamples(UserAccount user) throws StorageAccessException {
+		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
+		return fredDAO.getList("FROM Sample AS s WHERE s.feature.featureType <> ? AND s.audit.confidentialFlag = ? AND s.audit.createdBy = ?", Sample.class, FREDConstants.OUTCROP, true, userView);
 	}
+		
 	
 	/**
 	 * Retrieves all paleontology records with lapse date before specified one where 
-	 * either the user has created it or the fred user is an owner of a 
-	 * confidential group encompassing the record.
+	 * the user has created it.
 	 * 
 	 * @param user
 	 * @param lapseDate
 	 * @return
 	 * @throws StorageAccessException
+	 * @throws HibernateException 
+	 * @throws SQLException 
 	 */
 	public List<Paleontology> getConfidentialPaleontologyRecords(UserAccount user, Date lapseDate) throws StorageAccessException {
 		if (lapseDate == null)
@@ -364,42 +324,30 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	}
 	
 	/**
-	 * Retrieves all paleontology records in a PalList where either the user has created it or the fred user 
-	 * is an owner of a confidential group encompassing the record.
+	 * Retrieves all paleontology records where  the user has created it.
 	 * 
 	 * @param user
 	 * @return
 	 * @throws StorageAccessException
+	 * @throws HibernateException 
+	 * @throws SQLException 
 	 */
-	public List<Paleontology> getConfidentialPalLists(UserAccount user) throws StorageAccessException {
-		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));	
-		FrUserView frUser = new UserUtil(factory).getFrUserView(new Integer(user.getId()));
-		
-		Set<Paleontology> paleontologies = new HashSet<Paleontology>(fredDAO.getList(
-				"SELECT paleo FROM FrUserView fr " +
-				"JOIN fr.confidGroupsByOwnerId confidGroup " +
-				"JOIN confidGroup.audits audit " +
-				"JOIN audit.recordByPalListAuditIds record " +
-				"JOIN record.paleontology paleo " +
-				"WHERE audit.confidentialFlag = ? " +
-				"AND fr = ? "
-				, Paleontology.class, true, frUser));		
-		paleontologies.addAll(fredDAO.getList(
-				"FROM Paleontology AS p " +
-				"WHERE p.record.palListAudit.confidentialFlag = ? " +
-				"AND p.record.palListAudit.createdBy = ?"
-				, Paleontology.class, true, userView));	
-		return new ArrayList<Paleontology>(paleontologies);
+	public List<Paleontology> getConfidentialPaleontologyRecords(UserAccount user) throws StorageAccessException {
+		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
+		return fredDAO.getList("FROM Paleontology AS p WHERE p.record.audit.confidentialFlag = ? AND p.record.audit.createdBy = ?", Paleontology.class, true, userView);
 	}
+
+	
 	
 	/**
 	 * Retrieves all paleontology records in a PalList with lapse date before specified one where 
-	 * either the user has created it or the fred user is an owner of a 
-	 * confidential group encompassing the record.
+	 * the user has created it
 	 * 
 	 * @param user
 	 * @return
 	 * @throws StorageAccessException
+	 * @throws HibernateException 
+	 * @throws SQLException 
 	 */
 	public List<Paleontology> getConfidentialPalLists(UserAccount user, Date lapseDate) throws StorageAccessException {
 		if (lapseDate == null)
@@ -415,42 +363,29 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	}
 	
 	/**
-	 * Retrieves all adoption records where either the user has created it or the fred user 
-	 * is an owner of a confidential group encompassing the record.
+	 * Retrieves all paleontology records in a PalList where either the user has created it
 	 * 
 	 * @param user
 	 * @return
 	 * @throws StorageAccessException
+	 * @throws HibernateException 
+	 * @throws SQLException 
 	 */
-	public List<Adoption> getConfidentialAdoptionRecords(UserAccount user) throws StorageAccessException {
+	public List<Paleontology> getConfidentialPalLists(UserAccount user) throws StorageAccessException {
 		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));	
-		FrUserView frUser = new UserUtil(factory).getFrUserView(new Integer(user.getId()));
-		
-		Set<Adoption> adoptions = new HashSet<Adoption>(fredDAO.getList(
-				"SELECT adoption FROM FrUserView fr " +
-				"JOIN fr.confidGroupsByOwnerId confidGroup " +
-				"JOIN confidGroup.audits audit " +
-				"JOIN audit.records record " +
-				"JOIN record.adoption adoption " +
-				"WHERE audit.confidentialFlag = ? " +
-				"AND fr = ? "
-				, Adoption.class, true, frUser));		
-		adoptions.addAll(fredDAO.getList(
-				"FROM Adoption AS a " +
-				"WHERE a.record.audit.confidentialFlag = ? " +
-				"AND a.record.audit.createdBy = ?"
-				, Adoption.class, true, userView));	
-		return new ArrayList<Adoption>(adoptions);
+		return fredDAO.getList("FROM Paleontology AS p WHERE p.record.palListAudit.confidentialFlag = ? AND p.record.palListAudit.createdBy = ?", Paleontology.class, true, userView);
 	}
+
 	
 	/**
 	 * Retrieves all adoption records with lapse date before specified one where 
-	 * either the user has created it or the fred user is an owner of a 
-	 * confidential group encompassing the record.
+	 * the user has created it.
 	 * 
 	 * @param user
 	 * @return
 	 * @throws StorageAccessException
+	 * @throws HibernateException 
+	 * @throws SQLException 
 	 */
 	public List<Adoption> getConfidentialAdoptionRecords(UserAccount user, Date lapseDate) throws StorageAccessException {
 		if (lapseDate == null)
@@ -464,6 +399,21 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		}	
 		return adoptions;
 	}
+	
+	/**
+	 * Retrieves all adoption records where the user has created it.
+	 * 
+	 * @param user
+	 * @return
+	 * @throws StorageAccessException
+	 * @throws HibernateException 
+	 * @throws SQLException 
+	 */
+	public List<Adoption> getConfidentialAdoptionRecords(UserAccount user) throws StorageAccessException {
+		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
+		return fredDAO.getList("FROM Adoption AS a WHERE a.record.audit.confidentialFlag = ? AND a.record.audit.createdBy = ?", Adoption.class, true, userView);
+	}
+	
 	
 	
 	/**
