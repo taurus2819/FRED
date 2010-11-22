@@ -1,0 +1,1 @@
+DROP TABLE confid_group_owners;

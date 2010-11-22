@@ -11,8 +11,8 @@ public interface ConfidentialGroup extends Comparable<ConfidentialGroup>, Nameab
     public void setName(String name);
     public OrgView getOrgView();
     public void setOrgView(OrgView orgView);
-	public FrUserView getOwner();
-	public void setOwner(FrUserView owner);
+	public Set<FrUserView> getOwners();
+	public void setOwners(Set<FrUserView> owners);
 	public Set<Audit> getAudits();
 	public void setAudits(Set<Audit> audits);
 	public Set<FrUserView> getUsers();

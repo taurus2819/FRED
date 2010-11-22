@@ -20,8 +20,8 @@ public class ConfidentialGroup implements nz.cri.gns.fred.model.ConfidentialGrou
     /** persistent field */
     private OrgView orgView;
     
-    /** persistent field */
-    private FrUserView owner;
+
+    private Set<FrUserView> owners;
     
     /** persistent field */
     private Set<Audit> audits;
@@ -30,11 +30,11 @@ public class ConfidentialGroup implements nz.cri.gns.fred.model.ConfidentialGrou
     private Set<FrUserView> users;
     
     /** full constructor */
-    public ConfidentialGroup(Integer groupId, String name, OrgView orgView, FrUserView owner, Set<Audit> audits, Set<FrUserView> users) {
+    public ConfidentialGroup(Integer groupId, String name, OrgView orgView, Set<FrUserView> owners, Set<Audit> audits, Set<FrUserView> users) {
         this.groupId = groupId;
         this.name = name;
         this.orgView = orgView;
-        this.owner = owner;
+        this.owners = owners;
         this.audits = audits;
         this.users = users;
     }
@@ -67,12 +67,12 @@ public class ConfidentialGroup implements nz.cri.gns.fred.model.ConfidentialGrou
         this.orgView = orgView;
     }
     
-	public FrUserView getOwner() {
-		return owner;
+	public Set<FrUserView> getOwners() {
+		return owners;
 	}
 
-	public void setOwner(FrUserView owner) {
-		this.owner = owner;
+	public void setOwners(Set<FrUserView> owners) {
+		this.owners = owners;
 	}
 	
 	public Set<Audit> getAudits() {

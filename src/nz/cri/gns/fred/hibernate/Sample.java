@@ -499,7 +499,7 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
 		return (sampleId.intValue() == ((Sample)obj).getSampleId().intValue());
 	}
 	
-	//public int hashCode() {
-	//	return 286 * sampleId;
-	//}
+	public int hashCode() {
+		return 286 * sampleId;
+	}
 }
