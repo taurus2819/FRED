@@ -311,7 +311,14 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		return samples;
 	}
 	
-	// TODO test
+	/**
+	 * Retrieves all paleontology records where either the user has created it or the fred user 
+	 * is an owner of a confidential group encompassing the record.
+	 * 
+	 * @param user
+	 * @return
+	 * @throws StorageAccessException
+	 */
 	public List<Paleontology> getConfidentialPaleontologyRecords(UserAccount user) throws StorageAccessException {
 		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));	
 		FrUserView frUser = new UserUtil(factory).getFrUserView(new Integer(user.getId()));
@@ -333,7 +340,16 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		return new ArrayList<Paleontology>(paleontologies);
 	}
 	
-	// TODO test
+	/**
+	 * Retrieves all paleontology records with lapse date before specified one where 
+	 * either the user has created it or the fred user is an owner of a 
+	 * confidential group encompassing the record.
+	 * 
+	 * @param user
+	 * @param lapseDate
+	 * @return
+	 * @throws StorageAccessException
+	 */
 	public List<Paleontology> getConfidentialPaleontologyRecords(UserAccount user, Date lapseDate) throws StorageAccessException {
 		if (lapseDate == null)
 			return getConfidentialPaleontologyRecords(user);
@@ -347,7 +363,14 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		return paleontologies;
 	}
 	
-	// TODO test 
+	/**
+	 * Retrieves all paleontology records in a PalList where either the user has created it or the fred user 
+	 * is an owner of a confidential group encompassing the record.
+	 * 
+	 * @param user
+	 * @return
+	 * @throws StorageAccessException
+	 */
 	public List<Paleontology> getConfidentialPalLists(UserAccount user) throws StorageAccessException {
 		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));	
 		FrUserView frUser = new UserUtil(factory).getFrUserView(new Integer(user.getId()));
@@ -369,7 +392,15 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		return new ArrayList<Paleontology>(paleontologies);
 	}
 	
-	// TODO test 
+	/**
+	 * Retrieves all paleontology records in a PalList with lapse date before specified one where 
+	 * either the user has created it or the fred user is an owner of a 
+	 * confidential group encompassing the record.
+	 * 
+	 * @param user
+	 * @return
+	 * @throws StorageAccessException
+	 */
 	public List<Paleontology> getConfidentialPalLists(UserAccount user, Date lapseDate) throws StorageAccessException {
 		if (lapseDate == null)
 			return getConfidentialPalLists(user);
@@ -383,7 +414,14 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		return paleontologies;
 	}
 	
-	// TODO test
+	/**
+	 * Retrieves all adoption records where either the user has created it or the fred user 
+	 * is an owner of a confidential group encompassing the record.
+	 * 
+	 * @param user
+	 * @return
+	 * @throws StorageAccessException
+	 */
 	public List<Adoption> getConfidentialAdoptionRecords(UserAccount user) throws StorageAccessException {
 		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));	
 		FrUserView frUser = new UserUtil(factory).getFrUserView(new Integer(user.getId()));
@@ -405,7 +443,15 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		return new ArrayList<Adoption>(adoptions);
 	}
 	
-	// TODO test 
+	/**
+	 * Retrieves all adoption records with lapse date before specified one where 
+	 * either the user has created it or the fred user is an owner of a 
+	 * confidential group encompassing the record.
+	 * 
+	 * @param user
+	 * @return
+	 * @throws StorageAccessException
+	 */
 	public List<Adoption> getConfidentialAdoptionRecords(UserAccount user, Date lapseDate) throws StorageAccessException {
 		if (lapseDate == null)
 			return getConfidentialAdoptionRecords(user);
@@ -420,10 +466,13 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	}
 	
 	
-	
-	
-	
-	
+	/**
+	 * Generates a string describing the users/groups that have access 
+	 * to the data for the audit.
+	 * 
+	 * @param audit
+	 * @return
+	 */
 	public String getConfidAccessListDescription(Audit audit) {
 		if (!audit.getConfidentialFlag())
 			return null;
