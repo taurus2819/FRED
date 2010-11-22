@@ -119,7 +119,7 @@
 	%><tr class="midColour"><td colspan="3"><b>Data Entry Spreadsheet</b>&nbsp;&nbsp;&nbsp;Use for entering/editing large amounts of data</td></tr>
 	<tr class="lightColour"><td colspan="3">Download the spreadsheet by clicking on the link below and then choosing "Save" when prompted by your browser  (Note: in some browsers it may be necessary to right-click on the link and choose <i>Save As</i> from the pop-up menu). The spreadsheet has been tested with Microsoft Excel 2002, but should work with all versions.  Full instructions are included in the spreadsheet.</td></tr>
 	<tr class="lightColour"><td colspan="3" style="color: #ff0000;">May 2008: A change has been made to the <i>Paleontology</i> worksheet and versions older than 2.3 will no longer work.  Please download the latest version here.</td></tr>
-	<tr class="lightColour"><td colspan="3"><a href="FRED.xlt"><img src="images/excel.gif" border="0" width="20" height="20" alt="Data entry spreadsheet" /></a>&nbsp;&nbsp;<b><a href="FRED.xlt">Download FRED Excel template</a></b></td></tr>
+	<tr class="lightColour"><td colspan="3"><a href="FRED.zip"><img src="images/excel.gif" border="0" width="20" height="20" alt="Data entry spreadsheet" /></a>&nbsp;&nbsp;<b><a href="FRED.zip">Download FRED Excel template</a></b></td></tr>
 	<tr><td>&nbsp;</td></tr><%
 	
 	List<UserFolder> backlogFolders = folderUtil.getBacklogFolders(user);
