@@ -412,7 +412,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		
 		List<Adoption> adoptions = new ArrayList<Adoption>();
 		for (Adoption adoption : this.getConfidentialAdoptionRecords(user)){
-			Date adoptionLapseDate = adoption.getRecord().getPalListAudit().getConfidLapseDate();
+			Date adoptionLapseDate = adoption.getRecord().getAudit().getConfidLapseDate();
 			if (adoptionLapseDate != null && adoptionLapseDate.before(lapseDate))
 				adoptions.add(adoption);
 		}	
