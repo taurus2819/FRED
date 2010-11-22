@@ -21,11 +21,13 @@ import nz.cri.gns.fred.model.BedThickness;
 import nz.cri.gns.fred.model.Bedding;
 import nz.cri.gns.fred.model.Carbonate;
 import nz.cri.gns.fred.model.ColourModifier;
+import nz.cri.gns.fred.model.ConfidentialGroup;
 import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.FREDConstants;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.FossilGroup;
+import nz.cri.gns.fred.model.FrUserView;
 import nz.cri.gns.fred.model.GrainSize;
 import nz.cri.gns.fred.model.Hardness;
 import nz.cri.gns.fred.model.Lab;
@@ -502,14 +504,27 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return userFolder.isAllowedSubmitLocalities();
 	}
 
-	public boolean isAllowedEditSampleConfid(UserAccount user, Sample sample, UserFolder userFolder) {
+	public boolean isAllowedEditSampleConfid(UserAccount user, Sample sample, UserFolder userFolder) throws StorageAccessException {
+		FrUserView frUser = new UserUtil(factory).getFrUserView(new Integer(user.getId()));	
+		Audit audit = sample.getAudit();
+		
+		// If an Outcrop feature, confidentiality does not apply
 		if (FREDConstants.OUTCROP.equals(sample.getFeature().getFeatureType()))
 			return false;
 		
-		Audit audit = sample.getAudit();
-		if (audit.getStatus().equals(APPROVED))
-			return audit.getCreatedBy().getUserId().toString().equals(user.getId());
+		// If approved check if user created sample or is an owner of a group containing it
+		if (audit.getStatus().equals(APPROVED)){
+			if (audit.getCreatedBy().getUserId().toString().equals(user.getId()))
+				return true;
+			
+			Set<ConfidentialGroup> confidGroups = frUser.getConfidGroupsByOwnerId();
+			for (ConfidentialGroup confidentialGroup : confidGroups){
+				if (audit.getConfidGroups().contains(confidentialGroup))
+					return true;
+			}
+		}			
 
+		// Otherwise, check folder edit rights
 		return userFolder.isAllowedEditLocalities();		
 	}
 	
