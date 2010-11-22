@@ -784,7 +784,7 @@
 			</tr>
 			<tr class="lightColour">
 			<td><a href="javascript:document.FoldForm.action='set_confidentiality.jsp';document.FoldForm.method='get';document.FoldForm.submit();"><img src="images/lock.gif" border="0" height="20" width="20" alt="set Confidentiality" /></a></td>
-			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.action='set_confidentiality.jsp';document.FoldForm.submit();">set Confidentiality</a>&nbsp;&nbsp;<span style="font-weight: normal">Note: Only samples and records that you have created</span></td>
+			<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.action='set_confidentiality.jsp';document.FoldForm.submit();">set Confidentiality</a>&nbsp;&nbsp;<span style="font-weight: normal">Note: Only samples and records that you have created or your group owns</span></td>
 			</tr>
 			<tr class="lightColour">
 			<td><a href="javascript:document.FoldForm.ActionType.value='MergeFeatures';document.FoldForm.submit();"><img src="images/edit.gif" border="0" height="20" width="20" alt="Merge" /></a></td>
