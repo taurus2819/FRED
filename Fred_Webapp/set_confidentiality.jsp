@@ -188,7 +188,11 @@
 			</form><%
 		} 
 		else {
-			%><p><span class="subhead">Access denied</span></p>You don't have sufficient rights to edit the confidentiality - only the person who created the record can edit the confidentiality.  Click <a href="index.jsp" class="heading">here</a> to return to the FRED home page.<%
+			%><p><span class="subhead">Access denied</span></p>
+			You don't have sufficient rights to edit the confidentiality. <br />
+			The confidentiality can only be edited by the user who created the record <b>or</b> by a user who owns one of its confidential groups.  <br /> 
+			<br />
+			Click <a href="index.jsp" class="heading">here</a> to return to the FRED home page.<%
 		}
 	}
 
