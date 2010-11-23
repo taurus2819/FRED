@@ -218,7 +218,11 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	
 	public List<ConfidentialGroup> getConfidentialGroups(UserAccount user) throws StorageAccessException {		
 		FrUserView frUser = new UserUtil(factory).getFrUserView(new Integer(user.getId()));
-		return fredDAO.getList("FROM ConfidentialGroup AS c WHERE elements(c.owners) IS NULL OR ? IN elements(c.owners)", ConfidentialGroup.class, frUser);
+		return fredDAO.getList(
+				"FROM ConfidentialGroup c " +
+				"WHERE SIZE(c.owners) = 0 " +
+				"OR ? IN ELEMENTS(c.owners)",
+			ConfidentialGroup.class, frUser); // TODO Is there a way to use LEFT JOIN to make neater?
 	}
 	
 	public ConfidentialGroup getConfidentialGroup(Integer groupId) throws StorageAccessException {
