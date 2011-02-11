@@ -1,3 +1,4 @@
+<%@page pageEncoding="utf-8"%>
 <%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.query.FREDQuery"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"

@@ -1,3 +1,4 @@
+<%@page pageEncoding="utf-8"%>
 <%@page contentType="text/xml"
 %><%@page import="java.text.DateFormat"
 %><%@page import="java.util.Vector"

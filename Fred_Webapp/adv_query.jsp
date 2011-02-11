@@ -1,3 +1,4 @@
+<%@page pageEncoding="utf-8"%>
 <%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
 %><%@page import="nz.cri.gns.db.querybuilder.LogicManager"
 %><%@page import="nz.cri.gns.db.querybuilder.OperatorManager"

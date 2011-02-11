@@ -1,3 +1,4 @@
+<%@page pageEncoding="utf-8"%>
 <%@page	extends="nz.cri.gns.fred.FREDStaticIPSysJspPage"
 %><%@page import="java.io.PrintWriter"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"

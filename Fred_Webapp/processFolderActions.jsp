@@ -1,3 +1,4 @@
+<%@page pageEncoding="utf-8"%>
 <%@page contentType="text/xml"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"

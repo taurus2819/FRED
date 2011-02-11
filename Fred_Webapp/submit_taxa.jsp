@@ -1,3 +1,4 @@
+<%@page pageEncoding="utf-8"%>
 <%@page extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.de.PaleontologyRecordDE"
 %><%@page import="nz.cri.gns.fred.model.PaleontologyListEntry"

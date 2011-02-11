@@ -1,3 +1,4 @@
+<%@page pageEncoding="utf-8"%>
 <%@page extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"

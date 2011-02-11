@@ -1,3 +1,4 @@
+<%@page pageEncoding="utf-8"%>
 <%
 	nz.cri.gns.fred.util.FREDUtil.setSessionLock(session);
 %><html>
