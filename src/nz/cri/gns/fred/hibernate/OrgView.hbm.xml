@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.OrgView" 
+    table="ORG"
+    schema="MIS"
+    mutable="false"
+>
+
+    <id
+        name="clientCode"
+        type="int"
+        column="CL_CLIENT_CODE">
+        <generator class="sequence" />
+    </id>
+
+	    <property
+    	    name="companyName"
+        	type="java.lang.String"
+        	column="CL_COMPANY_NAME"
+        	length="90"
+	    />
+	    <property
+    	    name="deleted"
+        	type="java.lang.Boolean"
+        	column="CL_DELETED"
+	    />
+	       		   		   		
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to ConfidentialGroup -->
+    <set
+        name="confidGroups"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="ORG_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.ConfidentialGroup"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to UserView -->
+    <set
+        name="userViews"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="PE_CLIENT_CODE" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.UserView"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to FrUserView -->
+    <set
+        name="frUserViews"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="PE_CLIENT_CODE" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.FrUserView"
+        />
+    </set>
+    
+</class>
+</hibernate-mapping>

@@ -1,0 +1,44 @@
+{@startDETable}
+<table border="0" style="border: none; width: 550px; text-align: left" width="550" cellspacing="0" cellpadding="2">
+<tr><td colspan="4" class="deHeading">Section information</td></tr><tr><td style="text-align: left">
+<tr>
+<td colspan="2" class="heading" width="250">Section Collector</td>
+<td width="270"><input type="text" name="Person" value="{@Person}" size="40"></td>
+<td width="30"></td>
+</tr>
+<tr>
+<td width="150" class="heading">Sampling Dates</td>
+<td width="100" class="smallheading">Start Date</td>
+<td><input type="text" name="StartDate" id="StartDate" value="{@StartDate}">&nbsp;&nbsp;&nbsp;<a href="javascript:var x = document.getElementById('StartDateCal').onfollow()"><img id="StartDateCal" border="0" src="images/calendar.gif"></a></td>
+<td></td>
+</tr>
+<tr>
+<td class="heading"></td>
+<td class="smallheading">Completion Date</td>
+<td><input type="text" name="FinishDate" id="FinishDate" value="{@FinishDate}">&nbsp;&nbsp;&nbsp;<a href="javascript:var x = document.getElementById('FinishDateCal').onfollow()"><img id="FinishDateCal" border="0" src="images/calendar.gif"></a></td>
+<td></td>
+</tr>
+<tr>
+<td class="heading">Datum Elevation</td>
+<td></td>
+<td><select name="DatumType">
+<option value="-">-- Choose --</option>
+<option value="Top"{@@isTop: selected@}>Top</option>
+<option value="Bottom"{@@isBottom: selected@}>Bottom</option>
+</select>&nbsp;&nbsp;<input type="text" name="DatumEl" value="{@datumElevation}" size="10">&nbsp;asl</td>
+</tr>
+<tr>
+<td class="heading" rowspan="2">Section Heights/Depths<br /><span class="smalltext">If <i>Datum</i> = Top measurements are depths and for <i>Datum</i> = Bottom measurements are heights</span></td>
+<td class="smallheading">Top Horizon</td>
+<td><input type="text" name="StartDepth" value="{@startDepth}"></td>
+</tr>
+<tr>
+<td class="smallheading">Base Horizon</td>
+<td><input type="text" name="FinishDepth" value="{@finishDepth}"></td>
+</tr>
+<tr>
+<td class="heading">Height Unit</td>
+<td></td><td><input type="radio" name="DepthUnit" value="m" {@depthm}/>Metres&nbsp;&nbsp;<input type="radio" name="DepthUnit" value="ft" {@depthft}/>Feet</td>
+</tr>
+</table>
+{@endDETable}

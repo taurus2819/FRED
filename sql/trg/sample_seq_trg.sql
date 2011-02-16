@@ -1,0 +1,17 @@
+CREATE OR REPLACE TRIGGER Sample_Seq_Trg
+BEFORE INSERT ON Sample
+REFERENCING NEW AS new
+FOR EACH ROW
+WHEN (new.Sample_ID IS NULL)
+DECLARE
+  ok INTEGER;
+  newID NUMBER;
+BEGIN
+  ok := 1;
+  WHILE ok > 0 LOOP
+    SELECT Sample_Seq.NEXTVAL INTO newID FROM DUAL;
+    SELECT COUNT(*) INTO ok FROM Sample WHERE Sample_ID = newID;
+  END LOOP;
+  :NEW.Sample_ID := newID;
+END;
+/

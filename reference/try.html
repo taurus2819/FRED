@@ -1,0 +1,29 @@
+<html>
+<head>
+<link rel="StyleSheet" type="text/css" href="skins/aqua/theme.css">
+<script type="text/javascript" src="calendar.js"></script>
+<script type="text/javascript" src="calendar-en.js"></script>
+<script type="text/javascript" src="calendar-setup.js"></script>
+</head>
+<body>
+Hello world<p>
+<form>
+<INPUT id=FROMDATE name=FROMDATE value='' style='WIDTH: 90px'">
+</form>
+<script>
+function doBlur() {
+	document.forms[0].FROMDATE.blur();
+}
+Calendar.setup(
+	{
+		inputField:	"FROMDATE",
+		ifFormat:	"%d/%m/%Y",
+		eventName:	"focus",
+		weekNumbers:	false,
+		showsTime:	false,
+		onClose:	function(cal) {cal.hide(); document.forms[0].FROMDATE.blur(); }
+	}
+);
+</script>
+</body>
+</html>

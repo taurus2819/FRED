@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.LogTable" 
+    table="LOG_TABLE"
+    schema="FR"
+>
+
+    <id
+        name="logId"
+        type="int"
+        column="LOG_ID"
+    >
+        <generator class="sequence">
+                <param name="sequence">FR.LOG_SEQ</param>
+        </generator>
+    </id>
+    
+   <property
+        name="logType"
+        type="java.lang.String"
+        column="LOG_TYPE"
+        length="16"
+    />
+    <property
+        name="logDate"
+        type="java.util.Date"
+        column="LOG_DATE"
+    />
+    <property
+        name="userId"
+        type="java.lang.Integer"
+        column="USER_ID"
+    />
+    <property
+        name="localityCount"
+        type="java.lang.Integer"
+        column="LOCALITY_COUNT"
+    />
+
+    <!-- bi-directional many-to-one association to UserView -->
+    <many-to-one
+        name="user"
+        class="nz.cri.gns.fred.hibernate.UserView"
+        not-null="false"
+        insert="false"
+        update="false"
+    >
+        <column name="USER_ID" />
+    </many-to-one>
+    
+</class>
+</hibernate-mapping>

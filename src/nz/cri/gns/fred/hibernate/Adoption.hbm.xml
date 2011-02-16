@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.Adoption" 
+    table="ADOPTION"
+    schema="FR"
+>
+
+    <id
+        name="recordId"
+        type="int"
+        column="RECORD_ID"
+    >
+         <generator class="foreign">
+            <param name="property">record</param>
+        </generator>
+    </id>
+
+    <property
+        name="adoptionDate"
+        type="java.sql.Date"
+        column="ADOPTION_DATE"
+        length="7"
+    />
+    <property
+        name="dateRounding"
+        type="java.lang.String"
+        column="DATE_ROUNDING"
+        length="5"
+    />
+    <property
+        name="comments"
+        type="java.lang.String"
+        column="COMMENTS"
+        length="255"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-one association to Record -->
+    <one-to-one
+        name="record"
+        class="nz.cri.gns.fred.hibernate.Record"
+        outer-join="auto"
+        constrained="true"
+        cascade="all"
+    />
+    <!-- bi-directional many-to-many association to Person via Adoptor -->
+    <set
+        name="adoptors"
+        table="ADOPTOR"
+		schema="FR"
+        lazy="true"
+        inverse="false"
+		cascade="none"
+    >
+        <key>
+            <column name="RECORD_ID" />
+        </key>
+        <many-to-many 
+			column="PERSON_ID"
+            class="nz.cri.gns.fred.hibernate.Person"
+        />
+    </set>
+    <!-- bi-directional many-to-one association to Stage -->
+    <many-to-one
+        name="stage"
+        class="nz.cri.gns.fred.hibernate.Stage"
+        not-null="true"
+    >
+        <column name="ADOPTED_STAGE_ID" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

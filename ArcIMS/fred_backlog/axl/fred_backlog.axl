@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ARCXML version="1.1">
+  <CONFIG>
+    <ENVIRONMENT>
+      <LOCALE country="NZ" language="en" variant="" />
+      <UIFONT color="0,0,0" name="dialog" size="12" style="regular" />
+      <SCREEN dpi="96" />
+    </ENVIRONMENT>
+    <MAP>
+      <PROPERTIES>
+	    <ENVELOPE minx="2000139.878" miny="5310422.242" maxx="2999458.718" maxy="6756414.362" name="Initial_Extent" />
+        <ENVELOPE minx="2000139.878" miny="5310422.242" maxx="2999458.718" maxy="6756414.362" name="Extent_Limit" />
+	    <MAPUNITS units="meters" />
+	    <FILTERCOORDSYS string="PROJCS[&quot;GD_1949_New_Zealand_Map_Grid&quot;,GEOGCS[&quot;GCS_New_Zealand_1949&quot;,DATUM[&quot;D_New_Zealand_1949&quot;,SPHEROID[&quot;International_1924&quot;,6378388.0,297.0]],PRIMEM[&quot;Greenwich&quot;,0.0],UNIT[&quot;Degree&quot;,0.0174532925199433]],PROJECTION[&quot;New_Zealand_Map_Grid&quot;],PARAMETER[&quot;False_Easting&quot;,2510000.0],PARAMETER[&quot;False_Northing&quot;,6023150.0],PARAMETER[&quot;Longitude_Of_Origin&quot;,173.0],PARAMETER[&quot;Latitude_Of_Origin&quot;,-41.0],UNIT[&quot;Meter&quot;,1.0]]" />
+	    <FEATURECOORDSYS string="PROJCS[&quot;GD_1949_New_Zealand_Map_Grid&quot;,GEOGCS[&quot;GCS_New_Zealand_1949&quot;,DATUM[&quot;D_New_Zealand_1949&quot;,SPHEROID[&quot;International_1924&quot;,6378388.0,297.0]],PRIMEM[&quot;Greenwich&quot;,0.0],UNIT[&quot;Degree&quot;,0.0174532925199433]],PROJECTION[&quot;New_Zealand_Map_Grid&quot;],PARAMETER[&quot;False_Easting&quot;,2510000.0],PARAMETER[&quot;False_Northing&quot;,6023150.0],PARAMETER[&quot;Longitude_Of_Origin&quot;,173.0],PARAMETER[&quot;Latitude_Of_Origin&quot;,-41.0],UNIT[&quot;Meter&quot;,1.0]]" />
+      </PROPERTIES>
+      <WORKSPACES>
+	    <SDEWORKSPACE name="sde_ws-0" server="sde" instance="port:5151" database="" user="fr" encrypted="true" password="WWOPLPPQUXQP" geoindexdir="C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\2\" />
+      </WORKSPACES>
+      <LAYER type="image" name="NZ" visible="true" id="1">
+	    <DATASET name="GIS.BLUE_MARBLE_NZ.RASTER" type="image" workspace="sde_ws-0" />
+	    <COORDSYS string="PROJCS[&quot;GD_1949_New_Zealand_Map_Grid&quot;,GEOGCS[&quot;GCS_New_Zealand_1949&quot;,DATUM[&quot;D_New_Zealand_1949&quot;,SPHEROID[&quot;International_1924&quot;,6378388.0,297.0]],PRIMEM[&quot;Greenwich&quot;,0.0],UNIT[&quot;Degree&quot;,0.0174532925199433]],PROJECTION[&quot;New_Zealand_Map_Grid&quot;],PARAMETER[&quot;False_Easting&quot;,2510000.0],PARAMETER[&quot;False_Northing&quot;,6023150.0],PARAMETER[&quot;Longitude_Of_Origin&quot;,173.0],PARAMETER[&quot;Latitude_Of_Origin&quot;,-41.0],UNIT[&quot;Meter&quot;,1.0]]" />
+      </LAYER>
+      <LAYER type="featureclass" name="Status" visible="true" id="2"  minscale="1:5000000">
+	    <DATASET name="FR.BACKLOG_STATUS" type="polygon" workspace="sde_ws-0" />
+	    <VALUEMAPRENDERER lookupfield="STATUS">
+	      <EXACT value="no locality" label="no locality">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="0.0" filltransparency="0.3" fillcolor="223,223,223" boundarycaptype="round" />
+	      </EXACT>
+	      <EXACT value="processing" label="processing">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="0.0" filltransparency="0.3" fillcolor="255,0,0" boundarycaptype="round" />
+	      </EXACT>
+	      <EXACT value="complete" label="complete">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="0.0" filltransparency="0.3" fillcolor="0,255,0" boundarycaptype="round" />
+	      </EXACT>
+	    </VALUEMAPRENDERER>
+      </LAYER>
+      <LAYER type="featureclass" name="Masterfile Areas" visible="true" id="4"  minscale="1:5000000">
+	    <DATASET name="FR.MASTERFILE_AREAS" type="polygon" workspace="sde_ws-0" />
+	    <GROUPRENDERER>
+	      <SIMPLERENDERER>
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.0" boundarycaptype="round" />
+	      </SIMPLERENDERER>
+	      <SIMPLELABELRENDERER field="MASTERFILE">
+	        <TEXTSYMBOL antialiasing="true" font="Arial" fontstyle="regular" fontsize="10" glowing="255,255,0" />
+	      </SIMPLELABELRENDERER>
+	    </GROUPRENDERER>
+      </LAYER>
+      <LAYER type="featureclass" name="Nth NI" visible="false" id="5" maxscale="1:5000000">
+	    <DATASET name="FR.BACKLOG_STATUS" type="polygon" workspace="sde_ws-0" />
+	    <SPATIALQUERY where="MASTERFILE_ID=&apos;1&apos;" subfields="#ALL#" />
+	    <GROUPRENDERER>
+	    <VALUEMAPRENDERER lookupfield="STATUS">
+	      <EXACT value="no locality" label="no locality">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.3" fillcolor="223,223,223" boundarycaptype="round" />
+	      </EXACT>
+	      <EXACT value="processing" label="processing">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.3" fillcolor="255,0,0" boundarycaptype="round" />
+	      </EXACT>
+	      <EXACT value="complete" label="complete">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.3" fillcolor="0,255,0" boundarycaptype="round" />
+	      </EXACT>
+	      <OTHER>
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.0" boundarycaptype="round" />
+	      </OTHER>
+	    </VALUEMAPRENDERER>
+	      <SIMPLELABELRENDERER field="MAP_NO">
+	        <TEXTSYMBOL antialiasing="true" font="Arial" fontstyle="regular" fontsize="12" glowing="255,255,0" />
+	      </SIMPLELABELRENDERER>
+	    </GROUPRENDERER>
+	  </LAYER>
+      <LAYER type="featureclass" name="Cen NI" visible="false" id="6" maxscale="1:5000000">
+	    <DATASET name="FR.BACKLOG_STATUS" type="polygon" workspace="sde_ws-0" />
+	    <SPATIALQUERY where="MASTERFILE_ID=&apos;2&apos;" subfields="#ALL#" />
+	    <GROUPRENDERER>
+	    <VALUEMAPRENDERER lookupfield="STATUS">
+	      <EXACT value="no locality" label="no locality">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.3" fillcolor="223,223,223" boundarycaptype="round" />
+	      </EXACT>
+	      <EXACT value="processing" label="processing">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.3" fillcolor="255,0,0" boundarycaptype="round" />
+	      </EXACT>
+	      <EXACT value="complete" label="complete">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.3" fillcolor="0,255,0" boundarycaptype="round" />
+	      </EXACT>
+	      <OTHER>
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.0" boundarycaptype="round" />
+	      </OTHER>
+	    </VALUEMAPRENDERER>
+	      <SIMPLELABELRENDERER field="MAP_NO">
+	        <TEXTSYMBOL antialiasing="true" font="Arial" fontstyle="regular" fontsize="12" glowing="255,255,0" />
+	      </SIMPLELABELRENDERER>
+	    </GROUPRENDERER>
+	  </LAYER>
+      <LAYER type="featureclass" name="Sth NI" visible="false" id="7" maxscale="1:5000000">
+	    <DATASET name="FR.BACKLOG_STATUS" type="polygon" workspace="sde_ws-0" />
+	    <SPATIALQUERY where="MASTERFILE_ID=&apos;3&apos;" subfields="#ALL#" />
+	    <GROUPRENDERER>
+	    <VALUEMAPRENDERER lookupfield="STATUS">
+	      <EXACT value="no locality" label="no locality">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.3" fillcolor="223,223,223" boundarycaptype="round" />
+	      </EXACT>
+	      <EXACT value="processing" label="processing">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.3" fillcolor="255,0,0" boundarycaptype="round" />
+	      </EXACT>
+	      <EXACT value="complete" label="complete">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.3" fillcolor="0,255,0" boundarycaptype="round" />
+	      </EXACT>
+	      <OTHER>
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.0" boundarycaptype="round" />
+	      </OTHER>
+	    </VALUEMAPRENDERER>
+	      <SIMPLELABELRENDERER field="MAP_NO">
+	        <TEXTSYMBOL antialiasing="true" font="Arial" fontstyle="regular" fontsize="12" glowing="255,255,0" />
+	      </SIMPLELABELRENDERER>
+	    </GROUPRENDERER>
+	  </LAYER>
+      <LAYER type="featureclass" name="Nelson" visible="false" id="8" maxscale="1:5000000">
+	    <DATASET name="FR.BACKLOG_STATUS" type="polygon" workspace="sde_ws-0" />
+	    <SPATIALQUERY where="MASTERFILE_ID=&apos;4&apos;" subfields="#ALL#" />
+	    <GROUPRENDERER>
+	    <VALUEMAPRENDERER lookupfield="STATUS">
+	      <EXACT value="no locality" label="no locality">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.3" fillcolor="223,223,223" boundarycaptype="round" />
+	      </EXACT>
+	      <EXACT value="processing" label="processing">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.3" fillcolor="255,0,0" boundarycaptype="round" />
+	      </EXACT>
+	      <EXACT value="complete" label="complete">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.3" fillcolor="0,255,0" boundarycaptype="round" />
+	      </EXACT>
+	      <OTHER>
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.0" boundarycaptype="round" />
+	      </OTHER>
+	    </VALUEMAPRENDERER>
+	      <SIMPLELABELRENDERER field="MAP_NO">
+	        <TEXTSYMBOL antialiasing="true" font="Arial" fontstyle="regular" fontsize="12" glowing="255,255,0" />
+	      </SIMPLELABELRENDERER>
+	    </GROUPRENDERER>
+	  </LAYER>
+      <LAYER type="featureclass" name="Cen SI" visible="false" id="9" maxscale="1:5000000">
+	    <DATASET name="FR.BACKLOG_STATUS" type="polygon" workspace="sde_ws-0" />
+	    <SPATIALQUERY where="MASTERFILE_ID=&apos;5&apos;" subfields="#ALL#" />
+	    <GROUPRENDERER>
+	    <VALUEMAPRENDERER lookupfield="STATUS">
+	      <EXACT value="no locality" label="no locality">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.3" fillcolor="223,223,223" boundarycaptype="round" />
+	      </EXACT>
+	      <EXACT value="processing" label="processing">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.3" fillcolor="255,0,0" boundarycaptype="round" />
+	      </EXACT>
+	      <EXACT value="complete" label="complete">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.3" fillcolor="0,255,0" boundarycaptype="round" />
+	      </EXACT>
+	      <OTHER>
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.0" boundarycaptype="round" />
+	      </OTHER>
+	    </VALUEMAPRENDERER>
+	      <SIMPLELABELRENDERER field="MAP_NO">
+	        <TEXTSYMBOL antialiasing="true" font="Arial" fontstyle="regular" fontsize="12" glowing="255,255,0" />
+	      </SIMPLELABELRENDERER>
+	    </GROUPRENDERER>
+	  </LAYER>
+      <LAYER type="featureclass" name="Sth SI" visible="false" id="10" maxscale="1:5000000">
+	    <DATASET name="FR.BACKLOG_STATUS" type="polygon" workspace="sde_ws-0" />
+	    <SPATIALQUERY where="MASTERFILE_ID=&apos;6&apos;" subfields="#ALL#" />
+	    <GROUPRENDERER>
+	    <VALUEMAPRENDERER lookupfield="STATUS">
+	      <EXACT value="no locality" label="no locality">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.3" fillcolor="223,223,223" boundarycaptype="round" />
+	      </EXACT>
+	      <EXACT value="processing" label="processing">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.3" fillcolor="255,0,0" boundarycaptype="round" />
+	      </EXACT>
+	      <EXACT value="complete" label="complete">
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.3" fillcolor="0,255,0" boundarycaptype="round" />
+	      </EXACT>
+	      <OTHER>
+	        <SIMPLEPOLYGONSYMBOL boundarytransparency="1.0" filltransparency="0.0" boundarycaptype="round" />
+	      </OTHER>
+	    </VALUEMAPRENDERER>
+	      <SIMPLELABELRENDERER field="MAP_NO">
+	        <TEXTSYMBOL antialiasing="true" font="Arial" fontstyle="regular" fontsize="12" glowing="255,255,0" />
+	      </SIMPLELABELRENDERER>
+	    </GROUPRENDERER>
+	  </LAYER>
+	</MAP>
+  </CONFIG>
+</ARCXML>

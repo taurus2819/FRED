@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.Person" 
+    table="PERSON"
+    schema="FR"
+>
+
+    <id
+        name="personId"
+        type="int"
+        column="PERSON_ID"
+    >
+        <generator class="sequence">
+                <param name="sequence">FR.PERSON_SEQ</param>
+        </generator>
+    </id>
+
+    <property
+        name="name"
+        type="java.lang.String"
+        column="NAME"
+        not-null="true"
+        length="64"
+    />
+    <property
+        name="stCode"
+        type="int"
+        column="ST_CODE"
+        length="5"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-many association to Adoption via Adoptor -->
+    <set
+        name="adoptions"
+        table="ADOPTOR"
+		schema="FR"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="PERSON_ID" />
+        </key>
+        <many-to-many 
+			column="RECORD_ID"
+            class="nz.cri.gns.fred.hibernate.Adoption"
+        />
+    </set>
+    <!-- bi-directional many-to-many association to Paleontology via Identifier -->
+    <set
+        name="identifiedPaleontologies"
+        table="IDENTIFIER"
+		schema="FR"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="PERSON_ID" />
+        </key>
+        <many-to-many 
+			column="RECORD_ID"
+            class="nz.cri.gns.fred.hibernate.Paleontology"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to Feature -->
+    <set
+        name="features"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="PERSON_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Feature"
+        />
+    </set>
+    
+    <!-- bi-directional one-to-many association to SentTo -->
+    <set
+        name="sentTos"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="PERSON_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.SentTo"
+        />
+    </set>
+    
+    <!-- bi-directional many-to-many association to Sample via Collector -->
+    <set
+        name="collectedSamples"
+        table="COLLECTOR"
+		schema="FR"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="PERSON_ID" />
+        </key>
+        <many-to-many 
+            class="nz.cri.gns.fred.hibernate.Sample"
+        />
+    </set>
+
+</class>
+</hibernate-mapping>

@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.RelationshipType" 
+    table="RELATIONSHIP_TYPE"
+    schema="FR"
+>
+
+    <id
+        name="reltypeId"
+        type="int"
+        column="RELTYPE_ID"
+    >
+        <generator class="assigned" />
+    </id>
+
+    <property
+        name="name"
+        type="java.lang.String"
+        column="NAME"
+        not-null="true"
+        length="32"
+    /> 
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to Relationship -->
+    <set
+        name="relationships"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="RELATION_TYPE_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Relationship"
+        />
+    </set>
+    <!-- bi-directional many-to-one association to RelationType -->
+    <many-to-one
+        name="relationType"
+        class="nz.cri.gns.fred.hibernate.RelationType"
+        not-null="true"
+    >
+        <column name="RELATION_TYPE" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

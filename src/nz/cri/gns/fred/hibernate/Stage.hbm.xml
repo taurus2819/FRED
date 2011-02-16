@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.Stage" 
+    table="STAGE"
+    schema="FR"
+>
+
+    <id
+        name="stageId"
+        type="int"
+        column="STAGE_ID"
+    >
+        <generator class="sequence">
+                <param name="sequence">FR.STAGE_SEQ</param>
+        </generator>
+    </id>
+
+    <property
+        name="stageLowerMod"
+        type="java.lang.String"
+        column="STAGE_LOWER_MOD"
+        length="16"
+    />
+    <property
+        name="stageUpperMod"
+        type="java.lang.String"
+        column="STAGE_UPPER_MOD"
+        length="16"
+    />
+    <property
+        name="baseAge"
+        type="java.lang.Double"
+        column="BASE_AGE"
+    />
+    <property
+        name="topAge"
+        type="java.lang.Double"
+        column="TOP_AGE"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to Sample -->
+    <set
+        name="samplesByKnownStageId"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="KNOWN_STAGE_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Sample"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to Sample -->
+    <set
+        name="samplesByInferredStageId"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="INFERRED_STAGE_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Sample"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to Paleontology -->
+    <set
+        name="paleontologies"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="STAGE_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Paleontology"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to Adoption -->
+    <set
+        name="adoptions"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="ADOPTED_STAGE_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Adoption"
+        />
+    </set>
+    
+    <!-- bi-directional one-to-many association to SampleStageView -->
+    <set
+        name="sampleStageViews"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column not-null="true" name="STAGE_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.SampleStageView"
+        />
+    </set>
+    
+    <!-- bi-directional one-to-many association to RecordStageView -->
+    <set
+        name="recordStageViews"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column not-null="true" name="STAGE_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.RecordStageView"
+        />
+    </set>
+    
+    <!-- bi-directional many-to-one association to Age -->
+    <many-to-one
+        name="lowerAge"
+        class="nz.cri.gns.fred.hibernate.Age"
+        not-null="false"
+    >
+        <column name="AGE_LOWER_ID" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Age -->
+    <many-to-one
+        name="upperAge"
+        class="nz.cri.gns.fred.hibernate.Age"
+        not-null="false"
+    >
+        <column name="AGE_UPPER_ID" />
+    </many-to-one>
+</class>
+</hibernate-mapping>
