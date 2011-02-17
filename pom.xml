@@ -7,8 +7,14 @@
   <packaging>war</packaging>
   <version>2.0.0-SNAPSHOT</version>
 
-  <name>fred</name>
-  <url>http://maven.apache.org</url>
+  <name>Fossil Record Electronic Database</name>
+  <url>http://fred.org.nz</url>
+  
+  <organization>
+      <name>GNS Science Ltd</name>
+      <url>http://www.gns.cri.nz</url>
+  </organization>
+  
 
   <dependencies>
 
