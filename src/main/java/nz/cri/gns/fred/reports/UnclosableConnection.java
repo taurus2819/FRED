@@ -3,9 +3,11 @@ package nz.cri.gns.fred.reports;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
+import org.hibernate.repackage.cglib.proxy.Enhancer;
+import org.hibernate.repackage.cglib.proxy.MethodInterceptor;
+import org.hibernate.repackage.cglib.proxy.MethodProxy;
+
+
 
 public class UnclosableConnection implements MethodInterceptor {
 
