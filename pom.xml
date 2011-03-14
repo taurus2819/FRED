@@ -35,7 +35,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.8.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -61,6 +61,46 @@
       <artifactId>hibernate</artifactId>
       <version>2.0</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>nz.cri.gns</groupId>
+      <artifactId>gol-querybuilder</artifactId>
+      <version>2.0.0-RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>nz.cri.gns</groupId>
+      <artifactId>gol-dataaccess</artifactId>
+      <version>2.0.0-RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>nz.cri.gns</groupId>
+      <artifactId>gol-dbcp</artifactId>
+      <version>2.0.0-RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>nz.cri.gns</groupId>
+      <artifactId>gol-auth</artifactId>
+      <version>2.0.0-RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>nz.cri.gns</groupId>
+      <artifactId>gol-web</artifactId>
+      <version>2.0.0-RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>nz.cri.gns</groupId>
+      <artifactId>gol</artifactId>
+      <version>2.0.0-RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-cglib-repack</artifactId>
+      <version>2.1_3</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache</artifactId>
+      <version>1.5.0</version>
     </dependency>
   </dependencies>
 
