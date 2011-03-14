@@ -19,7 +19,7 @@ import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.util.AuditUtil;
 import junit.framework.TestCase;
 
-public class AuditUtilTest extends TestCase {
+public class AuditUtilTest {
 
 	private DAOFactory factory;
 
