@@ -125,5 +125,12 @@
     <description>Interim FRED Mavenisation.</description>
     <properties>
         <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
-    </properties>
+    </properties>      
+  <distributionManagement>
+    <repository>
+      <id>central</id>
+      <name>GNS Private Repository</name>
+      <url>http://repo.gns.cri.nz/artifactory/libs-releases-local</url>
+    </repository>
+  </distributionManagement>
 </project>
