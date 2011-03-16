@@ -35,7 +35,7 @@ public class FredHibernate implements HibernateProvider {
         }*/
 		config = new HibernateConfiguration();
 		try {
-			config.configureJNDI("fr", getClass().getResource("hibernate.cfg.xml"));
+                    config.configureJNDI("fr", getClass().getClassLoader().getResource("hibernate/hibernate.cfg.xml"));
 		} catch (StorageAccessException e) {
 			e.printStackTrace();
 		}
