@@ -3,70 +3,66 @@
 	"-//Hibernate/Hibernate Configuration DTD//EN" 
 	"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
-	<!-- a SessionFactory instance listed as /jndi/name -->
-	<session-factory>
-		
-		
-		<!-- properties -->
-		<property name="show_sql">false</property>
-		<!-- Rest done programmatically -->
-	
-		<!-- mapping files -->
-		<mapping resource="nz/cri/gns/fred/hibernate/Adoption.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/Age.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/AuditEdit.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/AuditTable.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/BacklogStatus.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/Bedding.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/BedThickness.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/Carbonate.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/ColourModifier.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/ConfidentialGroup.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/Country.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/DataOrigin.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/DatumMethod.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/DrillType.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/Feature.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/Folder.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/FolderRight.hbm.xml"/> 
-		<mapping resource="nz/cri/gns/fred/hibernate/FolderType.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/FolderUser.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/FossilGroup.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/FrNumber.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/FrUser.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/FrUserView.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/GrainSize.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/Hardness.hbm.xml"/>
-        <mapping resource="nz/cri/gns/fred/hibernate/Lab.hbm.xml"/>
-        <mapping resource="nz/cri/gns/fred/hibernate/LabSection.hbm.xml"/>
-        <mapping resource="nz/cri/gns/fred/hibernate/LogTable.hbm.xml"/>
-        <mapping resource="nz/cri/gns/fred/hibernate/MetaCat.hbm.xml"/>
-        <mapping resource="nz/cri/gns/fred/hibernate/MetaCatType.hbm.xml"/>
-        <mapping resource="nz/cri/gns/fred/hibernate/OrgView.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/Paleontology.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/PalList.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/Person.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/Record.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/RecordStageView.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/RegistrationArea.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/Relationship.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/RelationshipType.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/RelationType.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/RockColour.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/Sample.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/SampleStageView.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/SecurityClass.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/SedimentaryFeatureType.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/SentTo.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/SiteView.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/Stage.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/StratigraphicUnit.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/TaxonomicGroup.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/TaxonomicLookup.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/UserRightView.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/UserView.hbm.xml"/>
-		<mapping resource="nz/cri/gns/fred/hibernate/Weathering.hbm.xml"/>
-				
-				
-	</session-factory>
+    <!-- a SessionFactory instance listed as /jndi/name -->
+    <session-factory>
+        <!-- properties -->
+        <property name="show_sql">false</property>
+        <!-- Rest done programmatically -->
+
+        <!-- mapping files -->
+        <mapping resource="hibernate/Adoption.hbm.xml"/>
+        <mapping resource="hibernate/Age.hbm.xml"/>
+        <mapping resource="hibernate/AuditEdit.hbm.xml"/>
+        <mapping resource="hibernate/AuditTable.hbm.xml"/>
+        <mapping resource="hibernate/BacklogStatus.hbm.xml"/>
+        <mapping resource="hibernate/Bedding.hbm.xml"/>
+        <mapping resource="hibernate/BedThickness.hbm.xml"/>
+        <mapping resource="hibernate/Carbonate.hbm.xml"/>
+        <mapping resource="hibernate/ColourModifier.hbm.xml"/>
+        <mapping resource="hibernate/ConfidentialGroup.hbm.xml"/>
+        <mapping resource="hibernate/Country.hbm.xml"/>
+        <mapping resource="hibernate/DataOrigin.hbm.xml"/>
+        <mapping resource="hibernate/DatumMethod.hbm.xml"/>
+        <mapping resource="hibernate/DrillType.hbm.xml"/>
+        <mapping resource="hibernate/Feature.hbm.xml"/>
+        <mapping resource="hibernate/Folder.hbm.xml"/>
+        <mapping resource="hibernate/FolderRight.hbm.xml"/> 
+        <mapping resource="hibernate/FolderType.hbm.xml"/>
+        <mapping resource="hibernate/FolderUser.hbm.xml"/>
+        <mapping resource="hibernate/FossilGroup.hbm.xml"/>
+        <mapping resource="hibernate/FrNumber.hbm.xml"/>
+        <mapping resource="hibernate/FrUser.hbm.xml"/>
+        <mapping resource="hibernate/FrUserView.hbm.xml"/>
+        <mapping resource="hibernate/GrainSize.hbm.xml"/>
+        <mapping resource="hibernate/Hardness.hbm.xml"/>
+        <mapping resource="hibernate/Lab.hbm.xml"/>
+        <mapping resource="hibernate/LabSection.hbm.xml"/>
+        <mapping resource="hibernate/LogTable.hbm.xml"/>
+        <mapping resource="hibernate/MetaCat.hbm.xml"/>
+        <mapping resource="hibernate/MetaCatType.hbm.xml"/>
+        <mapping resource="hibernate/OrgView.hbm.xml"/>
+        <mapping resource="hibernate/Paleontology.hbm.xml"/>
+        <mapping resource="hibernate/PalList.hbm.xml"/>
+        <mapping resource="hibernate/Person.hbm.xml"/>
+        <mapping resource="hibernate/Record.hbm.xml"/>
+        <mapping resource="hibernate/RecordStageView.hbm.xml"/>
+        <mapping resource="hibernate/RegistrationArea.hbm.xml"/>
+        <mapping resource="hibernate/Relationship.hbm.xml"/>
+        <mapping resource="hibernate/RelationshipType.hbm.xml"/>
+        <mapping resource="hibernate/RelationType.hbm.xml"/>
+        <mapping resource="hibernate/RockColour.hbm.xml"/>
+        <mapping resource="hibernate/Sample.hbm.xml"/>
+        <mapping resource="hibernate/SampleStageView.hbm.xml"/>
+        <mapping resource="hibernate/SecurityClass.hbm.xml"/>
+        <mapping resource="hibernate/SedimentaryFeatureType.hbm.xml"/>
+        <mapping resource="hibernate/SentTo.hbm.xml"/>
+        <mapping resource="hibernate/SiteView.hbm.xml"/>
+        <mapping resource="hibernate/Stage.hbm.xml"/>
+        <mapping resource="hibernate/StratigraphicUnit.hbm.xml"/>
+        <mapping resource="hibernate/TaxonomicGroup.hbm.xml"/>
+        <mapping resource="hibernate/TaxonomicLookup.hbm.xml"/>
+        <mapping resource="hibernate/UserRightView.hbm.xml"/>
+        <mapping resource="hibernate/UserView.hbm.xml"/>
+        <mapping resource="hibernate/Weathering.hbm.xml"/>
+    </session-factory>
 </hibernate-configuration>
