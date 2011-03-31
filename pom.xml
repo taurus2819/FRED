@@ -77,11 +77,6 @@
       <version>2.0.0-RELEASE</version>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-cglib-repack</artifactId>
-      <version>2.1_3</version>
-    </dependency>
-    <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache</artifactId>
       <version>1.5.0</version>
@@ -105,6 +100,26 @@
       <groupId>odmg</groupId>
       <artifactId>odmg</artifactId>
       <version>3.0</version>
+    </dependency>
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <version>1.6.1</version>
+    </dependency>
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
+      <version>2.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-cglib-repack</artifactId>
+      <version>2.1_3</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <version>1.1</version>
     </dependency>
   </dependencies>
 
