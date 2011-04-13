@@ -1,5 +1,5 @@
-<%@page pageEncoding="utf-8"%>
-<%@page	extends="nz.cri.gns.fred.FREDStaticIPSysJspPage"
+<%@page pageEncoding="utf-8"
+%><%@page	extends="nz.cri.gns.fred.FREDStaticIPSysJspPage"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"

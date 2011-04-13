@@ -1,5 +1,5 @@
-<%@page pageEncoding="utf-8"%>
-<%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
+<%@page pageEncoding="utf-8"
+%><%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.model.Sample"
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"

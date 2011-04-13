@@ -1,5 +1,5 @@
-<%@page pageEncoding="utf-8"%>
-<%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
+<%@page pageEncoding="utf-8"
+%><%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.de.DataEntryForm"
 %><%@page import="nz.cri.gns.fred.de.DataInputException"
 %><%@page import="nz.cri.gns.fred.de.TaxonomicListException"

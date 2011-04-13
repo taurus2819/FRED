@@ -1,5 +1,5 @@
-<%@page pageEncoding="utf-8"%>
-<%@page extends="nz.cri.gns.fred.FREDIPSysLoginPage"
+<%@page pageEncoding="utf-8"
+%><%@page extends="nz.cri.gns.fred.FREDIPSysLoginPage"
 %><%@ page import="nz.cri.gns.fred.FREDIPSysJspPage"
 %><%@ page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%!

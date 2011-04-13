@@ -1,5 +1,5 @@
-<%@page pageEncoding="utf-8"%>
-<%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
+<%@page pageEncoding="utf-8"
+%><%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.model.Feature"
 %><%@page import="nz.cri.gns.fred.model.FossilGroup"
 %><%@page import="nz.cri.gns.fred.model.FrNumber"

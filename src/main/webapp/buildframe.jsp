@@ -1,5 +1,5 @@
-<%@page pageEncoding="utf-8"%>
-<%
+<%@page pageEncoding="utf-8"
+%><%
 	nz.cri.gns.fred.util.FREDUtil.setSessionLock(session);
 %><html>
 <frameset rows="363,*" border="0">

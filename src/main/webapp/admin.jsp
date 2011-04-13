@@ -1,5 +1,5 @@
-<%@page pageEncoding="utf-8"%>
-<%@page	extends="nz.cri.gns.fred.FREDAdminIPSysJspPage"
+<%@page pageEncoding="utf-8"
+%><%@page	extends="nz.cri.gns.fred.FREDAdminIPSysJspPage"
 %><%@page import="nz.cri.gns.jsp.NewExtranetTemplate"
 %><%!
 	public String getName(HttpServletRequest request) {

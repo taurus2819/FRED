@@ -1,5 +1,5 @@
-<%@page pageEncoding="utf-8"%>
-<%@page extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
+<%@page pageEncoding="utf-8"
+%><%@page extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.util.AuditUtil"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
