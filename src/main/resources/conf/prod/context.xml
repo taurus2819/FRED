@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context debug="1" docBase="fred" path="/fred" reloadable="true">
+  <Resource auth="Container" driverClassName="oracle.jdbc.OracleDriver" factory="nz.cri.gns.dbcp.GOLDataSourceFactory" logAbandoned="true" maxActive="30" maxIdle="5" maxWait="1000" name="jdbc/fr" removeAbandoned="true" rmiBinding="OnlineUtils" rmiServer="rmi" type="javax.sql.DataSource" url="jdbc:oracle:thin:@aquila.gns.cri.nz:1521:dev" username="fr"/>
+  <Resource auth="Container" driverClassName="oracle.jdbc.OracleDriver" factory="nz.cri.gns.dbcp.GOLDataSourceFactory" logAbandoned="true" maxActive="30" maxIdle="5" maxWait="1000" name="jdbc/mis" removeAbandoned="true" rmiBinding="OnlineUtils" rmiServer="rmi" type="javax.sql.DataSource" url="jdbc:oracle:thin:@aquila:1521:dev" username="mis"/>
+</Context>
