@@ -192,7 +192,7 @@
 		for (TaxonomicGroup group : panelList) {
 			%><tr class="lightColour">
 			<td style="text-align: left"><a href="taxa_group_detail.jsp?ID=<%=group.getGroupId()%>&q=<%=Math.random()%>" class="heading"><%=group.getName()%></a>&nbsp;&nbsp;</td>
-			<td style="text-align: left font-size: 10pt; font-weight: bold; color: #FF0000; text-align: left"><%=(taxaUtil.getProvisionalCount(group) > 0) ? "new data" : ""%>&nbsp;&nbsp;</td>
+			<td style="text-align: left; font-size: 10pt; font-weight: bold; color: #FF0000; text-align: left"><%=(taxaUtil.getProvisionalCount(group) > 0) ? "new data" : ""%>&nbsp;&nbsp;</td>
 			<td style="text-align: left"><a href="taxa_panelist.jsp?GroupID=<%=group.getGroupId()%>" title="Edit Users"><img src="images/prefs.gif" border="0" height="20" width="20" /></a></td>
 			</tr><%
 		}
