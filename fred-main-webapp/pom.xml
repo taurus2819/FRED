@@ -3,16 +3,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>nz.cri.gns</groupId>
-    <artifactId>fred</artifactId>
+    <artifactId>fred-main-webapp</artifactId>
     <packaging>war</packaging>
     <version>2.0.0-RELEASE</version>
-    <name>Fossil Record Electronic Database</name>
+    <name>FRED Main Webapp</name>
+    <description>Fossil Record Electonic Database Main Webapp</description>  
     <url>http://fred.org.nz</url>  
     <organization>
         <name>GNS Science Ltd</name>
         <url>http://www.gns.cri.nz</url>
     </organization>
-    <description>FRED main webapp</description>  
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -285,7 +285,6 @@
         </profile>
     </profiles>  
     <properties>
-        <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>      
     <distributionManagement>
