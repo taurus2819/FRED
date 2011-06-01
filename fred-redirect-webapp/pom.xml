@@ -40,6 +40,7 @@
             <groupId>nz.cri.gns</groupId>
             <artifactId>gol-dbcp</artifactId>
             <version>2.0.1-RELEASE</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <artifactId>jsp-api</artifactId>
