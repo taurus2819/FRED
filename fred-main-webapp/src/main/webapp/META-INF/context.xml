@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context antiJARLocking="true" path="/fred">
-    <ResourceLink global="jdbc/fr" name="jdbc/fr" />
-</Context> 
+<Context antiJARLocking="true" path="/fred-local">
+  <ResourceLink global="jdbc/fr" name="jdbc/fr"/>
+</Context>
