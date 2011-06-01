@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.Lab" 
+    table="LAB"
+    schema="SC"
+>
+
+    <id
+        name="labId"
+        type="int"
+        column="LAB_ID"
+    >
+        <generator class="sequence">
+                <param name="sequence">SC.LAB_SEQ</param>
+        </generator>
+    </id>
+
+   <property
+        name="name"
+        type="java.lang.String"
+        column="LAB_NAME"
+        length="50"
+    />
+    <property
+        name="address"
+        type="java.lang.String"
+        column="LAB_ADDRESS"
+        length="255"
+    />
+    <property
+        name="country"
+        type="java.lang.String"
+        column="LAB_COUNTRY"
+        length="2"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to LabSection -->
+    <set
+        name="sections"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="LAB_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.LabSection"
+        />
+    </set>
+
+    <!-- bi-directional one-to-many association to SentTo -->
+    <set
+        name="sentTos"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="LAB_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.SentTo"
+        />
+    </set>
+    
+</class>
+</hibernate-mapping>

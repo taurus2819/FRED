@@ -1,0 +1,347 @@
+<script type="text/javascript" src="/online/scripts/ajax.js"></script>
+<script type="text/javascript" src="scripts/locate.js"></script>
+<script type="text/javascript" src="scripts/fade.js"></script>
+<script type="text/javascript" src="scripts/contextHint.js"></script>
+
+{@startDETable}
+<table border="0" style="border: none; width: 550px; text-align: left" width="550" cellspacing="0" cellpadding="2">
+<tr><td colspan="3" class="deHeading">Collection information</td></tr><tr><td style="text-align: left">
+<tr>
+<td width="250" class="heading" style="color: #FF0000">Collection Date</td>
+<td width="270"><input type="text" name="CollDate" id="CollDate" value="{@CollDate}">&nbsp;&nbsp;&nbsp;<a href="javascript:var x = document.getElementById('CollDateCal').onfollow()"><img id="CollDateCal" border="0" src="images/calendar.gif"></a></td>
+<td width="30"></td>
+</tr>
+<tr>
+<td class="heading" style="vertical-align: top; color: #FF0000">Collectors  <span class="smalltext">(family name first)</span></td>
+<td colspan="2"><table border="0"><tbody id="collTable"></tbody></table><input name="Coll" id="CollectorField" maxlength="64">&nbsp;<a href="javascript:acceptCollector(document.getElementById('CollectorField').value);">Add</a>
+<script><!--
+new ContextHint(
+	document.getElementById("CollectorField"),
+	function generateURL(start) {
+		return "ajaxSupport.xml?action=List&type=Person&start=" + start + "&q=" + Math.random();
+	},
+	null,
+	true
+);
+
+function clearCollectorField() {
+	var colField = document.getElementById("CollectorField");
+	if (colField.value.length > 0) {
+		acceptCollector(document.getElementById('CollectorField').value);
+	}
+}
+function acceptCollectorAndSubmit(personName) {
+	//Only called if personName is > 0
+	callAJAX("ajaxSupport.xml?action=Confirm&type=Person&name=" + escape(personName) + "&q=" + Math.random(), processCollectorAcceptAndSubmit);
+}
+function acceptCollector(personName) {
+	if (personName.length == 0)
+		alert("Enter a name first!");
+	callAJAX("ajaxSupport.xml?action=Confirm&type=Person&name=" + escape(personName) + "&q=" + Math.random(), processCollectorAccept);
+}
+function processCollectorAcceptAndSubmit() {
+	processCollectorAcceptImpl(true);
+}
+function processCollectorAccept() {
+	processCollectorAcceptImpl(false);
+}
+function processCollectorAcceptImpl(doSubmit) {
+	if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+		var xml = xmlHttp.responseXML;
+		var reply = xml.getElementsByTagName("status")[0].firstChild.data;
+		var name = xml.getElementsByTagName("name")[0].firstChild.data;
+		if (reply == "Exists") {
+			addCollector(name);
+			if (doSubmit)
+				document.form1.submit();
+		} else if (confirm(name + " does not exist. A new record will be created.  Continue?")) {
+			callAJAX("ajaxSupport.xml?action=Add&type=Person&name=" + escape(name) + "&q=" + Math.random(), (doSubmit) ? processCollectorAcceptAndSubmit : processCollectorAccept);
+		}
+	}
+}
+function addCollector(name) {
+	var uid = "coll" + Math.round(Math.random() * 100000);
+	var tbl = document.getElementById("collTable");
+	var tr = document.createElement("tr");
+	tr.id = uid;
+	var td = document.createElement("td");
+	td.innerHTML = name;
+	tr.appendChild(td);
+	td = document.createElement("td");
+	td.innerHTML = '<input type="hidden" name="Coll" value="' + name + '"><a href="javascript:removeCollector(\'' + uid + '\');">remove</a>';
+	tr.appendChild(td);	
+	tbl.appendChild(tr);
+	
+	//Clear the old value
+	var field = document.getElementById("CollectorField");
+	field.focus();
+	window.setTimeout("document.getElementById('CollectorField').value = ''", 100);
+}
+function removeCollector(uid) {
+	var tbl = document.getElementById("collTable");
+	var tr = document.getElementById(uid);
+	tbl.removeChild(tr);
+}
+//This is for the initial load
+var collArray = new Array();
+{@Coll}
+
+for (var i=0; i<collArray.length; i++) {
+	addCollector(collArray[i]);
+}
+//--></script>
+</td>
+</tr>
+<tr><td class="heading" style="color: #FF0000">Fossils In Place</td>
+<td style="z-index: 1"><select name="InPlace">
+<option value=""> -- Choose -- </option>
+<option value="Yes"{@@isYes: selected@}>Yes</option>
+<option value="Almost"{@@isAlmost: selected@}>Almost</option>
+<option value="No"{@@isNo: selected@}>No</option>
+<option value="Unknown"{@@isUnknown: selected@}>Unknown</option>
+</select></td>
+</tr>
+<tr>
+<td class="heading"><span style="color: #FF0000">Sent To</span><br /><span class="smalltext">NOTE: if no fossils collected this field may be left blank and details entered in the <i>Not Collected</i> field.</span></td>
+<td><textarea name="SentTo" cols="40" rows="3">{@SentTo}</textarea></td>
+<td><a href="javascript:var newWin=open('data_entry_supp.jsp?Type=SentTo', 'Supp','width=800,height=450');" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a></td>
+</tr>
+<tr>
+<td class="heading">Not Collected<br /><span class="smalltext">specify fossils seen but not collected</span></td>
+<td><textarea name="NotColl" cols="40" rows="3">{@NotColl}</textarea></td>
+</tr>
+<tr>
+<td class="heading">Significance/Comments</td>
+<td><textarea name="Sig" cols="40" rows="3">{@Sig}</textarea></td>
+</tr>
+</table>
+{@endDETable}
+<p>
+{@startDETable}
+<table border="0" style="border: none; width: 550px; text-align: left" width="550" cellspacing="0" cellpadding="2">
+<tr><td colspan="4" class="deHeading">Stratigraphy</td></tr><tr><td style="text-align: left">
+<tr>
+<td class="heading" colspan="2">Stratigraphic Name</td>
+<td colspan="2"><input type="text" id="StratName" name="StratName" size="40" value="{@StratName}">
+<script><!--
+new ContextHint(
+	document.getElementById("StratName"),
+	function generateURL(start) {
+		return "ajaxSupport.xml?action=List&type=Strat&start=" + start + "&q=" + Math.random();
+	},
+	null,
+	true
+);
+//--></script></td>
+</tr>
+
+<tr>
+<td class="heading" rowspan="2">Stage Limits<br />
+<span class="smalltext">Enter oldest age first. For uncertain limits enter a ? at end of stage name</span></td>
+<td width="100" class="smallheading">Inferred</td>
+<td>
+<input type="text" id="InfStageStart" name="InfStageStart2" size="20" value="{@InfStageStart}" />&nbsp;to&nbsp;
+<input type="text" id="InfStageStop" name="InfStageStop2" size="20" value="{@InfStageStop}" /></td>
+</tr>
+<tr><td class="smallheading">Known</td>
+<td>
+<input type="text" id="KnwStageStart" name="KnwStageStart2" size="20" value="{@KnwStageStart}" />&nbsp;to&nbsp;
+<input type="text" id="KnwStageStop" name="KnwStageStop2" size="20" value="{@KnwStageStop}" />
+<script><!--
+new ContextHint(
+	document.getElementById("InfStageStart"),
+	function generateURL(start) {
+		return "ajaxSupport.xml?action=List&type=Age&start=" + start + "&q=" + Math.random();
+	},
+	null,
+	true
+);
+
+new ContextHint(
+	document.getElementById("InfStageStop"),
+	function generateURL(start) {
+		return "ajaxSupport.xml?action=List&type=Age&start=" + start + "&q=" + Math.random();
+	},
+	null,
+	true
+);
+new ContextHint(
+	document.getElementById("KnwStageStart"),
+	function generateURL(start) {
+		return "ajaxSupport.xml?action=List&type=Age&start=" + start + "&q=" + Math.random();
+	},
+	null,
+	true
+);
+
+new ContextHint(
+	document.getElementById("KnwStageStop"),
+	function generateURL(start) {
+		return "ajaxSupport.xml?action=List&type=Age&start=" + start + "&q=" + Math.random();
+	},
+	null,
+	true
+);
+//--></script>
+</td>
+</tr>
+<tr>
+<td colspan="2" class="heading">Samples Nearby</td>
+<td><input type="text" name="PrevSamp" size="40" value="{@PrevSamp}"></td>
+<td><a href="javascript:var newWin=open('data_entry_supp.jsp?Type=PrevSamp', 'Supp', 'width=800,height=350');" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a>
+</td>
+</tr>
+<tr>
+<td class="heading" colspan="2">Sample Relationships</td>
+<td><textarea name="SampRel" cols="40" rows="3">{@SampRel}</textarea></td>
+<td><a href="javascript:var newWin=open('data_entry_supp.jsp?Type=SampRel', 'Supp', 'width=800,height=450');" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a>
+</td>
+</tr>
+<tr>
+<td class="heading" colspan="2">Stratigraphic Relationships</td>
+<td><textarea name="StratRel" cols="40" rows="3">{@StratRel}</textarea></td>
+<td><a href="javascript:var newWin=open('data_entry_supp.jsp?Type=StratRel', 'Supp', 'width=800,height=450');" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a>
+</td>
+</tr>
+<tr>
+<td class="heading">Column/Map</td>
+<td></td>
+<td><input type="text" name="ColMap" size="40" value="{@ColMap}">
+</td>
+</tr>
+<tr>
+<td><img src="images/blank.gif" width="1" height="5" /></td>
+</tr>
+<tr>
+<td width="150" class="heading" rowspan="4">Attitude<br /><span class="smalltext">For flat-lying strata, enter 0 for <i>Dip</i>, Normal or Overturned for <i>Facing</i> and leave other fields blank.</span></td>
+<td width="100" class="smallheading">Dip</td>
+<td width="270"><input type="text" name="Dip" size="3" value="{@Dip}"></td>
+<td width="30"></td>
+</tr>
+<tr>
+<td class="smallheading">Dip Dirn.</td>
+<td><select name="DipDir">
+<option value=""> -- Choose -- </option>
+<option value="N"{@@isDipN: selected@}>North</option>
+<option value="NE"{@@isDipNE: selected@}>North-East</option>
+<option value="E"{@@isDipE: selected@}>East</option>
+<option value="SE"{@@isDipSE: selected@}>South-East</option>
+<option value="S"{@@isDipS: selected@}>South</option>
+<option value="SW"{@@isDipSW: selected@}>South-West</option>
+<option value="W"{@@isDipW: selected@}>West</option>
+<option value="NW"{@@isDipNW: selected@}>North-West</option>
+</select></td>
+</tr>
+<tr>
+<td class="smallheading">Strike</td>
+<td><input type="text" name="Strike" size="4" value="{@Strike}"></td>
+</tr>
+<tr>
+<td class="smallheading">Facing</td><td><select name="Facing">
+<option value=""> -- Choose -- </option>
+<option value="Normal"{@@isFacingNormal: selected@}>Normal</option>
+<option value="Overturned"{@@isFacingOverturned: selected@}>Overturned</option>
+</select></td>
+</tr>
+<tr>
+<td class="heading">Stratigraphy Comments</td>
+<td></td>
+<td><textarea name="StratComm" cols="40" rows="3">{@StratComm}</textarea></td>
+</tr>
+</table>
+{@endDETable}
+<p>
+{@startDETable}
+<table border="0" style="border: none; width: 550px; text-align: left" width="550" cellspacing="0" cellpadding="2">
+<tr><td colspan="4" class="deHeading">Sedimentary features</td></tr><tr><td style="text-align: left">
+<tr>
+<td class="heading">Grain Size</td>
+<td class="smallheading">Primary</td>
+<td>{@primaryGrainSize}</td>
+</tr>
+<tr>
+<td></td>
+<td class="smallheading">Secondary</td>
+<td>{@secondaryGrainSize}</td>
+</tr>
+<tr>
+<td></td>
+<td class="smallheading">Comparator Used</td>
+<td><select name="GSComp">
+<option value=""> -- Choose -- </option>
+<option value="Y"{@@isCompY: selected@}>Yes</option>
+<option value="N"{@@isCompN: selected@}>No</option>
+</select></td>
+</tr>
+<tr>
+<td class="heading">Stratification</td>
+<td class="smallheading">Thickness</td>
+<td>{@beddingThickness}</td>
+</tr>
+<tr>
+<td></td>
+<td class="smallheading">Features</td>
+<td>{@primaryBedding}&nbsp;<span class="heading">&</span>&nbsp;{@secondaryBedding}</td>
+</tr>
+<tr>
+<td class="heading">Weathering</td>
+<td></td>
+<td>{@weathering}</td>
+</tr>
+<tr>
+<td class="heading">Hardness</td>
+<td></td>
+<td>{@hardness}</td>
+</tr>
+<tr>
+<td class="heading">Carbonate</td>
+<td></td>
+<td>{@carbonate}</td>
+</tr>
+<tr>
+<td class="heading">Colour</td>
+<td class="smallheading">Shade</td>
+<td>{@ColMod}</td>
+</tr>
+<tr>
+<td></td>
+<td class="smallheading">Colour</td>
+<td>{@primaryColour}&nbsp;<span class="heading">-</span>&nbsp;{@secondaryColour}</td>
+</tr>
+<tr>
+<td></td>
+<td class="smallheading">Wet/Dry</td>
+<td><select name="Wet">
+<option value=""> -- Choose -- </option>
+<option value="Wet"{@@isWetWet: selected@}>Wet</option>
+<option value="Dry"{@@isWetDry: selected@}>Dry</option>
+</select></td>
+</tr>
+<tr>
+<td class="heading" colspan="2">Additional Features</td>
+<td><input type="text" name="SedFeat" size="40" value="{@SedFeat}"></td>
+<td><a href="javascript:var newWin=open('data_entry_supp.jsp?Type=SedFeat', 'Supp', 'width=800,height=350');" title="Build..."><img src="images/build.gif" width="20" height="20" border="0" /></a>
+</td>
+</tr>
+<tr>
+<td class="heading" colspan="2">Inferred Environment</td>
+<td><select name="DepEnv1"><option value=""> -- Choose -- </option>
+<option value="Marine"{@@isMarine: selected@}>Marine</option>
+<option value="Non-marine"{@@isNon-marine: selected@}>Non-marine</option>
+</select></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><textarea name="DepEnv2" cols="40" rows="3">{@DepEnv2}</textarea></td>
+</tr>
+<tr>
+<td class="heading" colspan="2">Nature of Rock Unit</td>
+<td><textarea name="RockNat" cols="40" rows="3">{@RockNat}</textarea></td>
+</tr>
+<tr>
+<td class="heading" colspan="2">Correspondence, Cross-references</td>
+<td><textarea name="Corr" cols="40" rows="3">{@Corr}</textarea></td>
+</tr>
+</table>
+{@endDETable}

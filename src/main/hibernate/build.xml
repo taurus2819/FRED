@@ -1,0 +1,10 @@
+<project name="fred-hibernate" default="hbm2java">
+  <target name="hbm2java" >   
+  	<taskdef name="hbm2java" classname="net.sf.hibernate.tool.hbm2java.Hbm2JavaTask"/>   
+  	<hbm2java config="hbm2java.xml" output="java">     
+  		<fileset dir="../middlegen/hibernate/nz/cri/gns/fred/hibernate">       
+  			<include name="**/*.hbm.xml"/>    
+  		</fileset>   
+  	</hbm2java> 
+  </target>
+</project>

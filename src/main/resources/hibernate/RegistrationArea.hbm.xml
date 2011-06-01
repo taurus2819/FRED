@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.RegistrationArea" 
+    table="REGISTRATION_AREA"
+    schema="FR"
+>
+
+    <id
+        name="regAreaId"
+        type="int"
+        column="REG_AREA_ID"
+    >
+        <generator class="assigned" />
+    </id>
+
+    <property
+        name="name"
+        type="java.lang.String"
+        column="NAME"
+        not-null="true"
+        length="32"
+    />
+    <property
+        name="code"
+        type="java.lang.String"
+        column="CODE"
+        not-null="true"
+        unique="true"
+        length="8"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to Feature -->
+    <set
+        name="features"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="REG_AREA_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.Feature"
+        />
+    </set>
+
+</class>
+</hibernate-mapping>

@@ -1,0 +1,15 @@
+CREATE TABLE Record
+(
+Record_ID	NUMBER(8),
+Sample_ID	NUMBER(7),
+Audit_ID	NUMBER(8) NOT NULL,
+Pal_List_Audit_ID NUMBER(8),
+PRIMARY KEY (Record_ID),
+CONSTRAINT Record_FK1 FOREIGN KEY (Sample_ID) REFERENCES Sample (Sample_ID) ON DELETE CASCADE,
+CONSTRAINT Record_FK2 FOREIGN KEY (Audit_ID) REFERENCES Audit_Table (Audit_ID),
+CONSTRAINT Record_FK3 FOREIGN KEY (Pal_List_Audit_ID) REFERENCES Audit_Table (Audit_ID)
+);
+
+CREATE INDEX Record_IDX1 ON Record (Sample_ID) TABLESPACE Indx;
+CREATE INDEX Record_IDX2 ON Record (Audit_ID) TABLESPACE Indx;
+CREATE INDEX Record_IDX3 ON Record (Pal_List_Audit_ID) TABLESPACE Indx;

@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.TaxonomicLookup" 
+    table="TAXONOMIC_LOOKUP"
+    schema="FR"
+>
+
+    <id
+        name="taxaId"
+        type="int"
+        column="TAXA_ID"
+    >
+        <generator class="sequence">
+                <param name="sequence">FR.TAXA_SEQ</param>
+        </generator>
+    </id>
+
+    <property
+        name="taxonomicName"
+        type="java.lang.String"
+        column="TAXONOMIC_NAME"
+        not-null="true"
+        length="64"
+    />
+    <property
+        name="author"
+        type="java.lang.String"
+        column="AUTHOR"
+        length="64"
+    />
+    <property
+        name="status"
+        type="java.lang.String"
+        column="STATUS"
+        not-null="true"
+        length="11"
+    />
+    <property
+        name="submittedById"
+        type="int"
+        column="SUBMITTED_BY_ID"
+        length="7"
+    />
+    <property
+        name="submittedDate"
+        type="java.sql.Date"
+        column="SUBMITTED_DATE"
+        length="7"
+    />
+    <property
+        name="approvedById"
+        type="int"
+        column="APPROVED_BY_ID"
+        length="7"
+    />
+    <property
+        name="approvedDate"
+        type="java.sql.Date"
+        column="APPROVED_DATE"
+        length="7"
+    />
+    <property
+        name="panelistComments"
+        type="java.lang.String"
+        column="PANELIST_COMMENTS"
+        length="255"
+    />
+    <property
+        name="sendMessage"
+        type="java.lang.String"
+        column="SEND_MESSAGE"
+        length="1"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to TaxonomicGroup -->
+    <many-to-one
+        name="taxonomicGroup"
+        class="nz.cri.gns.fred.hibernate.TaxonomicGroup"
+        not-null="true"
+    >
+        <column name="GROUP_ID" />
+    </many-to-one>
+    <!-- bi-directional one-to-many association to PalList -->
+    <set
+        name="listEntries"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="TAXA_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.PalList"
+        />
+    </set>
+    <!-- bi-directional many-to-one association to UserView -->
+    <many-to-one
+        name="submittedBy"
+        class="nz.cri.gns.fred.hibernate.UserView"
+        not-null="true"
+        insert="false"
+        update="false"
+    >
+        <column name="SUBMITTED_BY_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to UserView -->
+    <many-to-one
+        name="approvedBy"
+        class="nz.cri.gns.fred.hibernate.UserView"
+        not-null="false"
+        insert="false"
+        update="false"
+    >
+        <column name="APPROVED_BY_ID" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

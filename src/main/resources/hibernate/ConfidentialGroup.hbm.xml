@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="nz.cri.gns.fred.hibernate.ConfidentialGroup" 
+    table="CONFIDENTIAL_GROUP"
+    schema="FR"
+>
+
+    <id
+        name="groupId"
+        type="int"
+        column="GROUP_ID"
+    >
+        <generator class="sequence">
+                <param name="sequence">FR.CONFIDENTIAL_GROUP_SEQ</param>
+        </generator>
+    </id>
+
+	    <property
+    	    name="name"
+        	type="java.lang.String"
+        	column="NAME"
+        	length="32"
+	    />
+   		   		   		
+    <!-- Associations -->
+
+    <!-- bi-directional many-to-one association to OrgView -->
+    <many-to-one
+        name="orgView"
+        class="nz.cri.gns.fred.hibernate.OrgView"
+        not-null="true"
+    >
+        <column name="ORG_ID" />
+    </many-to-one>
+    
+    <set
+        name="owners"
+        table="CONFID_GROUP_OWNERS"
+		schema="FR"
+        lazy="true"
+        inverse="false"
+		cascade="none"
+    >
+        <key>
+            <column name="GROUP_ID" />
+        </key>
+        <many-to-many 
+			column="USER_ID"
+            class="nz.cri.gns.fred.hibernate.FrUserView"
+        />
+    </set>
+       
+    <!-- bi-directional many-to-many association to AuditTable via AuditConfid -->
+    <set
+        name="audits"
+        table="AUDIT_CONFID"
+		schema="FR"
+        lazy="true"
+        inverse="true"
+		cascade="none"
+    >
+        <key>
+            <column name="GROUP_ID" />
+        </key>
+        <many-to-many 
+			column="AUDIT_ID"
+            class="nz.cri.gns.fred.hibernate.AuditTable"
+        />
+    </set>
+
+    <!-- bi-directional many-to-many association to FrUserView via ConfidUser -->
+    <set
+        name="users"
+        table="CONFID_GROUP_USER"
+		schema="FR"
+        lazy="true"
+        inverse="false"
+		cascade="none"
+    >
+        <key>
+            <column name="GROUP_ID" />
+        </key>
+        <many-to-many 
+			column="USER_ID"
+            class="nz.cri.gns.fred.hibernate.FrUserView"
+        />
+    </set>
+        
+</class>
+</hibernate-mapping>

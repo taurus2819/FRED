@@ -1,0 +1,2 @@
+After creation, use mod/fred_lookup_breakup.sql to modify schema.  
+Also note there are a plethora of undocumented changes required.  Good luck.
