@@ -31,9 +31,9 @@
                         <artifactId>maven-assembly-plugin</artifactId>
                         <version>2.2.1</version>
                         <configuration>
-                            <descriptorRefs>
-                                <descriptorRef>ims-assembly.xml</descriptorRef>
-                            </descriptorRefs>
+                            <descriptors>
+                                <descriptor>src/main/resources/assemblies/ims-assembly.xml</descriptor>
+                            </descriptors>
                         </configuration>
                         <executions>
                             <execution>
@@ -64,9 +64,9 @@
                         <artifactId>maven-assembly-plugin</artifactId>
                         <version>2.2.1</version>
                         <configuration>
-                            <descriptorRefs>
-                                <descriptorRef>ims-assembly</descriptorRef>
-                            </descriptorRefs>
+                            <descriptors>
+                                <descriptor>src/main/resources/assemblies/ims-assembly.xml</descriptor>
+                            </descriptors>
                         </configuration>
                         <executions>
                             <execution>
@@ -77,25 +77,7 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>2.2.1</version>
-                        <configuration>
-                            <descriptorRefs>
-                                <descriptorRef>ims-assembly</descriptorRef>
-                            </descriptorRefs>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>make-assembly</id> <!-- this is used for inheritance merges -->
-                                <phase>package</phase> <!-- bind to the packaging phase -->
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
+                    </plugin>                    
                 </plugins>
                 <finalName>fred-ims</finalName>
             </build>
@@ -111,6 +93,24 @@
             </activation>
             <build>
                 <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/resources/assemblies/ims-assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                                <phase>package</phase> <!-- bind to the packaging phase -->
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
                 <finalName>fred-ims</finalName>
             </build>
@@ -130,9 +130,9 @@
                         <artifactId>maven-assembly-plugin</artifactId>
                         <version>2.2.1</version>
                         <configuration>
-                            <descriptorRefs>
-                                <descriptorRef>ims-assembly</descriptorRef>
-                            </descriptorRefs>
+                            <descriptors>
+                                <descriptor>src/main/resources/assemblies/ims-assembly.xml</descriptor>
+                            </descriptors>
                         </configuration>
                         <executions>
                             <execution>
