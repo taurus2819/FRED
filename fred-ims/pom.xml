@@ -1,12 +1,12 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>nz.cri.gns</groupId>
     <artifactId>fred-ims</artifactId>
     <packaging>jar</packaging>
     <version>2.0.0-RELEASE</version>
-    <name>Fossil Record Electronic Database</name>
+    <name>FRED ArcIMS</name>
     <url>http://fred.org.nz</url>  
     <organization>
         <name>GNS Science Ltd</name>
@@ -14,6 +14,7 @@
     </organization>
     <description>FRED ArcIMS Webapp</description>  
     <dependencies>
+    </dependencies>
     <profiles>
         <profile>
             <id>env-local</id>
@@ -26,6 +27,24 @@
             </activation>
             <build>
                 <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>ims-assembly.xml</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                                <phase>package</phase> <!-- bind to the packaging phase -->
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
                 <finalName>fred-ims</finalName>
             </build>
@@ -41,6 +60,42 @@
             </activation>
             <build>
                 <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>ims-assembly</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                                <phase>package</phase> <!-- bind to the packaging phase -->
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>ims-assembly</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                                <phase>package</phase> <!-- bind to the packaging phase -->
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
                 <finalName>fred-ims</finalName>
             </build>
@@ -56,8 +111,8 @@
             </activation>
             <build>
                 <plugins>
-		</plugins>
-		<finalName>fred-ims</finalName>
+                </plugins>
+                <finalName>fred-ims</finalName>
             </build>
         </profile>
         <profile>
@@ -71,6 +126,24 @@
             </activation>
             <build>
                 <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>ims-assembly</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                                <phase>package</phase> <!-- bind to the packaging phase -->
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
                 <finalName>fred-ims</finalName>
             </build>
