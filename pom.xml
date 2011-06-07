@@ -29,6 +29,7 @@
     <modules>
         <module>fred-main-webapp</module>
         <module>fred-redirect-webapp</module>
+        <module>fred-ims</module>
     </modules>
     <distributionManagement>
         <repository>
