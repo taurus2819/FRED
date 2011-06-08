@@ -27,10 +27,11 @@
 		<td class="deHeading" colspan="4">Fields to Download</td>
 	</tr>
 	<tr>
-		<td colspan="4">Select which types of fields you would like to download and then press the <i>Download</i> button.  A tab seperated text file will be generated and you can either open or save it.  If a large number of localities are selected the process may take a few minutes.</td>
+		<td colspan="4"><p>Select which types of fields you would like to download and then press the <i>Download</i> button.</p>  
+                    <p>A tab separated text file will be generated and you can either open or save it. </p><p>If a large number of localities are selected the process may take a few minutes.</p></td>
 	</tr>
 	<tr>
-		<td colspan="4">Please note: use of this download facility is logged</td>
+		<td colspan="4" style="font-style:italic">Please note: use of this download facility is logged</td>
 	</tr>
 	<tr>
 		<td class="heading">Locality&nbsp;&nbsp;</td>
