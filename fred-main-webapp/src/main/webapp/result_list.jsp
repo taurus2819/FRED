@@ -139,6 +139,7 @@
 
 		List<Sample> samples = null;
 		List<Feature> features = null;
+                List<Object> resultsList = new Vector<Object>();
 		if (useStored) {
 			samples = (List<Sample>) session.getAttribute("FRED.samples");
 			features = (List<Feature>) session.getAttribute("FRED.features");
@@ -240,41 +241,50 @@
 					
 					int j = 1;
 					for (Feature feature : features) {
-						if (j >= startIndex && j <= endIndex) {
-							feature = featureUtil.getFeature(feature.getFeatureId());
-							if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
-								String checkedText = ""; // default un-checked
-								if (!fids.isEmpty() && fids.contains(feature.getFeatureId().toString()))
-									checkedText = "checked=\"checked\"";
-							%>
-								<tr class="lightColour">
-									<td>
-										<input type="checkbox" name="FeatIDs" <%= checkedText %> onchange="updateMasterCheckbox()" value="<%=feature.getFeatureId()%>" />
-									</td>
-									<td>
-										<a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a>
-									</td>
-									<td class="heading"><%=feature.getFrNumber()%> <%=(feature.getYardFrNumber() != null) ? "(" + feature.getYardFrNumber() + ")" : ""%>&nbsp;&nbsp;</td>
-									<td><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
-									<td><%=DBUtils.nvl(feature.getFeatureName())%>&nbsp;&nbsp;</td>
-									<td>
-										<a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List">
-											<img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" />
-										</a>&nbsp;&nbsp;<%
-										if (user != null && featureUtil.isAllowedEditApprovedFeature(user, feature)) {
-											%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=feature.getMasterFile().getFolderId()%>">
-												<img src="images/edit.gif" height="20" width="20" border="0" alt="Edit" />
-											</a><%
-										}%>
-									</td>						
-								</tr><%
-								if (!FeatureUtil.OUTCROP.equals(feature.getFeatureType())) {
-									for (Sample sample : FREDUtil.getSortedList(feature.getSamples())) {
-										if (samples == null || samples.contains(sample) && sampleUtil.isAllowedReadSample(user, sample)) {%>
-											<tr class="lightColour">
+						//if (j >= startIndex && j <= endIndex) 
+                                                //{
+        					feature = featureUtil.getFeature(feature.getFeatureId());
+						if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
+                                                    resultsList.add(feature);
+                                                    if (j >= startIndex && j <= endIndex) 
+                                                    {
+                                                        String checkedText = ""; // default un-checked
+							if (!fids.isEmpty() && fids.contains(feature.getFeatureId().toString()))
+                                                            checkedText = "checked=\"checked\"";
+							%><tr class="lightColour">
+                                                            <td>
+                                                                    <input type="checkbox" name="FeatIDs" <%= checkedText %> onchange="updateMasterCheckbox()" value="<%=feature.getFeatureId()%>" />
+                                                            </td>
+                                                            <td>
+                                                                <a href="detail.jsp?resultsIndex=<%=(resultsList.size()-1)%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back+To+Result+List"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a>
+                                                            </td>
+                                                            <td class="heading"><%=feature.getFrNumber()%> <%=(feature.getYardFrNumber() != null) ? "(" + feature.getYardFrNumber() + ")" : ""%>&nbsp;&nbsp;</td>
+                                                            <td><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
+                                                            <td><%=DBUtils.nvl(feature.getFeatureName())%>&nbsp;&nbsp;</td>
+                                                            <td>
+                                                                <a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List">
+                                                                    <img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" />
+								</a>&nbsp;&nbsp;
+                                                                <%
+                                                        if (user != null && featureUtil.isAllowedEditApprovedFeature(user, feature)) 
+                                                        {
+                                                            %><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=feature.getMasterFile().getFolderId()%>">
+                                                                <img src="images/edit.gif" height="20" width="20" border="0" alt="Edit" />
+                                                            </a><%
+							}%>
+                                                            </td>						
+							</tr><%
+							if (!FeatureUtil.OUTCROP.equals(feature.getFeatureType())) {
+								for (Sample sample : FREDUtil.getSortedList(feature.getSamples())) {
+									if (samples == null || samples.contains(sample) && sampleUtil.isAllowedReadSample(user, sample)) 
+                                                                        {
+                                                                            resultsList.add(sample);
+                                                                            if (j >= startIndex && j <= endIndex) 
+                                                                            {
+                                                                                %><tr class="lightColour">
 												<td></td>
 												<td>
-													<a href="detail.jsp?ID=<%=sample.getSampleId()%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List">
+													<a href="detail.jsp?resultsIndex=<%=(resultsList.size()-1)%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List">
 														<img src="images/drill.gif" border="0" height="20" width="20" alt="View Sample" />
 													</a>
 												</td>
@@ -283,7 +293,8 @@
 												<td>&nbsp;</td>
 												<td>&nbsp;</td>
 											</tr><%
-										}
+                                                                             }
+                                                                        }
 									}
 								}
 							}
@@ -305,6 +316,7 @@
 					 }%>			
 				</table>
 			</form><%				
+			session.setAttribute("FRED.results", resultsList);
 		} else {
 			%><p>No records found matching your search criteria</p><%
 		}
