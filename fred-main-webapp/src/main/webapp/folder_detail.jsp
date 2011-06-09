@@ -331,7 +331,7 @@
 					plusMinusTd.setAttribute("id", "plusMinus" + featureId);
 					tr.appendChild(plusMinusTd);
 					var iconTd = document.createElement("td");
-					iconTd.appendChild(createIcon("images/loc.gif", "detail.jsp?FeatID=" + featureId + "&backURL=<%=backURL%>&backText=<%=backText%>"));
+					iconTd.appendChild(createIcon("images/loc.gif", "detail.jsp?FeatID=" + featureId + "&backURL=<%=backURL%>&backText=<%=backText%>","View"));
 					tr.appendChild(iconTd);
 					var nameTd = document.createElement("td");
 					nameTd.setAttribute("class", "heading");
@@ -357,7 +357,7 @@
 					tr.appendChild(createdTd);				
 					if (featureNode.getElementsByTagName("edit")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/edit.gif", "de.jsp?Type=" + featureType + "&FoldID=<%=folder.getFolderId()%>&FeatID=" + featureId, ""));
+						td.appendChild(createIcon("images/edit.gif", "de.jsp?Type=" + featureType + "&FoldID=<%=folder.getFolderId()%>&FeatID=" + featureId, "", "Edit"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
@@ -365,35 +365,35 @@
 					tr.appendChild(document.createElement("td"));
 					if (featureNode.getElementsByTagName("edit-binary")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/new_file.gif", "binary_data_entry.jsp?RecType=" + featureType + "&FoldID=<%=folder.getFolderId()%>&ID=" + featureId, ""));
+						td.appendChild(createIcon("images/new_file.gif", "binary_data_entry.jsp?RecType=" + featureType + "&FoldID=<%=folder.getFolderId()%>&ID=" + featureId, "","Add Image/File"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
 					}					
 					var mapTd = document.createElement("td");
-					mapTd.appendChild(createIcon("images/map.gif", "locality_map.jsp?FeatID=" + featureId + "&backURL=<%=backURL%>&backText=<%=backText%>", ""));
+					mapTd.appendChild(createIcon("images/map.gif", "locality_map.jsp?FeatID=" + featureId + "&backURL=<%=backURL%>&backText=<%=backText%>", "","Locality Map"));
 					tr.appendChild(mapTd);
 					if (featureNode.getElementsByTagName("copy-locality")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/copy.gif", "javascript:prmpt=prompt('Please enter the new name', 'Copy of " + featureIdentName + "');if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value='CopyFeat';document.FoldForm.FeatID.value='" + featureId + "';document.FoldForm.submit();}", ""));
+						td.appendChild(createIcon("images/copy.gif", "javascript:prmpt=prompt('Please enter the new name', 'Copy of " + featureIdentName + "');if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value='CopyFeat';document.FoldForm.FeatID.value='" + featureId + "';document.FoldForm.submit();}", "","Copy Record"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
 					}	
 					if (featureNode.getElementsByTagName("delete")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to delete this locality') == true) {featureAction('" + featureId + "', 'Delete');}", ""));
+						td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to delete this locality') == true) {featureAction('" + featureId + "', 'Delete');}", "","Delete/Remove"));
 						tr.appendChild(td);
 					} else if (featureNode.getElementsByTagName("remove")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to remove this locality from your folder') == true) {featureAction('" + featureId + "', 'Remove');}", ""));
+						td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to remove this locality from your folder') == true) {featureAction('" + featureId + "', 'Remove');}", "","Delete/Remove"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
 					}	
 					if (featureNode.getElementsByTagName("submit")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/submit.gif", "javascript:if (confirm('Are you sure you want to submit this locality') == true) {featureAction('" + featureId + "', 'Submit');}", ""));
+						td.appendChild(createIcon("images/submit.gif", "javascript:if (confirm('Are you sure you want to submit this locality') == true) {featureAction('" + featureId + "', 'Submit');}", "","Submit"));
 						tr.appendChild(td);
 					} else if (featureNode.getElementsByTagName("revoke")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
@@ -404,27 +404,27 @@
 					}					
 					if (featureNode.getElementsByTagName("create-sample")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/drill.gif", "de.jsp?Type=Sample&FoldID=<%=folder.getFolderId()%>&FeatID=" + featureId, ""));
+						td.appendChild(createIcon("images/drill.gif", "de.jsp?Type=Sample&FoldID=<%=folder.getFolderId()%>&FeatID=" + featureId, "","Add Sample","Add Sample"));
 						tr.appendChild(td);
 						tr.appendChild(document.createElement("td"));
 					} else {
 						if (featureNode.getElementsByTagName("create-adoption")[0].firstChild.nodeValue == 'TRUE') {
 							var td = document.createElement("td");
-							td.appendChild(createIcon("images/new_ado.gif", "de.jsp?Type=<%=FREDConstants.ADOPTION%>&FoldID=<%=folder.getFolderId()%>&SampID=" + featureNode.getElementsByTagName("sample-id")[0].firstChild.nodeValue, ""));
+							td.appendChild(createIcon("images/new_ado.gif", "de.jsp?Type=<%=FREDConstants.ADOPTION%>&FoldID=<%=folder.getFolderId()%>&SampID=" + featureNode.getElementsByTagName("sample-id")[0].firstChild.nodeValue, "","Add Adoption Record"));
 							tr.appendChild(td);
 						} else {
 							tr.appendChild(document.createElement("td"));
 						}
 						if (featureNode.getElementsByTagName("create-paleontology")[0].firstChild.nodeValue == 'TRUE') {
 							var td = document.createElement("td");
-							td.appendChild(createIcon("images/new_pal.gif", "de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=" + featureNode.getElementsByTagName("sample-id")[0].firstChild.nodeValue, ""));
+							td.appendChild(createIcon("images/new_pal.gif", "de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=" + featureNode.getElementsByTagName("sample-id")[0].firstChild.nodeValue, "","Add Paleontology Record"));
 							tr.appendChild(td);
 						} else {
 							tr.appendChild(document.createElement("td"));
 						}
 					}
 					var pdfTd = document.createElement("td");
-					pdfTd.appendChild(createIcon("images/pdf_icon.gif", "frf/frf.pdf?FeatIDs=" + featureId, "_blank"));
+					pdfTd.appendChild(createIcon("images/pdf_icon.gif", "frf/frf.pdf?FeatIDs=" + featureId, "_blank","Print"));
 					tr.appendChild(pdfTd);
 					return tr;
 				}
@@ -443,7 +443,7 @@
 					checkTd.appendChild(check);
 					tr.appendChild(checkTd);
 					var iconTd = document.createElement("td");
-					iconTd.appendChild(createIcon("images/drill.gif", "detail.jsp?ID=" + sampleId + "&backURL=<%=backURL%>&backText=<%=backText%>"));
+					iconTd.appendChild(createIcon("images/drill.gif", "detail.jsp?ID=" + sampleId + "&backURL=<%=backURL%>&backText=<%=backText%>","View Sample","View Sample"));
 					tr.appendChild(iconTd);
 					var nameTd = document.createElement("td");
 					nameTd.appendChild(document.createTextNode(sampleNode.getElementsByTagName("sample-name")[0].firstChild.nodeValue + "\u00a0\u00a0"));
@@ -463,21 +463,21 @@
 					tr.appendChild(createdTd);
 					if (sampleNode.getElementsByTagName("edit")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/edit.gif", "de.jsp?Type=Sample&FoldID=<%=folder.getFolderId()%>&SampID=" + sampleId, ""));
+						td.appendChild(createIcon("images/edit.gif", "de.jsp?Type=Sample&FoldID=<%=folder.getFolderId()%>&SampID=" + sampleId, "","Edit"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
 					}
 					if (sampleNode.getElementsByTagName("set-confidentiality")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/lock.gif", "set_confidentiality.jsp?FoldID=<%=folder.getFolderId()%>&SampIDs=" + sampleId, ""));
+						td.appendChild(createIcon("images/lock.gif", "set_confidentiality.jsp?FoldID=<%=folder.getFolderId()%>&SampIDs=" + sampleId, "", "Set Confidentiality"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
 					}
 					if (sampleNode.getElementsByTagName("edit-binary")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/new_file.gif", "binary_data_entry.jsp?RecType=SMP&FoldID=<%=folder.getFolderId()%>&ID=" + sampleId, ""));
+						td.appendChild(createIcon("images/new_file.gif", "binary_data_entry.jsp?RecType=SMP&FoldID=<%=folder.getFolderId()%>&ID=" + sampleId, "","Add Image/File"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
@@ -486,34 +486,34 @@
 					tr.appendChild(document.createElement("td"));
 					if (sampleNode.getElementsByTagName("delete")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to delete this sample') == true) {sampleAction('" + sampleId + "', 'Delete');}", ""));
+						td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to delete this sample') == true) {sampleAction('" + sampleId + "', 'Delete');}", "","Delete/Remove"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
 					}
 					if (sampleNode.getElementsByTagName("submit")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/submit.gif", "javascript:sampleAction('" + sampleId + "', 'Submit');", ""));
+						td.appendChild(createIcon("images/submit.gif", "javascript:sampleAction('" + sampleId + "', 'Submit');", "","Submit"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
 					}
 					if (sampleNode.getElementsByTagName("create-adoption")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/new_ado.gif", "de.jsp?Type=<%=FREDConstants.ADOPTION%>&FoldID=<%=folder.getFolderId()%>&SampID=" + sampleId, ""));
+						td.appendChild(createIcon("images/new_ado.gif", "de.jsp?Type=<%=FREDConstants.ADOPTION%>&FoldID=<%=folder.getFolderId()%>&SampID=" + sampleId, "","Add Adoption Record"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
 					}
 					if (sampleNode.getElementsByTagName("create-paleontology")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/new_pal.gif", "de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=" + sampleId, ""));
+						td.appendChild(createIcon("images/new_pal.gif", "de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=" + sampleId, "","Add Paleontology Record"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
 					}
 					var pdfTd = document.createElement("td");
-					pdfTd.appendChild(createIcon("images/pdf_icon.gif", "frf/frf.pdf?SampIDs=" + sampleId, "_blank"));
+					pdfTd.appendChild(createIcon("images/pdf_icon.gif", "frf/frf.pdf?SampIDs=" + sampleId, "_blank","Print"));
 					tr.appendChild(pdfTd);
 					return tr;
 				}
@@ -536,8 +536,10 @@
 					var iconImg = document.createElement("img");
 					if (recordType == '<%=FREDConstants.ADOPTION%>') {
 						iconImg.setAttribute("src", "images/ado.gif");
+						iconImg.setAttribute("title", "Adoption Record");
 					} else {
 						iconImg.setAttribute("src", "images/pal.gif");
+						iconImg.setAttribute("title", "Paleontology Record");
 					}
 					iconTd.appendChild(iconImg);
 					tr.appendChild(iconTd);
@@ -559,21 +561,21 @@
 					tr.appendChild(recDateTd);
 					if (recordNode.getElementsByTagName("edit")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/edit.gif", "de.jsp?Type=" + recordType + "&FoldID=<%=folder.getFolderId()%>&RecID=" + recordId, ""));
+						td.appendChild(createIcon("images/edit.gif", "de.jsp?Type=" + recordType + "&FoldID=<%=folder.getFolderId()%>&RecID=" + recordId, "", "Edit"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
 					}
 					if (recordNode.getElementsByTagName("set-confidentiality")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/lock.gif", "set_confidentiality.jsp?FoldID=<%=folder.getFolderId()%>&RecIDs=" + recordId, ""));
+						td.appendChild(createIcon("images/lock.gif", "set_confidentiality.jsp?FoldID=<%=folder.getFolderId()%>&RecIDs=" + recordId, "", "Set Confidentiality"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
 					}
 					if (recordNode.getElementsByTagName("edit-binary")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/new_file.gif", "binary_data_entry.jsp?RecType=" + recordType + "&FoldID=<%=folder.getFolderId()%>&ID=" + recordId, ""));
+						td.appendChild(createIcon("images/new_file.gif", "binary_data_entry.jsp?RecType=" + recordType + "&FoldID=<%=folder.getFolderId()%>&ID=" + recordId, "","Add Image/File"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
@@ -582,14 +584,14 @@
 					tr.appendChild(document.createElement("td"));
 					if (recordNode.getElementsByTagName("delete")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to delete this record') == true) {recordAction('" + recordId + "', 'Delete');}", ""));
+						td.appendChild(createIcon("images/delete.gif", "javascript:if (confirm('Are you sure you want to delete this record') == true) {recordAction('" + recordId + "', 'Delete');}", "","Delete/Remove"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
 					}
 					if (recordNode.getElementsByTagName("submit")[0].firstChild.nodeValue == 'TRUE') {
 						var td = document.createElement("td");
-						td.appendChild(createIcon("images/submit.gif", "javascript:recordAction('" + recordId + "', 'Submit');", ""));
+						td.appendChild(createIcon("images/submit.gif", "javascript:recordAction('" + recordId + "', 'Submit');", "","Submit"));
 						tr.appendChild(td);
 					} else {
 						tr.appendChild(document.createElement("td"));
@@ -597,12 +599,16 @@
 					tr.appendChild(document.createElement("td"));
 					tr.appendChild(document.createElement("td"));
 					var recPdfTd = document.createElement("td");
-					recPdfTd.appendChild(createIcon("images/pdf_icon.gif", "frf/frf.pdf?RecIDs=" + recordId, "_blank"));
+					recPdfTd.appendChild(createIcon("images/pdf_icon.gif", "frf/frf.pdf?RecIDs=" + recordId, "_blank","Print"));
 					tr.appendChild(recPdfTd);
 					return tr;
 				}
 				
 				function createIcon(imageSrc, href, target) {
+                                    return createIcon(imageSrc, href, target, "");
+				}
+				
+				function createIcon(imageSrc, href, target, alt) {
 					var anchor = document.createElement("a");
 					anchor.setAttribute("href", href);
 					if (target != '')
@@ -610,6 +616,8 @@
 					var image = document.createElement("img");
 					image.setAttribute("src", imageSrc);
 					image.setAttribute("border", "0");
+					image.setAttribute("alt", alt);
+					image.setAttribute("title", alt);
 					anchor.appendChild(image);
 					return anchor;
 				}
@@ -672,12 +680,12 @@
 				<li>Working localities are named with their field number or drillhole name until they are allocated a Fossil Record Number.</li>
 				<li>Click on the <i>Plus</i> icon to show/edit drillhole/vertical section samples, and paleontology and adopted age data records
 				<ul>
-				<li><img src="images/edit.gif" border="0" height="20" width="20" alt="" /> edit the locality</li>
-				<li><img src="images/lock.gif" border="0" height="20" width="20" alt="" /> set the confidentiality of the sample/record. <i>Note: localities are always open</i></li>
-				<li><img src="images/new_file.gif" border="0" height="20" width="20" alt="" /> to add a file/image to the locality/sample/record</li>
-				<li><img src="images/map.gif" border="0" height="20" width="20" alt="" /> view a map of the locality</li>
-				<li><img src="images/copy.gif" border="0" height="20" width="20" alt="" /> make a copy of the locality (front of form data only)</li>
-				<li><img src="images/delete.gif" border="0" height="20" width="20" alt="" /> delete the locality/sample/record</li>
+				<li><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit" title="Edit"/> edit the locality</li>
+				<li><img src="images/lock.gif" border="0" height="20" width="20" alt="" title="Set Confidentiality"/> set the confidentiality of the sample/record. <i>Note: localities are always open</i></li>
+				<li><img src="images/new_file.gif" border="0" height="20" width="20" alt="" title="Add Image/File"/> to add a file/image to the locality/sample/record</li>
+				<li><img src="images/map.gif" border="0" height="20" width="20" alt="" title="Locality Map"/> view a map of the locality</li>
+				<li><img src="images/copy.gif" border="0" height="20" width="20" alt="" title="Copy Locality"/> make a copy of the locality (front of form data only)</li>
+				<li><img src="images/delete.gif" border="0" height="20" width="20" alt="" title="Delete/Remove"/> delete the locality/sample/record</li>
 				<li><img src="images/submit.gif" border="0" height="20" width="20" alt="" /> submit the locality/sample/record for entry to the masterfile. <i>Note: sample and records are automatically approved and visible in FRED (according to the confidentiality rules you have specified), but localities are checked by the masterfile curator first</i></li>
 				<li><img src="images/revoke.gif" border="0" height="20" width="20" alt="" /> revoke the locality for entry from the masterfile</li>
 				<li><img src="images/drill.gif" border="0" height="20" width="20" alt="" /> to create a sample for this locality</li>
@@ -707,7 +715,7 @@
 					%><tr id="feature<%=feature.getFeatureId()%>" class="lightColour">	
 					<td style="text-align: left" id="plusMinus<%=feature.getFeatureId()%>" class="heading"><a href="javascript: getFeatureDetails('<%=feature.getFeatureId()%>');"><img src="images/plus.gif" border="0" /></a></td>
 					<td style="text-align: left"><input type="checkbox" name="FeatIDs" value="<%=feature.getFeatureId()%>" /></td>
-					<td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=backURL%>&backText=<%=backText%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a></td>
+					<td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=backURL%>&backText=<%=backText%>"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" title="View Locality" /></a></td>
 					<td style="text-align: left" class="heading"><%=name%>&nbsp;&nbsp;<%
 					if (featName != null && !featName.equals(name)) {
 						%><br />(<%=featName%>)&nbsp;&nbsp;<%
@@ -721,26 +729,26 @@
 					%></td>
 					<td style="text-align: left"><%=(audit.getCreatedDate() != null) ? FREDUtil.formatDateForOutput(audit.getCreatedDate()) : ""%></td><%
 					if (featureUtil.isAllowedEditFeature(user, feature, folder)) {
-						%><td style="text-align: left"><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a>&nbsp;</td>
+						%><td style="text-align: left"><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" title="Edit"/></a>&nbsp;</td>
 						<td></td>
-						<td style="text-align: left"><a href="binary_data_entry.jsp?ID=<%=feature.getFeatureId()%>&RecType=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Add Image/File" /></a>&nbsp;</td><%
+						<td style="text-align: left"><a href="binary_data_entry.jsp?ID=<%=feature.getFeatureId()%>&RecType=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Add Image/File" title="Add Image/File"/></a>&nbsp;</td><%
 					} else {
 						%><td></td><td></td><td></td><%
 					}
-					%><td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=backURL%>&backText=<%=backText%>"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" /></a>&nbsp;</td>
+					%><td style="text-align: left"><a href="locality_map.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=backURL%>&backText=<%=backText%>"><img src="images/map.gif" height="20" width="20" border="0" alt="View Locality Map" title="Locality Map"/></a>&nbsp;</td>
 					<td style="text-align: left"><%
 					if (folder.isAllowedCreateLocalities()) {
-						%><a href="javascript:prmpt=prompt('Please enter the new name', 'Copy of <%=FeatureUtil.getFeatureIdentifyingName(feature)%>');if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value='CopyFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/copy.gif" border="0" height="20" width="20" alt="Copy Locality" /></a>&nbsp;<%
+						%><a href="javascript:prmpt=prompt('Please enter the new name', 'Copy of <%=FeatureUtil.getFeatureIdentifyingName(feature)%>');if(prmpt!=null){document.FoldForm.NewFeatName.value=prmpt;document.FoldForm.ActionType.value='CopyFeat';document.FoldForm.FeatID.value='<%=feature.getFeatureId()%>';document.FoldForm.submit();}"><img src="images/copy.gif" border="0" height="20" width="20" alt="Copy Locality" title="Copy Locality" /></a>&nbsp;<%
 					}
 					%></td><td style="text-align: left"><%
 					if (!status.equals(FREDConstants.APPROVED) && featureUtil.isAllowedDeleteFeature(user, feature, folder)) {
-						%><a href="javascript:if (confirm('Are you sure you want to delete this locality') == true) {featureAction('<%=feature.getFeatureId()%>', 'Delete');}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete Locality" /></a>&nbsp;<%
+						%><a href="javascript:if (confirm('Are you sure you want to delete this locality') == true) {featureAction('<%=feature.getFeatureId()%>', 'Delete');}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete Locality" title="Delete/Remove"/></a>&nbsp;<%
 					} else if (status.equals(FREDConstants.APPROVED) && !FREDUtil.isEmpty(feature.getFolders())) {
-						%><a href="javascript:if (confirm('Are you sure you want to remove this locality from your folder') == true) {featureAction('<%=feature.getFeatureId()%>', 'Remove');}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Remove Locality" /></a>&nbsp;<%
+						%><a href="javascript:if (confirm('Are you sure you want to remove this locality from your folder') == true) {featureAction('<%=feature.getFeatureId()%>', 'Remove');}"><img src="images/delete.gif" border="0" height="20" width="20" alt="Remove Locality" title="Delete/Remove"/></a>&nbsp;<%
 					}
 					%></td><td style="text-align: left"><%
 					if (featureUtil.isAllowedSubmitFeature(user, feature, folder)) {
-						%><a href="javascript:if (confirm('Are you sure you want to submit this locality') == true) {featureAction('<%=feature.getFeatureId()%>', 'Submit');}"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Locality" /></a>&nbsp;<%
+						%><a href="javascript:if (confirm('Are you sure you want to submit this locality') == true) {featureAction('<%=feature.getFeatureId()%>', 'Submit');}"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit Locality" title="Submit"/></a>&nbsp;<%
 					} else if (featureUtil.isAllowedRevokeFeature(user, feature, folder)) {
 						%><a href="javascript:if (confirm('Are you sure you want to revoke this locality') == true) {featureAction('<%=feature.getFeatureId()%>', 'Revoke');}"><img src="images/revoke.gif" border="0" height="20" width="20" alt="Revoke Locality" /></a>&nbsp;<%
 					}
@@ -750,14 +758,14 @@
 						if (feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
 							Sample sample = featureUtil.getOutcropSample(feature);
 							%><a href="de.jsp?Type=<%=FREDConstants.ADOPTION%>&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/new_ado.gif" border="0" height="20" width="20" alt="Add Adoption Record" /></a>&nbsp;</td>
-							<td style="text-align: left"><a href="de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/new_pal.gif" border="0" height="20" width="20" alt="Add Paleontology Record" /></a><%
+							<td style="text-align: left"><a href="de.jsp?Type=<%=FREDConstants.PALEONTOLOGICAL%>&FoldID=<%=folder.getFolderId()%>&SampID=<%=sample.getSampleId()%>"><img src="images/new_pal.gif" border="0" height="20" width="20" alt="Add Paleontology Record" title="Add Paleontology Record"/></a><%
 						} else {
-							%><a href="de.jsp?Type=Sample&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/drill.gif" border="0" height="20" width="20" alt="New Sample" /></a>&nbsp;</td><td><%
+							%><a href="de.jsp?Type=Sample&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=folder.getFolderId()%>"><img src="images/drill.gif" border="0" height="20" width="20" alt="New Sample" title="Add Sample"/></a>&nbsp;</td><td><%
 						}
 					}
 					%></td>
 					<td style="text-align: left">
-					<a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId()%>&q=<%=Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" width="20" height="20" alt="Print Locality" /></a>&nbsp;
+					<a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId()%>&q=<%=Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" width="20" height="20" alt="Print Locality" title="Print" /></a>&nbsp;
 					</td></tr>
 					<tbody id="featureDetails<%=feature.getFeatureId()%>"></tbody><%
 				}
@@ -770,7 +778,7 @@
 				<table border="0" cellpadding="3" cellspacing="2" width="650">
 				<tr class="midColour"><th colspan="2">Selected Actions</th></tr>
 				<tr class="lightColour">
-				<td><a href="javascript:document.FoldForm.ActionType.value='Submit';document.FoldForm.submit();"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit" /></a></td>
+				<td><a href="javascript:document.FoldForm.ActionType.value='Submit';document.FoldForm.submit();"><img src="images/submit.gif" border="0" height="20" width="20" alt="Submit" title="Submit"/></a></td>
 				<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='Submit';document.FoldForm.submit();">Submit</a></td>
 				</tr>
 				<tr class="lightColour">
@@ -778,19 +786,19 @@
 				<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='RevokeFeatures';document.FoldForm.submit();">Revoke</a></td>
 				</tr>
 				<tr class="lightColour">
-				<td><a href="javascript:document.FoldForm.action='frf/frf.pdf';document.FoldForm.method='get';document.FoldForm.target='_blank';document.FoldForm.submit();"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print" /></a></td>
+				<td><a href="javascript:document.FoldForm.action='frf/frf.pdf';document.FoldForm.method='get';document.FoldForm.target='_blank';document.FoldForm.submit();"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print" title="Print" /></a></td>
 				<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.action='frf/frf.pdf';document.FoldForm.method='get';document.FoldForm.target='_blank';document.FoldForm.submit();">Print</a></td>
 				</tr>
 				<tr class="lightColour">
-				<td><a href="javascript:document.FoldForm.ActionType.value='Delete';document.FoldForm.submit();"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete/Remove" /></a></td>
+				<td><a href="javascript:document.FoldForm.ActionType.value='Delete';document.FoldForm.submit();"><img src="images/delete.gif" border="0" height="20" width="20" alt="Delete/Remove" title="Delete/Remove"/></a></td>
 				<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='Delete';document.FoldForm.submit();">Delete/Remove</a></td>
 				</tr>
 				<tr class="lightColour">
-				<td><a href="javascript:document.FoldForm.action='set_confidentiality.jsp';document.FoldForm.method='get';document.FoldForm.submit();"><img src="images/lock.gif" border="0" height="20" width="20" alt="set Confidentiality" /></a></td>
+				<td><a href="javascript:document.FoldForm.action='set_confidentiality.jsp';document.FoldForm.method='get';document.FoldForm.submit();"><img src="images/lock.gif" border="0" height="20" width="20" alt="set Confidentiality" title="Set Confidentiality"/></a></td>
 				<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.action='set_confidentiality.jsp';document.FoldForm.submit();">set Confidentiality</a>&nbsp;&nbsp;<span style="font-weight: normal">Note: Only samples and records that you have created or your group owns</span></td>
 				</tr>
 				<tr class="lightColour">
-				<td><a href="javascript:document.FoldForm.ActionType.value='MergeFeatures';document.FoldForm.submit();"><img src="images/edit.gif" border="0" height="20" width="20" alt="Merge" /></a></td>
+				<td><a href="javascript:document.FoldForm.ActionType.value='MergeFeatures';document.FoldForm.submit();"><img src="images/edit.gif" border="0" height="20" width="20" alt="Merge"  title="Merge"/></a></td>
 				<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='MergeFeatures';document.FoldForm.submit();">Merge To:</a>&nbsp;
 				<select name="MergeToFeatID"><option value="-">-- Choose --</option><%
 				for (Feature mergeToFeature : featureUtil.getFeaturesInFolder(folder)) {
@@ -802,7 +810,7 @@
 				</td>
 				</tr>
 				<tr class="lightColour">
-				<td><a href="javascript:document.FoldForm.ActionType.value='AlterType';document.FoldForm.submit();"><img src="images/edit.gif" border="0" height="20" width="20" alt="Alter Type" /></a></td>
+				<td><a href="javascript:document.FoldForm.ActionType.value='AlterType';document.FoldForm.submit();"><img src="images/edit.gif" border="0" height="20" width="20" alt="Alter Type" title="Alter Type" /></a></td>
 				<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.ActionType.value='AlterType';document.FoldForm.submit();">Alter Locality Type To:</a>&nbsp;
 				<select name="NewFeatType"><option value="-">-- Choose --</option>
 					<option value="Outcrop">Outcrop</option>

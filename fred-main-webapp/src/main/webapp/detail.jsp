@@ -347,7 +347,7 @@
     <tr class="midColour">
         <th colspan="2">
             Locality Information&nbsp;&nbsp;&nbsp;
-            <a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a>
+            <a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print"/></a>
                 <%
                     if (resultsSize > 0) {
                 %><div style="float: right"><%
@@ -486,7 +486,7 @@
 %><tr class="midColour"><th colspan="2">Sample Information<%
 if (!featType.equals(FREDConstants.OUTCROP)) {
         //add PDF link
-%>&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?SampIDs=<%=sample.getSampleId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a><%
+%>&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?SampIDs=<%=sample.getSampleId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print" /></a><%
             }
             %></th></tr><%
                 if (!featType.equals(FREDConstants.OUTCROP)) {
@@ -641,7 +641,7 @@ if (!featType.equals(FREDConstants.OUTCROP)) {
 //Adoption
                     for (Adoption adoRecord : sampleUtil.getAdoptionRecords(sample)) {
                         if (recordUtil.isAllowedReadRecord(user, adoRecord.getRecord())) {
-%><tr class="midColour"><th colspan="2">Adoption Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?RecIDs=<%=adoRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></th></tr><%
+%><tr class="midColour"><th colspan="2">Adoption Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?RecIDs=<%=adoRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print" /></th></tr><%
     if (recordUtil.isRecordConfidential(adoRecord.getRecord())) {
             %><tr class="lightColour"><td style="text-align: left; color: #FF0000" colspan="2">This adoption record has been marked as confidential. The following people/groups have been granted access to this record: <%=recordUtil.getRecordConfidAccessListDescription(adoRecord.getRecord())%>.<%=(adoRecord.getRecord().getAudit().getConfidLapseDate() != null) ? " This record will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(adoRecord.getRecord().getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
                 }
@@ -683,7 +683,7 @@ if (!featType.equals(FREDConstants.OUTCROP)) {
 //Paleontology
                     for (Paleontology palRecord : sampleUtil.getPaleontologyRecords(sample)) {
                         if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {
-%><tr class="midColour"><th colspan="2">Paleontology Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?RecIDs=<%=palRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></th></tr><%
+%><tr class="midColour"><th colspan="2">Paleontology Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?RecIDs=<%=palRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print" /></th></tr><%
     if (recordUtil.isRecordConfidential(palRecord.getRecord())) {
             %><tr class="lightColour"><td style="text-align: left; color: #FF0000" colspan="2">This paleontology record has been marked as confidential. The following people/groups have been granted access to this record: <%=recordUtil.getRecordConfidAccessListDescription(palRecord.getRecord())%>.<%=(palRecord.getRecord().getAudit().getConfidLapseDate() != null) ? " This record will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(palRecord.getRecord().getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
             } else if (recordUtil.isPalListConfidential(palRecord)) {
@@ -799,7 +799,7 @@ if (!featType.equals(FREDConstants.OUTCROP)) {
             if (sampleUtil.isAllowedReadSample(user, locSample)) {
     %><tr class="lightColour">
         <td><a href="detail.jsp?ID=<%=locSample.getSampleId() + backStr%>"><%=SampleUtil.getDrillHoleDepthDescription(locSample) + ((locSample.getFrNumber() != null && !locSample.getFrNumber().equals(feature.getFrNumber())) ? " (" + locSample.getFrNumber().getFrNumber() + ")" : "")%></a>&nbsp;&nbsp;</td>
-        <td><a href="frf/frf.pdf?SampIDs=<%=locSample.getSampleId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" /></a></td>
+        <td><a href="frf/frf.pdf?SampIDs=<%=locSample.getSampleId() + "&q=" + Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print" /></a></td>
     </tr><%
                 }
             }

@@ -126,10 +126,45 @@
 			%><table border="0" style="border: none; width: 550px" width="550"><tr><td style="text-align: left">
 			<tr><td colspan="3" class="deHeading">Instructions</td></tr><tr><td style="text-align: left">
 			<ul>
-			<li>Please fill out the following fields.  
-			<li>Click the <img src="images/build.gif" height="20" width="20" alt="Build..."> icon to open the field builder for more help.  
-			<li><span style="color: #FF0000">Red</span> fields must be completed before submitting this form.
-			</ul>
+<li>Please fill out as much information as possible</li>
+<li>Red fields must be completed before submitting this form</li>
+<li>Some entry fields require specific formatting:
+    <ul>
+<li>For Date please use this format – 01/02/2011</li>
+<li>Identifiers, Stage Limits, Group and Taxonomic name entries are all type-and-select</li>
+<li>Laboratory information fields are drop-down select</li>
+<li>All other fields are free-hand type</li>
+    </ul>
+<li>Taxonomic list:<ul>
+<li>If you know the group enter it in the Group box otherwise leave it blank. For new entries (ie entries not in the database) please enter a Group and an Author if appropriate</li>
+<li>Taxonomic name accepts the following abbreviations and qualifiers:
+<ul>
+<li>aff. = affinis/related to</li>
+<li>cf. = confer/compared with</li>
+<li>fam. = family</li>
+<li>gen. = genus</li>
+<li>gr. = group</li>
+<li>MS = manuscript name</li>
+<li>n.gen. = new genus</li>
+<li>n.sp. = new species (also n.spp.)</li>
+<li>s.l. = sensu lato/broad sense</li>
+<li>s.s. = sensu stricto/strict sense</li>
+<li>sp. = species</li>
+<li>spp. = multiple species</li>
+<li>subgen. = subgenus</li>
+<li>subsp. = subspecies</li>
+<li>var. = variety</li>
+</ul>
+<li>Taxonomic names listed below in red have not yet been approved (or have been rejected) - place your mouse over these entries to see more details. Records can't be submitted until all entries are approved</li>
+<li>Entries in the Comments box are interpreted in the following way:<ul>
+<li>Numeric value -> Specimen Count</li>
+<li>Non-numeric value -> Comments</li>
+<li>x|y -> Specimen Count = x, Specimen Coordinates = y</li>
+<li>x|y|z -> Specimen Count = x, Specimen Coordinates = y, Comments = z</li>
+    </ul>
+</li>
+    </ul>
+</li></ul>
 			</td></tr>
 			<tr><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr></table><%
 			endDETable(pageContext);

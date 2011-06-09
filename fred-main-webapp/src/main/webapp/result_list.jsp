@@ -256,7 +256,7 @@
                                                                     <input type="checkbox" name="FeatIDs" <%= checkedText %> onchange="updateMasterCheckbox()" value="<%=feature.getFeatureId()%>" />
                                                             </td>
                                                             <td>
-                                                                <a href="detail.jsp?resultsIndex=<%=(resultsList.size()-1)%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back+To+Result+List"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" /></a>
+                                                                <a href="detail.jsp?resultsIndex=<%=(resultsList.size()-1)%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back+To+Result+List"><img src="images/loc.gif" border="0" height="20" width="20" alt="View Locality" title="View Locality"/></a>
                                                             </td>
                                                             <td class="heading"><%=feature.getFrNumber()%> <%=(feature.getYardFrNumber() != null) ? "(" + feature.getYardFrNumber() + ")" : ""%>&nbsp;&nbsp;</td>
                                                             <td><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
@@ -269,7 +269,7 @@
                                                         if (user != null && featureUtil.isAllowedEditApprovedFeature(user, feature)) 
                                                         {
                                                             %><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FeatID=<%=feature.getFeatureId()%>&FoldID=<%=feature.getMasterFile().getFolderId()%>">
-                                                                <img src="images/edit.gif" height="20" width="20" border="0" alt="Edit" />
+                                                                <img src="images/edit.gif" height="20" width="20" border="0" alt="Edit" title="Edit"/>
                                                             </a><%
 							}%>
                                                             </td>						
@@ -285,7 +285,7 @@
 												<td></td>
 												<td>
 													<a href="detail.jsp?resultsIndex=<%=(resultsList.size()-1)%>&backURL=<%=URLEncoder.encode("result_list.jsp?Page=" + pageNum, "ISO-8859-1")%>&backText=Back%20To%20Result%20List">
-														<img src="images/drill.gif" border="0" height="20" width="20" alt="View Sample" />
+														<img src="images/drill.gif" border="0" height="20" width="20" alt="View Sample" title="View Sample"/>
 													</a>
 												</td>
 												<td class="heading">&nbsp;&nbsp;&nbsp;<%=SampleUtil.getDrillHoleDepthDescription(sample)%>&nbsp;&nbsp;</td>

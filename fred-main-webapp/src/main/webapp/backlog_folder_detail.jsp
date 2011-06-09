@@ -78,7 +78,7 @@
 			<li>Click on the icons to work with an individual locality record:
 			<ul>
 			<li><img src="images/print.gif" border="0"> to print the locality
-			<li><img src="images/edit.gif" border="0"> to edit the locality
+			<li><img src="images/edit.gif" border="0" alt="Edit" title="Edit"> to edit the locality
 			</ul>
 			</ul>
 			</td></tr>
@@ -96,7 +96,7 @@
 			for (int i=0; i<features.length; i++) {
 				Feature feature = features[i];
 				Audit audit = feature.getAudit();
-				%><tr><td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("backlog_folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" height="20" width="20" border="0" alt="View Locality" /></a></td>
+				%><tr><td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("backlog_folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" height="20" width="20" border="0" alt="View Locality" title="View Locality" /></a></td>
 				<td style="text-align: left" class="heading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=(audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : ""%>&nbsp;&nbsp;</td>
@@ -105,7 +105,7 @@
 				<td style="text-align: left"><a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId()%>&q=<%=Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print Locality" /></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%
 				if (folder.isAllowedEditLocalities()) {
-					%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a>&nbsp;&nbsp;<%
+					%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality"  title="Edit"/></a>&nbsp;&nbsp;<%
 				}
 				%></td>
 				<td style="text-align: left"><%
