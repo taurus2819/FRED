@@ -55,8 +55,6 @@
 			new IconnedLink("manage_confid_groups.jsp?backURL=" + URLEncoder.encode("set_confidentiality.jsp?ID=" + request.getParameter("ID") + "&RecType=" + request.getParameter("RecType") + "&FoldID=" + request.getParameter("FoldID"), "ISO-8859-1"), "images/edit.gif", "Manage User Groups")
 		});
 
-	drawTop(out, et, request, response);
-		
 	try {
 		
 		if (request.getParameter("AuditIDs") != null && "Update".equals(request.getParameter("Action"))) {
@@ -65,13 +63,19 @@
 				if (request.getParameter("PalListAuditIDs") != null) {
 					auditUtil.updateConfidentiality(request.getParameterValues("PalListAuditIDs"), request.getParameter("palConfidType"), request.getParameter("palConfidPeriod"), request.getParameter("palConfidLapseEmail"), request.getParameterValues("palConfidGroups"));
 				}
-				response.sendRedirect((String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "&q=" + Math.random());
+                                String attributeToGet = WebsiteConstants.DATA_ENTRY_REDIRECT;
+                                String attribute = (String)session.getAttribute(attributeToGet);
+                                double random = Math.random();
+                                String redirectTo = attribute + "&q=" + random;
+				response.sendRedirect(redirectTo);
 				return;
 			} catch (Exception e) {
 				System.out.println("********** FRED confidentiality error: " + new java.util.Date());
 				e.printStackTrace();
 			}
 		}
+		
+	drawTop(out, et, request, response);
 		
 		if (request.getParameter("SampIDs") != null || request.getParameter("RecIDs") != null) {
 			SampleUtil sampleUtil = new SampleUtil(factory);
