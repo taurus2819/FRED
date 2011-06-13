@@ -166,7 +166,7 @@
                         </configuration>
                     </plugin>
                 </plugins>
-                <finalName>fred</finalName>
+                <finalName>fred-local</finalName>
             </build>
         </profile>
         <profile>
@@ -207,7 +207,7 @@
                         </configuration>
                     </plugin>
                 </plugins>
-                <finalName>fred</finalName>
+                <finalName>fred-dev</finalName>
             </build>
         </profile>
         <profile>
@@ -248,7 +248,7 @@
                         </configuration>
                     </plugin>
                 </plugins>
-                <finalName>fred</finalName>
+                <finalName>fred-test</finalName>
             </build>
         </profile>
         <profile>
