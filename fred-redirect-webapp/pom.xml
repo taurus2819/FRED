@@ -58,6 +58,16 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <modules>
-    </modules>
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <name>GNS Private Repository</name>
+            <url>http://repo.gns.cri.nz/artifactory/libs-releases-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>libs-snapshots</name>
+            <url>http://repo.gns.cri.nz/artifactory/libs-snapshots-local</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project> 
