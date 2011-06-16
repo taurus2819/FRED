@@ -116,6 +116,9 @@ public class OutcropLocalityDE extends LocalityDE {
                 e = _e;
             else
                 e.getError().addAll(_e.getError());
+        } catch (nz.cri.gns.dataaccess.StorageAccessException storageE)
+        {
+            throw new DataInputException();
         }
         if (e != null)
             throw e;
