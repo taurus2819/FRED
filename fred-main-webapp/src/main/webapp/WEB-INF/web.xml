@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app version="2.5" 
+    xmlns="http://java.sun.com/xml/ns/javaee" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	<servlet>
+		<servlet-name>frf</servlet-name>
+		<servlet-class>nz.cri.gns.fred.servlet.FRFormServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>ajax</servlet-name>
+		<servlet-class>nz.cri.gns.fred.servlet.AJAXServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>locality</servlet-name>
+		<servlet-class>nz.cri.gns.fred.servlet.LocalityServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ajax</servlet-name>
+		<url-pattern>/ajaxSupport.xml</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>frf</servlet-name>
+		<url-pattern>/frf/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>locality</servlet-name>
+		<url-pattern>/locality/*</url-pattern>
+	</servlet-mapping>
+
+    <session-config>
+	<session-timeout>30</session-timeout>
+    </session-config>
+</web-app>

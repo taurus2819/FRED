@@ -1,0 +1,73 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>nz.cri.gns.fred</groupId>
+    <artifactId>fred-redirect-webapp</artifactId>
+    <version>2.0.0-RELEASE</version>
+    <packaging>war</packaging>
+    <name>FRED Redirect Webapp</name>
+    <description>FRED Redirection Webapp</description>
+    <build>
+        <finalName>fred-redirect-webapp</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.1.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>nz.cri.gns</groupId>
+            <artifactId>gol-html</artifactId>
+            <version>2.0.1-RELEASE</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>nz.cri.gns</groupId>
+            <artifactId>gol-dbcp</artifactId>
+            <version>2.0.1-RELEASE</version>
+        </dependency>
+        <dependency>
+            <artifactId>jsp-api</artifactId>
+            <groupId>javax.servlet.jsp</groupId>
+            <type>jar</type>
+            <version>2.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>nz.cri.gns</groupId>
+            <artifactId>fred</artifactId>
+            <version>2.0.0-RELEASE</version>
+            <classifier>classes</classifier>
+        </dependency>
+    </dependencies>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <name>GNS Private Repository</name>
+            <url>http://repo.gns.cri.nz/artifactory/libs-releases-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>libs-snapshots</name>
+            <url>http://repo.gns.cri.nz/artifactory/libs-snapshots-local</url>
+        </snapshotRepository>
+    </distributionManagement>
+</project> 

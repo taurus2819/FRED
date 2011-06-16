@@ -1,0 +1,46 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>nz.cri.gns.fred</groupId>
+    <artifactId>fred</artifactId>
+    <version>2.0.0-RELEASE</version>
+    <packaging>pom</packaging>
+    <name>Fossil Record Electronic Database</name>
+    <url>http://fred.org.nz</url>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+        <finalName>fred</finalName>
+    </build>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <modules>
+        <module>fred-main-webapp</module>
+        <module>fred-redirect-webapp</module>
+        <module>fred-ims</module>
+    </modules>
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <name>GNS Private Repository</name>
+            <url>http://repo.gns.cri.nz/artifactory/libs-releases-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>libs-snapshots</name>
+            <url>http://repo.gns.cri.nz/artifactory/libs-snapshots-local</url>
+        </snapshotRepository>
+    </distributionManagement>
+</project> 
