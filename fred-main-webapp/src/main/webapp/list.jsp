@@ -105,7 +105,12 @@
 				%><tr><td>Error: <%=e%></td></tr><%
 			}
 			if (dataEntryForm != null)
+                                                       {
 				dataEntryForm.makeExcelImportHTML(new PrintWriter(out));
+                                java.io.StringWriter strWrtr = new java.io.StringWriter();
+				dataEntryForm.makeExcelImportHTML(strWrtr);
+                                System.out.println(strWrtr);
+                                                               }
 		} else if (listName.equals("sampleId")) {
 			User user = null;
 			try {
@@ -337,6 +342,8 @@
 					rs = statement.executeQuery("SELECT l.lab_name || DECODE(ls.code, NULL, NULL, ': ' || ls.code) || '</td><td>' || ls.lab_section_id FROM lab_section ls, sc.lab l WHERE ls.lab_id = l.lab_id ORDER BY l.lab_name, ls.code"); 
 				} else if (listName.equals("taxaGroup")) {
 					rs = statement.executeQuery("SELECT name FROM taxonomic_group ORDER BY group_id"); 
+				} else if (listName.equals("confidGroup")) {
+					rs = statement.executeQuery("SELECT name FROM confidential_group ORDER BY name asc"); 
 				}
 				while (rs.next()) {
 					%><tr><td><%=rs.getString(1).replaceAll(" ", "&nbsp;")%></td></tr><%

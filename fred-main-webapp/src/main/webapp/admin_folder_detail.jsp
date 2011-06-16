@@ -88,7 +88,7 @@
 			<ul>
 			<li><img src="images/map.gif" border="0" height="20" width="20" alt="" /> view a map of the locality</li>
 			<li><img src="images/pdf_icon.gif" border="0"> to print the locality
-			<li><img src="images/edit.gif" border="0"> to edit the locality
+			<li><img src="images/edit.gif" border="0" alt="Edit" title="Edit"> to edit the locality
 			<li><img src="images/review.gif" border="0"> to accept or reject the locality
 			</ul>
 			<li>Multiple localities may be selected by <i>ticking</i> the checkboxes on the left-hand side.  You can then use the tools in the <i>Selected Locality Actions</i> box</li>
@@ -114,7 +114,7 @@
 				Audit audit = feature.getAudit();
 				%><tr>
 				<td style="text-align: left"><input type="checkbox" name="FeatIDs" value="<%=feature.getFeatureId()%>" /></td>
-				<td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" height="20" width="20" border="0" alt="View Locality" /></a></td>
+				<td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" height="20" width="20" border="0" alt="View Locality" title="View"/></a></td>
 				<td style="text-align: left" class="heading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=(audit.getSubmittedDate() != null) ? FREDUtil.formatDateForOutput(audit.getSubmittedDate()) : ""%>&nbsp;&nbsp;</td>
@@ -123,7 +123,7 @@
 				<td style="text-align: left"><a href="frf/frf.pdf?FeatIDs=<%=feature.getFeatureId()%>&q=<%=Math.random()%>" target="_blank"><img src="images/pdf_icon.gif" border="0" height="20" width="20" alt="Print Locality" /></a>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%
 				if (folder.isAllowedEditLocalities()) {
-					%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" /></a>&nbsp;&nbsp;<%
+					%><a href="de.jsp?Type=<%=feature.getFeatureType()%>&FoldID=<%=folder.getFolderId()%>&FeatID=<%=feature.getFeatureId()%>"><img src="images/edit.gif" border="0" height="20" width="20" alt="Edit Locality" title="Edit"/></a>&nbsp;&nbsp;<%
 				}
 				%></td><td style="text-align: left"><%
 				if (folder.isAllowedApproveLocalities()) {
@@ -148,7 +148,7 @@
 				Audit audit = feature.getAudit();
 				%><tr>
 				<td style="text-align: left"><input type="checkbox" name="FeatIDs" value="<%=feature.getFeatureId()%>" /></td>
-				<td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" height="20" width="20" border="0" alt="View Locality" /></a></td>
+				<td style="text-align: left"><a href="detail.jsp?FeatID=<%=feature.getFeatureId()%>&backURL=<%=URLEncoder.encode("admin_folder_detail.jsp?ID=" + folder.getFolderId() + "&q=" + Math.random(), "ISO-8859-1")%>&backText=Back%20To%20Folder"><img src="images/loc.gif" height="20" width="20" border="0" alt="View Locality" title="View Locality" /></a></td>
 				<td style="text-align: left"><span class="heading"><%=FeatureUtil.getFeatureIdentifyingName(feature)%></span>&nbsp;&nbsp;<%=(feature.getFeatureName() != null) ? "<br />(" + feature.getFeatureName() + ")&nbsp;&nbsp;" : ""%></td>
 				<td style="text-align: left"><%=feature.getFeatureType()%>&nbsp;&nbsp;</td>
 				<td style="text-align: left"><%=(audit.getApprovedDate() != null) ? FREDUtil.formatDateForOutput(audit.getApprovedDate()) : ""%>&nbsp;&nbsp;</td>

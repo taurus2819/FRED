@@ -62,7 +62,7 @@
 			for (PaleontologyListEntry t : e.getTaxaList()) {
 				%><tr><td><%=t.getTaxonomicGroup().getName()%>&nbsp;&nbsp;</td><td><%=t.getTaxonomicName()%>&nbsp;&nbsp;</td><td><%=t.getTaxon().getTaxonomicName()%>&nbsp;&nbsp;</td><td><%=t.getTaxon().getAuthor()%></td></tr><%
 			}
-			%><tr><td colsapn="4"><a href="submit_taxa.jsp"><img src="images/submit.gif" height="20" width="20" border="0" alt="Submit Taxa" /></a>&nbsp;<a href="submit_taxa.jsp">Submit Taxa.</a></td></tr>
+			%><tr><td colsapn="4"><a href="submit_taxa.jsp"><img src="images/submit.gif" height="20" width="20" border="0" alt="Submit Taxa" title="Submit"/></a>&nbsp;<a href="submit_taxa.jsp">Submit Taxa.</a></td></tr>
 			<tr><td colspan="4">Note: No reference to these taxa has been saved yet.  You must either choose to submit the above taxa or return to the data entry form, edit and re-save</td></tr>
 			</table><%
 			endDETable(pageContext);

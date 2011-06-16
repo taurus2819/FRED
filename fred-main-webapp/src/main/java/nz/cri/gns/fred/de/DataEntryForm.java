@@ -28,7 +28,7 @@ public interface DataEntryForm {
 	
 	public void makeExcelImportHTML(Writer out) throws IOException, SQLException;
 
-	public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException;
+	public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException, nz.cri.gns.dataaccess.StorageAccessException;
 
 	public int save(int dataOriginId) throws SQLException, IOException, InsufficientPrivelegesException, StorageAccessException;
 
