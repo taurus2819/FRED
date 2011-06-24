@@ -166,7 +166,7 @@
                         </configuration>
                     </plugin>
                 </plugins>
-                <finalName>fred-local</finalName>
+                <finalName>fred</finalName>
             </build>
         </profile>
         <profile>

@@ -515,7 +515,6 @@ if (!featType.equals(FREDConstants.OUTCROP)) {
 
 %><tr class="midColour"><th colspan="2">Collection Information</th></tr><%
     Object[] collectors = sample.getCollectors().toArray();
-    Arrays.sort(collectors);
     String[] collectorStr = new String[collectors.length];
     for (int i = 0; i < collectors.length; i++) {
         collectorStr[i] = ((PersonRelationship) collectors[i]).getDisplayName();
