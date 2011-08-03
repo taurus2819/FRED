@@ -87,9 +87,9 @@
 	if (dataEntryForm != null) {
 		try {
 			if (dataEntryForm.usesCalendar()) {
-				et.addScript("calendar-stripped.js");
-				et.addScript("calendar-en-stripped.js");
-				et.addScript("calendar-setup-stripped.js");
+				et.addScript("scripts/calendar-stripped.js");
+				et.addScript("scripts/calendar-en-stripped.js");
+				et.addScript("scripts/calendar-setup-stripped.js");
 				et.addStyleSheet("skins/aqua/theme.css");
 			}
 			List list = dataEntryForm.getNavigation();

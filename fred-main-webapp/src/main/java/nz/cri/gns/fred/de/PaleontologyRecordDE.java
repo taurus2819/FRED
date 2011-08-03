@@ -43,8 +43,8 @@ import nz.cri.gns.intranet.Template;
 
 public class PaleontologyRecordDE extends RecordDE {
 
-	private Set<PaleontologyListEntry> badTaxaList;
-	private boolean nonApprovedTaxaFlag = false;
+    private Set<PaleontologyListEntry> badTaxaList;
+    private boolean nonApprovedTaxaFlag = false;
     private TaxonomicUtil taxonomicUtil;
 
     public PaleontologyRecordDE(User user, Sample sample, int folderID, DAOFactory factory, ContentProvider provider) throws StorageAccessException, InsufficientPrivelegesException {
@@ -59,11 +59,11 @@ public class PaleontologyRecordDE extends RecordDE {
 
     @Override
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
-       reinitialise(factory);
-       Vector<String[]> error = new Vector<String[]>();
-        
-       super.updateFromRequest(request, factory, addIfNew);
-        
+        reinitialise(factory);
+        Vector<String[]> error = new Vector<String[]>();
+
+        super.updateFromRequest(request, factory, addIfNew);
+
         Paleontology pal = record.getPaleontology();
         //Collection date
         try {
@@ -71,60 +71,64 @@ public class PaleontologyRecordDE extends RecordDE {
             pal.setIdentificationDate(FREDUtil.parseDateFromDE(palDate));
             pal.setDateRounding(FREDUtil.parseDateRoundingFromDE(palDate));
         } catch (ParseException e) {
-            error.add(new String[] {"Adoption Date", "Badly formatted date"});
+            error.add(new String[]{"Adoption Date", "Badly formatted date"});
         }
-        
+
         //Identifiers
         try {
             pal.setIdentifiers(FREDUtil.getPersons(request.getParameter("Identifier"), new PersonUtil(factory), "Identifiers", addIfNew));
         } catch (DataInputException e) {
             error.addAll(e.getError());
         }
-        
+
         //Stage
         try {
             pal.setStage(StageDEUtil.getStage(request, "Stage", pal.getStage(), new StageUtil(factory), "Stage"));
         } catch (DataInputException e) {
-			error.addAll(e.getError());
+            error.addAll(e.getError());
         }
-        
+
         //Stage Comments
         pal.setStageComments(request.getParameter("StComm"));
-        
+
         String sectionId = request.getParameter("SectID");
         if (sectionId == null) {
             pal.setLabSection(null);
         } else {
-            if (pal.getLabSection() == null || !pal.getLabSection().getLabSectionId().toString().equals(sectionId)) try {
-                pal.setLabSection(recordUtil.getLabSection(Integer.parseInt(sectionId)));
-            } catch (NumberFormatException e) {
-            	pal.setLabSection(null);
-            } catch (StorageAccessException e) {
-            	e.printStackTrace();
-                error.add(new String[] {"Lab Section", "Error accessing data storage"});
+            if (pal.getLabSection() == null || !pal.getLabSection().getLabSectionId().toString().equals(sectionId)) {
+                try {
+                    pal.setLabSection(recordUtil.getLabSection(Integer.parseInt(sectionId)));
+                } catch (NumberFormatException e) {
+                    pal.setLabSection(null);
+                } catch (StorageAccessException e) {
+                    e.printStackTrace();
+                    error.add(new String[]{"Lab Section", "Error accessing data storage"});
+                }
             }
         }
-        
+
         pal.setLabNumber(request.getParameter("LabNum"));
         pal.setCollectionComments(request.getParameter("CollComm"));
-        
+
         //Taxa
         badTaxaList = new HashSet<PaleontologyListEntry>();
         String taxa = request.getParameter("Taxa");
         if (taxa != null) {
-        	dealWithTaxa(taxa.split("\\n"), pal, error);
+            dealWithTaxa(taxa.split("\\n"), pal, error);
         } else {
-        	String[] taxa2 = request.getParameterValues("Taxa2");
-        	dealWithTaxa(taxa2, pal, error);
+            String[] taxa2 = request.getParameterValues("Taxa2");
+            dealWithTaxa(taxa2, pal, error);
         }
-		
-        if (error.size() > 0) 
+
+        if (error.size() > 0) {
             throw new DataInputException(error);
-        
-		if (badTaxaList.size() > 0)
-			throw new TaxonomicListException(badTaxaList);
-	}
-	
+        }
+
+        if (badTaxaList.size() > 0) {
+            throw new TaxonomicListException(badTaxaList);
+        }
+    }
+
     private void dealWithTaxa(String[] taxa, Paleontology pal, Vector<String[]> error) {
         Set<PaleontologyListEntry> taxaList = pal.getListEntries();
         if (taxaList == null) {
@@ -138,104 +142,107 @@ public class PaleontologyRecordDE extends RecordDE {
         nonApprovedTaxaFlag = false;
 
         if (taxa != null && taxa.length > 0) {
-	        for (int i = 0; i < taxa.length; i++) {
-	        	String taxaLine = taxa[i].trim();
-	            if (taxaLine.length() == 0)
-	            	continue;
-				try {
-	                boolean found = false;
-	                String[] bits = taxaLine.split("\\*", -1);
-	                
-	                String groupStr = null;
-	                String nameStr = null;
-	                String authorStr = null;
-	                String specCountStr = null;
-	                String specCoordStr = null;
-	                String commentsStr = null;
-	                if (bits.length == 6) {
-	                	groupStr = bits[GROUP];
-	                	nameStr = bits[NAME];
-	                	authorStr = bits[AUTHOR];
-	                	specCountStr = bits[SPECIMEN_COUNT];
-	                	specCoordStr = bits[SPECIMEN_COORD];
-	                	commentsStr = bits[COMMENTS];
-	                } else {
-	                	groupStr = bits[GROUP];
-	                	nameStr = bits[NAME];
-	                	authorStr = bits[AUTHOR];
-	                	String[] commentsBits = TaxonomicUtil.decodeTaxaComments(bits[3]);
-	                	specCountStr = commentsBits[0];
-	                	specCoordStr = commentsBits[1];
-	                	commentsStr = commentsBits[2];
-	                }
-	                nameStr = nameStr.replaceAll("\"", "'");
-	                
-	            	Integer specCount = (specCountStr == null || specCountStr.length() == 0) ? null : new Integer(specCountStr);
-	                for (Iterator<PaleontologyListEntry> it = removedTaxaList.iterator(); it.hasNext(); ) {
-	                    PaleontologyListEntry entry = it.next();
-	                    if (taxonomicUtil.isMatchingEntry(entry, groupStr, nameStr, authorStr, specCount, specCoordStr, commentsStr)) {
-	                        //It matches
-	                        it.remove();
-	                        found = true;
-	                        if (entry.getTaxon() != null && !entry.getTaxon().getStatus().equals(FREDConstants.APPROVED))
-	                        	nonApprovedTaxaFlag = true;
-	                        break;
-	                    }
-	                }
-	                //Was not already in the list
-	                if (!found) {
-	                	//The group
-	                	TaxonomicGroup group = taxonomicUtil.getTaxonomicGroup(groupStr);
-	                	//clean TaxaName
-	                    String cleanName = TaxonomicUtil.getCleanedName(nameStr);
-	                    //Prepare for having an entry
-	                    PaleontologyListEntry entry = null;
-	                    //Is the taxonomic name valid?
-	                    boolean blankTaxon = cleanName.length() == 0 && nameStr.length() > 0;
-	                    	
-	                    Taxon taxon = (blankTaxon) 
-	                    	? null 
-	                    	: taxonomicUtil.getTaxon(group, cleanName, authorStr);
-	                    
-	                    if (taxon == null && !blankTaxon) {
-	                        //It's a new taxon - create a record...but don't save it yet!
-	                    	entry = new UnsavedListEntry(); 
-	                    	taxon = new UnsavedTaxon();
-	                        taxon.setAuthor(authorStr);
-	                        taxon.setStatus(FREDConstants.PROVISIONAL);
-	                        taxon.setTaxonomicGroup(group);
-	                        taxon.setTaxonomicName(cleanName);
-	                        taxon.setSubmittedById(new Integer(user.getId()));
-	                        taxon.setSubmittedDate(new Date());
-	                        //Also add the entry to the bad list
-	                        badTaxaList.add(entry);
-	                    } else {
-	                    	entry = taxonomicUtil.createPaleontologyListEntry();
-	                    	taxaList.add(entry);
-	                    }
-	                    
-	                    entry.setPaleontology(pal);
-	                    entry.setTaxonomicGroup(taxonomicUtil.getTaxonomicGroup(groupStr));
-	                    entry.setTaxonomicName(nameStr);
-	                    entry.setTaxon(taxon);
-	                    if (specCountStr != null && specCountStr.length() > 0)
-	                    	entry.setSpecimenCount(new Integer(specCountStr));
-	                    entry.setSpecimenCoords(specCoordStr);
-	                    entry.setComments(commentsStr);
-	                    if (entry.getTaxon() != null && !entry.getTaxon().getStatus().equals(FREDConstants.APPROVED))
-	                    	nonApprovedTaxaFlag = true;
-	                }
-				} catch (Exception e) {
-					e.printStackTrace();
-					error.add(new String[] {"Taxanomic List", taxaLine + " not valid"});
-				}
-	        }
+            for (int i = 0; i < taxa.length; i++) {
+                String taxaLine = taxa[i].trim();
+                if (taxaLine.length() == 0) {
+                    continue;
+                }
+                try {
+                    boolean found = false;
+                    String[] bits = taxaLine.split("\\*", -1);
+
+                    String groupStr = null;
+                    String nameStr = null;
+                    String authorStr = null;
+                    String specCountStr = null;
+                    String specCoordStr = null;
+                    String commentsStr = null;
+                    if (bits.length == 6) {
+                        groupStr = bits[GROUP];
+                        nameStr = bits[NAME];
+                        authorStr = bits[AUTHOR];
+                        specCountStr = bits[SPECIMEN_COUNT];
+                        specCoordStr = bits[SPECIMEN_COORD];
+                        commentsStr = bits[COMMENTS];
+                    } else {
+                        groupStr = bits[GROUP];
+                        nameStr = bits[NAME];
+                        authorStr = bits[AUTHOR];
+                        String[] commentsBits = TaxonomicUtil.decodeTaxaComments(bits[3]);
+                        specCountStr = commentsBits[0];
+                        specCoordStr = commentsBits[1];
+                        commentsStr = commentsBits[2];
+                    }
+                    nameStr = nameStr.replaceAll("\"", "'");
+
+                    Integer specCount = (specCountStr == null || specCountStr.length() == 0) ? null : new Integer(specCountStr);
+                    for (Iterator<PaleontologyListEntry> it = removedTaxaList.iterator(); it.hasNext();) {
+                        PaleontologyListEntry entry = it.next();
+                        if (taxonomicUtil.isMatchingEntry(entry, groupStr, nameStr, authorStr, specCount, specCoordStr, commentsStr)) {
+                            //It matches
+                            it.remove();
+                            found = true;
+                            if (entry.getTaxon() != null && !entry.getTaxon().getStatus().equals(FREDConstants.APPROVED)) {
+                                nonApprovedTaxaFlag = true;
+                            }
+                            break;
+                        }
+                    }
+                    //Was not already in the list
+                    if (!found) {
+                        //The group
+                        TaxonomicGroup group = taxonomicUtil.getTaxonomicGroup(groupStr);
+                        //clean TaxaName
+                        String cleanName = TaxonomicUtil.getCleanedName(nameStr);
+                        //Prepare for having an entry
+                        PaleontologyListEntry entry = null;
+                        //Is the taxonomic name valid?
+                        boolean blankTaxon = cleanName.length() == 0 && nameStr.length() > 0;
+
+                        Taxon taxon = (blankTaxon)
+                                ? null
+                                : taxonomicUtil.getTaxon(group, cleanName, authorStr);
+
+                        if (taxon == null && !blankTaxon) {
+                            //It's a new taxon - create a record...but don't save it yet!
+                            entry = new UnsavedListEntry();
+                            taxon = new UnsavedTaxon();
+                            taxon.setAuthor(authorStr);
+                            taxon.setStatus(FREDConstants.PROVISIONAL);
+                            taxon.setTaxonomicGroup(group);
+                            taxon.setTaxonomicName(cleanName);
+                            taxon.setSubmittedById(new Integer(user.getId()));
+                            taxon.setSubmittedDate(new Date());
+                            //Also add the entry to the bad list
+                            badTaxaList.add(entry);
+                        } else {
+                            entry = taxonomicUtil.createPaleontologyListEntry();
+                            taxaList.add(entry);
+                        }
+
+                        entry.setPaleontology(pal);
+                        entry.setTaxonomicGroup(taxonomicUtil.getTaxonomicGroup(groupStr));
+                        entry.setTaxonomicName(nameStr);
+                        entry.setTaxon(taxon);
+                        if (specCountStr != null && specCountStr.length() > 0) {
+                            entry.setSpecimenCount(new Integer(specCountStr));
+                        }
+                        entry.setSpecimenCoords(specCoordStr);
+                        entry.setComments(commentsStr);
+                        if (entry.getTaxon() != null && !entry.getTaxon().getStatus().equals(FREDConstants.APPROVED)) {
+                            nonApprovedTaxaFlag = true;
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    error.add(new String[]{"Taxanomic List", taxaLine + " not valid"});
+                }
+            }
         }
-        
+
         //Now remove any that remain in the 'removed' pile
         taxaList.removeAll(removedTaxaList);
     }
-    
     private static final int GROUP = 0;
     private static final int NAME = 1;
     private static final int AUTHOR = 2;
@@ -245,12 +252,12 @@ public class PaleontologyRecordDE extends RecordDE {
 
     @Override
     public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
-		try {
-			super.makeDataEntryHTML(out, factory);
+        try {
+            super.makeDataEntryHTML(out, factory);
             Template template = provider.getContent("paleo.de.form");
             prepareTemplate(template, provider);
             Paleontology pal = record.getPaleontology();
-            
+
             template.addSub("PalDate", FREDUtil.formatDateForDE(pal.getIdentificationDate(), pal.getDateRounding()));
             template.addSub("Identifier", FREDUtil.getNames(pal.getIdentifiers(), "\n"));
             template.addSub("StComm", pal.getStageComments());
@@ -261,160 +268,164 @@ public class PaleontologyRecordDE extends RecordDE {
 
             for (Lab lab : labs) {
                 String arrayName = "a" + lab.getLabId();
-            	out.println(arrayName + " = new Array();");
-                
-            	int count = 0;
+                out.println(arrayName + " = new Array();");
+
+                int count = 0;
                 for (LabSection section : new TreeSet<LabSection>(lab.getSections())) {
-                	out.println(arrayName + "[" + (count++) + "] = new Option('" + section.getCode() + "'," + section.getLabSectionId() + ");"); 
+                    out.println(arrayName + "[" + (count++) + "] = new Option('" + section.getCode() + "'," + section.getLabSectionId() + ");");
                 }
             }
-				
+
             template.loadUntil(out, "{@lab}");
-			SelectBox<Lab> selectBox = new SelectBox<Lab>(labs);
-			Attributes attributes = Attributes.createNameOnlyAttributes("LabID");
-			attributes.setAttribute("onChange", "swapSection(this.form)");
-			selectBox.writeBox(attributes, "-- Choose --", null, (pal.getLabSection() == null) ? null : pal.getLabSection().getLab(), out);
+            SelectBox<Lab> selectBox = new SelectBox<Lab>(labs);
+            Attributes attributes = Attributes.createNameOnlyAttributes("LabID");
+            attributes.setAttribute("onChange", "swapSection(this.form)");
+            selectBox.writeBox(attributes, "-- Choose --", null, (pal.getLabSection() == null) ? null : pal.getLabSection().getLab(), out);
 
-			if (pal.getLabSection() != null)
-				template.addSub("SectID", pal.getLabSection().getLabSectionId().toString()); 
-			template.addSub("LabNum", pal.getLabNumber());
-			template.addSub("CollComm", pal.getCollectionComments());
+            if (pal.getLabSection() != null) {
+                template.addSub("SectID", pal.getLabSection().getLabSectionId().toString());
+            }
+            template.addSub("LabNum", pal.getLabNumber());
+            template.addSub("CollComm", pal.getCollectionComments());
 
-			template.loadUntil(out, "{@Taxa}");
-			
-			List<TaxonomicGroup> groups = recordUtil.getTaxonomicGroups(pal);
-			List<PaleontologyListEntry> badTaxa = (badTaxaList == null) ? new Vector<PaleontologyListEntry>() : new Vector<PaleontologyListEntry>(badTaxaList);
-			if (groups != null && groups.size() > 0) {
-				for (TaxonomicGroup group : groups) {
-					List<PaleontologyListEntry> list = recordUtil.getListEntries(pal, group);
-					if (list == null || list.size() == 0) {
-						out.println("addTaxa('" + group.getName() + ": ', '', '');");
-					} else {
-						for (PaleontologyListEntry entry : list) {
-							Taxon taxon = entry.getTaxon();
-							out.println("addTaxa(\"" + group.getName() + "\", \""
-									+ entry.getTaxonomicName() + "\", \""
-									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
-									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
-						}
-					}
-					//Also check for bad taxa of this group
-					for (Iterator<PaleontologyListEntry> it = badTaxa.iterator(); it.hasNext(); ) {
-						PaleontologyListEntry entry = it.next();
-						if (entry.getTaxonomicGroup().equals(group) && entry.getTaxon() != null) {
-							Taxon taxon = entry.getTaxon();
-							out.println("addTaxa(\"" + group.getName() + "\", \""
-									+ entry.getTaxonomicName() + "\", \""
-									+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
-									+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
-							it.remove();
-						}
-					}
-				}
-			}
-			//Finally check for any remaining bad taxa
-			for (PaleontologyListEntry entry : badTaxa) {
-				if (entry.getTaxon() != null) {
-					Taxon taxon = entry.getTaxon();
-					out.println("addTaxa(\"" + taxon.getTaxonomicGroup().getName() + "\", \""
-							+ entry.getTaxonomicName() + "\", \""
-							+ DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
-							+ DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
-				}
-			}
-			
-			template.loadAll(out);
-			super.makeEndBitHTML(out);
-		} catch (StorageAccessException e) {
-			e.printStackTrace();
-			throw new IOException("Could not access storage: " + e.getMessage());
-		}
-	}
+            template.loadUntil(out, "{@Taxa}");
 
-	public void makePostFormHTML(PrintWriter out) throws IOException {
+            List<TaxonomicGroup> groups = recordUtil.getTaxonomicGroups(pal);
+            List<PaleontologyListEntry> badTaxa = (badTaxaList == null) ? new Vector<PaleontologyListEntry>() : new Vector<PaleontologyListEntry>(badTaxaList);
+            if (groups != null && groups.size() > 0) {
+                for (TaxonomicGroup group : groups) {
+                    List<PaleontologyListEntry> list = recordUtil.getListEntries(pal, group);
+                    if (list == null || list.size() == 0) {
+                        out.println("addTaxa('" + group.getName() + ": ', '', '');");
+                    } else {
+                        for (PaleontologyListEntry entry : list) {
+                            Taxon taxon = entry.getTaxon();
+                            out.println("addTaxa(\"" + group.getName() + "\", \""
+                                    + entry.getTaxonomicName() + "\", \""
+                                    + DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
+                                    + DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
+                        }
+                    }
+                    //Also check for bad taxa of this group
+                    for (Iterator<PaleontologyListEntry> it = badTaxa.iterator(); it.hasNext();) {
+                        PaleontologyListEntry entry = it.next();
+                        if (entry.getTaxonomicGroup().equals(group) && entry.getTaxon() != null) {
+                            Taxon taxon = entry.getTaxon();
+                            out.println("addTaxa(\"" + group.getName() + "\", \""
+                                    + entry.getTaxonomicName() + "\", \""
+                                    + DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
+                                    + DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
+                            it.remove();
+                        }
+                    }
+                }
+            }
+            //Finally check for any remaining bad taxa
+            for (PaleontologyListEntry entry : badTaxa) {
+                if (entry.getTaxon() != null) {
+                    Taxon taxon = entry.getTaxon();
+                    out.println("addTaxa(\"" + taxon.getTaxonomicGroup().getName() + "\", \""
+                            + entry.getTaxonomicName() + "\", \""
+                            + DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "\", \""
+                            + DBUtils.nvl(TaxonomicUtil.encodeTaxaComments(entry)) + "\");");
+                }
+            }
+
+            template.loadAll(out);
+            super.makeEndBitHTML(out);
+        } catch (StorageAccessException e) {
+            e.printStackTrace();
+            throw new IOException("Could not access storage: " + e.getMessage());
+        }
+    }
+
+    public void makePostFormHTML(PrintWriter out) throws IOException {
         Template template = provider.getContent("calendar.script");
-		template.addSub("button", "PalDateCal");
+        template.addSub("button", "PalDateCal");
         template.addSub("inputField", "PalDate");
         template.loadAll(out);
     }
 
-	@Override
+    @Override
     public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
-		super.makeExcelImportHTML(out);
-		Paleontology pal = record.getPaleontology();
-		out.write("<td>#" + FREDUtil.formatDateForDE(pal.getIdentificationDate(), pal.getDateRounding()) + "#</td>\n");
-		out.write("<td>" + FREDUtil.getNames(pal.getIdentifiers(), "#") + "</td>");
-		Stage stage = pal.getStage();
-		if (stage != null) {
-			if (stage.getLowerAge() != null)
-				out.write("<td>" + stage.getLowerAge().getAgeId().toString() + "</td>"
-						+ "<td>" + DBUtils.nvl(stage.getStageLowerMod()) + "</td>");	
-			else
-				out.write("<td></td><td></td>");
-			if (stage.getUpperAge() != null)
-				out.write("<td>" + stage.getUpperAge().getAgeId().toString() + "</td>"
-						+ "<td>" + DBUtils.nvl(stage.getStageUpperMod()) + "</td>");
-			else
-				out.write("<td></td><td></td>");
-		} else {
-			out.write("<td></td><td></td><td></td><td></td>");
-		}
-		out.write("<td>" + DBUtils.nvl(pal.getStageComments()) + "</td>");
-		out.write("<td>" + ((pal.getLabSection() != null) ? pal.getLabSection().getLabSectionId() : "") + "</td>");
-		out.write("<td>" + DBUtils.nvl(pal.getLabNumber()) + "</td>");
-		out.write("<td>" + DBUtils.nvl(pal.getCollectionComments()) + "</td>");
-		out.write("</tr>");
+        super.makeExcelImportHTML(out);
+        Paleontology pal = record.getPaleontology();
+        out.write("<td>#" + FREDUtil.formatDateForDE(pal.getIdentificationDate(), pal.getDateRounding()) + "#</td>\n");
+        out.write("<td>" + FREDUtil.getNames(pal.getIdentifiers(), "#") + "</td>");
+        Stage stage = pal.getStage();
+        if (stage != null) {
+            if (stage.getLowerAge() != null) {
+                out.write("<td>" + stage.getLowerAge().getAgeId().toString() + "</td>"
+                        + "<td>" + DBUtils.nvl(stage.getStageLowerMod()) + "</td>");
+            } else {
+                out.write("<td></td><td></td>");
+            }
+            if (stage.getUpperAge() != null) {
+                out.write("<td>" + stage.getUpperAge().getAgeId().toString() + "</td>"
+                        + "<td>" + DBUtils.nvl(stage.getStageUpperMod()) + "</td>");
+            } else {
+                out.write("<td></td><td></td>");
+            }
+        } else {
+            out.write("<td></td><td></td><td></td><td></td>");
+        }
+        out.write("<td>" + DBUtils.nvl(pal.getStageComments()) + "</td>");
+        out.write("<td>" + ((pal.getLabSection() != null) ? pal.getLabSection().getLabSectionId() : "") + "</td>");
+        out.write("<td>" + DBUtils.nvl(pal.getLabNumber()) + "</td>");
+        out.write("<td>" + DBUtils.nvl(pal.getCollectionComments()) + "</td>");
+        out.write("</tr>");
 
-		List<TaxonomicGroup> groups = recordUtil.getTaxonomicGroups(pal);
-		if (groups != null && groups.size() > 0) {
-			for (TaxonomicGroup group : groups) {
-				List<PaleontologyListEntry> list;
-				try {
-					list = recordUtil.getListEntries(pal, group);
-					if (list == null || list.size() == 0) {
-						out.write("<tr><td>" + group.getName() + "</td></tr>");
-					} else {
-						for (PaleontologyListEntry entry : list) {
-							Taxon taxon = entry.getTaxon();
-							out.write("<tr><td>" + group.getName() + "</td>" 
-									+ "<td>" + DBUtils.nvl(entry.getTaxonomicName()).replaceAll("'", "\"") + "</td>" 
-									+ "<td>" + DBUtils.nvl((taxon != null) ? taxon.getAuthor() : null) + "</td>"
-									+ "<td>" + ((taxon != null) ? taxon.getStatus() : "new") + "</td>"
-									+ "<td>" + ((TaxonomicUtil.encodeTaxaComments(entry) != null) ? TaxonomicUtil.encodeTaxaComments(entry) : "*") + "</td></tr>");
-						}
-					}
-				} catch (StorageAccessException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-	
-	@Override
+        List<TaxonomicGroup> groups = recordUtil.getTaxonomicGroups(pal);
+        if (groups != null && groups.size() > 0) {
+            for (TaxonomicGroup group : groups) {
+                List<PaleontologyListEntry> list;
+                try {
+                    list = recordUtil.getListEntries(pal, group);
+                    if (list == null || list.size() == 0) {
+                        out.write("<tr><td>" + group.getName() + "</td></tr>");
+                    } else {
+                        for (PaleontologyListEntry entry : list) {
+                            Taxon taxon = entry.getTaxon();
+                            out.write("<tr><td>" + group.getName() + "</td>"
+                                    + "<td>" + DBUtils.nvl(entry.getTaxonomicName()).replaceAll("'", "\"") + "</td>"
+                                    + "<td>" + DBUtils.nvl((taxon != null) ? taxon.getAuthor() : null) + "</td>"
+                                    + "<td>" + ((taxon != null) ? taxon.getStatus() : "new") + "</td>"
+                                    + "<td>" + ((TaxonomicUtil.encodeTaxaComments(entry) != null) ? TaxonomicUtil.encodeTaxaComments(entry) : "*") + "</td></tr>");
+                        }
+                    }
+                } catch (StorageAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    @Override
     protected void checkMandatoryFields() throws DataInputException {
-		if (badTaxaList.size() > 0 || nonApprovedTaxaFlag)
-			throw new DataInputException("Mandatory Fields", "Not all taxonomic entries are approved");
-	}
+        if (badTaxaList.size() > 0 || nonApprovedTaxaFlag) {
+            throw new DataInputException("Mandatory Fields", "Not all taxonomic entries are approved");
+        }
+    }
 
     public boolean usesCalendar() {
         return true;
     }
 
-	public String getHeading() {
-		return "Edit paleontological record";
-	}
-	
-	@Override
+    public String getHeading() {
+        return "Edit paleontological record";
+    }
+
+    @Override
     public int save(int dataOriginId) throws InsufficientPrivelegesException, StorageAccessException {
-		int recordId = super.save(dataOriginId);
-		/*if (record.getPaleontology().getRecordId() == null)
-			recordUtil.save(record.getPaleontology());
-		else
-			recordUtil.update(record.getPaleontology());*/
-		return recordId;
-	}
-	
-	public void save(PaleontologyListEntry entry) throws StorageAccessException {
+        int recordId = super.save(dataOriginId);
+        /*if (record.getPaleontology().getRecordId() == null)
+        recordUtil.save(record.getPaleontology());
+        else
+        recordUtil.update(record.getPaleontology());*/
+        return recordId;
+    }
+
+    public void save(PaleontologyListEntry entry) throws StorageAccessException {
         Paleontology pal = record.getPaleontology();
         Set<PaleontologyListEntry> taxaList = pal.getListEntries();
         if (taxaList == null) {
@@ -423,15 +434,15 @@ public class PaleontologyRecordDE extends RecordDE {
         }
         entry.setPaleontology(pal);
         try {
-        	taxaList.add(taxonomicUtil.ensureCompatibleWithPersistenceLayer(entry));
-        } catch (Exception e) {	
-        	throw new StorageAccessException(e);
+            taxaList.add(taxonomicUtil.ensureCompatibleWithPersistenceLayer(entry));
+        } catch (Exception e) {
+            throw new StorageAccessException(e);
         }
 
-	}
-	
-	@Override
+    }
+
+    @Override
     public void reinitialise(DAOFactory factory) {
-		super.reinitialise(factory);
-	}
+        super.reinitialise(factory);
+    }
 }

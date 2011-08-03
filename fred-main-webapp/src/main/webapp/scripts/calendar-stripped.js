@@ -39,9 +39,9 @@ this.activeMonth = null;
 this.hilitedYear = null;
 this.activeYear = null;
 this.dateClicked = false;
-if (dateAsStr.length == 4)
+if (dateAsStr != null && dateAsStr.length == 4)
 this.rounding = Calendar._TT["ROUNDING_YEAR"];
-else if (dateAsStr.length == 7)
+else if (dateAsStr != null && dateAsStr.length == 7)
 this.rounding = Calendar._TT["ROUNDING_MONTH"];
 else
 this.rounding = Calendar._TT["ROUNDING_DAY"];
@@ -905,9 +905,9 @@ return part;
 };
 
 var currentRounding = Calendar._TT["ROUNDING_DAY"];
-if (this.dateAsStr && this.dateAsStr.length == 4)
+if (this.dateAsStr != null && this.dateAsStr.length == 4)
 currentRounding = Calendar._TT["ROUNDING_YEAR"];
-else if (this.dateAsStr && this.dateAsStr.length == 7)
+else if (this.dateAsStr != null && this.dateAsStr.length == 7)
 currentRounding = Calendar._TT["ROUNDING_MONTH"];
 
 var R = makeRoundingPart("minute", currentRounding);
@@ -917,9 +917,9 @@ cell.colSpan = 2;
 cell.innerHTML = "&nbsp;";
 
 cal.onSetRounding = function() {
-if (this.dateAsStr.length == 4) 
+if (this.dateAsStr != null && this.dateAsStr.length == 4) 
 R.innerHTML = Calendar._TT["ROUNDING_YEAR"];
-else if (this.dateAsStr.length == 7)
+else if (this.dateAsStr != null && this.dateAsStr.length == 7)
 R.innerHTML = Calendar._TT["ROUNDING_MONTH"];
 else
 R.innerHTML = Calendar._TT["ROUNDING_DAY"];
