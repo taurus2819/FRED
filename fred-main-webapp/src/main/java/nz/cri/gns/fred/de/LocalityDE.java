@@ -477,15 +477,18 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             
 
             if (site != null) {
-                //add coord metadata from existing site
-                feature.setOrigSystemId(site.getOriginalId());
-                feature.setOrigCoord(site.getOriginalCoordinates());
-                if (site.getDirections() != null) {
-                    feature.setLocality(site.getDirections());
+                //add coord metadata from existing site but only if a drillhole
+                if (feature.getFeatureId() == null) {
+                    feature.setOrigSystemId(site.getOriginalId());
+                    feature.setOrigCoord(site.getOriginalCoordinates());
                 } else {
-                    feature.setLocality(locality); 
+                    // allow user to override 
+                    feature.setOrigSystemId(datum.getDatabaseId());
+                    feature.setOrigCoord(datum.getStringFor(coord));
                 }
-                
+                // always use FRED user contributed locality details
+                feature.setLocality(locality);
+               
                 //TODO reuse site_name as feature_name?? see JES
                 
             } else {
