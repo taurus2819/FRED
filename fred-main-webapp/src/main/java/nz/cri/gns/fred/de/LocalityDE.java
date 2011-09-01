@@ -485,9 +485,12 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                     // allow user to override 
                     feature.setOrigSystemId(datum.getDatabaseId());
                     feature.setOrigCoord(datum.getStringFor(coord));
-                }
-                // always use FRED user contributed locality details
+                }    
+                // always use FRED user contributed locality and site details
                 feature.setLocality(locality);
+                if (feature.getOrigCoord() != site.getOriginalCoordinates()) {
+                    site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
+                } 
                
                 //TODO reuse site_name as feature_name?? see JES
                 
