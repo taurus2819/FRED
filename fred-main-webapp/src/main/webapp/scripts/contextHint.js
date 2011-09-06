@@ -27,7 +27,7 @@ ContextHint = function(activatorField, urlGenerator, blurCode, omitFieldFix) {
     if (blurCode) {
 	    eval("activatorField.onblur = function() {getContextHint('" + this.key + "').hideDropout();" + blurCode + "};");
 	} else {
-	    eval("activatorField.onblur = function() {getContextHint('" + this.key + "').hideDropout();};");
+	    //eval("activatorField.onblur = function() {getContextHint('" + this.key + "').hideDropout();};");
 	}
 	ContextHint.addEvent(this.field, "keyup", ContextHint.processUnknownKeyStroke);
 	//eval("activatorField.onkeyup = function() {getContextHint('" + this.key + "').processKeyStroke();};");
@@ -183,7 +183,8 @@ this.createAndShowTable = function(xml) {
 		cell.style.paddingLeft = "5px";
 		cell.style.whiteSpace = "nowrap";
 		cell.style.cursor = "default";
-		eval("cell.onclick = function() {getContextHint('" + this.key + "').updateField(\"" + hint + "\");}");
+		eval("cell.onmouseup = function() {getContextHint('" + this.key + "').updateField(\"" + hint + "\");}");
+		eval("cell.onmousedown = function() {getContextHint('" + this.key + "').highlightMouse(" + i + ");}");
 		eval("cell.onmouseover = function() {getContextHint('" + this.key + "').highlightMouse(" + i + ");}");
 		eval("cell.onmouseout = function() {getContextHint('" + this.key + "').clearHighlight(" + i + ");}");
 		this.hintDiv.appendChild(cell);
