@@ -243,11 +243,12 @@
     <!-- bi-directional many-to-many association to Person via Collector -->
     <set
         name="collectors"
-        table="COLLECTOR"
+        table="ORDERED_COLLECTOR_VW"
 		schema="FR"
         lazy="true"
         inverse="false"
 		cascade="none"
+                order-by="order_col asc"
     >
         <key>
             <column name="SAMPLE_ID" />
