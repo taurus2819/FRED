@@ -1,22 +1,23 @@
 <%@page pageEncoding="utf-8"
-%><%@page	extends="nz.cri.gns.fred.FREDAdminIPSysJspPage"
-%><%@page import="nz.cri.gns.jsp.NewExtranetTemplate"
+        %><%@page	extends="nz.cri.gns.fred.FREDAdminIPSysJspPage"
+        %><%@page import="nz.cri.gns.jsp.NewExtranetTemplate"
 %><%!
-	public String getName(HttpServletRequest request) {
-		return "FRED :: Administration";
-	}
-	
+    public String getName(HttpServletRequest request) {
+        return "FRED :: Administration";
+    }
+
 %><%
 
-	NewExtranetTemplate et = getExtranetTemplate();
-	drawTop(out, et, request, response);
+    NewExtranetTemplate et = getExtranetTemplate();
+    drawTop(out, et, request, response);
 
-	%><p>
-	<ul>
-	<li><a href="user.jsp">User Management</a></li>
-	<li><a href="age_edit.jsp">Edit Ages</a></li>
-	</ul>
-	</p><%
-	
-	drawBottom(out, et);
+%><p>
+<ul>
+    <li><a href="user.jsp">User Management</a></li>
+    <li><a href="age_edit.jsp">Edit Ages</a></li>
+    <li><a href="backlog_status.jsp" target="status" class="boldlink">Masterfile and Map Sheet Status Summary</a> </li>
+</ul>
+<%
+
+    drawBottom(out, et);
 %>
