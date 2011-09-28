@@ -822,7 +822,6 @@
 				</td>
 				</tr>		
 				</table>
-				</p>
 				
 				<input type="hidden" name="ActionType" value="" />
 				<input type="hidden" name="ID" value="<%=folder.getFolder().getFolderId()%>" />
