@@ -663,6 +663,7 @@
 				//--></script>	
 				
 				<form name="FoldForm" method="post" action="folder_detail.jsp">
+                                                                 <input type="hidden" name="FoldID" value="<%= folder.getFolderId() %>">
 				
 				<div id="showInst">
 				<table border="0" width="550" style="border: none; width: 550px">
@@ -700,8 +701,7 @@
 				<tr class="lightColour"><td style="text-align: right"><a href="javascript:showHide('showInst', 'inst');">Hide instructions...</a></td></tr>
 				</table>
 				</div>
-							
-				<p>
+					
 				<table border="0" cellpadding="3" cellspacing="2" width="650">
 				<tr class="midColour"><th colspan="17">Localities</th></tr>
 				<tr class="midColour"><th colspan="4">Name&nbsp;&nbsp;</th><th>Type&nbsp;&nbsp;</th><th>Status&nbsp;&nbsp;</th><th>Created Date&nbsp;&nbsp;</th><th colspan="10">Actions</th></tr><%
@@ -772,9 +772,7 @@
 				%>
 				<tr class="midColour"><td colspan="17" style="text-align: left">Localities:&nbsp;<a href="javascript:selectAll()">Select&nbsp;All</a>&nbsp;&nbsp;<a href="javascript:unselectAll()">Unselect&nbsp;All</a>&nbsp;&nbsp;|&nbsp;&nbsp;Samples:&nbsp;<a href="javascript:selectAllSamples()">Select&nbsp;All</a>&nbsp;&nbsp;<a href="javascript:unselectAllSamples()">Unselect&nbsp;All</a>&nbsp;&nbsp;|&nbsp;&nbsp;Records:&nbsp;<a href="javascript:selectAllRecords()">Select&nbsp;All</a>&nbsp;&nbsp;<a href="javascript:unselectAllRecords()">Unselect&nbsp;All</a></td></tr>
 				</table>
-				</p>
 				
-				<p>
 				<table border="0" cellpadding="3" cellspacing="2" width="650">
 				<tr class="midColour"><th colspan="2">Selected Actions</th></tr>
 				<tr class="lightColour">
@@ -796,6 +794,10 @@
 				<tr class="lightColour">
 				<td><a href="javascript:document.FoldForm.action='set_confidentiality.jsp';document.FoldForm.method='get';document.FoldForm.submit();"><img src="images/lock.gif" border="0" height="20" width="20" alt="set Confidentiality" title="Set Confidentiality"/></a></td>
 				<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.action='set_confidentiality.jsp';document.FoldForm.submit();">set Confidentiality</a>&nbsp;&nbsp;<span style="font-weight: normal">Note: Only samples and records that you have created or your group owns</span></td>
+				</tr>
+				<tr class="lightColour">
+				<td><a href="javascript:document.FoldForm.action='binary_data_entry.jsp';document.FoldForm.method='get';document.FoldForm.submit();"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Attach Image or File" title="Attach Image/File"/></a></td>
+				<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.action='binary_data_entry.jsp';document.FoldForm.submit();">Attach Image/File</a>&nbsp;&nbsp;<span style="font-weight: normal"></span></td>
 				</tr>
 				<tr class="lightColour">
 				<td><a href="javascript:document.FoldForm.ActionType.value='MergeFeatures';document.FoldForm.submit();"><img src="images/edit.gif" border="0" height="20" width="20" alt="Merge"  title="Merge"/></a></td>
@@ -833,7 +835,7 @@
 			} catch (Exception e) {
 				System.out.println("*********** FRED folder_detail.jsp error ********** " + new java.util.Date());
 				e.printStackTrace();
-				%>A database error has occured loading this page.<%
+				%>A database error has occurred loading this page.<%
 			}
 		} else { //no folder found
 			%><p><span class="heading">You do not have sufficient rights to view this folder</span></p><%
