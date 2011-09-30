@@ -793,7 +793,7 @@
 				</tr>
 				<tr class="lightColour">
 				<td><a href="javascript:document.FoldForm.action='set_confidentiality.jsp';document.FoldForm.method='get';document.FoldForm.submit();"><img src="images/lock.gif" border="0" height="20" width="20" alt="set Confidentiality" title="Set Confidentiality"/></a></td>
-				<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.action='set_confidentiality.jsp';document.FoldForm.submit();">set Confidentiality</a>&nbsp;&nbsp;<span style="font-weight: normal">Note: Only samples and records that you have created or your group owns</span></td>
+				<td class="heading" style="text-align: left"><a href="javascript:document.FoldForm.action='set_confidentiality.jsp';document.FoldForm.submit();">set Confidentiality</a>&nbsp;&nbsp;<span style="font-weight: normal">Note: Only samples and records that you have created or your group can see</span></td>
 				</tr>
 				<tr class="lightColour">
 				<td><a href="javascript:document.FoldForm.action='binary_data_entry.jsp';document.FoldForm.method='get';document.FoldForm.submit();"><img src="images/new_file.gif" border="0" height="20" width="20" alt="Attach Image or File" title="Attach Image/File"/></a></td>

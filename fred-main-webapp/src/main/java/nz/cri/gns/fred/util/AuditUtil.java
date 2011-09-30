@@ -220,8 +220,8 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		FrUserView frUser = new UserUtil(factory).getFrUserView(new Integer(user.getId()));
 		return fredDAO.getList(
 				"FROM ConfidentialGroup c " +
-				"WHERE SIZE(c.owners) = 0 " +
-				"OR ? IN ELEMENTS(c.owners)",
+				"WHERE SIZE(c.users) = 0 " +
+				"OR ? IN ELEMENTS(c.users)",
 			ConfidentialGroup.class, frUser); // TODO Is there a way to use LEFT JOIN to make neater?
 	}
 	
