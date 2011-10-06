@@ -68,18 +68,18 @@ function updateCoordTypes(box) {
 			if (navigator.appName.indexOf("Microsoft Internet Explorer") > -1)
 				trWhat = "block";
 			break;
-		case 11:
 		case 12:
 		case 13:
 		case 14:
+                case 15:
 			eWhat = "Longitude";
 			nWhat = "Latitude";
 			break;
 	}
 
-	document.getElementById("mapSheetTr").style.display = trWhat;	
-	document.getElementById("easting").innerText = eWhat;
-	document.getElementById("northing").innerText = nWhat;
+	document.getElementById("mapSheetTr").style.display = trWhat;
+        document.getElementById("easting").innerHTML = eWhat;
+	document.getElementById("northing").innerHTML = nWhat;
 }
 var datumMethod = new Array();
 {@datumMethodArray}

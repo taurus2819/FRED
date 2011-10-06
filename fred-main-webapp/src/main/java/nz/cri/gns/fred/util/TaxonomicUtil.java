@@ -402,4 +402,11 @@ public class TaxonomicUtil extends ModelUtil {
 		} catch (Exception e) {	}
 		return false;
 	}
+        
+        public static String javascriptSafe(String comments) {
+            if (comments==null) {
+                return null;
+            }
+            return comments.replace(";", "\\;");
+        }
 }
