@@ -407,6 +407,9 @@ public class TaxonomicUtil extends ModelUtil {
             if (comments==null) {
                 return null;
             }
-            return comments.replace(";", "\\;");
+            comments = comments.replace(";", "\\;");
+            comments = comments.replace(",", "\\,");
+            comments = comments.replace("'", "\\'");
+            return comments;
         }
 }
