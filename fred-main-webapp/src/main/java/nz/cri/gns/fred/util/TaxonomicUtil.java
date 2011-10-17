@@ -403,13 +403,13 @@ public class TaxonomicUtil extends ModelUtil {
 		return false;
 	}
         
-        public static String javascriptSafe(String comments) {
-            if (comments==null) {
+        public static String javascriptSafe(String content) {
+            if (content==null) {
                 return null;
             }
-            comments = comments.replace(";", "\\;");
-            comments = comments.replace(",", "\\,");
-            comments = comments.replace("'", "\\'");
-            return comments;
+            content = content.replace(";", "\\;");
+            content = content.replace(",", "\\,");
+            content = content.replace("'", "\\'");
+            return content;
         }
 }
