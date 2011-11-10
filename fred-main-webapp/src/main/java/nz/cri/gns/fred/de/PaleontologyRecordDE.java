@@ -302,7 +302,7 @@ public class PaleontologyRecordDE extends RecordDE {
                             Taxon taxon = entry.getTaxon();
                             out.println("addTaxa('" + group.getName() + "', '"
                                     + TaxonomicUtil.javascriptSafe(entry.getTaxonomicName()) + "', '"
-                                    + DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "', '"
+                                    + DBUtils.nvl((taxon == null) ? "" : TaxonomicUtil.javascriptSafe(taxon.getAuthor())) + "', '"
                                     + DBUtils.nvl(TaxonomicUtil.javascriptSafe(
                                     TaxonomicUtil.encodeTaxaComments(entry))) + "');");
                         }
@@ -314,7 +314,7 @@ public class PaleontologyRecordDE extends RecordDE {
                             Taxon taxon = entry.getTaxon();
                             out.println("addTaxa('" + group.getName() + "', '"
                                     + TaxonomicUtil.javascriptSafe(entry.getTaxonomicName()) + "', '"
-                                    + DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "', '"
+                                    + DBUtils.nvl((taxon == null) ? "" : TaxonomicUtil.javascriptSafe(taxon.getAuthor())) + "', '"
                                     + DBUtils.nvl(TaxonomicUtil.javascriptSafe(
                                     TaxonomicUtil.encodeTaxaComments(entry))) + "');");
                             it.remove();
@@ -328,7 +328,7 @@ public class PaleontologyRecordDE extends RecordDE {
                     Taxon taxon = entry.getTaxon();
                     out.println("addTaxa('" + taxon.getTaxonomicGroup().getName() + "', '"
                             + TaxonomicUtil.javascriptSafe(entry.getTaxonomicName()) + "', '"
-                            + DBUtils.nvl((taxon == null) ? "" : taxon.getAuthor()) + "', '"
+                            + DBUtils.nvl((taxon == null) ? "" : TaxonomicUtil.javascriptSafe(taxon.getAuthor())) + "', '"
                             + DBUtils.nvl(TaxonomicUtil.javascriptSafe(
                             TaxonomicUtil.encodeTaxaComments(entry))) + "');");
                 }
