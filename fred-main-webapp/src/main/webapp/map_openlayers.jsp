@@ -158,7 +158,7 @@
 			map.addControl(pointSelectControl);				
 			pointSelectControl.activate();	
 				
-			map.addLayers([googleH, googleP, scale_topo_googleP, linzTopo50, linzTopo250, dtm, ortho, oneGeolNZ, master, fred]);
+			map.addLayers([googleH, googleP, scale_topo_googleP, linzTopo50, linzTopo250, dtm, ortho, oneGeolNZ, fred, master]);
 			
 			map.setCenter(new OpenLayers.LonLat(174, -41).transform(p4326, p900913), 4);
 				
@@ -348,7 +348,7 @@
 			
 			function loadDetails(feature_id)	{
 				var url = "./detail.jsp?FeatID="+ feature_id;
-				window.location.href = url;
+                window.open(url,'_blank')
 			}
 		
 		window.onload = go;
