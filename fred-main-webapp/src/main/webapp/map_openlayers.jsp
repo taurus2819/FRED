@@ -12,7 +12,7 @@
 <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/GeoExt.js"></script>
 <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/proj4js-compressed.js"></script>
 <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/EPSG4272.js"></script>
-<script type="text/javascript" language="javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAR7YD2FMuJnK6_0QbbbF44hQ08_qBhOQgbg5JAbe8BtjCWvwxJRR_8eXxxS2rzyp_59Hj39_qEIqQxw"></script>
+<script type="text/javascript" language="javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAR7YD2FMuJnK6_0QbbbF44hT9RFus3oXBoOeCvD-mUCY9FXcVEBSmekI_GIKP8gT-8xi3BYyX7H7OOQ"></script>
 
 <style type="text/css">
     .legend {
