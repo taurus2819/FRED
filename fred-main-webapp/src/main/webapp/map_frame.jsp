@@ -20,7 +20,7 @@
 
         <%
 	} catch (Exception e) {
-		%><p style="color: red">An error has occured while loading this page. Please contact IT support.<br/><%=e.getMessage()%></p><%
+		%><p style="color: red">An error has occurred while loading this page. Please contact IT support.<br/><%=e.getMessage()%></p><%
  		e.printStackTrace();
 	}				
 	drawBottom(out, et); 
