@@ -166,7 +166,8 @@
                     "Masterfile areas",
                     "http://maps.gns.cri.nz/geoserver21/wms",
                     {layers: "gns:MASTERFILE_AREAS_SHP", transparent: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
-                    {displayInLayerSwitcher: true, isBaseLayer: false, visibility: true, projection: p900913, wrapDateLine: true}
+                    {displayInLayerSwitcher: true, isBaseLayer: false, visibility: true, projection: p900913, wrapDateLine: true,
+                     maxScale: 2500000, numZoomLevels: 4}
                 );	
 
                 fredLayer = new OpenLayers.Layer.WMS(
