@@ -15,10 +15,6 @@
 		<servlet-name>locality</servlet-name>
 		<servlet-class>nz.cri.gns.fred.servlet.LocalityServlet</servlet-class>
 	</servlet>
-    <servlet>
-		<servlet-name>wfsProxy</servlet-name>
-		<servlet-class>nz.cri.gns.fred.servlet.WFSProxy</servlet-class>
-	</servlet>
 	<servlet-mapping>
 		<servlet-name>ajax</servlet-name>
 		<url-pattern>/ajaxSupport.xml</url-pattern>
@@ -31,19 +27,8 @@
 		<servlet-name>locality</servlet-name>
 		<url-pattern>/locality/*</url-pattern>
 	</servlet-mapping>
-    <servlet-mapping>
-		<servlet-name>wfsProxy</servlet-name>
-		<url-pattern>/wfsProxy</url-pattern>
-	</servlet-mapping>
 
     <session-config>
-        <session-timeout>30</session-timeout>
+	<session-timeout>30</session-timeout>
     </session-config>
-    
-    <env-entry> 
-        <env-entry-name>WFS</env-entry-name> 
-        <env-entry-value>http://maps.gns.cri.nz/geoserver21/wfs</env-entry-value> 
-        <env-entry-type>java.lang.String</env-entry-type> 
-    </env-entry>
-    
 </web-app>
