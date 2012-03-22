@@ -7,12 +7,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.Enumeration;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -26,8 +24,6 @@ public class WFSProxy extends HttpServlet	{
 
 
 	private String TARGET_URL_WFS;
-	
-	protected static Logger logger = Logger.getLogger("fred");
 		
 	
 /* (non-Javadoc)
@@ -43,7 +39,6 @@ public class WFSProxy extends HttpServlet	{
 	//	 public methods
 	public void init() throws ServletException
 	{
-		logger.info("Initializing Servlet.");
 		super.init();
 		
 		//initialize with parameters from web.xml	
