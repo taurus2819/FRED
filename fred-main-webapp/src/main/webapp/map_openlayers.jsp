@@ -145,7 +145,7 @@
 			fred = new OpenLayers.Layer.WMS(
 					"FRED samples",
 					"http://maps.gns.cri.nz/geoserver21/wms",
-					{layers: "gns:fsv", transparent: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
+					{layers: "gns:FR.FRED_SITE_VIEW", transparent: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
 					{displayInLayerSwitcher: true, isBaseLayer: false, visibility: true, projection: p900913, wrapDateLine: true}
 			);	
 						
@@ -242,10 +242,10 @@
 					var selectedFeature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(features[0].geometry.x, features[0].geometry.y), null, null);
 					
 					selectedFeature.attributes = {
-						id: features[0].attributes["feature_id"], 
-						number: features[0].attributes["fr_number"], 
-						feature_type: features[0].attributes["feature_ty"], 
-						locality: features[0].attributes["locality"]};
+						id: features[0].attributes["FEATURE_ID"], 
+						number: features[0].attributes["FR_NUMBER"], 
+						feature_type: features[0].attributes["FEATURE_TYPE"], 
+						locality: features[0].attributes["LOCALITY"]};
 					selectedFeature.geometry.transform(p4326, p900913);
 					if (selectedLayer != null) {
 						selectedLayer.addFeatures(selectedFeature);
@@ -259,10 +259,10 @@
 					for(var i=0; i<features.length; i++)	{
 						var selectedFeature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(features[i].geometry.x, features[i].geometry.y), null, null);
 						selectedFeature.attributes = {
-						id: features[i].attributes["feature_id"], 
-						number: features[i].attributes["fr_number"], 
-						feature_type: features[i].attributes["feature_ty"], 
-						locality: features[i].attributes["locality"]};
+						id: features[i].attributes["FEATURE_ID"], 
+						number: features[i].attributes["FR_NUMBER"], 
+						feature_type: features[i].attributes["FEATURE_TYPE"], 
+						locality: features[i].attributes["LOCALITY"]};
 						selectedFeature.geometry.transform(p4326, p900913);
 						if (selectedLayer != null) {
 							selectedLayer.addFeatures(selectedFeature);
