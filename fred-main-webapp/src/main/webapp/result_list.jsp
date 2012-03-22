@@ -16,6 +16,7 @@
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="java.util.List"
+%><%@page import="java.util.ArrayList"
 %><%@page import="java.util.Vector"
 %><%@page import="java.util.HashSet"
 %><%@page import="java.util.Collections"
@@ -32,21 +33,69 @@
 %><%@page import="java.util.Arrays"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
-%><%!
-	public String getName(HttpServletRequest request) {
-		return "FRED :: Search Results";
-	}
-%><%
-
-
-
-	// Define page variables and initialise head
-	
+%>
+<%!
 	// Define Util classes
 	DAOFactory factory = FredHibernate.get().getDAOFactory();
 	SampleUtil sampleUtil = new SampleUtil(factory);
 	FeatureUtil featureUtil = new FeatureUtil(factory);
 	AuditUtil auditUtil = new AuditUtil(factory);
+%>
+<%!
+	public String getName(HttpServletRequest request) {
+		return "FRED :: Search Results";
+	}
+%>
+<%!    private List<Sample> getSpatiallyFilteredSamples(String[] locIdList, String querySQL) throws Exception {
+
+        //System.err.println("#samples altogether " + locIdList.length);
+		
+        int MAX_NUM_FEATURES = 1000;
+        String subQuery;
+        int offset = 0;
+        int i = 0;
+        List<Sample> subSamples = null;
+        List<Sample> samples = new ArrayList<Sample>();
+
+		//System.out.println(querySQL);
+		
+		if(locIdList.length > 0)	{
+			
+			while (offset * MAX_NUM_FEATURES < locIdList.length) {
+
+				//System.err.println("Iteration "+ (offset+1));
+				subQuery = " and s.feature.featureId IN (";	
+				for (i = 0; i < MAX_NUM_FEATURES && offset * MAX_NUM_FEATURES + i < locIdList.length; i++) {
+
+					subQuery += locIdList[offset * MAX_NUM_FEATURES + i];	
+					subQuery += ",";
+				}
+
+				subQuery = subQuery.substring(0, subQuery.length() - 1);	
+				subQuery += ")";
+				offset++;
+				//System.err.println("#query "+ querySQL + subQuery);
+				subSamples = sampleUtil.getListFromHQL(querySQL + subQuery, Sample.class);
+				//System.err.println("#samples "+ subSamples.size());
+				samples.addAll(subSamples);
+			}
+		}
+		else	{
+			samples = sampleUtil.getListFromHQL(querySQL, Sample.class);
+		}
+        
+		return samples;
+    }
+%>
+
+
+<%
+
+
+
+	// Define page variables and initialise head
+	
+	
 	
 	// Define HTTP state variables
 	PageState state = new PageState(request, response, getServletContext());
@@ -159,10 +208,23 @@
 			String whereSQL = request.getParameter("WhereSQL");
 			String tableName = request.getParameter("TableName");
 			queryString = request.getParameter("QueryString");
+			//Account for large number of SAMPLE_IDs provided by polygon filter
+			String idString = request.getParameter("idList");
+		
 			try {
+				
 				String sampHql = "SELECT DISTINCT s FROM " + tableName + " WHERE " + whereSQL;
 				System.out.println(sampHql);
-				samples = sampleUtil.getListFromHQL(sampHql, Sample.class);
+					
+				//if polygon vertices are set, apply spatial filter
+				if (idString != null) { 
+					String[] locIdList = idString.split(",");
+					samples = getSpatiallyFilteredSamples(locIdList, sampHql);
+				} //END POLYGON FILTER BY SAMPLE_ID list
+				else {
+					samples = sampleUtil.getListFromHQL(sampHql, Sample.class);
+				}
+				
 				features = featureUtil.getFeatures(samples);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
 			} catch (Exception e) {

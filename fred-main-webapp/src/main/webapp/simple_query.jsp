@@ -199,6 +199,10 @@
 		}
 		return true;
 	}
+    
+    function definePolygon(){
+        window.open('map_popup_frame.jsp','popuppage','width=960,toolbar=1,resizable=1,scrollbars=yes,height=700,top=100,left=100');
+    }
 	
 	</script><%
 
@@ -268,7 +272,10 @@
 		tGroupSelectBox.setNameNameFlag(true);
 		tGroupSelectBox.writeBox(attributes, "-- All --", null, (TaxonomicGroup)null, new PrintWriter(out));
 		%>&nbsp;&nbsp;</td><td><i>Select a taxonomic group</i></td></tr>
-		<tr class="lightColour"><td class="heading">Taxonomic Name&nbsp;&nbsp;</td><td><input type="text" name="Taxon" size="30" />&nbsp;&nbsp;</td><td><i>Enter part of a taxonomic name</i></td></tr><%
+		<tr class="lightColour"><td class="heading">Taxonomic Name&nbsp;&nbsp;</td><td><input type="text" name="Taxon" size="30" />&nbsp;&nbsp;</td><td><i>Enter part of a taxonomic name</i></td></tr>
+        <!-- new feature: polygon query -->
+        <tr class="lightColour"><td class="heading">Spatial Filter&nbsp;&nbsp;</td><td><button onclick="definePolygon()" type="button">Create map polygon</button><div id="isPolygon"></div>&nbsp;&nbsp;</td><td><i>Click here to define a search polygon</i></td></tr>
+        <%
 	} else {
 		%><tr class="lightColour"><td colspan="3">More query fields are available to logged in users</td></tr><%
 	}
@@ -276,6 +283,8 @@
 	<input type="hidden" name="WhereSQL" value="" />
 	<input type="hidden" name="QueryString" value="" />
 	<input type="hidden" name="TableName" value="" />
+	<input type="hidden" id="idList" name="idList" value="" />
+	<input type="hidden" id="polygon" name="polygon" value="" />
 	<p><input type="submit" value="Submit Query" /></p>
 	</form><%
 	
