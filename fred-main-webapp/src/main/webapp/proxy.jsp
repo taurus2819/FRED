@@ -11,7 +11,6 @@
 	String rawUrl = request.getParameter("url");
 	URL url = new URL(rawUrl.replace("/gwc/service",""));
 	
-	System.out.println(url.getHost());
 	if (url.getHost().equals("maps-dev.gns.cri.nz") || url.getHost().equals("maps.gns.cri.nz")) 
 		okFlag = true;
 
@@ -51,7 +50,6 @@
 			result = bis.read();
 		}
 		%><%=buf.toString()%><%
-		System.out.println(buf);
 
 		} else {
 		%>Access to <%=url.getHost()%> prohibited<%

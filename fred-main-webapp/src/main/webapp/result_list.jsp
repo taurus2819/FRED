@@ -197,7 +197,6 @@
 			try {
 				FREDQuery query = FREDUtil.getFREDQuery(state);
 				queryString = query.getQueryAsString();
-				System.out.println(query.getHQLQuery());
 				samples = sampleUtil.getListFromHQL(query.getHQLQuery(), Sample.class);
 				features = featureUtil.getFeatures(samples);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
@@ -214,7 +213,6 @@
 			try {
 				
 				String sampHql = "SELECT DISTINCT s FROM " + tableName + " WHERE " + whereSQL;
-				System.out.println(sampHql);
 					
 				//if polygon vertices are set, apply spatial filter
 				if (idString != null) { 
