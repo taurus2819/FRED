@@ -1,5 +1,7 @@
 package nz.cri.gns.fred.hibernate.util;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -394,6 +396,18 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
 
     public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object... parameters) throws StorageAccessException {
         return getList(query, null, clazz, parameters);
+    }
+
+    public <T extends Comparable<? super T>> List<T> getListFromSQL(String query, String entity, Class<T> clazz, Integer maxResults) throws StorageAccessException, HibernateException {
+        Session session = provider.currentSession();
+        Query sqlQuery = session.createSQLQuery(query, entity, clazz);
+
+        if (maxResults != null) {
+            sqlQuery.setMaxResults(maxResults);
+        }
+        @SuppressWarnings("unchecked")
+        List<T> list = (List<T>) sqlQuery.list();
+        return list;
     }
 
     public <T extends Comparable<? super T>> List<T> getList(String query, Integer maxResults, Class<T> clazz, Object... parameters) throws StorageAccessException {

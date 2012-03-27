@@ -2,6 +2,7 @@ package nz.cri.gns.fred.dao;
 
 import java.util.List;
 
+import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.expression.Criterion;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.Match;
@@ -46,6 +47,7 @@ public interface FredDAO {
 	public <T> T saveOrUpdate(T object) throws StorageAccessException;
 	public <T> T save(T object) throws StorageAccessException;
 	public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException;
+        public <T extends Comparable<? super T>> List<T> getListFromSQL(String query, String entity, Class<T> clazz, Integer maxResults) throws StorageAccessException, HibernateException;
 	public <T extends Comparable<? super T>> List<T> getList(String query, Integer maxResults, Class<T> clazz, Object ... parameters) throws StorageAccessException;
 	public <T extends Comparable<? super T>> List<T> getList(Class<T> clazz, List<Criterion> criteria) throws StorageAccessException;
 	public <T extends Comparable<? super T>> List<T> getList(Class<T> clazz, List<Criterion> criteria, Integer matches) throws StorageAccessException;

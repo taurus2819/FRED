@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import net.sf.hibernate.HibernateException;
 import nz.cri.gns.auth.InsufficientPrivelegesException;
 import nz.cri.gns.auth.User;
 import nz.cri.gns.auth.UserAccount;
@@ -439,8 +440,12 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return fredDAO.getList(query, Record.class);
 	}
 	
-	public List<Paleontology> getPaleontologyRecords(Feature feature) throws StorageAccessException {
-		return fredDAO.getList("FROM Paleontology AS p WHERE p.record.sample.feature = ?", Paleontology.class, feature);
+	public List<? extends Paleontology> getPaleontologyRecords(Feature feature) throws StorageAccessException, HibernateException {
+            //return fredDAO.getList("FROM Paleontology AS p WHERE p.record.sample.feature = ?", Paleontology.class, feature);
+            
+            Paleontology pal = fredDAO.createNewPaleontology();
+            return fredDAO.getListFromSQL("select {p.*} from paleontology p, record  rec, sample samp where p.record_id = rec.record_id and rec.sample_id = samp.sample_id and samp.feature_id = "+feature.getFeatureId(), "p", pal.getClass(), null);
+            
 	}
 
 	public List<Paleontology> getPaleontologyRecords(Sample sample) throws StorageAccessException {
