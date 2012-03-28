@@ -14,7 +14,7 @@
         <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/GeoExt.js"></script>
         <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/proj4js/proj4js-compressed.js"></script>
         <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/proj4js/defs/EPSG4272.js"></script>
-        <script type="text/javascript" language="javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAR7YD2FMuJnK6_0QbbbF44hT9RFus3oXBoOeCvD-mUCY9FXcVEBSmekI_GIKP8gT-8xi3BYyX7H7OOQ"></script>
+        <script type="text/javascript" language="javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=AIzaSyDIuAtVq3FCUFSDAcXXzYkDZzkG-ORiqQg"></script>
         <script type="text/javascript" language="javascript" src="<%=request.getContextPath()%>/scripts/wfsQuery.js"></script>		  
 		  
 
