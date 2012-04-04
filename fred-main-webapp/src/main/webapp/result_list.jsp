@@ -72,7 +72,7 @@
 				}
 
 				subQuery = subQuery.substring(0, subQuery.length() - 1);	
-				subQuery += ")";
+				subQuery += ") ";
 				offset++;
 				//System.err.println("#query "+ querySQL + subQuery);
 				subSamples = sampleUtil.getListFromHQL(querySQL + subQuery, Sample.class);
@@ -215,7 +215,7 @@
 				String sampHql = "SELECT DISTINCT s FROM " + tableName + " WHERE " + whereSQL;
 					
 				//if polygon vertices are set, apply spatial filter
-				if (idString != null) { 
+				if (idString != null && idString.length() > 0) { 
 					String[] locIdList = idString.split(",");
 					samples = getSpatiallyFilteredSamples(locIdList, sampHql);
 				} //END POLYGON FILTER BY SAMPLE_ID list
