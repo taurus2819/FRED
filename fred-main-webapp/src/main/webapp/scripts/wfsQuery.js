@@ -38,7 +38,8 @@ function sndWFSRequest(proxy, url)
 {
 	wfsRequest.open('get', proxy, true);
    	wfsRequest.onreadystatechange = handleWFSResponse;
-   	wfsRequest.overrideMimeType("text/xml");
+   	if(wfsRequest.overrideMimeType)
+        wfsRequest.overrideMimeType("text/xml");
    	wfsRequest.send(null);
 }
 
