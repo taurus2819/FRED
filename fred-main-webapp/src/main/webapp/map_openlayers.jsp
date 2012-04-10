@@ -44,6 +44,8 @@
 		var tree;
 		var map;	
 		var checker = true;
+        
+        var geoserver_url = "http://maps.gns.cri.nz/geoserver/wms";
 		
 		function go() {
 			
@@ -95,7 +97,7 @@
 			linzTopo250 = new OpenLayers.Layer.WMS(
 					"LINZ Topo 250",
 					"http://wms.data.linz.govt.nz/2196be5e2a3f48179fddb966dd15add4/r/wms",
-					{layers: "r:x798", transparent: false, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
+					{layers: "r:x798", transparent: false, srs: "EPSG:900913", tiled: true, minZoomLevel: 0, maxZoomLevel: 4 },
 					{displayInLayerSwitcher: false, isBaseLayer: false, visibility: true, projection: p900913, wrapDateLine: true}
 			);
 			var linzTopo250_osm = new OpenLayers.Layer.OSM("LINZ Topo 250");
@@ -103,7 +105,7 @@
 			linzTopo50 = new OpenLayers.Layer.WMS(
 					"LINZ Topo 50",
 					"http://wms.data.linz.govt.nz/2196be5e2a3f48179fddb966dd15add4/r/wms",
-					{layers: "r:x767", transparent: false, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
+					{layers: "r:x767", transparent: false, srs: "EPSG:900913", tiled: true, minZoomLevel: 0, maxZoomLevel: 4 },
 					{displayInLayerSwitcher: false, isBaseLayer: false, visibility: true, projection: p900913, wrapDateLine: true}
 			);	
 			var linzTopo50_osm = new OpenLayers.Layer.OSM("LINZ Topo 50");	
@@ -115,37 +117,37 @@
 	
 			oneGeolNZ = new OpenLayers.Layer.WMS(
 					"New Zealand Geology",
-					"http://maps.gns.cri.nz/geoserver21/wms",
-					{layers: "gns:NZL_GNS_1M_Lithostratigraphy", transparent: true, srs: "EPSG:900913"},
+					geoserver_url,
+					{layers: "gns:NZL_GNS_1M_Lithostratigraphy", transparent: true, tiled: true, srs: "EPSG:900913"},
 					{displayInLayerSwitcher: true, isBaseLayer: false, visibility: false, projection: p900913, opacity: 0.6, wrapDateLine: true}
 			);
 			
 			dtm = new OpenLayers.Layer.WMS(
 					"New Zealand DTM",
-					"http://maps.gns.cri.nz/geoserver21/wms",
-					{layers: "gns:GIS.NZ_DTM_SHADE", transparent: true, srs: "EPSG:900913"},
+					geoserver_url,
+					{layers: "gns:GIS.NZ_DTM_SHADE", transparent: true, tiled: true, srs: "EPSG:900913"},
 					{displayInLayerSwitcher: true, isBaseLayer: false, visibility: false, projection: p900913, wrapDateLine: true}
 			);
 			
 			ortho = new OpenLayers.Layer.WMS(
 					"New Zealand Orthophotos",
-					"http://maps.gns.cri.nz/geoserver21/wms",
-					{layers: "gns:GIS.NZ_ORTHOPHOTO", transparent: true, srs: "EPSG:900913"},
+					geoserver_url,
+					{layers: "gns:GIS.NZ_ORTHOPHOTO", transparent: true, tiled: true, srs: "EPSG:900913"},
 					{displayInLayerSwitcher: true, isBaseLayer: false, visibility: false, projection: p900913, wrapDateLine: true}
 			);
 			
 			master = new OpenLayers.Layer.WMS(
 					"Masterfile areas",
-					"http://maps.gns.cri.nz/geoserver21/wms",
-					{layers: "gns:MASTERFILE_AREAS_SHP", transparent: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
+					geoserver_url,
+					{layers: "gns:MASTERFILE_AREAS_SHP", transparent: true, tiled: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
 					{displayInLayerSwitcher: true, isBaseLayer: false, visibility: true, projection: p900913, wrapDateLine: true, 
                      maxScale: 2500000, numZoomLevels: 4}
 			);	
 				
 			fred = new OpenLayers.Layer.WMS(
 					"FRED samples",
-					"http://maps.gns.cri.nz/geoserver21/wms",
-					{layers: "gns:FR.FRED_SITE_VIEW", transparent: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
+					geoserver_url,
+					{layers: "gns:FR.FRED_SITE_VIEW", transparent: true, tiled: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
 					{displayInLayerSwitcher: true, isBaseLayer: false, visibility: true, projection: p900913, wrapDateLine: true}
 			);	
 						
