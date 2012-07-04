@@ -223,7 +223,8 @@ public class SiteUtil extends ModelUtil {
             if (siteId != -1) {
                 sr = SiteRecord.querySite(app, siteId);
             }
-
+        } catch (Exception e ){
+            e.printStackTrace();
         } finally {
             if (app != null) {
                 app.close();
@@ -254,6 +255,7 @@ public class SiteUtil extends ModelUtil {
                 try {
                     conn.close();
                 } catch (SQLException e) {
+                    e.printStackTrace();
                 }
             }
         }
