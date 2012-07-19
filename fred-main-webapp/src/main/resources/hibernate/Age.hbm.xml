@@ -9,7 +9,6 @@
     name="nz.cri.gns.fred.hibernate.Age" 
     table="AGE"
     schema="FR"
-    mutable="false"
 >
 
     <id
