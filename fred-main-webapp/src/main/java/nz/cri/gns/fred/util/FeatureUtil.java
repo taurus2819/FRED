@@ -893,20 +893,32 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	
 	public List<FrNumber> getFrNumbersByString(String frNumStr) throws DataInputException, StorageAccessException {
 		try {
+                        //range
 			if (frNumStr.indexOf("-") > 0) {
 				String[] frNumBits = parseFrNumber(frNumStr.substring(0, frNumStr.indexOf("-")));
 				Integer endSerialNum = new Integer(frNumStr.substring(frNumStr.indexOf("-") + 1));
 				return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ?", FrNumber.class, frNumBits[0], new Integer(frNumBits[1]), endSerialNum);
-			} else {
-				List<FrNumber> frNumbers = new Vector<FrNumber>();
-				FrNumber frNum = getMetricFrNumberByString(frNumStr, false);
-				if (frNum != null)
-					frNumbers.add(frNum);
-				frNum = getYardFrNumberByString(frNumStr, false);
-				if (frNum != null)
-					frNumbers.add(frNum);
-				return frNumbers;
-			}
+                  	 
+                        } 
+                        
+                        //single
+                        List<FrNumber> frNumbers = new Vector<FrNumber>();
+                        FrNumber frNum = getMetricFrNumberByString(frNumStr, false);
+                        if (frNum != null)
+                                frNumbers.add(frNum);
+                        frNum = getYardFrNumberByString(frNumStr, false);
+                        if (frNum != null)
+                                frNumbers.add(frNum);
+                       
+                        // now add recollections
+                        String num= frNumbers.get(0).toString();
+                        if (num.indexOf("/") > 0) {
+                                String mapSheet = num.substring(0, frNumStr.indexOf("/f")).toUpperCase();
+                                String serial = num.substring(frNumStr.indexOf("/f") + 2);
+                                String[] frNumBits = {mapSheet, serial};
+                                return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber = ?", FrNumber.class, frNumBits[0], new Integer(frNumBits[1]));
+                        }
+				
 		} catch (Exception e) {}
 		return null;
 	}
