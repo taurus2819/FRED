@@ -47,6 +47,7 @@ public class OldFormatFredExport extends DefaultFredExport {
 //		System.out.println("Handle Feature: " + (new Date().getTime() - date0.getTime()));
 	}
 	
+    @Override
 	public void handleList(Feature feature, Sample sample, AgeRange age, Paleontology list) throws IOException {
 		//Don't export unapproved features
 		if (feature.getFrNumber() == null)
