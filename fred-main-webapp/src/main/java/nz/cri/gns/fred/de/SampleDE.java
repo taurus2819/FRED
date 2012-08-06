@@ -5,12 +5,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
@@ -118,7 +113,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         //Collectors
         Set<Person> collectors = sample.getCollectors();
         if (collectors == null) {
-            collectors = new HashSet<Person>();
+            collectors = new LinkedHashSet<Person>();
             sample.setCollectors(collectors);
         } else {
             collectors.clear();
@@ -712,7 +707,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             }
         } catch (DataInputException e) {
             if (e.hasAuxiliaryData()) {
-                sample.setCollectors((Set<Person>) e.getAuxiliaryData());
+                sample.setCollectors((LinkedHashSet)(Set<Person>) e.getAuxiliaryData());
             }
             error.addAll(e.getError());
         }
