@@ -24,10 +24,12 @@ public abstract class DefaultFredExport implements FredRecordExport {
 	 * Returns the most recent list for each group, in no particular order
 	 * @throws StorageAccessException 
 	 */
+    @Override
 	public Collection<Paleontology> getListsToExport(Sample sample) throws StorageAccessException {
 		return new ArrayList<Paleontology>(getMostRecentLists(sample));
 	}
 
+    @Override
 	public AgeRange getAgeRange(Sample sample, Paleontology list) throws StorageAccessException {
 		AgeRange age = getAgeByAdoption(sample);
 		if (age != null)
