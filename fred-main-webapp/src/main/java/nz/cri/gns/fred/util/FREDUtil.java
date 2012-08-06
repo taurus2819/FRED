@@ -13,12 +13,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -348,13 +343,13 @@ public class FREDUtil {
 
     public static Set<Person> getPersons(String parameter, PersonUtil personUtil, String personLabel, boolean addIfNew) throws DataInputException {
         if (parameter.trim().length() == 0)
-            return new HashSet<Person>();
+            return new LinkedHashSet<Person>();
         String[] peopleStr = parameter.split("[;\\n]");
         return getPersons(peopleStr, personUtil, personLabel, addIfNew);
     }
     
     public static Set<Person> getPersons(String[] peopleStr, PersonUtil personUtil, String personLabel, boolean addIfNew) throws DataInputException {
-        HashSet<Person> personSet = new HashSet<Person>();
+        HashSet<Person> personSet = new LinkedHashSet<Person>();
         Vector<String[]> error = new Vector<String[]>();
         for (String personStr : peopleStr) try {
         	if (personStr.trim().length() == 0)
