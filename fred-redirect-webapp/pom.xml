@@ -66,6 +66,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <scm>
+        <connection>scm:svn+ssh://repo.gns.cri.nz/repo/applications/FRED/trunk/fred-redirect-webapp</connection>
+    </scm>
     <distributionManagement>
         <repository>
             <id>central</id>
