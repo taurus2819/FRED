@@ -40,7 +40,7 @@
         <module>fred-ims</module>
     </modules>
     <scm>
-        <connection>scm:svn+ssh://repo.gns.cri.nz/repo/applications/FRED/trunk</connection>
+        <connection>scm:http://repo.gns.cri.nz/repo/applications/FRED/trunk</connection>
     </scm>
     <distributionManagement>
         <repository>
