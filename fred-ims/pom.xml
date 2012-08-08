@@ -161,7 +161,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>  
     <scm>
-        <connection>scm:http://repo.gns.cri.nz/repo/applications/FRED/trunk/fred-ims</connection>
+        <connection>scm:svn:http://repo.gns.cri.nz/repo/applications/FRED/trunk/fred-ims</connection>
     </scm>
     <distributionManagement>
         <repository>
