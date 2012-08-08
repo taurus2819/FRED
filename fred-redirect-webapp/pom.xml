@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>nz.cri.gns.fred</groupId>
     <artifactId>fred-redirect-webapp</artifactId>
-    <version>2.0.0-RELEASE</version>
+    <version>2.2.14-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>FRED Redirect Webapp</name>
     <description>FRED Redirection Webapp</description>
@@ -26,6 +26,14 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <tagNameFormat>RELEASE_@{project.version}</tagNameFormat>
+                </configuration>
+            </plugin>            
         </plugins>
     </build>
     <dependencies>
