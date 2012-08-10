@@ -10,7 +10,7 @@
     <artifactId>fred</artifactId>
     <packaging>war</packaging>
     <version>2.2.15-SNAPSHOT</version>
-    <name>Fossil Record Electronic Database</name>
+    <name>Funky Fossil Record Electronic Database</name>
     <url>http://fred.org.nz</url>  
     <organization>
         <name>GNS Science Ltd</name>
