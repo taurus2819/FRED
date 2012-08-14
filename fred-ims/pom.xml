@@ -171,7 +171,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>  
     <scm>
-        <connection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk</connection>
+        <connection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk/fred-ims</connection>
+        <developerConnection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk/fred-ims</developerConnection>
+        <url>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk/fred-ims</url>
     </scm>
     <distributionManagement>
         <repository>
