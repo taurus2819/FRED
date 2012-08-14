@@ -1,16 +1,15 @@
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>nz.cri.gns.fred</groupId>
         <artifactId>fred-top</artifactId>
-        <version>2.2.16-SNAPSHOT</version>
+        <version>2.2.16</version>
     </parent>
     <groupId>nz.cri.gns</groupId>
     <artifactId>fred-ims</artifactId>
     <packaging>jar</packaging>
-    <version>2.2.16-SNAPSHOT</version>
+    <version>2.2.16</version>
     <name>FRED ArcIMS</name>
     <url>http://fred.org.nz</url>  
     <organization>
@@ -171,9 +170,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>  
     <scm>
-        <connection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk/fred-ims</connection>
-        <developerConnection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk/fred-ims</developerConnection>
-        <url>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk/fred-ims</url>
+        <connection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/tags/RELEASE_2.2.16/fred-ims</connection>
+        <developerConnection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/tags/RELEASE_2.2.16/fred-ims</developerConnection>
+        <url>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/tags/RELEASE_2.2.16/fred-ims</url>
     </scm>
     <distributionManagement>
         <repository>
