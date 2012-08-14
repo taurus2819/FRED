@@ -46,6 +46,8 @@
     </modules>
     <scm>
         <connection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk</connection>
+        <developerConnection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk</developerConnection>
+        <url>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk</url>
     </scm>
     <distributionManagement>
         <repository>
