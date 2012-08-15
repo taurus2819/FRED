@@ -4,11 +4,11 @@
     <parent>
         <groupId>nz.cri.gns.fred</groupId>
         <artifactId>fred-top</artifactId>
-        <version>2.2.19</version>
+        <version>2.2.20-SNAPSHOT</version>
     </parent>
     <groupId>nz.cri.gns.fred</groupId>
     <artifactId>fred-redirect-webapp</artifactId>
-    <version>2.2.19</version>
+    <version>2.2.20-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>FRED Redirect Webapp</name>
     <description>FRED Redirection Webapp</description>
@@ -75,9 +75,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <scm>
-        <connection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/tags/RELEASE_2.2.19/fred-redirect-webapp</connection>
-        <developerConnection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/tags/RELEASE_2.2.19/fred-redirect-webapp</developerConnection>
-        <url>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/tags/RELEASE_2.2.19/fred-redirect-webapp</url>
+        <connection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk/fred-redirect-webapp</connection>
+        <developerConnection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk/fred-redirect-webapp</developerConnection>
+        <url>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk/fred-redirect-webapp</url>
     </scm>
     <distributionManagement>
         <repository>
