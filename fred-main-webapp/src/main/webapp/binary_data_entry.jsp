@@ -124,6 +124,25 @@
             featureIDs = (featureIDs == null ? new String[]{} : featureIDs);
             sampleIDs = (sampleIDs == null ? new String[]{} : sampleIDs);
             recordIDs = (recordIDs == null ? new String[]{} : recordIDs);
+            
+            //PDB-67 attach images for inline table records
+            String fid = httpRequest.getParameter("ID");
+            if (fid!=null && !fid.isEmpty()) {
+                // ensure its a feature not a folder
+                String type = httpRequest.getParameter("RecType");
+                if (type !=null && !type.isEmpty()) {
+                    if ("Vertical SectionDrillholeOutcrop".indexOf(type) >-1) {
+                        if (featureIDs.length==0){
+                            featureIDs =new String[]{fid};
+                        } else {
+                            String[] tmp = featureIDs;
+                            featureIDs = new String[tmp.length+1];
+                            System.arraycopy(tmp, 0, featureIDs, 0, tmp.length);
+                        }
+                   }
+               }
+            }
+            
 
             Vector<Item> items = new Vector<Item>();
 
