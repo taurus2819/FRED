@@ -21,9 +21,9 @@ import nz.cri.gns.fred.model.TaxonomicGroup;
 
 public class OldFormatFredExport extends DefaultFredExport {
 
-	private static final String EOL = "\r\n";
+	protected static final String EOL = "\r\n";
 	private int count;
-	private Writer writer;
+	protected Writer writer;
 	
 	public OldFormatFredExport(Writer writer) {
 		this.count = 1;
