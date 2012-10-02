@@ -31,6 +31,8 @@
 %><%@page import="nz.cri.gns.jsp.CustomHTMLLink"
 %><%@page import="java.util.Set"
 %><%@page import="java.util.Arrays"
+%><%@page import="java.util.Date"
+%><%@page import="java.util.GregorianCalendar"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %>
@@ -211,8 +213,7 @@
 			String idString = request.getParameter("idList");
 		
 			try {
-				
-				String sampHql = "SELECT DISTINCT s FROM " + tableName + " WHERE " + whereSQL;
+                               String sampHql = "SELECT DISTINCT s FROM " + tableName + " WHERE " + whereSQL;
 					
 				//if polygon vertices are set, apply spatial filter
 				if (idString != null && idString.length() > 0) { 
@@ -220,11 +221,11 @@
 					samples = getSpatiallyFilteredSamples(locIdList, sampHql);
 				} //END POLYGON FILTER BY SAMPLE_ID list
 				else {
-					samples = sampleUtil.getListFromHQL(sampHql, Sample.class);
-				}
-				
-				features = featureUtil.getFeatures(samples);
+                                    samples = sampleUtil.getListFromHQL(sampHql, Sample.class);
+                                }
+                                features = featureUtil.getFeatures(samples);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
+                        
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -299,15 +300,14 @@
 					else					
 						fids = new HashSet<String>(Arrays.asList(request.getParameterValues("fid")));
 					
-					int j = 1;
-					for (Feature feature : features) {
-						//if (j >= startIndex && j <= endIndex) 
-                                                //{
+
+                                        List<Feature> pageFeatures = features.subList(startIndex-1, endIndex);
+
+					for (Feature feature : pageFeatures) {
         					feature = featureUtil.getFeature(feature.getFeatureId());
 						if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
                                                     resultsList.add(feature);
-                                                    if (j >= startIndex && j <= endIndex) 
-                                                    {
+
                                                         String checkedText = ""; // default un-checked
 							if (!fids.isEmpty() && fids.contains(feature.getFeatureId().toString()))
                                                             checkedText = "checked=\"checked\"";
@@ -339,8 +339,6 @@
 									if (samples == null || samples.contains(sample) && sampleUtil.isAllowedReadSample(user, sample)) 
                                                                         {
                                                                             resultsList.add(sample);
-                                                                            if (j >= startIndex && j <= endIndex) 
-                                                                            {
                                                                                 %><tr class="lightColour">
 												<td></td>
 												<td>
@@ -353,13 +351,10 @@
 												<td>&nbsp;</td>
 												<td>&nbsp;</td>
 											</tr><%
-                                                                             }
                                                                         }
 									}
 								}
-							}
 						}
-						j++;
 					}
 										
 		
