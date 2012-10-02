@@ -331,4 +331,16 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
 	public int hashCode() {
 		return 217 * featureId;
 	}*/
+        
+        public Feature() {            
+        }
+        
+        /**
+         * A constructor to allow partial loading by hibernate
+         * @param id FeatureId
+         */
+        public Feature(Integer id) {
+            this.featureId = id;
+        }
+
 }

@@ -584,6 +584,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	public List<Feature> getFeaturesByRecord(Audit audit) throws StorageAccessException {
 		return fredDAO.getList("SELECT r.sample.feature FROM Record AS r WHERE r.audit = ?", Feature.class, audit);
 	}
+
+        public List<Feature> getFeaturesBySampleSubquery(String sampleSubquery) throws StorageAccessException {
+		return fredDAO.getList("select new Feature(f.featureId) FROM Feature AS f WHERE f.featureId in ("+sampleSubquery+")", Feature.class);
+	}
 	
 	public List<Feature> getFeatures(List<Sample> samples) {
 		Set<Feature> features = new HashSet<Feature>();

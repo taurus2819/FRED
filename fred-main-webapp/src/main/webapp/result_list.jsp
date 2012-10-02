@@ -66,7 +66,7 @@
 			while (offset * MAX_NUM_FEATURES < locIdList.length) {
 
 				//System.err.println("Iteration "+ (offset+1));
-				subQuery = " and s.feature.featureId IN (";	
+				subQuery = " and featureId IN (";	
 				for (i = 0; i < MAX_NUM_FEATURES && offset * MAX_NUM_FEATURES + i < locIdList.length; i++) {
 
 					subQuery += locIdList[offset * MAX_NUM_FEATURES + i];	
@@ -87,6 +87,33 @@
 		}
         
 		return samples;
+    }
+%>
+
+<%!    private String getSpatiallyFilteredQuery(String[] locIdList, String querySQL) throws Exception {
+        int MAX_NUM_FEATURES = 1000;
+        String subQuery="";
+        int offset = 0;
+        int i = 0;
+
+        //System.out.println(querySQL);		
+        if (locIdList.length > 0) {
+            while (offset * MAX_NUM_FEATURES < locIdList.length) {
+                
+                subQuery = " and s.feature.featureId IN (";
+                for (i = 0; i < MAX_NUM_FEATURES && offset * MAX_NUM_FEATURES + i < locIdList.length; i++) {
+                    subQuery += locIdList[offset * MAX_NUM_FEATURES + i];
+                    subQuery += ",";
+                }
+
+                subQuery = subQuery.substring(0, subQuery.length() - 1);
+                subQuery += ") ";
+                offset++;
+            }
+            return querySQL + subQuery;
+        } else {
+            return querySQL;
+        }
     }
 %>
 
@@ -199,8 +226,8 @@
 			try {
 				FREDQuery query = FREDUtil.getFREDQuery(state);
 				queryString = query.getQueryAsString();
-				samples = sampleUtil.getListFromHQL(query.getHQLQuery(), Sample.class);
-				features = featureUtil.getFeatures(samples);
+                                String hq = query.getHQLQuery();
+                                features = featureUtil.getFeaturesBySampleSubquery(hq);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -211,19 +238,15 @@
 			queryString = request.getParameter("QueryString");
 			//Account for large number of SAMPLE_IDs provided by polygon filter
 			String idString = request.getParameter("idList");
-		
-			try {
-                               String sampHql = "SELECT DISTINCT s FROM " + tableName + " WHERE " + whereSQL;
-					
+
+                        try {
+				String sampHql = "SELECT DISTINCT s.feature.featureId FROM " + tableName + " WHERE " + whereSQL;
+                                				
 				//if polygon vertices are set, apply spatial filter
 				if (idString != null && idString.length() > 0) { 
-					String[] locIdList = idString.split(",");
-					samples = getSpatiallyFilteredSamples(locIdList, sampHql);
-				} //END POLYGON FILTER BY SAMPLE_ID list
-				else {
-                                    samples = sampleUtil.getListFromHQL(sampHql, Sample.class);
-                                }
-                                features = featureUtil.getFeatures(samples);
+                                    sampHql = getSpatiallyFilteredQuery(idString.split(","), sampHql);
+				} 
+                                features = featureUtil.getFeaturesBySampleSubquery(sampHql);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
                         
 			} catch (Exception e) {
