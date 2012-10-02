@@ -10,6 +10,7 @@ import java.util.Set;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.abstractions.AgeRange;
+import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
@@ -19,8 +20,9 @@ import nz.cri.gns.fred.model.TaxonomicGroup;
 
 public class MolluscaExport extends OldFormatFredExport {
 
-	public MolluscaExport(Writer writer) {
+	public MolluscaExport(Writer writer, DAOFactory factory) {
 		super(writer);
+                Export.setFactory(factory);
 	}
 
 	private static Set<String> groups;
@@ -64,7 +66,7 @@ public class MolluscaExport extends OldFormatFredExport {
 	@Override
 	protected boolean groupRequired(TaxonomicGroup group) {
 		String name = group.getDisplayName();
-		return groups.contains(name);
+		return groups.contains(name.toUpperCase());
 	}
 
 	@Override
