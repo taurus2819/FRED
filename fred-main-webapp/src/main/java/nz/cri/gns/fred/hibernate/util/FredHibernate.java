@@ -1,5 +1,6 @@
 package nz.cri.gns.fred.hibernate.util;
 
+import java.sql.Connection;
 import net.sf.hibernate.Session;
 import nz.cri.gns.dataaccess.HibernateConfiguration;
 import nz.cri.gns.dataaccess.HibernateProvider;
@@ -29,6 +30,10 @@ public class FredHibernate implements HibernateProvider {
         } catch (StorageAccessException e) {
                 e.printStackTrace();
         }
+    }
+    
+    public void configure(Connection conn) {
+        config.configure(conn, getClass().getClassLoader().getResource("hibernate/hibernate.cfg.xml"));
     }
 
     public static final ThreadLocal<Session> session = new ThreadLocal<Session>();
