@@ -33,7 +33,7 @@ public class OldFormatFredExport extends DefaultFredExport {
 	public void handleFeature(Feature feature) throws IOException, StorageAccessException {
 //		Date date0 = new Date();
 		Set<Sample> samples = feature.getSamples();
-		samples.size();
+		int num = samples.size();
 //		System.out.println("Get samples: " + (new Date().getTime() - date0.getTime()));
 //		date0 = new Date();
 		System.out.println("Feature: " + feature.getFeatureId());
