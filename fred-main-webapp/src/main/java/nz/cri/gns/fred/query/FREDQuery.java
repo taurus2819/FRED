@@ -221,7 +221,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 
 	public String getHQLQuery() throws InvalidOperatorException, InvalidValueException {
 		//return super.getHQLQuery("SELECT DISTINCT s", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
-            return super.getHQLQuery("SELECT DISTINCT s.feature.featureId", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
+            return super.getHQLQuery("SELECT DISTINCT s.sampleId", "Sample AS s", "s.audit.status = 'approved' AND s.feature.audit.status = 'approved'", null, null);
 	}
 	
 	protected <T extends Comparable<? super T>> List<T> getValues(String query, Class<T> clazz, Object ... parameters) {

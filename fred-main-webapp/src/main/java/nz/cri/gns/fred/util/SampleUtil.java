@@ -217,6 +217,10 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	
 	public <T extends Comparable<? super T>> List<T> getListFromHQL(String query, Class<T> clazz) throws StorageAccessException {
 		return fredDAO.getList(query, clazz);
+	}        
+               
+        public List<Sample> getLightweightSamples(String sampleSubquery) throws StorageAccessException {
+		return fredDAO.getList("select new Sample(s.sampleId) FROM Sample AS s WHERE s.sampleId in ("+sampleSubquery+")", Sample.class);
 	}
 	
 	public static String getDrillHoleDepthDescription(Sample sample) {

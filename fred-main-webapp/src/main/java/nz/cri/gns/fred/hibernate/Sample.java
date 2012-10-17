@@ -460,7 +460,11 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
 	 * is important here so that this method is consistent with the .equals method.
 	 */
 	public int compareTo(nz.cri.gns.fred.model.Sample sample) {
-		if (feature.equals(sample.getFeature())) {
+		if (feature==null) {
+                  return sampleId.compareTo(sample.getSampleId());
+                }
+                  
+                if (feature.equals(sample.getFeature())) {
 			if (getTopDepth() != null && sample.getTopDepth() != null) {
 				if (getMetricDepth(getTopDepth(), getDepthUnit()).equals(getMetricDepth(sample.getTopDepth(), sample.getDepthUnit())) && getBottomDepth() != null && sample.getBottomDepth() != null){
 					if (getMetricDepth(getBottomDepth(), getDepthUnit()).equals(getMetricDepth(sample.getBottomDepth(), sample.getDepthUnit())))
@@ -502,4 +506,15 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
 	public int hashCode() {
 		return 286 * sampleId;
 	}
+        
+        
+        public Sample(){        
+        }
+        
+        /**
+         * Partial Constructor for hibernate
+         */
+        public Sample(int sampleId) {
+            this.sampleId= Integer.valueOf(sampleId);
+        }
 }

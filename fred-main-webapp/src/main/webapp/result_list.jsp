@@ -227,6 +227,7 @@
 				FREDQuery query = FREDUtil.getFREDQuery(state);
 				queryString = query.getQueryAsString();
                                 String hq = query.getHQLQuery();
+                                samples = sampleUtil.getLightweightSamples(hq);;
                                 features = featureUtil.getFeaturesBySampleSubquery(hq);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
 			} catch (Exception e) {
@@ -240,13 +241,15 @@
 			String idString = request.getParameter("idList");
 
                         try {
-				String sampHql = "SELECT DISTINCT s.feature.featureId FROM " + tableName + " WHERE " + whereSQL;
-                                				
+				String sampHql = "SELECT DISTINCT s.sampleId FROM " + tableName + " WHERE " + whereSQL;
+                                String featHql = "SELECT DISTINCT s.feature.featureId FROM " + tableName + " WHERE " + whereSQL;
+                                			
 				//if polygon vertices are set, apply spatial filter
 				if (idString != null && idString.length() > 0) { 
                                     sampHql = getSpatiallyFilteredQuery(idString.split(","), sampHql);
 				} 
-                                features = featureUtil.getFeaturesBySampleSubquery(sampHql);
+                                samples = sampleUtil.getLightweightSamples(sampHql);
+                                features = featureUtil.getFeaturesByFeatureSubquery(featHql);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
                         
 			} catch (Exception e) {

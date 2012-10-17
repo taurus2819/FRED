@@ -84,7 +84,7 @@
 	StageUtil stageUtil = new StageUtil(FredHibernate.get().getDAOFactory());
 	SampleUtil sampleUtil = new SampleUtil(FredHibernate.get().getDAOFactory());
 	RecordUtil recordUtil = new RecordUtil(FredHibernate.get().getDAOFactory());
-
+        
 	TreeSet<Sample> samples = new TreeSet<Sample>();
 	try {
 		if (request.getParameter("featId") != null) {

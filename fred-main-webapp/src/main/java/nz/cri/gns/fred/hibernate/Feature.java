@@ -320,7 +320,7 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
 		return FeatureUtil.getFeatureIdentifyingName(this);
 	}
 	
-   /* public boolean equals(Object o) {
+    public boolean equals(Object o) {
     	if (!(o instanceof Feature))
     		return false;
     	if (featureId == null || ((Feature)o).featureId == null)
@@ -330,7 +330,7 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
 	
 	public int hashCode() {
 		return 217 * featureId;
-	}*/
+	}
         
         public Feature() {            
         }
@@ -341,6 +341,15 @@ public class Feature implements Serializable, nz.cri.gns.fred.model.Feature, Clo
          */
         public Feature(Integer id) {
             this.featureId = id;
+        }
+        
+        /**
+         * A constructor to allow partial loading by hibernate
+         * @param id FeatureId
+         */
+        public Feature(Integer id, FrNumber frnumber) {
+            this.featureId = id;
+            this.frNumber = frnumber;
         }
 
 }
