@@ -66,8 +66,8 @@
 				queryString = queryString + "NZMG Sheet = " + Map.value.toUpperCase() + " AND ";
 			}
 			if (QMap.value != "-") {
-				whereSQL = whereSQL + "s.feature.siteView.qmapSheet = '" + QMap.value + "' AND ";
-				queryString = queryString + "QMAP Sheet = " + QMap.value + " AND ";
+				whereSQL = whereSQL + "s.feature.siteView.qmapSheet LIKE '%" + QMap.value + "%' AND ";
+				queryString = queryString + "QMAP Sheet LIKE '%" + QMap.value + "%' AND ";
 			}
 			if (FieldNum.value.length > 0) {
 				whereSQL = whereSQL + "UPPER(s.feature.featureName) LIKE '%" + replaceSingleQuote(FieldNum.value.toUpperCase()) + "%' AND ";
