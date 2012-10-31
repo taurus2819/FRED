@@ -151,7 +151,7 @@ public class MolluscaExport extends OldFormatFredExport {
 			boolean keep = false;
 			for (PaleontologyListEntry entry : it.next().getListEntries()) {
 				String group = entry.getTaxonomicGroup().getName();
-				if (groups.contains(group) || ageGroups.contains(group)) {
+				if (groups.contains(group.toUpperCase()) || ageGroups.contains(group.toUpperCase())) {
 					keep = true;
 					break;
 				}

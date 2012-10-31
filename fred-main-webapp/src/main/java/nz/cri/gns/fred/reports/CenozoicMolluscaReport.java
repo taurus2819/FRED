@@ -86,8 +86,8 @@ public class CenozoicMolluscaReport {
         
         //Collect all the features
         System.out.println("Reading inputs");
-        Iterable<Integer> candidates = parseInputIdFile(infilename);
-        //Iterable<String> candidates = parseInputFrNumFile(infilename);
+        //Iterable<Integer> candidates = parseInputIdFile(infilename);
+        Iterable<String> candidates = parseInputFrNumFile(infilename);
         HashSet<Integer> done = parseDoneFile(donefilename);
         Vector<Feature> features = new Vector<Feature>(1024);
         
@@ -102,49 +102,18 @@ public class CenozoicMolluscaReport {
 
         int count=0;
         System.out.println("Gathering data");
-        for (Integer id : candidates) {
-            count++;
-            try {
-                if (done.contains(id)) {
-                    //skip features previously processed
-                    continue;
-                }
-                Feature feature = util.getFeature(id.intValue());
-                if (feature == null) {
-                    continue;
-                }
-                //features.add(feature);
-                
-                try {
-                    export.handleFeature(feature);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                if (count % 1000==0) {
-                   System.out.println(count+"...");
-                }
-            } catch (Exception ex) {
-                System.out.println("skipping" + id);
-                System.out.println(ex);
-            }
-        }
-        
-        
-//        System.out.println("Generating report in batches");
-//        HashSet<String> hs = new HashSet<String>();
-//        for (String num : candidates) {
+//        for (Integer id : candidates) {
 //            count++;
 //            try {
-//                frnum = util.getFrNumber(num);
-//                if (hs.contains(frnum.toString())) {
+//                if (done.contains(id)) {
+//                    //skip features previously processed
 //                    continue;
 //                }
-//                
-//                hs.add(frnum.toString());
-//                Feature feature = util.getFeature(frnum);
+//                Feature feature = util.getFeature(id.intValue());
 //                if (feature == null) {
 //                    continue;
 //                }
+//                //features.add(feature);
 //                
 //                try {
 //                    export.handleFeature(feature);
@@ -154,12 +123,43 @@ public class CenozoicMolluscaReport {
 //                if (count % 1000==0) {
 //                   System.out.println(count+"...");
 //                }
-//                
 //            } catch (Exception ex) {
-//                System.out.println("skipping" + num);
+//                System.out.println("skipping" + id);
 //                System.out.println(ex);
 //            }
 //        }
+        
+        
+        System.out.println("Generating report in batches");
+        HashSet<String> hs = new HashSet<String>();
+        for (String num : candidates) {
+            count++;
+            try {
+                frnum = util.getFrNumber(num);
+                if (hs.contains(frnum.toString())) {
+                    continue;
+                }
+                
+                hs.add(frnum.toString());
+                Feature feature = util.getFeature(frnum);
+                if (feature == null) {
+                    continue;
+                }
+                
+                try {
+                    export.handleFeature(feature);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                if (count % 1000==0) {
+                   System.out.println(count+"...");
+                }
+                
+            } catch (Exception ex) {
+                System.out.println("skipping" + num);
+                System.out.println(ex);
+            }
+        }
 
         writer.flush();
         writer.close();
