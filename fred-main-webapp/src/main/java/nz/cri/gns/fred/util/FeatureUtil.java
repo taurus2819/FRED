@@ -40,6 +40,8 @@ import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.SedimentaryFeature;
 import nz.cri.gns.fred.model.SentTo;
 import nz.cri.gns.fred.model.UserFolder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
@@ -925,12 +927,22 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
                         String num= frNumbers.get(0).toString();
                         if (num.indexOf("/") > 0) {
                                 String mapSheet = num.substring(0, frNumStr.indexOf("/f")).toUpperCase();
-                                String serial = num.substring(frNumStr.indexOf("/f") + 2);
-                                String[] frNumBits = {mapSheet, serial};
-                                return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber = ?", FrNumber.class, frNumBits[0], new Integer(frNumBits[1]));
+                                String serial = null;
+                                String recoll = frNumbers.get(0).getRecollectionNumber();
+                                if (recoll == null) {
+                                        serial = num.substring(frNumStr.indexOf("/f") + 2);
+                                        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber = ?",
+                                                FrNumber.class, mapSheet, new Integer(serial));
+                                } else {
+                                    serial = num.substring(0, num.indexOf(recoll)).substring(frNumStr.indexOf("/f")+2);
+                                    return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber = ? AND f.recollectionNumber=?",
+                                            FrNumber.class, mapSheet, new Integer(serial), recoll);
+                                }
                         }
 				
-		} catch (Exception e) {}
+		} catch (Exception e) {
+                     Logger.getLogger(FeatureUtil.class.getName()).log(Level.SEVERE, null, e);
+                }
 		return null;
 	}
 	
