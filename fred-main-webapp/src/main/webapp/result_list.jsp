@@ -90,12 +90,11 @@
     }
 %>
 
-<%!    private String getSpatiallyFilteredQuery(String[] locIdList, String querySQL) throws Exception {
+<%!    private String[] getSpatiallyFilteredQuery(String[] locIdList, String querySQL) throws Exception {
         int MAX_NUM_FEATURES = 1000;
-        String subQuery="";
         int offset = 0;
         int i = 0;
-
+        String subQuery="";
         //System.out.println(querySQL);		
         if (locIdList.length > 0) {
             while (offset * MAX_NUM_FEATURES < locIdList.length) {
@@ -110,9 +109,9 @@
                 subQuery += ") ";
                 offset++;
             }
-            return querySQL + subQuery;
+            return new String[]{querySQL, subQuery};
         } else {
-            return querySQL;
+            return new String[]{querySQL};
         }
     }
 %>
@@ -246,7 +245,11 @@
                                 			
 				//if polygon vertices are set, apply spatial filter
 				if (idString != null && idString.length() > 0) { 
-                                    sampHql = getSpatiallyFilteredQuery(idString.split(","), sampHql);
+                                    String[] result = getSpatiallyFilteredQuery(idString.split(","), sampHql);
+                                    sampHql = result[0];
+                                    if (result.length>1) {
+                                        featHql = featHql + result[1];
+                                   }                                   
 				} 
                                 samples = sampleUtil.getLightweightSamples(sampHql);
                                 features = featureUtil.getFeaturesByFeatureSubquery(featHql);
