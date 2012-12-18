@@ -587,14 +587,27 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return fredDAO.getList("SELECT r.sample.feature FROM Record AS r WHERE r.audit = ?", Feature.class, audit);
 	}
 
-        public List<Feature> getFeaturesBySampleSubquery(String sampleSubquery) throws StorageAccessException {
+    public List<Feature> getFeaturesBySampleSubquery(String sampleSubquery) throws StorageAccessException {
 		List<Feature> cartesianFeatures = fredDAO.getList("select new Feature(s.feature.featureId, s.feature.frNumber) FROM Sample s WHERE s.sampleId in ("+sampleSubquery+")", Feature.class);
                 Set<Feature> features = new HashSet<Feature>();
                 features.addAll(cartesianFeatures);                
                 return FREDUtil.getSortedList(features);
 	}
+    
+    public List<Feature> getFeaturesBySampleSubquery(List<Sample> lightweightSamples) throws StorageAccessException {
+		if (lightweightSamples.isEmpty()) {
+            return new Vector<Feature>();
+        }
         
-        public List<Feature> getFeaturesByFeatureSubquery(String featureSubquery) throws StorageAccessException {
+        StringBuffer buffer = new StringBuffer(1024);        
+        for (Sample s : lightweightSamples) {
+            buffer.append(s.getSampleId().toString()).append(',');
+        }
+        String subQuery = buffer.substring(0, buffer.length()-1);
+        return getFeaturesBySampleSubquery(subQuery);
+	}
+        
+    public List<Feature> getFeaturesByFeatureSubquery(String featureSubquery) throws StorageAccessException {
 		return fredDAO.getList("select new Feature(f.featureId, f.frNumber) FROM Feature AS f join fetch f.frNumber WHERE f.featureId in ("+featureSubquery+")", Feature.class);
 	}
 	

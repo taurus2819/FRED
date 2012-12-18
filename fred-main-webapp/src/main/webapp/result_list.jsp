@@ -51,7 +51,7 @@
 <%!    private List<Sample> getSpatiallyFilteredSamples(String[] locIdList, String querySQL) throws Exception {
 
         //System.err.println("#samples altogether " + locIdList.length);
-		
+		// Maximum list elements handled by Oracle for an "in" statement
         int MAX_NUM_FEATURES = 1000;
         String subQuery;
         int offset = 0;
@@ -66,7 +66,7 @@
 			while (offset * MAX_NUM_FEATURES < locIdList.length) {
 
 				//System.err.println("Iteration "+ (offset+1));
-				subQuery = " and featureId IN (";	
+				subQuery = " and s.feature.featureId IN (";	
 				for (i = 0; i < MAX_NUM_FEATURES && offset * MAX_NUM_FEATURES + i < locIdList.length; i++) {
 
 					subQuery += locIdList[offset * MAX_NUM_FEATURES + i];	
@@ -77,45 +77,18 @@
 				subQuery += ") ";
 				offset++;
 				//System.err.println("#query "+ querySQL + subQuery);
-				subSamples = sampleUtil.getListFromHQL(querySQL + subQuery, Sample.class);
+				subSamples = sampleUtil.getLightweightSamples(querySQL+subQuery);
 				//System.err.println("#samples "+ subSamples.size());
 				samples.addAll(subSamples);
 			}
 		}
 		else	{
-			samples = sampleUtil.getListFromHQL(querySQL, Sample.class);
+			samples = sampleUtil.getLightweightSamples(querySQL);
 		}
         
 		return samples;
     }
 %>
-
-<%!    private String[] getSpatiallyFilteredQuery(String[] locIdList, String querySQL) throws Exception {
-        int MAX_NUM_FEATURES = 1000;
-        int offset = 0;
-        int i = 0;
-        String subQuery="";
-        //System.out.println(querySQL);		
-        if (locIdList.length > 0) {
-            while (offset * MAX_NUM_FEATURES < locIdList.length) {
-                
-                subQuery = " and s.feature.featureId IN (";
-                for (i = 0; i < MAX_NUM_FEATURES && offset * MAX_NUM_FEATURES + i < locIdList.length; i++) {
-                    subQuery += locIdList[offset * MAX_NUM_FEATURES + i];
-                    subQuery += ",";
-                }
-
-                subQuery = subQuery.substring(0, subQuery.length() - 1);
-                subQuery += ") ";
-                offset++;
-            }
-            return new String[]{querySQL, subQuery};
-        } else {
-            return new String[]{querySQL};
-        }
-    }
-%>
-
 
 <%
 
@@ -239,20 +212,17 @@
 			//Account for large number of SAMPLE_IDs provided by polygon filter
 			String idString = request.getParameter("idList");
 
-                        try {
+            try {
 				String sampHql = "SELECT DISTINCT s.sampleId FROM " + tableName + " WHERE " + whereSQL;
-                                String featHql = "SELECT DISTINCT s.feature.featureId FROM " + tableName + " WHERE " + whereSQL;
+                String featHql = "SELECT DISTINCT s.feature.featureId FROM " + tableName + " WHERE " + whereSQL;
                                 			
 				//if polygon vertices are set, apply spatial filter
 				if (idString != null && idString.length() > 0) { 
-                                    String[] result = getSpatiallyFilteredQuery(idString.split(","), sampHql);
-                                    sampHql = result[0];
-                                    if (result.length>1) {
-                                        featHql = featHql + result[1];
-                                   }                                   
-				} 
-                                samples = sampleUtil.getLightweightSamples(sampHql);
-                                features = featureUtil.getFeaturesByFeatureSubquery(featHql);
+                    samples = getSpatiallyFilteredSamples(idString.split(","), sampHql);
+				} else {
+                    samples = sampleUtil.getLightweightSamples(sampHql);
+                }
+                features = featureUtil.getFeaturesBySampleSubquery(samples);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
                         
 			} catch (Exception e) {
@@ -330,7 +300,7 @@
 						fids = new HashSet<String>(Arrays.asList(request.getParameterValues("fid")));
 					
 
-                                        List<Feature> pageFeatures = features.subList(startIndex-1, endIndex);
+                    List<Feature> pageFeatures = features.subList(startIndex-1, endIndex);
 
 					for (Feature feature : pageFeatures) {
         					feature = featureUtil.getFeature(feature.getFeatureId());
