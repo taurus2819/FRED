@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -590,7 +591,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     public List<Feature> getFeaturesBySampleSubquery(String sampleSubquery) throws StorageAccessException {
 		List<Feature> cartesianFeatures = fredDAO.getList("select new Feature(s.feature.featureId, s.feature.frNumber) FROM Sample s WHERE s.sampleId in ("+sampleSubquery+")", Feature.class);
                 Set<Feature> features = new HashSet<Feature>();
-                features.addAll(cartesianFeatures);                
+                features.addAll(cartesianFeatures);
                 return FREDUtil.getSortedList(features);
 	}
     
@@ -599,12 +600,25 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             return new Vector<Feature>();
         }
         
-        StringBuffer buffer = new StringBuffer(1024);        
-        for (Sample s : lightweightSamples) {
-            buffer.append(s.getSampleId().toString()).append(',');
-        }
-        String subQuery = buffer.substring(0, buffer.length()-1);
-        return getFeaturesBySampleSubquery(subQuery);
+        int MAX_ITEMS = 1000;
+        int offset = 0;
+        List<Feature> features = new ArrayList<Feature>();
+        
+        //chunk request due to Oracle list size limit
+        while (offset * MAX_ITEMS < lightweightSamples.size()) {
+            StringBuffer buffer = new StringBuffer(1024);
+            for (int i=0; i<MAX_ITEMS && offset * MAX_ITEMS+i < lightweightSamples.size(); i++) {
+                int count = offset * MAX_ITEMS + i;
+                buffer.append(lightweightSamples.get(offset * MAX_ITEMS+i).getSampleId());
+				buffer.append(",");
+			}
+            String subQuery = buffer.substring(0, buffer.length()-1);
+            features.addAll(getFeaturesBySampleSubquery(subQuery));
+            offset++;
+		}
+        
+        Collections.sort(features);        
+        return features;
 	}
         
     public List<Feature> getFeaturesByFeatureSubquery(String featureSubquery) throws StorageAccessException {
