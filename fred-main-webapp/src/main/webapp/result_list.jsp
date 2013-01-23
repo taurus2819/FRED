@@ -13,6 +13,7 @@
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.jsp.PageState"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
+%><%@page import="nz.cri.gns.jsp.JspUtils"
 %><%@page import="nz.cri.gns.auth.Authenticable"
 %><%@page import="nz.cri.gns.auth.User"
 %><%@page import="java.util.List"
@@ -32,7 +33,14 @@
 %><%@page import="java.util.Set"
 %><%@page import="java.util.Arrays"
 %><%@page import="java.util.Date"
+%><%@page import="java.util.Calendar"
 %><%@page import="java.util.GregorianCalendar"
+%><%@page import="java.io.*"
+%><%@page import="java.net.Socket"
+%><%@page import="java.net.InetAddress"
+%><%@page import="java.net.UnknownHostException"
+%><%@page import="java.util.logging.Logger"
+%><%@page import="java.util.Enumeration"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %>
@@ -60,7 +68,9 @@
         List<Sample> samples = new ArrayList<Sample>();
 
 		//System.out.println(querySQL);
-		
+		Calendar cal = new GregorianCalendar();
+        long t1 = cal.getTimeInMillis();
+                
 		if(locIdList.length > 0)	{
 			
 			while (offset * MAX_NUM_FEATURES < locIdList.length) {
@@ -85,7 +95,9 @@
 		else	{
 			samples = sampleUtil.getLightweightSamples(querySQL);
 		}
-        
+        cal = new GregorianCalendar();
+        long t2 = cal.getTimeInMillis();
+        System.out.println("Retrieved light samples in " + (t2-t1) + " ms.");
 		return samples;
     }
 %>
@@ -95,7 +107,8 @@
 
 
 	// Define page variables and initialise head
-	
+    ExtranetTemplate et = null;
+	try {
 	
 	
 	// Define HTTP state variables
@@ -109,7 +122,7 @@
 	int pageSize = 50;
 
 	// Define the extranet template for this page
-	ExtranetTemplate et = getExtranetTemplate();	
+	et = getExtranetTemplate();	
 	et.setDisplayLoadingMessage(true);
 	
 	// Define a vector of links
@@ -222,7 +235,12 @@
 				} else {
                     samples = sampleUtil.getLightweightSamples(sampHql);
                 }
+                Calendar cal = new GregorianCalendar();
+                long t1 = cal.getTimeInMillis();
                 features = featureUtil.getFeaturesBySampleSubquery(samples);
+                cal = new GregorianCalendar();
+                long t2 = cal.getTimeInMillis();
+                System.out.println("Retrieved light features in " + (t2-t1) + " ms.");
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
                         
 			} catch (Exception e) {
@@ -377,10 +395,121 @@
 	}
 		
 	drawBottom(out, et);
+   
+   } catch (Exception ex) {
+            %><tr></tr><td>An error has occurred</td>
+            <p>IT support have been notified and we'll be fixing it as soon as possible.</p><%
+           
+        String server = "smtp1.gns.cri.nz";
+        String from = "developer@gns.cri.nz";
+        String to = "developer@gns.cri.nz";
+        Logger log = Logger.getLogger("GNSOnline.error.general.jsp");
+
+        try {
+            String hostname = "???";
+            try {
+                InetAddress addr = InetAddress.getLocalHost();
+                byte[] ipAddr = addr.getAddress();
+                hostname = addr.getHostName();
+            } catch (UnknownHostException e) {
+            }
+
+            log = Logger.getLogger("GNSOnline.error.general.jsp");
+            Socket sockPuppet = new Socket(server, 25);
+            BufferedReader ismtp = new BufferedReader(
+                    new InputStreamReader(sockPuppet.getInputStream()));
+            PrintWriter osmtp = new PrintWriter(
+                    sockPuppet.getOutputStream(), true);
+
+            osmtp.println("HELO gns.cri.nz");
+            log.info(ismtp.readLine());
+            osmtp.println("MAIL FROM: " + from);
+            log.info(ismtp.readLine());
+            osmtp.println("RCPT TO: " + to);
+            log.info(ismtp.readLine());
+            osmtp.println("DATA");
+            log.info(ismtp.readLine());
+
+            osmtp.println("From: " + from);
+            osmtp.println("To: " + to);
+            osmtp.print("Subject: http://");
+            osmtp.print(hostname);
+            osmtp.print(request.getAttribute("javax.servlet.forward.context_path"));
+            osmtp.print(request.getAttribute("javax.servlet.forward.servlet_path"));
+            osmtp.println(" fail.");
+            osmtp.print("URL (in theory): http://");
+            osmtp.print(hostname);
+            osmtp.print(request.getAttribute("javax.servlet.forward.context_path"));
+            osmtp.println(request.getAttribute("javax.servlet.forward.servlet_path"));
+            osmtp.print("Logged in user was: ");
+            osmtp.println(JspUtils.getLoggedInUserString(session));
+            osmtp.print("Remote addr: ");
+            osmtp.println(request.getRemoteAddr());
+            osmtp.print("Remote host name: ");
+            osmtp.println(request.getRemoteHost());
+            osmtp.println();
+            osmtp.println("Application caught an exception, printed below: ");
+
+            ex.printStackTrace(osmtp);
+
+            osmtp.print("\nContext path: ");
+            osmtp.println(request.getContextPath());
+            osmtp.print("\nPath info: ");
+            osmtp.println(request.getPathInfo());
+            osmtp.print("\nQuery string: ");
+            osmtp.println(request.getQueryString());
+            osmtp.print("\nRequest URI: ");
+            osmtp.println(request.getRequestURI());
+            osmtp.print("\nRequest URL: ");
+            osmtp.println(request.getRequestURL().toString());
+            osmtp.print("\nServlet path: ");
+            osmtp.println(request.getServletPath());
+
+            osmtp.println("\nHeader is:");
+            Enumeration<String> javaSucks = request.getHeaderNames();
+            while (javaSucks.hasMoreElements()) {
+                String headerName = javaSucks.nextElement();
+                osmtp.print(headerName);
+                osmtp.print(": <<<");
+                osmtp.print(request.getHeader(headerName));
+                osmtp.println(">>>");
+            }
+
+            osmtp.println("\nParameters are:");
+            javaSucks = request.getParameterNames();
+            while (javaSucks.hasMoreElements()) {
+                String headerName = javaSucks.nextElement();
+                osmtp.print(headerName);
+                osmtp.print(": <<<");
+                osmtp.print(request.getParameter(headerName));
+                osmtp.println(">>>");
+            }
+        
+            osmtp.println("\nAttributes are:");
+            javaSucks = request.getAttributeNames();
+            while (javaSucks.hasMoreElements()) {
+                String headerName = javaSucks.nextElement();
+                osmtp.print(headerName);
+                osmtp.print(": <<<");
+                osmtp.print(request.getAttribute(headerName));
+                osmtp.println(">>>");
+            }
+
+            osmtp.println(".");
+            osmtp.println("QUIT");
+            log.info(ismtp.readLine());
+            osmtp.close();
+  
+            drawBottom(out, et);
+            
+       } catch (Exception e) {
+           log.warning(ex.toString());
+       }
+    
 	try {
 		factory.closeSession();
 	} catch (Exception e) {
 	}
 	
-
+   }
 %>
