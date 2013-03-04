@@ -1030,7 +1030,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			String[] frNumBits = {mapSheet, serialNumStr, recollectionNumber};
 			return frNumBits;
 		} else {
-			throw new DataInputException("FR Number", "Badly formed or missing FR Number");
+			throw new DataInputException("FR Number", "Badly formed or missing FR Number: [" + frNumStr + "]");
 		}
 	}
 	
