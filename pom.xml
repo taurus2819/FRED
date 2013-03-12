@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>nz.cri.gns.fred</groupId>
     <artifactId>fred-top</artifactId>
-    <version>2.2.32</version>
+    <version>2.2.33-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Fossil Record Electronic Database</name>
     <url>http://fred.org.nz</url>
@@ -43,9 +43,9 @@
         <module>fred-ims</module>
     </modules>
     <scm>
-        <connection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/tags/RELEASE_2.2.32</connection>
-        <developerConnection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/tags/RELEASE_2.2.32</developerConnection>
-        <url>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/tags/RELEASE_2.2.32</url>
+        <connection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk</connection>
+        <developerConnection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk</developerConnection>
+        <url>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk</url>
     </scm>
     <distributionManagement>
         <repository>
