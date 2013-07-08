@@ -658,13 +658,16 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                 } catch (Exception e) {
                     error.add(new String[]{"Bottom Depth/Height", "Non-numeric value"});
                 }
-                if ("Bottom".equals(sample.getFeature().getDatumType())) {
-                    if (topDepth.doubleValue() < bottomDepth.doubleValue()) {
-                        error.add(new String[]{"Heights", "Top height < bottom height and datum = Bottom"});
-                    }
-                } else {
-                    if (topDepth.doubleValue() > bottomDepth.doubleValue()) {
-                        error.add(new String[]{"Depths", "Top depth > bottom depth"});
+                
+                if (topDepth != null && bottomDepth != null) {
+                    if ("Bottom".equals(sample.getFeature().getDatumType())) {
+                        if (topDepth.doubleValue() < bottomDepth.doubleValue()) {
+                            error.add(new String[]{"Heights", "Top height < bottom height and datum = Bottom"});
+                        }
+                    } else {
+                        if (topDepth.doubleValue() > bottomDepth.doubleValue()) {
+                            error.add(new String[]{"Depths", "Top depth > bottom depth"});
+                        }
                     }
                 }
             }

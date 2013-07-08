@@ -5,7 +5,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import oracle.jdbc.pool.OracleConnectionPoolDataSource;
 import net.sf.hibernate.HibernateException;
 import net.sf.hibernate.SessionFactory;
 import net.sf.hibernate.cfg.Configuration;
