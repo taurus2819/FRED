@@ -16,7 +16,9 @@
         type="java.lang.Integer"
         column="AGE_ID"
     >
-        <generator class="assigned" />
+        <generator class="sequence">
+                <param name="sequence">FR.AGE_SEQ</param>
+        </generator>
     </id>
 
 	    <property

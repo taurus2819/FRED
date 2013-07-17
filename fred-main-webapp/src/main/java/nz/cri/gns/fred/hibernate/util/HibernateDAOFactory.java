@@ -96,6 +96,10 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
     }
 
     //create methods
+    public Age createNewAge() {
+        return new nz.cri.gns.fred.hibernate.Age();
+    }
+    
     public Folder createNewFolder() {
         return new nz.cri.gns.fred.hibernate.Folder();
     }
@@ -437,7 +441,16 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
             throw new StorageAccessException(e);
         }
     }
-
+    
+    public <T extends Comparable<? super T>> List<T> getUnsortedList(String query, Class<T> clazz, Object... parameters) throws StorageAccessException {
+        return getUnsortedList(query, null, clazz, parameters);
+    }
+    
+    public <T extends Comparable<? super T>> List<T> getUnsortedList(String query, Integer maxResults, Class<T> clazz, Object... parameters) throws StorageAccessException {
+        List<T> items = HibernateUtils.list(provider, query, maxResults, clazz, parameters);
+        return items;
+    }
+    
     public FrUser createNewFrUser() {
         return new nz.cri.gns.fred.hibernate.FrUser();
     }
@@ -482,4 +495,6 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
     public LogTable createNewLog() {
         return new nz.cri.gns.fred.hibernate.LogTable();
     }
+
+    
 }

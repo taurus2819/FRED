@@ -47,12 +47,14 @@ public interface FredDAO {
 	public <T> T saveOrUpdate(T object) throws StorageAccessException;
 	public <T> T save(T object) throws StorageAccessException;
 	public <T extends Comparable<? super T>> List<T> getList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException;
-        public <T extends Comparable<? super T>> List<T> getListFromSQL(String query, String entity, Class<T> clazz, Integer maxResults) throws StorageAccessException, HibernateException;
+    public <T extends Comparable<? super T>> List<T> getListFromSQL(String query, String entity, Class<T> clazz, Integer maxResults) throws StorageAccessException, HibernateException;
 	public <T extends Comparable<? super T>> List<T> getList(String query, Integer maxResults, Class<T> clazz, Object ... parameters) throws StorageAccessException;
 	public <T extends Comparable<? super T>> List<T> getList(Class<T> clazz, List<Criterion> criteria) throws StorageAccessException;
 	public <T extends Comparable<? super T>> List<T> getList(Class<T> clazz, List<Criterion> criteria, Integer matches) throws StorageAccessException;
-	
+	public <T extends Comparable<? super T>> List<T> getUnsortedList(String query, Class<T> clazz, Object ... parameters) throws StorageAccessException;
+    
 	//create
+    public Age createNewAge();
 	public Feature createNewFeature() throws StorageAccessException;
 	public Folder createNewFolder();
 	public FolderUser createNewFolderUser();

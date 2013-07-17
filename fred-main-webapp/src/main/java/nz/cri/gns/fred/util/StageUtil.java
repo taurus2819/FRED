@@ -82,7 +82,7 @@ public class StageUtil extends ModelUtil {
 	}
 	
 	public List<Age> getAges() throws StorageAccessException {
-		return fredDAO.getList("FROM Age AS a", Age.class);
+		return fredDAO.getUnsortedList("FROM Age AS a  order by a.baseAge, a.topAge", Age.class);
 	}
 
 	public List<Age> getActiveAges() throws StorageAccessException {
@@ -197,4 +197,7 @@ public class StageUtil extends ModelUtil {
 		return fredDAO.getList(Age.class, criteria, maxMatches);
 	}
 	
+    public Age createAge() {
+        return fredDAO.createNewAge();
+    }
 }
