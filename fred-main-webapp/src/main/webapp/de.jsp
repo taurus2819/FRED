@@ -144,7 +144,7 @@
 <li>fam. = family</li>
 <li>gen. = genus</li>
 <li>gr. = group</li>
-<li>MS = manuscript name</li>
+<li>MS. = manuscript name</li>
 <li>n.gen. = new genus</li>
 <li>n.sp. = new species (also n.spp.)</li>
 <li>s.l. = sensu lato/broad sense</li>
