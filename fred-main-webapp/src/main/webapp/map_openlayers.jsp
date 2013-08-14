@@ -59,7 +59,7 @@
 				controls: [
 					new OpenLayers.Control.Navigation(),
 	                new OpenLayers.Control.PanZoomBar({position: new OpenLayers.Pixel(2, 15)}),
-	                new OpenLayers.Control.ScaleLine({position: new OpenLayers.Pixel(710, 450)}),
+	                new OpenLayers.Control.ScaleLine({position: new OpenLayers.Pixel(630, 450)}),
 					new OpenLayers.Control.MousePosition({prefix:"Longitude: ",separator:", Latitude: "}),
 					new OpenLayers.Control.LayerSwitcher({ascending: false}),
 					new OpenLayers.Control.KeyboardDefaults()
