@@ -7,9 +7,15 @@ import nz.cri.gns.fred.model.Stage;
 public class PaleontologyAge extends StageAgeRange implements AgeRange {
 
 	private Paleontology pal;
+    private String label;
 
 	public PaleontologyAge(Paleontology paleontology) {
+		this(paleontology,null);
+	}
+    
+    public PaleontologyAge(Paleontology paleontology, String label) {
 		this.pal = paleontology;
+        this.label=label;
 	}
 
 
@@ -25,7 +31,7 @@ public class PaleontologyAge extends StageAgeRange implements AgeRange {
 
 
 	public String getAgeRangeType() {
-		return "List";
+		return "List" + label;
 	}
 
 }

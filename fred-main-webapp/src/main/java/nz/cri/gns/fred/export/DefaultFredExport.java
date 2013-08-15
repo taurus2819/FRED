@@ -54,7 +54,7 @@ public abstract class DefaultFredExport implements FredRecordExport {
 	 * @param sample
 	 * @return
 	 */
-	private AgeRange getAgeBySample(Sample sample) {
+	public AgeRange getAgeBySample(Sample sample) {
 //Date date0 = new Date();
 //try {
 		if (sample.getKnownStage() != null)
@@ -72,7 +72,7 @@ public abstract class DefaultFredExport implements FredRecordExport {
 	protected AgeRange getAgeByPaleontology(Sample sample, Paleontology list) {
 //Date date0 = new Date();
 //try {
-		return list.getStage() == null ? null : new PaleontologyAge(list);
+        return list.getStage() == null ? null : new PaleontologyAge(list);
 //} finally {
 //	System.out.println("Age by pal: " + (new Date().getTime() - date0.getTime()));
 //}

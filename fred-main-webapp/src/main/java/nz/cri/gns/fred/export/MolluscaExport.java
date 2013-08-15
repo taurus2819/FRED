@@ -99,24 +99,6 @@ public class MolluscaExport extends OldFormatFredExport {
 //		System.out.println("Get lists to export: " + (new Date().getTime() - date.getTime()));
 		return listSet;
 
-//		List<Paleontology> listList = super.getListsToExport(sample);
-//		List<Paleontology> newList = new ArrayList<Paleontology>(listList.size());
-//		original: for (Paleontology list : listList) {
-//			if (list.getIdentifiers().size() == 0)
-//				continue original;
-//			for (Person identifier : list.getIdentifiers()) {
-//				if (excludedIndentifiers.contains(identifier.getName()))
-//					continue original;
-//			}
-//			for (PaleontologyListEntry entry : list.getListEntries()) {
-//				if (groupRequired(entry.getTaxonomicGroup())) {
-//					//Keep it!
-//					newList.add(list);
-//					continue original;
-//				}
-//			}
-//		}
-//		return newList;
 	}
 
 	/**

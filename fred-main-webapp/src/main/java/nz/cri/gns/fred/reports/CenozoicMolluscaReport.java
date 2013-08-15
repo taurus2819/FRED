@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.rmi.NotBoundException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -96,40 +97,13 @@ public class CenozoicMolluscaReport {
         DAOFactory factory = FredHibernate.get().getDAOFactory();
         FeatureUtil util = new FeatureUtil(factory);
         
-        PrintWriter writer = new PrintWriter(new FileWriter(new File(outDir, "taxa.txt")));
+        PrintWriter writer = new PrintWriter(new File(outDir, "taxa.txt"), "UTF-8");
+       
         //MolluscanAgeValidator export = new MolluscanAgeValidator(writer, factory);
         MolluscaExport export = new MolluscaExport(writer, factory);
 
         int count=0;
-        System.out.println("Gathering data");
-//        for (Integer id : candidates) {
-//            count++;
-//            try {
-//                if (done.contains(id)) {
-//                    //skip features previously processed
-//                    continue;
-//                }
-//                Feature feature = util.getFeature(id.intValue());
-//                if (feature == null) {
-//                    continue;
-//                }
-//                //features.add(feature);
-//                
-//                try {
-//                    export.handleFeature(feature);
-//                } catch (Exception ex) {
-//                    ex.printStackTrace();
-//                }
-//                if (count % 1000==0) {
-//                   System.out.println(count+"...");
-//                }
-//            } catch (Exception ex) {
-//                System.out.println("skipping" + id);
-//                System.out.println(ex);
-//            }
-//        }
-        
-        
+        System.out.println("Gathering data");       
         System.out.println("Generating report in batches");
         HashSet<String> hs = new HashSet<String>();
         for (String num : candidates) {

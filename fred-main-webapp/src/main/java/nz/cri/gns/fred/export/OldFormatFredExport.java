@@ -36,7 +36,7 @@ public class OldFormatFredExport extends DefaultFredExport {
 		int num = samples.size();
 //		System.out.println("Get samples: " + (new Date().getTime() - date0.getTime()));
 //		date0 = new Date();
-		System.out.println("Feature: " + feature.getFeatureId());
+		System.out.println("Feature: " + feature.getFrNumber());
 		for (Sample sample : samples) {
 			for (Paleontology list : getListsToExport(sample)) {
 //				Date date = new Date();

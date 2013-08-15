@@ -10,11 +10,16 @@ public class ListDerivedAge extends SimpleAgeRange {
 
 	
 	private Type type;
-
+    private String label;
+    
 	public ListDerivedAge(Set<Paleontology> lists, Type type) {
+		this(lists,type,null);
+	}
+    public ListDerivedAge(Set<Paleontology> lists, Type type, String label) {
 		super();
 		process(lists, type);
 		this.type = type;
+        this.label = label;
 	}
 
 	private void process(Set<Paleontology> lists, Type type) {
@@ -64,6 +69,6 @@ public class ListDerivedAge extends SimpleAgeRange {
 	}
 
 	public String getAgeRangeType() {
-		return (type == Type.MINIMUM ? "Minimum" : "Maximum") + " overlap (list)";
+		return (type == Type.MINIMUM ? "Minimum" : "Maximum") + " overlap (list) " + label;
 	}
 }
