@@ -94,7 +94,7 @@ public class CenozoicPollenReport {
                     System.out.println(ex);
                 }
             }
-            export.writeTaxaDistribution(loadSynonyms());            
+            export.writeTaxaDistribution();            
             writer.flush();
             writer.close();            
             
@@ -413,9 +413,14 @@ public class CenozoicPollenReport {
     public void postProcessCenozoicPollen() {
         try {
             setupJNDI();
-            writer = new PrintWriter(new File("//tmp//taxa-age-dist-agg.txt"), "UTF-8");
+            writer = new PrintWriter(new File("//tmp//taxa-age-dist-no-cuttings.txt"), "UTF-8");
             readCountedTaxa("//tmp//taxa-age-dist.txt");
             Vector<String> synonyms = loadSynonyms();
+            writeTargetTaxaDistribution(synonyms);            
+            writer.flush();
+            writer.close();
+            
+            writer = new PrintWriter(new File("//tmp//taxa-age-dist-agg-no-cuttings.txt"), "UTF-8");
             aggregateTaxaCounts(synonyms);
             writeAggregatedTaxaDistribution(synonyms);
             writer.flush();
@@ -436,9 +441,9 @@ public class CenozoicPollenReport {
             BufferedReader br = new BufferedReader(new FileReader(new File(fileName)));
 
             //skip header 
+            /*br.readLine();
             br.readLine();
-            br.readLine();
-            br.readLine();
+            br.readLine();*/
             
             String line;
             while ((line = br.readLine()) != null) {

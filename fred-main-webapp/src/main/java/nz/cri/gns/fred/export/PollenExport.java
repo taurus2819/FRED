@@ -91,6 +91,10 @@ public class PollenExport extends OldFormatFredExport {
     
 	@Override
 	public Collection<Paleontology> getListsToExport(Sample sample) throws StorageAccessException {
+        if (sample.getDrillType() != null && sample.getDrillType().equals("Cutting")) {
+            return new Vector<Paleontology>();
+        }
+        
 		List<Paleontology> listSet =  Export.getFactory().getFredDAO().getPaleontologies(sample);
 
 		original: for (Iterator<Paleontology> it = listSet.iterator(); it.hasNext(); ) {
@@ -100,7 +104,7 @@ public class PollenExport extends OldFormatFredExport {
 					it.remove();
 					continue original;
 				}
-			}
+			}           
 			boolean keep = false;
 			for (PaleontologyListEntry entry : list.getListEntries()) {
 				if (groupRequired(entry.getTaxonomicGroup())) {
@@ -233,12 +237,7 @@ public class PollenExport extends OldFormatFredExport {
 		else
 			return new ListDerivedAge(relevantPals, ListDerivedAge.Type.MINIMUM, " excl Pollen");
 	}
-    
-    
-    public void writeTaxaDistribution(Vector<String> synonyms) {
-        writeTaxaDistribution();
-    }
-    
+      
      
     public void writeTaxaDistribution() {
         //read synonyms
