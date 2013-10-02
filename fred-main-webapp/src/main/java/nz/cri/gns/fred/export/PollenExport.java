@@ -31,6 +31,7 @@ import nz.cri.gns.fred.model.Taxon;
 
 public class PollenExport extends OldFormatFredExport {
     private HashMap<String, HashMap<String,Integer>> taxa = null;
+    private boolean checkIdentifers = false;
     
 	public PollenExport(Writer writer, DAOFactory factory) {
 		super(writer);
@@ -40,12 +41,17 @@ public class PollenExport extends OldFormatFredExport {
 
 	private static Set<String> groups;
 	private static Set<String> ageGroups;
-	private static Set<String> excludedIndentifiers;
+	private static Set<String> excludedIdentifiers;
 	private static double baseAge = 65;
 	static {
 		groups = new HashSet<String>(3);
 		groups.add("SPORITES");
 		groups.add("POLLENITES");
+        groups.add("XANTHOPHYCEAE");
+        groups.add("CHLOROPHYCEAE");
+        groups.add("PRASINOPHYCEAE");
+        groups.add("FUNGI");
+        groups.add("ALGAE");
 		
 		ageGroups = new HashSet<String>(5);
 		ageGroups.add("FORAMINIFERA");
@@ -55,8 +61,16 @@ public class PollenExport extends OldFormatFredExport {
 		ageGroups.add("GASTROPODA");
 		ageGroups.add("SCAPHOPODA");
         
-		excludedIndentifiers = new HashSet<String>(17);
-		// no bad boys yet
+		excludedIdentifiers = new HashSet<String>(17);
+		excludedIdentifiers.add("Pocknall, D.T.");
+		excludedIdentifiers.add("Mildenhall, D.C.");
+		excludedIdentifiers.add("Raine, J.I.");
+		excludedIdentifiers.add("McIntyre, D.J.");
+		excludedIdentifiers.add("Couper, R.A.");
+		excludedIdentifiers.add("Norriss, G.");
+		excludedIdentifiers.add("Kennedy, E.M.");
+		excludedIdentifiers.add("Harris, W.");
+        excludedIdentifiers.add("Harris, W.F.");
 	}
 	
 	
@@ -73,14 +87,10 @@ public class PollenExport extends OldFormatFredExport {
             return age;
 		age = getAgeByAllPaleontologiesExcludingSelf(sample);
         if (age != null)
-            return age;	
-		age = getAgeByPaleontology(sample, list); //add impl
-		if (age != null)
-			return age;                
+            return age;	               
         age = getAgeByAllPaleontologies(sample);
 		if (age != null)
-			return age;
-        
+			return age;        
 		age = super.getAgeBySample(sample);
 		if (age != null)
 			return age;
@@ -99,12 +109,8 @@ public class PollenExport extends OldFormatFredExport {
 
 		original: for (Iterator<Paleontology> it = listSet.iterator(); it.hasNext(); ) {
 			Paleontology list = it.next();
-			for (Person identifier : list.getIdentifiers()) {
-				if (excludedIndentifiers.contains(identifier.getName())) {
-					it.remove();
-					continue original;
-				}
-			}           
+            //Commented to include bad boys here-but exclude them subsequently. 
+            // This differs from original export intent of blanket exclude.         
 			boolean keep = false;
 			for (PaleontologyListEntry entry : list.getListEntries()) {
 				if (groupRequired(entry.getTaxonomicGroup())) {
@@ -145,7 +151,7 @@ public class PollenExport extends OldFormatFredExport {
             }
             String name = taxon.getTaxonomicName();
             if (name == null) {
-                System.out.println("skipping unidentified taxon in pl" + entry.getPalListId());
+                //System.out.println("skipping unidentified taxon in pl" + entry.getPalListId());
                 continue;
             }
             if (! taxa.containsKey(name)) {
@@ -188,17 +194,17 @@ public class PollenExport extends OldFormatFredExport {
 
 	@Override
 	protected AgeRange getAgeByAllPaleontologies(Sample sample) throws StorageAccessException {
-		List<Paleontology> lists =  Export.getFactory().getFredDAO().getPaleontologies(sample);
+		List<Paleontology> lists =  Export.getFactory().getFredDAO().getPaleontologies(sample);     
 		if (lists.size() == 1) {
 			Paleontology list = lists.iterator().next();
-			return list.getStage() == null ? null : new PaleontologyAge(list);
+			return list.getStage() == null ? null : new PaleontologyAge(list, " incl Pollen");
 		}
 		Set<Paleontology> relevantPals = getMostRecentLists(sample);
 		for (Iterator<Paleontology> it = relevantPals.iterator(); it.hasNext(); ) {
 			boolean keep = false;
 			for (PaleontologyListEntry entry : it.next().getListEntries()) {
 				String group = entry.getTaxonomicGroup().getName();
-				if (groups.contains(group.toUpperCase())) {// CHECK WITH JOE || ageGroups.contains(group.toUpperCase())) {
+				if (groups.contains(group.toUpperCase())) {
 					keep = true;
 					break;
 				}
@@ -217,14 +223,44 @@ public class PollenExport extends OldFormatFredExport {
 		List<Paleontology> lists =  Export.getFactory().getFredDAO().getPaleontologies(sample);
 		if (lists.size() == 1) {
 			Paleontology list = lists.iterator().next();
+            for (Person identifier : list.getIdentifiers()) {
+				if (excludedIdentifiers.contains(identifier.getName())) {
+					return null;
+				}
+			} 
+            for (PaleontologyListEntry entry : list.getListEntries()) {
+				String group = entry.getTaxonomicGroup().getName();
+				if (groups.contains(group.toUpperCase())) {
+                    return null;
+				}
+			}
 			return list.getStage() == null ? null : new PaleontologyAge(list," excl Pollen");
 		}
+        
 		Set<Paleontology> relevantPals = getMostRecentLists(sample);
-		for (Iterator<Paleontology> it = relevantPals.iterator(); it.hasNext(); ) {
-			boolean keep = false;
-			for (PaleontologyListEntry entry : it.next().getListEntries()) {
+        if (relevantPals.size() == 0) {
+			return null;
+        }
+        
+        pals: for (Iterator<Paleontology> it = relevantPals.iterator(); it.hasNext(); ) {
+			boolean keep = true;
+            
+            Paleontology paleontology = it.next();
+            for (Person identifier : paleontology.getIdentifiers()) {
+				if (excludedIdentifiers.contains(identifier.getName())) {
+                    keep = false;
+					break;
+				}
+			} 
+            if (!keep) {
+				it.remove();
+                continue pals;
+            }
+
+            keep = false;
+			for (PaleontologyListEntry entry : paleontology.getListEntries()) {
 				String group = entry.getTaxonomicGroup().getName();
-				if (! groups.contains(group.toUpperCase()) || ageGroups.contains(group.toUpperCase())) {
+				if (! groups.contains(group.toUpperCase())) {
 					keep = true;
 					break;
 				}
@@ -232,10 +268,8 @@ public class PollenExport extends OldFormatFredExport {
 			if (!keep)
 				it.remove();
 		}
-		if (relevantPals.size() == 0)
-			return null;
-		else
-			return new ListDerivedAge(relevantPals, ListDerivedAge.Type.MINIMUM, " excl Pollen");
+		
+        return new ListDerivedAge(relevantPals, ListDerivedAge.Type.MINIMUM, " excl Pollen");
 	}
       
      
