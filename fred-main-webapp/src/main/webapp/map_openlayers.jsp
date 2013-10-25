@@ -54,7 +54,7 @@
 	            GeoExt.tree.LayerNodeUI,
 	            new GeoExt.tree.TreeNodeUIEventMixin()
 	        );
-	        
+	        OpenLayers.Map.prototype.Z_INDEX_BASE.Control = 1500;
 			map = new OpenLayers.Map("map", {
 				controls: [
 					new OpenLayers.Control.Navigation(),
@@ -74,6 +74,7 @@
 				minZoomLevel: 1,
 				numZoomLevels: 20,
 				maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34)
+                
 			});
 			
 			var googleH = new OpenLayers.Layer.Google(
