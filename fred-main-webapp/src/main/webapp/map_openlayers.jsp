@@ -12,7 +12,7 @@
 <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/GeoExt.js"></script>
 <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/proj4js-compressed.js"></script>
 <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/EPSG4272.js"></script>
-<script type="text/javascript" language="javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=AIzaSyDIuAtVq3FCUFSDAcXXzYkDZzkG-ORiqQg"></script>
+<script type="text/javascript" language="javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 
 <style type="text/css">
     .legend {
@@ -79,19 +79,19 @@
 			
 			var googleH = new OpenLayers.Layer.Google(
 				"Google Hybrid",
-				{type: G_HYBRID_MAP, sphericalMercator: true, numZoomLevels: 20},
+				{type: google.maps.MapTypeId.SATELLITE, sphericalMercator: true, numZoomLevels: 20},
 				{displayInLayerSwitcher: false, visibility: true}
 			);
 
 			var googleP = new OpenLayers.Layer.Google(
 				"Google Physical",
-				{type: G_PHYSICAL_MAP, sphericalMercator: true, numZoomLevels: 20},
+				{type: google.maps.MapTypeId.TERRAIN, sphericalMercator: true, numZoomLevels: 20},
 				{displayInLayerSwitcher: false, visibility: false}
 			);
 			
 			var scale_topo_googleP = new OpenLayers.Layer.Google(
 					"NZ Topographic Maps",
-					{type: G_PHYSICAL_MAP, sphericalMercator: true, numZoomLevels: 20},
+					{type: google.maps.MapTypeId.TERRAIN, sphericalMercator: true, numZoomLevels: 20},
 					{displayInLayerSwitcher: false, visibility: false, minScale: 100000000, maxScale: 1000000}
 				);
 
@@ -162,7 +162,7 @@
 			map.addControl(pointSelectControl);				
 			pointSelectControl.activate();	
 				
-			map.addLayers([googleH, googleP, scale_topo_googleP, linzTopo50, linzTopo250, dtm, ortho, oneGeolNZ, fred, master]);
+			map.addLayers([googleH, googleP, linzTopo50, linzTopo250, dtm, ortho, oneGeolNZ, fred, master]);    //removed for now, LINZ layer stopped working: , scale_topo_googleP
 			
 			map.setCenter(new OpenLayers.LonLat(174, -41).transform(p4326, p900913), 4);
 				

@@ -14,7 +14,7 @@
         <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/GeoExt.js"></script>
         <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/proj4js/proj4js-compressed.js"></script>
         <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/proj4js/defs/EPSG4272.js"></script>
-        <script type="text/javascript" language="javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=AIzaSyDIuAtVq3FCUFSDAcXXzYkDZzkG-ORiqQg"></script>
+        <script type="text/javascript" language="javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
         <script type="text/javascript" language="javascript" src="<%=request.getContextPath()%>/scripts/wfsQuery.js"></script>		  
 		  
 
@@ -31,7 +31,7 @@
             }
 
             .x-form-item {
-                display: none;	<!-- reomve space between lines-->
+                display: none;
             }
         </style>
 
@@ -106,19 +106,19 @@
 
                 var googleH = new OpenLayers.Layer.Google(
                     "Google Hybrid",
-                    {type: G_HYBRID_MAP, sphericalMercator: true, numZoomLevels: 20},
+                    {type: google.maps.MapTypeId.SATELLITE, sphericalMercator: true, numZoomLevels: 20},
                     {displayInLayerSwitcher: false, visibility: true}
                 );
 
                 var googleP = new OpenLayers.Layer.Google(
                     "Google Physical",
-                    {type: G_PHYSICAL_MAP, sphericalMercator: true, numZoomLevels: 20},
+                    {type: google.maps.MapTypeId.TERRAIN, sphericalMercator: true, numZoomLevels: 20},
                     {displayInLayerSwitcher: false, visibility: false}
                 );
 
                 var scale_topo_googleP = new OpenLayers.Layer.Google(
                     "NZ Topographic Maps",
-                    {type: G_PHYSICAL_MAP, sphericalMercator: true, numZoomLevels: 20},
+                    {type: google.maps.MapTypeId.TERRAIN, sphericalMercator: true, numZoomLevels: 20},
                     {displayInLayerSwitcher: false, visibility: false, minScale: 100000000, maxScale: 1000000}
                 );
 
