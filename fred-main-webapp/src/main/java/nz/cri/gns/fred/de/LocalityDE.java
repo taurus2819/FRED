@@ -66,7 +66,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
     private Datum datum;
     private boolean isAllowedSave = false;
     private boolean isAllowedSubmit = false;
-
+    
     public LocalityDE(User user, int folderID, String featureType, DAOFactory factory, ContentProvider content) throws StorageAccessException, InsufficientPrivelegesException {
         initialise((featureUtil = new FeatureUtil(factory)).createFeature(folderID, featureType, user), folderID, user, factory, content);
     }
@@ -174,6 +174,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             //Aint' gonna happen
         }
         links.add(new IconnedLink("javascript:submitForm('Save');", "images/save.gif", "Save"));
+        if (feature.getFeatureId() == null) {
+            isAllowedSubmit=false;
+        }
         if (isAllowedSubmit) {
             links.add(new IconnedLink("javascript:submitForm('Submit');", "images/submit.gif", "Submit"));
         }
@@ -199,6 +202,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             }
             if (feature.getFeatureId() != null) {
                 template.addSub("featureId", feature.getFeatureId().toString());
+                template.addSub("hasFeatureId", "yes");
+            } else {
+                template.addSub("hasFeatureId", "no");
             }
             String featureType = feature.getFeatureType();
             template.addSub("featureType", URLEncoder.encode(featureType, "ISO-8859-1"));

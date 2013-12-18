@@ -12,6 +12,10 @@ public class ListDerivedAge extends SimpleAgeRange {
 	private Type type;
     private String label;
     
+    public ListDerivedAge(Age lower, boolean lowerCertain, Age upper, boolean upperCertain, String comment) {
+        super(lower,lowerCertain,upper,upperCertain,comment);
+        this.type= Type.MINIMUM;
+	}
 	public ListDerivedAge(Set<Paleontology> lists, Type type) {
 		this(lists,type,null);
 	}

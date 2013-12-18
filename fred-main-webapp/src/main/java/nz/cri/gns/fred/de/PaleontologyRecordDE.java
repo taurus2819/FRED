@@ -288,6 +288,14 @@ public class PaleontologyRecordDE extends RecordDE {
             template.addSub("LabNum", pal.getLabNumber());
             template.addSub("CollComm", pal.getCollectionComments());
 
+            template.loadUntil(out, "{@labsection}");
+            out.println("swapSection(form1);");
+            out.println("for (i=0; i<form1.SectID.options.length; i++) {");
+            out.print("                if (form1.SectID.options[i].value=="+pal.getLabSection().getLabSectionId().toString());
+            out.println("){");
+            out.println("                 form1.SectID.options.selectedIndex = i; }");
+            out.println("}");
+            
             template.loadUntil(out, "{@Taxa}");
 
             List<TaxonomicGroup> groups = recordUtil.getTaxonomicGroups(pal);
@@ -333,7 +341,7 @@ public class PaleontologyRecordDE extends RecordDE {
                             TaxonomicUtil.encodeTaxaComments(entry))) + "');");
                 }
             }
-
+                       
             template.loadAll(out);
             super.makeEndBitHTML(out);
         } catch (StorageAccessException e) {

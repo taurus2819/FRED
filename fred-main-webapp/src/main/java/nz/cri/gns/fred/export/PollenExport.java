@@ -108,9 +108,7 @@ public class PollenExport extends OldFormatFredExport {
 		List<Paleontology> listSet =  Export.getFactory().getFredDAO().getPaleontologies(sample);
 
 		original: for (Iterator<Paleontology> it = listSet.iterator(); it.hasNext(); ) {
-			Paleontology list = it.next();
-            //Commented to include bad boys here-but exclude them subsequently. 
-            // This differs from original export intent of blanket exclude.         
+			Paleontology list = it.next();        
 			boolean keep = false;
 			for (PaleontologyListEntry entry : list.getListEntries()) {
 				if (groupRequired(entry.getTaxonomicGroup())) {

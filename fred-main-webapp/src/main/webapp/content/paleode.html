@@ -51,7 +51,7 @@
     <tr>
         <td class="heading" colspan="2">Stage Comments</td>
         <td  colspan="2"><textarea name="StComm" cols="40" rows="2">{@StComm}</textarea>    
-            <script language="JavaScript"><!--
+            <script type="text/javascript"><!--
                 {@labArray}
                 function swapSection(frm){
                     if (frm.LabID.options[frm.LabID.options.selectedIndex].value != "-") {
@@ -76,7 +76,8 @@
     <tr>
         <td></td>
         <td class="smallheading">Code</td>
-        <td colspan="2"><select name="SectID"><option value="-" selected>-- Choose --</option></select></td>
+        <td colspan="2"><select name="SectID"><option value="-" selected>-- Choose --</option></select>        
+        </td>        
     </tr>
     <tr>
         <td></td>
@@ -84,12 +85,7 @@
         <td><input type="text" name="LabNum" size="20" value="{@LabNum}" /></td>
         <td></td>
     </tr>
-    {@@SectID:<script language="JavaScript"><!--@}
-        {@@SectID:swapSection(form1);@}
-        {@@SectID:for (i=0; i<form1.SectID.options.length; i++) {@}
-            {@@SectID:  if (form1.SectID.options[i].value=="@}{@SectID}{@@SectID:") { form1.SectID.options.selectedIndex = i; }@}
-            {@@SectID:}@}
-        {@@SectID://--></script>@}
+    
     <tr>
         <td class="heading" colspan="2">Collection Comments</td>
         <td><textarea name="CollComm" cols="40" rows="2" colspan="2">{@CollComm}</textarea></td>
@@ -141,7 +137,7 @@
         null,
         true
     );
-
+        
         var taxaCount = 0;
         var lineId = 0;
 
@@ -326,8 +322,12 @@
             }
             return whitespace.indexOf(str.charAt(0)) === -1 ? str : '';
         }
+        
+        {@labsection}
 
         {@Taxa}
+                
+
 
         //--></script>
 {@endDETable}
