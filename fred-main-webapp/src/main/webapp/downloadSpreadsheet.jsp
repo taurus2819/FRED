@@ -17,11 +17,11 @@
     File spreadsheetFile = new File(getServletContext().getRealPath("FRED.xlsm"));
     
     Workbook spreadsheet = new XSSFWorkbook(spreadsheetFile.getPath());
-    Sheet listSheet = spreadsheet.getSheet("Lists");
+    /*Sheet listSheet = spreadsheet.getSheet("Lists");
     Row thirdRow = listSheet.getRow(2);
     Cell firstCellThirdRow = thirdRow.getCell(0);
 
-    firstCellThirdRow.setCellValue(request.getRequestURL().toString().replaceAll("/[^/]*$", "/"));
+    firstCellThirdRow.setCellValue(request.getRequestURL().toString().replaceAll("/[^/]*$", "/"));*/
 
     response.setContentType("application/vnd.ms-excel.sheet.macroEnabled.12");
     response.setHeader("Content-Disposition", "filename=\"FRED.xlsm\"");
