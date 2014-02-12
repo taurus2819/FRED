@@ -291,10 +291,14 @@ public class PaleontologyRecordDE extends RecordDE {
             template.loadUntil(out, "{@labsection}");
             out.println("swapSection(form1);");
             out.println("for (i=0; i<form1.SectID.options.length; i++) {");
-            out.print("                if (form1.SectID.options[i].value=="+pal.getLabSection().getLabSectionId().toString());
-            out.println("){");
-            out.println("                 form1.SectID.options.selectedIndex = i; }");
-            out.println("}");
+            if (pal.getLabSection() != null) {
+                out.print("                if (form1.SectID.options[i].value=="+pal.getLabSection().getLabSectionId().toString());
+                out.println("){");
+                out.println("                 form1.SectID.options.selectedIndex = i; }");
+                out.println("}");
+            } else {
+               out.println("}"); 
+            }
             
             template.loadUntil(out, "{@Taxa}");
 

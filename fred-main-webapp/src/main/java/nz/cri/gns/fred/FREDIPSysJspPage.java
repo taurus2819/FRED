@@ -91,7 +91,14 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
                 + "<input type=\"text\" size=\"12\" id=\"frTBox\" name=\"frNum\" class=\"watermark\" style=\"border: 0; font-size: 10pt;\" value=\"Enter FR Num\" onFocus=\"clearTextbox('frTBox','Enter FR Num');\" onBlur=\"showDefaultText('frTBox','Enter FR Num');\" />&nbsp;"
                 + "<input type=\"submit\" value=\"Go\" /></form>";
         et.setButtons(new Link[]{
-                    new CustomHTMLLink(htmlLink), new IconnedLink("index.jsp", "images/home.gif", "FRED Home"), new IconnedLink("http://data.gns.cri.nz/npc/index.jsp", "images/home.gif", "NPC Database"), new IconnedLink("folder_list.jsp", "images/edit.gif", "Data Entry"), new IconnedLink("simple_query.jsp", "images/search.gif", "Simple Query"), new IconnedLink("buildframe.jsp", "images/search.gif", "Advanced Query"), new IconnedLink("map_frame.jsp", "images/map.gif", "Interactive Map"), new IconnedLink("admin.jsp", "images/edit.gif", "FRED Admin")
+                    new CustomHTMLLink(htmlLink), 
+                    new IconnedLink("index.jsp", "images/home.gif", "FRED Home"), 
+                    new IconnedLink("http://data.gns.cri.nz/npc/index.jsp", "images/home.gif", "NPC Database"), 
+                    new IconnedLink("folder_list.jsp", "images/edit.gif", "Data Entry"), 
+                    new IconnedLink("simple_query.jsp", "images/search.gif", "Simple Query"), 
+                    new IconnedLink("buildframe.jsp", "images/search.gif", "Advanced Query"), 
+                    new IconnedLink("map_frame.jsp", "images/map.gif", "Interactive Map"), 
+                    new IconnedLink("admin.jsp", "images/edit.gif", "FRED Admin")
                 });
         et.addScript("scripts/watermark.js");
         return et;
