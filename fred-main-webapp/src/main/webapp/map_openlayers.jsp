@@ -244,8 +244,7 @@
 					//alert("wmsselect.features.1");
 					var selectedFeature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(features[0].geometry.x, features[0].geometry.y), null, null);
 					
-					selectedFeature.attributes = {
-						id: features[0].attributes["FEATURE_ID"], 
+					selectedFeature.attributes = { 
 						number: features[0].attributes["FR_NUMBER"], 
 						feature_type: features[0].attributes["FEATURE_TYPE"], 
 						locality: features[0].attributes["LOCALITY"]};
@@ -262,7 +261,6 @@
 					for(var i=0; i<features.length; i++)	{
 						var selectedFeature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(features[i].geometry.x, features[i].geometry.y), null, null);
 						selectedFeature.attributes = {
-						id: features[i].attributes["FEATURE_ID"], 
 						number: features[i].attributes["FR_NUMBER"], 
 						feature_type: features[i].attributes["FEATURE_TYPE"], 
 						locality: features[i].attributes["LOCALITY"]};
@@ -282,7 +280,6 @@
 				var popupContents;
 				popupContents = "<div>";
 				popupContents += "<table border='0'>";
-				popupContents += "<tr><td><b>ID:</b>&nbsp;</td><td>" + feature.attributes.id + "</td></tr>";
 				popupContents += "<tr><td><b>Number:</b>&nbsp;</td><td><a href='javascript:loadDetails(" + feature.attributes.id + ")'>" + feature.attributes.number + "</a></td></tr>";
 				popupContents += "<tr><td><b>Feature Type:</b>&nbsp;</td><td>" + feature.attributes.feature_type + "</td></tr>";
 				popupContents += "<tr><td><b>Locality:</b>&nbsp;</td><td>" + feature.attributes.locality + "</td></tr>";	
@@ -300,7 +297,7 @@
 					location: feature,
 					html: popupContents,
 					width: 250,
-					height: 120,
+					height: 150,
 					collapsible: true,
 					autoScroll: true
 				});
@@ -314,7 +311,6 @@
 
 				for(var i=0; i<features.length; i++)	{
 					popupContents += "<table border='0'>";
-					popupContents += "<tr><td><b>ID:</b>&nbsp;</td><td>" + features[i].attributes.id + "</td></tr>";
 					popupContents += "<tr><td><b>Number:</b>&nbsp;</td><td><a href='javascript:loadDetails(" + features[i].attributes.id + ")'>" + features[i].attributes.number + "</a></td></tr>";
 					popupContents += "<tr><td><b>Feature Type:</b>&nbsp;</td><td>" + features[i].attributes.feature_type + "</td></tr>";
 					popupContents += "<tr><td><b>Locality:</b>&nbsp;</td><td>" + features[i].attributes.locality + "</td></tr>";
@@ -334,7 +330,7 @@
 					location: features[0],
 					html: popupContents,
 					width: 250,
-					height: 120,
+					height: 150,
 					collapsible: true,
 					autoScroll: true
 				});
