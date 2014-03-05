@@ -133,6 +133,12 @@
           <artifactId>gt-main</artifactId>
           <version>2.6.4</version>
         </dependency>
+        <dependency>
+            <groupId>com.vividsolutions</groupId>
+            <artifactId>jts</artifactId>
+            <version>1.10</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>

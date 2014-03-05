@@ -200,23 +200,36 @@
                 out.println("</table>");
                 out.println("    </form>");
                 endDETable(pageContext);
-
-                for (Item item : items) {
-                    DocumentAttacher attacher = null;
+             
+                int docID = 0;
+                Item item = null;                
+                DocumentAttacher attacher = null;
+                for (int j=0; j < items.size(); j++) {               
+                    item = items.get(j);                    
                     try {
                         attacher = FREDUtil.getDocumentAttacher(item.docType, state);
                         MetadataRecord[] mrs = attacher.getDocumentsForId(item.loadID);
                         String action = httpRequest.getParameter("Action");
                         if (action != null) {
                             try {
-                                if (action.equals("Insert")) {
-                                    int docID = attacher.insertDocument(item.loadID, httpRequest, "Upload");
-                                    MetadataRecord mr = attacher.getDocumentForId(docID);
-                                    if (httpRequest.getParameter("Name") != null) {
-                                        attacher.setTitle(mr, httpRequest.getParameter("Name"));
-                                    }
-                                    if (httpRequest.getParameter("Desc") != null) {
-                                        attacher.setNote(mr, httpRequest.getParameter("Desc"));
+                                if (action.equals("Insert")) {                                    
+                                    if (j == 0) {
+                                        //Insert into META_CAT only for the first item's attachment.
+                                        // For subsequent items with the same attachment, use only new attachment's metaID
+                                        docID = attacher.insertDocument(item.loadID, httpRequest, "Upload");
+                                        MetadataRecord mr = attacher.getDocumentForId(docID);
+                                        if (httpRequest.getParameter("Name") != null) {
+                                            attacher.setTitle(mr, httpRequest.getParameter("Name"));
+                                        }
+                                        if (httpRequest.getParameter("Desc") != null) {
+                                            attacher.setNote(mr, httpRequest.getParameter("Desc"));
+                                        } 
+                                    } else {
+                                        // Since same attachment is used for multiple items, use the same attachment metaID.
+                                        // This stops duplicates of the same attachment inserted into META_CAT table. 
+                                        // This is to avoid causing a tablespace problem in META_CAT table.
+                                        MetadataRecord mr = attacher.getDocumentForId(docID);
+                                        attacher.attachDocument(item.loadID, mr);
                                     }
                                 } else if (action.equals("Remove")) {
                                     attacher.removeDocument(item.loadID, mrs[Integer.parseInt(httpRequest.getParameter("DeleteID"))]);
@@ -227,7 +240,7 @@
                                 e.printStackTrace();
                                 out.println("<script language=\"JavaScript\">alert(\"Your file can not be loaded: " + e + "\");</script>");
                             }
-                        }
+                        }                        
 
                         if (item.subtype.equals(FREDConstants.PALEONTOLOGICAL)) {
                             try {
@@ -285,7 +298,6 @@
                             }
                         }
                     }
-
                 }
             } else {
                 out.println("<p><span class=\"subhead\">Access denied</span></p>No Items Provided.  Click <a href=\"index.jsp\" class=\"heading\">here</a> to return to the FRED home page.");
