@@ -245,6 +245,7 @@
 					var selectedFeature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(features[0].geometry.x, features[0].geometry.y), null, null);
 					
 					selectedFeature.attributes = { 
+                        id: features[0].attributes["FEATURE_ID"], 
 						number: features[0].attributes["FR_NUMBER"], 
 						feature_type: features[0].attributes["FEATURE_TYPE"], 
 						locality: features[0].attributes["LOCALITY"]};
@@ -261,7 +262,8 @@
 					for(var i=0; i<features.length; i++)	{
 						var selectedFeature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(features[i].geometry.x, features[i].geometry.y), null, null);
 						selectedFeature.attributes = {
-						number: features[i].attributes["FR_NUMBER"], 
+						id: features[0].attributes["FEATURE_ID"], 
+                        number: features[i].attributes["FR_NUMBER"], 
 						feature_type: features[i].attributes["FEATURE_TYPE"], 
 						locality: features[i].attributes["LOCALITY"]};
 						selectedFeature.geometry.transform(p4326, p900913);
