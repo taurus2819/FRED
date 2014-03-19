@@ -68,8 +68,8 @@ public class AgeField extends TableRequiredPossibleValueField {
 					age = thisValue;
 			}
 			if (operator.equals(Operator.EQUALS))
-				return "(" + numericField.getJoin(Operator.GREATER_THAN, new BasicValue(String.valueOf(age.getTopAge())))
-					+ " AND " + numericField.getJoin(Operator.LESS_THAN, new BasicValue(String.valueOf(age.getBaseAge()))) + ")";
+				return "(" + numericField.getJoin(Operator.GREATER_THAN_EQUAL, new BasicValue(String.valueOf(age.getTopAge())))
+					+ " AND " + numericField.getJoin(Operator.LESS_THAN_EQUAL, new BasicValue(String.valueOf(age.getBaseAge()))) + ")";
 			else if (operator.equals(Operator.GREATER_THAN))
 				return numericField.getJoin(Operator.GREATER_THAN_EQUAL, new BasicValue(String.valueOf(age.getBaseAge())));
 			else if(operator.equals(Operator.LESS_THAN))
