@@ -44,8 +44,9 @@ public class FolderUtil extends ModelUtil {
 	 */
 	public List<UserFolder> getPersonalFolders(UserAccount user) throws StorageAccessException {
 		Vector<UserFolder> folders = new Vector<UserFolder>();
-		folders.addAll(getOwnedFolders(Integer.parseInt(user.getId()), getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
-		folders.addAll(getAccessibleFolders(Integer.parseInt(user.getId()), getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
+        int userId = Integer.parseInt(user.getId());
+		folders.addAll(getOwnedFolders(userId, getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
+		folders.addAll(getAccessibleFolders(userId, getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
 		Collections.sort(folders);
 		return folders;
 	}
