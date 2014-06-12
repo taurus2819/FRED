@@ -341,6 +341,9 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
             case END:
                 crit.add(Expression.like("taxonomicName", str, MatchMode.END));
                 break;
+            case EXACT:
+                crit.add(Expression.like("taxonomicName", str, MatchMode.EXACT));
+                break;
         }
         if (group != null) {
             crit.add(Expression.eq("taxonomicGroup", group));

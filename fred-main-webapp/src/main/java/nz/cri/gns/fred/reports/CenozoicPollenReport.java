@@ -60,6 +60,8 @@ public class CenozoicPollenReport {
         CenozoicPollenReport report = new CenozoicPollenReport();
         //report.report();
         report.postProcessCenozoicPollen();
+        //report.prepareSynonymList();
+        //report.prepareSynonymSql();
                 
     }
     
@@ -75,7 +77,7 @@ public class CenozoicPollenReport {
         FeatureUtil util = new FeatureUtil(factory); 
         Feature feature = null;
         try {
-            PrintWriter writer = new PrintWriter(new File("//tmp//taxa-age-dist.txt"), "UTF-8");
+            PrintWriter writer = new PrintWriter(new File("//tmp//taxa-age-dist-raw.txt"), "UTF-8");
             PollenExport export = new PollenExport(writer, factory);
             int count = 0;
             
@@ -106,6 +108,7 @@ public class CenozoicPollenReport {
     
     public void prepareSynonymList() {
         try {
+            setupJNDI();
             
             FredDAO dao = FredHibernate.get().getDAOFactory().getFredDAO();
             DAOFactory factory = FredHibernate.get().getDAOFactory();
@@ -121,6 +124,7 @@ public class CenozoicPollenReport {
             HashMap<Integer,HashSet<String>> groups = new HashMap<Integer,HashSet<String>>();
             
             while ((line = br.readLine()) != null) {
+                line = line.trim();
                 if (!line.equals(".")) {
                     try {
                         if (groups.get(new Integer(group_id))==null){
@@ -131,7 +135,7 @@ public class CenozoicPollenReport {
                         } else {
                             groups.get(new Integer(group_id)).add(line);
                         }
-                        taxa = dao.getMatchingTaxa(line, null, Match.BEGINNING, 50);
+                        taxa = dao.getMatchingTaxa(line, null, Match.EXACT, 50);
                         if (taxa.size()==0) {
                             if (taxa_id==-1) {
                                 quarantine.println("unable to match taxa: " + line); 
@@ -139,7 +143,8 @@ public class CenozoicPollenReport {
                                 quarantine.println("unable to match synonym: " + line);
                             }
                         } else {
-                            Taxon taxon = taxa.get(0);                       
+                            Taxon taxon = taxa.get(0);   
+                            System.out.println("matching input: " + line + " with: " + taxon.getTaxonomicName() + " of (" + taxa.size() +") taxa");
                             if (taxa_id == -1) {
                                 taxa_id=taxon.getTaxaId().intValue();
                                 writer.print(taxa_id);
@@ -178,7 +183,7 @@ public class CenozoicPollenReport {
 
             PrintWriter writer = new PrintWriter(new FileWriter(new File("//tmp//taxasql.txt")), true);
             BufferedReader br = new BufferedReader(new FileReader(new File("//tmp//taxa.txt")));                  
-            writer.println("truncate table fr.taxonomic_synonyms;");
+            writer.println("truncate table fr.taxonomic_synonym;");
             
             String line = null;
             while ((line = br.readLine()) != null) {
@@ -191,7 +196,7 @@ public class CenozoicPollenReport {
                 String[] synonyms = parts[1].split(",");
                 
                 for (String synonym:synonyms) {
-                    writer.println("insert into taxonomic_synonyms (taxa_id, synonym_id) values (" +
+                    writer.println("insert into taxonomic_synonym (taxa_id, synonym_id) values (" +
                             parts[0] + "," + synonym + ");");
                 }               
             }
@@ -413,14 +418,14 @@ public class CenozoicPollenReport {
     public void postProcessCenozoicPollen() {
         try {
             setupJNDI();
-            writer = new PrintWriter(new File("//tmp//taxa-age-dist-no-cuttings.txt"), "UTF-8");
-            readCountedTaxa("//tmp//taxa-age-dist.txt");
+            writer = new PrintWriter(new File("//tmp//taxa-age-dist.txt"), "UTF-8");
+            readCountedTaxa("//tmp//taxa-age-dist-raw.txt");
             Vector<String> synonyms = loadSynonyms();
             writeTargetTaxaDistribution(synonyms);            
             writer.flush();
             writer.close();
             
-            writer = new PrintWriter(new File("//tmp//taxa-age-dist-agg-no-cuttings.txt"), "UTF-8");
+            writer = new PrintWriter(new File("//tmp//taxa-age-dist-agg.txt"), "UTF-8");
             aggregateTaxaCounts(synonyms);
             writeAggregatedTaxaDistribution(synonyms);
             writer.flush();

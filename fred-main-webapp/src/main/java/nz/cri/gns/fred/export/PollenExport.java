@@ -42,7 +42,7 @@ public class PollenExport extends OldFormatFredExport {
 	private static Set<String> groups;
 	private static Set<String> ageGroups;
 	private static Set<String> excludedIdentifiers;
-	private static double baseAge = 65;
+	private static double baseAge = 83.6;
 	static {
 		groups = new HashSet<String>(3);
 		groups.add("SPORITES");
@@ -101,9 +101,9 @@ public class PollenExport extends OldFormatFredExport {
     
 	@Override
 	public Collection<Paleontology> getListsToExport(Sample sample) throws StorageAccessException {
-        if (sample.getDrillType() != null && sample.getDrillType().equals("Cutting")) {
-            return new Vector<Paleontology>();
-        }
+//        if (sample.getDrillType() != null && sample.getDrillType().equals("Cutting")) {
+//            return new Vector<Paleontology>();
+//        }
         
 		List<Paleontology> listSet =  Export.getFactory().getFredDAO().getPaleontologies(sample);
 
@@ -293,5 +293,5 @@ public class PollenExport extends OldFormatFredExport {
             System.out.println(ex);
         }
         
-    }   
+    }
 }

@@ -4,7 +4,8 @@ public enum Match {
 
 	BEGINNING("", "%"),
 	END("%", ""),
-	ANYWHERE("%","%");
+	ANYWHERE("%","%"),
+    EXACT("", "");
 	
 	private String pre;
 	private String post;

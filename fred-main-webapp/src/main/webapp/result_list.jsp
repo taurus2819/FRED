@@ -135,7 +135,7 @@
 	if (user != null && new FolderUtil(factory).getPersonalFolders(user).size() > 0) {		
 		StringBuffer customHTML = new StringBuffer("<form method=\"post\" onsubmit=\"addFeaturesToActionURL(this)\" action=\"result_list.jsp?Page=" + ((request.getParameter("Page") == null) ? "1" : request.getParameter("Page")) + "\" name=\"FolderForm\" style=\"display: inline; margin: 0;\">");
 		customHTML.append("<input type=\"hidden\" name=\"ActionType\" value=\"AddtoFold\" />");
-		customHTML.append("<img src=\"images\\blank.gif\" height=\"20\" width=\"10\" alt=\"\" /><select name=\"FoldID\">");
+		customHTML.append("<img src=\"images/blank.gif\" height=\"20\" width=\"10\" alt=\"\" /><select name=\"FoldID\">");
 		customHTML.append("<option value=\"-\">-- Choose --</option>");
 		for (UserFolder folder : (new FolderUtil(factory)).getPersonalFolders(user)) {
 			String folderName = folder.getFolderName();
@@ -144,7 +144,7 @@
 			customHTML.append("<option value=\"").append(folder.getFolderId()).append("\">").append(folderName).append("</option>");
 		}
 		customHTML.append("</select><br />");
-		customHTML.append("<img src=\"images\\blank.gif\" height=\"20\" width=\"10\" alt=\"\" /><input type=\"submit\" value=\"Add to Folder\" />");
+		customHTML.append("<img src=\"images/blank.gif\" height=\"20\" width=\"10\" alt=\"\" /><input type=\"submit\" value=\"Add to Folder\" />");
 		customHTML.append("</form>");
 		il.add(new CustomHTMLLink(customHTML.toString()));
 	}
