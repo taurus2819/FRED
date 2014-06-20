@@ -15,8 +15,8 @@
         <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/proj4js/proj4js-compressed.js"></script>
         <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/proj4js/defs/EPSG4272.js"></script>
         <script type="text/javascript" language="javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
-        <script type="text/javascript" language="javascript" src="<%=request.getContextPath()%>/scripts/wfsQuery.js"></script>		  
-		  
+        <script type="text/javascript" language="javascript" src="<%=request.getContextPath()%>/scripts/wfsQuery.js"></script>          
+          
 
         <style type="text/css">
             .legend {
@@ -38,14 +38,14 @@
         <script type="text/javascript">
 
             OpenLayers.ProxyHost = "proxy.jsp?url=";
-	
+    
             var p4326 = new OpenLayers.Projection("EPSG:4326");
             var p4272 = new OpenLayers.Projection("EPSG:4272");
             var p900913 = new OpenLayers.Projection("EPSG:900913");
             var fredLayer;
             var popup;
             var tree;
-            var map;	
+            var map;    
             var checker = true;
 
             //imported stuff
@@ -70,8 +70,8 @@
             var thislat, thislon;
             var nwmarker, nemarker, semarker, swmarker, polygon;
             //end imported stuff
-			
-			var lineFeature;
+            
+            var lineFeature;
             
             var geoserver_url = "http://maps.gns.cri.nz/geoserver/wms";
 
@@ -135,12 +135,12 @@
                     "http://wms.data.linz.govt.nz/2196be5e2a3f48179fddb966dd15add4/r/wms",
                     {layers: "r:x767", transparent: false, tiled: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
                     {displayInLayerSwitcher: false, isBaseLayer: false, visibility: true, projection: p900913, wrapDateLine: true}
-                );	
-                var linzTopo50_osm = new OpenLayers.Layer.OSM("LINZ Topo 50");	
+                );    
+                var linzTopo50_osm = new OpenLayers.Layer.OSM("LINZ Topo 50");    
 
-                var osm = new OpenLayers.Layer.OSM("Open Street Map");	
+                var osm = new OpenLayers.Layer.OSM("Open Street Map");    
 
-                linzTopo50_osm = new OpenLayers.Layer.OSM("LINZ Topo 50");	
+                linzTopo50_osm = new OpenLayers.Layer.OSM("LINZ Topo 50");    
                 linzTopo250_osm = new OpenLayers.Layer.OSM("LINZ Topo 250");
 
                 oneGeolNZ = new OpenLayers.Layer.WMS(
@@ -170,14 +170,14 @@
                     {layers: "gns:MASTERFILE_AREAS_SHP", transparent: true, tiled: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
                     {displayInLayerSwitcher: true, isBaseLayer: false, visibility: true, projection: p900913, wrapDateLine: true,
                      maxScale: 2500000, numZoomLevels: 4}
-                );	
+                );    
 
                 fredLayer = new OpenLayers.Layer.WMS(
                     "FRED samples",
                      geoserver_url,
-                    {layers: "gns:fsv", transparent: true, tiled: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
+                    {layers: "gns:FR.FRED_SITE_VIEW", transparent: true, tiled: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
                     {displayInLayerSwitcher: true, isBaseLayer: false, visibility: false, projection: p900913, wrapDateLine: true}
-                );	
+                );    
 
                 var pointSelectControl = new OpenLayers.Control.WMSGetFeatureInfo({
                     infoFormat: "application/vnd.ogc.gml",
@@ -208,7 +208,7 @@
                 /*
                  * Red style
                  */
-				style_red = {
+                style_red = {
                     strokeColor: "#FF0000",
                     strokeOpacity: 0.5,
                     strokeWidth: 5,
@@ -220,208 +220,208 @@
 
                 map.addLayers([googleH, googleP, scale_topo_googleP, linzTopo50, linzTopo250, dtm, ortho, oneGeolNZ, 
                     fredLayer, master, vectorLayer, markers]);
-		
+        
                 
-				var googleCentre = new OpenLayers.LonLat(174, -41).transform(
-					new OpenLayers.Projection("EPSG:4272"), 
-					new OpenLayers.Projection("EPSG:900913"));
-				map.setCenter(googleCentre, 4);
-			
+                var googleCentre = new OpenLayers.LonLat(174, -41).transform(
+                    new OpenLayers.Projection("EPSG:4272"), 
+                    new OpenLayers.Projection("EPSG:900913"));
+                map.setCenter(googleCentre, 4);
+            
                 AutoSizeAnchored = OpenLayers.Class(OpenLayers.Popup.Anchored, {
                     'autoSize': true
                 });
-			
+            
                 map.events.register("click", map, addVertex);
 
-				mapPanel = new GeoExt.MapPanel({
-					region: 'center',
-					height: 500,
-					width: 800,
-					map: map
-				});
-					
-				oneGeolNZ.resolutions =  googleH.resolutions;	
-				
-				map.setCenter(new OpenLayers.LonLat(174, -41).transform(p4272, p900913), 4);
-			};
-			
-			function addMarker(ll, popupClass, popupContentHTML, closeBox, overflow) {
-				var size = new OpenLayers.Size(10,10);
-				var offset = new OpenLayers.Pixel(-5, -5);
-				var feature = new OpenLayers.Feature(markers, ll);
-				feature.closeBox = closeBox;
-				feature.popupClass = popupClass;
-				feature.data.popupContentHTML = popupContentHTML;
-				feature.data.overflow = (overflow) ? "auto" : "hidden";
+                mapPanel = new GeoExt.MapPanel({
+                    region: 'center',
+                    height: 500,
+                    width: 800,
+                    map: map
+                });
+                    
+                oneGeolNZ.resolutions =  googleH.resolutions;    
+                
+                map.setCenter(new OpenLayers.LonLat(174, -41).transform(p4272, p900913), 4);
+            };
+            
+            function addMarker(ll, popupClass, popupContentHTML, closeBox, overflow) {
+                var size = new OpenLayers.Size(10,10);
+                var offset = new OpenLayers.Pixel(-5, -5);
+                var feature = new OpenLayers.Feature(markers, ll);
+                feature.closeBox = closeBox;
+                feature.popupClass = popupClass;
+                feature.data.popupContentHTML = popupContentHTML;
+                feature.data.overflow = (overflow) ? "auto" : "hidden";
 
-				var marker = feature.createMarker();
-				marker.icon = new OpenLayers.Icon('http://maps.gns.cri.nz/scripts/OpenLayers-2.11/img/reddot.png',size,offset);
+                var marker = feature.createMarker();
+                marker.icon = new OpenLayers.Icon('http://maps.gns.cri.nz/scripts/OpenLayers-2.11/img/reddot.png',size,offset);
 
-				markers.addMarker(marker);
-			}    
-				
-			function mapBaseLayerChanged(event) {
-				
-				if(event.layer.name != "NZ Topographic Maps")	{
-					linzTopo50.setVisibility(false);
-					linzTopo250.setVisibility(false);
-				}
-			}
-			
-			function changeBaseLayerBasedOnZoom(event)	{
-					
-				var curScale = map.getScale();
-				
-				if(map.baseLayer.name == "NZ Topographic Maps")	{
-					if(curScale > 500000)	{
-						linzTopo50.setVisibility(false);
-						linzTopo250.setVisibility(false);
-					} 
-					else if(curScale > 50000)	{
-						
-						linzTopo50.setVisibility(false);
-						linzTopo250.setVisibility(true);
-					}
-					else	{
-						linzTopo250.setVisibility(false);
-						linzTopo50.setVisibility(true);
-					}
-				}				
-			}
-				
-			function toggleLayers()	{
-				state = checker;
-				checker = !checker;
-				if(state == false)	{//switch all on	
-					//alert("switching all on");
-					oneGeolNZ.setVisibility(true);
-					fred.setVisibility(true);
-					resultLayer.setVisibility(true);
-				}
-				else	{
-					//alert("switching all off");
-					oneGeolNZ.setVisibility(false);
-					fred.setVisibility(false);
-					resultLayer.setVisibility(false);
-				}
-				//alert("refreshed yet?");
-			}
+                markers.addMarker(marker);
+            }    
+                
+            function mapBaseLayerChanged(event) {
+                
+                if(event.layer.name != "NZ Topographic Maps")    {
+                    linzTopo50.setVisibility(false);
+                    linzTopo250.setVisibility(false);
+                }
+            }
+            
+            function changeBaseLayerBasedOnZoom(event)    {
+                    
+                var curScale = map.getScale();
+                
+                if(map.baseLayer.name == "NZ Topographic Maps")    {
+                    if(curScale > 500000)    {
+                        linzTopo50.setVisibility(false);
+                        linzTopo250.setVisibility(false);
+                    } 
+                    else if(curScale > 50000)    {
+                        
+                        linzTopo50.setVisibility(false);
+                        linzTopo250.setVisibility(true);
+                    }
+                    else    {
+                        linzTopo250.setVisibility(false);
+                        linzTopo50.setVisibility(true);
+                    }
+                }                
+            }
+                
+            function toggleLayers()    {
+                state = checker;
+                checker = !checker;
+                if(state == false)    {//switch all on    
+                    //alert("switching all on");
+                    oneGeolNZ.setVisibility(true);
+                    fred.setVisibility(true);
+                    resultLayer.setVisibility(true);
+                }
+                else    {
+                    //alert("switching all off");
+                    oneGeolNZ.setVisibility(false);
+                    fred.setVisibility(false);
+                    resultLayer.setVisibility(false);
+                }
+                //alert("refreshed yet?");
+            }
 
-			/*
-			 * Creates & submits WFS filter query. 
-			 * Ajax response updates content of 'wfsResponse' DOM element
-			 */
-			function getFeatureList()
-			{
-				if (true)
-				{
-					var url = 	"<%=request.getContextPath()%>/wfsProxy?" + //http://maps.gns.cri.nz/geoserver21/wfs?" +
-						"request=GetFeature&" +
-						"service=wfs&" +
-						"version=1.0.0&" +
-						"typename=gns:fsv&" +
-						"outputFormat=GML2&" +
-						"PropertyName=feature_id&" +
-						"filter=<Filter " + 
-						"xmlns:gml='http://www.opengis.net/gml'>" + 
-						"<Intersects><PropertyName>geometry</PropertyName>" +
-						"<gml:Polygon srsName='EPSG:4326'><gml:outerBoundaryIs><gml:LinearRing>" +
-						"<gml:coordinates>" + createPolygon() + "</gml:coordinates>" +
-						"</gml:LinearRing></gml:outerBoundaryIs></gml:Polygon></Intersects></Filter>";	
-								
-					sndWFSRequest(url,'');
-				}		
-			}
-			
-			/*
-			 * Sets a vertex where user has clicked in the map. Coordinates are stored in current map projection,
-			 * i.e. not necessarily in geographic lat/lon.
-			 */
-			function addVertex(e)	{
+            /*
+             * Creates & submits WFS filter query. 
+             * Ajax response updates content of 'wfsResponse' DOM element
+             */
+            function getFeatureList()
+            {
+                if (true)
+                {
+                    var url =     "<%=request.getContextPath()%>/wfsProxy?" + //http://maps.gns.cri.nz/geoserver21/wfs?" +
+                        "request=GetFeature&" +
+                        "service=wfs&" +
+                        "version=1.0.0&" +
+                        "typename=gns:FR.FRED_SITE_VIEW&" +
+                        "outputFormat=GML2&" +
+                        "PropertyName=FEATURE_ID&" +
+                        "filter=<Filter " + 
+                        "xmlns:gml='http://www.opengis.net/gml'>" + 
+                        "<Intersects><PropertyName>SHAPE</PropertyName>" +
+                        "<gml:Polygon srsName='EPSG:4326'><gml:outerBoundaryIs><gml:LinearRing>" +
+                        "<gml:coordinates>" + createPolygon() + "</gml:coordinates>" +
+                        "</gml:LinearRing></gml:outerBoundaryIs></gml:Polygon></Intersects></Filter>";    
+                                
+                    sndWFSRequest(url,'');
+                }        
+            }
+            
+            /*
+             * Sets a vertex where user has clicked in the map. Coordinates are stored in current map projection,
+             * i.e. not necessarily in geographic lat/lon.
+             */
+            function addVertex(e)    {
 
-				var lonlat = map.getLonLatFromViewPortPx(e.xy);
-				var bounds = map.getExtent().toBBOX();
+                var lonlat = map.getLonLatFromViewPortPx(e.xy);
+                var bounds = map.getExtent().toBBOX();
 
-				//if (num_markers == 25) return;
-				ll = new OpenLayers.LonLat(lonlat.lon,lonlat.lat);
-				popupClass = AutoSizeAnchored;
-				popupContentHTML = 1;
-				addMarker(ll, popupClass, popupContentHTML);
-				num_markers++;
+                //if (num_markers == 25) return;
+                ll = new OpenLayers.LonLat(lonlat.lon,lonlat.lat);
+                popupClass = AutoSizeAnchored;
+                popupContentHTML = 1;
+                addMarker(ll, popupClass, popupContentHTML);
+                num_markers++;
 
-				var magic=6378137;
-				var deg2rad=0.017453292519943295;
-				var pi=3.141592653589793;
-				londd=lonlat.lon/(magic*deg2rad);
-				latdd=(2*Math.atan(Math.exp(lonlat.lat/magic))-(pi/2))/deg2rad;
+                var magic=6378137;
+                var deg2rad=0.017453292519943295;
+                var pi=3.141592653589793;
+                londd=lonlat.lon/(magic*deg2rad);
+                latdd=(2*Math.atan(Math.exp(lonlat.lat/magic))-(pi/2))/deg2rad;
 
-				marker[num_markers] = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
+                marker[num_markers] = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
 
-				mylons[num_markers]=lonlat.lon;
-				mylats[num_markers]=lonlat.lat;
+                mylons[num_markers]=lonlat.lon;
+                mylats[num_markers]=lonlat.lat;
 
-				if (num_markers > 2){
-					vectorLayer.eraseFeatures(lineFeature);
-					vectorLayer.removeFeatures(lineFeature);
-					vectorLayer.destroyFeatures(lineFeature);
-				}
+                if (num_markers > 2){
+                    vectorLayer.eraseFeatures(lineFeature);
+                    vectorLayer.removeFeatures(lineFeature);
+                    vectorLayer.destroyFeatures(lineFeature);
+                }
 
-				if (num_markers > 1){
-					var pointList = [];
-					for(var p=1; p<=num_markers; ++p) {
-						newPoint = marker[p];
-						pointList.push(newPoint);
-					}
-					newPoint = marker[1];
-					pointList.push(newPoint);
-					lineFeature = new OpenLayers.Feature.Vector(
-						new OpenLayers.Geometry.LineString(pointList),null,style_red);
-					vectorLayer.addFeatures(lineFeature);
-				}				
-			}
-			
-			/*
-			 * Creates a space-separated list of coordinates (x,y), representing the polygon in geographic coordinates.
-			 */
-			function createPolygon()	{
-				var poly = '';
+                if (num_markers > 1){
+                    var pointList = [];
+                    for(var p=1; p<=num_markers; ++p) {
+                        newPoint = marker[p];
+                        pointList.push(newPoint);
+                    }
+                    newPoint = marker[1];
+                    pointList.push(newPoint);
+                    lineFeature = new OpenLayers.Feature.Vector(
+                        new OpenLayers.Geometry.LineString(pointList),null,style_red);
+                    vectorLayer.addFeatures(lineFeature);
+                }                
+            }
+            
+            /*
+             * Creates a space-separated list of coordinates (x,y), representing the polygon in geographic coordinates.
+             */
+            function createPolygon()    {
+                var poly = '';
 
-				//build a polygon by iterating through vertices
-				for(var p=1; p<=num_markers; ++p) {
-					poly += lonToDD(mylons[p]);
-					poly += ',';
-					poly += latToDD(mylats[p]);
-					poly += ' ';
-				}
-				//close polygon
-				poly += lonToDD(mylons[1]);
-				poly += ',';
-				poly += latToDD(mylats[1]);
-				
-				return poly;
-			}
-			
-			/*
-			 * Clears the polygon.
-			 */
-			function clearPolygon(){
-				for(var p=1; p<=num_markers; ++p) {
-					mylons[p]='';
-					mylats[p]='';
-				}
-				markers.clearMarkers();
-				vectorLayer.eraseFeatures(lineFeature);
-				vectorLayer.removeFeatures(lineFeature);
-				vectorLayer.destroyFeatures(lineFeature);
-			
-				document.getElementById('wfsResponse').innerHTML = '';
-				num_markers = 0;
-			}
+                //build a polygon by iterating through vertices
+                for(var p=1; p<=num_markers; ++p) {
+                    poly += lonToDD(mylons[p]);
+                    poly += ',';
+                    poly += latToDD(mylats[p]);
+                    poly += ' ';
+                }
+                //close polygon
+                poly += lonToDD(mylons[1]);
+                poly += ',';
+                poly += latToDD(mylats[1]);
+                
+                return poly;
+            }
+            
+            /*
+             * Clears the polygon.
+             */
+            function clearPolygon(){
+                for(var p=1; p<=num_markers; ++p) {
+                    mylons[p]='';
+                    mylats[p]='';
+                }
+                markers.clearMarkers();
+                vectorLayer.eraseFeatures(lineFeature);
+                vectorLayer.removeFeatures(lineFeature);
+                vectorLayer.destroyFeatures(lineFeature);
+            
+                document.getElementById('wfsResponse').innerHTML = '';
+                num_markers = 0;
+            }
 
-			/*
-			 * Converts coordinate into decimal degree.
-			 */
-            function latToDD(srcLat)	{
+            /*
+             * Converts coordinate into decimal degree.
+             */
+            function latToDD(srcLat)    {
 
                 var magic=6378137;
                 var deg2rad=0.017453292519943295;
@@ -430,57 +430,57 @@
                 return latdd;
             }
 
-            function lonToDD(srcLon)	{
+            function lonToDD(srcLon)    {
                 var magic=6378137;
                 var deg2rad=0.017453292519943295;
                 var pi=3.141592653589793;
-                londd=srcLon/(magic*deg2rad);	
+                londd=srcLon/(magic*deg2rad);    
                 return londd;
             }
-			
-			/*
-			 * Sets alement values of the parent window & closes the popup window.
-			 */
-			function returnToParent(commaString)	{
-			
-				var idList;
+            
+            /*
+             * Sets alement values of the parent window & closes the popup window.
+             */
+            function returnToParent(commaString)    {
+            
+                var idList;
 
-				if(commaString.length > 0)	
-					idList = commaString.split(",");
-				else 
-					idList = new Array();
-					
-				//alert("Returning to parent");
-				if(idList== null || idList.length == 0)	{
-					alert("The selected polygon does not contain any features.");
-					clearPolygon();
-				}
-				else	{
-			
-					var doc = window.opener.document;
-					doc.getElementById('idList').value = commaString;
-					doc.getElementById('polygon').value = createPolygon();
+                if(commaString.length > 0)    
+                    idList = commaString.split(",");
+                else 
+                    idList = new Array();
+                    
+                //alert("Returning to parent");
+                if(idList== null || idList.length == 0)    {
+                    alert("The selected polygon does not contain any features.");
+                    clearPolygon();
+                }
+                else    {
+            
+                    var doc = window.opener.document;
+                    doc.getElementById('idList').value = commaString;
+                    doc.getElementById('polygon').value = createPolygon();
 
-					var statementDiv = doc.getElementById("isPolygon");
-					statementDiv.innerHTML = "Features selected: " + idList.length;
-										
-					window.close();	
-					
-				}
-			}
-			
-            function cancel()	{
-				var doc = window.opener.document;
-				doc.getElementById('idList').value = '';
-				doc.getElementById('polygon').value = '';
-
-				var statementDiv = doc.getElementById("isPolygon");
-				statementDiv.innerHTML = "No features selected.";
-                window.close();	
+                    var statementDiv = doc.getElementById("isPolygon");
+                    statementDiv.innerHTML = "Features selected: " + idList.length;
+                                        
+                    window.close();    
+                    
+                }
             }
-		
+            
+            function cancel()    {
+                var doc = window.opener.document;
+                doc.getElementById('idList').value = '';
+                doc.getElementById('polygon').value = '';
+
+                var statementDiv = doc.getElementById("isPolygon");
+                statementDiv.innerHTML = "No features selected.";
+                window.close();    
+            }
+        
             window.onload = go;
-	
+    
         </script>
 
     </head>

@@ -52,9 +52,9 @@ function handleWFSResponse()
   {	
 	var xmldoc = wfsRequest.responseXML.documentElement;
      
-	var list = xmldoc.getElementsByTagName("gns:feature_id");
+	var list = xmldoc.getElementsByTagName("gns:FEATURE_ID");
 	if(list.length==0)	//care for Google Chrome specifics
-		list = xmldoc.getElementsByTagName("feature_id");
+		list = xmldoc.getElementsByTagName("FEATURE_ID");
 	
 	var table = document.createElement("table");
 	var idList = new Array();
