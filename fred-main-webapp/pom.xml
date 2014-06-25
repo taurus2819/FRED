@@ -3,12 +3,12 @@
     <parent>
         <groupId>nz.cri.gns.fred</groupId>
         <artifactId>fred-top</artifactId>
-        <version>2.2.54</version>
+        <version>2.2.55-SNAPSHOT</version>
     </parent>
     <groupId>nz.cri.gns</groupId>
     <artifactId>fred</artifactId>
     <packaging>war</packaging>
-    <version>2.2.54</version>
+    <version>2.2.55-SNAPSHOT</version>
     <name>Fossil Record Electronic Database</name>
     <url>http://fred.org.nz</url>  
     <organization>
@@ -315,9 +315,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>  
     <scm>
-        <connection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/tags/RELEASE_2.2.54/fred-main-webapp</connection>
-        <developerConnection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/tags/RELEASE_2.2.54/fred-main-webapp</developerConnection>
-        <url>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/tags/RELEASE_2.2.54/fred-main-webapp</url>
+        <connection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk/fred-main-webapp</connection>
+        <developerConnection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk/fred-main-webapp</developerConnection>
+        <url>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk/fred-main-webapp</url>
     </scm>
     <distributionManagement>
         <repository>
