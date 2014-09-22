@@ -9,10 +9,12 @@ import java.io.PrintWriter;
 import java.rmi.NotBoundException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -210,6 +212,11 @@ public class TaxaReport {
 			public <T> T unwrap(Class<T> iface) throws SQLException {
 				return conn.unwrap(iface);
 			}
+
+            @Override
+            public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
 		});
 	}
 

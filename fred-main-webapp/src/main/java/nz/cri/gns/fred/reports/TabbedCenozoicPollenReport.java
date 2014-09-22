@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -246,6 +247,11 @@ public class TabbedCenozoicPollenReport {
                 @Override
                 public <T> T unwrap(Class<T> iface) throws SQLException {
                     return conn.unwrap(iface);
+                }
+
+                @Override
+                public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+                    throw new UnsupportedOperationException("Not supported yet.");
                 }
             });
             

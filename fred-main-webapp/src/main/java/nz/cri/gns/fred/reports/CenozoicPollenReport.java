@@ -12,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.rmi.NotBoundException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -42,9 +43,16 @@ import nz.cri.gns.util.NullOutputStream;
 import org.xml.sax.SAXException;
 
 /**
+ * To use this, first receive the taxonomic synonyms file. A period separates each group of aliases. 
+ * The first entry is the official or nomiated taxonomic name. Each subsequent entry are synonyms for the nominated taxon.
+ * Run prepareSynonymList to assemble the internal fred ids for the taxonomic aliases
+ * Run prepareSynonymSql to write a file containing sql insert statements for the taxa in step above
+ * Truncate table fr.taxonomic_synonym and load sql statements from above.
+ * Run report on prepared frNumber candidate list
+ * Run postProcessCenozoicPollen() to aggregate ouput counts from synonyms with the nominated taxon outputs.
  *
  * @author richardt
- */
+ **/
 public class CenozoicPollenReport {
     private FredDAO dao;
     private HashMap<String, HashMap<String,Integer>> taxa = null;
@@ -305,6 +313,11 @@ public class CenozoicPollenReport {
                 @Override
                 public <T> T unwrap(Class<T> iface) throws SQLException {
                     return conn.unwrap(iface);
+                }
+
+                @Override
+                public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+                    throw new UnsupportedOperationException("Not supported yet.");
                 }
             });
             
