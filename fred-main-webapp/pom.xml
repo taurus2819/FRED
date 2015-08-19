@@ -68,7 +68,7 @@
         <dependency>
             <groupId>nz.cri.gns.online-servlet</groupId>
             <artifactId>online-servlet-core</artifactId>
-            <version>3.0.2.278</version>
+            <version>3.0.6.343</version>
         </dependency>
         <dependency>
             <groupId>net.sf.ehcache</groupId>
@@ -112,7 +112,7 @@
             <artifactId>jta</artifactId>
             <version>1.1</version>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>online-util</artifactId>
             <version>1.9.12.3</version>
@@ -129,9 +129,9 @@
             <version>3.7</version>
         </dependency>
         <dependency>
-          <groupId>org.geotools</groupId>
-          <artifactId>gt-main</artifactId>
-          <version>2.6.4</version>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>2.6.4</version>
         </dependency>
         <dependency>
             <groupId>com.vividsolutions</groupId>
@@ -158,8 +158,8 @@
                         <artifactId>maven-compiler-plugin</artifactId>
                         <version>2.0.2</version>
                         <configuration>
-                            <source>1.6</source>
-                            <target>1.6</target>
+                            <source>1.7</source>
+                            <target>1.7</target>
                         </configuration>
                     </plugin>
                     <plugin>

@@ -66,8 +66,8 @@ public class CenozoicPollenReport {
     
     public static void main(String[] args)     {
         CenozoicPollenReport report = new CenozoicPollenReport();
-        //report.report();
-        report.postProcessCenozoicPollen();
+        report.report();
+        //report.postProcessCenozoicPollen();
         //report.prepareSynonymList();
         //report.prepareSynonymSql();
                 
