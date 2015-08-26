@@ -25,11 +25,12 @@ public class WMSClient {
     public static URL generateMapURL(double xCentre, double yCentre, int distance, int width, int height, String layers) {
         String serverURL = null;
         try {
-            if (layers.contains("x7")) {
-                serverURL = "http://wms.data.linz.govt.nz/2196be5e2a3f48179fddb966dd15add4/r/wms?service=WMS&request=GetMap";
-            //maps.gns.cri.nz/mapserver?SERVICE=WMS&version=1.1.0&request=GetMap
-                //&layers=x767
-                //&srs=EPSG%3A27200&bbox=2692000,6042200,2697000,6047200&width=620&height=500&format=image%2Fjpeg
+            if (layers.contains("-7")) {
+                serverURL = "https://data.linz.govt.nz/services;key=2196be5e2a3f48179fddb966dd15add4/wms?SERVICE=WMS&request=GetMap";
+                    //"http://wms.data.linz.govt.nz/2196be5e2a3f48179fddb966dd15add4/r/wms?service=WMS&request=GetMap";
+                    //maps.gns.cri.nz/mapserver?SERVICE=WMS&version=1.1.0&request=GetMap
+                    //&layers=x767
+                    //&srs=EPSG%3A27200&bbox=2692000,6042200,2697000,6047200&width=620&height=500&format=image%2Fjpeg
             } else {
                 serverURL = "https://maps.gns.cri.nz/geoserver/wms?service=WMS&request=GetMap";
             //&layers=gns:FR.FRED_SITE_VIEW
@@ -100,5 +101,22 @@ public class WMSClient {
     private static String getTempFileName() {
         Random random = new Random();
         return "locmap"+random.nextInt()+ ".png";
+    }
+    
+    public static String getBacklogMapURL(double left, double top, double right, double bottom, int width, int height) {
+        try {
+            String serverURL = "https://maps.gns.cri.nz/geoserver/wms?request=Getmap";
+            String layers = "&layers=gns:bluemarble,FR.BACKLOG_STATUS,MASTERFILE_AREAS";
+            String styles = "&styles=,,fred_mfile_outlines";
+            String other = "&srs=EPSG:27200&format=image%2Fpng";
+            String bbox = "&bbox=" + left + "," + bottom + "," + right + "," + top;
+            String size ="&width=480&height=580";
+       
+            return serverURL + layers + styles + other + bbox + size;
+            
+        } catch (Exception ex) {
+            Logger.getLogger(WMSClient.class.getName()).log(Level.SEVERE, null, ex);
+            return "/nomap.png";
+        }
     }
 }

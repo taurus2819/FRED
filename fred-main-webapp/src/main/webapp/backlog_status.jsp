@@ -11,8 +11,7 @@
 %><%@page import="nz.cri.gns.fred.util.BacklogStatusUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
-%><%@page import="nz.cri.gns.gis.ims.IMSMap"
-%><%@page import="com.esri.aims.mtier.model.envelope.Envelope"
+%><%@page import="nz.cri.gns.fred.wms.WMSClient"
 %><%!	
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { 
 		return new Authenticable[0]; 
@@ -103,27 +102,63 @@
 	</table><%
 	endDETable(pageContext);
 	%></p><%	
-	
 	int masterfileId = -1;
-	try {
-		masterfileId = Integer.parseInt(request.getParameter("ID"));
-	} catch (Exception e) {	}
+    try {
+        masterfileId = Integer.parseInt(request.getParameter("ID"));
+    } catch (Exception ex) {
+    }
 
 	%><p><%
 	if (masterfileId <= 6) try {
-		URL imsService = new URL("http://maps.gns.cri.nz");
-		String service = "fred_backlog";
-		//URL imsService = new URL("http://" + DBUtils.getIMSServerFor(JspUtils.getInstance(application)));
-		IMSMap map = new IMSMap(imsService, service, 480, 580);
-		Envelope extent = new Envelope();
-		switch (masterfileId) {
-			case -1:
-				extent.setMinX(1940000);
-				extent.setMinY(5250000);
-				extent.setMaxX(3050000);
-				extent.setMaxY(6820000);
+        double left;
+        double bottom;
+        double right;
+        double top;
+        
+		switch (masterfileId) {			
+			case 1: //"NorthernNI":
+				left = 2370000;
+				bottom = 6230000;
+				right = 2850000;
+				top = 6810000;
+				break;
+			case 2: //"CentralNI":
+				left = 2550000;
+				bottom = 5960000;
+				right = 3030000;
+				top = 6540000;
+				break;
+			case 3: //"SouthernNI":
+				left = 2470000;
+				bottom = 5765000;
+				right = 2950000;
+				top = 6345000;
+				break;
+			case 4: //"Nelson":
+				left = 2270000;
+				bottom = 5760000;
+				right = 2750000;
+				top = 6300000;
+				break;
+			case 5: //"CentralSI":
+				left = 2170000;
+				bottom = 5480000;
+				right = 2650000;
+				top = 6060000;
+				break;
+            case 6: // "SouthernSI":
+				left = 1930000;
+				bottom = 5225000;
+				right = 2410000;
+				top = 5805000;
+				break;
+            default:
+				left = 1940000;
+				bottom = 5240000;
+				right = 3010000;
+				top = 6870000;
 				%><map name="FPMap0">
-				<area href="backlog_status.jsp?ID=1" shape="polygon" coords="208, 11, 209, 23, 222, 21, 223, 34, 241, 35, 239, 66, 252, 67, 253, 86, 267, 88, 267, 109, 282, 110, 285, 143, 298, 144, 297, 199, 282, 199, 282, 209, 357, 208, 356, 109, 342, 109, 341, 88, 328, 89, 327, 77, 313, 76, 313, 65, 298, 67, 298, 45, 268, 46, 268, 35, 253, 34, 254, 24, 229, 23, 229, 12">
+				<area href="backlog_status.jsp?ID=NorthernNI" shape="polygon" coords="208, 11, 209, 23, 222, 21, 223, 34, 241, 35, 239, 66, 252, 67, 253, 86, 267, 88, 267, 109, 282, 110, 285, 143, 298, 144, 297, 199, 282, 199, 282, 209, 357, 208, 356, 109, 342, 109, 341, 88, 328, 89, 327, 77, 313, 76, 313, 65, 298, 67, 298, 45, 268, 46, 268, 35, 253, 34, 254, 24, 229, 23, 229, 12">
 				<area href="backlog_status.jsp?ID=2" shape="polygon" coords="371, 277, 327, 277, 326, 244, 268, 243, 268, 212, 358, 211, 359, 155, 370, 155, 370, 144, 387, 144, 387, 156, 430, 156, 430, 200, 415, 199, 416, 232, 385, 232, 385, 254, 372, 254">
 				<area href="backlog_status.jsp?ID=3" shape="polygon" coords="341, 321, 300, 321, 298, 277, 312, 278, 313, 265, 298, 265, 297, 256, 283, 255, 283, 245, 326, 245, 327, 277, 358, 277, 356, 300, 342, 300">
 				<area href="backlog_status.jsp?ID=4" shape="polygon" coords="296, 333, 195, 333, 194, 321, 209, 321, 209, 278, 223, 279, 223, 265, 254, 266, 252, 289, 268, 288, 268, 277, 283, 277, 284, 289, 300, 289">
@@ -131,51 +166,9 @@
 				<area href="backlog_status.jsp?ID=6" shape="polygon" coords="105, 566, 76, 565, 77, 544, 90, 543, 91, 520, 62, 519, 61, 509, 47, 509, 47, 487, 60, 487, 60, 453, 76, 454, 76, 444, 91, 443, 92, 422, 106, 421, 106, 411, 120, 411, 120, 398, 136, 399, 136, 443, 195, 441, 195, 499, 181, 498, 180, 510, 163, 511, 165, 532, 137, 531, 134, 544, 121, 544, 120, 556, 107, 555">
 				</map><%
 				break;
-			case 1:
-				map.setLayerVisible(3, true);
-				extent.setMinX(2370000);
-				extent.setMinY(6230000);
-				extent.setMaxX(2850000);
-				extent.setMaxY(6810000);
-				break;
-			case 2:
-				map.setLayerVisible(4, true);
-				extent.setMinX(2550000);
-				extent.setMinY(5960000);
-				extent.setMaxX(3030000);
-				extent.setMaxY(6540000);
-				break;
-			case 3:
-				map.setLayerVisible(5, true);
-				extent.setMinX(2470000);
-				extent.setMinY(5765000);
-				extent.setMaxX(2950000);
-				extent.setMaxY(6345000);
-				break;
-			case 4:
-				map.setLayerVisible(6, true);
-				extent.setMinX(2270000);
-				extent.setMinY(5760000);
-				extent.setMaxX(2750000);
-				extent.setMaxY(6300000);
-				break;
-			case 5:
-				map.setLayerVisible(7, true);
-				extent.setMinX(2170000);
-				extent.setMinY(5480000);
-				extent.setMaxX(2650000);
-				extent.setMaxY(6060000);
-				break;
-			case 6:
-				map.setLayerVisible(8, true);
-				extent.setMinX(1930000);
-				extent.setMinY(5225000);
-				extent.setMaxX(2410000);
-				extent.setMaxY(5805000);
-				break;
 		}
-		map.setExtent(extent);
-		String imageURL = map.getURL();
+		String imageURL = WMSClient.getBacklogMapURL(left, top, right, bottom, 480, 580);
+
 		%><p><img src="<%=imageURL%>" width="480" height="580" alt="Backlog Status Map" border="0" <%=((masterfileId == -1) ? "usemap=\"#FPMap0\"" : "")%>/></p><%
 	} catch (Exception e) {
 		%><p>An error has occured while generating the map. Please try again</p><%

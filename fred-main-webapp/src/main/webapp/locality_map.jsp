@@ -48,9 +48,9 @@
 	try {
 		distance = Integer.parseInt(request.getParameter("Dist"));
 	} catch (Exception e) {}
-	String lyr = request.getParameter("Layer");
+	String lyr = request.getParameter("Lyr");
     if (lyr==null) {
-        lyr = "x767"; //topo50
+        lyr = "layer-767"; //topo50
     }
 
 	String backURL = request.getParameter("backURL");
@@ -66,14 +66,13 @@
 	et.setUseNavigationColumn(true);
 	et.setDisplayLoadingMessage(true);
 	
-	IconnedLink[] il = new IconnedLink[(backURL != null) ? 5 : 4];
+	IconnedLink[] il = new IconnedLink[(backURL != null) ? 4 : 3];
 	int x = 0;
 	if (backURL != null)
 		il[x++] = new IconnedLink(backURL, "images/back_arrow.gif", (backText != null) ? request.getParameter("backText") : "Back");
-	il[x++] = new IconnedLink("http://maps.gns.cri.nz/website/fred", "images/map.gif", "Interactive Map");
-	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=12500&Layer=x798"+ backStr, "images/map.gif", "Small Scale");
-	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=2500&Layer=x767" + backStr, "images/map.gif", "Large Scale");
-	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=500&Layer=gns:GIS.NZ_ORTHOPHOTO" + backStr, "images/map.gif", "Orthophoto");
+	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=12500&Lyr=layer-798"+ backStr, "images/map.gif", "Small Scale");
+	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=2500&Lyr=layer-767" + backStr, "images/map.gif", "Large Scale");
+	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=500&Lyr=gns:GIS.NZ_ORTHOPHOTO" + backStr, "images/map.gif", "Orthophoto");
 	addButtons(et, il);
 	drawTop(out, et, request, response);
 	
