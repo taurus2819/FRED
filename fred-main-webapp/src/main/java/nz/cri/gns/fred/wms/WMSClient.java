@@ -71,8 +71,8 @@ public class WMSClient {
             g.setColor(Color.BLACK);
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
-            int middleX = (int) (width / 2);
-            int middleY = (int) (height / 2);
+            int middleX = (int) (width / 2)-9;
+            int middleY = (int) (height / 2)-9;
 
             g.translate(middleX, middleY);
 
