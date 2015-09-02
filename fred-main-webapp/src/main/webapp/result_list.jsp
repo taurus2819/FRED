@@ -151,8 +151,7 @@
 	
 	
 	// Adds all the links in the array to the extranet template
-	addButtons(et, il.toArray(new Link[il.size()]));
-	
+	addButtons(et, il.toArray(new Link[il.size()]));	
 	// Execute any actions
 	String alertText = "";
 	String actionType = request.getParameter("ActionType");
@@ -210,8 +209,9 @@
 		} else 	if ("Adv".equals(request.getParameter("Type"))) {
 			try {
 				FREDQuery query = FREDUtil.getFREDQuery(state);
-				queryString = query.getQueryAsString();
+				queryString = query.getQueryAsString();                               
                                 String hq = query.getHQLQuery();
+                                System.out.println ("ADV hq " + hq);
                                 samples = sampleUtil.getLightweightSamples(hq);;
                                 features = featureUtil.getFeaturesBySampleSubquery(hq);
 				auditUtil.addLogEntry(AuditUtil.QUERY_LOG_TYPE, user, features.size());
@@ -293,13 +293,20 @@
 									Displaying records <%=startIndex%> to <%=endIndex%> of <%=numRecords%>
 								</td>
 								<td style="text-align: right" colspan="2"><%
-									for (int i = minRangePage; i <= maxRangePage; i++) {
-										%>&nbsp;<a href="result_list.jsp?Page=<%=i%>"<%=((i == pageNum) ? " class=\"heading\"" : "")%>><%=i%></a><%
-									}%>
-								</td>
+									if (pageNum > startPage) {
+                                                                            %><a href="result_list.jsp?Page=<%=startPage%>"<%=((startPage == pageNum) ? " class=\"heading\"" : "")%>>First ..</a><%
+                                                                        }
+                                                                        for (int i = minRangePage; i <= maxRangePage; i++) {
+                                                                                %>&nbsp;<a href="result_list.jsp?Page=<%=i%>"<%=((i == pageNum) ? " class=\"heading\"" : "")%>><%=i%></a><%
+                                                                        }                                                
+                                                                        if (pageNum < endPage) {
+                                                                            %><a href="result_list.jsp?Page=<%=endPage%>"<%=((endPage== pageNum) ? " class=\"heading\"" : "")%>>.. Last</a><%
+                                                                        }	
+                                                                %></td>
 							</tr><%
-						}
-					%>
+						}%>
+                                               
+					
 					<tr class="midColour">
 						<th>
 							<input type="checkbox" name="MasterCheckbox" onchange="updateAllCheckBoxes(this.checked);" />
@@ -375,17 +382,23 @@
 					}
 										
 		
-					if (maxRangePage > 1) {
+					if (maxRangePage > 1) {                                           
 						%><tr class="midColour">
-							<td class="heading" colspan="3">
+							<td class="heading" colspan="4">
 								Displaying records <%=startIndex%> to <%=endIndex%> of <%=numRecords%>
 							</td>
-							<td style="text-align: right" colspan="2"><%
-							for (int i = minRangePage; i <= maxRangePage; i++) {
-								%>&nbsp;<a href="result_list.jsp?Page=<%=i%>"<%=((i == pageNum) ? " class=\"heading\"" : "")%>><%=i%></a><%
-							}%>
-							</td></tr><%
-					 }%>			
+							<td style="text-align: right" colspan="2"><%                                                        
+                                                            if (pageNum > startPage) {
+                                                                %><a href="result_list.jsp?Page=<%=startPage%>"<%=((startPage == pageNum) ? " class=\"heading\"" : "")%>>First ..</a><%
+                                                            }
+                                                            for (int i = minRangePage; i <= maxRangePage; i++) {
+                                                                    %>&nbsp;<a href="result_list.jsp?Page=<%=i%>"<%=((i == pageNum) ? " class=\"heading\"" : "")%>><%=i%></a><%
+                                                            }                                                
+                                                            if (pageNum < endPage) {
+                                                                %><a href="result_list.jsp?Page=<%=endPage%>"<%=((endPage== pageNum) ? " class=\"heading\"" : "")%>>.. Last</a><%
+                                                            }	
+                                                        %></td></tr><%
+					 }%>
 				</table>
 			</form><%				
 			session.setAttribute("FRED.results", resultsList);
