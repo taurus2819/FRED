@@ -68,7 +68,7 @@
         <dependency>
             <groupId>nz.cri.gns.online-servlet</groupId>
             <artifactId>online-servlet-core</artifactId>
-            <version>3.0.6.343</version>
+            <version>3.0.8.348</version>
         </dependency>
         <dependency>
             <groupId>net.sf.ehcache</groupId>
