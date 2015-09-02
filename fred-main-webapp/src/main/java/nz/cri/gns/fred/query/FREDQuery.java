@@ -15,6 +15,10 @@ import nz.cri.gns.db.querybuilder.BasicTextField;
 import nz.cri.gns.db.querybuilder.Field;
 import nz.cri.gns.db.querybuilder.InvalidOperatorException;
 import nz.cri.gns.db.querybuilder.InvalidValueException;
+import nz.cri.gns.db.querybuilder.advanced.FilteredNumberField;
+import nz.cri.gns.db.querybuilder.advanced.FilteredPossibleValueField;
+import nz.cri.gns.db.querybuilder.advanced.FilteredTextField;
+import nz.cri.gns.db.querybuilder.advanced.FilteredDateField;
 import nz.cri.gns.db.querybuilder.advanced.NumberSource;
 import nz.cri.gns.db.querybuilder.advanced.PossibleValueField;
 import nz.cri.gns.db.querybuilder.advanced.TableRequiredDateField;
@@ -46,10 +50,11 @@ import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.model.Weathering;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.UserUtil;
+import nz.cri.gns.fred.model.FREDConstants;
 
 public class FREDQuery extends HqlQuery implements NumberSource {
 
-	private static final long serialVersionUID = 20060120L;
+	private static final long serialVersionUID = 20060120L;	
 	
 	private static final String[] RECORD_TABLES = new String[] {"s.records"};
 	private static final HqlJoin[] RECORD_JOINS = {new HqlJoin(false, "record")};
@@ -59,6 +64,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 	private static final HqlJoin SAMPLE_STAGE_VIEW_JOIN = new HqlJoin(false, "sampleStageView");
 	private static final String EDIT_TABLE = "s.audit.auditEdits";
 	private static final HqlJoin EDIT_JOIN = new HqlJoin(false, "edit");
+        
 	
 	protected int lastUsedId = 900000;
 	
@@ -102,28 +108,29 @@ public class FREDQuery extends HqlQuery implements NumberSource {
 		add(new TwoLevelField("Locality Fields", f));
 		
 		f = new Field[10];
-		f[0] = new BasicTextField("s.feature.featureName", "Drillhole Name");
-		f[1] = new BasicTextField("s.feature.person.name", "Operating Company");
-		f[2] = new BasicDateField("s.feature.startDate", "Spud Date");
-		f[3] = new BasicDateField("s.feature.finishDate", "Completion Date");
-		f[4] = new BasicTextField("s.feature.licenceArea", "Licence Area");
-		f[5] = new PossibleValueField("s.feature.datumType", "Datum Type", getDrillholeDatumTypes());
-		f[6] = new BasicNumberField("s.feature.datumElevation", "Datum Elevation (m)");
-		f[7] = new MetricDepthField("s.feature.startDepth", "Kick-off Depth (m)", "f.depthUnit");
-		f[8] = new MetricDepthField("s.feature.finishDepth", "Termination Depth (m)", "f.depthUnit");
+                //f[0] = new TableRequiredTextField("s.feature.featureName", "Drillhole Name", RECORD_TABLES_1, RECORD_JOINS_1);
+                f[0] = new FilteredTextField("s.feature.featureName", "Drillhole Name", "s.feature.featureType='" + FREDConstants.DRILLHOLE + "'");
+		f[1] = new FilteredTextField("s.feature.person.name", "Operating Company", "s.feature.featureType='" + FREDConstants.DRILLHOLE + "'");
+		f[2] = new FilteredDateField("s.feature.startDate", "Spud Date", "s.feature.featureType='" + FREDConstants.DRILLHOLE + "'");
+		f[3] = new FilteredDateField("s.feature.finishDate", "Completion Date", "s.feature.featureType='" + FREDConstants.DRILLHOLE + "'");
+		f[4] = new BasicTextField("s.feature.drillholeLicenceName", "Licence Area");
+		f[5] = new FilteredPossibleValueField("s.feature.datumType", "Datum Type", getDrillholeDatumTypes(),"s.feature.featureType='" + FREDConstants.DRILLHOLE + "'");
+		f[6] = new FilteredNumberField("s.feature.datumElevation", "Datum Elevation (m)", "s.feature.featureType='" + FREDConstants.DRILLHOLE + "'");
+                f[7] = new FilteredMetricDepthField("s.feature.startDepth", "Kick-off Depth (m)", "s.feature.depthUnit", "s.feature.featureType='" + FREDConstants.DRILLHOLE + "'");
+		f[8] = new FilteredMetricDepthField("s.feature.finishDepth", "Termination Depth (m)", "s.feature.depthUnit","s.feature.featureType='" + FREDConstants.DRILLHOLE + "'");
 		f[9] = new PossibleValueField("s.drillType", "Sample Type", getValues("FROM DrillType AS t", DrillType.class));
 		add(new TwoLevelField("Drillhole Fields", f));
 		
 		f = new Field[8];
-		f[0] = new BasicTextField("s.feature.featureName", "Vertical Section Name");
+		f[0] = new FilteredTextField("s.feature.featureName", "Vertical Section Name", "s.feature.featureType='" + FREDConstants.VERTICAL_SECTION + "'");
 		//f[1] = new PossibleValueField("f.person", "Section Collector", people);
-		f[1] = new BasicTextField("s.feature.person.name", "Section Collector");
-		f[2] = new BasicDateField("s.feature.startDate", "Sampling Start Date");
-		f[3] = new BasicDateField("s.feature.finishDate", "Completion Date");
-		f[4] = new PossibleValueField("s.feature.datumType", "Datum Type", getVertSectDatumTypes());
-		f[5] = new BasicNumberField("s.feature.datumElevation", "Datum Elevation (m)");
-		f[6] = new MetricDepthField("s.feature.startDepth", "Top Horizon (m)", "f.depthUnit");
-		f[7] = new MetricDepthField("s.feature.finishDepth", "Base Horizon (m)", "f.depthUnit");
+		f[1] = new FilteredTextField("s.feature.person.name", "Section Collector", "s.feature.featureType='" + FREDConstants.VERTICAL_SECTION + "'");
+		f[2] = new FilteredDateField("s.feature.startDate", "Sampling Start Date", "s.feature.featureType='" + FREDConstants.VERTICAL_SECTION + "'");
+		f[3] = new FilteredDateField("s.feature.finishDate", "Completion Date",  "s.feature.featureType='" + FREDConstants.VERTICAL_SECTION + "'");
+		f[4] = new FilteredPossibleValueField("s.feature.datumType", "Datum Type", getVertSectDatumTypes(), "s.feature.featureType='" + FREDConstants.VERTICAL_SECTION + "'");
+		f[5] = new FilteredNumberField("s.feature.datumElevation", "Datum Elevation (m)",  "s.feature.featureType='" + FREDConstants.VERTICAL_SECTION + "'");
+		f[6] = new FilteredMetricDepthField("s.feature.startDepth", "Top Horizon (m)", "s.feature.depthUnit", "s.feature.featureType='" + FREDConstants.VERTICAL_SECTION + "'");
+		f[7] = new FilteredMetricDepthField("s.feature.finishDepth", "Base Horizon (m)", "s.feature.depthUnit", "s.feature.featureType='" + FREDConstants.VERTICAL_SECTION + "'");
 		add(new TwoLevelField("Vertical Section Fields", f));
 		
 		f = new Field[9];
