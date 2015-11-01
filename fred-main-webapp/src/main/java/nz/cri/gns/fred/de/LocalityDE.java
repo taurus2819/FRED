@@ -495,8 +495,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 feature.setLocality(locality);
                 if (feature.getOrigCoord() != site.getOriginalCoordinates()) {
                     site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
-                } 
-                site.setMethod(Integer.parseInt(request.getParameter("LocMethodID")));               
+                }                            
                
                 //TODO reuse site_name as feature_name?? see JES
                 
