@@ -1,20 +1,15 @@
 package nz.cri.gns.fred.util;
 
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.naming.NamingException;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.db.BasicDatabaseApp2;
-import nz.cri.gns.db.DatabaseApp2;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
@@ -184,6 +179,8 @@ public class SiteUtil extends ModelUtil {
     }
 
     public static SiteRecord getSite(Feature feature) throws NamingException, SQLException {
+        /*
+        upgrade15 refactor
         Connection conn = null;
         DatabaseApp2 app = null;
         SiteRecord sr = null;
@@ -201,10 +198,12 @@ public class SiteUtil extends ModelUtil {
                 }
             }
         }
-        return sr;
+        return sr;*/
+        return null;
     }
 
     public static SiteRecord getSite(Datum datum, Coordinate coord) throws NamingException, SQLException {
+       /* upgrade15
         Connection conn = null;
         DatabaseApp2 app = null;
         SiteRecord sr = null;
@@ -235,10 +234,12 @@ public class SiteUtil extends ModelUtil {
                 }
             }
         }
-        return sr;
+        return sr;*/
+        return null;
     }
 
     public static SiteRecord getSite(String wellName)  throws NamingException, SQLException {
+        /* upgrade15 
         Connection conn = null;
         DatabaseApp2 app = null;
         SiteRecord sr = null;
@@ -259,7 +260,8 @@ public class SiteUtil extends ModelUtil {
                 }
             }
         }
-        return sr;
+        return sr;*/
+        return null;
     }
 
     /**

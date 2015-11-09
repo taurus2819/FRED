@@ -20,15 +20,13 @@ import javax.naming.NamingException;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
-import nz.cri.gns.auth.Right;
-import nz.cri.gns.auth.SecurityClass;
-import nz.cri.gns.auth.SecurityClassAccess;
-import nz.cri.gns.auth.UserAccount;
+import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.database.DataException;
 import nz.cri.gns.db.BasicDatabaseApp2;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.metadata.DocumentAttacher;
+import nz.cri.gns.fred.FredGrantedAuthorities;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Feature;
@@ -41,6 +39,7 @@ import nz.cri.gns.fred.query.FREDQuery;
 import nz.cri.gns.fred.query.FREDRecordQuery;
 import nz.cri.gns.intranet.DBConnection;
 import nz.cri.gns.jsp.PageState;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public class FREDUtil {
 	
@@ -184,27 +183,9 @@ public class FREDUtil {
 	/**
 	 * @param user
 	 * @return
-	 * @throws NamingException
-	 * @throws SQLException
 	 */
-	public static boolean checkEditSecurityClass(UserAccount user) {
-		Connection conn = null;
-		try {
-			conn = getConnection();
-			BasicDatabaseApp2 app = new BasicDatabaseApp2(conn, user.getId());
-			SecurityClass sc = new SecurityClass(SECURITY_CLASS_FRED_EDIT, app);
-			SecurityClassAccess sca = new SecurityClassAccess(sc, Right.ANY_RIGHT);
-			boolean allowed = sca.isAccessibleTo(user, app);		
-			conn.close();
-			return allowed;
-		} catch (Exception e) {
-			return false;
-		} finally {
-			if (conn != null) try {
-				conn.close();
-			} catch (Exception _e) {
-			}
-		}
+	public static boolean checkEditSecurityClass(User user) {
+		return user.getAuthorities().contains(new SimpleGrantedAuthority(FredGrantedAuthorities.FR_DATA_ENTRY));
 	}
 	
 	/**

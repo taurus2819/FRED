@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import nz.cri.gns.auth.InsufficientPrivelegesException;
-import nz.cri.gns.auth.UserAccount;
+import nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException;
+import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
@@ -189,7 +189,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return null;
 	}
 	
-	public Sample findOrCreateSample(String localityName, UserAccount user) throws StorageAccessException, DataInputException, InsufficientPrivelegesException {
+	public Sample findOrCreateSample(String localityName, User user) throws StorageAccessException, DataInputException, InsufficientPrivelegesException {
 		if (localityName.indexOf(":") < 0)
 			return findSample(localityName);
 		FeatureUtil featureUtil = new FeatureUtil(factory);
@@ -333,7 +333,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return (hasDepthInformation(belowSample) ? belowSample : null);
 	}
 	
-	public void deleteSamples(String[] sampIds, UserFolder folder, UserAccount user) {
+	public void deleteSamples(String[] sampIds, UserFolder folder, User user) {
 		boolean errFlag = false;
 		for (int i = 0; i < sampIds.length; i++) {
 			try {
@@ -346,12 +346,12 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 			throw new IllegalStateException("An error has occured. Not all localities have been removed/deleted");
 	}
 	
-	public void deleteSample(int sampleId, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
+	public void deleteSample(int sampleId, UserFolder folder, User user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
 		Sample sample = getSample(sampleId);
 		deleteSample(sample, folder, user);
 	}
 	
-	public void deleteSample(Sample sample, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
+	public void deleteSample(Sample sample, UserFolder folder, User user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
 		if (!isAllowedDeleteSample(sample, folder, user))
 			throw new InsufficientPrivelegesException();
 		
@@ -376,11 +376,11 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		} catch (Exception e) {}
 	}
 
-	public void submitSample(int sampleId, UserFolder folder, UserAccount user) throws DataInputException, InsufficientPrivelegesException, StorageAccessException {
+	public void submitSample(int sampleId, UserFolder folder, User user) throws DataInputException, InsufficientPrivelegesException, StorageAccessException {
 		submitSample(getSample(sampleId), folder, user);
 	}
 	
-	public void submitSample(Sample sample, UserFolder folder, UserAccount user) throws DataInputException, InsufficientPrivelegesException, StorageAccessException {
+	public void submitSample(Sample sample, UserFolder folder, User user) throws DataInputException, InsufficientPrivelegesException, StorageAccessException {
 		//Update the audit log, so long as this isn't an outcrop
 		if (!sample.getFeature().getFeatureType().equals(OUTCROP)) {
 			if (!isAllowedSubmitSample(user, sample, folder))
@@ -392,16 +392,16 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		}
 	}
 	
-	public void submitSamples(String[] sampIds, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, DataInputException {
+	public void submitSamples(String[] sampIds, UserFolder folder, User user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, DataInputException {
 		for (int i = 0; i < sampIds.length; i++) {
 			submitSample(getSample(Integer.parseInt(sampIds[i])), folder, user);
 		}
 	}
 	
-	private void setAuditApproved(Sample sample, UserAccount user) throws StorageAccessException {
+	private void setAuditApproved(Sample sample, User user) throws StorageAccessException {
 		Audit audit = sample.getAudit();
 		audit.setStatus(APPROVED);		//Samples don't need approval
-		audit.setSubmittedById(new Integer(user.getId()));
+		audit.setSubmittedById(user.getId().intValue());
 		audit.setSubmittedDate(new Date());
 		audit.setWorkingComments(null);
 		audit.setFolder(null);
@@ -438,7 +438,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	/**
 	 * Returns true if a user is allowed to view the locality
 	 */
-	public boolean isAllowedReadSample(UserAccount user, Sample sample) throws StorageAccessException {
+	public boolean isAllowedReadSample(User user, Sample sample) throws StorageAccessException {
 		if (user == null)
 			return false;
 		
@@ -466,7 +466,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * @throws StorageAccessException
 	 * @throws NumberFormatException
 	 */
-	private boolean isAllowedDeleteSample(Sample sample, UserFolder folder, UserAccount user) throws StorageAccessException {
+	private boolean isAllowedDeleteSample(Sample sample, UserFolder folder, User user) throws StorageAccessException {
 		Audit audit = sample.getAudit();
 		if (audit.getStatus().equals(APPROVED))
 			return false;
@@ -477,7 +477,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return folder.isAllowedDeleteLocalities();
 	}
 	
-	public boolean isAllowedEditSample(UserAccount user, Sample sample, UserFolder userFolder) throws StorageAccessException {
+	public boolean isAllowedEditSample(User user, Sample sample, UserFolder userFolder) throws StorageAccessException {
 		Audit audit = sample.getAudit();
 		if (audit.getStatus().equals(APPROVED))
 			return featureUtil.hasMasterfileRights(user, sample.getFeature(), UserFolder.FOLDER_EDIT_RIGHT, fredDAO) ||
@@ -488,7 +488,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return userFolder.isAllowedEditLocalities();
 	}
 	
-	public boolean isAllowedDeleteSample(UserAccount user, Sample sample, UserFolder userFolder) throws StorageAccessException {
+	public boolean isAllowedDeleteSample(User user, Sample sample, UserFolder userFolder) throws StorageAccessException {
 		Audit audit = sample.getAudit();
 		if (audit.getStatus().equals(APPROVED))
 			return false;
@@ -498,7 +498,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return userFolder.isAllowedDeleteLocalities();
 	}
 	
-	public boolean isAllowedSubmitSample(UserAccount user, Sample sample, UserFolder userFolder) throws NumberFormatException, StorageAccessException {
+	public boolean isAllowedSubmitSample(User user, Sample sample, UserFolder userFolder) throws NumberFormatException, StorageAccessException {
 		Audit audit = sample.getAudit();
 		if (audit.getStatus().equals(APPROVED))
 			return false;	
@@ -508,8 +508,8 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 		return userFolder.isAllowedSubmitLocalities();
 	}
 
-	public boolean isAllowedEditSampleConfid(UserAccount user, Sample sample, UserFolder userFolder) throws StorageAccessException {
-		FrUserView frUser = new UserUtil(factory).getFrUserView(new Integer(user.getId()));	
+	public boolean isAllowedEditSampleConfid(User user, Sample sample, UserFolder userFolder) throws StorageAccessException {
+		FrUserView frUser = new UserUtil(factory).getFrUserView(user.getId().intValue());	
 		Audit audit = sample.getAudit();
 		
 		// If an Outcrop feature, confidentiality does not apply
@@ -581,7 +581,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 	 * @param reuseFeatureAudit 
 	 * @throws StorageAccessException 
 	 */
-	public Sample createSample(Feature feature, Integer folderId, boolean reuseFeatureAudit, UserAccount user) throws StorageAccessException {
+	public Sample createSample(Feature feature, Integer folderId, boolean reuseFeatureAudit, User user) throws StorageAccessException {
 		Sample sample = fredDAO.createNewSample();
 		sample.setFeature(feature);
 		Audit audit = null;
@@ -593,7 +593,7 @@ public class SampleUtil extends ModelUtil implements FREDConstants, AuditedUtil 
 				audit.setFolder(fredDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class));
 			audit.setStatus(FREDConstants.WORKING);
 			audit.setCreatedDate(new Date());
-			audit.setCreatedById(new Integer(user.getId()));
+			audit.setCreatedById(user.getId().intValue());
 		}
 		sample.setAudit(audit);
 		return sample;

@@ -3,7 +3,6 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
-import nz.cri.gns.dataaccess.StorageAccessException;
 
 import nz.cri.gns.fred.model.Audit;
 import nz.cri.gns.fred.model.AuditEdit;
@@ -50,7 +49,7 @@ public class AuditTable implements Serializable, Audit {
     public void processAuditString(
             String auditString,
             nz.cri.gns.fred.dao.DAOFactory factory,
-            nz.cri.gns.auth.UserAccount user)
+            nz.cri.gns.auth.domain.User user)
             throws nz.cri.gns.dataaccess.StorageAccessException {
         // Confidential for 1 year accessible to AU; CU; GNS; with a lapse email to milan@es.co.nz
         // 1:1 Year;Auckland University;Canterbury University;GNS Science(milan@es.co.nz)
@@ -122,7 +121,7 @@ public class AuditTable implements Serializable, Audit {
     @Override
     public String createAuditString(
             nz.cri.gns.fred.dao.DAOFactory factory,
-            nz.cri.gns.auth.UserAccount user)
+            nz.cri.gns.auth.domain.User user)
             throws nz.cri.gns.dataaccess.StorageAccessException {
         // Confidential for 1 year accessible to AU; CU; GNS; with a lapse email to milan@es.co.nz
         // 1:1 Year;Auckland University;Canterbury University;GNS Science(milan@es.co.nz)

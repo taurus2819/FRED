@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Vector;
 
 import net.sf.hibernate.HibernateException;
-import nz.cri.gns.auth.UserAccount;
+import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
@@ -42,9 +42,9 @@ public class FolderUtil extends ModelUtil {
 	 * personal folders belonging to the given user,
 	 * or to which the given user has access but is not the owner
 	 */
-	public List<UserFolder> getPersonalFolders(UserAccount user) throws StorageAccessException {
+	public List<UserFolder> getPersonalFolders(User user) throws StorageAccessException {
 		Vector<UserFolder> folders = new Vector<UserFolder>();
-        int userId = Integer.parseInt(user.getId());
+        int userId = user.getId().intValue();
 		folders.addAll(getOwnedFolders(userId, getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
 		folders.addAll(getAccessibleFolders(userId, getFolderType(Folder.FOLDER_TYPE_PERSONAL)));
 		Collections.sort(folders);
@@ -55,8 +55,8 @@ public class FolderUtil extends ModelUtil {
 	 * Returns a list of <code>UserFolder</code>s representing
 	 * admin folders to which the given user has access
 	 */
-	public List<UserFolder> getAdminFolders(UserAccount user) throws StorageAccessException {
-		List<UserFolder> folders = getAccessibleFolders(Integer.parseInt(user.getId()), getFolderType(Folder.FOLDER_TYPE_ADMIN));
+	public List<UserFolder> getAdminFolders(User user) throws StorageAccessException {
+		List<UserFolder> folders = getAccessibleFolders(user.getId().intValue(), getFolderType(Folder.FOLDER_TYPE_ADMIN));
 		Collections.sort(folders);
 		return folders;
 	}
@@ -71,8 +71,8 @@ public class FolderUtil extends ModelUtil {
 	 * Returns a list of <code>UserFolder</code>s representing
 	 * backlog admin folders to which the given user has access
 	 */
-	public List<UserFolder> getBacklogAdminFolders(UserAccount user) throws StorageAccessException {
-		List<UserFolder> folders = getAccessibleFolders(Integer.parseInt(user.getId()), getFolderType(Folder.FOLDER_TYPE_BACKLOG_ADMIN));
+	public List<UserFolder> getBacklogAdminFolders(User user) throws StorageAccessException {
+		List<UserFolder> folders = getAccessibleFolders(user.getId().intValue(), getFolderType(Folder.FOLDER_TYPE_BACKLOG_ADMIN));
 		Collections.sort(folders);
 		return folders;
 	}
@@ -82,10 +82,10 @@ public class FolderUtil extends ModelUtil {
 	 * backlog folders belonging to the given user,
 	 * or to which the given user has access but is not the owner
 	 */
-	public List<UserFolder> getBacklogFolders(UserAccount user) throws StorageAccessException {
+	public List<UserFolder> getBacklogFolders(User user) throws StorageAccessException {
 		Vector<UserFolder> folders = new Vector<UserFolder>();
-		folders.addAll(getOwnedFolders(Integer.parseInt(user.getId()), getFolderType(Folder.FOLDER_TYPE_BACKLOG)));
-		folders.addAll(getAccessibleFolders(Integer.parseInt(user.getId()), getFolderType(Folder.FOLDER_TYPE_BACKLOG)));
+		folders.addAll(getOwnedFolders(user.getId().intValue(), getFolderType(Folder.FOLDER_TYPE_BACKLOG)));
+		folders.addAll(getAccessibleFolders(user.getId().intValue(), getFolderType(Folder.FOLDER_TYPE_BACKLOG)));
 		Collections.sort(folders);
 		return folders;
 	}	
@@ -112,32 +112,32 @@ public class FolderUtil extends ModelUtil {
 		return fredDAO.getList("FROM Folder as f WHERE f.folderType = ?", Folder.class, type);		
 	}
 	
-	public List<UserFolder> getPersonalPlusBacklogFolders(UserAccount user) throws StorageAccessException {
+	public List<UserFolder> getPersonalPlusBacklogFolders(User user) throws StorageAccessException {
 		List<UserFolder> folders = getPersonalFolders(user);
 		folders.addAll(getBacklogFolders(user));
 		Collections.sort(folders);
 		return folders;
 	}
 	
-	public Folder addFolder(String name, UserAccount user)  throws StorageAccessException {
+	public Folder addFolder(String name, User user)  throws StorageAccessException {
 	    Folder folder = fredDAO.createNewFolder();
 	    folder.setName(name);
-	    folder.setOwner(userUtil.getFrUserView(new Integer(user.getId())));
+	    folder.setOwner(userUtil.getFrUserView(user.getId().intValue()));
 	    folder.setFolderType(getFolderType(Folder.FOLDER_TYPE_PERSONAL));
 	    fredDAO.saveOrUpdate(folder);
 	    return folder;
 	}
 	
-	public Folder addBacklogFolder(String name, UserAccount user)  throws StorageAccessException {
+	public Folder addBacklogFolder(String name, User user)  throws StorageAccessException {
 	    Folder folder = fredDAO.createNewFolder();
 	    folder.setName(name);
-	    folder.setOwner(userUtil.getFrUserView(new Integer(user.getId())));
+	    folder.setOwner(userUtil.getFrUserView(user.getId().intValue()));
 	    folder.setFolderType(getFolderType(Folder.FOLDER_TYPE_BACKLOG));
 	    fredDAO.saveOrUpdate(folder);
 	    return folder;
 	}
 	
-	public void deleteFolder(int folderId, UserAccount user)  throws StorageAccessException {
+	public void deleteFolder(int folderId, User user)  throws StorageAccessException {
 		UserFolder userFolder = getUserFolder(folderId, user);
 		if (!userFolder.isAllowedAdmin())
 			throw new IllegalStateException("Cannot delete folder as no admin rights");
@@ -159,8 +159,8 @@ public class FolderUtil extends ModelUtil {
 		}
 	}
 	
-	public UserFolder getUserFolder(int folderId, UserAccount user) throws StorageAccessException {
-		return getUserFolder(folderId, Integer.parseInt(user.getId()));
+	public UserFolder getUserFolder(int folderId, User user) throws StorageAccessException {
+		return getUserFolder(folderId, new Integer(user.getId().intValue()));
 	}
 	
 	public UserFolder getUserFolder(int folderId, int userId) throws StorageAccessException {

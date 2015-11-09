@@ -13,8 +13,8 @@ import javax.naming.NamingException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import nz.cri.gns.auth.InsufficientPrivelegesException;
-import nz.cri.gns.auth.User;
+import nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException;
+import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.site.SiteRecord;
@@ -528,7 +528,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 
                 site.setDirections(request.getParameter("Loc"));                
                 site.setCountry(request.getParameter("Country"));
-                site.setOwner(user.getPersonId());
+                site.setOwner(user.getId().intValue());
                 feature.setLocality(locality);
             }
         } else {

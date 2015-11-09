@@ -7,12 +7,12 @@ public interface Audit extends Comparable<Audit> {
 
     public void processAuditString(String auditString,
             nz.cri.gns.fred.dao.DAOFactory factory,
-            nz.cri.gns.auth.UserAccount user)
+            nz.cri.gns.auth.domain.User user)
             throws nz.cri.gns.dataaccess.StorageAccessException;
     
     public String createAuditString(
             nz.cri.gns.fred.dao.DAOFactory factory,
-            nz.cri.gns.auth.UserAccount user)
+            nz.cri.gns.auth.domain.User user)
             throws nz.cri.gns.dataaccess.StorageAccessException;
 
     public Integer getAuditId();

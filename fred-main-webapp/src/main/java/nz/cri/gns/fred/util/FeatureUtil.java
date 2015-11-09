@@ -16,9 +16,8 @@ import java.util.Vector;
 
 import javax.naming.NamingException;
 
-import nz.cri.gns.auth.InsufficientPrivelegesException;
-import nz.cri.gns.auth.User;
-import nz.cri.gns.auth.UserAccount;
+import nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException;
+import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.core.SimpleNameableAndIdentifiable;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
@@ -57,12 +56,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		this.folderUtil = new FolderUtil(factory);
 	}
 	
-	public Feature copyFeature(Feature feature, String newName, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
+	public Feature copyFeature(Feature feature, String newName, UserFolder folder, User user) throws StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
 		if (!folder.isAllowedCreateLocalities())
 			throw new InsufficientPrivelegesException();
 		Audit audit = fredDAO.createNewAudit();
 		audit.setStatus(FREDConstants.WORKING);
-		audit.setCreatedById(new Integer(user.getId()));
+		audit.setCreatedById(user.getId().intValue());
 		audit.setCreatedDate(new Date());
 		audit.setFolder(folder.getFolder());
 		fredDAO.saveOrUpdate(audit);
@@ -112,109 +111,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		
 		return newFeature;
 		
-/*		newFeature.setSiteId(feature.getSiteId());
-		newFeature.setAudit(feature.getAudit());
-		newFeature.setMasterFile(feature.getMasterFile());
-		newFeature.setFeatureType(feature.getFeatureType());
-		newFeature.setFeatureName(newName);
-		newFeature.setLocality(feature.getLocality());
-		newFeature.setRegistrationArea(feature.getRegistrationArea());
-		newFeature.setPerson(feature.getPerson());
-		newFeature.setStartDate(feature.getStartDate());
-		newFeature.setStartDateRounding(feature.getStartDateRounding());
-*/
-		
-/*
- * Here follows the original code from FolderUtils.  According to JIR this is _not_ 
- * appropriate for vert sections and drillholes
- * we should only be copying the Front of form data.  Left here for posterity
- *
-		
-		String featureAuditID = DBUtils.doInsertUsingSequence(qd, "audit_id", "audit_seq", conn, true);
-		ResultSet seqRst = conn.executeQuery("SELECT feature_seq.NEXTVAL FROM DUAL");
-		seqRst.next();
-		int featureID = seqRst.getInt(1);
-		String query = "SELECT feature_type FROM feature WHERE feature_id = ?";
-		ResultSet rs1 = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(oldFeatureID)});
-		rs1.next();
-		String featureType = rs1.getString(1);
-		query = 
-			"INSERT INTO feature (feature_id, site_id, audit_id, masterfile_id, feature_type, feature_name, " +
-							"locality, reg_area_id, person_id, start_date, start_date_rounding, finish_date, finish_date_rounding, " +
-							"drillhole_licence_name, datum_type, datum_elevation, start_depth, finish_depth, comments) " +
-			"SELECT ? AS featid, site_id ? AS auditid, masterfile_id, feature_type, ? AS featname, locality, reg_area_id, person_id, start_date, start_date_rounding, finish_date, finish_date_rounding, drillhole_licence_name, datum_type, datum_elevation, start_depth, finish_depth, comments FROM feature WHERE feature_id = ?";
-		conn.executeUpdate(query, 
-				new int[] {Types.NUMERIC, Types.NUMERIC, Types.VARCHAR, Types.NUMERIC}, 
-				new Object[] {new Integer(featureID), new Integer(featureAuditID), newFeatureName, new Integer(oldFeatureID)});
-		query = "SELECT sample_id FROM sample WHERE feature_id = ?";
-		rs1 = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(oldFeatureID)});
-		Statement ps1 = conn.preservePreparedStatement();
-		
-		while (rs1.next()) {
-			String sampleAuditID;
-			if (featureType.equals(Feature.OUTCROP_LOCALITY)) {
-				//if Outcrop re-use Feature AuditID in Sample
-				sampleAuditID = featureAuditID; 
-			} else {
-				qd = new QueryDescriptor("audit_table");
-				qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
-				qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(userID));
-				qd.addQueryColumn("created_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
-				qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(folderID));
-				qd.addQueryColumn("security_class_id", Types.NUMERIC, new Integer(4));
-				sampleAuditID = DBUtils.doInsertUsingSequence(qd, "audit_id", "audit_seq", conn, true);
-			}
-			int oldSampleID = rs1.getInt(1);
-			seqRst = conn.executeQuery("SELECT Sample_Seq.NEXTVAL FROM DUAL");
-			seqRst.next();
-			int sampleID = seqRst.getInt(1);
-			query = "INSERT INTO sample (sample_id, feature_id, audit_id, top_depth, bottom_depth, drill_type_id, collection_date, date_rounding, strat_unit, in_place, not_collected, significance, inferred_stage_id, known_stage_id, column_map, dip, dip_direction, strike, facing, primary_grainsize_id, secondary_grainsize_id, comparator_used, bed_thick_id, primary_bedding_id, secondary_bedding_id, weathering_id, hardness_id, carbonate_id, colour_modifier_id, primary_colour_id, secondary_colour_id, wet, rock_nature, deposition_env, correspondence, comments) SELECT ? AS sampid, ? AS featid, ? AS auditID, top_depth, bottom_depth, drill_type_id, collection_date, date_rounding, strat_unit, in_place, not_collected, significance, inferred_stage_id, known_stage_id, column_map, dip, dip_direction, strike, facing, primary_grainsize_id, secondary_grainsize_id, comparator_used, bed_thick_id, primary_bedding_id, secondary_bedding_id, weathering_id, hardness_id, carbonate_id, colour_modifier_id, primary_colour_id, secondary_colour_id, wet, rock_nature, deposition_env, comments FROM sample WHERE sample_id = ?";
-			conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC, Types.NUMERIC, Types.NUMERIC, }, new Object[] {new Integer(sampleID), new Integer(featureID), new Integer(sampleAuditID), new Integer(oldSampleID)});
-			query = "INSERT INTO collector (sample_id, person_id) SELECT ? AS sampid, person_id FROM collector WHERE sample_id = ?";
-			conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(sampleID), new Integer(oldSampleID)});
-			query = "INSERT INTO relationship (relationship_id, sample_id, relationship_type, related_feature_id, strat_unit, distance, distance_range, distance_mod, relation_type_id) SELECT relationship_seq.NEXTVAL AS relID, ? AS sampID, relationship_type, related_feature_id, strat_unit, distance, distance_range, distance_mod, relation_type_id FROM Relationship WHERE Record_ID = ?";
-			conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(sampleID), new Integer(oldSampleID)});
-			query = "INSERT INTO sedimentary_feature (sample_id, sed_feature_id, abundant) SELECT ? AS sampID, sed_feature_id, abundant FROM sedimentary_feature WHERE sample_id = ?";
-			conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(sampleID), new Integer(oldSampleID)});
-			query = "INSERT INTO sent_to (sample_id, fossil_group_id, person_id, lab_id, comments) SELECT ? AS sampID, fossil_group_id, person_id, lab_id, comments FROM sent_to WHERE sample_id = ?";
-			conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(sampleID), new Integer(oldSampleID)});
-			query = "SELECT record_ID, record_type FROM record_all_view WHERE sample_id = ?";
-			ResultSet rs2 = conn.executeQuery(query, new int[] {Types.NUMERIC}, new Object[] {new Integer(oldSampleID)});
-			Statement ps2 = conn.preservePreparedStatement();
-			while (rs2.next()) {
-				int oldRecordID = rs2.getInt(1);
-				String recordType = rs2.getString(2);
-				qd = new QueryDescriptor("audit_table");
-				qd.addQueryColumn("status", Types.VARCHAR, Audit.STATUS_WORKING);
-				qd.addQueryColumn("created_by_id", Types.NUMERIC, new Integer(userID));
-				qd.addQueryColumn("created_date", Types.DATE, java.sql.Date.valueOf(FREDUtils.getNowForSQL()));
-				qd.addQueryColumn("working_folder_id", Types.NUMERIC, new Integer(folderID));
-				qd.addQueryColumn("security_class_id", Types.NUMERIC, new Integer(4));
-				String recordAuditID = DBUtils.doInsertUsingSequence(qd, "audit_id", "audit_seq", conn, true);
-				seqRst = conn.executeQuery("SELECT Record_Seq.NEXTVAL FROM DUAL");
-				seqRst.next();
-				int recordID = seqRst.getInt(1);
-				query = "INSERT INTO record (record_id, sample_id, audit_id) VALUES (?, ?, ?)";
-				conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(recordID), new Integer(sampleID), new Integer(recordAuditID)});
-				if (recordType.equals(Record.ADOPTION_RECORD)) {
-					query = "INSERT INTO adoption (record_id, adoption_date, date_rounding, adopted_stage_id, comments) SELECT ? AS recid, adoption_date, date_rounding, adopted_stage_id, comments FROM adoption WHERE record_id = ?";
-					conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(recordID), new Integer(oldRecordID)});
-					query = "INSERT INTO adoptor (record_id, person_id) SELECT ? AS recid, person_id FROM adoptor WHERE record_id = ?";
-					conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(recordID), new Integer(oldRecordID)});
-				} else if (recordType.equals(Record.PALEONTOLOGY_RECORD)) {
-					query = "INSERT INTO paleontology (record_id, identification_date, date_rounding, stage_id, stage_comments, lab_section_id, lab_number, collection_comments) SELECT ? AS recid, identification_date, date_rounding, stage_id, stage_comments, lab_section_id, lab_number, collection_comments FROM paleontology WHERE record_id = ?";
-					conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(recordID), new Integer(oldRecordID)});
-					query = "INSERT INTO identifier (record_id, person_id) SELECT ? AS recid, person_id FROM identifier WHERE record_id = ?";
-					conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(recordID), new Integer(oldRecordID)});
-					query = "INSERT INTO pal_list (pal_list_id, record_id, group_id, taxa_id, taxonomic_name, specimen_count, specimen_coords, comments) SELECT pal_list_seq.NEXTVAL AS palID, ? AS recid, group_id, taxa_id, taxonomic_name, specimen_count, specimen_coords, comments FROM pal_list WHERE record_id = ";
-					conn.executeUpdate(query, new int[] {Types.NUMERIC, Types.NUMERIC}, new Object[] {new Integer(recordID), new Integer(oldRecordID)});
-				}
-			}
-			ps2.close();
-		}
-		conn.releaseStatement();
-		ps1.close();	
-	*/	
 	}
 
 	public Sample cloneSample(Feature newFeature, Sample sample) throws StorageAccessException, IntrospectionException {
@@ -275,7 +171,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return newSample;
 	}
 
-	public void deleteRemoveFeatures(String[] featIDs, UserFolder folder, UserAccount user) {
+	public void deleteRemoveFeatures(String[] featIDs, UserFolder folder, User user) {
 		boolean errFlag = false;
 		for (int i = 0; i < featIDs.length; i++) {
 			try {
@@ -292,12 +188,12 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			throw new IllegalStateException("An error has occured. Not all localities have been removed/deleted");
 	}
 	
-	public void deleteFeature(Feature feature, UserAccount user) throws InsufficientPrivelegesException, StorageAccessException {
+	public void deleteFeature(Feature feature, User user) throws InsufficientPrivelegesException, StorageAccessException {
 		Folder folder = feature.getAudit().getFolder();
 		if (folder == null)
 			folder = feature.getMasterFile();
 		
-		UserFolder userFolder = folderUtil.getUserFolder(folder.getFolderId(), Integer.parseInt(user.getId()));
+		UserFolder userFolder = folderUtil.getUserFolder(folder.getFolderId(), user.getId().intValue());
 		
 		if (!userFolder.isAllowedDeleteLocalities())
 			throw new InsufficientPrivelegesException();
@@ -314,7 +210,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		fredDAO.delete(feature);
 	}
 	
-	public void removeFeature(Feature feature, UserFolder userFolder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+	public void removeFeature(Feature feature, UserFolder userFolder, User user) throws StorageAccessException, InsufficientPrivelegesException {
 		if (!feature.getAudit().getStatus().equals(FREDConstants.APPROVED))
 			throw new IllegalStateException("Cannot remove a working locality");
 		if (!userFolder.isAllowedDeleteLocalities())
@@ -326,13 +222,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		fredDAO.saveOrUpdate(feature);
 	}
 	
-	public void submitFeatures(String[] featIds, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, DataInputException {
+	public void submitFeatures(String[] featIds, UserFolder folder, User user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, DataInputException {
 		for (int i = 0; i < featIds.length; i++) {
 			submitFeature(getFeature(Integer.parseInt(featIds[i])), folder, user);
 		}
 	}
 	
-	public void submitFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
+	public void submitFeature(Feature feature, UserFolder folder, User user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
 		if (!isAllowedSubmitFeature(user, feature, folder))
 			throw new InsufficientPrivelegesException();
 		if (feature.getFeatureType() == null || feature.getRegistrationArea() == null
@@ -356,21 +252,20 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		
 		Audit audit = feature.getAudit();
 		audit.setStatus(FREDConstants.WAITING);
-		audit.setSubmittedById(new Integer(user.getId()));
-		audit.setSubmittedDate(new Date());
-		
+		audit.setSubmittedById(user.getId().intValue());
+		audit.setSubmittedDate(new Date());		
 		feature.setMasterFile(fredDAO.get(masterfileId, nz.cri.gns.fred.hibernate.Folder.class));
 		fredDAO.saveOrUpdate(audit);
 		fredDAO.saveOrUpdate(feature);		
 	}
 	
-	public void revokeFeatures(String[] featIds, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException { 
+	public void revokeFeatures(String[] featIds, UserFolder folder, User user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException { 
 		for (int i = 0; i < featIds.length; i++) {
 			revokeFeature(getFeature(Integer.parseInt(featIds[i])), folder, user);
 		}
 	}
 
-	public void revokeFeature(Feature feature, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+	public void revokeFeature(Feature feature, UserFolder folder, User user) throws StorageAccessException, InsufficientPrivelegesException {
 		if (!isAllowedRevokeFeature(user, feature, folder))
 			throw new InsufficientPrivelegesException();
 
@@ -385,13 +280,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		fredDAO.saveOrUpdate(feature);		
 	}
 
-	public void alterFeatureTypes(String[] featIDs, String newFeatureType, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
+	public void alterFeatureTypes(String[] featIDs, String newFeatureType, UserFolder folder, User user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
 		for (int i = 0; i < featIDs.length; i++) {
 			alterFeatureType(getFeature(Integer.parseInt(featIDs[i])), newFeatureType, folder, user);
 		}
 	}
 	
-	public void alterFeatureType(Feature feature, String newFeatureType, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
+	public void alterFeatureType(Feature feature, String newFeatureType, UserFolder folder, User user) throws StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
 		if (!folder.isAllowedEditLocalities())
 			throw new InsufficientPrivelegesException();
 		if (feature.getAudit().getStatus().equals(FREDConstants.WAITING))
@@ -434,7 +329,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			}
 			AuditEdit edit = fredDAO.createNewAuditEdit();
 			edit.setAudit(feature.getAudit());
-			edit.setEditedById(Integer.parseInt(user.getId()));
+			edit.setEditedById(user.getId().intValue());
 			edit.setEditedDate(new Date());
 			edit.setComments("Locality type changed from " + oldFeatureType + " to " + newFeatureType);
 			fredDAO.saveOrUpdate(edit);
@@ -450,13 +345,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		}
 	}
 	
-	public void mergeFeatures(Feature mergeToFeature, String[] mergeFeatIDs, UserFolder folder, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, NumberFormatException, IntrospectionException {
+	public void mergeFeatures(Feature mergeToFeature, String[] mergeFeatIDs, UserFolder folder, User user) throws StorageAccessException, InsufficientPrivelegesException, NumberFormatException, IntrospectionException {
 		for (int i = 0; i < mergeFeatIDs.length; i++) {
 			mergeFeature(mergeToFeature, getFeature(Integer.parseInt(mergeFeatIDs[i])), folder, user);
 		}
 	}
 		
-	public void mergeFeature(Feature mergeToFeature, Feature mergeFromFeature, UserFolder folder, UserAccount user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
+	public void mergeFeature(Feature mergeToFeature, Feature mergeFromFeature, UserFolder folder, User user) throws NumberFormatException, StorageAccessException, InsufficientPrivelegesException, IntrospectionException {
 		if (!folder.isAllowedEditLocalities())
 			throw new InsufficientPrivelegesException();
 		if (!mergeFromFeature.equals(mergeToFeature)) {
@@ -481,7 +376,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 				//add comments
 				AuditEdit edit = fredDAO.createNewAuditEdit();
 				edit.setAudit(sample.getAudit());
-				edit.setEditedById(new Integer(user.getId()));
+				edit.setEditedById(user.getId().intValue());
 				edit.setEditedDate(new Date());
 				edit.setComments("Sample merged into " + getFeatureIdentifyingName(mergeToFeature) + " from " + getFeatureIdentifyingName(mergeFromFeature));
 				fredDAO.saveOrUpdate(edit);
@@ -672,7 +567,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 * Returns true if a user is allowed to view the locality
 	 * always true if user != null && status == approved
 	 */
-	public boolean isAllowedReadFeature(UserAccount user, Feature feature) throws StorageAccessException {
+	public boolean isAllowedReadFeature(User user, Feature feature) throws StorageAccessException {
 		if (user == null)
 			return false;
 		String status = feature.getAudit().getStatus();
@@ -680,7 +575,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			UserFolder folder = new FolderUtil(factory).getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), user);
 			UserFolder mfFolder = null;
 			if (feature.getMasterFile() != null)
-				mfFolder = folderUtil.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
+				mfFolder = folderUtil.getUserFolder(feature.getMasterFile().getFolderId().intValue(), user.getId().intValue());
 			return ((folder != null && folder.isAllowedReadLocalities()) || (mfFolder != null && mfFolder.isAllowedReadLocalities()));
 		}
 		return true;
@@ -690,21 +585,21 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 * Returns true if a user is allowed to view the locality site information
 	 * always true if status == approved
 	 */
-	public boolean isAllowedReadFeatureSite(UserAccount user, Feature feature) throws StorageAccessException {
+	public boolean isAllowedReadFeatureSite(User user, Feature feature) throws StorageAccessException {
 		String status = feature.getAudit().getStatus();
 		if (!status.equals(FREDConstants.APPROVED)) {
 			if (user == null)
 				return false;
-			UserFolder folder = folderUtil.getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), Integer.parseInt(user.getId()));
+			UserFolder folder = folderUtil.getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), user.getId().intValue());
 			UserFolder mfFolder = null;
 			if (feature.getMasterFile() != null)
-				mfFolder = folderUtil.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
+				mfFolder = folderUtil.getUserFolder(feature.getMasterFile().getFolderId().intValue(), user.getId().intValue());
 			return ((folder != null && folder.isAllowedReadLocalities()) || (mfFolder != null && mfFolder.isAllowedReadLocalities()));
 		}
 		return true;
 	}
 	
-	public boolean isAllowedEditFeature(UserAccount user, Feature feature, UserFolder folder) throws StorageAccessException {
+	public boolean isAllowedEditFeature(User user, Feature feature, UserFolder folder) throws StorageAccessException {
 		String status = feature.getAudit().getStatus();
 		if (status.equals(FREDConstants.APPROVED))
 			return hasMasterfileRights(user, feature, UserFolder.FOLDER_EDIT_RIGHT) || FREDUtil.checkEditSecurityClass(user);
@@ -715,26 +610,26 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return folder.isAllowedEditLocalities();
 	}
 
-	public boolean isAllowedEditApprovedFeature(UserAccount user, Feature feature) throws StorageAccessException {
+	public boolean isAllowedEditApprovedFeature(User user, Feature feature) throws StorageAccessException {
 		if (!feature.getAudit().getStatus().equals(FREDConstants.APPROVED))
 			return false;
 		return hasMasterfileRights(user, feature, UserFolder.FOLDER_EDIT_RIGHT);
 	}
 	
-	public boolean isAllowedSubmitFeature(UserAccount user, Feature feature, UserFolder folder) {
+	public boolean isAllowedSubmitFeature(User user, Feature feature, UserFolder folder) {
 		String status = feature.getAudit().getStatus();
 		if (status.equals(FREDConstants.WAITING) || status.equals(FREDConstants.APPROVED))
 			return false;
 		return folder.isAllowedSubmitLocalities();
 	}
 	
-	public boolean isAllowedRevokeFeature(UserAccount user, Feature feature, UserFolder folder) {
+	public boolean isAllowedRevokeFeature(User user, Feature feature, UserFolder folder) {
 		if (!feature.getAudit().getStatus().equals(FREDConstants.WAITING))
 			return false;
 		return folder.isAllowedSubmitLocalities();		
 	}
 	
-	public boolean isAllowedDeleteFeature(UserAccount user, Feature feature, UserFolder userFolder) throws StorageAccessException {
+	public boolean isAllowedDeleteFeature(User user, Feature feature, UserFolder userFolder) throws StorageAccessException {
 		Audit audit = feature.getAudit();
 		if (audit.getStatus().equals(APPROVED))
 			return false;
@@ -747,9 +642,9 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	/**
 	 * Returns true is the user is allowed to approve the locality
 	 */
-	public boolean isAllowedApproveFeature(UserAccount user, Feature feature) throws StorageAccessException {
+	public boolean isAllowedApproveFeature(User user, Feature feature) throws StorageAccessException {
 		if (WAITING.equals(feature.getAudit().getStatus())) {
-			UserFolder folder = folderUtil.getUserFolder(feature.getMasterFile().getFolderId().intValue(), Integer.parseInt(user.getId()));
+			UserFolder folder = folderUtil.getUserFolder(feature.getMasterFile().getFolderId().intValue(), user.getId().intValue());
 			if (folder != null)
 				return folder.isAllowedApproveLocalities();
 		}
@@ -761,16 +656,16 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 * @throws StorageAccessException
 	 * @throws 
 	 */
-	public boolean hasMasterfileRights(UserAccount user, Feature feature, int right) throws StorageAccessException {
+	public boolean hasMasterfileRights(User user, Feature feature, int right) throws StorageAccessException {
 		return hasMasterfileRights(user, feature, right, fredDAO);
 	}
 	
-	public boolean hasMasterfileRights(UserAccount user, Feature feature, int right, FredDAO fredDAO) throws NumberFormatException, StorageAccessException {
+	public boolean hasMasterfileRights(User user, Feature feature, int right, FredDAO fredDAO) throws NumberFormatException, StorageAccessException {
 		Folder masterfile = feature.getMasterFile();
 		if (masterfile == null)
 			return false;
 		
-		UserFolder masterfileFolder = folderUtil.getUserFolder(masterfile.getFolderId().intValue(), Integer.parseInt(user.getId()));
+		UserFolder masterfileFolder = folderUtil.getUserFolder(masterfile.getFolderId().intValue(), user.getId().intValue());
 		
 		return (masterfileFolder == null) ? false : (masterfileFolder.getRights() & right) > 0;
 	}
@@ -782,7 +677,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return new Vector<Sample>(feature.getSamples()).get(0);
 	}
 	
-	public void approveFeature(Feature feature, String mapSheet, Integer serialNumber, String recollectionNumber, String comments, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
+	public void approveFeature(Feature feature, String mapSheet, Integer serialNumber, String recollectionNumber, String comments, User user) throws StorageAccessException, InsufficientPrivelegesException, DataInputException {
 		if (!hasMasterfileRights(user, feature, UserFolder.FOLDER_APPROVE_RIGHT))
 			throw new InsufficientPrivelegesException();
 		
@@ -806,7 +701,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		
 		//update audit table
 		audit.setStatus(APPROVED);
-		audit.setApprovedById(new Integer(user.getId()));
+		audit.setApprovedById(user.getId().intValue());
 		audit.setApprovedDate(new Date());
 		audit.setFolder(null);
 		audit.setWorkingComments(null);
@@ -823,7 +718,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 * @throws NamingException 
 	 * @throws SQLException 
 	 */
-	public void approveBacklogFeature(Feature feature, UserAccount user) throws InsufficientPrivelegesException, StorageAccessException, SQLException, NamingException {
+	public void approveBacklogFeature(Feature feature, User user) throws InsufficientPrivelegesException, StorageAccessException, SQLException, NamingException {
 		//Put it back in the correct folder
 		if (!hasMasterfileRights(user, feature, UserFolder.FOLDER_APPROVE_RIGHT))
 			throw new InsufficientPrivelegesException();
@@ -832,7 +727,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		audit.setFolder(null);
 		audit.setWorkingComments(null);
 		audit.setStatus(APPROVED);
-		audit.setApprovedById(new Integer(user.getId()));
+		audit.setApprovedById(user.getId().intValue());
 		audit.setApprovedDate(new Date());
 		audit.setSubmittedById(null);
 		audit.setSubmittedDate(null);
@@ -852,7 +747,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		fredDAO.saveOrUpdate(feature);
 	}
 	
-	public void rejectLocality(Feature feature, String comments, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+	public void rejectLocality(Feature feature, String comments, User user) throws StorageAccessException, InsufficientPrivelegesException {
 		if (!hasMasterfileRights(user, feature, UserFolder.FOLDER_APPROVE_RIGHT))
 			throw new InsufficientPrivelegesException();
 		
@@ -862,7 +757,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		fredDAO.saveOrUpdate(audit);
 	}
 	
-	public void addToFolder(Feature feature, int folderId, UserAccount user) throws StorageAccessException, DataInputException {
+	public void addToFolder(Feature feature, int folderId, User user) throws StorageAccessException, DataInputException {
 		if (!feature.getAudit().getStatus().equals(APPROVED))
 			throw new DataInputException("Folder", "Cannot add a working locality");
 		
@@ -908,7 +803,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 * storage.
 	 * @throws StorageAccessException 
 	 */
-	public Feature createFeature(int folderId, String featureType, UserAccount user) throws StorageAccessException {
+	public Feature createFeature(int folderId, String featureType, User user) throws StorageAccessException {
 		if (!(featureType.equals(FREDConstants.OUTCROP) 
 				|| featureType.equals(FREDConstants.DRILLHOLE) || featureType.equals(FREDConstants.VERTICAL_SECTION))) 
 			throw new IllegalArgumentException("Invalid feature type given: " + featureType);
@@ -918,7 +813,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		audit.setFolder(fredDAO.get(folderId, nz.cri.gns.fred.hibernate.Folder.class));
 		audit.setStatus(FREDConstants.WORKING);
 		audit.setCreatedDate(new Date());
-		audit.setCreatedById(new Integer(user.getId()));
+		audit.setCreatedById(user.getId().intValue());
 		feature.setAudit(audit);
 		return feature;
 	}
@@ -1055,7 +950,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		return null;
 	}
 
-	public void addSample(Feature feature, String topDepthAsString, String bottomDepthAsString, String drillTypeIdAsString, int folderId, UserAccount user) throws StorageAccessException, DataInputException {
+	public void addSample(Feature feature, String topDepthAsString, String bottomDepthAsString, 
+            String drillTypeIdAsString, int folderId, User user) throws StorageAccessException, DataInputException {
 		if (feature.getFeatureType().equals(OUTCROP))
 			throw new DataInputException("Sample", "Cannot add samples to an outcrop");
 		
@@ -1120,21 +1016,21 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 		if (feature.getFeatureId() == null) {
 			//New feature
 			audit.setStatus(FREDConstants.WORKING);
-			audit.setCreatedById(user.getPersonId());
+			audit.setCreatedById(user.getId().intValue());
 			audit.setCreatedDate(new Date());
 			audit.setDataOrigin((new AuditUtil(factory)).getDataOrigin(new Integer(dataOriginId)));
 		} else if (FeatureUtil.isBacklogFeature(feature)) {
 			//Backlog editing feature
 			AuditEdit edit = fredDAO.createNewAuditEdit();
 			edit.setAudit(audit);
-			edit.setEditedById(user.getPersonId());
+			edit.setEditedById(user.getId().intValue());
 			edit.setEditedDate(new Date());
 			edit.setComments("Backlog data editing");
 			fredDAO.saveOrUpdate(edit);
 		} else if (audit.getStatus().equals(FREDConstants.APPROVED)) {
 			AuditEdit edit = fredDAO.createNewAuditEdit();
 			edit.setAudit(audit);
-			edit.setEditedById(user.getPersonId());
+			edit.setEditedById(user.getId().intValue());
 			edit.setEditedDate(new Date());
 			edit.setComments(comments);
 			fredDAO.saveOrUpdate(edit);
@@ -1210,7 +1106,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 	 * Backlog method
 	 * @throws StorageAccessException 
 	 */
-	public void addToBacklog(UserFolder folderToAddTo, String mapSheet, int start, int end, UserFolder masterFile, UserAccount user) throws StorageAccessException {
+	public void addToBacklog(UserFolder folderToAddTo, String mapSheet, int start, int end, UserFolder masterFile, User user) throws StorageAccessException {
 		if (!masterFile.isAllowedReadLocalities())
 			return;
 		List<FrNumber> numbers = getFrNumbers(mapSheet.toUpperCase(), start, end);
@@ -1227,7 +1123,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
 			audit.setStatus(WORKING);
 			AuditEdit edit = fredDAO.createNewAuditEdit();
 			edit.setAudit(audit);
-			edit.setEditedById(new Integer(user.getId()));
+			edit.setEditedById(user.getId().intValue());
 			edit.setEditedDate(new Date());
 			edit.setComments(BACKLOG_PREPARE_COMMENTS);
 			fredDAO.saveOrUpdate(edit);

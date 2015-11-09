@@ -13,9 +13,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sf.hibernate.expression.Criterion;
 import net.sf.hibernate.expression.Expression;
-import nz.cri.gns.auth.InsufficientPrivelegesException;
-import nz.cri.gns.auth.User;
-import nz.cri.gns.auth.UserAccount;
+import nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException;
+import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.Match;
@@ -53,8 +52,8 @@ public class TaxonomicUtil extends ModelUtil {
 		return fredDAO.get(taxonId, nz.cri.gns.fred.hibernate.TaxonomicLookup.class);
 	}
 	
-	public List<TaxonomicGroup> getTaxonomicGroupsIsPanelistOf(UserAccount user) throws StorageAccessException {
-		FrUserView frUser = fredDAO.get(new Integer(user.getId()), nz.cri.gns.fred.hibernate.FrUserView.class);
+	public List<TaxonomicGroup> getTaxonomicGroupsIsPanelistOf(User user) throws StorageAccessException {
+		FrUserView frUser = fredDAO.get(user.getId().intValue(), nz.cri.gns.fred.hibernate.FrUserView.class);
 		List<TaxonomicGroup> groups = new Vector<TaxonomicGroup>();
 		for (TaxonomicGroup group : frUser.getTaxonomicGroups())
 			groups.add(group);
@@ -62,8 +61,8 @@ public class TaxonomicUtil extends ModelUtil {
 		return groups;
 	}
 	
-	public boolean isUserPanelistOf(TaxonomicGroup group, UserAccount user) throws StorageAccessException {
-		Integer userId = new Integer(user.getId());
+	public boolean isUserPanelistOf(TaxonomicGroup group, User user) throws StorageAccessException {
+		Integer userId = new Integer(user.getId().intValue());
 		for (FrUserView frUser : group.getPanelists()) {
 			if (frUser.getUserId().equals(userId))
 				return true;
@@ -81,30 +80,30 @@ public class TaxonomicUtil extends ModelUtil {
 		fredDAO.saveOrUpdate(group);
 	}
 	
-	public Taxon approveTaxon(Taxon taxon, UserAccount user, String comments) throws StorageAccessException, InsufficientPrivelegesException {
+	public Taxon approveTaxon(Taxon taxon, User user, String comments) throws StorageAccessException, InsufficientPrivelegesException {
 		return approveRejectObsoleteTaxon(taxon, user, FREDConstants.APPROVED, comments);
 	}
 
-	public Taxon rejectTaxon(Taxon taxon, UserAccount user, String comments) throws StorageAccessException, InsufficientPrivelegesException {
+	public Taxon rejectTaxon(Taxon taxon, User user, String comments) throws StorageAccessException, InsufficientPrivelegesException {
 		return approveRejectObsoleteTaxon(taxon, user, FREDConstants.REJECTED, comments);
 	}
 	
-	public Taxon obsoleteTaxon(Taxon taxon, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+	public Taxon obsoleteTaxon(Taxon taxon, User user) throws StorageAccessException, InsufficientPrivelegesException {
 		return approveRejectObsoleteTaxon(taxon, user, FREDConstants.OBSOLETE, taxon.getPanelistComments());
 	}
 	
-	private Taxon approveRejectObsoleteTaxon(Taxon taxon, UserAccount user, String status, String comments) throws InsufficientPrivelegesException, StorageAccessException {
+	private Taxon approveRejectObsoleteTaxon(Taxon taxon, User user, String status, String comments) throws InsufficientPrivelegesException, StorageAccessException {
 		if (!isUserPanelistOf(taxon.getTaxonomicGroup(), user))
 			throw new InsufficientPrivelegesException();
 		taxon.setStatus(status);
-		taxon.setApprovedById(new Integer(user.getId()));
+		taxon.setApprovedById(user.getId().intValue());
 		taxon.setApprovedDate(new Date());
 		taxon.setPanelistComments(comments);
 		fredDAO.saveOrUpdate(taxon);
 		return taxon;		
 	}
 
-	public void deleteTaxon(Taxon taxon, UserAccount user) throws StorageAccessException, InsufficientPrivelegesException {
+	public void deleteTaxon(Taxon taxon, User user) throws StorageAccessException, InsufficientPrivelegesException {
 		if (!isUserPanelistOf(taxon.getTaxonomicGroup(), user))
 			throw new InsufficientPrivelegesException();
 		if (!FREDUtil.isEmpty(taxon.getListEntries()))
@@ -299,7 +298,7 @@ public class TaxonomicUtil extends ModelUtil {
 
 	public void submitProvisional(User user, Taxon taxon) throws StorageAccessException {
 		taxon.setStatus(FREDConstants.PROVISIONAL);
-		taxon.setSubmittedById(new Integer(user.getId()));
+		taxon.setSubmittedById(user.getId().intValue());
 		taxon.setSubmittedDate(new Date());
 		try {
 			taxon = ensureCompatibleWithPersistenceLayer(taxon);

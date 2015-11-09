@@ -10,12 +10,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import nz.cri.gns.auth.domain.User;
 
-import nz.cri.gns.auth.UserAccount;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.dao.DAOFactory;
@@ -147,13 +146,13 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		return edits;
 	}
 	
-	public boolean isAllowedReadApproved(Audit audit, UserAccount user) throws NumberFormatException, StorageAccessException {
+	public boolean isAllowedReadApproved(Audit audit, User user) throws NumberFormatException, StorageAccessException {
 		if (user == null || audit == null)
 			return false;
 		if (!FREDConstants.APPROVED.equals(audit.getStatus()))
 			return false;
 		if (audit.getConfidentialFlag()) {
-			FrUserView frUser = new UserUtil(factory).getFrUserView(Integer.parseInt(user.getId()));
+			FrUserView frUser = new UserUtil(factory).getFrUserView(user.getId().intValue());
 			OrgView userOrg = frUser.getOrgView();
 			if (audit.getCreatedBy().getUserId().equals(frUser.getUserId()))
 				return true;
@@ -216,8 +215,8 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		saveOrUpdate(audit);	
 	}
 	
-	public List<ConfidentialGroup> getConfidentialGroups(UserAccount user) throws StorageAccessException {		
-		FrUserView frUser = new UserUtil(factory).getFrUserView(new Integer(user.getId()));
+	public List<ConfidentialGroup> getConfidentialGroups(User user) throws StorageAccessException {		
+		FrUserView frUser = new UserUtil(factory).getFrUserView(user.getId().intValue());
 		return fredDAO.getList(
 				"FROM ConfidentialGroup c " +
 				"WHERE SIZE(c.users) = 0 " +
@@ -229,17 +228,17 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		return fredDAO.get(groupId, nz.cri.gns.fred.hibernate.ConfidentialGroup.class);
 	}
 	
-	public ConfidentialGroup addConfidentialGroup(String name, UserAccount user)  throws StorageAccessException {
+	public ConfidentialGroup addConfidentialGroup(String name, User user)  throws StorageAccessException {
 	    ConfidentialGroup group = fredDAO.createNewConfidentialGroup();
 	    group.setName(name);
 	    Set<FrUserView> owners = new HashSet<FrUserView>();
-	    owners.add(new UserUtil(factory).getFrUserView(new Integer(user.getId())));
+	    owners.add(new UserUtil(factory).getFrUserView(user.getId().intValue()));
 	    group.setOwners(owners);
 	    fredDAO.saveOrUpdate(group);
 	    return group;
 	}
 	
-	public void deleteConfidentialGroup(int groupId, UserAccount user)  throws StorageAccessException {
+	public void deleteConfidentialGroup(int groupId, User user)  throws StorageAccessException {
 		boolean isOwner = false;
 		ConfidentialGroup group = getConfidentialGroup(new Integer(groupId));
 		for (FrUserView owner : group.getOwners()){
@@ -274,7 +273,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	 * @throws HibernateException 
 	 * @throws SQLException 
 	 */
-	public List<Sample> getConfidentialSamples(UserAccount user, Date lapseDate) throws StorageAccessException {
+	public List<Sample> getConfidentialSamples(User user, Date lapseDate) throws StorageAccessException {
 		if (lapseDate == null)
 			return getConfidentialSamples(user);
 		
@@ -297,8 +296,8 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	 * @throws HibernateException 
 	 * @throws SQLException 
 	 */
-	public List<Sample> getConfidentialSamples(UserAccount user) throws StorageAccessException {
-		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
+	public List<Sample> getConfidentialSamples(User user) throws StorageAccessException {
+		UserView userView = new UserUtil(factory).getUserView(user.getId().intValue());
 		return fredDAO.getList("FROM Sample AS s WHERE s.feature.featureType <> ? AND s.audit.confidentialFlag = ? AND s.audit.createdBy = ?", Sample.class, FREDConstants.OUTCROP, true, userView);
 	}
 		
@@ -314,7 +313,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	 * @throws HibernateException 
 	 * @throws SQLException 
 	 */
-	public List<Paleontology> getConfidentialPaleontologyRecords(UserAccount user, Date lapseDate) throws StorageAccessException {
+	public List<Paleontology> getConfidentialPaleontologyRecords(User user, Date lapseDate) throws StorageAccessException {
 		if (lapseDate == null)
 			return getConfidentialPaleontologyRecords(user);
 		
@@ -336,8 +335,8 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	 * @throws HibernateException 
 	 * @throws SQLException 
 	 */
-	public List<Paleontology> getConfidentialPaleontologyRecords(UserAccount user) throws StorageAccessException {
-		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
+	public List<Paleontology> getConfidentialPaleontologyRecords(User user) throws StorageAccessException {
+		UserView userView = new UserUtil(factory).getUserView(user.getId().intValue());
 		return fredDAO.getList("FROM Paleontology AS p WHERE p.record.audit.confidentialFlag = ? AND p.record.audit.createdBy = ?", Paleontology.class, true, userView);
 	}
 
@@ -353,7 +352,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	 * @throws HibernateException 
 	 * @throws SQLException 
 	 */
-	public List<Paleontology> getConfidentialPalLists(UserAccount user, Date lapseDate) throws StorageAccessException {
+	public List<Paleontology> getConfidentialPalLists(User user, Date lapseDate) throws StorageAccessException {
 		if (lapseDate == null)
 			return getConfidentialPalLists(user);
 		
@@ -375,8 +374,8 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	 * @throws HibernateException 
 	 * @throws SQLException 
 	 */
-	public List<Paleontology> getConfidentialPalLists(UserAccount user) throws StorageAccessException {
-		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));	
+	public List<Paleontology> getConfidentialPalLists(User user) throws StorageAccessException {
+		UserView userView = new UserUtil(factory).getUserView(user.getId().intValue());	
 		return fredDAO.getList("FROM Paleontology AS p WHERE p.record.palListAudit.confidentialFlag = ? AND p.record.palListAudit.createdBy = ?", Paleontology.class, true, userView);
 	}
 
@@ -391,7 +390,7 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	 * @throws HibernateException 
 	 * @throws SQLException 
 	 */
-	public List<Adoption> getConfidentialAdoptionRecords(UserAccount user, Date lapseDate) throws StorageAccessException {
+	public List<Adoption> getConfidentialAdoptionRecords(User user, Date lapseDate) throws StorageAccessException {
 		if (lapseDate == null)
 			return getConfidentialAdoptionRecords(user);
 		
@@ -413,8 +412,8 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 	 * @throws HibernateException 
 	 * @throws SQLException 
 	 */
-	public List<Adoption> getConfidentialAdoptionRecords(UserAccount user) throws StorageAccessException {
-		UserView userView = new UserUtil(factory).getUserView(new Integer(user.getId()));
+	public List<Adoption> getConfidentialAdoptionRecords(User user) throws StorageAccessException {
+		UserView userView = new UserUtil(factory).getUserView(user.getId().intValue());
 		return fredDAO.getList("FROM Adoption AS a WHERE a.record.audit.confidentialFlag = ? AND a.record.audit.createdBy = ?", Adoption.class, true, userView);
 	}
 	
@@ -440,12 +439,12 @@ public class AuditUtil extends ModelUtil implements FREDConstants, AuditedUtil {
 		return sb.toString();
 	}
 	
-	public void addLogEntry(String type, UserAccount user, Integer localityCount) throws StorageAccessException {
+	public void addLogEntry(String type, User user, Integer localityCount) throws StorageAccessException {
 		LogTable log = fredDAO.createNewLog();
 		log.setLogDate(new Date());
 		log.setLogType(type);
 		if (user != null)
-			log.setUserId(new Integer(user.getId()));
+			log.setUserId(user.getId().intValue());
 		log.setLocalityCount(localityCount);
 		fredDAO.saveOrUpdate(log);
 	}

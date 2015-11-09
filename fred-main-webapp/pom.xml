@@ -68,7 +68,7 @@
         <dependency>
             <groupId>nz.cri.gns.online-servlet</groupId>
             <artifactId>online-servlet-core</artifactId>
-            <version>3.0.8.350</version>
+            <version>upgrade15</version>
         </dependency>
         <dependency>
             <groupId>net.sf.ehcache</groupId>
@@ -138,6 +138,12 @@
             <artifactId>jts</artifactId>
             <version>1.10</version>
             <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>nz.cri.gns.staffservice</groupId>
+            <artifactId>auth</artifactId>
+            <version>1.0.0</version>
+            <classifier>classes</classifier>
         </dependency>
     </dependencies>
     <profiles>
