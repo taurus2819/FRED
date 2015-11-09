@@ -18,7 +18,6 @@
         %><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
         %><%@page import="nz.cri.gns.jsp.JspUtils"
         %><%@page import="nz.cri.gns.jsp.PageState"
-        %><%@page import="nz.cri.gns.intranet.DBConnection"
         %><%@page import="java.sql.Connection"
         %><%@page import="java.sql.ResultSet"
         %><%@page import="java.sql.Statement"

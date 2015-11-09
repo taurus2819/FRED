@@ -27,28 +27,21 @@ import org.xml.sax.SAXException;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
-import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.export.MolluscanAgeValidator;
-import nz.cri.gns.fred.export.MolluscaExport;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
-import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Sample;
-import nz.cri.gns.fred.util.FREDUtil;
-import nz.cri.gns.fred.util.SiteUtil;
-import nz.cri.gns.fred.util.StageUtil;
-import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.util.NullOutputStream;
 
 public class SampleNameReport {
+
     private int featureCount = 0;
-    
+
     public SampleNameReport() {
-  
+
     }
-    
+
     /**
      * @param args
      * @throws IOException
@@ -64,46 +57,44 @@ public class SampleNameReport {
     public static void main(String[] args) throws IOException, NamingException, StorageAccessException, ClassNotFoundException, NotBoundException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException {
         String s = "Commencing";
         try {
-                SampleNameReport report = new SampleNameReport();
-                if (args.length==2) {
-                    report.report(args[0], args[1], null);
-                } else {
-                    report.report(args[0], args[1], args[2]);
-                }
+            SampleNameReport report = new SampleNameReport();
+            if (args.length == 5) {
+                report.report(args[0], args[1], args[2], args[3], args[4], null);
+            } else {
+                report.report(args[0], args[1], args[2], args[3], args[4], args[5]);
+            }
         } catch (Exception ex) {
+            System.out.println("Usage: new SampleReport( <Oracle SID> <DB username> <DB password> <input-file> [<output-dir>])");
             ex.printStackTrace();
         }
-                
+
     }
-    
-    public void report(String infilename, String outdirname, String donefilename)
+
+    public void report(String sid, String user, String password, String infilename, String outdirname, String donefilename)
             throws IOException, NamingException, StorageAccessException, ClassNotFoundException, NotBoundException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException {
-        if (infilename== null || outdirname==null) {
-            System.out.println("Usage: new SampleReport( <input-file> [<output-dir>])");
-        }
 
         File outDir = new File(outdirname);
 
         //Connect!
-        setupJNDI();
-        
+        setupJNDI(sid, user, password);
+
         //Collect all the features
         System.out.println("Reading inputs");
         Iterable<Integer> candidates = parseInputIdFile(infilename);
         Vector<Sample> samples = new Vector<Sample>(1024);
-        
+
         FredDAO dao = FredHibernate.get().getDAOFactory().getFredDAO();
         DAOFactory factory = FredHibernate.get().getDAOFactory();
         SampleUtil util = new SampleUtil(factory);
-        
+
         PrintWriter writer = new PrintWriter(new FileWriter(new File(outDir, "samplenames.txt")));
 
-        int count=0;
+        int count = 0;
         System.out.println("Gathering data");
         for (Integer id : candidates) {
             count++;
             try {
-               
+
                 Sample sample = util.getSample(id.intValue());
                 if (sample == null) {
                     continue;
@@ -112,9 +103,9 @@ public class SampleNameReport {
                 writer.write(',');
                 writer.write(sample.toString());
                 writer.write("\r\n");
-                
-                if (count % 1000==0) {
-                   System.out.println(count+"...");
+
+                if (count % 1000 == 0) {
+                    System.out.println(count + "...");
                 }
             } catch (Exception ex) {
                 System.out.println("skipping" + id);
@@ -126,10 +117,10 @@ public class SampleNameReport {
         System.out.println("Ferme");
     }
 
-    private void setupJNDI() throws NamingException, ClassNotFoundException, NotBoundException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
+    private void setupJNDI(String sid, String user, String password) throws NamingException, ClassNotFoundException, NotBoundException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
         try {
             JNDI.setup();
-            
+
         } catch (Exception ex) {
             if (ex instanceof IllegalStateException) {
                 if ("InitialContextFactoryBuilder already set".equals(ex.getMessage())) {
@@ -138,9 +129,9 @@ public class SampleNameReport {
                 }
             }
         }
-        
+
         InitialContext context = new InitialContext();
-        final Connection conn = DBUtils.getJavaSqlConnection("gns", "fr");
+        final Connection conn = DBUtils.getJavaSqlConnection(sid, user, password);
         FredHibernate.get().configure(conn);
         context.bind("java:comp/env/jdbc/fr", new DataSource() {
 
@@ -194,7 +185,7 @@ public class SampleNameReport {
         while ((line = br.readLine()) != null) {
             featureCount++;
             ids.add(Integer.valueOf(line));
-            
+
         }
         return ids;
     }

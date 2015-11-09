@@ -3,10 +3,8 @@ package nz.cri.gns.fred.reports;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.rmi.NotBoundException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -24,21 +22,12 @@ import org.xml.sax.SAXException;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
-import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.export.MolluscanAgeValidator;
 import nz.cri.gns.fred.export.MolluscaExport;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FrNumber;
-import nz.cri.gns.fred.model.PaleontologyListEntry;
-import nz.cri.gns.fred.model.Record;
-import nz.cri.gns.fred.model.Sample;
-import nz.cri.gns.fred.model.Taxon;
-import nz.cri.gns.fred.util.FREDUtil;
-import nz.cri.gns.fred.util.SiteUtil;
-import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.util.NullOutputStream;
 
@@ -64,28 +53,26 @@ public class CenozoicMolluscaReport {
     public static void main(String[] args) throws IOException, NamingException, StorageAccessException, ClassNotFoundException, NotBoundException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException {
         String s = "Commencing";
         try {
-                CenozoicMolluscaReport report = new CenozoicMolluscaReport();
-                if (args.length==2) {
-                    report.report(args[0], args[1], null);
-                } else {
-                    report.report(args[0], args[1], args[2]);
-                }
+            CenozoicMolluscaReport report = new CenozoicMolluscaReport();
+            if (args.length==5) {
+                report.report(args[0], args[1], args[2], args[3], args[4], null);
+            } else {
+                report.report(args[0], args[1], args[2], args[3], args[4], args[5]);
+            }
         } catch (Exception ex) {
+            System.out.println("Usage: new CenozoicMolluscaReport( <Oracle SID> <DB username> <DB password> <input-file> <output-dir> [<done file name>] )");
             ex.printStackTrace();
         }
                 
     }
     
-    public void report(String infilename, String outdirname, String donefilename)
+    public void report(String sid, String user, String password, String infilename, String outdirname, String donefilename)
             throws IOException, NamingException, StorageAccessException, ClassNotFoundException, NotBoundException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException {
-        if (infilename== null || outdirname==null) {
-            System.out.println("Usage: new CenozoicMolluscaReport( <input-file> [<output-dir>])");
-        }
 
         File outDir = new File(outdirname);
 
         //Connect!
-        setupJNDI();
+        setupJNDI(sid, user, password);
         
         //Collect all the features
         System.out.println("Reading inputs");
@@ -142,7 +129,7 @@ public class CenozoicMolluscaReport {
         System.out.println("Ferme");
     }
 
-    private void setupJNDI() throws NamingException, ClassNotFoundException, NotBoundException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
+    private void setupJNDI(String sid, String user, String password) throws NamingException, ClassNotFoundException, NotBoundException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
         try {
             JNDI.setup();
             
@@ -156,7 +143,7 @@ public class CenozoicMolluscaReport {
         }
         
         InitialContext context = new InitialContext();
-        final Connection conn = DBUtils.getJavaSqlConnection("gns", "fr");
+        final Connection conn = DBUtils.getJavaSqlConnection(sid, user, password);
         FredHibernate.get().configure(conn);
         context.bind("java:comp/env/jdbc/fr", new DataSource() {
 

@@ -11,7 +11,7 @@
         %><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
         %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
         %><%@page import="nz.cri.gns.jsp.PageState"
-        %><%@page import="nz.cri.gns.auth.User"
+        %><%@page import="nz.cri.gns.auth.domain.User"
         %><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
         %><%@page import="nz.cri.gns.db.metadata.DocumentAttacher"
         %><%@page import="nz.cri.gns.db.metadata.MetadataRecord"
@@ -289,15 +289,7 @@
 
                     } catch (Exception ex) {
                         ex.printStackTrace();
-                    } finally {
-                        if (attacher != null) {
-                            try {
-                                FREDUtil.closeDocumentAttacherConnection();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
+                    } 
                 }
             } else {
                 out.println("<p><span class=\"subhead\">Access denied</span></p>No Items Provided.  Click <a href=\"index.jsp\" class=\"heading\">here</a> to return to the FRED home page.");

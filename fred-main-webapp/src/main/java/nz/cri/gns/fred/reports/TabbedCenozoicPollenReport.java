@@ -22,7 +22,6 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
-import nz.cri.gns.fred.export.PollenExport;
 import nz.cri.gns.fred.export.TabbedPollenExport;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.model.Feature;
@@ -46,14 +45,19 @@ public class TabbedCenozoicPollenReport {
     }
     
     
-    public static void main(String[] args)     {
-        TabbedCenozoicPollenReport report = new TabbedCenozoicPollenReport();
-        report.report();
+    public static void main(String[] args) {
+        try {
+            TabbedCenozoicPollenReport report = new TabbedCenozoicPollenReport();
+            report.report(args[0], args[1], args[2]);
+        } catch (Exception e) {
+            System.out.println("Usage: TabbedCenozoicPollenReport( <Oracle SID> <DB username> <DB password> )");
+            e.printStackTrace();            
+        }
     }
     
-    private void report() {
+    private void report(String sid, String user, String password) {
         System.out.println("Setting up jndi");
-        setupJNDI();
+        setupJNDI(sid, user, password);
         System.out.println("Reading inputs");
         Iterable<String> candidates = parseInputFile("//tmp//cenozoic-pollen-frnums.txt");
         Vector<Feature> features = new Vector<Feature>(1024);
@@ -195,7 +199,7 @@ public class TabbedCenozoicPollenReport {
         return frnums;
     }
      
-      private void setupJNDI() {
+      private void setupJNDI(String sid, String user, String password) {
         try {
             JNDI.setup();            
                   
@@ -212,7 +216,7 @@ public class TabbedCenozoicPollenReport {
         
         try {            
             InitialContext context = new InitialContext();
-            final Connection conn = DBUtils.getJavaSqlConnection("gns", "fr");
+            final Connection conn = DBUtils.getJavaSqlConnection(sid, user, password);
             FredHibernate.get().configure(conn);
             context.bind("java:comp/env/jdbc/fr", new DataSource() {
                 
