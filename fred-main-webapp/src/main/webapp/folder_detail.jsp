@@ -5,7 +5,7 @@
 %><%@page import="java.util.List"
 %><%@page import="java.util.Iterator"
 %><%@page import="java.net.URLEncoder"
-%><%@page import="nz.cri.gns.auth.User"
+%><%@page import="nz.cri.gns.auth.domain.User"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.dataaccess.StorageAccessException"
 %><%@page import="nz.cri.gns.fred.de.MandatoryFieldsMissingException"

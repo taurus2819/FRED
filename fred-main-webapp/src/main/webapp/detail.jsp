@@ -32,7 +32,7 @@
         %><%@page import="java.util.List"
         %><%@page import="java.util.Arrays"
         %><%@page import="java.util.Vector"
-        %><%@page import="nz.cri.gns.auth.User"
+        %><%@page import="nz.cri.gns.auth.domain.User"
         %><%@page import="nz.cri.gns.auth.Authenticable"
         %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
         %><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"

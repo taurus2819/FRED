@@ -25,7 +25,7 @@
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.jsp.PageState"
-%><%@page import="nz.cri.gns.auth.User"
+%><%@page import="nz.cri.gns.auth.domain.User"
 %><%!
 	public String getName(HttpServletRequest request) {
 		try {

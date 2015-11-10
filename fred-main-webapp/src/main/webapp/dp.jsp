@@ -11,7 +11,7 @@
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
-%><%@page import="nz.cri.gns.auth.InsufficientPrivelegesException"
+%><%@page import="nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException"
 %><%@page import="nz.cri.gns.dataaccess.StorageAccessException"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%!

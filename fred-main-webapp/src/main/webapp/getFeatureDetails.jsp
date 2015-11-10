@@ -4,7 +4,7 @@
 %><%@page import="java.util.Vector"
 %><%@page import="java.net.URLEncoder"
 %><%@page import="java.util.Collections"
-%><%@page import="nz.cri.gns.auth.User"
+%><%@page import="nz.cri.gns.auth.domain.User"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"

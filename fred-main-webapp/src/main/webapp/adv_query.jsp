@@ -10,7 +10,7 @@
 %><%@page import="java.util.Date"
 %><%@page import="java.util.Iterator"
 %><%@page import="java.net.URLEncoder"
-%><%@page import="nz.cri.gns.auth.Authenticable"
+%><%@page import="org.springframework.security.core.GrantedAuthority"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 %>

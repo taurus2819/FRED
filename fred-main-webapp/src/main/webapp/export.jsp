@@ -34,7 +34,7 @@
 %><%@page import="nz.cri.gns.util.map.Datum.Coordinate"
 %><%@page import="nz.cri.gns.util.map.Datum.LatLong"
 %><%@page import="nz.cri.gns.util.map.DatumFactory"
-%><%@page import="nz.cri.gns.auth.User"
+%><%@page import="nz.cri.gns.auth.domain.User"
 %><%!
 	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
 
