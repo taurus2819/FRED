@@ -1,6 +1,6 @@
 <%@page pageEncoding="utf-8"
         %><%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
-        %><%@page import="nz.cri.gns.auth.Authenticable"
+        %><%@page import="org.springframework.security.core.GrantedAuthority"
         %><%@page import="org.apache.poi.ss.usermodel.Workbook"
         %><%@page import="org.apache.poi.ss.usermodel.Sheet"
         %><%@page import="org.apache.poi.ss.usermodel.Row"
@@ -9,8 +9,9 @@
         %><%@page import="java.util.zip.ZipOutputStream"
         %><%@page import="java.io.File"
 %><%!
-    public Authenticable[] getRequiredRights(HttpServletRequest request) {
-        return new Authenticable[0];
+    @Override
+    public GrantedAuthority getRequiredRights() {
+        return null;
     }
 %><%
 

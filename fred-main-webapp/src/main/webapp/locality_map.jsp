@@ -13,7 +13,7 @@
 %><%@page import="java.net.URL"
 %><%@page import="java.net.URLEncoder"
 %><%@page import="nz.cri.gns.auth.domain.User"
-%><%@page import="nz.cri.gns.auth.Authenticable"
+%><%@page import="org.springframework.security.core.GrantedAuthority"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.fred.model.SiteView"
@@ -22,9 +22,10 @@
 %><%@page import="nz.cri.gns.fred.util.SiteUtil"
 %><%@page import="com.esri.aims.mtier.model.map.layer.renderer.symbol.SimpleMarkerSymbol"
 %><%!	
-	public Authenticable[] getRequiredRights(HttpServletRequest request) { 
-		return new Authenticable[0]; 
-	}
+        @Override
+        public GrantedAuthority getRequiredRights() {
+            return null;
+        }
 %><%!
 	public String getName(HttpServletRequest request) {
 		try {

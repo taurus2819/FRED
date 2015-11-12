@@ -3,9 +3,12 @@
 %><%@page import="nz.cri.gns.fred.query.FREDQuery"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.db.querybuilder.QueryElement"
-%><%@page import="nz.cri.gns.auth.Authenticable"
+%><%@page import="org.springframework.security.core.GrantedAuthority"
 %><%!
-	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
+        @Override
+        public GrantedAuthority getRequiredRights() {
+            return null;
+        }
 %><%
 	FREDQuery query = FREDUtil.getFREDQuery(getPageState(request, response));
 	if (query != null) {

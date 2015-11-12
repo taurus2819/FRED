@@ -1,10 +1,11 @@
 <%@page pageEncoding="utf-8"
 %><%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
-%><%@page import="nz.cri.gns.auth.Authenticable"
+%><%@page import="org.springframework.security.core.GrantedAuthority"
 %><%!	
-	public Authenticable[] getRequiredRights(HttpServletRequest request) { 
-		return new Authenticable[0]; 
-	}
+    @Override
+    public GrantedAuthority getRequiredRights() {
+        return null;
+    }
 %><%
 	response.sendRedirect("detail.jsp?FeatID=" + request.getParameter("ID"));
 %>

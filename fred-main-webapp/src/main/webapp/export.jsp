@@ -22,7 +22,7 @@
 %><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
-%><%@page import="nz.cri.gns.auth.Authenticable"
+%><%@page import="org.springframework.security.core.GrantedAuthority"
 %><%@page import="java.util.List"
 %><%@page import="java.util.Vector"
 %><%@page import="java.util.TreeSet"
@@ -36,7 +36,10 @@
 %><%@page import="nz.cri.gns.util.map.DatumFactory"
 %><%@page import="nz.cri.gns.auth.domain.User"
 %><%!
-	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
+        @Override
+        public GrantedAuthority getRequiredRights() {
+            return null;
+        }
 
 	public void writeLocalityHeader(JspWriter out) throws IOException {
 		out.print("FR Number\tYard FR Number\tLocality Type\tField Number/Drillhole Name\tDepth From\tDepth To\tDepth Unit\tDrill Type\t");

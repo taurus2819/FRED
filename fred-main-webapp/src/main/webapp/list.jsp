@@ -37,7 +37,7 @@
 %><%!
 @Override
 public GrantedAuthority getRequiredRights() {
-	return null;
+    return null;
 }
 %><%
 

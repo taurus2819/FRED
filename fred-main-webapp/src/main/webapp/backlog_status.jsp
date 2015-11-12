@@ -2,7 +2,7 @@
 %><%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="java.net.URL"
-%><%@page import="nz.cri.gns.auth.Authenticable"
+%><%@page import="org.springframework.security.core.GrantedAuthority"
 %><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.model.BacklogStatus"
@@ -13,9 +13,10 @@
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.fred.wms.WMSClient"
 %><%!	
-	public Authenticable[] getRequiredRights(HttpServletRequest request) { 
-		return new Authenticable[0]; 
-	}
+    @Override
+    public GrantedAuthority getRequiredRights() {
+        return null;
+    }
 %><%!
 	public String getName(HttpServletRequest request) {
 		if (request.getParameter("ID") == null || request.getParameter("ID").equals("-1"))
