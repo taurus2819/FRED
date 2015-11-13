@@ -22,7 +22,7 @@
 %><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
-%><%@page import="org.springframework.security.core.GrantedAuthority"
+%><%@page import="nz.cri.gns.auth.security.IpGrantedAuthority"
 %><%@page import="java.util.List"
 %><%@page import="java.util.Vector"
 %><%@page import="java.util.TreeSet"
@@ -37,7 +37,7 @@
 %><%@page import="nz.cri.gns.auth.domain.User"
 %><%!
         @Override
-        public GrantedAuthority getRequiredRights() {
+        public IpGrantedAuthority getRequiredRights() {
             return null;
         }
 

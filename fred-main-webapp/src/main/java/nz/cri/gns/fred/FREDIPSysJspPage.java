@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.PageContext;
+import nz.cri.gns.auth.security.IpGrantedAuthority;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.KeyValueObject;
@@ -19,13 +20,11 @@ import nz.cri.gns.jsp.IconnedLink;
 import nz.cri.gns.jsp.Link;
 import nz.cri.gns.jsp.NewExtranetTemplate;
 import nz.cri.gns.jsp.PageState;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public abstract class FREDIPSysJspPage extends IPSysJspPage {
 
     private static final long serialVersionUID = 20050818L;
-    private static GrantedAuthority fredRights;
+    private static IpGrantedAuthority fredRights;
 
     @Override
     public String getName(HttpServletRequest request) {
@@ -38,9 +37,9 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
     }
 
     @Override
-    public GrantedAuthority getRequiredRights() {
+    public IpGrantedAuthority getRequiredRights() {
         if (fredRights == null) {
-            fredRights = new SimpleGrantedAuthority(FredGrantedAuthorities.FR_WEBSITE_ACCESS);
+            fredRights = new IpGrantedAuthority(FredGrantedAuthorities.FR_WEBSITE_ACCESS);
         }
         return fredRights;
     }

@@ -21,9 +21,9 @@ import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
 import nz.cri.gns.auth.domain.User;
+import nz.cri.gns.auth.security.IpGrantedAuthority;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.database.DataException;
-import nz.cri.gns.db.ConnectionProvider;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.metadata.DocumentAttacher;
 import nz.cri.gns.fred.FredGrantedAuthorities;
@@ -38,7 +38,6 @@ import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.query.FREDQuery;
 import nz.cri.gns.fred.query.FREDRecordQuery;
 import nz.cri.gns.jsp.PageState;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public class FREDUtil {
 
@@ -191,7 +190,7 @@ public class FREDUtil {
      * @return
      */
     public static boolean checkEditSecurityClass(User user) {
-        return user.getAuthorities().contains(new SimpleGrantedAuthority(FredGrantedAuthorities.FR_DATA_ENTRY));
+        return user.getAuthorities().contains(new IpGrantedAuthority(FredGrantedAuthorities.FR_DATA_ENTRY));
     }
 
     /**

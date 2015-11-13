@@ -28,7 +28,7 @@
         %><%@page import="java.text.DateFormat"
         %><%@page import="java.text.SimpleDateFormat"
         %><%@page import="nz.cri.gns.auth.domain.User"
-        %><%@page import="org.springframework.security.core.GrantedAuthority"
+        %><%@page import="nz.cri.gns.auth.security.IpGrantedAuthority"
         %><%@page import="nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException"
         %><%@page import="nz.cri.gns.fred.website.ContentProvider"
         %><%@page import="java.util.Iterator"
@@ -36,7 +36,7 @@
         %><%@page import="java.io.File"
 %><%!
 @Override
-public GrantedAuthority getRequiredRights() {
+public IpGrantedAuthority getRequiredRights() {
     return null;
 }
 %><%

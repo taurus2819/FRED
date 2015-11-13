@@ -11,7 +11,7 @@
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.auth.domain.User"
-%><%@page import="org.springframework.security.core.GrantedAuthority"
+%><%@page import="nz.cri.gns.auth.security.IpGrantedAuthority"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.fred.util.AuditUtil"
@@ -22,7 +22,7 @@
 %><%@page import="java.net.URLEncoder"
 %><%!	
     @Override
-    public GrantedAuthority getRequiredRights() {
+    public IpGrantedAuthority getRequiredRights() {
         return null;
     }
 %><%!

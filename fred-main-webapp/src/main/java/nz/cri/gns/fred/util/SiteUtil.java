@@ -275,7 +275,9 @@ public class SiteUtil extends ModelUtil {
      * @throws SQLException 
      */
     public static SiteRecord getSite(SiteRecord site) throws ParserConfigurationException, FactoryConfigurationError, SAXException, IOException, SQLException, NamingException {
-        return site.insert(FREDUtil.getInstance());
+        //return site.insert(FREDUtil.getInstance());
+        //upgrade15 todo
+        return null;
     }
 
     public DatumMethod getSiteDatumMethod(int methodId) throws StorageAccessException {

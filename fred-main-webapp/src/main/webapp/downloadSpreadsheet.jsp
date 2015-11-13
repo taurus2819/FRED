@@ -1,6 +1,6 @@
 <%@page pageEncoding="utf-8"
         %><%@page	extends="nz.cri.gns.fred.FREDIPSysJspPage"
-        %><%@page import="org.springframework.security.core.GrantedAuthority"
+        %><%@page import="nz.cri.gns.auth.security.IpGrantedAuthority"
         %><%@page import="org.apache.poi.ss.usermodel.Workbook"
         %><%@page import="org.apache.poi.ss.usermodel.Sheet"
         %><%@page import="org.apache.poi.ss.usermodel.Row"
@@ -10,7 +10,7 @@
         %><%@page import="java.io.File"
 %><%!
     @Override
-    public GrantedAuthority getRequiredRights() {
+    public IpGrantedAuthority getRequiredRights() {
         return null;
     }
 %><%

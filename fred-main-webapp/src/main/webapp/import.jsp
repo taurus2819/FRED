@@ -16,7 +16,7 @@
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
 %><%@page import="nz.cri.gns.auth.domain.User"
-%><%@page import="org.springframework.security.core.GrantedAuthority"
+%><%@page import="nz.cri.gns.auth.security.IpGrantedAuthority"
 %><%@page import="nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException"
 %><%@page import="nz.cri.gns.fred.de.DataEntryFormFactory"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
@@ -24,7 +24,7 @@
 %><%@page import="java.io.File"
 %><%!	
         @Override
-        public GrantedAuthority getRequiredRights() {
+        public IpGrantedAuthority getRequiredRights() {
             return null;
         }
 %><%!	

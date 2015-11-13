@@ -5,7 +5,6 @@
 %><%@page import="nz.cri.gns.db.DBUtils"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
-%><%@page import="nz.cri.gns.gis.ims.IMSMap"
 %><%@page import="nz.cri.gns.util.map.Datum"
 %><%@page import="nz.cri.gns.util.map.Datum.Coordinate"
 %><%@page import="nz.cri.gns.util.map.Datum.LatLong"
@@ -13,17 +12,16 @@
 %><%@page import="java.net.URL"
 %><%@page import="java.net.URLEncoder"
 %><%@page import="nz.cri.gns.auth.domain.User"
-%><%@page import="org.springframework.security.core.GrantedAuthority"
+%><%@page import="nz.cri.gns.auth.security.IpGrantedAuthority"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
 %><%@page import="nz.cri.gns.fred.model.SiteView"
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.util.SiteUtil"
-%><%@page import="com.esri.aims.mtier.model.map.layer.renderer.symbol.SimpleMarkerSymbol"
 %><%!	
         @Override
-        public GrantedAuthority getRequiredRights() {
+        public IpGrantedAuthority getRequiredRights() {
             return null;
         }
 %><%!

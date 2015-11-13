@@ -10,10 +10,10 @@
 %><%@page import="java.util.Date"
 %><%@page import="java.util.Iterator"
 %><%@page import="java.net.URLEncoder"
-%><%@page import="org.springframework.security.core.GrantedAuthority"
+%><%@page import="nz.cri.gns.auth.security.IpGrantedAuthority"
 %><%!
 @Override
-public GrantedAuthority getRequiredRights() {
+public IpGrantedAuthority getRequiredRights() {
     return null;
 }
 %>

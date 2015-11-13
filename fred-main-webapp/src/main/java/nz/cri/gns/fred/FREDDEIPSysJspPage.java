@@ -1,18 +1,17 @@
 package nz.cri.gns.fred;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import nz.cri.gns.auth.security.IpGrantedAuthority;
 
 public abstract class FREDDEIPSysJspPage extends FREDIPSysJspPage{
 	
     private static final long serialVersionUID = 20050818L;
 
-	private static GrantedAuthority deRights;
+	private static IpGrantedAuthority deRights;
 
 	@Override
-	public GrantedAuthority getRequiredRights() {
+	public IpGrantedAuthority getRequiredRights() {
 		if (deRights == null) {
-			deRights = new SimpleGrantedAuthority(FredGrantedAuthorities.FR_DATA_ENTRY); 
+			deRights = new IpGrantedAuthority(FredGrantedAuthorities.FR_DATA_ENTRY); 
 		}
 		return deRights;
 	}

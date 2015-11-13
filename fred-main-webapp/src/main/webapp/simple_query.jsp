@@ -11,13 +11,13 @@
 %><%@page import="nz.cri.gns.html.Attributes"
 %><%@page import="java.io.PrintWriter"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
-%><%@page import="org.springframework.security.core.GrantedAuthority"
+%><%@page import="nz.cri.gns.auth.security.IpGrantedAuthority"
 %><%@page import="nz.cri.gns.html.select.SelectBox"
 %><%@page import="nz.cri.gns.html.Attributes"
 %><%@page import="nz.cri.gns.auth.domain.User"
 %><%!
         @Override
-        public GrantedAuthority getRequiredRights() {
+        public IpGrantedAuthority getRequiredRights() {
             return null;
         }
 %><%!

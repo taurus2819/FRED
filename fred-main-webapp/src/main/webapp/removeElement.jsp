@@ -3,10 +3,10 @@
 %><%@page import="nz.cri.gns.fred.query.FREDQuery"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.db.querybuilder.QueryElement"
-%><%@page import="org.springframework.security.core.GrantedAuthority"
+%><%@page import="nz.cri.gns.auth.security.IpGrantedAuthority"
 %><%!
         @Override
-        public GrantedAuthority getRequiredRights() {
+        public IpGrantedAuthority getRequiredRights() {
             return null;
         }
 %><%

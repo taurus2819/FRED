@@ -1,15 +1,15 @@
 package nz.cri.gns.fred;
 
+import nz.cri.gns.auth.security.IpGrantedAuthority;
 import nz.cri.gns.jsp.IconnedLink;
 import nz.cri.gns.jsp.NewExtranetTemplate;
-import org.springframework.security.core.GrantedAuthority;
 
 public abstract class FREDStaticIPSysJspPage extends FREDIPSysJspPage{
 	
     private static final long serialVersionUID = 20050818L;
 
 	@Override
-	public GrantedAuthority getRequiredRights() {
+	public IpGrantedAuthority getRequiredRights() {
 		return null;
 	}
 	
