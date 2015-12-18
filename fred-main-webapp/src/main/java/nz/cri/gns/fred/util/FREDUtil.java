@@ -24,7 +24,6 @@ import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.auth.security.IpGrantedAuthority;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.database.DataException;
-import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.db.metadata.DocumentAttacher;
 import nz.cri.gns.fred.FredGrantedAuthorities;
 import nz.cri.gns.fred.de.DataInputException;
@@ -281,14 +280,6 @@ public class FREDUtil {
         return null;//"Day";
     }
 
-    public static String getInstance() throws SQLException, NamingException {
-        if (instance == null) {
-            try (Connection conn = getConnection()) {
-                instance = DBUtils.getInstance(conn);
-            }
-        }
-        return instance;
-    }
 
     public static String getPetWellLink(Feature feature) throws NamingException, SQLException {
         if (feature.getFeatureName() == null) {

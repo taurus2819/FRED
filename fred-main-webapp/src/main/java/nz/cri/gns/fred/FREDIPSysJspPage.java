@@ -27,12 +27,12 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
     private static IpGrantedAuthority fredRights;
 
     @Override
-    public String getName(HttpServletRequest request) {
+    public String getName() {
         return "FRED :: The Fossil Record Electronic Database";
     }
 
     @Override
-    public String getTitle(HttpServletRequest request) {
+    public String getTitle() {
         return "FRED :: The Fossil Record Electronic Database";
     }
 

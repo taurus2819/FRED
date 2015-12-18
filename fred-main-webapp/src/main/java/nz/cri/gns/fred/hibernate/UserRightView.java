@@ -19,12 +19,9 @@ public class UserRightView implements Serializable, nz.cri.gns.fred.model.UserRi
 
     /** nullable persistent field */
     private String fullName;
-    
-    /** nullable persistent field */
-    private Integer ipRightId;
 
     /** nullable persistent field */
-    private String ipRightDescription;
+    private String ipRightName;
     
     /** persistent field */
     private UserView userView;
@@ -61,20 +58,12 @@ public class UserRightView implements Serializable, nz.cri.gns.fred.model.UserRi
 		return fullName;
 	}
 
-	public void setIpRightId(Integer ipRightId) {
-		this.ipRightId = ipRightId;
+	public void setIpRightName(String ipRightName) {
+		this.ipRightName = ipRightName;
 	}
 
-	public Integer getIpRightId() {
-		return ipRightId;
-	}
-
-	public void setIpRightDescription(String ipRightDescription) {
-		this.ipRightDescription = ipRightDescription;
-	}
-
-	public String getIpRightDescription() {
-		return ipRightDescription;
+	public String getIpRightName() {
+		return ipRightName;
 	}
 
 	public void setUserView(UserView userView) {

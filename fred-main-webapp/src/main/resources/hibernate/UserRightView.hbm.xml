@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+ <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
     "-//Hibernate/Hibernate Mapping DTD 2.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
@@ -13,7 +13,7 @@
 
 <class 
     name="nz.cri.gns.fred.hibernate.UserRightView" 
-    table="USER_RIGHT_VIEW"
+    table="USER_RIGHT_VIEW2"
     schema="IP"
     mutable="false"
 >
@@ -47,15 +47,10 @@
         	length="91"
 	    />
 	    <property
-    	    name="ipRightId"
-        	type="java.lang.Integer"
-        	column="ir_id"
-	    />
-	    <property
-    	    name="ipRightDescription"
+    	    name="ipRightName"
         	type="java.lang.String"
-        	column="ir_description"
-        	length="200"
+        	column="ir_name"
+            length="36"
 	    />
    		   		   		
     <!-- Associations -->
