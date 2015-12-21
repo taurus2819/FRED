@@ -13,7 +13,8 @@
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%!
 	public String getName(HttpServletRequest request) {
-		return "FRED :: " + ((User)getUser(request.getSession())).getFullName() + "'s Folders";
+        String name = ((User)getUser(request.getSession())).getFullName();
+		return "FRED :: " +name + "'s Folders";
 	}
 	
 %><%
