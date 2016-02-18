@@ -9,7 +9,6 @@ import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
-import javax.naming.NamingException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -464,21 +463,11 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             // try to re-use any existing site details. 
             // take 1- try the well name
             if (site == null) {
-                try {
-                    site = SiteUtil.getSite(feature.getFeatureName());
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                } catch (NamingException nex) {
-                    nex.printStackTrace();
-                }
+                site = SiteUtil.getSite(feature.getFeatureName());
             }
             // take 2 try the given coords
             if (site == null) {
-                try {
-                    site = SiteUtil.getSite(datum, coord); 
-                } catch (SQLException ex) {
-                } catch (NamingException nex) {                    
-                }
+                site = SiteUtil.getSite(datum, coord);
             }
             
 
