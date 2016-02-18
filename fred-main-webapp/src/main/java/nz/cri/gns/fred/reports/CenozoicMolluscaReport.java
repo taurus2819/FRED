@@ -54,25 +54,25 @@ public class CenozoicMolluscaReport {
         String s = "Commencing";
         try {
             CenozoicMolluscaReport report = new CenozoicMolluscaReport();
-            if (args.length==5) {
-                report.report(args[0], args[1], args[2], args[3], args[4], null);
+            if (args.length==6) {
+                report.report(args[0], args[1], args[2], args[3], args[4], args[5], null);
             } else {
-                report.report(args[0], args[1], args[2], args[3], args[4], args[5]);
+                report.report(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
             }
         } catch (Exception ex) {
-            System.out.println("Usage: new CenozoicMolluscaReport( <Oracle SID> <DB username> <DB password> <input-file> <output-dir> [<done file name>] )");
+            System.out.println("Usage: new CenozoicMolluscaReport(<Oracle Host> <Oracle SID> <DB username> <DB password> <input-file> <output-dir> [<done file name>] )");
             ex.printStackTrace();
         }
                 
     }
     
-    public void report(String sid, String user, String password, String infilename, String outdirname, String donefilename)
+    public void report(String host, String sid, String user, String password, String infilename, String outdirname, String donefilename)
             throws IOException, NamingException, StorageAccessException, ClassNotFoundException, NotBoundException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException {
 
         File outDir = new File(outdirname);
 
         //Connect!
-        setupJNDI(sid, user, password);
+        setupJNDI(host, sid, user, password);
         
         //Collect all the features
         System.out.println("Reading inputs");
@@ -129,7 +129,7 @@ public class CenozoicMolluscaReport {
         System.out.println("Ferme");
     }
 
-    private void setupJNDI(String sid, String user, String password) throws NamingException, ClassNotFoundException, NotBoundException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
+    private void setupJNDI(String host,String sid, String user, String password) throws NamingException, ClassNotFoundException, NotBoundException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
         try {
             JNDI.setup();
             
@@ -143,7 +143,7 @@ public class CenozoicMolluscaReport {
         }
         
         InitialContext context = new InitialContext();
-        final Connection conn = DBUtils.getJavaSqlConnection(sid, user, password);
+        final Connection conn = DBUtils.getJavaSqlConnection(host, sid, user, password);
         FredHibernate.get().configure(conn);
         context.bind("java:comp/env/jdbc/fr", new DataSource() {
 

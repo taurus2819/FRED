@@ -294,7 +294,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
                 //Accuracy etc
                 template.addSub("mapYear", DBUtils.nvl(feature.getMapYear()));
-                template.addSub("accuracy", (site.isNull(SiteRecord.H_ACCURACY_FIELD) ? "" : String.valueOf(site.getAccuracy())));
+                template.addSub("accuracy", (site.getAccuracy() == -1F) ? "" : String.valueOf(site.getAccuracy()));
                 template.addSub("localityDesc", DBUtils.nvl(feature.getLocality()));
             }
             template.addSub("northingLabel", northingLabel);
@@ -312,7 +312,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             SelectBox<DatumMethod> dSelectBox = new SelectBox<DatumMethod>(methods);
             attributes = Attributes.createNameOnlyAttributes("LocMethodID");
             attributes.setAttribute("onChange", "setAccuracy(this.value, this.form)");
-            dSelectBox.writeBox(attributes, "-- Choose --", null, (site != null && !site.isNull(SiteRecord.H_METHOD_FIELD)) ? siteUtil.getSiteDatumMethod(site.getMethod()) : null, out);
+            dSelectBox.writeBox(attributes, "-- Choose --", null, (site != null && site.getMethod()>-1) ? siteUtil.getSiteDatumMethod(site.getMethod()) : null, out);
 
             template.loadUntil(out, "{@countryCombo}");
             SelectBox<Country> cSelectBox = new SelectBox<Country>(featureUtil.getCountries());
@@ -356,10 +356,10 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         out.write("<td>#" + ((coord != null) ? coord.getEastWestString() : "") + "#</td>\n");
         out.write("<td>#" + ((coord != null) ? coord.getNorthSouthString() : "") + "#</td>\n");
         out.write("<td>" + DBUtils.nvl(feature.getMapYear()) + "</td>\n");
-        out.write("<td>" + ((site != null && !site.isNull(SiteRecord.H_METHOD_FIELD)) ? String.valueOf(site.getMethod()) : "") + "</td>\n");
-        out.write("<td>" + ((site != null && !site.isNull(SiteRecord.H_ACCURACY_FIELD)) ? String.valueOf(site.getAccuracy()) : "") + "</td>\n");
+        out.write("<td>" + ((site != null && site.getMethod()>-1) ? String.valueOf(site.getMethod()) : "") + "</td>\n");
+        out.write("<td>" + ((site != null && site.getAccuracy()>-1) ? String.valueOf(site.getAccuracy()) : "") + "</td>\n");
         out.write("<td>" + DBUtils.nvl(feature.getLocality()) + "</td>\n");
-        out.write("<td>" + ((site != null && !site.isNull(SiteRecord.COUNTRY_FIELD)) ? site.getCountry() : "") + "</td>\n");
+        out.write("<td>" + ((site != null && site.getCountry()!=null) ? site.getCountry() : "") + "</td>\n");
     }
 
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
@@ -515,14 +515,14 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 try {
                     site.setMethod(Integer.parseInt(request.getParameter("LocMethodID")));
                 } catch (Exception e) {
-                    site.setNull(SiteRecord.H_METHOD_FIELD);
+                    //method is null (-1) by default
                 }
                 if (request.getParameter("Accuracy").length() > 0) {
                     try {
                         site.setAccuracy(Float.parseFloat(request.getParameter("Accuracy")));
                     } catch (Exception e) {
                         error.add(new String[]{"Accuracy", "Invalid value"});
-                        site.setNull(SiteRecord.H_ACCURACY_FIELD);
+                        // site accuracy is null (-1) by default
                     }
                 }
                 
