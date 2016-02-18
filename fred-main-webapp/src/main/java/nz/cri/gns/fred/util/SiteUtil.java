@@ -178,90 +178,26 @@ public class SiteUtil extends ModelUtil {
         }
     }
 
-    public static SiteRecord getSite(Feature feature) throws NamingException, SQLException {
-        /*
-        upgrade15 refactor
-        Connection conn = null;
-        DatabaseApp2 app = null;
+    public static SiteRecord getSite(Feature feature) {
         SiteRecord sr = null;
         try {
-            conn = FREDUtil.getConnection();
-            app = new BasicDatabaseApp2(conn, "");
-            sr = SiteRecord.querySite(app, feature.getSiteId().intValue());
-        } finally {
-            if (app != null) {
-                app.close();
-            } else if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                }
-            }
+            sr = nz.cri.gns.db.util.SiteUtil.querySite(feature.getSiteId());
+        } catch (Exception ex) {
         }
-        return sr;*/
-        return null;
+        return sr;
     }
 
-    public static SiteRecord getSite(Datum datum, Coordinate coord) throws NamingException, SQLException {
-       /* upgrade15
-        Connection conn = null;
-        DatabaseApp2 app = null;
+    public static SiteRecord getSite(Datum datum, Coordinate coord) {
         SiteRecord sr = null;
-        int siteId = -1;
-
-        try {
-            conn = FREDUtil.getConnection();
-            app = new BasicDatabaseApp2(conn, "");
-            siteId = SiteRecord.checkSiteExists(
-                    datum,
-                    coord,
-                    new nz.cri.gns.db.site.DatumMethod(-1, -1F, -1F),
-                    0,
-                    app);
-
-            if (siteId != -1) {
-                sr = SiteRecord.querySite(app, siteId);
-            }
-        } catch (Exception e ){
-            e.printStackTrace();
-        } finally {
-            if (app != null) {
-                app.close();
-            } else if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                }
-            }
+        int siteId = nz.cri.gns.db.util.SiteUtil.checkSiteExists(datum, datum.convertToNZGD49(coord), null);
+        if (siteId != -1 ){
+            sr = nz.cri.gns.db.util.SiteUtil.querySite(siteId);
         }
-        return sr;*/
-        return null;
+        return sr;
     }
 
-    public static SiteRecord getSite(String wellName)  throws NamingException, SQLException {
-        /* upgrade15 
-        Connection conn = null;
-        DatabaseApp2 app = null;
-        SiteRecord sr = null;
-
-        try {
-            conn = FREDUtil.getConnection();
-            app = new BasicDatabaseApp2(conn, "");
-            sr = SiteRecord.querySiteByWellName(app, wellName);
-            
-        } finally {
-            if (app != null) {
-                app.close();
-            } else if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return sr;*/
-        return null;
+    public static SiteRecord getSite(String wellName) {
+        return nz.cri.gns.db.util.SiteUtil.querySiteByWellName(wellName);
     }
 
     /**
@@ -275,9 +211,7 @@ public class SiteUtil extends ModelUtil {
      * @throws SQLException 
      */
     public static SiteRecord getSite(SiteRecord site) throws ParserConfigurationException, FactoryConfigurationError, SAXException, IOException, SQLException, NamingException {
-        //return site.insert(FREDUtil.getInstance());
-        //upgrade15 todo
-        return null;
+        return nz.cri.gns.db.util.SiteUtil.insertSite(site);
     }
 
     public DatumMethod getSiteDatumMethod(int methodId) throws StorageAccessException {
