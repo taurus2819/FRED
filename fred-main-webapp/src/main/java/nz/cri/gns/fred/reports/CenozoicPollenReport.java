@@ -8,9 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -19,10 +16,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.HashMap;
 import java.util.HashSet;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
 import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
@@ -32,7 +26,6 @@ import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.util.FeatureUtil;
-import nz.cri.gns.util.NullOutputStream;
 
 /**
  * To use this, first receive the taxonomic synonyms file. A period separates
@@ -48,18 +41,20 @@ import nz.cri.gns.util.NullOutputStream;
  * @author richardt
  *
  */
-public class CenozoicPollenReport {
+public class CenozoicPollenReport extends AbstractReport {
 
     private FredDAO dao;
     private HashMap<String, HashMap<String, Integer>> taxa = null;
     private HashMap<String, HashMap<String, Integer>> aggregatedTaxa = null;
     PrintWriter writer;
+    String host;
     String sid;
     String user;
     String password;
 
-    public CenozoicPollenReport(String sid, String user, String password) {
+    public CenozoicPollenReport(String host, String sid, String user, String password) {
         dao = FredHibernate.get().getDAOFactory().getFredDAO();
+        this.host = host;
         this.sid = sid;
         this.user = user;
         this.password = password;
@@ -67,10 +62,10 @@ public class CenozoicPollenReport {
 
     public static void main(String[] args) {
         try {
-            CenozoicPollenReport report = new CenozoicPollenReport(args[0], args[1], args[2]);
+            CenozoicPollenReport report = new CenozoicPollenReport(args[0], args[1], args[2], args[3]);
             report.report();
         } catch (Exception e) {
-            System.out.println("Usage: CenozoicPollenReport <Oracle SID> <DB username> <DB password>");
+            System.out.println("Usage: CenozoicPollenReport <Oracle host> <Oracle SID> <DB username> <DB password>");
             e.printStackTrace();            
         }
 
@@ -78,7 +73,7 @@ public class CenozoicPollenReport {
 
     private void report() {
         System.out.println("Setting up jndi");
-        setupJNDI();
+        setupJNDI(host, sid, user, password);
         System.out.println("Reading inputs");
         Iterable<String> candidates = parseInputFile("//tmp//cenozoic-pollen-frnums.txt");
         Vector<Feature> features = new Vector<Feature>(1024);
@@ -119,7 +114,7 @@ public class CenozoicPollenReport {
 
     public void prepareSynonymList() {
         try {
-            setupJNDI();
+            setupJNDI(host, sid, user, password);
 
             FredDAO dao = FredHibernate.get().getDAOFactory().getFredDAO();
             DAOFactory factory = FredHibernate.get().getDAOFactory();
@@ -263,70 +258,6 @@ public class CenozoicPollenReport {
         return frnums;
     }
 
-    private void setupJNDI() {
-        try {
-            JNDI.setup();
-
-        } catch (Exception ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, ex.getMessage(), ex);
-            if (ex instanceof IllegalStateException) {
-                if ("InitialContextFactoryBuilder already set".equals(ex.getMessage())) {
-                    System.out.println("Using previous JNDI setup");
-                    return;
-                }
-            }
-        }
-
-        try {
-            InitialContext context = new InitialContext();
-            final Connection conn = DBUtils.getJavaSqlConnection(sid, user, password);
-            FredHibernate.get().configure(conn);
-            context.bind("java:comp/env/jdbc/fr", new DataSource() {
-
-                public int getLoginTimeout() throws SQLException {
-                    return 0;
-                }
-
-                public void setLoginTimeout(int seconds) throws SQLException {
-                }
-
-                public void setLogWriter(PrintWriter out) throws SQLException {
-                }
-
-                public PrintWriter getLogWriter() throws SQLException {
-                    return new PrintWriter(new NullOutputStream());
-                }
-
-                public Connection getConnection(String username, String password)
-                        throws SQLException {
-                    return null;
-                }
-
-                public Connection getConnection() throws SQLException {
-                    return UnclosableConnection.create(conn);
-                }
-
-                @Override
-                public boolean isWrapperFor(Class<?> iface) throws SQLException {
-                    return conn.isWrapperFor(iface);
-                }
-
-                @Override
-                public <T> T unwrap(Class<T> iface) throws SQLException {
-                    return conn.unwrap(iface);
-                }
-
-                @Override
-                public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-            });
-
-        } catch (Exception ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, ex.getMessage(), ex);
-        }
-    }
-
     private void writeAggregatedTaxaDistribution(Vector<String> synonyms) {
         Taxon taxon = null;
         writer.write("------------------------------");
@@ -431,7 +362,7 @@ public class CenozoicPollenReport {
 
     public void postProcessCenozoicPollen() {
         try {
-            setupJNDI();
+            setupJNDI(host, sid, user, password);
             writer = new PrintWriter(new File("//tmp//taxa-age-dist.txt"), "UTF-8");
             readCountedTaxa("//tmp//taxa-age-dist-raw.txt");
             Vector<String> synonyms = loadSynonyms();

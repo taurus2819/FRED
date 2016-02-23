@@ -7,18 +7,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.rmi.NotBoundException;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
-
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.sql.DataSource;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -38,9 +32,8 @@ import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.SiteUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.util.TaxonomicUtil;
-import nz.cri.gns.util.NullOutputStream;
 
-public class TaxaReport {
+public class TaxaReport extends AbstractReport {
 
     /**
      * @param args
@@ -55,15 +48,15 @@ public class TaxaReport {
      * @throws ClassNotFoundException
      */
     public static void main(String[] args) throws IOException, NamingException, StorageAccessException, ClassNotFoundException, NotBoundException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException {
-        if (args.length < 5) {
-            System.out.println("Usage: TaxaReport <Oracle SID> <DB username> <DB password> <group> <input-file> [<output-dir>]");
+        if (args.length < 6) {
+            System.out.println("Usage: TaxaReport <Oracle host> <Oracle SID> <DB username> <DB password> <group> <input-file> [<output-dir>]");
             System.exit(1);
         }
 
-        File outDir = args.length < 6 ? new File(".") : new File(args[5]);
+        File outDir = args.length < 7 ? new File(".") : new File(args[6]);
 
         //Connect!
-        setupJNDI(args[0], args[1], args[2]);
+        setupJNDI(args[0], args[1], args[2], args[3]);
 
         //Collect all the samples
         Set<Sample> samples = new HashSet<>();
@@ -71,9 +64,9 @@ public class TaxaReport {
         FredDAO dao = FredHibernate.get().getDAOFactory().getFredDAO();
 
         System.out.println("Gathering data");
-        for (String name : parseInputFile(args[1])) {
+        for (String name : parseInputFile(args[5])) {
             System.out.println(name);
-            Taxon taxonName = new TaxonomicUtil(FredHibernate.get().getDAOFactory()).getTaxon(dao.findTaxonomicGroup(args[0]), name, null);
+            Taxon taxonName = new TaxonomicUtil(FredHibernate.get().getDAOFactory()).getTaxon(dao.findTaxonomicGroup(args[4]), name, null);
             if (taxonName == null) {
                 continue;
             }
@@ -172,53 +165,6 @@ public class TaxaReport {
             }
         }
         taxa.close();
-    }
-
-    private static void setupJNDI(String sid, String user, String password) throws NamingException, ClassNotFoundException, NotBoundException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
-        JNDI.setup();
-        InitialContext context = new InitialContext();
-        final Connection conn = DBUtils.getJavaSqlConnection(sid, user, password);
-        context.bind("java:comp/env/jdbc/fr", new DataSource() {
-            public int getLoginTimeout() throws SQLException {
-                return 0;
-            }
-
-            public void setLoginTimeout(int seconds) throws SQLException {
-
-            }
-
-            public void setLogWriter(PrintWriter out) throws SQLException {
-
-            }
-
-            public PrintWriter getLogWriter() throws SQLException {
-                return new PrintWriter(new NullOutputStream());
-            }
-
-            public Connection getConnection(String username, String password)
-                    throws SQLException {
-                return null;
-            }
-
-            public Connection getConnection() throws SQLException {
-                return UnclosableConnection.create(conn);
-            }
-
-            @Override
-            public boolean isWrapperFor(Class<?> iface) throws SQLException {
-                return conn.isWrapperFor(iface);
-            }
-
-            @Override
-            public <T> T unwrap(Class<T> iface) throws SQLException {
-                return conn.unwrap(iface);
-            }
-
-            @Override
-            public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        });
     }
 
     private static Iterable<String> parseInputFile(String file) throws IOException {
