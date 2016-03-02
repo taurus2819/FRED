@@ -109,7 +109,7 @@ public class FREDUtil {
      * <code>getSessionLock()</code> to alleviate concurrent access problems
      */
     public static FREDQuery getFREDQuery(PageState state) throws IOException, SQLException {
-		//Synchronizing on the session will ensure that two frames don't have
+        //Synchronizing on the session will ensure that two frames don't have
         //problems, whilst allowing other users to still run concurrently
         synchronized (getSessionLock(state.session)) {
             FREDQuery query = (FREDQuery) state.session.getAttribute(QUERY_ATTRIBUTE_NAME);
@@ -139,7 +139,7 @@ public class FREDUtil {
      * <code>getSessionLock()</code> to alleviate concurrent access problems
      */
     public static FREDRecordQuery getFREDRecordQuery(PageState state) throws IOException, SQLException {
-		//Synchronizing on the session will ensure that two frames don't have
+        //Synchronizing on the session will ensure that two frames don't have
         //problems, whilst allowing other users to still run concurrently
         synchronized (getSessionLock(state.session)) {
             FREDRecordQuery query = (FREDRecordQuery) state.session.getAttribute(RECORD_QUERY_ATTRIBUTE_NAME);
@@ -182,6 +182,43 @@ public class FREDUtil {
         InitialContext context = new InitialContext();
         DataSource source = (DataSource) context.lookup("java:comp/env/jdbc/fr");
         return source.getConnection();
+    }
+
+    public static String getPetWellLink(Feature feature) throws NamingException, SQLException {
+        if (feature.getFeatureName() == null) {
+            return null;
+        }
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            Statement statement = conn.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT well_name FROM petroleum.petroleum_well WHERE UPPER(well_name) = '" + feature.getFeatureName().toUpperCase() + "'");
+            rs.next();
+            String link = "https://data.gns.cri.nz/wellsdb/index.html?name=" + rs.getString(1);
+            statement.close();
+            return link;
+        } catch (SQLException e) {
+            return null;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (Exception _e) {
+                }
+            }
+        }
+    }
+
+    /**
+     * Joins the string array, starting from the given index, with a space
+     * character as the separator
+     */
+    public static String join(String[] parts, int startFrom) {
+        StringBuffer buffer = new StringBuffer();
+        for (int i = startFrom; i < parts.length; i++) {
+            buffer.append(parts[i]).append(" ");
+        }
+        return buffer.substring(0, buffer.length() - 1);
     }
 
     /**
@@ -278,45 +315,6 @@ public class FREDUtil {
             return "Month";
         }
         return null;//"Day";
-    }
-
-
-    public static String getPetWellLink(Feature feature) throws NamingException, SQLException {
-        if (feature.getFeatureName() == null) {
-            return null;
-        }
-        Connection conn = null;
-        try {
-            conn = getConnection();
-            Statement statement = conn.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT well_name FROM petroleum.petroleum_well WHERE UPPER(well_name) = '" + feature.getFeatureName().toUpperCase() + "'");
-            rs.next();
-            String link = "http://data.gns.cri.nz/psid/petwell.jsp?wellname=" + rs.getString(1);
-            statement.close();
-            conn.close();
-            return link;
-        } catch (SQLException e) {
-            return null;
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (Exception _e) {
-                }
-            }
-        }
-    }
-
-    /**
-     * Joins the string array, starting from the given index, with a space
-     * character as the seperator
-     */
-    public static String join(String[] parts, int startFrom) {
-        StringBuffer buffer = new StringBuffer();
-        for (int i = startFrom; i < parts.length; i++) {
-            buffer.append(parts[i]).append(" ");
-        }
-        return buffer.substring(0, buffer.length() - 1);
     }
 
     public static String getNames(Set<? extends PersonRelationship> persons, String separator) {

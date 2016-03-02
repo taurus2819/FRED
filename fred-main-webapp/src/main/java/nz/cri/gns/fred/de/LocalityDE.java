@@ -469,7 +469,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             if (site == null) {
                 site = SiteUtil.getSite(datum, coord);
             }
-            
 
             if (site != null) {
                 //add coord metadata from existing site but only if a drillhole
@@ -485,7 +484,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 feature.setLocality(locality);
                 if (feature.getOrigCoord() != site.getOriginalCoordinates()) {
                     site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
-                } 
+                }                            
                
                 //TODO reuse site_name as feature_name?? see JES
                 
