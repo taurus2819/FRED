@@ -18,7 +18,6 @@
         %><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
         %><%@page import="nz.cri.gns.jsp.JspUtils"
         %><%@page import="nz.cri.gns.jsp.PageState"
-        %><%@page import="nz.cri.gns.intranet.DBConnection"
         %><%@page import="java.sql.Connection"
         %><%@page import="java.sql.ResultSet"
         %><%@page import="java.sql.Statement"
@@ -28,17 +27,18 @@
         %><%@page import="java.util.Date"
         %><%@page import="java.text.DateFormat"
         %><%@page import="java.text.SimpleDateFormat"
-        %><%@page import="nz.cri.gns.auth.Authenticable"
-        %><%@page import="nz.cri.gns.auth.User"
-        %><%@page import="nz.cri.gns.auth.InsufficientPrivelegesException"
+        %><%@page import="nz.cri.gns.auth.domain.User"
+        %><%@page import="nz.cri.gns.auth.security.IpGrantedAuthority"
+        %><%@page import="nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException"
         %><%@page import="nz.cri.gns.fred.website.ContentProvider"
         %><%@page import="java.util.Iterator"
         %><%@page import="java.io.PrintWriter"
         %><%@page import="java.io.File"
 %><%!
-    public Authenticable[] getRequiredRights(HttpServletRequest request) {
-        return new Authenticable[0];
-    }
+@Override
+public IpGrantedAuthority getRequiredRights() {
+    return null;
+}
 %><%
 
     String listName = request.getParameter("listName");
@@ -56,14 +56,16 @@
         RecordUtil recordUtil = new RecordUtil(factory);
 
         %><table><%
-
+            User user;
+            try {
+                user = createUser(request.getParameter("user"), request.getParameter("pass"));
+            } catch (Exception e) {   
+                user = null;
+            }         
             if (listName.equals("folderContent")) {
-                User user = null;
-                try {
-                    user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
-                } catch (Exception e) {
-		   		%><tr><td>Error: Invalid username/password</td><td></td><%
-		   	}
+                if (user == null) {
+                    %><tr><td>Error: Invalid username/password</td><td></td><%
+		}
                 UserFolder userFolder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("folderID")), user);
                 if (userFolder.isAllowedReadLocalities()) {
                     if (request.getParameter("formType").equals("locality")) {
@@ -84,12 +86,9 @@
             %><tr><td>Error: Insufficient privileges</td></tr><%                                    
                 }
             } else if (listName.equals("document")) {
-                User user = null;
-                try {
-                    user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
-                } catch (Exception e) {
-            %><tr><td>Error: Invalid username/password</td><td>&nbsp;</td></tr><%                                    
-                }
+                if (user == null) {
+                    %><tr><td>Error: Invalid username/password</td><td></td><%
+		}
                 ContentProvider provider = new ContentProvider(new File(request.getSession().getServletContext().getRealPath("/content")));
                 DataEntryForm dataEntryForm = null;
                 try {
@@ -116,11 +115,8 @@
                         System.out.println(strWrtr);
                     }
                 } else if (listName.equals("sampleId")) {
-                    User user = null;
-                    try {
-                        user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
-                    } catch (Exception e) {
-            %><tr><td>Error: Invalid username/password</td><td></td><%                                    
+                    if (user == null) {
+                        %><tr><td>Error: Invalid username/password</td><td></td><%
                     }
                 if (user != null) {
                     Sample sample = null;
@@ -143,11 +139,9 @@
             }
                 }
             } else if (listName.equals("palList")) {
-                User user = null;
-                try {
-                    user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
-                } catch (Exception e) {
-                               %><tr><td>Error: Invalid username/password</td><td></td><%                                    }
+                if (user == null) {
+                    %><tr><td>Error: Invalid username/password</td><td></td><%
+		}
                 try {
                     String folderID = request.getParameter("folderID");
                     UserFolder userFolder = folderUtil.getUserFolder(Integer.parseInt(folderID), user);
@@ -157,47 +151,47 @@
                         SimpleDateFormat monthFormatter = new SimpleDateFormat("MMMM yyyy");
                         SimpleDateFormat defaultFormatter = new SimpleDateFormat("dd MMMM yyyy");
 
-                        String dbuser = "fr";
-                        DBConnection conn = JspUtils.createDatabaseConnection(session, null, dbuser, pageContext.getServletContext());
-                        Statement statement = conn.statement;
-                        int counter =0;
+                        try (Connection conn = JspUtils.getConnectionFromPool("fr"); Statement statement = conn.createStatement()) {
+                            int counter =0;
 
-                        String query = "select * from folder_content_summary_view where folder_ID = " + folderID + " order by 1 asc";
-                        ResultSet rs = statement.executeQuery(query);
+                            String query = "select * from folder_content_summary_view where folder_ID = " + folderID + " order by 1 asc";
+                            try (ResultSet rs = statement.executeQuery(query)) {
+                                if (rs != null) {
+                                    while (rs.next()) {
+                                        String recordId = (rs.getString(1) == null ? "" : rs.getString(1));
+                                        String frNumber = (rs.getString(2) == null ? "" : rs.getString(2));
+                                        String featureType = (rs.getString(3) == null ? "" : rs.getString(3));
+                                        String depthDesc = (rs.getString(4) == null ? "" : rs.getString(4));
+                                        String labName = (rs.getString(5) == null ? "" : rs.getString(5) + " ");
+                                        String labCode = (rs.getString(6) == null ? "" : rs.getString(6) + " ");
+                                        String labNumber = (rs.getString(7) == null ? "" : rs.getString(8) + " ");
+                                        String person = (rs.getString(8) == null ? "" : rs.getString(8));
+                                        Date detailDate = rs.getDate(9);
+                                        String detailRounding = (rs.getString(10) == null ? "" : rs.getString(10));
+                                        String dbFolderID = (rs.getString(11) == null ? "" : rs.getString(11));
 
-                        if (rs != null) {
-                            while (rs.next()) {
-                                String recordId = (rs.getString(1) == null ? "" : rs.getString(1));
-                                String frNumber = (rs.getString(2) == null ? "" : rs.getString(2));
-                                String featureType = (rs.getString(3) == null ? "" : rs.getString(3));
-                                String depthDesc = (rs.getString(4) == null ? "" : rs.getString(4));
-                                String labName = (rs.getString(5) == null ? "" : rs.getString(5) + " ");
-                                String labCode = (rs.getString(6) == null ? "" : rs.getString(6) + " ");
-                                String labNumber = (rs.getString(7) == null ? "" : rs.getString(8) + " ");
-                                String person = (rs.getString(8) == null ? "" : rs.getString(8));
-                                Date detailDate = rs.getDate(9);
-                                String detailRounding = (rs.getString(10) == null ? "" : rs.getString(10));
-                                String dbFolderID = (rs.getString(11) == null ? "" : rs.getString(11));
+                                        String labStr = labName + labCode + labNumber + "; ";
+                                        labStr = (labStr.equals("; ") ? "" : labStr);
+                                        String detailDateStr = "";
+                                        if (detailDate != null) {
+                                            if ("Month".equals(detailRounding)) {
+                                                detailDateStr = monthFormatter.format(detailDate);
+                                            } else if ("Year".equals(detailRounding)) {
+                                                detailDateStr = yearFormatter.format(detailDate);
+                                            } else {
+                                                detailDateStr = defaultFormatter.format(detailDate);
+                                            }
+                                        }
 
-                                String labStr = labName + labCode + labNumber + "; ";
-                                labStr = (labStr.equals("; ") ? "" : labStr);
-                                String detailDateStr = "";
-                                if (detailDate != null) {
-                                    if ("Month".equals(detailRounding)) {
-                                        detailDateStr = monthFormatter.format(detailDate);
-                                    } else if ("Year".equals(detailRounding)) {
-                                        detailDateStr = yearFormatter.format(detailDate);
-                                    } else {
-                                        detailDateStr = defaultFormatter.format(detailDate);
+                                        String recName = frNumber + ": "
+                                                + (!FREDConstants.OUTCROP.equals(featureType) ? depthDesc + ": " : "")
+                                                + labStr + (person.equals("") ? "" : person + "; ") + detailDateStr;
+                        %><tr><td><%=recName%></td><td><%=recordId%></td></tr><%
                                     }
+                                
                                 }
-
-                                String recName = frNumber + ": "
-                                        + (!FREDConstants.OUTCROP.equals(featureType) ? depthDesc + ": " : "")
-                                        + labStr + (person.equals("") ? "" : person + "; ") + detailDateStr;
-                %><tr><td><%=recName%></td><td><%=recordId%></td></tr><%
+                            }
                         }
-                    }
                 } else {
             %><tr><td>No records found in folder</td><td></td></tr><%                                            }
             } catch (Exception e) {
@@ -206,9 +200,8 @@
                     %></td><td></td></tr><%
                         }
                     } else if (listName.equals("oldPalList")) {
-                        User user = null;
                         try {
-                            user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
+                            user = createUser(request.getParameter("user"), request.getParameter("pass"));
                         } catch (Exception e) {
                     %><tr><td>Error: Invalid username/password</td><td></td><%                                    }
                         try {
@@ -236,201 +229,185 @@
                     } else if (listName.equals("blankPalList")) {
 			%><tr><td>No records defined</td><td>-1</td></tr><%
 		} else if (listName.equals("locSampleList")) {
-                        User user = null;
-                        try {
-                            user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
-                        } catch (Exception e) {
-		   		%><tr><td>Error: Invalid username/password</td><td></td><%
-		   	}
-                try {
-                    UserFolder userFolder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("folderID")), user);
-                    Feature[] features = featureUtil.getFeaturesInFolder(userFolder);
-                    if (features.length > 0) {
-                        for (int i = 0; i < features.length; i++) {
-                            if (featureUtil.isAllowedReadFeature(user, features[i])) {
-                                List<Sample> samples = new Vector<Sample>();
-                                samples.addAll(features[i].getSamples());
-                                Collections.sort(samples);
-                                for (Sample sample : samples) {
-                %><tr><td><%=FeatureUtil.getFeatureIdentifyingName(features[i])
-                                + ((!FREDConstants.OUTCROP.equals(features[i].getFeatureType())) ? ": " + SampleUtil.getDrillHoleDepthDescription(sample) : "")%></td><td><%=sample.getSampleId()%></td></tr><%
+                    if (user == null) {
+                        %><tr><td>Error: Invalid username/password</td><td></td><%
+                    }
+                    try {
+                        UserFolder userFolder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("folderID")), user);
+                        Feature[] features = featureUtil.getFeaturesInFolder(userFolder);
+                        if (features.length > 0) {
+                            for (int i = 0; i < features.length; i++) {
+                                if (featureUtil.isAllowedReadFeature(user, features[i])) {
+                                    List<Sample> samples = new Vector<Sample>();
+                                    samples.addAll(features[i].getSamples());
+                                    Collections.sort(samples);
+                                    for (Sample sample : samples) {
+                    %><tr><td><%=FeatureUtil.getFeatureIdentifyingName(features[i])
+                                    + ((!FREDConstants.OUTCROP.equals(features[i].getFeatureType())) ? ": " + SampleUtil.getDrillHoleDepthDescription(sample) : "")%></td><td><%=sample.getSampleId()%></td></tr><%
+                                    }
                                 }
                             }
+                        } else {
+                            %><tr><td>No features found in folder</td><td></td></tr><%
                         }
-                    } else {
-					%><tr><td>No features found in folder</td><td></td></tr><%
-				}
-        } catch (Exception e) {
-				%><tr><td>Error</td><td></td></tr><%
-			}
-} else if (listName.equals("blankLocSampleList")) {
+                    } catch (Exception e) {
+                        %><tr><td>Error</td><td></td></tr><%
+                    }
+                } else if (listName.equals("blankLocSampleList")) {
 			%><tr><td>No samples defined</td><td>-1</td></tr><%
 		} else if (listName.equals("sampleList")) {
-    User user = null;
-    try {
-        user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
-    } catch (Exception e) {
-		   		%><tr><td>Error: Invalid username/password</td><td></td><%
-		   	}
-    try {
-        Feature feature = featureUtil.getFeature(Integer.parseInt(request.getParameter("featureID")));
-        if (!feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
-            for (Sample sample : FeatureUtil.getSortedSamples(feature)) {
-                if (sampleUtil.isAllowedReadSample(user, sample)) {
-                %><tr><td><%=SampleUtil.getDrillHoleDepthDescription(sample)%></td><td><%=sample.getSampleId()%></td></tr><%
-            }
-        }
-    } else {
-					%><tr><td>** Outcrop **</td><td></td></tr><%
-				}
-} catch (Exception e) {
-		   		%><tr><td>Error</td><td></td></tr><%
-		   	}
-} else if (listName.equals("blankSampleList")) {
+                    if (user == null) {
+                        %><tr><td>Error: Invalid username/password</td><td></td><%
+                    }
+                    try {
+                        Feature feature = featureUtil.getFeature(Integer.parseInt(request.getParameter("featureID")));
+                        if (!feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
+                            for (Sample sample : FeatureUtil.getSortedSamples(feature)) {
+                                if (sampleUtil.isAllowedReadSample(user, sample)) {
+                                    %><tr><td><%=SampleUtil.getDrillHoleDepthDescription(sample)%></td><td><%=sample.getSampleId()%></td></tr><%
+                                }
+                            }
+                        } else {
+                            %><tr><td>** Outcrop **</td><td></td></tr><%
+                        }
+                    } catch (Exception e) {
+                        %><tr><td>Error</td><td></td></tr><%
+                    }
+                } else if (listName.equals("blankSampleList")) {
 			%><tr><td>No samples defined</td><td>-1</td></tr><%
 		} else if (listName.equals("localityList")) {
-    User user = null;
-    try {
-        user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
-    } catch (Exception e) {
-		   		%><tr><td>Error: Invalid username/password</td><td></td><%
-		   	}
-    try {
-        UserFolder userFolder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("folderID")), user);
-        Feature[] features = featureUtil.getFeaturesInFolder(userFolder);
-        if (features.length > 0) {
-            for (int i = 0; i < features.length; i++) {
-                if (featureUtil.isAllowedReadFeature(user, features[i])) {
-                %><tr><td><%=FeatureUtil.getFeatureIdentifyingName(features[i])%></td><td><%=features[i].getFeatureId()%></td></tr><%
-            }
-        }
-    } else {
-					%><tr><td>No features found in folder</td><td></td></tr><%
-				}
-} catch (Exception e) {
-				%><tr><td>Error</td><td></td></tr><%
-			}
-} else if (listName.equals("blankLocalityList")) {
-			%><tr><td>No features defined</td><td>-1</td></tr><%
+                    if (user == null) {
+                        %><tr><td>Error: Invalid username/password</td><td></td><%
+                    }
+                    try {
+                        UserFolder userFolder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("folderID")), user);
+                        Feature[] features = featureUtil.getFeaturesInFolder(userFolder);
+                        if (features.length > 0) {
+                            for (int i = 0; i < features.length; i++) {
+                                if (featureUtil.isAllowedReadFeature(user, features[i])) {
+                                %><tr><td><%=FeatureUtil.getFeatureIdentifyingName(features[i])%></td><td><%=features[i].getFeatureId()%></td></tr><%
+                                }
+                            }
+                        } else {
+                            %><tr><td>No features found in folder</td><td></td></tr><%
+                        }
+                    } catch (Exception e) {
+                        %><tr><td>Error</td><td></td></tr><%
+                    }
+                } else if (listName.equals("blankLocalityList")) {
+                    %><tr><td>No features defined</td><td>-1</td></tr><%
 		} else if (listName.equals("folderList")) {
-    User user = null;
-    try {
-        user = new User(request.getParameter("user"), request.getParameter("pass"), JspUtils.createDatabaseConnection(state.getSession(), "nz.cri.gns.ip.connection", "ip", state.getContext()));
-    } catch (Exception e) {
-		   		%><tr><td>Error: Invalid username/password</td><td></td><%
-		   	}
-    try {
-        if (folderUtil.getPersonalFolders(user).size() > 0 || folderUtil.getBacklogFolders(user).size() > 0) {
-            for (Iterator i = folderUtil.getPersonalFolders(user).iterator(); i.hasNext();) {
-                UserFolder folder = (UserFolder) i.next();
-                %><tr><td><%=folder.getFolderName()%></td><td><%=folder.getFolderId()%></td></tr><%
-        }
-        for (Iterator i = folderUtil.getBacklogFolders(user).iterator(); i.hasNext();) {
-            UserFolder folder = (UserFolder) i.next();
-            %><tr><td><%=folder.getFolderName()%></td><td><%=folder.getFolderId()%></td></tr><%
-    }
-} else {
-					%><tr><td>No folders found</td><td></td></tr><%
-				}
-} catch (Exception e) {
-    e.printStackTrace();
-            %><tr><td>No folders defined</td><td></td></tr><%
-    }
-} else if (listName.equals("blankFolderList")) {
+                    if (user == null) {
+                        %><tr><td>Error: Invalid username/password</td><td></td><%
+                    }
+                    try {
+                        if (folderUtil.getPersonalFolders(user).size() > 0 || folderUtil.getBacklogFolders(user).size() > 0) {
+                            for (Iterator i = folderUtil.getPersonalFolders(user).iterator(); i.hasNext();) {
+                                UserFolder folder = (UserFolder) i.next();
+                                %><tr><td><%=folder.getFolderName()%></td><td><%=folder.getFolderId()%></td></tr><%
+                            }
+                            for (Iterator i = folderUtil.getBacklogFolders(user).iterator(); i.hasNext();) {
+                                UserFolder folder = (UserFolder) i.next();
+                            %><tr><td><%=folder.getFolderName()%></td><td><%=folder.getFolderId()%></td></tr><%
+                            }
+                        } else {
+                            %><tr><td>No folders found</td><td></td></tr><%
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        %><tr><td>No folders defined</td><td></td></tr><%
+                    }
+                } else if (listName.equals("blankFolderList")) {
 			%><tr><td>No folders defined</td><td>-1</td></tr><%
 		} else if (listName.equals("datum")) {
-            %><tr><td>New Zealand Map Grid</td><td>NZMG</td></tr>
-            <tr><td>NZMS260 - 3-digit</td><td>NZMS260</td></tr>
-            <tr><td>NZMS260 - 4-digit</td><td>NZMS260</td></tr>
-            <tr><td>NZTM</td><td>NZTM</td></tr>
-            <tr><td>NZTopo50 - 3-digit</td><td>NZTopo50</td></tr>
-            <tr><td>NZTopo50 - 4-digit</td><td>NZTopo50</td></tr>
-            <tr><td>NZ Yard Grid (Sth Isl)</td><td>NZ Yard SthIsl</td></tr>
-            <tr><td>NZ Yard Grid (Nth Isl)</td><td>NZ Yard NthIsl</td></tr>
-            <tr><td>NZMS1 (Sth Isl) - 3-digit</td><td>NZMS1 SthIsl</td></tr>
-            <tr><td>NZMS1 (Sth Isl) - 4-digit</td><td>NZMS1 SthIsl</td></tr>
-            <tr><td>NZMS1 (Nth Isl) - 3-digit</td><td>NZMS1 NthIsl</td></tr>
-            <tr><td>NZMS1 (Nth Isl) - 4-digit</td><td>NZMS1 NthIsl</td></tr>
-            <tr><td>Chatham Island Grid</td><td>Chatham Island Grid</td></tr>
-            <tr><td>Auckland Island Grid</td><td>Auckland Island Transverse Mercator</td></tr>
-            <tr><td>Campbell Island Grid</td><td>Campbell Island Transverse Mercator</td></tr>
-            <tr><td>Lat/Long NZGD49</td><td>NZGD49</td></tr>
-            <tr><td>Lat/Long Chatham Isl</td><td>Chatham Island Datum</td></tr>
-            <tr><td>Lat/Long NZGD2000</td><td>NZGD2000</td></tr>
-			<tr><td>Lat/Long WGS84</td><td>WGS84</td></tr><%
+                    %><tr><td>New Zealand Map Grid</td><td>NZMG</td></tr>
+                    <tr><td>NZMS260 - 3-digit</td><td>NZMS260</td></tr>
+                    <tr><td>NZMS260 - 4-digit</td><td>NZMS260</td></tr>
+                    <tr><td>NZTM</td><td>NZTM</td></tr>
+                    <tr><td>NZTopo50 - 3-digit</td><td>NZTopo50</td></tr>
+                    <tr><td>NZTopo50 - 4-digit</td><td>NZTopo50</td></tr>
+                    <tr><td>NZ Yard Grid (Sth Isl)</td><td>NZ Yard SthIsl</td></tr>
+                    <tr><td>NZ Yard Grid (Nth Isl)</td><td>NZ Yard NthIsl</td></tr>
+                    <tr><td>NZMS1 (Sth Isl) - 3-digit</td><td>NZMS1 SthIsl</td></tr>
+                    <tr><td>NZMS1 (Sth Isl) - 4-digit</td><td>NZMS1 SthIsl</td></tr>
+                    <tr><td>NZMS1 (Nth Isl) - 3-digit</td><td>NZMS1 NthIsl</td></tr>
+                    <tr><td>NZMS1 (Nth Isl) - 4-digit</td><td>NZMS1 NthIsl</td></tr>
+                    <tr><td>Chatham Island Grid</td><td>Chatham Island Grid</td></tr>
+                    <tr><td>Auckland Island Grid</td><td>Auckland Island Transverse Mercator</td></tr>
+                    <tr><td>Campbell Island Grid</td><td>Campbell Island Transverse Mercator</td></tr>
+                    <tr><td>Lat/Long NZGD49</td><td>NZGD49</td></tr>
+                    <tr><td>Lat/Long Chatham Isl</td><td>Chatham Island Datum</td></tr>
+                    <tr><td>Lat/Long NZGD2000</td><td>NZGD2000</td></tr>
+                    <tr><td>Lat/Long WGS84</td><td>WGS84</td></tr><%
+                    
 		} else if (listName.equals("localityType")) {
                         %><tr><td>Outcrop</td><td></td></tr>
                         <tr><td>Drillhole</td><td></td></tr>
                         <tr><td>Vertical Section</td><td></td></tr><%
 		} else {
-                Connection conn = null;
-                try {
-                    conn = FREDUtil.getConnection();
-                    Statement statement = conn.createStatement();
-                    ResultSet rs = null;
-                    if (listName.equals("bedding")) {
-                        rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || bedding_id  FROM bedding ORDER BY code");
-                    } else if (listName.equals("carbonate")) {
-                        rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || carbonate_id  FROM carbonate ORDER BY code");
-                    } else if (listName.equals("colour")) {
-                        rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || colour_id  FROM rock_colour ORDER BY code");
-                    } else if (listName.equals("colourMod")) {
-                        rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || modifier_id  FROM colour_modifier ORDER BY code");
-                    } else if (listName.equals("country")) {
-                        rs = statement.executeQuery("SELECT country_name || '</td><td>' || country_code FROM mis.country ORDER BY country_name");
-                    } else if (listName.equals("drillType")) {
-                        rs = statement.executeQuery("SELECT name || '</td><td>' || drill_type_id FROM drill_type ORDER BY name");
-                    } else if (listName.equals("fossilGroup")) {
-                        rs = statement.executeQuery("SELECT name FROM fossil_group ORDER BY name");
-                    } else if (listName.equals("grainSize")) {
-                        rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || grain_size_id  FROM grain_size ORDER BY code");
-                    } else if (listName.equals("hardness")) {
-                        rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || hardness_id  FROM hardness ORDER BY code");
-                    } else if (listName.equals("lab")) {
-                        rs = statement.executeQuery("SELECT lab_name FROM sc.lab ORDER BY lab_name");
-                    } else if (listName.equals("locMethod")) {
-                        rs = statement.executeQuery("SELECT method || '</td><td>' || method_id || '</td><td>' || nom_accuracy_xy FROM sc.method WHERE nom_accuracy_xy IS NOT NULL ORDER BY nom_accuracy_xy");
-                    } else if (listName.equals("person")) {
-                        rs = statement.executeQuery("SELECT name FROM person ORDER BY name");
-                    } else if (listName.equals("regArea")) {
-                        rs = statement.executeQuery("SELECT name || '</td><td>' || reg_area_id FROM registration_area ORDER BY name");
-                    } else if (listName.equals("thickness")) {
-                        rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || thickness_id FROM bed_thickness ORDER BY code");
-                    } else if (listName.equals("sedFeature")) {
-                        rs = statement.executeQuery("SELECT name FROM sedimentary_feature_type ORDER BY code");
-                    } else if (listName.equals("stageName")) {
-                        rs = statement.executeQuery("SELECT name || '</td><td>' || age_id FROM age ORDER BY base_age, top_age");
-                    } else if (listName.equals("stratName")) {
-                        rs = statement.executeQuery("SELECT su_name FROM sl.strat_unit ORDER BY su_name");
-                    } else if (listName.equals("weathering")) {
-                        rs = statement.executeQuery("SELECT code || ': ' || name || '</td><td>' || weathering_id FROM weathering ORDER BY code");
-                    } else if (listName.equals("labSection")) {
-                        rs = statement.executeQuery("SELECT l.lab_name || DECODE(ls.code, NULL, NULL, ': ' || ls.code) || '</td><td>' || ls.lab_section_id FROM lab_section ls, sc.lab l WHERE ls.lab_id = l.lab_id ORDER BY l.lab_name, ls.code");
-                    } else if (listName.equals("taxaGroup")) {
-                        rs = statement.executeQuery("SELECT name FROM taxonomic_group ORDER BY group_id");
-                    } else if (listName.equals("confidGroup")) {
-                        rs = statement.executeQuery("SELECT name FROM confidential_group ORDER BY name asc");
-                    }
-                    while (rs.next()) {
-            %><tr><td><%=rs.getString(1).replaceAll(" ", "&nbsp;")%></td></tr><%
+                    try (Connection conn = FREDUtil.getConnection(); Statement statement = conn.createStatement()){
+                        String query = null;
+                        if (listName.equals("bedding")) {
+                            query = "SELECT code || ': ' || name || '</td><td>' || bedding_id  FROM bedding ORDER BY code";
+                        } else if (listName.equals("carbonate")) {
+                            query = "SELECT code || ': ' || name || '</td><td>' || carbonate_id  FROM carbonate ORDER BY code";
+                        } else if (listName.equals("colour")) {
+                            query = "SELECT code || ': ' || name || '</td><td>' || colour_id  FROM rock_colour ORDER BY code";
+                        } else if (listName.equals("colourMod")) {
+                            query = "SELECT code || ': ' || name || '</td><td>' || modifier_id  FROM colour_modifier ORDER BY code";
+                        } else if (listName.equals("country")) {
+                            query = "SELECT country_name || '</td><td>' || country_code FROM mis.country ORDER BY country_name";
+                        } else if (listName.equals("drillType")) {
+                            query = "SELECT name || '</td><td>' || drill_type_id FROM drill_type ORDER BY name";
+                        } else if (listName.equals("fossilGroup")) {
+                            query = "SELECT name FROM fossil_group ORDER BY name";
+                        } else if (listName.equals("grainSize")) {
+                            query = "SELECT code || ': ' || name || '</td><td>' || grain_size_id  FROM grain_size ORDER BY code";
+                        } else if (listName.equals("hardness")) {
+                            query = "SELECT code || ': ' || name || '</td><td>' || hardness_id  FROM hardness ORDER BY code";
+                        } else if (listName.equals("lab")) {
+                            query = "SELECT lab_name FROM sc.lab ORDER BY lab_name";
+                        } else if (listName.equals("locMethod")) {
+                            query = "SELECT method || '</td><td>' || method_id || '</td><td>' || nom_accuracy_xy FROM sc.method WHERE nom_accuracy_xy IS NOT NULL ORDER BY nom_accuracy_xy";
+                        } else if (listName.equals("person")) {
+                            query = "SELECT name FROM person ORDER BY name";
+                        } else if (listName.equals("regArea")) {
+                            query = "SELECT name || '</td><td>' || reg_area_id FROM registration_area ORDER BY name";
+                        } else if (listName.equals("thickness")) {
+                            query = "SELECT code || ': ' || name || '</td><td>' || thickness_id FROM bed_thickness ORDER BY code";
+                        } else if (listName.equals("sedFeature")) {
+                            query = "SELECT name FROM sedimentary_feature_type ORDER BY code";
+                        } else if (listName.equals("stageName")) {
+                            query = "SELECT name || '</td><td>' || age_id FROM age ORDER BY base_age, top_age";
+                        } else if (listName.equals("stratName")) {
+                            query = "SELECT su_name FROM sl.strat_unit ORDER BY su_name";
+                        } else if (listName.equals("weathering")) {
+                            query = "SELECT code || ': ' || name || '</td><td>' || weathering_id FROM weathering ORDER BY code";
+                        } else if (listName.equals("labSection")) {
+                            query = "SELECT l.lab_name || DECODE(ls.code, NULL, NULL, ': ' || ls.code) || '</td><td>' || ls.lab_section_id FROM lab_section ls, sc.lab l WHERE ls.lab_id = l.lab_id ORDER BY l.lab_name, ls.code";
+                        } else if (listName.equals("taxaGroup")) {
+                            query = "SELECT name FROM taxonomic_group ORDER BY group_id";
+                        } else if (listName.equals("confidGroup")) {
+                            query = "SELECT name FROM confidential_group ORDER BY name asc";
                         }
-                        rs.close();
-                        statement.close();
-                        conn.close();
-                    } finally {
-				if (conn != null) try {
-                                conn.close();
-                            } catch (Exception _e) {
+                        if (query != null) {
+                            try (ResultSet rs = statement.executeQuery(query)) {
+                                while (rs.next()) {
+                                    %><tr><td><%=rs.getString(1).replaceAll(" ", "&nbsp;")%></td></tr><%
+                                }                                
                             }
                         }
+
+                    } catch (Exception _e) {
                     }
                 }
+            }
             %></table><%
                 try {
                     FredHibernate.get().getDAOFactory().closeSession();
                 } catch (Exception e) {
-            %><p>Exception: <%=e.getMessage()%></p>
-        <p><%=e.toString()%></p><%
-            }
+                    %><p>Exception: <%=e.getMessage()%></p>
+                     <p><%=e.toString()%></p><%
+                }
 
         %></body></html>

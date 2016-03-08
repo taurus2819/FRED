@@ -1,7 +1,7 @@
 <%@page pageEncoding="utf-8"
 %><%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="java.util.List"
-%><%@page import="nz.cri.gns.auth.User"
+%><%@page import="nz.cri.gns.auth.domain.User"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
 %><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
@@ -13,7 +13,8 @@
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%!
 	public String getName(HttpServletRequest request) {
-		return "FRED :: " + ((User)getUser(request.getSession())).getFullName() + "'s Folders";
+        String name = ((User)getUser(request.getSession())).getFullName();
+		return "FRED :: " +name + "'s Folders";
 	}
 	
 %><%

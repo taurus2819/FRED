@@ -14,8 +14,8 @@
 %><%@page import="nz.cri.gns.jsp.PageState"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
 %><%@page import="nz.cri.gns.jsp.JspUtils"
-%><%@page import="nz.cri.gns.auth.Authenticable"
-%><%@page import="nz.cri.gns.auth.User"
+%><%@page import="nz.cri.gns.auth.security.IpGrantedAuthority"
+%><%@page import="nz.cri.gns.auth.domain.User"
 %><%@page import="java.util.List"
 %><%@page import="java.util.ArrayList"
 %><%@page import="java.util.Vector"
@@ -42,7 +42,10 @@
 %><%@page import="java.util.logging.Logger"
 %><%@page import="java.util.Enumeration"
 %><%!
-	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
+        @Override
+        public IpGrantedAuthority getRequiredRights() {
+            return null;
+        }
 %>
 <%!
 	// Define Util classes

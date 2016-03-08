@@ -11,12 +11,15 @@
 %><%@page import="nz.cri.gns.html.Attributes"
 %><%@page import="java.io.PrintWriter"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
-%><%@page import="nz.cri.gns.auth.Authenticable"
+%><%@page import="nz.cri.gns.auth.security.IpGrantedAuthority"
 %><%@page import="nz.cri.gns.html.select.SelectBox"
 %><%@page import="nz.cri.gns.html.Attributes"
-%><%@page import="nz.cri.gns.auth.User"
+%><%@page import="nz.cri.gns.auth.domain.User"
 %><%!
-	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
+        @Override
+        public IpGrantedAuthority getRequiredRights() {
+            return null;
+        }
 %><%!
 	public String getName(HttpServletRequest request) {
 		return "FRED :: Simple Query Form";

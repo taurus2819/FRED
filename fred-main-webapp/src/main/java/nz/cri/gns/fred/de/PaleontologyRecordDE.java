@@ -15,8 +15,8 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-import nz.cri.gns.auth.InsufficientPrivelegesException;
-import nz.cri.gns.auth.User;
+import nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException;
+import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
@@ -211,7 +211,7 @@ public class PaleontologyRecordDE extends RecordDE {
                             taxon.setStatus(FREDConstants.PROVISIONAL);
                             taxon.setTaxonomicGroup(group);
                             taxon.setTaxonomicName(cleanName);
-                            taxon.setSubmittedById(new Integer(user.getId()));
+                            taxon.setSubmittedById(user.getId().intValue());
                             taxon.setSubmittedDate(new Date());
                             //Also add the entry to the bad list
                             badTaxaList.add(entry);

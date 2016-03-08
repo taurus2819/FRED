@@ -32,8 +32,8 @@
         %><%@page import="java.util.List"
         %><%@page import="java.util.Arrays"
         %><%@page import="java.util.Vector"
-        %><%@page import="nz.cri.gns.auth.User"
-        %><%@page import="nz.cri.gns.auth.Authenticable"
+        %><%@page import="nz.cri.gns.auth.domain.User"
+        %><%@page import="nz.cri.gns.auth.security.IpGrantedAuthority"
         %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
         %><%@page import="nz.cri.gns.fred.hibernate.util.FredHibernate"
         %><%@page import="nz.cri.gns.fred.util.AuditUtil"
@@ -48,8 +48,9 @@
         %><%@page import="nz.cri.gns.fred.de.DataInputException"
         %><%@page import="nz.cri.gns.intranet.ServletUtils"
 %><%!
-    public Authenticable[] getRequiredRights(HttpServletRequest request) {
-        return new Authenticable[0];
+    @Override
+    public IpGrantedAuthority getRequiredRights() {
+        return null;
     }
 %><%!    public String getName(HttpServletRequest request) {
         try {

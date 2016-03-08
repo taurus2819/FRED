@@ -1,8 +1,6 @@
 package nz.cri.gns.fred;
 
-import javax.servlet.http.HttpServletRequest;
-
-import nz.cri.gns.auth.Authenticable;
+import nz.cri.gns.auth.security.IpGrantedAuthority;
 import nz.cri.gns.jsp.IconnedLink;
 import nz.cri.gns.jsp.NewExtranetTemplate;
 
@@ -11,8 +9,8 @@ public abstract class FREDStaticIPSysJspPage extends FREDIPSysJspPage{
     private static final long serialVersionUID = 20050818L;
 
 	@Override
-	public Authenticable[] getRequiredRights(HttpServletRequest request) {
-		return new Authenticable[0];
+	public IpGrantedAuthority getRequiredRights() {
+		return null;
 	}
 	
 	@Override

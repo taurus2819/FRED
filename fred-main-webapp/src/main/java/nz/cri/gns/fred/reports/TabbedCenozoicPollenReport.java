@@ -1,4 +1,3 @@
-
 package nz.cri.gns.fred.reports;
 
 import java.io.BufferedReader;
@@ -7,35 +6,27 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
 import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
-import nz.cri.gns.fred.export.PollenExport;
 import nz.cri.gns.fred.export.TabbedPollenExport;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.util.FeatureUtil;
-import nz.cri.gns.util.NullOutputStream;
 
 /**
  *
  * @author richardt
  */
-public class TabbedCenozoicPollenReport {
+public class TabbedCenozoicPollenReport extends AbstractReport {
      private FredDAO dao;
     private HashMap<String, HashMap<String,Integer>> taxa = null;
     private HashMap<String, HashMap<String,Integer>> aggregatedTaxa = null;
@@ -46,14 +37,19 @@ public class TabbedCenozoicPollenReport {
     }
     
     
-    public static void main(String[] args)     {
-        TabbedCenozoicPollenReport report = new TabbedCenozoicPollenReport();
-        report.report();
+    public static void main(String[] args) {
+        try {
+            TabbedCenozoicPollenReport report = new TabbedCenozoicPollenReport();
+            report.report(args[0], args[1], args[2], args[3]);
+        } catch (Exception e) {
+            System.out.println("Usage: TabbedCenozoicPollenReport( <Oracle host> <Oracle SID> <DB username> <DB password> )");
+            e.printStackTrace();            
+        }
     }
     
-    private void report() {
+    private void report(String host, String sid, String user, String password) {
         System.out.println("Setting up jndi");
-        setupJNDI();
+        setupJNDI(host, sid, user, password);
         System.out.println("Reading inputs");
         Iterable<String> candidates = parseInputFile("//tmp//cenozoic-pollen-frnums.txt");
         Vector<Feature> features = new Vector<Feature>(1024);
@@ -193,70 +189,5 @@ public class TabbedCenozoicPollenReport {
         }
         
         return frnums;
-    }
-     
-      private void setupJNDI() {
-        try {
-            JNDI.setup();            
-                  
-        } catch (Exception ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, ex.getMessage(), ex);
-            if (ex instanceof IllegalStateException) {
-                if ("InitialContextFactoryBuilder already set".equals(ex.getMessage())) {
-                    System.out.println("Using previous JNDI setup");
-                    return;
-                }
-            }        
-        }
-        
-        
-        try {            
-            InitialContext context = new InitialContext();
-            final Connection conn = DBUtils.getJavaSqlConnection("gns", "fr");
-            FredHibernate.get().configure(conn);
-            context.bind("java:comp/env/jdbc/fr", new DataSource() {
-                
-                public int getLoginTimeout() throws SQLException {
-                    return 0;
-                }
-                
-                public void setLoginTimeout(int seconds) throws SQLException {
-                }
-                
-                public void setLogWriter(PrintWriter out) throws SQLException {
-                }
-                
-                public PrintWriter getLogWriter() throws SQLException {
-                    return new PrintWriter(new NullOutputStream());
-                }
-                
-                public Connection getConnection(String username, String password)
-                        throws SQLException {
-                    return null;
-                }
-                
-                public Connection getConnection() throws SQLException {
-                    return UnclosableConnection.create(conn);
-                }
-                
-                @Override
-                public boolean isWrapperFor(Class<?> iface) throws SQLException {
-                    return conn.isWrapperFor(iface);
-                }
-                
-                @Override
-                public <T> T unwrap(Class<T> iface) throws SQLException {
-                    return conn.unwrap(iface);
-                }
-
-                @Override
-                public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-            });
-            
-        } catch (Exception ex) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, ex.getMessage(), ex);
-        } 
     }
 }

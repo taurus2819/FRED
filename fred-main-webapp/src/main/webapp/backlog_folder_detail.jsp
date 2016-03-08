@@ -13,7 +13,7 @@
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
 %><%@page import="nz.cri.gns.fred.website.WebsiteConstants"
-%><%@page import="nz.cri.gns.auth.User"
+%><%@page import="nz.cri.gns.auth.domain.User"
 %><%@page import="java.net.URLEncoder"
 %><%!
 	public String getName(HttpServletRequest request) {

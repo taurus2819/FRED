@@ -10,9 +10,12 @@
 %><%@page import="java.util.Date"
 %><%@page import="java.util.Iterator"
 %><%@page import="java.net.URLEncoder"
-%><%@page import="nz.cri.gns.auth.Authenticable"
+%><%@page import="nz.cri.gns.auth.security.IpGrantedAuthority"
 %><%!
-	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
+@Override
+public IpGrantedAuthority getRequiredRights() {
+    return null;
+}
 %>
 <!DOCTYPE html 
    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 

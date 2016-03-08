@@ -3,51 +3,30 @@ package nz.cri.gns.fred.reports;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.rmi.NotBoundException;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.*;
-import java.util.logging.Logger;
-
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.sql.DataSource;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.db.DBUtils;
-import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.export.MolluscanAgeValidator;
 import nz.cri.gns.fred.export.MolluscaExport;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.FrNumber;
-import nz.cri.gns.fred.model.PaleontologyListEntry;
-import nz.cri.gns.fred.model.Record;
-import nz.cri.gns.fred.model.Sample;
-import nz.cri.gns.fred.model.Taxon;
-import nz.cri.gns.fred.util.FREDUtil;
-import nz.cri.gns.fred.util.SiteUtil;
-import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
-import nz.cri.gns.util.NullOutputStream;
 
-public class CenozoicMolluscaReport {
+public class CenozoicMolluscaReport extends AbstractReport {
     private int featureCount = 0;
     
-    public CenozoicMolluscaReport() {
-  
-    }
+    public CenozoicMolluscaReport() { }
     
     /**
      * @param args
@@ -64,28 +43,26 @@ public class CenozoicMolluscaReport {
     public static void main(String[] args) throws IOException, NamingException, StorageAccessException, ClassNotFoundException, NotBoundException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException {
         String s = "Commencing";
         try {
-                CenozoicMolluscaReport report = new CenozoicMolluscaReport();
-                if (args.length==2) {
-                    report.report(args[0], args[1], null);
-                } else {
-                    report.report(args[0], args[1], args[2]);
-                }
+            CenozoicMolluscaReport report = new CenozoicMolluscaReport();
+            if (args.length==6) {
+                report.report(args[0], args[1], args[2], args[3], args[4], args[5], null);
+            } else {
+                report.report(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+            }
         } catch (Exception ex) {
+            System.out.println("Usage: new CenozoicMolluscaReport(<Oracle Host> <Oracle SID> <DB username> <DB password> <input-file> <output-dir> [<done file name>] )");
             ex.printStackTrace();
         }
                 
     }
     
-    public void report(String infilename, String outdirname, String donefilename)
+    public void report(String host, String sid, String user, String password, String infilename, String outdirname, String donefilename)
             throws IOException, NamingException, StorageAccessException, ClassNotFoundException, NotBoundException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException {
-        if (infilename== null || outdirname==null) {
-            System.out.println("Usage: new CenozoicMolluscaReport( <input-file> [<output-dir>])");
-        }
 
         File outDir = new File(outdirname);
 
         //Connect!
-        setupJNDI();
+        setupJNDI(host, sid, user, password);
         
         //Collect all the features
         System.out.println("Reading inputs");
@@ -140,64 +117,6 @@ public class CenozoicMolluscaReport {
         writer.flush();
         writer.close();
         System.out.println("Ferme");
-    }
-
-    private void setupJNDI() throws NamingException, ClassNotFoundException, NotBoundException, SQLException, ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
-        try {
-            JNDI.setup();
-            
-        } catch (Exception ex) {
-            if (ex instanceof IllegalStateException) {
-                if ("InitialContextFactoryBuilder already set".equals(ex.getMessage())) {
-                    System.out.println("Using previous JNDI setup");
-                    return;
-                }
-            }
-        }
-        
-        InitialContext context = new InitialContext();
-        final Connection conn = DBUtils.getJavaSqlConnection("gns", "fr");
-        FredHibernate.get().configure(conn);
-        context.bind("java:comp/env/jdbc/fr", new DataSource() {
-
-            public int getLoginTimeout() throws SQLException {
-                return 0;
-            }
-
-            public void setLoginTimeout(int seconds) throws SQLException {
-            }
-
-            public void setLogWriter(PrintWriter out) throws SQLException {
-            }
-
-            public PrintWriter getLogWriter() throws SQLException {
-                return new PrintWriter(new NullOutputStream());
-            }
-
-            public Connection getConnection(String username, String password)
-                    throws SQLException {
-                return null;
-            }
-
-            public Connection getConnection() throws SQLException {
-                return UnclosableConnection.create(conn);
-            }
-
-            @Override
-            public boolean isWrapperFor(Class<?> iface) throws SQLException {
-                return conn.isWrapperFor(iface);
-            }
-
-            @Override
-            public <T> T unwrap(Class<T> iface) throws SQLException {
-                return conn.unwrap(iface);
-            }
-
-            @Override
-            public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        });
     }
 
     private Iterable<Integer> parseInputIdFile(String file) throws IOException {

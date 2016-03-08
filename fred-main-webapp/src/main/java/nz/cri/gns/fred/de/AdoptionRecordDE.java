@@ -9,8 +9,8 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-import nz.cri.gns.auth.InsufficientPrivelegesException;
-import nz.cri.gns.auth.User;
+import nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException;
+import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.Adoption;

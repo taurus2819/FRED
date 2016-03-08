@@ -3,8 +3,8 @@ package nz.cri.gns.fred.de;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import nz.cri.gns.auth.InsufficientPrivelegesException;
-import nz.cri.gns.auth.User;
+import nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException;
+import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.FREDConstants;
@@ -51,14 +51,6 @@ public class DataEntryFormFactory {
 		return toLoc;
 	}
 	
-/*	public static LocalityDE copyLocalityDataEntryForm(int copyID, User user, int folderID, DAOFactory factory) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException {
-		LocalityDE copyLoc = getLocalityDataEntryForm(copyID, user, factory);
-		LocalityDE toLoc = getLocalityDataEntryForm(copyLoc.getFeatureType(), user, folderID, factory);
-		for (int i = 0; i < copyLoc.getFieldCount(); i++) {
-			toLoc.setField(i, copyLoc.getField(i));
-		}
-		return toLoc;
-	}*/
 	
 	public static SampleDE getSampleDataEntryForm(int sampleID, int folderID, User user, DAOFactory factory, ContentProvider provider) throws IllegalArgumentException, DataInputException, SQLException, IOException, InsufficientPrivelegesException, StorageAccessException  {
 		return new SampleDE(new SampleUtil(factory).getSample(sampleID), folderID, user, factory, provider);

@@ -11,10 +11,8 @@ public interface UserRightView extends Comparable<UserRightView>, NameableAndIde
 	public String getFamilyName();
 	public void setFullName(String fullName);
 	public String getFullName();
-	public void setIpRightId(Integer ipRightId);
-	public Integer getIpRightId();
-	public void setIpRightDescription(String ipRightDescription);
-	public String getIpRightDescription();
+	public void setIpRightName(String rightName);
+	public String getIpRightName();
 	public void setUserView(UserView userView);
 	public UserView getUserView();
 }

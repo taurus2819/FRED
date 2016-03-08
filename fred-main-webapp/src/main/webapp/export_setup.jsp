@@ -1,9 +1,12 @@
 <%@page pageEncoding="utf-8"
 %><%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
-%><%@page import="nz.cri.gns.auth.Authenticable"
+%><%@page import="nz.cri.gns.auth.security.IpGrantedAuthority"
 %><%!
-	public Authenticable[] getRequiredRights(HttpServletRequest request) { return new Authenticable[0]; }
+        @Override
+        public IpGrantedAuthority getRequiredRights() {
+            return null;
+        }
 %><%!
 	public String getName(HttpServletRequest request) {
 		return "FRED :: Export Data";

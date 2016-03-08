@@ -17,8 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
-import nz.cri.gns.auth.User;
-import nz.cri.gns.auth.UserAccount;
+import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
@@ -75,7 +74,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 	private RecordUtil recordUtil;
 	private SampleUtil sampleUtil;
 	private FeatureUtil featureUtil;
-	private UserAccount user;
+	private User user;
 	
 	private Date generateDate;
 	private String username;
@@ -99,7 +98,7 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 			this.recordUtil = new RecordUtil(factory);
 			this.sampleUtil = new SampleUtil(factory);
 			this.featureUtil = new FeatureUtil(factory);
-			this.user = (UserAccount)request.getSession().getAttribute(User.USER_ATTRIBUTE);
+			this.user = (User)request.getSession().getAttribute(User.USER_ATTRIBUTE);
 			this.generateDate = new Date();
 			this.username = ((user != null) ? user.getGivenName() + " " + user.getFamilyName() : "unknown");
 			

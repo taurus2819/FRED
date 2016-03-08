@@ -15,17 +15,18 @@
 %><%@page import="nz.cri.gns.fred.util.FeatureUtil"
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
-%><%@page import="nz.cri.gns.auth.User"
-%><%@page import="nz.cri.gns.auth.Authenticable"
-%><%@page import="nz.cri.gns.auth.InsufficientPrivelegesException"
+%><%@page import="nz.cri.gns.auth.domain.User"
+%><%@page import="nz.cri.gns.auth.security.IpGrantedAuthority"
+%><%@page import="nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException"
 %><%@page import="nz.cri.gns.fred.de.DataEntryFormFactory"
 %><%@page import="nz.cri.gns.fred.model.FREDConstants"
 %><%@page import="nz.cri.gns.fred.website.ContentProvider"
 %><%@page import="java.io.File"
 %><%!	
-	public Authenticable[] getRequiredRights(HttpServletRequest request) {
-		return new Authenticable[0];
-	}
+        @Override
+        public IpGrantedAuthority getRequiredRights() {
+            return null;
+        }
 %><%!	
 	private DataEntryForm getDataEntryFormImpl(HttpServletRequest request, User user) {
 		DAOFactory factory = FredHibernate.get().getDAOFactory();
