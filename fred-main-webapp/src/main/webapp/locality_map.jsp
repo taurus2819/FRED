@@ -1,3 +1,5 @@
+<%@page import="java.util.logging.Level"%>
+<%@page import="java.util.logging.Logger"%>
 <%@page import="nz.cri.gns.fred.wms.WMSClient"%>
 <%@page pageEncoding="utf-8"
 %><%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
@@ -20,6 +22,8 @@
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.util.SiteUtil"
 %><%!	
+        private static final Logger log = Logger.getLogger("locality_map.jsp");
+        
         @Override
         public IpGrantedAuthority getRequiredRights() {
             return null;
@@ -46,7 +50,9 @@
 	int distance = 2500;
 	try {
 		distance = Integer.parseInt(request.getParameter("Dist"));
-	} catch (Exception e) {}
+	} catch (Exception e) {
+            log.log(Level.WARNING, "locality_map.jsp: error parsing Dist", e);
+        }
 	String lyr = request.getParameter("Lyr");
     if (lyr==null) {
         lyr = "layer-767"; //topo50
@@ -88,7 +94,9 @@
 				try {
                     Datum nzms260Datum = DatumFactory.createDatum("NZMS260");
 					nzms260Coord = nzms260Datum.convertFromNZGD49(ll);
-				} catch (Exception e) {}
+				} catch (Exception e) {
+                                    log.log(Level.WARNING, "locality_map.jsp: error creating Datum", e);
+                                }
 
 				if (nzms260Coord != null) {
 					try {
@@ -99,7 +107,9 @@
                         if (!datum.getName().equals("NZMG")) {
                             try {
                                 nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
-							} catch (Exception e) { }
+							} catch (Exception e) { 
+                                log.log(Level.WARNING, "locality_map.jsp: error converting Datum", e);                        
+                                                        }
                         } else {
                             nzmgCoord = coord;
                         }
