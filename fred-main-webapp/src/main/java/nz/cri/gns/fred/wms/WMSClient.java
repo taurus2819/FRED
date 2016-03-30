@@ -65,10 +65,11 @@ public class WMSClient {
         Image image = null;
         log.log(Level.INFO, "Map image outDir: {0}", outDir);
         try {
-
+            log.log(Level.INFO, "Reading image from: {0}", url);
             BufferedImage rawImage = ImageIO.read(url);
             final Graphics2D g = rawImage.createGraphics();
             Composite origComposite = g.getComposite();
+            log.log(Level.INFO, "Finished reading map image from: {0}", url);
             
             g.setColor(Color.BLACK);
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
