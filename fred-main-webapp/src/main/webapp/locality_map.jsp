@@ -51,7 +51,6 @@
 	try {
 		distance = Integer.parseInt(request.getParameter("Dist"));
 	} catch (Exception e) {
-            log.log(Level.WARNING, "locality_map.jsp: error parsing Dist", e);
         }
 	String lyr = request.getParameter("Lyr");
     if (lyr==null) {
@@ -100,12 +99,16 @@
 
 				if (nzms260Coord != null) {
 					try {
+                        log.info("Retrieving fred datum");
                         Datum datum = SiteUtil.getFREDDatum(feature);
+                        log.info("Getting coord");
                         Coordinate coord = SiteUtil.getFREDCoordinate(feature);
+                        log.info("Creating NZMG datum");
                         Datum nzmgDatum = DatumFactory.createDatum("NZMG");
                         Datum.Coordinate nzmgCoord = null;
                         if (!datum.getName().equals("NZMG")) {
                             try {
+                                log.info("Converting datum");
                                 nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
 							} catch (Exception e) { 
                                 log.log(Level.WARNING, "locality_map.jsp: error converting Datum", e);                        
@@ -116,8 +119,10 @@
                         //map
 						int width = 620;
 						int height = 500;
+                                                log.info("Getting map URL");
                         String url = WMSClient.getMapURL(nzmgCoord.getEastWest(), nzmgCoord.getNorthSouth(), distance, width, height, lyr, 
                                 getServletConfig().getServletContext().getRealPath("/fred"));
+                        log.info("Map url: "+url);
                         %><img src="<%=url%>" width="<%=width%>" height="<%=height%>" alt="FRED locality map" border="1" /><%
 						if (lyr.toUpperCase().contains("ORTHO")) {
 							%><p><table border="0" width="600"><tr><td>
@@ -150,7 +155,7 @@
 						%></table>
 						</p><%
 						
-						
+                                            log.info("Map rendered");	
 					} catch (Exception e) {
 						e.printStackTrace();
 						%>An error occured while generating this map. Please try again later.<%
