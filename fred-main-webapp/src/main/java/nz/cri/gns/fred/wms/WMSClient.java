@@ -22,6 +22,8 @@ import javax.imageio.ImageIO;
  */
 public class WMSClient {
 
+    private static final Logger log = Logger.getLogger(WMSClient.class.getName());
+    
     public static URL generateMapURL(double xCentre, double yCentre, int distance, int width, int height, String layers) {
         String serverURL = null;
         try {
@@ -61,7 +63,7 @@ public class WMSClient {
 
     private static String processMap(URL url, int width, int height, String outDir) {
         Image image = null;
-
+        log.log(Level.INFO, "Map image outDir: {0}", outDir);
         try {
 
             BufferedImage rawImage = ImageIO.read(url);
@@ -88,7 +90,9 @@ public class WMSClient {
 
             g.translate(-middleX, -middleY);
             File outFile = new File(outDir+getTempFileName());
+            log.log(Level.INFO, "Writing image to: {0}", outFile.getAbsolutePath());
             ImageIO.write(rawImage, "PNG", outFile);
+            log.log(Level.INFO, "Image written to: {0}", outFile.getAbsolutePath());
             return outFile.getName();
 
         
