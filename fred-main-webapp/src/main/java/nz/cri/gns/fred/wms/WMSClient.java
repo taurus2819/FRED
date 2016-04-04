@@ -15,6 +15,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -66,7 +67,7 @@ public class WMSClient {
         log.log(Level.INFO, "Map image outDir: {0}", outDir);
         try {
             log.log(Level.INFO, "Reading image from: {0}", url);
-            BufferedImage rawImage = ImageIO.read(url);
+            BufferedImage rawImage = (BufferedImage) new ImageIcon(url).getImage();
             final Graphics2D g = rawImage.createGraphics();
             Composite origComposite = g.getComposite();
             log.log(Level.INFO, "Finished reading map image from: {0}", url);

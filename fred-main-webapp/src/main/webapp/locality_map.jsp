@@ -99,27 +99,23 @@
 
 				if (nzms260Coord != null) {
 					try {
-                        log.info("Retrieving fred datum");
                         Datum datum = SiteUtil.getFREDDatum(feature);
-                        log.info("Getting coord");
                         Coordinate coord = SiteUtil.getFREDCoordinate(feature);
-                        log.info("Creating NZMG datum");
                         Datum nzmgDatum = DatumFactory.createDatum("NZMG");
                         Datum.Coordinate nzmgCoord = null;
                         if (!datum.getName().equals("NZMG")) {
                             try {
-                                log.info("Converting datum");
                                 nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
 							} catch (Exception e) { 
                                 log.log(Level.WARNING, "locality_map.jsp: error converting Datum", e);                        
-                                                        }
+                            }
                         } else {
                             nzmgCoord = coord;
                         }
                         //map
 						int width = 620;
 						int height = 500;
-                                                log.info("Getting map URL");
+                        log.info("Getting map URL");
                         String url = WMSClient.getMapURL(nzmgCoord.getEastWest(), nzmgCoord.getNorthSouth(), distance, width, height, lyr, 
                                 getServletConfig().getServletContext().getRealPath("/fred"));
                         log.info("Map url: "+url);
