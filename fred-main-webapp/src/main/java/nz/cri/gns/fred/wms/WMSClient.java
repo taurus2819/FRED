@@ -15,7 +15,6 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 
 /**
  *
@@ -64,13 +63,11 @@ public class WMSClient {
 
     private static String processMap(URL url, int width, int height, String outDir) {
         Image image = null;
-        log.log(Level.INFO, "Map image outDir: {0}", outDir);
+        
         try {
-            log.log(Level.INFO, "Reading image from: {0}", url);
-            BufferedImage rawImage = (BufferedImage) new ImageIcon(url).getImage();
+            BufferedImage rawImage = ImageIO.read(url);
             final Graphics2D g = rawImage.createGraphics();
             Composite origComposite = g.getComposite();
-            log.log(Level.INFO, "Finished reading map image from: {0}", url);
             
             g.setColor(Color.BLACK);
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
@@ -92,9 +89,8 @@ public class WMSClient {
 
             g.translate(-middleX, -middleY);
             File outFile = new File(outDir+getTempFileName());
-            log.log(Level.INFO, "Writing image to: {0}", outFile.getAbsolutePath());
             ImageIO.write(rawImage, "PNG", outFile);
-            log.log(Level.INFO, "Image written to: {0}", outFile.getAbsolutePath());
+
             return outFile.getName();
 
         
