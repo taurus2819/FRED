@@ -189,7 +189,7 @@ public class SiteUtil extends ModelUtil {
 
     public static SiteRecord getSite(Datum datum, Coordinate coord) {
         SiteRecord sr = null;
-        int siteId = nz.cri.gns.db.util.SiteUtil.checkSiteExists(datum, datum.convertToNZGD49(coord), null);
+        int siteId = nz.cri.gns.db.util.SiteUtil.checkSiteExists(DatumFactory.getNzgd49(), datum.convertToNZGD49(coord), null);
         if (siteId != -1 ){
             sr = nz.cri.gns.db.util.SiteUtil.querySite(siteId);
         }

@@ -493,7 +493,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
                 try {
                     site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
-                    datum.convertToNZGD49(coord);
+                    site.setLatLong(datum.convertToNZGD49(coord));
                     //Also set the FRED copied SITE fields
                     feature.setOrigSystemId(datum.getDatabaseId());
                     feature.setOrigCoord(datum.getStringFor(coord));
@@ -577,6 +577,11 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 e.printStackTrace();
                 throw new StorageAccessException(e);
             }
+            
+            if (site == null) {
+                throw new StorageAccessException("Failed to save site");
+            }
+            
             feature.setSiteId(new Integer(site.key));
 
             try {
