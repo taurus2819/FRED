@@ -1,18 +1,18 @@
-<link rel="stylesheet" href="http://maps.gns.cri.nz/ext-2.2.1/resources/css/ext-all.css" type="text/css" />
-<link rel="stylesheet" href="http://maps.gns.cri.nz/GeoExt/resources/css/geoext-all.css" type="text/css" />
+<link rel="stylesheet" href="//maps.gns.cri.nz/ext-2.2.1/resources/css/ext-all.css" type="text/css" />
+<link rel="stylesheet" href="//maps.gns.cri.nz/GeoExt/resources/css/geoext-all.css" type="text/css" />
     
 <script src="/online/scripts/ajax.js"></script>
 <script src="/online/scripts/fade.js"></script>
 <script src="/online/scripts/locate.js"></script>
 <script src="/online/scripts/contextHint.js"></script>
     
-<script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/ext-base.js"></script>
-<script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/ext-all.js"></script>
-<script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/OpenLayers-2.11/OpenLayers.js"></script>
-<script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/GeoExt.js"></script>
-<script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/proj4js-compressed.js"></script>
-<script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/EPSG4272.js"></script>
-<script type="text/javascript" language="javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/ext-base.js"></script>
+<script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/ext-all.js"></script>
+<script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/OpenLayers-2.11/OpenLayers.js"></script>
+<script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/GeoExt.js"></script>
+<script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/proj4js-compressed.js"></script>
+<script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/EPSG4272.js"></script>
+<script type="text/javascript" language="javascript" src="//maps.google.com/maps/api/js?sensor=false"></script>
 
 <style type="text/css">
     .legend {

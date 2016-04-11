@@ -6,15 +6,15 @@
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
         <title>FRED Database</title>
 
-        <link rel="stylesheet" href="http://maps.gns.cri.nz/GeoExt/resources/css/geoext-all.css" type="text/css" />
+        <link rel="stylesheet" href="//maps.gns.cri.nz/GeoExt/resources/css/geoext-all.css" type="text/css" />
 
-        <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/ext-base.js"></script>
-        <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/ext-all.js"></script>
-        <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/OpenLayers-2.11/OpenLayers.js"></script>
-        <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/GeoExt.js"></script>
-        <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/proj4js/proj4js-compressed.js"></script>
-        <script type="text/javascript" language="javascript" src="http://maps.gns.cri.nz/scripts/proj4js/defs/EPSG4272.js"></script>
-        <script type="text/javascript" language="javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+        <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/ext-base.js"></script>
+        <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/ext-all.js"></script>
+        <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/OpenLayers-2.11/OpenLayers.js"></script>
+        <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/GeoExt.js"></script>
+        <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/proj4js/proj4js-compressed.js"></script>
+        <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/proj4js/defs/EPSG4272.js"></script>
+        <script type="text/javascript" language="javascript" src="//maps.google.com/maps/api/js?sensor=false"></script>
         <script type="text/javascript" language="javascript" src="<%=request.getContextPath()%>/scripts/wfsQuery.js"></script>          
           
 
