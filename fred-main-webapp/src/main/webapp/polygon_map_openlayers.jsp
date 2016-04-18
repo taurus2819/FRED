@@ -13,7 +13,7 @@
         <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/OpenLayers-2.11/OpenLayers.js"></script>
         <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/GeoExt.js"></script>
         <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/proj4js/proj4js-compressed.js"></script>
-        <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/proj4js/defs/EPSG4272.js"></script>
+        <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/proj4js/defs/EPSG4272.js"></script>
         <script type="text/javascript" language="javascript" src="//maps.google.com/maps/api/js?sensor=false"></script>
         <script type="text/javascript" language="javascript" src="<%=request.getContextPath()%>/scripts/wfsQuery.js"></script>          
           
@@ -74,6 +74,7 @@
             var lineFeature;
             
             var geoserver_url = "http://maps.gns.cri.nz/geoserver/wms";
+            var geology_url = "http://maps.gns.cri.nz/geology/wms";
 
             function go() {
 
@@ -145,7 +146,7 @@
 
                 oneGeolNZ = new OpenLayers.Layer.WMS(
                     "New Zealand Geology",
-                    geoserver_url,
+                    geology_url,
                     {layers: "gns:NZL_GNS_1M_Lithostratigraphy", transparent: true, tiled: true, srs: "EPSG:900913"},
                     {displayInLayerSwitcher: true, isBaseLayer: false, visibility: false, projection: p900913, opacity: 0.6, wrapDateLine: true}
                 );
@@ -157,12 +158,13 @@
                     {displayInLayerSwitcher: true, isBaseLayer: false, visibility: false, projection: p900913, wrapDateLine: true}
                 );
 
-                ortho = new OpenLayers.Layer.WMS(
+                //has been removed, maybe replaced in the future
+                /*ortho = new OpenLayers.Layer.WMS(
                     "New Zealand Orthophotos",
                      geoserver_url,
                     {layers: "gns:GIS.NZ_ORTHOPHOTO", transparent: true, tiled: true, srs: "EPSG:900913"},
                     {displayInLayerSwitcher: true, isBaseLayer: false, visibility: false, projection: p900913, wrapDateLine: true}
-                );
+                );*/
 
                 master = new OpenLayers.Layer.WMS(
                     "Masterfile areas",
@@ -218,7 +220,7 @@
 
                 vectorLayer = new OpenLayers.Layer.Vector("Simple Geometry", {style: layer_style, 'displayInLayerSwitcher': false});
 
-                map.addLayers([googleH, googleP, scale_topo_googleP, linzTopo50, linzTopo250, dtm, ortho, oneGeolNZ, 
+                map.addLayers([googleH, googleP, scale_topo_googleP, linzTopo50, linzTopo250, dtm, oneGeolNZ, 
                     fredLayer, master, vectorLayer, markers]);
         
                 

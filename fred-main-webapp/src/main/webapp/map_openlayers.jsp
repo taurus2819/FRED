@@ -11,7 +11,7 @@
 <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/OpenLayers-2.11/OpenLayers.js"></script>
 <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/GeoExt.js"></script>
 <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/proj4js-compressed.js"></script>
-<script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/EPSG4272.js"></script>
+<script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/proj4js/defs/EPSG4272.js"></script>
 <script type="text/javascript" language="javascript" src="//maps.google.com/maps/api/js?sensor=false"></script>
 
 <style type="text/css">
@@ -46,6 +46,7 @@
         var checker = true;
         
         var geoserver_url = "http://maps.gns.cri.nz/geoserver/wms";
+        var geology_url = "http://maps.gns.cri.nz/geology/wms";
         
         function go() {
             
@@ -119,7 +120,7 @@
     
             oneGeolNZ = new OpenLayers.Layer.WMS(
                     "New Zealand Geology",
-                    geoserver_url,
+                    geology_url,
                     {layers: "gns:NZL_GNS_1M_Lithostratigraphy", transparent: true, tiled: true, srs: "EPSG:900913"},
                     {displayInLayerSwitcher: true, isBaseLayer: false, visibility: false, projection: p900913, opacity: 0.6, wrapDateLine: true}
             );
@@ -131,12 +132,14 @@
                     {displayInLayerSwitcher: true, isBaseLayer: false, visibility: false, projection: p900913, wrapDateLine: true}
             );
             
+            //has been removed, maybe replaced in the future
+            /*
             ortho = new OpenLayers.Layer.WMS(
                     "New Zealand Orthophotos",
                     geoserver_url,
                     {layers: "gns:GIS.NZ_ORTHOPHOTO", transparent: true, tiled: true, srs: "EPSG:900913"},
                     {displayInLayerSwitcher: true, isBaseLayer: false, visibility: false, projection: p900913, wrapDateLine: true}
-            );
+            );*/
             
             master = new OpenLayers.Layer.WMS(
                     "Masterfile areas",
@@ -163,7 +166,7 @@
             map.addControl(pointSelectControl);                
             pointSelectControl.activate();    
                 
-            map.addLayers([googleH, googleP, linzTopo50, linzTopo250, dtm, ortho, oneGeolNZ, fred, master]);    //removed for now, LINZ layer stopped working: , scale_topo_googleP
+            map.addLayers([googleH, googleP, linzTopo50, linzTopo250, dtm, oneGeolNZ, fred, master]);    //removed for now, LINZ layer stopped working: , scale_topo_googleP
             
             map.setCenter(new OpenLayers.LonLat(174, -41).transform(p4326, p900913), 4);
                 
