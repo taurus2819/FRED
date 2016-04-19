@@ -17,7 +17,7 @@
     firstCellThirdRow.setCellValue(request.getRequestURL().toString().replaceAll("/[^/]*$", "/"));*/
 
     response.setContentType("application/vnd.ms-excel.sheet.macroEnabled.12");
-    response.setHeader("Content-Disposition", "filename=\"FRED.xlsm\"");
+    response.setHeader("Content-Disposition", "attachment;filename=FRED.xlsm");
     spreadsheet.write(response.getOutputStream());
 
     //response.setContentType("application/zip");
