@@ -7,8 +7,8 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -60,12 +60,14 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
      */
     protected String editComments;
     private SiteRecord site;
-    /** This allows for bad coordinates to still be re-editted */
+    /**
+     * This allows for bad coordinates to still be re-editted
+     */
     private Datum.Coordinate coord;
     private Datum datum;
     private boolean isAllowedSave = false;
     private boolean isAllowedSubmit = false;
-    
+
     public LocalityDE(User user, int folderID, String featureType, DAOFactory factory, ContentProvider content) throws StorageAccessException, InsufficientPrivelegesException {
         initialise((featureUtil = new FeatureUtil(factory)).createFeature(folderID, featureType, user), folderID, user, factory, content);
     }
@@ -82,12 +84,12 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         }
     }
 
-    private String getLegalLocality(String loc, Vector<String[]> error) {
+    private String getLegalLocality(String loc, ArrayList<String[]> error) {
         //Also set the FRED locality - but first reject & and "
         if (!FREDUtil.isEmpty(loc)) {
             if (loc.indexOf("&") >= 0 || loc.indexOf("\"") >= 0) {
                 error.add(new String[]{"Locality", "Contains & or \" characters"});
-            } 
+            }
         }
         return loc;
     }
@@ -162,8 +164,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         }
     }
 
+    @Override
     public List<IconnedLink> getNavigation() {
-        List<IconnedLink> links = new Vector<IconnedLink>(4);
+        List<IconnedLink> links = new ArrayList<>(4);
         try {
             String args = ((workingFolder == null) ? "?q" : ("?FoldID=" + workingFolder.getFolderId()))
                     + ((feature.getFeatureId() == null) ? "" : ("&FeatID=" + feature.getFeatureId()))
@@ -174,7 +177,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         }
         links.add(new IconnedLink("javascript:submitForm('Save');", "images/save.gif", "Save"));
         if (feature.getFeatureId() == null) {
-            isAllowedSubmit=false;
+            isAllowedSubmit = false;
         }
         if (isAllowedSubmit) {
             links.add(new IconnedLink("javascript:submitForm('Submit');", "images/submit.gif", "Submit"));
@@ -183,6 +186,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         return links;
     }
 
+    @Override
     public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
         reinitialise(factory);
         Template template = provider.getContent("locality.de.form");
@@ -263,10 +267,8 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             Attributes attributes = Attributes.createNameOnlyAttributes("RegAreaId");
             raSelectBox.writeBox(attributes, "-- Choose --", null, (feature.getRegistrationArea() != null) ? feature.getRegistrationArea() : new SiteUtil(factory).getRegistrationArea(SiteUtil.REG_MAINLAND_NZ), out);
 
-
             //Metadata listing
             //template.loadUntil(out, "{@metadataList}");
-
             //Site setup
             String eastingLabel = "Easting";
             String northingLabel = "Northing";
@@ -311,7 +313,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             SelectBox<DatumMethod> dSelectBox = new SelectBox<DatumMethod>(methods);
             attributes = Attributes.createNameOnlyAttributes("LocMethodID");
             attributes.setAttribute("onChange", "setAccuracy(this.value, this.form)");
-            dSelectBox.writeBox(attributes, "-- Choose --", null, (site != null && site.getMethod()>-1) ? siteUtil.getSiteDatumMethod(site.getMethod()) : null, out);
+            dSelectBox.writeBox(attributes, "-- Choose --", null, (site != null && site.getMethod() > -1) ? siteUtil.getSiteDatumMethod(site.getMethod()) : null, out);
 
             template.loadUntil(out, "{@countryCombo}");
             SelectBox<Country> cSelectBox = new SelectBox<Country>(featureUtil.getCountries());
@@ -355,16 +357,17 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         out.write("<td>#" + ((coord != null) ? coord.getEastWestString() : "") + "#</td>\n");
         out.write("<td>#" + ((coord != null) ? coord.getNorthSouthString() : "") + "#</td>\n");
         out.write("<td>" + DBUtils.nvl(feature.getMapYear()) + "</td>\n");
-        out.write("<td>" + ((site != null && site.getMethod()>-1) ? String.valueOf(site.getMethod()) : "") + "</td>\n");
-        out.write("<td>" + ((site != null && site.getAccuracy()>-1) ? String.valueOf(site.getAccuracy()) : "") + "</td>\n");
+        out.write("<td>" + ((site != null && site.getMethod() > -1) ? String.valueOf(site.getMethod()) : "") + "</td>\n");
+        out.write("<td>" + ((site != null && site.getAccuracy() > -1) ? String.valueOf(site.getAccuracy()) : "") + "</td>\n");
         out.write("<td>" + DBUtils.nvl(feature.getLocality()) + "</td>\n");
-        out.write("<td>" + ((site != null && site.getCountry()!=null) ? site.getCountry() : "") + "</td>\n");
+        out.write("<td>" + ((site != null && site.getCountry() != null) ? site.getCountry() : "") + "</td>\n");
     }
 
+    @Override
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
         reinitialise(factory);
 
-        Vector<String[]> error = new Vector<String[]>();
+        ArrayList<String[]> error = new ArrayList<>();
 
         //FRNum (if backlog - but only update if null)
         if (FeatureUtil.isBacklogFeature(feature)) {
@@ -373,7 +376,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 if (frNumber == null) {
                     String frNumberStr = request.getParameter("FRNumber");
                     //if only map sheet entered then get next available FRNumber
-                    if (frNumberStr.indexOf("/f") < 0) {
+                    if (!frNumberStr.contains("/f")) {
                         frNumber = featureUtil.getNextAvailableFrNumber(frNumberStr);
                     } else {
                         frNumber = featureUtil.getMetricFrNumberByString(frNumberStr, true);
@@ -393,7 +396,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             if (!FREDUtil.isEmpty(request.getParameter("YardFRNumber"))) {
                 try {
                     feature.setYardFrNumber(featureUtil.getYardFrNumberByString(request.getParameter("YardFRNumber"), true));
-                } catch (Exception e) {
+                } catch (DataInputException | StorageAccessException e) {
                     error.add(new String[]{"Yard FR Number", e.getMessage()});
                 }
             } else {
@@ -454,13 +457,13 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
         //locality
         String locality = getLegalLocality(request.getParameter("Loc"), error);
-        
+
         if (coord != null) {
             if (!datum.coordinateAcceptable(coord)) {
                 error.add(new String[]{"Coordinate", "Coordinates not of correct type"});
             }
 
-            // try to re-use any existing site details. 
+            // try to re-use any existing site details.
             // take 1- try the well name
             if (site == null) {
                 site = SiteUtil.getSite(feature.getFeatureName());
@@ -476,18 +479,17 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                     feature.setOrigSystemId(site.getOriginalId());
                     feature.setOrigCoord(site.getOriginalCoordinates());
                 } else {
-                    // allow user to override 
+                    // allow user to override
                     feature.setOrigSystemId(datum.getDatabaseId());
                     feature.setOrigCoord(datum.getStringFor(coord));
-                }    
+                }
                 // always use FRED user contributed locality and site details
                 feature.setLocality(locality);
                 if (feature.getOrigCoord() != site.getOriginalCoordinates()) {
                     site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
-                }                            
-               
+                }
+
                 //TODO reuse site_name as feature_name?? see JES
-                
             } else {
                 site = new SiteRecord();
 
@@ -513,8 +515,8 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                         // site accuracy is null (-1) by default
                     }
                 }
-                
-                site.setDirections(request.getParameter("Loc"));                
+
+                site.setDirections(request.getParameter("Loc"));
                 site.setCountry(request.getParameter("Country"));
                 site.setOwner(user.getId().intValue());
                 feature.setLocality(locality);
@@ -577,11 +579,11 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 e.printStackTrace();
                 throw new StorageAccessException(e);
             }
-            
+
             if (site == null) {
                 throw new StorageAccessException("Failed to save site");
             }
-            
+
             feature.setSiteId(new Integer(site.key));
 
             try {
@@ -589,7 +591,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 SiteUtil siteUtil = new SiteUtil(factory);
                 feature.setSiteView(siteUtil.getSiteView(feature.getSiteId()));
             } catch (Exception ex) {
-                //happily swallow this one 
+                //happily swallow this one
             }
         } else {
             feature.setSiteId(null);

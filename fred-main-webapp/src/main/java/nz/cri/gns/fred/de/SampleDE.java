@@ -342,11 +342,11 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         template.addSub("SampRel", getRelationshipsFull(FREDConstants.SAMPLE, new String[]{FREDConstants.ABOVE, FREDConstants.BELOW}, newLineSeparator));
 
         template.addSub("StratRel", getRelationshipsFull(FREDConstants.STRATIGRAPHIC, new String[]{
-                    FREDConstants.ABOVE_TOP,
-                    FREDConstants.ABOVE_BASE,
-                    FREDConstants.BELOW_TOP,
-                    FREDConstants.BELOW_BASE
-                }, newLineSeparator));
+            FREDConstants.ABOVE_TOP,
+            FREDConstants.ABOVE_BASE,
+            FREDConstants.BELOW_TOP,
+            FREDConstants.BELOW_BASE
+        }, newLineSeparator));
 
         template.addSub("ColMap", sample.getColumnMap());
         template.addSub("Dip", FREDUtil.toString(sample.getDip()));
@@ -570,9 +570,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             if (sample.getSecondaryColour() != null) {
                 template.addSub("ColourS", sample.getSecondaryColour().getColourId().toString());
             }
-            
-            if (!outcropSample)
+
+            if (!outcropSample) {
                 template.addSub("Confidential", sample.getAudit().createAuditString(factory, user));
+            }
 
             template.loadAll(new PrintWriter(out));
 
@@ -606,14 +607,16 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
     }
 
+    @Override
     public int submit(int dataOriginId) throws InsufficientPrivelegesException, DataInputException, StorageAccessException {
         save(dataOriginId);
         sampleUtil.submitSample(sample, workingFolder, user);
-        return sample.getSampleId().intValue();
+        return sample.getSampleId();
     }
 
+    @Override
     public List<IconnedLink> getNavigation() {
-        List<IconnedLink> links = new Vector<IconnedLink>(4);
+        List<IconnedLink> links = new ArrayList<>(4);
         String args = ((workingFolder == null) ? "?q" : ("?FoldID=" + workingFolder.getFolderId()))
                 + ((sample.getSampleId() == null) ? "" : ("&SampID=" + sample.getSampleId()))
                 + "&RecType=Sample";
@@ -639,7 +642,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException, nz.cri.gns.dataaccess.StorageAccessException {
         reinitialise(factory);
 
-        Vector<String[]> error = new Vector<String[]>();
+        ArrayList<String[]> error = new ArrayList<String[]>();
 
         //Drillhole/Vert Section depths
         if (!outcropSample) {
@@ -658,16 +661,14 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                 } catch (Exception e) {
                     error.add(new String[]{"Bottom Depth/Height", "Non-numeric value"});
                 }
-                
+
                 if (topDepth != null && bottomDepth != null) {
                     if ("Bottom".equals(sample.getFeature().getDatumType())) {
                         if (topDepth.doubleValue() < bottomDepth.doubleValue()) {
                             error.add(new String[]{"Heights", "Top height < bottom height and datum = Bottom"});
                         }
-                    } else {
-                        if (topDepth.doubleValue() > bottomDepth.doubleValue()) {
-                            error.add(new String[]{"Depths", "Top depth > bottom depth"});
-                        }
+                    } else if (topDepth.doubleValue() > bottomDepth.doubleValue()) {
+                        error.add(new String[]{"Depths", "Top depth > bottom depth"});
                     }
                 }
             }
@@ -710,7 +711,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             }
         } catch (DataInputException e) {
             if (e.hasAuxiliaryData()) {
-                sample.setCollectors((LinkedHashSet)(Set<Person>) e.getAuxiliaryData());
+                sample.setCollectors((LinkedHashSet) (Set<Person>) e.getAuxiliaryData());
             }
             error.addAll(e.getError());
         }
@@ -722,12 +723,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         String inPlace = request.getParameter("InPlace");
         if (inPlace.length() == 0) {
             sample.setInPlace(null);
+        } else if (inPlace.equals("Yes") || inPlace.equals("No") || inPlace.equals("Almost") || inPlace.equals("Unknown")) {
+            sample.setInPlace(inPlace);
         } else {
-            if (inPlace.equals("Yes") || inPlace.equals("No") || inPlace.equals("Almost") || inPlace.equals("Unknown")) {
-                sample.setInPlace(inPlace);
-            } else {
-                error.add(new String[]{"In Place", inPlace + " is not valid. In Place must be either 'Yes', 'No', 'Almost' or 'Unknown'"});
-            }
+            error.add(new String[]{"In Place", inPlace + " is not valid. In Place must be either 'Yes', 'No', 'Almost' or 'Unknown'"});
         }
 
         //Sent to
@@ -829,7 +828,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                             }
                         }
                         if (!found) {
-                            //Wasn't in the old set, so add it 
+                            //Wasn't in the old set, so add it
                             relationships.add(sampleUtil.createRelationship(sample, feature, FREDConstants.SAMPLE, FREDConstants.NEARBY));
                         }
                     } else {
@@ -915,7 +914,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                         }
                     }
                     if (!found) {
-                        //Wasn't in the old set, so add it 
+                        //Wasn't in the old set, so add it
                         relationships.add(sampleUtil.cloneRelationship(newRelationship));
                     }
                 } catch (Exception e) {
@@ -958,12 +957,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         String dipDir = request.getParameter("DipDir");
         if (dipDir.length() == 0) {
             sample.setDipDirection(null);
+        } else if (dipDir.equals("N") || dipDir.equals("NE") || dipDir.equals("E") || dipDir.equals("SE") || dipDir.equals("S") || dipDir.equals("SW") || dipDir.equals("W") || dipDir.equals("NW")) {
+            sample.setDipDirection(dipDir);
         } else {
-            if (dipDir.equals("N") || dipDir.equals("NE") || dipDir.equals("E") || dipDir.equals("SE") || dipDir.equals("S") || dipDir.equals("SW") || dipDir.equals("W") || dipDir.equals("NW")) {
-                sample.setDipDirection(dipDir);
-            } else {
-                error.add(new String[]{"Dip Direction", dipDir + " is not valid. Dip Direction must be either 'N', 'NE', 'E', 'SE', 'S', 'SW', 'W' or 'SW'"});
-            }
+            error.add(new String[]{"Dip Direction", dipDir + " is not valid. Dip Direction must be either 'N', 'NE', 'E', 'SE', 'S', 'SW', 'W' or 'SW'"});
         }
 
         //Strike
@@ -985,12 +982,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         String facing = request.getParameter("Facing");
         if (facing.length() == 0) {
             sample.setFacing(null);
+        } else if (facing.equals("Normal") || facing.equals("Overturned")) {
+            sample.setFacing(facing);
         } else {
-            if (facing.equals("Normal") || facing.equals("Overturned")) {
-                sample.setFacing(facing);
-            } else {
-                error.add(new String[]{"Facing", facing + " is not valid. Facing must be either 'Normal' or 'Overturned'"});
-            }
+            error.add(new String[]{"Facing", facing + " is not valid. Facing must be either 'Normal' or 'Overturned'"});
         }
 
         //Grainsize
@@ -1009,16 +1004,12 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         String gsComp = request.getParameter("GSComp");
         if (FREDUtil.isEmpty(gsComp)) {
             sample.setComparatorUsed(null);
+        } else if (FREDUtil.decodeCombo(grainSizeP) == null) {
+            error.add(new String[]{"Comparator Used", "Primary grain size must be entered if entering Comparator Used"});
+        } else if (gsComp.equals("Y") || gsComp.equals("N")) {
+            sample.setComparatorUsed(gsComp);
         } else {
-            if (FREDUtil.decodeCombo(grainSizeP) == null) {
-                error.add(new String[]{"Comparator Used", "Primary grain size must be entered if entering Comparator Used"});
-            } else {
-                if (gsComp.equals("Y") || gsComp.equals("N")) {
-                    sample.setComparatorUsed(gsComp);
-                } else {
-                    error.add(new String[]{"Comparator Used", gsComp + " is not valid. Comparator Used must be either 'Y' or 'N'"});
-                }
-            }
+            error.add(new String[]{"Comparator Used", gsComp + " is not valid. Comparator Used must be either 'Y' or 'N'"});
         }
 
         //StratComments
@@ -1042,12 +1033,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         String wet = request.getParameter("Wet");
         if (wet.length() == 0) {
             sample.setWet(null);
+        } else if (wet.equals("Wet") || wet.equals("Dry")) {
+            sample.setWet(wet);
         } else {
-            if (wet.equals("Wet") || wet.equals("Dry")) {
-                sample.setWet(wet);
-            } else {
-                error.add(new String[]{"Wet/Dry", wet + " is not valid. Wet/Dry must be either 'Wet' or 'Dry'"});
-            }
+            error.add(new String[]{"Wet/Dry", wet + " is not valid. Wet/Dry must be either 'Wet' or 'Dry'"});
         }
 
         //Sed features
@@ -1101,7 +1090,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         }
 
         //DepositionalEnvironment
-        StringBuffer depEnv = new StringBuffer();
+        StringBuilder depEnv = new StringBuilder();
         String depEnv1 = request.getParameter("DepEnv1").trim();
         if (depEnv1 == null || depEnv1.length() == 0) {
             depEnv1 = getDepositionalEnvironmentMarineOrNot(request.getParameter("DepEnv2"));

@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -45,7 +45,7 @@ public class PaleontologyRecordDE extends RecordDE {
 
     private Set<PaleontologyListEntry> badTaxaList;
     private boolean nonApprovedTaxaFlag = false;
-    private TaxonomicUtil taxonomicUtil;
+    private final TaxonomicUtil taxonomicUtil;
 
     public PaleontologyRecordDE(User user, Sample sample, int folderID, DAOFactory factory, ContentProvider provider) throws StorageAccessException, InsufficientPrivelegesException {
         super(user, sample, folderID, FREDConstants.PALEONTOLOGICAL, factory, provider);
@@ -60,7 +60,7 @@ public class PaleontologyRecordDE extends RecordDE {
     @Override
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
         reinitialise(factory);
-        Vector<String[]> error = new Vector<String[]>();
+        ArrayList<String[]> error = new ArrayList<>();
 
         super.updateFromRequest(request, factory, addIfNew);
 
@@ -94,16 +94,14 @@ public class PaleontologyRecordDE extends RecordDE {
         String sectionId = request.getParameter("SectID");
         if (sectionId == null) {
             pal.setLabSection(null);
-        } else {
-            if (pal.getLabSection() == null || !pal.getLabSection().getLabSectionId().toString().equals(sectionId)) {
-                try {
-                    pal.setLabSection(recordUtil.getLabSection(Integer.parseInt(sectionId)));
-                } catch (NumberFormatException e) {
-                    pal.setLabSection(null);
-                } catch (StorageAccessException e) {
-                    e.printStackTrace();
-                    error.add(new String[]{"Lab Section", "Error accessing data storage"});
-                }
+        } else if (pal.getLabSection() == null || !pal.getLabSection().getLabSectionId().toString().equals(sectionId)) {
+            try {
+                pal.setLabSection(recordUtil.getLabSection(Integer.parseInt(sectionId)));
+            } catch (NumberFormatException e) {
+                pal.setLabSection(null);
+            } catch (StorageAccessException e) {
+                e.printStackTrace();
+                error.add(new String[]{"Lab Section", "Error accessing data storage"});
             }
         }
 
@@ -111,7 +109,7 @@ public class PaleontologyRecordDE extends RecordDE {
         pal.setCollectionComments(request.getParameter("CollComm"));
 
         //Taxa
-        badTaxaList = new HashSet<PaleontologyListEntry>();
+        badTaxaList = new HashSet<>();
         String taxa = request.getParameter("Taxa");
         if (taxa != null) {
             dealWithTaxa(taxa.split("\\n"), pal, error);
@@ -129,21 +127,21 @@ public class PaleontologyRecordDE extends RecordDE {
         }
     }
 
-    private void dealWithTaxa(String[] taxa, Paleontology pal, Vector<String[]> error) {
+    private void dealWithTaxa(String[] taxa, Paleontology pal, ArrayList<String[]> error) {
         Set<PaleontologyListEntry> taxaList = pal.getListEntries();
         if (taxaList == null) {
-            taxaList = new HashSet<PaleontologyListEntry>();
+            taxaList = new HashSet<>();
             pal.setListEntries(taxaList);
         }
-        //Copy all the old into the removed set ... for now 
-        Set<PaleontologyListEntry> removedTaxaList = new HashSet<PaleontologyListEntry>(taxaList);
+        //Copy all the old into the removed set ... for now
+        Set<PaleontologyListEntry> removedTaxaList = new HashSet<>(taxaList);
 
         //Mark it as ok ... for now
         nonApprovedTaxaFlag = false;
 
         if (taxa != null && taxa.length > 0) {
-            for (int i = 0; i < taxa.length; i++) {
-                String taxaLine = taxa[i].trim();
+            for (String taxa1 : taxa) {
+                String taxaLine = taxa1.trim();
                 if (taxaLine.length() == 0) {
                     continue;
                 }
@@ -266,18 +264,18 @@ public class PaleontologyRecordDE extends RecordDE {
 
             List<Lab> labs = recordUtil.getLabs();
 
-            for (Lab lab : labs) {
+            labs.stream().forEach((lab) -> {
                 String arrayName = "a" + lab.getLabId();
                 out.println(arrayName + " = new Array();");
 
                 int count = 0;
-                for (LabSection section : new TreeSet<LabSection>(lab.getSections())) {
+                for (LabSection section : new TreeSet<>(lab.getSections())) {
                     out.println(arrayName + "[" + (count++) + "] = new Option('" + section.getCode() + "'," + section.getLabSectionId() + ");");
                 }
-            }
+            });
 
             template.loadUntil(out, "{@lab}");
-            SelectBox<Lab> selectBox = new SelectBox<Lab>(labs);
+            SelectBox<Lab> selectBox = new SelectBox<>(labs);
             Attributes attributes = Attributes.createNameOnlyAttributes("LabID");
             attributes.setAttribute("onChange", "swapSection(this.form)");
             selectBox.writeBox(attributes, "-- Choose --", null, (pal.getLabSection() == null) ? null : pal.getLabSection().getLab(), out);
@@ -292,32 +290,32 @@ public class PaleontologyRecordDE extends RecordDE {
             out.println("swapSection(form1);");
             out.println("for (i=0; i<form1.SectID.options.length; i++) {");
             if (pal.getLabSection() != null) {
-                out.print("                if (form1.SectID.options[i].value=="+pal.getLabSection().getLabSectionId().toString());
+                out.print("                if (form1.SectID.options[i].value==" + pal.getLabSection().getLabSectionId().toString());
                 out.println("){");
                 out.println("                 form1.SectID.options.selectedIndex = i; }");
                 out.println("}");
             } else {
-               out.println("}"); 
+                out.println("}");
             }
-            
+
             template.loadUntil(out, "{@Taxa}");
 
             List<TaxonomicGroup> groups = recordUtil.getTaxonomicGroups(pal);
-            List<PaleontologyListEntry> badTaxa = (badTaxaList == null) ? new Vector<PaleontologyListEntry>() : new Vector<PaleontologyListEntry>(badTaxaList);
+            List<PaleontologyListEntry> badTaxa = (badTaxaList == null) ? new ArrayList<>() : new ArrayList<>(badTaxaList);
             if (groups != null && groups.size() > 0) {
                 for (TaxonomicGroup group : groups) {
                     List<PaleontologyListEntry> list = recordUtil.getListEntries(pal, group);
-                    if (list == null || list.size() == 0) {
+                    if (list == null || list.isEmpty()) {
                         out.println("addTaxa('" + group.getName() + ": ', '', '');");
                     } else {
-                        for (PaleontologyListEntry entry : list) {
+                        list.stream().forEach((entry) -> {
                             Taxon taxon = entry.getTaxon();
                             out.println("addTaxa('" + group.getName() + "', '"
                                     + TaxonomicUtil.javascriptSafe(entry.getTaxonomicName()) + "', '"
                                     + DBUtils.nvl((taxon == null) ? "" : TaxonomicUtil.javascriptSafe(taxon.getAuthor())) + "', '"
                                     + DBUtils.nvl(TaxonomicUtil.javascriptSafe(
-                                    TaxonomicUtil.encodeTaxaComments(entry))) + "');");
-                        }
+                                            TaxonomicUtil.encodeTaxaComments(entry))) + "');");
+                        });
                     }
                     //Also check for bad taxa of this group
                     for (Iterator<PaleontologyListEntry> it = badTaxa.iterator(); it.hasNext();) {
@@ -328,24 +326,22 @@ public class PaleontologyRecordDE extends RecordDE {
                                     + TaxonomicUtil.javascriptSafe(entry.getTaxonomicName()) + "', '"
                                     + DBUtils.nvl((taxon == null) ? "" : TaxonomicUtil.javascriptSafe(taxon.getAuthor())) + "', '"
                                     + DBUtils.nvl(TaxonomicUtil.javascriptSafe(
-                                    TaxonomicUtil.encodeTaxaComments(entry))) + "');");
+                                            TaxonomicUtil.encodeTaxaComments(entry))) + "');");
                             it.remove();
                         }
                     }
                 }
             }
             //Finally check for any remaining bad taxa
-            for (PaleontologyListEntry entry : badTaxa) {
-                if (entry.getTaxon() != null) {
-                    Taxon taxon = entry.getTaxon();
-                    out.println("addTaxa('" + taxon.getTaxonomicGroup().getName() + "', '"
-                            + TaxonomicUtil.javascriptSafe(entry.getTaxonomicName()) + "', '"
-                            + DBUtils.nvl((taxon == null) ? "" : TaxonomicUtil.javascriptSafe(taxon.getAuthor())) + "', '"
-                            + DBUtils.nvl(TaxonomicUtil.javascriptSafe(
-                            TaxonomicUtil.encodeTaxaComments(entry))) + "');");
-                }
-            }
-                       
+            badTaxa.stream().filter((entry) -> (entry.getTaxon() != null)).forEach((entry) -> {
+                Taxon taxon = entry.getTaxon();
+                out.println("addTaxa('" + taxon.getTaxonomicGroup().getName() + "', '"
+                        + TaxonomicUtil.javascriptSafe(entry.getTaxonomicName()) + "', '"
+                        + DBUtils.nvl((taxon == null) ? "" : TaxonomicUtil.javascriptSafe(taxon.getAuthor())) + "', '"
+                        + DBUtils.nvl(TaxonomicUtil.javascriptSafe(
+                                TaxonomicUtil.encodeTaxaComments(entry))) + "');");
+            });
+
             template.loadAll(out);
             super.makeEndBitHTML(out);
         } catch (StorageAccessException e) {
@@ -354,6 +350,7 @@ public class PaleontologyRecordDE extends RecordDE {
         }
     }
 
+    @Override
     public void makePostFormHTML(PrintWriter out) throws IOException {
         Template template = provider.getContent("calendar.script");
         template.addSub("button", "PalDateCal");
@@ -396,7 +393,7 @@ public class PaleontologyRecordDE extends RecordDE {
                 List<PaleontologyListEntry> list;
                 try {
                     list = recordUtil.getListEntries(pal, group);
-                    if (list == null || list.size() == 0) {
+                    if (list == null || list.isEmpty()) {
                         out.write("<tr><td>" + group.getName() + "</td></tr>");
                     } else {
                         for (PaleontologyListEntry entry : list) {
@@ -422,10 +419,12 @@ public class PaleontologyRecordDE extends RecordDE {
         }
     }
 
+    @Override
     public boolean usesCalendar() {
         return true;
     }
 
+    @Override
     public String getHeading() {
         return "Edit paleontological record";
     }
@@ -444,7 +443,7 @@ public class PaleontologyRecordDE extends RecordDE {
         Paleontology pal = record.getPaleontology();
         Set<PaleontologyListEntry> taxaList = pal.getListEntries();
         if (taxaList == null) {
-            taxaList = new HashSet<PaleontologyListEntry>();
+            taxaList = new HashSet<>();
             pal.setListEntries(taxaList);
         }
         entry.setPaleontology(pal);

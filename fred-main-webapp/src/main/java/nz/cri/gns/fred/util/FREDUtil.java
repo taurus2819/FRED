@@ -5,6 +5,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,7 +33,6 @@ import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.Person;
 import nz.cri.gns.fred.model.PersonRelationship;
-import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.query.FREDQuery;
 import nz.cri.gns.fred.query.FREDRecordQuery;
@@ -42,6 +42,7 @@ public class FREDUtil {
 
     public static class CopyAll implements Instruction {
 
+        @Override
         public boolean include(PropertyDescriptor prop) {
             return true;
         }
@@ -61,6 +62,7 @@ public class FREDUtil {
             this.instruction = furtherInstruction;
         }
 
+        @Override
         public boolean include(PropertyDescriptor prop) {
             return !names.contains(prop.getName()) && (instruction == null || instruction.include(prop));
         }
@@ -85,6 +87,7 @@ public class FREDUtil {
             this.instruction = furtherInstruction;
         }
 
+        @Override
         public boolean include(PropertyDescriptor prop) {
             return !clazz.isAssignableFrom(prop.getPropertyType()) && (instruction == null || instruction.include(prop));
         }
@@ -96,6 +99,9 @@ public class FREDUtil {
     /**
      * Stores the given query in the session under
      * <code>QUERY_ATTRIBUTE_NAME</code>
+     *
+     * @param session
+     * @param query
      */
     public static void setFREDQuery(HttpSession session, FREDQuery query) {
         synchronized (getSessionLock(session)) {
@@ -107,6 +113,11 @@ public class FREDUtil {
      * Retrieves the query from the session, where it is stored under
      * <code>QUERY_ATTRIBUTE_NAME</code>. This method is synchronized on
      * <code>getSessionLock()</code> to alleviate concurrent access problems
+     *
+     * @param state
+     * @return
+     * @throws java.io.IOException
+     * @throws java.sql.SQLException
      */
     public static FREDQuery getFREDQuery(PageState state) throws IOException, SQLException {
         //Synchronizing on the session will ensure that two frames don't have
@@ -126,6 +137,9 @@ public class FREDUtil {
     /**
      * Stores the given query in the session under
      * <code>QUERY_ATTRIBUTE_NAME</code>
+     *
+     * @param session
+     * @param query
      */
     public static void setFREDRecordQuery(HttpSession session, FREDQuery query) {
         synchronized (getSessionLock(session)) {
@@ -137,6 +151,11 @@ public class FREDUtil {
      * Retrieves the query from the session, where it is stored under
      * <code>QUERY_ATTRIBUTE_NAME</code>. This method is synchronized on
      * <code>getSessionLock()</code> to alleviate concurrent access problems
+     *
+     * @param state
+     * @return
+     * @throws java.io.IOException
+     * @throws java.sql.SQLException
      */
     public static FREDRecordQuery getFREDRecordQuery(PageState state) throws IOException, SQLException {
         //Synchronizing on the session will ensure that two frames don't have
@@ -188,33 +207,29 @@ public class FREDUtil {
         if (feature.getFeatureName() == null) {
             return null;
         }
-        Connection conn = null;
-        try {
-            conn = getConnection();
-            Statement statement = conn.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT well_name FROM petroleum.petroleum_well WHERE UPPER(well_name) = '" + feature.getFeatureName().toUpperCase() + "'");
+
+        try (Connection conn = getConnection();
+                Statement statement = conn.createStatement();
+                ResultSet rs = statement.executeQuery("SELECT well_name FROM petroleum.petroleum_well WHERE UPPER(well_name) = '" + feature.getFeatureName().toUpperCase() + "'");) {
             rs.next();
             String link = "https://data.gns.cri.nz/wellsdb/index.html?name=" + rs.getString(1);
             statement.close();
             return link;
         } catch (SQLException e) {
             return null;
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (Exception _e) {
-                }
-            }
         }
     }
 
     /**
      * Joins the string array, starting from the given index, with a space
      * character as the separator
+     *
+     * @param parts
+     * @param startFrom
+     * @return
      */
     public static String join(String[] parts, int startFrom) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (int i = startFrom; i < parts.length; i++) {
             buffer.append(parts[i]).append(" ");
         }
@@ -231,6 +246,10 @@ public class FREDUtil {
 
     /**
      * Returns a string of a date with appropriate formatting
+     *
+     * @param date
+     * @param rounding
+     * @return
      */
     public static String formatDateForOutput(Date date, String rounding) {
         if (date == null) {
@@ -251,6 +270,10 @@ public class FREDUtil {
 
     /**
      * Returns a string of a date with appropriate formatting
+     *
+     * @param date
+     * @param rounding
+     * @return
      */
     public static String formatDateForDE(Date date, String rounding) {
         if (date == null) {
@@ -279,7 +302,7 @@ public class FREDUtil {
             dblStr = dblStr.substring(0, dblStr.length() - 2);
             return dblStr;
         }
-        StringBuffer fmt = new StringBuffer("0.");
+        StringBuilder fmt = new StringBuilder("0.");
         for (int i = 0; i < maxDp; i++) {
             fmt.append("#");
         }
@@ -321,26 +344,26 @@ public class FREDUtil {
         if (persons == null) {
             return "";
         }
-        StringBuffer names = new StringBuffer();
+        StringBuilder names = new StringBuilder();
 
-        for (PersonRelationship person : persons) {
+        persons.stream().forEach((person) -> {
             names.append(person.getDisplayName()).append(separator);
-        }
+        });
 
         return names.toString();
     }
 
     public static Set<Person> getPersons(String parameter, PersonUtil personUtil, String personLabel, boolean addIfNew) throws DataInputException {
         if (parameter.trim().length() == 0) {
-            return new LinkedHashSet<Person>();
+            return new LinkedHashSet<>();
         }
         String[] peopleStr = parameter.split("[;\\n]");
         return getPersons(peopleStr, personUtil, personLabel, addIfNew);
     }
 
     public static Set<Person> getPersons(String[] peopleStr, PersonUtil personUtil, String personLabel, boolean addIfNew) throws DataInputException {
-        HashSet<Person> personSet = new LinkedHashSet<Person>();
-        Vector<String[]> error = new Vector<String[]>();
+        HashSet<Person> personSet = new LinkedHashSet<>();
+        ArrayList<String[]> error = new ArrayList<>();
         for (String personStr : peopleStr) {
             try {
                 if (personStr.trim().length() == 0) {
@@ -395,6 +418,8 @@ public class FREDUtil {
      * Compares the two objects, handling nulls. The value of null == null is
      * given by nullEqulity
      *
+     * @param o1
+     * @param o2
      * @param nullEquality the value to return if both are null
      * @return
      */
@@ -412,7 +437,12 @@ public class FREDUtil {
      * Uses introspection to copy fields from <code>from</code> to
      * <code>to</code>
      *
+     * @param <T>
+     * @param from
+     * @param to
+     * @param instruction
      * @return to as a convenience.
+     * @throws java.beans.IntrospectionException
      */
     public static <T> T beanCopy(T from, T to, Instruction instruction) throws IntrospectionException {
         BeanInfo fromInfo = Introspector.getBeanInfo(from.getClass());
@@ -421,7 +451,7 @@ public class FREDUtil {
             if (instruction.include(prop)) {
                 try {
                     prop.getWriteMethod().invoke(to, new Object[]{prop.getReadMethod().invoke(from, (Object[]) null)});
-                } catch (Exception e) {
+                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                 }
             }
         }
@@ -433,7 +463,13 @@ public class FREDUtil {
      * <code>to</code> but uses the given class (must be a superclass of both
      * from and to) to determine which properties to copy.
      *
+     * @param <T>
+     * @param from
+     * @param to
+     * @param clazz
+     * @param instruction
      * @return to as a convenience.
+     * @throws java.beans.IntrospectionException
      */
     public static <T> T beanCopy(T from, T to, Class<T> clazz, Instruction instruction) throws IntrospectionException {
         BeanInfo fromInfo = Introspector.getBeanInfo(clazz);
@@ -442,7 +478,7 @@ public class FREDUtil {
             if (instruction.include(prop)) {
                 try {
                     prop.getWriteMethod().invoke(to, new Object[]{prop.getReadMethod().invoke(from, (Object[]) null)});
-                } catch (Exception e) {
+                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                 }
             }
         }
@@ -450,15 +486,13 @@ public class FREDUtil {
     }
 
     public static <T> List<T> toVector(T... array) {
-        List<T> list = new Vector<T>(array.length);
-        for (T t : array) {
-            list.add(t);
-        }
+        List<T> list = new ArrayList<>(array.length);
+        list.addAll(Arrays.asList(array));
         return list;
     }
 
     public static boolean isEmpty(Set<?> set) {
-        return set == null || set.size() == 0;
+        return set == null || set.isEmpty();
     }
 
     public static boolean isEmpty(String str) {
@@ -472,12 +506,10 @@ public class FREDUtil {
      * @return
      */
     public static Set<Adoption> getAdoptions(Sample sample) {
-        Set<Adoption> adoptions = new HashSet<Adoption>();
-        for (Record record : sample.getRecords()) {
-            if (record.getAdoption() != null) {
-                adoptions.add(record.getAdoption());
-            }
-        }
+        Set<Adoption> adoptions = new HashSet<>();
+        sample.getRecords().stream().filter((record) -> (record.getAdoption() != null)).forEach((record) -> {
+            adoptions.add(record.getAdoption());
+        });
         return adoptions;
     }
 
@@ -489,17 +521,15 @@ public class FREDUtil {
      * @return
      */
     public static Set<Paleontology> getPaleontologies(Sample sample) {
-        Set<Paleontology> lists = new HashSet<Paleontology>();
-        for (Record record : sample.getRecords()) {
-            if (record.getPaleontology() != null) {
-                lists.add(record.getPaleontology());
-            }
-        }
+        Set<Paleontology> lists = new HashSet<>();
+        sample.getRecords().stream().filter((record) -> (record.getPaleontology() != null)).forEach((record) -> {
+            lists.add(record.getPaleontology());
+        });
         return lists;
     }
 
     public static <T extends Comparable<? super T>> List<T> getSortedList(Set<T> set) {
-        List<T> list = new Vector<T>();
+        List<T> list = new ArrayList<>();
         list.addAll(set);
         Collections.sort(list);
         return list;
