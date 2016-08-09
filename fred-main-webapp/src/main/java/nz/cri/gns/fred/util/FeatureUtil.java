@@ -45,6 +45,8 @@ import java.util.logging.Logger;
 
 public class FeatureUtil extends ModelUtil implements AuditedUtil {
 
+    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.util.FeatureUtil");
+
     private FredDAO fredDAO;
     private FolderUtil folderUtil;
 
@@ -120,7 +122,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
                 new FREDUtil.ExcludeByType(Set.class,
                         new FREDUtil.ExcludeByName(FREDUtil.toVector("audit", "sampleId", "feature", "frNumber")))
         );
-		//Clear the fr number if it has one
+        //Clear the fr number if it has one
         //Copy relationships
         Set<Relationship> relationships = sample.getRelationships();
         if (relationships != null && relationships.size() > 0) {
@@ -881,7 +883,6 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
                 String[] frNumBits = parseFrNumber(frNumStr.substring(0, frNumStr.indexOf("-")));
                 Integer endSerialNum = new Integer(frNumStr.substring(frNumStr.indexOf("-") + 1));
                 return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ?", FrNumber.class, frNumBits[0], new Integer(frNumBits[1]), endSerialNum);
-
             }
 
             //single
@@ -896,25 +897,28 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
             }
 
             // now add recollections
-            String num = frNumbers.get(0).toString();
-            if (num.indexOf("/") > 0) {
-                String mapSheet = num.substring(0, frNumStr.indexOf("/f")).toUpperCase();
-                String serial = null;
-                String recoll = frNumbers.get(0).getRecollectionNumber();
-                if (recoll == null) {
-                    serial = num.substring(frNumStr.indexOf("/f") + 2);
-                    return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber = ?",
-                            FrNumber.class, mapSheet, new Integer(serial));
-                } else {
-                    serial = num.substring(0, num.indexOf(recoll)).substring(frNumStr.indexOf("/f") + 2);
-                    return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber = ? AND f.recollectionNumber=?",
-                            FrNumber.class, mapSheet, new Integer(serial), recoll);
+            if (!frNumbers.isEmpty()) {
+                String num = frNumbers.get(0).toString();
+                if (num.indexOf("/") > 0) {
+                    String mapSheet = num.substring(0, frNumStr.indexOf("/f")).toUpperCase();
+                    String serial = null;
+                    String recoll = frNumbers.get(0).getRecollectionNumber();
+                    if (recoll == null) {
+                        serial = num.substring(frNumStr.indexOf("/f") + 2);
+                        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber = ?",
+                                FrNumber.class, mapSheet, new Integer(serial));
+                    } else {
+                        serial = num.substring(0, num.indexOf(recoll)).substring(frNumStr.indexOf("/f") + 2);
+                        return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber = ? AND f.recollectionNumber=?",
+                                FrNumber.class, mapSheet, new Integer(serial), recoll);
+                    }
                 }
             }
-
-        } catch (Exception e) {
-            Logger.getLogger(FeatureUtil.class.getName()).log(Level.SEVERE, null, e);
+        } catch (DataInputException e) {
+            // Reduce log spam. This happens when the user enters a funny FR number.
+            log.log(Level.FINE, "User entered something funny:", e);
         }
+
         return null;
     }
 
@@ -1040,11 +1044,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         Sample sample = new SampleUtil(factory).createSample(feature, folderId, false, user);
         sample.setTopDepth(topDepth);
         sample.setBottomDepth(bottomDepth);
+
         if (drillTypeId != null) {
-            sample.setDrillType(fredDAO.get(drillTypeId, nz.cri.gns.fred.hibernate.DrillType.class));
+            sample.setDrillType(fredDAO.get(drillTypeId, nz.cri.gns.fred.hibernate.DrillType.class
+            ));
         }
 
-		//add first FRNumber (if one defined)
+        //add first FRNumber (if one defined)
         //sample.setFrNumber(FeatureUtil.getFrNumber(feature));
         fredDAO.saveOrUpdate(sample);
     }
@@ -1145,7 +1151,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         return getFeatureWithName(ident);
     }
 
-    public Feature getFeatureWithName(String name) throws StorageAccessException {
+    public Feature
+            getFeatureWithName(String name) throws StorageAccessException {
         return fredDAO.getFirst("FROM Feature AS f WHERE f.featureName = ?", Feature.class, name);
     }
 
@@ -1166,11 +1173,13 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         return null;
     }
 
-    public FrNumber getFrNumber(String frNum) throws StorageAccessException {
+    public FrNumber
+            getFrNumber(String frNum) throws StorageAccessException {
         return fredDAO.getFirst("FROM FrNumber AS f WHERE f.frNumber = ? AND f.obsolete IS NULL", FrNumber.class, frNum);
     }
 
-    public FrNumber getYardFrNumber(String frNum) throws StorageAccessException {
+    public FrNumber
+            getYardFrNumber(String frNum) throws StorageAccessException {
         return fredDAO.getFirst("FROM FrNumber AS f WHERE f.frNumber = ? AND f.obsolete IS NOT NULL", FrNumber.class, frNum);
     }
 
@@ -1254,13 +1263,16 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         }
     }
 
-    public Integer getTotalFeatureCount() throws StorageAccessException {
+    public Integer
+            getTotalFeatureCount() throws StorageAccessException {
         return fredDAO.getFirst("SELECT COUNT(*) FROM Feature AS f WHERE f.audit.status=?", Integer.class, AuditUtil.APPROVED);
     }
 
-    public Date getLastFeatureApprovalDate() throws StorageAccessException {
+    public Date
+            getLastFeatureApprovalDate() throws StorageAccessException {
         try {
-            return fredDAO.getList("SELECT MAX(f.audit.approvedDate) FROM Feature AS f", Date.class).get(0);
+            return fredDAO.getList("SELECT MAX(f.audit.approvedDate) FROM Feature AS f", Date.class
+            ).get(0);
         } catch (Exception e) {
             return null;
         }
@@ -1274,12 +1286,14 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         return d.toString();
     }
 
-    public Country getCountry(String countryCode) throws StorageAccessException {
+    public Country
+            getCountry(String countryCode) throws StorageAccessException {
         return fredDAO.getFirst("FROM Country AS c WHERE c.countryCode = ?", Country.class, countryCode);
     }
 
     public List<Country> getCountries() throws StorageAccessException {
-        return fredDAO.getList("FROM Country AS c", Country.class);
+        return fredDAO.getList("FROM Country AS c", Country.class
+        );
     }
 
     public List<SimpleNameableAndIdentifiable> getFrMapSheetsAsNameable() throws StorageAccessException {
@@ -1293,7 +1307,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
     }
 
     public List<String> getFrMapSheets() throws StorageAccessException {
-        return fredDAO.getList("SELECT DISTINCT fr.mapSheet FROM FrNumber AS fr", String.class);
+        return fredDAO.getList("SELECT DISTINCT fr.mapSheet FROM FrNumber AS fr", String.class
+        );
     }
 
     public String getFullLocalityPDFURL(Feature feature) {
