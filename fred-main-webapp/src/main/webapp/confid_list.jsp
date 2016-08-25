@@ -38,7 +38,7 @@
 %><%
 	DAOFactory factory = FredHibernate.get().getDAOFactory();
 	User user = (User)getUser(session);
-	Integer userId = new Integer(user.getId());
+	Integer userId = new Integer(user.getId().intValue());
 	AuditUtil auditUtil = new AuditUtil(factory);
 	RecordUtil recordUtil = new RecordUtil(factory);
 	

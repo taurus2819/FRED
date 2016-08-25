@@ -37,7 +37,8 @@
     
         var p4326 = new OpenLayers.Projection("EPSG:4326");
         var p4272 = new OpenLayers.Projection("EPSG:4272");
-        var p900913 = new OpenLayers.Projection("EPSG:900913");
+        var p900913 = new OpenLayers.Projection("EPSG:900913"); //Informal google maps transnumeration epsg
+        var p3857 = new OpenLayers.Projection("EPSG:3857"); //Formal ESRI recognised google maps epsg
         var selectedLayer;
         var petlabLayer;
         var popup;
@@ -127,9 +128,9 @@
             
             dtm = new OpenLayers.Layer.WMS(
                     "New Zealand DTM",
-                    geoserver_url,
-                    {layers: "gns:GIS.NZ_DTM_SHADE", transparent: true, tiled: true, srs: "EPSG:900913"},
-                    {displayInLayerSwitcher: true, isBaseLayer: false, visibility: false, projection: p900913, wrapDateLine: true}
+                    "https://data.gns.cri.nz/gis/services/basemaps/nzdtm_shade/MapServer/WmsServer",
+                    {layers: "NZ_DTM_SHADE", transparent: true, tiled: true, srs: "EPSG:3857"},
+                    {displayInLayerSwitcher: true, isBaseLayer: false, visibility: false, projection: p3857, wrapDateLine: true}
             );
             
             //has been removed, maybe replaced in the future

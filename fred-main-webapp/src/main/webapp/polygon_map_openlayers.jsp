@@ -153,8 +153,8 @@
 
                 dtm = new OpenLayers.Layer.WMS(
                     "New Zealand DTM",
-                     geoserver_url,
-                    {layers: "gns:GIS.NZ_DTM_SHADE", transparent: true, tiled: true, srs: "EPSG:900913"},
+                     "https://data.gns.cri.nz/gis/services/basemaps/nzdtm_shade/MapServer/WmsServer",
+                    {layers: "NZ_DTM_SHADE", transparent: true, tiled: true, srs: "EPSG:900913"},
                     {displayInLayerSwitcher: true, isBaseLayer: false, visibility: false, projection: p900913, wrapDateLine: true}
                 );
 
