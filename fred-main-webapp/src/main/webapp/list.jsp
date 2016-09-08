@@ -123,7 +123,7 @@ public IpGrantedAuthority getRequiredRights() {
                     try {
                         sample = sampleUtil.findOrCreateSample(request.getParameter("localityName"), user);
                     } catch (DataInputException e) {
-                        String[] error = (String[]) e.getError().firstElement();
+                        String[] error = (String[]) e.getError().get(0);
                 %><tr><td>Error:</td><td><%=error[0]%> - <%=error[1]%></td></tr><%
                 } catch (InsufficientPrivelegesException e) {
             %><tr><td>Error:</td><td><%=e.getMessage()%></td></tr><%
