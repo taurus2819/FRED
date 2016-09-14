@@ -152,7 +152,7 @@
             message = msg.toString();
         } catch (DataInputException e) {
             status = "Error";
-            String[] error = (String[]) e.getError().firstElement();
+            String[] error = (String[]) e.getError().get(0);
             message = "Data Error: " + error[0] + " - " + error[1];
         } catch (Exception e) {
             status = "Error";
