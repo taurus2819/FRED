@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.PageContext;
+import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.auth.security.IpGrantedAuthority;
 
 import nz.cri.gns.dataaccess.StorageAccessException;
@@ -20,6 +21,7 @@ import nz.cri.gns.jsp.IconnedLink;
 import nz.cri.gns.jsp.Link;
 import nz.cri.gns.jsp.NewExtranetTemplate;
 import nz.cri.gns.jsp.PageState;
+import nz.cri.gns.xls.upload.XlsUploadUtils;
 
 public abstract class FREDIPSysJspPage extends IPSysJspPage {
 
@@ -130,4 +132,14 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
             }
         }
     }
+    
+    /**
+     * 
+     * @param request
+     * @return 
+     */
+    public User getAuthenticatedExcelUser(HttpServletRequest request) {
+        // check session
+        return new XlsUploadUtils().getAuthenticatedExcelUser(request, FredStart.SYSTEM_PROPERTIES_FILE);
+    }      
 }

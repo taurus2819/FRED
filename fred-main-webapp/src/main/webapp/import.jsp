@@ -1,3 +1,5 @@
+<%@page import="nz.cri.gns.xls.upload.TemplateVersionException"%>
+<%@page import="org.springframework.security.core.AuthenticationException"%>
 <%@page import="nz.cri.gns.auth.AuthServiceClient"%>
 <%@page pageEncoding="utf-8"
         %><%@page extends="nz.cri.gns.fred.FREDIPSysJspPage"
@@ -81,8 +83,6 @@
     String status = "";
     String message = "";
 
-    String userName = request.getParameter("user");
-    String password = request.getParameter("pass");
     String button = request.getParameter("button");
     String type = request.getParameter("Type");
     if (button == null || button.equals("")) {
@@ -91,10 +91,13 @@
 
     User user = null;
     try {
-        user = new AuthServiceClient().authenticateUser(userName, password);
-    } catch (Exception e) {
+        user = getAuthenticatedExcelUser(request);
+    } catch (AuthenticationException e) {
         status = "AuthError";
         message = "Invalid username/password";
+    } catch (TemplateVersionException e) {
+        status = "Error";
+        message = "Data entry template out of date, please download the latest version from the FRED website";
     }
 
     if (type != null && !type.equals("") && user != null) {
