@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nz.cri.gns.core.Environment;
@@ -21,7 +22,7 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 public class DataEntryTemplateUtil {
     public static final String TEMPLATE_FILE_NAME = "FRED.xlsm";
     
-    public void writeDataUploadTemplate(HttpServletRequest request, HttpServletResponse response) throws IOException, InvalidFormatException {
+    public void writeDataUploadTemplate(HttpServletRequest request, HttpServletResponse response) throws IOException, InvalidFormatException, URISyntaxException {
         
         String baseUrl;
         String secureBaseUrl;
@@ -32,7 +33,7 @@ public class DataEntryTemplateUtil {
         if ("localhost".equals(environment) || !versionedTemplate.exists()) {
             baseUrl = utils.getBaseUrl(request);
             secureBaseUrl = baseUrl;
-            utils.writeXlsTemplateWithHiddenVersionPage(
+            utils.writeVersionedTemplate(
                     baseUrl, 
                     secureBaseUrl, 
                     TEMPLATE_FILE_NAME, 
@@ -52,23 +53,16 @@ public class DataEntryTemplateUtil {
         return Environment.getDataUrl() + "/fred/";
     }
      
-    public static void writeVersionedTemplate() throws IOException, InvalidFormatException {
-        
-        String baseUrl = getDefaultBaseUrl();
+    public static void writeVersionedTemplate() throws IOException, InvalidFormatException, URISyntaxException {
+                
         XlsUploadUtils utils = new XlsUploadUtils();
         utils.setDefaultOpenSheetIndex(1);
-        try (InputStream xlsInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(TEMPLATE_FILE_NAME)) {
-            try (FileOutputStream xlsOutputStream = new FileOutputStream(getVersionedTemplateFilename())) {
-                utils.addHiddenVersionPage(
-                        xlsInputStream,
-                        xlsOutputStream,
-                        XlsUploadUtils.VERSION_SHEET_NAME,
-                        baseUrl,
-                        utils.getHttpsUrl(baseUrl),
-                        utils.getSystemProperties(FredStart.SYSTEM_PROPERTIES_FILE)
-                );
-            }
-        }        
+        utils.writeVersionedTemplate(
+                getDefaultBaseUrl(), 
+                TEMPLATE_FILE_NAME, 
+                getVersionedTemplateFilename(), 
+                utils.getSystemProperties(FredStart.SYSTEM_PROPERTIES_FILE)
+        );         
     }
     
     public static String getVersionedTemplateFilename() {
