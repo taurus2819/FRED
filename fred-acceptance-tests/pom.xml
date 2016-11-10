@@ -11,7 +11,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <webdriver.driver>firefox</webdriver.driver>
         <webdriver.firefox.bin>C:\Program Files (x86)\Mozilla Firefox_31\firefox.exe</webdriver.firefox.bin>
-        <serenity.version>1.0.58</serenity.version>
+        <serenity.version>1.1.42</serenity.version>
     </properties>
     <dependencies>
         <dependency>
