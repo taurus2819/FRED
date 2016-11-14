@@ -16,6 +16,12 @@
         <url>http://www.gns.cri.nz</url>
     </organization>
     <description>FRED main webapp </description>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Required to show the build date in the desired format -->
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>    
+        <build.display.date>${maven.build.timestamp}</build.display.date>        
+    </properties>     
     <build>
         <plugins>
             <plugin>
@@ -224,11 +230,7 @@
                 </plugins>
             </build>
         </profile>        
-    </profiles>
-    
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>  
+    </profiles> 
     <scm>
         <connection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk/fred-main-webapp</connection>
         <developerConnection>scm:svn:svn+ssh://jenkins@repo/repo/applications/FRED/trunk/fred-main-webapp</developerConnection>
