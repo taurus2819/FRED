@@ -114,7 +114,7 @@
         <dependency>
             <groupId>nz.cri.gns.online-servlet</groupId>
             <artifactId>online-servlet-core</artifactId>
-            <version>3.1.18.462</version>
+            <version>3.1.18.469</version>
         </dependency>
         <dependency>
             <groupId>net.sf.ehcache</groupId>
@@ -186,6 +186,45 @@
             <classifier>classes</classifier>
         </dependency>
     </dependencies>
+    <profiles>
+        <profile>
+            <id>jenkins-build</id>
+            <build>
+                <plugins>
+                    <!-- Plugin used to insert version and date into page footer -->
+                    <plugin>
+                        <groupId>com.google.code.maven-replacer-plugin</groupId>
+                        <artifactId>replacer</artifactId>
+                        <version>1.5.3</version>
+                        <executions>
+                            <execution>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>replace</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <includes>
+                                <include>${project.basedir}/src/main/webapp/index.jsp</include>
+                                <include>${project.build.directory}/classes/fred.properties</include>
+                            </includes>                             
+                            <replacements>
+                                <replacement>
+                                    <token>PROJECT_VERSION</token>
+                                    <value>${project.version}</value>
+                                </replacement>
+                                <replacement>
+                                    <token>BUILD_DATE</token>
+                                    <value>${build.display.date}</value>
+                                </replacement>
+                            </replacements>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>        
+    </profiles>
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

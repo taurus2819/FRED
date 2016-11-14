@@ -51,7 +51,9 @@
 				<p><span class="smalltext">Macintosh users: webmaps require Safari or Netscape 7+ browsers</span></p>
 			</td>
 		</tr>
-		</table><%
+		</table>
+                <div style="margin: 0 auto;font-size: 0.7em; padding: 10px; text-align: center; color: #999; background-color: #fff;">Version PROJECT_VERSION created BUILD_DATE</div>
+        <%
 	} catch (Exception e) {
 		%><p style="color: red">An error has occured while loading this page. Please contact IT support.<br/><%=e.getMessage()%></p><%
  		e.printStackTrace();
