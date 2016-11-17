@@ -21,7 +21,7 @@
         <tr><td class="heading">External Users&nbsp;&nbsp;</td>
             <td>
                 <div>Please click <a href='http://data.gns.cri.nz/register/user_reg.jsp?DBase=FRED' target='register' class='boldlink'>here</a> to register for an account.</div>
-                <div>If you have not changed your password since 16/11/2016 you will need to reset it using the <a href="<%=Environment.getDataUrl()%>/register/password.jsp">password reset page</a></div>
+                <div>If you have not changed your password since 23/11/2016 you will need to reset it using the <a href="<%=Environment.getDataUrl()%>/register/password.jsp">password reset page</a></div>
             </td>
         </tr>
         <tr><td colspan="2"><%
