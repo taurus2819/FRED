@@ -154,7 +154,7 @@ Public Function getSavedQueryData(id As String, folderId As String, docType As S
   End If
   
   queryData = "docType=" & docType & "&id=" & id & "&folderID=" & folderId
-  errorMsg = getSecureList("Lists", "document", "ext_downloadFREDLocality", queryData)
+  errorMsg = getSecureList("OracleData", "document", "ext_downloadFREDLocality", queryData)
 
   'copy from web query to main worksheet
   cellData = ActiveWorkbook.Sheets("OracleData").Range(Constants.DOWNLOAD_PAL_RECORD_ID & Constants.DOWNLOAD_DATA_ROW).value
@@ -752,3 +752,4 @@ Private Function stripStar(str As String) As String
   End If
 
 End Function
+

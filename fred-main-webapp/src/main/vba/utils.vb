@@ -644,7 +644,7 @@ Private Sub copyHtmlTableToQueryTable(htmlContent As Object, sheetName As String
     With htmlContent.getElementsByTagName("table")(0)
         For Each Tr In .Rows
             For Each Td In Tr.Cells
-                ActiveWorkbook.Sheets("Lists").Cells(iRow, iCol).value = Td.innerText
+                ActiveWorkbook.Sheets(sheetName).Cells(iRow, iCol).value = Td.innerText
                 iCol = iCol + 1
             Next Td
             iCol = columnNumToStart
