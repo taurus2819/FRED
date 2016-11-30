@@ -3,12 +3,12 @@
     <parent>
         <groupId>nz.cri.gns.fred</groupId>
         <artifactId>fred-top</artifactId>
-        <version>3.1.7.42</version>
+        <version>3.1.7.43</version>
     </parent>
     <groupId>nz.cri.gns</groupId>
     <artifactId>fred</artifactId>
     <packaging>war</packaging>
-    <version>3.1.7.42</version>
+    <version>3.1.7.43</version>
     <name>Fossil Record Electronic Database</name>
     <url>http://fred.org.nz</url>  
     <organization>
