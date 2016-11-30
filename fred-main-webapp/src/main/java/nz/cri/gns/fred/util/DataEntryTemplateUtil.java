@@ -3,9 +3,7 @@ package nz.cri.gns.fred.util;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -63,6 +61,11 @@ public class DataEntryTemplateUtil {
                 getVersionedTemplateFilename(), 
                 utils.getSystemProperties(FredStart.SYSTEM_PROPERTIES_FILE)
         );         
+    }
+    
+    public static String getDownloadUrl(HttpServletRequest request) {
+        XlsUploadUtils utils = new XlsUploadUtils();
+        return "data-entry-template/"+utils.getTemplateFilename(utils.getEnvironmentName(request), TEMPLATE_FILE_NAME);
     }
     
     public static String getVersionedTemplateFilename() {

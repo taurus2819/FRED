@@ -15,10 +15,14 @@
 		<servlet-name>locality</servlet-name>
 		<servlet-class>nz.cri.gns.fred.servlet.LocalityServlet</servlet-class>
 	</servlet>
-    <servlet>
+        <servlet>
 		<servlet-name>wfsProxy</servlet-name>
 		<servlet-class>nz.cri.gns.fred.servlet.WFSProxy</servlet-class>
 	</servlet>
+        <servlet>
+		<servlet-name>dataEntryTemplate</servlet-name>
+		<servlet-class>nz.cri.gns.fred.servlet.DataEntryTemplateServlet</servlet-class>
+	</servlet>        
 	<servlet-mapping>
 		<servlet-name>ajax</servlet-name>
 		<url-pattern>/ajaxSupport.xml</url-pattern>
@@ -31,10 +35,14 @@
 		<servlet-name>locality</servlet-name>
 		<url-pattern>/locality/*</url-pattern>
 	</servlet-mapping>
-    <servlet-mapping>
+        <servlet-mapping>
 		<servlet-name>wfsProxy</servlet-name>
 		<url-pattern>/wfsProxy</url-pattern>
 	</servlet-mapping>
+        <servlet-mapping>
+		<servlet-name>dataEntryTemplate</servlet-name>
+		<url-pattern>/data-entry-template/*</url-pattern>
+	</servlet-mapping>        
 
     <session-config>
         <session-timeout>240</session-timeout>

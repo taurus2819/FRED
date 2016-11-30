@@ -10,7 +10,9 @@
 %><%@page import="nz.cri.gns.fred.util.FolderUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.fred.util.TaxonomicUtil"
+%><%@page import="nz.cri.gns.fred.util.DataEntryTemplateUtil"
 %><%@page import="nz.cri.gns.jsp.ExtranetTemplate"
+
 %><%!
 	public String getName(HttpServletRequest request) {
         String name = ((User)getUser(request.getSession())).getFullName();
@@ -120,10 +122,9 @@
 	
 	%><tr class="midColour"><td colspan="3"><b>Data Entry Spreadsheet</b>&nbsp;&nbsp;&nbsp;Use for entering/editing large amounts of data</td></tr>
 	<tr class="lightColour"><td colspan="3">Download the spreadsheet by clicking on the link below and then choosing "Save" when prompted by your browser  (Note: in some browsers it may be necessary to right-click on the link and choose <i>Save As</i> from the pop-up menu). The spreadsheet has been tested with Microsoft Excel 2002,2007,2010 but should work with all versions.  Full instructions are included in the spreadsheet.</td></tr>
-	<tr class="lightColour"><td colspan="3" style="color: #ff0000;">May 2008: A change has been made to the <i>Paleontology</i> worksheet and versions older than 2.3 will no longer work.  Please download the latest version here.</td></tr>
-    <tr class="lightColour"><td colspan="3" style="color: #ff0000;">Jan 2014: Changes to Microsoft Excel 2010 Security will require you to enable content, before first use.</td></tr>
-    <!--tr class="lightColour"><td colspan="3"><a href="FRED.zip"><img src="images/excel.gif" style=" vertical-align: middle;" border="0" width="20" height="20" alt="Data entry spreadsheet" />&nbsp;&nbsp;<b>Online FRED template</a></b><span style="float:right;">&nbsp;&nbsp;<b><a href="FRED_static.zip">Static FRED template&nbsp;&nbsp;<img src="images/excel.gif" border="0" width="20" height="20" alt="Data entry spreadsheet" style=" vertical-align: middle;"/></a></span></td></tr-->
-        <tr class="lightColour"><td colspan="3"><a href="downloadSpreadsheet.jsp"><img src="images/excel.gif" style=" vertical-align: middle;" border="0" width="20" height="20" alt="Data entry spreadsheet" />&nbsp;&nbsp;<b>Online FRED template</b></a><span style="float:right;">&nbsp;&nbsp;<b><a href="FRED_static.zip">Static FRED template&nbsp;&nbsp;<img src="images/excel.gif" border="0" width="20" height="20" alt="Data entry spreadsheet" style=" vertical-align: middle;"/></a></span></td></tr>
+    <tr class="lightColour"><td colspan="3" >Jan 2014: Changes to Microsoft Excel 2010 Security will require you to enable content, before first use.</td></tr>
+    <tr class="lightColour"><td colspan="3" >Nov 2016: Online FRED template updated, older versions will no longer work. Users must download the new version.</td></tr>
+    <tr class="lightColour"><td colspan="3"><a href="<%=DataEntryTemplateUtil.getDownloadUrl(request)%>"><img src="images/excel.gif" style=" vertical-align: middle;" border="0" width="20" height="20" alt="Data entry spreadsheet" />&nbsp;&nbsp;<b>Online FRED template</b></a><span style="float:right;">&nbsp;&nbsp;<b><a href="FRED_static.zip">Static FRED template&nbsp;&nbsp;<img src="images/excel.gif" border="0" width="20" height="20" alt="Data entry spreadsheet" style=" vertical-align: middle;"/></a></span></td></tr>
 	<tr><td>&nbsp;</td></tr><%
 	
 	List<UserFolder> backlogFolders = folderUtil.getBacklogFolders(user);
