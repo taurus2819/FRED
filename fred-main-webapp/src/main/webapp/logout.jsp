@@ -3,11 +3,11 @@
 <html>
     <head>
         <title></title>
-        <meta http-equiv="refresh" content="0; url='/fred'">
+        <meta http-equiv="refresh" content="0; url='/'">
         <meta http-equiv="pragma" content="no-cache">
 
         <script type="text/javascript">
-            window.location.replace('/fred')
+            window.location.replace('/')
         </script>
     </head>
     <%!
