@@ -482,7 +482,7 @@ Private Function constructSaveSubmitURL(docType As String, button As String) As 
         dte = ActiveWorkbook.Sheets("Pal_Record").Range(currentColumn & Constants.PAL_ID_DATE).value
         rnd = ActiveWorkbook.Sheets("Pal_Record").Range(currentColumn & Constants.PAL_DATE_ROUNDING).value
         query = query & "&PalDate=" & encodeURL(utils.formatDate(dte, rnd))
-        query = query & "&Identifier=" & Replace(encodeURL(ActiveWorkbook.Sheets("Pal_Record").Range(currentColumn & Constants.PAL_IDENTIFIERS).value), "%23", Chr(10))
+        query = query & "&Identifier=" & Replace(encodeURL(ActiveWorkbook.Sheets("Pal_Record").Range(currentColumn & Constants.PAL_IDENTIFIERS).value), "%23", "%0A")
         query = query & "&StageStageStart=" & encodeURL(decodeCode(ActiveWorkbook.Sheets("Pal_Record").Range(currentColumn & Constants.PAL_STAGE_START).value, "stageName", 1))
         query = query & "&StageStartMod=" & encodeURL(ActiveWorkbook.Sheets("Pal_Record").Range(currentColumn & Constants.PAL_STAGE_START_MOD).value)
         query = query & "&StageStageStop=" & encodeURL(decodeCode(ActiveWorkbook.Sheets("Pal_Record").Range(currentColumn & Constants.PAL_STAGE_STOP).value, "stageName", 1))

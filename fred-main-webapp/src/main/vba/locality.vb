@@ -735,10 +735,10 @@ Private Function constructSaveSubmitURL(button As String) As Boolean
       dte = ActiveWorkbook.Sheets("Locality").Range(Constants.COLL_DATE & currentLine).value
       rnd = ActiveWorkbook.Sheets("Locality").Range(Constants.COLL_DATE_RND & currentLine).value
       query = query & "&CollDate=" & encodeURL(utils.formatDate(dte, rnd))
-      query = query & "&Coll=" & Replace(encodeURL(ActiveWorkbook.Sheets("Locality").Range(Constants.COLLECTOR & currentLine).value), "%23", Chr(10))
+      query = query & "&Coll=" & Replace(encodeURL(ActiveWorkbook.Sheets("Locality").Range(Constants.COLLECTOR & currentLine).value), "%23", "%0A")
       query = query & "&StratName=" & encodeURL(ActiveWorkbook.Sheets("Locality").Range(Constants.STRAT_NAME & currentLine).value)
       query = query & "&InPlace=" & encodeURL(ActiveWorkbook.Sheets("Locality").Range(Constants.FOSSIL_IN_PLACE & currentLine).value)
-      query = query & "&SentTo=" & Replace(encodeURL(ActiveWorkbook.Sheets("Locality").Range(Constants.SENT_TO & currentLine).value), "%23", Chr(10))
+      query = query & "&SentTo=" & Replace(encodeURL(ActiveWorkbook.Sheets("Locality").Range(Constants.SENT_TO & currentLine).value), "%23", "%0A")
       query = query & "&NotColl=" & encodeURL(ActiveWorkbook.Sheets("Locality").Range(Constants.NOT_COLLECTED & currentLine).value)
       query = query & "&Sig=" & encodeURL(ActiveWorkbook.Sheets("Locality").Range(Constants.SIG & currentLine).value)
       query = query & "&InfStageStart=" & encodeURL(decodeCode(ActiveWorkbook.Sheets("Locality").Range(Constants.INF_STAGE_START & currentLine).value, "stageName", 1))
@@ -750,8 +750,8 @@ Private Function constructSaveSubmitURL(button As String) As Boolean
       query = query & "&KnwStageStop=" & encodeURL(decodeCode(ActiveWorkbook.Sheets("Locality").Range(Constants.KNW_STAGE_STOP & currentLine).value, "stageName", 1))
       query = query & "&KnwStopMod=" & encodeURL(ActiveWorkbook.Sheets("Locality").Range(Constants.KNW_STAGE_STOP_MOD & currentLine).value)
       query = query & "&PrevSamp=" & Replace(encodeURL(ActiveWorkbook.Sheets("Locality").Range(Constants.PREV_SAMPLE & currentLine).value), "%23", ";")
-      query = query & "&SampRel=" & Replace(encodeURL(ActiveWorkbook.Sheets("Locality").Range(Constants.SAMP_REL & currentLine).value), "%23", Chr(10))
-      query = query & "&StratRel=" & Replace(encodeURL(ActiveWorkbook.Sheets("Locality").Range(Constants.STRAT_REL & currentLine).value), "%23", Chr(10))
+      query = query & "&SampRel=" & Replace(encodeURL(ActiveWorkbook.Sheets("Locality").Range(Constants.SAMP_REL & currentLine).value), "%23", "%0A")
+      query = query & "&StratRel=" & Replace(encodeURL(ActiveWorkbook.Sheets("Locality").Range(Constants.STRAT_REL & currentLine).value), "%23", "%0A")
       query = query & "&ColMap=" & encodeURL(ActiveWorkbook.Sheets("Locality").Range(Constants.COLUMN_MAP & currentLine).value)
       query = query & "&Dip=" & encodeURL(ActiveWorkbook.Sheets("Locality").Range(Constants.DIP & currentLine).value)
       query = query & "&DipDir=" & encodeURL(ActiveWorkbook.Sheets("Locality").Range(Constants.DIP_DIRECTION & currentLine).value)
