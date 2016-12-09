@@ -3,11 +3,11 @@
     <parent>
         <groupId>nz.cri.gns.fred</groupId>
         <artifactId>fred-top</artifactId>
-        <version>3.1.7.49</version>
+        <version>3.1.7.50</version>
     </parent>
     <groupId>nz.cri.gns.fred</groupId>
     <artifactId>fred-redirect-webapp</artifactId>
-    <version>3.1.7.49</version>
+    <version>3.1.7.50</version>
     <packaging>war</packaging>
     <name>FRED Redirect Webapp</name>
     <description>FRED Redirection Webapp</description>
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>nz.cri.gns</groupId>
             <artifactId>fred</artifactId>
-            <version>3.1.7.49</version>
+            <version>3.1.7.50</version>
             <classifier>classes</classifier>
         </dependency>
     </dependencies>
