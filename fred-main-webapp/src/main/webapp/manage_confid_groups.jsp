@@ -62,7 +62,7 @@
 		<input type="hidden" name="backURL" value="<%=backURL%>" />
 		<input type="hidden" name="GroupName" value="" />
 		</form><%
-		FrUserView frUser = userUtil.getFrUserView(new Integer(user.getId()));
+		FrUserView frUser = userUtil.getFrUserView(user.getId().intValue());
 		%><p><%
 		startDETable(pageContext);
 		%><table border="0" width="550">
