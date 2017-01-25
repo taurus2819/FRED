@@ -50,10 +50,15 @@
 	ExtranetTemplate et = getExtranetTemplate();
 	et.setDisplayLoadingMessage(true);
 	et.setUseNavigationColumn(false);
+                
+        session.setAttribute("FRED.SAMP_IDS", request.getParameter("SampIDs"));
+        session.setAttribute("FRED.REC_IDS", request.getParameter("RecIDs"));
+        
 	addButtons(et, new IconnedLink[] {
 			new IconnedLink((String)session.getAttribute(WebsiteConstants.DATA_ENTRY_REDIRECT) + "&q=" + Math.random(), "images/back_arrow.gif", "Back"),
-			new IconnedLink("manage_confid_groups.jsp?backURL=" + URLEncoder.encode("set_confidentiality.jsp?ID=" + request.getParameter("ID") + "&RecType=" + request.getParameter("RecType") + "&FoldID=" + request.getParameter("FoldID"), "ISO-8859-1"), "images/edit.gif", "Manage User Groups")
-		});
+			//new IconnedLink("manage_confid_groups.jsp?backURL=" + URLEncoder.encode("set_confidentiality.jsp?ID=" + request.getParameter("ID") + "&RecType=" + request.getParameter("RecType") + "&FoldID=" + request.getParameter("FoldID"), "ISO-8859-1"), "images/edit.gif", "Manage User Groups")
+                        new IconnedLink("manage_confid_groups.jsp?backURL=" + URLEncoder.encode("set_confidentiality.jsp?ID=" + session.getAttribute("FRED.FOLD_ID") + "&RecType=" + request.getParameter("RecType") + "&FoldID=" + session.getAttribute("FRED.FOLD_ID"), "ISO-8859-1"), "images/edit.gif", "Manage User Groups")	
+        });
 
 	try {
 		
@@ -81,8 +86,8 @@
 			SampleUtil sampleUtil = new SampleUtil(factory);
 			RecordUtil recordUtil = new RecordUtil(factory);
 			UserFolder folder = null;
-			try {
-				folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("FoldID")), user);
+			try {                                   
+                            folder = folderUtil.getUserFolder(Integer.parseInt(request.getParameter("FoldID")), user);
 			} catch (Exception e) {	}
 			List<Audit> audits = new Vector<Audit>();
 			List<Audit> palListAudits = new Vector<Audit>();
@@ -132,7 +137,7 @@
 				for (Audit a : palListAudits) {
 					%><input type="hidden" name="PalListAuditIDs" value="<%=a.getAuditId()%>" /><%
 				}			
-				if (folder != null) {
+				if (folder != null) {                                        
 					%><input type="hidden" name="FoldID" value="<%=folder.getFolderId()%>" /><%
 				}
 				%><input type="hidden" name="Action" value="Update">

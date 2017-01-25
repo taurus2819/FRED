@@ -41,6 +41,10 @@
 		response.sendRedirect("folder_list.jsp");
 		return;
 	}
+        
+        session.setAttribute("FRED.FOLD_ID", request.getParameter("ID"));
+        session.setAttribute("FRED.SAMP_IDS", null);
+        session.setAttribute("FRED.REC_IDS", null);
 	
 	FolderUtil folderUtil = new FolderUtil(factory);
 	FeatureUtil featureUtil = new FeatureUtil(factory);

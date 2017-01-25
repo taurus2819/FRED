@@ -28,13 +28,14 @@
 	AuditUtil auditUtil = new AuditUtil(FredHibernate.get().getDAOFactory());
 	User user = (User)getUser(session);
 	String backURL = request.getParameter("backURL");
-
+        
 	ExtranetTemplate et = getExtranetTemplate();
 	
 	if (request.getParameter("GroupID") == null) {
 		addButtons(et, new IconnedLink[] {
-				new IconnedLink(backURL + "&q=" + Math.random(), "images/back_arrow.gif", "Back to Set Confidentiality"),
-				new IconnedLink("javascript:doNewGroup();", "images/lock.gif", "New User Group")		
+				//new IconnedLink(backURL + "&q=" + Math.random(), "images/back_arrow.gif", "Back to Set Confidentiality"),
+ 				new IconnedLink("set_confidentiality.jsp?FoldID=" + session.getAttribute("FRED.FOLD_ID") + (session.getAttribute("FRED.SAMP_IDS") != null ? "&SampIDs=" + session.getAttribute("FRED.SAMP_IDS") : "&RecIDs=" + session.getAttribute("FRED.REC_IDS"))+ "&q=" + Math.random(), "images/back_arrow.gif", "Back to Set Confidentiality"),
+                                new IconnedLink("javascript:doNewGroup();", "images/lock.gif", "New User Group")		
 		});
 		
 		if (request.getParameter("ActionType") != null) { //do something
@@ -80,9 +81,10 @@
 		</form><%
 	} else {
 		addButtons(et, new IconnedLink[] {
-				new IconnedLink("manage_confid_groups.jsp", "images/back_arrow.gif", "Back to Group List"),
-				new IconnedLink(backURL + "&q=" + Math.random(), "images/back_arrow.gif", "Back to Set Confidentiality")
-		});
+				new IconnedLink("manage_confid_groups.jsp?backURL=" + backURL, "images/back_arrow.gif", "Back to Group List"),
+				//new IconnedLink(backURL + "&q=" + Math.random(), "images/back_arrow.gif", "Back to Set Confidentiality")
+                                new IconnedLink("set_confidentiality.jsp?FoldID=" + session.getAttribute("FRED.FOLD_ID") + (session.getAttribute("FRED.SAMP_IDS") != null ? "&SampIDs=" + session.getAttribute("FRED.SAMP_IDS") : "&RecIDs=" + session.getAttribute("FRED.REC_IDS"))+ "&q=" + Math.random(), "images/back_arrow.gif", "Back to Set Confidentiality")
+                });
 		drawTop(out, et, request, response);
 		ConfidentialGroup group = auditUtil.getConfidentialGroup(new Integer(request.getParameter("GroupID")));
 		
