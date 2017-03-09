@@ -27,6 +27,10 @@
         <servlet-name>de.jsp</servlet-name>
         <servlet-class>nz.cri.gns.fred.servlet.De_jsp</servlet-class>
     </servlet>        
+    <servlet>
+        <servlet-name>dp.jsp</servlet-name>
+        <servlet-class>nz.cri.gns.fred.servlet.Dp_jsp</servlet-class>
+    </servlet>        
     
     <servlet-mapping>
         <servlet-name>ajax</servlet-name>
@@ -51,6 +55,10 @@
     <servlet-mapping>
         <servlet-name>de.jsp</servlet-name>
         <url-pattern>/de.jsp</url-pattern>
+    </servlet-mapping>        
+    <servlet-mapping>
+        <servlet-name>dp.jsp</servlet-name>
+        <url-pattern>/dp.jsp</url-pattern>
     </servlet-mapping>        
 
     <session-config>
