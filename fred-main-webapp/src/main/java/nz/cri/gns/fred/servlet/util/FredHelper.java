@@ -58,7 +58,7 @@ public class FredHelper extends FREDIPSysJspPage {
                     break;
                 } else {
                     // Will cut compound UTF-8 characters up.
-                    out.write(Arrays.toString(buf).toCharArray(), 0, bytesRead);
+                    out.write(new String(buf, "UTF-8"), 0, bytesRead);
                 }
             }
         }
