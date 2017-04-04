@@ -76,7 +76,7 @@ left outer join default_identification_date did on did.person_id=i.person_id;
 
 -- auto age wide 
 create or replace view auto_age_wide_view as
-select sample_id, min(top_age) as wide_age_lower, max(base_age) as wide_age_upper
+select sample_id, min(top_age) as wide_age_upper, max(base_age) as wide_age_lower
 from (
 select sample_id, top_age, base_age
 from (
