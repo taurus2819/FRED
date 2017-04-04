@@ -71,6 +71,8 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     private BedThickness bedThickness;
     private Stage stageByKnownStageId;
     private Stage stageByInferredStageId;
+    private Stage autoAgeWide;
+    private Stage autoAgeNarrow;
     private Set<SedimentaryFeature> sedimentaryFeatures;
     private Set<MetaCat> metaCats;
     private Set<Record> records;
@@ -556,4 +558,22 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     public Sample(int sampleId) {
         this.sampleId = Integer.valueOf(sampleId);
     }
+
+    public Stage getAutoAgeWide() {
+        return autoAgeWide;
+    }
+
+    public void setAutoAgeWide(Stage autoAgeWide) {
+        this.autoAgeWide = autoAgeWide;
+    }
+
+    public Stage getAutoAgeNarrow() {
+        return autoAgeNarrow;
+    }
+
+    public void setAutoAgeNarrow(Stage autoAgeNarrow) {
+        this.autoAgeNarrow = autoAgeNarrow;
+    }
+    
+    
 }

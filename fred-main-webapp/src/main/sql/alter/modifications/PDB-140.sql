@@ -1,30 +1,50 @@
 --ALTER TABLE FR.SAMPLE ADD (AUTO_AGE_WIDE NUMBER(7) references stage(stage_id));
 --ALTER TABLE FR.SAMPLE ADD (AUTO_AGE_NARROW NUMBER(7) references stage(stage_id));
 
-create or replace view v_sample_auto_age as 
-select s.*,
-        nvl(adopted_age_lower, nvl(age_narrow_lower.age_id, nvl(known_stage.age_lower_id, nvl(inferred_stage.age_lower_id, 15374)))) as age_narrow_lower_id,
-        nvl(adopted_age_upper, nvl(age_narrow_upper.age_id, nvl(known_stage.age_upper_id, nvl(inferred_stage.age_upper_id, 15374)))) as age_narrow_upper_id,
-        nvl(adopted_age_lower, nvl(age_wide_lower.age_id, nvl(known_stage.age_lower_id, nvl(inferred_stage.age_lower_id, 15374)))) as age_wide_lower_id,
-        nvl(adopted_age_upper, nvl(age_wide_upper.age_id, nvl(known_stage.age_upper_id, nvl(inferred_stage.age_upper_id, 15374)))) as age_wide_upper_id
+-- This is how you define constants in Oracle
+CREATE OR REPLACE FUNCTION "FR"."CONST_MAX_BASE_AGE" 
+        return number 
+        is
+        
+        begin
+                return (999.9);
+        end;
+
+CREATE OR REPLACE FUNCTION "FR"."CONST_MIN_TOP_AGE"
+RETURN number
+AS
+BEGIN
+  RETURN 0.0;
+END;
+
+-- Testing how to get the const value:
+select const_max_base_age from dual;
+        
+create or replace view squirrel_age_view as 
+select s.sample_id,
+        nvl(vlaal.base_age, nvl(vaan.narrow_age_lower, nvl(ksal.base_age, nvl(isl.base_age, const_max_base_age)))) as NARROW_BASE_AGE,
+        nvl(vlaau.top_age, nvl(vaan.narrow_age_upper, nvl(ksau.top_age, nvl(isu.top_age, const_min_top_age)))) as NARROW_TOP_AGE,
+        nvl(vlaal.base_age, nvl(vaaw.wide_age_lower, nvl(ksau.base_age, nvl(isl.base_age, const_max_base_age)))) as WIDE_BASE_AGE,
+        nvl(vlaau.top_age, nvl(vaaw.wide_age_upper, nvl(ksau.top_age, nvl(isl.top_age, const_min_top_age)))) as WIDE_TOP_AGE
 from sample s
 -- adoption
-left outer join v_latest_adoption vla on vla.sample_id=s.sample_id
+left outer join latest_adoption_view vla on vla.sample_id=s.sample_id
+left outer join age vlaal on vlaal.age_id=vla.adopted_age_lower
+left outer join age vlaau on vlaau.age_id=vla.adopted_age_upper
 -- determined
-left outer join v_auto_age_wide vaaw on vaaw.sample_id=s.sample_id
-left outer join v_auto_age_narrow vaan on vaan.sample_id=s.sample_id
--- Convert age bounds of both the above back to age IDs.
-left outer join age age_narrow_lower on age_narrow_lower.base_age=vaan.narrow_age_lower
-left outer join age age_narrow_upper on age_narrow_upper.top_age=vaan.narrow_age_upper
-left outer join age age_wide_lower on age_wide_lower.base_age=vaaw.wide_age_lower
-left outer join age age_wide_upper on age_wide_upper.top_age=wide_age_upper
+left outer join auto_age_wide_view vaaw on vaaw.sample_id=s.sample_id
+left outer join auto_age_narrow_view vaan on vaan.sample_id=s.sample_id
 -- known 
 left outer join stage known_stage on known_stage.stage_id=s.known_stage_id
+left outer join age ksal on ksal.age_id=known_stage.age_lower_id
+left outer join age ksau on ksau.age_id=known_stage.age_upper_id
 -- inferred 
-left outer join stage inferred_stage on inferred_stage.stage_id=s.inferred_stage_id;
+left outer join stage inferred_stage on inferred_stage.stage_id=s.inferred_stage_id
+left outer join age isl on isl.age_id=inferred_stage.age_lower_id
+left outer join age isu on isu.age_id=inferred_stage.age_upper_id;
 
 
-create or replace view v_latest_adoption as
+create or replace view latest_adoption_view as
 select r.sample_id, s.age_lower_id as adopted_age_lower, s.age_upper_id as adopted_age_upper
 from record r
 join adoption ad on ad.record_id=r.record_id
@@ -35,11 +55,27 @@ where ad.adoption_date in (
         join record r2 on r2.record_id=ad2.record_id
         where r2.sample_id=r.sample_id
 );
-comment on table v_latest_adoption is 'List the latest adoption, if there is one, for each sample, where the adoption_date is used to determine its newness.';
+comment on table latest_adoption_view is 'List the latest adoption, if there is one, for each sample, where the adoption_date is used to determine its newness.';
+
+
+create or replace view paleontology_fixed_view as
+select p.RECORD_ID,
+    nvl(p.identification_date, nvl(did.identification_date, to_date('1850-01-01', 'YYYY-MM-DD'))) as identification_date,
+    p.DATE_ROUNDING,
+    p.STAGE_ID,
+    p.STAGE_COMMENTS,
+    p.LAB_SECTION_ID,
+    p.LAB_NUMBER,
+    p.COLLECTION_COMMENTS,
+    p.PAL_ID
+from paleontology p
+left outer join identifier i on i.record_id=p.record_id
+left outer join default_identification_date did on did.person_id=i.person_id;
+
 
 
 -- auto age wide 
-create or replace view v_auto_age_wide as
+create or replace view auto_age_wide_view as
 select sample_id, min(top_age) as wide_age_lower, max(base_age) as wide_age_upper
 from (
 select sample_id, top_age, base_age
@@ -47,7 +83,7 @@ from (
         -- determined ages
         select r.sample_id, a_upper.top_age as top_age, a_lower.base_age as base_age
         from record r
-        join paleontology p on p.record_id=r.record_id
+        join paleontology_fixed_view p on p.record_id=r.record_id
         join stage s on s.stage_id=p.stage_id
         join age a_lower on (a_lower.age_id=s.age_lower_id and a_lower.code<>'nd')
         join age a_upper on (a_upper.age_id=s.age_upper_id and a_upper.code<>'nd')
@@ -71,7 +107,7 @@ group by sample_id;
 
 
 -- Auto age narrow. 
-create view v_auto_age_narrow as
+create view auto_age_narrow_view as
 select sample_id, min_lower_base_age as narrow_age_lower, max_upper_top_age as narrow_age_upper
 from (
 select sample_id, min(lower_base_age) as min_lower_base_age, max(upper_top_age) as max_upper_top_age
@@ -83,7 +119,7 @@ from (
                 a_upper.top_age as upper_top_age,
                 row_number() over (partition by r.sample_id, pl.group_id order by p.identification_date desc, r.record_id desc ) as dest_rank
         from record r
-        join v_paleontology_fixed p on p.record_id=r.record_id
+        join paleontology_fixed_view p on p.record_id=r.record_id
         join pal_list pl on pl.record_id=p.record_id
         join stage s on s.stage_id=p.stage_id
         join age a_lower on (a_lower.age_id = s.age_lower_id and a_lower.code<>'nd')
@@ -102,79 +138,6 @@ ALTER TABLE FR.DEFAULT_IDENTIFICATION_DATE ADD PRIMARY KEY (PERSON_ID, IDENTIFIC
 insert into default_identification_date (person_id, identification_date) values (1, to_date('2000-01-01', 'YYYY-MM-DD');
 -- TODO: more entries.
 
-
-create or replace view v_paleontology_fixed as
-select p.RECORD_ID,
-    nvl(p.identification_date, nvl(did.identification_date, to_date('1850-01-01', 'YYYY-MM-DD'))) as identification_date,
-    p.DATE_ROUNDING,
-    p.STAGE_ID,
-    p.STAGE_COMMENTS,
-    p.LAB_SECTION_ID,
-    p.LAB_NUMBER,
-    p.COLLECTION_COMMENTS,
-    p.PAL_ID
-from paleontology p
-left outer join identifier i on i.record_id=p.record_id
-left outer join default_identification_date did on did.person_id=i.person_id;
-
-
-CREATE or replace VIEW SAMPLE_STAGE_VIEW
-    (
-        SAMPLE_ID,
-        TYPE,
-        STAGE_ID,
-        BASE_AGE,
-        TOP_AGE
-    ) AS
-SELECT s.sample_id,
-    'inferred' AS type,
-    st.stage_id,
-    st.base_age,
-    st.top_age
-FROM sample s
-JOIN stage st ON s.inferred_stage_id = st.stage_id
-UNION
-SELECT s.sample_id,
-    'known' AS type,
-    st.stage_id,
-    st.base_age,
-    st.top_age
-FROM sample s
-JOIN stage st ON s.known_stage_id = st.stage_id
-UNION
-SELECT s.sample_id,
-    'adoption' AS type,
-    st.stage_id,
-    st.base_age,
-    st.top_age
-FROM sample s
-JOIN record r   ON s.sample_id = r.sample_id
-JOIN adoption a ON r.record_id = a.record_id
-JOIN stage st   ON a.adopted_stage_id = st.stage_id
-UNION
-SELECT s.sample_id,
-    'paleontology' AS type,
-    st.stage_id,
-    st.base_age,
-    st.top_age
-FROM sample s
-JOIN record r       ON s.sample_id = r.sample_id
-JOIN paleontology p ON r.record_id = p.record_id
-JOIN stage st       ON p.stage_id = st.stage_id
-union
-SELECT vs.sample_id,
-    'monkeyNarrow' AS type,
-    null as stage_id,
-    vs.age_narrow_lower_id as base_age,
-    vs.age_narrow_upper_id as top_age
-from v_sample_auto_age vs
-union
-SELECT vs.sample_id,
-    'monkeyWide' AS type,
-    null as stage_id,
-    vs.age_wide_lower_id as base_age,
-    vs.age_wide_upper_id as top_age
-from v_sample_auto_age vs;
 
 
 -------------------------------------------------
