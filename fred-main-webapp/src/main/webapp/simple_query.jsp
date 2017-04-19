@@ -273,7 +273,7 @@
 		<tr class="lightColour"><td class="heading">Age (numeric)&nbsp;&nbsp;</td><td><input type="text" name="AgeFrom" size="10" />&nbsp;<b>to</b>&nbsp;<input type="text" name="AgeTo" size="10" />&nbsp;&nbsp;</td><td><i>Enter a numeric age (or range). Sample, adopted and paleontological ages will be searched</i></td></tr>
 
                                     <%-- Squirrel Wide Age --%>
-                		<tr class="lightColour"><td class="heading">Squirrel Wide Age (by Stage)&nbsp;&nbsp;</td><td>
+                		<tr class="lightColour"><td class="heading">Auto-Consensus-Age (broad)&nbsp;&nbsp;</td><td>
                                      <%
                                             Attributes squirrelWideAges = Attributes.createNameOnlyAttributes("SquirrelWideAgeFrom");
                                             ageSelectBox.writeBox(squirrelWideAges, "-- All --", null, (Age)null, new PrintWriter(out));
@@ -282,20 +282,20 @@
                                             squirrelWideAges = Attributes.createNameOnlyAttributes("SquirrelWideAgeTo");
                                             ageSelectBox.writeBox(squirrelWideAges, "-- All --", null, (Age)null, new PrintWriter(out));
 		%>&nbsp;&nbsp;</td>
-                                    <td><i>TODO this text / Select a <a href="age.jsp" target=_blank">NZ stage name</a> (or range). 
-                                            Sample, adopted and paleontological ages will be searched</i></td></tr>
+                                    <td><i>Select a <a href="age.jsp" target=_blank">NZ stage name</a> (or range). 
+                                            The automatically calculated <a>consensus age fields</a> will be searched</i></td></tr>
 		
                 
                                     <%-- Squirrel Narrow Age --%>
-                                    <tr class="lightColour"><td class="heading">Squirrel Narrow Age (by Stage)&nbsp;&nbsp;</td><td><%
+                                    <tr class="lightColour"><td class="heading">Auto-Consensus-Age (narrow)&nbsp;&nbsp;</td><td><%
 		Attributes squirrelNarrowAgeFrom = Attributes.createNameOnlyAttributes("SquirrelNarrowAgeFrom");
 		ageSelectBox.writeBox(squirrelNarrowAgeFrom, "-- All --", null, (Age)null, new PrintWriter(out));
 		%>&nbsp;<b>to</b>&nbsp;<%
 		Attributes squirrelNarrowAgeTo = Attributes.createNameOnlyAttributes("SquirrelNarrowAgeTo");
 		ageSelectBox.writeBox(squirrelNarrowAgeTo, "-- All --", null, (Age)null, new PrintWriter(out));
 		%>&nbsp;&nbsp;</td>
-                                    <td><i>TODO this text / Select a <a href="age.jsp" target=_blank">NZ stage name</a> (or range). 
-                                            Sample, adopted and paleontological ages will be searched</i></td></tr>                
+                                    <td><i>Select a <a href="age.jsp" target=_blank">NZ stage name</a> (or range). 
+                                            The automatically calculated <a>consensus age fields</a> will be searched</i></td></tr>                
                 
                                     
                 <tr class="lightColour"><td class="heading">Taxonomic Group&nbsp;&nbsp;</td><td><%
