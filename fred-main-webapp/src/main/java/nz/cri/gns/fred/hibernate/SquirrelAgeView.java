@@ -3,7 +3,7 @@ package nz.cri.gns.fred.hibernate;
 import java.io.Serializable;
 
 public class SquirrelAgeView implements Serializable, nz.cri.gns.fred.model.SquirrelAgeView {
-
+    private Integer sampleId;
     private Double narrowBaseAge;
     private Double narrowTopAge;
     private Double wideBaseAge;
@@ -14,6 +14,16 @@ public class SquirrelAgeView implements Serializable, nz.cri.gns.fred.model.Squi
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    public Integer getSampleId() {
+        return sampleId;
+    }
+
+    public void setSampleId(Integer sampleId) {
+        this.sampleId = sampleId;
+    }
+
+    
+    
     public Double getNarrowBaseAge() {
         return narrowBaseAge;
     }

@@ -4,48 +4,51 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-2.0.dtd" >
     
 <hibernate-mapping>
-<!-- 
-    Created by mikevdg on his keyboard.
--->
-   <id
+    <!-- 
+        Created by mikevdg on his keyboard.
+    -->
+  
+    <class 
+        name="nz.cri.gns.fred.hibernate.SquirrelAgeView" 
+        table="SQUIRREL_AGE_VIEW"
+        schema="FR"
+        mutable="false"
+    > 
+        <id
             name="sampleId"
             type="int"
             column="SAMPLE_ID"
         >
+            <generator class="assigned" />
         </id>
-<class 
-    name="nz.cri.gns.fred.hibernate.SquirrelAgeView" 
-    table="SQUIRREL_AGE_VIEW"
-    schema="FR"
-    mutable="false"
->
-    <property
-        name="narrowBaseAge"
-        type="java.lang.Double"
-        column="NARROW_BASE_AGE"
-    />
-    <property
-        name="narrowTopAge"
-        type="java.lang.Double"
-        column="NARROW_TOP_AGE"
-    />
-    <property
-        name="WideBaseAge"
-        type="java.lang.Double"
-        column="WIDE_BASE_AGE"
-    />
-    <property
-        name="wideTopAge"
-        type="java.lang.Double"
-        column="WIDE_TOP_AGE"
-    />
+        <property
+            name="narrowBaseAge"
+            type="java.lang.Double"
+            column="NARROW_BASE_AGE"
+        />
+        <property
+            name="narrowTopAge"
+            type="java.lang.Double"
+            column="NARROW_TOP_AGE"
+        />
+        <property
+            name="wideBaseAge"
+            type="java.lang.Double"
+            column="WIDE_BASE_AGE"
+        />
+        <property
+            name="wideTopAge"
+            type="java.lang.Double"
+            column="WIDE_TOP_AGE"
+        />
 
-    <many-to-one
-        name="sample"
-        class="nz.cri.gns.fred.hibernate.Sample"
-        not-null="false"
-    >
-        <column name="SAMPLE_ID" />
-    </many-to-one>
-</class>
+        <!--
+        <many-to-one
+            name="sample"
+            class="nz.cri.gns.fred.hibernate.Sample"
+            not-null="false"
+        >
+            <column name="SAMPLE_ID" />
+        </many-to-one>-->
+    </class>
 </hibernate-mapping>

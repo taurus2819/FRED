@@ -167,11 +167,14 @@ group by sample_id
 where min_lower_base_age > max_upper_top_age; -- exclude samples with no age overlap.
 
 
+create view squirrel_sample_view as
+select s.*, a.narrow_base_age, a.narrow_top_age, a.wide_base_age, a.wide_top_age from sample s
+join squirrel_age_view a on a.sample_id=s.sample_id
+
 -- Arbitrary, guessed, default identification dates.
 create table default_identification_date (person_id number(6), identification_date date);
 ALTER TABLE FR.DEFAULT_IDENTIFICATION_DATE ADD PRIMARY KEY (PERSON_ID, IDENTIFICATION_DATE);
 comment on table default_identification_date is 'Used by squirrel_age_view.';
 insert into default_identification_date (person_id, identification_date) values (1, to_date('2000-01-01', 'YYYY-MM-DD');
 -- TODO: more entries.
-
 

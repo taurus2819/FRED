@@ -559,21 +559,57 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.sampleId = Integer.valueOf(sampleId);
     }
 
-    public Stage getAutoAgeWide() {
-        return autoAgeWide;
-    }
-
-    public void setAutoAgeWide(Stage autoAgeWide) {
-        this.autoAgeWide = autoAgeWide;
-    }
-
-    public Stage getAutoAgeNarrow() {
-        return autoAgeNarrow;
-    }
-
-    public void setAutoAgeNarrow(Stage autoAgeNarrow) {
-        this.autoAgeNarrow = autoAgeNarrow;
-    }
+    /* Squirrel ages */
+    /*
+    private Double narrowBaseAge;
+    private Double narrowTopAge;
+    private Double wideBaseAge;
+    private Double wideTopAge;
     
+        public Double getNarrowBaseAge() {
+        return narrowBaseAge;
+    }
+
+    public void setNarrowBaseAge(Double narrowBaseAge) {
+        this.narrowBaseAge = narrowBaseAge;
+    }
+
+    public Double getNarrowTopAge() {
+        return narrowTopAge;
+    }
+
+    public void setNarrowTopAge(Double narrowTopAge) {
+        this.narrowTopAge = narrowTopAge;
+    }
+
+    public Double getWideBaseAge() {
+        return wideBaseAge;
+    }
+
+    public void setWideBaseAge(Double wideBaseAge) {
+        this.wideBaseAge = wideBaseAge;
+    }
+
+    public Double getWideTopAge() {
+        return wideTopAge;
+    }
+
+    public void setWideTopAge(Double wideTopAge) {
+        this.wideTopAge = wideTopAge;
+    }
+    */
+    
+    private Set<nz.cri.gns.fred.model.SquirrelAgeView> squirrelAge;
+
+    @Override
+    public void setSquirrelAge(Set<nz.cri.gns.fred.model.SquirrelAgeView> squirrelAge) {
+        this.squirrelAge = squirrelAge;
+    }
+
+    @Override
+    public Set<nz.cri.gns.fred.model.SquirrelAgeView> getSquirrelAge() {
+        return squirrelAge;
+    }
+
     
 }

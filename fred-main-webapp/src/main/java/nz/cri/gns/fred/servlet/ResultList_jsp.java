@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Vector;
 import java.util.HashSet;
 import java.net.URLEncoder;
-import java.sql.SQLException;
 import nz.cri.gns.fred.util.FolderUtil;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.UserFolder;
@@ -32,15 +31,18 @@ import nz.cri.gns.jsp.Link;
 import nz.cri.gns.jsp.CustomHTMLLink;
 import java.util.Set;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.db.querybuilder.InvalidOperatorException;
-import nz.cri.gns.db.querybuilder.InvalidValueException;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.servlet.util.FredHelper;
 import nz.cri.gns.fred.servlet.util.JspWriterImpl;
 import nz.cri.gns.fred.util.StageUtil;
 
 public class ResultList_jsp extends HttpServlet {
+
+    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.servlet.ResultList_jsp");
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -49,6 +51,23 @@ public class ResultList_jsp extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        String whereSQL = request.getParameter("WhereSQL");
+        String tableName = request.getParameter("TableName");
+        String queryStringParam = request.getParameter("QueryString");
+        String page = request.getParameter("Page");
+        String type = request.getParameter("Type");
+
+        if (null == tableName) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter TableName");
+            return;
+        }
+
+        if (null == whereSQL) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter WhereSQL");
+            return;
+        }
+
         JspWriterImpl out = new JspWriterImpl(response.getOutputStream());
         HttpSession session = request.getSession();
 
@@ -78,22 +97,6 @@ public class ResultList_jsp extends HttpServlet {
                 queryURL = "simple_query.jsp";
             }
             int pageSize = 50;
-
-            String whereSQL = request.getParameter("WhereSQL");
-            String tableName = request.getParameter("TableName");
-            String queryStringParam = request.getParameter("QueryString");
-            String page = request.getParameter("Page");
-            String type = request.getParameter("Type");
-
-            if (null == tableName) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter TableName");
-                return;
-            }
-
-            if (null == whereSQL) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter WhereSQL");
-                return;
-            }
 
             // Define the extranet template for this page
             ExtranetTemplate et = h.getExtranetTemplate();
@@ -125,6 +128,16 @@ public class ResultList_jsp extends HttpServlet {
 
             // Adds all the links in the array to the extranet template
             h.addButtons(et, il.toArray(new Link[il.size()]));
+
+            // Add scripts to extranet template 
+            et.addScript("scripts/resultList.js");
+            //et.setBodyTag("onload=\"updateMasterCheckbox()\"");
+
+            // Start drawing page from the extranet template defined	
+            h.drawTop(out, et, request, response);
+            out.print("loading...");
+            out.flush(); // Make sure the loading message appears.
+
             // Execute any actions
             String alertText = "";
             String actionType = request.getParameter("ActionType");
@@ -157,15 +170,7 @@ public class ResultList_jsp extends HttpServlet {
                 out.write(");\n");
                 out.write("\t\t//-->\n");
                 out.write("\t\t</script>");
-
             }
-
-            // Add scripts to extranet template 
-            et.addScript("scripts/resultList.js");
-            et.setBodyTag("onload=\"updateMasterCheckbox()\"");
-
-            // Start drawing page from the extranet template defined	
-            h.drawTop(out, et, request, response);
 
             String queryString;
 
@@ -224,19 +229,19 @@ public class ResultList_jsp extends HttpServlet {
                     sqWideAgeTo = stageUtil.getAge(sqWideAgeToId).getTopAge();
                     hasSquirrelAge = true;
                 }
-            
+
                 StringBuilder sampHqlStr = new StringBuilder();
                 sampHqlStr.append("SELECT DISTINCT s.sampleId FROM ");
                 sampHqlStr.append(tableName);
-                
-                if ( hasSquirrelAge ) {
-                    sampHqlStr.append(" JOIN s.sampleSquirrelAge as squirrelAge ");
+
+                if (hasSquirrelAge) {
+                    sampHqlStr.append(" JOIN s.squirrelAge as squirrelAge ");
                 }
-                
+
                 sampHqlStr.append(" WHERE ");
                 sampHqlStr.append(whereSQL);
 
-                if (hasSquirrelAge ) {
+                if (hasSquirrelAge) {
                     // Grumble mumble. We should use parameters here.
                     sampHqlStr.append(" AND (squirrelAge.narrowBaseAge >= ");
                     sampHqlStr.append(sqNarrowAgeTo);
@@ -246,9 +251,9 @@ public class ResultList_jsp extends HttpServlet {
                     sampHqlStr.append(sqWideAgeTo);
                     sampHqlStr.append(") AND (squirrelAge.wideTopAge <= ");
                     sampHqlStr.append(sqWideAgeFrom);
-                    sampHqlStr.append(")) ");
+                    sampHqlStr.append(") ");
                 }
-                
+
                 String sampHql = sampHqlStr.toString();
 
                 //if polygon vertices are set, apply spatial filter
@@ -526,14 +531,21 @@ public class ResultList_jsp extends HttpServlet {
 
             h.drawBottom(out, et);
             factory.closeSession();
-        } catch (StorageAccessException | SQLException | InvalidOperatorException | InvalidValueException e) {
-            throw new ServletException(e);
+        } catch (Exception  e) {
+            log.log(Level.WARNING, null, e);
+            out.write("<p>An error occurred:</p><p> ");
+            out.write(new Date().toString());
+            out.write("</p><p>");
+            out.write(e.getMessage());
+            out.write("</p>");
+        } finally {
+            out.flush();
         }
     }
 
     public Integer paramAsInt(HttpServletRequest req, String paramName) throws ServletException {
         String s = req.getParameter(paramName);
-        if (null == s || s.trim().isEmpty()) {
+        if (null == s || s.trim().isEmpty() || "-".equals(s.trim())) {
             return null;
         }
         try {
