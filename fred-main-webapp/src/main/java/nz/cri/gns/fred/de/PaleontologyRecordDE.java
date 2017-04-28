@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -42,6 +44,7 @@ import nz.cri.gns.html.select.SelectBox;
 import nz.cri.gns.intranet.Template;
 
 public class PaleontologyRecordDE extends RecordDE {
+    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.PaleontologyRecordDE");
 
     private Set<PaleontologyListEntry> badTaxaList;
     private boolean nonApprovedTaxaFlag = false;
@@ -100,7 +103,7 @@ public class PaleontologyRecordDE extends RecordDE {
             } catch (NumberFormatException e) {
                 pal.setLabSection(null);
             } catch (StorageAccessException e) {
-                e.printStackTrace();
+                log.log(Level.SEVERE, null, e);
                 error.add(new String[]{"Lab Section", "Error accessing data storage"});
             }
         }
@@ -232,7 +235,7 @@ public class PaleontologyRecordDE extends RecordDE {
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.log(Level.SEVERE, null, e);
                     error.add(new String[]{"Taxanomic List", taxaLine + " not valid"});
                 }
             }
@@ -345,7 +348,7 @@ public class PaleontologyRecordDE extends RecordDE {
             template.loadAll(out);
             super.makeEndBitHTML(out);
         } catch (StorageAccessException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, null, e);
             throw new IOException("Could not access storage: " + e.getMessage());
         }
     }
@@ -406,7 +409,7 @@ public class PaleontologyRecordDE extends RecordDE {
                         }
                     }
                 } catch (StorageAccessException e) {
-                    e.printStackTrace();
+                    throw new SQLException(e);
                 }
             }
         }

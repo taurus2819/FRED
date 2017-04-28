@@ -19,7 +19,7 @@ public interface DataEntryForm {
 
 	public List<IconnedLink> getNavigation();
 	
-	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException;
+	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException, StorageAccessException;
 	
 	/**
 	 * Writes any HTML that the form requires outside of the HTML form

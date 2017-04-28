@@ -34,9 +34,11 @@
 	drawTop(out, et, request, response);
 
 	%><script language="JavaScript">
-	function submitForm(form) {
-		if (generateSQL(form))
-			form.submit();
+	function submitForm() {
+                        var form = document.getElementsByName("QueryForm")[0];
+                        if (generateSQL(form)) {
+                            form.submit();
+                        }
 	}
 	
 	function trim(str)
@@ -185,7 +187,7 @@
 				tableName = tableName + " JOIN s.sampleStageViews AS sampleStageView";
 				queryString = queryString + "Age= " + aQuery + " AND ";
 			}
-
+              
 			if (palListFlag) {
 				whereSQL = whereSQL + "record.audit.status = 'approved' AND ";
 				tableName = tableName + " JOIN s.records AS record JOIN record.paleontology.listEntries AS pal";
@@ -222,7 +224,7 @@
 		%></script><%
 	}
 	
-	%><form name="QueryForm" method="post" action="result_list.jsp" onsubmit="return generateSQL(this)">
+	%><form name="QueryForm" action="result_list.jsp" method="post" >
 	<p><table border="0" cellpadding="3" cellspacing="2" width="600">
 	<tr class="lightColour"><td class="heading">NZMS260 Sheet&nbsp;&nbsp;</td><td><input type="text" name="Map" size="10" />&nbsp;&nbsp;</td><td><i>Enter a <a href="http://www.linz.govt.nz/topography/topo-maps/nz-med-scale-maps/index.aspx" target="_blank">NZ 1:50,000 map</a> sheet</i></td></tr>
 	<tr class="lightColour"><td class="heading">QMap Sheet&nbsp;&nbsp;</td><td>
@@ -269,7 +271,34 @@
 		ageSelectBox.writeBox(attributes, "-- All --", null, (Age)null, new PrintWriter(out));
 		%>&nbsp;&nbsp;</td><td><i>Select a <a href="age.jsp" target=_blank">NZ stage name</a> (or range). Sample, adopted and paleontological ages will be searched</i></td></tr>
 		<tr class="lightColour"><td class="heading">Age (numeric)&nbsp;&nbsp;</td><td><input type="text" name="AgeFrom" size="10" />&nbsp;<b>to</b>&nbsp;<input type="text" name="AgeTo" size="10" />&nbsp;&nbsp;</td><td><i>Enter a numeric age (or range). Sample, adopted and paleontological ages will be searched</i></td></tr>
-		<tr class="lightColour"><td class="heading">Taxonomic Group&nbsp;&nbsp;</td><td><%
+
+                                    <%-- Squirrel Wide Age --%>
+                		<tr class="lightColour"><td class="heading">Auto-Consensus-Age (broad)&nbsp;&nbsp;</td><td>
+                                     <%
+                                            Attributes squirrelWideAges = Attributes.createNameOnlyAttributes("SquirrelWideAgeFrom");
+                                            ageSelectBox.writeBox(squirrelWideAges, "-- All --", null, (Age)null, new PrintWriter(out));
+		%>&nbsp;<b>to</b>&nbsp;
+                                    <%
+                                            squirrelWideAges = Attributes.createNameOnlyAttributes("SquirrelWideAgeTo");
+                                            ageSelectBox.writeBox(squirrelWideAges, "-- All --", null, (Age)null, new PrintWriter(out));
+		%>&nbsp;&nbsp;</td>
+                                    <td><i>Select a <a href="age.jsp" target=_blank">NZ stage name</a> (or range). 
+                                            The automatically calculated <a>consensus age fields</a> will be searched</i></td></tr>
+		
+                
+                                    <%-- Squirrel Narrow Age --%>
+                                    <tr class="lightColour"><td class="heading">Auto-Consensus-Age (narrow)&nbsp;&nbsp;</td><td><%
+		Attributes squirrelNarrowAgeFrom = Attributes.createNameOnlyAttributes("SquirrelNarrowAgeFrom");
+		ageSelectBox.writeBox(squirrelNarrowAgeFrom, "-- All --", null, (Age)null, new PrintWriter(out));
+		%>&nbsp;<b>to</b>&nbsp;<%
+		Attributes squirrelNarrowAgeTo = Attributes.createNameOnlyAttributes("SquirrelNarrowAgeTo");
+		ageSelectBox.writeBox(squirrelNarrowAgeTo, "-- All --", null, (Age)null, new PrintWriter(out));
+		%>&nbsp;&nbsp;</td>
+                                    <td><i>Select a <a href="age.jsp" target=_blank">NZ stage name</a> (or range). 
+                                            The automatically calculated <a>consensus age fields</a> will be searched</i></td></tr>                
+                
+                                    
+                <tr class="lightColour"><td class="heading">Taxonomic Group&nbsp;&nbsp;</td><td><%
 		SelectBox<TaxonomicGroup> tGroupSelectBox = new SelectBox<TaxonomicGroup>(new TaxonomicUtil(factory).getTaxonomicGroups());
 		attributes = Attributes.createNameOnlyAttributes("TaxonomicGroup");
 		tGroupSelectBox.setNameNameFlag(true);
@@ -288,7 +317,7 @@
 	<input type="hidden" name="TableName" value="" />
 	<input type="hidden" id="idList" name="idList" value="" />
 	<input type="hidden" id="polygon" name="polygon" value="" />
-	<p><input type="submit" value="Submit Query" /></p>
+        <p><input type="button" value="Submit Query" onclick="submitForm()" /></p>
 	</form><%
 	
 	drawBottom(out, et);

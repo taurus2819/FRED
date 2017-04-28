@@ -22,8 +22,7 @@
             type="int"
             column="SAMPLE_ID"
         >
-            <generator class="sequence">
-                <param name="sequence">FR.SAMPLE_SEQ</param>
+            <generator class="assigned">
             </generator>
         </id>
 
@@ -154,6 +153,28 @@
             length="512"
         />
 
+        
+        <property
+            name="narrowBaseAge"
+            type="java.lang.Double"
+            column="NARROW_BASE_AGE"
+        />
+        <property
+            name="narrowTopAge"
+            type="java.lang.Double"
+            column="NARROW_TOP_AGE"
+        />
+        <property
+            name="WideBaseAge"
+            type="java.lang.Double"
+            column="WIDE_BASE_AGE"
+        />
+        <property
+            name="wideTopAge"
+            type="java.lang.Double"
+            column="WIDE_TOP_AGE"
+        />
+        
         <!-- Associations -->
   
         <!-- bi-directional many-to-one association to ColourModifier -->
@@ -415,21 +436,6 @@
             />
         </set>
 
-        <set
-            name="squirrelAge"
-            lazy="true"
-            inverse="true"
-            cascade="none"
-        >
-            <key>
-                <column not-null="true" name="SAMPLE_ID" />
-            </key>
-            <one-to-many 
-                class="nz.cri.gns.fred.hibernate.SquirrelAgeView"
-            />
-        </set>
-
-
         <!-- bi-directional many-to-many association to MetaCat -->
         <set
             name="metaCats"
@@ -446,6 +452,8 @@
                 <column name="META_ID" />
             </many-to-many>
         </set>
+    
+    
     
     </class>
 </hibernate-mapping>
