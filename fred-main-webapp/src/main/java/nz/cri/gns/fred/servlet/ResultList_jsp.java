@@ -34,7 +34,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nz.cri.gns.auth.security.IpGrantedAuthority;
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.fred.FredGrantedAuthorities;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.servlet.util.FredHelper;
 import nz.cri.gns.fred.servlet.util.JspWriterImpl;
@@ -69,17 +71,15 @@ public class ResultList_jsp extends HttpServlet {
                 return;
             }
         }
-        
+
         JspWriterImpl out = new JspWriterImpl(response.getOutputStream());
         HttpSession session = request.getSession();
 
         FredHelper h = new FredHelper(); // Replaces subclassing FREDDEIPSysJspPage. 
         User user = h.getUser(session);
-        // TODO: check access.
-        /*
-         if (!h.checkAccess(request, response, new IpGrantedAuthority(FredGrantedAuthorities.FR_DATA_ENTRY))) {
-         return;
-         }*/
+        if (!h.checkAccess(request, response, new IpGrantedAuthority(FredGrantedAuthorities.FR_DATA_ENTRY))) {
+            return;
+        }
 
         try {
             response.setContentType("text/html;charset=utf-8");
@@ -218,6 +218,12 @@ public class ResultList_jsp extends HttpServlet {
                     sqNarrowAgeTo = stageUtil.getAge(sqNarrowAgeToId).getTopAge();
                     hasSquirrelAge = true;
                 }
+                // Swap ages if the user got them the wrong way around.
+                if (hasSquirrelAge && sqNarrowAgeFrom < sqNarrowAgeTo) {
+                    Double swap = sqNarrowAgeFrom;
+                    sqNarrowAgeFrom = sqNarrowAgeTo;
+                    sqNarrowAgeTo = swap;
+                }
 
                 Integer sqWideAgeFromId = paramAsInt(request, "SquirrelWideAgeFrom");
                 Integer sqWideAgeToId = paramAsInt(request, "SquirrelWideAgeTo");
@@ -230,6 +236,12 @@ public class ResultList_jsp extends HttpServlet {
                 if (null != sqWideAgeToId) {
                     sqWideAgeTo = stageUtil.getAge(sqWideAgeToId).getTopAge();
                     hasSquirrelAge = true;
+                }
+                // Swap ages if the user got them the wrong way around.
+                if (hasSquirrelAge && sqWideAgeFrom < sqWideAgeTo) {
+                    Double swap = sqWideAgeFrom;
+                    sqWideAgeFrom = sqWideAgeTo;
+                    sqWideAgeTo = swap;
                 }
 
                 StringBuilder sampHqlStr = new StringBuilder();
