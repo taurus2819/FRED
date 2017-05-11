@@ -58,16 +58,18 @@ public class ResultList_jsp extends HttpServlet {
         String page = request.getParameter("Page");
         String type = request.getParameter("Type");
 
-        if (null == tableName) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter TableName");
-            return;
-        }
+        if (!"Adv".equals(type)) {
+            if (null == tableName) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter TableName");
+                return;
+            }
 
-        if (null == whereSQL) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter WhereSQL");
-            return;
+            if (null == whereSQL) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter WhereSQL");
+                return;
+            }
         }
-
+        
         JspWriterImpl out = new JspWriterImpl(response.getOutputStream());
         HttpSession session = request.getSession();
 
@@ -531,7 +533,7 @@ public class ResultList_jsp extends HttpServlet {
 
             h.drawBottom(out, et);
             factory.closeSession();
-        } catch (Exception  e) {
+        } catch (Exception e) {
             log.log(Level.WARNING, null, e);
             out.write("<p>An error occurred:</p><p> ");
             out.write(new Date().toString());
