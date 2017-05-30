@@ -283,7 +283,7 @@
                                             ageSelectBox.writeBox(squirrelWideAges, "-- All --", null, (Age)null, new PrintWriter(out));
 		%>&nbsp;&nbsp;</td>
                                     <td><i>Select a <a href="age.jsp" target=_blank">NZ stage name</a> (or range). 
-                                            The automatically calculated <a>consensus age fields</a> will be searched</i></td></tr>
+                                            The automatically calculated  <a href="javascript:show('squirrelAgeHelp');">consensus age fields</a> will be searched</i></td></tr>
 		
                 
                                     <%-- Squirrel Narrow Age --%>
@@ -295,7 +295,7 @@
 		ageSelectBox.writeBox(squirrelNarrowAgeTo, "-- All --", null, (Age)null, new PrintWriter(out));
 		%>&nbsp;&nbsp;</td>
                                     <td><i>Select a <a href="age.jsp" target=_blank">NZ stage name</a> (or range). 
-                                            The automatically calculated <a>consensus age fields</a> will be searched</i></td></tr>                
+                                            The automatically calculated <a href="javascript:show('squirrelAgeHelp');">consensus age fields</a> will be searched</i></td></tr>                
                 
                                     
                 <tr class="lightColour"><td class="heading">Taxonomic Group&nbsp;&nbsp;</td><td><%
@@ -318,7 +318,26 @@
 	<input type="hidden" id="idList" name="idList" value="" />
 	<input type="hidden" id="polygon" name="polygon" value="" />
         <p><input type="button" value="Submit Query" onclick="submitForm()" /></p>
-	</form><%
+	</form>
+                <div id="squirrelAgeHelp" style="visibility:hidden" class="dialog">
+                    <div>
+                    <h4>Calculated Age fields</h4>
+                    <p>For every sample recorded in FRED, two age fields are calculated automatically from all 
+                        available information, namely “auto consensus-age (narrow)” and “auto consensus-age 
+                        (broad)”.</p>
+                    <p>If an adopted age has been entered, the narrow and broad calculated fields will both be set to 
+                        the adopted age.</p>
+                    <p>Otherwise, the narrow field is set to identify the minimum overlap (if overlap exists) between 
+                        multiple age estimates. It is the more discriminating of the two fields – i.e., it will yield the fewest 
+                        results in a search. The broad field will reflect the maximum possible range that is consistent 
+                        with all age estimates and therefore “casts the widest net”. This field should be used for 
+                        searches that aim to return every possible matching record.</p>               
+                    <p><img src="images/squirrel_age.png" width="80%"/></p>
+                    <p><button onclick="javascript:hide('squirrelAgeHelp')">Hide</button></p>
+                    </div>
+                </div>
+                
+                <%
 	
 	drawBottom(out, et);
 	try {
