@@ -21,7 +21,7 @@ import nz.cri.gns.jsp.IconnedLink;
 import nz.cri.gns.auth.domain.User;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Vector;    
+import java.util.Vector;
 import java.util.HashSet;
 import java.net.URLEncoder;
 import nz.cri.gns.fred.util.FolderUtil;
@@ -35,7 +35,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.cri.gns.auth.security.IpGrantedAuthority;
-import nz.cri.gns.dataaccess.StorageAccessException; 
+import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.FredGrantedAuthorities;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.servlet.util.FredHelper;
@@ -65,9 +65,6 @@ public class ResultList_jsp extends HttpServlet {
 
         FredHelper h = new FredHelper(); // Replaces subclassing FREDDEIPSysJspPage. 
         User user = h.getUser(session);
-        if (!h.checkAccess(request, response, new IpGrantedAuthority(FredGrantedAuthorities.FR_DATA_ENTRY))) {
-            return;
-        }
 
         try {
             response.setContentType("text/html;charset=utf-8");
@@ -180,6 +177,10 @@ public class ResultList_jsp extends HttpServlet {
                 features = (List<Feature>) session.getAttribute("FRED.features");
                 queryString = (String) session.getAttribute("FRED.queryString");
             } else if ("Adv".equals(type)) {
+                if (!h.checkAccess(request, response, new IpGrantedAuthority(FredGrantedAuthorities.FR_WEBSITE_ACCESS))) {
+                    // TODO: what access should they have? I can't find it.
+                    return;
+                }
                 FREDQuery query = FREDUtil.getFREDQuery(state);
                 queryString = query.getQueryAsString();
                 String hq = query.getHQLQuery();
