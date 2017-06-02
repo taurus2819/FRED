@@ -227,6 +227,7 @@ public class ResultList_jsp extends HttpServlet {
                     hasSquirrelAge = true;
                 }
                 // Swap ages if the user got them the wrong way around.
+                // 'From' is older (base age). 'To' is newer (top age). 
                 if (hasSquirrelAge && sqWideAgeFrom < sqWideAgeTo) {
                     Double swap = sqWideAgeFrom;
                     sqWideAgeFrom = sqWideAgeTo;
@@ -246,13 +247,13 @@ public class ResultList_jsp extends HttpServlet {
 
                 if (hasSquirrelAge) {
                     // Grumble mumble. We should use parameters here.
-                    sampHqlStr.append(" AND (squirrelAge.narrowBaseAge >= ");
+                    sampHqlStr.append(" AND (squirrelAge.narrowBaseAge > ");
                     sampHqlStr.append(sqNarrowAgeTo);
-                    sampHqlStr.append(") AND (squirrelAge.narrowTopAge <= ");
+                    sampHqlStr.append(") AND (squirrelAge.narrowTopAge < ");
                     sampHqlStr.append(sqNarrowAgeFrom);
-                    sampHqlStr.append(") AND (squirrelAge.wideBaseAge >= ");
+                    sampHqlStr.append(") AND (squirrelAge.wideBaseAge > ");
                     sampHqlStr.append(sqWideAgeTo);
-                    sampHqlStr.append(") AND (squirrelAge.wideTopAge <= ");
+                    sampHqlStr.append(") AND (squirrelAge.wideTopAge < ");
                     sampHqlStr.append(sqWideAgeFrom);
                     sampHqlStr.append(") ");
                 }
