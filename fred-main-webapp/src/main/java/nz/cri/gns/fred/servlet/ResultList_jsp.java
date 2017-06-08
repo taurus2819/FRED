@@ -213,7 +213,7 @@ public class ResultList_jsp extends HttpServlet {
                     sqNarrowAgeFrom = sqNarrowAgeTo;
                     sqNarrowAgeTo = swap;
                 }
-
+                
                 Integer sqWideAgeFromId = paramAsInt(request, "SquirrelWideAgeFrom");
                 Integer sqWideAgeToId = paramAsInt(request, "SquirrelWideAgeTo");
                 Double sqWideAgeFrom = 999.9;
@@ -256,6 +256,19 @@ public class ResultList_jsp extends HttpServlet {
                     sampHqlStr.append(") AND (squirrelAge.wideTopAge < ");
                     sampHqlStr.append(sqWideAgeFrom);
                     sampHqlStr.append(") ");
+
+                    // Show this to the user.
+                    StringBuilder s = new StringBuilder(queryString);
+                    s.append(" AND Consensus narrow age from  ");
+                    s.append(sqNarrowAgeFrom);
+                    s.append(" to ");
+                    s.append(sqNarrowAgeTo);
+                    s.append(" AND Consensus wide age from ");
+                    s.append(sqWideAgeFrom);
+                    s.append(" to ");
+                    s.append(sqWideAgeTo);
+                    queryString = s.toString();
+                    
                 }
 
                 String sampHql = sampHqlStr.toString();
