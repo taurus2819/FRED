@@ -502,25 +502,27 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 } catch (Exception e) {
                     error.add(new String[]{"Coordinate", "Invalid coordinates specified. Ensure you enter the correct number of digits for the selected coordinate system"});
                 }
-                try {
-                    site.setMethod(Integer.parseInt(request.getParameter("LocMethodID")));
-                } catch (Exception e) {
-                    //method is null (-1) by default
-                }
-                if (request.getParameter("Accuracy").length() > 0) {
-                    try {
-                        site.setAccuracy(Float.parseFloat(request.getParameter("Accuracy")));
-                    } catch (Exception e) {
-                        error.add(new String[]{"Accuracy", "Invalid value"});
-                        // site accuracy is null (-1) by default
-                    }
-                }
 
                 site.setDirections(request.getParameter("Loc"));
                 site.setCountry(request.getParameter("Country"));
                 site.setOwner(user.getId().intValue());
                 feature.setLocality(locality);
             }
+            
+            try {
+                site.setMethod(Integer.parseInt(request.getParameter("LocMethodID")));
+            } catch (Exception e) {
+                //method is null (-1) by default
+            }
+            if (request.getParameter("Accuracy").length() > 0) {
+                try {
+                    site.setAccuracy(Float.parseFloat(request.getParameter("Accuracy")));
+                } catch (Exception e) {
+                    error.add(new String[]{"Accuracy", "Invalid value"});
+                    // site accuracy is null (-1) by default
+                }
+            }       
+            
         } else {
             site = null;
             feature.setOrigSystemId(null);
