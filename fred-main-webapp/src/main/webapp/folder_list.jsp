@@ -73,7 +73,7 @@
 	</tr>
 	</table>
 	</div>
-	<div id="inst" style="visibilty: hidden; display: none">
+	<div id="inst" style="visibility: hidden; display: none">
 	<table border="0" cellpadding="3" cellspacing="2" width="550">
 	<tr class="midColour"><th colspan="3">Instructions</th></tr>
 	<tr class="lightColour"><td style="text-align: left">
