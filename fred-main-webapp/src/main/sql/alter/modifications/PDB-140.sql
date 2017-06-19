@@ -20,7 +20,7 @@ BEGIN
 END;
 
 -- Testing how to get the const value:
-select const_max_base_age from dual;
+--select const_max_base_age from dual;
         
 create or replace view stage_fixed_view as
 -- Part of squirrel_age_view
@@ -29,30 +29,6 @@ from stage;
 
 
 
-create or replace view squirrel_age_view as 
-select s.sample_id,
-        nvl(vlaal.base_age, nvl(vaan.narrow_age_lower, nvl(aawd.wide_age_lower, nvl(ksal.base_age, nvl(isl.base_age, const_max_base_age))))) as NARROW_BASE_AGE,
-        nvl(vlaau.top_age, nvl(vaan.narrow_age_upper, nvl(aawd.wide_age_upper, nvl(ksau.top_age, nvl(isu.top_age, const_min_top_age))))) as NARROW_TOP_AGE,
-        nvl(vlaal.base_age, nvl(vaaw.wide_age_lower, const_max_base_age)) as WIDE_BASE_AGE,
-        nvl(vlaau.top_age, nvl(vaaw.wide_age_upper, const_min_top_age)) as WIDE_TOP_AGE
-from sample s
--- adoption
-left outer join latest_adoption_view vla on vla.sample_id=s.sample_id
-left outer join age vlaal on vlaal.age_id=vla.adopted_age_lower
-left outer join age vlaau on vlaau.age_id=vla.adopted_age_upper
--- determined
-left outer join auto_age_wide_view vaaw on vaaw.sample_id=s.sample_id
-left outer join auto_age_narrow_view vaan on vaan.sample_id=s.sample_id
-left outer join auto_age_wide_dtrmnd aawd on aawd.sample_id=s.sample_id
--- known 
-left outer join stage_fixed_view known_stage on known_stage.stage_id=s.known_stage_id
-left outer join age ksal on ksal.age_id=known_stage.age_lower_id
-left outer join age ksau on ksau.age_id=known_stage.age_upper_id
--- inferred 
-left outer join stage_fixed_view inferred_stage on inferred_stage.stage_id=s.inferred_stage_id
-left outer join age isl on isl.age_id=inferred_stage.age_lower_id
-left outer join age isu on isu.age_id=inferred_stage.age_upper_id;
-       
 
 create or replace view latest_adoption_view as
 -- Part of squirrel_age_view
@@ -89,6 +65,7 @@ left outer join default_identification_date did on did.person_id=i.person_id;
 -- auto age wide 
 create or replace view auto_age_wide_view as
 -- Part of squirrel_age_view
+-- Calculate the squirrel wide ages for each sample.
 select sample_id, min(top_age) as wide_age_upper, max(base_age) as wide_age_lower
 from (
 select sample_id, top_age, base_age
@@ -143,6 +120,7 @@ group by sample_id;
 -- Auto age narrow. 
 create or replace view auto_age_narrow_view as
 -- Part of squirrel_age_view
+-- Calculate the narrow ages for each sample.
 select sample_id, min_lower_base_age as narrow_age_lower, max_upper_top_age as narrow_age_upper
 from (
 select sample_id, min(lower_base_age) as min_lower_base_age, max(upper_top_age) as max_upper_top_age
@@ -169,12 +147,95 @@ where min_lower_base_age > max_upper_top_age; -- exclude samples with no age ove
 
 create view squirrel_sample_view as
 select s.*, a.narrow_base_age, a.narrow_top_age, a.wide_base_age, a.wide_top_age from sample s
-join squirrel_age_view a on a.sample_id=s.sample_id
+join squirrel_age_view a on a.sample_id=s.sample_id;
 
 -- Arbitrary, guessed, default identification dates.
 create table default_identification_date (person_id number(6), identification_date date);
 ALTER TABLE FR.DEFAULT_IDENTIFICATION_DATE ADD PRIMARY KEY (PERSON_ID, IDENTIFICATION_DATE);
 comment on table default_identification_date is 'Used by squirrel_age_view.';
-insert into default_identification_date (person_id, identification_date) values (1, to_date('2000-01-01', 'YYYY-MM-DD');
+insert into default_identification_date (person_id, identification_date) values (1, to_date('2000-01-01', 'YYYY-MM-DD'));
 -- TODO: more entries.
 
+-- The main view of all of this.
+create or replace view squirrel_age_view as 
+-- Implementation of "squirrel ages" (mikevdg's name) or "auto-consensus ages" (official name).
+-- For each sample, calculate a 'narrow' and 'wide' age range by gathering ages from various places.
+-- The logic here is non-trivial. Refer to the documentation for more information.
+-- Jira PDB-140.
+select s.sample_id,
+        nvl(vlaal.base_age, nvl(vaan.narrow_age_lower, nvl(aawd.wide_age_lower, nvl(ksal.base_age, nvl(isl.base_age, const_max_base_age))))) as NARROW_BASE_AGE,
+        nvl(vlaau.top_age, nvl(vaan.narrow_age_upper, nvl(aawd.wide_age_upper, nvl(ksau.top_age, nvl(isu.top_age, const_min_top_age))))) as NARROW_TOP_AGE,
+        nvl(vlaal.base_age, nvl(vaaw.wide_age_lower, const_max_base_age)) as WIDE_BASE_AGE,
+        nvl(vlaau.top_age, nvl(vaaw.wide_age_upper, const_min_top_age)) as WIDE_TOP_AGE
+from sample s
+-- adoption
+left outer join latest_adoption_view vla on vla.sample_id=s.sample_id
+left outer join age vlaal on vlaal.age_id=vla.adopted_age_lower
+left outer join age vlaau on vlaau.age_id=vla.adopted_age_upper
+-- determined
+left outer join auto_age_wide_view vaaw on vaaw.sample_id=s.sample_id
+left outer join auto_age_narrow_view vaan on vaan.sample_id=s.sample_id
+left outer join auto_age_wide_dtrmnd aawd on aawd.sample_id=s.sample_id
+-- known 
+left outer join stage_fixed_view known_stage on known_stage.stage_id=s.known_stage_id
+left outer join age ksal on ksal.age_id=known_stage.age_lower_id
+left outer join age ksau on ksau.age_id=known_stage.age_upper_id
+-- inferred 
+left outer join stage_fixed_view inferred_stage on inferred_stage.stage_id=s.inferred_stage_id
+left outer join age isl on isl.age_id=inferred_stage.age_lower_id
+left outer join age isu on isu.age_id=inferred_stage.age_upper_id;
+
+-- An existing view that we're updating with squirrel ages.
+CREATE or replace VIEW SAMPLE_STAGE_VIEW
+ AS
+SELECT s.sample_id,
+    'inferred' AS type,
+    st.stage_id,
+    st.base_age,
+    st.top_age
+FROM sample s
+JOIN stage st ON s.inferred_stage_id = st.stage_id
+UNION
+SELECT s.sample_id,
+    'known' AS type,
+    st.stage_id,
+    st.base_age,
+    st.top_age
+FROM sample s
+JOIN stage st ON s.known_stage_id = st.stage_id
+UNION
+SELECT s.sample_id,
+    'adoption' AS type,
+    st.stage_id,
+    st.base_age,
+    st.top_age
+FROM sample s
+JOIN record r   ON s.sample_id = r.sample_id
+JOIN adoption a ON r.record_id = a.record_id
+JOIN stage st   ON a.adopted_stage_id = st.stage_id
+UNION
+SELECT s.sample_id,
+    'paleontology' AS type,
+    st.stage_id,
+    st.base_age,
+    st.top_age
+FROM sample s
+JOIN record r       ON s.sample_id = r.sample_id
+JOIN paleontology p ON r.record_id = p.record_id
+JOIN stage st       ON p.stage_id = st.stage_id
+UNION
+-- See PDB-140.sql
+SELECT sample_id,
+    'squirrelWide' AS type,
+    null as stage_id,
+     wide_base_age as base_age,
+     wide_top_age as top_age
+FROM squirrel_age_view
+UNION
+-- See PDB-140.sql.
+SELECT sample_id,
+    'squirrelNarrow' AS type,
+    null as stage_id,
+    narrow_base_age as base_age,
+    narrow_top_age as top_age
+FROM squirrel_age_view;

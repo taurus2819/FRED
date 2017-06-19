@@ -34,7 +34,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nz.cri.gns.auth.security.IpGrantedAuthority;
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.fred.FredGrantedAuthorities;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.servlet.util.FredHelper;
 import nz.cri.gns.fred.servlet.util.JspWriterImpl;
@@ -58,26 +60,11 @@ public class ResultList_jsp extends HttpServlet {
         String page = request.getParameter("Page");
         String type = request.getParameter("Type");
 
-        if (null == tableName) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter TableName");
-            return;
-        }
-
-        if (null == whereSQL) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing parameter WhereSQL");
-            return;
-        }
-
         JspWriterImpl out = new JspWriterImpl(response.getOutputStream());
         HttpSession session = request.getSession();
 
         FredHelper h = new FredHelper(); // Replaces subclassing FREDDEIPSysJspPage. 
         User user = h.getUser(session);
-        // TODO: check access.
-        /*
-         if (!h.checkAccess(request, response, new IpGrantedAuthority(FredGrantedAuthorities.FR_DATA_ENTRY))) {
-         return;
-         }*/
 
         try {
             response.setContentType("text/html;charset=utf-8");
@@ -190,6 +177,10 @@ public class ResultList_jsp extends HttpServlet {
                 features = (List<Feature>) session.getAttribute("FRED.features");
                 queryString = (String) session.getAttribute("FRED.queryString");
             } else if ("Adv".equals(type)) {
+                if (!h.checkAccess(request, response, new IpGrantedAuthority(FredGrantedAuthorities.FR_WEBSITE_ACCESS))) {
+                    // TODO: what access should they have? I can't find it.
+                    return;
+                }
                 FREDQuery query = FREDUtil.getFREDQuery(state);
                 queryString = query.getQueryAsString();
                 String hq = query.getHQLQuery();
@@ -216,7 +207,13 @@ public class ResultList_jsp extends HttpServlet {
                     sqNarrowAgeTo = stageUtil.getAge(sqNarrowAgeToId).getTopAge();
                     hasSquirrelAge = true;
                 }
-
+                // Swap ages if the user got them the wrong way around.
+                if (hasSquirrelAge && sqNarrowAgeFrom < sqNarrowAgeTo) {
+                    Double swap = sqNarrowAgeFrom;
+                    sqNarrowAgeFrom = sqNarrowAgeTo;
+                    sqNarrowAgeTo = swap;
+                }
+                
                 Integer sqWideAgeFromId = paramAsInt(request, "SquirrelWideAgeFrom");
                 Integer sqWideAgeToId = paramAsInt(request, "SquirrelWideAgeTo");
                 Double sqWideAgeFrom = 999.9;
@@ -228,6 +225,13 @@ public class ResultList_jsp extends HttpServlet {
                 if (null != sqWideAgeToId) {
                     sqWideAgeTo = stageUtil.getAge(sqWideAgeToId).getTopAge();
                     hasSquirrelAge = true;
+                }
+                // Swap ages if the user got them the wrong way around.
+                // 'From' is older (base age). 'To' is newer (top age). 
+                if (hasSquirrelAge && sqWideAgeFrom < sqWideAgeTo) {
+                    Double swap = sqWideAgeFrom;
+                    sqWideAgeFrom = sqWideAgeTo;
+                    sqWideAgeTo = swap;
                 }
 
                 StringBuilder sampHqlStr = new StringBuilder();
@@ -243,15 +247,28 @@ public class ResultList_jsp extends HttpServlet {
 
                 if (hasSquirrelAge) {
                     // Grumble mumble. We should use parameters here.
-                    sampHqlStr.append(" AND (squirrelAge.narrowBaseAge >= ");
+                    sampHqlStr.append(" AND (squirrelAge.narrowBaseAge > ");
                     sampHqlStr.append(sqNarrowAgeTo);
-                    sampHqlStr.append(") AND (squirrelAge.narrowTopAge <= ");
+                    sampHqlStr.append(") AND (squirrelAge.narrowTopAge < ");
                     sampHqlStr.append(sqNarrowAgeFrom);
-                    sampHqlStr.append(") AND (squirrelAge.wideBaseAge >= ");
+                    sampHqlStr.append(") AND (squirrelAge.wideBaseAge > ");
                     sampHqlStr.append(sqWideAgeTo);
-                    sampHqlStr.append(") AND (squirrelAge.wideTopAge <= ");
+                    sampHqlStr.append(") AND (squirrelAge.wideTopAge < ");
                     sampHqlStr.append(sqWideAgeFrom);
                     sampHqlStr.append(") ");
+
+                    // Show this to the user.
+                    StringBuilder s = new StringBuilder(queryString);
+                    s.append(" AND Consensus narrow age from  ");
+                    s.append(sqNarrowAgeFrom);
+                    s.append(" to ");
+                    s.append(sqNarrowAgeTo);
+                    s.append(" AND Consensus wide age from ");
+                    s.append(sqWideAgeFrom);
+                    s.append(" to ");
+                    s.append(sqWideAgeTo);
+                    queryString = s.toString();
+                    
                 }
 
                 String sampHql = sampHqlStr.toString();
@@ -531,7 +548,7 @@ public class ResultList_jsp extends HttpServlet {
 
             h.drawBottom(out, et);
             factory.closeSession();
-        } catch (Exception  e) {
+        } catch (Exception e) {
             log.log(Level.WARNING, null, e);
             out.write("<p>An error occurred:</p><p> ");
             out.write(new Date().toString());
