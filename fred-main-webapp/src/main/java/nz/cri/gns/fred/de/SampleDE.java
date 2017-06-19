@@ -6,8 +6,6 @@ import java.io.Writer;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
@@ -52,8 +50,6 @@ import nz.cri.gns.intranet.Template;
 import nz.cri.gns.jsp.IconnedLink;
 
 public class SampleDE extends DETemplate implements DataEntryForm {
-
-    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.SampleDE");
 
     private User user;
     private Sample sample;
@@ -101,7 +97,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             isAllowedSave = outcropSample || sampleUtil.isAllowedEditSample(user, sample, workingFolder);
             isAllowedSubmit = outcropSample || sampleUtil.isAllowedSubmitSample(user, sample, workingFolder);
         } catch (Exception e) {
-            log.log(Level.SEVERE, null, e);
+            e.printStackTrace();
         }
     }
 
@@ -195,7 +191,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         this.outcropSample = isOutcropSample;
     }
 
-    public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException, StorageAccessException {
+    public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
         reinitialise(factory);
 
         if (!outcropSample) {
@@ -224,7 +220,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                     Attributes attributes = Attributes.createNameOnlyAttributes("DrillType");
                     selectBox.writeBox(attributes, "-- Choose --", null, sample.getDrillType(), out);
                 } catch (Exception e) {
-                    log.log(Level.SEVERE, null, e);
+                    e.printStackTrace();
                 }
             }
             //comments
@@ -309,7 +305,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             template.loadAll(out);
 
         } catch (Exception e) {
-            log.log(Level.SEVERE, null, e);
+            e.printStackTrace();
         }
         if (!outcropSample) {
             //This section is only relevant if this is _not_ an outcrop sample
@@ -586,7 +582,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             }
 
         } catch (Exception e) {
-            log.log(Level.SEVERE, null, e);
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
@@ -688,7 +684,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             if (drillType != null) { //catch no drilltype for vert sects
                 try {
                     sample.setDrillType(getDrillType(request.getParameter("DrillType")));
-                } catch (NumberFormatException e) {
+                } catch (Exception e) {
                     error.add(new String[]{"Drill Type", "Invalid Drill Type"});
                 }
             }
@@ -739,24 +735,29 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (sentToParam.length() > 0) {
             String[] sentTos = request.getParameter("SentTo").split("\\n");
             for (String sentTo : sentTos) {
-                String[] parts = sentTo.split("\\*");
-                FossilGroup group = (parts[0].length() == 0) ? null : sampleUtil.getFossilGroup(parts[0]);
-                if (parts[0].length() > 0 && group == null) {
-                    error.add(new String[]{"Sent To", "Invalid group: " + parts[0]});
+                try {
+                    String[] parts = sentTo.split("\\*");
+                    FossilGroup group = (parts[0].length() == 0) ? null : sampleUtil.getFossilGroup(parts[0]);
+                    if (parts[0].length() > 0 && group == null) {
+                        error.add(new String[]{"Sent To", "Invalid group: " + parts[0]});
+                    }
+                    Person person = (parts.length >= 2 && parts[1].length() != 0) ? (addIfNew ? personUtil.findOrCreatePerson(parts[1]) : personUtil.findPerson(parts[1])) : null;
+                    if (parts.length >= 2 && parts[1].length() > 0 && person == null) {
+                        error.add(new String[]{"Sent To", "Invalid person: " + parts[1]});
+                    }
+                    Lab lab = (parts.length >= 3 && parts[2].length() != 0) ? sampleUtil.findLab(parts[2]) : null;
+                    if (parts.length >= 3 && parts[2].length() > 0 && lab == null) {
+                        error.add(new String[]{"Sent To", "Invalid lab: " + parts[2]});
+                    }
+                    String comments = ((parts.length >= 4) ? parts[3].replaceAll(String.valueOf((char) 13), "") : null);
+                    if (comments != null && comments.length() == 0) {
+                        comments = null;
+                    }
+                    sentToSet.add(sampleUtil.findOrCreateSentTo(sample, group, person, lab, comments));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    error.add(new String[]{"Sent To", "Database error: " + e.getMessage()});
                 }
-                Person person = (parts.length >= 2 && parts[1].length() != 0) ? (addIfNew ? personUtil.findOrCreatePerson(parts[1]) : personUtil.findPerson(parts[1])) : null;
-                if (parts.length >= 2 && parts[1].length() > 0 && person == null) {
-                    error.add(new String[]{"Sent To", "Invalid person: " + parts[1]});
-                }
-                Lab lab = (parts.length >= 3 && parts[2].length() != 0) ? sampleUtil.findLab(parts[2]) : null;
-                if (parts.length >= 3 && parts[2].length() > 0 && lab == null) {
-                    error.add(new String[]{"Sent To", "Invalid lab: " + parts[2]});
-                }
-                String comments = ((parts.length >= 4) ? parts[3].replaceAll(String.valueOf((char) 13), "") : null);
-                if (comments != null && comments.length() == 0) {
-                    comments = null;
-                }
-                sentToSet.add(sampleUtil.findOrCreateSentTo(sample, group, person, lab, comments));
             }
         }
         Set<SentTo> oldSentTos = sample.getSentTos();
@@ -764,7 +765,11 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (oldSentTos != null) {
             oldSentTos.removeAll(sentToSet);
             for (SentTo sentTo : oldSentTos) {
-                sampleUtil.delete(sentTo);
+                try {
+                    sampleUtil.delete(sentTo);
+                } catch (StorageAccessException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -830,7 +835,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                         error.add(new String[]{"Previous sample", "Feature " + previous + " not found"});
                     }
                 } catch (Exception e) {
-                    log.log(Level.SEVERE, null, e);
+                    e.printStackTrace();
                     error.add(new String[]{"Previous sample", e.getMessage()});
                 }
             }
@@ -839,7 +844,11 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (previousSample != null) {
             relationships.removeAll(previousSample);
             for (Relationship rel : previousSample) {
-                sampleUtil.delete(rel);
+                try {
+                    sampleUtil.delete(rel);
+                } catch (StorageAccessException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -864,9 +873,12 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                         //Wasn't in the old set, so add it
                         relationships.add(sampleUtil.cloneRelationship(newRelationship));
                     }
+                } catch (StorageAccessException e) {
+                    e.printStackTrace();
+                    error.add(new String[]{"Sample relationships", e.getMessage()});
                 } catch (IllegalArgumentException e) {
                     error.add(new String[]{"Sample relationships", e.getMessage()});
-                    log.log(Level.SEVERE, null, e);
+                    e.printStackTrace();
                 } catch (DataInputException e) {
                     error.addAll(e.getError());
                 }
@@ -876,7 +888,11 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (sampleRel != null) {
             relationships.removeAll(sampleRel);
             for (Relationship rel : sampleRel) {
-                sampleUtil.delete(rel);
+                try {
+                    sampleUtil.delete(rel);
+                } catch (StorageAccessException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -884,30 +900,37 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (request.getParameter("StratRel").length() > 0) {
             //Go through each entered relationship
             for (String relationshipDesc : request.getParameter("StratRel").split("\\n")) {
-                Relationship newRelationship = sampleUtil.decodeStratigraphicRelationshipDescription(relationshipDesc);
-                newRelationship.setSample(sample);
-                boolean found = false;
-                for (Iterator<Relationship> it = stratRel.iterator(); it.hasNext();) {
-                    Relationship rel = it.next();
-                    if (sampleUtil.isMatchingRelationship(rel, newRelationship)) {
-                        //Remove it from the old set
-                        it.remove();
-                        found = true;
-                        break;
+                try {
+                    Relationship newRelationship = sampleUtil.decodeStratigraphicRelationshipDescription(relationshipDesc);
+                    newRelationship.setSample(sample);
+                    boolean found = false;
+                    for (Iterator<Relationship> it = stratRel.iterator(); it.hasNext();) {
+                        Relationship rel = it.next();
+                        if (sampleUtil.isMatchingRelationship(rel, newRelationship)) {
+                            //Remove it from the old set
+                            it.remove();
+                            found = true;
+                            break;
+                        }
                     }
+                    if (!found) {
+                        //Wasn't in the old set, so add it
+                        relationships.add(sampleUtil.cloneRelationship(newRelationship));
+                    }
+                } catch (Exception e) {
+                    error.add(new String[]{"Stratigraphic relationships", e.getMessage()});
                 }
-                if (!found) {
-                    //Wasn't in the old set, so add it
-                    relationships.add(sampleUtil.cloneRelationship(newRelationship));
-                }
-
             }
         }
         //Remove any that are still in the old set
         if (stratRel != null) {
             relationships.removeAll(stratRel);
             for (Relationship rel : stratRel) {
-                sampleUtil.delete(rel);
+                try {
+                    sampleUtil.delete(rel);
+                } catch (StorageAccessException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -925,7 +948,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                 if (iDip > 90 || iDip < 0) {
                     error.add(new String[]{"Dip", iDip + " is not valid.  Dip must be between 0 and 90"});
                 }
-            } catch (NumberFormatException e) {
+            } catch (Exception e) {
                 error.add(new String[]{"Dip", dip + " is not valid.  Dip must be a whole number of degrees"});
             }
         }
@@ -951,7 +974,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                 if (iStrike > 360 || iStrike < 0) {
                     error.add(new String[]{"Strike", iStrike + " is not valid.  Strike must be between 0 and 360"});
                 }
-            } catch (NumberFormatException e) {
+            } catch (Exception e) {
                 error.add(new String[]{"Strike", strike + " is not valid.  Strike must be a whole number of degrees"});
             }
         }
@@ -967,14 +990,17 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
         //Grainsize
         String grainSizeP = request.getParameter("GrainSizeP");
-        sample.setPrimaryGrainSize(getGrainSize(grainSizeP));
-        String grainSizeS = request.getParameter("GrainSizeS");
-        if (FREDUtil.decodeCombo(grainSizeP) == null && FREDUtil.decodeCombo(grainSizeS) != null) {
-            error.add(new String[]{"Grain Size", "Primary Grain Size must be entered if entering Secondary Grain Size"});
-        } else {
-            sample.setSecondaryGrainSize(getGrainSize(grainSizeS));
+        try {
+            sample.setPrimaryGrainSize(getGrainSize(grainSizeP));
+            String grainSizeS = request.getParameter("GrainSizeS");
+            if (FREDUtil.decodeCombo(grainSizeP) == null && FREDUtil.decodeCombo(grainSizeS) != null) {
+                error.add(new String[]{"Grain Size", "Primary Grain Size must be entered if entering Secondary Grain Size"});
+            } else {
+                sample.setSecondaryGrainSize(getGrainSize(grainSizeS));
+            }
+        } catch (StorageAccessException e) {
+            error.add(new String[]{"Grain Size", "Database problem: " + e.getMessage()});
         }
-
         String gsComp = request.getParameter("GSComp");
         if (FREDUtil.isEmpty(gsComp)) {
             sample.setComparatorUsed(null);
@@ -989,15 +1015,19 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         //StratComments
         sample.setStratComments(request.getParameter("StratComm"));
 
-        sample.setBedThickness(getBeddingThickness(request.getParameter("BedThick")));
-        sample.setPrimaryBedding(getBedding(request.getParameter("BeddingP")));
-        sample.setSecondaryBedding(getBedding(request.getParameter("BeddingS")));
-        sample.setWeathering(getWeathering(request.getParameter("Weath")));
-        sample.setHardness(getHardness(request.getParameter("Hard")));
-        sample.setCarbonate(getCarbonate(request.getParameter("Carb")));
-        sample.setColourModifier(getColourModifier(request.getParameter("ColMod")));
-        sample.setPrimaryColour(getColour(request.getParameter("ColourP")));
-        sample.setSecondaryColour(getColour(request.getParameter("ColourS")));
+        try {
+            sample.setBedThickness(getBeddingThickness(request.getParameter("BedThick")));
+            sample.setPrimaryBedding(getBedding(request.getParameter("BeddingP")));
+            sample.setSecondaryBedding(getBedding(request.getParameter("BeddingS")));
+            sample.setWeathering(getWeathering(request.getParameter("Weath")));
+            sample.setHardness(getHardness(request.getParameter("Hard")));
+            sample.setCarbonate(getCarbonate(request.getParameter("Carb")));
+            sample.setColourModifier(getColourModifier(request.getParameter("ColMod")));
+            sample.setPrimaryColour(getColour(request.getParameter("ColourP")));
+            sample.setSecondaryColour(getColour(request.getParameter("ColourS")));
+        } catch (StorageAccessException e) {
+            error.add(new String[]{"Lookups", "Database problem: " + e.getMessage()});
+        }
 
         //Wet/Dry
         String wet = request.getParameter("Wet");
@@ -1036,17 +1066,21 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                     }
                 }
                 if (!found) {
-                    //Create a new one
-                    SedimentaryFeature feature = sampleUtil.createSedimentaryFeature(sedFeature, isAbundant);
-                    //check feature type doesn't already exist in set
-                    for (SedimentaryFeature testFeat : newFeatures) {
-                        if (testFeat.getSedimentaryFeatureType().equals(feature.getSedimentaryFeatureType())) {
-                            error.add(new String[]{"Additional Features", "Duplicate feature: " + sedFeature});
-                            break;
+                    try {
+                        //Create a new one
+                        SedimentaryFeature feature = sampleUtil.createSedimentaryFeature(sedFeature, isAbundant);
+                        //check feature type doesn't already exist in set
+                        for (SedimentaryFeature testFeat : newFeatures) {
+                            if (testFeat.getSedimentaryFeatureType().equals(feature.getSedimentaryFeatureType())) {
+                                error.add(new String[]{"Additional Features", "Duplicate feature: " + sedFeature});
+                                break;
+                            }
                         }
+                        newFeatures.add(feature);
+                        sedFeatures.add(feature);
+                    } catch (Exception e) {
+                        error.add(new String[]{"Additional Features", "Invalid feature: " + sedFeature});
                     }
-                    newFeatures.add(feature);
-                    sedFeatures.add(feature);
                 }
             }
             //Remove anything that's not still there.
@@ -1091,13 +1125,17 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     /**
      * @param factory
      */
-    private void reinitialise(DAOFactory factory) throws StorageAccessException {
+    private void reinitialise(DAOFactory factory) {
         sampleUtil = new SampleUtil(factory);
         if (sample.getSampleId() != null) {
-            sample = sampleUtil.getSample(sample.getSampleId().intValue());
-            if (copySample != null) {
-                getFromDatabase(copySample);
-                copySample = null;
+            try {
+                sample = sampleUtil.getSample(sample.getSampleId().intValue());
+                if (copySample != null) {
+                    getFromDatabase(copySample);
+                    copySample = null;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

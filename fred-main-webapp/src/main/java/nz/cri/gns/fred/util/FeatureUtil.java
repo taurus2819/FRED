@@ -510,7 +510,7 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         List<Feature> cartesianFeatures = fredDAO.getList("select new Feature(s.feature.featureId, s.feature.frNumber) FROM Sample s WHERE s.sampleId in (" + sampleSubquery + ")", Feature.class);
         Set<Feature> features = new HashSet<Feature>();
         features.addAll(cartesianFeatures);
-        return FREDUtil.getSortedList(features); // Dude. Do the sorting in the query above!! -mikevdg.
+        return FREDUtil.getSortedList(features);
     }
 
     public List<Feature> getFeaturesBySampleSubquery(List<Sample> lightweightSamples) throws StorageAccessException {

@@ -51,40 +51,40 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
     public void setStageUpperMod(String stageUpperMod) {
         this.stageUpperMod = stageUpperMod;
     }
+    
+	public void setBaseAge(Double baseAge) {
+		this.baseAge = baseAge;
+	}
 
-    public void setBaseAge(Double baseAge) {
-        this.baseAge = baseAge;
-    }
+	public Double getBaseAge() {
+		return baseAge;
+	}
 
-    public Double getBaseAge() {
-        return baseAge;
-    }
+	public void setTopAge(Double topAge) {
+		this.topAge = topAge;
+	}
 
-    public void setTopAge(Double topAge) {
-        this.topAge = topAge;
-    }
+	public Double getTopAge() {
+		return topAge;
+	}
 
-    public Double getTopAge() {
-        return topAge;
-    }
-
-    public Age getLowerAge() {
-        return lowerAge;
-    }
+	public Age getLowerAge() {
+		return lowerAge;
+	}
 
     public void setLowerAge(Age lowerAge) {
-        this.lowerAge = lowerAge;
-    }
+		this.lowerAge = lowerAge;
+	}
 
-    public Age getUpperAge() {
-        return upperAge;
-    }
+	public Age getUpperAge() {
+		return upperAge;
+	}
+	
+	public void setUpperAge(Age upperAge) {
+		this.upperAge = upperAge;
+	}
 
-    public void setUpperAge(Age upperAge) {
-        this.upperAge = upperAge;
-    }
-
-    public Set<Sample> getSamplesByKnownStageId() {
+	public Set<Sample> getSamplesByKnownStageId() {
         return this.samplesByKnownStageId;
     }
 
@@ -116,36 +116,35 @@ public class Stage implements Serializable, nz.cri.gns.fred.model.Stage {
         this.adoptions = adoptions;
     }
 
-    public void setSampleStageViews(Set<SampleStageView> sampleStageViews) {
-        this.sampleStageViews = sampleStageViews;
-    }
+	public void setSampleStageViews(Set<SampleStageView> sampleStageViews) {
+		this.sampleStageViews = sampleStageViews;
+	}
 
-    public Set<SampleStageView> getSampleStageViews() {
-        return sampleStageViews;
-    }
+	public Set<SampleStageView> getSampleStageViews() {
+		return sampleStageViews;
+	}
+	
+	public void setRecordStageViews(Set<RecordStageView> recordStageViews) {
+		this.recordStageViews = recordStageViews;
+	}
 
-    public void setRecordStageViews(Set<RecordStageView> recordStageViews) {
-        this.recordStageViews = recordStageViews;
-    }
+	public Set<RecordStageView> getRecordStageViews() {
+		return recordStageViews;
+	}
 
-    public Set<RecordStageView> getRecordStageViews() {
-        return recordStageViews;
-    }
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof Stage && ((Stage)o).stageId.equals(stageId);
+	}
+	
+	@Override
+	public int hashCode() {
+		return 487 * stageId;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        return o instanceof Stage && ((Stage) o).stageId.equals(stageId);
-    }
-
-    @Override
-    public int hashCode() {
-        return 487 * stageId;
-    }
-
-    public int compareTo(nz.cri.gns.fred.model.Stage arg0) {
-        if (baseAge.equals(arg0.getBaseAge())) {
-            return topAge.compareTo(arg0.getTopAge());
-        }
-        return baseAge.compareTo(arg0.getBaseAge());
-    }
+	public int compareTo(nz.cri.gns.fred.model.Stage arg0) {
+		if (baseAge.equals(arg0.getBaseAge()))
+			return topAge.compareTo(arg0.getTopAge());
+		return baseAge.compareTo(arg0.getBaseAge());
+	}
 }

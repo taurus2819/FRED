@@ -6,7 +6,7 @@
     <!-- a SessionFactory instance listed as /jndi/name -->
     <session-factory>
         <!-- properties -->
-        <property name="show_sql">true</property>
+        <property name="show_sql">false</property>
         <!-- Rest done programmatically -->
 
         <!-- mapping files -->
@@ -57,7 +57,6 @@
         <mapping resource="hibernate/SedimentaryFeatureType.hbm.xml"/>
         <mapping resource="hibernate/SentTo.hbm.xml"/>
         <mapping resource="hibernate/SiteView.hbm.xml"/>
-        <mapping resource="hibernate/SquirrelAgeView.hbm.xml"/>
         <mapping resource="hibernate/Stage.hbm.xml"/>
         <mapping resource="hibernate/StratigraphicUnit.hbm.xml"/>
         <mapping resource="hibernate/TaxonomicGroup.hbm.xml"/>

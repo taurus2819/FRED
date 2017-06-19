@@ -466,6 +466,7 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
             List list = query.list();
             return ((Integer) list.get(0)).intValue();
         } catch (Exception e) {
+            e.printStackTrace();
             throw new StorageAccessException(e);
         }
     }

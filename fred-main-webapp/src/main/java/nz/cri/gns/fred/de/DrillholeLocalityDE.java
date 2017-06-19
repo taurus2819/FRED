@@ -156,7 +156,7 @@ public class DrillholeLocalityDE extends LocalityDE {
     }
 
     @Override
-    public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException, StorageAccessException {
+    public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
         super.makeDataEntryHTML(out, factory);
 
         Template template = provider.getContent(getContentPrefix() + ".de.form");

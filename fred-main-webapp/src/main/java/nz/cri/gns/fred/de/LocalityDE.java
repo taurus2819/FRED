@@ -9,8 +9,6 @@ import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -49,8 +47,6 @@ import nz.cri.gns.util.map.Datum.MapSheetCoordinate;
 
 public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
-    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.LocalityDE");
-
     public static final String comboNull = "-";
     protected DAOFactory factory;
     protected FeatureUtil featureUtil;
@@ -79,9 +75,13 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
     public LocalityDE(Feature feature, int folderID, User user, DAOFactory factory, ContentProvider content) throws InsufficientPrivelegesException, StorageAccessException {
         featureUtil = new FeatureUtil(factory);
         initialise(feature, folderID, user, factory, content);
-        site = SiteUtil.getSite(feature);
-        coord = SiteUtil.getFREDCoordinate(feature);
-        datum = SiteUtil.getFREDDatum(feature);
+        try {
+            site = SiteUtil.getSite(feature);
+            coord = SiteUtil.getFREDCoordinate(feature);
+            datum = SiteUtil.getFREDDatum(feature);
+        } catch (Exception e) {
+            //Site wasn't set
+        }
     }
 
     private String getLegalLocality(String loc, ArrayList<String[]> error) {
@@ -110,8 +110,11 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             workingFolder = folderUtil.getUserFolder(feature.getAudit().getFolder().getFolderId().intValue(), user);
         }
 
-        isAllowedSave = featureUtil.isAllowedEditFeature(user, feature, workingFolder);
-        isAllowedSubmit = featureUtil.isAllowedSubmitFeature(user, feature, workingFolder);
+        try {
+            isAllowedSave = featureUtil.isAllowedEditFeature(user, feature, workingFolder);
+            isAllowedSubmit = featureUtil.isAllowedSubmitFeature(user, feature, workingFolder);
+        } catch (Exception e) {
+        }
     }
 
     public void copyFrom(int featureID) throws InsufficientPrivelegesException, StorageAccessException {
@@ -129,9 +132,13 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         feature.setRegistrationArea(fromFeature.getRegistrationArea());
         feature.getAudit().setWorkingComments(fromFeature.getAudit().getWorkingComments());
         feature.setLocality(fromFeature.getLocality());
-        site = SiteUtil.getSite(fromFeature);
-        coord = SiteUtil.getFREDCoordinate(fromFeature);
-        datum = SiteUtil.getFREDDatum(fromFeature);
+        try {
+            site = SiteUtil.getSite(fromFeature);
+            coord = SiteUtil.getFREDCoordinate(fromFeature);
+            datum = SiteUtil.getFREDDatum(fromFeature);
+        } catch (Exception e) {
+            //Site wasn't set
+        }
         feature.setMapYear(fromFeature.getMapYear());
         feature.setComments(fromFeature.getComments());
         feature.setCoordComments(fromFeature.getCoordComments());
@@ -180,7 +187,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
     }
 
     @Override
-    public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException, StorageAccessException {
+    public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
         reinitialise(factory);
         Template template = provider.getContent("locality.de.form");
         prepareTemplate(template, provider);
@@ -317,7 +324,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             template.addSub("locComm", DBUtils.nvl(feature.getComments()));
 
         } catch (StorageAccessException e) {
-            log.log(Level.SEVERE, null, e);
+            e.printStackTrace();
             throw new IOException("Could not access storage: " + e.getMessage());
         }
         template.loadAll(out);
@@ -383,7 +390,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             } catch (DataInputException e) {
                 error.add(new String[]{"FR Number", e.getMessage()});
             } catch (StorageAccessException e) {
-                log.log(Level.SEVERE, null, e);
+                e.printStackTrace();
                 //Should never happen
             }
             if (!FREDUtil.isEmpty(request.getParameter("YardFRNumber"))) {
@@ -409,7 +416,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 try {
                     feature.setRegistrationArea(new FeatureUtil(factory).getRegistrationArea(Integer.parseInt(registrationAreaId)));
                 } catch (StorageAccessException e) {
-                    log.log(Level.SEVERE, null, e);
+                    e.printStackTrace();
                     //Should never happen
                 }
             }
@@ -569,7 +576,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             try {
                 site = SiteUtil.getSite(site);
             } catch (Exception e) {
-                log.log(Level.SEVERE, null, e);
+                e.printStackTrace();
                 throw new StorageAccessException(e);
             }
 
@@ -606,13 +613,13 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
     /*
      * Not used??
-     private static void refreshSamples(nz.cri.gns.fred.data.Feature feature, User user, PageState state) throws InsufficientPrivelegesException, SQLException, IOException {
-     if (feature.getSampleCount() > 0) {
-     for (Iterator i = feature.getAsVector(nz.cri.gns.fred.data.Feature.SAMPLES).iterator(); i.hasNext(); ) {
-     new nz.cri.gns.fred.data.Sample(((Integer) i.next()).intValue(), user, state, true);
-     }
-     }
-     } */
+    private static void refreshSamples(nz.cri.gns.fred.data.Feature feature, User user, PageState state) throws InsufficientPrivelegesException, SQLException, IOException {
+    if (feature.getSampleCount() > 0) {
+    for (Iterator i = feature.getAsVector(nz.cri.gns.fred.data.Feature.SAMPLES).iterator(); i.hasNext(); ) {
+    new nz.cri.gns.fred.data.Sample(((Integer) i.next()).intValue(), user, state, true);
+    }
+    }
+    } */
     public int getWorkingFolderID() {
         if (workingFolder != null) {
             return workingFolder.getFolderId();

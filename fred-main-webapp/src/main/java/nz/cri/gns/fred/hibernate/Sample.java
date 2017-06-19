@@ -71,8 +71,6 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     private BedThickness bedThickness;
     private Stage stageByKnownStageId;
     private Stage stageByInferredStageId;
-    private Stage autoAgeWide;
-    private Stage autoAgeNarrow;
     private Set<SedimentaryFeature> sedimentaryFeatures;
     private Set<MetaCat> metaCats;
     private Set<Record> records;
@@ -104,7 +102,7 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     public void setBottomDepth(Double bottomDepth) {
         this.bottomDepth = bottomDepth;
     }
-
+    
     public String getDepthUnit() {
         return this.depthUnit;
     }
@@ -209,15 +207,15 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.facing = facing;
     }
 
-    public String getStratComments() {
-        return stratComments;
-    }
-
+	public String getStratComments() {
+		return stratComments;
+	}
+	
     public void setStratComments(String stratComments) {
-        this.stratComments = stratComments;
-    }
+		this.stratComments = stratComments;
+	}
 
-    public String getComparatorUsed() {
+	public String getComparatorUsed() {
         return this.comparatorUsed;
     }
 
@@ -310,7 +308,7 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     }
 
     public void setFeature(Feature feature) {
-        this.feature = feature;
+    	this.feature = feature;
     }
 
     public Audit getAudit() {
@@ -352,7 +350,7 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
     public void setYardFrNumber(FrNumber yardFrNumber) {
         this.yardFrNumber = yardFrNumber;
     }
-
+    
     public DrillType getDrillType() {
         return this.drillType;
     }
@@ -449,167 +447,111 @@ public class Sample implements Serializable, nz.cri.gns.fred.model.Sample, Clone
         this.relationships = relationships;
     }
 
-    public void setSampleStageViews(Set<SampleStageView> sampleStageViews) {
-        this.sampleStageViews = sampleStageViews;
-    }
+	public void setSampleStageViews(Set<SampleStageView> sampleStageViews) {
+		this.sampleStageViews = sampleStageViews;
+	}
 
-    public Set<SampleStageView> getSampleStageViews() {
-        return sampleStageViews;
-    }
-
+	public Set<SampleStageView> getSampleStageViews() {
+		return sampleStageViews;
+	}
+        
     /**
-     * Compares by top depth then by bottom depth then by object id. Comparing
-     * by object id if all else is equal,
-     *
-     * @return int
-     */
+    * Compares by top depth then by bottom depth then by object id. Comparing by object id if all else is equal, 
+    * 
+    * @return int
+    */
     @Override
     public int compareTo(nz.cri.gns.fred.model.Sample sample) {
-        if (feature == null) {
-            return sampleId.compareTo(sample.getSampleId());
-        }
-        if (feature.equals(sample.getFeature())) {
-            //Compare top depth values first
-            if (getTopDepth() != null && sample.getTopDepth() != null) {
-                if (getMetricDepth(getTopDepth(), getDepthUnit()).equals(getMetricDepth(sample.getTopDepth(), sample.getDepthUnit()))) {
-                    // top depth values are equal, so consider bottom depth values    
-                    return sortBottomDepth(sample);
-                }
-                // top depth values are not equal and not null, so sort
-                return getMetricDepth(getTopDepth(), getDepthUnit()).compareTo(getMetricDepth(sample.getTopDepth(), sample.getDepthUnit()));
+            if (feature==null) {
+                  return sampleId.compareTo(sample.getSampleId());
+            }   
+            if (feature.equals(sample.getFeature())) {
+                    //Compare top depth values first
+                    if (getTopDepth() != null && sample.getTopDepth() != null) {                       
+                            if (getMetricDepth(getTopDepth(), getDepthUnit()).equals(getMetricDepth(sample.getTopDepth(), sample.getDepthUnit()))) {
+                                 // top depth values are equal, so consider bottom depth values    
+                                return sortBottomDepth(sample);                                    
+                            }
+                            // top depth values are not equal and not null, so sort
+                            return getMetricDepth(getTopDepth(), getDepthUnit()).compareTo(getMetricDepth(sample.getTopDepth(), sample.getDepthUnit()));
+                    }
+                    //Here means at least one top depth value is null
+                    if (getTopDepth() == null && sample.getTopDepth() == null) {
+                        // both top depth values null, so treat as equal, move on to consider bottom depth values
+                         return sortBottomDepth(sample);
+                    } 
+                    if (getTopDepth() == null && sample.getTopDepth() != null) {
+                        return -1;
+                    }                            
+                    if (getTopDepth() != null && sample.getTopDepth() == null) {
+                        return 1;
+                    } 
+                    return getMetricDepth(getTopDepth(), getDepthUnit()).compareTo(getMetricDepth(sample.getTopDepth(), sample.getDepthUnit()));
+                            
             }
-            //Here means at least one top depth value is null
-            if (getTopDepth() == null && sample.getTopDepth() == null) {
-                // both top depth values null, so treat as equal, move on to consider bottom depth values
-                return sortBottomDepth(sample);
-            }
-            if (getTopDepth() == null && sample.getTopDepth() != null) {
-                return -1;
-            }
-            if (getTopDepth() != null && sample.getTopDepth() == null) {
-                return 1;
-            }
-            return getMetricDepth(getTopDepth(), getDepthUnit()).compareTo(getMetricDepth(sample.getTopDepth(), sample.getDepthUnit()));
-
-        }
-        return feature.compareTo(sample.getFeature());
-    }
-
-    private int sortBottomDepth(nz.cri.gns.fred.model.Sample sample) {
-        //both bottom depth values are not null
-        if (getBottomDepth() != null && sample.getBottomDepth() != null) {
-            if (getMetricDepth(getBottomDepth(), getDepthUnit()).equals(getMetricDepth(sample.getBottomDepth(), sample.getDepthUnit()))) {
-                // bottom depth values are equal, so sort sample ids   
+            return feature.compareTo(sample.getFeature());
+        } 
+       
+        private int sortBottomDepth(nz.cri.gns.fred.model.Sample sample) {
+            //both bottom depth values are not null
+            if (getBottomDepth() != null && sample.getBottomDepth() != null) {
+                    if (getMetricDepth(getBottomDepth(), getDepthUnit()).equals (getMetricDepth(sample.getBottomDepth(), sample.getDepthUnit()))) {
+                        // bottom depth values are equal, so sort sample ids   
+                        return (sampleId.compareTo(sample.getSampleId())); 
+                    } else {
+                        //sort bottom depth values
+                        return getMetricDepth(getBottomDepth(), getDepthUnit()).compareTo(getMetricDepth(sample.getBottomDepth(), sample.getDepthUnit()));
+                    }
+            } 
+            //at least one bottom depth value is null          								   
+            if (getBottomDepth() == null && sample.getBottomDepth() == null) {
+                //both bottom depth values null, treat as equal so sort sample id 
                 return (sampleId.compareTo(sample.getSampleId()));
-            } else {
-                //sort bottom depth values
-                return getMetricDepth(getBottomDepth(), getDepthUnit()).compareTo(getMetricDepth(sample.getBottomDepth(), sample.getDepthUnit()));
             }
+            if (getBottomDepth() == null && sample.getBottomDepth() != null) {
+                return -1;
+            }                            
+            if (getBottomDepth() != null && sample.getBottomDepth() == null) {
+                return 1;
+            } 
+            return getMetricDepth(getBottomDepth(), getDepthUnit()).compareTo(getMetricDepth(sample.getBottomDepth(), sample.getDepthUnit()));													
         }
-        //at least one bottom depth value is null          								   
-        if (getBottomDepth() == null && sample.getBottomDepth() == null) {
-            //both bottom depth values null, treat as equal so sort sample id 
-            return (sampleId.compareTo(sample.getSampleId()));
+        
+	private static Double getMetricDepth(Double depth, String unit) {               
+		try {
+			if ("m".equals(unit))
+				return depth;
+			else if ("ft".equals(unit))
+				return new Double(depth.doubleValue() * FREDConstants.FT_TO_M);
+		} catch (Exception e) {
+                }
+		 return null;
+	}
+
+	@Override
+	public String toString() {
+		return feature.toString() + ((!feature.getFeatureType().equals(FREDConstants.OUTCROP)) ? ": " + SampleUtil.getDrillHoleDepthDescription(this) : "");
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Sample)) 
+			return false;
+		return (sampleId.intValue() == ((Sample)obj).getSampleId().intValue());
+	}
+	
+	public int hashCode() {
+		return 286 * sampleId;
+	}
+        
+        
+        public Sample(){        
         }
-        if (getBottomDepth() == null && sample.getBottomDepth() != null) {
-            return -1;
+        
+        /**
+         * Partial Constructor for hibernate
+         */
+        public Sample(int sampleId) {
+            this.sampleId= Integer.valueOf(sampleId);
         }
-        if (getBottomDepth() != null && sample.getBottomDepth() == null) {
-            return 1;
-        }
-        return getMetricDepth(getBottomDepth(), getDepthUnit()).compareTo(getMetricDepth(sample.getBottomDepth(), sample.getDepthUnit()));
-    }
-
-    private static Double getMetricDepth(Double depth, String unit) {
-        try {
-            if ("m".equals(unit)) {
-                return depth;
-            } else if ("ft".equals(unit)) {
-                return new Double(depth.doubleValue() * FREDConstants.FT_TO_M);
-            }
-        } catch (Exception e) {
-        }
-        return null;
-    }
-
-    @Override
-    public String toString() {
-        return feature.toString() + ((!feature.getFeatureType().equals(FREDConstants.OUTCROP)) ? ": " + SampleUtil.getDrillHoleDepthDescription(this) : "");
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Sample)) {
-            return false;
-        }
-        return (sampleId.intValue() == ((Sample) obj).getSampleId().intValue());
-    }
-
-    public int hashCode() {
-        return 286 * sampleId;
-    }
-
-    public Sample() {
-    }
-
-    /**
-     * Partial Constructor for hibernate
-     */
-    public Sample(int sampleId) {
-        this.sampleId = Integer.valueOf(sampleId);
-    }
-
-    /* Squirrel ages */
-    /*
-    private Double narrowBaseAge;
-    private Double narrowTopAge;
-    private Double wideBaseAge;
-    private Double wideTopAge;
-    
-        public Double getNarrowBaseAge() {
-        return narrowBaseAge;
-    }
-
-    public void setNarrowBaseAge(Double narrowBaseAge) {
-        this.narrowBaseAge = narrowBaseAge;
-    }
-
-    public Double getNarrowTopAge() {
-        return narrowTopAge;
-    }
-
-    public void setNarrowTopAge(Double narrowTopAge) {
-        this.narrowTopAge = narrowTopAge;
-    }
-
-    public Double getWideBaseAge() {
-        return wideBaseAge;
-    }
-
-    public void setWideBaseAge(Double wideBaseAge) {
-        this.wideBaseAge = wideBaseAge;
-    }
-
-    public Double getWideTopAge() {
-        return wideTopAge;
-    }
-
-    public void setWideTopAge(Double wideTopAge) {
-        this.wideTopAge = wideTopAge;
-    }
-    */
-    
-    private Set<nz.cri.gns.fred.model.SquirrelAgeView> squirrelAge;
-
-    @Override
-    public void setSquirrelAge(Set<nz.cri.gns.fred.model.SquirrelAgeView> squirrelAge) {
-        this.squirrelAge = squirrelAge;
-    }
-
-    @Override
-    public Set<nz.cri.gns.fred.model.SquirrelAgeView> getSquirrelAge() {
-        return squirrelAge;
-    }
-
-    
 }

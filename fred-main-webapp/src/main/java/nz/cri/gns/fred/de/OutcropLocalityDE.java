@@ -19,78 +19,75 @@ import nz.cri.gns.fred.website.ContentProvider;
 
 public class OutcropLocalityDE extends LocalityDE {
 
-    private SampleDE sampleDE;
+	private SampleDE sampleDE;
 
-    public OutcropLocalityDE(User user, int folderID, DAOFactory factory, ContentProvider content) throws SQLException, IOException, DataInputException, StorageAccessException, InsufficientPrivelegesException {
-        super(user, folderID, FREDConstants.OUTCROP, factory, content);
-        sampleDE = new SampleDE(user, feature, folderID, factory, content, true);
-        sampleDE.setOutcropSample(true);
-    }
+	public OutcropLocalityDE(User user, int folderID, DAOFactory factory, ContentProvider content) throws SQLException, IOException, DataInputException, StorageAccessException, InsufficientPrivelegesException {
+		super(user, folderID, FREDConstants.OUTCROP, factory, content);
+		sampleDE = new SampleDE(user, feature, folderID, factory, content, true);
+		sampleDE.setOutcropSample(true);
+	}
+	
+	/**
+	 * Instantiates from an existing feature
+	 * @throws StorageAccessException 
+	 */
+	public OutcropLocalityDE(Feature feature, int folderId, User user, DAOFactory factory, ContentProvider content) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException, StorageAccessException  {
+		super(feature, folderId, user, factory, content);
+		if (!feature.getFeatureType().equals(FREDConstants.OUTCROP))
+			throw new DataInputException("Feature Type", "Invalid");
+		if (FREDUtil.isEmpty(feature.getSamples()))
+			throw new DataInputException("Outcrop Locality", "Sample data has become corrupted");
+		sampleDE = new SampleDE(feature.getSamples().iterator().next(), folderId, user, factory, provider);
+		sampleDE.setOutcropSample(true);
+	}
 
-    /**
-     * Instantiates from an existing feature
-     *
-     * @throws StorageAccessException
-     */
-    public OutcropLocalityDE(Feature feature, int folderId, User user, DAOFactory factory, ContentProvider content) throws IOException, SQLException, DataInputException, InsufficientPrivelegesException, StorageAccessException {
-        super(feature, folderId, user, factory, content);
-        if (!feature.getFeatureType().equals(FREDConstants.OUTCROP)) {
-            throw new DataInputException("Feature Type", "Invalid");
-        }
-        if (FREDUtil.isEmpty(feature.getSamples())) {
-            throw new DataInputException("Outcrop Locality", "Sample data has become corrupted");
-        }
-        sampleDE = new SampleDE(feature.getSamples().iterator().next(), folderId, user, factory, provider);
-        sampleDE.setOutcropSample(true);
-    }
+	@Override
+	public void copyFrom(int featureId) throws InsufficientPrivelegesException, StorageAccessException {
+		super.copyFrom(featureId);
+		Feature copyFeature = featureUtil.getFeature(featureId);
+		Sample copySample = copyFeature.getSamples().iterator().next();
+		sampleDE.copyFrom(copySample.getSampleId());
+	}
 
-    @Override
-    public void copyFrom(int featureId) throws InsufficientPrivelegesException, StorageAccessException {
-        super.copyFrom(featureId);
-        Feature copyFeature = featureUtil.getFeature(featureId);
-        Sample copySample = copyFeature.getSamples().iterator().next();
-        sampleDE.copyFrom(copySample.getSampleId());
-    }
+	@Override
+	public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException {
+		super.makeDataEntryHTML(out, factory);
+		sampleDE.makeDataEntryHTML(out, factory);
+		super.makeEndBitHTML(out);
+	}
 
-    @Override
-    public void makeDataEntryHTML(PrintWriter out, DAOFactory factory) throws IOException, SQLException, StorageAccessException {
-        super.makeDataEntryHTML(out, factory);
-        sampleDE.makeDataEntryHTML(out, factory);
-        super.makeEndBitHTML(out);
-    }
+	@Override
+	public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
+		super.makeExcelImportHTML(out);
+		out.write("<td></td>");
+		out.write("<td></td>");
+		out.write("<td></td>");
+		out.write("<td></td>");
+		out.write("<td></td>");
+		out.write("<td></td>");
+		out.write("<td></td>");
+		out.write("<td></td>");
+		sampleDE.makeExcelImportHTML(out);
+		out.write("</tr>\n");
+	}
+	
+	@Override
+	public int save(int dataOriginId) throws SQLException, IOException, StorageAccessException, InsufficientPrivelegesException {
+		super.save(dataOriginId);
+		sampleDE.save(dataOriginId);
+		return feature.getFeatureId();
+	}
+	
+	@Override
+	public int submit(int dataOriginId) throws SQLException, IOException, DataInputException, InsufficientPrivelegesException, StorageAccessException {
+		super.submit(dataOriginId);
+		sampleDE.submit(dataOriginId);
+		return feature.getFeatureId();	
+	}
 
-    @Override
-    public void makeExcelImportHTML(Writer out) throws IOException, SQLException {
-        super.makeExcelImportHTML(out);
-        out.write("<td></td>");
-        out.write("<td></td>");
-        out.write("<td></td>");
-        out.write("<td></td>");
-        out.write("<td></td>");
-        out.write("<td></td>");
-        out.write("<td></td>");
-        out.write("<td></td>");
-        sampleDE.makeExcelImportHTML(out);
-        out.write("</tr>\n");
-    }
-
-    @Override
-    public int save(int dataOriginId) throws SQLException, IOException, StorageAccessException, InsufficientPrivelegesException {
-        super.save(dataOriginId);
-        sampleDE.save(dataOriginId);
-        return feature.getFeatureId();
-    }
-
-    @Override
-    public int submit(int dataOriginId) throws SQLException, IOException, DataInputException, InsufficientPrivelegesException, StorageAccessException {
-        super.submit(dataOriginId);
-        sampleDE.submit(dataOriginId);
-        return feature.getFeatureId();
-    }
-
-    public String getHeading() {
-        return "Edit outcrop locality";
-    }
+	public String getHeading() {
+		return "Edit outcrop locality";
+	}
 
     @Override
     public void makePostFormHTML(PrintWriter out) throws IOException {
@@ -115,17 +112,16 @@ public class OutcropLocalityDE extends LocalityDE {
         try {
             sampleDE.updateFromRequest(request, factory, addIfNew);
         } catch (DataInputException _e) {
-            if (e == null) {
+            if (e == null)
                 e = _e;
-            } else {
+            else
                 e.getError().addAll(_e.getError());
-            }
-        } catch (nz.cri.gns.dataaccess.StorageAccessException storageE) {
+        } catch (nz.cri.gns.dataaccess.StorageAccessException storageE)
+        {
             throw new DataInputException();
         }
-        if (e != null) {
+        if (e != null)
             throw e;
-        }
     }
 
 }
