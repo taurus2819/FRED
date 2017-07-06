@@ -183,7 +183,7 @@
 				return false;
 			}
 			if (aStart != "") {
-				whereSQL = whereSQL + "(sampleStageView.baseAge > " + aStop + " AND sampleStageView.topAge < " + aStart + ") AND ";
+				whereSQL = whereSQL + "(sampleStageView.baseAge > " + aStop + " AND sampleStageView.topAge < " + aStart + ") AND sampleStageView.type in ('inferred', 'known', 'adoption', 'paleontology') AND ";
 				tableName = tableName + " JOIN s.sampleStageViews AS sampleStageView";
 				queryString = queryString + "Age= " + aQuery + " AND ";
 			}
