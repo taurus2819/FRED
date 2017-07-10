@@ -234,9 +234,13 @@ public class PaleontologyRecordDE extends RecordDE {
                             nonApprovedTaxaFlag = true;
                         }
                     }
-                } catch (Exception e) {
+                } catch (DataInputException e) {
+                    error.add(new String[]{"Taxanomic List", taxaLine + " not valid because "+e.getMessage()});
+                } catch (NumberFormatException e) {
+                    error.add(new String[]{"Taxanomic List", taxaLine + " has a malformed number."});
+                } catch (Exception e) { // StorageAccessException 
                     log.log(Level.SEVERE, null, e);
-                    error.add(new String[]{"Taxanomic List", taxaLine + " not valid"});
+                    error.add(new String[]{"Error occurred processing ", taxaLine + ": "+e.getMessage()});
                 }
             }
         }
