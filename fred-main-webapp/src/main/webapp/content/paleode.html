@@ -170,6 +170,10 @@
         function addTaxa(group, taxaName, author, comments) {
             var xmlDoc = sjaxXML("ajaxSupport.xml?action=Confirm&type=TaxonomicName&name=" + trim(taxaName) + "&TaxonomicGroup=" + trim(group));
             var taxaNode = xmlDoc.getElementsByTagName("TaxonomicName")[0];
+            if (undefined===taxaNode) {
+                alert ("Some kind of server error happened.");
+                return;
+            }
             var taxaName = taxaNode.getElementsByTagName("name")[0].firstChild.nodeValue;
             var status = taxaNode.getElementsByTagName("status")[0].firstChild.nodeValue;
             var authorNode = taxaNode.getElementsByTagName("author")[0];

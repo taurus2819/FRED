@@ -39,7 +39,6 @@ public class Dp_jsp extends HttpServlet {
             return;
         }
 
-        
         ExtranetTemplate et = h.getExtranetTemplate();
         h.addButtons(et, new IconnedLink[]{
             new IconnedLink((String) session.getAttribute(WebsiteConstants.DATA_ENTRY_ERROR_REDIRECT), "images/back_arrow.gif", "Back to Data Entry"),
@@ -47,6 +46,12 @@ public class Dp_jsp extends HttpServlet {
         });
 
         DataEntryForm dataEntryForm = (DataEntryForm) session.getAttribute(WebsiteConstants.DATA_ENTRY_FORM);
+        
+        if (null==dataEntryForm) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Sorry; your session went away by accident. Go back and try again.");
+            return;
+        }
+        
         try {
             try {
                 DAOFactory factory = FredHibernate.get().getDAOFactory();
@@ -110,21 +115,30 @@ public class Dp_jsp extends HttpServlet {
 
             }
         } catch (DataInputException e) {
+            // DataInputExceptions contain a list of errors. They have no message.
             h.drawTop(out, et, request, response);
             h.include(request, out, "/content/detablestart.html");
 
             out.write("<table style=\"margin-left:20px; width:550px;\" border=\"0\">\n");
-            out.write("\t\t\t<tr><td colspan=\"2\" class=\"deHeading\">Syntax Error</td></tr>");
+            out.write("\t\t\t<tr><td colspan=\"2\" class=\"deHeading\">Syntax Error: ");
+            out.write("</td></tr>");
+            if (null != e.getError()) {
+                for (String[] error : e.getError()) {
 
-            for (String[] error : e.getError()) {
+                    out.write("<tr><td class=\"heading\">Problem Field&nbsp;&nbsp;</td><td>");
+                    out.print(error[0]);
+                    out.write("</td></tr>\n");
+                    out.write("\t\t\t\t<tr><td class=\"heading\">Error</td><td>");
+                    out.print(error[1]);
+                    out.write("</td></tr>");
 
-                out.write("<tr><td class=\"heading\">Problem Field&nbsp;&nbsp;</td><td>");
-                out.print(error[0]);
-                out.write("</td></tr>\n");
-                out.write("\t\t\t\t<tr><td class=\"heading\">Error</td><td>");
-                out.print(error[1]);
-                out.write("</td></tr>");
-
+                }
+            } else {
+                    out.write("<tr><td class=\"heading\">Problem Field&nbsp;&nbsp;</td><td>");
+                    out.write("</td></tr>\n");
+                    out.write("\t\t\t\t<tr><td class=\"heading\">Error</td><td>");
+                    out.print("Unfortunately, FRED didn't give any nice error messages to display here.");
+                    out.write("</td></tr>");
             }
 
             out.write("</table>");
@@ -149,7 +163,7 @@ public class Dp_jsp extends HttpServlet {
 
         } catch (SQLException | StorageAccessException | IOException e) {
             log.log(Level.SEVERE, null, e);
-            
+
             h.drawTop(out, et, request, response);
             h.include(request, out, "/content/detablestart.html");
 
@@ -166,6 +180,7 @@ public class Dp_jsp extends HttpServlet {
             out.write("</p>");
 
         } finally {
+            out.flush();
             try {
                 FredHibernate.get().getDAOFactory().closeSession();
             } catch (StorageAccessException ex) {

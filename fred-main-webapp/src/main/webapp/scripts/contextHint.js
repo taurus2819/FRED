@@ -156,10 +156,22 @@ ContextHint = function (activatorField, urlGenerator, blurCode, omitFieldFix) {
     };
 
     this.showHint = function () {
-        if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
-            var xml = xmlHttp.responseXML;
-            this.hintDiv.innerHTML = "";
-            this.createAndShowTable(xml);
+        if (xmlHttp.readyState === 4 || xmlHttp.readyState === "complete") {
+            if (xmlHttp.status === 200) {
+                var xml = xmlHttp.responseXML;
+                this.hintDiv.innerHTML = "";
+                this.createAndShowTable(xml);
+            } else {
+                var cell = document.createElement("div");
+
+                cell.style.background = "pink";
+                cell.id = this.key + "Hint" + i;
+                cell.innerHTML = xmlHttp.statusText;
+                cell.style.paddingRight = "5px";
+                cell.style.paddingLeft = "5px";
+                cell.style.whiteSpace = "nowrap";
+                this.hintDiv.appendChild(cell);
+            }
         }
     };
 

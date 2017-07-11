@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,6 +17,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.FredDAO;
+import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.FREDConstants;
@@ -29,6 +32,8 @@ import nz.cri.gns.fred.util.TaxonomicUtil;
 import nz.cri.gns.jsp.IPSysJspPage;
 
 public class AJAXServlet extends HttpServlet {
+
+    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.servlet.AJAXServlet");
 
     public static class NamedId {
 
@@ -63,222 +68,177 @@ public class AJAXServlet extends HttpServlet {
 
         List() {
 
-            @Override
-            public void process(Type type, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-                String start = request.getParameter("start");
-                List<NamedId> values = new ArrayList<NamedId>();
-                switch (type) {
-                    case Person:
-                        PersonUtil personUtil = new PersonUtil(FredHibernate.get().getDAOFactory());
-                        try {
-                            List<Person> people = personUtil.getMatchingPersons(start, Match.BEGINNING, 15);
-                            for (Person person : people) {
-                                values.add(new NamedId(person.getPersonId().toString(), person.getDisplayName()));
-                            }
-                        } catch (StorageAccessException e) {
-                        }
-                        break;
-                    case Strat:
-                        FredDAO dao = FredHibernate.get().getDAOFactory().getFredDAO();
-                        try {
-                            List<StratigraphicUnit> units = dao.getMatchingUnitNames(start, Match.BEGINNING, 15);
-                            for (StratigraphicUnit unit : units) {
-                                values.add(new NamedId(unit.getId().toString(), unit.getName()));
-                            }
-                        } catch (StorageAccessException e) {
-                        }
-                        break;
-                    case Age:
-                        StageUtil stageUtil = new StageUtil(FredHibernate.get().getDAOFactory());
-                        try {
-                            List<Age> ages = stageUtil.getMatchingAges(start, 15);
-                            for (Age age : ages) {
-                                values.add(new NamedId(age.getAgeId().toString(), age.getName() + " (" + age.getCode() + ")"));
-                            }
-                        } catch (StorageAccessException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    case TaxonomicGroup:
-                        try {
-                            List<TaxonomicGroup> groups = new TaxonomicUtil(FredHibernate.get().getDAOFactory()).getMatchingTaxonomicGroups(start, Match.BEGINNING, 5);
-                            for (TaxonomicGroup group : groups) {
-                                values.add(new NamedId(group.getGroupId().toString(), group.getName()));
-                            }
-                        } catch (StorageAccessException e) {
-                        }
-                        break;
-                    case TaxonomicName:
-                        try {
-                            TaxonomicUtil taxaUtil = new TaxonomicUtil(FredHibernate.get().getDAOFactory());
-                            String cleanName = null;
-                            TaxonomicGroup group = null;
-                            if (request.getParameter("group") != null) {
-                                try {
-                                    group = taxaUtil.getTaxonomicGroup(request.getParameter("group"));
-                                } catch (Exception e) {
+                    @Override
+                    public void process(Type type, HttpServletRequest request, PrintWriter out) throws ServletException, IOException, StorageAccessException, DataInputException {
+                        String start = request.getParameter("start");
+                        List<NamedId> values = new ArrayList<NamedId>();
+                        switch (type) {
+                            case Person:
+                                PersonUtil personUtil = new PersonUtil(FredHibernate.get().getDAOFactory());
+                                List<Person> people = personUtil.getMatchingPersons(start, Match.BEGINNING, 15);
+                                for (Person person : people) {
+                                    values.add(new NamedId(person.getPersonId().toString(), person.getDisplayName()));
                                 }
-                            }
-                            try {
+                                break;
+                            case Strat:
+                                FredDAO dao = FredHibernate.get().getDAOFactory().getFredDAO();
+                                List<StratigraphicUnit> units = dao.getMatchingUnitNames(start, Match.BEGINNING, 15);
+                                for (StratigraphicUnit unit : units) {
+                                    values.add(new NamedId(unit.getId().toString(), unit.getName()));
+                                }
+                                break;
+                            case Age:
+                                StageUtil stageUtil = new StageUtil(FredHibernate.get().getDAOFactory());
+                                List<Age> ages = stageUtil.getMatchingAges(start, 15);
+                                for (Age age : ages) {
+                                    values.add(new NamedId(age.getAgeId().toString(), age.getName() + " (" + age.getCode() + ")"));
+                                }
+                                break;
+                            case TaxonomicGroup:
+                                List<TaxonomicGroup> groups = new TaxonomicUtil(FredHibernate.get().getDAOFactory()).getMatchingTaxonomicGroups(start, Match.BEGINNING, 5);
+                                for (TaxonomicGroup group : groups) {
+                                    values.add(new NamedId(group.getGroupId().toString(), group.getName()));
+                                }
+                                break;
+                            case TaxonomicName:
+                                TaxonomicUtil taxaUtil = new TaxonomicUtil(FredHibernate.get().getDAOFactory());
+                                String cleanName = null;
+                                TaxonomicGroup group = null;
+                                if (request.getParameter("group") != null) {
+                                    group = taxaUtil.getTaxonomicGroup(request.getParameter("group"));
+                                }
                                 cleanName = TaxonomicUtil.getCleanedName(start);
-                            } catch (Exception e) {
-                            }
-                            List<Taxon> taxa = taxaUtil.getMatchingTaxa(cleanName, group, Match.ANYWHERE, 30);
-                            for (Taxon taxon : taxa) {
-                                values.add(new NamedId(taxon.getTaxaId().toString(), ((group == null) ? taxon.getTaxonomicGroup().getName() + ": " : "") + taxon.getTaxonomicName()));
-                            }
-                        } catch (StorageAccessException e) {
+                                List<Taxon> taxa = taxaUtil.getMatchingTaxa(cleanName, group, Match.ANYWHERE, 30);
+                                for (Taxon taxon : taxa) {
+                                    values.add(new NamedId(taxon.getTaxaId().toString(), ((group == null) ? taxon.getTaxonomicGroup().getName() + ": " : "") + taxon.getTaxonomicName()));
+                                }
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Unknown type");
                         }
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unknown type");
-                }
 
-                PrintWriter out = response.getWriter();
+                        String what = type.toString();
 
-                String what = type.toString();
+                        out.println("<?xml version=\"1.0\"?>");
+                        out.println("<" + what + "s>");
+                        for (NamedId value : values) {
+                            out.println("<" + what + ">");
+                            out.println("<name><![CDATA[" + value.getName() + "]]></name>");
+                            out.println("<id>" + value.getId() + "</id>");
+                            out.println("</" + what + ">");
+                        }
+                        out.println("</" + what + "s>");
 
-                out.println("<?xml version=\"1.0\"?>");
-                out.println("<" + what + "s>");
-                for (NamedId value : values) {
-                    out.println("<" + what + ">");
-                    out.println("<name><![CDATA[" + value.getName() + "]]></name>");
-                    out.println("<id>" + value.getId() + "</id>");
-                    out.println("</" + what + ">");
-                }
-                out.println("</" + what + "s>");
-
-            }
-        },
+                    }
+                },
         Confirm() {
 
-            @Override
-            public void process(Type type, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-                String name = request.getParameter("name").trim();
-                String status = "";
-                String moreData = null;
-                switch (type) {
-                    case Person:
-                        PersonUtil util = new PersonUtil(FredHibernate.get().getDAOFactory());
-                        try {
-                            Person person = util.findPerson(name);
-                            status = ((person != null) ? "Exists" : "Doesn't exist");
-                        } catch (StorageAccessException e) {
-                        }
-                        break;
-                    case TaxonomicName:
-                        try {
-                            TaxonomicUtil taxaUtil = new TaxonomicUtil(FredHibernate.get().getDAOFactory());
-                            TaxonomicGroup group = null;
-                            if (request.getParameter("TaxonomicGroup") != null) {
-                                try {
+                    @Override
+                    public void process(Type type, HttpServletRequest request, PrintWriter out) throws ServletException, IOException, StorageAccessException, DataInputException {
+                        String name = request.getParameter("name").trim();
+                        String status = "";
+                        String moreData = null;
+                        switch (type) {
+                            case Person:
+                                PersonUtil util = new PersonUtil(FredHibernate.get().getDAOFactory());
+                                Person person = util.findPerson(name);
+                                status = ((person != null) ? "Exists" : "Doesn't exist");
+                                break;
+                            case TaxonomicName:
+                                TaxonomicUtil taxaUtil = new TaxonomicUtil(FredHibernate.get().getDAOFactory());
+                                TaxonomicGroup group = null;
+                                if (request.getParameter("TaxonomicGroup") != null) {
                                     group = taxaUtil.getTaxonomicGroup(request.getParameter("TaxonomicGroup").trim());
-                                } catch (Exception e) {
                                 }
-                            }
-                            String cleanName = TaxonomicUtil.getCleanedName(name);
-                            if (cleanName == null || cleanName.length() == 0) {
-                                if (group != null) {
-                                    status = FREDConstants.APPROVED;
-                                } else {
-                                    status = "invalid";
-                                }
-                            } else {
-                                Taxon taxon = taxaUtil.getTaxon(group, cleanName, null);
-                                if (taxon != null) {
-                                    status = taxon.getStatus();
-                                    moreData = "<taxa-id>" + taxon.getTaxaId() + "</taxa-id>";
-                                    moreData += "<clean-name>" + cleanName + "</clean-name>";
-                                    moreData += "<taxonomic-group>" + taxon.getTaxonomicGroup().getName() + "</taxonomic-group>";
-                                    moreData += "<author><![CDATA[" + DBUtils.nvl(taxon.getAuthor()) + "]]></author>";
-                                    if (status.equals(FREDConstants.PROVISIONAL)) {
-                                        moreData += "<submitted-by><![CDATA[" + taxon.getSubmittedBy().getFullName() + "]]></submitted-by>"
-                                                + "<submitted-date>" + FREDUtil.formatDateForOutput(taxon.getSubmittedDate()) + "</submitted-date>";
-                                    } else if (status.equals(FREDConstants.REJECTED)) {
-                                        moreData += "<rejected-by><![CDATA[" + taxon.getApprovedBy().getFullName() + "]]></rejected-by>"
-                                                + "<rejected-date>" + FREDUtil.formatDateForOutput(taxon.getApprovedDate()) + "</rejected-date>"
-                                                + "<rejected-comments><![CDATA[" + taxon.getPanelistComments() + "]]></rejected-comments>";
+                                String cleanName = TaxonomicUtil.getCleanedName(name);
+                                if (cleanName == null || cleanName.length() == 0) {
+                                    if (group != null) {
+                                        status = FREDConstants.APPROVED;
+                                    } else {
+                                        status = "invalid";
                                     }
                                 } else {
-                                    status = "new";
-                                    moreData = "<clean-name>" + cleanName + "</clean-name>";
+                                    Taxon taxon = taxaUtil.getTaxon(group, cleanName, null);
+                                    if (taxon != null) {
+                                        status = taxon.getStatus();
+                                        moreData = "<taxa-id>" + taxon.getTaxaId() + "</taxa-id>";
+                                        moreData += "<clean-name>" + cleanName + "</clean-name>";
+                                        moreData += "<taxonomic-group>" + taxon.getTaxonomicGroup().getName() + "</taxonomic-group>";
+                                        moreData += "<author><![CDATA[" + DBUtils.nvl(taxon.getAuthor()) + "]]></author>";
+                                        if (status.equals(FREDConstants.PROVISIONAL)) {
+                                            moreData += "<submitted-by><![CDATA[" + taxon.getSubmittedBy().getFullName() + "]]></submitted-by>"
+                                            + "<submitted-date>" + FREDUtil.formatDateForOutput(taxon.getSubmittedDate()) + "</submitted-date>";
+                                        } else if (status.equals(FREDConstants.REJECTED)) {
+                                            moreData += "<rejected-by><![CDATA[" + taxon.getApprovedBy().getFullName() + "]]></rejected-by>"
+                                            + "<rejected-date>" + FREDUtil.formatDateForOutput(taxon.getApprovedDate()) + "</rejected-date>"
+                                            + "<rejected-comments><![CDATA[" + taxon.getPanelistComments() + "]]></rejected-comments>";
+                                        }
+                                    } else {
+                                        status = "new";
+                                        moreData = "<clean-name>" + cleanName + "</clean-name>";
+                                    }
                                 }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                                break;
                         }
-                        break;
-                }
 
-                PrintWriter out = response.getWriter();
+                        String what = type.toString();
 
-                String what = type.toString();
-
-                out.println("<?xml version=\"1.0\"?>");
-                out.println("<" + what + ">");
-                out.println("<name><![CDATA[" + name + "]]></name>");
-                out.println("<status>" + status + "</status>");
-                if (moreData != null) {
-                    out.println(moreData);
-                }
-                out.println("</" + what + ">");
-            }
-        },
+                        out.println("<?xml version=\"1.0\"?>");
+                        out.println("<" + what + ">");
+                        out.println("<name><![CDATA[" + name + "]]></name>");
+                        out.println("<status>" + status + "</status>");
+                        if (moreData != null) {
+                            out.println(moreData);
+                        }
+                        out.println("</" + what + ">");
+                    }
+                },
         Add() {
 
-            @Override
-            public void process(Type type, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-                String name = request.getParameter("name");
-                boolean confirmation = false;
-                String moreData = null;
-                switch (type) {
-                    case Person:
-                        PersonUtil util = new PersonUtil(FredHibernate.get().getDAOFactory());
-                        try {
-                            util.findOrCreatePerson(name);
-                            confirmation = true;
-                        } catch (StorageAccessException e) {
-                        }
-                        break;
-                    case TaxonomicName:
-                        try {
-                            TaxonomicUtil taxaUtil = new TaxonomicUtil(FredHibernate.get().getDAOFactory());
-                            TaxonomicGroup group = taxaUtil.getTaxonomicGroup(request.getParameter("TaxonomicGroup").trim());
-                            String cleanName = TaxonomicUtil.getCleanedName(name);
-                            String author = request.getParameter("Author");
-                            Taxon taxon = taxaUtil.getTaxon(group, cleanName, null);
-                            if (taxon == null) {
-                                taxon = taxaUtil.createTaxon();
-                                taxon.setTaxonomicGroup(group);
-                                taxon.setTaxonomicName(cleanName);
-                                taxon.setAuthor(author);
-                                taxaUtil.submitProvisional((User) IPSysJspPage.getUser(request.getSession()), taxon);
+                    @Override
+                    public void process(Type type, HttpServletRequest request, PrintWriter out) throws ServletException, IOException, StorageAccessException, DataInputException {
+                        String name = request.getParameter("name");
+                        boolean confirmation = false;
+                        String moreData = null;
+                        switch (type) {
+                            case Person:
+                                PersonUtil util = new PersonUtil(FredHibernate.get().getDAOFactory());
+                                util.findOrCreatePerson(name);
                                 confirmation = true;
-                            } else {
-                                confirmation = true;
-                            }
-                            moreData = "<taxa-id>" + taxon.getTaxaId() + "</taxa-id>";
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                                break;
+                            case TaxonomicName:
+                                TaxonomicUtil taxaUtil = new TaxonomicUtil(FredHibernate.get().getDAOFactory());
+                                TaxonomicGroup group = taxaUtil.getTaxonomicGroup(request.getParameter("TaxonomicGroup").trim());
+                                String cleanName = TaxonomicUtil.getCleanedName(name);
+                                String author = request.getParameter("Author");
+                                Taxon taxon = taxaUtil.getTaxon(group, cleanName, null);
+                                if (taxon == null) {
+                                    taxon = taxaUtil.createTaxon();
+                                    taxon.setTaxonomicGroup(group);
+                                    taxon.setTaxonomicName(cleanName);
+                                    taxon.setAuthor(author);
+                                    taxaUtil.submitProvisional((User) IPSysJspPage.getUser(request.getSession()), taxon);
+                                    confirmation = true;
+                                } else {
+                                    confirmation = true;
+                                }
+                                moreData = "<taxa-id>" + taxon.getTaxaId() + "</taxa-id>";
                         }
-                }
 
-                PrintWriter out = response.getWriter();
+                        String what = type.toString();
 
-                String what = type.toString();
+                        out.println("<?xml version=\"1.0\"?>");
+                        out.println("<" + what + ">");
+                        out.println("<name><![CDATA[" + name + "]]></name>");
+                        out.println("<status>" + ((confirmation) ? "Exists" : "Could not be created") + "</status>");
+                        if (moreData != null) {
+                            out.println(moreData);
+                        }
+                        out.println("</" + what + ">");
+                    }
+                };
 
-                out.println("<?xml version=\"1.0\"?>");
-                out.println("<" + what + ">");
-                out.println("<name><![CDATA[" + name + "]]></name>");
-                out.println("<status>" + ((confirmation) ? "Exists" : "Could not be created") + "</status>");
-                if (moreData != null) {
-                    out.println(moreData);
-                }
-                out.println("</" + what + ">");
-            }
-        };
-
-        public abstract void process(Type type, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
+        public abstract void process(Type type, HttpServletRequest request, PrintWriter out) throws ServletException, IOException, StorageAccessException, DataInputException;
     }
 
     @Override
@@ -288,7 +248,27 @@ public class AJAXServlet extends HttpServlet {
 
         String action = request.getParameter("action");
         String type = request.getParameter("type");
+        PrintWriter out = response.getWriter();
 
-        Action.valueOf(action).process(Type.valueOf(type), request, response);
+        try {
+            Action.valueOf(action).process(Type.valueOf(type), request, out);
+        } catch (StorageAccessException | ServletException e) {
+            log.log(Level.SEVERE, null, e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            writeError(out, e.getMessage());
+        } catch (DataInputException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            writeError(out, e.getMessage());
+        } catch (IOException e) {
+            // Client closed the connection. We let it be.
+        }
+    }
+
+    private void writeError(PrintWriter out, String message) {
+        // client closed the connection. We let it be.
+        out.print("<?xml version=\"1.0\"?>");
+        out.print("<error>");
+        out.print(message);
+        out.println("</error>");
     }
 }
