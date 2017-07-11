@@ -119,11 +119,11 @@ public class ExportServlet extends HttpServlet {
                     boolean palListFlag = (request.getParameter("palList") != null);
 
                     //file header
-                    out.println("**************************************************************************************************************");
-                    out.println("Data downloaded from FRED (http://www.fred.org.nz) on " + FREDUtil.formatDateForOutput(new Date()));
-                    out.println("FRED is the computer database for the NZ Fossil Record File (FRF), which is a nationally significant database administrated by GSNZ and GNS Science                                ");
-                    out.println("Please acknowledge use of this data in publications, reports and presentations.                               ");
-                    out.println("**************************************************************************************************************");
+                    out.println("\"**************************************************************************************************************\"");
+                    out.println("\"Data downloaded from FRED (http://www.fred.org.nz) on " + FREDUtil.formatDateForOutput(new Date())+"\"");
+                    out.println("\"FRED is the computer database for the NZ Fossil Record File (FRF), which is a nationally significant database administrated by GSNZ and GNS Science                                \"");
+                    out.println("\"Please acknowledge use of this data in publications, reports and presentations.                               \"");
+                    out.println("\"**************************************************************************************************************\"");
                     out.print("\n");
 
                     if (localityFlag) {
@@ -324,7 +324,7 @@ public class ExportServlet extends HttpServlet {
                         out.println("********");
 
                         writeLocalityHeader(out);
-                        out.print("Identifiers\tIdentification Date\tStage Lower\tLower Modifier\tStage Upper\tUpper Modifier\tAge Start\tAge Stop\tStage Comments\tnLab Number\tCollection Comments\n");
+                        out.print("Identifiers\tIdentification Date\tStage Lower\tLower Modifier\tStage Upper\tUpper Modifier\tAge Start\tAge Stop\tStage Comments\tLab Number\tCollection Comments\n");
 
                         for (Sample sample : samples) {
                             for (Paleontology paleontology : recordUtil.getPaleontologyRecords(sample)) {
