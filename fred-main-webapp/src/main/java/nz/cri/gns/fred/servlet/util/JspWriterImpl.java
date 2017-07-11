@@ -79,42 +79,42 @@ public class JspWriterImpl extends JspWriter {
 
     @Override
     public void println(char x) throws IOException {
-        pw.print(x);
+        pw.println(x);
     }
 
     @Override
     public void println(int x) throws IOException {
-        pw.print(x);
+        pw.println(x);
     }
 
     @Override
     public void println(long x) throws IOException {
-        pw.print(x);
+        pw.println(x);
     }
 
     @Override
     public void println(float x) throws IOException {
-        pw.print(x);
+        pw.println(x);
     }
 
     @Override
     public void println(double x) throws IOException {
-        pw.print(x);
+        pw.println(x);
     }
 
     @Override
     public void println(char[] x) throws IOException {
-        pw.print(x);
+        pw.println(x);
     }
 
     @Override
     public void println(String x) throws IOException {
-        pw.print(x);
+        pw.println(x);
     }
 
     @Override
     public void println(Object x) throws IOException {
-        pw.print(x);
+        pw.println(x);
     }
 
     @Override
