@@ -1,8 +1,5 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<web-app version="2.5" 
-         xmlns="http://java.sun.com/xml/ns/javaee" 
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
     <servlet>
         <servlet-name>frf</servlet-name>
         <servlet-class>nz.cri.gns.fred.servlet.FRFormServlet</servlet-class>
@@ -22,11 +19,11 @@
     <servlet>
         <servlet-name>dataEntryTemplate</servlet-name>
         <servlet-class>nz.cri.gns.fred.servlet.DataEntryTemplateServlet</servlet-class>
-    </servlet>        
+    </servlet>
     <servlet>
         <servlet-name>de.jsp</servlet-name>
         <servlet-class>nz.cri.gns.fred.servlet.De_jsp</servlet-class>
-    </servlet>        
+    </servlet>
     <servlet>
         <servlet-name>dp.jsp</servlet-name>
         <servlet-class>nz.cri.gns.fred.servlet.Dp_jsp</servlet-class>
@@ -34,8 +31,11 @@
     <servlet>
         <servlet-name>result_list.jsp</servlet-name>
         <servlet-class>nz.cri.gns.fred.servlet.ResultList_jsp</servlet-class>
-    </servlet>        
-    
+    </servlet>
+    <servlet>
+        <servlet-name>ExportServlet</servlet-name>
+        <servlet-class>nz.cri.gns.fred.servlet.ExportServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ajax</servlet-name>
         <url-pattern>/ajaxSupport.xml</url-pattern>
@@ -55,11 +55,11 @@
     <servlet-mapping>
         <servlet-name>dataEntryTemplate</servlet-name>
         <url-pattern>/data-entry-template/*</url-pattern>
-    </servlet-mapping>        
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>de.jsp</servlet-name>
         <url-pattern>/de.jsp</url-pattern>
-    </servlet-mapping>        
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>dp.jsp</servlet-name>
         <url-pattern>/dp.jsp</url-pattern>
@@ -67,16 +67,17 @@
     <servlet-mapping>
         <servlet-name>result_list.jsp</servlet-name>
         <url-pattern>/result_list.jsp</url-pattern>
-    </servlet-mapping>        
-
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ExportServlet</servlet-name>
+        <url-pattern>/export.jsp</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>240</session-timeout>
     </session-config>
-    
-    <env-entry> 
-        <env-entry-name>WFS</env-entry-name> 
-        <env-entry-value>http://maps.gns.cri.nz/geoserver/wfs</env-entry-value> 
-        <env-entry-type>java.lang.String</env-entry-type> 
+    <env-entry>
+        <env-entry-name>WFS</env-entry-name>
+        <env-entry-value>http://maps.gns.cri.nz/geoserver/wfs</env-entry-value>
+        <env-entry-type>java.lang.String</env-entry-type>
     </env-entry>
-    
 </web-app>
