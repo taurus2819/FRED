@@ -118,9 +118,6 @@ public class ExportServlet extends HttpServlet {
                     boolean paleontologyFlag = (request.getParameter("paleontology") != null);
                     boolean palListFlag = (request.getParameter("palList") != null);
 
-                    response.setHeader("Content-Disposition", "attachment; filename=\"FRED_download.txt\"");
-                    response.setContentType("application/x-octet-stream");
-
                     //file header
                     out.println("**************************************************************************************************************");
                     out.println("Data downloaded from FRED (http://www.fred.org.nz) on " + FREDUtil.formatDateForOutput(new Date()));
