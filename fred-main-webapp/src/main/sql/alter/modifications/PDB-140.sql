@@ -21,6 +21,7 @@ END;
 
 
 -- Arbitrary, guessed, default identification dates.
+drop table  default_identification_date;
 create table default_identification_date (person_id number(6), identification_date date);
 ALTER TABLE FR.DEFAULT_IDENTIFICATION_DATE ADD PRIMARY KEY (PERSON_ID, IDENTIFICATION_DATE);
 comment on table default_identification_date is 'Used by squirrel_age_view.';
@@ -244,7 +245,7 @@ left outer join stage_fixed_view inferred_stage on inferred_stage.stage_id=s.inf
 left outer join age isl on isl.age_id=inferred_stage.age_lower_id
 left outer join age isu on isu.age_id=inferred_stage.age_upper_id;
 
-create view squirrel_sample_view as
+create or replace view squirrel_sample_view as
 select s.*, a.narrow_base_age, a.narrow_top_age, a.wide_base_age, a.wide_top_age from sample s
 join squirrel_age_view a on a.sample_id=s.sample_id;
 
