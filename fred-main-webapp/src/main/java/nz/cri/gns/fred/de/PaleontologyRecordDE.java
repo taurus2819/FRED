@@ -43,8 +43,8 @@ import nz.cri.gns.html.Attributes;
 import nz.cri.gns.html.select.SelectBox;
 import nz.cri.gns.intranet.Template;
 
-
 public class PaleontologyRecordDE extends RecordDE {
+
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.PaleontologyRecordDE");
 
     private Set<PaleontologyListEntry> badTaxaList;
@@ -104,7 +104,7 @@ public class PaleontologyRecordDE extends RecordDE {
             } catch (NumberFormatException e) {
                 pal.setLabSection(null);
             } catch (StorageAccessException e) {
-                e.printStackTrace();
+                log.log(Level.SEVERE, null, e);
                 error.add(new String[]{"Lab Section", "Error accessing data storage"});
             }
         }
@@ -240,7 +240,7 @@ public class PaleontologyRecordDE extends RecordDE {
                 } catch (NumberFormatException e) {
                     error.add(new String[]{"Taxanomic List", taxaLine + " has a malformed number."});
                 } catch (Exception e) { // StorageAccessException 
-                    e.printStackTrace();
+                    log.log(Level.SEVERE, null, e);
                     error.add(new String[]{"Error occurred processing ", taxaLine + ": " + e.getMessage()});
                 }
             }
@@ -353,7 +353,7 @@ public class PaleontologyRecordDE extends RecordDE {
             template.loadAll(out);
             super.makeEndBitHTML(out);
         } catch (StorageAccessException e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, null, e);
             throw new IOException("Could not access storage: " + e.getMessage());
         }
     }
@@ -414,7 +414,7 @@ public class PaleontologyRecordDE extends RecordDE {
                         }
                     }
                 } catch (StorageAccessException e) {
-                    log.log(Level.WARNING, null, e);
+                    throw new SQLException(e);
                 }
             }
         }

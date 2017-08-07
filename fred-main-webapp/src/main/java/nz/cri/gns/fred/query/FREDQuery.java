@@ -184,12 +184,16 @@ public class FREDQuery extends HqlQuery implements NumberSource {
         f[0] = new BasicTextField("s.correspondence", "Correspondence");
         add(new TwoLevelField("Correspondence Fields", f));
 
-        f = new Field[5];
+        f = new Field[9];
         f[0] = new HqlUniqueSubTableTextField("person.name", "Adoptor", new String[]{"s.records", "record.adoption", "adoption.adoptors"}, new HqlJoin[]{new HqlJoin(false, "record"), new HqlJoin(false, "adoption"), new HqlJoin(false, "person")});
         f[1] = new TableRequiredDateField("record.adoption.adoptionDate", "Adoption Date", RECORD_TABLES, RECORD_JOINS);
         f[2] = new AgeField("Adopted Stage", ages, SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "adoption");
         f[3] = new NumericAgeField("Adopted Stage (numeric)", SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "adoption");
-        f[4] = new TableRequiredTextField("record.adoption.comments", "Comments", RECORD_TABLES, RECORD_JOINS);
+        f[4] = new AgeField("Auto-Consensus Narrow", ages, SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "squirrelNarrow");
+        f[5] = new NumericAgeField("Auto-Consensus Narrow (numeric)", SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "squirrelNarrow");
+        f[6] = new AgeField("Auto-Consensus Wide", ages, SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "squirrelWide");
+        f[7] = new NumericAgeField("Auto-Consensus Wide (numeric)", SAMPLE_STAGE_VIEW_TABLE, SAMPLE_STAGE_VIEW_JOIN, "squirrelWide");
+        f[8] = new TableRequiredTextField("record.adoption.comments", "Comments", RECORD_TABLES, RECORD_JOINS);
         add(new TwoLevelField("Adoption Fields", f));
 
         f = new Field[13];
