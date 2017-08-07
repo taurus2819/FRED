@@ -42,6 +42,7 @@ import nz.cri.gns.html.select.SelectBox;
 import nz.cri.gns.intranet.Template;
 
 public class PaleontologyRecordDE extends RecordDE {
+    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.PaleontologyRecordDE");
 
     private Set<PaleontologyListEntry> badTaxaList;
     private boolean nonApprovedTaxaFlag = false;
@@ -231,9 +232,13 @@ public class PaleontologyRecordDE extends RecordDE {
                             nonApprovedTaxaFlag = true;
                         }
                     }
-                } catch (Exception e) {
+                } catch (DataInputException e) {
+                    error.add(new String[]{"Taxanomic List", taxaLine + " not valid because " + e.getMessage()});
+                } catch (NumberFormatException e) {
+                    error.add(new String[]{"Taxanomic List", taxaLine + " has a malformed number."});
+                } catch (Exception e) { // StorageAccessException 
                     e.printStackTrace();
-                    error.add(new String[]{"Taxanomic List", taxaLine + " not valid"});
+                    error.add(new String[]{"Error occurred processing ", taxaLine + ": " + e.getMessage()});
                 }
             }
         }
@@ -314,7 +319,7 @@ public class PaleontologyRecordDE extends RecordDE {
                                     + TaxonomicUtil.javascriptSafe(entry.getTaxonomicName()) + "', '"
                                     + DBUtils.nvl((taxon == null) ? "" : TaxonomicUtil.javascriptSafe(taxon.getAuthor())) + "', '"
                                     + DBUtils.nvl(TaxonomicUtil.javascriptSafe(
-                                            TaxonomicUtil.encodeTaxaComments(entry))) + "');");
+                                                    TaxonomicUtil.encodeTaxaComments(entry))) + "');");
                         });
                     }
                     //Also check for bad taxa of this group
@@ -326,7 +331,7 @@ public class PaleontologyRecordDE extends RecordDE {
                                     + TaxonomicUtil.javascriptSafe(entry.getTaxonomicName()) + "', '"
                                     + DBUtils.nvl((taxon == null) ? "" : TaxonomicUtil.javascriptSafe(taxon.getAuthor())) + "', '"
                                     + DBUtils.nvl(TaxonomicUtil.javascriptSafe(
-                                            TaxonomicUtil.encodeTaxaComments(entry))) + "');");
+                                                    TaxonomicUtil.encodeTaxaComments(entry))) + "');");
                             it.remove();
                         }
                     }
@@ -339,7 +344,7 @@ public class PaleontologyRecordDE extends RecordDE {
                         + TaxonomicUtil.javascriptSafe(entry.getTaxonomicName()) + "', '"
                         + DBUtils.nvl((taxon == null) ? "" : TaxonomicUtil.javascriptSafe(taxon.getAuthor())) + "', '"
                         + DBUtils.nvl(TaxonomicUtil.javascriptSafe(
-                                TaxonomicUtil.encodeTaxaComments(entry))) + "');");
+                                        TaxonomicUtil.encodeTaxaComments(entry))) + "');");
             });
 
             template.loadAll(out);
@@ -433,9 +438,9 @@ public class PaleontologyRecordDE extends RecordDE {
     public int save(int dataOriginId) throws InsufficientPrivelegesException, StorageAccessException {
         int recordId = super.save(dataOriginId);
         /*if (record.getPaleontology().getRecordId() == null)
-        recordUtil.save(record.getPaleontology());
-        else
-        recordUtil.update(record.getPaleontology());*/
+         recordUtil.save(record.getPaleontology());
+         else
+         recordUtil.update(record.getPaleontology());*/
         return recordId;
     }
 

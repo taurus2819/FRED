@@ -47,6 +47,7 @@ function processCollectorAccept() {
 }
 function processCollectorAcceptImpl(doSubmit) {
 	if (xmlHttp.readyState == 4 || xmlHttp.readyState == "complete") {
+                        if(xmlHttp.status==200) {
 		var xml = xmlHttp.responseXML;
 		var reply = xml.getElementsByTagName("status")[0].firstChild.data;
 		var name = xml.getElementsByTagName("name")[0].firstChild.data;
@@ -57,7 +58,10 @@ function processCollectorAcceptImpl(doSubmit) {
 		} else if (confirm(name + " does not exist. A new record will be created.  Continue?")) {
 			callAJAX("ajaxSupport.xml?action=Add&type=Person&name=" + escape(name) + "&q=" + Math.random(), (doSubmit) ? processCollectorAcceptAndSubmit : processCollectorAccept);
 		}
-	}
+	} else {
+                            alert("The server had an issue: ".concat(xmlHttp.statusText));
+                  }
+       }
 }
 function addCollector(name) {
 	var uid = "coll" + Math.round(Math.random() * 100000);
