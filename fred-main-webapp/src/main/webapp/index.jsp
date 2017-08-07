@@ -1,3 +1,4 @@
+<%@page import="nz.cri.gns.core.Environment"%>
 <%@page pageEncoding="utf-8"
 %><%@page	extends="nz.cri.gns.fred.FREDStaticIPSysJspPage"
 %><%@page import="nz.cri.gns.fred.util.BacklogStatusUtil"
@@ -8,13 +9,23 @@
 %><%
 	
 	ExtranetTemplate et = getExtranetTemplate();
+        et.addStyleSheet(Environment.getDataUrl().replace("http://", "https://")+"/web-app-msg/tomcat_paleo/fred.css");
 	try {
 		FeatureUtil featureUtil = new FeatureUtil(FredHibernate.get().getDAOFactory());
 		BacklogStatusUtil bsUtil = new BacklogStatusUtil(FredHibernate.get().getDAOFactory());
 		
 		drawTop(out, et, request, response);
 	
-		%><table width="550" style="width:550px;" border="0">
+		%>
+                
+                <%-- 
+                    Used to show a temporary 'upcoming maintenance' message for major outages.
+                    See http://intrawiki.gns.cri.nz/IT/Applications_Department/Miscellaneous/Upcoming_maintenance_outage_message for more details.
+                --%>
+                <iframe class="web-app-msg" src="<%=Environment.getDataUrl().replace("http://", "https://")%>/web-app-msg/tomcat_paleo/fred.html"></iframe> 
+                 
+                
+                <table width="550" style="width:550px;" border="0">
 		<tr>
 			<td colspan="2">
 				<p>FRED is a computer database for the New Zealand Fossil Record File(FRF).  This is a recording scheme for fossil localities in NZ and nearby regions including SE Pacific Islands and the Ross Sea region of Antarctica, and is jointly managed by <a href="http://www.gsnz.org.nz" target="gsnz">Geoscience Society of New Zealand</a> and <a href="http://www.gns.cri.nz" target="gns">GNS Science</a>.  FRED is operated by GNS Science through the FRST National Paleontological Databases Programme, with the assistance of staff at Auckland, Victoria, Canterbury and Otago universities.</p>
