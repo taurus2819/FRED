@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,6 +42,7 @@ import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.html.Attributes;
 import nz.cri.gns.html.select.SelectBox;
 import nz.cri.gns.intranet.Template;
+
 
 public class PaleontologyRecordDE extends RecordDE {
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.PaleontologyRecordDE");
@@ -411,7 +414,7 @@ public class PaleontologyRecordDE extends RecordDE {
                         }
                     }
                 } catch (StorageAccessException e) {
-                    e.printStackTrace();
+                    log.log(Level.WARNING, null, e);
                 }
             }
         }
