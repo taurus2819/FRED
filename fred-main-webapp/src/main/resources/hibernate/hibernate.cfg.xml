@@ -64,5 +64,6 @@
         <mapping resource="hibernate/UserRightView.hbm.xml"/>
         <mapping resource="hibernate/UserView.hbm.xml"/>
         <mapping resource="hibernate/Weathering.hbm.xml"/>
+        <mapping resource="hibernate/SquirrelAgeView.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>
