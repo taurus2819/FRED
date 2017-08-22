@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.jsp.JspWriter;
 import net.sf.hibernate.HibernateException;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
@@ -45,6 +44,8 @@ import nz.cri.gns.util.map.Datum;
 import nz.cri.gns.util.map.Datum.Coordinate;
 import nz.cri.gns.util.map.Datum.LatLong;
 import nz.cri.gns.util.map.DatumFactory;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 
 /**
  * Was export.jsp.
@@ -62,7 +63,8 @@ public class ExportServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        response.setContentType("text/html");
+        response.setCharacterEncoding("UTF-16"); // Excel refuses to use UTF-8.
         HttpSession session = request.getSession();
         FredHelper h = new FredHelper();
 
@@ -99,7 +101,8 @@ public class ExportServlet extends HttpServlet {
                 }
             }
 
-            try (JspWriterImpl out = new JspWriterImpl(response.getOutputStream())) {
+            try (JspWriterImpl out = new JspWriterImpl(response.getWriter())) {
+                CSVPrinter c = new CSVPrinter(out, CSVFormat.EXCEL);
 
                 if (samples.size() > 0) {
                     // Content type, disposition.
@@ -119,249 +122,291 @@ public class ExportServlet extends HttpServlet {
                     boolean palListFlag = (request.getParameter("palList") != null);
 
                     //file header
-                    out.println("\"**************************************************************************************************************\"");
-                    out.println("\"Data downloaded from FRED (http://www.fred.org.nz) on " + FREDUtil.formatDateForOutput(new Date())+"\"");
-                    out.println("\"FRED is the computer database for the NZ Fossil Record File (FRF), which is a nationally significant database administrated by GSNZ and GNS Science                                \"");
-                    out.println("\"Please acknowledge use of this data in publications, reports and presentations.                               \"");
-                    out.println("\"**************************************************************************************************************\"");
-                    out.print("\n");
+                    c.printRecord("**************************************************************************************************************");
+                    c.printRecord("Data downloaded from FRED (http://www.fred.org.nz) on " + FREDUtil.formatDateForOutput(new Date()));
+                    c.printRecord("FRED is the computer database for the NZ Fossil Record File (FRF), which is a nationally significant database administrated by GSNZ and GNS Science                                ");
+                    c.printRecord("Please acknowledge use of this data in publications, reports and presentations.                               ");
+                    c.printRecord("**************************************************************************************************************");
+                    c.println();
 
                     if (localityFlag) {
-                        out.println("********");
-                        out.println("Locality");
-                        out.println("********");
+                        c.printRecord("********");
+                        c.printRecord("Locality");
+                        c.printRecord("********");
 
-                        writeLocalityHeader(out);
-                        out.print("Original Grid Reference\tNZMG Easting\tNZMG Northing\tNZGD49 Latitude\tNZGD49 Longitude\tMap Year\tMethod\tAccuracy\tLocality\tCountry\tCoordinate Comments\tLocality Comments\t");
+                        writeLocalityHeader(c);
+                        
+                        final String[] coordHeader = new String[] {"Original Grid Reference", "NZMG Easting", "NZMG Northing", "NZGD49 Latitude", "NZGD49 Longitude", "Map Year", "Method", "Accuracy", "Locality", "Country", "Coordinate Comments", "Locality Comments"};
+                        for (String each : coordHeader) {
+                            c.print(each);
+                        }
 
+                        final String[] collectionHeader = new String[] {"Collectors", "Collection Date", "Fossils in Place", "Sent To", "Not Collected", "Significance/Comments"};
                         if (collectionFlag) {
-                            out.print("Collectors\tCollection Date\tFossils in Place\tSent To\tNot Collected\tSignificance/Comments\t");
+                            for (String each : collectionHeader) {
+                                c.print(each);
+                            }
                         }
                         if (stratigraphyFlag) {
-                            out.print("Stratigraphic Name\tInferred Stage Lower\tInferred Lower Modifier\tInferred Stage Upper\tInferred Upper Modifier\tInferred Age Start\tInferred Age Stop\tKnown Stage Lower\tKnown Lower Modifier\tKnown Stage Upper\tKnown Upper Modifier\tKnown Age Start\tKnown Age Stop\t");
-                            out.print("Samples Nearby\tSample Relationships\tStratigraphic Relationships\tColumn/Map\tDip\tDip Direction\tStrike\tFacing\tStratigraphy Comments\t");
+                            final String [] stratigraphyHeader = new String[] {"Stratigraphic Name", "Inferred Stage Lower", "Inferred Lower Modifier", "Inferred Stage Upper", "Inferred Upper Modifier", "Inferred Age Start", "Inferred Age Stop", "Known Stage Lower", "Known Lower Modifier", "Known Stage Upper", "Known Upper Modifier", "Known Age Start", "Known Age Stop", "",  "Samples Nearby", "Sample Relationships", "Stratigraphic Relationships", "Column/Map", "Dip", "Dip Direction", "Strike", "Facing", "Stratigraphy Comments"};
+                            for (String each : stratigraphyHeader) {
+                                c.print(each);
+                            }
                         }
                         if (sedimentaryFlag) {
-                            out.print("Primary Grainsize\tSecondary Grainsize\tComparator Used\tBedding Thickness\tBedding Features\tWeathering\tHardness\tCarbonate\tColour\tSedimentary Features\tInferred Environment\tNature of Rock Unit\tCorrespondence\t");
+                            final String[] sedimentaryHeader = new String[] {"Primary Grainsize", "Secondary Grainsize", "Comparator Used", "Bedding Thickness", "Bedding Features", "Weathering", "Hardness", "Carbonate", "Colour", "Sedimentary Features", "Inferred Environment", "Nature of Rock Unit", "Correspondence"};
+                            for (String each : sedimentaryHeader ) {
+                                c.print(each);
+                            }
                         }
 
-                        out.print("\n");
+                        c.println();
 
                         for (Sample sample : samples) {
                             Feature feature = sample.getFeature();
                             if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
-                                writeLocality(sample, out);
+                                writeLocality(sample, c);
                                 SiteView sv = feature.getSiteView();
                                 if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
                                     Datum datum = SiteUtil.getFREDDatum(feature);
                                     Coordinate coord = SiteUtil.getFREDCoordinate(feature);
-                                    out.print(datum.getHumanStringFor(coord).replaceAll("Geographic ", "") + "\t");
+                                    c.print(datum.getHumanStringFor(coord).replaceAll("Geographic ", ""));
                                     try {
                                         Datum nzmgDatum = DatumFactory.createDatum("NZMG");
                                         Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
-                                        out.print(nzmgCoord.getEastWest() + "\t" + nzmgCoord.getNorthSouth() + "\t");
+                                        c.print(nzmgCoord.getEastWest());
+                                        c.print(nzmgCoord.getNorthSouth());
                                     } catch (Exception e) {
-                                        out.print("\t\t");
+                                        c.print(null); c.print(null);
                                     }
                                     if (sv != null) {
                                         LatLong ll = SiteUtil.getSiteLatLong(sv);
-                                        out.print(ll.getLatAsDecDegree(5) + "\t" + ll.getLongAsDecDegree(5) + "\t");
+                                        c.print(ll.getLatAsDecDegree(5));
+                                        c.print(ll.getLongAsDecDegree(5));
                                     } else {
-                                        out.print("\t\t");
+                                        c.print(null); c.print(null);
                                     }
                                 } else {
-                                    out.print("\t\t\t\t\t");
+                                    for (int i=0; i<5; i++) {
+                                        c.print(null);
+                                    }
                                 }
-                                out.print(DBUtils.nvl(feature.getMapYear()) + "\t");
-                                out.print(((sv != null) ? DBUtils.nvl(sv.getMethod()) : "") + "\t");
-                                out.print(((sv != null) ? DBUtils.nvl(sv.getAccuracy()) : "") + "\t");
+                                c.print(DBUtils.nvl(feature.getMapYear()));
+                                c.print(((sv != null) ? DBUtils.nvl(sv.getMethod()) : ""));
+                                c.print(((sv != null) ? DBUtils.nvl(sv.getAccuracy()) : ""));
 
                                 if (featureUtil.isAllowedReadFeature(user, feature)) {
-                                    out.print(DBUtils.nvl(feature.getLocality()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
-                                    out.print(((sv != null) ? sv.getCountryName() : "") + "\t");
-                                    out.print(DBUtils.nvl(feature.getCoordComments()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
-                                    out.print(DBUtils.nvl(feature.getComments()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
+                                    c.print(DBUtils.nvl(feature.getLocality()).replaceAll("\\s\\s+|\\n|\\r", " "));
+                                    c.print(((sv != null) ? sv.getCountryName() : ""));
+                                    c.print(DBUtils.nvl(feature.getCoordComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
+                                    c.print(DBUtils.nvl(feature.getComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
 
                                     if (collectionFlag) {
                                         if (!FREDUtil.isEmpty(sample.getCollectors())) {
+                                            StringBuilder sb = new StringBuilder();
                                             for (Person collector : sample.getCollectors()) {
-                                                out.print(collector.getName() + "; ");
+                                                sb.append(collector.getName());
+                                                sb.append("; ");
                                             }
+                                            c.print(sb.toString());
                                         }
-                                        out.print("\t");
-                                        out.print(DBUtils.nvl(FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding())) + "\t");
-                                        out.print(DBUtils.nvl(sample.getInPlace()) + "\t");
+                                        c.print(DBUtils.nvl(FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding())));
+                                        c.print(DBUtils.nvl(sample.getInPlace()));
                                         if (!FREDUtil.isEmpty(sample.getSentTos())) {
+                                            StringBuilder sb = new StringBuilder();
                                             for (SentTo sentTo : sample.getSentTos()) {
-                                                out.print(SampleUtil.getSentToDescription(sentTo).replaceAll("\\s\\s+|\\n|\\r", " ") + "; ");
+                                                sb.append(SampleUtil.getSentToDescription(sentTo).replaceAll("\\s\\s+|\\n|\\r", " ")).append("; ");
                                             }
+                                            c.print(sb.toString());
                                         }
-                                        out.print("\t");
-                                        out.print(DBUtils.nvl(sample.getNotCollected()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
-                                        out.print(DBUtils.nvl(sample.getSignificance()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
+                                        c.print(DBUtils.nvl(sample.getNotCollected()).replaceAll("\\s\\s+|\\n|\\r", " "));
+                                        c.print(DBUtils.nvl(sample.getSignificance()).replaceAll("\\s\\s+|\\n|\\r", " "));
                                     }
 
                                     if (stratigraphyFlag) {
-                                        out.print(DBUtils.nvl(sample.getStratUnit()) + "\t");
+                                        c.print(DBUtils.nvl(sample.getStratUnit()));
                                         if (sample.getInferredStage() != null) {
                                             Stage stage = sample.getInferredStage();
-                                            out.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : "") + "\t");
-                                            out.print(DBUtils.nvl(stage.getStageLowerMod()) + "\t");
-                                            out.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : "") + "\t");
-                                            out.print(DBUtils.nvl(stage.getStageUpperMod()) + "\t");
-                                            out.print(stageUtil.getNumericAgeStart(stage) + "\t");
-                                            out.print(stageUtil.getNumericAgeStop(stage) + "\t");
+                                            c.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : ""));
+                                            c.print(DBUtils.nvl(stage.getStageLowerMod()));
+                                            c.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : ""));
+                                            c.print(DBUtils.nvl(stage.getStageUpperMod()));
+                                            c.print(stageUtil.getNumericAgeStart(stage));
+                                            c.print(stageUtil.getNumericAgeStop(stage));
                                         } else {
-                                            out.print("\t\t\t\t\t\t");
+                                             for (int i=0; i<6; i++) {
+                                                c.print(null);
+                                             }
                                         }
                                         if (sample.getKnownStage() != null) {
                                             Stage stage = sample.getKnownStage();
-                                            out.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : "") + "\t");
-                                            out.print(DBUtils.nvl(stage.getStageLowerMod()) + "\t");
-                                            out.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : "") + "\t");
-                                            out.print(DBUtils.nvl(stage.getStageUpperMod()) + "\t");
-                                            out.print(stageUtil.getNumericAgeStart(stage) + "\t");
-                                            out.print(stageUtil.getNumericAgeStop(stage) + "\t");
+                                            c.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : ""));
+                                            c.print(DBUtils.nvl(stage.getStageLowerMod()));
+                                            c.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : ""));
+                                            c.print(DBUtils.nvl(stage.getStageUpperMod()));
+                                            c.print(stageUtil.getNumericAgeStart(stage));
+                                            c.print(stageUtil.getNumericAgeStop(stage));
                                         } else {
-                                            out.print("\t\t\t\t\t\t");
+                                              for (int i=0; i<6; i++) {
+                                                c.print(null);
+                                             }
                                         }
                                         List<? extends Relationship> nearbys = sampleUtil.getRelationships(sample, "Sample", "nearby");
                                         if (nearbys != null && nearbys.size() > 0) {
+                                            StringBuilder sb = new StringBuilder();
                                             for (Relationship rel : nearbys) {
-                                                out.print(SampleUtil.getRelationshipDescription(rel) + "; ");
+                                                sb.append(SampleUtil.getRelationshipDescription(rel));
+                                                sb.append("; ");
                                             }
+                                            c.print(sb.toString());
                                         }
-                                        out.print("\t");
                                         List<? extends Relationship> sampRels = sampleUtil.getRelationships(sample, "Sample", new String[]{"above", "below"});
                                         if (nearbys != null && sampRels.size() > 0) {
+                                            StringBuilder sb = new StringBuilder();
                                             for (Relationship rel : sampRels) {
-                                                out.print(SampleUtil.getRelationshipDescription(rel) + "; ");
+                                                sb.append(SampleUtil.getRelationshipDescription(rel)).append("; ");
                                             }
+                                            c.print(sb.toString());
                                         }
-                                        out.print("\t");
+
                                         List<? extends Relationship> stratRels = sampleUtil.getRelationships(sample, "Stratigraphic", new String[]{"above top", "above base", "below top", "below base"});
                                         if (nearbys != null && stratRels.size() > 0) {
+                                            StringBuilder sb = new StringBuilder();
                                             for (Relationship rel : stratRels) {
-                                                out.print(SampleUtil.getRelationshipDescription(rel) + "; ");
+                                                sb.append(SampleUtil.getRelationshipDescription(rel)).append("; ");
                                             }
+                                            c.print(sb.toString());
                                         }
-                                        out.print("\t");
-                                        out.print(DBUtils.nvl(sample.getColumnMap()) + "\t");
-                                        out.print(DBUtils.nvl(sample.getDip()) + "\t");
-                                        out.print(DBUtils.nvl(sample.getDipDirection()) + "\t");
-                                        out.print(DBUtils.nvl(sample.getStrike()) + "\t");
-                                        out.print(DBUtils.nvl(sample.getFacing()) + "\t");
-                                        out.print(DBUtils.nvl(sample.getStratComments()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
+                                        c.print(DBUtils.nvl(sample.getColumnMap()));
+                                        c.print(DBUtils.nvl(sample.getDip()));
+                                        c.print(DBUtils.nvl(sample.getDipDirection()));
+                                        c.print(DBUtils.nvl(sample.getStrike()));
+                                        c.print(DBUtils.nvl(sample.getFacing()));
+                                        c.print(DBUtils.nvl(sample.getStratComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
                                     }
                                     if (sedimentaryFlag) {
-                                        out.print(((sample.getPrimaryGrainSize() != null) ? sample.getPrimaryGrainSize().getName() : "") + "\t");
-                                        out.print(((sample.getSecondaryGrainSize() != null) ? sample.getSecondaryGrainSize().getName() : "") + "\t");
-                                        out.print(DBUtils.nvl(sample.getComparatorUsed()) + "\t");
-                                        out.print(((sample.getBedThickness() != null) ? sample.getBedThickness().getName() : "") + "\t");
-                                        out.print(SampleUtil.getBeddingDescription(sample) + "\t");
-                                        out.print(((sample.getWeathering() != null) ? sample.getWeathering().getName() : "") + "\t");
-                                        out.print(((sample.getHardness() != null) ? sample.getHardness().getName() : "") + "\t");
-                                        out.print(((sample.getCarbonate() != null) ? sample.getCarbonate().getName() : "") + "\t");
-                                        out.print(SampleUtil.getColourDescription(sample) + "\t");
+                                        c.print(((sample.getPrimaryGrainSize() != null) ? sample.getPrimaryGrainSize().getName() : ""));
+                                        c.print(((sample.getSecondaryGrainSize() != null) ? sample.getSecondaryGrainSize().getName() : ""));
+                                        c.print(DBUtils.nvl(sample.getComparatorUsed()));
+                                        c.print(((sample.getBedThickness() != null) ? sample.getBedThickness().getName() : ""));
+                                        c.print(SampleUtil.getBeddingDescription(sample));
+                                        c.print(((sample.getWeathering() != null) ? sample.getWeathering().getName() : ""));
+                                        c.print(((sample.getHardness() != null) ? sample.getHardness().getName() : ""));
+                                        c.print(((sample.getCarbonate() != null) ? sample.getCarbonate().getName() : ""));
+                                        c.print(SampleUtil.getColourDescription(sample));
                                         if (!FREDUtil.isEmpty(sample.getSedimentaryFeatures())) {
+                                            StringBuilder sb = new StringBuilder();
                                             for (SedimentaryFeature sedFeat : sample.getSedimentaryFeatures()) {
-                                                out.print(SampleUtil.getSedFeatureDescription(sedFeat) + "; ");
+                                                sb.append(SampleUtil.getSedFeatureDescription(sedFeat)).append("; ");
                                             }
+                                            c.print(sb.toString());
                                         }
-                                        out.print("\t");
-                                        out.print(DBUtils.nvl(sample.getDepositionEnv()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
-                                        out.print(DBUtils.nvl(sample.getRockNature()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
-                                        out.print(DBUtils.nvl(sample.getCorrespondence()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
+                                        c.print(DBUtils.nvl(sample.getDepositionEnv()).replaceAll("\\s\\s+|\\n|\\r", " "));
+                                        c.print(DBUtils.nvl(sample.getRockNature()).replaceAll("\\s\\s+|\\n|\\r", " "));
+                                        c.print(DBUtils.nvl(sample.getCorrespondence()).replaceAll("\\s\\s+|\\n|\\r", " "));
                                     }
                                 }
-                                out.print("\n");
+                                c.println();
                             }
                         }
-                        out.print("\n");
+                        c.println();
                     }
 
                     if (adoptionFlag) {
-                        out.println("********");
-                        out.println("Adoption");
-                        out.println("********");
+                        c.printRecord("********");
+                        c.printRecord("Adoption");
+                        c.printRecord("********");
 
-                        writeLocalityHeader(out);
-                        out.print("Adoptors\tAdoption Date\tAdopted Stage Lower\tAdopted Lower Modifier\tAdopted Stage Upper\tAdopted Upper Modifier\tAdopted Age Start\tAdopted Age Stop\tComments\n");
+                        writeLocalityHeader(c);
+                        
+                        final String[] adoptionHeader = new String[] {"Adoptors", "Adoption Date", "Adopted Stage Lower", "Adopted Lower Modifier", "Adopted Stage Upper", "Adopted Upper Modifier", "Adopted Age Start", "Adopted Age Stop", "Comments"};
+                        for (String each : adoptionHeader) {
+                            c.print(each);
+                        }
+                        c.println();
 
                         for (Sample sample : samples) {
                             for (Adoption adoption : recordUtil.getAdoptionRecords(sample)) {
                                 if (recordUtil.isAllowedReadRecord(user, adoption.getRecord())) {
-                                    writeLocality(adoption.getRecord().getSample(), out);
+                                    writeLocality(adoption.getRecord().getSample(), c);
                                     if (!FREDUtil.isEmpty(adoption.getAdoptors())) {
+                                        StringBuilder sb = new StringBuilder();
                                         for (Person person : adoption.getAdoptors()) {
-                                            out.print(person.getName() + "; ");
+                                            sb.append(person.getName()).append("; ");
                                         }
+                                        c.print(sb.toString());
                                     }
-                                    out.print("\t");
-                                    out.print(DBUtils.nvl(FREDUtil.formatDateForOutput(adoption.getAdoptionDate(), adoption.getDateRounding())) + "\t");
+                                    c.print(DBUtils.nvl(FREDUtil.formatDateForOutput(adoption.getAdoptionDate(), adoption.getDateRounding())));
                                     if (adoption.getStage() != null) {
                                         Stage stage = adoption.getStage();
-                                        out.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : "") + "\t");
-                                        out.print(DBUtils.nvl(stage.getStageLowerMod()) + "\t");
-                                        out.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : "") + "\t");
-                                        out.print(DBUtils.nvl(stage.getStageUpperMod()) + "\t");
-                                        out.print(stageUtil.getNumericAgeStart(stage) + "\t");
-                                        out.print(stageUtil.getNumericAgeStop(stage) + "\t");
+                                        c.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : ""));
+                                        c.print(DBUtils.nvl(stage.getStageLowerMod()));
+                                        c.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : ""));
+                                        c.print(DBUtils.nvl(stage.getStageUpperMod()));
+                                        c.print(stageUtil.getNumericAgeStart(stage));
+                                        c.print(stageUtil.getNumericAgeStop(stage));
                                     } else {
-                                        out.print("\t\t\t\t\t\t");
+                                        for (int i=0; i<6; i++) {
+                                            c.print(null);
+                                        }
                                     }
-                                    out.print(DBUtils.nvl(adoption.getComments()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
-                                    out.print("\n");
+                                    c.print(DBUtils.nvl(adoption.getComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
+                                    c.println();
                                 }
                             }
                         }
-                        out.print("\n");
+                        c.println();
                     }
 
                     if (paleontologyFlag) {
-                        out.println("********");
-                        out.println("Paleontology");
-                        out.println("********");
+                        c.printRecord("********");
+                        c.printRecord("Paleontology");
+                        c.printRecord("********");
 
-                        writeLocalityHeader(out);
-                        out.print("Identifiers\tIdentification Date\tStage Lower\tLower Modifier\tStage Upper\tUpper Modifier\tAge Start\tAge Stop\tStage Comments\tLab Number\tCollection Comments\n");
-
+                        writeLocalityHeader(c);
+                        final String[] paleontologyHeader = new String[] {"Identifiers", "Identification Date", "Stage Lower", "Lower Modifier", "Stage Upper", "Upper Modifier", "Age Start", "Age Stop", "Stage Comments", "Lab Number", "Collection Comments"};
+                        c.printRecord((Object[]) paleontologyHeader);
+                        
+                        
                         for (Sample sample : samples) {
                             for (Paleontology paleontology : recordUtil.getPaleontologyRecords(sample)) {
                                 if (recordUtil.isAllowedReadRecord(user, paleontology.getRecord())) {
-                                    writeLocality(paleontology.getRecord().getSample(), out);
+                                    writeLocality(paleontology.getRecord().getSample(), c);
                                     if (!FREDUtil.isEmpty(paleontology.getIdentifiers())) {
+                                        StringBuilder sb = new StringBuilder();
                                         for (Person person : paleontology.getIdentifiers()) {
-                                            out.print(person.getName() + "; ");
+                                            sb.append(person.getName()).append("; ");
                                         }
+                                        c.print(sb.toString());
                                     }
-                                    out.print("\t");
-                                    out.print(DBUtils.nvl(FREDUtil.formatDateForOutput(paleontology.getIdentificationDate(), paleontology.getDateRounding())) + "\t");
+                                    c.print(DBUtils.nvl(FREDUtil.formatDateForOutput(paleontology.getIdentificationDate(), paleontology.getDateRounding())));
                                     if (paleontology.getStage() != null) {
                                         Stage stage = paleontology.getStage();
-                                        out.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : "") + "\t");
-                                        out.print(DBUtils.nvl(stage.getStageLowerMod()) + "\t");
-                                        out.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : "") + "\t");
-                                        out.print(DBUtils.nvl(stage.getStageUpperMod()) + "\t");
-                                        out.print(stageUtil.getNumericAgeStart(stage) + "\t");
-                                        out.print(stageUtil.getNumericAgeStop(stage) + "\t");
+                                        c.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : ""));
+                                        c.print(DBUtils.nvl(stage.getStageLowerMod()));
+                                        c.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : ""));
+                                        c.print(DBUtils.nvl(stage.getStageUpperMod()));
+                                        c.print(stageUtil.getNumericAgeStart(stage));
+                                        c.print(stageUtil.getNumericAgeStop(stage));
                                     } else {
-                                        out.print("\t\t\t\t\t\t");
+                                        for (int i=0; i<6; i++) {
+                                            c.print(null);
+                                        }
                                     }
-                                    out.print(DBUtils.nvl(paleontology.getStageComments()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
-                                    out.print(DBUtils.nvl(RecordUtil.getLabNumberDescription(paleontology)) + "\t");
-                                    out.print(DBUtils.nvl(paleontology.getCollectionComments()).replaceAll("\\s\\s+|\\n|\\r", " ") + "\t");
-                                    out.print("\n");
+                                    c.print(DBUtils.nvl(paleontology.getStageComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
+                                    c.print(DBUtils.nvl(RecordUtil.getLabNumberDescription(paleontology)));
+                                    c.print(DBUtils.nvl(paleontology.getCollectionComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
+                                    c.println();
                                 }
                             }
                         }
-                        out.print("\n");
+                        c.println();
                     }
 
                     if (palListFlag) {
-                        out.println("********");
-                        out.println("Paleontology List");
-                        out.println("********");
+                        c.printRecord("********");
+                        c.printRecord("Paleontology List");
+                        c.printRecord("********");
 
                         List<List<Paleontology>> paleontologyMasterList = new Vector<List<Paleontology>>();
                         List<Paleontology> paleontologies = new Vector<Paleontology>();
@@ -383,77 +428,82 @@ public class ExportServlet extends HttpServlet {
                         }
 
                         if (paleontologyMasterList.size() > 0) {
+                            // These seem to be printed across the columns???
                             for (List<Paleontology> pals : paleontologyMasterList) {
 
-                                out.print("FR Number\t\t");
+                                c.print("FR Number");
+                                c.print(null);
                                 for (Paleontology paleontology : pals) {
                                     Sample sample = paleontology.getRecord().getSample();
                                     if (sample.getFrNumber() != null) {
-                                        out.print(sample.getFrNumber().getFrNumber() + "\t");
+                                        c.print(sample.getFrNumber().getFrNumber());
                                     } else {
-                                        out.print(((sample.getFeature().getFrNumber() != null) ? sample.getFeature().getFrNumber().getFrNumber() : "") + "\t");
+                                        c.print(((sample.getFeature().getFrNumber() != null) ? sample.getFeature().getFrNumber().getFrNumber() : ""));
                                     }
                                 }
-                                out.print("\n");
+                                c.println();
 
-                                out.print("Yard FR Number\t\t");
+                                c.print("Yard FR Number");
+                                c.print(null);
                                 for (Paleontology paleontology : pals) {
                                     Sample sample = paleontology.getRecord().getSample();
                                     if (sample.getYardFrNumber() != null) {
-                                        out.print(sample.getYardFrNumber().getFrNumber() + "\t");
+                                        c.print(sample.getYardFrNumber().getFrNumber());
                                     } else {
-                                        out.print(((sample.getFeature().getYardFrNumber() != null) ? sample.getFeature().getYardFrNumber().getFrNumber() : "") + "\t");
+                                        c.print(((sample.getFeature().getYardFrNumber() != null) ? sample.getFeature().getYardFrNumber().getFrNumber() : ""));
                                     }
 
                                 }
-                                out.print("\n");
+                                c.println();
 
-                                out.print("Locality Type\t\t");
+                                c.print("Locality Type"); c.print(null);
                                 for (Paleontology paleontology : pals) {
-                                    out.print(paleontology.getRecord().getSample().getFeature().getFeatureType() + "\t");
+                                    c.print(paleontology.getRecord().getSample().getFeature().getFeatureType());
                                 }
-                                out.print("\n");
+                                c.println();
 
-                                out.print("Field Number/Drillhole Name\t\t");
+                                c.print("Field Number/Drillhole Name"); c.print(null);
                                 for (Paleontology paleontology : pals) {
-                                    out.print(DBUtils.nvl(paleontology.getRecord().getSample().getFeature().getFeatureName()) + "\t");
+                                    c.print(DBUtils.nvl(paleontology.getRecord().getSample().getFeature().getFeatureName()));
                                 }
-                                out.print("\n");
+                                c.println();
 
-                                out.print("Depth From\t\t");
+                                c.print("Depth From"); c.print(null);
                                 for (Paleontology paleontology : pals) {
-                                    out.print(DBUtils.nvl(paleontology.getRecord().getSample().getTopDepth()) + "\t");
+                                    c.print(DBUtils.nvl(paleontology.getRecord().getSample().getTopDepth()));
                                 }
-                                out.print("\n");
+                                c.println();
 
-                                out.print("Depth To\t\t");
+                                c.print("Depth To"); c.print(null);
                                 for (Paleontology paleontology : pals) {
-                                    out.print(DBUtils.nvl(paleontology.getRecord().getSample().getBottomDepth()) + "\t");
+                                    c.print(DBUtils.nvl(paleontology.getRecord().getSample().getBottomDepth()));
                                 }
-                                out.print("\n");
+                                c.println();
 
-                                out.print("Depth Unit\t\t");
+                                c.print("Depth Unit"); c.print(null);
                                 for (Paleontology paleontology : pals) {
-                                    out.print(DBUtils.nvl(paleontology.getRecord().getSample().getDepthUnit()) + "\t");
+                                    c.print(DBUtils.nvl(paleontology.getRecord().getSample().getDepthUnit()));
                                 }
-                                out.print("\n");
+                                c.println();
 
-                                out.print("Drill Type\t\t");
+                                c.print("Drill Type"); c.print(null);
                                 for (Paleontology paleontology : pals) {
-                                    out.print(((paleontology.getRecord().getSample().getDrillType() != null) ? paleontology.getRecord().getSample().getDrillType().getName() : "") + "\t");
+                                    c.print(((paleontology.getRecord().getSample().getDrillType() != null) ? paleontology.getRecord().getSample().getDrillType().getName() : ""));
                                 }
-                                out.print("\n");
+                                c.println();
 
-                                out.print("Identifier\t\t");
+                                c.print("Identifier"); c.print(null);
                                 for (Paleontology paleontology : pals) {
                                     if (!FREDUtil.isEmpty(paleontology.getIdentifiers())) {
+                                        StringBuilder sb = new StringBuilder();
                                         for (Person person : paleontology.getIdentifiers()) {
-                                            out.print(person.getName() + "; ");
+                                            sb.append(person.getName()).append("; ");
                                         }
+                                        c.print(sb.toString());
                                     }
-                                    out.print("\t");
+                                    
                                 }
-                                out.print("\n");
+                                c.println();
 
                                 TreeSet<TaxonomicNameAndGroup> taxonomicNames = new TreeSet<TaxonomicNameAndGroup>();
                                 for (Paleontology paleontology : pals) {
@@ -467,21 +517,21 @@ public class ExportServlet extends HttpServlet {
                                 //sortedTaxonomicNames.addAll(taxonomicNames);
                                 //Collections.sort(taxonomicNames);
                                 for (TaxonomicNameAndGroup nameAndGroup : taxonomicNames) {
-                                    out.print(nameAndGroup.getTaxonomicGroup().getName() + "\t" + DBUtils.nvl(nameAndGroup.getTaxonomicName()) + "\t");
+                                    c.print(nameAndGroup.getTaxonomicGroup().getName() + DBUtils.nvl(nameAndGroup.getTaxonomicName()));
                                     for (Paleontology paleontology : pals) {
                                         for (PaleontologyListEntry palList : paleontology.getListEntries()) {
                                             TaxonomicNameAndGroup check = new TaxonomicNameAndGroup(palList.getTaxonomicName(), palList.getTaxonomicGroup());
                                             if (check.equals(nameAndGroup)) {
-                                                out.print(encodeTaxaString(palList));
+                                                c.print(encodeTaxaString(palList));
                                                 break;
                                             }
 
                                         }
-                                        out.print("\t");
+                                        c.print("null");
                                     }
-                                    out.print("\n");
+                                    c.println();
                                 }
-                                out.print("\n");
+                                c.println();
                             }
                         }
                     }
@@ -541,27 +591,30 @@ public class ExportServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    public void writeLocalityHeader(JspWriter out) throws IOException {
-        out.print("FR Number\tYard FR Number\tLocality Type\tField Number/Drillhole Name\tDepth From\tDepth To\tDepth Unit\tDrill Type\t");
+    public void writeLocalityHeader(CSVPrinter c) throws IOException {
+        final String[] localityHeader = new String[] {"FR Number", "Yard FR Number", "Locality Type", "Field Number/Drillhole Name", "Depth From", "Depth To", "Depth Unit", "Drill Type"};
+        for (String each : localityHeader) {
+            c.print(each);
+        }
     }
 
-    public void writeLocality(Sample sample, JspWriter out) throws IOException {
+    public void writeLocality(Sample sample, CSVPrinter c) throws IOException {
         if (sample.getFrNumber() != null) {
-            out.print(sample.getFrNumber().getFrNumber() + "\t");
+            c.print(sample.getFrNumber().getFrNumber());
         } else {
-            out.print(((sample.getFeature().getFrNumber() != null) ? sample.getFeature().getFrNumber().getFrNumber() : "") + "\t");
+            c.print(((sample.getFeature().getFrNumber() != null) ? sample.getFeature().getFrNumber().getFrNumber() : ""));
         }
         if (sample.getYardFrNumber() != null) {
-            out.print(sample.getYardFrNumber().getFrNumber() + "\t");
+            c.print(sample.getYardFrNumber().getFrNumber());
         } else {
-            out.print(((sample.getFeature().getYardFrNumber() != null) ? sample.getFeature().getYardFrNumber().getFrNumber() : "") + "\t");
+            c.print(((sample.getFeature().getYardFrNumber() != null) ? sample.getFeature().getYardFrNumber().getFrNumber() : ""));
         }
-        out.print(sample.getFeature().getFeatureType() + "\t");
-        out.print(DBUtils.nvl(sample.getFeature().getFeatureName()) + "\t");
-        out.print(DBUtils.nvl(sample.getTopDepth()) + "\t");
-        out.print(DBUtils.nvl(sample.getBottomDepth()) + "\t");
-        out.print(DBUtils.nvl(sample.getDepthUnit()) + "\t");
-        out.print(((sample.getDrillType() != null) ? sample.getDrillType().getName() : "") + "\t");
+        c.print(sample.getFeature().getFeatureType());
+        c.print(DBUtils.nvl(sample.getFeature().getFeatureName()));
+        c.print(DBUtils.nvl(sample.getTopDepth()));
+        c.print(DBUtils.nvl(sample.getBottomDepth()));
+        c.print(DBUtils.nvl(sample.getDepthUnit()));
+        c.print(((sample.getDrillType() != null) ? sample.getDrillType().getName() : ""));
     }
 
     public String encodeTaxaString(PaleontologyListEntry palList) {
@@ -583,5 +636,6 @@ public class ExportServlet extends HttpServlet {
 
         return enc;
     }
-
+    
 }
+

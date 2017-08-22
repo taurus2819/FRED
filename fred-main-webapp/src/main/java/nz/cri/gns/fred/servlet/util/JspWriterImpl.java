@@ -8,13 +8,16 @@ import javax.servlet.jsp.JspWriter;
 /** I can't find an implementation so I quickly made one for use in Servlets ported from bad JSP code.
  * After you've finished writing stuff, you need to call >>flush(). The PrintWriter has a buffer on it. */
 public class JspWriterImpl extends JspWriter {
-    private OutputStream out;
-    private PrintWriter pw;
+    final private PrintWriter pw;
     
     public JspWriterImpl(OutputStream o) {
         super(0, false); // We don't use any of this.
-        out = o;
-        pw = new PrintWriter(out, false);
+        pw = new PrintWriter(o, false);
+    }
+    
+    public JspWriterImpl(PrintWriter o) {
+        super(0, false); // We don't use any of this.
+        pw = o;
     }
     
     @Override
