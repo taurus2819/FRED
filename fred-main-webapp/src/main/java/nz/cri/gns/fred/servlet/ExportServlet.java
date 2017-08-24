@@ -526,7 +526,8 @@ public class ExportServlet extends HttpServlet {
                                 //sortedTaxonomicNames.addAll(taxonomicNames);
                                 //Collections.sort(taxonomicNames);
                                 for (TaxonomicNameAndGroup nameAndGroup : taxonomicNames) {
-                                    c.print(nameAndGroup.getTaxonomicGroup().getName() + DBUtils.nvl(nameAndGroup.getTaxonomicName()));
+                                    c.print(nameAndGroup.getTaxonomicGroup().getName());
+                                    c.print(DBUtils.nvl(nameAndGroup.getTaxonomicName()));
                                     for (Paleontology paleontology : pals) {
                                         for (PaleontologyListEntry palList : paleontology.getListEntries()) {
                                             TaxonomicNameAndGroup check = new TaxonomicNameAndGroup(palList.getTaxonomicName(), palList.getTaxonomicGroup());
@@ -536,7 +537,7 @@ public class ExportServlet extends HttpServlet {
                                             }
 
                                         }
-                                        c.print("null");
+                                        c.print(null);
                                     }
                                     c.println();
                                 }
