@@ -64,7 +64,16 @@ public class ExportServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html");
-        response.setCharacterEncoding("UTF-16"); // Excel refuses to use UTF-8.
+        
+        /* Let's take a minute to muse over how aweful Microsoft Excel is.
+        
+        If you set the encoding to UTF-8, Excel assumes it's ISO8859-1 instead.
+        If you set the encoding to UTF-16, Excel converts the BOM to þÿ in Cell A1.
+        So you need to set the encoding to UTF-16LE. Screw you, Excel.
+        
+        */
+        
+        response.setCharacterEncoding("UTF-16LE"); // Read the blurb above.
         HttpSession session = request.getSession();
         FredHelper h = new FredHelper();
 
