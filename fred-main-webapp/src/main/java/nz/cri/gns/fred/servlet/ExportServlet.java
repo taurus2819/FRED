@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,6 +19,7 @@ import net.sf.hibernate.HibernateException;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.DBUtils;
+import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.model.Adoption;
 import nz.cri.gns.fred.model.Feature;
@@ -50,7 +53,11 @@ import org.apache.commons.csv.CSVPrinter;
 /**
  * Was export.jsp.
  */
-public class ExportServlet extends HttpServlet {
+public class ExportServlet
+        extends HttpServlet {
+
+    private static final Logger log = Logger.getLogger(
+            "nz.cri.gns.fred.servlet.ExportServlet");
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -61,37 +68,39 @@ public class ExportServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    protected void processRequest(HttpServletRequest request,
+            HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html");
-        
+
         /* Let's take a minute to muse over how aweful Microsoft Excel is.
         
-        If you set the encoding to UTF-8, Excel assumes it's ISO8859-1 instead.
-        If you set the encoding to UTF-16, Excel converts the BOM to þÿ in Cell A1.
-        So you need to set the encoding to UTF-16LE. Screw you, Excel.
+         If you set the encoding to UTF-8, Excel assumes it's ISO8859-1 instead.
+         If you set the encoding to UTF-16, Excel converts the BOM to þÿ in Cell A1.
+         So you need to set the encoding to UTF-16LE. Screw you, Excel.
         
-        */
-        
+         */
         response.setCharacterEncoding("UTF-16LE"); // Read the blurb above.
         HttpSession session = request.getSession();
         FredHelper h = new FredHelper();
-
-        User user = (User) h.getUser(session);
-        FeatureUtil featureUtil = new FeatureUtil(FredHibernate.get().getDAOFactory());
-        StageUtil stageUtil = new StageUtil(FredHibernate.get().getDAOFactory());
-        SampleUtil sampleUtil = new SampleUtil(FredHibernate.get().getDAOFactory());
-        RecordUtil recordUtil = new RecordUtil(FredHibernate.get().getDAOFactory());
-
-        TreeSet<Sample> samples = new TreeSet<Sample>();
+        DAOFactory factory = FredHibernate.get().getDAOFactory();
 
         try {
+            User user = (User) h.getUser(session);
+            FeatureUtil featureUtil = new FeatureUtil(factory);
+            StageUtil stageUtil = new StageUtil(factory);
+            SampleUtil sampleUtil = new SampleUtil(factory);
+            RecordUtil recordUtil = new RecordUtil(factory);
+
+            TreeSet<Sample> samples = new TreeSet<Sample>();
+
             if (request.getParameter("featId") != null) {
                 Integer featureId;
                 try {
                     featureId = Integer.parseInt(request.getParameter("featId"));
                 } catch (NumberFormatException e) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid featId. Not a number");
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                            "Invalid featId. Not a number");
                     return;
                 }
                 Feature feature = featureUtil.getFeature(featureId);
@@ -99,9 +108,12 @@ public class ExportServlet extends HttpServlet {
                     samples.add(sample);
                 }
             } else if (request.getParameter("sampId") != null) {
-                samples.add(sampleUtil.getSample(Integer.parseInt(request.getParameter("sampId"))));
-            } else if (session.getAttribute("FRED.features") != null && ((List<Feature>) session.getAttribute("FRED.features")).size() > 0) {
-                List<Feature> features = (List<Feature>) session.getAttribute("FRED.features");
+                samples.add(sampleUtil.getSample(Integer.parseInt(
+                        request.getParameter("sampId"))));
+            } else if (session.getAttribute("FRED.features") != null && ((List<Feature>) session.getAttribute(
+                    "FRED.features")).size() > 0) {
+                List<Feature> features = (List<Feature>) session.getAttribute(
+                        "FRED.features");
                 for (Feature feature : features) {
                     FredHibernate.get().currentSession().refresh(feature);
                     for (Sample sample : feature.getSamples()) {
@@ -116,26 +128,36 @@ public class ExportServlet extends HttpServlet {
                 if (samples.size() > 0) {
                     // Content type, disposition.
                     response.setContentType("text/csv");
-                    StringBuilder ctSb = new StringBuilder("attachment;filename=fred-export-");
-                    ctSb.append(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+                    StringBuilder ctSb = new StringBuilder(
+                            "attachment;filename=fred-export-");
+                    ctSb.append(new SimpleDateFormat("yyyy-MM-dd").format(
+                            new Date()));
                     ctSb.append(".csv");
                     response.addHeader("Content-Disposition", ctSb.toString());
-                    
 
                     boolean collectionFlag = (request.getParameter("collection") != null);
-                    boolean stratigraphyFlag = (request.getParameter("stratigraphy") != null);
-                    boolean sedimentaryFlag = (request.getParameter("sedimentary") != null);
+                    boolean stratigraphyFlag = (request.getParameter(
+                            "stratigraphy") != null);
+                    boolean sedimentaryFlag = (request.getParameter(
+                            "sedimentary") != null);
                     boolean localityFlag = collectionFlag || stratigraphyFlag || sedimentaryFlag;
                     boolean adoptionFlag = (request.getParameter("adoption") != null);
-                    boolean paleontologyFlag = (request.getParameter("paleontology") != null);
+                    boolean paleontologyFlag = (request.getParameter(
+                            "paleontology") != null);
                     boolean palListFlag = (request.getParameter("palList") != null);
 
                     //file header
-                    c.printRecord("**************************************************************************************************************");
-                    c.printRecord("Data downloaded from FRED (http://www.fred.org.nz) on " + FREDUtil.formatDateForOutput(new Date()));
-                    c.printRecord("FRED is the computer database for the NZ Fossil Record File (FRF), which is a nationally significant database administrated by GSNZ and GNS Science                                ");
-                    c.printRecord("Please acknowledge use of this data in publications, reports and presentations.                               ");
-                    c.printRecord("**************************************************************************************************************");
+                    c.printRecord(
+                            "**************************************************************************************************************");
+                    c.printRecord(
+                            "Data downloaded from FRED (http://www.fred.org.nz) on " + FREDUtil.formatDateForOutput(
+                                    new Date()));
+                    c.printRecord(
+                            "FRED is the computer database for the NZ Fossil Record File (FRF), which is a nationally significant database administrated by GSNZ and GNS Science                                ");
+                    c.printRecord(
+                            "Please acknowledge use of this data in publications, reports and presentations.");
+                    c.printRecord(
+                            "**************************************************************************************************************");
                     c.println();
 
                     if (localityFlag) {
@@ -144,27 +166,52 @@ public class ExportServlet extends HttpServlet {
                         c.printRecord("********");
 
                         writeLocalityHeader(c);
-                        
-                        final String[] coordHeader = new String[] {"Original Grid Reference", "NZMG Easting", "NZMG Northing", "NZGD49 Latitude", "NZGD49 Longitude", "Map Year", "Method", "Accuracy", "Locality", "Country", "Coordinate Comments", "Locality Comments"};
+
+                        final String[] coordHeader = new String[]{
+                            "Original Grid Reference", "NZMG Easting",
+                            "NZMG Northing", "NZGD49 Latitude",
+                            "NZGD49 Longitude", "Map Year", "Method", "Accuracy",
+                            "Locality", "Country", "Coordinate Comments",
+                            "Locality Comments"};
                         for (String each : coordHeader) {
                             c.print(each);
                         }
 
-                        final String[] collectionHeader = new String[] {"Collectors", "Collection Date", "Fossils in Place", "Sent To", "Not Collected", "Significance/Comments"};
+                        final String[] collectionHeader = new String[]{
+                            "Collectors", "Collection Date", "Fossils in Place",
+                            "Sent To", "Not Collected", "Significance/Comments"};
                         if (collectionFlag) {
                             for (String each : collectionHeader) {
                                 c.print(each);
                             }
                         }
                         if (stratigraphyFlag) {
-                            final String [] stratigraphyHeader = new String[] {"Stratigraphic Name", "Inferred Stage Lower", "Inferred Lower Modifier", "Inferred Stage Upper", "Inferred Upper Modifier", "Inferred Age Start", "Inferred Age Stop", "Known Stage Lower", "Known Lower Modifier", "Known Stage Upper", "Known Upper Modifier", "Known Age Start", "Known Age Stop", "",  "Samples Nearby", "Sample Relationships", "Stratigraphic Relationships", "Column/Map", "Dip", "Dip Direction", "Strike", "Facing", "Stratigraphy Comments"};
+                            final String[] stratigraphyHeader = new String[]{
+                                "Stratigraphic Name", "Inferred Stage Lower",
+                                "Inferred Lower Modifier",
+                                "Inferred Stage Upper",
+                                "Inferred Upper Modifier", "Inferred Age Start",
+                                "Inferred Age Stop", "Known Stage Lower",
+                                "Known Lower Modifier", "Known Stage Upper",
+                                "Known Upper Modifier", "Known Age Start",
+                                "Known Age Stop", "Samples Nearby",
+                                "Sample Relationships",
+                                "Stratigraphic Relationships", "Column/Map",
+                                "Dip", "Dip Direction", "Strike", "Facing",
+                                "Stratigraphy Comments"};
                             for (String each : stratigraphyHeader) {
                                 c.print(each);
                             }
                         }
                         if (sedimentaryFlag) {
-                            final String[] sedimentaryHeader = new String[] {"Primary Grainsize", "Secondary Grainsize", "Comparator Used", "Bedding Thickness", "Bedding Features", "Weathering", "Hardness", "Carbonate", "Colour", "Sedimentary Features", "Inferred Environment", "Nature of Rock Unit", "Correspondence"};
-                            for (String each : sedimentaryHeader ) {
+                            final String[] sedimentaryHeader = new String[]{
+                                "Primary Grainsize", "Secondary Grainsize",
+                                "Comparator Used", "Bedding Thickness",
+                                "Bedding Features", "Weathering", "Hardness",
+                                "Carbonate", "Colour", "Sedimentary Features",
+                                "Inferred Environment", "Nature of Rock Unit",
+                                "Correspondence"};
+                            for (String each : sedimentaryHeader) {
                                 c.print(each);
                             }
                         }
@@ -173,45 +220,60 @@ public class ExportServlet extends HttpServlet {
 
                         for (Sample sample : samples) {
                             Feature feature = sample.getFeature();
-                            if (featureUtil.isAllowedReadFeatureSite(user, feature)) {
+                            if (featureUtil.isAllowedReadFeatureSite(user,
+                                    feature)) {
                                 writeLocality(sample, c);
                                 SiteView sv = feature.getSiteView();
                                 if (feature.getOrigCoord() != null & feature.getOrigSystemId() != null) {
                                     Datum datum = SiteUtil.getFREDDatum(feature);
-                                    Coordinate coord = SiteUtil.getFREDCoordinate(feature);
-                                    c.print(datum.getHumanStringFor(coord).replaceAll("Geographic ", ""));
+                                    Coordinate coord = SiteUtil.getFREDCoordinate(
+                                            feature);
+                                    c.print(datum.getHumanStringFor(coord).replaceAll(
+                                            "Geographic ", ""));
                                     try {
-                                        Datum nzmgDatum = DatumFactory.createDatum("NZMG");
-                                        Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(datum, coord);
+                                        Datum nzmgDatum = DatumFactory.createDatum(
+                                                "NZMG");
+                                        Datum.Coordinate nzmgCoord = nzmgDatum.convertFromDatum(
+                                                datum, coord);
                                         c.print(nzmgCoord.getEastWest());
                                         c.print(nzmgCoord.getNorthSouth());
                                     } catch (Exception e) {
-                                        c.print(null); c.print(null);
+                                        c.print(null);
+                                        c.print(null);
                                     }
                                     if (sv != null) {
                                         LatLong ll = SiteUtil.getSiteLatLong(sv);
                                         c.print(ll.getLatAsDecDegree(5));
                                         c.print(ll.getLongAsDecDegree(5));
                                     } else {
-                                        c.print(null); c.print(null);
+                                        c.print(null);
+                                        c.print(null);
                                     }
                                 } else {
-                                    for (int i=0; i<5; i++) {
+                                    for (int i = 0; i < 5; i++) {
                                         c.print(null);
                                     }
                                 }
                                 c.print(DBUtils.nvl(feature.getMapYear()));
-                                c.print(((sv != null) ? DBUtils.nvl(sv.getMethod()) : ""));
-                                c.print(((sv != null) ? DBUtils.nvl(sv.getAccuracy()) : ""));
+                                c.print(((sv != null) ? DBUtils.nvl(
+                                        sv.getMethod()) : ""));
+                                c.print(((sv != null) ? DBUtils.nvl(
+                                        sv.getAccuracy()) : ""));
 
-                                if (featureUtil.isAllowedReadFeature(user, feature)) {
-                                    c.print(DBUtils.nvl(feature.getLocality()).replaceAll("\\s\\s+|\\n|\\r", " "));
+                                if (featureUtil.isAllowedReadFeature(user,
+                                        feature)) {
+                                    c.print(DBUtils.nvl(feature.getLocality()).replaceAll(
+                                            "\\s\\s+|\\n|\\r", " "));
                                     c.print(((sv != null) ? sv.getCountryName() : ""));
-                                    c.print(DBUtils.nvl(feature.getCoordComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
-                                    c.print(DBUtils.nvl(feature.getComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
+                                    c.print(DBUtils.nvl(
+                                            feature.getCoordComments()).replaceAll(
+                                                    "\\s\\s+|\\n|\\r", " "));
+                                    c.print(DBUtils.nvl(feature.getComments()).replaceAll(
+                                            "\\s\\s+|\\n|\\r", " "));
 
                                     if (collectionFlag) {
-                                        if (!FREDUtil.isEmpty(sample.getCollectors())) {
+                                        if (!FREDUtil.isEmpty(
+                                                sample.getCollectors())) {
                                             StringBuilder sb = new StringBuilder();
                                             for (Person collector : sample.getCollectors()) {
                                                 sb.append(collector.getName());
@@ -219,100 +281,154 @@ public class ExportServlet extends HttpServlet {
                                             }
                                             c.print(sb.toString());
                                         }
-                                        c.print(DBUtils.nvl(FREDUtil.formatDateForOutput(sample.getCollectionDate(), sample.getDateRounding())));
+                                        c.print(DBUtils.nvl(
+                                                FREDUtil.formatDateForOutput(
+                                                        sample.getCollectionDate(),
+                                                        sample.getDateRounding())));
                                         c.print(DBUtils.nvl(sample.getInPlace()));
-                                        if (!FREDUtil.isEmpty(sample.getSentTos())) {
+                                        if (!FREDUtil.isEmpty(
+                                                sample.getSentTos())) {
                                             StringBuilder sb = new StringBuilder();
                                             for (SentTo sentTo : sample.getSentTos()) {
-                                                sb.append(SampleUtil.getSentToDescription(sentTo).replaceAll("\\s\\s+|\\n|\\r", " ")).append("; ");
+                                                sb.append(
+                                                        SampleUtil.getSentToDescription(
+                                                                sentTo).replaceAll(
+                                                                "\\s\\s+|\\n|\\r",
+                                                                " ")).append(
+                                                                "; ");
                                             }
                                             c.print(sb.toString());
                                         }
-                                        c.print(DBUtils.nvl(sample.getNotCollected()).replaceAll("\\s\\s+|\\n|\\r", " "));
-                                        c.print(DBUtils.nvl(sample.getSignificance()).replaceAll("\\s\\s+|\\n|\\r", " "));
+                                        c.print(DBUtils.nvl(
+                                                sample.getNotCollected()).replaceAll(
+                                                        "\\s\\s+|\\n|\\r", " "));
+                                        c.print(DBUtils.nvl(
+                                                sample.getSignificance()).replaceAll(
+                                                        "\\s\\s+|\\n|\\r", " "));
                                     }
 
                                     if (stratigraphyFlag) {
-                                        c.print(DBUtils.nvl(sample.getStratUnit()));
+                                        c.print(DBUtils.nvl(
+                                                sample.getStratUnit()));
                                         if (sample.getInferredStage() != null) {
                                             Stage stage = sample.getInferredStage();
                                             c.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : ""));
-                                            c.print(DBUtils.nvl(stage.getStageLowerMod()));
+                                            c.print(DBUtils.nvl(
+                                                    stage.getStageLowerMod()));
                                             c.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : ""));
-                                            c.print(DBUtils.nvl(stage.getStageUpperMod()));
-                                            c.print(stageUtil.getNumericAgeStart(stage));
-                                            c.print(stageUtil.getNumericAgeStop(stage));
+                                            c.print(DBUtils.nvl(
+                                                    stage.getStageUpperMod()));
+                                            c.print(stageUtil.getNumericAgeStart(
+                                                    stage));
+                                            c.print(stageUtil.getNumericAgeStop(
+                                                    stage));
                                         } else {
-                                             for (int i=0; i<6; i++) {
+                                            for (int i = 0; i < 6; i++) {
                                                 c.print(null);
-                                             }
+                                            }
                                         }
                                         if (sample.getKnownStage() != null) {
                                             Stage stage = sample.getKnownStage();
                                             c.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : ""));
-                                            c.print(DBUtils.nvl(stage.getStageLowerMod()));
+                                            c.print(DBUtils.nvl(
+                                                    stage.getStageLowerMod()));
                                             c.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : ""));
-                                            c.print(DBUtils.nvl(stage.getStageUpperMod()));
-                                            c.print(stageUtil.getNumericAgeStart(stage));
-                                            c.print(stageUtil.getNumericAgeStop(stage));
+                                            c.print(DBUtils.nvl(
+                                                    stage.getStageUpperMod()));
+                                            c.print(stageUtil.getNumericAgeStart(
+                                                    stage));
+                                            c.print(stageUtil.getNumericAgeStop(
+                                                    stage));
                                         } else {
-                                              for (int i=0; i<6; i++) {
+                                            for (int i = 0; i < 6; i++) {
                                                 c.print(null);
-                                             }
+                                            }
                                         }
-                                        List<? extends Relationship> nearbys = sampleUtil.getRelationships(sample, "Sample", "nearby");
+                                        List<? extends Relationship> nearbys = sampleUtil.getRelationships(
+                                                sample, "Sample", "nearby");
                                         if (nearbys != null && nearbys.size() > 0) {
                                             StringBuilder sb = new StringBuilder();
                                             for (Relationship rel : nearbys) {
-                                                sb.append(SampleUtil.getRelationshipDescription(rel));
+                                                sb.append(
+                                                        SampleUtil.getRelationshipDescription(
+                                                                rel));
                                                 sb.append("; ");
                                             }
                                             c.print(sb.toString());
                                         }
-                                        List<? extends Relationship> sampRels = sampleUtil.getRelationships(sample, "Sample", new String[]{"above", "below"});
+                                        List<? extends Relationship> sampRels = sampleUtil.getRelationships(
+                                                sample, "Sample",
+                                                new String[]{"above", "below"});
                                         if (nearbys != null && sampRels.size() > 0) {
                                             StringBuilder sb = new StringBuilder();
                                             for (Relationship rel : sampRels) {
-                                                sb.append(SampleUtil.getRelationshipDescription(rel)).append("; ");
+                                                sb.append(
+                                                        SampleUtil.getRelationshipDescription(
+                                                                rel)).append(
+                                                                "; ");
                                             }
                                             c.print(sb.toString());
                                         }
 
-                                        List<? extends Relationship> stratRels = sampleUtil.getRelationships(sample, "Stratigraphic", new String[]{"above top", "above base", "below top", "below base"});
+                                        List<? extends Relationship> stratRels = sampleUtil.getRelationships(
+                                                sample, "Stratigraphic",
+                                                new String[]{"above top",
+                                                    "above base", "below top",
+                                                    "below base"});
                                         if (nearbys != null && stratRels.size() > 0) {
                                             StringBuilder sb = new StringBuilder();
                                             for (Relationship rel : stratRels) {
-                                                sb.append(SampleUtil.getRelationshipDescription(rel)).append("; ");
+                                                sb.append(
+                                                        SampleUtil.getRelationshipDescription(
+                                                                rel)).append(
+                                                                "; ");
                                             }
                                             c.print(sb.toString());
                                         }
-                                        c.print(DBUtils.nvl(sample.getColumnMap()));
+                                        c.print(DBUtils.nvl(
+                                                sample.getColumnMap()));
                                         c.print(DBUtils.nvl(sample.getDip()));
-                                        c.print(DBUtils.nvl(sample.getDipDirection()));
+                                        c.print(DBUtils.nvl(
+                                                sample.getDipDirection()));
                                         c.print(DBUtils.nvl(sample.getStrike()));
                                         c.print(DBUtils.nvl(sample.getFacing()));
-                                        c.print(DBUtils.nvl(sample.getStratComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
+                                        c.print(DBUtils.nvl(
+                                                sample.getStratComments()).replaceAll(
+                                                        "\\s\\s+|\\n|\\r", " "));
                                     }
                                     if (sedimentaryFlag) {
                                         c.print(((sample.getPrimaryGrainSize() != null) ? sample.getPrimaryGrainSize().getName() : ""));
                                         c.print(((sample.getSecondaryGrainSize() != null) ? sample.getSecondaryGrainSize().getName() : ""));
-                                        c.print(DBUtils.nvl(sample.getComparatorUsed()));
+                                        c.print(DBUtils.nvl(
+                                                sample.getComparatorUsed()));
                                         c.print(((sample.getBedThickness() != null) ? sample.getBedThickness().getName() : ""));
-                                        c.print(SampleUtil.getBeddingDescription(sample));
+                                        c.print(SampleUtil.getBeddingDescription(
+                                                sample));
                                         c.print(((sample.getWeathering() != null) ? sample.getWeathering().getName() : ""));
                                         c.print(((sample.getHardness() != null) ? sample.getHardness().getName() : ""));
                                         c.print(((sample.getCarbonate() != null) ? sample.getCarbonate().getName() : ""));
-                                        c.print(SampleUtil.getColourDescription(sample));
-                                        if (!FREDUtil.isEmpty(sample.getSedimentaryFeatures())) {
+                                        c.print(SampleUtil.getColourDescription(
+                                                sample));
+                                        if (!FREDUtil.isEmpty(
+                                                sample.getSedimentaryFeatures())) {
                                             StringBuilder sb = new StringBuilder();
                                             for (SedimentaryFeature sedFeat : sample.getSedimentaryFeatures()) {
-                                                sb.append(SampleUtil.getSedFeatureDescription(sedFeat)).append("; ");
+                                                sb.append(
+                                                        SampleUtil.getSedFeatureDescription(
+                                                                sedFeat)).append(
+                                                                "; ");
                                             }
                                             c.print(sb.toString());
                                         }
-                                        c.print(DBUtils.nvl(sample.getDepositionEnv()).replaceAll("\\s\\s+|\\n|\\r", " "));
-                                        c.print(DBUtils.nvl(sample.getRockNature()).replaceAll("\\s\\s+|\\n|\\r", " "));
-                                        c.print(DBUtils.nvl(sample.getCorrespondence()).replaceAll("\\s\\s+|\\n|\\r", " "));
+                                        c.print(DBUtils.nvl(
+                                                sample.getDepositionEnv()).replaceAll(
+                                                        "\\s\\s+|\\n|\\r", " "));
+                                        c.print(DBUtils.nvl(
+                                                sample.getRockNature()).replaceAll(
+                                                        "\\s\\s+|\\n|\\r", " "));
+                                        c.print(DBUtils.nvl(
+                                                sample.getCorrespondence()).replaceAll(
+                                                        "\\s\\s+|\\n|\\r", " "));
                                     }
                                 }
                                 c.println();
@@ -327,39 +443,55 @@ public class ExportServlet extends HttpServlet {
                         c.printRecord("********");
 
                         writeLocalityHeader(c);
-                        
-                        final String[] adoptionHeader = new String[] {"Adoptors", "Adoption Date", "Adopted Stage Lower", "Adopted Lower Modifier", "Adopted Stage Upper", "Adopted Upper Modifier", "Adopted Age Start", "Adopted Age Stop", "Comments"};
+
+                        final String[] adoptionHeader = new String[]{"Adoptors",
+                            "Adoption Date", "Adopted Stage Lower",
+                            "Adopted Lower Modifier", "Adopted Stage Upper",
+                            "Adopted Upper Modifier", "Adopted Age Start",
+                            "Adopted Age Stop", "Comments"};
                         for (String each : adoptionHeader) {
                             c.print(each);
                         }
                         c.println();
 
                         for (Sample sample : samples) {
-                            for (Adoption adoption : recordUtil.getAdoptionRecords(sample)) {
-                                if (recordUtil.isAllowedReadRecord(user, adoption.getRecord())) {
-                                    writeLocality(adoption.getRecord().getSample(), c);
+                            for (Adoption adoption : recordUtil.getAdoptionRecords(
+                                    sample)) {
+                                if (recordUtil.isAllowedReadRecord(user,
+                                        adoption.getRecord())) {
+                                    writeLocality(
+                                            adoption.getRecord().getSample(), c);
                                     if (!FREDUtil.isEmpty(adoption.getAdoptors())) {
                                         StringBuilder sb = new StringBuilder();
                                         for (Person person : adoption.getAdoptors()) {
-                                            sb.append(person.getName()).append("; ");
+                                            sb.append(person.getName()).append(
+                                                    "; ");
                                         }
                                         c.print(sb.toString());
                                     }
-                                    c.print(DBUtils.nvl(FREDUtil.formatDateForOutput(adoption.getAdoptionDate(), adoption.getDateRounding())));
+                                    c.print(DBUtils.nvl(
+                                            FREDUtil.formatDateForOutput(
+                                                    adoption.getAdoptionDate(),
+                                                    adoption.getDateRounding())));
                                     if (adoption.getStage() != null) {
                                         Stage stage = adoption.getStage();
                                         c.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : ""));
-                                        c.print(DBUtils.nvl(stage.getStageLowerMod()));
+                                        c.print(DBUtils.nvl(
+                                                stage.getStageLowerMod()));
                                         c.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : ""));
-                                        c.print(DBUtils.nvl(stage.getStageUpperMod()));
-                                        c.print(stageUtil.getNumericAgeStart(stage));
-                                        c.print(stageUtil.getNumericAgeStop(stage));
+                                        c.print(DBUtils.nvl(
+                                                stage.getStageUpperMod()));
+                                        c.print(stageUtil.getNumericAgeStart(
+                                                stage));
+                                        c.print(stageUtil.getNumericAgeStop(
+                                                stage));
                                     } else {
-                                        for (int i=0; i<6; i++) {
+                                        for (int i = 0; i < 6; i++) {
                                             c.print(null);
                                         }
                                     }
-                                    c.print(DBUtils.nvl(adoption.getComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
+                                    c.print(DBUtils.nvl(adoption.getComments()).replaceAll(
+                                            "\\s\\s+|\\n|\\r", " "));
                                     c.println();
                                 }
                             }
@@ -373,38 +505,60 @@ public class ExportServlet extends HttpServlet {
                         c.printRecord("********");
 
                         writeLocalityHeader(c);
-                        final String[] paleontologyHeader = new String[] {"Identifiers", "Identification Date", "Stage Lower", "Lower Modifier", "Stage Upper", "Upper Modifier", "Age Start", "Age Stop", "Stage Comments", "Lab Number", "Collection Comments"};
+                        final String[] paleontologyHeader = new String[]{
+                            "Identifiers", "Identification Date", "Stage Lower",
+                            "Lower Modifier", "Stage Upper", "Upper Modifier",
+                            "Age Start", "Age Stop", "Stage Comments",
+                            "Lab Number", "Collection Comments"};
                         c.printRecord((Object[]) paleontologyHeader);
-                        
-                        
+
                         for (Sample sample : samples) {
-                            for (Paleontology paleontology : recordUtil.getPaleontologyRecords(sample)) {
-                                if (recordUtil.isAllowedReadRecord(user, paleontology.getRecord())) {
-                                    writeLocality(paleontology.getRecord().getSample(), c);
-                                    if (!FREDUtil.isEmpty(paleontology.getIdentifiers())) {
+                            for (Paleontology paleontology : recordUtil.getPaleontologyRecords(
+                                    sample)) {
+                                if (recordUtil.isAllowedReadRecord(user,
+                                        paleontology.getRecord())) {
+                                    writeLocality(
+                                            paleontology.getRecord().getSample(),
+                                            c);
+                                    if (!FREDUtil.isEmpty(
+                                            paleontology.getIdentifiers())) {
                                         StringBuilder sb = new StringBuilder();
                                         for (Person person : paleontology.getIdentifiers()) {
-                                            sb.append(person.getName()).append("; ");
+                                            sb.append(person.getName()).append(
+                                                    "; ");
                                         }
                                         c.print(sb.toString());
                                     }
-                                    c.print(DBUtils.nvl(FREDUtil.formatDateForOutput(paleontology.getIdentificationDate(), paleontology.getDateRounding())));
+                                    c.print(DBUtils.nvl(
+                                            FREDUtil.formatDateForOutput(
+                                                    paleontology.getIdentificationDate(),
+                                                    paleontology.getDateRounding())));
                                     if (paleontology.getStage() != null) {
                                         Stage stage = paleontology.getStage();
                                         c.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : ""));
-                                        c.print(DBUtils.nvl(stage.getStageLowerMod()));
+                                        c.print(DBUtils.nvl(
+                                                stage.getStageLowerMod()));
                                         c.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : ""));
-                                        c.print(DBUtils.nvl(stage.getStageUpperMod()));
-                                        c.print(stageUtil.getNumericAgeStart(stage));
-                                        c.print(stageUtil.getNumericAgeStop(stage));
+                                        c.print(DBUtils.nvl(
+                                                stage.getStageUpperMod()));
+                                        c.print(stageUtil.getNumericAgeStart(
+                                                stage));
+                                        c.print(stageUtil.getNumericAgeStop(
+                                                stage));
                                     } else {
-                                        for (int i=0; i<6; i++) {
+                                        for (int i = 0; i < 6; i++) {
                                             c.print(null);
                                         }
                                     }
-                                    c.print(DBUtils.nvl(paleontology.getStageComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
-                                    c.print(DBUtils.nvl(RecordUtil.getLabNumberDescription(paleontology)));
-                                    c.print(DBUtils.nvl(paleontology.getCollectionComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
+                                    c.print(DBUtils.nvl(
+                                            paleontology.getStageComments()).replaceAll(
+                                                    "\\s\\s+|\\n|\\r", " "));
+                                    c.print(DBUtils.nvl(
+                                            RecordUtil.getLabNumberDescription(
+                                                    paleontology)));
+                                    c.print(DBUtils.nvl(
+                                            paleontology.getCollectionComments()).replaceAll(
+                                                    "\\s\\s+|\\n|\\r", " "));
                                     c.println();
                                 }
                             }
@@ -421,11 +575,14 @@ public class ExportServlet extends HttpServlet {
                         List<Paleontology> paleontologies = new Vector<Paleontology>();
                         int i = 0;
                         for (Sample sample : samples) {
-                            for (Paleontology paleontology : recordUtil.getPaleontologyRecords(sample)) {
-                                if (recordUtil.isAllowedReadPalList(user, paleontology)) {
+                            for (Paleontology paleontology : recordUtil.getPaleontologyRecords(
+                                    sample)) {
+                                if (recordUtil.isAllowedReadPalList(user,
+                                        paleontology)) {
                                     paleontologies.add(paleontology);
                                     if (++i == 250) {
-                                        paleontologyMasterList.add(paleontologies);
+                                        paleontologyMasterList.add(
+                                                paleontologies);
                                         paleontologies = new Vector<Paleontology>();
                                         i = 0;
                                     }
@@ -465,59 +622,74 @@ public class ExportServlet extends HttpServlet {
                                 }
                                 c.println();
 
-                                c.print("Locality Type"); c.print(null);
+                                c.print("Locality Type");
+                                c.print(null);
                                 for (Paleontology paleontology : pals) {
                                     c.print(paleontology.getRecord().getSample().getFeature().getFeatureType());
                                 }
                                 c.println();
 
-                                c.print("Field Number/Drillhole Name"); c.print(null);
+                                c.print("Field Number/Drillhole Name");
+                                c.print(null);
                                 for (Paleontology paleontology : pals) {
-                                    c.print(DBUtils.nvl(paleontology.getRecord().getSample().getFeature().getFeatureName()));
+                                    c.print(DBUtils.nvl(
+                                            paleontology.getRecord().getSample().getFeature().getFeatureName()));
                                 }
                                 c.println();
 
-                                c.print("Depth From"); c.print(null);
+                                c.print("Depth From");
+                                c.print(null);
                                 for (Paleontology paleontology : pals) {
-                                    c.print(DBUtils.nvl(paleontology.getRecord().getSample().getTopDepth()));
+                                    c.print(DBUtils.nvl(
+                                            paleontology.getRecord().getSample().getTopDepth()));
                                 }
                                 c.println();
 
-                                c.print("Depth To"); c.print(null);
+                                c.print("Depth To");
+                                c.print(null);
                                 for (Paleontology paleontology : pals) {
-                                    c.print(DBUtils.nvl(paleontology.getRecord().getSample().getBottomDepth()));
+                                    c.print(DBUtils.nvl(
+                                            paleontology.getRecord().getSample().getBottomDepth()));
                                 }
                                 c.println();
 
-                                c.print("Depth Unit"); c.print(null);
+                                c.print("Depth Unit");
+                                c.print(null);
                                 for (Paleontology paleontology : pals) {
-                                    c.print(DBUtils.nvl(paleontology.getRecord().getSample().getDepthUnit()));
+                                    c.print(DBUtils.nvl(
+                                            paleontology.getRecord().getSample().getDepthUnit()));
                                 }
                                 c.println();
 
-                                c.print("Drill Type"); c.print(null);
+                                c.print("Drill Type");
+                                c.print(null);
                                 for (Paleontology paleontology : pals) {
                                     c.print(((paleontology.getRecord().getSample().getDrillType() != null) ? paleontology.getRecord().getSample().getDrillType().getName() : ""));
                                 }
                                 c.println();
 
-                                c.print("Identifier"); c.print(null);
+                                c.print("Identifier");
+                                c.print(null);
                                 for (Paleontology paleontology : pals) {
-                                    if (!FREDUtil.isEmpty(paleontology.getIdentifiers())) {
+                                    if (!FREDUtil.isEmpty(
+                                            paleontology.getIdentifiers())) {
                                         StringBuilder sb = new StringBuilder();
                                         for (Person person : paleontology.getIdentifiers()) {
-                                            sb.append(person.getName()).append("; ");
+                                            sb.append(person.getName()).append(
+                                                    "; ");
                                         }
                                         c.print(sb.toString());
                                     }
-                                    
+
                                 }
                                 c.println();
 
                                 TreeSet<TaxonomicNameAndGroup> taxonomicNames = new TreeSet<TaxonomicNameAndGroup>();
                                 for (Paleontology paleontology : pals) {
                                     for (PaleontologyListEntry palList : paleontology.getListEntries()) {
-                                        TaxonomicNameAndGroup nameAndGroup = new TaxonomicNameAndGroup(palList.getTaxonomicName(), palList.getTaxonomicGroup());
+                                        TaxonomicNameAndGroup nameAndGroup = new TaxonomicNameAndGroup(
+                                                palList.getTaxonomicName(),
+                                                palList.getTaxonomicGroup());
                                         //if (!taxonomicNames.contains(nameAndGroup))
                                         taxonomicNames.add(nameAndGroup);
                                     }
@@ -527,10 +699,13 @@ public class ExportServlet extends HttpServlet {
                                 //Collections.sort(taxonomicNames);
                                 for (TaxonomicNameAndGroup nameAndGroup : taxonomicNames) {
                                     c.print(nameAndGroup.getTaxonomicGroup().getName());
-                                    c.print(DBUtils.nvl(nameAndGroup.getTaxonomicName()));
+                                    c.print(DBUtils.nvl(
+                                            nameAndGroup.getTaxonomicName()));
                                     for (Paleontology paleontology : pals) {
                                         for (PaleontologyListEntry palList : paleontology.getListEntries()) {
-                                            TaxonomicNameAndGroup check = new TaxonomicNameAndGroup(palList.getTaxonomicName(), palList.getTaxonomicGroup());
+                                            TaxonomicNameAndGroup check = new TaxonomicNameAndGroup(
+                                                    palList.getTaxonomicName(),
+                                                    palList.getTaxonomicGroup());
                                             if (check.equals(nameAndGroup)) {
                                                 c.print(encodeTaxaString(palList));
                                                 break;
@@ -546,7 +721,8 @@ public class ExportServlet extends HttpServlet {
                         }
                     }
 
-                    new AuditUtil(FredHibernate.get().getDAOFactory()).addLogEntry(AuditUtil.DOWNLOAD_LOG_TYPE, user, samples.size());
+                    new AuditUtil(FredHibernate.get().getDAOFactory()).addLogEntry(
+                            AuditUtil.DOWNLOAD_LOG_TYPE, user, samples.size());
 
                 } else {
                     ExtranetTemplate et = h.getExtranetTemplate();
@@ -558,6 +734,12 @@ public class ExportServlet extends HttpServlet {
             }
         } catch (StorageAccessException | SQLException | NamingException | HibernateException e) {
             throw new ServletException(e);
+        } finally {
+            try {
+                factory.closeSession();
+            } catch (StorageAccessException ex) {
+                log.log(Level.WARNING, null, ex);
+            }
         }
 
     }
@@ -572,7 +754,8 @@ public class ExportServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request,
+            HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
@@ -586,7 +769,8 @@ public class ExportServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request,
+            HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
@@ -602,7 +786,9 @@ public class ExportServlet extends HttpServlet {
     }// </editor-fold>
 
     public void writeLocalityHeader(CSVPrinter c) throws IOException {
-        final String[] localityHeader = new String[] {"FR Number", "Yard FR Number", "Locality Type", "Field Number/Drillhole Name", "Depth From", "Depth To", "Depth Unit", "Drill Type"};
+        final String[] localityHeader = new String[]{"FR Number",
+            "Yard FR Number", "Locality Type", "Field Number/Drillhole Name",
+            "Depth From", "Depth To", "Depth Unit", "Drill Type"};
         for (String each : localityHeader) {
             c.print(each);
         }
@@ -634,18 +820,21 @@ public class ExportServlet extends HttpServlet {
 
         String enc = ((specCount != null) ? specCount.toString() : "") + "|" + specCoord + "|" + comments;
 
-        if (specCount == null && FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(comments)) {
+        if (specCount == null && FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(
+                comments)) {
             enc = "*";
-        } else if (specCount != null && !FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(comments)) {
+        } else if (specCount != null && !FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(
+                comments)) {
             enc = specCount.toString() + "|" + specCoord;
-        } else if (specCount != null && FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(comments)) {
+        } else if (specCount != null && FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(
+                comments)) {
             enc = specCount.toString();
-        } else if (specCount == null && FREDUtil.isEmpty(specCoord) && !FREDUtil.isEmpty(comments)) {
+        } else if (specCount == null && FREDUtil.isEmpty(specCoord) && !FREDUtil.isEmpty(
+                comments)) {
             enc = comments;
         }
 
         return enc;
     }
-    
-}
 
+}

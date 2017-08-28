@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException;
 import nz.cri.gns.auth.security.IpGrantedAuthority;
@@ -28,7 +30,13 @@ import nz.cri.gns.fred.FredGrantedAuthorities;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.servlet.util.JspWriterImpl;
 
-public class De_jsp extends HttpServlet {
+/**
+ * Was de.jsp
+ */
+public class De_jsp
+        extends HttpServlet {
+
+    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.servlet.De_jsp");
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -40,16 +48,17 @@ public class De_jsp extends HttpServlet {
         JspWriterImpl out = new JspWriterImpl(response.getOutputStream());
         HttpSession session = request.getSession();
         FredHelper h = new FredHelper(); // Replaces subclassing FREDDEIPSysJspPage. 
+        DAOFactory factory = FredHibernate.get().getDAOFactory();
 
         try {
-            
+
             if (!h.checkAccess(request, response, new IpGrantedAuthority(FredGrantedAuthorities.FR_DATA_ENTRY))) {
                 return;
             }
 
             response.setContentType("text/html;charset=utf-8");
             ExtranetTemplate et = h.getExtranetTemplate();
-            DAOFactory factory = FredHibernate.get().getDAOFactory();
+
             DataEntryForm dataEntryForm = null;
 
             dataEntryForm = getDataEntryForm(h, request);
@@ -170,17 +179,16 @@ public class De_jsp extends HttpServlet {
             out.write("\t//--></script>");
 
             h.drawBottom(out, et);
-
-            try {
-                factory.closeSession();
-            } catch (StorageAccessException e) {
-            }
-
             out.flush();
         } catch (StorageAccessException | InsufficientPrivelegesException | SQLException e) {
             throw new ServletException(e);
+        } finally {
+            try {
+                factory.closeSession();
+            } catch (StorageAccessException ex) {
+                log.log(Level.WARNING, null, ex);
+            }
         }
-
     }
 
     public String getName(HttpServletRequest request) {

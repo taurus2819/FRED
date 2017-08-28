@@ -1,11 +1,11 @@
 package nz.cri.gns.fred.hibernate.util;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.sf.hibernate.Criteria;
 import net.sf.hibernate.HibernateException;
@@ -50,8 +50,11 @@ import nz.cri.gns.fred.model.StratigraphicUnit;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 
-public class HibernateDAOFactory implements DAOFactory, FredDAO {
-
+public class HibernateDAOFactory
+        implements DAOFactory, FredDAO {
+    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.hibernate.util.HibernateDAOFactory");
+    
+    
     private HibernateProvider provider;
 
     public HibernateDAOFactory(HibernateProvider provider) {
@@ -99,7 +102,7 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
     public Age createNewAge() {
         return new nz.cri.gns.fred.hibernate.Age();
     }
-    
+
     public Folder createNewFolder() {
         return new nz.cri.gns.fred.hibernate.Folder();
     }
@@ -167,11 +170,7 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
     }
 
     public void closeSession() throws StorageAccessException {
-        try {
-            provider.closeSession();
-        } catch (Exception e) {
-            throw new StorageAccessException(e);
-        }
+        provider.closeSession();
     }
 
     //FeatureDAO methods
@@ -444,16 +443,16 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
             throw new StorageAccessException(e);
         }
     }
-    
+
     public <T extends Comparable<? super T>> List<T> getUnsortedList(String query, Class<T> clazz, Object... parameters) throws StorageAccessException {
         return getUnsortedList(query, null, clazz, parameters);
     }
-    
+
     public <T extends Comparable<? super T>> List<T> getUnsortedList(String query, Integer maxResults, Class<T> clazz, Object... parameters) throws StorageAccessException {
         List<T> items = HibernateUtils.list(provider, query, maxResults, clazz, parameters);
         return items;
     }
-    
+
     public FrUser createNewFrUser() {
         return new nz.cri.gns.fred.hibernate.FrUser();
     }
@@ -498,6 +497,4 @@ public class HibernateDAOFactory implements DAOFactory, FredDAO {
     public LogTable createNewLog() {
         return new nz.cri.gns.fred.hibernate.LogTable();
     }
-
-    
 }
