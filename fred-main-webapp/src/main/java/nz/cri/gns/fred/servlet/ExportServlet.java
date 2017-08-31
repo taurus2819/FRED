@@ -238,21 +238,17 @@ public class ExportServlet
                                         c.print(nzmgCoord.getEastWest());
                                         c.print(nzmgCoord.getNorthSouth());
                                     } catch (Exception e) {
-                                        c.print(null);
-                                        c.print(null);
+                                        skipColumns(c, 2);
                                     }
                                     if (sv != null) {
                                         LatLong ll = SiteUtil.getSiteLatLong(sv);
                                         c.print(ll.getLatAsDecDegree(5));
                                         c.print(ll.getLongAsDecDegree(5));
                                     } else {
-                                        c.print(null);
-                                        c.print(null);
+                                        skipColumns(c, 2);
                                     }
                                 } else {
-                                    for (int i = 0; i < 5; i++) {
-                                        c.print(null);
-                                    }
+                                        skipColumns(c, 5);
                                 }
                                 c.print(DBUtils.nvl(feature.getMapYear()));
                                 c.print(((sv != null) ? DBUtils.nvl(
@@ -260,8 +256,7 @@ public class ExportServlet
                                 c.print(((sv != null) ? DBUtils.nvl(
                                         sv.getAccuracy()) : ""));
 
-                                if (featureUtil.isAllowedReadFeature(user,
-                                        feature)) {
+                                if (featureUtil.isAllowedReadFeature(user,feature)) {
                                     c.print(DBUtils.nvl(feature.getLocality()).replaceAll(
                                             "\\s\\s+|\\n|\\r", " "));
                                     c.print(((sv != null) ? sv.getCountryName() : ""));
@@ -308,54 +303,42 @@ public class ExportServlet
                                     }
 
                                     if (stratigraphyFlag) {
-                                        c.print(DBUtils.nvl(
-                                                sample.getStratUnit()));
+                                        c.print(DBUtils.nvl(sample.getStratUnit()));
                                         if (sample.getInferredStage() != null) {
                                             Stage stage = sample.getInferredStage();
                                             c.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : ""));
-                                            c.print(DBUtils.nvl(
-                                                    stage.getStageLowerMod()));
+                                            c.print(DBUtils.nvl(stage.getStageLowerMod()));
                                             c.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : ""));
-                                            c.print(DBUtils.nvl(
-                                                    stage.getStageUpperMod()));
-                                            c.print(stageUtil.getNumericAgeStart(
-                                                    stage));
-                                            c.print(stageUtil.getNumericAgeStop(
-                                                    stage));
+                                            c.print(DBUtils.nvl(stage.getStageUpperMod()));
+                                            c.print(stageUtil.getNumericAgeStart(stage));
+                                            c.print(stageUtil.getNumericAgeStop(stage));
                                         } else {
-                                            for (int i = 0; i < 6; i++) {
-                                                c.print(null);
-                                            }
+                                            skipColumns(c, 6);
                                         }
                                         if (sample.getKnownStage() != null) {
                                             Stage stage = sample.getKnownStage();
                                             c.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : ""));
-                                            c.print(DBUtils.nvl(
-                                                    stage.getStageLowerMod()));
+                                            c.print(DBUtils.nvl(stage.getStageLowerMod()));
                                             c.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : ""));
-                                            c.print(DBUtils.nvl(
-                                                    stage.getStageUpperMod()));
-                                            c.print(stageUtil.getNumericAgeStart(
-                                                    stage));
-                                            c.print(stageUtil.getNumericAgeStop(
-                                                    stage));
+                                            c.print(DBUtils.nvl(stage.getStageUpperMod()));
+                                            c.print(stageUtil.getNumericAgeStart(stage));
+                                            c.print(stageUtil.getNumericAgeStop(stage));
                                         } else {
-                                            for (int i = 0; i < 6; i++) {
-                                                c.print(null);
-                                            }
+                                            skipColumns(c, 6);
                                         }
                                         List<? extends Relationship> nearbys = sampleUtil.getRelationships(
                                                 sample, "Sample", "nearby");
                                         if (nearbys != null && nearbys.size() > 0) {
                                             StringBuilder sb = new StringBuilder();
                                             for (Relationship rel : nearbys) {
-                                                sb.append(
-                                                        SampleUtil.getRelationshipDescription(
-                                                                rel));
+                                                sb.append(SampleUtil.getRelationshipDescription(rel));
                                                 sb.append("; ");
                                             }
                                             c.print(sb.toString());
+                                        } else {
+                                            c.print(null);
                                         }
+                                        
                                         List<? extends Relationship> sampRels = sampleUtil.getRelationships(
                                                 sample, "Sample",
                                                 new String[]{"above", "below"});
@@ -363,11 +346,11 @@ public class ExportServlet
                                             StringBuilder sb = new StringBuilder();
                                             for (Relationship rel : sampRels) {
                                                 sb.append(
-                                                        SampleUtil.getRelationshipDescription(
-                                                                rel)).append(
-                                                                "; ");
+                                                        SampleUtil.getRelationshipDescription(rel)).append("; ");
                                             }
                                             c.print(sb.toString());
+                                        } else {
+                                            c.print(null);
                                         }
 
                                         List<? extends Relationship> stratRels = sampleUtil.getRelationships(
@@ -378,24 +361,22 @@ public class ExportServlet
                                         if (nearbys != null && stratRels.size() > 0) {
                                             StringBuilder sb = new StringBuilder();
                                             for (Relationship rel : stratRels) {
-                                                sb.append(
-                                                        SampleUtil.getRelationshipDescription(
-                                                                rel)).append(
-                                                                "; ");
+                                                sb.append(SampleUtil.getRelationshipDescription(rel)).append("; ");
                                             }
                                             c.print(sb.toString());
+                                        } else {
+                                            c.print(null);
                                         }
-                                        c.print(DBUtils.nvl(
-                                                sample.getColumnMap()));
+                                        
+                                        c.print(DBUtils.nvl(sample.getColumnMap()));
                                         c.print(DBUtils.nvl(sample.getDip()));
-                                        c.print(DBUtils.nvl(
-                                                sample.getDipDirection()));
+                                        c.print(DBUtils.nvl(sample.getDipDirection()));
                                         c.print(DBUtils.nvl(sample.getStrike()));
                                         c.print(DBUtils.nvl(sample.getFacing()));
-                                        c.print(DBUtils.nvl(
-                                                sample.getStratComments()).replaceAll(
-                                                        "\\s\\s+|\\n|\\r", " "));
+                                        c.print(DBUtils.nvl(sample.getStratComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
                                     }
+                                    
+                                    
                                     if (sedimentaryFlag) {
                                         c.print(((sample.getPrimaryGrainSize() != null) ? sample.getPrimaryGrainSize().getName() : ""));
                                         c.print(((sample.getSecondaryGrainSize() != null) ? sample.getSecondaryGrainSize().getName() : ""));
@@ -409,8 +390,7 @@ public class ExportServlet
                                         c.print(((sample.getCarbonate() != null) ? sample.getCarbonate().getName() : ""));
                                         c.print(SampleUtil.getColourDescription(
                                                 sample));
-                                        if (!FREDUtil.isEmpty(
-                                                sample.getSedimentaryFeatures())) {
+                                        if (!FREDUtil.isEmpty(sample.getSedimentaryFeatures())) {
                                             StringBuilder sb = new StringBuilder();
                                             for (SedimentaryFeature sedFeat : sample.getSedimentaryFeatures()) {
                                                 sb.append(
@@ -419,6 +399,8 @@ public class ExportServlet
                                                                 "; ");
                                             }
                                             c.print(sb.toString());
+                                        } else {
+                                            c.print(null);
                                         }
                                         c.print(DBUtils.nvl(
                                                 sample.getDepositionEnv()).replaceAll(
@@ -486,12 +468,9 @@ public class ExportServlet
                                         c.print(stageUtil.getNumericAgeStop(
                                                 stage));
                                     } else {
-                                        for (int i = 0; i < 6; i++) {
-                                            c.print(null);
-                                        }
+                                        skipColumns(c, 6);
                                     }
-                                    c.print(DBUtils.nvl(adoption.getComments()).replaceAll(
-                                            "\\s\\s+|\\n|\\r", " "));
+                                    c.print(DBUtils.nvl(adoption.getComments()).replaceAll("\\s\\s+|\\n|\\r", " "));
                                     c.println();
                                 }
                             }
@@ -515,19 +494,16 @@ public class ExportServlet
                         for (Sample sample : samples) {
                             for (Paleontology paleontology : recordUtil.getPaleontologyRecords(
                                     sample)) {
-                                if (recordUtil.isAllowedReadRecord(user,
-                                        paleontology.getRecord())) {
-                                    writeLocality(
-                                            paleontology.getRecord().getSample(),
-                                            c);
-                                    if (!FREDUtil.isEmpty(
-                                            paleontology.getIdentifiers())) {
+                                if (recordUtil.isAllowedReadRecord(user, paleontology.getRecord())) {
+                                    writeLocality(paleontology.getRecord().getSample(), c);
+                                    if (!FREDUtil.isEmpty(paleontology.getIdentifiers())) {
                                         StringBuilder sb = new StringBuilder();
                                         for (Person person : paleontology.getIdentifiers()) {
-                                            sb.append(person.getName()).append(
-                                                    "; ");
+                                            sb.append(person.getName()).append("; ");
                                         }
                                         c.print(sb.toString());
+                                    } else {
+                                        c.print(null);
                                     }
                                     c.print(DBUtils.nvl(
                                             FREDUtil.formatDateForOutput(
@@ -536,19 +512,13 @@ public class ExportServlet
                                     if (paleontology.getStage() != null) {
                                         Stage stage = paleontology.getStage();
                                         c.print(((stage.getLowerAge() != null) ? stage.getLowerAge().getName() : ""));
-                                        c.print(DBUtils.nvl(
-                                                stage.getStageLowerMod()));
+                                        c.print(DBUtils.nvl(stage.getStageLowerMod()));
                                         c.print(((stage.getUpperAge() != null) ? stage.getUpperAge().getName() : ""));
-                                        c.print(DBUtils.nvl(
-                                                stage.getStageUpperMod()));
-                                        c.print(stageUtil.getNumericAgeStart(
-                                                stage));
-                                        c.print(stageUtil.getNumericAgeStop(
-                                                stage));
+                                        c.print(DBUtils.nvl(stage.getStageUpperMod()));
+                                        c.print(stageUtil.getNumericAgeStart(stage));
+                                        c.print(stageUtil.getNumericAgeStop(stage));
                                     } else {
-                                        for (int i = 0; i < 6; i++) {
-                                            c.print(null);
-                                        }
+                                        skipColumns(c, 6);
                                     }
                                     c.print(DBUtils.nvl(
                                             paleontology.getStageComments()).replaceAll(
@@ -575,14 +545,11 @@ public class ExportServlet
                         List<Paleontology> paleontologies = new Vector<Paleontology>();
                         int i = 0;
                         for (Sample sample : samples) {
-                            for (Paleontology paleontology : recordUtil.getPaleontologyRecords(
-                                    sample)) {
-                                if (recordUtil.isAllowedReadPalList(user,
-                                        paleontology)) {
+                            for (Paleontology paleontology : recordUtil.getPaleontologyRecords(sample)) {
+                                if (recordUtil.isAllowedReadPalList(user,paleontology)) {
                                     paleontologies.add(paleontology);
                                     if (++i == 250) {
-                                        paleontologyMasterList.add(
-                                                paleontologies);
+                                        paleontologyMasterList.add(paleontologies);
                                         paleontologies = new Vector<Paleontology>();
                                         i = 0;
                                     }
@@ -671,16 +638,13 @@ public class ExportServlet
                                 c.print("Identifier");
                                 c.print(null);
                                 for (Paleontology paleontology : pals) {
-                                    if (!FREDUtil.isEmpty(
-                                            paleontology.getIdentifiers())) {
+                                    if (!FREDUtil.isEmpty(paleontology.getIdentifiers())) {
                                         StringBuilder sb = new StringBuilder();
                                         for (Person person : paleontology.getIdentifiers()) {
-                                            sb.append(person.getName()).append(
-                                                    "; ");
+                                            sb.append(person.getName()).append("; ");
                                         }
                                         c.print(sb.toString());
                                     }
-
                                 }
                                 c.println();
 
@@ -699,20 +663,20 @@ public class ExportServlet
                                 //Collections.sort(taxonomicNames);
                                 for (TaxonomicNameAndGroup nameAndGroup : taxonomicNames) {
                                     c.print(nameAndGroup.getTaxonomicGroup().getName());
-                                    c.print(DBUtils.nvl(
-                                            nameAndGroup.getTaxonomicName()));
+                                    c.print(DBUtils.nvl(nameAndGroup.getTaxonomicName()));
                                     for (Paleontology paleontology : pals) {
+                                        String printMe = null;
                                         for (PaleontologyListEntry palList : paleontology.getListEntries()) {
                                             TaxonomicNameAndGroup check = new TaxonomicNameAndGroup(
                                                     palList.getTaxonomicName(),
                                                     palList.getTaxonomicGroup());
                                             if (check.equals(nameAndGroup)) {
-                                                c.print(encodeTaxaString(palList));
+                                                printMe = encodeTaxaString(palList);
                                                 break;
-                                            }
+                                            } 
 
                                         }
-                                        c.print(null);
+                                        c.print(printMe);
                                     }
                                     c.println();
                                 }
@@ -785,10 +749,10 @@ public class ExportServlet
         return "Short description";
     }// </editor-fold>
 
-    public void writeLocalityHeader(CSVPrinter c) throws IOException {
-        final String[] localityHeader = new String[]{"FR Number",
+    private final String[] localityHeader = new String[]{"FR Number",
             "Yard FR Number", "Locality Type", "Field Number/Drillhole Name",
             "Depth From", "Depth To", "Depth Unit", "Drill Type"};
+    public void writeLocalityHeader(CSVPrinter c) throws IOException {
         for (String each : localityHeader) {
             c.print(each);
         }
@@ -820,21 +784,23 @@ public class ExportServlet
 
         String enc = ((specCount != null) ? specCount.toString() : "") + "|" + specCoord + "|" + comments;
 
-        if (specCount == null && FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(
-                comments)) {
+        if (specCount == null && FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(comments)) {
             enc = "*";
-        } else if (specCount != null && !FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(
-                comments)) {
+        } else if (specCount != null && !FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(comments)) {
             enc = specCount.toString() + "|" + specCoord;
-        } else if (specCount != null && FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(
-                comments)) {
+        } else if (specCount != null && FREDUtil.isEmpty(specCoord) && FREDUtil.isEmpty(comments)) {
             enc = specCount.toString();
-        } else if (specCount == null && FREDUtil.isEmpty(specCoord) && !FREDUtil.isEmpty(
-                comments)) {
+        } else if (specCount == null && FREDUtil.isEmpty(specCoord) && !FREDUtil.isEmpty(comments)) {
             enc = comments;
         }
 
         return enc;
     }
 
+    private void skipColumns(CSVPrinter c, int numColumns) throws IOException {
+        for (int i=0; i<numColumns; i++) {
+            c.print(null);
+        }
+    }
+    
 }
