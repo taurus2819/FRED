@@ -24,7 +24,11 @@
 %><%@page import="nz.cri.gns.fred.util.RecordUtil"
 %><%@page import="nz.cri.gns.fred.util.FREDUtil"
 %><%@page import="nz.cri.gns.db.DBUtils"
+%><%@page import="java.util.logging.Logger"
+%><%@page import="java.util.logging.Level"
 %><%!
+    private static final Logger log = Logger.getLogger("folder_detail.jsp");
+
 	public String getName(HttpServletRequest request) {
 		try {
 			FolderUtil folderUtil = new FolderUtil(FredHibernate.get().getDAOFactory());
@@ -125,9 +129,8 @@
 					alert("<%=e.getMessage()%>");
 					//--></script><%
 				} catch (Exception e) {
-					System.out.println("*********** FRED folder_detail.jsp error ********** " + new java.util.Date());
-					e.printStackTrace();
-					errorMessage = "An Error has occured: " + e.getMessage();
+                                                                            log.log(Level.WARNING, null, e);
+                                                                            errorMessage = "An Error has occured: " + e.toString();
 				}
 			}
 			
@@ -835,16 +838,17 @@
 				</form><%
 				
 			} catch (Exception e) {
-				System.out.println("*********** FRED folder_detail.jsp error ********** " + new java.util.Date());
-				e.printStackTrace();
-				%>A database error has occurred loading this page.<%
+                                                                            log.log(Level.WARNING, null, e);
+                                                                            errorMessage = "An Error has occurred: " + e.toString();
+				%>A database error has occurred loading this page: <%=e.toString()%> <%
 			}
 		} else { //no folder found
 			%><p><span class="heading">You do not have sufficient rights to view this folder</span></p><%
 		}
 		
-	} catch (Exception e) { // This is needed to catch entire exception
-		e.printStackTrace(); 
+	} catch (Exception e) {
+                    log.log(Level.WARNING, null, e);
+                    %>An Error has occurred: <%=e.toString()%><%
 	}
 	
 	drawBottom(out, et);
