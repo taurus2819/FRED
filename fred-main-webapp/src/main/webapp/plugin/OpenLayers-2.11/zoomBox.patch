@@ -1,0 +1,14 @@
+Index: ZoomBox.js
+===================================================================
+--- ZoomBox.js	(revision 10488)
++++ ZoomBox.js	(working copy)
+@@ -57,6 +57,9 @@
+                             new OpenLayers.Pixel(position.left, position.bottom));
+                 var maxXY = this.map.getLonLatFromPixel(
+                             new OpenLayers.Pixel(position.right, position.top));
++                if (maxXY.lon < minXY.lon) {
++                   maxXY.lon += this.map.baseLayer.maxExtent.getWidth();
++                }
+                 bounds = new OpenLayers.Bounds(minXY.lon, minXY.lat,
+                                                maxXY.lon, maxXY.lat);
+             } else {

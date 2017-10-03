@@ -29,10 +29,6 @@ public class WMSClient {
         try {
             if (layers.contains("-7")) {
                 serverURL = "https://data.linz.govt.nz/services;key=2196be5e2a3f48179fddb966dd15add4/wms?SERVICE=WMS&request=GetMap";
-                    //"http://wms.data.linz.govt.nz/2196be5e2a3f48179fddb966dd15add4/r/wms?service=WMS&request=GetMap";
-                    //maps.gns.cri.nz/mapserver?SERVICE=WMS&version=1.1.0&request=GetMap
-                    //&layers=x767
-                    //&srs=EPSG%3A27200&bbox=2692000,6042200,2697000,6047200&width=620&height=500&format=image%2Fjpeg
             } else {
                 serverURL = "https://maps.gns.cri.nz/geoserver/wms?service=WMS&request=GetMap";
             //&layers=gns:FR.FRED_SITE_VIEW

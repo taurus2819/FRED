@@ -6,16 +6,19 @@
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
         <title>FRED Database</title>
 
-        <link rel="stylesheet" href="//maps.gns.cri.nz/GeoExt/resources/css/geoext-all.css" type="text/css" />
+        <link rel="stylesheet" href="./plugin/GeoExt-1.0/resources/css/geoext-all.css" type="text/css" />
 
-        <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/ext-base.js"></script>
-        <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/ext-all.js"></script>
-        <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/OpenLayers-2.11/OpenLayers.js"></script>
-        <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/GeoExt.js"></script>
-        <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/scripts/proj4js/proj4js-compressed.js"></script>
-        <script type="text/javascript" language="javascript" src="//maps.gns.cri.nz/proj4js/defs/EPSG4272.js"></script>
-        <script type="text/javascript" language="javascript" src="//maps.google.com/maps/api/js?sensor=false"></script>
-        <script type="text/javascript" language="javascript" src="<%=request.getContextPath()%>/scripts/wfsQuery.js"></script>          
+        <script type="text/javascript" language="javascript" src="./scripts/ext-base.js"></script>
+        <script type="text/javascript" language="javascript" src="./scripts/ext-all.js"></script>
+        <script type="text/javascript" language="javascript" src="./scripts/util.js"></script>
+        <script type="text/javascript" language="javascript" src="./plugin/OpenLayers-2.11/OpenLayers.js"></script>
+        <script type="text/javascript" language="javascript" src="./plugin/GeoExt-1.0/script/GeoExt.js"></script>
+        <script type="text/javascript" language="javascript" src="./plugin/proj4js/proj4js-compressed.js"></script>
+        <script type="text/javascript" language="javascript" src="./plugin/proj4js/defs/EPSG4272.js"></script>
+        <script type="text/javascript" language="javascript" src="./plugin/proj4js/defs/EPSG3857.js"></script>
+        <script type="text/javascript" language="javascript" src="//maps.googleapis.com/maps/api/js?key=AIzaSyBj_MCLMBKMcNvUXelP9pfEmlCsHN_nbX0"></script>
+        <script type="text/javascript" language="javascript" src="./scripts/wfsQuery.js"></script>          
+         
           
 
         <style type="text/css">
@@ -38,7 +41,8 @@
         <script type="text/javascript">
 
             OpenLayers.ProxyHost = "proxy.jsp?url=";
-    
+            var dataHost = getDataHostName();
+            var p3857 = new OpenLayers.Projection("EPSG:3857");    
             var p4326 = new OpenLayers.Projection("EPSG:4326");
             var p4272 = new OpenLayers.Projection("EPSG:4272");
             var p900913 = new OpenLayers.Projection("EPSG:900913");
@@ -73,8 +77,9 @@
             
             var lineFeature;
             
-            var geoserver_url = "http://maps.gns.cri.nz/geoserver/wms";
-            var geology_url = "http://maps.gns.cri.nz/geology/wms";
+            var geoserver_url = "https://maps.gns.cri.nz/geoserver/wms";
+            var geology_url = "https://maps.gns.cri.nz/geology/wms";
+            var esri_url = dataHost.concat("/gis/services"); 
 
             function go() {
 
@@ -125,18 +130,18 @@
 
                 linzTopo250 = new OpenLayers.Layer.WMS(
                     "LINZ Topo 250",
-                    "http://wms.data.linz.govt.nz/2196be5e2a3f48179fddb966dd15add4/r/wms",
-                    {layers: "r:x798", transparent: false, tiled: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
-                    {displayInLayerSwitcher: false, isBaseLayer: false, visibility: true, projection: p900913, wrapDateLine: true}
+                    esri_url + "/basemaps/topo250/ImageServer/WmsServer",
+                    {layers: "topo250", transparent: false, tiled: true, srs: "EPSG:3857", minZoomLevel: 0, maxZoomLevel: 4 },
+                    {displayInLayerSwitcher: false, isBaseLayer: false, visibility: true, projection: p3857, wrapDateLine: true}
                 );
                 var linzTopo250_osm = new OpenLayers.Layer.OSM("LINZ Topo 250");
 
                 linzTopo50 = new OpenLayers.Layer.WMS(
                     "LINZ Topo 50",
-                    "http://wms.data.linz.govt.nz/2196be5e2a3f48179fddb966dd15add4/r/wms",
-                    {layers: "r:x767", transparent: false, tiled: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
-                    {displayInLayerSwitcher: false, isBaseLayer: false, visibility: true, projection: p900913, wrapDateLine: true}
-                );    
+                    esri_url + "/basemaps/topo50/ImageServer/WmsServer",
+                    {layers: "topo50", transparent: false, tiled: true, srs: "EPSG:3857", minZoomLevel: 0, maxZoomLevel: 4 },
+                    {displayInLayerSwitcher: false, isBaseLayer: false, visibility: true, projection: p3857, wrapDateLine: true}
+                );     
                 var linzTopo50_osm = new OpenLayers.Layer.OSM("LINZ Topo 50");    
 
                 var osm = new OpenLayers.Layer.OSM("Open Street Map");    
@@ -153,9 +158,9 @@
 
                 dtm = new OpenLayers.Layer.WMS(
                     "New Zealand DTM",
-                     "https://data.gns.cri.nz/gis/services/basemaps/nzdtm_shade/MapServer/WmsServer",
-                    {layers: "NZ_DTM_SHADE", transparent: true, tiled: true, srs: "EPSG:900913"},
-                    {displayInLayerSwitcher: true, isBaseLayer: false, visibility: false, projection: p900913, wrapDateLine: true}
+                    esri_url +"/basemaps/nzdtm_shade/MapServer/WmsServer",
+                    {layers: "NZ_DTM_SHADE", transparent: true, tiled: true, srs: "EPSG:3857"},
+                    {displayInLayerSwitcher: true, isBaseLayer: false, visibility: false, projection: p3857, wrapDateLine: true}
                 );
 
                 //has been removed, maybe replaced in the future
@@ -257,7 +262,7 @@
                 feature.data.overflow = (overflow) ? "auto" : "hidden";
 
                 var marker = feature.createMarker();
-                marker.icon = new OpenLayers.Icon('http://maps.gns.cri.nz/scripts/OpenLayers-2.11/img/reddot.png',size,offset);
+                marker.icon = new OpenLayers.Icon('./plugin/OpenLayers-2.11/img/reddot.png',size,offset);
 
                 markers.addMarker(marker);
             }    

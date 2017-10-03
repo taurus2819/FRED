@@ -116,8 +116,10 @@ public class ExportServlet
                         "FRED.features");
                 for (Feature feature : features) {
                     FredHibernate.get().currentSession().refresh(feature);
-                    for (Sample sample : feature.getSamples()) {
-                        samples.add(sample);
+                    if (feature.getSamples() != null) {
+                        for (Sample sample : feature.getSamples()) {
+                            samples.add(sample);
+                        }
                     }
                 }
             }
@@ -150,7 +152,7 @@ public class ExportServlet
                     c.printRecord(
                             "**************************************************************************************************************");
                     c.printRecord(
-                            "Data downloaded from FRED (http://www.fred.org.nz) on " + FREDUtil.formatDateForOutput(
+                            "Data downloaded from FRED (https://www.fred.org.nz) on " + FREDUtil.formatDateForOutput(
                                     new Date()));
                     c.printRecord(
                             "FRED is the computer database for the NZ Fossil Record File (FRF), which is a nationally significant database administrated by GSNZ and GNS Science                                ");

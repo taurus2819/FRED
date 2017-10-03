@@ -1,0 +1,196 @@
+Index: lib/OpenLayers/Control/EditingToolbar.js
+===================================================================
+--- lib/OpenLayers/Control/EditingToolbar.js	(revision 10593)
++++ lib/OpenLayers/Control/EditingToolbar.js	(working copy)
+@@ -22,6 +22,14 @@
+  */
+ OpenLayers.Control.EditingToolbar = OpenLayers.Class(
+   OpenLayers.Control.Panel, {
++    
++    /**
++     * APIProperty: citeCompliant
++     * {Boolean} If set to false, coordinates of features drawn in a map extent
++     * crossing the date line will exceed the world bounds, but will be
++     * displayed properly. Default is true.
++     */
++    citeCompliant: true,
+ 
+     /**
+      * Constructor: OpenLayers.Control.EditingToolbar
+@@ -38,9 +46,18 @@
+           [ new OpenLayers.Control.Navigation() ]
+         );  
+         var controls = [
+-          new OpenLayers.Control.DrawFeature(layer, OpenLayers.Handler.Point, {'displayClass': 'olControlDrawFeaturePoint'}),
+-          new OpenLayers.Control.DrawFeature(layer, OpenLayers.Handler.Path, {'displayClass': 'olControlDrawFeaturePath'}),
+-          new OpenLayers.Control.DrawFeature(layer, OpenLayers.Handler.Polygon, {'displayClass': 'olControlDrawFeaturePolygon'})
++          new OpenLayers.Control.DrawFeature(layer, OpenLayers.Handler.Point, {
++              displayClass: 'olControlDrawFeaturePoint',
++              handlerOptions: {citeCompliant: this.citeCompliant}
++          }),
++          new OpenLayers.Control.DrawFeature(layer, OpenLayers.Handler.Path, {
++              displayClass: 'olControlDrawFeaturePath',
++              handlerOptions: {citeCompliant: this.citeCompliant}
++          }),
++          new OpenLayers.Control.DrawFeature(layer, OpenLayers.Handler.Polygon, {
++              displayClass: 'olControlDrawFeaturePolygon',
++              handlerOptions: {citeCompliant: this.citeCompliant}
++          })
+         ];
+         this.addControls(controls);
+     },
+Index: lib/OpenLayers/Handler/Polygon.js
+===================================================================
+--- lib/OpenLayers/Handler/Polygon.js	(revision 10593)
++++ lib/OpenLayers/Handler/Polygon.js	(working copy)
+@@ -60,7 +60,7 @@
+      *     feature.
+      */
+     createFeature: function(pixel) {
+-        var lonlat = this.control.map.getLonLatFromPixel(pixel);
++        var lonlat = this.layer.getLonLatFromViewPortPx(pixel);
+         this.point = new OpenLayers.Feature.Vector(
+             new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat)
+         );
+Index: lib/OpenLayers/Handler/Point.js
+===================================================================
+--- lib/OpenLayers/Handler/Point.js	(revision 10593)
++++ lib/OpenLayers/Handler/Point.js	(working copy)
+@@ -42,6 +42,14 @@
+     multi: false,
+     
+     /**
++     * APIProperty: citeCompliant
++     * {Boolean} If set to false, coordinates of features drawn in a map extent
++     * crossing the date line will exceed the world bounds, but will be
++     * displayed properly. Default is true.
++     */
++    citeCompliant: true,
++    
++    /**
+      * Property: drawing 
+      * {Boolean} A point is being drawn
+      */
+@@ -125,7 +133,8 @@
+             // without this, resolution properties must be specified at the
+             // map-level for this temporary layer to init its resolutions
+             // correctly
+-            calculateInRange: OpenLayers.Function.True
++            calculateInRange: OpenLayers.Function.True,
++            wrapDateLine: this.citeCompliant
+         }, this.layerOptions);
+         this.layer = new OpenLayers.Layer.Vector(this.CLASS_NAME, options);
+         this.map.addLayer(this.layer);
+@@ -140,7 +149,7 @@
+      * pixel - {<OpenLayers.Pixel>} A pixel location on the map.
+      */
+     createFeature: function(pixel) {
+-        var lonlat = this.map.getLonLatFromPixel(pixel);
++        var lonlat = this.layer.getLonLatFromViewPortPx(pixel);
+         this.point = new OpenLayers.Feature.Vector(
+             new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat)
+         );
+@@ -253,7 +262,7 @@
+      * pixel - {<OpenLayers.Pixel>} A pixel location on the map.
+      */
+     modifyFeature: function(pixel) {
+-        var lonlat = this.map.getLonLatFromPixel(pixel);
++        var lonlat = this.layer.getLonLatFromViewPortPx(pixel);
+         this.point.geometry.x = lonlat.lon;
+         this.point.geometry.y = lonlat.lat;
+         this.callback("modify", [this.point.geometry, this.point]);
+Index: lib/OpenLayers/Handler/RegularPolygon.js
+===================================================================
+--- lib/OpenLayers/Handler/RegularPolygon.js	(revision 10593)
++++ lib/OpenLayers/Handler/RegularPolygon.js	(working copy)
+@@ -77,6 +77,14 @@
+     irregular: false,
+ 
+     /**
++     * APIProperty: citeCompliant
++     * {Boolean} If set to false, coordinates of features drawn in a map extent
++     * crossing the date line will exceed the world bounds, but will be
++     * displayed properly. Default is true.
++     */
++    citeCompliant: true,
++    
++    /**
+      * Property: angle
+      * {Float} The angle from the origin (mouse down) to the current mouse
+      *     position, in radians.  This is measured counterclockwise from the
+@@ -165,7 +173,8 @@
+                 // without this, resolution properties must be specified at the
+                 // map-level for this temporary layer to init its resolutions
+                 // correctly
+-                calculateInRange: OpenLayers.Function.True
++                calculateInRange: OpenLayers.Function.True,
++                wrapDateLine: this.citeCompliant
+             };
+             this.layer = new OpenLayers.Layer.Vector(this.CLASS_NAME, options);
+             this.map.addLayer(this.layer);
+@@ -215,7 +224,7 @@
+      */
+     down: function(evt) {
+         this.fixedRadius = !!(this.radius);
+-        var maploc = this.map.getLonLatFromPixel(evt.xy);
++        var maploc = this.layer.getLonLatFromViewPortPx(evt.xy);
+         this.origin = new OpenLayers.Geometry.Point(maploc.lon, maploc.lat);
+         // create the new polygon
+         if(!this.fixedRadius || this.irregular) {
+@@ -241,7 +250,7 @@
+      * evt - {Evt} The move event
+      */
+     move: function(evt) {
+-        var maploc = this.map.getLonLatFromPixel(evt.xy);
++        var maploc = this.layer.getLonLatFromViewPortPx(evt.xy);
+         var point = new OpenLayers.Geometry.Point(maploc.lon, maploc.lat);
+         if(this.irregular) {
+             var ry = Math.sqrt(2) * Math.abs(point.y - this.origin.y) / 2;
+Index: lib/OpenLayers/Handler/Path.js
+===================================================================
+--- lib/OpenLayers/Handler/Path.js	(revision 10593)
++++ lib/OpenLayers/Handler/Path.js	(working copy)
+@@ -78,7 +78,7 @@
+      *     feature.
+      */
+     createFeature: function(pixel) {
+-        var lonlat = this.control.map.getLonLatFromPixel(pixel);
++        var lonlat = this.layer.getLonLatFromViewPortPx(pixel);
+         this.point = new OpenLayers.Feature.Vector(
+             new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat)
+         );
+@@ -119,7 +119,7 @@
+      */
+     addPoint: function(pixel) {
+         this.layer.removeFeatures([this.point]);
+-        var lonlat = this.control.map.getLonLatFromPixel(pixel);
++        var lonlat = this.layer.getLonLatFromViewPortPx(pixel);
+         this.point = new OpenLayers.Feature.Vector(
+             new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat)
+         );
+@@ -152,7 +152,7 @@
+      *     point.
+      */
+     modifyFeature: function(pixel) {
+-        var lonlat = this.control.map.getLonLatFromPixel(pixel);
++        var lonlat = this.layer.getLonLatFromViewPortPx(pixel);
+         this.point.geometry.x = lonlat.lon;
+         this.point.geometry.y = lonlat.lat;
+         this.callback("modify", [this.point.geometry, this.getSketch()]);
+Index: examples/spherical-mercator.html
+===================================================================
+--- examples/spherical-mercator.html	(revision 10593)
++++ examples/spherical-mercator.html	(working copy)
+@@ -118,7 +118,11 @@
+                            yahoo, yahoosat, yahoohyb, oam, mapnik, osmarender,
+                            wms, vector]);
+             map.addControl(new OpenLayers.Control.LayerSwitcher());
+-            map.addControl(new OpenLayers.Control.EditingToolbar(vector));
++            map.addControl(new OpenLayers.Control.EditingToolbar(vector, {
++                // let's not be cite compliant, but create features that
++                // display properly even if they cross the date line
++                citeCompliant: false
++            }));
+             map.addControl(new OpenLayers.Control.Permalink());
+             map.addControl(new OpenLayers.Control.MousePosition());
+             if (!map.getCenter()) {map.zoomToMaxExtent()}
