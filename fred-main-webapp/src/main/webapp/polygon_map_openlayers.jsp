@@ -79,7 +79,7 @@
             
             var geoserver_url = "https://maps.gns.cri.nz/geoserver/wms";
             var geology_url = "https://maps.gns.cri.nz/geology/wms";
-            var esri_url = dataHost.concat("/gis/services"); 
+            var esri_url = "https://" + dataHost + "/gis/services"; 
 
             function go() {
 
