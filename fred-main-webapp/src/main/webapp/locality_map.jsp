@@ -115,11 +115,11 @@
                         //map
 						int width = 620;
 						int height = 500;
-                        // TODO: remove verbose logging, just trying to figure out why maps don't load on UAT
-                        log.info("Getting map URL, web base="+getServletConfig().getServletContext().getRealPath("/"));
-                        log.info("Getting map URL, fred base="+getServletConfig().getServletContext().getRealPath("/fred"));
-                        String url = WMSClient.getMapURL(nzmgCoord.getEastWest(), nzmgCoord.getNorthSouth(), distance, width, height, lyr, 
-                                getServletConfig().getServletContext().getRealPath("/fred"));
+                        String fredPath = getServletConfig().getServletContext().getRealPath("/fred");
+                        log.info("Getting map URL, fred base="+fredPath);
+                        String url = WMSClient.getMapURL(
+                                nzmgCoord.getEastWest(), nzmgCoord.getNorthSouth(), distance, width, height, lyr, fredPath
+                        );
                         log.info("Map url: "+url);
                         %><img src="<%=url%>" width="<%=width%>" height="<%=height%>" alt="FRED locality map" border="1" /><%
 						if (lyr.toUpperCase().contains("ORTHO")) {
