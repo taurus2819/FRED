@@ -115,7 +115,9 @@
                         //map
 						int width = 620;
 						int height = 500;
-                        log.info("Getting map URL");
+                        // TODO: remove verbose logging, just trying to figure out why maps don't load on UAT
+                        log.info("Getting map URL, web base="+getServletConfig().getServletContext().getRealPath("/"));
+                        log.info("Getting map URL, fred base="+getServletConfig().getServletContext().getRealPath("/fred"));
                         String url = WMSClient.getMapURL(nzmgCoord.getEastWest(), nzmgCoord.getNorthSouth(), distance, width, height, lyr, 
                                 getServletConfig().getServletContext().getRealPath("/fred"));
                         log.info("Map url: "+url);
