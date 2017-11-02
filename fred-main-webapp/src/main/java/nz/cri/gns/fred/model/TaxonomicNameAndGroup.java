@@ -32,10 +32,13 @@ public class TaxonomicNameAndGroup implements Comparable<TaxonomicNameAndGroup>{
 	}
 
 	public int compareTo(TaxonomicNameAndGroup arg0) {
-		if (!taxonomicGroup.equals(arg0.getTaxonomicGroup()))
-			return taxonomicGroup.compareTo(arg0.getTaxonomicGroup());
+
 		try {
-			return (taxonomicName.toUpperCase()).compareTo(arg0.getTaxonomicName().toUpperCase());
+                    if (!taxonomicGroup.equals(arg0.getTaxonomicGroup())) {
+                            return taxonomicGroup.compareTo(arg0.getTaxonomicGroup());   
+                    }
+                    
+                    return (taxonomicName.toUpperCase()).compareTo(arg0.getTaxonomicName().toUpperCase());
 		} catch (Exception e) {}
 		return 0;
 	}
