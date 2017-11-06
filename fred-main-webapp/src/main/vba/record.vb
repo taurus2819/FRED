@@ -588,7 +588,9 @@ Private Function sendSaveSubmitURL(docType As String, queryString As String, col
   Dim i As Integer
   Dim taxaListLine As Integer
 
-  sendSecureImport (queryString)
+  'Taxonomy lists have to be sent in the body of a POST request, otherwise the GET URL
+  'can exceed the maximum length allowed by Apache and Tomcat
+  sendSecureImport queryString, httpMethod:="POST"
   
   Application.GoTo reference:="status"
   status = ActiveCell.value
@@ -752,4 +754,3 @@ Private Function stripStar(str As String) As String
   End If
 
 End Function
-

@@ -227,12 +227,17 @@ Public Sub clearUser()
 
   userName = ""
   password = ""
+  sessionId = ""
 
 End Sub
 
 Public Function authenticate() As Boolean
+  Dim url As String
+  Dim objHTTP As Object
+  Dim strCookie As String
+  Dim requestBody As String
 
-  If userName = "" Then
+  If userName = "" Or sessionId = "" Then
     With passwordFrm
       .userNameTxt = Null
       .passwordTxt = Null
@@ -241,12 +246,36 @@ Public Function authenticate() As Boolean
     End With
   End If
   If userName <> "" Then
-    authenticate = True
+    If sessionId = "" Then
+        Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
+        url = Constants.secureBaseURL & "login.jsp"
+        requestBody = "loginname=" & encodeURL(userName) & "&loginpass=" & encodeURL(password)
+        objHTTP.Open "POST", url, False
+        objHTTP.SetRequestHeader "Content-Type", "application/x-www-form-urlencoded"
+        'Prevent following redirect with Option(6) = False, as only original response is
+        'guaranteed to contain the session ID cookie
+        objHTTP.Option(6) = False
+        objHTTP.send requestBody
+        authenticate = (objHTTP.status = 302)
+        If authenticate Then
+            sessionId = GetJsessionId(objHTTP.GetResponseHeader("Set-Cookie"))
+        ElseIf objHTTP.status = 401 Then
+            MsgBox "Incorrect username or password", vbCritical, "Login Error"
+            clearUser
+        Else
+            MsgBox "An unexpected error occurred logging in, please try again or contact GNS IT Support (Applications.Support@gns.cri.nz)", vbCritical, "Login Error"
+            clearUser
+        End If
+    Else
+        authenticate = True
+    End If
   Else
     authenticate = False
   End If
 
 End Function
+
+
 
 Public Function incrementColumn(col As String) As String
   Dim first As String
@@ -537,9 +566,10 @@ Public Function getSecureList(sheetName As String, listName As String, queryTabl
 
     Dim msg As String
     Dim htmlContent As Object
-    Dim htmlTable As Object
+    Dim htmlTables As Object
     Dim firstResultVal As String
     Dim url As String
+    Dim rowCount As Integer
     
     url = getSecureUrlBase("list.jsp") & "&listName=" & listName
     If Len(urlParams) > 0 Then
@@ -549,18 +579,21 @@ Public Function getSecureList(sheetName As String, listName As String, queryTabl
     Set htmlContent = sendSecure(url)
     
     
-    Set htmlTable = htmlContent.getElementsByTagName("table")(0)
-    If htmlTable.Rows.length > 0 Then
-        firstResultVal = htmlTable.Rows(0).Cells(0).innerText
+    Set htmlTables = htmlContent.getElementsByTagName("table")
+    rowCount = 0
+    If htmlTables.length > 0 Then rowCount = htmlTables(0).Rows.length
+    If rowCount > 0 Then
+        firstResultVal = htmlTables(0).Rows(0).Cells(0).innerText
     Else
         firstResultVal = ""
     End If
     
     msg = firstResultVal
     If InStr(firstResultVal, "Error") = 1 Then
-
         MsgBox msg, vbCritical, "Error"
         utils.clearUser
+    ElseIf rowCount = 0 Then
+        MsgBox "No data found", vbInformation, "Message"
     Else
         Call copyHtmlTableToQueryTable(htmlContent, sheetName, queryTableName, listRef)
     End If
@@ -569,22 +602,34 @@ Public Function getSecureList(sheetName As String, listName As String, queryTabl
 
 End Function
 
-Public Function sendSecureImport(urlParams As String) As String
+Public Function sendSecureImport(urlParams As String, Optional ByVal httpMethod As String = "GET") As String
 
     Dim msg As String
     Dim htmlContent As Object
     Dim firstResultVal As String
+    Dim htmlTables As Object
+    Dim rowCount As Integer
 
-    Set htmlContent = sendSecure(getSecureUrlBase("import.jsp") & "&" & urlParams)
+    If httpMethod = "GET" Then
+        Set htmlContent = sendSecure(getSecureUrlBase("import.jsp") & "&" & urlParams)
+    Else
+        Set htmlContent = sendSecure(getSecureUrlBase("import.jsp"), httpMethod, urlParams)
+    End If
     Call copyHtmlTableToQueryTable(htmlContent, "Lists", "import")
     
-    firstResultVal = htmlContent.getElementsByTagName("table")(0).Rows(0).Cells(0).innerText
-    If InStr(firstResultVal, "Error") = 1 Then
-        msg = firstResultVal
-        utils.clearUser
+    Set htmlTables = htmlContent.getElementsByTagName("table")
+    rowCount = 0
+    If htmlTables.length > 0 Then rowCount = htmlTables(0).Rows.length
+    If rowCount > 0 Then
+        firstResultVal = htmlContent.getElementsByTagName("table")(0).Rows(0).Cells(0).innerText
+        If InStr(firstResultVal, "Error") = 1 Then
+            msg = firstResultVal
+            utils.clearUser
+        Else
+            msg = ""
+        End If
     Else
-        msg = ""
-        
+        msg = "Error: invalid response, data may not have been saved."
     End If
   
   sendSecureImport = msg
@@ -592,34 +637,36 @@ Public Function sendSecureImport(urlParams As String) As String
 End Function
 
 Private Function getSecureUrlBase(jspFile As String) As String
-    Dim sessionEncoding As String
     Dim url As String
     
     url = ""
     If authenticate Then
-        sessionEncoding = ""
-        If Len(utils.sessionId) > 0 Then
-          sessionEncoding = ";jsessionid=" + utils.sessionId
-        End If
-    
-        url = Constants.secureBaseURL & jspFile & sessionEncoding & "?user=" & utils.encodeURL(utils.userName) & "&pass=" & utils.encodeURL(utils.password) & "&template-version=" & getTemplateVersion()
-        
+        url = Constants.secureBaseURL & jspFile & ";jsessionid=" & utils.sessionId & "?template-version=" & getTemplateVersion()
     End If
     
     getSecureUrlBase = url
 End Function
 
 
-Private Function sendSecure(secureUrl As String) As Object
+Private Function sendSecure(secureUrl As String, Optional ByVal httpMethod As String = "GET", Optional ByVal requestBody As String = "") As Object
     Dim htmlContent As Object
     
     Set htmlContent = CreateObject("htmlfile")
     'WinHTTP.WinHTTPrequest used instead of MSXML2.XMLHTTP as it does not cache responses (caching breaks PNumber retrieval)
-    With CreateObject("WinHTTP.WinHTTPrequest.5.1")
-        .Open "GET", secureUrl, False
-        .send
-        htmlContent.Body.Innerhtml = .responseText
-    End With
+    If httpMethod = "POST" Then
+        With CreateObject("WinHTTP.WinHTTPrequest.5.1")
+            .Open "POST", secureUrl, False
+            .SetRequestHeader "Content-Type", "application/x-www-form-urlencoded"
+            .send requestBody
+            htmlContent.Body.Innerhtml = .responseText
+        End With
+    Else
+        With CreateObject("WinHTTP.WinHTTPrequest.5.1")
+            .Open "GET", secureUrl, False
+            .send
+            htmlContent.Body.Innerhtml = .responseText
+        End With
+    End If
     Set sendSecure = htmlContent
 End Function
 
@@ -633,30 +680,32 @@ Private Sub copyHtmlTableToQueryTable(htmlContent As Object, sheetName As String
     Dim queryTableRows As Object
     
     Dim name As name
-    Dim htmlTable As Object
     Dim rowCount As Integer
+    Dim htmlTables As Object
 
     Set queryTableRows = ActiveWorkbook.Sheets(sheetName).QueryTables(queryTableName).ResultRange
     columnNumToStart = queryTableRows.column
     iRow = queryTableRows.row
     iCol = columnNumToStart
       
-    With htmlContent.getElementsByTagName("table")(0)
-        For Each Tr In .Rows
-            For Each Td In Tr.Cells
-                ActiveWorkbook.Sheets(sheetName).Cells(iRow, iCol).value = Td.innerText
-                iCol = iCol + 1
-            Next Td
-            iCol = columnNumToStart
-            iRow = iRow + 1
-        Next Tr
-    End With
+    Set htmlTables = htmlContent.getElementsByTagName("table")
+    If htmlTables.length > 0 Then
+        With htmlTables(0)
+            For Each Tr In .Rows
+                For Each Td In Tr.Cells
+                    ActiveWorkbook.Sheets(sheetName).Cells(iRow, iCol).value = Td.innerText
+                    iCol = iCol + 1
+                Next Td
+                iCol = columnNumToStart
+                iRow = iRow + 1
+            Next Tr
+        End With
+    End If
     
     'Update the cell block range so any linked drop-downs include entire list of options
     If Len(listRef) > 0 Then
         Set name = ActiveWorkbook.Names.Item(listRef)
-        Set htmlTable = htmlContent.getElementsByTagName("table")(0)
-        rowCount = htmlTable.Rows.length
+        rowCount = htmlTables(0).Rows.length
         With name
             .RefersTo = .RefersToRange.Resize(rowCount, 1)
         End With
@@ -669,4 +718,24 @@ End Function
 
 Public Function getTemplateBuildDate() As String
     getTemplateBuildDate = Sheets(Constants.hiddenSheetName).Range("B1")
+End Function
+
+
+' Takes a string of the form "JSESSIONID=40DD2DFCAF24A2D64544F55194FCE04E;path=/pamsservices;HttpOnly"
+' and returns only the portion "40DD2DFCAF24A2D64544F55194FCE04E"
+Public Function GetJsessionId(setCookieStr As String) As String
+
+    Dim jsessionid As String
+
+    Dim words() As String
+    Dim word As Variant
+
+    words = Split(setCookieStr, ";")
+    For Each word In words
+        If InStr(1, word, "JSESSIONID") > 0 Then
+            jsessionid = Split(word, "=")(1)
+        End If
+    Next word
+
+    GetJsessionId = jsessionid
 End Function

@@ -79,95 +79,103 @@
         }
     }
 %><%
-    PageState state = new PageState(request, response, getServletContext());
     String status = "";
     String message = "";
-
-    String button = request.getParameter("button");
-    String type = request.getParameter("Type");
-    if (button == null || button.equals("")) {
-        button = "save";
-    }
-
-    User user = null;
     try {
-        user = getAuthenticatedExcelUser(request);
-    } catch (AuthenticationException e) {
-        status = "AuthError";
-        message = "Invalid username/password";
-    } catch (TemplateVersionException e) {
-        status = "Error";
-        message = "Data entry template out of date, please download the latest version from the FRED website";
-    }
+        PageState state = new PageState(request, response, getServletContext());
 
-    if (type != null && !type.equals("") && user != null) {
-        try {
-            if (type.equals("NewFold")) {
-                new FolderUtil(FredHibernate.get().getDAOFactory()).addFolder(request.getParameter("FoldName"), user);
-                status = "Created OK";
-                message = "";
-            } else if (type.equals("Taxa")) {
-                TaxonomicUtil taxaUtil = new TaxonomicUtil(FredHibernate.get().getDAOFactory());
-                UnsavedListEntry entry = new UnsavedListEntry();
-                UnsavedTaxon taxon = new UnsavedTaxon();
-                taxon.setTaxonomicGroup(taxaUtil.getTaxonomicGroup(request.getParameter("TaxaGroup")));
-                taxon.setTaxonomicName(TaxonomicUtil.getCleanedName(request.getParameter("TaxaName")));
-                taxon.setAuthor(request.getParameter("Author"));
-                entry.setTaxon(taxon);
-                entry.setTaxonomicGroup(taxaUtil.getTaxonomicGroup(request.getParameter("TaxaGroup")));
-                entry.setTaxonomicName(request.getParameter("TaxaName"));
-                taxaUtil.submitProvisional(user, entry);
-                status = "Submitted OK";
-            } else {
-                DAOFactory factory = FredHibernate.get().getDAOFactory();
-                DataEntryForm dataEntryForm = getDataEntryFormImpl(request, user);
-                if (dataEntryForm != null) {
-                    dataEntryForm.updateFromRequest(request, factory, true);
-                    String id;
-                    if (button.equals("save")) {
-                        id = String.valueOf(dataEntryForm.save(FREDConstants.DATA_ORIGIN_EXCEL));
-                        status = "Saved OK";
-                    } else {
-                        id = String.valueOf(dataEntryForm.submit(FREDConstants.DATA_ORIGIN_EXCEL));
-                        /*
-                                        if (request.getParameter("FRNum") != null) {
-                                                FRNumber frNum = FRNumber.parseFRNumber(request.getParameter("FRNum"), true);
-                                                FolderUtils.approveLocality(id, frNum, null, user, state);
-                                        } */
-                        status = "Submitted OK";
-                    }
-                    message = id;
-                } else {
-                    status = "Error";
 
-                    message = "Not able to create data entry form";
-                }
-            }
-        } catch (InsufficientPrivelegesException e) {
-            status = "AuthError";
-            message = "User not authorised";
-        } catch (TaxonomicListException e) {
-            status = "TaxaListError";
-            StringBuffer msg = new StringBuffer();
-            for (PaleontologyListEntry t : e.getTaxaList()) {
-                msg.append(t.getTaxonomicGroup().getName()).append("*").append(t.getTaxonomicName()).append("#");
-            }
-            message = msg.toString();
-        } catch (DataInputException e) {
-            status = "Error";
-            String[] error = (String[]) e.getError().get(0);
-            message = "Data Error: " + error[0] + " - " + error[1];
-        } catch (Exception e) {
-            status = "Error";
-            message = "Unspecified Error: " + e.toString();
-            System.out.println("*** FRED Error: " + new java.util.Date() + " ***");
-            e.printStackTrace();
+        String button = request.getParameter("button");
+        String type = request.getParameter("Type");
+        if (button == null || button.equals("")) {
+            button = "save";
         }
-    }
 
-    try {
-        FredHibernate.get().getDAOFactory().closeSession();
+        User user = null;
+        try {
+            user = getAuthenticatedExcelUser(request);
+        } catch (AuthenticationException e) {
+            status = "AuthError";
+            message = "Invalid username/password";
+        } catch (TemplateVersionException e) {
+            status = "Error";
+            message = "Data entry template out of date, please download the latest version from the FRED website";
+        }
+
+        if (type != null && !type.equals("") && user != null) {
+            try {
+                if (type.equals("NewFold")) {
+                    new FolderUtil(FredHibernate.get().getDAOFactory()).addFolder(request.getParameter("FoldName"), user);
+                    status = "Created OK";
+                    message = "";
+                } else if (type.equals("Taxa")) {
+                    TaxonomicUtil taxaUtil = new TaxonomicUtil(FredHibernate.get().getDAOFactory());
+                    UnsavedListEntry entry = new UnsavedListEntry();
+                    UnsavedTaxon taxon = new UnsavedTaxon();
+                    taxon.setTaxonomicGroup(taxaUtil.getTaxonomicGroup(request.getParameter("TaxaGroup")));
+                    taxon.setTaxonomicName(TaxonomicUtil.getCleanedName(request.getParameter("TaxaName")));
+                    taxon.setAuthor(request.getParameter("Author"));
+                    entry.setTaxon(taxon);
+                    entry.setTaxonomicGroup(taxaUtil.getTaxonomicGroup(request.getParameter("TaxaGroup")));
+                    entry.setTaxonomicName(request.getParameter("TaxaName"));
+                    taxaUtil.submitProvisional(user, entry);
+                    status = "Submitted OK";
+                } else {
+                    DAOFactory factory = FredHibernate.get().getDAOFactory();
+                    DataEntryForm dataEntryForm = getDataEntryFormImpl(request, user);
+                    if (dataEntryForm != null) {
+                        dataEntryForm.updateFromRequest(request, factory, true);
+                        String id;
+                        if (button.equals("save")) {
+                            id = String.valueOf(dataEntryForm.save(FREDConstants.DATA_ORIGIN_EXCEL));
+                            status = "Saved OK";
+                        } else {
+                            id = String.valueOf(dataEntryForm.submit(FREDConstants.DATA_ORIGIN_EXCEL));
+                            /*
+                                            if (request.getParameter("FRNum") != null) {
+                                                    FRNumber frNum = FRNumber.parseFRNumber(request.getParameter("FRNum"), true);
+                                                    FolderUtils.approveLocality(id, frNum, null, user, state);
+                                            } */
+                            status = "Submitted OK";
+                        }
+                        message = id;
+                    } else {
+                        status = "Error";
+
+                        message = "Not able to create data entry form";
+                    }
+                }
+            } catch (InsufficientPrivelegesException e) {
+                status = "AuthError";
+                message = "User not authorised";
+            } catch (TaxonomicListException e) {
+                status = "TaxaListError";
+                StringBuffer msg = new StringBuffer();
+                for (PaleontologyListEntry t : e.getTaxaList()) {
+                    msg.append(t.getTaxonomicGroup().getName()).append("*").append(t.getTaxonomicName()).append("#");
+                }
+                message = msg.toString();
+            } catch (DataInputException e) {
+                status = "Error";
+                String[] error = (String[]) e.getError().get(0);
+                message = "Data Error: " + error[0] + " - " + error[1];
+            } 
+        } else if (type == null || type.isEmpty()) {
+            status = "Error";
+            message = "Invalid request, form type not specified";
+        } else if (user == null) {
+            status = "AuthError";
+            message = "User not found";            
+        }
+
+        try {
+            FredHibernate.get().getDAOFactory().closeSession();
+        } catch (Exception e) {
+        }
     } catch (Exception e) {
+        status = "Error";
+        message = "Unexpected error";   
+        e.printStackTrace();
     }
 %>
 <html>
