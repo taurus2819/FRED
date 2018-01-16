@@ -53,16 +53,18 @@ public class StageUtil extends ModelUtil {
 	
 	private static String getStageDesc(Stage stage, int nameType) throws NamingException, SQLException {
 		StringBuffer desc = new StringBuffer();
-		Age lowerAge = stage.getLowerAge();
-		Age upperAge = stage.getUpperAge();
 		
-		if (lowerAge != null) {
+		if (stage.getLowerAge() != null) {
 			desc.append(getStageAgeName(stage.getLowerAge())[nameType]);
 			if (stage.getStageLowerMod() != null) desc.append(stage.getStageLowerMod());
-			if (upperAge == null) upperAge = lowerAge; // if no upperAge, just reference lowerAge again
-			desc.append(" - ").append(getStageAgeName(stage.getUpperAge())[nameType]);
-			if (stage.getStageUpperMod() != null) desc.append(stage.getStageUpperMod());
-			desc.append(" (").append(lowerAge.getBaseAge()).append(" - ").append(upperAge.getTopAge()).append(" Ma)");
+			if (stage.getUpperAge() != null){
+                            desc.append(" - ").append(getStageAgeName(stage.getUpperAge())[nameType]);
+                            if (stage.getStageUpperMod() != null) desc.append(stage.getStageUpperMod());
+                            desc.append(" (").append(stage.getLowerAge().getBaseAge()).append(" - ").append(stage.getUpperAge().getTopAge()).append(" Ma)");
+                        } else {
+                            // If no upper age then use lower age to provide the top age
+                            desc.append(" (").append(stage.getLowerAge().getBaseAge()).append(" - ").append(stage.getLowerAge().getTopAge()).append(" Ma)");
+                        }
 		}
 		return desc.toString();		
 	}
