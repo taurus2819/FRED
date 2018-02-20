@@ -16,23 +16,24 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
-/**
- *
- * @author richardt
+
+/** This is used for the locality map as well as generating reports. Richard says that it is implemented this way
+ * to get decent performance when generating large reports with many maps. Maps are (probably?) cached
+ * near the web service.
+ * 
+ * @author sorenh, richardt
  */
 public class WMSClient {
-
     private static final Logger log = Logger.getLogger(WMSClient.class.getName());
     
     public static URL generateMapURL(double xCentre, double yCentre, int distance, int width, int height, String layers) {
         String serverURL = null;
         try {
             if (layers.contains("-7")) {
-                serverURL = "https://data.linz.govt.nz/services;key=2196be5e2a3f48179fddb966dd15add4/wms?SERVICE=WMS&request=GetMap";
+                serverURL = "https://data.linz.govt.nz/services;"
+                        + "key=2196be5e2a3f48179fddb966dd15add4/wms?SERVICE=WMS&request=GetMap";
             } else {
                 serverURL = "https://maps.gns.cri.nz/geoserver/wms?service=WMS&request=GetMap";
-            //&layers=gns:FR.FRED_SITE_VIEW
-                //&srs=EPSG%3A27200&bbox=2692000,6042200,2697000,6047200&width=620&height=500&format=image%2Fjpeg
             }
             String layer = "&layers=" + layers;
             String other = "&srs=EPSG:27200&format=image/png";
@@ -42,16 +43,18 @@ public class WMSClient {
             double xShift = stretch * aspectRatio;
             double yShift = stretch;
 
-            String bbox = "&bbox=" + (xCentre - xShift) + "," + (yCentre - yShift) + "," + (xCentre + xShift) + "," + (yCentre + yShift);
+            String bbox = "&bbox=" + (xCentre - xShift) + "," + (yCentre - yShift) + "," 
+                    + (xCentre + xShift) + "," + (yCentre + yShift);
 
             return new URL(serverURL + layer + "&width=" + width + "&height=" + height + other + bbox);
         } catch (MalformedURLException ex) {
-            Logger.getLogger(WMSClient.class.getName()).log(Level.SEVERE, null, ex);
+            log.log(Level.SEVERE, null, ex);
         }
         return null;
     }
 
-    public static String getMapURL(double xCentre, double yCentre, int distance, int width, int height, String layers, String outDir) {
+    public static String getMapURL(double xCentre, double yCentre, int distance, int width, int height, 
+            String layers, String outDir) {
         URL url = generateMapURL(xCentre, yCentre, distance, width, height, layers);
 
         return processMap(url, width, height, outDir);
@@ -88,10 +91,9 @@ public class WMSClient {
             ImageIO.write(rawImage, "PNG", outFile);
 
             return outFile.getName();
-
         
         } catch (Exception ex) {
-            Logger.getLogger(WMSClient.class.getName()).log(Level.SEVERE, null, ex);
+            log.log(Level.SEVERE, "Could not retrieve map: "+url, ex);
         }
         return "/nomap.png";
     }
@@ -113,7 +115,7 @@ public class WMSClient {
             return serverURL + layers + styles + other + bbox + size;
             
         } catch (Exception ex) {
-            Logger.getLogger(WMSClient.class.getName()).log(Level.SEVERE, null, ex);
+            log.log(Level.SEVERE, null, ex);
             return "/nomap.png";
         }
     }
