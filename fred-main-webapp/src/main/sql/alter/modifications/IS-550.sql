@@ -1,5 +1,11 @@
 CREATE or replace VIEW SQUIRREL_AGE_VIEW
 AS
+/**
+ * $HeadURL$
+ * $LastChangedBy$
+ * $Rev$
+ * $Date$
+ */
 SELECT s.sample_id,
     NVL(vlaal.base_age, NVL(vaan.narrow_age_lower, NVL(aawd.wide_age_lower, NVL
     (ksal.base_age, isl.base_age)))) AS NARROW_BASE_AGE,
