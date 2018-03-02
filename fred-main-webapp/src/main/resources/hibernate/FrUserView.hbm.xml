@@ -46,11 +46,6 @@
         	length="91"
 	    />
 	    <property
-    	    name="irId"
-        	type="java.lang.Integer"
-        	column="IR_ID"
-	    />
-	    <property
     	    name="deleted"
         	type="java.lang.Boolean"
         	column="DELETED"

@@ -13,8 +13,6 @@ public interface FrUserView extends Comparable<FrUserView>, NameableAndIdentifia
 	public String getFamilyName();
 	public void setFullName(String fullName);
 	public String getFullName();
-	public void setIrId(Integer irId);
-	public Integer getIrId();
 	public void setDeleted(Boolean deleted);
 	public Boolean getDeleted();
 	public void setOrgView(OrgView orgView);

@@ -36,6 +36,10 @@
         <servlet-name>ExportServlet</servlet-name>
         <servlet-class>nz.cri.gns.fred.servlet.ExportServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AuthServiceServlet</servlet-name>
+        <servlet-class>nz.cri.gns.fred.servlet.AuthServiceProxy</servlet-class>
+    </servlet>    
     <servlet-mapping>
         <servlet-name>ajax</servlet-name>
         <url-pattern>/ajaxSupport.xml</url-pattern>
@@ -72,6 +76,10 @@
         <servlet-name>ExportServlet</servlet-name>
         <url-pattern>/export.jsp</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AuthServiceServlet</servlet-name>
+        <url-pattern>/updateUserRight</url-pattern>
+    </servlet-mapping>    
 
     <session-config>
         <session-timeout>240</session-timeout>
