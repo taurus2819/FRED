@@ -56,6 +56,7 @@ import nz.cri.gns.fred.model.FREDConstants;
 public class FREDQuery extends HqlQuery implements NumberSource {
 
     private static final long serialVersionUID = 20060120L;
+    private static final Logger log = Logger.getLogger(FREDQuery.class.getName());
 
     private static final String[] RECORD_TABLES = new String[]{"s.records"};
     private static final HqlJoin[] RECORD_JOINS = {new HqlJoin(false, "record")};
@@ -78,6 +79,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
         try {
             this.frUsers = new UserUtil(FredHibernate.get().getDAOFactory()).getFrWriters();
         } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to load FRED writers", e);
         }
         addFields();
     }

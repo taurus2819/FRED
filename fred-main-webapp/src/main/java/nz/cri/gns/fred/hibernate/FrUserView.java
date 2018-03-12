@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Set;
 
 import nz.cri.gns.fred.model.ConfidentialGroup;
@@ -16,8 +17,11 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
     private String givenName;
     private String familyName;
     private String fullName;
-    private Integer irId;
     private Boolean deleted;
+    private Boolean hasWebAccessRight;
+    private Boolean hasDataEntryRight;
+    private Boolean hasAdminRight;
+    private Date lastLogin;
     private OrgView orgView;
     private Set<TaxonomicGroup> taxonomicGroups;
     private Set<ConfidentialGroup> confidGroupsByOwnerId;
@@ -55,15 +59,7 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
 	public String getFullName() {
 		return fullName;
 	}
-	
-	public void setIrId(Integer irId) {
-		this.irId = irId;
-	}
-
-	public Integer getIrId() {
-		return irId;
-	}
-
+        
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
 	}
@@ -72,6 +68,54 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
 		return deleted;
 	}
 
+    /**
+     * @return the hasWebAccessRight
+     */
+    @Override
+    public Boolean getHasWebAccessRight() {
+        return hasWebAccessRight;
+    }
+
+    /**
+     * @param hasWebAccessRight the hasWebAccessRight to set
+     */
+    @Override
+    public void setHasWebAccessRight(Boolean hasWebAccessRight) {
+        this.hasWebAccessRight = hasWebAccessRight;
+    }
+
+    /**
+     * @return the hasDataEntryRight
+     */
+    public Boolean getHasDataEntryRight() {
+        return hasDataEntryRight;
+    }
+
+    /**
+     * @param hasDataEntryRight the hasDataEntryRight to set
+     */
+    @Override
+    public void setHasDataEntryRight(Boolean hasDataEntryRight) {
+        this.hasDataEntryRight = hasDataEntryRight;
+    }
+
+    /**
+     * @return the hasAdminRight
+     */
+    @Override
+    public Boolean getHasAdminRight() {
+        return hasAdminRight;
+    }
+
+    /**
+     * @param hasAdminRight the hasAdminRight to set
+     */
+    @Override
+    public void setHasAdminRight(Boolean hasAdminRight) {
+        this.hasAdminRight = hasAdminRight;
+    }
+
+    @Override
 	public void setOrgView(OrgView orgView) {
 		this.orgView = orgView;
 	}
@@ -79,6 +123,16 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
 	public OrgView getOrgView() {
 		return orgView;
 	}
+        
+    @Override
+       public void setLastLogin(Date lastLogin) {
+            this.lastLogin = lastLogin;
+        }
+        
+    @Override
+        public Date getLastLogin() {
+            return this.lastLogin;
+        }
 
 	public void setTaxonomicGroups(Set<TaxonomicGroup> taxonomicGroups) {
 		this.taxonomicGroups = taxonomicGroups;
@@ -133,4 +187,5 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
 	public int hashCode() {
 		return 261 * userId;
 	}
+
 }

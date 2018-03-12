@@ -44,12 +44,36 @@
         	type="java.lang.String"
         	column="FULL_NAME"
         	length="91"
-	    />
+	    />          
 	    <property
     	    name="deleted"
         	type="java.lang.Boolean"
         	column="DELETED"
 	    />
+            
+	    <property
+    	    name="hasWebAccessRight"
+        	type="java.lang.Boolean"
+        	column="FR_WEBSITE_ACCESS"
+	    />
+            
+	    <property
+    	    name="hasDataEntryRight"
+        	type="java.lang.Boolean"
+        	column="FR_DATA_ENTRY"
+	    />
+            
+	    <property
+    	    name="hasAdminRight"
+        	type="java.lang.Boolean"
+        	column="FR_ADMIN"
+	    />   
+            
+            <property
+              name="lastLogin"
+              type="java.util.Date"
+              column="LAST_LOGIN"
+            />                                           
    		   		   		
     <!-- Associations -->
   
@@ -128,7 +152,7 @@
         not-null="true"
     >
         <column name="PE_CLIENT_CODE" />
-    </many-to-one>
+    </many-to-one>  
     
 </class>
 </hibernate-mapping>

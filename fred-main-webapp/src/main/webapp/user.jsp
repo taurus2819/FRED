@@ -1,3 +1,4 @@
+<%@page import="java.util.List"%>
 <%@page pageEncoding="utf-8"
 %><%@page	extends="nz.cri.gns.fred.FREDAdminIPSysJspPage"
 %><%@page import="nz.cri.gns.jsp.NewExtranetTemplate"
@@ -26,24 +27,26 @@
 	Date twoYearsAgo = cal.getTime();
 	
 	%>
-        <div id="fredUserUpdateMsg" style="position: fixed; top: 120px; left: 850px; color: #666; font-size: 16px; padding: 10px; border-radius: 5px;">
-            Loading...
+        <div id="fredUserUpdateMsg" style="display: none; position: fixed; top: 120px; left: 850px; color: #666; font-size: 16px; padding: 10px; border-radius: 5px;">
+            Update saved
         </div>        
         <p><table id="fredUserTable" border="0" cellpadding="3" cellspacing="2" width="600">
 	<tr class="midColour"><th colspan="7">Current FRED Users</th></tr>
 	<tr class="midColour"><th>Name</th><th>Organisation</th><th>Read</th><th>Write</th><th>Admin</th><th>Last Access</th></tr><%
-	for (User user : userUtil.getAllUsers()) {
-		FrUser frUser = userUtil.getFrUser(user.getId().intValue());
-		if (frUser != null || !"GNS".equals(user.getCompanyName())) {
+        List<FrUserView> users = userUtil.getAllUsers();
+	for (FrUserView user : users) {
+                String companyName = user.getOrgView() == null ? "" : user.getOrgView().getCompanyName();
+                Date lastLogin = user.getLastLogin();
+		if (lastLogin != null || !"GNS".equals(companyName)) {
 			%><tr class="lightColour">
 			<td><%=user.getFullName()%></td>
-			<td><%=user.getFullName().equals(user.getCompanyName()) ? "" : user.getCompanyName()%></td>
-                        <td><input type="checkbox" id="read-<%=user.getId()%>" class="rightCheckbox" value="read" <%=userUtil.userHasRight(user, FredGrantedAuthorities.FR_WEBSITE_ACCESS) ? "checked='checked'" : ""%>></td>
-                        <td><input type="checkbox" id="write-<%=user.getId()%>" class="rightCheckbox" value="write" <%=userUtil.userHasRight(user, FredGrantedAuthorities.FR_DATA_ENTRY) ? "checked='checked'" : ""%>></td>
-                        <td><input type="checkbox" id="admin-<%=user.getId()%>" class="rightCheckbox" value="admin" <%=userUtil.userHasRight(user, FredGrantedAuthorities.FR_ADMIN) ? "checked='checked'" : ""%>></td>
+			<td><%=user.getFullName().equals(companyName) ? "" : companyName%></td>
+                        <td><input type="checkbox" id="read-<%=user.getUserId()%>" class="rightCheckbox" value="read" <%=user.getHasWebAccessRight() ? "checked='checked'" : ""%>></td>
+                        <td><input type="checkbox" id="write-<%=user.getUserId()%>" class="rightCheckbox" value="write" <%=user.getHasDataEntryRight() ? "checked='checked'" : ""%>></td>
+                        <td><input type="checkbox" id="admin-<%=user.getUserId()%>" class="rightCheckbox" value="admin" <%=user.getHasAdminRight() ? "checked='checked'" : ""%>></td>
                         <%
-			if (frUser != null) {
-				%><td<%=(frUser.getLastLogin().before(twoYearsAgo)) ? " style=\"color: #ff0000\"" : "" %>><%=FREDUtil.formatDateForOutput(frUser.getLastLogin())%><%
+			if (lastLogin != null) {
+				%><td<%=(lastLogin.before(twoYearsAgo)) ? " style=\"color: #ff0000\"" : "" %>><%=FREDUtil.formatDateForOutput(lastLogin)%><%
 			} else {
 				%><td><%
 			}
@@ -73,8 +76,6 @@
                     alert("Update failed, please try again or contact IT Support");
                 });            
         });
-         $('#fredUserTable .rightCheckbox').show();
-        $('#fredUserUpdateMsg').hide().text('Update saved');
     });
 </script>          
 <%
