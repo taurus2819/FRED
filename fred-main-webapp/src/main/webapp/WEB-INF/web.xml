@@ -78,7 +78,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AuthServiceServlet</servlet-name>
-        <url-pattern>/updateUserRight</url-pattern>
+        <url-pattern>/updateUserRight.json</url-pattern>
     </servlet-mapping>    
 
     <session-config>

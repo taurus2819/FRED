@@ -68,7 +68,7 @@
             var right = $(this).val();
             var userId = $(this).attr('id').substring((right + '-').length);
             var action = $(this).is(':checked') ? 'grant' : 'revoke';     
-            $.post('updateUserRight', {right: right, action: action, userId: userId})
+            $.post('updateUserRight.json', {right: right, action: action, userId: userId})
                 .done(function(){
                     $('#fredUserUpdateMsg').show().fadeOut(4000);   
                 })
