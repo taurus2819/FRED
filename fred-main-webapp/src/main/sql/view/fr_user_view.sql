@@ -18,6 +18,7 @@ create or replace force view fr.fr_user_view ("PE_ID", "GIVEN_NAME", "FAMILY_NAM
    , sum(decode (ir_name, 'FR_DATA_ENTRY', 1, 0))
    , sum(decode (ir_name, 'FR_ADMIN', 1, 0))
    , last_login
+   , os_login
 from ip.user_right_view2 pv
 left join fr.fr_user fu on pv.person_id = fu.pe_id
 where ir_name in ('FR_DATA_ENTRY', 'FR_WEBSITE_ACCESS', 'FR_ADMIN')
@@ -29,7 +30,8 @@ group by
    , pe_client_code
    , cl_company_name
    , deleted
-   , last_login;
+   , last_login
+   , os_login;
 
 -- These were invalid after updating the above...possibly were already invalid.
 alter view fr.folder_view compile;
