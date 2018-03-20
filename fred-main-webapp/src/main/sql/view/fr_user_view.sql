@@ -1,5 +1,5 @@
 -- Remove IR_ID column from fr_user_view
-create or replace force view fr.fr_user_view ("PE_ID", "GIVEN_NAME", "FAMILY_NAME", "FULL_NAME", "PE_CLIENT_CODE", "CL_COMPANY_NAME", "DELETED", "FR_WEBSITE_ACCESS", "FR_DATA_ENTRY", "FR_ADMIN", "LAST_LOGIN") as
+create or replace force view fr.fr_user_view ("PE_ID", "GIVEN_NAME", "FAMILY_NAME", "FULL_NAME", "PE_CLIENT_CODE", "CL_COMPANY_NAME", "DELETED", "FR_WEBSITE_ACCESS", "FR_DATA_ENTRY", "FR_ADMIN", "LAST_LOGIN", "USERNAME") as
   select
 /**
  * $HeadURL$
