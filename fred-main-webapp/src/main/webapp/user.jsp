@@ -27,12 +27,12 @@
 	Date twoYearsAgo = cal.getTime();
 	
 	%>
-        <div id="fredUserUpdateMsg" style="display: none; position: fixed; top: 120px; left: 850px; color: #666; font-size: 16px; padding: 10px; border-radius: 5px;">
+        <div id="fredUserUpdateMsg" style="display: none; position: fixed; top: 120px; left: 950px; color: #666; font-size: 16px; padding: 10px; border-radius: 5px;">
             Update saved
         </div>        
         <p><table id="fredUserTable" border="0" cellpadding="3" cellspacing="2" width="600">
 	<tr class="midColour"><th colspan="7">Current FRED Users</th></tr>
-	<tr class="midColour"><th>Name</th><th>Organisation</th><th>Read</th><th>Write</th><th>Admin</th><th>Last Access</th></tr><%
+	<tr class="midColour"><th>Name</th><th>Username</th><th>Organisation</th><th>Read</th><th>Write</th><th>Admin</th><th>Last Access</th></tr><%
         List<FrUserView> users = userUtil.getAllUsers();
 	for (FrUserView user : users) {
                 String companyName = user.getOrgView() == null ? "" : user.getOrgView().getCompanyName();
@@ -40,6 +40,7 @@
 		if (lastLogin != null || !"GNS".equals(companyName)) {
 			%><tr class="lightColour">
 			<td><%=user.getFullName()%></td>
+                        <td><%=user.getUsername()%></td>
 			<td><%=user.getFullName().equals(companyName) ? "" : companyName%></td>
                         <td><input type="checkbox" id="read-<%=user.getUserId()%>" class="rightCheckbox" value="read" <%=user.getHasWebAccessRight() ? "checked='checked'" : ""%>></td>
                         <td><input type="checkbox" id="write-<%=user.getUserId()%>" class="rightCheckbox" value="write" <%=user.getHasDataEntryRight() ? "checked='checked'" : ""%>></td>

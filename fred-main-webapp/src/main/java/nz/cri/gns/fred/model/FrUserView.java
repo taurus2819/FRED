@@ -20,6 +20,8 @@ public interface FrUserView extends Comparable<FrUserView>, NameableAndIdentifia
 	public OrgView getOrgView();
         public void setLastLogin(Date lastLogin);
         public Date getLastLogin();
+        public void setUsername(String username);
+        public String getUsername();
 	public void setTaxonomicGroups(Set<TaxonomicGroup> taxonomicGroups);
 	public Set<TaxonomicGroup> getTaxonomicGroups();
 	public void setConfidGroupsByOwnerId(Set<ConfidentialGroup> confidGroupsByOwnerId);

@@ -17,6 +17,7 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
     private String givenName;
     private String familyName;
     private String fullName;
+    private String username;
     private Boolean deleted;
     private Boolean hasWebAccessRight;
     private Boolean hasDataEntryRight;
@@ -187,5 +188,21 @@ public class FrUserView implements Serializable, nz.cri.gns.fred.model.FrUserVie
 	public int hashCode() {
 		return 261 * userId;
 	}
+
+    /**
+     * @return the username
+     */
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * @param username the username to set
+     */
+    @Override
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
 }

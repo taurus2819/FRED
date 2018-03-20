@@ -73,7 +73,13 @@
               name="lastLogin"
               type="java.util.Date"
               column="LAST_LOGIN"
-            />                                           
+            />    
+            
+            <property
+              name="username"
+              type="java.lang.String"
+              column="USERNAME"
+            />                                                    
    		   		   		
     <!-- Associations -->
   
