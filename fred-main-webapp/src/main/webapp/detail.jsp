@@ -51,6 +51,7 @@
     @Override
     public IpGrantedAuthority getRequiredRights() {
         return null;
+        
     }
 %><%!    public String getName(HttpServletRequest request) {
         try {
@@ -674,14 +675,47 @@
                         }
 
     //Paleontology
-                        for (Paleontology palRecord : sampleUtil.getPaleontologyRecords(sample)) {
-                            if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {
-        %><tr class="midColour"><th colspan="2">Paleontology Information&nbsp;&nbsp;&nbsp;<a href="frf/frf.pdf?RecIDs=<%=palRecord.getRecordId()%>" target="_blank"><img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print" /></th></tr><%
-        if (recordUtil.isRecordConfidential(palRecord.getRecord())) {
-                %><tr class="lightColour"><td style="text-align: left; color: #FF0000" colspan="2">This paleontology record has been marked as confidential. The following people/groups have been granted access to this record: <%=recordUtil.getRecordConfidAccessListDescription(palRecord.getRecord())%>.<%=(palRecord.getRecord().getAudit().getConfidLapseDate() != null) ? " This record will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(palRecord.getRecord().getAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
-                } else if (recordUtil.isPalListConfidential(palRecord)) {
-        %><tr class="lightColour"><td style="text-align: left; color: #FF0000" colspan="2">The taxonomic list in this paleontology record has been marked as confidential. The following people/groups have been granted access to this record: <%=recordUtil.getPalListConfidAccessListDescription(palRecord)%>.<%=(palRecord.getRecord().getPalListAudit().getConfidLapseDate() != null) ? " This list will become <i>open-file</i> on " + FREDUtil.formatDateForOutput(palRecord.getRecord().getPalListAudit().getConfidLapseDate()) + "." : ""%></td></tr><%
-        }
+    boolean hasPalRecords = false;
+    for (Paleontology palRecord : sampleUtil.getPaleontologyRecords(sample)) {
+        hasPalRecords = true;
+        if (recordUtil.isAllowedReadRecord(user, palRecord.getRecord())) {
+            %>
+            <tr class="midColour">
+                <th colspan="2">
+                    Paleontology Information&nbsp;&nbsp;&nbsp;
+                    <a href="frf/frf.pdf?RecIDs=<%=palRecord.getRecordId()%>" target="_blank">
+                    <img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print" />
+                </th>
+            </tr>
+            
+            <% if (recordUtil.isRecordConfidential(palRecord.getRecord())) { %>
+            
+            <tr class="lightColour">
+                <td style="text-align: left; color: #FF0000" colspan="2">
+                    This paleontology record has been marked as confidential. The following people/groups have 
+                    been granted access to this record: 
+                    <%=recordUtil.getRecordConfidAccessListDescription(palRecord.getRecord())%>.
+                    <%=(palRecord.getRecord().getAudit().getConfidLapseDate() != null) 
+                            ? " This record will become <i>open-file</i> on " 
+                                + FREDUtil.formatDateForOutput(palRecord.getRecord().getAudit().getConfidLapseDate()) + "." 
+                            : ""%>
+                </td>
+            </tr>
+            
+            <% } else if (recordUtil.isPalListConfidential(palRecord)) { %>
+            
+            <tr class="lightColour">
+                <td style="text-align: left; color: #FF0000" colspan="2">
+                    The taxonomic list in this paleontology record has been marked as confidential. The following 
+                    people/groups have been granted access to this record: 
+                    <%=recordUtil.getPalListConfidAccessListDescription(palRecord)%>.
+                    <%=(palRecord.getRecord().getPalListAudit().getConfidLapseDate() != null) 
+                            ? " This list will become <i>open-file</i> on " 
+                                + FREDUtil.formatDateForOutput(palRecord.getRecord().getPalListAudit().getConfidLapseDate()) + "." : ""%>
+                </td>
+            </tr>
+        <% }
+            
         Object[] identifiers = palRecord.getIdentifiers().toArray();
         String[] identifiersStr = new String[identifiers.length];
         for (int j = 0; j < identifiers.length; j++) {
@@ -771,18 +805,26 @@
     <tr class="lightColour"><td colspan="2"><table border="0" cellspacing="0" width="600"><%
         int y = 1;
                 %><tr><%
+                    boolean hasMetaCats = false;
                     for (MetaCat metaCat : palRecord.getRecord().getMetaCats()) {
+                        hasMetaCats = true;
                         if (y++ == 5) {
                     %></tr><tr><%
                             y = 2;
                         }
                         %><td width="150" align="center" class="smalltext"><a href="/online/DigitalDocument?src=<%=metaCat.getMetaId()%>"><img border="0" src="/online/Thumbnail?src=<%=metaCat.getMetaId()%>" alt="FRED Digital Document" /><br /><%=metaCat.getTitle()%></a></td><%
                             }
+                            if (!hasMetaCats) {
+                                %><tr class="lightColour"><td >No Images/Files available</td></tr><%
+                            }
                             %></td></tr></table></td></tr><%
-                                            }
-                                        }
-                                    }
-                                }
+                    } // for (metaCat: ...
+        } else {
+            %><tr><td>
+          You don't have permission to read this Paleontological record.</td></tr><%
+        }
+     } // for (palRecord ... 
+                                } // if (user can read sample ...
                             } else {
                                 //Sample List
 %></table>
@@ -822,12 +864,10 @@
         }
 
         drawBottom(out, et);
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-
-    try {
-        FredHibernate.get().getDAOFactory().closeSession();
-    } catch (Exception e) {
+    } finally {
+        try {
+            FredHibernate.get().getDAOFactory().closeSession();
+        } catch (Exception e) {
+        }
     }
 %>
