@@ -32,6 +32,8 @@
         %><%@page import="java.util.List"
         %><%@page import="java.util.Arrays"
         %><%@page import="java.util.Vector"
+        %><%@page import="java.util.logging.Logger"
+        %><%@page import="java.util.logging.Level"
         %><%@page import="nz.cri.gns.auth.domain.User"
         %><%@page import="nz.cri.gns.auth.security.IpGrantedAuthority"
         %><%@page import="nz.cri.gns.fred.dao.DAOFactory"
@@ -48,10 +50,11 @@
         %><%@page import="nz.cri.gns.fred.de.DataInputException"
         %><%@page import="nz.cri.gns.intranet.ServletUtils"
 %><%!
+    private static final Logger log = Logger.getLogger("detail.jsp");
+
     @Override
     public IpGrantedAuthority getRequiredRights() {
         return null;
-        
     }
 %><%!    public String getName(HttpServletRequest request) {
         try {
@@ -820,11 +823,13 @@
                             %></td></tr></table></td></tr><%
                     } // for (metaCat: ...
         } else {
-            %><tr><td>
-          You don't have permission to read this Paleontological record.</td></tr><%
+            // IS-814: Chris and Marianna have decided not to let the user know.
+            log.log(Level.INFO, "User is not allowed to view this record.");            
         }
      } // for (palRecord ... 
-                                } // if (user can read sample ...
+                                } else { // if (user can read sample ...
+                                    log.log(Level.INFO, "User is not allowed to view this sample.");
+                                }
                             } else {
                                 //Sample List
 %></table>
