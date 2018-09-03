@@ -54,7 +54,7 @@
         }
 	String lyr = request.getParameter("Lyr");
     if (lyr==null) {
-        lyr = "layer-767"; //topo50
+        lyr = "topo50";
     }
 
 	String backURL = request.getParameter("backURL");
@@ -74,8 +74,8 @@
 	int x = 0;
 	if (backURL != null)
 		il[x++] = new IconnedLink(backURL, "images/back_arrow.gif", (backText != null) ? request.getParameter("backText") : "Back");
-	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=12500&Lyr=layer-798"+ backStr, "images/map.gif", "Small Scale");
-	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=2500&Lyr=layer-767" + backStr, "images/map.gif", "Large Scale");
+	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=12500&Lyr=topo250"+ backStr, "images/map.gif", "Small Scale");
+	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=2500&Lyr=topo50" + backStr, "images/map.gif", "Large Scale");
 	il[x++] = new IconnedLink("locality_map.jsp?FeatID=" + featId + "&Dist=500&Lyr=gns:GIS.NZ_ORTHOPHOTO" + backStr, "images/map.gif", "Orthophoto");
 	addButtons(et, il);
 	drawTop(out, et, request, response);

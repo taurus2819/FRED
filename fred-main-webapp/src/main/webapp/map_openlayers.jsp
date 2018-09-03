@@ -37,6 +37,7 @@
         <script type="text/javascript">
 
         OpenLayers.ProxyHost = "proxy.jsp?url=";
+        var host = getFQHostName();
         var dataHost = getDataHostName();
         var p3857 = new OpenLayers.Projection("EPSG:3857");    
         var p4326 = new OpenLayers.Projection("EPSG:4326");
@@ -49,10 +50,10 @@
         var map;    
         var checker = true;
         
-        var geoserver_url = "https://maps.gns.cri.nz/geoserver/wms";
-        var geology_url = "https://maps.gns.cri.nz/geology/wms";
-        var esri_url = "https://" + dataHost + "/gis/services"; 
-        
+        var geoserver_url = host.concat("/webmaps/gns/wms");
+        var geology_url = host.concat("/webmaps/geology/wms");
+        var esri_url = host.concat("/webmaps/gis/services"); 
+
         function go() {
             
                 // custom layer node UI class
@@ -101,7 +102,7 @@
                     {type: google.maps.MapTypeId.TERRAIN, sphericalMercator: true, numZoomLevels: 20},
                     {displayInLayerSwitcher: false, visibility: false, minScale: 100000000, maxScale: 1000000}
                 );
-
+            
             linzTopo250 = new OpenLayers.Layer.WMS(
                     "LINZ Topo 250",
                     esri_url + "/basemaps/topo250/ImageServer/WmsServer",
@@ -142,7 +143,7 @@
             master = new OpenLayers.Layer.WMS(
                     "Masterfile areas",
                     geoserver_url,
-                    {layers: "gns:MASTERFILE_AREAS_SHP", transparent: true, tiled: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
+                    {layers: "gns:MASTERFILE_AREAS", transparent: true, tiled: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
                     {displayInLayerSwitcher: true, isBaseLayer: false, visibility: true, projection: p900913, wrapDateLine: true, 
                      maxScale: 2500000, numZoomLevels: 4}
             );    
@@ -150,7 +151,7 @@
             fred = new OpenLayers.Layer.WMS(
                     "FRED samples",
                     geoserver_url,
-                    {layers: "gns:FR.FRED_SITE_VIEW", transparent: true, tiled: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
+                    {layers: "gns:pg_fred_site_view", transparent: true, tiled: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
                     {displayInLayerSwitcher: true, isBaseLayer: false, visibility: true, projection: p900913, wrapDateLine: true}
             );    
                         
@@ -164,7 +165,7 @@
             map.addControl(pointSelectControl);                
             pointSelectControl.activate();    
                 
-            map.addLayers([googleH, googleP, linzTopo50, linzTopo250, dtm, oneGeolNZ, fred, master]);    //removed for now, LINZ layer stopped working: , scale_topo_googleP
+            map.addLayers([googleH, googleP, linzTopo50, linzTopo250, dtm, oneGeolNZ, fred, master, scale_topo_googleP]);    //removed for now, LINZ layer stopped working: , scale_topo_googleP
             
             map.setCenter(new OpenLayers.LonLat(174, -41).transform(p4326, p900913), 4);
                 
@@ -237,19 +238,17 @@
             }
 
             function wmsSelect(wmsRequest) {    //called in response to GetFeatureInfo request
-            
                 destroyPopup();
                 var features = wmsRequest.features;
-                                
                 if (features.length == 1) {
                     //alert("wmsselect.features.1");
                     var selectedFeature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(features[0].geometry.x, features[0].geometry.y), null, null);
                     
                     selectedFeature.attributes = { 
-                        id: features[0].attributes["FEATURE_ID"], 
-                        number: features[0].attributes["FR_NUMBER"], 
-                        feature_type: features[0].attributes["FEATURE_TYPE"], 
-                        locality: features[0].attributes["LOCALITY"]};
+                        id: features[0].attributes["feature_id"], 
+                        number: features[0].attributes["fr_number"], 
+                        feature_type: features[0].attributes["feature_type"], 
+                        locality: features[0].attributes["locality"]};
                     selectedFeature.geometry.transform(p4326, p900913);
                     if (selectedLayer != null) {
                         selectedLayer.addFeatures(selectedFeature);
@@ -263,10 +262,10 @@
                     for(var i=0; i<features.length; i++)    {
                         var selectedFeature = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(features[i].geometry.x, features[i].geometry.y), null, null);
                         selectedFeature.attributes = {
-                        id: features[0].attributes["FEATURE_ID"], 
-                        number: features[i].attributes["FR_NUMBER"], 
-                        feature_type: features[i].attributes["FEATURE_TYPE"], 
-                        locality: features[i].attributes["LOCALITY"]};
+                        id: features[0].attributes["feature_id"], 
+                        number: features[i].attributes["fr_number"], 
+                        feature_type: features[i].attributes["feature_type"], 
+                        locality: features[i].attributes["locality"]};
                         selectedFeature.geometry.transform(p4326, p900913);
                         if (selectedLayer != null) {
                             selectedLayer.addFeatures(selectedFeature);

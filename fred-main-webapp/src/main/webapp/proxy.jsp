@@ -11,7 +11,7 @@
 	String rawUrl = request.getParameter("url");
 	URL url = new URL(rawUrl.replace("/gwc/service",""));
 	
-	if (url.getHost().equals("maps-dev.gns.cri.nz") || url.getHost().equals("maps.gns.cri.nz")) 
+	if (url.getHost().equals("data-dev.gns.cri.nz") || url.getHost().equals("data-uat.gns.cri.nz") || url.getHost().equals("data.gns.cri.nz")) 
 		okFlag = true;
 
 	if (okFlag) {

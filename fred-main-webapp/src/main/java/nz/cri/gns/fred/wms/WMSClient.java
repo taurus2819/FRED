@@ -15,6 +15,9 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 
 /** This is used for the locality map as well as generating reports. Richard says that it is implemented this way
@@ -28,15 +31,21 @@ public class WMSClient {
     
     public static URL generateMapURL(double xCentre, double yCentre, int distance, int width, int height, String layers) {
         String serverURL = null;
+        String srs = null;
         try {
-            if (layers.contains("-7")) {
-                serverURL = "https://data.linz.govt.nz/services;"
-                        + "key=2196be5e2a3f48179fddb966dd15add4/wms?SERVICE=WMS&request=GetMap";
+            if (layers.contains("topo50")) {
+                serverURL = getArcGIS() + "services/basemaps/topo50/ImageServer/WmsServer";
+                srs="&crs=EPSG:27200";
+            } else if (layers.contains("topo250")) {
+                serverURL = getArcGIS() + "services/basemaps/topo250/ImageServer/WmsServer";
+                srs="&crs=EPSG:27200";
             } else {
-                serverURL = "https://maps.gns.cri.nz/geoserver/wms?service=WMS&request=GetMap";
+                serverURL = getWMS();
+                srs="&srs=EPSG:27200";
             }
+            String wmsops= "?service=WMS&request=GetMap";
             String layer = "&layers=" + layers;
-            String other = "&srs=EPSG:27200&format=image/png";
+            String other = "&format=image/png";
 
             double aspectRatio = 4.0 / 3;
             double stretch = distance;
@@ -46,7 +55,7 @@ public class WMSClient {
             String bbox = "&bbox=" + (xCentre - xShift) + "," + (yCentre - yShift) + "," 
                     + (xCentre + xShift) + "," + (yCentre + yShift);
 
-            return new URL(serverURL + layer + "&width=" + width + "&height=" + height + other + bbox);
+            return new URL(serverURL + wmsops+ layer + "&width=" + width + "&height=" + height + srs + other + bbox);
         } catch (MalformedURLException ex) {
             log.log(Level.SEVERE, null, ex);
         }
@@ -64,6 +73,7 @@ public class WMSClient {
         Image image = null;
         
         try {
+            Logger.getLogger(WMSClient.class.getName()).log(Level.INFO, url.toExternalForm());
             BufferedImage rawImage = ImageIO.read(url);
             final Graphics2D g = rawImage.createGraphics();
             Composite origComposite = g.getComposite();
@@ -105,18 +115,60 @@ public class WMSClient {
     
     public static String getBacklogMapURL(double left, double top, double right, double bottom, int width, int height) {
         try {
-            String serverURL = "https://maps.gns.cri.nz/geoserver/wms?request=Getmap";
+            Context env = (Context)new InitialContext().lookup("java:comp/env");        
+            String serverURL = (String)env.lookup("FRED_WMS");
+            String wms = "?request=Getmap";
             String layers = "&layers=gns:bluemarble,FR.BACKLOG_STATUS,MASTERFILE_AREAS";
             String styles = "&styles=,,fred_mfile_outlines";
             String other = "&srs=EPSG:27200&format=image%2Fpng";
             String bbox = "&bbox=" + left + "," + bottom + "," + right + "," + top;
             String size ="&width=480&height=580";
        
-            return serverURL + layers + styles + other + bbox + size;
+            return serverURL + wms + layers + styles + other + bbox + size;
             
+        } catch (NamingException e) {
+			Logger.getLogger(WMSClient.class.getName()).log(Level.SEVERE, null, e); 
+            return "/nomap.png";
         } catch (Exception ex) {
             log.log(Level.SEVERE, null, ex);
             return "/nomap.png";
         }
     }
+    
+    
+    private static String getArcGIS() {
+        try {
+            Context env = (Context)new InitialContext().lookup("java:comp/env");        
+            return (String)env.lookup("ESRI_AGS");
+            
+        } catch (NamingException e) {
+			Logger.getLogger(WMSClient.class.getName()).log(Level.SEVERE, null, e); 
+            return "noagsserver";
+        } 
+    }
+    
+    private static String getWFS() {
+        try {
+            Context env = (Context)new InitialContext().lookup("java:comp/env");        
+            return (String)env.lookup("FRED_WFS");
+            
+        } catch (NamingException e) {
+			Logger.getLogger(WMSClient.class.getName()).log(Level.SEVERE, null, e); 
+            return "nowfsserver";
+        } 
+    }
+    
+    private static String getWMS() {
+        try {
+            Context env = (Context)new InitialContext().lookup("java:comp/env");        
+            return (String)env.lookup("FRED_WMS");
+            
+        } catch (NamingException e) {
+			Logger.getLogger(WMSClient.class.getName()).log(Level.SEVERE, null, e); 
+            return "nowmsserver";
+        } 
+    }
+    
+    
 }
+

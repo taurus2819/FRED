@@ -44,7 +44,7 @@ public class WFSProxy extends HttpServlet	{
 		//initialize with parameters from web.xml	
 		try {
 			Context env = (Context)new InitialContext().lookup("java:comp/env");
-			TARGET_URL_WFS = (String)env.lookup("WFS");
+			TARGET_URL_WFS = (String)env.lookup("FRED_WFS");
 		} catch (NamingException e) {
 			e.printStackTrace();
 		}
@@ -94,7 +94,7 @@ public class WFSProxy extends HttpServlet	{
 		String targetURL = TARGET_URL_WFS;
 		
 		URLConnection serverConnection = new URL(targetURL+inParams).openConnection();
-		//logger.info("Proxy calls "+targetURL+inParams);
+		//Logger.getLogger(this.getClass().getName()).info("Proxy calls "+targetURL+inParams);
 		serverConnection.setDoInput(true);
 		serverConnection.setDoOutput(false);
 		

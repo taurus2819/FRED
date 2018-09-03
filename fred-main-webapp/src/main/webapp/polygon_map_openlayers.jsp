@@ -18,7 +18,6 @@
         <script type="text/javascript" language="javascript" src="./plugin/proj4js/defs/EPSG3857.js"></script>
         <script type="text/javascript" language="javascript" src="//maps.googleapis.com/maps/api/js?key=AIzaSyBj_MCLMBKMcNvUXelP9pfEmlCsHN_nbX0"></script>
         <script type="text/javascript" language="javascript" src="./scripts/wfsQuery.js"></script>          
-         
           
 
         <style type="text/css">
@@ -41,6 +40,8 @@
         <script type="text/javascript">
 
             OpenLayers.ProxyHost = "proxy.jsp?url=";
+            var host = getFQHostName();
+            var p3857 = new OpenLayers.Projection("EPSG:3857");
             var dataHost = getDataHostName();
             var p3857 = new OpenLayers.Projection("EPSG:3857");    
             var p4326 = new OpenLayers.Projection("EPSG:4326");
@@ -77,9 +78,9 @@
             
             var lineFeature;
             
-            var geoserver_url = "https://maps.gns.cri.nz/geoserver/wms";
-            var geology_url = "https://maps.gns.cri.nz/geology/wms";
-            var esri_url = "https://" + dataHost + "/gis/services"; 
+            var geoserver_url = host.concat("/webmaps/gns/wms");
+            var geology_url = host.concat("/webmaps/geology/wms");
+            var esri_url = host.concat("/webmaps/gis/services"); 
 
             function go() {
 
@@ -141,7 +142,7 @@
                     esri_url + "/basemaps/topo50/ImageServer/WmsServer",
                     {layers: "topo50", transparent: false, tiled: true, srs: "EPSG:3857", minZoomLevel: 0, maxZoomLevel: 4 },
                     {displayInLayerSwitcher: false, isBaseLayer: false, visibility: true, projection: p3857, wrapDateLine: true}
-                );     
+                );    
                 var linzTopo50_osm = new OpenLayers.Layer.OSM("LINZ Topo 50");    
 
                 var osm = new OpenLayers.Layer.OSM("Open Street Map");    
@@ -174,7 +175,7 @@
                 master = new OpenLayers.Layer.WMS(
                     "Masterfile areas",
                      geoserver_url,
-                    {layers: "gns:MASTERFILE_AREAS_SHP", transparent: true, tiled: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
+                    {layers: "gns:MASTERFILE_AREAS", transparent: true, tiled: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
                     {displayInLayerSwitcher: true, isBaseLayer: false, visibility: true, projection: p900913, wrapDateLine: true,
                      maxScale: 2500000, numZoomLevels: 4}
                 );    
@@ -182,7 +183,7 @@
                 fredLayer = new OpenLayers.Layer.WMS(
                     "FRED samples",
                      geoserver_url,
-                    {layers: "gns:FR.FRED_SITE_VIEW", transparent: true, tiled: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
+                    {layers: "gns:pg_fred_site_view", transparent: true, tiled: true, srs: "EPSG:900913", minZoomLevel: 0, maxZoomLevel: 4 },
                     {displayInLayerSwitcher: true, isBaseLayer: false, visibility: false, projection: p900913, wrapDateLine: true}
                 );    
 
@@ -322,16 +323,16 @@
             {
                 if (true)
                 {
-                    var url =     "<%=request.getContextPath()%>/wfsProxy?" + //http://maps.gns.cri.nz/geoserver21/wfs?" +
+                    var url =     "<%=request.getContextPath()%>/wfsProxy?" + 
                         "request=GetFeature&" +
                         "service=wfs&" +
                         "version=1.0.0&" +
-                        "typename=gns:FR.FRED_SITE_VIEW&" +
+                        "typename=gns:pg_fred_site_view&" +
                         "outputFormat=GML2&" +
-                        "PropertyName=FEATURE_ID&" +
+                        "PropertyName=feature_id&" +
                         "filter=<Filter " + 
                         "xmlns:gml='http://www.opengis.net/gml'>" + 
-                        "<Intersects><PropertyName>SHAPE</PropertyName>" +
+                        "<Intersects><PropertyName>shape</PropertyName>" +
                         "<gml:Polygon srsName='EPSG:4326'><gml:outerBoundaryIs><gml:LinearRing>" +
                         "<gml:coordinates>" + createPolygon() + "</gml:coordinates>" +
                         "</gml:LinearRing></gml:outerBoundaryIs></gml:Polygon></Intersects></Filter>";    
