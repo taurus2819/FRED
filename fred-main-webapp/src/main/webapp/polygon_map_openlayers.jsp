@@ -42,7 +42,6 @@
             OpenLayers.ProxyHost = "proxy.jsp?url=";
             var host = getFQHostName();
             var p3857 = new OpenLayers.Projection("EPSG:3857");
-            var dataHost = getDataHostName();
             var p3857 = new OpenLayers.Projection("EPSG:3857");    
             var p4326 = new OpenLayers.Projection("EPSG:4326");
             var p4272 = new OpenLayers.Projection("EPSG:4272");
