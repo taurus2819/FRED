@@ -34,10 +34,10 @@ public class WMSClient {
         String srs = null;
         try {
             if (layers.contains("topo50")) {
-                serverURL = getArcGIS() + "services/basemaps/topo50/ImageServer/WmsServer";
+                serverURL = getArcGIS() + "/services/basemaps/topo50/ImageServer/WmsServer";
                 srs="&crs=EPSG:27200";
             } else if (layers.contains("topo250")) {
-                serverURL = getArcGIS() + "services/basemaps/topo250/ImageServer/WmsServer";
+                serverURL = getArcGIS() + "/services/basemaps/topo250/ImageServer/WmsServer";
                 srs="&crs=EPSG:27200";
             } else {
                 serverURL = getWMS();
