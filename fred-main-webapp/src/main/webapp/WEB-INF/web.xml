@@ -40,6 +40,16 @@
         <servlet-name>AuthServiceServlet</servlet-name>
         <servlet-class>nz.cri.gns.fred.servlet.AuthServiceProxy</servlet-class>
     </servlet>    
+    
+    <servlet>
+        <servlet-name>template</servlet-name>
+        <servlet-class>nz.cri.gns.fred.importer.TemplateServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>xlsUploader</servlet-name>
+        <servlet-class>nz.cri.gns.fred.importer.XLSUploadServlet</servlet-class>
+    </servlet>
+    
     <servlet-mapping>
         <servlet-name>ajax</servlet-name>
         <url-pattern>/ajaxSupport.xml</url-pattern>
@@ -80,7 +90,16 @@
         <servlet-name>AuthServiceServlet</servlet-name>
         <url-pattern>/updateUserRight.json</url-pattern>
     </servlet-mapping>    
-
+    
+    <servlet-mapping>
+        <servlet-name>template</servlet-name>
+        <url-pattern>/template.xlsx</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>xlsUploader</servlet-name>
+        <url-pattern>/xlsUploader</url-pattern>
+    </servlet-mapping>
+    
     <session-config>
         <session-timeout>240</session-timeout>
     </session-config>

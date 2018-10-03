@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -41,7 +40,6 @@ import nz.cri.gns.intranet.Template;
 import nz.cri.gns.jsp.IconnedLink;
 import nz.cri.gns.util.map.ChathamIslandDatum;
 import nz.cri.gns.util.map.Datum;
-import nz.cri.gns.util.map.DatumFactory;
 import nz.cri.gns.util.map.NZGD2000;
 import nz.cri.gns.util.map.NZGD49;
 import nz.cri.gns.util.map.WGS84;
@@ -418,109 +416,38 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         //Recollection and working comments
         feature.getAudit().setWorkingComments(FeatureUtil.combineWorkingComments(request.getParameter("Recoll"), request.getParameter("WorkComm")));
 
-        //Site
-        datum = DatumFactory.createDatum(request.getParameter("CoordType"));
-        coord = null;
-        String east = request.getParameter("East");
-        String north = request.getParameter("North");
-        if (east != null && !east.equals("") && north != null && !north.equals("")) {
-            try {
-                if (datum.isMapSheetSystem()) {
-                    int precision = east.length();
-                    if (north.length() != precision) {
-                        error.add(new String[]{"Coordinate", "Truncated coordinates different lengths"});
-                    } else if ((precision > 0 && precision < 3) || precision > 4) {
-                        error.add(new String[]{"Coordinate", "Length of truncated coordinates must be 3 or 4"});
-                    } else {
-                        coord = (Datum.Coordinate) datum.preferredCoordinate().getConstructor(new Class[]{double.class, double.class, String.class, int.class}).newInstance(new Object[]{new Double(north), new Double(east), request.getParameter("MapSheet"), precision});
-                    }
-                } else {
-                    coord = (Datum.Coordinate) datum.preferredCoordinate().getConstructor(new Class[]{double.class, double.class}).newInstance(new Object[]{new Double(north), new Double(east)});
-                }
-            } catch (NumberFormatException e) {
-                error.add(new String[]{"Coordinate", "Non numeric coordinate entered"});
-            } catch (IllegalArgumentException e) {
-            } catch (SecurityException e) {
-            } catch (InstantiationException e) {
-            } catch (IllegalAccessException e) {
-            } catch (InvocationTargetException e) {
-            } catch (NoSuchMethodException e) {
-            }
-        }
-
         //locality
         String locality = getLegalLocality(request.getParameter("Loc"), error);
+        // always use FRED user contributed locality and site details
+        feature.setLocality(locality);
 
-        if (coord != null) {
-            if (!datum.coordinateAcceptable(coord)) {
-                error.add(new String[]{"Coordinate", "Coordinates not of correct type"});
-            }
+        // Site
+        Float accuracy = null;
+        if (request.getParameter("Accuracy").length() > 0) {
+            accuracy = Float.parseFloat(request.getParameter("Accuracy"));
+        }
 
-            // try to re-use any existing site details.
-            // take 1- try the well name
-            if (site == null) {
-                site = SiteUtil.getSite(feature.getFeatureName());
-            }
-            // take 2 try the given coords
-            if (site == null) {
-                site = SiteUtil.getSite(datum, coord);
-            }
+        site = SiteUtil.findOrMakeSiteInstance(
+                error,
+                feature.getFeatureName(),
+                feature.getOrigSystemId(),
+                feature.getOrigCoord(),
+                request.getParameter("CoordType"),
+                request.getParameter("East"),
+                request.getParameter("North"),
+                request.getParameter("Loc"),
+                request.getParameter("Country"),
+                Integer.parseInt(request.getParameter("LocMethodID")),
+                accuracy,
+                request.getParameter("MapSheet"),
+                user
+        );
 
-            if (site != null) {
-                //add coord metadata from existing site but only if a drillhole
-                if (feature.getFeatureId() == null) {
-                    feature.setOrigSystemId(site.getOriginalId());
-                    feature.setOrigCoord(site.getOriginalCoordinates());
-                } else {
-                    // allow user to override
-                    feature.setOrigSystemId(datum.getDatabaseId());
-                    feature.setOrigCoord(datum.getStringFor(coord));
-                }
-                // always use FRED user contributed locality and site details
-                feature.setLocality(locality);
-                if (feature.getOrigCoord() != site.getOriginalCoordinates()) {
-                    site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
-                    site.setLatLong(datum.convertToNZGD49(coord));
-                }
-
-                //TODO reuse site_name as feature_name?? see JES
-            } else {
-                site = new SiteRecord();
-
-                try {
-                    site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
-                    site.setLatLong(datum.convertToNZGD49(coord));
-                    //Also set the FRED copied SITE fields
-                    feature.setOrigSystemId(datum.getDatabaseId());
-                    feature.setOrigCoord(datum.getStringFor(coord));
-                } catch (Exception e) {
-                    error.add(new String[]{"Coordinate", "Invalid coordinates specified. Ensure you enter the correct number of digits for the selected coordinate system"});
-                }
-
-                site.setDirections(request.getParameter("Loc"));
-                site.setCountry(request.getParameter("Country"));
-                site.setOwner(user.getId().intValue());
-                feature.setLocality(locality);
-            }
-            
-            try {
-                site.setMethod(Integer.parseInt(request.getParameter("LocMethodID")));
-            } catch (Exception e) {
-                //method is null (-1) by default
-            }
-            if (request.getParameter("Accuracy").length() > 0) {
-                try {
-                    site.setAccuracy(Float.parseFloat(request.getParameter("Accuracy")));
-                } catch (Exception e) {
-                    error.add(new String[]{"Accuracy", "Invalid value"});
-                    // site accuracy is null (-1) by default
-                }
-            }       
-            
-        } else {
-            site = null;
-            feature.setOrigSystemId(null);
-            feature.setOrigCoord(null);
+        if (null!=site && null==feature.getOrigSystemId()) {
+            feature.setOrigSystemId(site.getOriginalId());
+        }
+        if (null!=site && null==feature.getOrigCoord()) {
+            feature.setOrigCoord(site.getOriginalCoordinates());
         }
 
         //set Map Year
@@ -530,7 +457,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             } else {
                 feature.setMapYear(null);
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             error.add(new String[]{"Map Year", "Map Year not numeric"});
         }
 
@@ -570,6 +497,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         if (site != null) {
             site.key = null;
             try {
+                // SiteUtil.getSite() will find an existing site, or insert a new one if not found.
                 site = SiteUtil.getSite(site);
             } catch (Exception e) {
                 log.log(Level.SEVERE, null, e);
