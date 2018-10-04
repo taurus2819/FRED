@@ -31,19 +31,32 @@ public class FredOutcropRowProcessor extends TemplateRowProcessor {
 
         List<String[]> error = new ArrayList<>();
 
-        // TODO: I made up all these codes. Implement them.
+        // Convert ACCURACY to a float.
+        Double accuracyD = getRowValueDouble(row, "ACCURACY");
+        Float accuracy;
+        if (null==accuracyD) {
+            accuracy=null;
+        } else {
+            accuracy = accuracyD.floatValue();
+        }
+        
+        // TODO: origCoords has a particular format.
+        String origCoords = getRowValueString(row, "NORTHING")+"|"+getRowValueString(row, "EASTING");
+        
+        String datum = nameFromName(row, "ORIG_SYSTEM_ID");
+        
         SiteUtil.findOrMakeSiteInstance(
                 error,
                 getRowValueString(row, "FEATURE_NAME"),
                 getRowValueInteger(row, "ORIG_SYSTEM_ID"), // TODO: should be a lookup value.
-                getRowValueString(row, "ORIG_COORDS"),
-                getRowValueString(row, "DATUM"),
+                origCoords,
+                datum,
                 getRowValueString(row, "EASTING"),
                 getRowValueString(row, "NORTHING"),
                 getRowValueString(row, "LOCALITY"),
                 getRowValueString(row, "COUNTRY"),
                 getRowValueInteger(row, "LOCATION_METHOD"),
-                getRowValueDouble(row, "ACCURACY").floatValue(),
+                accuracy,
                 getRowValueString(row, "MAP_SHEET"),
                 user
         );
