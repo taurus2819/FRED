@@ -3,8 +3,8 @@
     <body>
         <h2>MG Demo</h2>
 
-        <p><a href="template.xlsx?CODE=MG_IMPORT_SPREADSHEET_TYPE">Get the Metaimporter template spreadsheet</a></p>
-        <p><a href="template.xlsx?CODE=FRED_OUTCROP">Get the FRED template spreadsheet</a></p>
+        <p><a href="template.xlsx?CODE=METAIMPORTER">Get the Metaimporter template spreadsheet</a></p>
+        <p><a href="template.xlsx?CODE=FRED">Get the FRED template spreadsheet</a></p>
 
         <br/><br/><br/>
         

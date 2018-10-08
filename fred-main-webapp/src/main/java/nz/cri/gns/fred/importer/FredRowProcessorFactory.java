@@ -16,12 +16,17 @@ public class FredRowProcessorFactory implements RowProcessorFactory {
     @Override
     public RowProcessor createRowProcessor(String code) {
         switch(code) {
-            case "MG_IMPORT_SPREADSHEET_TYPE":
-                return new TemplateRowProcessor("MG_IMPORT_SPREADSHEET_TYPE");
+            case "MG_IMPORT_SHEET_TYPE":
+            case "VERTICAL_SECTION":
+            case "PALEO":
+            case "DRILL_HOLE":
+                return new TemplateRowProcessor(code);
             case "FRED_OUTCROP":
                 return new FredOutcropRowProcessor(user);
+            default:
+                throw new MgException("Unknown type of spreadsheet: "+String.valueOf(code));
         }
-        throw new MgException("Unknown type of spreadsheet.");
+        
     }
                 
 }
