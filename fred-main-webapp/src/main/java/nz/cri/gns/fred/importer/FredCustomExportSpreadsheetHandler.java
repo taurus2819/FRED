@@ -19,13 +19,18 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
     }
 
     @Override
-    public void addColumn(GenericSpreadsheet sheet, ExportSpreadsheet.Sheet sheetInfo, String heading, Column c) {
+    public boolean addColumn(GenericSpreadsheet sheet, ExportSpreadsheet.Sheet sheetInfo, String heading, Column c) {
         switch (sheetInfo.templateCode) {
             case "FRED_OUTCROP":
                 switch (c.getImportCode()) {
                     case "LOCATION_METHOD":
                         addLocationMethodColumn(sheet, heading, c);
+                        return true;
+                    default:
+                        return false;
                 }
+            default:
+                return false;
         }
     }
 
@@ -36,7 +41,7 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
             s.allColumns();
             s.addOrderBy("METHOD");
             sheet.addDropDownHeader(heading, conn, s);
-
+            sheet.nextColumn(); // this smells bad. Why?
         } catch (SQLException ex) {
             throw new MgException(ex);
         }

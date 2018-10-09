@@ -20,9 +20,10 @@ public class TemplateServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
+        Connection conn = null;
         try {
 
-            Connection conn = FREDUtil.getConnection();
+            conn = FREDUtil.getConnection();
 
             String templateCode = request.getParameter("CODE");
 
@@ -44,6 +45,11 @@ public class TemplateServlet extends HttpServlet {
 
         } catch (SQLException | NamingException | MgException ex) {
             throw new RuntimeException(ex);
-        } 
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException ex) {
+            }
+        }
     }
 }
