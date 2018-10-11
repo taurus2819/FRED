@@ -7,13 +7,16 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 import nz.cri.gns.db.DBUtils;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.util.NullOutputStream;
 
 public abstract class AbstractReport {
+
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.reports.AbstractReport");
+
     protected static final void setupJNDI(String host, String sid, String user, String password) {
         try {
             JNDI.setup();
@@ -74,7 +77,7 @@ public abstract class AbstractReport {
                 }
             });
 
-        } catch (Exception ex) {
+        } catch (ClassNotFoundException | SQLException | NamingException ex) {
             log.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }

@@ -52,9 +52,9 @@ import nz.cri.gns.fred.model.TaxonomicGroup;
 
 public class HibernateDAOFactory
         implements DAOFactory, FredDAO {
+
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.hibernate.util.HibernateDAOFactory");
-    
-    
+
     private HibernateProvider provider;
 
     public HibernateDAOFactory(HibernateProvider provider) {
@@ -133,7 +133,7 @@ public class HibernateDAOFactory
             query.setString("prov", FREDConstants.PROVISIONAL);
             List list = query.list();
             return ((Integer) list.get(0)).intValue();
-        } catch (Exception e) {
+        } catch (HibernateException | StorageAccessException e) {
             throw new StorageAccessException(e);
         }
     }
@@ -147,7 +147,7 @@ public class HibernateDAOFactory
             query.setString("prov", status);
             List list = query.list();
             return ((Integer) list.get(0)).intValue();
-        } catch (Exception e) {
+        } catch (HibernateException | StorageAccessException e) {
             throw new StorageAccessException(e);
         }
     }
@@ -160,7 +160,7 @@ public class HibernateDAOFactory
             query.setEntity("group", group);
             query.setString("prov", status);
             return query.list();
-        } catch (Exception e) {
+        } catch (HibernateException | StorageAccessException e) {
             throw new StorageAccessException(e);
         }
     }
@@ -205,7 +205,7 @@ public class HibernateDAOFactory
                 return null;
             }
             return (AuditEdit) list.get(0);
-        } catch (Exception e) {
+        } catch (HibernateException | StorageAccessException e) {
             throw new StorageAccessException(e);
         }
     }
@@ -270,7 +270,7 @@ public class HibernateDAOFactory
                 return null;
             }
             return (Stage) list.get(0);
-        } catch (Exception e) {
+        } catch (HibernateException | StorageAccessException e) {
             throw new StorageAccessException(e);
         }
     }
@@ -319,7 +319,7 @@ public class HibernateDAOFactory
             query.setEntity("grp", group);
             query.setEntity("pal", pal);
             return query.list();
-        } catch (Exception e) {
+        } catch (HibernateException | StorageAccessException e) {
             throw new StorageAccessException(e);
         }
     }
@@ -464,8 +464,7 @@ public class HibernateDAOFactory
             Query query = session.createQuery("SELECT MAX(a.ageId) FROM Age AS a");
             List list = query.list();
             return ((Integer) list.get(0)).intValue();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (HibernateException | StorageAccessException e) {
             throw new StorageAccessException(e);
         }
     }

@@ -1,7 +1,6 @@
 package nz.cri.gns.fred.de;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 public class DataInputException extends Exception {
 
@@ -12,6 +11,12 @@ public class DataInputException extends Exception {
     public DataInputException() {
     }
 
+    public DataInputException(String field, String msg, Throwable t) {
+        super(t);
+        this.error = new ArrayList<>();
+        error.add(new String[]{field, msg});
+    }
+    
     public DataInputException(String field, String msg) {
         super();
         this.error = new ArrayList<>();

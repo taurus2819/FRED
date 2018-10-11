@@ -252,7 +252,8 @@ public class SiteUtil extends ModelUtil {
 
     /**
      * Populate my fields that are relevant to the Site schema. After populating
-     * them, you can invoke >>save() to submit the site to the Site service.
+     * them, you can invoke >>save(SiteRecord site) to submit the site to the
+     * Site service.
      *
      * The SiteRecord is updated with these new values if they differ.
      *
@@ -276,6 +277,10 @@ public class SiteUtil extends ModelUtil {
             String mapSheet,
             User user
     ) {
+        if (null == user) {
+            throw new NullPointerException();
+        }
+
         SiteRecord site; // return me.
 
         /* This is based on refactored existing code. Some behaviour has changed. -mikevdg */
@@ -321,7 +326,7 @@ public class SiteUtil extends ModelUtil {
         }
 
         if (!datum.coordinateAcceptable(coord)) {
-            error.add(new String[]{"Coordinate", "Coordinates not of correct type"});
+            error.add(new String[]{"Coordinate", "Coordsaveinates not of correct type"});
         }
 
         if (null == site) {
@@ -356,15 +361,26 @@ public class SiteUtil extends ModelUtil {
         site.setCountry(country);
         site.setOwner(user.getId().intValue());
 
-        try {
+        if (null != locationMethodId) {
             site.setMethod(locationMethodId);
-        } catch (Exception e) {
-            //method is null (-1) by default
         }
         if (null != accuracy) {
             site.setAccuracy(accuracy);
         }
         return site;
+    }
+
+    /**
+     * Return the saved version of the SiteRecord. The original is not modified,
+     * so only use the returned value.
+     *
+     * A quick note about the site service. It lives at
+     * http://online.gns.cri.nz/online/json/site.jsp; it in turn invokes a
+     * proprietary REST service by Arc to create this site. This service does
+     * not return useful error messages, so your milage will vary.
+     */
+    public static SiteRecord save(SiteRecord site) throws nz.cri.gns.db.util.SiteUtil.SiteException {
+        return nz.cri.gns.db.util.SiteUtil.findOrCreateSite(site);
     }
 
 }

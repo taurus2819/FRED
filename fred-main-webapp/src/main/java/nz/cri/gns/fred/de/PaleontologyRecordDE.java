@@ -1,5 +1,6 @@
 package nz.cri.gns.fred.de;
 
+import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -239,7 +240,7 @@ public class PaleontologyRecordDE extends RecordDE {
                     error.add(new String[]{"Taxanomic List", taxaLine + " not valid because " + e.getMessage()});
                 } catch (NumberFormatException e) {
                     error.add(new String[]{"Taxanomic List", taxaLine + " has a malformed number."});
-                } catch (Exception e) { // StorageAccessException 
+                } catch (StorageAccessException e) { // StorageAccessException 
                     log.log(Level.SEVERE, null, e);
                     error.add(new String[]{"Error occurred processing ", taxaLine + ": " + e.getMessage()});
                 }
@@ -457,7 +458,7 @@ public class PaleontologyRecordDE extends RecordDE {
         entry.setPaleontology(pal);
         try {
             taxaList.add(taxonomicUtil.ensureCompatibleWithPersistenceLayer(entry));
-        } catch (Exception e) {
+        } catch (IntrospectionException e) {
             throw new StorageAccessException(e);
         }
 

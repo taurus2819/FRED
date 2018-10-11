@@ -1,7 +1,7 @@
 <%@page pageEncoding="utf-8"%><%@page language="Java"
 %><html>
     <body>
-        <h2>MG Demo</h2>
+        <h2>FRED new importer stuff</h2>
 
         <p><a href="template.xlsx?CODE=METAIMPORTER">Get the Metaimporter template spreadsheet</a></p>
         <p><a href="template.xlsx?CODE=FRED_OUTCROP">Get the FRED Outcrop spreadsheet</a></p>

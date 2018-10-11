@@ -10,8 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.NamingException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.ParserConfigurationException;
 
 import nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException;
 import nz.cri.gns.auth.domain.User;
@@ -44,6 +46,7 @@ import nz.cri.gns.util.map.NZGD2000;
 import nz.cri.gns.util.map.NZGD49;
 import nz.cri.gns.util.map.WGS84;
 import nz.cri.gns.util.map.Datum.MapSheetCoordinate;
+import org.xml.sax.SAXException;
 
 public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
@@ -483,7 +486,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                     getFromDatabase(copyFeature);
                     copyFeature = null;
                 }
-            } catch (Exception e) {
+            } catch (InsufficientPrivelegesException | StorageAccessException e) {
             }
         }
 
@@ -499,7 +502,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             try {
                 // SiteUtil.getSite() will find an existing site, or insert a new one if not found.
                 site = SiteUtil.getSite(site);
-            } catch (Exception e) {
+            } catch (IOException | SQLException | NamingException | ParserConfigurationException | SAXException e) {
                 log.log(Level.SEVERE, null, e);
                 throw new StorageAccessException(e);
             }
@@ -514,7 +517,8 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 // feature incomplete
                 SiteUtil siteUtil = new SiteUtil(factory);
                 feature.setSiteView(siteUtil.getSiteView(feature.getSiteId()));
-            } catch (Exception ex) {
+            } catch (StorageAccessException ex) {
+                log.log(Level.SEVERE, null, ex);
                 //happily swallow this one
             }
         } else {
