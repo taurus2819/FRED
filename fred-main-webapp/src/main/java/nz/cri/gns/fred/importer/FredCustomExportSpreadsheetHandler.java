@@ -24,7 +24,10 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
             case "FRED_OUTCROP":
                 switch (c.getImportCode()) {
                     case "LOCATION_METHOD":
-                        addLocationMethodColumn(sheet, heading, c);
+                        addLocationMethodColumn(sheet, heading, c, "SC.METHOD", "METHOD");
+                        return true;
+                    case "COUNTRY":
+                        addLocationMethodColumn(sheet, heading, c, "MIS.COUNTRY", "COUNTRY_NAME");
                         return true;
                     default:
                         return false;
@@ -34,12 +37,12 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
         }
     }
 
-    private void addLocationMethodColumn(GenericSpreadsheet sheet, String heading, Column c) {
+    private void addLocationMethodColumn(GenericSpreadsheet sheet, String heading, Column c, String tableName, String orderBy) {
         SQLSelect s;
         try {
-            s = SchemaSingleton.getInstance(conn).select("SC.METHOD");
+            s = SchemaSingleton.getInstance(conn).select(tableName);
             s.allColumns();
-            s.addOrderBy("METHOD");
+            s.addOrderBy(orderBy);
             sheet.addDropDownHeader(heading, conn, s);
             sheet.nextColumn(); // this smells bad. Why?
         } catch (SQLException ex) {
