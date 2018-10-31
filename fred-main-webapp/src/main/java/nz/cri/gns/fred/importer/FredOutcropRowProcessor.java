@@ -50,8 +50,8 @@ public class FredOutcropRowProcessor extends TemplateRowProcessor {
 
         // TODO: origCoords has a particular format.
         String origCoords = getRowValueString(row, "NORTHING") + "|" + getRowValueString(row, "EASTING");
-
         String datumCode = getDatumCode(row);
+        String countryCode = idAsStringFromName(row, "COUNTRY");
 
         log("Searching for site... please wait...");
         SiteRecord site = SiteUtil.findOrMakeSiteInstance(
@@ -63,7 +63,7 @@ public class FredOutcropRowProcessor extends TemplateRowProcessor {
                 getRowValueString(row, "EASTING"),
                 getRowValueString(row, "NORTHING"),
                 getRowValueString(row, "LOCALITY"),
-                getRowValueString(row, "COUNTRY"),
+                countryCode,
                 getRowValueInteger(row, "LOCATION_METHOD"),
                 accuracy,
                 getRowValueString(row, "MAP_SHEET"),

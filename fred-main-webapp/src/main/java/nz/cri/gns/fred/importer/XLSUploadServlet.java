@@ -5,6 +5,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,7 +19,8 @@ import nz.cri.gns.munginator.upload.RowProcessor;
 import nz.cri.gns.munginator.upload.XLSUploaderServlet;
 
 public class XLSUploadServlet extends HttpServlet {
-
+    private static Logger log = Logger.getLogger("nz.cri.gns.fred.importer.XLSUploadServlet");
+    
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User user = IPSysJspPage.getUser(req.getSession());
@@ -47,7 +50,9 @@ public class XLSUploadServlet extends HttpServlet {
                     "/");
         } catch (NamingException | SQLException e) {
             throw new ServletException(e);
-        } catch (Throwable t) {
+        } catch (Throwable t) { // Don't worry; it gets re-thrown.
+            // We catch Throwable here because Tomcat eats them and never tells anybody.
+            log.log(Level.SEVERE, null, t);
             try {
                 OutputStream o = resp.getOutputStream();
                 t.printStackTrace(new PrintWriter(o));
