@@ -107,6 +107,9 @@ public class FredOutcropRowProcessor extends TemplateRowProcessor {
         try {
             conn = FREDUtil.getConnection();
             Integer datumId = idFromName(row, "ORIG_SYSTEM_ID");
+            if (null==datumId) {
+                throw new RowImportException(row, "ORIG_SYSTEM_ID", "This cell needs a value.", null );
+            }
             SQLSelect s = schema.select("LU_COORD_SYSTEM");
             s.addColumn("CODE");
             s.addWhere("ORIG_SYSTEM_ID", datumId);
