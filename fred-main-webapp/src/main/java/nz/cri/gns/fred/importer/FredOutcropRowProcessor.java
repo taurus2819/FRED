@@ -13,8 +13,8 @@ import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.db.util.SiteUtil.SiteException;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.SiteUtil;
-import nz.cri.gns.munginator.SQLModify;
-import nz.cri.gns.munginator.SQLSelect;
+import nz.cri.gns.munginator.Modify;
+import nz.cri.gns.munginator.Read;
 import nz.cri.gns.munginator.upload.RowImportException;
 import nz.cri.gns.munginator.upload.TemplateRowProcessor;
 import nz.cri.gns.munginator.upload.stagingarea.Row;
@@ -30,12 +30,12 @@ public class FredOutcropRowProcessor extends TemplateRowProcessor {
     }
 
     @Override
-    protected void beforePopulateRow(Row row, SQLModify update) throws RowImportException {
+    protected void beforePopulateRow(Row row, Modify update) throws RowImportException {
 
     }
 
     @Override
-    protected void afterPopulateRow(Row row, SQLModify update) throws RowImportException {
+    protected void afterPopulateRow(Row row, Modify update) throws RowImportException {
         update.set("FEATURE_ID$FEATURE_TYPE", "Outcrop");
         List<String[]> error = new ArrayList<>();
 
@@ -97,7 +97,7 @@ public class FredOutcropRowProcessor extends TemplateRowProcessor {
     }
 
     @Override
-    protected void afterCommitRow(Row row, SQLModify update) throws RowImportException {
+    protected void afterCommitRow(Row row, Modify update) throws RowImportException {
 
     }
 
@@ -110,7 +110,7 @@ public class FredOutcropRowProcessor extends TemplateRowProcessor {
             if (null==datumId) {
                 throw new RowImportException(row, "ORIG_SYSTEM_ID", "This cell needs a value.", null );
             }
-            SQLSelect s = schema.select("LU_COORD_SYSTEM");
+            Read s = schema.select("LU_COORD_SYSTEM");
             s.addColumn("CODE");
             s.addWhere("ORIG_SYSTEM_ID", datumId);
             try {

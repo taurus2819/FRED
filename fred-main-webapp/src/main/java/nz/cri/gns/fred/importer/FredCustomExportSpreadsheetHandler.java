@@ -3,7 +3,7 @@ package nz.cri.gns.fred.importer;
 import java.sql.Connection;
 import java.sql.SQLException;
 import nz.cri.gns.munginator.MgException;
-import nz.cri.gns.munginator.SQLSelect;
+import nz.cri.gns.munginator.Read;
 import nz.cri.gns.munginator.SchemaSingleton;
 import nz.cri.gns.munginator.columns.Column;
 import nz.cri.gns.munginator.export.ExportSpreadsheet;
@@ -38,7 +38,7 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
     }
 
     private void addLocationMethodColumn(GenericSpreadsheet sheet, String heading, Column c, String tableName, String orderBy) {
-        SQLSelect s;
+        Read s;
         try {
             s = SchemaSingleton.getInstance(conn).select(tableName);
             s.allColumns();
