@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,17 +37,23 @@ public class FredOutcropRowProcessor extends TemplateRowProcessor {
 
     @Override
     protected void afterPopulateRow(Row row, Modify update) throws RowImportException {
-        update.set("FEATURE_ID$FEATURE_TYPE", "Outcrop");
-        List<String[]> error = new ArrayList<>();
 
-        // Convert ACCURACY to a float.
-        Double accuracyD = getRowValueDouble(row, "ACCURACY");
-        Float accuracy;
-        if (null == accuracyD) {
-            accuracy = null;
-        } else {
-            accuracy = accuracyD.floatValue();
-        }
+        update.set("FEATURE_ID$FEATURE_TYPE", "Outcrop");
+
+        // TODO: use FeatureUtil.createFeature(). This replicates that:
+        Integer folderId = idFromName(row, "FOLDER");
+        update.set("FEATURE_ID$AUDIT_ID$WORKING_FOLDER_ID", folderId);
+        // default audit status is already "working".
+        update.set("FEATURE_ID$AUDIT_ID$CREATED_DATE", new Date()); // TODO: update the SQL to do this.
+        update.set("FEATURE_ID$AUDIT_ID$CREATED_BY_ID", user.getId());
+        // While we're fiddling with audits...
+
+        findOrCreateSite(row, update);
+
+    }
+
+    private void findOrCreateSite(Row row, Modify update) throws RowImportException {
+        List<String[]> error = new ArrayList<>(); // Used in some FRED APIs.
 
         // TODO: origCoords has a particular format.
         String origCoords = getRowValueString(row, "NORTHING") + "|" + getRowValueString(row, "EASTING");
@@ -65,7 +72,7 @@ public class FredOutcropRowProcessor extends TemplateRowProcessor {
                 getRowValueString(row, "LOCALITY"),
                 countryCode,
                 getRowValueInteger(row, "LOCATION_METHOD"),
-                accuracy,
+                toFloat(getRowValueDouble(row, "ACCURACY")),
                 getRowValueString(row, "MAP_SHEET"),
                 user
         );
@@ -90,7 +97,7 @@ public class FredOutcropRowProcessor extends TemplateRowProcessor {
                 throw new RowImportException(row, "NORTHING", "Creating a site using the site service has failed.", null);
             }
         } else {
-            log("Site already exists: \""+site.getDirections()+"\". I will not update it.");
+            log("Site already exists: \"" + site.getDirections() + "\". I will not update it.");
         }
 
         update.set("FEATURE_ID$SITE_ID", site.getId());
@@ -107,8 +114,8 @@ public class FredOutcropRowProcessor extends TemplateRowProcessor {
         try {
             conn = FREDUtil.getConnection();
             Integer datumId = idFromName(row, "ORIG_SYSTEM_ID");
-            if (null==datumId) {
-                throw new RowImportException(row, "ORIG_SYSTEM_ID", "This cell needs a value.", null );
+            if (null == datumId) {
+                throw new RowImportException(row, "ORIG_SYSTEM_ID", "This cell needs a value.", null);
             }
             Read s = schema.select("LU_COORD_SYSTEM");
             s.addColumn("CODE");
@@ -127,10 +134,21 @@ public class FredOutcropRowProcessor extends TemplateRowProcessor {
             throw new RowImportException(row, "ORIG_SYSTEM_ID", "Could not get datum", e);
         } finally {
             try {
-                conn.close();
+                if (null != conn) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
             }
         }
         return datumCode;
+    }
+
+    private Float toFloat(Double d) {
+        if (null == d) {
+            return null;
+        } else {
+            return d.floatValue();
+        }
+
     }
 }

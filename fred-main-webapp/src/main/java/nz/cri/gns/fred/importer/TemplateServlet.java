@@ -9,7 +9,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.fred.util.FREDUtil;
+import nz.cri.gns.jsp.IPSysJspPage;
 import nz.cri.gns.munginator.MgException;
 import nz.cri.gns.munginator.export.ExportSpreadsheet;
 
@@ -24,17 +26,18 @@ public class TemplateServlet extends HttpServlet {
         try {
 
             conn = FREDUtil.getConnection();
-
+            User user = IPSysJspPage.getUser(request.getSession());
             String templateCode = request.getParameter("CODE");
 
             {
                 // Dummy run to catch any errors.
-                ExportSpreadsheet ss = new ExportSpreadsheet(conn, templateCode, null, ExportSpreadsheet.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn));
+                // If you change the content type or write to the OutputStream, you can't show errors to the user.
+                ExportSpreadsheet ss = new ExportSpreadsheet(conn, templateCode, null, ExportSpreadsheet.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn, user));
                 ss.write(new DiscardOutputStream());
             }
 
             // Now do it for real.
-            ExportSpreadsheet ss = new ExportSpreadsheet(conn, templateCode, null, ExportSpreadsheet.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn));
+            ExportSpreadsheet ss = new ExportSpreadsheet(conn, templateCode, null, ExportSpreadsheet.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn, user));
 
             response.setContentType(
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -47,7 +50,9 @@ public class TemplateServlet extends HttpServlet {
             throw new RuntimeException(ex);
         } finally {
             try {
-                conn.close();
+                if (null != conn) {
+                    conn.close();
+                }
             } catch (SQLException ex) {
             }
         }
