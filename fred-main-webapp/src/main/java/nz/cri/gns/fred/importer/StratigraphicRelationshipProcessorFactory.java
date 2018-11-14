@@ -6,14 +6,13 @@ import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.munginator.MgException;
 import nz.cri.gns.munginator.upload.RowProcessor;
 import nz.cri.gns.munginator.upload.RowProcessorFactory;
-import nz.cri.gns.munginator.upload.TemplateRowProcessor;
 
-public class FredRowProcessorFactory implements RowProcessorFactory {
+public class StratigraphicRelationshipProcessorFactory implements RowProcessorFactory {
 
     User user;
     DAOFactory factory = null;
 
-    public FredRowProcessorFactory(User user) {
+    public StratigraphicRelationshipProcessorFactory(User user) {
         this.user = user;
         factory = FredHibernate.get().getDAOFactory();
     }
@@ -21,14 +20,11 @@ public class FredRowProcessorFactory implements RowProcessorFactory {
     @Override
     public RowProcessor createRowProcessor(String code) {
         switch (code) {
-            case "MG_IMPORT_SHEET_TYPE":
-                return new TemplateRowProcessor(code);
             case "VERTICAL_SECTION":
+            case "PALEO":
             case "DRILL_HOLE":
             case "FRED_OUTCROP":
-                return new FredRowProcessor(user, factory);
-            case "PALEO":
-                throw new MgException("The paleo spreadsheet hasn't been implemented yet.");
+                return new StratigraphicRelationshipRowProcessor(code, user, factory);
             default:
                 throw new MgException("Unknown type of spreadsheet: " + String.valueOf(code));
         }

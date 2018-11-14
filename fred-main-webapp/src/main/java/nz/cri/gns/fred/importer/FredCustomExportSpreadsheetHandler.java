@@ -42,6 +42,9 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
                     case "COUNTRY":
                         addLocationMethodColumn(sheet, heading, c, "MIS.COUNTRY", "COUNTRY_NAME");
                         return true;
+                    case "DISTANCE_MOD":
+                        sheet.addDropDownHeader(heading, new String[]{"c.", "?"});
+                        return true;
                     default:
                         return false;
                 }
@@ -79,7 +82,6 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
                 try {
                     factory.closeSession();
                 } catch (StorageAccessException ex) {
-
                 }
             }
         }

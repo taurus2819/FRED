@@ -10,9 +10,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
 import nz.cri.gns.auth.domain.User;
+import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.db.util.SiteUtil.SiteException;
+import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.util.FREDUtil;
+import nz.cri.gns.fred.util.FeatureUtil;
+import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.util.SiteUtil;
 import nz.cri.gns.munginator.Modify;
 import nz.cri.gns.munginator.Read;
@@ -20,14 +24,21 @@ import nz.cri.gns.munginator.upload.RowImportException;
 import nz.cri.gns.munginator.upload.TemplateRowProcessor;
 import nz.cri.gns.munginator.upload.stagingarea.Row;
 
-public class FredOutcropRowProcessor extends TemplateRowProcessor {
+public class FredRowProcessor extends TemplateRowProcessor {
 
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.import.FredOutcropRowProcessor");
     private User user;
 
-    public FredOutcropRowProcessor(User user) {
+    DAOFactory factory;
+    FeatureUtil featureUtil;
+    SampleUtil sampleUtil;
+
+    public FredRowProcessor(User user, DAOFactory factory) {
         super("FRED_OUTCROP");
         this.user = user;
+        this.factory = factory;
+        featureUtil = new FeatureUtil(factory);
+        sampleUtil = new SampleUtil(factory);
     }
 
     @Override
@@ -46,9 +57,13 @@ public class FredOutcropRowProcessor extends TemplateRowProcessor {
         // default audit status is already "working".
         update.set("FEATURE_ID$AUDIT_ID$CREATED_DATE", new Date()); // TODO: update the SQL to do this.
         update.set("FEATURE_ID$AUDIT_ID$CREATED_BY_ID", user.getId());
-        // While we're fiddling with audits...
-
+        
         findOrCreateSite(row, update);
+        
+    }
+
+    @Override
+    protected void afterPerformRow(Row row, Modify update) throws RowImportException {
 
     }
 
@@ -103,11 +118,6 @@ public class FredOutcropRowProcessor extends TemplateRowProcessor {
         update.set("FEATURE_ID$SITE_ID", site.getId());
     }
 
-    @Override
-    protected void afterCommitRow(Row row, Modify update) throws RowImportException {
-
-    }
-
     private String getDatumCode(Row row) throws RowImportException {
         String datumCode;
         Connection conn = null;
@@ -151,4 +161,16 @@ public class FredOutcropRowProcessor extends TemplateRowProcessor {
         }
 
     }
+
+    @Override
+    public void close() {
+        if (null != factory) {
+            try {
+                factory.closeSession();
+            } catch (StorageAccessException ex) {
+
+            }
+        }
+    }
+
 }

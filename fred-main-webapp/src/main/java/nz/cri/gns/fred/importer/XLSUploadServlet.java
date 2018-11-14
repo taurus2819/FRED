@@ -48,6 +48,17 @@ public class XLSUploadServlet extends HttpServlet {
                     errorConn,
                     new FredRowProcessorFactory(user),
                     "/");
+
+            // Fix up the Stratigraphic relationships.
+            new XLSUploaderServlet().doUploadAndImport(
+                    req,
+                    resp,
+                    manageConn,
+                    importConn,
+                    errorConn,
+                    new StratigraphicRelationshipProcessorFactory(user),
+                    "/");
+
         } catch (NamingException | SQLException e) {
             throw new ServletException(e);
         } catch (Throwable t) { // Don't worry; it gets re-thrown.
