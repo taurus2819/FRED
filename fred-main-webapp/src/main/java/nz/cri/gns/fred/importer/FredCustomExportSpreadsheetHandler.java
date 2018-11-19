@@ -42,8 +42,18 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
                     case "COUNTRY":
                         addLocationMethodColumn(sheet, heading, c, "MIS.COUNTRY", "COUNTRY_NAME");
                         return true;
-                    case "DISTANCE_MOD":
+                    case "SAMPLE_RELATIONSHIP_MOD":
+                    case "STRAT_RELATIONSHIP_MOD":
                         sheet.addDropDownHeader(heading, new String[]{"c.", "?"});
+                        sheet.nextColumn();
+                        return true;
+                    case "SAMPLE_RELATIONSHIP_PREP":
+                        sheet.addDropDownHeader(heading, new String[]{"above / 232", "below / 233"});
+                        sheet.nextColumn();
+                        return true;
+                    case "STRAT_RELATIONSHIP_PREP":
+                        sheet.addDropDownHeader(heading, new String[]{"above top / 236", "above base / 237", "below top / 238", "below base / 239"});
+                        sheet.nextColumn();
                         return true;
                     default:
                         return false;
@@ -53,6 +63,25 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
         }
     }
 
+    /*SAMPLES_NEARBY
+SAMPLE_RELATIONSHIP_MOD
+SAMPLE_RELATIONSHIP_DISTANCE
+SAMPLE_RELATIONSHIP_PREP
+SAMPLE_RELATIONSHIP_REFERENCE
+STRAT_RELATIONSHIP_MOD
+STRAT_RELATIONSHIP_DISTANCE
+STRAT_RELATIONSHIP_PREP
+STRAT_RELATIONSHIP_STRAT_UNIT
+    
+    232	above
+233	below
+    
+    
+    236	above top
+237	above base
+238	below top
+239	below base
+     */
     private void addLocationMethodColumn(GenericSpreadsheet sheet, String heading, Column c, String tableName, String orderBy) {
         Read s;
         try {
@@ -64,7 +93,6 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
         } catch (SQLException ex) {
             throw new MgException(ex);
         }
-
     }
 
     private void addFolderList(GenericSpreadsheet sheet, String heading, User user) {

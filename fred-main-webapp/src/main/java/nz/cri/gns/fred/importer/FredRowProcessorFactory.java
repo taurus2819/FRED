@@ -1,5 +1,7 @@
 package nz.cri.gns.fred.importer;
 
+import java.util.ArrayList;
+import java.util.List;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
@@ -17,16 +19,25 @@ public class FredRowProcessorFactory implements RowProcessorFactory {
         this.user = user;
         factory = FredHibernate.get().getDAOFactory();
     }
+    
+    private static List<RowProcessor> list(RowProcessor one, RowProcessor two) {
+        List<RowProcessor> result = new ArrayList<>();
+        result.add(one);
+        if(null!=two) {
+            result.add(two);
+        }
+        return result;
+    }
 
     @Override
-    public RowProcessor createRowProcessor(String code) {
+    public List<RowProcessor> createRowProcessors(String code) {
         switch (code) {
             case "MG_IMPORT_SHEET_TYPE":
-                return new TemplateRowProcessor(code);
+                return list(new TemplateRowProcessor(code), null);
             case "VERTICAL_SECTION":
             case "DRILL_HOLE":
             case "FRED_OUTCROP":
-                return new FredRowProcessor(user, factory);
+                return list(new FredRowProcessor(user, factory), new StratigraphicRelationshipRowProcessor(code, user, factory));
             case "PALEO":
                 throw new MgException("The paleo spreadsheet hasn't been implemented yet.");
             default:

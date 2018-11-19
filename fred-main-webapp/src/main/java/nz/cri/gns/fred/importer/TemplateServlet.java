@@ -25,10 +25,14 @@ public class TemplateServlet extends HttpServlet {
         Connection conn = null;
         try {
 
-            conn = FREDUtil.getConnection();
             User user = IPSysJspPage.getUser(request.getSession());
+            if (null==user) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "You must log in first.");
+                return;
+            }
             String templateCode = request.getParameter("CODE");
 
+            conn = FREDUtil.getConnection();
             {
                 // Dummy run to catch any errors.
                 // If you change the content type or write to the OutputStream, you can't show errors to the user.
