@@ -63,25 +63,6 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
         }
     }
 
-    /*SAMPLES_NEARBY
-SAMPLE_RELATIONSHIP_MOD
-SAMPLE_RELATIONSHIP_DISTANCE
-SAMPLE_RELATIONSHIP_PREP
-SAMPLE_RELATIONSHIP_REFERENCE
-STRAT_RELATIONSHIP_MOD
-STRAT_RELATIONSHIP_DISTANCE
-STRAT_RELATIONSHIP_PREP
-STRAT_RELATIONSHIP_STRAT_UNIT
-    
-    232	above
-233	below
-    
-    
-    236	above top
-237	above base
-238	below top
-239	below base
-     */
     private void addLocationMethodColumn(GenericSpreadsheet sheet, String heading, Column c, String tableName, String orderBy) {
         Read s;
         try {
