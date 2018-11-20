@@ -14,6 +14,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.db.site.SiteRecord;
 import nz.cri.gns.db.util.SiteUtil.SiteException;
 import nz.cri.gns.fred.dao.DAOFactory;
+import nz.cri.gns.fred.model.Feature;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.SampleUtil;
@@ -48,15 +49,21 @@ public class FredRowProcessor extends TemplateRowProcessor {
 
     @Override
     protected void afterPopulateRow(Row row, Modify update) throws RowImportException {
+        String featureName = getRowValueNotNull(row, "FEATURE_NAME").getValueString();
+        
         switch (spreadsheetType) {
             case "FRED_OUTCROP":
                 update.set("FEATURE_ID$FEATURE_TYPE", "Outcrop");
+                update.set("FEATURE_ID$FEATURE_NAME", featureName);
+                update.set("FEATURE_ID$FIELD_ID", featureName);
                 break;
             case "VERTICAL_SECTION":
                 update.set("FEATURE_ID$FEATURE_TYPE", "Vertical Section");
+                setFeatureId(row, update, featureName);
                 break;
             case "DRILL_HOLE":
                 update.set("FEATURE_ID$FEATURE_TYPE", "Drillhole");
+                setFeatureId(row, update, featureName);
                 break;
 
         }
@@ -183,4 +190,14 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
     }
 
+    /** Find the existing feature with the given name. */
+    private void setFeatureId(Row row, Modify update, String featureName) throws RowImportException {
+        Feature f = null;
+        try {
+            f = featureUtil.getFeatureWithIdentifyingName(featureName);
+        } catch (StorageAccessException ex) {
+            throw new RowImportException(row, "FEATURE_NAME", "Could not find this feature", ex);
+        }
+        update.set("FEATURE_ID", f.getFeatureId());
+    }
 }
