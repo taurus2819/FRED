@@ -43,10 +43,10 @@ public class TemplateServlet extends HttpServlet {
             // Now do it for real.
             ExportSpreadsheet ss = new ExportSpreadsheet(conn, templateCode, null, ExportSpreadsheet.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn, user));
 
-            response.setContentType(
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setContentType(ss.getContentType());
+                    // remove me "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             response.setHeader("Content-Disposition",
-                    "attachment; filename=template.xlsx");
+                    "attachment; filename=\""+ss.getFileName()+"\"");
             OutputStream o = response.getOutputStream();
             ss.write(o);
 

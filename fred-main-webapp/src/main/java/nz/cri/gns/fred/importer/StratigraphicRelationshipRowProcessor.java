@@ -77,6 +77,7 @@ public class StratigraphicRelationshipRowProcessor extends RowProcessor {
             throw new RowImportException(row, "SAMPLES_NEARBY", null, ex);
         }
 
+        warn("TODO: sample and stratigraphic relationships not yet created.");
     }
 
     @Override
