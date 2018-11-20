@@ -37,7 +37,7 @@ public class FredRowProcessorFactory implements RowProcessorFactory {
             case "VERTICAL_SECTION":
             case "DRILL_HOLE":
             case "FRED_OUTCROP":
-                return list(new FredRowProcessor(user, factory), new StratigraphicRelationshipRowProcessor(code, user, factory));
+                return list(new FredRowProcessor(user, factory, code), new StratigraphicRelationshipRowProcessor(code, user, factory));
             case "PALEO":
                 throw new MgException("The paleo spreadsheet hasn't been implemented yet.");
             default:

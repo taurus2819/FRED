@@ -33,8 +33,8 @@ public class FredRowProcessor extends TemplateRowProcessor {
     FeatureUtil featureUtil;
     SampleUtil sampleUtil;
 
-    public FredRowProcessor(User user, DAOFactory factory) {
-        super("FRED_OUTCROP");
+    public FredRowProcessor(User user, DAOFactory factory, String code) {
+        super(code);
         this.user = user;
         this.factory = factory;
         featureUtil = new FeatureUtil(factory);
@@ -48,8 +48,18 @@ public class FredRowProcessor extends TemplateRowProcessor {
 
     @Override
     protected void afterPopulateRow(Row row, Modify update) throws RowImportException {
+        switch (spreadsheetType) {
+            case "FRED_OUTCROP":
+                update.set("FEATURE_ID$FEATURE_TYPE", "Outcrop");
+                break;
+            case "VERTICAL_SECTION":
+                update.set("FEATURE_ID$FEATURE_TYPE", "Vertical Section");
+                break;
+            case "DRILL_HOLE":
+                update.set("FEATURE_ID$FEATURE_TYPE", "Drillhole");
+                break;
 
-        update.set("FEATURE_ID$FEATURE_TYPE", "Outcrop");
+        }
 
         // TODO: use FeatureUtil.createFeature(). This replicates that:
         Integer folderId = idFromName(row, "FOLDER");
@@ -57,9 +67,9 @@ public class FredRowProcessor extends TemplateRowProcessor {
         // default audit status is already "working".
         update.set("FEATURE_ID$AUDIT_ID$CREATED_DATE", new Date()); // TODO: update the SQL to do this.
         update.set("FEATURE_ID$AUDIT_ID$CREATED_BY_ID", user.getId());
-        
+
         findOrCreateSite(row, update);
-        
+
     }
 
     @Override
