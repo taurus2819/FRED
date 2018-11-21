@@ -30,34 +30,30 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
 
     @Override
     public boolean addColumn(GenericSpreadsheet sheet, ExportSpreadsheet.Sheet sheetInfo, String heading, Column c) {
-        switch (sheetInfo.templateCode) {
-            case "FRED_OUTCROP":
-                switch (c.getImportCode()) {
-                    case "FOLDER":
-                        addFolderList(sheet, heading, user);
-                        return true;
-                    case "LOCATION_METHOD":
-                        addLocationMethodColumn(sheet, heading, c, "SC.METHOD", "METHOD");
-                        return true;
-                    case "COUNTRY":
-                        addLocationMethodColumn(sheet, heading, c, "MIS.COUNTRY", "COUNTRY_NAME");
-                        return true;
-                    case "SAMPLE_RELATIONSHIP_MOD":
-                    case "STRAT_RELATIONSHIP_MOD":
-                        sheet.addDropDownHeader(heading, new String[]{"c.", "?"});
-                        sheet.nextColumn();
-                        return true;
-                    case "SAMPLE_RELATIONSHIP_PREP":
-                        sheet.addDropDownHeader(heading, new String[]{"above / 232", "below / 233"});
-                        sheet.nextColumn();
-                        return true;
-                    case "STRAT_RELATIONSHIP_PREP":
-                        sheet.addDropDownHeader(heading, new String[]{"above top / 236", "above base / 237", "below top / 238", "below base / 239"});
-                        sheet.nextColumn();
-                        return true;
-                    default:
-                        return false;
-                }
+        // If you need it, the sheet is in sheetInfo.templateCode
+        switch (c.getImportCode()) {
+            case "FOLDER":
+                addFolderList(sheet, heading, user);
+                return true;
+            case "LOCATION_METHOD":
+                addLocationMethodColumn(sheet, heading, c, "SC.METHOD", "METHOD");
+                return true;
+            case "COUNTRY":
+                addLocationMethodColumn(sheet, heading, c, "MIS.COUNTRY", "COUNTRY_NAME");
+                return true;
+            case "SAMPLE_RELATIONSHIP_MOD":
+            case "STRAT_RELATIONSHIP_MOD":
+                sheet.addDropDownHeader(heading, new String[]{"c.", "?"});
+                sheet.nextColumn();
+                return true;
+            case "SAMPLE_RELATIONSHIP_PREP":
+                sheet.addDropDownHeader(heading, new String[]{"above / 232", "below / 233"});
+                sheet.nextColumn();
+                return true;
+            case "STRAT_RELATIONSHIP_PREP":
+                sheet.addDropDownHeader(heading, new String[]{"above top / 236", "above base / 237", "below top / 238", "below base / 239"});
+                sheet.nextColumn();
+                return true;
             default:
                 return false;
         }

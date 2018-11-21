@@ -50,12 +50,20 @@ public class FredRowProcessor extends TemplateRowProcessor {
     @Override
     protected void afterPopulateRow(Row row, Modify update) throws RowImportException {
         String featureName = getRowValueNotNull(row, "FEATURE_NAME").getValueString();
-        
+
+        // TODO: use FeatureUtil.createFeature(). This replicates that:
+        Integer folderId = idFromName(row, "FOLDER");
+        update.set("FEATURE_ID$AUDIT_ID$WORKING_FOLDER_ID", folderId);
+        // default audit status is already "working".
+        update.set("FEATURE_ID$AUDIT_ID$CREATED_DATE", new Date()); // TODO: update the SQL to do this.
+        update.set("FEATURE_ID$AUDIT_ID$CREATED_BY_ID", user.getId());
+
         switch (spreadsheetType) {
             case "FRED_OUTCROP":
                 update.set("FEATURE_ID$FEATURE_TYPE", "Outcrop");
                 update.set("FEATURE_ID$FEATURE_NAME", featureName);
-                update.set("FEATURE_ID$FIELD_ID", featureName);
+                update.set("FEATURE_ID$FIELD_NUMBER", featureName);
+                findOrCreateSite(row, update);
                 break;
             case "VERTICAL_SECTION":
                 update.set("FEATURE_ID$FEATURE_TYPE", "Vertical Section");
@@ -65,17 +73,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 update.set("FEATURE_ID$FEATURE_TYPE", "Drillhole");
                 setFeatureId(row, update, featureName);
                 break;
-
         }
-
-        // TODO: use FeatureUtil.createFeature(). This replicates that:
-        Integer folderId = idFromName(row, "FOLDER");
-        update.set("FEATURE_ID$AUDIT_ID$WORKING_FOLDER_ID", folderId);
-        // default audit status is already "working".
-        update.set("FEATURE_ID$AUDIT_ID$CREATED_DATE", new Date()); // TODO: update the SQL to do this.
-        update.set("FEATURE_ID$AUDIT_ID$CREATED_BY_ID", user.getId());
-
-        findOrCreateSite(row, update);
 
     }
 
@@ -190,13 +188,18 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
     }
 
-    /** Find the existing feature with the given name. */
+    /**
+     * Find the existing feature with the given name.
+     */
     private void setFeatureId(Row row, Modify update, String featureName) throws RowImportException {
         Feature f = null;
         try {
             f = featureUtil.getFeatureWithIdentifyingName(featureName);
         } catch (StorageAccessException ex) {
-            throw new RowImportException(row, "FEATURE_NAME", "Could not find this feature", ex);
+            throw new RowImportException(row, "FEATURE_NAME", "An error occurred while trying to find a feature.", ex);
+        }
+        if (null == f) {
+            throw new RowImportException(row, "FEATURE_NAME", "Could not find this feature.", null);
         }
         update.set("FEATURE_ID", f.getFeatureId());
     }
