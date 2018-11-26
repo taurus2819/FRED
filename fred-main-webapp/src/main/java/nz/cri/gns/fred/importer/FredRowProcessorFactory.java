@@ -14,7 +14,8 @@ public class FredRowProcessorFactory implements RowProcessorFactory {
 
     User user;
     DAOFactory factory = null;
-
+    PaleoRowProcessorMatrix paleoMatrix;
+    
     public FredRowProcessorFactory(User user) {
         this.user = user;
         factory = FredHibernate.get().getDAOFactory();
@@ -39,11 +40,18 @@ public class FredRowProcessorFactory implements RowProcessorFactory {
             case "FRED_OUTCROP":
                 return list(new FredRowProcessor(user, factory, code), new StratigraphicRelationshipRowProcessor(code, user, factory));
             case "PALEO":
-                throw new MgException("The paleo spreadsheet hasn't been implemented yet.");
+                return list(new PaleoRowProcessor(user, factory, code, getPaleoRowProcessorMatrix()), null);
             default:
                 throw new MgException("Unknown type of spreadsheet: " + String.valueOf(code));
         }
 
+    }
+    
+    public PaleoRowProcessorMatrix getPaleoRowProcessorMatrix() {
+        if (null==paleoMatrix) {
+            paleoMatrix = new PaleoRowProcessorMatrix();
+        }
+        return paleoMatrix;
     }
 
 }
