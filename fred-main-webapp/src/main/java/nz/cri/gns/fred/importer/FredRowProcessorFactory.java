@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.munginator.MgException;
 import nz.cri.gns.munginator.upload.RowProcessor;
 import nz.cri.gns.munginator.upload.RowProcessorFactory;
@@ -16,9 +15,9 @@ public class FredRowProcessorFactory implements RowProcessorFactory {
     DAOFactory factory = null;
     PaleoRowProcessorMatrix paleoMatrix;
     
-    public FredRowProcessorFactory(User user) {
+    public FredRowProcessorFactory(User user, DAOFactory factory) {
         this.user = user;
-        factory = FredHibernate.get().getDAOFactory();
+        this.factory = factory;
     }
     
     private static List<RowProcessor> list(RowProcessor one, RowProcessor two) {

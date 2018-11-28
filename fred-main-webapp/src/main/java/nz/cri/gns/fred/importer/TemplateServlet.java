@@ -1,7 +1,6 @@
 package nz.cri.gns.fred.importer;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.naming.NamingException;
@@ -10,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nz.cri.gns.auth.domain.User;
+import nz.cri.gns.fred.dao.DAOFactory;
+import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.jsp.IPSysJspPage;
 import nz.cri.gns.munginator.MgException;
@@ -26,6 +27,7 @@ public class TemplateServlet extends HttpServlet {
         try {
 
             User user = IPSysJspPage.getUser(request.getSession());
+            DAOFactory factory = FredHibernate.get().getDAOFactory();
             if (null == user) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "You must log in first.");
                 return;
@@ -39,7 +41,7 @@ public class TemplateServlet extends HttpServlet {
 
                 SpreadsheetExporter ss;
                 if ("FRED_PALEO".equals(templateCode)) {
-                    ss = new PaleoSpreadsheetExporter(conn, templateCode, "Paleo");
+                    ss = new PaleoSpreadsheetExporter(conn, templateCode, "Paleo", factory);
                 } else {
                     ss = new SpreadsheetExporter(conn, templateCode, null, SpreadsheetExporter.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn, user));
                 }
@@ -49,7 +51,7 @@ public class TemplateServlet extends HttpServlet {
             // Now do it for real.
             SpreadsheetExporter ss;
             if ("FRED_PALEO".equals(templateCode)) {
-                ss = new PaleoSpreadsheetExporter(conn, templateCode, "Paleo");
+                ss = new PaleoSpreadsheetExporter(conn, templateCode, "Paleo", factory);
             } else {
                 ss = new SpreadsheetExporter(conn, templateCode, null, SpreadsheetExporter.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn, user));
             }

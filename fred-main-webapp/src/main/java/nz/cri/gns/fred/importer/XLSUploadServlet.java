@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nz.cri.gns.auth.domain.User;
+import nz.cri.gns.fred.dao.DAOFactory;
+import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.jsp.IPSysJspPage;
 import nz.cri.gns.munginator.upload.RowProcessor;
@@ -35,6 +37,8 @@ public class XLSUploadServlet extends HttpServlet {
         Connection importConn = null;
         Connection errorConn = null;
 
+        DAOFactory factory = FredHibernate.get().getDAOFactory();
+        
         try {
             manageConn = FREDUtil.getConnection();
             importConn = FREDUtil.getConnection();
@@ -46,7 +50,7 @@ public class XLSUploadServlet extends HttpServlet {
                     manageConn,
                     importConn,
                     errorConn,
-                    new FredRowProcessorFactory(user),
+                    new FredRowProcessorFactory(user, factory),
                     "/");
 
         } catch (NamingException | SQLException e) {
