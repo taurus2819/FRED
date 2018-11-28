@@ -13,7 +13,7 @@ import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.jsp.IPSysJspPage;
 import nz.cri.gns.munginator.MgException;
-import nz.cri.gns.munginator.export.ExportSpreadsheet;
+import nz.cri.gns.munginator.export.SpreadsheetExporter;
 
 public class TemplateServlet extends HttpServlet {
 
@@ -26,7 +26,7 @@ public class TemplateServlet extends HttpServlet {
         try {
 
             User user = IPSysJspPage.getUser(request.getSession());
-            if (null==user) {
+            if (null == user) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "You must log in first.");
                 return;
             }
@@ -36,19 +36,25 @@ public class TemplateServlet extends HttpServlet {
             {
                 // Dummy run to catch any errors.
                 // If you change the content type or write to the OutputStream, you can't show errors to the user.
-                ExportSpreadsheet ss = new ExportSpreadsheet(conn, templateCode, null, ExportSpreadsheet.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn, user));
+
+                SpreadsheetExporter ss;
+                if ("FRED_PALEO".equals(templateCode)) {
+                    ss = new PaleoSpreadsheetExporter(conn, templateCode, "Paleo");
+                } else {
+                    ss = new SpreadsheetExporter(conn, templateCode, null, SpreadsheetExporter.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn, user));
+                }
                 ss.write(new DiscardOutputStream());
             }
 
             // Now do it for real.
-            ExportSpreadsheet ss = new ExportSpreadsheet(conn, templateCode, null, ExportSpreadsheet.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn, user));
+            SpreadsheetExporter ss;
+            if ("FRED_PALEO".equals(templateCode)) {
+                ss = new PaleoSpreadsheetExporter(conn, templateCode, "Paleo");
+            } else {
+                ss = new SpreadsheetExporter(conn, templateCode, null, SpreadsheetExporter.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn, user));
+            }
 
-            response.setContentType(ss.getContentType());
-                    // remove me "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            response.setHeader("Content-Disposition",
-                    "attachment; filename=\""+ss.getFileName()+"\"");
-            OutputStream o = response.getOutputStream();
-            ss.write(o);
+            ss.write(response);
 
         } catch (SQLException | NamingException | MgException ex) {
             throw new RuntimeException(ex);

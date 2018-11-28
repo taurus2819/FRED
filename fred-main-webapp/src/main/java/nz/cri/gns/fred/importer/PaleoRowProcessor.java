@@ -18,12 +18,20 @@ import nz.cri.gns.fred.util.RecordUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.util.TaxonomicUtil;
 import nz.cri.gns.munginator.MgException;
+import nz.cri.gns.munginator.columns.Column;
+import nz.cri.gns.munginator.export.SpreadsheetExporter;
+import nz.cri.gns.munginator.export.GenericSpreadsheet;
+import nz.cri.gns.munginator.upload.CustomExportSpreadsheetHandler;
 import nz.cri.gns.munginator.upload.RowImportException;
 import nz.cri.gns.munginator.upload.RowProcessor;
 import nz.cri.gns.munginator.upload.stagingarea.Row;
 import nz.cri.gns.munginator.upload.stagingarea.RowSingleValue;
 import nz.cri.gns.munginator.upload.stagingarea.RowValue;
 
+/** I am both a RowProcessor and CustomExportSpreadsheetHandler for Paleo sheets. This is only because the first 60 lines
+ * of both were identical and the code kind of belongs together.
+ * @author mikevdg
+ */
 public class PaleoRowProcessor extends RowProcessor {
 
     PaleoRowProcessorMatrix paleoMatrix;
@@ -58,6 +66,8 @@ public class PaleoRowProcessor extends RowProcessor {
         this.stageUtil = new StageUtil(factory);
     }
 
+    /* RowProcessor methods. */
+    
     @Override
     protected void importRow(Row row) throws SQLException, RowImportException {
         int rowNum = row.getRowNum();
@@ -271,4 +281,5 @@ public class PaleoRowProcessor extends RowProcessor {
         }
     }
 
+    
 }

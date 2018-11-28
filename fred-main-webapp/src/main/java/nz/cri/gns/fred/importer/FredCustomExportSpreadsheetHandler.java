@@ -14,7 +14,7 @@ import nz.cri.gns.munginator.MgException;
 import nz.cri.gns.munginator.Read;
 import nz.cri.gns.munginator.SchemaSingleton;
 import nz.cri.gns.munginator.columns.Column;
-import nz.cri.gns.munginator.export.ExportSpreadsheet;
+import nz.cri.gns.munginator.export.SpreadsheetExporter;
 import nz.cri.gns.munginator.export.GenericSpreadsheet;
 import nz.cri.gns.munginator.upload.CustomExportSpreadsheetHandler;
 
@@ -29,7 +29,7 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
     }
 
     @Override
-    public boolean addColumn(GenericSpreadsheet sheet, ExportSpreadsheet.Sheet sheetInfo, String heading, Column c) {
+    public boolean addColumn(GenericSpreadsheet sheet, SpreadsheetExporter.Sheet sheetInfo, String heading, Column c) {
         // If you need it, the sheet is in sheetInfo.templateCode
         switch (c.getImportCode()) {
             case "FOLDER":
