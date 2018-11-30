@@ -5,8 +5,6 @@ import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
@@ -48,6 +46,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
         try {
             final GenericSpreadsheet s = spreadsheet; // shorthand
             SheetIterator it = new AcrossSheetIterator();
+            SheetIterator to;
             s.setOutputStream(o);
 
             TaxonomicUtil taxUtil = new TaxonomicUtil(factory);
@@ -65,49 +64,57 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             RecordUtil recordUtil = new RecordUtil(factory);
             String labList = s.addList("Laboratories", recordUtil.getLabs().stream().map(Lab::getDisplayName).collect(Collectors.toList()));
 
-            // There are 30000 of these: taxUtil.getTaxa(group, FREDConstants.APPROVED);
             s.addSheet("Paleo", it);
+
+            it.nextColumn();
+            s.setCellValue("Locality");
+            spreadsheet.setCellAsHeading();
+            it.nextColumn();
+            spreadsheet.setCellsText(todoTextSize, it.copy().skipColumns(numColumns), "Enter the locality", false);
+            spreadsheet.setCellsColour(GenericSpreadsheet.Colour.LIGHT_YELLOW, it.copy().skipColumns(numColumns));
+
+            addTextCellsAcross("Locality", it, "Choose a locality.");
+
             cr(s, it);
-            s.setCellText("Locality", 0);
-            // TODO: text constraint
-            cr(s, it);
-            s.setCellText("Identification Date", 0);
-            for (int i = 0; i < numColumns; i++) {
-                s.setCellTimestamp(null);
-            }
-            cr(s, it);
-            s.setCellText("Date Rounding", 0);
+            it.nextColumn();
+            s.setCellValue("Identification Date");
+            s.setCellAsHeading();
+            it.nextColumn();
+            to = it.copy().skipColumns(numColumns);
+            s.setCellsTimestamp(to, "Enter an Identification Date in the format \"DD/MM/YYYY HH:MM:SS\"", false);
+            s.setCellsColour(GenericSpreadsheet.Colour.LIGHT_YELLOW, to);
+
             String dateRoundingList = s.addList("Date Rounding", new String[]{"Year / 1", "Month / 2"});
-            addCellsAcross(dateRoundingList, it);
-            cr(s, it);
-            s.setCellText("Identifier(s)", 0); // TODO: multi-lists?
-            cr(s, it);
-            s.setCellText("Stage Start", 0);
-            addCellsAcross(ageList, it);
-            cr(s, it);
-            s.setCellText("Stage Start Mod", 0);
-            addCellsAcross(stageModList, it);
-            cr(s, it);
-            s.setCellText("Stage Stop", 0);
-            addCellsAcross(ageList, it);
-            cr(s, it);
-            s.setCellText("Stage Stop Mod", 0);
-            addCellsAcross(stageModList, it);
-            cr(s, it);
-            s.setCellText("Stage Comments", 0);
-            cr(s, it);
-            s.setCellText("Laboratory", 0);
-            addCellsAcross(labList, it);
-            cr(s, it);
-            s.setCellText("Lab Number", 0);
-            cr(s, it);
-            s.setCellText("Collection Comments", 0);
+            addCellsAcross("Date Rounding", dateRoundingList, it, "Select the accuracy of the date.");
+
+            addTextCellsAcross("Identifier(s)", it, "Enter identifiers. TODO: better description");
+
+            addCellsAcross("Stage Start", ageList, it, "Choose the Stage Start. TODO: better description");
+
+            addCellsAcross("Stage Start Mod", stageModList, it, "Enter the modifier for the stage: blank or '?'.");
+
+            addCellsAcross("Stage Stop", ageList, it, "Choose the Stop Stage. TODO");
+
+            addCellsAcross("Stage Stop Mod", stageModList, it, "Enter the modifier for the stop stage: blank or '?'.");
+
+            addTextCellsAcross("Stage Comments", it, "Enter comments about the stage.");
+
+            addCellsAcross("Laboratory", labList, it, "Choose a Laboratory.");
+
+            addTextCellsAcross("Lab Number", it, "Enter the number used in the laboratory for this sample.");
+
+            addTextCellsAcross("Collection Comments", it, "Enter comments about this collection. ");
 
             for (int i = 0; i < LAST_ROW; i++) {
                 cr(s, it);
-                s.setCellSelection("TODO: Group", groupList);
+                s.setCellsSelection(groupList, it, "Choose a Taxonomic Group", false);
+                s.setCellAsHeading();
                 s.nextColumn();
-                s.setCellText("TODO: Taxon", 0);
+                s.setCellsText(numColumns, it, "Type in a Tanonomic Name from the StratLex database, or enter a new name.", false);
+                s.setCellAsHeading();
+                s.nextColumn();
+
+                s.setCellsText(todoTextSize, it.copy().skipColumns(numColumns), "Enter funky values here. TODO: better description.", false);
             }
 
             s.finish();
@@ -118,11 +125,26 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
         }
     }
 
-    private void addCellsAcross(String listReference, SheetIterator it) {
-        for (int i = 0; i < numColumns; i++) {
-            it.nextColumn();
-            this.spreadsheet.setCellSelection((String) null, listReference);
-        }
+    private void addCellsAcross(String heading, String listReference, SheetIterator it, String placeholder) {
+        cr(spreadsheet, it);
+        it.nextColumn();
+        spreadsheet.setCellValue(heading);
+        spreadsheet.setCellAsHeading();
+
+        SheetIterator to = it.copy().skipColumns(numColumns);
+        it.nextColumn();
+        spreadsheet.setCellsSelection(listReference, to, placeholder, false);
+        spreadsheet.setCellsColour(GenericSpreadsheet.Colour.LIGHT_YELLOW, to);
     }
 
+    private void addTextCellsAcross(String heading, SheetIterator it, String placeholder) {
+        cr(spreadsheet, it);
+        it.nextColumn();
+        spreadsheet.setCellValue(heading);
+        spreadsheet.setCellAsHeading();
+        it.nextColumn();
+        SheetIterator to = it.copy().skipColumns(numColumns);
+        spreadsheet.setCellsText(todoTextSize, to, placeholder, false);
+        spreadsheet.setCellsColour(GenericSpreadsheet.Colour.LIGHT_YELLOW, to);
+    }
 }
