@@ -55,7 +55,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <attachClasses>false</attachClasses>                            
+                    <attachClasses>true</attachClasses>                            
                 </configuration>
             </plugin>
             <plugin>
@@ -197,7 +197,7 @@
             <version>1.2</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>nz.cri.gns</groupId>
             <artifactId>munginator</artifactId>
             <version>0.1</version>
         </dependency>

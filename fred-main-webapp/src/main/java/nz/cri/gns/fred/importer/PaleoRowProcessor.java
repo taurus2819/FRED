@@ -1,6 +1,7 @@
 package nz.cri.gns.fred.importer;
 
 import java.sql.SQLException;
+import java.util.Map;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
@@ -18,10 +19,6 @@ import nz.cri.gns.fred.util.RecordUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.util.TaxonomicUtil;
 import nz.cri.gns.munginator.MgException;
-import nz.cri.gns.munginator.columns.Column;
-import nz.cri.gns.munginator.export.SpreadsheetExporter;
-import nz.cri.gns.munginator.export.GenericSpreadsheet;
-import nz.cri.gns.munginator.upload.CustomExportSpreadsheetHandler;
 import nz.cri.gns.munginator.upload.RowImportException;
 import nz.cri.gns.munginator.upload.RowProcessor;
 import nz.cri.gns.munginator.upload.stagingarea.Row;
@@ -34,7 +31,7 @@ import nz.cri.gns.munginator.upload.stagingarea.RowValue;
  */
 public class PaleoRowProcessor extends RowProcessor {
 
-    PaleoRowProcessorMatrix paleoMatrix;
+    Map<Integer, Paleontology>  paleoMatrix;
 
     // These are the rows in the spreadsheet.
     private static final int ROW_LOCALITY = 0;
@@ -56,7 +53,7 @@ public class PaleoRowProcessor extends RowProcessor {
     private final RecordUtil recordUtil;
     private final StageUtil stageUtil;
 
-    PaleoRowProcessor(User user, DAOFactory factory, String code, PaleoRowProcessorMatrix paleoMatrix) {
+    public PaleoRowProcessor(User user, DAOFactory factory, String code, Map<Integer, Paleontology> paleoMatrix) {
         super(code);
         this.paleoMatrix = paleoMatrix;
         this.fredDAO = factory.getFredDAO();
@@ -128,7 +125,13 @@ public class PaleoRowProcessor extends RowProcessor {
 
     @Override
     public void close() {
-        paleoMatrix.close();
+        for (Paleontology each : paleoMatrix.values()) {
+            try {
+                fredDAO.save(each);
+            } catch (StorageAccessException ex) {
+                throw new MgException(ex); 
+            }
+        }
     }
 
     private Paleontology getPaleo(int index) {
@@ -279,6 +282,11 @@ public class PaleoRowProcessor extends RowProcessor {
             }
             paleo.setLabSection(labSection);
         }
+    }
+
+    @Override
+    public boolean rowIsMultipleValue(Row row) {
+        return false;
     }
 
     
