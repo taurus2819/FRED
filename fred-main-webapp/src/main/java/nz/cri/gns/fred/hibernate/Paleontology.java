@@ -2,6 +2,7 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,9 +32,13 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
     private String collectionComments;
     private Record record;
     private LabSection labSection;
-    private Stage stage;
-    private Set<PaleontologyListEntry> palLists;
-    private Set<Person> identifiers;
+    private Stage stage = new nz.cri.gns.fred.hibernate.Stage();
+    private Set<PaleontologyListEntry> palLists = new HashSet();
+    private Set<Person> identifiers = new HashSet();
+
+    public Paleontology() {
+        record.setPaleontology(this);
+    }
 
     public Integer getRecordId() {
         return this.recordId;

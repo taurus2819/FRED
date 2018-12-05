@@ -78,12 +78,14 @@
             <version>2.3</version>
             <scope>provided</scope>
         </dependency>
+        
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
+        
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -136,6 +138,7 @@
             <artifactId>poi</artifactId>
             <version>3.13</version>
         </dependency>
+        
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
@@ -148,6 +151,7 @@
             <version>1.4.189</version>
             <scope>test</scope>
         </dependency>
+        
         <dependency>
             <groupId>nz.cri.gns</groupId>
             <artifactId>munginator</artifactId>
@@ -168,5 +172,14 @@
             <artifactId>online-servlet-core</artifactId>
             <version>3.1.54.592</version>
         </dependency>
+        
+        <dependency>
+            <groupId>com.github.h-thurow</groupId>
+            <artifactId>simple-jndi</artifactId>
+            <version>0.17.2</version>
+        </dependency>
+        
     </dependencies>
+    
+    
 </project>
