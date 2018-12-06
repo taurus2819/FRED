@@ -34,6 +34,7 @@ import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.FrUser;
 import nz.cri.gns.fred.model.Lab;
+import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.LogTable;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
@@ -495,5 +496,24 @@ public class HibernateDAOFactory
 
     public LogTable createNewLog() {
         return new nz.cri.gns.fred.hibernate.LogTable();
+    }
+
+    @Override
+    public LabSection getLabSectionByName(String name) {
+        Session session;
+        try {
+            session = provider.currentSession();
+        } catch (StorageAccessException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        try {
+            Query query = session.createQuery("FROM LabSection AS l WHERE l.name=:name");
+            query.setString("name", name);
+            return (LabSection) query.uniqueResult();
+        } catch (HibernateException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

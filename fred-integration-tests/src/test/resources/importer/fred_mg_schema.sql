@@ -659,3 +659,42 @@ VALUES (MG_IMPORT_SS_TYPE_ID_SEQ.NEXTVAL, 'FRED_PALEO', 'FRED Paleontological An
 insert into MG_IMPORT_SHEET_TYPE (ID, CODE,  NAME, MG_TABLE, ROW_DATA_START, MG_IMPORT_SPREADSHEET_TYPE) 
 values (mg_import_s_type_id_seq.nextval, 'PALEO', 'Paleontological Analysis', (SELECT ID FROM MG_TABLE WHERE CODE='SAMPLE'), 1, (SELECT ID FROM MG_IMPORT_SPREADSHEET_TYPE WHERE CODE='FRED_PALEO'));
 
+INSERT
+INTO MG_IMPORT_COLUMN_TYPE
+    (
+        ID,
+        CODE,
+        MG_IMPORT_SHEET_TYPE,
+        DISP_ORDER,
+        MG_COLUMN_TYPE,
+        heading
+    )
+    VALUES
+    (
+        MG_IMPORT_COLUMN_TYPE_ID_SEQ.NEXTVAL,
+        'TAXON_GROUP',
+        (select id from mg_import_sheet_type where code='PALEO'),
+        0,
+        3,
+        'Taxon group'
+    );
+    
+INSERT
+INTO MG_IMPORT_COLUMN_TYPE
+    (
+        ID,
+        CODE,
+        MG_IMPORT_SHEET_TYPE,
+        DISP_ORDER,
+        MG_COLUMN_TYPE,
+        heading
+    )
+    VALUES
+    (
+        MG_IMPORT_COLUMN_TYPE_ID_SEQ.NEXTVAL,
+        'TAXON',
+        (select id from mg_import_sheet_type where code='PALEO'),
+        1,
+        3,
+        'Taxon'
+    );

@@ -21,11 +21,21 @@ import nz.cri.gns.munginator.upload.RowProcessor;
 import nz.cri.gns.munginator.upload.XLSUploaderServlet;
 
 public class XLSUploadServlet extends HttpServlet {
+
     private static Logger log = Logger.getLogger("nz.cri.gns.fred.importer.XLSUploadServlet");
-    
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        User user = IPSysJspPage.getUser(req.getSession());
+        //User user = IPSysJspPage.getUser(req.getSession());
+
+        /**
+         * Testing only. Delete this code.
+         */
+        User user = new User();
+        user.setId(2287L);
+        user.setOsLogin("mikevdg");
+        user.setOrgId(8364);
+
         if (null == user) {
             resp.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not logged in.");
             return;
@@ -38,7 +48,7 @@ public class XLSUploadServlet extends HttpServlet {
         Connection errorConn = null;
 
         DAOFactory factory = FredHibernate.get().getDAOFactory();
-        
+
         try {
             manageConn = FREDUtil.getConnection();
             importConn = FREDUtil.getConnection();

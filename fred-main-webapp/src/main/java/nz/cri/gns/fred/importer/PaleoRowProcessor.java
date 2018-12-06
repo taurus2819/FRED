@@ -1,9 +1,11 @@
 package nz.cri.gns.fred.importer;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
+import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.model.Age;
@@ -25,13 +27,16 @@ import nz.cri.gns.munginator.upload.stagingarea.Row;
 import nz.cri.gns.munginator.upload.stagingarea.RowSingleValue;
 import nz.cri.gns.munginator.upload.stagingarea.RowValue;
 
-/** I am both a RowProcessor and CustomExportSpreadsheetHandler for Paleo sheets. This is only because the first 60 lines
- * of both were identical and the code kind of belongs together.
+/**
+ * I am both a RowProcessor and CustomExportSpreadsheetHandler for Paleo sheets.
+ * This is only because the first 60 lines of both were identical and the code
+ * kind of belongs together.
+ *
  * @author mikevdg
  */
 public class PaleoRowProcessor extends RowProcessor {
 
-    Map<Integer, Paleontology>  paleoMatrix;
+    Map<Integer, Paleontology> paleoMatrix;
 
     // These are the rows in the spreadsheet.
     private static final int ROW_LOCALITY = 0;
@@ -64,7 +69,6 @@ public class PaleoRowProcessor extends RowProcessor {
     }
 
     /* RowProcessor methods. */
-    
     @Override
     protected void importRow(Row row) throws SQLException, RowImportException {
         int rowNum = row.getRowNum();
@@ -74,51 +78,54 @@ public class PaleoRowProcessor extends RowProcessor {
             RowSingleValue v = (RowSingleValue) each;
             Paleontology paleo = getPaleo(v.getColumnNum());
 
-            if (rowNum < ROW_MATRIX_START) {
-                switch (rowNum) {
-                    case ROW_LOCALITY:
-                        throw new RowImportException(row, each, "Not implemented");
-                        
-                    case ROW_ID_DATE:
-                        paleo.setIdentificationDate(v.getValueTimestamp());
-                        break;
-                    case ROW_DATE_ROUNDING:
-                        paleo.setDateRounding(v.getValueString());
-                        break;
-                    case ROW_IDENTIFIER:
-                        setIdentifiers(paleo, row, v);
-                        break;
-                    case ROW_START_STAGE:
-                        setStartStage(paleo, row, v);
-                        break;
-                    case ROW_START_MOD:
-                        paleo.getStage().setStageLowerMod(v.getValueString());
-                        break;
-                    case ROW_STOP_STAGE:
-                        setStopStage(paleo, row, v);
-                        break;
-                    case ROW_STOP_MOD:
-                        paleo.getStage().setStageUpperMod(v.getValueString());
-                        break;
-                    case ROW_STAGE_COMMENT:
-                        paleo.setStageComments(v.getValueString());
-                        break;
-                    case ROW_LABORATORY:
-                        setLabSection(paleo, row, v);
-                        break;
-                    case ROW_LAB_NUMBER:
-                        paleo.setLabNumber(v.getValueString());
-                        break;
-                    case ROW_COLLECTION_COMMENTS:
-                        paleo.setCollectionComments(v.getValueString());
-                        break;
-                    default:
-                        throw new MgException("The programmer did something wrong.");
+            if (each.getColumnNum() >= 2) {
+                if (rowNum < ROW_MATRIX_START) {
+                    switch (rowNum) {
+                        case ROW_LOCALITY:
+                            throw new RowImportException(row, each, "Not implemented");
+                        case ROW_ID_DATE:
+                            paleo.setIdentificationDate(v.getValueTimestamp());
+                            break;
+                        case ROW_DATE_ROUNDING:
+                            paleo.setDateRounding(v.getValueString());
+                            break;
+                        case ROW_IDENTIFIER:
+                            setIdentifiers(paleo, row, v);
+                            break;
+                        case ROW_START_STAGE:
+                            setStartStage(paleo, row, v);
+                            break;
+                        case ROW_START_MOD:
+                            paleo.getStage().setStageLowerMod(v.getValueString());
+                            break;
+                        case ROW_STOP_STAGE:
+                            setStopStage(paleo, row, v);
+                            break;
+                        case ROW_STOP_MOD:
+                            paleo.getStage().setStageUpperMod(v.getValueString());
+                            break;
+                        case ROW_STAGE_COMMENT:
+                            paleo.setStageComments(v.getValueString());
+                            break;
+                        case ROW_LABORATORY:
+                            setLabSection(paleo, row, v);
+                            break;
+                        case ROW_LAB_NUMBER:
+                            paleo.setLabNumber(v.getValueString());
+                            break;
+                        case ROW_COLLECTION_COMMENTS:
+                            paleo.setCollectionComments(v.getValueString());
+                            break;
+                        default:
+                            throw new MgException("The programmer did something wrong.");
+                    }
+                } else {
+                    // Import the pal list entries.
+                    String p = v.getValueString();
+                    addPaleoListEntry(paleo, row, p);
                 }
             } else {
-                // Import the pal list entries.
-                String p = v.getValueString();
-                addPaleoListEntry(paleo, row, p);
+                warn("DEBUG: skipping value: " + v.getValueString());
             }
         }
     }
@@ -129,7 +136,7 @@ public class PaleoRowProcessor extends RowProcessor {
             try {
                 fredDAO.save(each);
             } catch (StorageAccessException ex) {
-                throw new MgException(ex); 
+                throw new MgException(ex);
             }
         }
     }
@@ -201,27 +208,39 @@ public class PaleoRowProcessor extends RowProcessor {
             }
         }
 
-        Integer tgId = idFromName(row, "TAXON_GROUP");
+        if (!row.hasValue(0)) {
+            throw new RowImportException(row, null, "No taxon group on this row.");
+        }
+        String tgStr = row.getValue(0).getValueString();
+        if (null == tgStr) {
+            throw new RowImportException(row, null, "No taxon group on this row.");
+        }
         try {
-            taxonGroup = taxonUtil.getTaxonomicGroup(tgId);
+            taxonGroup = taxonUtil.getTaxonomicGroup(tgStr);
         } catch (StorageAccessException ex) {
             throw new RowImportException(row, "TAXON_GROUP", "Can not find this Taxonomic Group by ID", ex);
         }
 
+        List<Taxon> txs;
+        
+        String txStr = row.getValue(1).getValueString();
+        if (null == txStr) {
+            throw new RowImportException(row, null, "No taxon on this row.");
+        }
+        try {
+            txs = taxonUtil.getMatchingTaxa(txStr, taxonGroup, Match.EXACT, 1);
+
+        } catch (StorageAccessException ex) {
+            throw new RowImportException(row, "TAXON", "Can not find this Taxonomy by ID", ex);
+        }
         Taxon tx;
-        String txName;
-        String txStr = getRowValueNotNull(row, "TAXON").getValueString();
-        if (txStr.indexOf("/") > 0) {
-            Integer txId = idFromName(row, "TAXON");
-            txName = nameFromName(row, "TAXON");
-            try {
-                tx = taxonUtil.getTaxon(txId);
-            } catch (StorageAccessException ex) {
-                throw new RowImportException(row, "TAXON", "Can not find this Taxonomy by ID", ex);
-            }
+        if (null == txs || txs.isEmpty()) {
+            warn("Cannot find this taxon. Assuming it is a new one.");
+            tx = taxonUtil.createTaxon();
+            tx.setTaxonomicGroup(taxonGroup);
+            tx.setTaxonomicName(txStr);
         } else {
-            tx = null;
-            txName = txStr;
+            tx = txs.get(0);
         }
 
         PaleontologyListEntry result = fredDAO.createNewPaleontologyListEntry();
@@ -230,15 +249,15 @@ public class PaleoRowProcessor extends RowProcessor {
         result.setComments(comments);
         result.setTaxonomicGroup(taxonGroup);
         result.setTaxon(tx);
-        result.setTaxonomicName(txName);
+        result.setTaxonomicName(txStr);
         result.setPaleontology(p);
     }
 
-
     private void setIdentifiers(Paleontology paleo, Row row, RowSingleValue v) throws RowImportException {
         Person p;
+        String personName = v.getValueString();
         try {
-            p = personUtil.findPerson(nameFromName(row, v));
+            p = personUtil.findPerson(personName);
         } catch (StorageAccessException ex) {
             throw new RowImportException(row, v, "Could not find this person", ex);
         }
@@ -247,36 +266,38 @@ public class PaleoRowProcessor extends RowProcessor {
     }
 
     private void setStartStage(Paleontology paleo, Row row, RowSingleValue v) throws RowImportException {
-        Integer ageId = idFromName(row, v);
-        if (null != ageId) {
+        if (!v.isEmpty()) {
+            String stageName = v.getValueString();
             Stage s = paleo.getStage();
             try {
-                Age a = stageUtil.getAge(ageId);
+                Age a = stageUtil.getAgeByName(stageName);
                 s.setLowerAge(a);
             } catch (StorageAccessException ex) {
                 throw new RowImportException(row, v, "Could not find this age.", ex);
-            }            
+            }
         }
     }
 
     private void setStopStage(Paleontology paleo, Row row, RowSingleValue v) throws RowImportException {
-        Integer ageId = idFromName(row, v);
-        if (null != ageId) {
+        if (!v.isEmpty()) {
+            String stageName = v.getValueString();
+
             Stage s = paleo.getStage();
             try {
-                Age a = stageUtil.getAge(ageId);
+                Age a = stageUtil.getAgeByName(stageName);
                 s.setUpperAge(a);
             } catch (StorageAccessException ex) {
                 throw new RowImportException(row, v, "Could not find this age.", ex);
-            }            
-        }    }
+            }
+
+        }
+    }
 
     private void setLabSection(Paleontology paleo, Row row, RowSingleValue v) throws RowImportException {
-        Integer id = idFromName(row, v);
-        if (null != id) {
+        if (!v.isEmpty()) {
             LabSection labSection;
             try {
-                labSection = recordUtil.getLabSection(id);
+                labSection = recordUtil.getLabSectionByName(v.getValueString());
             } catch (StorageAccessException ex) {
                 throw new RowImportException(row, v, "Can't find that lab section.", ex);
             }
@@ -288,6 +309,4 @@ public class PaleoRowProcessor extends RowProcessor {
     public boolean rowIsMultipleValue(Row row) {
         return false;
     }
-
-    
 }

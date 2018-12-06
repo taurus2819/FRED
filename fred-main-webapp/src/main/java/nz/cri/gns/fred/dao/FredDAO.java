@@ -18,6 +18,7 @@ import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.FrUser;
 import nz.cri.gns.fred.model.Lab;
+import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.LogTable;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
@@ -245,5 +246,7 @@ public interface FredDAO {
      */
 
     public FrUser createNewFrUser();
+
+    public LabSection getLabSectionByName(String name);    
 
 }

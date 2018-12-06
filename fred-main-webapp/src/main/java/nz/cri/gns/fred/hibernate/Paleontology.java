@@ -37,7 +37,6 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
     private Set<Person> identifiers = new HashSet();
 
     public Paleontology() {
-        record.setPaleontology(this);
     }
 
     public Integer getRecordId() {
