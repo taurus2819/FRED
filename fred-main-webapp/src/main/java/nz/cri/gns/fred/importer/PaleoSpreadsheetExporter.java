@@ -66,13 +66,8 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
 
             s.addSheet("Paleo", it);
 
-            it.nextColumn();
-            s.setCellValue("Locality");
-            spreadsheet.setCellAsHeading();
-            it.nextColumn();
-            spreadsheet.setCellsText(todoTextSize, it.copy().skipColumns(numColumns), "Enter the locality", false);
-            spreadsheet.setCellsColour(GenericSpreadsheet.Colour.LIGHT_YELLOW, it.copy().skipColumns(numColumns));
-
+            // Leave a blank row for "headings".
+            
             addTextCellsAcross("Locality", it, "Choose a locality.");
 
             cr(s, it);
@@ -84,7 +79,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             s.setCellsTimestamp(to, "Enter an Identification Date in the format \"DD/MM/YYYY HH:MM:SS\"", false);
             s.setCellsColour(GenericSpreadsheet.Colour.LIGHT_YELLOW, to);
 
-            String dateRoundingList = s.addList("Date Rounding", new String[]{"Year / 1", "Month / 2"});
+            String dateRoundingList = s.addList("Date Rounding", new String[]{"Year", "Month"});
             addCellsAcross("Date Rounding", dateRoundingList, it, "Select the accuracy of the date.");
 
             addTextCellsAcross("Identifier(s)", it, "Enter identifiers. TODO: better description");

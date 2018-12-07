@@ -112,6 +112,7 @@
             name="stage"
             class="nz.cri.gns.fred.hibernate.Stage"
             not-null="true"
+            cascade="all"
         >
             <column name="STAGE_ID" />
         </many-to-one>
