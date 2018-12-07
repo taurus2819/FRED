@@ -26,15 +26,7 @@ public class XLSUploadServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //User user = IPSysJspPage.getUser(req.getSession());
-
-        /**
-         * Testing only. Delete this code.
-         */
-        User user = new User();
-        user.setId(2287L);
-        user.setOsLogin("mikevdg");
-        user.setOrgId(8364);
+        User user = IPSysJspPage.getUser(req.getSession());
 
         if (null == user) {
             resp.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not logged in.");
