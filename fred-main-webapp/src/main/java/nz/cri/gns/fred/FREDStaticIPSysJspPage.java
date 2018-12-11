@@ -18,7 +18,7 @@ public abstract class FREDStaticIPSysJspPage extends FREDIPSysJspPage{
 		NewExtranetTemplate et = FREDIPSysJspPage.getFREDTemplate();
 		
 		//add nav
-		IconnedLink[] il = new IconnedLink[8];
+		IconnedLink[] il = new IconnedLink[9];
 		il[0] = new IconnedLink("user_manual.pdf", "images/book.gif", "FRED User Manual");
 		il[1] = new IconnedLink("quick_start.jsp", "images/book.gif", "Quick Start");
 		il[2] = new IconnedLink("about.jsp", "images/book.gif", "About");
