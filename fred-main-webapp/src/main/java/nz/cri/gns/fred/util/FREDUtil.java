@@ -534,4 +534,25 @@ public class FREDUtil {
         Collections.sort(list);
         return list;
     }
+    
+    /**    
+     * @param inStr
+     * @return string
+     * Returns an empty string if the input argument is null.
+     * Returns numeric string with quotes to prevent excel converting field name like 13/12 to 13 December
+     *
+    */
+    public static String nvl(String inStr) {      
+        if (inStr == null) {
+            return "";
+        }
+        if (isNumeric(inStr)) {
+            return "\"" + inStr + "\"";
+        }
+        return inStr;
+    }
+    
+    public static boolean isNumeric(String str) {       
+        return str.matches("\\d+(\\/\\d+)");  //match a number with "/".
+    }
 }

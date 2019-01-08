@@ -96,5 +96,5 @@ public class FredHelper extends FREDIPSysJspPage {
             return false;
         }
         return true;
-    }
+    }   
 }

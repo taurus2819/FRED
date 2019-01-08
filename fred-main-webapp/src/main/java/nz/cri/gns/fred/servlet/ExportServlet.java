@@ -601,7 +601,7 @@ public class ExportServlet
                                 c.print("Field Number/Drillhole Name");
                                 c.print(null);
                                 for (Paleontology paleontology : pals) {
-                                    c.print(DBUtils.nvl(
+                                    c.print(FREDUtil.nvl(
                                             paleontology.getRecord().getSample().getFeature().getFeatureName()));
                                 }
                                 c.println();
@@ -772,7 +772,7 @@ public class ExportServlet
             c.print(((sample.getFeature().getYardFrNumber() != null) ? sample.getFeature().getYardFrNumber().getFrNumber() : ""));
         }
         c.print(sample.getFeature().getFeatureType());
-        c.print(DBUtils.nvl(sample.getFeature().getFeatureName()));
+        c.print(FREDUtil.nvl(sample.getFeature().getFeatureName()));
         c.print(DBUtils.nvl(sample.getTopDepth()));
         c.print(DBUtils.nvl(sample.getBottomDepth()));
         c.print(DBUtils.nvl(sample.getDepthUnit()));
