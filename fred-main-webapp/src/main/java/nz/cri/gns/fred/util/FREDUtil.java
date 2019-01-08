@@ -535,24 +535,14 @@ public class FREDUtil {
         return list;
     }
     
-    /**    
-     * @param inStr
-     * @return string
-     * Returns an empty string if the input argument is null.
-     * Returns numeric string with quotes to prevent excel converting field name like 13/12 to 13 December
+    /** 
+     * @param inStr String
+     * @return An empty string if the inStr argument is null else a new string in this format ="inStr" ("=" sign in front)
+     * Reason: Prevents excel converting field name like 13/12 to 13 December
      *
-    */
-    public static String nvl(String inStr) {      
-        if (inStr == null) {
-            return "";
-        }
-        if (isNumeric(inStr)) {
-            return "\"" + inStr + "\"";
-        }
-        return inStr;
-    }
-    
-    public static boolean isNumeric(String str) {       
-        return str.matches("\\d+(\\/\\d+)");  //match a number with "/".
+     */
+    public static String nvl(String inStr) {
+        //excel will interpret eg: ="13/12" as 13/12 and not 13 Dec
+        return (inStr == null) ? "" : "=" + "\"" + inStr + "\"";
     }
 }
