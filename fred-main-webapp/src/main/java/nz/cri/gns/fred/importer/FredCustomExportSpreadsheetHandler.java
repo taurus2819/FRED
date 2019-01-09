@@ -43,15 +43,15 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
                 return true;
             case "SAMPLE_RELATIONSHIP_MOD":
             case "STRAT_RELATIONSHIP_MOD":
-                sheet.addDropDownHeader(heading, new String[]{"c.", "?"});
+                sheet.addDropDownHeader(heading, null, new String[]{"c.", "?"}, null);
                 sheet.nextColumn();
                 return true;
             case "SAMPLE_RELATIONSHIP_PREP":
-                sheet.addDropDownHeader(heading, new String[]{"above / 232", "below / 233"});
+                sheet.addDropDownHeader(heading, null, new String[]{"above / 232", "below / 233"}, null);
                 sheet.nextColumn();
                 return true;
             case "STRAT_RELATIONSHIP_PREP":
-                sheet.addDropDownHeader(heading, new String[]{"above top / 236", "above base / 237", "below top / 238", "below base / 239"});
+                sheet.addDropDownHeader(heading, null, new String[]{"above top / 236", "above base / 237", "below top / 238", "below base / 239"}, null);
                 sheet.nextColumn();
                 return true;
             default:
@@ -65,7 +65,7 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
             s = SchemaSingleton.getInstance(conn).select(tableName);
             s.allColumns();
             s.addOrderBy(orderBy);
-            sheet.addDropDownHeader(heading, conn, s);
+            sheet.addDropDownHeader(heading, null, conn, s, null);
             sheet.nextColumn(); // this smells bad. Why?
         } catch (SQLException ex) {
             throw new MgException(ex);
@@ -78,7 +78,7 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
             factory = FredHibernate.get().getDAOFactory();
             List<UserFolder> folders = new FolderUtil(factory).getPersonalFolders(user);
             List<String> columnValues = folders.stream().map(folder -> folder.getFolderName() + " / " + folder.getFolderId()).collect(Collectors.toList());
-            sheet.addDropDownHeader(heading, columnValues);
+            sheet.addDropDownHeader(heading, null, columnValues, null);
             sheet.nextColumn();
         } catch (StorageAccessException e) {
             throw new MgException(e);
