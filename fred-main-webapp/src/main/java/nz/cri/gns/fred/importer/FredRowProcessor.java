@@ -19,11 +19,13 @@ import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.util.SiteUtil;
+import nz.cri.gns.munginator.Create;
 import nz.cri.gns.munginator.Modify;
 import nz.cri.gns.munginator.Read;
 import nz.cri.gns.munginator.upload.RowImportException;
 import nz.cri.gns.munginator.upload.TemplateRowProcessor;
 import nz.cri.gns.munginator.upload.stagingarea.Row;
+import nz.cri.gns.munginator.upload.stagingarea.RowSingleValue;
 
 public class FredRowProcessor extends TemplateRowProcessor {
 
@@ -79,7 +81,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
 
     @Override
     protected void afterPerformRow(Row row, Modify update) throws RowImportException {
-
+        insertCollectors(row, update);
     }
 
     private void findOrCreateSite(Row row, Modify update) throws RowImportException {
@@ -202,5 +204,60 @@ public class FredRowProcessor extends TemplateRowProcessor {
             throw new RowImportException(row, "FEATURE_NAME", "Could not find this feature.", null);
         }
         update.set("FEATURE_ID", f.getFeatureId());
+    }
+
+    private void insertCollectors(Row row, Modify update) throws RowImportException {
+        try {
+            List<RowSingleValue> collectors = getRowMultiValue(row, "COLLECTOR_NAME");
+            for (RowSingleValue each : collectors) {
+                if (null != each) {
+                    Integer personId;
+                    if (each.isEmpty() || each.getValueString().indexOf("/") < 1) {
+                        personId = insertPerson(each.getValueString());
+                        if (null==personId) {
+                            throw new NullPointerException("");
+                        }
+                    } else {
+                        personId = idFromName(row, each);
+                        if (null==personId) {
+                            throw new NullPointerException("");
+                        }
+                    }
+                    Integer sampleId = (Integer) (update.get("SAMPLE_ID"));
+                    associateCollector(sampleId, personId);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RowImportException(row, "COLLECTOR_NAME", null, e);
+        }
+    }
+
+    private Integer findPerson(String collectorName) throws SQLException {
+        Read s = schema.getTable("PERSON").select();
+        s.addWhere("NAME", collectorName);
+        try {
+            s.doIt(importConn);
+            if (!s.next()) {
+                return null;
+            } else {
+                return (Integer) s.get("PERSON_ID");
+            }
+        } finally {
+            s.close();
+        }
+    }
+
+    private Integer insertPerson(String collectorName) throws SQLException {
+        Create i = schema.getTable("PERSON").insert();
+        i.set("NAME", collectorName);
+        i.doIt(importConn);
+        return (Integer) i.get("PERSON_ID");
+    }
+
+    private void associateCollector(Integer sampleId, Integer personId) throws SQLException {
+        Create ps = schema.getTable("COLLECTOR").insert();
+        ps.set("SAMPLE_ID", sampleId);
+        ps.set("PERSON_ID", personId);
+        ps.doIt(importConn);
     }
 }
