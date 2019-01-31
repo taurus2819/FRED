@@ -42,7 +42,7 @@ import nz.cri.gns.munginator.upload.stagingarea.RowValue;
  */
 public class PaleoRowProcessor extends RowProcessor {
 
-    Map<Integer, Record> paleoMatrix;
+    Map<Integer, Record> paleoMatrix; // Map column num -> Record.
 
     // These are the rows in the spreadsheet.
     private static final int ROW_LOCALITY = 1;
@@ -92,7 +92,7 @@ public class PaleoRowProcessor extends RowProcessor {
             if (rowNum > ROW_LOCALITY && each.getColumnNum()>=2) {
                 paleo = getPaleo(v.getColumnNum());
                 if (null==paleo) {
-                    throw new RowImportException(row, v, "The locality wasn't defined back in row "+Integer.toString(rowNum)+" of this column.");
+                    throw new RowImportException(row, v, "The locality wasn't defined back in row "+Integer.toString(ROW_LOCALITY)+" of this column.");
                 }
             } 
             
