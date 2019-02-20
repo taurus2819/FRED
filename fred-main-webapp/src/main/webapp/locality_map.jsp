@@ -90,15 +90,15 @@
 				LatLong ll = SiteUtil.getSiteLatLong(sv);
 				Coordinate nzms260Coord = null;
 
-				try {
-                    Datum nzms260Datum = DatumFactory.createDatum("NZMS260");
-					nzms260Coord = nzms260Datum.convertFromNZGD49(ll);
-				} catch (Exception e) {
-                                    log.log(Level.WARNING, "locality_map.jsp: error creating Datum", e);
-                                }
+//				try {
+//                    Datum nzms260Datum = DatumFactory.createDatum("NZMS260");
+//					nzms260Coord = nzms260Datum.convertFromNZGD49(ll);
+//				} catch (Exception e) {
+//                                    log.log(Level.WARNING, "locality_map.jsp: error creating Datum", e);
+//                                }
 
-				if (nzms260Coord != null) {
-					try {
+                        if (nzms260Coord == null) {
+			try {
                         Datum datum = SiteUtil.getFREDDatum(feature);
                         Coordinate coord = SiteUtil.getFREDCoordinate(feature);
                         Datum nzmgDatum = DatumFactory.createDatum("NZMG");
@@ -112,13 +112,25 @@
                         } else {
                             nzmgCoord = coord;
                         }
+                        // Produces map coordinates
+                        Datum nztmDatum = DatumFactory.createDatum("NZTM");
+                        Datum.Coordinate nztmCoord = null;
+                        if (!datum.getName().equals("NZTM")) {
+                            try {
+                                nztmCoord = nztmDatum.convertFromDatum(datum, coord);
+							} catch (Exception e) { 
+                                log.log(Level.WARNING, "locality_map.jsp: error converting Datum", e);                        
+                            }
+                        } else {
+                            nztmCoord = coord;
+                        }
                         //map
 						int width = 620;
 						int height = 500;
                         String fredPath = getServletConfig().getServletContext().getRealPath("/fred");
                         log.info("Getting map URL, fred base="+fredPath);
                         String url = WMSClient.getMapURL(
-                                nzmgCoord.getEastWest(), nzmgCoord.getNorthSouth(), distance, width, height, lyr, fredPath
+                                nztmCoord.getEastWest(), nztmCoord.getNorthSouth(), distance, width, height, lyr, fredPath
                         );
                         log.info("Map url: "+url);
                         %><img src="<%=url%>" width="<%=width%>" height="<%=height%>" alt="FRED locality map" border="1" /><%

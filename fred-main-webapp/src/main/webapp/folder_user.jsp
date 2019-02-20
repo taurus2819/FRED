@@ -91,9 +91,9 @@
 				%><tr class="midColour"><td class="heading" colspan="99">Folder Owner: <%=(folder.getFolder().getOwner() != null) ? folder.getFolder().getOwner().getFullName() : ""%></span></td></tr><%
 			}
 			%><tr class="midColour"><td colspan="99">The users listed below have rights to this folder.  Users can be added or deleted from this list and their rights altered by clicking on the <img src="images/ok.gif" width="20" height="20" border="0" /> or <img src="images/cancel.gif" width="20" height="20" border="0" /> icons.</td></tr>
-			<tr class="midColour"><th>User&nbsp;&nbsp;</th><th width="60" style="width=60px; text-align=center">Read</th><%
+			<tr class="midColour"><th>User&nbsp;&nbsp;</th><th width="60" style="width:60px; text-align:center">Read</th><%
 			for (FolderRight rightType : rightTypes) {
-				%><th width="60" style="width=60px; text-align=center"><%=rightType.getRightDescription()%></th><%
+				%><th width="60" style="width:60px; text-align:center"><%=rightType.getRightDescription()%></th><%
 			}
 			Set<FrUserView> excludeFrUsers = new HashSet<FrUserView>();
 			if (folder.getFolder().getOwner() != null)
