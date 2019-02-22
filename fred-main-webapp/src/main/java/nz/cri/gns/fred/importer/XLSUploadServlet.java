@@ -53,7 +53,7 @@ public class XLSUploadServlet extends HttpServlet {
                     importConn,
                     errorConn,
                     new FredRowProcessorFactory(user, factory),
-                    "/");
+                    "/fred/folder_list.jsp");
 
         } catch (NamingException | SQLException e) {
             throw new ServletException(e);
