@@ -247,10 +247,16 @@ public class ResultList_jsp extends HttpServlet {
 
                 if (hasSquirrelAge) {
                     // Grumble mumble. We should use parameters here.
-                    sampHqlStr.append(" AND (squirrelAge.narrowBaseAge > ");
-                    sampHqlStr.append(sqNarrowAgeTo);
-                    sampHqlStr.append(") AND (squirrelAge.narrowTopAge < ");
+//                    sampHqlStr.append(" AND (squirrelAge.narrowBaseAge > ");
+//                    sampHqlStr.append(sqNarrowAgeTo);
+//                    sampHqlStr.append(") AND (squirrelAge.narrowTopAge < ");
+//                    sampHqlStr.append(sqNarrowAgeFrom);
+
+                    sampHqlStr.append(" AND (squirrelAge.narrowBaseAge <= ");
                     sampHqlStr.append(sqNarrowAgeFrom);
+                    sampHqlStr.append(") AND (squirrelAge.narrowTopAge >= ");
+                    sampHqlStr.append(sqNarrowAgeTo);
+
                     sampHqlStr.append(") AND (squirrelAge.wideBaseAge > ");
                     sampHqlStr.append(sqWideAgeTo);
                     sampHqlStr.append(") AND (squirrelAge.wideTopAge < ");
