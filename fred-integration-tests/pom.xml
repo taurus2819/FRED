@@ -173,11 +173,13 @@
             <version>3.1.54.592</version>
         </dependency>
         
+        <!--
         <dependency>
             <groupId>com.github.h-thurow</groupId>
             <artifactId>simple-jndi</artifactId>
             <version>0.17.2</version>
         </dependency>
+        -->
         
     </dependencies>
     

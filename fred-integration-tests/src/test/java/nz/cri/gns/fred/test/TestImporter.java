@@ -29,6 +29,7 @@ import nz.cri.gns.munginator.upload.Importer;
 import nz.cri.gns.munginator.upload.RowProcessor;
 import nz.cri.gns.munginator.upload.XLSUploader;
 import nz.cri.gns.munginator.upload.XLSUploader.SheetIdentifier;
+import org.h2.jdbcx.JdbcDataSource;
 import org.h2.tools.RunScript;
 import org.h2.tools.Server;
 import static org.junit.Assert.assertTrue;
@@ -52,24 +53,33 @@ public class TestImporter {
 
     @Before
     public void initializeDatabase() throws SQLException, NamingException {
+        /* This doesn't work yet. Hibernate cannot find a data source. */
+
         try {
 
-                 InitialContext ctxt = new InitialContext();
-                 DataSource ds = (DataSource) ctxt.lookup("jdbc.fr");
-                 
-                 /*
             try {
                 Class.forName("org.h2.Driver");
             } catch (ClassNotFoundException ex) {
                 throw new RuntimeException(ex);
             }
+            
+            InitialContext ctxt = new InitialContext(); // Loads from jndi.properties, then jdbc.properties.
+
+            // Did we load everything from jdbc.properties properly?
+            DataSource ds = (DataSource) ctxt.lookup("jdbc.fr");
+
+            /*
+            Used for debugging. You can hook up an SQL client to view the results of the test. 
+            */
+            /*
             server = Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "9092");
 
             JdbcDataSource ds = new JdbcDataSource();
             ds.setURL("jdbc:h2:mem:mgdemo;MODE=Oracle");
             ds.setUser("sa");
             ds.setPassword("");
-            server.start();*/
+            server.start();
+            */
 
             conn = ds.getConnection();
             conn.setAutoCommit(false);
@@ -85,17 +95,18 @@ public class TestImporter {
                     "/importer/fred_mg_schema.sql")));
             conn.commit();
 
-            /*
-            System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.SimpleContextFactory");
+            /* Trying to manually make things work. This should be loaded from jdbc.properties
+            */
+            /*System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.SimpleContextFactory");
             System.setProperty("org.osjava.sj.root", "target/test-classes/config");
             System.setProperty("org.osjava.jndi.delimiter", "/");
-            System.setProperty("org.osjava.sj.jndi.shared", "true");             */
-             /*
+            System.setProperty("org.osjava.sj.jndi.shared", "true");
             InitialContext ic = new InitialContext();
             ic.createSubcontext("java:comp");
             ic.createSubcontext("java:comp/env");
             ic.createSubcontext("java:comp/env/jdbc");
             ic.bind("java:comp/env/jdbc/fr", ds);*/
+            
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }

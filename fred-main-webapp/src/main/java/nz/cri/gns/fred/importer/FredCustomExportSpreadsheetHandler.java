@@ -43,15 +43,15 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
                 return true;
             case "SAMPLE_RELATIONSHIP_MOD":
             case "STRAT_RELATIONSHIP_MOD":
-                sheet.addDropDownHeader(heading, null, new String[]{"c.", "?"});
+                sheet.addDropDownHeader(heading, c, new String[]{"c.", "?"});
                 sheet.nextColumn();
                 return true;
             case "SAMPLE_RELATIONSHIP_PREP":
-                sheet.addDropDownHeader(heading, null, new String[]{"above / 232", "below / 233"});
+                sheet.addDropDownHeader(heading, c, new String[]{"above / 232", "below / 233"});
                 sheet.nextColumn();
                 return true;
             case "STRAT_RELATIONSHIP_PREP":
-                sheet.addDropDownHeader(heading, null, new String[]{"above top / 236", "above base / 237", "below top / 238", "below base / 239"});
+                sheet.addDropDownHeader(heading, c, new String[]{"above top / 236", "above base / 237", "below top / 238", "below base / 239"});
                 sheet.nextColumn();
                 return true;
             default:

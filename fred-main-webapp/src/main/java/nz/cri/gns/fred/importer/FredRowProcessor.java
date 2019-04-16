@@ -214,12 +214,12 @@ public class FredRowProcessor extends TemplateRowProcessor {
                     Integer personId;
                     if (each.isEmpty() || each.getValueString().indexOf("/") < 1) {
                         personId = insertPerson(each.getValueString());
-                        if (null==personId) {
+                        if (null == personId) {
                             throw new NullPointerException("");
                         }
                     } else {
                         personId = idFromName(row, each);
-                        if (null==personId) {
+                        if (null == personId) {
                             throw new NullPointerException("");
                         }
                     }
@@ -260,4 +260,34 @@ public class FredRowProcessor extends TemplateRowProcessor {
         ps.set("PERSON_ID", personId);
         ps.doIt(importConn);
     }
+
+    /*
+    SAMPLES_NEARBY
+SAMPLE_RELATIONSHIP_MOD
+SAMPLE_RELATIONSHIP_DISTANCE
+SAMPLE_RELATIONSHIP_PREP
+SAMPLE_RELATIONSHIP_REFERENCE
+STRAT_RELATIONSHIP_MOD
+STRAT_RELATIONSHIP_DISTANCE
+STRAT_RELATIONSHIP_PREP
+STRAT_RELATIONSHIP_STRAT_UNIT*/
+    @Override
+    public boolean isMultiValue(int columnNum) {
+        String code = columns.get(columnNum).getCode();
+        switch (code) {
+            case "SAMPLES_NEARBY":
+            case "SAMPLE_RELATIONSHIP_MOD":
+            case "SAMPLE_RELATIONSHIP_DISTANCE":
+            case "SAMPLE_RELATIONSHIP_PREP":
+            case "SAMPLE_RELATIONSHIP_REFERENCE":
+            case "STRAT_RELATIONSHIP_MOD":
+            case "STRAT_RELATIONSHIP_DISTANCE":
+            case "STRAT_RELATIONSHIP_PREP":
+            case "STRAT_RELATIONSHIP_STRAT_UNIT":
+                return true;
+            default:
+                return super.isMultiValue(columnNum);
+        }
+    }
+
 }
