@@ -24,6 +24,7 @@ import nz.cri.gns.munginator.Modify;
 import nz.cri.gns.munginator.Read;
 import nz.cri.gns.munginator.upload.RowImportException;
 import nz.cri.gns.munginator.upload.TemplateRowProcessor;
+import nz.cri.gns.munginator.upload.stagingarea.ImportColumn;
 import nz.cri.gns.munginator.upload.stagingarea.Row;
 import nz.cri.gns.munginator.upload.stagingarea.RowSingleValue;
 
@@ -76,12 +77,14 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 setFeatureId(row, update, featureName);
                 break;
         }
-
     }
 
     @Override
     protected void afterPerformRow(Row row, Modify update) throws RowImportException {
         insertCollectors(row, update);
+        insertSamplesNearby(row, update);
+        insertSampleRelationships(row, update);
+        insertStratRelationships(row, update);
     }
 
     private void findOrCreateSite(Row row, Modify update) throws RowImportException {
@@ -261,6 +264,74 @@ public class FredRowProcessor extends TemplateRowProcessor {
         ps.doIt(importConn);
     }
 
+    private void insertSamplesNearby(Row row, Modify update) throws RowImportException {
+        warn("Discarding 'Samples Nearby' because I don't know what to do with it (TODO).");
+    }
+
+    private void insertSampleRelationships(Row row, Modify update) throws RowImportException {
+        try {
+            Create relationship = schema.insert("RELATIONSHIP");
+            relationship.set("RELATIONSHIP_TYPE", "Sample");
+            relationship.set("SAMPLE_ID", (Integer) (update.get("SAMPLE_ID")));
+
+            List<RowSingleValue> mod = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_MOD"); // "c." or "?" or nothing.
+            List<RowSingleValue> distance = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_DISTANCE"); // metres, I assume.
+            List<RowSingleValue> prep = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_PREP"); // above / below
+            List<RowSingleValue> ref = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_REFERENCE"); // sample names, possibly in this spreadsheet.
+
+            for (int i = 0; i < ref.size(); i++) {
+                if (null==ref.get(i) || ref.get(i).isEmpty()) {
+                    throw new RowImportException(row, "SAMPLE_RELATIONSHIP_REFERENCE", "Why would you put a mod, distance or prep here without a reference?", null);
+                }
+                
+                int prepId = idFromName(row, prep.get(i));
+                relationship.set("RELATION_TYPE_ID", prepId); // "above" or "below".
+                relationship.set("DISTANCE_MOD", mod.get(i).getValueInteger());
+                relationship.set("DISTANCE_RANGE", distance.get(i).getValueDouble());
+
+                Integer sampleId = findSampleId(ref.get(i).getValueString());
+                if (null == sampleId) {
+                    throw new RowImportException(row, "SAMPLE_RELATIONSHIP_REFERENCE", "I can't find this sample!", null);
+                }
+                relationship.set("SAMPLE_ID", sampleId);
+                relationship.doIt(importConn);
+
+            }
+
+        } catch (SQLException e) {
+            throw new RowImportException(row, "SAMPLE_RELATIONSHIP_REFERENCE", "Some error happened with the sample reference columns.", e);
+        }
+    }
+
+    private void insertStratRelationships(Row row, Modify update) throws RowImportException {
+        try {
+            Create relationship = schema.insert("RELATIONSHIP");
+            relationship.set("RELATIONSHIP_TYPE", "Sample");
+            relationship.set("SAMPLE_ID", (Integer) (update.get("SAMPLE_ID")));
+
+            List<RowSingleValue> mod = getRowMultiValue(row, "STRAT_RELATIONSHIP_MOD"); // "c." or "?" or nothing.
+            List<RowSingleValue> distance = getRowMultiValue(row, "STRAT_RELATIONSHIP_DISTANCE"); // metres, I assume.
+            List<RowSingleValue> prep = getRowMultiValue(row, "STRAT_RELATIONSHIP_PREP"); // above / below
+            List<RowSingleValue> unit = getRowMultiValue(row, "STRAT_RELATIONSHIP_STRAT_UNIT"); // sample names, possibly in this spreadsheet.
+
+            for (int i = 0; i < unit.size(); i++) {
+                int prepId = idFromName(row, prep.get(i));
+                relationship.set("RELATION_TYPE_ID", prepId); // "above" or "below".
+                relationship.set("DISTANCE_MOD", mod.get(i).getValueInteger());
+                relationship.set("DISTANCE_RANGE", distance.get(i).getValueDouble());
+
+                String stratUnit = nameFromName(row, unit.get(i));
+                Integer stratUnitId = findStratUnitId(stratUnit);
+                relationship.set("STRAT_UNIT", stratUnit);
+                relationship.set("STRAT_UNIT_ID", stratUnitId);
+                relationship.doIt(importConn);
+            }
+
+        } catch (SQLException e) {
+            throw new RowImportException(row, "STRAT_RELATIONSHIP_STRAT_UNIT", "Some error happened with the stratigraphic reference columns.", e);
+        }
+    }
+
     /*
     SAMPLES_NEARBY
 SAMPLE_RELATIONSHIP_MOD
@@ -273,21 +344,67 @@ STRAT_RELATIONSHIP_PREP
 STRAT_RELATIONSHIP_STRAT_UNIT*/
     @Override
     public boolean isMultiValue(int columnNum) {
-        String code = columns.get(columnNum).getCode();
-        switch (code) {
-            case "SAMPLES_NEARBY":
-            case "SAMPLE_RELATIONSHIP_MOD":
-            case "SAMPLE_RELATIONSHIP_DISTANCE":
-            case "SAMPLE_RELATIONSHIP_PREP":
-            case "SAMPLE_RELATIONSHIP_REFERENCE":
-            case "STRAT_RELATIONSHIP_MOD":
-            case "STRAT_RELATIONSHIP_DISTANCE":
-            case "STRAT_RELATIONSHIP_PREP":
-            case "STRAT_RELATIONSHIP_STRAT_UNIT":
-                return true;
-            default:
-                return super.isMultiValue(columnNum);
+        ImportColumn c = columns.get(columnNum);
+        if (null != c.getCode()) {
+            switch (c.getCode()) {
+                case "SAMPLES_NEARBY":
+                case "SAMPLE_RELATIONSHIP_MOD":
+                case "SAMPLE_RELATIONSHIP_DISTANCE":
+                case "SAMPLE_RELATIONSHIP_PREP":
+                case "SAMPLE_RELATIONSHIP_REFERENCE":
+                case "STRAT_RELATIONSHIP_MOD":
+                case "STRAT_RELATIONSHIP_DISTANCE":
+                case "STRAT_RELATIONSHIP_PREP":
+                case "STRAT_RELATIONSHIP_STRAT_UNIT":
+                    return true;
+            }
+        }
+        return super.isMultiValue(columnNum);
+    }
+
+    /**
+     * Find the sample with the given FR_NUMBER (i.e. name), or null if it can't
+     * be found.
+     */
+    private Integer findSampleId(String name) throws SQLException {
+        Read s = schema.select("SAMPLE");
+        s.addColumn("SAMPLE_ID");
+        s.addWhere("FR_ID$FR_NUMBER", name.trim());
+        try {
+            s.doIt(importConn);
+            if (!s.next()) {
+                // Not found; return null.
+                return null;
+            }
+            return (Integer) s.get("SAMPLE_ID");
+        } finally {
+            s.close();
         }
     }
 
+    private Integer findStratUnitId(String name) throws SQLException {
+        // TODO: probably use an online service?
+        Read su = schema.select("SL.STRAT_UNIT");
+        // TODO: it would be really good to do a WHERE LOWER(X)=LOWER(Y) here.
+        su.addColumn("SU_ID");
+        su.addWhere("SU_NAME_STANDARD", name);
+        try {
+            su.doIt(importConn);
+            if (su.next()) {
+                return (Integer) su.get("SU_ID");
+            }
+
+            // Not found. Try SU_NAME instead.
+            su = schema.select("SL.STRAT_UNIT");
+            su.addColumn("SU_ID");
+            su.addWhere("SU_NAME", name);
+            su.doIt(importConn);
+            if (su.next()) {
+                return (Integer) su.get("SU_ID");
+            }
+            return null;
+        } finally {
+            su.close();
+        }
+    }
 }
