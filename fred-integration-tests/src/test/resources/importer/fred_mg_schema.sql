@@ -293,14 +293,15 @@ insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='REGISTRATION_AREA'), 3, 'NAME');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='REGISTRATION_AREA'), 3, 'CODE');
 
-insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='RELATIONSHIP'), 1, 'RELATIONSHIP_ID');
-insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='RELATIONSHIP'), 6, 'RELATIONSHIP_TYPE');
+
+insert into mg_column (id, mg_table, mg_column_type, code, is_primary_key, sequence) values (mg_column_id_seq.nextval, (select id from mg_table where code='RELATIONSHIP'), 9, 'RELATIONSHIP_ID', 1, 'RELATIONSHIP_SEQ');
+insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='RELATIONSHIP'), 3, 'RELATIONSHIP_TYPE');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='RELATIONSHIP'), 6, 'RELATED_FEATURE_ID');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='RELATIONSHIP'), 3, 'STRAT_UNIT');
-insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='RELATIONSHIP'), 3, 'DISTANCE');
+insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='RELATIONSHIP'), 2, 'DISTANCE');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='RELATIONSHIP'), 3, 'DISTANCE_MOD');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='RELATIONSHIP'), 6, 'RELATION_TYPE_ID');
-insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='RELATIONSHIP'), 3, 'DISTANCE_RANGE');
+insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='RELATIONSHIP'), 2, 'DISTANCE_RANGE');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='RELATIONSHIP'), 6, 'SAMPLE_ID');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='RELATIONSHIP'), 6, 'STRAT_UNIT_ID');
 

@@ -5,7 +5,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
@@ -20,8 +22,11 @@ import nz.cri.gns.fred.util.FeatureUtil;
 import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.util.SiteUtil;
 import nz.cri.gns.munginator.Create;
+import nz.cri.gns.munginator.MgException;
 import nz.cri.gns.munginator.Modify;
 import nz.cri.gns.munginator.Read;
+import nz.cri.gns.munginator.Table;
+import nz.cri.gns.munginator.Update;
 import nz.cri.gns.munginator.upload.RowImportException;
 import nz.cri.gns.munginator.upload.TemplateRowProcessor;
 import nz.cri.gns.munginator.upload.stagingarea.ImportColumn;
@@ -37,12 +42,15 @@ public class FredRowProcessor extends TemplateRowProcessor {
     FeatureUtil featureUtil;
     SampleUtil sampleUtil;
 
+    private Map<Integer, String> relationshipSamples; // Mapping RELATIONSHIP_ID to sample names. 
+
     public FredRowProcessor(User user, DAOFactory factory, String code) {
         super(code);
         this.user = user;
         this.factory = factory;
         featureUtil = new FeatureUtil(factory);
         sampleUtil = new SampleUtil(factory);
+        relationshipSamples = new HashMap<>();
     }
 
     @Override
@@ -184,6 +192,11 @@ public class FredRowProcessor extends TemplateRowProcessor {
 
     @Override
     public void close() {
+        try {
+            matchUpSamples();
+        } catch (SQLException ex) {
+            throw new MgException(ex);
+        }
         if (null != factory) {
             try {
                 factory.closeSession();
@@ -275,15 +288,11 @@ public class FredRowProcessor extends TemplateRowProcessor {
         List<RowSingleValue> ref = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_REFERENCE"); // sample names, possibly in this spreadsheet.
 
         try {
-            Create relationship = schema.insert("RELATIONSHIP");
-            relationship.set("RELATIONSHIP_TYPE", "Sample");
-            relationship.set("SAMPLE_ID", (Integer) (update.get("SAMPLE_ID")));
-
             for (int i = 0; i < ref.size(); i++) {
                 boolean mdpHasValue = hasValue(mod, i) || hasValue(distance, i) || hasValue(prep, i);
-                
+
                 // If nothing has a value here...
-                if (!(hasValue(ref, i) || mdpHasValue )) {
+                if (!(hasValue(ref, i) || mdpHasValue)) {
                     continue;
                 }
 
@@ -292,22 +301,48 @@ public class FredRowProcessor extends TemplateRowProcessor {
                     throw new RowImportException(row, "SAMPLE_RELATIONSHIP_REFERENCE", "A mod, distance or prep here requires a reference.", null);
                 }
 
+                if (!hasValue(prep, i)) {
+                    throw new RowImportException(row, "SAMPLE_RELATIONSHIP_PREP", "Prep must have a value.", null);
+                }
+
+                Create relationship = schema.insert("RELATIONSHIP");
+                relationship.set("RELATIONSHIP_TYPE", "Sample");
+                relationship.set("SAMPLE_ID", (Integer) (update.get("SAMPLE_ID")));
+                relationship.set("RELATED_FEATURE_ID", (Integer) (update.get("FEATURE_ID")));
+
                 int prepId = idFromName(row, prep.get(i));
                 relationship.set("RELATION_TYPE_ID", prepId); // "above" or "below".
-                relationship.set("DISTANCE_MOD", mod.get(i).getValueInteger());
-                relationship.set("DISTANCE_RANGE", distance.get(i).getValueDouble());
-
-                Integer sampleId = findSampleId(ref.get(i).getValueString());
-                if (null == sampleId) {
-                    throw new RowImportException(row, "SAMPLE_RELATIONSHIP_REFERENCE", "I can't find this sample!", null);
+                if (hasValue(mod, i)) {
+                    relationship.set("DISTANCE_MOD", mod.get(i).getValueInteger());
+                } else {
+                    relationship.set("DISTANCE_MOD", null);
                 }
-                relationship.set("SAMPLE_ID", sampleId);
-                relationship.doIt(importConn);
+                if (hasValue(distance, i)) {
+                    relationship.set("DISTANCE_RANGE", distance.get(i).getValueDouble());
+                } else {
+                    relationship.set("DISTANCE_RANGE", null);
+                }
+                // The SAMPLE_ID will be set later after all rows are imported.
 
+                relationship.doIt(importConn);
             }
 
         } catch (SQLException e) {
             throw new RowImportException(row, "SAMPLE_RELATIONSHIP_REFERENCE", "Some error happened with the sample reference columns.", e);
+        }
+    }
+
+    private void matchUpSamples() throws MgException, SQLException {
+        Table relationshipTable = schema.getTable("RELATIONSHIP");
+        for (Integer relationshipId : relationshipSamples.keySet()) {
+            Update relationship = relationshipTable.update();
+            Integer sampleId = findSampleId(relationshipSamples.get(relationshipId));
+            if (null == sampleId) {
+                throw new MgException("I can't find a sample called \"" + relationshipSamples.get(relationshipId));
+            }
+            relationship.set("SAMPLE_ID", sampleId);
+            relationship.addWhere("RELATIONSHIP_ID", relationshipId);
+            relationship.doIt(importConn);
         }
     }
 
@@ -326,15 +361,12 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
 
         try {
-            Create relationship = schema.insert("RELATIONSHIP");
-            relationship.set("RELATIONSHIP_TYPE", "Sample");
-            relationship.set("SAMPLE_ID", (Integer) (update.get("SAMPLE_ID")));
 
             for (int i = 0; i < unit.size(); i++) {
                 boolean mdpHasValue = hasValue(mod, i) || hasValue(distance, i) || hasValue(prep, i);
-                
+
                 // If nothing has a value here...
-                if (!(hasValue(unit, i) || mdpHasValue )) {
+                if (!(hasValue(unit, i) || mdpHasValue)) {
                     continue;
                 }
 
@@ -342,11 +374,28 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 if (mdpHasValue && !hasValue(unit, i)) {
                     throw new RowImportException(row, "STRAT_RELATIONSHIP_STRAT_UNIT", "A mod, distance or prep here requires a reference.", null);
                 }
-                
-                int prepId = idFromName(row, prep.get(i));
+
+                if (!hasValue(prep, i)) {
+                    throw new RowImportException(row, "STRAT_RELATIONSHIP_PREP", "Prep must have a value (the missing value is on this row or a following row).", null);
+                }
+
+                Create relationship = schema.insert("RELATIONSHIP");
+                relationship.set("RELATIONSHIP_TYPE", "Sample");
+                relationship.set("SAMPLE_ID", (Integer) (update.get("SAMPLE_ID")));
+                relationship.set("RELATED_FEATURE_ID", (Integer) (update.get("FEATURE_ID")));
+
+                Integer prepId = idFromName(row, prep.get(i));
                 relationship.set("RELATION_TYPE_ID", prepId); // "above" or "below".
-                relationship.set("DISTANCE_MOD", mod.get(i).getValueInteger());
-                relationship.set("DISTANCE_RANGE", distance.get(i).getValueDouble());
+                if (hasValue(mod, i)) {
+                    relationship.set("DISTANCE_MOD", mod.get(i).getValueInteger());
+                } else {
+                    relationship.set("DISTANCE_MOD", null);
+                }
+                if (hasValue(distance, i)) {
+                    relationship.set("DISTANCE_RANGE", distance.get(i).getValueDouble());
+                } else {
+                    relationship.set("DISTANCE_RANGE", null);
+                }
 
                 String stratUnit = nameFromName(row, unit.get(i));
                 Integer stratUnitId = findStratUnitId(stratUnit);
