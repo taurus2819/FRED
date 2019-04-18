@@ -269,21 +269,29 @@ public class FredRowProcessor extends TemplateRowProcessor {
     }
 
     private void insertSampleRelationships(Row row, Modify update) throws RowImportException {
+        List<RowSingleValue> mod = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_MOD"); // "c." or "?" or nothing.
+        List<RowSingleValue> distance = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_DISTANCE"); // metres, I assume.
+        List<RowSingleValue> prep = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_PREP"); // above / below
+        List<RowSingleValue> ref = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_REFERENCE"); // sample names, possibly in this spreadsheet.
+
         try {
             Create relationship = schema.insert("RELATIONSHIP");
             relationship.set("RELATIONSHIP_TYPE", "Sample");
             relationship.set("SAMPLE_ID", (Integer) (update.get("SAMPLE_ID")));
 
-            List<RowSingleValue> mod = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_MOD"); // "c." or "?" or nothing.
-            List<RowSingleValue> distance = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_DISTANCE"); // metres, I assume.
-            List<RowSingleValue> prep = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_PREP"); // above / below
-            List<RowSingleValue> ref = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_REFERENCE"); // sample names, possibly in this spreadsheet.
-
             for (int i = 0; i < ref.size(); i++) {
-                if (null==ref.get(i) || ref.get(i).isEmpty()) {
-                    throw new RowImportException(row, "SAMPLE_RELATIONSHIP_REFERENCE", "Why would you put a mod, distance or prep here without a reference?", null);
-                }
+                boolean mdpHasValue = hasValue(mod, i) || hasValue(distance, i) || hasValue(prep, i);
                 
+                // If nothing has a value here...
+                if (!(hasValue(ref, i) || mdpHasValue )) {
+                    continue;
+                }
+
+                // If ref is missing a value...
+                if (mdpHasValue && !hasValue(ref, i)) {
+                    throw new RowImportException(row, "SAMPLE_RELATIONSHIP_REFERENCE", "A mod, distance or prep here requires a reference.", null);
+                }
+
                 int prepId = idFromName(row, prep.get(i));
                 relationship.set("RELATION_TYPE_ID", prepId); // "above" or "below".
                 relationship.set("DISTANCE_MOD", mod.get(i).getValueInteger());
@@ -303,18 +311,38 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
     }
 
+    private boolean hasValue(List<RowSingleValue> mv, int i) {
+        return (null != mv.get(i) && !mv.get(i).isEmpty());
+    }
+
     private void insertStratRelationships(Row row, Modify update) throws RowImportException {
+        List<RowSingleValue> mod = getRowMultiValue(row, "STRAT_RELATIONSHIP_MOD"); // "c." or "?" or nothing.
+        List<RowSingleValue> distance = getRowMultiValue(row, "STRAT_RELATIONSHIP_DISTANCE"); // metres, I assume.
+        List<RowSingleValue> prep = getRowMultiValue(row, "STRAT_RELATIONSHIP_PREP"); // above / below
+        List<RowSingleValue> unit = getRowMultiValue(row, "STRAT_RELATIONSHIP_STRAT_UNIT"); // sample names, possibly in this spreadsheet.
+
+        if (unit.isEmpty()) {
+            return;
+        }
+
         try {
             Create relationship = schema.insert("RELATIONSHIP");
             relationship.set("RELATIONSHIP_TYPE", "Sample");
             relationship.set("SAMPLE_ID", (Integer) (update.get("SAMPLE_ID")));
 
-            List<RowSingleValue> mod = getRowMultiValue(row, "STRAT_RELATIONSHIP_MOD"); // "c." or "?" or nothing.
-            List<RowSingleValue> distance = getRowMultiValue(row, "STRAT_RELATIONSHIP_DISTANCE"); // metres, I assume.
-            List<RowSingleValue> prep = getRowMultiValue(row, "STRAT_RELATIONSHIP_PREP"); // above / below
-            List<RowSingleValue> unit = getRowMultiValue(row, "STRAT_RELATIONSHIP_STRAT_UNIT"); // sample names, possibly in this spreadsheet.
-
             for (int i = 0; i < unit.size(); i++) {
+                boolean mdpHasValue = hasValue(mod, i) || hasValue(distance, i) || hasValue(prep, i);
+                
+                // If nothing has a value here...
+                if (!(hasValue(unit, i) || mdpHasValue )) {
+                    continue;
+                }
+
+                // If ref is missing a value...
+                if (mdpHasValue && !hasValue(unit, i)) {
+                    throw new RowImportException(row, "STRAT_RELATIONSHIP_STRAT_UNIT", "A mod, distance or prep here requires a reference.", null);
+                }
+                
                 int prepId = idFromName(row, prep.get(i));
                 relationship.set("RELATION_TYPE_ID", prepId); // "above" or "below".
                 relationship.set("DISTANCE_MOD", mod.get(i).getValueInteger());
@@ -332,16 +360,6 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
     }
 
-    /*
-    SAMPLES_NEARBY
-SAMPLE_RELATIONSHIP_MOD
-SAMPLE_RELATIONSHIP_DISTANCE
-SAMPLE_RELATIONSHIP_PREP
-SAMPLE_RELATIONSHIP_REFERENCE
-STRAT_RELATIONSHIP_MOD
-STRAT_RELATIONSHIP_DISTANCE
-STRAT_RELATIONSHIP_PREP
-STRAT_RELATIONSHIP_STRAT_UNIT*/
     @Override
     public boolean isMultiValue(int columnNum) {
         ImportColumn c = columns.get(columnNum);
