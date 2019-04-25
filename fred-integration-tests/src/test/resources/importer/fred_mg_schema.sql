@@ -325,7 +325,7 @@ insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SAMPLE'), 6, 'DRILL_TYPE_ID');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SAMPLE'), 6, 'YARD_FR_ID');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SAMPLE'), 7, 'AUDIT_ID');
-insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SAMPLE'), 4, 'COLLECTION_DATE');
+insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SAMPLE'), 10, 'COLLECTION_DATE');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SAMPLE'), 6, 'DATE_ROUNDING');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SAMPLE'), 3, 'STRAT_UNIT');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SAMPLE'), 6, 'IN_PLACE');
