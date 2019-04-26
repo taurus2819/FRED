@@ -54,6 +54,10 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
                 sheet.addDropDownHeader(heading, c, new String[]{"above top / 236", "above base / 237", "below top / 238", "below base / 239"});
                 sheet.nextColumn();
                 return true;
+            case "INFERRED_ENVIRONMENT":
+                sheet.addDropDownHeader(heading, c, new String[]{"Marine", "Non Marine"});
+                sheet.nextColumn();
+                return true;
             default:
                 return false;
         }
