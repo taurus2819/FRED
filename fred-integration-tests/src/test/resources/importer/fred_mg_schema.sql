@@ -282,7 +282,7 @@ insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='PAL_LIST_META'), 3, 'META_ID');
 insert into mg_column (id, mg_table, mg_column_type, code, is_primary_key, sequence) values (mg_column_id_seq.nextval, (select id from mg_table where code='PERSON'), 1, 'PERSON_ID', 1, 'PERSON_SEQ');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='PERSON'), 3, 'ST_CODE');
-insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='PERSON'), 3, 'NAME');
+insert into mg_column (id, mg_table, mg_column_type, code, ORDER_BY_RANK) values (mg_column_id_seq.nextval, (select id from mg_table where code='PERSON'), 3, 'NAME', 1);
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='RECORD'), 1, 'RECORD_ID');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='RECORD'), 6, 'SAMPLE_ID');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='RECORD'), 6, 'AUDIT_ID');
@@ -417,7 +417,7 @@ insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='WEATHERING'), 3, 'CODE');
 
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SC.LAB'), 1, 'LAB_ID');
-insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SC.LAB'), 3, 'LAB_NAME');
+insert into mg_column (id, mg_table, mg_column_type, code, ORDER_BY_RANK) values (mg_column_id_seq.nextval, (select id from mg_table where code='SC.LAB'), 3, 'LAB_NAME', 1);
 
 
 CREATE TABLE LU_COORD_SYSTEM (
