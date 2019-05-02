@@ -43,7 +43,7 @@ public class TemplateServlet extends HttpServlet {
                 if ("FRED_PALEO".equals(templateCode)) {
                     ss = new PaleoSpreadsheetExporter(conn, templateCode, "Paleontological Analysis", factory);
                 } else {
-                    ss = new SpreadsheetExporter(conn, templateCode, null, SpreadsheetExporter.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn, user));
+                    ss = new SpreadsheetExporter(conn, templateCode, null, null, SpreadsheetExporter.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn, user));
                 }
                 ss.write(new DiscardOutputStream());
             }
@@ -53,7 +53,7 @@ public class TemplateServlet extends HttpServlet {
             if ("FRED_PALEO".equals(templateCode)) {
                 ss = new PaleoSpreadsheetExporter(conn, templateCode, "Paleontological Analysis", factory);
             } else {
-                ss = new SpreadsheetExporter(conn, templateCode, null, SpreadsheetExporter.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn, user));
+                ss = new SpreadsheetExporter(conn, templateCode, null, null, SpreadsheetExporter.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn, user));
             }
 
             ss.write(response);

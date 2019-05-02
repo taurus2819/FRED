@@ -25,7 +25,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
 
     private final DAOFactory factory;
 
-    public PaleoSpreadsheetExporter(Connection conn, String code, String name, DAOFactory factory) {
+    public PaleoSpreadsheetExporter(Connection conn, String code, String name, DAOFactory factory) throws IOException {
         super(conn, code, name);
         this.factory = factory;
     }
@@ -114,7 +114,8 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
 
             s.finish();
 
-            s.flush();
+            s.write();
+            s.close();
         } catch (StorageAccessException e) {
             throw new MgException(e);
         }
