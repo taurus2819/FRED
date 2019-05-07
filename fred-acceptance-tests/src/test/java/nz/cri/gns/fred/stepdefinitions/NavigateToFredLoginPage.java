@@ -1,0 +1,66 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package nz.cri.gns.fred.stepdefinitions;
+
+import cucumber.api.PendingException;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.When;
+import cucumber.api.java.en.Then;
+import cucumber.api.junit.Cucumber;
+import java.util.List;
+import junit.framework.AssertionFailedError;
+import static org.assertj.core.api.Assertions.*;
+import net.serenitybdd.core.annotations.findby.By;
+import net.serenitybdd.cucumber.CucumberWithSerenity;
+import net.thucydides.core.annotations.Steps;
+import nz.cri.gns.fred.navigation.FREDHomePage;
+import nz.cri.gns.fred.navigation.FREDLoginPage;
+import nz.cri.gns.fred.navigation.NavigateToFredHomePage;
+import nz.cri.gns.fred.search.BySelect;
+import static org.junit.Assert.*;
+import org.junit.runner.RunWith;
+import org.openqa.selenium.WebElement;
+/**
+ *
+ * @author sitikond
+ */
+@RunWith(CucumberWithSerenity.class)
+public class NavigateToFredLoginPage {
+
+    FREDHomePage fredHomePage;
+    FREDLoginPage fredLoginPage;
+
+    @Steps
+    NavigateToFredHomePage navigateTo;
+
+    @Given("^user wants to login to FRED$")
+    public void user_wants_to_login_to_fred() throws Throwable {
+        navigateTo.theFREDHomePage();
+        List<WebElement> navlistElements = fredHomePage.getDriver().findElements(By.id("navlist"));
+    }
+
+    @When("^the user clicks on the login menu$")
+    public void the_user_clicks_on_the_login_menu() throws Throwable {
+        WebElement loginMenuElement = 
+                //fredHomePage.getDriver().findElement(BySelect.get("xpath", "//*[@id=\"navlist\"]/li[15]/a"));   // Conditions of Use menu
+                fredHomePage.getDriver().findElement(BySelect.get("xpath", "//*[@id=\"navlist\"]/li[18]/a"));     //Login menu
+        if(loginMenuElement.getText().trim().equalsIgnoreCase("Login")){
+            loginMenuElement.click();
+        }
+        else{
+            assertThat(loginMenuElement.getText()).isNotEqualToIgnoringCase("Login");
+        }       
+    }
+
+    @Then("^the FRED lgoin page with the title FRED Login should appear$")
+    public void the_fred_lgoin_page_with_the_title_fred_login_should_appear() throws Throwable {
+        WebElement loginPageElement = fredLoginPage.getDriver().findElement(BySelect.get("xpath", "//*[@id=\"contentWrap\"]/div[1]/div"));
+        String loginPageTitle = loginPageElement.getText().trim();     //fredLoginPage.getDriver().getTitle();
+        boolean fredLoginPage = loginPageTitle.equals(FREDLoginPage.FRED_LOGIN_TITLE);
+        assertTrue(loginPageTitle.equals(FREDLoginPage.FRED_LOGIN_TITLE));
+    }
+
+}
