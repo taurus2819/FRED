@@ -21,6 +21,9 @@ public class SearchFor extends UIInteractionSteps {
         } else if(term.equalsIgnoreCase("FRED User Manual")){
             By fredUserManualMenu = SearchForm.FRED_USER_MANUL;
             $(fredUserManualMenu).click();
+        } else if(term.equalsIgnoreCase("Login")){
+            By loginMenu = SearchForm.LOGIN;
+            $(loginMenu).click();
         }
     }
 }

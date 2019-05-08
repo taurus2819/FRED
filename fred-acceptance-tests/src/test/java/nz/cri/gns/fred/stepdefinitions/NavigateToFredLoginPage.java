@@ -13,16 +13,19 @@ import cucumber.api.junit.Cucumber;
 import java.util.List;
 import junit.framework.AssertionFailedError;
 import static org.assertj.core.api.Assertions.*;
-import net.serenitybdd.core.annotations.findby.By;
+//import net.serenitybdd.core.annotations.findby.By;
 import net.serenitybdd.cucumber.CucumberWithSerenity;
 import net.thucydides.core.annotations.Steps;
+import nz.cri.gns.fred.links.HyperLinks;
 import nz.cri.gns.fred.navigation.FREDHomePage;
 import nz.cri.gns.fred.navigation.FREDLoginPage;
 import nz.cri.gns.fred.navigation.NavigateToFredHomePage;
 import nz.cri.gns.fred.search.BySelect;
+import nz.cri.gns.fred.search.SearchFor;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.By;
 /**
  *
  * @author sitikond
@@ -35,6 +38,12 @@ public class NavigateToFredLoginPage {
 
     @Steps
     NavigateToFredHomePage navigateTo;
+    
+    @Steps
+    HyperLinks clickLink;
+    
+    @Steps
+    SearchFor searchFor;
 
     @Given("^user wants to login to FRED$")
     public void user_wants_to_login_to_fred() throws Throwable {
@@ -43,9 +52,10 @@ public class NavigateToFredLoginPage {
 
     @When("^the user clicks on the login menu$")
     public void the_user_clicks_on_the_login_menu() throws Throwable {
-        WebElement loginMenuElement = 
-                fredHomePage.getDriver().findElement(BySelect.get("xpath", "//*[@id='navlist']//*[contains(@href, 'login.jsp')]")); 
-        loginMenuElement.click();
+//        WebElement loginMenuElement = 
+//                fredHomePage.getDriver().findElement(By.xpath("//*[@id='navlist']//*[contains(@href, 'login.jsp')]"));  //By.cssSelector("a[href='map.jsp']");
+//        loginMenuElement.click();
+        searchFor.group("Login");
     }
 
     @Then("^the FRED lgoin page with the title FRED Login should appear$")
