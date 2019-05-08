@@ -7,4 +7,4 @@ Scenario: Visiting FRED
     Given Chris is on the FRED home page
     When he focuses on the FRED home page
     Then the FRED page title should appear
-    And check FRED is getting the data
+#    And check FRED is getting the data

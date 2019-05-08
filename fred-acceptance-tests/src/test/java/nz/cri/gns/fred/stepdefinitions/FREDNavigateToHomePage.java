@@ -60,9 +60,9 @@ public class FREDNavigateToHomePage {
         assertThat(isFredTitle);
     }
 
-    @Then("check FRED is getting the data")
-    public void check_fred_is_getting_the_data() {
-        searchFor.group("National Paleontological Collection (NPC)");
-    }
+//    @Then("check FRED is getting the data")
+//    public void check_fred_is_getting_the_data() {
+//        searchFor.group("National Paleontological Collection (NPC)");
+//    }
     
 }
