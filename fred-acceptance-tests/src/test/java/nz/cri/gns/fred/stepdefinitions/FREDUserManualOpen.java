@@ -57,7 +57,7 @@ public class FREDUserManualOpen {
         EnvironmentConfig cfg = new EnvironmentConfig();
         String fredURL = cfg.getProperty("webdriver.base.url");
         System.out.println("Configuration = " + fredURL);
-    	driver.get(FREDHomePage.FRED_URL);
+    	driver.get(fredURL);
         
     }
     
