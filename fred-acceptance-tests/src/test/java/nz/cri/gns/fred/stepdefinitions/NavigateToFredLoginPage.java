@@ -39,20 +39,13 @@ public class NavigateToFredLoginPage {
     @Given("^user wants to login to FRED$")
     public void user_wants_to_login_to_fred() throws Throwable {
         navigateTo.theFREDHomePage();
-        List<WebElement> navlistElements = fredHomePage.getDriver().findElements(By.id("navlist"));
     }
 
     @When("^the user clicks on the login menu$")
     public void the_user_clicks_on_the_login_menu() throws Throwable {
         WebElement loginMenuElement = 
-                //fredHomePage.getDriver().findElement(BySelect.get("xpath", "//*[@id=\"navlist\"]/li[15]/a"));   // Conditions of Use menu
-                fredHomePage.getDriver().findElement(BySelect.get("xpath", "//*[@id=\"navlist\"]/li[18]/a"));     //Login menu
-        if(loginMenuElement.getText().trim().equalsIgnoreCase("Login")){
-            loginMenuElement.click();
-        }
-        else{
-            assertThat(loginMenuElement.getText()).isNotEqualToIgnoringCase("Login");
-        }       
+                fredHomePage.getDriver().findElement(BySelect.get("xpath", "//*[@id='navlist']//*[contains(@href, 'login.jsp')]")); 
+        loginMenuElement.click();
     }
 
     @Then("^the FRED lgoin page with the title FRED Login should appear$")
@@ -62,5 +55,4 @@ public class NavigateToFredLoginPage {
         boolean fredLoginPage = loginPageTitle.equals(FREDLoginPage.FRED_LOGIN_TITLE);
         assertTrue(loginPageTitle.equals(FREDLoginPage.FRED_LOGIN_TITLE));
     }
-
 }
