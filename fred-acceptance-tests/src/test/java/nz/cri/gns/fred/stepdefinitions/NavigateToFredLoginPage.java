@@ -52,10 +52,10 @@ public class NavigateToFredLoginPage {
 
     @When("^the user clicks on the login menu$")
     public void the_user_clicks_on_the_login_menu() throws Throwable {
-//        WebElement loginMenuElement = 
-//                fredHomePage.getDriver().findElement(By.xpath("//*[@id='navlist']//*[contains(@href, 'login.jsp')]"));  //By.cssSelector("a[href='map.jsp']");
-//        loginMenuElement.click();
-        searchFor.group("Login");
+        WebElement loginMenuElement = 
+                fredHomePage.getDriver().findElement(By.xpath("//*[@id='navlist']//*[contains(@href, 'login.jsp')]")); 
+        loginMenuElement.click();
+        
     }
 
     @Then("^the FRED lgoin page with the title FRED Login should appear$")

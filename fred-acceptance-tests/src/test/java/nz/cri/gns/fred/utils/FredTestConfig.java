@@ -16,13 +16,13 @@ import java.util.logging.Logger;
  *
  * @author sitikond
  */
-public class EnvironmentConfig {
+public class FredTestConfig {
     
     Properties configFile;
     
-    public EnvironmentConfig() throws FileNotFoundException, IOException{
+    public FredTestConfig(String propertyFile) throws FileNotFoundException, IOException{
     	configFile = new Properties();    	
-    	configFile.load(new FileInputStream("src/test/resources/serenity.conf"));
+    	configFile.load(new FileInputStream(propertyFile));
     }
     
     public String getProperty(String environment){

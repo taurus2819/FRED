@@ -10,16 +10,19 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
+import net.serenitybdd.core.environment.EnvironmentSpecificConfiguration;
 import net.thucydides.core.annotations.Steps;
+import net.thucydides.core.util.EnvironmentVariables;
 import nz.cri.gns.fred.navigation.FREDHomePage;
 import nz.cri.gns.fred.navigation.FREDQuickStartPage;
 import nz.cri.gns.fred.navigation.FREDUserManualPage;
 import nz.cri.gns.fred.navigation.NavigateToFredHomePage;
 import nz.cri.gns.fred.search.BySelect;
-import nz.cri.gns.fred.utils.EnvironmentConfig;
+import nz.cri.gns.fred.utils.FredTestConfig;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import static org.junit.Assert.assertTrue;
@@ -27,6 +30,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 
 /**
  *
@@ -41,8 +45,7 @@ public class FREDUserManualOpen {
     @Steps
     NavigateToFredHomePage navigateTo;
     URL pdfURL;
-    BufferedInputStream bis;
-    
+    BufferedInputStream bis;    
     
     static {
         WebDriverManager.chromedriver().setup();
@@ -50,13 +53,27 @@ public class FREDUserManualOpen {
     
     @Given("^The user launches the FRED application$")
     public void The_user_launches_the_FRED_application() throws Throwable {
-//        System.setProperty("webdriver.chrome.driver", "C:\\Prashanth\\myprojs\\Selenium\\chromedriver_win32\\chromedriver.exe");        
-        driver = new ChromeDriver();
+//        System.setProperty("webdriver.chrome.driver", "C:\\Prashanth\\myprojs\\Selenium\\chromedriver_win32\\chromedriver.exe"); 
+        navigateTo.theFREDHomePage();
+        driver = fredHomePage.getDriver();
+        getWebDriver();        
     	driver.manage().window().maximize();
     	driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);    	
-        EnvironmentConfig cfg = new EnvironmentConfig();
-        String fredURL = cfg.getProperty("webdriver.base.url");
+        FredTestConfig cfg = new FredTestConfig("src/test/resources/serenity.conf");
+        String environmentSwitch = System.getProperty("environment");
+        String fredURL;
+        if(environmentSwitch.length() > 0){
+            fredURL = cfg.getProperty(environmentSwitch + ".webdriver.base.url");
+        }else {
+            fredURL = cfg.getProperty("default.webdriver.base.url");
+        }
+        fredURL = fredURL.substring(1, fredURL.length() - 1) + "/fred";
+        System.out.println("Driver = " + driver.toString());
         System.out.println("Configuration = " + fredURL);
+        System.out.println("System property = " + System.getProperty("environment"));
+//        EnvironmentVariables environmentVariables = null;
+//        String url = EnvironmentSpecificConfiguration.from(environmentVariables)
+//                .getProperty("webdriver.base.url")
     	driver.get(fredURL);
         
     }
@@ -67,15 +84,25 @@ public class FREDUserManualOpen {
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
     }
     
-    @Then("^the user manual pdf is opened$")
-    public void the_user_manual_pdf_is_opened() throws Throwable {
+    @Then("the user manual pdf is opened to verify it is {string}")
+    public void the_user_manual_pdf_is_opened_to_verify_it_is(String version) throws IOException {
         String getURL = driver.getCurrentUrl();    	
-    	pdfURL = new URL(getURL);
-    	InputStream inputStream = pdfURL.openStream();    	
+    	pdfURL = new URL(getURL); 
+    	InputStream inputStream = pdfURL.openStream();
+    	
     	bis = new BufferedInputStream(inputStream);
     	PDDocument document = PDDocument.load(bis);
     	String pdfContent = new PDFTextStripper().getText(document);
-    	assertTrue(pdfContent.contains("Version 1.0"));
+        driver.close();
+    	assertTrue(pdfContent.contains(version));
+    }
+
+    private void getWebDriver() {
+        if (driver.toString().startsWith("ChromeDriver")){
+            driver = new ChromeDriver();
+        } else {
+            driver = new FirefoxDriver();
+        }
     }
     
 }
