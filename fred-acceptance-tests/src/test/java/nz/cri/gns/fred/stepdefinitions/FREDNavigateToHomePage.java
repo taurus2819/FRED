@@ -10,9 +10,11 @@ import cucumber.api.java.en.When;
 import cucumber.api.java.en.Then;
 import cucumber.api.junit.Cucumber;
 import java.util.List;
+import net.serenitybdd.core.environment.EnvironmentSpecificConfiguration;
 
 import net.serenitybdd.cucumber.CucumberWithSerenity;
 import net.thucydides.core.annotations.Steps;
+import net.thucydides.core.util.EnvironmentVariables;
 import nz.cri.gns.fred.links.HyperLinks;
 import nz.cri.gns.fred.navigation.FREDHomePage;
 import nz.cri.gns.fred.navigation.NavigateToFredHomePage;
@@ -31,6 +33,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 @RunWith(CucumberWithSerenity.class)
 public class FREDNavigateToHomePage {
     FREDHomePage fredHomePage;
+    EnvironmentVariables environmentVariables;
     List<String> keywords;
     
     @Steps
@@ -50,7 +53,9 @@ public class FREDNavigateToHomePage {
     @When("^he focuses on the FRED home page$")
     public void he_focuses_on_the_fred_home_page() throws Throwable {
         String currentURL = fredHomePage.getDriver().getCurrentUrl();
-        assertThat(currentURL.equalsIgnoreCase(FREDHomePage.FRED_URL));
+        String url = EnvironmentSpecificConfiguration.from(environmentVariables)
+                .getProperty("webdriver.base.url");
+        assertThat(currentURL.equalsIgnoreCase(url + "/fred"));
     }
 
     @Then("^the FRED page title should appear$")

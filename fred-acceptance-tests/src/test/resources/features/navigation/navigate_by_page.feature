@@ -1,6 +1,6 @@
 
-Feature: Navigate to FRED open Page
-  typin in the URL https://data-uat.gns.cri.nz/fred
+Feature: Navigate to FRED home Page
+  type in the FRED URL and
   the user must be directed to the FRED page
 
 Scenario: Visiting FRED

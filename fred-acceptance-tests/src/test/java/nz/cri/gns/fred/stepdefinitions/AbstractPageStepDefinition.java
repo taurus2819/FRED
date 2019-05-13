@@ -16,6 +16,7 @@ import org.openqa.selenium.WebDriver;
  * @author sitikond
  */
 @RunWith(Cucumber.class)
+@Deprecated
 public class AbstractPageStepDefinition {
     
     protected WebDriver driver;

@@ -16,6 +16,7 @@ import java.util.logging.Logger;
  *
  * @author sitikond
  */
+@Deprecated
 public class FredTestConfig {
     
     Properties configFile;

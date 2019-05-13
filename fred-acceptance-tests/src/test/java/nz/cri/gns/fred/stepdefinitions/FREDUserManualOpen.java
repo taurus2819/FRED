@@ -46,36 +46,22 @@ public class FREDUserManualOpen {
     NavigateToFredHomePage navigateTo;
     URL pdfURL;
     BufferedInputStream bis;    
+    EnvironmentVariables environmentVariables;
     
     static {
         WebDriverManager.chromedriver().setup();
     }
     
     @Given("^The user launches the FRED application$")
-    public void The_user_launches_the_FRED_application() throws Throwable {
-//        System.setProperty("webdriver.chrome.driver", "C:\\Prashanth\\myprojs\\Selenium\\chromedriver_win32\\chromedriver.exe"); 
+    public void The_user_launches_the_FRED_application() throws Throwable { 
         navigateTo.theFREDHomePage();
         driver = fredHomePage.getDriver();
         getWebDriver();        
     	driver.manage().window().maximize();
-    	driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);    	
-        FredTestConfig cfg = new FredTestConfig("src/test/resources/serenity.conf");
-        String environmentSwitch = System.getProperty("environment");
-        String fredURL;
-        if(environmentSwitch.length() > 0){
-            fredURL = cfg.getProperty(environmentSwitch + ".webdriver.base.url");
-        }else {
-            fredURL = cfg.getProperty("default.webdriver.base.url");
-        }
-        fredURL = fredURL.substring(1, fredURL.length() - 1) + "/fred";
-        System.out.println("Driver = " + driver.toString());
-        System.out.println("Configuration = " + fredURL);
-        System.out.println("System property = " + System.getProperty("environment"));
-//        EnvironmentVariables environmentVariables = null;
-//        String url = EnvironmentSpecificConfiguration.from(environmentVariables)
-//                .getProperty("webdriver.base.url")
-    	driver.get(fredURL);
-        
+    	driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);  
+        String url = EnvironmentSpecificConfiguration.from(environmentVariables)
+                .getProperty("webdriver.base.url");
+    	driver.get(url + "/fred");        
     }
     
     @When("^the user clicks on the 'FRED User Manual' menu$")
