@@ -84,7 +84,7 @@ public class FREDUserManualOpen {
     }
 
     private void getWebDriver() {
-        if (driver.toString().startsWith("ChromeDriver")){
+        if (driver.toString().equals("WebDriverFacade for chrome")){
             driver = new ChromeDriver();
         } else {
             driver = new FirefoxDriver();
