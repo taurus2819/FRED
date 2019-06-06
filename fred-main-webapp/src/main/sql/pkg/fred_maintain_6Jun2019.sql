@@ -1,22 +1,38 @@
---------------------------------------------------------
---  DDL for Package Body FRED_MAINTAIN
---------------------------------------------------------
-
-  CREATE OR REPLACE PACKAGE BODY "FR"."FRED_MAINTAIN" 
+CREATE OR REPLACE PACKAGE "FR"."FRED_MAINTAIN"
+/*
+Mod 04Jul16 mqe add exception trapping in Generate_MF_Email procedure
+Mod 19Mar19 robinp added the optional From parameter
+Mod 6Jun19 robinp stop dev & tst from spamming FRED people 
+*/
+AUTHID CURRENT_USER
+AS
+  PROCEDURE Go;
+  PROCEDURE Check_Masterfiles;
+  PROCEDURE Check_Taxa;
+  PROCEDURE Check_Confidentiality;
+  PROCEDURE Generate_MF_Email(MFID IN NUMBER);
+  PROCEDURE Generate_Submit_Email (UserID IN NUMBER);
+  PROCEDURE Generate_Taxa_Email (PanelID IN NUMBER);
+  PROCEDURE Generate_TaxaSub_Email (UserID IN NUMBER);
+  PROCEDURE Generate_Confidentiality_EMail(UserID IN NUMBER);
+  PROCEDURE Update_Backlog_Status;
+END FRED_Maintain;
+/
+CREATE OR REPLACE PACKAGE BODY "FR"."FRED_MAINTAIN"
 AS
   intval BINARY_INTEGER;
-	sidval VARCHAR2(256); 
+  sidval VARCHAR2(256); 
   PROCEDURE Go
   AS
   BEGIN
-  -- Get SID of database: 5 June 2019 
-  -- if sidval is 'DEV' or 'TST', send to developer@gns.cri.nz
-  -- Prevents spamming real users for testing
-    intval := dbms_utility.get_parameter_value('instance_name',intval, sidval);    
+    -- Get SID of database: 5 June 2019 
+    -- if sidval is 'DEV' or 'TST', send to developer@gns.cri.nz
+    -- Prevents spamming real users for testing
+    intval := dbms_utility.get_parameter_value('instance_name',intval, sidval);
     Check_Masterfiles;
     Check_Taxa;
     Check_Confidentiality;
-    Update_Backlog_Status;    
+    Update_Backlog_Status;
   END Go;
 
   PROCEDURE Check_Masterfiles
@@ -104,9 +120,9 @@ AS
       ELSE
         SELECT CP_Email_Address INTO EmailAdd FROM MIS.Contact_Person WHERE CP_Code = (CRow.user_id * -1);
       END IF;
-      if (upper(sidval) = 'DEV' OR upper(sidval) = 'TST') then
-         EmailAdd := 'developer@gns.cri.nz' ;
-      end if ;
+      IF (upper(sidval) = 'DEV' OR upper(sidval) = 'TST') then
+          EmailAdd := 'developer@gns.cri.nz' ;
+      END IF;
       SYS.SEND_MAIL(EmailAdd, 'FRED Database - localities to approve/reject (' || sidval || ')', EmailString, 'Fossil_Record_Administrator');
     END LOOP;
     COMMIT;
@@ -121,7 +137,7 @@ exception
   END Generate_MF_Email;
 
   PROCEDURE Generate_Submit_Email(UserID IN NUMBER)
-/*
+/* 
 mod mqe 20Sep13 debug; limit size of emails produced
 */
   AS
@@ -145,35 +161,35 @@ mod mqe 20Sep13 debug; limit size of emails produced
 			kount := kount + 1 ;
 			if kount = 1 then
 		   	EmailString := 'Your samples have been approved or rejected '
-					|| 'as listed below:' || CHR(10) || CHR(10)
-					||	'Feature Name' || CHR(9) || 'Masterfile' || CHR(9)
-					|| 'FR Number' || CHR(9) || 'Action' || CHR(9)
+					|| 'as listed below:' || CHR(10) || CHR(10) 
+					||	'Feature Name' || CHR(9) || 'Masterfile' || CHR(9) 
+					|| 'FR Number' || CHR(9) || 'Action' || CHR(9) 
 					|| 'Comments' || CHR(10);
 			end if ;
-			EmailString := EmailString || CRow.Feature_Name || CHR(9)
-				|| CRow.Name || CHR(9) || CRow.FR_Number || CHR(9)
+			EmailString := EmailString || CRow.Feature_Name || CHR(9) 
+				|| CRow.Name || CHR(9) || CRow.FR_Number || CHR(9) 
 				|| CRow.Type || CHR(9) || CRow.Curator_Comments || CHR(10);
 			if kount > 49 then
 				/* Limit email size to 50 line-items */
-				EmailString := EmailString || CHR(10)
+				EmailString := EmailString || CHR(10) 
 					|| 'Click here to view your folders '
 					|| ' http://www.fred.org.nz/folder_list.jsp';
-          if (upper(sidval) = 'DEV' OR upper(sidval) = 'TST') then
-             UserEmail := 'developer@gns.cri.nz' ;
-          end if ;
+			if (upper(sidval) = 'DEV' OR upper(sidval) = 'TST') then
+				UserEmail := 'developer@gns.cri.nz' ;
+          		end if;
 		    	SYS.SEND_MAIL(UserEmail, 'FRED Database - localities approved/rejected (' || sidval || ')', EmailString, 'Fossil_Record_Administrator');
 				kount := 0 ;
 	   	end if ;
 	  exception
 			when others then
 				raise_application_error(-20001, 'procedure fred_maintain.generate_submit_mail failed building EmailString length ' || length(EmailString) || ' on row ' || kount ) ;
-		end ;
+		end ;	
     END LOOP;
-    EmailString := EmailString || CHR(10)
+    EmailString := EmailString || CHR(10) 
 		|| 'Click here to view your folders '
 		|| '  http://www.fred.org.nz/folder_list.jsp';
     if (upper(sidval) = 'DEV' OR upper(sidval) = 'TST') then
-        UserEmail := 'developer@gns.cri.nz' ;
+            UserEmail := 'developer@gns.cri.nz' ;
     end if ;
     SYS.SEND_MAIL(UserEmail, 'FRED Database - localities approved/rejected (' || sidval || ')', EmailString, 'Fossil_Record_Administrator');
   END Generate_Submit_Email;
@@ -200,8 +216,8 @@ mod mqe 20Sep13 debug; limit size of emails produced
        CHR(9) || CRow.Author || CHR(10);
     END LOOP;
     EmailString := EmailString || CHR(10) || 'Click here to view http://www.fred.org.nz/folder_list.jsp';
-   if (upper(sidval) = 'DEV' OR upper(sidval) = 'TST') then
-        PanelistEmail := 'developer@gns.cri.nz' ;
+    if (upper(sidval) = 'DEV' OR upper(sidval) = 'TST') then
+            PanelistEmail := 'developer@gns.cri.nz' ;
     end if ;
     SYS.SEND_MAIL(PanelistEmail, 'FRED Database - new taxonomic names (' || sidval || ')', EmailString, 'Fossil_Record_Administrator');
   END Generate_Taxa_Email;
@@ -252,10 +268,10 @@ mod mqe 20Sep13 debug; limit size of emails produced
          	CHR(9) || CRow.Full_Name || CHR(9) || CRow.Panelist_Comments  || CHR(10);
       END IF;
     END LOOP;
-  if (upper(sidval) = 'DEV' OR upper(sidval) = 'TST') then
-      UserEmail := 'developer@gns.cri.nz' ;
-  end if ;    
-  SYS.SEND_MAIL(UserEmail, 'FRED Database - taxonomic names approved/rejected (' || sidval || ')', EmailString, 'Fossil_Record_Administrator');
+    if (upper(sidval) = 'DEV' OR upper(sidval) = 'TST') then
+            UserEmail := 'developer@gns.cri.nz' ;
+    end if ;
+    SYS.SEND_MAIL(UserEmail, 'FRED Database - taxonomic names approved/rejected (' || sidval || ')', EmailString, 'Fossil_Record_Administrator');
   END Generate_TaxaSub_Email;
 
   PROCEDURE Generate_Confidentiality_Email(UserID IN NUMBER)
@@ -286,7 +302,7 @@ mod mqe 20Sep13 debug; limit size of emails produced
       WHERE A.Audit_ID = R.Pal_List_Audit_ID AND R.Sample_ID = S.Sample_ID AND S.Feature_ID = F.Feature_ID AND F.FR_ID = FR.FR_ID
       AND A.Status = 'approved' AND (A.Confid_Email_Flag IS NULL OR A.Confid_Email_Flag = 0)
       AND A.Submitted_By_ID = UserID AND A.Confid_Lapse_Date - SYSDATE < 91;
-  BEGIN    
+  BEGIN
     IF UserID > 0 THEN
       SELECT ST_Email INTO UserEmail FROM mis.all_staff WHERE ST_Code = UserID;
     ELSE
@@ -310,7 +326,7 @@ mod mqe 20Sep13 debug; limit size of emails produced
       EmailString := EmailString || CRow.FR_Number || CHR(10);
     END LOOP;
     if (upper(sidval) = 'DEV' OR upper(sidval) = 'TST') then
-        UserEmail := 'developer@gns.cri.nz' ;
+            UserEmail := 'developer@gns.cri.nz' ;
     end if ;
     SYS.SEND_MAIL(UserEmail, 'FRED Database - confidentiality about to lapse (' || sidval || ')', EmailString, 'Fossil_Record_Administrator');
   END Generate_Confidentiality_Email;
@@ -390,5 +406,4 @@ mod mqe 20Sep13 debug; limit size of emails produced
   END Update_Backlog_Status;
 
 END;
-
 /
