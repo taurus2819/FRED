@@ -86,6 +86,7 @@ insert into mg_table (id, code, name) values (mg_table_id_seq.nextval, 'TEMP_YAR
 insert into mg_table (id, code, name) values (mg_table_id_seq.nextval, 'USER_LIST', 'USER_LIST');
 insert into mg_table (id, code, name) values (mg_table_id_seq.nextval, 'WEATHERING', 'WEATHERING');
 insert into mg_table (id, code, name) values (mg_table_id_seq.nextval, 'LU_COORD_SYSTEM', 'Coordinate System');
+insert into mg_table (id, code, name) values (mg_table_id_seq.nextval, 'SC.ORIG_SYSTEM', 'Original Coordinate System');
 insert into mg_table (id, code, name) values (mg_table_id_seq.nextval, 'SC.LAB', 'Lab');
 
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='ADOPTION'), 6, 'RECORD_ID');
@@ -438,6 +439,11 @@ insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='LU_COORD_SYSTEM'), 3, 'NAME');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='LU_COORD_SYSTEM'), 1, 'DISP_ORDER');
 insert into temp_fk (from_table, from_column, to_table, to_column) values ('FEATURE','ORIG_SYSTEM_ID','LU_COORD_SYSTEM','ORIG_SYSTEM_ID');
+
+insert into mg_column (id, mg_table, mg_column_type, code, is_primary_key) values (mg_column_id_seq.nextval, (select id from mg_table where code='SC.ORIG_SYSTEM'), 1, 'SYSTEM_ID', 1);
+insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SC.ORIG_SYSTEM'), 3, 'SYSTEM_CODE');
+insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SC.ORIG_SYSTEM'), 3, 'HUMAN_NAME');
+
 
 insert into mg_table (id, code, name) values (mg_table_id_seq.nextval, 'SC.METHOD', 'Coordinate System');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SC.METHOD'), 1, 'METHOD_ID');
