@@ -362,8 +362,9 @@ insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SAMPLE_META'), 1, 'META_ID');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SECURITY_CLASS'), 1, 'CLASS_ID');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SECURITY_CLASS'), 3, 'NAME');
+
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SEDIMENTARY_FEATURE'), 6, 'SED_FEATURE_ID');
-insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SEDIMENTARY_FEATURE'), 3, 'ABUNDANT');
+insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SEDIMENTARY_FEATURE'), 3, 'ABUNDANT'); -- Y or N.
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SEDIMENTARY_FEATURE'), 6, 'SAMPLE_ID');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SEDIMENTARY_FEATURE_TYPE'), 1, 'SEDFEATURE_TYPE_ID');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SEDIMENTARY_FEATURE_TYPE'), 3, 'NAME');
@@ -559,6 +560,7 @@ insert into temp_fk (from_table, from_column, to_table, to_column) values ('RELA
 insert into temp_fk (from_table, from_column, to_table, to_column) values ('RELATIONSHIP','SAMPLE_ID','SAMPLE','SAMPLE_ID');
 insert into temp_fk (from_table, from_column, to_table, to_column) values ('RELATIONSHIP','STRAT_UNIT_ID','SL.STRAT_UNIT','SU_ID');
 insert into temp_fk (from_table, from_column, to_table, to_column) values ('SEDIMENTARY_FEATURE','SED_FEATURE_ID','SEDIMENTARY_FEATURE_TYPE','SEDFEATURE_TYPE_ID');
+--insert into temp_fk (from_table, from_column, to_table, to_column) values ('SEDIMENTARY_FEATURE','ABUNDANT','LU_YESNO','CODE');
 insert into temp_fk (from_table, from_column, to_table, to_column) values ('SEDIMENTARY_FEATURE','SAMPLE_ID','SAMPLE','SAMPLE_ID');
 insert into temp_fk (from_table, from_column, to_table, to_column) values ('STAGE','AGE_LOWER_ID','LU_AGE_VIEW','AGE_ID'); -- This would mean that entries with obsolete ages will have problems.
 insert into temp_fk (from_table, from_column, to_table, to_column) values ('STAGE','AGE_UPPER_ID','LU_AGE_VIEW','AGE_ID');
@@ -640,26 +642,26 @@ join mg_table tt on tt.id=tc.mg_table and tt.code=tfk.to_table;
 DROP TABLE TEMP_FK;
 
 
-INSERT INTO MG_IMPORT_SPREADSHEET_TYPE(ID, CODE, NAME)
-VALUES (MG_IMPORT_SS_TYPE_ID_SEQ.NEXTVAL, 'FRED_OUTCROP', 'FRED Outcrop');
+INSERT INTO MG_IMPORT_SPREADSHEET_TYPE(ID, CODE, NAME, FILENAME_TEMPLATE)
+VALUES (MG_IMPORT_SS_TYPE_ID_SEQ.NEXTVAL, 'FRED_OUTCROP', 'FRED Outcrop', 'fred_template.xlsx');
 
 insert into MG_IMPORT_SHEET_TYPE (ID, CODE,  NAME, MG_TABLE, ROW_DATA_START, MG_IMPORT_SPREADSHEET_TYPE) 
 values (mg_import_s_type_id_seq.nextval, 'FRED_OUTCROP', 'Outcrop', (SELECT ID FROM MG_TABLE WHERE CODE='SAMPLE'), 1, (SELECT ID FROM MG_IMPORT_SPREADSHEET_TYPE WHERE CODE='FRED_OUTCROP'));
 
-INSERT INTO MG_IMPORT_SPREADSHEET_TYPE(ID, CODE, NAME)
-VALUES (MG_IMPORT_SS_TYPE_ID_SEQ.NEXTVAL, 'FRED_VERTICAL_SECTION', 'FRED Vertical Section');
+INSERT INTO MG_IMPORT_SPREADSHEET_TYPE(ID, CODE, NAME, FILENAME_TEMPLATE)
+VALUES (MG_IMPORT_SS_TYPE_ID_SEQ.NEXTVAL, 'FRED_VERTICAL_SECTION', 'FRED Vertical Section', 'fred_template.xlsx');
 
 insert into MG_IMPORT_SHEET_TYPE (ID, CODE,  NAME, MG_TABLE, ROW_DATA_START, MG_IMPORT_SPREADSHEET_TYPE) 
 values (mg_import_s_type_id_seq.nextval, 'VERTICAL_SECTION', 'Vertical Section', (SELECT ID FROM MG_TABLE WHERE CODE='SAMPLE'), 1, (SELECT ID FROM MG_IMPORT_SPREADSHEET_TYPE WHERE CODE='FRED_VERTICAL_SECTION'));
 
-INSERT INTO MG_IMPORT_SPREADSHEET_TYPE(ID, CODE, NAME)
-VALUES (MG_IMPORT_SS_TYPE_ID_SEQ.NEXTVAL, 'FRED_DRILL_HOLE', 'FRED Drill Hole');
+INSERT INTO MG_IMPORT_SPREADSHEET_TYPE(ID, CODE, NAME, FILENAME_TEMPLATE)
+VALUES (MG_IMPORT_SS_TYPE_ID_SEQ.NEXTVAL, 'FRED_DRILL_HOLE', 'FRED Drill Hole', 'fred_template.xlsx');
 
 insert into MG_IMPORT_SHEET_TYPE (ID, CODE,  NAME, MG_TABLE, ROW_DATA_START, MG_IMPORT_SPREADSHEET_TYPE) 
 values (mg_import_s_type_id_seq.nextval, 'DRILL_HOLE', 'Drill Hole', (SELECT ID FROM MG_TABLE WHERE CODE='SAMPLE'), 1, (SELECT ID FROM MG_IMPORT_SPREADSHEET_TYPE WHERE CODE='FRED_DRILL_HOLE'));
 
-INSERT INTO MG_IMPORT_SPREADSHEET_TYPE(ID, CODE, NAME)
-VALUES (MG_IMPORT_SS_TYPE_ID_SEQ.NEXTVAL, 'FRED_PALEO', 'FRED Paleontological Analysis');
+INSERT INTO MG_IMPORT_SPREADSHEET_TYPE(ID, CODE, NAME, FILENAME_TEMPLATE)
+VALUES (MG_IMPORT_SS_TYPE_ID_SEQ.NEXTVAL, 'FRED_PALEO', 'FRED Paleontological Analysis', 'fred_template.xlsx');
 
 insert into MG_IMPORT_SHEET_TYPE (ID, CODE,  NAME, MG_TABLE, ROW_DATA_START, MG_IMPORT_SPREADSHEET_TYPE) 
 values (mg_import_s_type_id_seq.nextval, 'PALEO', 'Paleontological Analysis', (SELECT ID FROM MG_TABLE WHERE CODE='SAMPLE'), 1, (SELECT ID FROM MG_IMPORT_SPREADSHEET_TYPE WHERE CODE='FRED_PALEO'));

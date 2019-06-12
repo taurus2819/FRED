@@ -8,6 +8,7 @@ drop table lu_wet;
 drop table lu_yesno;
 drop view lu_age_view;
 drop view lu_strat_relationship_view;
+drop view lu_country;
 
 drop table mg_import_sheet;
 drop table mg_import_sheet_Type;

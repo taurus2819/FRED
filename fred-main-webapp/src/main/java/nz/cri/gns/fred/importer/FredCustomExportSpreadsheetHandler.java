@@ -39,7 +39,7 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
                 addLocationMethodColumn(sheet, heading, c, "SC.METHOD", "METHOD");
                 return true;
             case "COUNTRY":
-                addLocationMethodColumn(sheet, heading, c, "MIS.COUNTRY", "COUNTRY_NAME");
+                addLocationMethodColumn(sheet, heading, c, "LU_COUNTRY", "COUNTRY_NAME");
                 return true;
             case "SAMPLE_RELATIONSHIP_MOD":
             case "STRAT_RELATIONSHIP_MOD":

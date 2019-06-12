@@ -33,6 +33,10 @@ import nz.cri.gns.munginator.upload.stagingarea.ImportColumn;
 import nz.cri.gns.munginator.upload.stagingarea.Row;
 import nz.cri.gns.munginator.upload.stagingarea.RowSingleValue;
 
+/**
+ * I am the importer for the Outcrop, Vertical Section and Drillhole
+ * spreadsheets.
+ */
 public class FredRowProcessor extends TemplateRowProcessor {
 
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.import.FredOutcropRowProcessor");
@@ -62,6 +66,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
     protected void afterPopulateRow(Row row, Modify update) throws RowImportException {
         String featureName = getRowValueNotNull(row, "FEATURE_NAME").getValueString();
 
+        
         // TODO: use FeatureUtil.createFeature(). This replicates that:
         Integer folderId = idFromName(row, "FOLDER");
         update.set("FEATURE_ID$AUDIT_ID$WORKING_FOLDER_ID", folderId);
@@ -75,6 +80,11 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 update.set("FEATURE_ID$FEATURE_NAME", featureName);
                 update.set("FEATURE_ID$FIELD_NUMBER", featureName);
                 findOrCreateSite(row, update);
+                String workingComments = getRowValueString(row, "WORKING_COMMENTS");
+                String recollectionOf = getRowValueString(row, "RECOLLECTION_OF");
+                if (null!=workingComments && null!=recollectionOf) {
+                    update.set("AUDIT_ID$WORKING_COMMENTS", FeatureUtil.combineWorkingComments(recollectionOf, workingComments));
+                }
                 break;
             case "VERTICAL_SECTION":
                 update.set("FEATURE_ID$FEATURE_TYPE", "Vertical Section");
@@ -206,6 +216,42 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
     }
 
+    private void matchUpSamples() throws MgException, SQLException {
+        // TODO: relationshipSamples is never populated???
+        Table relationshipTable = schema.getTable("RELATIONSHIP");
+        for (Integer relationshipId : relationshipSamples.keySet()) {
+            Update relationship = relationshipTable.update();
+            Integer sampleId = findSampleId(relationshipSamples.get(relationshipId));
+            if (null == sampleId) {
+                throw new MgException("I can't find a sample called \"" + relationshipSamples.get(relationshipId));
+            }
+            relationship.set("SAMPLE_ID", sampleId);
+            relationship.addWhere("RELATIONSHIP_ID", relationshipId);
+            relationship.doIt(importConn);
+        }
+    }
+
+    /**
+     * Find the sample with the given FR_NUMBER (i.e. name), or null if it can't
+     * be found.
+     */
+    private Integer findSampleId(String name) throws SQLException {
+        // TODO: only used from matchUpSamples(), which never iterates.
+        Read s = schema.select("SAMPLE");
+        s.addColumn("SAMPLE_ID");
+        s.addWhere("FR_ID$FR_NUMBER", name.trim());
+        try {
+            s.doIt(importConn);
+            if (!s.next()) {
+                // Not found; return null.
+                return null;
+            }
+            return (Integer) s.get("SAMPLE_ID");
+        } finally {
+            s.close();
+        }
+    }
+
     /**
      * Find the existing feature with the given name.
      */
@@ -332,20 +378,6 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
     }
 
-    private void matchUpSamples() throws MgException, SQLException {
-        Table relationshipTable = schema.getTable("RELATIONSHIP");
-        for (Integer relationshipId : relationshipSamples.keySet()) {
-            Update relationship = relationshipTable.update();
-            Integer sampleId = findSampleId(relationshipSamples.get(relationshipId));
-            if (null == sampleId) {
-                throw new MgException("I can't find a sample called \"" + relationshipSamples.get(relationshipId));
-            }
-            relationship.set("SAMPLE_ID", sampleId);
-            relationship.addWhere("RELATIONSHIP_ID", relationshipId);
-            relationship.doIt(importConn);
-        }
-    }
-
     private boolean hasValue(List<RowSingleValue> mv, int i) {
         return (null != mv.get(i) && !mv.get(i).isEmpty());
     }
@@ -427,26 +459,6 @@ public class FredRowProcessor extends TemplateRowProcessor {
             }
         }
         return super.isMultiValue(columnNum);
-    }
-
-    /**
-     * Find the sample with the given FR_NUMBER (i.e. name), or null if it can't
-     * be found.
-     */
-    private Integer findSampleId(String name) throws SQLException {
-        Read s = schema.select("SAMPLE");
-        s.addColumn("SAMPLE_ID");
-        s.addWhere("FR_ID$FR_NUMBER", name.trim());
-        try {
-            s.doIt(importConn);
-            if (!s.next()) {
-                // Not found; return null.
-                return null;
-            }
-            return (Integer) s.get("SAMPLE_ID");
-        } finally {
-            s.close();
-        }
     }
 
     private Integer findStratUnitId(String name) throws SQLException {
