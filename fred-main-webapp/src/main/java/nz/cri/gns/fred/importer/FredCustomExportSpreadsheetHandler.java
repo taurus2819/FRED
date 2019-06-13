@@ -58,6 +58,10 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
                 sheet.addDropDownHeader(heading, c, new String[]{"Marine", "Non Marine"});
                 sheet.nextColumn();
                 return true;
+            case "COMPARATOR_USED":
+                sheet.addDropDownHeader(heading, c, new String[]{"Y", "N"});
+                sheet.nextColumn();
+                return true;
             default:
                 return false;
         }

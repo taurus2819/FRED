@@ -100,7 +100,6 @@ public class FredRowProcessor extends TemplateRowProcessor {
     @Override
     protected void afterPerformRow(Row row, Modify update) throws RowImportException {
         insertCollectors(row, update);
-        insertSamplesNearby(row, update);
         insertSampleRelationships(row, update);
         insertStratRelationships(row, update);
     }
@@ -165,15 +164,15 @@ public class FredRowProcessor extends TemplateRowProcessor {
             if (null == datumId) {
                 throw new RowImportException(row, "ORIG_SYSTEM_ID", "This cell needs a value.", null);
             }
-            Read s = schema.select("LU_COORD_SYSTEM");
-            s.addColumn("CODE");
-            s.addWhere("ORIG_SYSTEM_ID", datumId);
+            Read s = schema.select("SC.ORIG_SYSTEM");
+            s.addColumn("SYSTEM_CODE");
+            s.addWhere("SYSTEM_ID", datumId);
             try {
                 s.doIt(conn);
                 if (!s.next()) {
                     throw new RowImportException(row, "ORIG_SYSTEM_ID", "Datum not in the lookup table.", null);
                 }
-                datumCode = s.getString("CODE");
+                datumCode = s.getString("SYSTEM_CODE");
             } finally {
                 s.close();
             }
@@ -321,10 +320,6 @@ public class FredRowProcessor extends TemplateRowProcessor {
         ps.set("SAMPLE_ID", sampleId);
         ps.set("PERSON_ID", personId);
         ps.doIt(importConn);
-    }
-
-    private void insertSamplesNearby(Row row, Modify update) throws RowImportException {
-        warn("Discarding 'Samples Nearby' because I don't know what to do with it (TODO).");
     }
 
     private void insertSampleRelationships(Row row, Modify update) throws RowImportException {
