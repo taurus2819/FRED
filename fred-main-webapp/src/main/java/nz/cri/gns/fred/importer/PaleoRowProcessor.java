@@ -27,6 +27,7 @@ import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.util.TaxonomicUtil;
 import nz.cri.gns.munginator.MgException;
+import nz.cri.gns.munginator.export.XLSXSpreadsheet;
 import nz.cri.gns.munginator.upload.RowImportException;
 import nz.cri.gns.munginator.upload.RowProcessor;
 import nz.cri.gns.munginator.upload.stagingarea.Row;
@@ -88,14 +89,16 @@ public class PaleoRowProcessor extends RowProcessor {
             // Each paleo is on it's own row.
             // Rows are paleos. Columns are paleo list entries.
             RowSingleValue v = (RowSingleValue) each;
+            if (null==v || v.isEmpty()) {
+                continue;
+            }
             Paleontology paleo=null;
             if (rowNum > ROW_LOCALITY && each.getColumnNum()>=2) {
                 paleo = getPaleo(v.getColumnNum());
                 if (null==paleo) {
-                    throw new RowImportException(row, v, "The locality wasn't defined back in row "+Integer.toString(ROW_LOCALITY)+" of this column.");
+                    throw new RowImportException(row, v, "The locality wasn't defined back in row "+Integer.toString(ROW_LOCALITY)+" of column "+XLSXSpreadsheet.columnNumToLetters(each.getColumnNum()));
                 }
             } 
-            
             
             if (each.getColumnNum() >= 2) {
                 if (rowNum < ROW_MATRIX_START) {
@@ -149,11 +152,7 @@ public class PaleoRowProcessor extends RowProcessor {
                     String p = v.getValueString();
                     addPaleoListEntry(paleo, row, p);
                 }
-            } else {
-                if (null != v) {
-                    warn("DEBUG: skipping value: " + v.getValueString());
-                }
-            }
+            } 
         }
     }
 
@@ -250,19 +249,19 @@ public class PaleoRowProcessor extends RowProcessor {
         }
 
         if (!row.hasValue(0)) {
-            throw new RowImportException(row, null, "No taxon group on this row.");
+            throw new RowImportException(row, null, "No taxon group in column A on this row.");
         }
         String tgStr = row.getValue(0).getValueString();
         if (null == tgStr) {
-            throw new RowImportException(row, null, "No taxon group on this row.");
+            throw new RowImportException(row, null, "No taxon group in column A on this row.");
         }
         try {
             taxonGroup = (TaxonomicGroup) taxonUtil.getTaxonomicGroup(tgStr);
         } catch (StorageAccessException ex) {
-            throw new RowImportException(row, "TAXON_GROUP", "Error occurred while looking for this taxon group.", ex);
+            throw new RowImportException(row, "TAXON_GROUP", "Error occurred while looking for this taxon group in column A.", ex);
         }
         if (null==taxonGroup) {
-            throw new RowImportException(row, "TAXON_GROUP", "Could not find this taxon group", null);
+            throw new RowImportException(row, "TAXON_GROUP", "Could not find the taxon group "+tgStr+" in column A", null);
         }
         
         List<Taxon> txs;
@@ -303,7 +302,7 @@ public class PaleoRowProcessor extends RowProcessor {
     private void setRowLocality(Row row, RowValue v) throws RowImportException {
         // This is the first row, so we initialize stuff.
         if (null == v || v.isEmpty()) {
-            throw new RowImportException(row, v, "Locality is empty.");
+            throw new RowImportException(row, v, "Locality is empty in row "+row.getRowNum()+"column "+XLSXSpreadsheet.columnNumToLetters(v.getColumnNum()));
         }
         String localityName = ((RowSingleValue) v).getValueString();
         Sample sample;
@@ -315,7 +314,7 @@ public class PaleoRowProcessor extends RowProcessor {
         if (null == sample) {
             throw new RowImportException(row, v, "Could not find a locality with this name.");
         }
-        log("Found locality: "+localityName);
+        log("Found locality: "+localityName+" for column "+XLSXSpreadsheet.columnNumToLetters(v.getColumnNum()));
         
         UserFolder folder;
         try {
