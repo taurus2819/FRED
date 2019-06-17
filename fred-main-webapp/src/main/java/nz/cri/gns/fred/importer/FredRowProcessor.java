@@ -66,14 +66,16 @@ public class FredRowProcessor extends TemplateRowProcessor {
     protected void afterPopulateRow(Row row, Modify update) throws RowImportException {
         String featureName = getRowValueNotNull(row, "FEATURE_NAME").getValueString();
 
-        
-        // TODO: use FeatureUtil.createFeature(). This replicates that:
+        // TODO: use FeatureUtil.createFeature(). This replicates that but in a rollbackable transaction:
         Integer folderId = idFromName(row, "FOLDER");
         update.set("FEATURE_ID$AUDIT_ID$WORKING_FOLDER_ID", folderId);
         // default audit status is already "working".
-        update.set("FEATURE_ID$AUDIT_ID$CREATED_DATE", new Date()); // TODO: update the SQL to do this.
+        update.set("FEATURE_ID$AUDIT_ID$CREATED_DATE", new Date()); // TODO: should be in the DDL.
         update.set("FEATURE_ID$AUDIT_ID$CREATED_BY_ID", user.getId());
 
+        insertStages(row, update);
+
+        // The FR_NUMBER and MASTERSHEET are populated during the approval process.
         switch (spreadsheetType) {
             case "FRED_OUTCROP":
                 update.set("FEATURE_ID$FEATURE_TYPE", "Outcrop");
@@ -82,7 +84,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 findOrCreateSite(row, update);
                 String workingComments = getRowValueString(row, "WORKING_COMMENTS");
                 String recollectionOf = getRowValueString(row, "RECOLLECTION_OF");
-                if (null!=workingComments && null!=recollectionOf) {
+                if (null != workingComments || null != recollectionOf) {
                     update.set("AUDIT_ID$WORKING_COMMENTS", FeatureUtil.combineWorkingComments(recollectionOf, workingComments));
                 }
                 break;
@@ -94,6 +96,8 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 update.set("FEATURE_ID$FEATURE_TYPE", "Drillhole");
                 setFeatureId(row, update, featureName);
                 break;
+            default:
+                throw new MgException("Invalid spreadsheet type.");
         }
     }
 
@@ -293,21 +297,6 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
     }
 
-    private Integer findPerson(String collectorName) throws SQLException {
-        Read s = schema.getTable("PERSON").select();
-        s.addWhere("NAME", collectorName);
-        try {
-            s.doIt(importConn);
-            if (!s.next()) {
-                return null;
-            } else {
-                return (Integer) s.get("PERSON_ID");
-            }
-        } finally {
-            s.close();
-        }
-    }
-
     private Integer insertPerson(String collectorName) throws SQLException {
         Create i = schema.getTable("PERSON").insert();
         i.set("NAME", collectorName);
@@ -481,4 +470,75 @@ public class FredRowProcessor extends TemplateRowProcessor {
             su.close();
         }
     }
+
+    private void insertStages(Row row, Modify m) throws RowImportException {
+        /* We need to do this manulally. The magic doesn't work here as it sets all the stage columns
+        to the same value as they have the same destination table.
+         */
+        Integer knownId = insertStage(row, "KNOWN_STAGE_LOWER", "KNOWN_STAGE_UPPER");
+        m.set("KNOWN_STAGE_ID", knownId);
+
+        Integer inferredId = insertStage(row, "INFERRED_STAGE_LOWER", "INFERRED_STAGE_UPPER");
+        m.set("INFERRED_STAGE_ID", inferredId);
+    }
+
+    private Integer insertStage(Row row, String lowerCode, String upperCode) throws RowImportException {
+        Integer lowerAgeId = null;
+        String lowerAge = nameFromName(row, lowerCode);
+        if (null != lowerAge) {
+            try {
+                lowerAgeId = findAge(lowerAge);
+            } catch (SQLException ex) {
+                throw new RowImportException(row, lowerCode, null, ex);
+            }
+            if (null == lowerAgeId) {
+                throw new RowImportException(row, lowerCode, "Cannot find this age", null);
+            }
+        }
+
+        Integer upperAgeId = null;
+        String upperAge = nameFromName(row, upperCode);
+        if (null != upperAge) {
+            try {
+                upperAgeId = findAge(upperAge);
+            } catch (SQLException ex) {
+                throw new RowImportException(row, lowerCode, null, ex);
+            }
+            if (null == upperAgeId) {
+                throw new RowImportException(row, upperCode, "Cannot find this age", null);
+            }
+        }
+
+        if (null != lowerAge || null != upperAge) {
+            Create u = schema.getTable("STAGE").insert();
+            u.set("AGE_LOWER_ID", lowerAgeId);
+            u.set("AGE_UPPER_ID", upperAgeId);
+            try {
+                u.doIt(importConn);
+            } catch (SQLException ex) {
+                throw new RowImportException(row, "KNOWN_STAGE_LOWER", "Could not create an entry in the STAGE table.", ex);
+            }
+            return (Integer) u.get("STAGE_ID");
+        } else {
+            return null;
+        }
+    }
+
+    private Integer findAge(String ageName) throws SQLException {
+        Read r = schema.getTable("AGE").select();
+        r.addColumn("AGE_ID");
+        r.addWhere("NAME", ageName);
+        r.addWhere("OBSOLETE_FLAG", 0);
+        r.addWhere("DUPLICATE_FLAG", 0);
+        try {
+            r.doIt(importConn);
+            if (!r.next()) {
+                return null;
+            }
+            return r.getInteger("AGE_ID");
+        } finally {
+            r.close();
+        }
+    }
+
 }

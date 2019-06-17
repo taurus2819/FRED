@@ -204,7 +204,7 @@ insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FEATURE'), 3, 'ORIG_COORD');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FEATURE'), 3, 'MAP_YEAR');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FEATURE'), 3, 'COORD_COMMENTS');
-insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FEATURE'), 6, 'FR_ID');
+insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FEATURE'), 7, 'FR_ID');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FEATURE'), 6, 'YARD_FR_ID');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FEATURE'), 3, 'DEPTH_UNIT');
 
@@ -228,14 +228,14 @@ insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FOSSIL_GROUP'), 1, 'GROUP_ID');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FOSSIL_GROUP'), 3, 'NAME');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FR'), 3, 'FR_ID');
-insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FR_NUMBER'), 3, 'FR_ID');
+insert into mg_column (id, mg_table, mg_column_type, code, is_primary_key, sequence) values (mg_column_id_seq.nextval, (select id from mg_table where code='FR_NUMBER'), 9, 'FR_ID', 1, 'FR_SEQ');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FR_NUMBER'), 3, 'MAP_SHEET');
-insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FR_NUMBER'), 3, 'SERIAL_NUMBER');
+insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FR_NUMBER'), 1, 'SERIAL_NUMBER');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FR_NUMBER'), 3, 'RECOLLECTION_NUMBER');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FR_NUMBER'), 3, 'FRNUM_COMMENTS');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FR_NUMBER'), 3, 'FR_NUMBER');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FR_NUMBER'), 3, 'OBSOLETE');
-insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FR_NUMBER'), 3, 'DELETE_FLAG');
+insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FR_NUMBER'), 1, 'DELETE_FLAG');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FR_USER'), 1, 'PE_ID');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='FR_USER'), 3, 'LAST_LOGIN');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='GRAIN_SIZE'), 1, 'GRAIN_SIZE_ID');
@@ -318,7 +318,7 @@ insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_
 
 insert into mg_column (id, mg_table, mg_column_type, code, is_primary_key, sequence) values (mg_column_id_seq.nextval, (select id from mg_table where code='SAMPLE'), 9, 'SAMPLE_ID', 1, 'SAMPLE_SEQ');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SAMPLE'), 7, 'FEATURE_ID');
-insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SAMPLE'), 6, 'FR_ID');
+insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SAMPLE'), 7, 'FR_ID');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SAMPLE'), 3, 'TOP_DEPTH');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SAMPLE'), 3, 'BOTTOM_DEPTH');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SAMPLE'), 3, 'DRILL_TYPE');
@@ -381,7 +381,7 @@ insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_
 insert into mg_column (id, mg_table, mg_column_type, code, is_primary_key, sequence) values (mg_column_id_seq.nextval, (select id from mg_table where code='SENT_TO'), 9, 'SENT_TO_ID', 1, 'SENT_TO_SEQ');
 
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SIMEDELS'), 1, 'RECORD_ID');
-insert into mg_column (id, mg_table, mg_column_type, code, sequence) values (mg_column_id_seq.nextval, (select id from mg_table where code='STAGE'), 9, 'STAGE_ID', 'STAGE_SEQ');
+insert into mg_column (id, mg_table, mg_column_type, code, is_primary_key, sequence) values (mg_column_id_seq.nextval, (select id from mg_table where code='STAGE'), 9, 'STAGE_ID', 1, 'STAGE_SEQ');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='STAGE'), 3, 'STAGE_LOWER_MOD');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='STAGE'), 3, 'STAGE_UPPER_MOD');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='STAGE'), 3, 'STAGE_MOD');

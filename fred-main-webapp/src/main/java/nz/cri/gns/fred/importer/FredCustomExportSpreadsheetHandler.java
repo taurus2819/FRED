@@ -3,6 +3,8 @@ package nz.cri.gns.fred.importer;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
@@ -62,6 +64,17 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
                 sheet.addDropDownHeader(heading, c, new String[]{"Y", "N"});
                 sheet.nextColumn();
                 return true;
+            case "KNOWN_STAGE_LOWER":
+            case "KNOWN_STAGE_UPPER":
+            case "INFERRED_STAGE_LOWER":
+            case "INFERRED_STAGE_UPPER":
+                try {
+                    sheet.addDropDownHeader(heading, c, conn, getStages());
+                } catch (SQLException ex) {
+                    throw new MgException("Could not get a list of Ages.", ex);
+                }
+                sheet.nextColumn();
+                return true;
             default:
                 return false;
         }
@@ -98,5 +111,15 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
                 }
             }
         }
+    }
+
+    private Read getStages() throws SQLException {
+        Read r = SchemaSingleton.getInstance(conn).select("AGE");
+        r.addColumn("AGE_ID");
+        r.addColumn("NAME");
+        r.addWhere("OBSOLETE_FLAG", 0);
+        r.addWhere("DUPLICATE_FLAG", 0);
+        r.addOrderBy("BASE_AGE");
+        return r;
     }
 }
