@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.hibernate.Record;
+import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.munginator.MgException;
 import nz.cri.gns.munginator.upload.RowProcessor;
 import nz.cri.gns.munginator.upload.RowProcessorFactory;

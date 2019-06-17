@@ -100,8 +100,14 @@ public class FredRowProcessor extends TemplateRowProcessor {
         c.set("CREATED_DATE", new Date()); // TODO: should be in the DDL.
         c.set("CREATED_BY_ID", user.getId());
         c.set("DATA_ORIGIN_ID", 909); // Excel template.
-        String workingComments = getRowValueString(row, "WORKING_COMMENTS");
-        String recollectionOf = getRowValueString(row, "RECOLLECTION_OF");
+        String workingComments = null;
+        String recollectionOf = null;
+        if (hasRowValue(row, "WORKING_COMMENTS")) {
+            workingComments = getRowValueString(row, "WORKING_COMMENTS");
+        }
+        if (hasRowValue(row, "RECOLLECTION_OF"))  {
+            recollectionOf = getRowValueString(row, "RECOLLECTION_OF");
+        }
         if (null != workingComments || null != recollectionOf) {
             c.set("WORKING_COMMENTS", FeatureUtil.combineWorkingComments(recollectionOf, workingComments));
         }
@@ -111,8 +117,8 @@ public class FredRowProcessor extends TemplateRowProcessor {
         } catch (SQLException ex) {
             throw new RowImportException(row, "FOLDER", "Could not create AUDIT entry.", ex);
         }
-        Integer auditId = (Integer)c.get("AUDIT_ID");
-        
+        Integer auditId = (Integer) c.get("AUDIT_ID");
+
         update.set("AUDIT_ID", auditId);
         update.set("FEATURE_ID$AUDIT_ID", auditId);
     }

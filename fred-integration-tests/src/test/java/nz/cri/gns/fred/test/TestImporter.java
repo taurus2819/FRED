@@ -24,12 +24,11 @@ import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.hibernate.util.FredHibernate;
 import nz.cri.gns.fred.importer.PaleoRowProcessor;
-import nz.cri.gns.fred.model.Paleontology;
+import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.munginator.upload.Importer;
 import nz.cri.gns.munginator.upload.RowProcessor;
 import nz.cri.gns.munginator.upload.XLSUploader;
 import nz.cri.gns.munginator.upload.XLSUploader.SheetIdentifier;
-import org.h2.jdbcx.JdbcDataSource;
 import org.h2.tools.RunScript;
 import org.h2.tools.Server;
 import static org.junit.Assert.assertTrue;
@@ -51,6 +50,7 @@ public class TestImporter {
         return new File(TestImporter.class.getResource(filename).getFile());
     }
 
+    
     @Before
     public void initializeDatabase() throws SQLException, NamingException {
         /* This doesn't work yet. Hibernate cannot find a data source. */
@@ -131,7 +131,7 @@ public class TestImporter {
             Integer sheetId = sheets.get(0).id;
             List<RowProcessor> rps = new ArrayList<>();
 
-            Map<Integer, Paleontology> paleoMatrix = new HashMap<>();
+            Map<Integer, Record> paleoMatrix = new HashMap<>();
             DAOFactory factory = FredHibernate.get().getDAOFactory();
 
             User user = new AuthServiceClient().queryUsersByRight("FR_DATA_ENTRY").get(0);
