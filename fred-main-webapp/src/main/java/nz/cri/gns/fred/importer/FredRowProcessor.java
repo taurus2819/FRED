@@ -67,12 +67,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
         String featureName = getRowValueNotNull(row, "FEATURE_NAME").getValueString();
 
         // TODO: use FeatureUtil.createFeature(). This replicates that but in a rollbackable transaction:
-        Integer folderId = idFromName(row, "FOLDER");
-        update.set("FEATURE_ID$AUDIT_ID$WORKING_FOLDER_ID", folderId);
-        // default audit status is already "working".
-        update.set("FEATURE_ID$AUDIT_ID$CREATED_DATE", new Date()); // TODO: should be in the DDL.
-        update.set("FEATURE_ID$AUDIT_ID$CREATED_BY_ID", user.getId());
-
+        createAudit(row, update);
         insertStages(row, update);
 
         // The FR_NUMBER and MASTERSHEET are populated during the approval process.
@@ -82,11 +77,6 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 update.set("FEATURE_ID$FEATURE_NAME", featureName);
                 update.set("FEATURE_ID$FIELD_NUMBER", featureName);
                 findOrCreateSite(row, update);
-                String workingComments = getRowValueString(row, "WORKING_COMMENTS");
-                String recollectionOf = getRowValueString(row, "RECOLLECTION_OF");
-                if (null != workingComments || null != recollectionOf) {
-                    update.set("AUDIT_ID$WORKING_COMMENTS", FeatureUtil.combineWorkingComments(recollectionOf, workingComments));
-                }
                 break;
             case "VERTICAL_SECTION":
                 update.set("FEATURE_ID$FEATURE_TYPE", "Vertical Section");
@@ -99,6 +89,32 @@ public class FredRowProcessor extends TemplateRowProcessor {
             default:
                 throw new MgException("Invalid spreadsheet type.");
         }
+    }
+
+    private void createAudit(Row row, Modify update) throws RowImportException {
+        Integer folderId = idFromName(row, "FOLDER");
+
+        Create c = schema.insert("AUDIT_TABLE");
+        c.set("WORKING_FOLDER_ID", folderId);
+        // default audit status is already "working".
+        c.set("CREATED_DATE", new Date()); // TODO: should be in the DDL.
+        c.set("CREATED_BY_ID", user.getId());
+        c.set("DATA_ORIGIN_ID", 909); // Excel template.
+        String workingComments = getRowValueString(row, "WORKING_COMMENTS");
+        String recollectionOf = getRowValueString(row, "RECOLLECTION_OF");
+        if (null != workingComments || null != recollectionOf) {
+            c.set("WORKING_COMMENTS", FeatureUtil.combineWorkingComments(recollectionOf, workingComments));
+        }
+
+        try {
+            c.doIt(importConn);
+        } catch (SQLException ex) {
+            throw new RowImportException(row, "FOLDER", "Could not create AUDIT entry.", ex);
+        }
+        Integer auditId = (Integer)c.get("AUDIT_ID");
+        
+        update.set("AUDIT_ID", auditId);
+        update.set("FEATURE_ID$AUDIT_ID", auditId);
     }
 
     @Override

@@ -737,6 +737,8 @@ update registration_area set disp_order = 	21	 where code = 'TL';
 update registration_area set disp_order = 	22	 where code = 'TG';
 update registration_area set disp_order = 	23	 where code = 'VA';
 
+insert into data_origin (data_origin_id, name, description) values (910, '>=2019 Excel template', 'Entry using Excel spreadsheet template.');
+
 -------------------------------------
 XXX In the SC database:
 alter table sc.method add disp_order number(4) default 1;
