@@ -9,9 +9,11 @@ import java.util.stream.Collectors;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.Age;
+import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.TaxonomicGroup;
 import nz.cri.gns.fred.util.RecordUtil;
+import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.util.TaxonomicUtil;
 import nz.cri.gns.munginator.MgException;
@@ -20,10 +22,13 @@ import nz.cri.gns.munginator.export.GenericSpreadsheet;
 import nz.cri.gns.munginator.export.SheetIterator;
 import nz.cri.gns.munginator.export.SpreadsheetExporter;
 import static nz.cri.gns.munginator.export.XLSXSpreadsheet.LAST_ROW;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
 
     private final DAOFactory factory;
+    private static final String SHEETNAME = "Paleo";
 
     public PaleoSpreadsheetExporter(Connection conn, String code, String name, DAOFactory factory) throws IOException {
         super(conn, code, name);
@@ -53,6 +58,8 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             List<TaxonomicGroup> groups;
             groups = taxUtil.getTaxonomicGroups();
 
+            SampleUtil sampleUtil = new SampleUtil(factory);
+
             StageUtil stageUtil = new StageUtil(factory);
             List<Age> ages;
             ages = stageUtil.getAges();
@@ -64,11 +71,15 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             RecordUtil recordUtil = new RecordUtil(factory);
             String labList = s.addList("Laboratories", recordUtil.getLabs().stream().map(Lab::getDisplayName).collect(Collectors.toList()));
 
-            s.addSheet("Paleo", it);
+            s.addSheet(SHEETNAME, it);
 
             // Leave a blank row for "headings".
-            
             addTextCellsAcross("Locality", it, "Choose a locality.");
+
+            String sampleTypeList = s.addList("Sample Type", sampleUtil.getDrillTypes().stream().map(DrillType::getName).collect(Collectors.toList()));
+            addTextCellsAcross("Top Depth", it, "Enter the sample depth if it's from a drilling");
+            addTextCellsAcross("Bottom Depth", it, "Select the accuracy of the date.");
+            addCellsAcross("Sample Type", sampleTypeList, it, "Choose a Sample Type.");
 
             cr(s, it);
             it.nextColumn();
@@ -82,13 +93,13 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             String dateRoundingList = s.addList("Date Rounding", new String[]{"Year", "Month"});
             addCellsAcross("Date Rounding", dateRoundingList, it, "Select the accuracy of the date.");
 
-            addTextCellsAcross("Identifier(s)", it, "Enter identifiers. TODO: better description");
+            addTextCellsAcross("Identifier(s)", it, "Enter identifiers. ");
 
-            addCellsAcross("Stage Start", ageList, it, "Choose the Stage Start. TODO: better description");
+            addCellsAcross("Stage Start", ageList, it, "Choose the Stage Start. ");
 
             addCellsAcross("Stage Start Mod", stageModList, it, "Enter the modifier for the stage: blank or '?'.");
 
-            addCellsAcross("Stage Stop", ageList, it, "Choose the Stop Stage. TODO");
+            addCellsAcross("Stage Stop", ageList, it, "Choose the Stop Stage.");
 
             addCellsAcross("Stage Stop Mod", stageModList, it, "Enter the modifier for the stop stage: blank or '?'.");
 
@@ -109,10 +120,11 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
                 s.setCellAsHeading();
                 s.nextColumn();
 
-                s.setCellsText(todoTextSize, it.copy().skipColumns(numColumns), "Enter funky values here. TODO: better description.", false);
+                s.setCellsText(todoTextSize, it.copy().skipColumns(numColumns), "Enter '*' for presense, a numeric count, count|comment, a straight comment, 'aff.' or 'cf.'", false);
             }
 
             s.finish();
+            makeSecondColumnBigger();
 
             s.write();
             s.close();
@@ -142,5 +154,19 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
         SheetIterator to = it.copy().skipColumns(numColumns);
         spreadsheet.setCellsText(todoTextSize, to, placeholder, false);
         spreadsheet.setCellsColour(GenericSpreadsheet.Colour.LIGHT_YELLOW, to);
+    }
+
+    private void makeSecondColumnBigger() {
+        Object w = spreadsheet.getUnderlyingSpreadsheet();
+        XSSFWorkbook wb;
+        if (!(w instanceof XSSFWorkbook)) {
+            return;
+        }
+        wb = (XSSFWorkbook) spreadsheet.getUnderlyingSpreadsheet();
+        XSSFSheet s = wb.getSheet(SHEETNAME);
+        if (s==null) {
+            return;
+        }
+        s.setColumnWidth(1, 32 * 256);
     }
 }

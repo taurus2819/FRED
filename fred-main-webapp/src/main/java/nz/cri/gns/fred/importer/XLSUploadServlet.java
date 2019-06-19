@@ -75,13 +75,13 @@ public class XLSUploadServlet extends HttpServlet {
             } catch (SQLException ex) {
             }
             try {
-                if (null != manageConn) {
+                if (null != importConn) {
                     importConn.close();
                 }
             } catch (SQLException ex) {
             }
             try {
-                if (null != manageConn) {
+                if (null != errorConn) {
                     errorConn.close();
                 }
             } catch (SQLException ex) {
