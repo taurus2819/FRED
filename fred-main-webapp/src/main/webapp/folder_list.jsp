@@ -133,6 +133,7 @@
                        <span style="float:right;">&nbsp;&nbsp;<b><a href="FRED_static.zip">Static FRED template&nbsp;&nbsp;<img src="images/excel.gif" border="0" width="20" height="20" alt="Data entry spreadsheet" style=" vertical-align: middle;"/></a></span>
                    </td>
                 </tr>
+                <%--
                 <tr class="lightColour">                
                    <td colspan="3">
                         <a href="template.xlsx?CODE=FRED_VERTICAL_SECTION">
@@ -140,7 +141,7 @@
                             <b>Vertical Section Import Spreadsheet</b>
                        </a>
                    </td>
-                </tr>
+                </tr>--%>
                 <tr class="lightColour">                
                    <td colspan="3">
                         <a href="template.xlsx?CODE=FRED_DRILL_HOLE">
