@@ -265,9 +265,9 @@ public class SiteUtil extends ModelUtil {
     public static SiteRecord findOrMakeSiteInstance(
             List<String[]> error,
             String featureName,
-            Integer origSystemId, // TODO: unused?
+            Integer origSystemId, 
             String origCoords, // TODO: unused?
-            String datumStr,
+            String datumStr, // Please leave null. Use origSystemId.
             String east,
             String north,
             String locality,
@@ -288,7 +288,14 @@ public class SiteUtil extends ModelUtil {
         // take 1- try the well name
         site = SiteUtil.getSite(featureName);
 
-        Datum datum = DatumFactory.createDatum(datumStr);
+        Datum datum;
+        if (null==datumStr) {
+            datum = DatumFactory.createDatum(origSystemId);
+        } else {
+            // This is a source of bugs. Don't use this.
+            datum = DatumFactory.createDatum(datumStr);
+        }
+        
         Datum.Coordinate coord = null;
         if (east != null && !east.equals("") && north != null && !north.equals("")) {
             try {

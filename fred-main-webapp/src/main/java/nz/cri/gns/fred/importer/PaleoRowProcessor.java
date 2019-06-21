@@ -179,11 +179,11 @@ public class PaleoRowProcessor extends RowProcessor {
                             break;
                         case ROW_LAB_NUMBER:
                             paleo.setLabNumber(v.getValueString());
-                            log("Setting lab number:" + v.getValueString());
+                            log("Setting lab number: " + v.getValueString());
                             break;
                         case ROW_COLLECTION_COMMENTS:
                             paleo.setCollectionComments(v.getValueString());
-                            log("Setting collection comments:" + v.getValueString());
+                            log("Setting collection comments: " + v.getValueString());
                             break;
                         default:
                             throw new MgException();
@@ -336,7 +336,7 @@ public class PaleoRowProcessor extends RowProcessor {
         result.setTaxonomicName(txStr);
         result.setPaleontology(p);
 
-        log("Made a new pal_list entry. Group:" + taxonGroup.getDisplayName() + " Taxon:" + txStr + " Count:" + count + " Coords:" + coords + " Comments:" + comments);
+        log("Made a new pal_list entry. Group: " + taxonGroup.getDisplayName() + " Taxon: " + txStr + " Count: " + count + " Coords: " + coords + " Comments: " + comments);
     }
 
     private void findSample(Integer columnNum, Row row, RowValue v) throws RowImportException {
@@ -419,7 +419,7 @@ public class PaleoRowProcessor extends RowProcessor {
             throw new RowImportException(row, v, "Could not find this person", ex);
         }
         if (null == p) {
-            warn("Could not find this person:" + personName);
+            warn("Could not find this person: " + personName);
             return;
         }
 

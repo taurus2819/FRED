@@ -58,8 +58,15 @@ public class FredRowProcessor extends TemplateRowProcessor {
     }
 
     @Override
-    protected void beforePopulateRow(Row row, Modify update) throws RowImportException {
+    protected void verifyRow(Row row) throws SQLException, RowImportException {
+        checkDatumCode(row);
+        super.verifyRow(row);
+    }
 
+    
+    
+    @Override
+    protected void beforePopulateRow(Row row, Modify update) throws RowImportException {
     }
 
     @Override
@@ -135,16 +142,15 @@ public class FredRowProcessor extends TemplateRowProcessor {
 
         // TODO: origCoords has a particular format.
         String origCoords = getRowValueString(row, "NORTHING") + "|" + getRowValueString(row, "EASTING");
-        String datumCode = getDatumCode(row);
         String countryCode = idAsStringFromName(row, "COUNTRY");
 
         log("Searching for site... please wait...");
         SiteRecord site = SiteUtil.findOrMakeSiteInstance(
                 error,
                 getRowValueString(row, "FEATURE_NAME"),
-                getRowValueInteger(row, "ORIG_SYSTEM_ID"), // TODO: should be a lookup value.
+                idFromName(row, "ORIG_SYSTEM_ID"),
                 origCoords,
-                datumCode,
+                null,
                 getRowValueString(row, "EASTING"),
                 getRowValueString(row, "NORTHING"),
                 getRowValueString(row, "LOCALITY"),
@@ -181,8 +187,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
         update.set("FEATURE_ID$SITE_ID", site.getId());
     }
 
-    private String getDatumCode(Row row) throws RowImportException {
-        String datumCode;
+    private void checkDatumCode(Row row) throws RowImportException {
         Connection conn = null;
         try {
             conn = FREDUtil.getConnection();
@@ -198,7 +203,6 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 if (!s.next()) {
                     throw new RowImportException(row, "ORIG_SYSTEM_ID", "Datum not in the lookup table.", null);
                 }
-                datumCode = s.getString("SYSTEM_CODE");
             } finally {
                 s.close();
             }
@@ -213,7 +217,6 @@ public class FredRowProcessor extends TemplateRowProcessor {
             } catch (SQLException ex) {
             }
         }
-        return datumCode;
     }
 
     private Float toFloat(Double d) {
@@ -225,6 +228,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
 
     }
 
+    /* TODO
     @Override
     public void close() {
         try {
@@ -239,8 +243,10 @@ public class FredRowProcessor extends TemplateRowProcessor {
 
             }
         }
-    }
+    }*/
 
+    
+    /** The column SAMPLE_RELATIONSHIP_REFERENCE contains 
     private void matchUpSamples() throws MgException, SQLException {
         // TODO: relationshipSamples is never populated???
         Table relationshipTable = schema.getTable("RELATIONSHIP");
@@ -375,6 +381,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
                     relationship.set("DISTANCE_RANGE", null);
                 }
                 // The SAMPLE_ID will be set later after all rows are imported.
+                // TODO this has not been done.
 
                 relationship.doIt(importConn);
             }
