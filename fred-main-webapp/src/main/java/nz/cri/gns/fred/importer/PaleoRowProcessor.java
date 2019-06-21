@@ -101,6 +101,13 @@ public class PaleoRowProcessor extends RowProcessor {
     @Override
     protected void importRow(Row row) throws SQLException, RowImportException {
         int rowNum = row.getRowNum();
+
+        if (rowNum == ROW_SAMPLE_TYPE+1) {
+            for (Integer c : localityNameMatrix.keySet()) {
+                findSample(c, row);
+            }
+        }
+        
         for (RowValue each : row) {
             // Each paleo is on it's own row.
             // Rows are paleos. Columns are paleo list entries.
@@ -145,7 +152,6 @@ public class PaleoRowProcessor extends RowProcessor {
                             if (!v.isEmpty()) {
                                 sampleTypeMatrix.put(v.getColumnNum(), v.getValueString());
                             }
-                            findSample(v.getColumnNum(), row, v);
                             break;
                         case ROW_ID_DATE:
                             paleo.setIdentificationDate(v.getValueTimestamp());
@@ -339,9 +345,9 @@ public class PaleoRowProcessor extends RowProcessor {
         log("Made a new pal_list entry. Group: " + taxonGroup.getDisplayName() + " Taxon: " + txStr + " Count: " + count + " Coords: " + coords + " Comments: " + comments);
     }
 
-    private void findSample(Integer columnNum, Row row, RowValue v) throws RowImportException {
+    private void findSample(Integer columnNum, Row row) throws RowImportException {
         Sample sample;
-
+               
         /**
          * This doesn't work. It expects a weird format for the sample that
          * includes depths, etc. try { sample = (Sample)
@@ -379,20 +385,20 @@ public class PaleoRowProcessor extends RowProcessor {
             r.doIt(importConn);
             if (!r.next()) {
                 log("If you're an expert, this is the SQL: "+r.toString()); 
-                throw new RowImportException(row, v, "Could not find a sample with the FR number='"+localityName+"', topDepth="+topDepth+", bottomDepth="+bottomDepth+", drillType="+drillType);
+                throw new RowImportException(row, (RowValue)null, "Could not find a sample with the FR number='"+localityName+"', topDepth="+topDepth+", bottomDepth="+bottomDepth+", drillType="+drillType);
             }
 
             
             Integer sampleId = r.getInteger("SAMPLE_ID");
-            log("Found a sample with the FR number='"+localityName+"', topDepth="+topDepth+", bottomDepth="+bottomDepth+", drillType="+drillType+ " for column " + XLSXSpreadsheet.columnNumToLetters(v.getColumnNum()));
+            log("Found a sample with the FR number='"+localityName+"', topDepth="+topDepth+", bottomDepth="+bottomDepth+", drillType="+drillType+ " for column " + XLSXSpreadsheet.columnNumToLetters(columnNum));
             
             if (r.next()) {
-                throw new RowImportException(row, v, "Found multiple samples with this locality, depths and sample type.");
+                throw new RowImportException(row, (RowValue)null, "Found multiple samples with this locality, depths and sample type.");
             }
 
             sample = sampleUtil.getSample(sampleId);
         } catch (SQLException | StorageAccessException e) {
-            throw new RowImportException(row, v, null, e);
+            throw new RowImportException(row, (RowValue)null, null, e);
         } finally {
             if (null != r) {
                 r.close();
@@ -403,11 +409,11 @@ public class PaleoRowProcessor extends RowProcessor {
         try {
             folder = folderUtil.getPersonalFolders(user).get(0);
         } catch (StorageAccessException ex) {
-            throw new RowImportException(row, v, "Can't get a folder.", ex);
+            throw new RowImportException(row, (RowValue)null, "Can't get a folder.", ex);
         }
         warn("TODO: I don't know which folder to use. Putting everything in " + folder.getFolder().getName());
 
-        createRecord(v.getColumnNum(), sample, folder.getFolder().getFolderId(), user);
+        createRecord(columnNum, sample, folder.getFolder().getFolderId(), user);
     }
 
     private void setIdentifiers(Paleontology paleo, Row row, RowSingleValue v) throws RowImportException {
