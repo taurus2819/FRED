@@ -228,6 +228,10 @@ public class PaleoRowProcessor extends RowProcessor {
             throw new MgException(ex);
         }
         paleoMatrix.put(index, r);
+        
+        // PDB-221
+        r.getPaleontology().setStage(null);
+        
         return r;
     }
 
@@ -409,7 +413,7 @@ public class PaleoRowProcessor extends RowProcessor {
         try {
             folder = folderUtil.getPersonalFolders(user).get(0);
         } catch (StorageAccessException ex) {
-            throw new RowImportException(row, (RowValue)null, "Can't get a folder.", ex);
+            throw new RowImportException(row, (RowValue)null, "Can't get a folder because: "+ex.getMessage(), ex);
         }
         warn("TODO: I don't know which folder to use. Putting everything in " + folder.getFolder().getName());
 
