@@ -1,52 +1,53 @@
 package nz.cri.gns.fred.importer;
 
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import nz.cri.gns.auth.domain.User;
-import nz.cri.gns.dataaccess.StorageAccessException;
-import nz.cri.gns.fred.dao.DAOFactory;
-import nz.cri.gns.fred.model.Relationship;
-import nz.cri.gns.fred.model.FREDConstants;
-import nz.cri.gns.fred.model.Feature;
-import nz.cri.gns.fred.model.Sample;
-import nz.cri.gns.fred.util.FeatureUtil;
-import nz.cri.gns.fred.util.SampleUtil;
+import java.util.Map;
+import nz.cri.gns.munginator.Create;
+import nz.cri.gns.munginator.Read;
 import nz.cri.gns.munginator.upload.RowImportException;
 import nz.cri.gns.munginator.upload.RowProcessor;
 import nz.cri.gns.munginator.upload.stagingarea.Row;
 import nz.cri.gns.munginator.upload.stagingarea.RowSingleValue;
 
+/**
+ * Insert stuff into the RELATIONSHIP table. TODO: rename this class to make it
+ * match reality.
+ *
+ * @author mikevdg
+ */
 public class StratigraphicRelationshipRowProcessor extends RowProcessor {
 
-    private User user;
+    private final Map<Integer, Integer> rowToSampleId;
 
-    DAOFactory factory;
-    FeatureUtil featureUtil;
-    SampleUtil sampleUtil;
-    Set<Feature> commitUs;
-
-    public StratigraphicRelationshipRowProcessor(String spreadsheetType, User user, DAOFactory factory) {
+    public StratigraphicRelationshipRowProcessor(String spreadsheetType, Map<Integer, Integer> rowToSampleId) {
         super(spreadsheetType);
-        this.user = user;
-        this.factory = factory;
-        featureUtil = new FeatureUtil(factory);
-        sampleUtil = new SampleUtil(factory);
-        commitUs = new HashSet<>();
+        this.rowToSampleId = rowToSampleId;
     }
 
     @Override
     protected void importRow(Row row) throws SQLException, RowImportException {
-        setFeatureByName(row);
+        insertSamplesNearby(row);
+        insertSampleRelationships(row);
     }
 
     /**
      * For the "Samples nearby" and "Sample Relationships" fields. Find the
      * SAMPLE_ID that is named with the given column value.
      *
-     * The cell value can be: An existing Fossil Record Number (FRN)
-     * (FR_NUMBER.FR_NUMBER) Another sample from the current spreadsheet
+     * These fields need to be worked with here:
+     *
+     * SAMPLES_NEARBY: insert into relationship with type="nearby"
+     *
+     * SAMPLE_RELATIONSHIP_MOD SAMPLE_RELATIONSHIP_DISTANCE
+     * SAMPLE_RELATIONSHIP_PREP SAMPLE_RELATIONSHIP_REFERENCE - convert to
+     * SAMPLE_ID
+     *
+     * The stratigraphic relationships are handled by the FredRowProcessor as
+     * they don't refer to other samples.
+     *
+     * The cell value can be: * An existing Fossil Record Number (FRN)
+     * (FR_NUMBER.FR_NUMBER) * Another sample from the current spreadsheet
      * referenced by field number (FEATURE.FIELD_NUMBER, see also FR_ID)
      *
      * FRNs are of the format [map sheet]/f[serial number]
@@ -54,84 +55,110 @@ public class StratigraphicRelationshipRowProcessor extends RowProcessor {
      * The serial number should be four digits. Users might enter fewer digits;
      * this should be padded to four digits with zeros.
      */
-    private void setFeatureByName(Row row) throws RowImportException {
+    private void insertSamplesNearby(Row row) throws RowImportException {
         if (!hasRowValue(row, "SAMPLES_NEARBY")) {
             return;
         }
 
-        String fromName = getRowValueString(row, "FEATURE_NAME");
-        String toName = getRowValueString(row, "SAMPLES_NEARBY");
-        Feature from = null;
-        Feature to = null;
+        Integer fromSampleId;
+        Integer toFeatureId;
 
+        fromSampleId = rowToSampleId.get(row.getRowNum());
+        
+        // TODO: It should be a multi-value field.
+        String name = getRowValueString(row, "SAMPLES_NEARBY");
+        if (null==name) {
+            return;
+        }
+        toFeatureId = findFeatureId(row, name, "SAMPLES_NEARBY");
+
+        
+        Create c = schema.insert("RELATIONSHIP");
+        c.set("SAMPLE_ID", fromSampleId);
+        c.set("RELATIONSHIP_TYPE", "Sample");
+        c.set("RELATED_FEATURE_ID", toFeatureId);
+        c.set("RELATION_TYPE_ID", 231); // "nearby"
         try {
-            from = featureUtil.getFeatureWithIdentifyingName(fromName);
-            to = featureUtil.getFeatureWithIdentifyingName(toName);
-            commitUs.add(from);
+            c.doIt(importConn);
+        } catch(SQLException e) {
+            throw new RowImportException(row, "SAMPLES_NEARBY", null, e);
+        }
+    }
 
-            if (null == to) {
-                throw new RowImportException(row, "SAMPLES_NEARBY", "Cannot find a feature with this FRN: ", null);
+    private Integer findFeatureId(Row row, String name, String columnName) throws RowImportException {
+        String frId = getRowValueString(row, columnName);
+
+        Read r = schema.select("FEATURE");
+        r.addColumn("FEATURE_ID");
+        r.addWhere("FR_ID$FR_NUMBER", frId);
+        try {
+            r.doIt(importConn);
+            if (!r.next()) {
+                return r.getInteger("FEATURE_ID");
+            } else {
+                throw new RowImportException(row, columnName, "Could not find a feature with this name.", null);
             }
 
-            Sample fromSample = first(from.getSamples());
-
-            Relationship r = sampleUtil.createRelationship(fromSample, to, FREDConstants.SAMPLE, FREDConstants.NEARBY);
-            from.getRelationships().add(r);
-        } catch (StorageAccessException ex) {
-            throw new RowImportException(row, "SAMPLES_NEARBY", null, ex);
-
+        } catch (SQLException e) {
+            throw new RowImportException(row, columnName, null, e);
+        } finally {
+            r.close();
         }
-        /* TODO: SAMPLES_NEARBY should be multi-value. 
-        It seems that getRowMultiValue() fails with a classcastexception. I need to investigate this further.
-        
-        String fromName = getRowValueString(row, "FEATURE_NAME");
-        Feature from = null;
+    }
+
+    private void insertSampleRelationships(Row row) throws RowImportException {
+        List<RowSingleValue> mod = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_MOD"); // "c." or "?" or nothing.
+        List<RowSingleValue> distance = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_DISTANCE"); // metres, I assume.
+        List<RowSingleValue> prep = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_PREP"); // above / below
+        List<RowSingleValue> ref = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_REFERENCE"); // sample names, possibly in this spreadsheet.
 
         try {
-            from = featureUtil.getFeatureWithIdentifyingName(fromName);
-            commitUs.add(from);
-            List<RowSingleValue> tos = getRowMultiValue(row, "SAMPLES_NEARBY");
+            for (int i = 0; i < ref.size(); i++) {
+                boolean mdpHasValue = hasValue(mod, i) || hasValue(distance, i) || hasValue(prep, i);
 
-            for (RowSingleValue toRV : tos) {
-                String toName = toRV.getValueString();
-                Feature to = featureUtil.getFeatureWithIdentifyingName(toName);
-                if (null == to) {
-                    throw new RowImportException(row, "SAMPLES_NEARBY", "Cannot find a feature with this FRN: ", null);
+                // If nothing has a value here...
+                if (!(hasValue(ref, i) || mdpHasValue)) {
+                    continue;
                 }
 
-                Sample fromSample = first(from.getSamples());
+                // If ref is missing a value...
+                if (mdpHasValue && !hasValue(ref, i)) {
+                    throw new RowImportException(row, "SAMPLE_RELATIONSHIP_REFERENCE", "A mod, distance or prep here requires a reference.", null);
+                }
 
-                Relationship r = sampleUtil.createRelationship(fromSample, to, FREDConstants.SAMPLE, FREDConstants.NEARBY);
-                from.getRelationships().add(r);
+                if (!hasValue(prep, i)) {
+                    throw new RowImportException(row, "SAMPLE_RELATIONSHIP_PREP", "Prep must have a value.", null);
+                }
+
+                String name = ref.get(i).getValueString();
+                Integer toFeatureId = findFeatureId(row, name, "SAMPLE_RELATIONSHIP_REFERENCE");
+                
+                Create relationship = schema.insert("RELATIONSHIP");
+                relationship.set("RELATIONSHIP_TYPE", "Sample");
+                relationship.set("SAMPLE_ID", rowToSampleId.get(row.getRowNum()));
+                relationship.set("RELATED_FEATURE_ID", toFeatureId);
+
+                int prepId = idFromName(row, prep.get(i));
+                relationship.set("RELATION_TYPE_ID", prepId); // "above" or "below".
+                if (hasValue(mod, i)) {
+                    relationship.set("DISTANCE_MOD", mod.get(i).getValueInteger());
+                } else {
+                    relationship.set("DISTANCE_MOD", null);
+                }
+                if (hasValue(distance, i)) {
+                    relationship.set("DISTANCE_RANGE", distance.get(i).getValueDouble());
+                } else {
+                    relationship.set("DISTANCE_RANGE", null);
+                }
+                relationship.doIt(importConn);
             }
-        } catch (StorageAccessException ex) {
-            throw new RowImportException(row, "SAMPLES_NEARBY", null, ex);
-        }
-         */
-    }
 
-    @Override
-    public void close() {
-    }
-
-    @Override
-    public void commit() {
-        try {
-            for (Feature each : commitUs) {
-                factory.getFredDAO().saveOrUpdate(each);
-            }
-        } catch (StorageAccessException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RowImportException(row, "SAMPLE_RELATIONSHIP_REFERENCE", "Some error happened with the sample reference columns.", e);
         }
     }
 
-    // TODO: rollback(). FredDAO does not support this yet.
-    private Sample first(Set<Sample> in) {
-        if (null == in || in.isEmpty()) {
-            return null;
-        } else {
-            return in.iterator().next();
-        }
+    private boolean hasValue(List<RowSingleValue> mv, int i) {
+        return (null != mv.get(i) && !mv.get(i).isEmpty());
     }
-
 }

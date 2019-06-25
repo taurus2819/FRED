@@ -40,7 +40,10 @@ public class FredRowProcessorFactory implements RowProcessorFactory {
             case "VERTICAL_SECTION":
             case "DRILL_HOLE":
             case "FRED_OUTCROP":
-                return list(new FredRowProcessor(user, factory, code), new StratigraphicRelationshipRowProcessor(code, user, factory));
+                // rowToSampleId maps row numbers in the spreadsheet to sample IDs.
+                // FredRowProcessor populates it, StratigraphicRelationshipRowProcessor consumes it.
+                Map<Integer, Integer> rowToSampleId = new HashMap<>();
+                return list(new FredRowProcessor(user, factory, code, rowToSampleId), new StratigraphicRelationshipRowProcessor(code, rowToSampleId));
             case "PALEO":
                 return list(new PaleoRowProcessor(user, factory, code, getPaleoRowProcessorMatrix()), null);
             default:
