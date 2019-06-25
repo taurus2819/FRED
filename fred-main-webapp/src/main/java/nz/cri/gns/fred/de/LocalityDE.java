@@ -9,6 +9,7 @@ import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,6 +47,9 @@ import nz.cri.gns.util.map.NZGD2000;
 import nz.cri.gns.util.map.NZGD49;
 import nz.cri.gns.util.map.WGS84;
 import nz.cri.gns.util.map.Datum.MapSheetCoordinate;
+import nz.cri.gns.xss.SanitizeHttpServletRequest;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 
 public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
@@ -59,6 +63,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
     private UserFolder workingFolder;
     protected Feature feature;
     private Feature copyFeature;
+    protected SanitizeHttpServletRequest sanitizeHttpRequest;
     /**
      * Temporary storage for working comments
      */
@@ -101,6 +106,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         this.provider = content;
 
         FolderUtil folderUtil = new FolderUtil(factory);
+        sanitizeHttpRequest = new SanitizeHttpServletRequest();
 
         //check status
         if (!featureUtil.isAllowedReadFeature(user, feature)) {
@@ -359,15 +365,20 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
     @Override
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
         reinitialise(factory);
-
         ArrayList<String[]> error = new ArrayList<>();
+        
+//        for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()){
+//            for (String value : entry.getValue()){
+//                System.out.println("Get Parameters = " + value);
+//            }
+//        }
 
         //FRNum (if backlog - but only update if null)
         if (FeatureUtil.isBacklogFeature(feature)) {
             try {
                 FrNumber frNumber = feature.getFrNumber();
                 if (frNumber == null) {
-                    String frNumberStr = request.getParameter("FRNumber");
+                    String frNumberStr = sanitizeHttpRequest.stripAllScripts(request.getParameter("FRNumber"));
                     //if only map sheet entered then get next available FRNumber
                     if (!frNumberStr.contains("/f")) {
                         frNumber = featureUtil.getNextAvailableFrNumber(frNumberStr);
@@ -386,9 +397,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 log.log(Level.SEVERE, null, e);
                 //Should never happen
             }
-            if (!FREDUtil.isEmpty(request.getParameter("YardFRNumber"))) {
+            if (!FREDUtil.isEmpty(sanitizeHttpRequest.stripAllScripts(request.getParameter("YardFRNumber")))) {
                 try {
-                    feature.setYardFrNumber(featureUtil.getYardFrNumberByString(request.getParameter("YardFRNumber"), true));
+                    feature.setYardFrNumber(featureUtil.getYardFrNumberByString(sanitizeHttpRequest.stripAllScripts(request.getParameter("YardFRNumber")), true));
                 } catch (DataInputException | StorageAccessException e) {
                     error.add(new String[]{"Yard FR Number", e.getMessage()});
                 }
@@ -398,10 +409,10 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         }
 
         //Feature name
-        feature.setFeatureName(request.getParameter("FeatName"));
+        feature.setFeatureName(sanitizeHttpRequest.stripAllScripts(request.getParameter("FeatName")));
 
         //Registration area
-        String registrationAreaId = request.getParameter("RegAreaId");
+        String registrationAreaId = sanitizeHttpRequest.stripAllScripts(request.getParameter("RegAreaId"));
         if (feature.getRegistrationArea() == null || !feature.getRegistrationArea().getRegAreaId().toString().equals(registrationAreaId)) {
             if (registrationAreaId.equals("-")) {
                 feature.setRegistrationArea(null);
@@ -416,13 +427,13 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         }
 
         //Recollection and working comments
-        feature.getAudit().setWorkingComments(FeatureUtil.combineWorkingComments(request.getParameter("Recoll"), request.getParameter("WorkComm")));
+        feature.getAudit().setWorkingComments(FeatureUtil.combineWorkingComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("Recoll")), sanitizeHttpRequest.stripAllScripts(request.getParameter("WorkComm"))));
 
         //Site
         datum = DatumFactory.createDatum(request.getParameter("CoordType"));
         coord = null;
-        String east = request.getParameter("East");
-        String north = request.getParameter("North");
+        String east = sanitizeHttpRequest.stripAllScripts(request.getParameter("East"));
+        String north = sanitizeHttpRequest.stripAllScripts(request.getParameter("North"));
         if (east != null && !east.equals("") && north != null && !north.equals("")) {
             try {
                 if (datum.isMapSheetSystem()) {
@@ -432,7 +443,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                     } else if ((precision > 0 && precision < 3) || precision > 4) {
                         error.add(new String[]{"Coordinate", "Length of truncated coordinates must be 3 or 4"});
                     } else {
-                        coord = (Datum.Coordinate) datum.preferredCoordinate().getConstructor(new Class[]{double.class, double.class, String.class, int.class}).newInstance(new Object[]{new Double(north), new Double(east), request.getParameter("MapSheet"), precision});
+                        coord = (Datum.Coordinate) datum.preferredCoordinate().getConstructor(new Class[]{double.class, double.class, String.class, int.class}).newInstance(new Object[]{new Double(north), new Double(east), sanitizeHttpRequest.stripAllScripts(request.getParameter("MapSheet")), precision});
                     }
                 } else {
                     coord = (Datum.Coordinate) datum.preferredCoordinate().getConstructor(new Class[]{double.class, double.class}).newInstance(new Object[]{new Double(north), new Double(east)});
@@ -449,7 +460,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         }
 
         //locality
-        String locality = getLegalLocality(request.getParameter("Loc"), error);
+        String locality = getLegalLocality(sanitizeHttpRequest.stripAllScripts(request.getParameter("Loc")), error);
 
         if (coord != null) {
             if (!datum.coordinateAcceptable(coord)) {
@@ -508,9 +519,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             } catch (Exception e) {
                 //method is null (-1) by default
             }
-            if (request.getParameter("Accuracy").length() > 0) {
+            if (sanitizeHttpRequest.stripAllScripts(request.getParameter("Accuracy")).length() > 0) {
                 try {
-                    site.setAccuracy(Float.parseFloat(request.getParameter("Accuracy")));
+                    site.setAccuracy(Float.parseFloat(sanitizeHttpRequest.stripAllScripts(request.getParameter("Accuracy"))));
                 } catch (Exception e) {
                     error.add(new String[]{"Accuracy", "Invalid value"});
                     // site accuracy is null (-1) by default
@@ -525,8 +536,8 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
         //set Map Year
         try {
-            if (request.getParameter("MapYear") != null && !request.getParameter("MapYear").equals("")) {
-                feature.setMapYear(Integer.parseInt(request.getParameter("MapYear")));
+            if (sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear")) != null && !sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear")).equals("")) {
+                feature.setMapYear(Integer.parseInt(sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear"))));
             } else {
                 feature.setMapYear(null);
             }
@@ -534,10 +545,11 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             error.add(new String[]{"Map Year", "Map Year not numeric"});
         }
 
-        feature.setCoordComments(request.getParameter("CoordComm"));
-        feature.setComments(request.getParameter("LocComm"));
+        feature.setCoordComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("CoordComm")));
+        feature.setComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("LocComm")));
 
-        editComments = request.getParameter("EditComm");
+        editComments = sanitizeHttpRequest.sanitizer(request.getParameter("EditComm"));
+        editComments = sanitizeHttpRequest.stripAllScripts(editComments);
 
         if (error.size() > 0) {
             throw new DataInputException(error);

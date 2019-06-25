@@ -22,6 +22,7 @@ import nz.cri.gns.fred.util.PersonUtil;
 import nz.cri.gns.fred.util.StageUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.intranet.Template;
+import nz.cri.gns.xss.SanitizeHttpServletRequest;
 
 public class AdoptionRecordDE extends RecordDE {
 
@@ -64,6 +65,7 @@ public class AdoptionRecordDE extends RecordDE {
 
     @Override
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
+        SanitizeHttpServletRequest sanitizeHttpRequest = new SanitizeHttpServletRequest();
         ArrayList<String[]> error = new ArrayList<>();
 
         super.updateFromRequest(request, factory, addIfNew);
@@ -71,7 +73,7 @@ public class AdoptionRecordDE extends RecordDE {
         Adoption adoption = record.getAdoption();
         //Collection date
         try {
-            String adoptionDate = request.getParameter("AdoDate");
+            String adoptionDate = sanitizeHttpRequest.stripAllScripts(request.getParameter("AdoDate"));
             adoption.setAdoptionDate(FREDUtil.parseDateFromDE(adoptionDate));
             adoption.setDateRounding(FREDUtil.parseDateRoundingFromDE(adoptionDate));
         } catch (ParseException e) {
@@ -80,7 +82,7 @@ public class AdoptionRecordDE extends RecordDE {
 
         //Adoptors
         try {
-            adoption.setAdoptors(FREDUtil.getPersons(request.getParameter("Adoptor"), new PersonUtil(factory), "Adoptors", addIfNew));
+            adoption.setAdoptors(FREDUtil.getPersons(sanitizeHttpRequest.stripAllScripts(request.getParameter("Adoptor")), new PersonUtil(factory), "Adoptors", addIfNew));
         } catch (DataInputException e) {
             error.addAll(e.getError());
         }
@@ -93,7 +95,7 @@ public class AdoptionRecordDE extends RecordDE {
         }
 
         //Comments
-        adoption.setComments(request.getParameter("Comm"));
+        adoption.setComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("Comm")));
 
         if (error.size() > 0) {
             throw new DataInputException(error);

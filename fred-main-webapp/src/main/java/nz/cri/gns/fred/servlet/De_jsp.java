@@ -29,6 +29,7 @@ import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.FredGrantedAuthorities;
 import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.servlet.util.JspWriterImpl;
+import nz.cri.gns.xss.SanitizeHttpServletRequest;
 
 /**
  * Was de.jsp
@@ -45,6 +46,7 @@ public class De_jsp
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        SanitizeHttpServletRequest sanitizeHttpRequest = new SanitizeHttpServletRequest();
         JspWriterImpl out = new JspWriterImpl(response.getOutputStream());
         HttpSession session = request.getSession();
         FredHelper h = new FredHelper(); // Replaces subclassing FREDDEIPSysJspPage. 
@@ -77,19 +79,19 @@ public class De_jsp
 
                 h.drawTop(out, et, request, response);
 
-                if (request.getParameter("CopyID") != null) {
+                if (sanitizeHttpRequest.stripAllScripts(request.getParameter("CopyID")) != null) {
                     try {
-                        dataEntryForm.copyFrom(Integer.parseInt(request.getParameter("CopyID")));
+                        dataEntryForm.copyFrom(Integer.parseInt(sanitizeHttpRequest.stripAllScripts(request.getParameter("CopyID"))));
                     } catch (NumberFormatException e) {
                         throw new ServletException("Malformed parameter: CopyID");
                     }
                 }
 
-                String formType = request.getParameter("Type");
-                String featID = request.getParameter("FeatID");
-                String sampID = request.getParameter("SampID");
-                String recID = request.getParameter("RecID");
-                String foldID = request.getParameter("FoldID");
+                String formType = sanitizeHttpRequest.stripAllScripts(request.getParameter("Type"));
+                String featID = sanitizeHttpRequest.stripAllScripts(request.getParameter("FeatID"));
+                String sampID = sanitizeHttpRequest.stripAllScripts(request.getParameter("SampID"));
+                String recID = sanitizeHttpRequest.stripAllScripts(request.getParameter("RecID"));
+                String foldID = sanitizeHttpRequest.stripAllScripts(request.getParameter("FoldID"));
 
                 //save DataEntryForm in session
                 session.setAttribute(WebsiteConstants.DATA_ENTRY_FORM, dataEntryForm);
@@ -203,16 +205,17 @@ public class De_jsp
     }
 
     private DataEntryForm getDataEntryFormImpl(FredHelper h, HttpServletRequest request) throws ServletException {
+        SanitizeHttpServletRequest sanitizeHttpRequest = new SanitizeHttpServletRequest();
         if (request.getAttribute(WebsiteConstants.DATA_ENTRY_FORM) != null) {
             return (DataEntryForm) request.getAttribute(WebsiteConstants.DATA_ENTRY_FORM);
         }
         HttpSession session = request.getSession();
-        if (request.getParameter("Err") != null || request.getParameter("CopyID") != null) {
+        if (sanitizeHttpRequest.stripAllScripts(request.getParameter("Err")) != null || sanitizeHttpRequest.stripAllScripts(request.getParameter("CopyID")) != null) {
             return (DataEntryForm) session.getAttribute(WebsiteConstants.DATA_ENTRY_FORM);
         } else {
             DAOFactory factory = FredHibernate.get().getDAOFactory();
             User user = (User) h.getUser(session);
-            String formType = request.getParameter("Type");
+            String formType = sanitizeHttpRequest.stripAllScripts(request.getParameter("Type"));
             Integer foldId = h.paramAsInteger(request, "FoldID");
             if (null == foldId) {
                 throw new ServletException("Parameter FoldID is missing or malformed");

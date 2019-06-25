@@ -37,6 +37,7 @@ import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.query.FREDQuery;
 import nz.cri.gns.fred.query.FREDRecordQuery;
 import nz.cri.gns.jsp.PageState;
+import nz.cri.gns.xss.SanitizeHttpServletRequest;
 
 public class FREDUtil {
 
@@ -364,7 +365,9 @@ public class FREDUtil {
     public static Set<Person> getPersons(String[] peopleStr, PersonUtil personUtil, String personLabel, boolean addIfNew) throws DataInputException {
         HashSet<Person> personSet = new LinkedHashSet<>();
         ArrayList<String[]> error = new ArrayList<>();
+        SanitizeHttpServletRequest sanitizeHttpRequest = new SanitizeHttpServletRequest();
         for (String personStr : peopleStr) {
+            personStr = sanitizeHttpRequest.stripAllScripts(personStr);
             try {
                 if (personStr.trim().length() == 0) {
                     continue;
