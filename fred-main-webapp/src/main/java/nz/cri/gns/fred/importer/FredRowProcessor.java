@@ -172,7 +172,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
             try {
                 site = SiteUtil.save(site); // Will fail if the site has an ID already. 
             } catch (SiteException ex) {
-                log.log(Level.WARNING, null, ex);
+                log.log(Level.WARNING, "Site: "+site.toJson().toString(), ex);
                 throw new RowImportException(row, "NORTHING", "Something failed. " + ex.getMessage(), null);
             }
 
@@ -401,9 +401,15 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
     }
 
+    
+    
     @Override
     public boolean isMultiValue(int columnNum) {
         ImportColumn c = columns.get(columnNum);
+        return isMultiValue(c) || super.isMultiValue(columnNum);
+    }
+    
+    public static boolean isMultiValue(ImportColumn c) {
         if (null != c.getCode()) {
             switch (c.getCode()) {
                 case "SAMPLES_NEARBY":
@@ -418,7 +424,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
                     return true;
             }
         }
-        return super.isMultiValue(columnNum);
+        return false;
     }
 
     private Integer findStratUnitId(String name) throws SQLException {

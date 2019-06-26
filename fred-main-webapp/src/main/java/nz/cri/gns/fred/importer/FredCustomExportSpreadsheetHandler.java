@@ -36,10 +36,10 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
                 addFolderList(sheet, heading, user);
                 return true;
             case "LOCATION_METHOD":
-                addLocationMethodColumn(sheet, heading, c, "SC.METHOD", "METHOD");
+                addLocationMethodColumn(sheet, heading);
                 return true;
             case "COUNTRY":
-                addLocationMethodColumn(sheet, heading, c, "LU_COUNTRY", "COUNTRY_NAME");
+                addCountryColumn(sheet, heading);
                 return true;
             case "SAMPLE_RELATIONSHIP_MOD":
             case "STRAT_RELATIONSHIP_MOD":
@@ -78,12 +78,27 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
         }
     }
 
-    private void addLocationMethodColumn(GenericSpreadsheet sheet, String heading, Column c, String tableName, String orderBy) {
+    private void addLocationMethodColumn(GenericSpreadsheet sheet, String heading) {
         Read s;
         try {
-            s = SchemaSingleton.getInstance(conn).select(tableName);
-            s.allColumns();
-            s.addOrderBy(orderBy);
+            s = SchemaSingleton.getInstance(conn).select("SC.METHOD");
+            s.addColumn("METHOD_ID");
+            s.addColumn("METHOD");
+            s.addOrderBy("METHOD");
+            sheet.addDropDownHeader(heading, null, conn, s);
+            sheet.nextColumn(); // this smells bad. Why?
+        } catch (SQLException ex) {
+            throw new MgException(ex);
+        }
+    }
+
+    private void addCountryColumn(GenericSpreadsheet sheet, String heading) {
+        Read s;
+        try {
+            s = SchemaSingleton.getInstance(conn).select("LU_COUNTRY");
+            s.addColumn("COUNTRY_CODE");
+            s.addColumn("COUNTRY_NAME");
+            s.addOrderBy("COUNTRY_NAME");
             sheet.addDropDownHeader(heading, null, conn, s);
             sheet.nextColumn(); // this smells bad. Why?
         } catch (SQLException ex) {

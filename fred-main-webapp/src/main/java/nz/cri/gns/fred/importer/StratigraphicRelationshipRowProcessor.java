@@ -7,6 +7,7 @@ import nz.cri.gns.munginator.Create;
 import nz.cri.gns.munginator.Read;
 import nz.cri.gns.munginator.upload.RowImportException;
 import nz.cri.gns.munginator.upload.RowProcessor;
+import nz.cri.gns.munginator.upload.stagingarea.ImportColumn;
 import nz.cri.gns.munginator.upload.stagingarea.Row;
 import nz.cri.gns.munginator.upload.stagingarea.RowSingleValue;
 
@@ -56,44 +57,41 @@ public class StratigraphicRelationshipRowProcessor extends RowProcessor {
      * this should be padded to four digits with zeros.
      */
     private void insertSamplesNearby(Row row) throws RowImportException {
-        if (!hasRowValue(row, "SAMPLES_NEARBY")) {
-            return;
-        }
-
+        List<RowSingleValue> nearby = getRowMultiValue(row, "SAMPLES_NEARBY");
         Integer fromSampleId;
-        Integer toFeatureId;
 
         fromSampleId = rowToSampleId.get(row.getRowNum());
-        
-        // TODO: It should be a multi-value field.
-        String name = getRowValueString(row, "SAMPLES_NEARBY");
-        if (null==name) {
-            return;
-        }
-        toFeatureId = findFeatureId(row, name, "SAMPLES_NEARBY");
 
-        
         Create c = schema.insert("RELATIONSHIP");
         c.set("SAMPLE_ID", fromSampleId);
         c.set("RELATIONSHIP_TYPE", "Sample");
-        c.set("RELATED_FEATURE_ID", toFeatureId);
         c.set("RELATION_TYPE_ID", 231); // "nearby"
-        try {
-            c.doIt(importConn);
-        } catch(SQLException e) {
-            throw new RowImportException(row, "SAMPLES_NEARBY", null, e);
+
+        for (RowSingleValue each : nearby) {
+            if (null == each || each.isEmpty()) {
+                continue;
+            }
+
+            Integer toFeatureId;
+            String name = each.getValueString();
+            toFeatureId = findFeatureId(row, name, "SAMPLES_NEARBY");
+
+            c.set("RELATED_FEATURE_ID", toFeatureId);
+            try {
+                c.doIt(importConn);
+            } catch (SQLException e) {
+                throw new RowImportException(row, "SAMPLES_NEARBY", null, e);
+            }
         }
     }
 
     private Integer findFeatureId(Row row, String name, String columnName) throws RowImportException {
-        String frId = getRowValueString(row, columnName);
-
         Read r = schema.select("FEATURE");
         r.addColumn("FEATURE_ID");
-        r.addWhere("FR_ID$FR_NUMBER", frId);
+        r.addWhere("FR_ID$FR_NUMBER", name);
         try {
             r.doIt(importConn);
-            if (!r.next()) {
+            if (r.next()) {
                 return r.getInteger("FEATURE_ID");
             } else {
                 throw new RowImportException(row, columnName, "Could not find a feature with this name.", null);
@@ -132,7 +130,7 @@ public class StratigraphicRelationshipRowProcessor extends RowProcessor {
 
                 String name = ref.get(i).getValueString();
                 Integer toFeatureId = findFeatureId(row, name, "SAMPLE_RELATIONSHIP_REFERENCE");
-                
+
                 Create relationship = schema.insert("RELATIONSHIP");
                 relationship.set("RELATIONSHIP_TYPE", "Sample");
                 relationship.set("SAMPLE_ID", rowToSampleId.get(row.getRowNum()));
@@ -161,4 +159,11 @@ public class StratigraphicRelationshipRowProcessor extends RowProcessor {
     private boolean hasValue(List<RowSingleValue> mv, int i) {
         return (null != mv.get(i) && !mv.get(i).isEmpty());
     }
+
+    @Override
+    public boolean isMultiValue(int columnNum) {
+        ImportColumn c = columns.get(columnNum);
+        return FredRowProcessor.isMultiValue(c) || super.isMultiValue(columnNum);
+    }
+
 }
