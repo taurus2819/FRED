@@ -52,6 +52,7 @@ public class AdoptionRecordDE extends RecordDE {
         super.makeEndBitHTML(out);
     }
 
+    @Override
     public void makePostFormHTML(PrintWriter out) throws IOException {
         Template template = provider.getContent("calendar.script");
         template.addSub("inputField", "AdoDate");
@@ -102,10 +103,12 @@ public class AdoptionRecordDE extends RecordDE {
         }
     }
 
+    @Override
     public boolean usesCalendar() {
         return true;
     }
 
+    @Override
     public String getHeading() {
         return "Edit adoption record";
     }

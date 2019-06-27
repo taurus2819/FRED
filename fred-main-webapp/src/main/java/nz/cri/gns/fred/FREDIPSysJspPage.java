@@ -129,6 +129,7 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
             try {
                 FredHibernate.get().getDAOFactory().closeSession();
             } catch (StorageAccessException e) {
+                e.printStackTrace();
             }
         }
     }
