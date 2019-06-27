@@ -41,14 +41,12 @@ import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.servlet.util.FredHelper;
 import nz.cri.gns.fred.servlet.util.JspWriterImpl;
 import nz.cri.gns.fred.util.StageUtil;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
+import nz.cri.gns.xss.SanitizeHttpServletRequest;
 
 public class ResultList_jsp extends HttpServlet {
 
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.servlet.ResultList_jsp");
-    private final  PolicyFactory sanitizer = Sanitizers.FORMATTING.and(Sanitizers.BLOCKS);
-
+    
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doGet(req, resp);
@@ -56,12 +54,12 @@ public class ResultList_jsp extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        String whereSQL = sanitizer.sanitize(request.getParameter("WhereSQL"));
-        String tableName = sanitizer.sanitize(request.getParameter("TableName"));
-        String queryStringParam = sanitizer.sanitize(request.getParameter("QueryString"));
-        String page = sanitizer.sanitize(request.getParameter("Page"));
-        String type = sanitizer.sanitize(request.getParameter("Type"));
+        
+        String whereSQL = request.getParameter("WhereSQL");
+        String tableName = request.getParameter("TableName");
+        String queryStringParam = request.getParameter("QueryString");
+        String page = request.getParameter("Page");
+        String type = request.getParameter("Type");
 
         JspWriterImpl out = new JspWriterImpl(response.getOutputStream());
         HttpSession session = request.getSession();
@@ -82,7 +80,7 @@ public class ResultList_jsp extends HttpServlet {
             PageState state = new PageState(request, response, getServletContext());
 
             // Define other page variables
-            String queryURL = sanitizer.sanitize(request.getParameter("QueryURL"));
+            String queryURL = request.getParameter("QueryURL");
             if (queryURL == null) {
                 queryURL = "simple_query.jsp";
             }
@@ -99,7 +97,7 @@ public class ResultList_jsp extends HttpServlet {
 
             // Add to Folder link
             if (user != null && new FolderUtil(factory).getPersonalFolders(user).size() > 0) {
-                StringBuilder customHTML = new StringBuilder("<form method=\"post\" onsubmit=\"addFeaturesToActionURL(this)\" action=\"result_list.jsp?Page=" + ((sanitizer.sanitize(request.getParameter("Page")) == null) ? "1" : sanitizer.sanitize(request.getParameter("Page"))) + "\" name=\"FolderForm\" style=\"display: inline; margin: 0;\">");
+                StringBuilder customHTML = new StringBuilder("<form method=\"post\" onsubmit=\"addFeaturesToActionURL(this)\" action=\"result_list.jsp?Page=" + ((request.getParameter("Page") == null) ? "1" : request.getParameter("Page")) + "\" name=\"FolderForm\" style=\"display: inline; margin: 0;\">");
                 customHTML.append("<input type=\"hidden\" name=\"ActionType\" value=\"AddtoFold\" />");
                 customHTML.append("<img src=\"images/blank.gif\" height=\"20\" width=\"10\" alt=\"\" /><select name=\"FoldID\">");
                 customHTML.append("<option value=\"-\">-- Choose --</option>");
@@ -130,8 +128,8 @@ public class ResultList_jsp extends HttpServlet {
 
             // Execute any actions
             String alertText = "";
-            String actionType = sanitizer.sanitize(request.getParameter("ActionType"));
-            String foldId = sanitizer.sanitize(request.getParameter("FoldID"));
+            String actionType = request.getParameter("ActionType");
+            String foldId = request.getParameter("FoldID");
             String[] featureIdsStr = request.getParameterValues("fid");
             if (user != null && actionType != null && foldId != null && actionType.equals("AddtoFold") && !foldId.equals("-") && featureIdsStr != null) {
                 for (int i = 0; i < featureIdsStr.length; i++) {
@@ -141,7 +139,7 @@ public class ResultList_jsp extends HttpServlet {
 
                         if (featureUtil.isAllowedReadFeature(user, feature)) {
                             try {
-                                featureUtil.addToFolder(feature, Integer.parseInt(sanitizer.sanitize(request.getParameter("FoldID"))), user);
+                                featureUtil.addToFolder(feature, Integer.parseInt(request.getParameter("FoldID")), user);
                             } catch (DataInputException e) {
                                 throw new ServletException(e);
                             }
@@ -193,7 +191,7 @@ public class ResultList_jsp extends HttpServlet {
             } else {
                 queryString = queryStringParam;
                 //Account for large number of SAMPLE_IDs provided by polygon filter
-                String idString = sanitizer.sanitize(request.getParameter("idList"));
+                String idString = request.getParameter("idList");
 
                 // Calculate Squirrel Narrow ages.
                 // "From" is always older than "To". This means that (From > To) as the ages are the positive number of years ago.
@@ -570,7 +568,7 @@ public class ResultList_jsp extends HttpServlet {
     }
 
     public Integer paramAsInt(HttpServletRequest req, String paramName) throws ServletException {
-        String s = sanitizer.sanitize(req.getParameter(paramName));
+        String s = req.getParameter(paramName);
         if (null == s || s.trim().isEmpty() || "-".equals(s.trim())) {
             return null;
         }
