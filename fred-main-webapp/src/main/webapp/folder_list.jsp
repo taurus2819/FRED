@@ -126,7 +126,7 @@
                 all versions.</td></tr>
                 <tr class="lightColour">
                     <td colspan="3">
-                        <a href="template.xlsx?CODE=FRED_OUTCROP">
+                        <a href="template.xlsm?CODE=FRED_OUTCROP">
                             <img src="images/excel.gif" style=" vertical-align: middle;" border="0" width="20" height="20" alt="Data entry spreadsheet" />&nbsp;&nbsp;
                             <b>Outcrop Import Spreadsheet</b>
                        </a>
@@ -136,7 +136,7 @@
                 <%--
                 <tr class="lightColour">                
                    <td colspan="3">
-                        <a href="template.xlsx?CODE=FRED_VERTICAL_SECTION">
+                        <a href="template.xlsm?CODE=FRED_VERTICAL_SECTION">
                             <img src="images/excel.gif" style=" vertical-align: middle;" border="0" width="20" height="20" alt="Data entry spreadsheet" />&nbsp;&nbsp;
                             <b>Vertical Section Import Spreadsheet</b>
                        </a>
@@ -144,7 +144,7 @@
                 </tr>--%>
                 <tr class="lightColour">                
                    <td colspan="3">
-                        <a href="template.xlsx?CODE=FRED_DRILL_HOLE">
+                        <a href="template.xlsm?CODE=FRED_DRILL_HOLE">
                             <img src="images/excel.gif" style=" vertical-align: middle;" border="0" width="20" height="20" alt="Data entry spreadsheet" />&nbsp;&nbsp;
                             <b>Drill Hole Import Spreadsheet</b>
                        </a>
@@ -152,7 +152,7 @@
                 </tr>
                 <tr class="lightColour">                
                    <td colspan="3">
-                        <a href="template.xlsx?CODE=FRED_PALEO">
+                        <a href="template.xlsm?CODE=FRED_PALEO">
                             <img src="images/excel.gif" style=" vertical-align: middle;" border="0" width="20" height="20" alt="Data entry spreadsheet" />&nbsp;&nbsp;
                             <b>Paleo Import Spreadsheet</b>
                        </a>

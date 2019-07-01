@@ -138,7 +138,7 @@ public class StratigraphicRelationshipRowProcessor extends RowProcessor {
 
                 int prepId = idFromName(row, prep.get(i));
                 relationship.set("RELATION_TYPE_ID", prepId); // "above" or "below".
-                if (hasValue(mod, i)) {
+                if (hasValue(mod, i)) { 
                     relationship.set("DISTANCE_MOD", mod.get(i).getValueInteger());
                 } else {
                     relationship.set("DISTANCE_MOD", null);

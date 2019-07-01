@@ -93,7 +93,7 @@
     
     <servlet-mapping>
         <servlet-name>template</servlet-name>
-        <url-pattern>/template.xlsx</url-pattern>
+        <url-pattern>/template.xlsm</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>xlsUploader</servlet-name>
