@@ -41,6 +41,9 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
             case "COUNTRY":
                 addCountryColumn(sheet, heading);
                 return true;
+            case "STRAT_UNIT":
+                addStratUnitColumn(sheet, heading);
+                return true;
             case "SAMPLE_RELATIONSHIP_MOD":
             case "STRAT_RELATIONSHIP_MOD":
                 sheet.addDropDownHeader(heading, c, new String[]{"c.", "?"});
@@ -99,6 +102,20 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
             s.addColumn("COUNTRY_CODE");
             s.addColumn("COUNTRY_NAME");
             s.addOrderBy("COUNTRY_NAME");
+            sheet.addDropDownHeader(heading, null, conn, s);
+            sheet.nextColumn(); // this smells bad. Why?
+        } catch (SQLException ex) {
+            throw new MgException(ex);
+        }
+    }
+
+    private void addStratUnitColumn(GenericSpreadsheet sheet, String heading) {
+        Read s;
+        try {
+            s = SchemaSingleton.getInstance(conn).select("SL.STRAT_UNIT");
+            s.addColumn("SU_ID");
+            s.addColumn("SU_NAME_STANDARD");
+            s.addOrderBy("SU_NAME_STANDARD");
             sheet.addDropDownHeader(heading, null, conn, s);
             sheet.nextColumn(); // this smells bad. Why?
         } catch (SQLException ex) {

@@ -457,7 +457,7 @@ insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_
 insert into mg_table (id, code, name) values (mg_table_id_seq.nextval, 'SL.STRAT_UNIT', 'Strat unit');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SL.STRAT_UNIT'), 1, 'SU_ID');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SL.STRAT_UNIT'), 3, 'SU_NAME');
-insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SL.STRAT_UNIT'), 3, 'SU_NAME_STANDARD');
+insert into mg_column (id, mg_table, mg_column_type, code, ORDER_BY_RANK) values (mg_column_id_seq.nextval, (select id from mg_table where code='SL.STRAT_UNIT'), 3, 'SU_NAME_STANDARD', 1);
 
 create table lu_cardinal (
         code varchar(4) not null primary key,
