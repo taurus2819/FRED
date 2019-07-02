@@ -62,6 +62,7 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
                 sheet.nextColumn();
                 return true;
             case "COMPARATOR_USED":
+            case "ABUNDANT":
                 sheet.addDropDownHeader(heading, c, new String[]{"Y", "N"});
                 sheet.nextColumn();
                 return true;
@@ -113,7 +114,6 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
         Read s;
         try {
             s = SchemaSingleton.getInstance(conn).select("SL.STRAT_UNIT");
-            s.addColumn("SU_ID");
             s.addColumn("SU_NAME_STANDARD");
             s.addOrderBy("SU_NAME_STANDARD");
             sheet.addDropDownHeader(heading, null, conn, s);

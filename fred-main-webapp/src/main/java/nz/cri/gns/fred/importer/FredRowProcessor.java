@@ -134,6 +134,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
         insertCollectors(row, update);
         insertStratRelationships(row, update);
+        insertAdditionalFeatures(row, update);
     }
 
     private void findOrCreateSite(Row row, Modify update) throws RowImportException {
@@ -172,7 +173,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
             try {
                 site = SiteUtil.save(site); // Will fail if the site has an ID already. 
             } catch (SiteException ex) {
-                log.log(Level.WARNING, "Site: "+site.toJson().toString(), ex);
+                log.log(Level.WARNING, "Site: " + site.toJson().toString(), ex);
                 throw new RowImportException(row, "NORTHING", "Something failed. " + ex.getMessage(), null);
             }
 
@@ -401,14 +402,12 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
     }
 
-    
-    
     @Override
     public boolean isMultiValue(int columnNum) {
         ImportColumn c = columns.get(columnNum);
         return isMultiValue(c) || super.isMultiValue(columnNum);
     }
-    
+
     public static boolean isMultiValue(ImportColumn c) {
         if (null != c.getCode()) {
             switch (c.getCode()) {
@@ -421,6 +420,8 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 case "STRAT_RELATIONSHIP_DISTANCE":
                 case "STRAT_RELATIONSHIP_PREP":
                 case "STRAT_RELATIONSHIP_STRAT_UNIT":
+                case "ADDITIONAL_FEATURES":
+                case "ABUNDANT":
                     return true;
             }
         }
@@ -526,4 +527,33 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
     }
 
+    private void insertAdditionalFeatures(Row row, Modify update) throws RowImportException {
+        List<RowSingleValue> additionalFeatures = getRowMultiValue(row, "ADDITIONAL_FEATURE");
+        List<RowSingleValue> abundant = getRowMultiValue(row, "ABUNDANT");
+
+        Create c = schema.insert("SEDIMENTARY_FEATURE");
+        try {
+            c.set("SAMPLE_ID", update.get("SAMPLE_ID"));
+        } catch (SQLException ex) {
+            throw new RowImportException(row, "ADDITIONAL_FEATURE", null, ex);
+        }
+
+        for (int i = 0; i < additionalFeatures.size(); i++) {
+            RowSingleValue each = additionalFeatures.get(i);
+            if (null != each && !each.isEmpty()) {
+                c.set("SED_FEATURE_ID", idFromName(each.getValueString(), row, each));
+                RowSingleValue ab = abundant.get(i);
+                if (null != ab && !ab.isEmpty()) {
+                    c.set("ABUNDANT", ab.getValueString());
+                } else {
+                    c.set("ABUNDANT", null);
+                }
+                try {
+                    c.doIt(importConn);
+                } catch (SQLException ex) {
+                    throw new RowImportException(row, each, "Could not insert into SEDIMENTARY_FEATURE", ex);
+                }
+            }
+        }
+    }
 }
