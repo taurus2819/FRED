@@ -528,14 +528,14 @@ public class FredRowProcessor extends TemplateRowProcessor {
     }
 
     private void insertAdditionalFeatures(Row row, Modify update) throws RowImportException {
-        List<RowSingleValue> additionalFeatures = getRowMultiValue(row, "ADDITIONAL_FEATURE");
+        List<RowSingleValue> additionalFeatures = getRowMultiValue(row, "ADDITIONAL_FEATURES");
         List<RowSingleValue> abundant = getRowMultiValue(row, "ABUNDANT");
 
         Create c = schema.insert("SEDIMENTARY_FEATURE");
         try {
             c.set("SAMPLE_ID", update.get("SAMPLE_ID"));
         } catch (SQLException ex) {
-            throw new RowImportException(row, "ADDITIONAL_FEATURE", null, ex);
+            throw new RowImportException(row, "ADDITIONAL_FEATURES", null, ex);
         }
 
         for (int i = 0; i < additionalFeatures.size(); i++) {
