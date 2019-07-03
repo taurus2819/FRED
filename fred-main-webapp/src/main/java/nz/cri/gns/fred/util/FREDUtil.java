@@ -37,6 +37,7 @@ import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.query.FREDQuery;
 import nz.cri.gns.fred.query.FREDRecordQuery;
 import nz.cri.gns.jsp.PageState;
+import nz.cri.gns.xss.SanitizeHttpServletRequest;
 
 public class FREDUtil {
 
@@ -364,7 +365,9 @@ public class FREDUtil {
     public static Set<Person> getPersons(String[] peopleStr, PersonUtil personUtil, String personLabel, boolean addIfNew) throws DataInputException {
         HashSet<Person> personSet = new LinkedHashSet<>();
         ArrayList<String[]> error = new ArrayList<>();
+        SanitizeHttpServletRequest sanitizeHttpRequest = new SanitizeHttpServletRequest();
         for (String personStr : peopleStr) {
+            personStr = sanitizeHttpRequest.stripAllScripts(personStr);
             try {
                 if (personStr.trim().length() == 0) {
                     continue;
@@ -533,5 +536,16 @@ public class FREDUtil {
         list.addAll(set);
         Collections.sort(list);
         return list;
+    }
+    
+    /** 
+     * @param inStr String
+     * @return An empty string if the inStr argument is null else a new string in this format ="inStr" ("=" sign in front)
+     * Reason: Prevents excel converting field name like 13/12 to 13 December
+     *
+     */
+    public static String nvl(String inStr) {
+        //excel will interpret eg: ="13/12" as 13/12 and not 13 Dec
+        return (inStr == null) ? "" : "=" + "\"" + inStr + "\"";
     }
 }

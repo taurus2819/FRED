@@ -113,7 +113,7 @@
 				<tr><td class="deHeading">Instructions</td></tr>
 				<tr><td>You may set this data to be <i>Open</i> or <i>Confidential</i>.<%
 				if (palListAudits.size() > 0) {
-					%>  You may set the confidentiality of the taxonomic lists seperately.<%
+					%>  You may set the confidentiality of the taxonomic lists separately.<%
 				}
 				%><ul>
 				<li>If set to <i>Open</i> any registered user will be able to view the data (after it has been submitted/approved).</li>

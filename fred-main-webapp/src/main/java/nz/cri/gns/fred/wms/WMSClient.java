@@ -32,14 +32,26 @@ public class WMSClient {
     public static URL generateMapURL(double xCentre, double yCentre, int distance, int width, int height, String layers) {
         String serverURL = null;
         String srs = null;
+        String bbox = null;
         try {
+            double aspectRatio = 4.0 / 3;
+            double stretch = distance;
+            double xShift = stretch * aspectRatio;
+            double yShift = stretch;
+            
+            // This is back to front because stupid ESRI
+            bbox = "&bbox=" + (yCentre - yShift) + "," + (xCentre - xShift) + "," 
+                    + (yCentre + yShift) + "," + (xCentre + xShift);
+            
             if (layers.contains("topo50")) {
                 serverURL = getArcGIS() + "/services/basemaps/topo50/ImageServer/WmsServer";
-                srs="&crs=EPSG:27200";
+                srs="&crs=EPSG:2193";
             } else if (layers.contains("topo250")) {
                 serverURL = getArcGIS() + "/services/basemaps/topo250/ImageServer/WmsServer";
-                srs="&crs=EPSG:27200";
+                srs="&crs=EPSG:2193";
             } else {
+                bbox = "&bbox=" + (xCentre - xShift) + "," + (yCentre - yShift) + "," 
+                    + (xCentre + xShift) + "," + (yCentre + yShift);
                 serverURL = getWMS();
                 srs="&srs=EPSG:27200";
             }
@@ -47,13 +59,8 @@ public class WMSClient {
             String layer = "&layers=" + layers;
             String other = "&format=image/png";
 
-            double aspectRatio = 4.0 / 3;
-            double stretch = distance;
-            double xShift = stretch * aspectRatio;
-            double yShift = stretch;
+            
 
-            String bbox = "&bbox=" + (xCentre - xShift) + "," + (yCentre - yShift) + "," 
-                    + (xCentre + xShift) + "," + (yCentre + yShift);
 
             return new URL(serverURL + wmsops+ layer + "&width=" + width + "&height=" + height + srs + other + bbox);
         } catch (MalformedURLException ex) {

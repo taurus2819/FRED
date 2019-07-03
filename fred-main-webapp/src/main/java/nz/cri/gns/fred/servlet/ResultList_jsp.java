@@ -41,11 +41,12 @@ import nz.cri.gns.fred.de.DataInputException;
 import nz.cri.gns.fred.servlet.util.FredHelper;
 import nz.cri.gns.fred.servlet.util.JspWriterImpl;
 import nz.cri.gns.fred.util.StageUtil;
+import nz.cri.gns.xss.SanitizeHttpServletRequest;
 
 public class ResultList_jsp extends HttpServlet {
 
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.servlet.ResultList_jsp");
-
+    
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doGet(req, resp);
@@ -53,7 +54,7 @@ public class ResultList_jsp extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+        
         String whereSQL = request.getParameter("WhereSQL");
         String tableName = request.getParameter("TableName");
         String queryStringParam = request.getParameter("QueryString");
@@ -247,10 +248,16 @@ public class ResultList_jsp extends HttpServlet {
 
                 if (hasSquirrelAge) {
                     // Grumble mumble. We should use parameters here.
-                    sampHqlStr.append(" AND (squirrelAge.narrowBaseAge > ");
-                    sampHqlStr.append(sqNarrowAgeTo);
-                    sampHqlStr.append(") AND (squirrelAge.narrowTopAge < ");
+//                    sampHqlStr.append(" AND (squirrelAge.narrowBaseAge > ");
+//                    sampHqlStr.append(sqNarrowAgeTo);
+//                    sampHqlStr.append(") AND (squirrelAge.narrowTopAge < ");
+//                    sampHqlStr.append(sqNarrowAgeFrom);
+
+                    sampHqlStr.append(" AND (squirrelAge.narrowBaseAge <= ");
                     sampHqlStr.append(sqNarrowAgeFrom);
+                    sampHqlStr.append(") AND (squirrelAge.narrowTopAge >= ");
+                    sampHqlStr.append(sqNarrowAgeTo);
+
                     sampHqlStr.append(") AND (squirrelAge.wideBaseAge > ");
                     sampHqlStr.append(sqWideAgeTo);
                     sampHqlStr.append(") AND (squirrelAge.wideTopAge < ");

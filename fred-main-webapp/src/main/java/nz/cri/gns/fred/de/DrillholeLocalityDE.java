@@ -18,6 +18,7 @@ import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.PersonUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.intranet.Template;
+import nz.cri.gns.xss.SanitizeHttpServletRequest;
 
 public class DrillholeLocalityDE extends LocalityDE {
 
@@ -59,12 +60,13 @@ public class DrillholeLocalityDE extends LocalityDE {
 
     @Override
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
+        SanitizeHttpServletRequest sanitizeHttpRequest = new SanitizeHttpServletRequest();
         super.updateFromRequest(request, factory, addIfNew);
 
         String[] error = null;
 
         //Operator
-        String operator = request.getParameter("Person").trim();
+        String operator = sanitizeHttpRequest.stripAllScripts(request.getParameter("Person")).trim();
         //Will always be a company
         if (operator.length() == 0) {
             feature.setPerson(null);
@@ -77,7 +79,7 @@ public class DrillholeLocalityDE extends LocalityDE {
         }
 
         try {
-            String startDate = request.getParameter("StartDate");
+            String startDate = sanitizeHttpRequest.stripAllScripts(request.getParameter("StartDate"));
             feature.setStartDate(FREDUtil.parseDateFromDE(startDate));
             feature.setStartDateRounding(FREDUtil.parseDateRoundingFromDE(startDate));
         } catch (ParseException e) {
@@ -85,23 +87,23 @@ public class DrillholeLocalityDE extends LocalityDE {
         }
 
         try {
-            String finishDate = request.getParameter("FinishDate");
+            String finishDate = sanitizeHttpRequest.stripAllScripts(request.getParameter("FinishDate"));
             feature.setFinishDate(FREDUtil.parseDateFromDE(finishDate));
             feature.setFinishDateRounding(FREDUtil.parseDateRoundingFromDE(finishDate));
         } catch (ParseException e) {
             error = new String[]{"Start Date", "Badly formatted date"};
         }
 
-        feature.setDrillholeLicenceName(request.getParameter("LicArea"));
+        feature.setDrillholeLicenceName(sanitizeHttpRequest.stripAllScripts(request.getParameter("LicArea")));
 
-        String datumType = request.getParameter("DatumType");
+        String datumType = sanitizeHttpRequest.stripAllScripts(request.getParameter("DatumType"));
         if (datumType.equals("-")) {
             feature.setDatumType(null);
         } else {
             feature.setDatumType(datumType);
         }
 
-        String datumElevation = request.getParameter("DatumEl").trim();
+        String datumElevation = sanitizeHttpRequest.stripAllScripts(request.getParameter("DatumEl")).trim();
         if (datumElevation.length() == 0) {
             feature.setDatumElevation(null);
         } else {
@@ -114,21 +116,21 @@ public class DrillholeLocalityDE extends LocalityDE {
 
         Double startDepth = null;
         Double finishDepth = null;
-        if (request.getParameter("StartDepth").length() > 0) {
+        if (sanitizeHttpRequest.stripAllScripts(request.getParameter("StartDepth")).length() > 0) {
             try {
-                startDepth = new Double(request.getParameter("StartDepth").trim());
+                startDepth = new Double(sanitizeHttpRequest.stripAllScripts(request.getParameter("StartDepth")).trim());
             } catch (NumberFormatException e) {
                 error = new String[]{"Kickoff Depth", "Invalid depth entered"};
             }
         }
 
-        if (request.getParameter("FinishDepth").length() > 0) {
+        if (sanitizeHttpRequest.stripAllScripts(request.getParameter("FinishDepth")).length() > 0) {
             try {
-                finishDepth = new Double(request.getParameter("FinishDepth").trim());
+                finishDepth = new Double(sanitizeHttpRequest.stripAllScripts(request.getParameter("FinishDepth")).trim());
             } catch (NumberFormatException e) {
                 error = new String[]{"Termination Depth", "Invalid depth entered"};
             }
-            if (request.getParameter("StartDepth").length() > 0) {
+            if (sanitizeHttpRequest.stripAllScripts(request.getParameter("StartDepth")).length() > 0) {
                 if ("Bottom".equals(feature.getDatumType())) {
                     if (startDepth.doubleValue() < finishDepth.doubleValue()) {
                         error = new String[]{"Depths/Heights", "Top horizon < base horizon and datum = Bottom"};
@@ -143,7 +145,7 @@ public class DrillholeLocalityDE extends LocalityDE {
 
         feature.setStartDepth(startDepth);
         feature.setFinishDepth(finishDepth);
-        String depthUnit = request.getParameter("DepthUnit");
+        String depthUnit = sanitizeHttpRequest.stripAllScripts(request.getParameter("DepthUnit"));
         if ("ft".equals(depthUnit)) {
             feature.setDepthUnit("ft");
         } else {

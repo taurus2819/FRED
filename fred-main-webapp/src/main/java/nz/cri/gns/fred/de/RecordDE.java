@@ -38,6 +38,7 @@ import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.intranet.Template;
 import nz.cri.gns.jsp.IconnedLink;
+import nz.cri.gns.xss.SanitizeHttpServletRequest;
 
 public abstract class RecordDE extends DETemplate implements DataEntryForm {
 
@@ -258,8 +259,9 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
     }
 
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
-        record.getAudit().setWorkingComments(request.getParameter("WorkComm"));
-    }
+            SanitizeHttpServletRequest sanitizeHttpRequest = new SanitizeHttpServletRequest();
+            record.getAudit().setWorkingComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("WorkComm")));
+        }
 
     protected void reinitialise(DAOFactory factory) {
         recordUtil = new RecordUtil(factory);

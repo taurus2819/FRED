@@ -50,6 +50,7 @@ import nz.cri.gns.html.Attributes;
 import nz.cri.gns.html.select.SelectBox;
 import nz.cri.gns.intranet.Template;
 import nz.cri.gns.jsp.IconnedLink;
+import nz.cri.gns.xss.SanitizeHttpServletRequest;
 
 public class SampleDE extends DETemplate implements DataEntryForm {
 
@@ -66,6 +67,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
     private DAOFactory factory;
     private ContentProvider provider;
     private UserFolder workingFolder;
+    protected SanitizeHttpServletRequest sanitizeHttpRequest;
 
     public SampleDE(User user, Feature feature, int folderID, DAOFactory factory, ContentProvider content) throws StorageAccessException, InsufficientPrivelegesException {
         this(user, feature, folderID, factory, content, false);
@@ -88,6 +90,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         this.stageUtil = new StageUtil(factory);
 
         FolderUtil folderUtil = new FolderUtil(factory);
+        sanitizeHttpRequest = new SanitizeHttpServletRequest();
 
         //check status
         if (outcropSample || !sampleUtil.isAllowedReadSample(user, sample)) {
@@ -696,7 +699,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
         //Collection date
         try {
-            String collectionDate = request.getParameter("CollDate");
+            String collectionDate = sanitizeHttpRequest.stripAllScripts(request.getParameter("CollDate"));
             sample.setCollectionDate(FREDUtil.parseDateFromDE(collectionDate));
             sample.setDateRounding(FREDUtil.parseDateRoundingFromDE(collectionDate));
         } catch (ParseException e) {
@@ -709,7 +712,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             String[] collectors = request.getParameterValues("Coll");
             //This is to support the spreadsheet
             if (collectors.length <= 1) {
-                sample.setCollectors(FREDUtil.getPersons(request.getParameter("Coll"), personUtil, "Collectors", addIfNew));
+                sample.setCollectors(FREDUtil.getPersons(sanitizeHttpRequest.stripAllScripts(request.getParameter("Coll")), personUtil, "Collectors", addIfNew));
             } else {
                 sample.setCollectors(FREDUtil.getPersons(collectors, personUtil, "Collectors", false));
             }
@@ -721,7 +724,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         }
 
         //Strat name
-        sample.setStratUnit(request.getParameter("StratName"));
+        sample.setStratUnit(sanitizeHttpRequest.stripAllScripts(request.getParameter("StratName")));
 
         //In place
         String inPlace = request.getParameter("InPlace");
@@ -734,11 +737,12 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         }
 
         //Sent to
-        String sentToParam = request.getParameter("SentTo").trim();
+        String sentToParam = sanitizeHttpRequest.stripAllScripts(request.getParameter("SentTo")).trim();
         HashSet<SentTo> sentToSet = new HashSet<SentTo>();
         if (sentToParam.length() > 0) {
             String[] sentTos = request.getParameter("SentTo").split("\\n");
             for (String sentTo : sentTos) {
+                sentTo = sanitizeHttpRequest.stripAllScripts(sentTo);
                 String[] parts = sentTo.split("\\*");
                 FossilGroup group = (parts[0].length() == 0) ? null : sampleUtil.getFossilGroup(parts[0]);
                 if (parts[0].length() > 0 && group == null) {
@@ -769,8 +773,8 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         }
 
         //Not collected?
-        sample.setNotCollected(request.getParameter("NotColl"));
-        sample.setSignificance(request.getParameter("Sig"));
+        sample.setNotCollected(sanitizeHttpRequest.stripAllScripts(request.getParameter("NotColl")));
+        sample.setSignificance(sanitizeHttpRequest.stripAllScripts(request.getParameter("Sig")));
 
         //Work out the inferred stage
         try {
@@ -808,7 +812,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         FeatureUtil featureUtil = new FeatureUtil(factory);
         if (request.getParameter("PrevSamp").length() > 0) {
             //Go through all the new ones
-            for (String previous : request.getParameter("PrevSamp").split(";")) {
+            for (String previous : sanitizeHttpRequest.stripAllScripts(request.getParameter("PrevSamp")).split(";")) {
                 try {
                     previous = previous.trim();
                     Feature feature = featureUtil.getFeatureWithIdentifyingName(previous);
@@ -846,7 +850,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         //Next up - sample relationships
         if (request.getParameter("SampRel").length() > 0) {
             //Go through each entered relationship
-            for (String relationshipDesc : request.getParameter("SampRel").split("\\n")) {
+            for (String relationshipDesc : sanitizeHttpRequest.stripAllScripts(request.getParameter("SampRel")).split("\\n")) {
                 try {
                     Relationship newRelationship = sampleUtil.decodeSampleRelationshipDescription(relationshipDesc);
                     newRelationship.setSample(sample);
@@ -883,7 +887,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         //Lastly - strat relationships
         if (request.getParameter("StratRel").length() > 0) {
             //Go through each entered relationship
-            for (String relationshipDesc : request.getParameter("StratRel").split("\\n")) {
+            for (String relationshipDesc : sanitizeHttpRequest.stripAllScripts(request.getParameter("StratRel")).split("\\n")) {
                 Relationship newRelationship = sampleUtil.decodeStratigraphicRelationshipDescription(relationshipDesc);
                 newRelationship.setSample(sample);
                 boolean found = false;
@@ -912,10 +916,10 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         }
 
         //Column map
-        sample.setColumnMap(request.getParameter("ColMap"));
+        sample.setColumnMap(sanitizeHttpRequest.stripAllScripts(request.getParameter("ColMap")));
 
         //Dip
-        String dip = request.getParameter("Dip");
+        String dip = sanitizeHttpRequest.stripAllScripts(request.getParameter("Dip"));
         if (dip.length() == 0) {
             sample.setDip(null);
         } else {
@@ -931,7 +935,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         }
 
         //Dip Direction
-        String dipDir = request.getParameter("DipDir");
+        String dipDir = sanitizeHttpRequest.stripAllScripts(request.getParameter("DipDir"));
         if (dipDir.length() == 0) {
             sample.setDipDirection(null);
         } else if (dipDir.equals("N") || dipDir.equals("NE") || dipDir.equals("E") || dipDir.equals("SE") || dipDir.equals("S") || dipDir.equals("SW") || dipDir.equals("W") || dipDir.equals("NW")) {
@@ -941,7 +945,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         }
 
         //Strike
-        String strike = request.getParameter("Strike");
+        String strike = sanitizeHttpRequest.stripAllScripts(request.getParameter("Strike"));
         if (strike.length() == 0) {
             sample.setStrike(null);
         } else {
@@ -956,7 +960,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             }
         }
 
-        String facing = request.getParameter("Facing");
+        String facing = sanitizeHttpRequest.stripAllScripts(request.getParameter("Facing"));
         if (facing.length() == 0) {
             sample.setFacing(null);
         } else if (facing.equals("Normal") || facing.equals("Overturned")) {
@@ -1015,7 +1019,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             sedFeatures = new HashSet<SedimentaryFeature>();
             sample.setSedimentaryFeatures(sedFeatures);
         }
-        String sf = request.getParameter("SedFeat");
+        String sf = sanitizeHttpRequest.stripAllScripts(request.getParameter("SedFeat"));
         if (sf.length() > 0) {
             HashSet<SedimentaryFeature> newFeatures = new HashSet<SedimentaryFeature>(sedFeatures.size());
             for (String sedFeature : sf.split(";")) {
@@ -1057,11 +1061,11 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
         //DepositionalEnvironment
         StringBuilder depEnv = new StringBuilder();
-        String depEnv1 = request.getParameter("DepEnv1").trim();
+        String depEnv1 = sanitizeHttpRequest.stripAllScripts(request.getParameter("DepEnv1")).trim();
         if (depEnv1 == null || depEnv1.length() == 0) {
-            depEnv1 = getDepositionalEnvironmentMarineOrNot(request.getParameter("DepEnv2"));
+            depEnv1 = getDepositionalEnvironmentMarineOrNot(sanitizeHttpRequest.stripAllScripts(request.getParameter("DepEnv2")));
         }
-        String depEnv2 = getDepositionalEnvironmentFreeText(request.getParameter("DepEnv2"));
+        String depEnv2 = getDepositionalEnvironmentFreeText(sanitizeHttpRequest.stripAllScripts(request.getParameter("DepEnv2")));
         if (depEnv1 != null) {
             depEnv.append(depEnv1);
         }
@@ -1074,12 +1078,12 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         sample.setDepositionEnv(depEnv.toString());
 
         //Rock nature
-        sample.setRockNature(request.getParameter("RockNat"));
-        sample.setCorrespondence(request.getParameter("Corr"));
+        sample.setRockNature(sanitizeHttpRequest.stripAllScripts(request.getParameter("RockNat")));
+        sample.setCorrespondence(sanitizeHttpRequest.stripAllScripts(request.getParameter("Corr")));
 
         //@TODO Confidential
         Audit audit = sample.getAudit();
-        String confidString = request.getParameter("Confid");
+        String confidString = sanitizeHttpRequest.stripAllScripts(request.getParameter("Confid"));
         audit.processAuditString(confidString, factory, user);
 
         if (error.size() > 0) {
