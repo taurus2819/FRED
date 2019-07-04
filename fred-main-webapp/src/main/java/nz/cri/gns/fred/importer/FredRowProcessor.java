@@ -529,7 +529,11 @@ public class FredRowProcessor extends TemplateRowProcessor {
 
     private void insertAdditionalFeatures(Row row, Modify update) throws RowImportException {
         List<RowSingleValue> additionalFeatures = getRowMultiValue(row, "ADDITIONAL_FEATURES");
-        List<RowSingleValue> abundant = getRowMultiValue(row, "ABUNDANT");
+        List<RowSingleValue> abundant = null;
+
+        if (hasRowValue(row, "ABUNDANT")) {
+            abundant = getRowMultiValue(row, "ABUNDANT");
+        }
 
         Create c = schema.insert("SEDIMENTARY_FEATURE");
         try {
@@ -542,12 +546,16 @@ public class FredRowProcessor extends TemplateRowProcessor {
             RowSingleValue each = additionalFeatures.get(i);
             if (null != each && !each.isEmpty()) {
                 c.set("SED_FEATURE_ID", idFromName(each.getValueString(), row, each));
-                RowSingleValue ab = abundant.get(i);
-                if (null != ab && !ab.isEmpty()) {
-                    c.set("ABUNDANT", ab.getValueString());
-                } else {
-                    c.set("ABUNDANT", null);
+
+                if (null != abundant) {
+                    RowSingleValue ab = abundant.get(i);
+                    if (null != ab && !ab.isEmpty()) {
+                        c.set("ABUNDANT", ab.getValueString());
+                    } else {
+                        c.set("ABUNDANT", null);
+                    }
                 }
+
                 try {
                     c.doIt(importConn);
                 } catch (SQLException ex) {
