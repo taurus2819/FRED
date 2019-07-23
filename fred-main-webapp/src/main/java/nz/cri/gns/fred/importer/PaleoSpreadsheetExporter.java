@@ -6,12 +6,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
+import nz.cri.gns.auth.domain.User;
 import nz.cri.gns.dataaccess.StorageAccessException;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.DrillType;
 import nz.cri.gns.fred.model.Lab;
 import nz.cri.gns.fred.model.TaxonomicGroup;
+import nz.cri.gns.fred.model.UserFolder;
+import nz.cri.gns.fred.util.FolderUtil;
 import nz.cri.gns.fred.util.RecordUtil;
 import nz.cri.gns.fred.util.SampleUtil;
 import nz.cri.gns.fred.util.StageUtil;
@@ -29,10 +32,12 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
 
     private final DAOFactory factory;
     private static final String SHEETNAME = "Paleo";
+    private final User user;
 
-    public PaleoSpreadsheetExporter(Connection conn, String code, String name, DAOFactory factory) throws IOException {
+    public PaleoSpreadsheetExporter(Connection conn, String code, String name, DAOFactory factory, User user) throws IOException {
         super(conn, code, name);
         this.factory = factory;
+        this.user = user;
     }
 
     /**
@@ -54,6 +59,9 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             SheetIterator to;
             s.setOutputStream(o);
 
+            FolderUtil folderUtil = new FolderUtil(factory);
+            String folderList = s.addList("Folders", folderUtil.getPersonalFolders(user).stream().map(UserFolder::getFolderName).collect(Collectors.toList()));
+            
             TaxonomicUtil taxUtil = new TaxonomicUtil(factory);
             List<TaxonomicGroup> groups;
             groups = taxUtil.getTaxonomicGroups();
@@ -70,10 +78,11 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
 
             RecordUtil recordUtil = new RecordUtil(factory);
             String labList = s.addList("Laboratories", recordUtil.getLabs().stream().map(Lab::getDisplayName).collect(Collectors.toList()));
-
+            
             s.addSheet(SHEETNAME, it);
 
             // Leave a blank row for "headings".
+            addCellsAcross("Folder", folderList, it, "Choose one of your folders.");
             addTextCellsAcross("Locality", it, "Choose a locality.");
 
             String sampleTypeList = s.addList("Sample Type", sampleUtil.getDrillTypes().stream().map(DrillType::getName).collect(Collectors.toList()));

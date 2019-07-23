@@ -48,29 +48,31 @@ import nz.cri.gns.munginator.upload.stagingarea.RowValue;
 public class PaleoRowProcessor extends RowProcessor {
 
     Map<Integer, Record> paleoMatrix; // Map column num -> Record.
+    Map<Integer, String> folderNameMatrix; // Map column num  -> Folder name
     Map<Integer, String> localityNameMatrix; // Map column num  -> Locality name.
     Map<Integer, BigDecimal> topDepthMatrix; // Map column num -> top depth
     Map<Integer, BigDecimal> bottomDepthMatrix; // Map column  num -> bottom depth.
     Map<Integer, String> sampleTypeMatrix; // Map column num -> sample type.
 
     // These are the rows in the spreadsheet.
-    private static final int ROW_LOCALITY = 1;
-    private static final int ROW_TOP_DEPTH = 2;
-    private static final int ROW_BOTTOM_DEPTH = 3;
-    private static final int ROW_SAMPLE_TYPE = 4;
+    private static final int ROW_FOLDER = 1;
+    private static final int ROW_LOCALITY = 2;
+    private static final int ROW_TOP_DEPTH = 3;
+    private static final int ROW_BOTTOM_DEPTH = 4;
+    private static final int ROW_SAMPLE_TYPE = 5;
 
-    private static final int ROW_ID_DATE = 5;
-    private static final int ROW_DATE_ROUNDING = 6;
-    private static final int ROW_IDENTIFIER = 7;
-    private static final int ROW_START_STAGE = 8;
-    private static final int ROW_START_MOD = 9;
-    private static final int ROW_STOP_STAGE = 10;
-    private static final int ROW_STOP_MOD = 11;
-    private static final int ROW_STAGE_COMMENT = 12;
-    private static final int ROW_LABORATORY = 13;
-    private static final int ROW_LAB_NUMBER = 14;
-    private static final int ROW_COLLECTION_COMMENTS = 15;
-    private static final int ROW_MATRIX_START = 16;
+    private static final int ROW_ID_DATE = 6;
+    private static final int ROW_DATE_ROUNDING = 7;
+    private static final int ROW_IDENTIFIER = 8;
+    private static final int ROW_START_STAGE = 9;
+    private static final int ROW_START_MOD = 10;
+    private static final int ROW_STOP_STAGE = 11;
+    private static final int ROW_STOP_MOD = 12;
+    private static final int ROW_STAGE_COMMENT = 13;
+    private static final int ROW_LABORATORY = 14;
+    private static final int ROW_LAB_NUMBER = 15;
+    private static final int ROW_COLLECTION_COMMENTS = 16;
+    private static final int ROW_MATRIX_START = 17;
     private final FredDAO fredDAO;
     private final TaxonomicUtil taxonUtil;
     private final PersonUtil personUtil;
@@ -84,6 +86,7 @@ public class PaleoRowProcessor extends RowProcessor {
         super(code);
         this.user = user;
         this.paleoMatrix = paleoMatrix;
+        this.folderNameMatrix = new Hashtable<>();
         this.localityNameMatrix = new Hashtable<>();
         this.topDepthMatrix = new Hashtable<>();
         this.bottomDepthMatrix = new Hashtable<>();
@@ -126,6 +129,12 @@ public class PaleoRowProcessor extends RowProcessor {
             if (each.getColumnNum() >= 2) {
                 if (rowNum < ROW_MATRIX_START) {
                     switch (rowNum) {
+                        case ROW_FOLDER:
+                            if (v.isEmpty()) {
+                                throw new RowImportException(row, v, "You need to choose a folder.");
+                            }
+                            folderNameMatrix.put(v.getColumnNum(), v.getValueString());
+                            break;
                         case ROW_LOCALITY:
                             if (v.isEmpty()) {
                                 throw new RowImportException(row, v, "The locality is missing here.");
@@ -411,11 +420,16 @@ public class PaleoRowProcessor extends RowProcessor {
 
         UserFolder folder;
         try {
-            folder = folderUtil.getPersonalFolders(user).get(0);
+            String folderName = folderNameMatrix.get(columnNum);
+            folder = folderUtil
+                    .getPersonalFolders(user)
+                    .stream()
+                    .filter(each -> each.getFolderName().equals(folderName))
+                    .findFirst()
+                    .orElseThrow(()->new RowImportException(row, (RowValue)null, "Cannot find this folder."));
         } catch (StorageAccessException ex) {
             throw new RowImportException(row, (RowValue)null, "Can't get a folder because: "+ex.getMessage(), ex);
         }
-        warn("TODO: I don't know which folder to use. Putting everything in " + folder.getFolder().getName());
 
         createRecord(columnNum, sample, folder.getFolder().getFolderId(), user);
     }

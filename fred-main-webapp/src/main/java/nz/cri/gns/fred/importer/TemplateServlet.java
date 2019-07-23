@@ -41,7 +41,7 @@ public class TemplateServlet extends HttpServlet {
 
                 SpreadsheetExporter ss;
                 if ("FRED_PALEO".equals(templateCode)) {
-                    ss = new PaleoSpreadsheetExporter(conn, templateCode, "Paleontological Analysis", factory);
+                    ss = new PaleoSpreadsheetExporter(conn, templateCode, "Paleontological Analysis", factory, user);
                 } else {
                     ss = new SpreadsheetExporter(conn, templateCode, null, null, SpreadsheetExporter.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn, user));
                 }
@@ -51,7 +51,7 @@ public class TemplateServlet extends HttpServlet {
             // Now do it for real.
             SpreadsheetExporter ss;
             if ("FRED_PALEO".equals(templateCode)) {
-                ss = new PaleoSpreadsheetExporter(conn, templateCode, "Paleontological Analysis", factory);
+                ss = new PaleoSpreadsheetExporter(conn, templateCode, "Paleontological Analysis", factory, user);
             } else {
                 ss = new SpreadsheetExporter(conn, templateCode, null, null, SpreadsheetExporter.Filetype.XLSX, new FredCustomExportSpreadsheetHandler(conn, user));
             }
