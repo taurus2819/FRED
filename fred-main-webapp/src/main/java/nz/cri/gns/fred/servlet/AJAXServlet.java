@@ -138,7 +138,7 @@ public class AJAXServlet extends HttpServlet {
                     @Override
                     public void process(Type type, HttpServletRequest request, PrintWriter out) throws ServletException, IOException, StorageAccessException, DataInputException {
                         SanitizeHttpServletRequest sanitizeHttpRequest = new SanitizeHttpServletRequest();
-                        String name = sanitizeHttpRequest.stripAllScripts(request.getParameter("name").trim());
+                        String name = /*sanitizeHttpRequest.stripAllScripts(*/request.getParameter("name").trim()/*)*/;
                         String status = "";
                         String moreData = null;
                         switch (type) {

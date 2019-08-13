@@ -168,6 +168,7 @@
         }
 
         function addTaxa(group, taxaName, author, comments) {
+        console.log(taxaName)
             var xmlDoc = sjaxXML("ajaxSupport.xml?action=Confirm&type=TaxonomicName&name=" + trim(taxaName) + "&TaxonomicGroup=" + trim(group));
             var taxaNode = xmlDoc.getElementsByTagName("TaxonomicName")[0];
             if (undefined===taxaNode) {

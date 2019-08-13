@@ -219,12 +219,15 @@ public class TaxonomicUtil extends ModelUtil {
 
     private static String cleanNoDot(String taxaName, String checkString) {
     	taxaName = cleanTaxaName(taxaName, " " + checkString + " ");
+        System.out.println(taxaName);
     	//check end of string
-    	if (taxaName.lastIndexOf(" " + checkString) == taxaName.length() - checkString.length() - 1)
+    	if (taxaName.lastIndexOf(" " + checkString) == taxaName.length() - checkString.length() - 1) {
     		taxaName = taxaName.substring(0, taxaName.lastIndexOf(" et")).trim();
+        }
     	//check beginning of string
-    	if (taxaName.indexOf(checkString + " ") == 0)
-    		taxaName = taxaName.substring(checkString.length() + 1, taxaName.length()).trim();
+    	if (taxaName.indexOf(checkString + " ") == 0) {
+            taxaName = taxaName.substring(checkString.length() + 1, taxaName.length()).trim();
+        }
     	return taxaName;
     }
     

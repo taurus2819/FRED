@@ -116,7 +116,7 @@ public class PaleontologyRecordDE extends RecordDE {
 
         //Taxa
         badTaxaList = new HashSet<>();
-        String taxa = sanitizeHttpRequest.stripAllScripts(request.getParameter("Taxa"));
+        String taxa = /*sanitizeHttpRequest.stripAllScripts(*/request.getParameter("Taxa")/*)*/;
         if (taxa != null) {
             dealWithTaxa(taxa.split("\\n"), pal, error);
         } else {
