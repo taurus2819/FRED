@@ -13,6 +13,7 @@ import nz.cri.gns.fred.model.Folder;
 import nz.cri.gns.fred.model.Record;
 import nz.cri.gns.fred.model.Sample;
 import nz.cri.gns.fred.model.UserView;
+import org.apache.commons.lang.ObjectUtils;
 
 public class AuditTable implements Serializable, Audit {
 
@@ -379,7 +380,19 @@ public class AuditTable implements Serializable, Audit {
         this.confidGroups = confidGroups;
     }
 
+    @Override
     public int compareTo(Audit arg0) {
+        Object one = submittedDate;
+        Object two = arg0.getSubmittedDate();
+        
+        if (one==null && two!=null) {
+            return -1;
+        } else if (one==null && two==null) {
+            return 0;
+        } else if (one!=null && two==null) {
+            return 1;
+        } else {
             return submittedDate.compareTo(arg0.getSubmittedDate());
+        }
     }
 }
