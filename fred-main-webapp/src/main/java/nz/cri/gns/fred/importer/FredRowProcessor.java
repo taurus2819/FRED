@@ -78,6 +78,8 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 update.set("FEATURE_ID$FEATURE_TYPE", "Outcrop");
                 update.set("FEATURE_ID$FEATURE_NAME", featureName);
                 update.set("FEATURE_ID$FIELD_NUMBER", featureName);
+                update.set("FEATURE_ID$ORIG_COORD", getOrigCoords(row));
+                update.set("FEATURE_ID$ORIG_SYSTEM_ID", idFromName(row, "ORIG_SYSTEM_ID"));
                 findOrCreateSite(row, update);
                 break;
             case "VERTICAL_SECTION":
@@ -187,6 +189,10 @@ public class FredRowProcessor extends TemplateRowProcessor {
         update.set("FEATURE_ID$SITE_ID", site.getId());
     }
 
+    private String getOrigCoords(Row row) throws RowImportException {
+      return  getRowValueString(row, "EASTING") + "|" + getRowValueString(row, "NORTHING");  
+    }
+    
     private void checkDatumCode(Row row) throws RowImportException {
         Connection conn = null;
         try {
