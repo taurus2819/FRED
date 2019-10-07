@@ -97,6 +97,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
 
     private void createAudit(Row row, Modify update) throws RowImportException {
         Integer folderId = idFromName(row, "FOLDER");
+        checkFolderIsValid(row, folderId);
 
         Create c = schema.insert("AUDIT_TABLE");
         c.set("WORKING_FOLDER_ID", folderId);
@@ -125,6 +126,21 @@ public class FredRowProcessor extends TemplateRowProcessor {
 
         update.set("AUDIT_ID", auditId);
         update.set("FEATURE_ID$AUDIT_ID", auditId);
+    }
+
+    private void checkFolderIsValid(Row row, Integer folderId) throws RowImportException {
+        Read s = schema.getTable("FOLDER").select();
+        s.addWhere("FOLDER_ID", folderId);
+        try {
+            s.doIt(importConn);
+            if (!s.next()) {
+                throw new RowImportException(row, "FOLDER", "This is not a valid Folder ID", null);
+            }
+        } catch (SQLException e) {
+            throw new RowImportException(row, "FOLDER", null, e);
+        } finally {
+            s.close();
+        }
     }
 
     @Override
@@ -190,9 +206,9 @@ public class FredRowProcessor extends TemplateRowProcessor {
     }
 
     private String getOrigCoords(Row row) throws RowImportException {
-      return  getRowValueString(row, "EASTING") + "|" + getRowValueString(row, "NORTHING");  
+        return getRowValueString(row, "EASTING") + "|" + getRowValueString(row, "NORTHING");
     }
-    
+
     private void checkDatumCode(Row row) throws RowImportException {
         Connection conn = null;
         try {
@@ -541,16 +557,20 @@ public class FredRowProcessor extends TemplateRowProcessor {
             abundant = getRowMultiValue(row, "ABUNDANT");
         }
 
-        Create c = schema.insert("SEDIMENTARY_FEATURE");
-        try {
-            c.set("SAMPLE_ID", update.get("SAMPLE_ID"));
-        } catch (SQLException ex) {
-            throw new RowImportException(row, "ADDITIONAL_FEATURES", null, ex);
-        }
+        Create c = null; // Created lazily to prevent warnings about it not being used (In Create>>finalize()).
 
         for (int i = 0; i < additionalFeatures.size(); i++) {
             RowSingleValue each = additionalFeatures.get(i);
             if (null != each && !each.isEmpty()) {
+                if (null == c) { // Create c lazily.
+                    c = schema.insert("SEDIMENTARY_FEATURE");
+                    try {
+                        c.set("SAMPLE_ID", update.get("SAMPLE_ID"));
+                    } catch (SQLException ex) {
+                        throw new RowImportException(row, "ADDITIONAL_FEATURES", null, ex);
+                    }
+                }
+
                 c.set("SED_FEATURE_ID", idFromName(each.getValueString(), row, each));
 
                 if (null != abundant) {
