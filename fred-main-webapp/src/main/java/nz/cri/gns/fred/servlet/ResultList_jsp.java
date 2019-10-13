@@ -560,7 +560,7 @@ public class ResultList_jsp extends HttpServlet {
             out.write("<p>An error occurred:</p><p> ");
             out.write(new Date().toString());
             out.write("</p><p>");
-            out.write(e.getMessage());
+            out.write("Please try refining and submitting the search again"); //e.getMessage());
             out.write("</p>");
         } finally {
             out.flush();
