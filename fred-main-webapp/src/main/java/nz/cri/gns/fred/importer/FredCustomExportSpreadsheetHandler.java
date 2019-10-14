@@ -50,11 +50,11 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
                 sheet.nextColumn();
                 return true;
             case "SAMPLE_RELATIONSHIP_PREP":
-                sheet.addDropDownHeader(heading, c, new String[]{"above / 232", "below / 233"});
+                sheet.addDropDownHeader(heading, c, new String[]{"above", "below"});
                 sheet.nextColumn();
                 return true;
             case "STRAT_RELATIONSHIP_PREP":
-                sheet.addDropDownHeader(heading, c, new String[]{"above top / 236", "above base / 237", "below top / 238", "below base / 239"});
+                sheet.addDropDownHeader(heading, c, new String[]{"above top", "above base", "below top", "below base"});
                 sheet.nextColumn();
                 return true;
             case "INFERRED_ENVIRONMENT":
@@ -128,7 +128,7 @@ public class FredCustomExportSpreadsheetHandler implements CustomExportSpreadshe
         try {
             factory = FredHibernate.get().getDAOFactory();
             List<UserFolder> folders = new FolderUtil(factory).getPersonalFolders(user);
-            List<String> columnValues = folders.stream().map(folder -> folder.getFolderName() + " / " + folder.getFolderId()).collect(Collectors.toList());
+            List<String> columnValues = folders.stream().map(folder -> folder.getFolderName()).collect(Collectors.toList());
             sheet.addDropDownHeader(heading, null, columnValues);
             sheet.nextColumn();
         } catch (StorageAccessException e) {

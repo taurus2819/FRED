@@ -79,7 +79,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 update.set("FEATURE_ID$FEATURE_NAME", featureName);
                 update.set("FEATURE_ID$FIELD_NUMBER", featureName);
                 update.set("FEATURE_ID$ORIG_COORD", getOrigCoords(row));
-                update.set("FEATURE_ID$ORIG_SYSTEM_ID", idFromName(row, "ORIG_SYSTEM_ID"));
+                update.set("FEATURE_ID$ORIG_SYSTEM_ID$NAME", getRowValueString(row, "ORIG_SYSTEM_ID"));
                 findOrCreateSite(row, update);
                 break;
             case "VERTICAL_SECTION":
@@ -96,8 +96,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
     }
 
     private void createAudit(Row row, Modify update) throws RowImportException {
-        Integer folderId = idFromName(row, "FOLDER");
-        checkFolderIsValid(row, folderId);
+        Integer folderId = findFolderId(row, "FOLDER");
 
         Create c = schema.insert("AUDIT_TABLE");
         c.set("WORKING_FOLDER_ID", folderId);
@@ -128,31 +127,60 @@ public class FredRowProcessor extends TemplateRowProcessor {
         update.set("FEATURE_ID$AUDIT_ID", auditId);
     }
 
-    private void checkFolderIsValid(Row row, Integer folderId) throws RowImportException {
-        Read s = schema.getTable("FOLDER").select();
-        s.addWhere("FOLDER_ID", folderId);
-        try {
+    private Integer findFolderId(Row row, String code) throws RowImportException {
+        String folderName = getRowValueString(row, code);
+
+        try (Read s = schema.getTable("FOLDER").select()) {
+            s.addColumn("FOLDER_ID");
+            s.addWhere("NAME", folderName);
             s.doIt(importConn);
             if (!s.next()) {
                 throw new RowImportException(row, "FOLDER", "This is not a valid Folder ID", null);
             }
+            return s.getInteger("FOLDER_ID");
         } catch (SQLException e) {
             throw new RowImportException(row, "FOLDER", null, e);
-        } finally {
-            s.close();
         }
     }
 
     @Override
     protected void afterPerformRow(Row row, Modify update) throws RowImportException {
-        try {
-            rowToSampleId.put(row.getRowNum(), (Integer) update.get("SAMPLE_ID"));
-        } catch (SQLException ex) {
-            throw new RowImportException(row, (RowValue) null, null, ex);
-        }
+        rowToSampleId.put(row.getRowNum(), (Integer) update.get("SAMPLE_ID"));
         insertCollectors(row, update);
         insertStratRelationships(row, update);
         insertAdditionalFeatures(row, update);
+    }
+
+    private String findCountryId(Row row, String code) throws RowImportException {
+        String name = getRowValueString(row, code);
+
+        try (Read s = schema.getTable("COUNTRY").select()) {
+            s.addColumn("COUNTRY_CODE");
+            s.addWhere("COUNTRY_NAME", name);
+            s.doIt(importConn);
+            if (!s.next()) {
+                throw new RowImportException(row, code, "This is not a valid country", null);
+            }
+            return s.getString("COUNTRY_CODE");
+        } catch (SQLException e) {
+            throw new RowImportException(row, code, null, e);
+        }
+    }
+
+    private Integer findOrigSystemId(Row row, String code) throws RowImportException {
+        String name = getRowValueString(row, code);
+
+        try (Read s = schema.getTable("LU_COORD_SYSTEM").select()) {
+            s.addColumn("ORIG_SYSTEM_ID");
+            s.addWhere("NAME", name);
+            s.doIt(importConn);
+            if (!s.next()) {
+                throw new RowImportException(row, code, "This is not a valid system.", null);
+            }
+            return s.getInteger("ORIG_SYSTEM_ID");
+        } catch (SQLException e) {
+            throw new RowImportException(row, code, null, e);
+        }
     }
 
     private void findOrCreateSite(Row row, Modify update) throws RowImportException {
@@ -160,13 +188,14 @@ public class FredRowProcessor extends TemplateRowProcessor {
 
         // TODO: origCoords has a particular format.
         String origCoords = getRowValueString(row, "NORTHING") + "|" + getRowValueString(row, "EASTING");
-        String countryCode = idAsStringFromName(row, "COUNTRY");
+        String countryCode = findCountryId(row, "COUNTRY");
+        Integer origSystemId = findOrigSystemId(row, "ORIG_SYSTEM_ID");
 
         log("Searching for site... please wait...");
         SiteRecord site = SiteUtil.findOrMakeSiteInstance(
                 error,
                 getRowValueString(row, "FEATURE_NAME"),
-                idFromName(row, "ORIG_SYSTEM_ID"),
+                origSystemId,
                 origCoords,
                 null,
                 getRowValueString(row, "EASTING"),
@@ -213,7 +242,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
         Connection conn = null;
         try {
             conn = FREDUtil.getConnection();
-            Integer datumId = idFromName(row, "ORIG_SYSTEM_ID");
+            Integer datumId = findOrigSystemId(row, "ORIG_SYSTEM_ID");
             if (null == datumId) {
                 throw new RowImportException(row, "ORIG_SYSTEM_ID", "This cell needs a value.", null);
             }
@@ -328,7 +357,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
                             throw new NullPointerException("");
                         }
                     } else {
-                        personId = idFromName(row, each);
+                        personId = findPersonId(row, each);
                         if (null == personId) {
                             throw new NullPointerException("");
                         }
@@ -339,6 +368,25 @@ public class FredRowProcessor extends TemplateRowProcessor {
             }
         } catch (SQLException e) {
             throw new RowImportException(row, "COLLECTOR_NAME", null, e);
+        }
+    }
+
+    private Integer findPersonId(Row row, RowSingleValue v) throws RowImportException {
+        if (null == v || v.isEmpty()) {
+            return null;
+        }
+        String name = v.getValueString();
+
+        try (Read s = schema.getTable("LU_PERSON").select()) {
+            s.addColumn("PERSON_ID");
+            s.addWhere("NAME", name);
+            s.doIt(importConn);
+            if (!s.next()) {
+                throw new RowImportException(row, v, "This is not a valid person.", null);
+            }
+            return s.getInteger("PERSON_ID");
+        } catch (SQLException e) {
+            throw new RowImportException(row, v, null, e);
         }
     }
 
@@ -360,10 +408,28 @@ public class FredRowProcessor extends TemplateRowProcessor {
         return (null != mv.get(i) && !mv.get(i).isEmpty());
     }
 
+    private Integer stratPrepNameToId(Row r, RowSingleValue v) {
+        if (null == v || v.isEmpty()) {
+            return null;
+        }
+        switch (v.getValueString().trim().toLowerCase()) {
+            case "above top":
+                return 236;
+            case "above base":
+                return 237;
+            case "below top":
+                return 238;
+            case "below base":
+                return 239;
+            default:
+                return null;
+        }
+    }
+
     private void insertStratRelationships(Row row, Modify update) throws RowImportException {
         List<RowSingleValue> mod = getRowMultiValue(row, "STRAT_RELATIONSHIP_MOD"); // "c." or "?" or nothing.
         List<RowSingleValue> distance = getRowMultiValue(row, "STRAT_RELATIONSHIP_DISTANCE"); // metres, I assume.
-        List<RowSingleValue> prep = getRowMultiValue(row, "STRAT_RELATIONSHIP_PREP"); // above / below
+        List<RowSingleValue> prep = getRowMultiValue(row, "STRAT_RELATIONSHIP_PREP"); // "above base" / ... etc
         List<RowSingleValue> unit = getRowMultiValue(row, "STRAT_RELATIONSHIP_STRAT_UNIT"); // sample names, possibly in this spreadsheet.
 
         if (unit.isEmpty()) {
@@ -394,7 +460,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 relationship.set("SAMPLE_ID", (Integer) (update.get("SAMPLE_ID")));
                 // I don't think this is correct. relationship.set("RELATED_FEATURE_ID", (Integer) (update.get("FEATURE_ID")));
 
-                Integer prepId = idFromName(row, prep.get(i));
+                Integer prepId = stratPrepNameToId(row, prep.get(i));
                 relationship.set("RELATION_TYPE_ID", prepId); // "above" or "below".
                 if (hasValue(mod, i)) {
                     relationship.set("DISTANCE_MOD", mod.get(i).getValueInteger());
@@ -407,14 +473,14 @@ public class FredRowProcessor extends TemplateRowProcessor {
                     relationship.set("DISTANCE_RANGE", null);
                 }
 
-                String stratUnit = nameFromName(row, unit.get(i));
-                Integer stratUnitId = findStratUnitId(stratUnit);
+                String stratUnitName = unit.get(i).getValueString();
+                Integer stratUnitId = findStratUnitId(stratUnitName);
 
                 if (null == stratUnitId) {
                     throw new RowImportException(row, "STRAT_RELATIONSHIP_STRAT_UNIT", "Could not find this stratigraphic unit.", null);
                 }
 
-                relationship.set("STRAT_UNIT", stratUnit);
+                relationship.set("STRAT_UNIT", stratUnitName); // er what???
                 relationship.set("STRAT_UNIT_ID", stratUnitId);
                 relationship.doIt(importConn);
             }
@@ -492,7 +558,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
 
     private Integer insertStage(Row row, String lowerCode, String upperCode) throws RowImportException {
         Integer lowerAgeId = null;
-        String lowerAge = nameFromName(row, lowerCode);
+        String lowerAge = getRowValueString(row, lowerCode);
         if (null != lowerAge) {
             try {
                 lowerAgeId = findAge(lowerAge);
@@ -505,7 +571,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
 
         Integer upperAgeId = null;
-        String upperAge = nameFromName(row, upperCode);
+        String upperAge = getRowValueString(row, upperCode);
         if (null != upperAge) {
             try {
                 upperAgeId = findAge(upperAge);
@@ -564,14 +630,10 @@ public class FredRowProcessor extends TemplateRowProcessor {
             if (null != each && !each.isEmpty()) {
                 if (null == c) { // Create c lazily.
                     c = schema.insert("SEDIMENTARY_FEATURE");
-                    try {
                         c.set("SAMPLE_ID", update.get("SAMPLE_ID"));
-                    } catch (SQLException ex) {
-                        throw new RowImportException(row, "ADDITIONAL_FEATURES", null, ex);
-                    }
                 }
 
-                c.set("SED_FEATURE_ID", idFromName(each.getValueString(), row, each));
+                c.set("SED_FEATURE_ID$NAME", each.getValueString());
 
                 if (null != abundant) {
                     RowSingleValue ab = abundant.get(i);

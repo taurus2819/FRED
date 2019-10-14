@@ -104,6 +104,20 @@ public class StratigraphicRelationshipRowProcessor extends RowProcessor {
         }
     }
 
+    private Integer samplePrepToId(Row row, RowSingleValue v) {
+        if (null==v || v.isEmpty()) {
+            return null;
+        }
+        switch (v.getValueString().trim().toLowerCase()) {
+            case "above":
+                return 232;
+            case "below":
+                return 233;
+            default:
+                return null;
+        }
+    }
+
     private void insertSampleRelationships(Row row) throws RowImportException {
         List<RowSingleValue> mod = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_MOD"); // "c." or "?" or nothing.
         List<RowSingleValue> distance = getRowMultiValue(row, "SAMPLE_RELATIONSHIP_DISTANCE"); // metres, I assume.
@@ -136,9 +150,9 @@ public class StratigraphicRelationshipRowProcessor extends RowProcessor {
                 relationship.set("SAMPLE_ID", rowToSampleId.get(row.getRowNum()));
                 relationship.set("RELATED_FEATURE_ID", toFeatureId);
 
-                int prepId = idFromName(row, prep.get(i));
+                int prepId = samplePrepToId(row, prep.get(i));
                 relationship.set("RELATION_TYPE_ID", prepId); // "above" or "below".
-                if (hasValue(mod, i)) { 
+                if (hasValue(mod, i)) {
                     relationship.set("DISTANCE_MOD", mod.get(i).getValueInteger());
                 } else {
                     relationship.set("DISTANCE_MOD", null);
