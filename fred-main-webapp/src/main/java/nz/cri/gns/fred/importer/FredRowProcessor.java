@@ -86,10 +86,16 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 break;
             case "VERTICAL_SECTION":
                 update.set("FEATURE_ID$FEATURE_TYPE", "Vertical Section");
+                update.set("STRAT_UNIT", getRowValueString(row, "STRAT_UNIT"));
+                update.set("COMPARATOR_USED", getRowValueString(row, "COMPARATOR_USED"));
+                update.set("DEPOSITION_ENV", getRowValueString(row, "INFERRED_ENVIRONMENT"));
                 setFeatureId(row, update, featureName);
                 break;
             case "DRILL_HOLE":
                 update.set("FEATURE_ID$FEATURE_TYPE", "Drillhole");
+                update.set("STRAT_UNIT", getRowValueString(row, "STRAT_UNIT"));
+                update.set("COMPARATOR_USED", getRowValueString(row, "COMPARATOR_USED"));
+                update.set("DEPOSITION_ENV", getRowValueString(row, "INFERRED_ENVIRONMENT"));
                 setFeatureId(row, update, featureName);
                 break;
             default:
