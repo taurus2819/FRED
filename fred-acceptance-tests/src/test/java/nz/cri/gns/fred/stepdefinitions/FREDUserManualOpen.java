@@ -20,30 +20,28 @@ import net.thucydides.core.util.EnvironmentVariables;
 import nz.cri.gns.fred.navigation.FREDHomePage;
 import nz.cri.gns.fred.navigation.FREDQuickStartPage;
 import nz.cri.gns.fred.navigation.FREDUserManualPage;
-import nz.cri.gns.fred.navigation.NavigateToFredHomePage;
-import nz.cri.gns.fred.search.BySelect;
-import nz.cri.gns.fred.utils.FredTestConfig;
+import nz.cri.gns.fred.navigation.NavigateTo;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import static org.junit.Assert.assertTrue;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 /**
  *
  * @author sitikond
+ * modified to use new NavigateTo
  */
 public class FREDUserManualOpen {
     
     FREDHomePage fredHomePage;
     FREDQuickStartPage fredQuickStart;
     FREDUserManualPage fredUserManualPage;
-    WebDriver driver;
+    WebDriver driver2;
     @Steps
-    NavigateToFredHomePage navigateTo;
+    NavigateTo navigateTo;
     URL pdfURL;
     BufferedInputStream bis;    
     EnvironmentVariables environmentVariables;
@@ -55,39 +53,39 @@ public class FREDUserManualOpen {
     @Given("^The user launches the FRED application$")
     public void The_user_launches_the_FRED_application() throws Throwable { 
         navigateTo.theFREDHomePage();
-        driver = fredHomePage.getDriver();
+        driver2 = fredHomePage.getDriver();
         getWebDriver();        
-    	driver.manage().window().maximize();
-    	driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);  
+    	driver2.manage().window().maximize();
+    	driver2.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);  
         String url = EnvironmentSpecificConfiguration.from(environmentVariables)
                 .getProperty("webdriver.base.url");
-    	driver.get(url + "/fred");        
+    	driver2.get(url + "/fred");        
     }
     
-    @When("^the user clicks on the 'FRED User Manual' menu$")
+    @When("^the user clicks the 'FRED User Manual' menu$")
     public void the_user_clicks_on_the_fred_user_manual_menu() throws Throwable {
-        driver.findElement(By.xpath("//*[@id='navlist']//*[contains(@href, 'manual.pdf')]")).click();
-        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        driver2.findElement(By.xpath("//*[@id='navlist']//*[contains(@href, 'manual.pdf')]")).click();
+        driver2.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
     }
     
     @Then("the user manual pdf is opened to verify it is {string}")
     public void the_user_manual_pdf_is_opened_to_verify_it_is(String version) throws IOException {
-        String getURL = driver.getCurrentUrl();    	
+        String getURL = driver2.getCurrentUrl();    	
     	pdfURL = new URL(getURL); 
     	InputStream inputStream = pdfURL.openStream();
     	
     	bis = new BufferedInputStream(inputStream);
     	PDDocument document = PDDocument.load(bis);
     	String pdfContent = new PDFTextStripper().getText(document);
-        driver.close();
+        driver2.close();
     	assertTrue(pdfContent.contains(version));
     }
 
     private void getWebDriver() {
-        if (driver.toString().equals("WebDriverFacade for chrome")){
-            driver = new ChromeDriver();
+        if (driver2.toString().equals("WebDriverFacade for chrome")){
+            driver2 = new ChromeDriver();
         } else {
-            driver = new FirefoxDriver();
+            driver2 = new FirefoxDriver();
         }
     }
     
