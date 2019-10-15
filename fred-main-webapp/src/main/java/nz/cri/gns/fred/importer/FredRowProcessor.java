@@ -79,9 +79,11 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 update.set("FEATURE_ID$FIELD_NUMBER", featureName);
                 update.set("FEATURE_ID$ORIG_COORD", getOrigCoords(row));
                 update.set("FEATURE_ID$ORIG_SYSTEM_ID", findOrigSystemId(row, "ORIG_SYSTEM_ID"));
+                update.set("FEATURE_ID$LOCALITY", getRowValueString(row, "LOCALITY"));
                 update.set("STRAT_UNIT", getRowValueString(row, "STRAT_UNIT"));
                 update.set("COMPARATOR_USED", getRowValueString(row, "COMPARATOR_USED"));
                 update.set("DEPOSITION_ENV", getRowValueString(row, "INFERRED_ENVIRONMENT"));
+                update.set("COLUMN_MAP", getRowValueString(row, "MAP_SHEET"));
                 findOrCreateSite(row, update);
                 break;
             case "VERTICAL_SECTION":
@@ -89,6 +91,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 update.set("STRAT_UNIT", getRowValueString(row, "STRAT_UNIT"));
                 update.set("COMPARATOR_USED", getRowValueString(row, "COMPARATOR_USED"));
                 update.set("DEPOSITION_ENV", getRowValueString(row, "INFERRED_ENVIRONMENT"));
+                update.set("COLUMN_MAP", getRowValueString(row, "MAP_SHEET"));
                 setFeatureId(row, update, featureName);
                 break;
             case "DRILL_HOLE":
@@ -96,7 +99,8 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 update.set("STRAT_UNIT", getRowValueString(row, "STRAT_UNIT"));
                 update.set("COMPARATOR_USED", getRowValueString(row, "COMPARATOR_USED"));
                 update.set("DEPOSITION_ENV", getRowValueString(row, "INFERRED_ENVIRONMENT"));
-                setFeatureId(row, update, featureName);
+                update.set("COLUMN_MAP", getRowValueString(row, "MAP_SHEET"));
+                    setFeatureId(row, update, featureName);
                 break;
             default:
                 throw new MgException("Invalid spreadsheet type.");
@@ -479,7 +483,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 }
 
                 Create relationship = schema.insert("RELATIONSHIP");
-                relationship.set("RELATIONSHIP_TYPE", "Sample");
+                relationship.set("RELATIONSHIP_TYPE", "Stratigraphic");
                 relationship.set("SAMPLE_ID", (Integer) (update.get("SAMPLE_ID")));
                 // I don't think this is correct. relationship.set("RELATED_FEATURE_ID", (Integer) (update.get("FEATURE_ID")));
 
