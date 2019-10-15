@@ -29,7 +29,6 @@ import nz.cri.gns.munginator.upload.TemplateRowProcessor;
 import nz.cri.gns.munginator.upload.stagingarea.ImportColumn;
 import nz.cri.gns.munginator.upload.stagingarea.Row;
 import nz.cri.gns.munginator.upload.stagingarea.RowSingleValue;
-import nz.cri.gns.munginator.upload.stagingarea.RowValue;
 
 /**
  * I am the importer for the Outcrop, Vertical Section and Drillhole
@@ -79,7 +78,10 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 update.set("FEATURE_ID$FEATURE_NAME", featureName);
                 update.set("FEATURE_ID$FIELD_NUMBER", featureName);
                 update.set("FEATURE_ID$ORIG_COORD", getOrigCoords(row));
-                update.set("FEATURE_ID$ORIG_SYSTEM_ID$NAME", getRowValueString(row, "ORIG_SYSTEM_ID"));
+                update.set("FEATURE_ID$ORIG_SYSTEM_ID", findOrigSystemId(row, "ORIG_SYSTEM_ID"));
+                update.set("STRAT_UNIT", getRowValueString(row, "STRAT_UNIT"));
+                update.set("COMPARATOR_USED", getRowValueString(row, "COMPARATOR_USED"));
+                update.set("DEPOSITION_ENV", getRowValueString(row, "INFERRED_ENVIRONMENT"));
                 findOrCreateSite(row, update);
                 break;
             case "VERTICAL_SECTION":
@@ -149,12 +151,27 @@ public class FredRowProcessor extends TemplateRowProcessor {
         insertCollectors(row, update);
         insertStratRelationships(row, update);
         insertAdditionalFeatures(row, update);
+
+        /**
+         * These rows are processed in StratigraphicRelationshipRowProcessor.
+         */
+        for (String each : new String[]{
+            "SAMPLE_RELATIONSHIP_DISTANCE",
+            "SAMPLE_RELATIONSHIP_MOD",
+            "SAMPLE_RELATIONSHIP_PREP",
+            "SAMPLE_RELATIONSHIP_REFERENCE",
+            "SAMPLES_NEARBY"}) {
+            for (RowSingleValue rv : getRowMultiValue(row, each)) {
+                rv.markUsed();
+            }
+        }
+        row.checkAllValuesUsed();
     }
 
     private String findCountryId(Row row, String code) throws RowImportException {
         String name = getRowValueString(row, code);
 
-        try (Read s = schema.getTable("COUNTRY").select()) {
+        try (Read s = schema.getTable("LU_COUNTRY").select()) {
             s.addColumn("COUNTRY_CODE");
             s.addWhere("COUNTRY_NAME", name);
             s.doIt(importConn);
@@ -202,7 +219,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 getRowValueString(row, "NORTHING"),
                 getRowValueString(row, "LOCALITY"),
                 countryCode,
-                getRowValueInteger(row, "LOCATION_METHOD"),
+                findMethod(row, "LOCATION_METHOD"),
                 toFloat(getRowValueDouble(row, "ACCURACY")),
                 getRowValueString(row, "MAP_SHEET"),
                 user
@@ -630,10 +647,14 @@ public class FredRowProcessor extends TemplateRowProcessor {
             if (null != each && !each.isEmpty()) {
                 if (null == c) { // Create c lazily.
                     c = schema.insert("SEDIMENTARY_FEATURE");
-                        c.set("SAMPLE_ID", update.get("SAMPLE_ID"));
+                    c.set("SAMPLE_ID", update.get("SAMPLE_ID"));
                 }
 
-                c.set("SED_FEATURE_ID$NAME", each.getValueString());
+                try {
+                    c.set(importConn, "SED_FEATURE_ID$NAME", each.getValueString());
+                } catch (SQLException e) {
+                    throw new RowImportException(row, "ADDITIONAL_FEATURES", "Could not find this value.", e);
+                }
 
                 if (null != abundant) {
                     RowSingleValue ab = abundant.get(i);
@@ -650,6 +671,26 @@ public class FredRowProcessor extends TemplateRowProcessor {
                     throw new RowImportException(row, each, "Could not insert into SEDIMENTARY_FEATURE", ex);
                 }
             }
+        }
+    }
+
+    private Integer findMethod(Row row, String code) throws RowImportException {
+        RowSingleValue v = getRowValue(row, code);
+        if (null == v || v.isEmpty()) {
+            return null;
+        }
+
+        try (Read r = schema.getTable("SC.METHOD").select()) {
+            r.addColumn("METHOD_ID");
+            r.addWhere("METHOD", v.getValueString());
+
+            r.doIt(importConn);
+            if (!r.next()) {
+                throw new RowImportException(row, code, "Could not find this method", null);
+            }
+            return r.getInteger("METHOD_ID");
+        } catch (SQLException e) {
+            throw new RowImportException(row, code, "Could not find this method", e);
         }
     }
 }
