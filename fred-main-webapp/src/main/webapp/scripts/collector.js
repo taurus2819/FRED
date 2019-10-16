@@ -114,7 +114,8 @@ function createAndShowTable(thediv, xml) {
 		cell.style.paddingLeft = "5px";
 		cell.style.whiteSpace = "nowrap";
 		cell.style.cursor = "default";
-		eval("cell.onclick = function() {updateCollector('" + personName + "');}");
+		//eval("cell.onclick = function() {updateCollector('" + personName + "');}");
+                cell[onclick] = function() {updateCollector('" + personName + "');};
 		thediv.appendChild(cell);
 	}
 	//Reset the selected settings

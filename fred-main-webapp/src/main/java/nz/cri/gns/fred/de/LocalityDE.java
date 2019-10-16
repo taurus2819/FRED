@@ -90,11 +90,15 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
     }
 
     private String getLegalLocality(String loc, ArrayList<String[]> error) {
-        //Also set the FRED locality - but first reject & and "
+        // Also set the FRED locality - but first replace all naked & and "
+        // Cannot use the String.contains function here, as we are replacing all of them
         if (!FREDUtil.isEmpty(loc)) {
-            if (loc.indexOf("&") >= 0 || loc.indexOf("\"") >= 0) {
-                error.add(new String[]{"Locality", "Contains & or \" characters"});
+            if (loc.indexOf("&amp;") >= 0 || loc.indexOf("&#38;") >=0 || loc.indexOf("&#34;") >=0) {
+                loc = loc.replace("&amp;","and").replace("&#38;","and").replace("&#34;","&#39;");
             }
+        }
+        else{
+            error.add(new String[]{"Locality Description", "Empty locality description"});
         }
         return loc;
     }
@@ -451,6 +455,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             } catch (NumberFormatException e) {
                 error.add(new String[]{"Coordinate", "Non numeric coordinate entered"});
             } catch (IllegalArgumentException e) {
+                
             } catch (SecurityException e) {
             } catch (InstantiationException e) {
             } catch (IllegalAccessException e) {
@@ -461,98 +466,103 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
         //locality
         String locality = getLegalLocality(sanitizeHttpRequest.stripAllScripts(request.getParameter("Loc")), error);
-
-        if (coord != null) {
-            if (!datum.coordinateAcceptable(coord)) {
-                error.add(new String[]{"Coordinate", "Coordinates not of correct type"});
-            }
-
-            // try to re-use any existing site details.
-            // take 1- try the well name
-            if (site == null) {
-                site = SiteUtil.getSite(feature.getFeatureName());
-            }
-            // take 2 try the given coords
-            if (site == null) {
-                site = SiteUtil.getSite(datum, coord);
-            }
-
-            if (site != null) {
-                //add coord metadata from existing site but only if a drillhole
-                if (feature.getFeatureId() == null) {
-                    feature.setOrigSystemId(site.getOriginalId());
-                    feature.setOrigCoord(site.getOriginalCoordinates());
-                } else {
-                    // allow user to override
-                    feature.setOrigSystemId(datum.getDatabaseId());
-                    feature.setOrigCoord(datum.getStringFor(coord));
-                }
-                // always use FRED user contributed locality and site details
-                feature.setLocality(locality);
-                if (feature.getOrigCoord() != site.getOriginalCoordinates()) {
-                    site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
-                    site.setLatLong(datum.convertToNZGD49(coord));
-                }
-
-                //TODO reuse site_name as feature_name?? see JES
-            } else {
-                site = new SiteRecord();
-
-                try {
-                    site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
-                    site.setLatLong(datum.convertToNZGD49(coord));
-                    //Also set the FRED copied SITE fields
-                    feature.setOrigSystemId(datum.getDatabaseId());
-                    feature.setOrigCoord(datum.getStringFor(coord));
-                } catch (Exception e) {
-                    error.add(new String[]{"Coordinate", "Invalid coordinates specified. Ensure you enter the correct number of digits for the selected coordinate system"});
-                }
-
-                site.setDirections(request.getParameter("Loc"));
-                site.setCountry(request.getParameter("Country"));
-                site.setOwner(user.getId().intValue());
-                feature.setLocality(locality);
-            }
-            
-            try {
-                site.setMethod(Integer.parseInt(request.getParameter("LocMethodID")));
-            } catch (Exception e) {
-                //method is null (-1) by default
-            }
-            if (sanitizeHttpRequest.stripAllScripts(request.getParameter("Accuracy")).length() > 0) {
-                try {
-                    site.setAccuracy(Float.parseFloat(sanitizeHttpRequest.stripAllScripts(request.getParameter("Accuracy"))));
-                } catch (Exception e) {
-                    error.add(new String[]{"Accuracy", "Invalid value"});
-                    // site accuracy is null (-1) by default
-                }
-            }       
-            
-        } else {
-            site = null;
-            feature.setOrigSystemId(null);
-            feature.setOrigCoord(null);
-        }
-
-        //set Map Year
         try {
-            if (sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear")) != null && !sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear")).equals("")) {
-                feature.setMapYear(Integer.parseInt(sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear"))));
+            if (coord != null) {
+                if (!datum.coordinateAcceptable(coord)) {
+                    error.add(new String[]{"Coordinate", "Coordinates not of correct type"});
+                }
+
+                // try to re-use any existing site details.
+                // take 1- try the well name
+                if (site == null) {
+                    site = SiteUtil.getSite(feature.getFeatureName());
+                }
+                // take 2 try the given coords
+                if (site == null && datum.coordinateAcceptable(coord)) {
+                    site = SiteUtil.getSite(datum, coord);
+                }
+
+                if (site != null) {
+                    //add coord metadata from existing site but only if a drillhole
+                    if (feature.getFeatureId() == null) {
+                        feature.setOrigSystemId(site.getOriginalId());
+                        feature.setOrigCoord(site.getOriginalCoordinates());
+                    } else {
+                        // allow user to override
+                        feature.setOrigSystemId(datum.getDatabaseId());
+                        feature.setOrigCoord(datum.getStringFor(coord));
+                    }
+                    // always use FRED user contributed locality and site details
+                    feature.setLocality(locality);
+                    if (feature.getOrigCoord() != site.getOriginalCoordinates()) {
+                        site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
+                        site.setLatLong(datum.convertToNZGD49(coord));
+                    }
+
+                    //TODO reuse site_name as feature_name?? see JES
+                } else {
+                    site = new SiteRecord();
+
+                    try {
+                        site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
+                        site.setLatLong(datum.convertToNZGD49(coord));
+                        //Also set the FRED copied SITE fields
+                        feature.setOrigSystemId(datum.getDatabaseId());
+                        feature.setOrigCoord(datum.getStringFor(coord));
+                    } catch (Exception e) {
+                        error.add(new String[]{"Coordinate", "Invalid coordinates specified. Ensure you enter the correct number of digits for the selected coordinate system"});
+                    }
+
+                    site.setDirections(request.getParameter("Loc"));
+                    site.setCountry(request.getParameter("Country"));
+                    site.setOwner(user.getId().intValue());
+                    feature.setLocality(locality);
+                }
+
+                try {
+                    site.setMethod(Integer.parseInt(request.getParameter("LocMethodID")));
+                } catch (Exception e) {
+                    //method is null (-1) by default
+                }
+                if (sanitizeHttpRequest.stripAllScripts(request.getParameter("Accuracy")).length() > 0) {
+                    try {
+                        site.setAccuracy(Float.parseFloat(sanitizeHttpRequest.stripAllScripts(request.getParameter("Accuracy"))));
+                    } catch (Exception e) {
+                        error.add(new String[]{"Accuracy", "Invalid value"});
+                        // site accuracy is null (-1) by default
+                    }
+                }
+
             } else {
-                feature.setMapYear(null);
+                site = null;
+                feature.setOrigSystemId(null);
+                feature.setOrigCoord(null);
             }
-        } catch (Exception e) {
-            error.add(new String[]{"Map Year", "Map Year not numeric"});
-        }
 
-        feature.setCoordComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("CoordComm")));
-        feature.setComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("LocComm")));
+            //set Map Year
+            try {
+                if (sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear")) != null && !sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear")).equals("")) {
+                    feature.setMapYear(Integer.parseInt(sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear"))));
+                } else {
+                    feature.setMapYear(null);
+                }
+            } catch (Exception e) {
+                error.add(new String[]{"Map Year", "Map Year not numeric"});
+            }
 
-        editComments = sanitizeHttpRequest.sanitizer(request.getParameter("EditComm"));
-        editComments = sanitizeHttpRequest.stripAllScripts(editComments);
+            feature.setCoordComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("CoordComm")));
+            feature.setComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("LocComm")));
 
-        if (error.size() > 0) {
-            throw new DataInputException(error);
+            editComments = sanitizeHttpRequest.sanitizer(request.getParameter("EditComm"));
+            editComments = sanitizeHttpRequest.stripAllScripts(editComments);
+
+            if (error.size() > 0) {
+                throw new DataInputException(error);
+            }
+        } catch (IllegalArgumentException iae) {
+
+            log.log(Level.SEVERE, null, iae);
+            throw new DataInputException("There was an issue with the Locality.  Perhaps the Easting/Northing?", iae.getMessage());
         }
     }
 
@@ -589,7 +599,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             }
 
             if (site == null) {
-                throw new StorageAccessException("Failed to save site");
+                throw new StorageAccessException("Failed to save site. Did you forget to add a Field Number?");
             }
 
             feature.setSiteId(new Integer(site.key));

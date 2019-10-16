@@ -1,8 +1,8 @@
-/** Globale Variablen - ajax.js **/
+/** Global Variables - ajax.js **/
 var wfsRequest = wfsRequestObject();
 
 /**
- * Erzeugt das XMLHttpRequestObject, das für Ajax benötigt wird.
+ * Generates the XMLHttpRequestObject needed for Ajax.
  */
 function wfsRequestObject()
 {
@@ -32,7 +32,7 @@ function wfsRequestObject()
 }
 
 /**
- * Sendet die Ajax - Anfrage des Client an der Server.
+ * Sends the Ajax request from the client to the server.
  */
 function sndWFSRequest(proxy, url) 
 {
@@ -44,7 +44,7 @@ function sndWFSRequest(proxy, url)
 }
 
 /**
- * Verarbeitet das Ergebnis eines sndReq - Aufrufes
+ * Processes the result of a sndReq call
  */
 function handleWFSResponse()
 {
