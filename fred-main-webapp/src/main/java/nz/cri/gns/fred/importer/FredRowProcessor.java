@@ -55,7 +55,9 @@ public class FredRowProcessor extends TemplateRowProcessor {
 
     @Override
     protected void verifyRow(Row row) throws SQLException, RowImportException {
-        checkDatumCode(row);
+        if ("FRED_OUTCROP".equals(spreadsheetType)) {
+            checkDatumCode(row);
+        }
         super.verifyRow(row);
     }
 
@@ -100,7 +102,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
                 update.set("COMPARATOR_USED", getRowValueString(row, "COMPARATOR_USED"));
                 update.set("DEPOSITION_ENV", getRowValueString(row, "INFERRED_ENVIRONMENT"));
                 update.set("COLUMN_MAP", getRowValueString(row, "MAP_SHEET"));
-                    setFeatureId(row, update, featureName);
+                setFeatureId(row, update, featureName);
                 break;
             default:
                 throw new MgException("Invalid spreadsheet type.");
@@ -172,7 +174,9 @@ public class FredRowProcessor extends TemplateRowProcessor {
             "SAMPLE_RELATIONSHIP_REFERENCE",
             "SAMPLES_NEARBY"}) {
             for (RowSingleValue rv : getRowMultiValue(row, each)) {
-                rv.markUsed();
+                if (null != rv) {
+                    rv.markUsed();
+                }
             }
         }
         row.checkAllValuesUsed();

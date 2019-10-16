@@ -105,12 +105,12 @@ public class PaleoRowProcessor extends RowProcessor {
     protected void importRow(Row row) throws SQLException, RowImportException {
         int rowNum = row.getRowNum();
 
-        if (rowNum == ROW_SAMPLE_TYPE+1) {
+        if (rowNum == ROW_SAMPLE_TYPE + 1) {
             for (Integer c : localityNameMatrix.keySet()) {
                 findSample(c, row);
             }
         }
-        
+
         for (RowValue each : row) {
             // Each paleo is on it's own row.
             // Rows are paleos. Columns are paleo list entries.
@@ -143,7 +143,7 @@ public class PaleoRowProcessor extends RowProcessor {
                             break;
                         case ROW_TOP_DEPTH:
                             if (!v.isEmpty()) {
-                                if (null==v.getValueNumber()) {
+                                if (null == v.getValueNumber()) {
                                     throw new RowImportException("Top depth needs to be a decimal point number.");
                                 }
                                 topDepthMatrix.put(v.getColumnNum(), v.getValueNumber());
@@ -151,7 +151,7 @@ public class PaleoRowProcessor extends RowProcessor {
                             break;
                         case ROW_BOTTOM_DEPTH:
                             if (!v.isEmpty()) {
-                                if (null==v.getValueNumber()) {
+                                if (null == v.getValueNumber()) {
                                     throw new RowImportException("Bottom depth needs to be a decimal point number.");
                                 }
                                 bottomDepthMatrix.put(v.getColumnNum(), v.getValueNumber());
@@ -177,13 +177,13 @@ public class PaleoRowProcessor extends RowProcessor {
                             setStartStage(paleo, row, v);
                             break;
                         case ROW_START_MOD:
-                            paleo.getStage().setStageLowerMod(v.getValueString());
+                            getStage(paleo).setStageLowerMod(v.getValueString());
                             break;
                         case ROW_STOP_STAGE:
                             setStopStage(paleo, row, v);
                             break;
                         case ROW_STOP_MOD:
-                            paleo.getStage().setStageUpperMod(v.getValueString());
+                            getStage(paleo).setStageUpperMod(v.getValueString());
                             break;
                         case ROW_STAGE_COMMENT:
                             paleo.setStageComments(v.getValueString());
@@ -212,6 +212,16 @@ public class PaleoRowProcessor extends RowProcessor {
         }
     }
 
+    /**
+     * Prevent NullPointerException.
+     */
+    private nz.cri.gns.fred.model.Stage getStage(Paleontology p) {
+        if (null == p.getStage()) {
+            p.setStage(new Stage());
+        }
+        return p.getStage();
+    }
+
     @Override
     public void close() {
         for (Record each : paleoMatrix.values()) {
@@ -237,10 +247,10 @@ public class PaleoRowProcessor extends RowProcessor {
             throw new MgException(ex);
         }
         paleoMatrix.put(index, r);
-        
+
         // PDB-221
         r.getPaleontology().setStage(null);
-        
+
         return r;
     }
 
@@ -360,7 +370,7 @@ public class PaleoRowProcessor extends RowProcessor {
 
     private void findSample(Integer columnNum, Row row) throws RowImportException {
         Sample sample;
-               
+
         /**
          * This doesn't work. It expects a weird format for the sample that
          * includes depths, etc. try { sample = (Sample)
@@ -378,7 +388,7 @@ public class PaleoRowProcessor extends RowProcessor {
             r = schema.select("SAMPLE");
             r.addColumn("SAMPLE_ID");
             r.addWhere("FEATURE_ID$FR_ID$FR_NUMBER", localityName);
-            
+
             BigDecimal topDepth = null;
             if (topDepthMatrix.containsKey(columnNum)) {
                 topDepth = topDepthMatrix.get(columnNum);
@@ -397,21 +407,20 @@ public class PaleoRowProcessor extends RowProcessor {
 
             r.doIt(importConn);
             if (!r.next()) {
-                log("If you're an expert, this is the SQL: "+r.toString()); 
-                throw new RowImportException(row, (RowValue)null, "Could not find a sample with the FR number='"+localityName+"', topDepth="+topDepth+", bottomDepth="+bottomDepth+", drillType="+drillType);
+                log("If you're an expert, this is the SQL: " + r.toString());
+                throw new RowImportException(row, (RowValue) null, "Could not find a sample with the FR number='" + localityName + "', topDepth=" + topDepth + ", bottomDepth=" + bottomDepth + ", drillType=" + drillType);
             }
 
-            
             Integer sampleId = r.getInteger("SAMPLE_ID");
-            log("Found a sample with the FR number='"+localityName+"', topDepth="+topDepth+", bottomDepth="+bottomDepth+", drillType="+drillType+ " for column " + XLSXSpreadsheet.columnNumToLetters(columnNum));
-            
+            log("Found a sample with the FR number='" + localityName + "', topDepth=" + topDepth + ", bottomDepth=" + bottomDepth + ", drillType=" + drillType + " for column " + XLSXSpreadsheet.columnNumToLetters(columnNum));
+
             if (r.next()) {
-                throw new RowImportException(row, (RowValue)null, "Found multiple samples with this locality, depths and sample type.");
+                throw new RowImportException(row, (RowValue) null, "Found multiple samples with this locality, depths and sample type.");
             }
 
             sample = sampleUtil.getSample(sampleId);
         } catch (SQLException | StorageAccessException e) {
-            throw new RowImportException(row, (RowValue)null, null, e);
+            throw new RowImportException(row, (RowValue) null, null, e);
         } finally {
             if (null != r) {
                 r.close();
@@ -426,9 +435,9 @@ public class PaleoRowProcessor extends RowProcessor {
                     .stream()
                     .filter(each -> each.getFolderName().equals(folderName))
                     .findFirst()
-                    .orElseThrow(()->new RowImportException(row, (RowValue)null, "Cannot find this folder."));
+                    .orElseThrow(() -> new RowImportException(row, (RowValue) null, "Cannot find this folder."));
         } catch (StorageAccessException ex) {
-            throw new RowImportException(row, (RowValue)null, "Can't get a folder because: "+ex.getMessage(), ex);
+            throw new RowImportException(row, (RowValue) null, "Can't get a folder because: " + ex.getMessage(), ex);
         }
 
         createRecord(columnNum, sample, folder.getFolder().getFolderId(), user);
@@ -454,7 +463,7 @@ public class PaleoRowProcessor extends RowProcessor {
     private void setStartStage(Paleontology paleo, Row row, RowSingleValue v) throws RowImportException {
         if (!v.isEmpty()) {
             String stageName = v.getValueString();
-            Stage s = (Stage) paleo.getStage();
+            Stage s = (Stage) getStage(paleo);
             try {
                 Age a = (Age) stageUtil.getAgeByName(stageName);
                 s.setLowerAge(a);
@@ -469,7 +478,7 @@ public class PaleoRowProcessor extends RowProcessor {
         if (!v.isEmpty()) {
             String stageName = v.getValueString();
 
-            Stage s = (Stage) paleo.getStage();
+            Stage s = (Stage) getStage(paleo);
             try {
                 Age a = (Age) stageUtil.getAgeByName(stageName);
                 s.setUpperAge(a);
