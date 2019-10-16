@@ -5,9 +5,6 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.net.URL;
 import net.thucydides.core.annotations.Steps;
 import net.thucydides.core.util.EnvironmentVariables;
@@ -100,11 +97,6 @@ public class FREDStepDefinitions {
     @When("^he focuses on the FRED home page$")
     public void he_focuses_on_the_fred_home_page() throws Throwable {
         assertThat(fredHomePage.waitFor(ExpectedConditions.urlContains("/fred")));
-        // New assertion replaces this old way of doing it.
-//        String currentURL = fredHomePage.getDriver().getCurrentUrl();
-//        String url = EnvironmentSpecificConfiguration.from(environmentVariables)
-//                .getProperty("webdriver.base.url");
-//        assertThat(currentURL.equalsIgnoreCase(url + "/fred"));
     }
 
     @When("^(?:.*)puts in a username and no password$")
@@ -117,8 +109,6 @@ public class FREDStepDefinitions {
 
     @And("^the user logs in$")
     public void user_logs_in() throws Throwable {
-        // For localhost testing (stores the user password)
-        //String secretPass = readFile("C:\\Users\\bens\\Documents\\secretPassText.txt");
         WebElement loginBox = fredHomePage.getDriver().findElement(BySelect.get("name", "loginname"));
         loginBox.sendKeys("stafftest");
         WebElement passBox = fredHomePage.getDriver().findElement(BySelect.get("name", "loginpass"));
@@ -138,8 +128,9 @@ public class FREDStepDefinitions {
     @Then("the user name is shown as logged in")
     public void the_user_name_shown() {
         WebElement pageUserName = fredHomePage.getDriver().findElement(BySelect.get("xpath", "//*[@id=\"contentWrapInner\"]/div[1]"));
-        String userName = pageUserName.getText().trim();
-        assertThat(userName.equalsIgnoreCase("Logged in as Ben Sloboda&nbsp;&nbsp;&nbsp;"));
+        String loggedInName = pageUserName.getText().trim();
+        System.out.println("Logged in Name: " + loggedInName);
+        assertTrue(loggedInName.equalsIgnoreCase("Logged in as SecuredStaffClientTest insertGnsStaffLoginIdUnavailable"));
     }
     
     @And("the user is logged out")
@@ -188,16 +179,10 @@ public class FREDStepDefinitions {
     @Then("^(?:.*)the FRED page title should appear$")
     public void the_fred_page_title_should_appear() throws Throwable {
         assertThat(fredHomePage.waitFor(ExpectedConditions.titleIs("FRED :: The Fossil Record Electronic Database")));
-        // New assertion replaces this other way of doing it.
-//        String title = fredHomePage.getDriver().getTitle();
-//        boolean isFredTitle = title.equals(FREDHomePage.TITLE);
-//        assertThat(isFredTitle);
     }
 
     @Then("^(?:.*)the FRED login page with the title FRED Login should appear$")
     public void the_fred_login_page_with_the_title_fred_login_should_appear() throws Throwable {
-        // New assertion doesn't work the same way...fails every time, so using the other way - Ben S
-        //assertThat(fredLoginPage.waitFor(ExpectedConditions.textToBe(By.xpath("//*[@id=\\\"contentWrap\\\"]/div[1]/div"),fredLoginPage.FRED_LOGIN_TITLE)));
         WebElement loginPageElement = fredLoginPage.getDriver().findElement(BySelect.get("xpath", "//*[@id=\"contentWrap\"]/div[1]/div"));
         String loginPageTitle = loginPageElement.getText().trim();
         assertTrue(loginPageTitle.equals(fredLoginPage.FRED_LOGIN_TITLE));
@@ -208,20 +193,5 @@ public class FREDStepDefinitions {
         WebElement loginPageElement = fredLoginPage.getDriver().findElement(BySelect.get("xpath", "//*[@id=\"contentWrapInner\"]/table/tbody/tr[5]/td/center/form/table/tbody/tr[1]/td[2]/input"));
         String badUserName = loginPageElement.getText().trim();
         assertFalse(badUserName.equals(userName));
-    }
-// This is a helper method to pull the password for localhost testing
-    private String readFile(String file) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        String line = null;
-        StringBuilder stringBuilder = new StringBuilder();
-        
-        try {
-            while ((line = reader.readLine()) != null) {
-                stringBuilder.append(line);
-            }
-            return stringBuilder.toString();
-        } finally {
-            reader.close();
-        }
     }
 }

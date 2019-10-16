@@ -15,6 +15,4 @@ Feature: Click on the 'About' and 'Quick Start' menu options in turn
   available.
   
      When the user clicks on the quickStart menu
-     Then the quickStart page is displayed  
-
-# Uses new Step Definitions
+     Then the quickStart page is displayed
