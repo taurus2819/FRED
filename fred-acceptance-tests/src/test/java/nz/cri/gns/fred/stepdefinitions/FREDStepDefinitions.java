@@ -116,7 +116,7 @@ public class FREDStepDefinitions {
         WebElement loginSubmit = fredHomePage.getDriver().findElement(By.xpath("//*[@id=\"contentWrapInner\"]/table/tbody/tr[5]/td/center/form/table/tbody/tr[3]/td/input"));
         loginSubmit.click();
     }
-//// Test Fails here for the alert box.  It created an error folder in my acocunt on DEV - Ben S
+//// Test Fails here for the alert box.  It created an error folder in my account on DEV - Ben S
 //    @And("a new name is entered for the folder")
 //    public void new_folder_name() {
 //        WebDriverWait wait = new WebDriverWait(fredHomePage.getDriver(), 10);
