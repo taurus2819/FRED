@@ -226,6 +226,7 @@
 	
 	%><form name="QueryForm" action="result_list.jsp" method="post" >
 	<p><table border="0" cellpadding="3" cellspacing="2" width="600">
+            <div><input type="hidden" id="token" name="token" /></div>
 	<tr class="lightColour"><td class="heading">NZMS260 Sheet&nbsp;&nbsp;</td><td><input type="text" name="Map" size="10" />&nbsp;&nbsp;</td><td><i>Enter a <a href="http://www.linz.govt.nz/topography/topo-maps/nz-med-scale-maps/index.aspx" target="_blank">NZ 1:50,000 map</a> sheet</i></td></tr>
 	<tr class="lightColour"><td class="heading">QMap Sheet&nbsp;&nbsp;</td><td>
 	<select name="QMap">
