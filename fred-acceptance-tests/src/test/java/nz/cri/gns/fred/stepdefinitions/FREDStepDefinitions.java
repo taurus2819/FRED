@@ -21,8 +21,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  *
@@ -106,16 +108,18 @@ public class FREDStepDefinitions {
         WebElement loginSubmit = fredHomePage.getDriver().findElement(By.xpath("//*[@id=\"contentWrapInner\"]/table/tbody/tr[5]/td/center/form/table/tbody/tr[3]/td/input"));
         loginSubmit.click();
     }
-
-    @And("^the user logs in$")
-    public void user_logs_in() throws Throwable {
-        WebElement loginBox = fredHomePage.getDriver().findElement(BySelect.get("name", "loginname"));
-        loginBox.sendKeys("stafftest");
-        WebElement passBox = fredHomePage.getDriver().findElement(BySelect.get("name", "loginpass"));
+    
+    
+    @When("^(?:.*)puts in a username and password$")
+    public void puts_in_username_and_password() throws Throwable {
+        WebElement loginBox = fredHomePage.getDriver().findElement(By.xpath("//*[@id=\"contentWrapInner\"]/table/tbody/tr[5]/td/center/form/table/tbody/tr[1]/td[2]/input"));
+        loginBox.sendKeys("stafftest"); 
+        WebElement passBox = fredHomePage.getDriver().findElement(By.xpath("//*[@id=\"contentWrapInner\"]/table/tbody/tr[5]/td/center/form/table/tbody/tr[2]/td[2]/input"));
         passBox.sendKeys("HawkingGreatBigLong33CharPassword");
         WebElement loginSubmit = fredHomePage.getDriver().findElement(By.xpath("//*[@id=\"contentWrapInner\"]/table/tbody/tr[5]/td/center/form/table/tbody/tr[3]/td/input"));
         loginSubmit.click();
     }
+    
 //// Test Fails here for the alert box.  It created an error folder in my account on DEV - Ben S
 //    @And("a new name is entered for the folder")
 //    public void new_folder_name() {
@@ -125,11 +129,10 @@ public class FREDStepDefinitions {
 //        fredHomePage.getDriver().switchTo().alert().accept();
 //    }
 
-    @Then("the user name is shown as logged in")
-    public void the_user_name_shown() {
+    @Then("the username value shown as logged in")
+    public void the_username_value_shown_as_logged_in() {
         WebElement pageUserName = fredHomePage.getDriver().findElement(BySelect.get("xpath", "//*[@id=\"contentWrapInner\"]/div[1]"));
         String loggedInName = pageUserName.getText().trim();
-        System.out.println("Logged in Name: " + loggedInName);
         assertTrue(loggedInName.equalsIgnoreCase("Logged in as SecuredStaffClientTest insertGnsStaffLoginIdUnavailable"));
     }
     

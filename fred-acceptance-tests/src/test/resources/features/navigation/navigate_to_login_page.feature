@@ -1,6 +1,5 @@
 @loginPageCheck
-Feature: In order to Login to FRED the user
-  should click on the login menu
+Feature: click the login menu to Login to FRED
 
   Scenario: Should display the Login page
     Given user is on theFREDHomePage
