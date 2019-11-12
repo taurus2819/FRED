@@ -382,17 +382,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
             for (RowSingleValue each : collectors) {
                 if (null != each) {
                     Integer personId;
-                    if (each.isEmpty() || each.getValueString().indexOf("/") < 1) {
-                        personId = insertPerson(each.getValueString());
-                        if (null == personId) {
-                            throw new NullPointerException("");
-                        }
-                    } else {
-                        personId = findPersonId(row, each);
-                        if (null == personId) {
-                            throw new NullPointerException("");
-                        }
-                    }
+                    personId = findPersonId(row, each, () -> insertPerson(row, each));
                     Integer sampleId = (Integer) (update.get("SAMPLE_ID"));
                     associateCollector(sampleId, personId);
                 }
@@ -402,18 +392,23 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
     }
 
-    private Integer findPersonId(Row row, RowSingleValue v) throws RowImportException {
+    interface PersonNotFound {
+        Integer op() throws RowImportException;
+    }
+
+    /** Do a database query to find that person by name. */
+    private Integer findPersonId(Row row, RowSingleValue v, PersonNotFound notFound) throws RowImportException {
         if (null == v || v.isEmpty()) {
-            return null;
+            return notFound.op();
         }
         String name = v.getValueString();
 
-        try (Read s = schema.getTable("LU_PERSON").select()) {
+        try (Read s = schema.getTable("PERSON").select()) {
             s.addColumn("PERSON_ID");
             s.addWhere("NAME", name);
             s.doIt(importConn);
             if (!s.next()) {
-                throw new RowImportException(row, v, "This is not a valid person.", null);
+                return notFound.op();
             }
             return s.getInteger("PERSON_ID");
         } catch (SQLException e) {
@@ -421,10 +416,15 @@ public class FredRowProcessor extends TemplateRowProcessor {
         }
     }
 
-    private Integer insertPerson(String collectorName) throws SQLException {
+    private Integer insertPerson(Row row, RowSingleValue v) throws RowImportException {
+        String collectorName = v.getValueString();
         Create i = schema.getTable("PERSON").insert();
         i.set("NAME", collectorName);
-        i.doIt(importConn);
+        try {
+            i.doIt(importConn);
+        } catch (SQLException e) {
+            throw new RowImportException(row, v, null, e);
+        }
         return (Integer) i.get("PERSON_ID");
     }
 
