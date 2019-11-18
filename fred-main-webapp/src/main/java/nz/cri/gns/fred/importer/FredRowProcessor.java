@@ -406,6 +406,7 @@ public class FredRowProcessor extends TemplateRowProcessor {
         try (Read s = schema.getTable("PERSON").select()) {
             s.addColumn("PERSON_ID");
             s.addWhere("NAME", name);
+            s.addOrderBy("NAME", "ASC");
             s.doIt(importConn);
             if (!s.next()) {
                 return notFound.op();
