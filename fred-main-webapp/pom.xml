@@ -120,7 +120,7 @@
         <dependency>
             <groupId>nz.cri.gns.online-servlet</groupId>
             <artifactId>online-servlet-core</artifactId>
-            <version>3.1.74.631</version>            
+            <version>3.1.80.635</version>            
         </dependency>
         <dependency>
             <groupId>net.sf.ehcache</groupId>
