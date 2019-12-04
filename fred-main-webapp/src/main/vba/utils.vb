@@ -249,7 +249,7 @@ Public Function authenticate() As Boolean
     If sessionId = "" Then
         Set objHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
         url = Constants.secureBaseURL & "login.jsp"
-        requestBody = "loginname=" & encodeURL(userName) & "&loginpass=" & encodeURL(password)
+        requestBody = "loginname=" & encodeURL(userName) & "&loginpass=" & encodeURL(password) & "&norecaptcha=skip"
         objHTTP.Open "POST", url, False
         objHTTP.SetRequestHeader "Content-Type", "application/x-www-form-urlencoded"
         'Prevent following redirect with Option(6) = False, as only original response is
