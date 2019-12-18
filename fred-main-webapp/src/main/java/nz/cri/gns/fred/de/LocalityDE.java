@@ -84,15 +84,10 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         datum = SiteUtil.getFREDDatum(feature);
     }
 
-    private String getLegalLocality(String loc, ArrayList<String[]> error) {
-        // Also set the FRED locality - but first replace all naked & and "
-        // Cannot use the String.contains function here, as we are replacing all of them
-        if (!FREDUtil.isEmpty(loc)) {
-            if (loc.indexOf("&amp;") >= 0 || loc.indexOf("&#38;") >=0 || loc.indexOf("&#34;") >=0) {
-                loc = loc.replace("&amp;","and").replace("&#38;","and").replace("&#34;","&#39;");
-            }
-        }
-        else{
+    private String getLocalityFromRequest(HttpServletRequest request, ArrayList<String[]> error) {
+        String loc = request.getParameter("Loc");
+        loc = sanitizeHttpRequest.stripAllScripts(loc);
+        if (FREDUtil.isEmpty(loc)) {
             error.add(new String[]{"Locality Description", "Empty locality description"});
         }
         return loc;
@@ -460,7 +455,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         }
 
         //locality
-        String locality = getLegalLocality(sanitizeHttpRequest.stripAllScripts(request.getParameter("Loc")), error);
+        String locality = getLocalityFromRequest(request, error);
         try {
             if (coord != null) {
                 if (!datum.coordinateAcceptable(coord)) {
