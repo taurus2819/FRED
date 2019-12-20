@@ -9,7 +9,6 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
-import org.apache.commons.text.StringEscapeUtils;
 
 public class PDFUtil {
 
@@ -29,12 +28,12 @@ public class PDFUtil {
 	
 	public static void addCells(PdfPTable table, Object[] text, Font[] fonts) {
 		for (int i = 0; i < text.length; i++)
-			addCell(table, StringEscapeUtils.unescapeHtml4(text[i].toString()), fonts[i], Element.ALIGN_LEFT, 1);
+			addCell(table, text[i], fonts[i], Element.ALIGN_LEFT, 1);
 	}
 	
 	public static void addCells(PdfPTable table, Object[] text, Font[] fonts, int[] align) {
 		for (int i = 0; i < text.length; i++)
-			addCell(table, StringEscapeUtils.unescapeHtml4(text[i].toString()), fonts[i], align[i], 1);
+			addCell(table, text[i], fonts[i], align[i], 1);
 	}
 	
 	public static void addRepeatingCells(PdfPTable table, String heading, Object[] text, Font[] fonts, boolean newLines) {

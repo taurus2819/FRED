@@ -9,7 +9,6 @@ import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,8 +42,6 @@ import nz.cri.gns.jsp.IconnedLink;
 import nz.cri.gns.util.map.*;
 import nz.cri.gns.util.map.Datum.MapSheetCoordinate;
 import nz.cri.gns.xss.SanitizeHttpServletRequest;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
 
 public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
