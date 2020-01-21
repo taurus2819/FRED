@@ -17,11 +17,7 @@ import nz.cri.gns.fred.hibernate.Paleontology;
 import nz.cri.gns.fred.hibernate.Person;
 import nz.cri.gns.fred.hibernate.Stage;
 import nz.cri.gns.fred.hibernate.TaxonomicGroup;
-import nz.cri.gns.fred.model.PaleontologyListEntry;
-import nz.cri.gns.fred.model.Record;
-import nz.cri.gns.fred.model.Sample;
-import nz.cri.gns.fred.model.Taxon;
-import nz.cri.gns.fred.model.UserFolder;
+import nz.cri.gns.fred.model.*;
 import nz.cri.gns.fred.util.FolderUtil;
 import nz.cri.gns.fred.util.PersonUtil;
 import nz.cri.gns.fred.util.RecordUtil;
@@ -122,7 +118,7 @@ public class PaleoRowProcessor extends RowProcessor {
             if (rowNum > ROW_SAMPLE_TYPE && each.getColumnNum() >= 2) {
                 paleo = getPaleo(v.getColumnNum());
                 if (null == paleo) {
-                    throw new RowImportException(row, v, "The locality wasn't defined back in row " + Integer.toString(ROW_LOCALITY) + " of column " + XLSXSpreadsheet.columnNumToLetters(each.getColumnNum()));
+                    throw new RowImportException(row, v, "The locality wasn't defined back in row " + Integer.toString(ROW_LOCALITY+1) + " of column " + XLSXSpreadsheet.columnNumToLetters(each.getColumnNum()));
                 }
             }
 
@@ -348,10 +344,16 @@ public class PaleoRowProcessor extends RowProcessor {
         }
         Taxon tx;
         if (null == txs || txs.isEmpty()) {
-            warn("Cannot find this taxon. Assuming it is a new one.");
+            warn("Cannot find the taxon \"txStr\"+. Assuming it is a new one."); 
             tx = taxonUtil.createTaxon();
             tx.setTaxonomicGroup(taxonGroup);
+            tx.setStatus(FREDConstants.PROVISIONAL);
             tx.setTaxonomicName(txStr);
+            try {
+                fredDAO.save(tx);
+            } catch (StorageAccessException e) {
+                throw new RowImportException(row, row.getValue(1), "Could not create this taxon because:", e);
+            }
         } else {
             tx = txs.get(0);
         }
@@ -364,7 +366,7 @@ public class PaleoRowProcessor extends RowProcessor {
         result.setTaxon(tx);
         result.setTaxonomicName(txStr);
         result.setPaleontology(p);
-
+        p.getListEntries().add(result);
         log("Made a new pal_list entry. Group: " + taxonGroup.getDisplayName() + " Taxon: " + txStr + " Count: " + count + " Coords: " + coords + " Comments: " + comments);
     }
 
