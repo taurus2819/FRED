@@ -73,7 +73,8 @@ public class Dp_jsp extends HttpServlet {
 
             } catch (TaxonomicListException e) {
                 //Still save it
-                dataEntryForm.save(FREDConstants.DATA_ORIGIN_ONLINE); // Can throw exceptions to be caught in the outer try{}catch{}
+                // Can throw exceptions to be caught in the outer try{}catch{}
+                dataEntryForm.save(FREDConstants.DATA_ORIGIN_ONLINE);
 
                 session.setAttribute("taxa", request.getParameter("Taxa"));
                 session.setAttribute(WebsiteConstants.BAD_TAXA_LIST, e.getTaxaList());

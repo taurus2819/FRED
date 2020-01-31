@@ -71,12 +71,7 @@ public class MolluscaExport extends OldFormatFredExport {
 
 	@Override
 	public Collection<Paleontology> getListsToExport(Sample sample) throws StorageAccessException {
-//		Date date = new Date();
-//		System.out.println("Start lists");
 		List<Paleontology> listSet =  Export.getFactory().getFredDAO().getPaleontologies(sample);
-//		System.out.println("Finish lists");
-//		System.out.println("Pals: " + (new Date().getTime() - date.getTime()));
-//		date = new Date();
 		original: for (Iterator<Paleontology> it = listSet.iterator(); it.hasNext(); ) {
 			Paleontology list = it.next();
 			for (Person identifier : list.getIdentifiers()) {
@@ -96,7 +91,6 @@ public class MolluscaExport extends OldFormatFredExport {
 			if (!keep)
 				it.remove();
 		}
-//		System.out.println("Get lists to export: " + (new Date().getTime() - date.getTime()));
 		return listSet;
 
 	}
@@ -121,8 +115,6 @@ public class MolluscaExport extends OldFormatFredExport {
 
 	@Override
 	protected AgeRange getAgeByAllPaleontologies(Sample sample) throws StorageAccessException {
-//Date date0 = new Date();
-//try {
 		List<Paleontology> lists =  Export.getFactory().getFredDAO().getPaleontologies(sample);
 		if (lists.size() == 1) {
 			Paleontology list = lists.iterator().next();
@@ -145,11 +137,5 @@ public class MolluscaExport extends OldFormatFredExport {
 			return null;
 		else
 			return new ListDerivedAge(relevantPals, ListDerivedAge.Type.MINIMUM);
-//} finally {
-//	System.out.println("Age by all pal: " + (new Date().getTime() - date0.getTime()));
-//}
 	}
-	
-	
-
 }

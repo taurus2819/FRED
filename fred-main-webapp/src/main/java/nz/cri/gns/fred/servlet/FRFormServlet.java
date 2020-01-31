@@ -64,6 +64,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfPageEvent;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 
@@ -377,7 +378,9 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 			PDFUtil.addCells(table, new String[] {"Accuracy", ((sv != null && sv.getAccuracy() != null) ? String.valueOf(sv.getAccuracy()) + " m" : null)}, bodyFonts);
 
 			if (featureUtil.isAllowedReadFeature(user, feature)) {
-				PDFUtil.addCells(table, new String[] {"Locality", feature.getLocality()}, bodyFonts);
+                            // Convert HTML code back to String here
+                            String cleanedLocalityString = StringEscapeUtils.unescapeHtml4(feature.getLocality());
+				PDFUtil.addCells(table, new String[] {"Locality", cleanedLocalityString}, bodyFonts);
 				PDFUtil.addCells(table, new String[] {"Country", ((sv != null) ? sv.getCountryName() : null)}, bodyFonts);	
 				PDFUtil.addCells(table, new String[] {"Coordinate Comments", feature.getCoordComments()}, bodyFonts);
 				PDFUtil.addCells(table, new String[] {"Locality Comments", feature.getComments()}, bodyFonts);
@@ -637,7 +640,8 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 				PDFUtil.addRepeatingCells(table, "Adoptor(s)", adoptorsStr, bodyFonts, false);
 				PDFUtil.addCells(table, new String[] {"Adoption Date", ((adoRecord.getAdoptionDate() != null) ? FREDUtil.formatDateForOutput(adoRecord.getAdoptionDate(), adoRecord.getDateRounding()) : null)}, bodyFonts);
 				PDFUtil.addCells(table, new String[] {"Stage", ((adoRecord.getStage() != null) ? StageUtil.getStageDescription(adoRecord.getStage()) : null)}, bodyFonts);
-				PDFUtil.addCells(table, new String[] {"Comments", adoRecord.getComments()}, bodyFonts);
+				String cleanedCommentString = StringEscapeUtils.unescapeHtml4(adoRecord.getComments());
+				PDFUtil.addCells(table, new String[] {"Comments", cleanedCommentString}, bodyFonts);
 				
 				if (!FREDUtil.isEmpty(record.getMetaCats()))
 					PDFUtil.addCells(table, new String[] {"Attached Images", "Images have been attached to this record and can be viewed online"}, bodyFonts);

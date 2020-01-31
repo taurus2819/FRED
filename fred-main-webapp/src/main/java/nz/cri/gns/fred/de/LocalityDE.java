@@ -56,6 +56,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
     protected Feature feature;
     private Feature copyFeature;
     protected SanitizeHttpServletRequest sanitizeHttpRequest;
+
     /**
      * Temporary storage for working comments
      */
@@ -358,18 +359,12 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         reinitialise(factory);
         ArrayList<String[]> error = new ArrayList<>();
 
-//        for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()){
-//            for (String value : entry.getValue()){
-//                System.out.println("Get Parameters = " + value);
-//            }
-//        }
-
         //FRNum (if backlog - but only update if null)
         if (FeatureUtil.isBacklogFeature(feature)) {
             try {
                 FrNumber frNumber = feature.getFrNumber();
                 if (frNumber == null) {
-                    String frNumberStr = sanitizeHttpRequest.stripAllScripts(request.getParameter("FRNumber"));
+                    String frNumberStr = request.getParameter("FRNumber");
                     //if only map sheet entered then get next available FRNumber
                     if (!frNumberStr.contains("/f")) {
                         frNumber = featureUtil.getNextAvailableFrNumber(frNumberStr);
@@ -386,9 +381,8 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 error.add(new String[]{"FR Number", e.getMessage()});
             } catch (StorageAccessException e) {
                 log.log(Level.SEVERE, null, e);
-                //Should never happen
             }
-            if (!FREDUtil.isEmpty(sanitizeHttpRequest.stripAllScripts(request.getParameter("YardFRNumber")))) {
+            if (!FREDUtil.isEmpty(request.getParameter("YardFRNumber"))) {
                 try {
                     feature.setYardFrNumber(featureUtil.getYardFrNumberByString(sanitizeHttpRequest.stripAllScripts(request.getParameter("YardFRNumber")), true));
                 } catch (DataInputException | StorageAccessException e) {
@@ -403,7 +397,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         feature.setFeatureName(sanitizeHttpRequest.stripAllScripts(request.getParameter("FeatName")));
 
         //Registration area
-        String registrationAreaId = sanitizeHttpRequest.stripAllScripts(request.getParameter("RegAreaId"));
+        String registrationAreaId = request.getParameter("RegAreaId");
         if (feature.getRegistrationArea() == null || !feature.getRegistrationArea().getRegAreaId().toString().equals(registrationAreaId)) {
             if (registrationAreaId.equals("-")) {
                 feature.setRegistrationArea(null);
@@ -423,8 +417,8 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         //Site
         datum = DatumFactory.createDatum(request.getParameter("CoordType"));
         coord = null;
-        String east = sanitizeHttpRequest.stripAllScripts(request.getParameter("East"));
-        String north = sanitizeHttpRequest.stripAllScripts(request.getParameter("North"));
+        String east = request.getParameter("East");
+        String north = request.getParameter("North");
         if (east != null && !east.equals("") && north != null && !north.equals("")) {
             try {
                 if (datum.isMapSheetSystem()) {
@@ -434,7 +428,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                     } else if ((precision > 0 && precision < 3) || precision > 4) {
                         error.add(new String[]{"Coordinate", "Length of truncated coordinates must be 3 or 4"});
                     } else {
-                        coord = (Datum.Coordinate) datum.preferredCoordinate().getConstructor(new Class[]{double.class, double.class, String.class, int.class}).newInstance(new Object[]{new Double(north), new Double(east), sanitizeHttpRequest.stripAllScripts(request.getParameter("MapSheet")), precision});
+                        coord = (Datum.Coordinate) datum.preferredCoordinate().getConstructor(new Class[]{double.class, double.class, String.class, int.class}).newInstance(new Object[]{new Double(north), new Double(east), request.getParameter("MapSheet"), precision});
                     }
                 } else {
                     coord = (Datum.Coordinate) datum.preferredCoordinate().getConstructor(new Class[]{double.class, double.class}).newInstance(new Object[]{new Double(north), new Double(east)});
@@ -442,7 +436,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             } catch (NumberFormatException e) {
                 error.add(new String[]{"Coordinate", "Non numeric coordinate entered"});
             } catch (IllegalArgumentException e) {
-
             } catch (SecurityException e) {
             } catch (InstantiationException e) {
             } catch (IllegalAccessException e) {
@@ -478,7 +471,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                         } else {
                             // allow user to override
                             feature.setOrigSystemId(datum.getDatabaseId());
-
                             feature.setOrigCoord(datum.getStringFor(coord));
                         }
                         // always use FRED user contributed locality and site details
@@ -552,9 +544,8 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 throw new DataInputException(error);
             }
         } catch (IllegalArgumentException iae) {
-
             log.log(Level.SEVERE, null, iae);
-            throw new DataInputException("There was an issue with the Locality.  Perhaps the Easting/Northing?", iae.getMessage());
+            throw new DataInputException("There was an issue with the Locality.", iae.getMessage());
         }
     }
 
@@ -592,7 +583,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
             }
 
             if (site == null) {
-                throw new StorageAccessException("Failed to save site. Did you forget to add a Field Number?");
+                throw new StorageAccessException("Failed to save site");
             }
 
             feature.setSiteId(Integer.valueOf(site.key));
@@ -602,7 +593,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 SiteUtil siteUtil = new SiteUtil(factory);
                 feature.setSiteView(siteUtil.getSiteView(feature.getSiteId()));
             } catch (Exception ex) {
-                //happily swallow this one
                 log.log(Level.SEVERE, null, ex);
             }
         } else {

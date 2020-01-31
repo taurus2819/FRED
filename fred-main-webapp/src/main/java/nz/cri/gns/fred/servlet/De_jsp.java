@@ -79,9 +79,9 @@ public class De_jsp
 
                 h.drawTop(out, et, request, response);
 
-                if (sanitizeHttpRequest.stripAllScripts(request.getParameter("CopyID")) != null) {
+                if (request.getParameter("CopyID") != null) {
                     try {
-                        dataEntryForm.copyFrom(Integer.parseInt(sanitizeHttpRequest.stripAllScripts(request.getParameter("CopyID"))));
+                        dataEntryForm.copyFrom(Integer.parseInt(request.getParameter("CopyID")));
                     } catch (NumberFormatException e) {
                         throw new ServletException("Malformed parameter: CopyID");
                     }

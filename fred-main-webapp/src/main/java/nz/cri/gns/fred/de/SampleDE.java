@@ -128,7 +128,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (fromSample.getCollectors() != null) {
             collectors.addAll(fromSample.getCollectors());
         }
-        //sample.setCollectors(fromSample.getCollectors());
 
         sample.setStratUnit(fromSample.getStratUnit());
         sample.setInPlace(fromSample.getInPlace());
@@ -144,7 +143,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         if (fromSample.getSentTos() != null) {
             sentTos.addAll(fromSample.getSentTos());
         }
-        //sample.setSentTos(fromSample.getSentTos());
 
         sample.setNotCollected(fromSample.getNotCollected());
         sample.setSignificance(fromSample.getSignificance());
@@ -161,7 +159,6 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         }
         if (fromSample.getRelationships() != null) {
             relationships.addAll(fromSample.getRelationships());
-            //sample.setRelationships(fromSample.getRelationships());
         }
 
         sample.setColumnMap(fromSample.getColumnMap());
@@ -699,7 +696,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
         //Collection date
         try {
-            String collectionDate = sanitizeHttpRequest.stripAllScripts(request.getParameter("CollDate"));
+            String collectionDate = request.getParameter("CollDate");
             sample.setCollectionDate(FREDUtil.parseDateFromDE(collectionDate));
             sample.setDateRounding(FREDUtil.parseDateRoundingFromDE(collectionDate));
         } catch (ParseException e) {
@@ -812,7 +809,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         FeatureUtil featureUtil = new FeatureUtil(factory);
         if (request.getParameter("PrevSamp").length() > 0) {
             //Go through all the new ones
-            for (String previous : sanitizeHttpRequest.stripAllScripts(request.getParameter("PrevSamp")).split(";")) {
+            for (String previous : request.getParameter("PrevSamp").split(";")) {
                 try {
                     previous = previous.trim();
                     Feature feature = featureUtil.getFeatureWithIdentifyingName(previous);
