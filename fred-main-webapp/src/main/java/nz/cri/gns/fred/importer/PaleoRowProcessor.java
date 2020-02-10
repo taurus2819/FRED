@@ -280,36 +280,40 @@ public class PaleoRowProcessor extends RowProcessor {
 
         Integer count = null;
         String coords = null;
-        String comments = null;
+        String comments = "";
         TaxonomicGroup taxonGroup = null;
 
         if (!newEntry.contains("|")) {
             try {
                 count = Integer.parseInt(newEntry);
             } catch (NumberFormatException e) {
-                comments = newEntry;
+                if (!"*".equals(newEntry)) {
+                    comments = newEntry;
+                }
             }
         } else {
-            String[] parts = newEntry.split("|");
+            // We add a space to make sure we capture any last '|'.
+            String[] parts = (newEntry+" ").split("\\|");
             try {
-                count = Integer.parseInt(newEntry);
+                if (null!=parts[0] && !parts[0].isEmpty()) {
+                    count = Integer.parseInt(parts[0]);
+                }
             } catch (NumberFormatException e) {
+                if (!"*".equals(parts[0])) {
+                    comments = parts[0] + "|";
+                }
             }
             if (parts.length == 2) {
-                comments = parts[1].trim();
-                if (comments.isEmpty()) {
-                    comments = null;
-                }
+                comments = comments + parts[1].trim();
             } else {
                 if (parts.length == 3) {
                     coords = parts[1].trim();
                     if (coords.isEmpty()) {
                         coords = null;
                     }
-                    comments = parts[2].trim();
-                    if (comments.isEmpty()) {
-                        comments = null;
-                    }
+                    comments = comments+parts[2].trim();
+                } else {
+                    comments = newEntry; // At the very least, don't lose data.
                 }
             }
         }
@@ -361,7 +365,11 @@ public class PaleoRowProcessor extends RowProcessor {
         PaleontologyListEntry result = fredDAO.createNewPaleontologyListEntry();
         result.setSpecimenCount(count);
         result.setSpecimenCoords(coords);
-        result.setComments(comments);
+        if (null==comments || comments.isEmpty()) {
+            result.setComments(null);
+        } else {
+            result.setComments(comments);
+        }
         result.setTaxonomicGroup(taxonGroup);
         result.setTaxon(tx);
         result.setTaxonomicName(txStr);
