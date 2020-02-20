@@ -18,12 +18,7 @@ import nz.cri.gns.fred.hibernate.Person;
 import nz.cri.gns.fred.hibernate.Stage;
 import nz.cri.gns.fred.hibernate.TaxonomicGroup;
 import nz.cri.gns.fred.model.*;
-import nz.cri.gns.fred.util.FolderUtil;
-import nz.cri.gns.fred.util.PersonUtil;
-import nz.cri.gns.fred.util.RecordUtil;
-import nz.cri.gns.fred.util.SampleUtil;
-import nz.cri.gns.fred.util.StageUtil;
-import nz.cri.gns.fred.util.TaxonomicUtil;
+import nz.cri.gns.fred.util.*;
 import nz.cri.gns.munginator.MgException;
 import nz.cri.gns.munginator.Read;
 import nz.cri.gns.munginator.SchemaSingleton;
@@ -76,6 +71,7 @@ public class PaleoRowProcessor extends RowProcessor {
     private final StageUtil stageUtil;
     private final SampleUtil sampleUtil;
     private final FolderUtil folderUtil;
+    private final AuditUtil auditUtil;
     private final User user;
 
     public PaleoRowProcessor(User user, DAOFactory factory, String code, Map<Integer, Record> paleoMatrix) {
@@ -94,6 +90,7 @@ public class PaleoRowProcessor extends RowProcessor {
         this.stageUtil = new StageUtil(factory);
         this.sampleUtil = new SampleUtil(factory);
         this.folderUtil = new FolderUtil(factory);
+        this.auditUtil = new AuditUtil(factory);
     }
 
     /* RowProcessor methods. */
@@ -238,7 +235,8 @@ public class PaleoRowProcessor extends RowProcessor {
         }
         Record r;
         try {
-            r = (Record) recordUtil.createRecord(sample, RecordUtil.PALEONTOLOGICAL, folderId, user);
+            r = recordUtil.createRecord(sample, RecordUtil.PALEONTOLOGICAL, folderId, user);
+            r.getAudit().setDataOrigin(this.auditUtil.getDataOrigin(new Integer(FREDConstants.DATA_ORIGIN_EXCEL)));
         } catch (StorageAccessException ex) {
             throw new MgException(ex);
         }
