@@ -236,6 +236,8 @@ public class PaleoRowProcessor extends RowProcessor {
         Record r;
         try {
             r = recordUtil.createRecord(sample, RecordUtil.PALEONTOLOGICAL, folderId, user);
+
+            // PDB-259
             r.getAudit().setDataOrigin(this.auditUtil.getDataOrigin(new Integer(FREDConstants.DATA_ORIGIN_EXCEL)));
         } catch (StorageAccessException ex) {
             throw new MgException(ex);
