@@ -553,9 +553,6 @@ insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='LU_AGE_VIEW'), 2, 'BASE_AGE' );
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='LU_AGE_VIEW'), 2, 'TOP_AGE' );
 
-CREATE VIEW LU_COUNTRY AS
-SELECT * FROM MIS.COUNTRY
-ORDER BY decode (country_code, 'AQ', 'AA', 'NZ', 'AB', country_name);
 
 insert into temp_fk (from_table, from_column, to_table, to_column) values ('RECORD','AUDIT_ID','AUDIT_TABLE','AUDIT_ID');
 insert into temp_fk (from_table, from_column, to_table, to_column) values ('RECORD','SAMPLE_ID','SAMPLE','SAMPLE_ID');
@@ -737,27 +734,27 @@ update registration_area set disp_order = 	21	 where code = 'TL';
 update registration_area set disp_order = 	22	 where code = 'TG';
 update registration_area set disp_order = 	23	 where code = 'VA';
 
-insert into data_origin (data_origin_id, name, description) values (910, '>=2019 Excel template', 'Entry using Excel spreadsheet template.');
+insert into data_origin (origin_id, name, description) values (910, '>=2019 Excel template', 'Entry using Excel spreadsheet template.');
 
 -------------------------------------
-XXX In the SC database:
-alter table sc.method add disp_order number(4) default 1;
-update method set disp_order = 1 where method='GPS - Field';
-update method set disp_order = 2 where method='GPS - Differential';
-update method set disp_order = 3 where method='Map - 1:50,000 scale';
-update method set disp_order = 4 where method='Air Photo';
-update method set disp_order = 5 where method='Altimeter';
-update method set disp_order = 6 where method='Country known only';
-update method set disp_order = 7 where method='Google Elevation';
-update method set disp_order = 8 where method='Location name';
-update method set disp_order = 9 where method='Map - 1:10,000 scale';
-update method set disp_order = 10 where method='Map - <=1:25,000 scale';
-update method set disp_order = 11 where method='Map - 1:63,360 scale';
-update method set disp_order = 12 where method='Map - 1:100,000 scale';
-update method set disp_order = 13 where method='Map - >=1:250,000 scale';
-update method set disp_order = 14 where method='Map - scale not specified';
-update method set disp_order = 15 where method='Map sheet known only';
-update method set disp_order = 16 where method='Remote site';
-update method set disp_order = 17 where method='Surveyed';
-update method set disp_order = 18 where method='Verbal description';
+--In the SC database:
+--alter table sc.method add disp_order number(4) default 1;
+--update method set disp_order = 1 where method='GPS - Field';
+--update method set disp_order = 2 where method='GPS - Differential';
+--update method set disp_order = 3 where method='Map - 1:50,000 scale';
+--update method set disp_order = 4 where method='Air Photo';
+--update method set disp_order = 5 where method='Altimeter';
+--update method set disp_order = 6 where method='Country known only';
+--update method set disp_order = 7 where method='Google Elevation';
+--update method set disp_order = 8 where method='Location name';
+--update method set disp_order = 9 where method='Map - 1:10,000 scale';
+--update method set disp_order = 10 where method='Map - <=1:25,000 scale';
+--update method set disp_order = 11 where method='Map - 1:63,360 scale';
+--update method set disp_order = 12 where method='Map - 1:100,000 scale';
+--update method set disp_order = 13 where method='Map - >=1:250,000 scale';
+--update method set disp_order = 14 where method='Map - scale not specified';
+--update method set disp_order = 15 where method='Map sheet known only';
+--update method set disp_order = 16 where method='Remote site';
+--update method set disp_order = 17 where method='Surveyed';
+--update method set disp_order = 18 where method='Verbal description';
 

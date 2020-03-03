@@ -1,73 +1,6 @@
-drop table if exists ADOPTION;
-drop table if exists ADOPTOR;
-drop table if exists AGE;
-drop table if exists AUDIT_CONFID;
-drop table if exists AUDIT_EDIT;
-drop table if exists AUDIT_TABLE;
-drop table if exists BACKLOG_STATUS_TEMP;
-drop table if exists BAD_RECORDS;
-drop table if exists BASIS_PAL_LIST;
-drop table if exists BEDDING;
-drop table if exists BED_THICKNESS;
-drop table if exists BEGG_FEATURE;
-drop table if exists BORE_FRED;
-drop table if exists CARBONATE;
-drop table if exists COLLECTOR;
-drop table if exists COLOUR_MODIFIER;
-drop table if exists CONFIDENTIAL_GROUP;
-drop table if exists CONFID_GROUP_OWNERS;
-drop table if exists CONFID_GROUP_USER;
-drop table if exists DATA_ORIGIN;
-drop table if exists DEFAULT_IDENTIFICATION_DATE;
-drop table if exists DOUBLE_TAXA;
-drop table if exists DRILL_TYPE;
-drop table if exists DUPS;
-drop table if exists FEATURE;
-drop table if exists FEATURE_META;
-drop table if exists FOLDER;
-drop table if exists FOLDER_CONTENT;
-drop table if exists FOLDER_RIGHT;
-drop table if exists FOLDER_TYPE;
-drop table if exists FOLDER_USER;
-drop table if exists FOSSIL_GROUP;
-drop table if exists FR;
-drop table if exists FR_NUMBER;
-drop table if exists FR_USER;
-drop table if exists GRAIN_SIZE;
-drop table if exists HARDNESS;
-drop table if exists IDENTIFIER;
-drop table if exists JAMES_TEMP;
-drop table if exists JOE;
-drop table if exists LAB_SECTION;
-drop table if exists LOG_TABLE;
-drop table if exists LOOKUP;
-drop table if exists PALEONTOLOGY;
-drop table if exists PAL_LIST;
-drop table if exists PAL_LIST_META;
-drop table if exists PERSON;
-drop table if exists RECORD;
-drop table if exists RECORD_META;
-drop table if exists REGISTRATION_AREA;
-drop table if exists RELATIONSHIP;
-drop table if exists RELATIONSHIP_TYPE;
-drop table if exists RELATION_TYPE;
-drop table if exists ROCK_COLOUR;
-drop table if exists SAMPLE;
-drop table if exists SAMPLE_META;
-drop table if exists SECURITY_CLASS;
-drop table if exists SEDIMENTARY_FEATURE;
-drop table if exists SEDIMENTARY_FEATURE_TYPE;
-drop table if exists SENT_TO;
-drop table if exists SIMEDELS;
-drop table if exists STAGE;
-drop table if exists TAXA_PANEL;
-drop table if exists TAXONOMIC_GROUP;
-drop table if exists TAXONOMIC_LOOKUP;
-drop table if exists TAXONOMIC_SYNONYM;
-drop table if exists TEMP_LOB;
-drop table if exists TEMP_YARD_REFS;
-drop table if exists USER_LIST;
-drop table if exists WEATHERING;
+create schema sc;
+create schema fr;
+set schema fr;
 
 CREATE SEQUENCE AGE_SEQ START WITH 176;
 CREATE SEQUENCE AUDIT_EDIT_SEQ START WITH 285216;
@@ -260,3 +193,127 @@ ALTER TABLE TAXA_PANEL ADD CONSTRAINT FK_TAXA_PANEL_GROUP FOREIGN KEY (GROUP_ID)
 ALTER TABLE TAXONOMIC_LOOKUP ADD CONSTRAINT FK_TAXONOMIC_LKP_GROUP FOREIGN KEY (GROUP_ID) REFERENCES TAXONOMIC_GROUP (GROUP_ID);
 ALTER TABLE TAXONOMIC_SYNONYM ADD CONSTRAINT TAXONOMIC_SYNONYM_FK2 FOREIGN KEY (TAXA_ID) REFERENCES TAXONOMIC_LOOKUP (TAXA_ID);
 ALTER TABLE TAXONOMIC_SYNONYM ADD CONSTRAINT TAXONOMIC_SYNONYM_FK3 FOREIGN KEY (SYNONYM_ID) REFERENCES TAXONOMIC_LOOKUP (TAXA_ID);
+
+CREATE TABLE SC.SITE
+    (
+        SITE_ID NUMBER(7) DEFAULT 0 NOT NULL,
+        SITE_NAME VARCHAR2(64),
+        LATITUDE FLOAT(126) NOT NULL,
+        LONGITUDE FLOAT(126) NOT NULL,
+        METHOD_ID NUMBER(3),
+        ACCURACY FLOAT(126),
+        DIRECTIONS VARCHAR2(1000),
+        ORIG_SYSTEM_ID NUMBER(3),
+        ORIG_COORD VARCHAR2(100),
+        HEIGHT FLOAT(126),
+        H_METHOD_ID NUMBER(3),
+        H_ACCURACY FLOAT(126),
+        COUNTRY_CODE VARCHAR2(2),
+        OBJECTID INTEGER NOT NULL,
+        OWNER_ID NUMBER(7),
+        FLAG NUMBER(2),
+        SHAPE varchar2(4000),
+    );
+
+CREATE VIEW FR.SITE_VIEW ( FEATURE_ID, FR_NUMBER, FEATURE_TYPE, LOCALITY, SHAPE, OBJECTID ) AS SELECT DISTINCT
+f.Feature_ID, FR_Number, Feature_Type, Locality, Shape, s.ObjectID
+FROM FEATURE f
+  inner join sc.site s
+    on f.site_id = s.site_id
+  left join FR_NUMBER fr
+    on f.fr_id = fr.fr_id
+ ;
+
+ CREATE TABLE SC.LAB ( LAB_ID NUMBER(4) NOT NULL, LAB_NAME VARCHAR2(50) NOT NULL, LAB_ADDRESS VARCHAR2(255), LAB_COUNTRY VARCHAR2(2), CONSTRAINT LAB_PK PRIMARY KEY (LAB_ID) );
+
+CREATE VIEW FR_USER_VIEW ( PE_ID, GIVEN_NAME, FAMILY_NAME, FULL_NAME, PE_CLIENT_CODE, CL_COMPANY_NAME, DELETED, FR_WEBSITE_ACCESS, FR_DATA_ENTRY, FR_ADMIN, LAST_LOGIN, USERNAME ) AS select
+   1
+   , 'Test'
+   , 'User'
+   , 'Test User'
+   , 1
+   , 'GNS'
+   , 0
+   , 1
+   , 1
+   , 1
+   , sysdate
+   , 'testuser';
+
+create schema mis;
+create view mis.org (CL_CLIENT_CODE,
+                        CL_COMPANY_NAME,
+                        CL_DELETED)
+as select 1, 'GNS', 0;
+
+create schema IP;
+CREATE VIEW IP.PERSON_VIEW2
+    (
+        PE_ID,
+        GIVEN_NAME,
+        FAMILY_NAME,
+        FULL_NAME,
+        DELETED,
+        PE_CLIENT_CODE,
+        PE_OS_LOGIN,
+        CL_COMPANY_NAME,
+        EMAIL_ADDRESS
+    ) AS
+    select 1, 'Test', 'User', 'Test User', 0, 1, 'testuser', 'GNS', 'developer@gns.cri.nz';
+
+CREATE VIEW SC.SITE_VIEW
+    (
+        SITE_ID,
+        SITE_NAME,
+        LATITUDE,
+        LONGITUDE,
+        COUNTRY_CODE,
+        COUNTRY_NAME,
+        NZMG_SHEET,
+        NZMG_EAST,
+        NZMG_NORTH,
+        QMAP_SHEET,
+        NZMS262_SHEET,
+        NZTOPO50_SHEET,
+        DSIRQM_SHEET,
+        ISLAND,
+        METHOD_ID,
+        METHOD,
+        ACCURACY,
+        DIRECTIONS,
+        ORIG_SYSTEM_ID,
+        COORD_SYSTEM,
+        ORIG_COORD,
+        HEIGHT,
+        H_METHOD_ID,
+        H_METHOD,
+        H_ACCURACY,
+        OWNER_ID,
+        OWNER
+    ) AS
+SELECT 379265,
+    'RQ-3',
+    -41.06519000193306, 176.08813195524672,
+    'NZ',
+    'NZ',
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    72,
+    null,
+    'BP36|595|496',
+    null,
+    null,
+    null,
+    null,
+    1,
+    null;

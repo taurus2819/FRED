@@ -1,6 +1,4 @@
-create schema sc;
 
-CREATE TABLE SC.LAB ( LAB_ID NUMBER(4) NOT NULL, LAB_NAME VARCHAR2(50) NOT NULL, LAB_ADDRESS VARCHAR2(255), LAB_COUNTRY VARCHAR2(2), CONSTRAINT LAB_PK PRIMARY KEY (LAB_ID) );
 insert into SC.LAB (LAB_ID, LAB_NAME, LAB_ADDRESS, LAB_COUNTRY) values (1, 'Rafter laboratory', 'Gracefield Road, Lower Hutt', 'NZ');
 insert into SC.LAB (LAB_ID, LAB_NAME, LAB_ADDRESS, LAB_COUNTRY) values (2, 'Service Laboratories', 'Nelson', 'NZ');
 insert into SC.LAB (LAB_ID, LAB_NAME, LAB_ADDRESS, LAB_COUNTRY) values (3, 'Anatech', null, null);
@@ -357,6 +355,106 @@ insert into SC.METHOD (METHOD_ID, METHOD, NOM_ACCURACY_XY, NOM_ACCURACY_Z) value
 insert into SC.METHOD (METHOD_ID, METHOD, NOM_ACCURACY_XY, NOM_ACCURACY_Z) values (17, 'Map - 1:10,000 scale', 10, null);
 insert into SC.METHOD (METHOD_ID, METHOD, NOM_ACCURACY_XY, NOM_ACCURACY_Z) values (18, 'Google Elevation', null, 10);
 
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (1, 'Modern', 'N', 'Quaternary', 0, 0, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (2, 'Holocene', 'Rec', 'Quaternary', 0.012, 0, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (3, 'Aranuian', 'Quar', 'Quaternary', 0.014, 0, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (4, 'Otiran', 'Quti', 'Quaternary', 0.06, 0.014, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (5, 'Oturian', 'Qutu', 'Quaternary', 0.13, 0.06, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (6, 'Waimean', 'Quwe', 'Quaternary', 0.37, 0.13, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (7, 'Terangian', 'Qutr', 'Quaternary', 0.43, 0.37, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (8, 'Upper Hawera Series', 'Qu', 'Quaternary', 0.13, 0, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (9, 'Lower Hawera Series', 'Ql', 'Quaternary', 0.43, 0.13, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (10, 'Hawera Series', 'Q', 'Quaternary', 0.43, 0, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (11, 'Haweran', 'Wq', 'Quaternary', 0.34, 0, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (12, 'Putikian', 'Wu', 'Quaternary', 0.78, 0.34, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (13, 'Okehuan', 'Wk', 'Quaternary', 1.63, 0.78, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (14, 'Castlecliffian', 'WC', 'Quaternary', 1.63, 0.34, 0, null, 1);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (15, 'Castlecliffian', 'Wc', 'Quaternary', 1.63, 0.34, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (16, 'Marahauan', 'Wa', 'Quaternary', 2.3, 1.63, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (17, 'Hautawan', 'Wh', 'Quaternary', 2.4, 2.3, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (18, 'Nukumaruan', 'WN', 'Quaternary', 2.4, 1.63, 0, null, 1);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (19, 'Nukumaruan', 'Wn', 'Quaternary', 2.4, 1.63, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (20, 'Mangapanian', 'Wm', 'Neogene', 3, 2.4, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (21, 'Waipipian', 'Wp', 'Neogene', 3.7, 3, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (22, 'Waitotaran', 'WW', 'Neogene', 3.7, 2.4, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (23, 'Waitotaran', 'Ww', 'Neogene', 3.7, 2.4, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (24, 'Opoitian', 'Wo', 'Neogene', 5.33, 3.7, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (25, 'Wanganui Series', 'W', 'Neogene', 5.33, 0, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (26, 'Kapitean', 'Tk', 'Neogene', 7.2, 5.33, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (27, 'Tongaporutuan', 'Tt', 'Neogene', 11.04, 7.2, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (28, 'Taranaki Series', 'T', 'Neogene', 11.04, 5.33, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (29, 'Waiauan', 'Sw', 'Neogene', 13.05, 11.04, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (30, 'Lillburnian', 'Sl', 'Neogene', 15.1, 13.05, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (31, 'Clifdenian', 'Sc', 'Neogene', 15.9, 15.1, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (32, 'Southland Series', 'S', 'Neogene', 15.9, 11.04, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (33, 'Altonian', 'Sa', 'Neogene', 18.7, 15.9, 0, null, 1);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (34, 'Hutchinsonian', 'Ph', 'Neogene', 18.7, 15.9, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (35, 'Awamoan', 'Pa', 'Neogene', 18.7, 15.9, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (36, 'Altonian', 'Pl', 'Neogene', 18.7, 15.9, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (37, 'Otaian', 'Po', 'Neogene', 21.7, 18.7, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (38, 'Pareora Series', 'P', 'Neogene', 21.7, 15.9, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (39, 'Waitakian', 'Lw', 'Neogene', 25.2, 21.7, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (40, 'Duntroonian', 'Ld', 'Paleogene', 27.3, 25.2, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (41, 'Whaingaroan', 'Lwh', 'Paleogene', 34.6, 27.3, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (42, 'Landon Series', 'L', 'Paleogene', 34.6, 21.7, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (43, 'Runangan', 'Ar', 'Paleogene', 36.7, 34.6, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (44, 'Kaiatan', 'Ak', 'Paleogene', 39.1, 36.7, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (45, 'Bortonian', 'Ab', 'Paleogene', 42.6, 39.1, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (46, 'Arnold Series', 'A', 'Paleogene', 42.6, 34.6, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (47, 'Porangan', 'Dp', 'Paleogene', 45.7, 42.6, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (48, 'Heretaungan', 'Dh', 'Paleogene', 48.9, 45.7, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (49, 'Mangaorapan', 'Dm', 'Paleogene', 52, 48.9, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (50, 'Waipawan', 'Dw', 'Paleogene', 56, 52, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (51, 'Teurian', 'Dt', 'Paleogene', 66, 56, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (52, 'Wangaloan', 'Dwn', 'Paleogene', 66, 56, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (53, 'Dannevirke Series', 'D', 'Paleogene', 66, 42.6, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (54, 'Teurian', 'Mt', 'Paleogene', 66, 56, 0, null, 1);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (55, 'Wangaloan', 'Mw', 'Paleogene', 66, 56, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (56, 'Upper Haumurian', 'Mhu', 'Cretaceous', 79, 66, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (57, 'Lower Haumurian', 'Mhl', 'Cretaceous', 83.6, 79, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (58, 'Haumurian', 'Mh', 'Cretaceous', 83.6, 66, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (59, 'Piripauan', 'Mp', 'Cretaceous', 86.5, 83.6, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (60, 'Mata Series', 'M', 'Cretaceous', 86.5, 66, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (61, 'Teratan', 'Rt', 'Cretaceous', 90.5, 86.5, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (62, 'Mangaotanean', 'Rm', 'Cretaceous', 93.7, 90.5, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (63, 'Arowhanan', 'Ra', 'Cretaceous', 95.2, 93.7, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (64, 'Raukumara Series', 'R', 'Cretaceous', 95.2, 86.5, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (65, 'Ngaterian', 'Cn', 'Cretaceous', 99.5, 95.2, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (66, 'Motuan', 'Cm', 'Cretaceous', 103.3, 99.5, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (67, 'Urutawan', 'Cu', 'Cretaceous', 108.4, 103.3, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (68, 'Clarence Series', 'C', 'Cretaceous', 108.4, 95.2, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (69, 'Korangan', 'Uk', 'Cretaceous', 117.5, 108.4, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (70, 'pre-Korangan', 'Um', 'Cretaceous', 145, 117.5, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (71, 'Taitai Series', 'U', 'Cretaceous', 145, 108.4, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (72, 'Waikatoan', 'Opw', 'Jurassic', 148.2, 145, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (73, 'Mangaoran', 'Opm', 'Jurassic', 150, 148.2, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (74, 'Puaroan', 'Op', 'Jurassic', 150, 145, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (75, 'Oteke Series', 'O', 'Jurassic', 150, 145, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (76, 'Ohauan', 'Ko', 'Jurassic', 154.5, 150, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (77, 'Heterian', 'Kh', 'Jurassic', 164.3, 154.5, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (78, 'Temaikan', 'Kt', 'Jurassic', 176, 164.3, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (79, 'Kawhia Series', 'K', 'Jurassic', 176, 150, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (80, 'Ururoan', 'Hu', 'Jurassic', 188.9, 176, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (81, 'Aratauran', 'Ha', 'Jurassic', 201.3, 188.9, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (82, 'Herangi Series', 'H', 'Jurassic', 201.3, 176, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (83, 'Otapirian', 'Bo', 'Triassic', 208.5, 201.3, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (84, 'Warepan', 'Bw', 'Triassic', 217, 208.5, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (85, 'Otamitan', 'Bm', 'Triassic', 221, 217, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (86, 'Oretian', 'Br', 'Triassic', 227.5, 221, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (87, 'Balfour Series', 'B', 'Triassic', 227.5, 201.3, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (88, 'Kaihikuan', 'Gk', 'Triassic', 238, 227.5, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (89, 'Etalian', 'Ge', 'Triassic', 246, 238, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (90, 'Malakovian', 'Gm', 'Triassic', 249, 246, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (91, 'Nelsonian', 'Gn', 'Triassic', 251.5, 249, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (92, 'Gore Series', 'G', 'Triassic', 251.5, 227.5, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (93, 'Makarewan', 'YDm', 'Permian', 253.2, 251.5, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (94, 'Waiitian', 'YDw', 'Permian', 254.2, 253.2, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (95, 'Puruhauan', 'YDp', 'Permian', 259.8, 254.2, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (96, 'D''Urville Series', 'YD', 'Permian', 259.8, 251.5, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (97, 'Flettian', 'YAf', 'Permian', 266, 259.8, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (98, 'Barrettian', 'YAr', 'Permian', 276, 266, 0, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (99, 'Braxtonian', 'YAb', 'Permian', 276, 259.8, 1, null, 0);
+insert into AGE (AGE_ID, NAME, CODE, PERIOD, BASE_AGE, TOP_AGE, OBSOLETE_FLAG, COMMENTS, DUPLICATE_FLAG) values (100, 'Mangapirian', 'YAm', 'Permian', 285, 276, 0, null, 0);
 
 
 insert into BED_THICKNESS (THICKNESS_ID, NAME, CODE) values (121, 'non-bedded', '1');
@@ -795,3 +893,27 @@ insert into TAXONOMIC_GROUP (GROUP_ID, NAME) values (358, 'Biostatistics');
 insert into WEATHERING (WEATHERING_ID, NAME, CODE) values (141, 'none or slight', '1');
 insert into WEATHERING (WEATHERING_ID, NAME, CODE) values (142, 'moderate', '2');
 insert into WEATHERING (WEATHERING_ID, NAME, CODE) values (143, 'intense', '3');
+
+insert into FOLDER (FOLDER_ID, NAME, OWNER_ID, FOLDER_TYPE) values (3, 'Southern Nth Island', null, 1);
+insert into FOLDER (FOLDER_ID, NAME, OWNER_ID, FOLDER_TYPE) values (13258, 'Test only', 1, 2);
+
+insert into FR_NUMBER (FR_ID, MAP_SHEET, SERIAL_NUMBER, RECOLLECTION_NUMBER, FRNUM_COMMENTS, FR_NUMBER, OBSOLETE, DELETE_FLAG) values (156703, 'T26', 528, null, null, 'T26/f0528', null, null);
+insert into FR_NUMBER (FR_ID, MAP_SHEET, SERIAL_NUMBER, RECOLLECTION_NUMBER, FRNUM_COMMENTS, FR_NUMBER, OBSOLETE, DELETE_FLAG) values (156704, 'T26', 529, null, null, 'T26/f0529', null, null);
+
+--insert into SITE (SITE_ID, SITE_NAME, LATITUDE, LONGITUDE, METHOD_ID, ACCURACY, DIRECTIONS, ORIG_SYSTEM_ID, ORIG_COORD, HEIGHT, H_METHOD_ID, H_ACCURACY, COUNTRY_CODE, OBJECTID, OWNER_ID, FLAG) values (379265, 'RQ-3', -41.06519000193306, 176.08813195524672, null, null, 'Test locality', 72, 'BP36|595|496', null, null, null, 'NZ', 384240, null, null, 1, 1, 176.088131921489, -41.0651899190599, 176.088131921489, -41.0651899190599, null, null, null, null, 0, 0, 300049);
+
+insert into PERSON (PERSON_ID, ST_CODE, NAME) values (1, null, 'Test User');
+insert into PERSON (PERSON_ID, ST_CODE, NAME) values (1938, null, 'Fletcher Challenge Energy Taranaki Ltd');
+insert into PERSON (PERSON_ID, ST_CODE, NAME) values (2696, null, 'Leed, H.');
+
+insert into AUDIT_TABLE (AUDIT_ID, STATUS, DATA_ORIGIN_ID, CREATED_BY_ID, CREATED_DATE, SUBMITTED_BY_ID, SUBMITTED_DATE, APPROVED_BY_ID, APPROVED_DATE, SEND_MESSAGE, WORKING_COMMENTS, WORKING_FOLDER_ID, CURATOR_COMMENTS, SECURITY_CLASS_ID, CONFIDENTIAL_FLAG, CONFID_PERIOD, CONFID_LAPSE_DATE, CONFID_LAPSE_EMAIL, CONFID_EMAIL_FLAG, DONT_DELETE_FLAG) values (398759, 'approved', 909, 1, TIMESTAMP '2012-02-07 00:00:00', 1, TIMESTAMP '2012-02-07 00:00:00', 1, TIMESTAMP '2012-02-21 00:00:00', null, null, null, null, 4, 0, 0, null, null, 0, null);
+insert into AUDIT_TABLE (AUDIT_ID, STATUS, DATA_ORIGIN_ID, CREATED_BY_ID, CREATED_DATE, SUBMITTED_BY_ID, SUBMITTED_DATE, APPROVED_BY_ID, APPROVED_DATE, SEND_MESSAGE, WORKING_COMMENTS, WORKING_FOLDER_ID, CURATOR_COMMENTS, SECURITY_CLASS_ID, CONFIDENTIAL_FLAG, CONFID_PERIOD, CONFID_LAPSE_DATE, CONFID_LAPSE_EMAIL, CONFID_EMAIL_FLAG, DONT_DELETE_FLAG) values (398760, 'approved', 909, 1, TIMESTAMP '2012-02-07 00:00:00', 1, TIMESTAMP '2012-02-07 00:00:00', 1, TIMESTAMP '2012-02-21 00:00:00', null, null, null, null, 4, 0, 0, null, null, 0, null);
+
+insert into SC.SITE (SITE_ID, SITE_NAME, LATITUDE, LONGITUDE, METHOD_ID, ACCURACY, DIRECTIONS, ORIG_SYSTEM_ID, ORIG_COORD, HEIGHT, H_METHOD_ID, H_ACCURACY, COUNTRY_CODE, OBJECTID, OWNER_ID, FLAG, SHAPE)
+          values (379265, 'RQ-3', -41.06519000193306, 176.08813195524672, null, null, 'Test locality', 72, 'BP36|595|496', null, null, null, 'NZ', 384240, null, null, 'foo');
+
+insert into FEATURE (FEATURE_ID, SITE_ID, AUDIT_ID, MASTERFILE_ID, FIELD_NUMBER, LOCALITY, REG_AREA_ID, COMMENTS, FEATURE_TYPE, FEATURE_NAME, DRILLHOLE_LICENCE_NAME, START_DATE, START_DATE_ROUNDING, FINISH_DATE, FINISH_DATE_ROUNDING, PERSON_ID, DATUM_TYPE, DATUM_ELEVATION, START_DEPTH, FINISH_DEPTH, ORIG_SYSTEM_ID, ORIG_COORD, MAP_YEAR, COORD_COMMENTS, FR_ID, YARD_FR_ID, DEPTH_UNIT) values (106358, 379265, 398759, 3, null, 'Riversdale Quarry', 400, null, 'Outcrop', 'RQ-2', null, null, null, null, null, null, null, null, null, null, 72, 'BP36|595|496', null, null, 156703, null, null);
+insert into FEATURE (FEATURE_ID, SITE_ID, AUDIT_ID, MASTERFILE_ID, FIELD_NUMBER, LOCALITY, REG_AREA_ID, COMMENTS, FEATURE_TYPE, FEATURE_NAME, DRILLHOLE_LICENCE_NAME, START_DATE, START_DATE_ROUNDING, FINISH_DATE, FINISH_DATE_ROUNDING, PERSON_ID, DATUM_TYPE, DATUM_ELEVATION, START_DEPTH, FINISH_DEPTH, ORIG_SYSTEM_ID, ORIG_COORD, MAP_YEAR, COORD_COMMENTS, FR_ID, YARD_FR_ID, DEPTH_UNIT) values (106359, 379265, 398760, 3, null, 'Riversdale Quarry', 400, null, 'Outcrop', 'RQ-3', null, null, null, null, null, null, null, null, null, null, 72, 'BP36|595|496', null, null, 156704, null, null);
+
+insert into SAMPLE (SAMPLE_ID, FEATURE_ID, FR_ID, TOP_DEPTH, BOTTOM_DEPTH, DRILL_TYPE, COMMENTS, DRILL_TYPE_ID, YARD_FR_ID, AUDIT_ID, COLLECTION_DATE, DATE_ROUNDING, STRAT_UNIT, IN_PLACE, NOT_COLLECTED, SIGNIFICANCE, INFERRED_STAGE_ID, KNOWN_STAGE_ID, COLUMN_MAP, DIP, DIP_DIRECTION, STRIKE, FACING, PRIMARY_GRAINSIZE_ID, SECONDARY_GRAINSIZE_ID, COMPARATOR_USED, BED_THICK_ID, PRIMARY_BEDDING_ID, SECONDARY_BEDDING_ID, WEATHERING_ID, HARDNESS_ID, CARBONATE_ID, COLOUR_MODIFIER_ID, PRIMARY_COLOUR_ID, SECONDARY_COLOUR_ID, WET, ROCK_NATURE, DEPOSITION_ENV, CORRESPONDENCE, DEPTH_UNIT, STRAT_COMMENTS) values (167377, 106358, null, null, null, null, null, null, null, 398759, TIMESTAMP '2011-08-19 00:00:00', null, null, 'Yes', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+insert into SAMPLE (SAMPLE_ID, FEATURE_ID, FR_ID, TOP_DEPTH, BOTTOM_DEPTH, DRILL_TYPE, COMMENTS, DRILL_TYPE_ID, YARD_FR_ID, AUDIT_ID, COLLECTION_DATE, DATE_ROUNDING, STRAT_UNIT, IN_PLACE, NOT_COLLECTED, SIGNIFICANCE, INFERRED_STAGE_ID, KNOWN_STAGE_ID, COLUMN_MAP, DIP, DIP_DIRECTION, STRIKE, FACING, PRIMARY_GRAINSIZE_ID, SECONDARY_GRAINSIZE_ID, COMPARATOR_USED, BED_THICK_ID, PRIMARY_BEDDING_ID, SECONDARY_BEDDING_ID, WEATHERING_ID, HARDNESS_ID, CARBONATE_ID, COLOUR_MODIFIER_ID, PRIMARY_COLOUR_ID, SECONDARY_COLOUR_ID, WET, ROCK_NATURE, DEPOSITION_ENV, CORRESPONDENCE, DEPTH_UNIT, STRAT_COMMENTS) values (167378, 106359, null, null, null, null, null, null, null, 398760, TIMESTAMP '2011-08-19 00:00:00', null, null, 'Yes', null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);

@@ -29,6 +29,7 @@ import nz.cri.gns.munginator.upload.Importer;
 import nz.cri.gns.munginator.upload.RowProcessor;
 import nz.cri.gns.munginator.upload.XLSUploader;
 import nz.cri.gns.munginator.upload.XLSUploader.SheetIdentifier;
+import org.h2.jdbcx.JdbcDataSource;
 import org.h2.tools.RunScript;
 import org.h2.tools.Server;
 import static org.junit.Assert.assertTrue;
@@ -62,24 +63,19 @@ public class TestImporter {
             } catch (ClassNotFoundException ex) {
                 throw new RuntimeException(ex);
             }
-            
-            InitialContext ctxt = new InitialContext(); // Loads from jndi.properties, then jdbc.properties.
-
-            // Did we load everything from jdbc.properties properly?
-            DataSource ds = (DataSource) ctxt.lookup("jdbc.fr");
 
             /*
             Used for debugging. You can hook up an SQL client to view the results of the test. 
             */
-            /*
             server = Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "9092");
 
             JdbcDataSource ds = new JdbcDataSource();
             ds.setURL("jdbc:h2:mem:mgdemo;MODE=Oracle");
+            //ds.setURL("jdbc:h2:~/fredtests;MODE=Oracle");
             ds.setUser("sa");
             ds.setPassword("");
             server.start();
-            */
+
 
             conn = ds.getConnection();
             conn.setAutoCommit(false);
@@ -93,20 +89,10 @@ public class TestImporter {
                     "/importer/munginator.sql")));
             RunScript.execute(conn, new FileReader(getResource(
                     "/importer/fred_mg_schema.sql")));
+            RunScript.execute(conn, new FileReader(getResource(
+                    "/importer/lu_country_h2.sql")));
             conn.commit();
 
-            /* Trying to manually make things work. This should be loaded from jdbc.properties
-            */
-            /*System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.SimpleContextFactory");
-            System.setProperty("org.osjava.sj.root", "target/test-classes/config");
-            System.setProperty("org.osjava.jndi.delimiter", "/");
-            System.setProperty("org.osjava.sj.jndi.shared", "true");
-            InitialContext ic = new InitialContext();
-            ic.createSubcontext("java:comp");
-            ic.createSubcontext("java:comp/env");
-            ic.createSubcontext("java:comp/env/jdbc");
-            ic.bind("java:comp/env/jdbc/fr", ds);*/
-            
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -132,9 +118,10 @@ public class TestImporter {
             List<RowProcessor> rps = new ArrayList<>();
 
             Map<Integer, Record> paleoMatrix = new HashMap<>();
-            DAOFactory factory = FredHibernate.get().getDAOFactory();
+            DAOFactory factory = FredHibernate.usingConnection(conn).getDAOFactory();
 
-            User user = new AuthServiceClient().queryUsersByRight("FR_DATA_ENTRY").get(0);
+            User user = new User();
+            user.setId(1L);
 
             rps.add(new PaleoRowProcessor(user, factory, "PALEO", paleoMatrix));
 

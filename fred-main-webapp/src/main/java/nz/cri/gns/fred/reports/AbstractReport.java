@@ -34,7 +34,7 @@ public abstract class AbstractReport {
         try {
             InitialContext context = new InitialContext();
             final Connection conn = DBUtils.getJavaSqlConnection(host, sid, user, password);
-            FredHibernate.get().configure(conn);
+            FredHibernate.usingConnection(conn);
             // TODO: Why are we fudging with the DataSource like this? -mikevdg.
             context.bind("java:comp/env/jdbc/fr", new DataSource() {
 
