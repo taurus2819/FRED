@@ -259,10 +259,10 @@ public class AJAXServlet extends HttpServlet {
             Action.valueOf(action).process(Type.valueOf(type), request, out);
         } catch (StorageAccessException | ServletException e) {
             log.log(Level.SEVERE, null, e);
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             writeError(out, e.getMessage());
         } catch (DataInputException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             writeError(out, e.getMessage());
         } catch (IOException e) {
             // Client closed the connection. We let it be.
