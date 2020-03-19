@@ -201,14 +201,14 @@ public class FredRowProcessor extends TemplateRowProcessor {
     private Integer findOrigSystemId(Row row, String code) throws RowImportException {
         String name = getRowValueString(row, code);
 
-        try (Read s = schema.getTable("LU_COORD_SYSTEM").select()) {
-            s.addColumn("ORIG_SYSTEM_ID");
-            s.addWhere("NAME", name);
+        try (Read s = schema.getTable("SC.ORIG_SYSTEM").select()) {
+            s.addColumn("SYSTEM_ID");
+            s.addWhere("COORD_SYSTEM", name);
             s.doIt(importConn);
             if (!s.next()) {
                 throw new RowImportException(row, code, "This is not a valid system.", null);
             }
-            return s.getInteger("ORIG_SYSTEM_ID");
+            return s.getInteger("SYSTEM_ID");
         } catch (SQLException e) {
             throw new RowImportException(row, code, null, e);
         }

@@ -443,6 +443,7 @@ insert into temp_fk (from_table, from_column, to_table, to_column) values ('FEAT
 insert into mg_column (id, mg_table, mg_column_type, code, is_primary_key) values (mg_column_id_seq.nextval, (select id from mg_table where code='SC.ORIG_SYSTEM'), 1, 'SYSTEM_ID', 1);
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SC.ORIG_SYSTEM'), 3, 'SYSTEM_CODE');
 insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SC.ORIG_SYSTEM'), 3, 'HUMAN_NAME');
+insert into mg_column (id, mg_table, mg_column_type, code) values (mg_column_id_seq.nextval, (select id from mg_table where code='SC.ORIG_SYSTEM'), 3, 'COORD_SYSTEM');
 
 
 insert into mg_table (id, code, name) values (mg_table_id_seq.nextval, 'SC.METHOD', 'Coordinate System');
