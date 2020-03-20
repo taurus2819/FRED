@@ -1,9 +1,6 @@
 package nz.cri.gns.fred.hibernate.util;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -498,17 +495,34 @@ public class HibernateDAOFactory
         return new nz.cri.gns.fred.hibernate.LogTable();
     }
 
-    @Override
-    public LabSection getLabSectionByName(String name) {
-        Session session;
+    private Session retrieveSession() {
         try {
-            session = provider.currentSession();
+            return provider.currentSession();
         } catch (StorageAccessException ex) {
             throw new RuntimeException(ex);
         }
+    }
 
+    private static final String LAB_SECTION_LONG_NAME_FORMAT =
+        " concat(concat(section.lab.name, '-'), section.code) ";
+
+    @Override
+    public List<String> getLabSectionLongNames() {
         try {
-            Query query = session.createQuery("FROM LabSection AS l WHERE l.name=:name");
+            Query query = retrieveSession().createQuery("select "
+                    +LAB_SECTION_LONG_NAME_FORMAT
+                    +" FROM LabSection section ORDER BY section.name, section.lab.name");
+            return (List<String>)query.list();
+        } catch (HibernateException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public LabSection findLabSectionByLongName(String name) {
+        try {
+            Query query = retrieveSession().createQuery("FROM LabSection AS section WHERE "
+                            +LAB_SECTION_LONG_NAME_FORMAT+"=:name");
             query.setString("name", name);
             return (LabSection) query.uniqueResult();
         } catch (HibernateException e) {

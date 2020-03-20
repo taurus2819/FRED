@@ -454,10 +454,6 @@ public class RecordUtil extends ModelUtil implements FREDConstants, AuditedUtil 
         return fredDAO.get(id, nz.cri.gns.fred.hibernate.LabSection.class);
     }
 
-    public LabSection getLabSectionByName(String name) throws StorageAccessException{
-        return fredDAO.getLabSectionByName(name);
-    }
-    
     public Lab findLab(String labName) throws StorageAccessException {
         return fredDAO.findLab(labName);
     }

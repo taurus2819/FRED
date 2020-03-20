@@ -49,7 +49,6 @@ public class FredRowProcessorFactory implements RowProcessorFactory {
             default:
                 throw new MgException("Unknown type of spreadsheet: " + String.valueOf(code));
         }
-
     }
     
     public Map<Integer, Record>  getPaleoRowProcessorMatrix() {

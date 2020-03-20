@@ -53,8 +53,9 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
 
     @Override
     public void write(OutputStream o) throws SQLException, IOException {
+        final GenericSpreadsheet s = spreadsheet; // shorthand
         try {
-            final GenericSpreadsheet s = spreadsheet; // shorthand
+
             SheetIterator it = new AcrossSheetIterator();
             SheetIterator to;
             s.setOutputStream(o);
@@ -69,6 +70,7 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             SampleUtil sampleUtil = new SampleUtil(factory);
 
             StageUtil stageUtil = new StageUtil(factory);
+
             List<Age> ages;
             ages = stageUtil.getAges();
             String groupList = s.addList("Taxonomic Groups", groups.stream().map(TaxonomicGroup::getDisplayName).collect(Collectors.toList()));
@@ -77,7 +79,8 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             String stageModList = s.addList("Stage mod", new String[]{"?"});
 
             RecordUtil recordUtil = new RecordUtil(factory);
-            String labList = s.addList("Laboratories", recordUtil.getLabs().stream().map(Lab::getDisplayName).collect(Collectors.toList()));
+
+            String labList = s.addList("Laboratories", factory.getFredDAO().getLabSectionLongNames());
             
             s.addSheet(SHEETNAME, it);
 
@@ -136,9 +139,10 @@ public final class PaleoSpreadsheetExporter extends SpreadsheetExporter {
             makeSecondColumnBigger();
 
             s.write();
-            s.close();
         } catch (StorageAccessException e) {
             throw new MgException(e);
+        } finally {
+            s.close();
         }
     }
 

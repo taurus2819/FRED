@@ -12,7 +12,6 @@ import nz.cri.gns.fred.Match;
 import nz.cri.gns.fred.dao.DAOFactory;
 import nz.cri.gns.fred.dao.FredDAO;
 import nz.cri.gns.fred.hibernate.Age;
-import nz.cri.gns.fred.hibernate.LabSection;
 import nz.cri.gns.fred.hibernate.Paleontology;
 import nz.cri.gns.fred.hibernate.Person;
 import nz.cri.gns.fred.hibernate.Stage;
@@ -502,14 +501,14 @@ public class PaleoRowProcessor extends RowProcessor {
 
     private void setLabSection(Paleontology paleo, Row row, RowSingleValue v) throws RowImportException {
         if (!v.isEmpty()) {
-            LabSection labSection;
-            try {
-                labSection = (LabSection) recordUtil.getLabSectionByName(v.getValueString());
-                log("Setting lab section: " + labSection);
-            } catch (StorageAccessException ex) {
-                throw new RowImportException(row, v, "Can't find that lab section.", ex);
+            LabSection ls;
+
+            ls = fredDAO.findLabSectionByLongName(v.getValueString());
+            log("Setting lab section: " + ls);
+            if (!v.isEmpty() && null == ls) {
+                throw new RowImportException(row, v, "Failed to find this laboratory.");
             }
-            paleo.setLabSection(labSection);
+            paleo.setLabSection(ls);
         }
     }
 
