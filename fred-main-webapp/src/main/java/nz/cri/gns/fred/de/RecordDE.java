@@ -42,6 +42,7 @@ import nz.cri.gns.xss.SanitizeHttpServletRequest;
 
 public abstract class RecordDE extends DETemplate implements DataEntryForm {
 
+
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.RecordDE");
 
     protected User user;
@@ -83,6 +84,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         }
 
         try {
+
             isAllowedSave = recordUtil.isAllowedEditRecord(user, record, workingFolder);
             isAllowedSubmit = recordUtil.isAllowedSubmitRecord(user, record, workingFolder);
         } catch (StorageAccessException e) {
@@ -265,6 +267,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
 
     protected void reinitialise(DAOFactory factory) {
         recordUtil = new RecordUtil(factory);
+
         if (record.getRecordId() != null) {
             try {
                 record = recordUtil.getRecord(record.getRecordId().intValue());
@@ -274,7 +277,7 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
                 }
             } catch (StorageAccessException e) {
                 log.log(Level.WARNING, null, e);
-            }
+           }
         }
     }
 

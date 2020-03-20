@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package nz.cri.gns.fred.search;
 
 import org.openqa.selenium.By;
@@ -12,8 +7,9 @@ import org.openqa.selenium.By;
  * @author sitikond
  */
 public class BySelect {
-    
+
     public static By get(String type, String selector){
+        // Baby by by by (by by) -Nsync
         By by = null;
         if("id".equalsIgnoreCase(type)){
             by = By.id(selector);
@@ -30,5 +26,4 @@ public class BySelect {
         }
         return by;
     }
-    
 }

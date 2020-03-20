@@ -108,17 +108,17 @@ public class OutcropLocalityDE extends LocalityDE {
         //Update the feature fields, catching any exceptions
         try {
             super.updateFromRequest(request, factory, addIfNew);
-        } catch (DataInputException _e) {
-            e = _e;
+        } catch (DataInputException ex) {
+            e = ex;
         }
         //Update the sample fields, catching and updating any exceptions
         try {
             sampleDE.updateFromRequest(request, factory, addIfNew);
-        } catch (DataInputException _e) {
+        } catch (DataInputException ex) {
             if (e == null) {
-                e = _e;
+                e = ex;
             } else {
-                e.getError().addAll(_e.getError());
+                e.getError().addAll(ex.getError());
             }
         } catch (nz.cri.gns.dataaccess.StorageAccessException storageE) {
             throw new DataInputException();

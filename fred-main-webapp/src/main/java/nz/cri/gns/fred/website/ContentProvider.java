@@ -28,6 +28,7 @@ public class ContentProvider {
 		try {
 			return new Template(new FileReader(new File(contentPath, filename)), Template.BRACE_MODE);
 		} catch (Exception e) {
+                    System.out.println("Template:" + e);
 			return null;
 		}
 	}

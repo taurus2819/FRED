@@ -43,7 +43,6 @@ import nz.cri.gns.fred.website.ContentProvider;
 import nz.cri.gns.html.Attributes;
 import nz.cri.gns.html.select.SelectBox;
 import nz.cri.gns.intranet.Template;
-import nz.cri.gns.xss.SanitizeHttpServletRequest;
 
 public class PaleontologyRecordDE extends RecordDE {
 
@@ -67,14 +66,13 @@ public class PaleontologyRecordDE extends RecordDE {
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
         reinitialise(factory);
         ArrayList<String[]> error = new ArrayList<>();
-        SanitizeHttpServletRequest sanitizeHttpRequest = new SanitizeHttpServletRequest();
 
         super.updateFromRequest(request, factory, addIfNew);
 
         Paleontology pal = record.getPaleontology();
         //Collection date
         try {
-            String palDate = sanitizeHttpRequest.stripAllScripts(request.getParameter("PalDate"));
+            String palDate = request.getParameter("PalDate");
             pal.setIdentificationDate(FREDUtil.parseDateFromDE(palDate));
             pal.setDateRounding(FREDUtil.parseDateRoundingFromDE(palDate));
         } catch (ParseException e) {
@@ -83,7 +81,7 @@ public class PaleontologyRecordDE extends RecordDE {
 
         //Identifiers
         try {
-            pal.setIdentifiers(FREDUtil.getPersons(sanitizeHttpRequest.stripAllScripts(request.getParameter("Identifier")), new PersonUtil(factory), "Identifiers", addIfNew));
+            pal.setIdentifiers(FREDUtil.getPersons(request.getParameter("Identifier"), new PersonUtil(factory), "Identifiers", addIfNew));
         } catch (DataInputException e) {
             error.addAll(e.getError());
         }
@@ -96,9 +94,9 @@ public class PaleontologyRecordDE extends RecordDE {
         }
 
         //Stage Comments
-        pal.setStageComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("StComm")));
+        pal.setStageComments(request.getParameter("StComm"));
 
-        String sectionId = sanitizeHttpRequest.stripAllScripts(request.getParameter("SectID"));
+        String sectionId = request.getParameter("SectID");
         if (sectionId == null) {
             pal.setLabSection(null);
         } else if (pal.getLabSection() == null || !pal.getLabSection().getLabSectionId().toString().equals(sectionId)) {
@@ -112,12 +110,12 @@ public class PaleontologyRecordDE extends RecordDE {
             }
         }
 
-        pal.setLabNumber(sanitizeHttpRequest.stripAllScripts(request.getParameter("LabNum")));
-        pal.setCollectionComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("CollComm")));
+        pal.setLabNumber(request.getParameter("LabNum"));
+        pal.setCollectionComments(request.getParameter("CollComm"));
 
         //Taxa
         badTaxaList = new HashSet<>();
-        String taxa = /*sanitizeHttpRequest.stripAllScripts(*/request.getParameter("Taxa")/*)*/;
+        String taxa = request.getParameter("Taxa");
         if (taxa != null) {
             dealWithTaxa(taxa.split("\\n"), pal, error);
         } else {
@@ -443,10 +441,6 @@ public class PaleontologyRecordDE extends RecordDE {
     @Override
     public int save(int dataOriginId) throws InsufficientPrivelegesException, StorageAccessException {
         int recordId = super.save(dataOriginId);
-        /*if (record.getPaleontology().getRecordId() == null)
-         recordUtil.save(record.getPaleontology());
-         else
-         recordUtil.update(record.getPaleontology());*/
         return recordId;
     }
 

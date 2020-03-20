@@ -656,13 +656,9 @@ public class ExportServlet
                                         TaxonomicNameAndGroup nameAndGroup = new TaxonomicNameAndGroup(
                                                 palList.getTaxonomicName(),
                                                 palList.getTaxonomicGroup());
-                                        //if (!taxonomicNames.contains(nameAndGroup))
                                         taxonomicNames.add(nameAndGroup);
                                     }
                                 }
-                                //List<ReferencedTaxonomicName> sortedTaxonomicNames = new Vector<ReferencedTaxonomicName>();
-                                //sortedTaxonomicNames.addAll(taxonomicNames);
-                                //Collections.sort(taxonomicNames);
                                 for (TaxonomicNameAndGroup nameAndGroup : taxonomicNames) {
                                     c.print(nameAndGroup.getTaxonomicGroup().getName());
                                     c.print(DBUtils.nvl(nameAndGroup.getTaxonomicName()));

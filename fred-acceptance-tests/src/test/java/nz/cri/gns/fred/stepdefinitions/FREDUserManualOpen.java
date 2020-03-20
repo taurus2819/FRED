@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package nz.cri.gns.fred.stepdefinitions;
 
 import cucumber.api.java.en.Given;
@@ -20,21 +15,19 @@ import net.thucydides.core.util.EnvironmentVariables;
 import nz.cri.gns.fred.navigation.FREDHomePage;
 import nz.cri.gns.fred.navigation.FREDQuickStartPage;
 import nz.cri.gns.fred.navigation.FREDUserManualPage;
-import nz.cri.gns.fred.navigation.NavigateToFredHomePage;
-import nz.cri.gns.fred.search.BySelect;
-import nz.cri.gns.fred.utils.FredTestConfig;
+import nz.cri.gns.fred.navigation.NavigateTo;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import static org.junit.Assert.assertTrue;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 /**
  *
  * @author sitikond
+ * modified to use new NavigateTo
  */
 public class FREDUserManualOpen {
     
@@ -43,7 +36,7 @@ public class FREDUserManualOpen {
     FREDUserManualPage fredUserManualPage;
     WebDriver driver;
     @Steps
-    NavigateToFredHomePage navigateTo;
+    NavigateTo navigateTo;
     URL pdfURL;
     BufferedInputStream bis;    
     EnvironmentVariables environmentVariables;
@@ -64,7 +57,7 @@ public class FREDUserManualOpen {
     	driver.get(url + "/fred");        
     }
     
-    @When("^the user clicks on the 'FRED User Manual' menu$")
+    @When("^the user clicks the 'FRED User Manual' menu$")
     public void the_user_clicks_on_the_fred_user_manual_menu() throws Throwable {
         driver.findElement(By.xpath("//*[@id='navlist']//*[contains(@href, 'manual.pdf')]")).click();
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);

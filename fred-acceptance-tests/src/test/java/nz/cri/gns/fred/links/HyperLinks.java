@@ -1,9 +1,35 @@
 package nz.cri.gns.fred.links;
 
-import org.openqa.selenium.By;
+import net.serenitybdd.core.steps.UIInteractionSteps;
+import net.thucydides.core.annotations.Step;
+import nz.cri.gns.fred.navigation.FREDHomePage;
+public class HyperLinks extends UIInteractionSteps{
 
-public class HyperLinks {
-//    public static By LINK_NPC = By.cssSelector(//*[@id="contentWrapInner"]/table/tbody/tr[5]/td/p[2]/a);
-    public static By LINK_NPC = By.linkText("National Paleontological Collection (NPC)");
-    public static By LOGIN = By.cssSelector("a[href='login.jsp?loginpage=%2Ffred%2Findex.jsp']");
+    FREDHomePage fredHomePage;
+
+    @Step("Click on FRED Link")
+    public void clickLink(String linkName) {
+        switch(linkName){
+            case "quickStart":
+                $(FREDLinkForm.QuickStart).click();
+                break;
+            case "about":
+                $(FREDLinkForm.About).click();
+                break;
+            case "login":
+                $(FREDLinkForm.Login).click();
+                break;
+            case "usermanual":
+                $(FREDLinkForm.UserManual).click();
+                break;
+            case "dataentry": 
+                $(FREDLinkForm.DataEntry).click();
+                break;
+            case "newfolder": 
+                $(FREDLinkForm.NewFolder).click();
+                break;
+            default:
+                break;
+        }
+    }
 }

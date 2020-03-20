@@ -3,12 +3,12 @@
     <parent>
         <groupId>nz.cri.gns.fred</groupId>
         <artifactId>fred-top</artifactId>
-        <version>3.2.24.136</version>
+        <version>3.2.33.155</version>
     </parent>
     <groupId>nz.cri.gns</groupId>
     <artifactId>fred</artifactId>
     <packaging>war</packaging>
-    <version>3.2.24.136</version>
+    <version>3.2.33.155</version>
     <name>Fossil Record Electronic Database</name>
     <url>http://fred.org.nz</url>  
     <organization>
@@ -96,6 +96,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>javax.servlet.jsp-api</artifactId>
             <version>2.3.1</version>
@@ -120,7 +125,7 @@
         <dependency>
             <groupId>nz.cri.gns.online-servlet</groupId>
             <artifactId>online-servlet-core</artifactId>
-            <version>3.1.68.625</version>            
+            <version>3.1.81.636</version>            
         </dependency>
         <dependency>
             <groupId>net.sf.ehcache</groupId>

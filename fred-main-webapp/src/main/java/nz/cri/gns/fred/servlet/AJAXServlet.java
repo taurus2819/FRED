@@ -71,8 +71,7 @@ public class AJAXServlet extends HttpServlet {
 
                     @Override
                     public void process(Type type, HttpServletRequest request, PrintWriter out) throws ServletException, IOException, StorageAccessException, DataInputException {
-                        SanitizeHttpServletRequest sanitizeHttpRequest = new SanitizeHttpServletRequest();
-                        String start = sanitizeHttpRequest.stripAllScripts(request.getParameter("start"));
+                        String start = request.getParameter("start");
                         List<NamedId> values = new ArrayList<NamedId>();
                         switch (type) {
                             case Person:
@@ -106,8 +105,8 @@ public class AJAXServlet extends HttpServlet {
                                 TaxonomicUtil taxaUtil = new TaxonomicUtil(FredHibernate.get().getDAOFactory());
                                 String cleanName = null;
                                 TaxonomicGroup group = null;
-                                if (sanitizeHttpRequest.stripAllScripts(request.getParameter("group")) != null) {
-                                    group = taxaUtil.getTaxonomicGroup(sanitizeHttpRequest.stripAllScripts(request.getParameter("group")));
+                                if (request.getParameter("group") != null) {
+                                    group = taxaUtil.getTaxonomicGroup(request.getParameter("group"));
                                 }
                                 cleanName = TaxonomicUtil.getCleanedName(start);
                                 List<Taxon> taxa = taxaUtil.getMatchingTaxa(cleanName, group, Match.ANYWHERE, 30);
@@ -137,8 +136,7 @@ public class AJAXServlet extends HttpServlet {
 
                     @Override
                     public void process(Type type, HttpServletRequest request, PrintWriter out) throws ServletException, IOException, StorageAccessException, DataInputException {
-                        SanitizeHttpServletRequest sanitizeHttpRequest = new SanitizeHttpServletRequest();
-                        String name = /*sanitizeHttpRequest.stripAllScripts(*/request.getParameter("name").trim()/*)*/;
+                        String name = request.getParameter("name").trim();
                         String status = "";
                         String moreData = null;
                         switch (type) {
@@ -150,8 +148,8 @@ public class AJAXServlet extends HttpServlet {
                             case TaxonomicName:
                                 TaxonomicUtil taxaUtil = new TaxonomicUtil(FredHibernate.get().getDAOFactory());
                                 TaxonomicGroup group = null;
-                                if (sanitizeHttpRequest.stripAllScripts(request.getParameter("TaxonomicGroup")) != null) {
-                                    group = taxaUtil.getTaxonomicGroup(sanitizeHttpRequest.stripAllScripts(request.getParameter("TaxonomicGroup").trim()));
+                                if (request.getParameter("TaxonomicGroup") != null) {
+                                    group = taxaUtil.getTaxonomicGroup(request.getParameter("TaxonomicGroup").trim());
                                 }
                                 String cleanName = TaxonomicUtil.getCleanedName(name);
                                 if (cleanName == null || cleanName.length() == 0) {
@@ -248,11 +246,10 @@ public class AJAXServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //Set as XML output
-        SanitizeHttpServletRequest sanitizeHttpRequest = new SanitizeHttpServletRequest();
         response.setContentType("text/xml");
 
-        String action = sanitizeHttpRequest.stripAllScripts(request.getParameter("action"));
-        String type = sanitizeHttpRequest.stripAllScripts(request.getParameter("type"));
+        String action = request.getParameter("action");
+        String type = request.getParameter("type");
         PrintWriter out = response.getWriter();
 
         try {

@@ -8,7 +8,6 @@ import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
@@ -49,8 +48,6 @@ import nz.cri.gns.util.map.WGS84;
 import nz.cri.gns.util.map.Datum.MapSheetCoordinate;
 import org.xml.sax.SAXException;
 import nz.cri.gns.xss.SanitizeHttpServletRequest;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
 
 
 public abstract class LocalityDE extends DETemplate implements DataEntryForm {
@@ -93,12 +90,12 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         datum = SiteUtil.getFREDDatum(feature);
     }
 
-    private String getLegalLocality(String loc, ArrayList<String[]> error) {
+    private String getLocalityFromRequest(HttpServletRequest request, ArrayList<String[]> error) {
         //Also set the FRED locality - but first reject & and "
-        if (!FREDUtil.isEmpty(loc)) {
-            if (loc.indexOf("&") >= 0 || loc.indexOf("\"") >= 0) {
-                error.add(new String[]{"Locality", "Contains & or \" characters"});
-            }
+        String loc = request.getParameter("Loc");
+        loc = sanitizeHttpRequest.stripAllScripts(loc);
+        if (FREDUtil.isEmpty(loc)) {
+            error.add(new String[]{"Locality Description", "Empty locality description"});
         }
         return loc;
     }
@@ -434,7 +431,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         feature.getAudit().setWorkingComments(FeatureUtil.combineWorkingComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("Recoll")), sanitizeHttpRequest.stripAllScripts(request.getParameter("WorkComm"))));
 
         //locality
-        String locality = getLegalLocality(sanitizeHttpRequest.stripAllScripts(request.getParameter("Loc")), error);
+        String locality = getLocalityFromRequest(request, error);
         // always use FRED user contributed locality and site details
         feature.setLocality(locality);
 
@@ -527,7 +524,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 throw new StorageAccessException("Failed to save site");
             }
 
-            feature.setSiteId(new Integer(site.key));
+            feature.setSiteId(Integer.valueOf(site.key));
 
             try {
                 // feature incomplete
@@ -535,7 +532,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 feature.setSiteView(siteUtil.getSiteView(feature.getSiteId()));
             } catch (StorageAccessException ex) {
                 log.log(Level.SEVERE, null, ex);
-                //happily swallow this one
             }
         } else {
             feature.setSiteId(null);

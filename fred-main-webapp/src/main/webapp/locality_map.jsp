@@ -53,9 +53,9 @@
 	} catch (Exception e) {
         }
 	String lyr = request.getParameter("Lyr");
-    if (lyr==null) {
-        lyr = "topo50";
-    }
+        if (lyr==null) {
+            lyr = "topo50";
+        }
 
 	String backURL = request.getParameter("backURL");
 	if (backURL != null && backURL.length() == 0)

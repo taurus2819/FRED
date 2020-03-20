@@ -31,7 +31,9 @@ import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.util.SiteUtil;
 import nz.cri.gns.util.map.Datum.LatLong;
 
+
 public class TabbedPollenExport extends OldFormatFredExport {
+
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.export.TabbedPollenExport");
     
     private boolean checkIdentifers = false;
@@ -223,18 +225,15 @@ public class TabbedPollenExport extends OldFormatFredExport {
 
         for (String name : synonyms.keySet()) {
             Integer total = new Integer(0);
-//            int synstrike =0;
             Vector<String> syns = synonyms.get(name);
+
 
             for (String synonym : synonyms.get(name)) {
                 if (recordedTaxa.containsKey(synonym)) {
-//                   synstrike+=1;
                     Integer count = parseDVct(synonym, recordedTaxa.get(synonym));
                     total += count;
-//                   if (synstrike > 1 && count > 0 && total > count) {
-//                       String s = "stop";
-//                   }
                 }
+
             }
 
             if (total > 0) {
@@ -303,6 +302,7 @@ public class TabbedPollenExport extends OldFormatFredExport {
                     val = new Integer(tmp);
                 }
             }
+
         } catch (NumberFormatException ex) {
             log.log(Level.WARNING, "barfing on comments for " + synonym + " [" + comments + "]", ex);
         }

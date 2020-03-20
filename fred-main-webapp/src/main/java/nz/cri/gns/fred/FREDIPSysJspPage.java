@@ -113,9 +113,6 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
         et.setButtons(l);
     }
 
-    //protected Link[] getButtons(HttpServletRequest request) {
-    //	return new Link[0];
-    //}
     protected void startDETable(PageContext context) throws IOException, ServletException {
         context.include("/content/detablestart.html");
     }
