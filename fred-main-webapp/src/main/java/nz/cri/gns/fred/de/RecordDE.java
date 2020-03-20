@@ -42,17 +42,22 @@ import nz.cri.gns.xss.SanitizeHttpServletRequest;
 
 public abstract class RecordDE extends DETemplate implements DataEntryForm {
 
+
+    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.de.RecordDE");
+
     protected User user;
     protected Record record;
     private Record copyRecord;
+
     protected RecordUtil recordUtil;
     protected ContentProvider provider;
     protected UserFolder workingFolder;
+
     protected boolean isAllowedSave = false;
     protected boolean isAllowedSubmit = false;
+
     protected DAOFactory factory;
-    
-    private static final Logger LOG = Logger.getLogger("nz.cri.gns.fred.de.RecordDE");
+
     protected RecordDE(User user, Sample sample, int folderID, String recordType, DAOFactory factory, ContentProvider content) throws StorageAccessException, InsufficientPrivelegesException {
         initialise((recordUtil = new RecordUtil(factory)).createRecord(sample, recordType, folderID, user), folderID, user, factory, content);
     }
@@ -79,10 +84,12 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
         }
 
         try {
+
             isAllowedSave = recordUtil.isAllowedEditRecord(user, record, workingFolder);
             isAllowedSubmit = recordUtil.isAllowedSubmitRecord(user, record, workingFolder);
-        } catch (Exception e) {
-            LOG.log(Level.SEVERE, null, e);
+        } catch (StorageAccessException e) {
+            log.log(Level.WARNING, null, e);
+
         }
     }
 
@@ -254,12 +261,13 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
     }
 
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
-        SanitizeHttpServletRequest sanitizeHttpRequest = new SanitizeHttpServletRequest();
-        record.getAudit().setWorkingComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("WorkComm")));
-    }
+            SanitizeHttpServletRequest sanitizeHttpRequest = new SanitizeHttpServletRequest();
+            record.getAudit().setWorkingComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("WorkComm")));
+        }
 
     protected void reinitialise(DAOFactory factory) {
         recordUtil = new RecordUtil(factory);
+
         if (record.getRecordId() != null) {
             try {
                 record = recordUtil.getRecord(record.getRecordId().intValue());
@@ -267,9 +275,9 @@ public abstract class RecordDE extends DETemplate implements DataEntryForm {
                     getFromDatabase(copyRecord);
                     copyRecord = null;
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            } catch (StorageAccessException e) {
+                log.log(Level.WARNING, null, e);
+           }
         }
     }
 

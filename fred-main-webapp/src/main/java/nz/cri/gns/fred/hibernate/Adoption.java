@@ -11,11 +11,13 @@ import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.RecordUtil;
 
-/** @author Hibernate CodeGenerator */
+/**
+ * @author Hibernate CodeGenerator
+ */
 public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption {
 
-	private static final long serialVersionUID = 20050818L;
-	
+    private static final long serialVersionUID = 20050818L;
+
     private Integer recordId;
     private Date adoptionDate;
     private String dateRounding;
@@ -80,45 +82,34 @@ public class Adoption implements Serializable, nz.cri.gns.fred.model.Adoption {
         this.adoptors = adoptors;
     }
 
-	public Date getDate() {
-		return getAdoptionDate();
-	}
+    public Date getDate() {
+        return getAdoptionDate();
+    }
 
-	public Set<Person> getPersons() {
-		return getAdoptors();
-	}
+    public Set<Person> getPersons() {
+        return getAdoptors();
+    }
 
-	public void updateKey() {
-		this.recordId = this.record.getRecordId();
-	}
+    public void updateKey() {
+        this.recordId = this.record.getRecordId();
+    }
 
-	public boolean isUnsaved() {
-		return recordId == null;
-	}
+    public boolean isUnsaved() {
+        return recordId == null;
+    }
 
-	public int compareTo(RecordDetails arg0) {
-		if (record.getSample().equals(arg0.getRecord().getSample())) {
-			Date thisDate = this.getDate();
-			Date thatDate = arg0.getDate();
-			if (FREDUtil.equals(thisDate, thatDate, true))
-				return RecordUtil.getRecordName(this).compareTo(RecordUtil.getRecordName(arg0));
-			else try {
-				return thisDate.compareTo(thatDate);
-			} catch (Exception e) {
-				if (thisDate != null)
-					return 1;
-				else
-					return -1;
-			}
-		}
-		return record.getSample().compareTo(arg0.getRecord().getSample());
-	}
+    public int compareTo(RecordDetails arg0) {
+        if (record.getSample().equals(arg0.getRecord().getSample())) {
+            Date thisDate = this.getDate();
+            Date thatDate = arg0.getDate();
+            if (FREDUtil.equals(thisDate, thatDate, true)) {
+                return RecordUtil.getRecordName(this).compareTo(RecordUtil.getRecordName(arg0));
+            } else {
+                return thisDate.compareTo(thatDate);
 
-	/*public boolean equals(Object o) {
-		return recordId != null && o instanceof Adoption && recordId.equals(((Adoption)o).getRecordId());
-	}
-	
-	public int hashCode() {
-		return 764 * recordId;
-	}*/
+            }
+
+        }
+        return record.getSample().compareTo(arg0.getRecord().getSample());
+    }
 }

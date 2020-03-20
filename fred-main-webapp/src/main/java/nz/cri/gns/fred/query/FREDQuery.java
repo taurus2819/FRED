@@ -78,7 +78,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
         this.ages = getValues("FROM Age AS a WHERE a.code NOT IN (?, ?) AND a.obsoleteFlag = ?", Age.class, "nd", "nf", false);
         try {
             this.frUsers = new UserUtil(FredHibernate.get().getDAOFactory()).getFrWriters();
-        } catch (Exception e) {
+        } catch (StorageAccessException e) {
             log.log(Level.SEVERE, "Failed to load FRED writers", e);
         }
         addFields();
@@ -255,7 +255,7 @@ public class FREDQuery extends HqlQuery implements NumberSource {
             while (rs.next()) {
                 options.add(new KeyValueObject(rs.getString(1), rs.getString(2)));
             }
-        } catch (Exception e) {
+        } catch (Exception e) { // TODO: But no exceptions are thrown?
             Logger.getLogger(FREDQuery.class.getName()).log(Level.SEVERE, null, e);
         }
         return options;

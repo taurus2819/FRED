@@ -1,0 +1,46 @@
+drop table lu_cardinal;
+drop table lu_coord_system;
+drop table lu_date_rounding;
+drop table lu_depth_unit;
+drop table lu_facing;
+drop table lu_in_place;
+drop table lu_wet;
+drop table lu_yesno;
+drop view lu_age_view;
+drop view lu_strat_relationship_view;
+drop view lu_country;
+
+drop table mg_import_sheet;
+drop table mg_import_sheet_Type;
+drop table MG_COLUMN;
+drop table MG_COLUMN_FOREIGN_KEY;
+drop table MG_COLUMN_TYPE;
+drop table MG_IMPORT_COLUMN;
+drop table MG_IMPORT_COLUMN_BEHAVIOUR;
+drop table MG_IMPORT_COLUMN_TYPE;
+drop table MG_IMPORT_ERROR;
+drop table MG_IMPORT_SPREADSHEET;
+drop table MG_IMPORT_SPREADSHEET_TYPE;
+drop table MG_IMPORT_VALUE;
+drop table MG_TABLE;
+
+drop sequence EXAMPLE_CFK_ID_SEQ;
+drop sequence EXAMPLE_RCFK_ID_SEQ;
+drop sequence EXAMPLE_TABLE_ID_SEQ;
+drop sequence MG_COLUMN_FOREIGN_KEY_ID_SEQ;
+drop sequence MG_COLUMN_ID_SEQ;
+drop sequence MG_COLUMN_TYPE_ID_SEQ;
+drop sequence MG_IMPORT_COLUMN_BEHAVIOUR_ID_SEQ;
+drop sequence MG_IMPORT_COLUMN_ID_SEQ;
+drop sequence MG_IMPORT_COLUMN_TYPE_ID_SEQ;
+drop sequence MG_IMPORT_C_BEHAVIOUR_ID_SEQ;
+drop sequence MG_IMPORT_SHEET_ID_SEQ;
+drop sequence MG_IMPORT_SPREADSHEET_ID_SEQ;
+drop sequence MG_IMPORT_SPREADSHEET_TYPE_ID_SEQ;
+drop sequence MG_IMPORT_SS_TYPE_ID_SEQ;
+drop sequence MG_IMPORT_S_TYPE_ID_SEQ;
+drop sequence MG_IMPORT_VALUE_SEQ;
+drop sequence MG_TABLE_ID_SEQ;
+drop sequence SECOND_EXAMPLE_TABLE_ID_SEQ;
+drop table example_multivalue;
+

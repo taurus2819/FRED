@@ -18,6 +18,7 @@ import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.FrUser;
 import nz.cri.gns.fred.model.Lab;
+import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.LogTable;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
@@ -242,5 +243,11 @@ public interface FredDAO {
     public List<TaxonomicGroup> getMatchingTaxonomicGroups(String str, Match matchType, int maxMatches) throws StorageAccessException;
 
     public FrUser createNewFrUser();
+
+    /** Use this to create a drop-down list of labs. */
+    public List<String> getLabSectionLongNames();
+
+    /** In the drop-down list you made using the previous method, use this to work out which LabSection it was. */
+    public LabSection findLabSectionByLongName(String name);
 
 }

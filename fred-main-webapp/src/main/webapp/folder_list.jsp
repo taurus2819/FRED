@@ -1,5 +1,5 @@
 <%@page pageEncoding="utf-8"
-%><%@page	extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
+%><%@page extends="nz.cri.gns.fred.FREDDEIPSysJspPage"
 %><%@page import="java.util.List"
 %><%@page import="nz.cri.gns.auth.domain.User"
 %><%@page import="nz.cri.gns.jsp.IconnedLink"
@@ -118,15 +118,59 @@
 		%><tr class="lightColour"><td colspan="3">You do not currently have any data entry folders. Click <a href="javascript:doNewFolder();">here</a> to create one.</td></tr><%
 	}
 	
-	%><tr><td>&nbsp;</td></tr><%
-	
-	%><tr class="midColour"><td colspan="3"><b>Data Entry Spreadsheet</b>&nbsp;&nbsp;&nbsp;Use for entering/editing large amounts of data</td></tr>
-	<tr class="lightColour"><td colspan="3">Download the spreadsheet by clicking on the link below and then choosing "Save" when prompted by your browser  (Note: in some browsers it may be necessary to right-click on the link and choose <i>Save As</i> from the pop-up menu). The spreadsheet has been tested with Microsoft Excel 2002,2007,2010 but should work with all versions.  Full instructions are included in the spreadsheet.</td></tr>
-    <tr class="lightColour"><td colspan="3" >Jan 2014: Changes to Microsoft Excel 2010 Security will require you to enable content, before first use.</td></tr>
-    <tr class="lightColour"><td colspan="3" >Nov 2016: Online FRED template updated, older versions will no longer work. Users must download the new version.</td></tr>
-    <tr class="lightColour"><td colspan="3"><a href="<%=DataEntryTemplateUtil.getDownloadUrl(request)%>"><img src="images/excel.gif" style=" vertical-align: middle;" border="0" width="20" height="20" alt="Data entry spreadsheet" />&nbsp;&nbsp;<b>Online FRED template</b></a><span style="float:right;">&nbsp;&nbsp;<b><a href="FRED_static.zip">Static FRED template&nbsp;&nbsp;<img src="images/excel.gif" border="0" width="20" height="20" alt="Data entry spreadsheet" style=" vertical-align: middle;"/></a></span></td></tr>
-	<tr><td>&nbsp;</td></tr><%
-	
+	%><tr><td>&nbsp;</td></tr><tr class="midColour"><td colspan="3"><b>Data Entry Spreadsheet</b>&nbsp;&nbsp;&nbsp;Use for entering/editing large amounts of data</td></tr>
+	<tr class="lightColour"><td colspan="3">Download the spreadsheet by clicking on the link 
+                below and then choosing "Save" when prompted by your browser  (Note: in some browsers it 
+                may be necessary to right-click on the link and choose <i>Save As</i> from the pop-up menu). 
+                The spreadsheet has been tested with Microsoft Excel 2002,2007,2010 but should work with 
+                all versions.</td></tr>
+                <tr class="lightColour">
+                    <td colspan="3">
+                        <a href="template.xlsm?CODE=FRED_OUTCROP">
+                            <img src="images/excel.gif" style=" vertical-align: middle;" border="0" width="20" height="20" alt="Data entry spreadsheet" />&nbsp;&nbsp;
+                            <b>Outcrop Import Spreadsheet</b>
+                       </a>
+                       <span style="float:right;">&nbsp;&nbsp;<b><a href="FRED_static.zip">Static FRED template&nbsp;&nbsp;<img src="images/excel.gif" border="0" width="20" height="20" alt="Data entry spreadsheet" style=" vertical-align: middle;"/></a></span>
+                   </td>
+                </tr>
+                <%--
+                <tr class="lightColour">                
+                   <td colspan="3">
+                        <a href="template.xlsm?CODE=FRED_VERTICAL_SECTION">
+                            <img src="images/excel.gif" style=" vertical-align: middle;" border="0" width="20" height="20" alt="Data entry spreadsheet" />&nbsp;&nbsp;
+                            <b>Vertical Section Import Spreadsheet</b>
+                       </a>
+                   </td>
+                </tr>--%>
+                <tr class="lightColour">                
+                   <td colspan="3">
+                        <a href="template.xlsm?CODE=FRED_DRILL_HOLE">
+                            <img src="images/excel.gif" style=" vertical-align: middle;" border="0" width="20" height="20" alt="Data entry spreadsheet" />&nbsp;&nbsp;
+                            <b>Drill Hole Import Spreadsheet</b>
+                       </a>
+                   </td>
+                </tr>
+                <tr class="lightColour">                
+                   <td colspan="3">
+                        <a href="template.xlsm?CODE=FRED_PALEO">
+                            <img src="images/excel.gif" style=" vertical-align: middle;" border="0" width="20" height="20" alt="Data entry spreadsheet" />&nbsp;&nbsp;
+                            <b>Paleo Import Spreadsheet</b>
+                       </a>
+                   </td>
+                </tr>
+	<tr><td>&nbsp;</td></tr>
+
+                <tr class="midColour"><td colspan="3"><b>Upload one of these spreadsheets</b> (but not the static FRED template). </td></tr>
+                <tr class="lightColour">     
+                     <td colspan="3">
+                        <form action="xlsUploader" method="post" enctype="multipart/form-data">
+                            <input type="file" name="file" />
+                            <input value="Upload" type="submit" />
+                        </form>
+                     </td>
+                 </tr>
+
+        <%
 	List<UserFolder> backlogFolders = folderUtil.getBacklogFolders(user);
 	//List Backlog folders
 	if (backlogFolders.size() > 0) {

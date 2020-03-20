@@ -103,7 +103,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
         try {
             isAllowedSave = outcropSample || sampleUtil.isAllowedEditSample(user, sample, workingFolder);
             isAllowedSubmit = outcropSample || sampleUtil.isAllowedSubmitSample(user, sample, workingFolder);
-        } catch (Exception e) {
+        } catch (NumberFormatException | StorageAccessException e) {
             log.log(Level.SEVERE, null, e);
         }
     }
@@ -223,7 +223,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                     SelectBox<DrillType> selectBox = new SelectBox<DrillType>(sampleUtil.getDrillTypes());
                     Attributes attributes = Attributes.createNameOnlyAttributes("DrillType");
                     selectBox.writeBox(attributes, "-- Choose --", null, sample.getDrillType(), out);
-                } catch (Exception e) {
+                } catch (IOException | StorageAccessException e) {
                     log.log(Level.SEVERE, null, e);
                 }
             }
@@ -308,7 +308,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
 
             template.loadAll(out);
 
-        } catch (Exception e) {
+        } catch (IOException | SQLException | NamingException | StorageAccessException e) {
             log.log(Level.SEVERE, null, e);
         }
         if (!outcropSample) {
@@ -585,7 +585,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                 out.write("</tr>");
             }
 
-        } catch (Exception e) {
+        } catch (IOException | SQLException | NamingException | StorageAccessException e) {
             log.log(Level.SEVERE, null, e);
             throw new RuntimeException(e);
         }
@@ -655,14 +655,14 @@ public class SampleDE extends DETemplate implements DataEntryForm {
             if (request.getParameter("TopDepth").length() > 0) {
                 try {
                     topDepth = new Double(request.getParameter("TopDepth").trim());
-                } catch (Exception e) {
+                } catch (NumberFormatException e) {
                     error.add(new String[]{"Top Depth/Height", "Non-numeric value"});
                 }
             }
             if (request.getParameter("BottomDepth").length() > 0) {
                 try {
                     bottomDepth = new Double(request.getParameter("BottomDepth").trim());
-                } catch (Exception e) {
+                } catch (NumberFormatException e) {
                     error.add(new String[]{"Bottom Depth/Height", "Non-numeric value"});
                 }
 
@@ -830,7 +830,7 @@ public class SampleDE extends DETemplate implements DataEntryForm {
                     } else {
                         error.add(new String[]{"Previous sample", "Feature " + previous + " not found"});
                     }
-                } catch (Exception e) {
+                } catch (StorageAccessException e) {
                     log.log(Level.SEVERE, null, e);
                     error.add(new String[]{"Previous sample", e.getMessage()});
                 }

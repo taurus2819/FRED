@@ -1,8 +1,11 @@
 package nz.cri.gns.fred.de;
 
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
+import nz.cri.gns.dataaccess.StorageAccessException;
 
 import nz.cri.gns.fred.model.Age;
 import nz.cri.gns.fred.model.Stage;
@@ -73,18 +76,18 @@ public class StageDEUtil {
                     }
                     stopId = ageStop.getAgeId().toString();
                 }
-            } catch (Exception e) {
+            } catch (StorageAccessException | DataInputException e) {
                 log.log(Level.SEVERE, null, e);
-                throw new DataInputException(label, e.getMessage());
+                throw new DataInputException(label, e.getMessage(), e);
             }
         }
 
         if (stageUtil.stageDiffers(existingStage, startId, startMod != null, stopId, stopMod != null)) {
             try {
                 return stageUtil.getStage(startId, startMod != null, stopId, stopMod != null);
-            } catch (Exception e) {
+            } catch (SQLException | NamingException | StorageAccessException e) {
                 log.log(Level.SEVERE, null, e);
-                throw new DataInputException(label, e.getMessage());
+                throw new DataInputException(label, e.getMessage(), e);
             }
         } else {
             return existingStage;

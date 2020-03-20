@@ -11,6 +11,7 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
 
@@ -1228,6 +1229,16 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         return getFrNumber(mapSheet + "/f" + serialNum + DBUtils.nvl(recollectionNumber));
     }
 
+    /** Same logic as getFrNumber but with no database access or GOL. */
+    public String asFrNumberString(String mapSheet, Integer serialNumber, String recollectionNumber) {
+        String serialNum = String.valueOf(serialNumber);
+        while (serialNum.length() < 4) {
+            serialNum = "0" + serialNum;
+        }
+        
+        return mapSheet + "/f" + serialNum + Objects.toString(recollectionNumber, "");  
+    }
+    
     public List<FrNumber> getFrNumbers(String mapSheet) throws StorageAccessException {
         return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.obsolete IS NULL", FrNumber.class, mapSheet);
     }

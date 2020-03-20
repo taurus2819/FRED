@@ -31,8 +31,11 @@ import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.util.SiteUtil;
 import nz.cri.gns.util.map.Datum.LatLong;
 
+
 public class TabbedPollenExport extends OldFormatFredExport {
 
+    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.export.TabbedPollenExport");
+    
     private boolean checkIdentifers = false;
     private SortedMap<String, Vector<String>> synonyms = null;
 
@@ -177,8 +180,8 @@ public class TabbedPollenExport extends OldFormatFredExport {
             writer.write(EOL);
             writer.flush();
 
-        } catch (Exception ex) {
-            System.out.println(ex);
+        } catch (IOException ex) {
+            log.log(Level.WARNING, null, ex);
             writer.write(EOL);
         }
     }
@@ -224,11 +227,13 @@ public class TabbedPollenExport extends OldFormatFredExport {
             Integer total = new Integer(0);
             Vector<String> syns = synonyms.get(name);
 
+
             for (String synonym : synonyms.get(name)) {
                 if (recordedTaxa.containsKey(synonym)) {
                     Integer count = parseDVct(synonym, recordedTaxa.get(synonym));
                     total += count;
                 }
+
             }
 
             if (total > 0) {
@@ -297,8 +302,9 @@ public class TabbedPollenExport extends OldFormatFredExport {
                     val = new Integer(tmp);
                 }
             }
-        } catch (Exception ex) {
-            System.out.println("barfing on comments for " + synonym + " [" + comments + "]");
+
+        } catch (NumberFormatException ex) {
+            log.log(Level.WARNING, "barfing on comments for " + synonym + " [" + comments + "]", ex);
         }
 
         return val;

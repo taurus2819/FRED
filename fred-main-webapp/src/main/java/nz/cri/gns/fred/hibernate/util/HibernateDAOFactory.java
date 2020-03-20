@@ -1,9 +1,6 @@
 package nz.cri.gns.fred.hibernate.util;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,6 +31,7 @@ import nz.cri.gns.fred.model.FossilGroup;
 import nz.cri.gns.fred.model.FrNumber;
 import nz.cri.gns.fred.model.FrUser;
 import nz.cri.gns.fred.model.Lab;
+import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.LogTable;
 import nz.cri.gns.fred.model.Paleontology;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
@@ -52,9 +50,9 @@ import nz.cri.gns.fred.model.TaxonomicGroup;
 
 public class HibernateDAOFactory
         implements DAOFactory, FredDAO {
+
     private static final Logger log = Logger.getLogger("nz.cri.gns.fred.hibernate.util.HibernateDAOFactory");
-    
-    
+
     private HibernateProvider provider;
 
     public HibernateDAOFactory(HibernateProvider provider) {
@@ -133,7 +131,7 @@ public class HibernateDAOFactory
             query.setString("prov", FREDConstants.PROVISIONAL);
             List list = query.list();
             return ((Integer) list.get(0)).intValue();
-        } catch (Exception e) {
+        } catch (HibernateException | StorageAccessException e) {
             throw new StorageAccessException(e);
         }
     }
@@ -147,7 +145,7 @@ public class HibernateDAOFactory
             query.setString("prov", status);
             List list = query.list();
             return ((Integer) list.get(0)).intValue();
-        } catch (Exception e) {
+        } catch (HibernateException | StorageAccessException e) {
             throw new StorageAccessException(e);
         }
     }
@@ -160,7 +158,7 @@ public class HibernateDAOFactory
             query.setEntity("group", group);
             query.setString("prov", status);
             return query.list();
-        } catch (Exception e) {
+        } catch (HibernateException | StorageAccessException e) {
             throw new StorageAccessException(e);
         }
     }
@@ -205,7 +203,7 @@ public class HibernateDAOFactory
                 return null;
             }
             return (AuditEdit) list.get(0);
-        } catch (Exception e) {
+        } catch (HibernateException | StorageAccessException e) {
             throw new StorageAccessException(e);
         }
     }
@@ -270,7 +268,7 @@ public class HibernateDAOFactory
                 return null;
             }
             return (Stage) list.get(0);
-        } catch (Exception e) {
+        } catch (HibernateException | StorageAccessException e) {
             throw new StorageAccessException(e);
         }
     }
@@ -319,7 +317,7 @@ public class HibernateDAOFactory
             query.setEntity("grp", group);
             query.setEntity("pal", pal);
             return query.list();
-        } catch (Exception e) {
+        } catch (HibernateException | StorageAccessException e) {
             throw new StorageAccessException(e);
         }
     }
@@ -464,8 +462,7 @@ public class HibernateDAOFactory
             Query query = session.createQuery("SELECT MAX(a.ageId) FROM Age AS a");
             List list = query.list();
             return ((Integer) list.get(0)).intValue();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (HibernateException | StorageAccessException e) {
             throw new StorageAccessException(e);
         }
     }
@@ -496,5 +493,41 @@ public class HibernateDAOFactory
 
     public LogTable createNewLog() {
         return new nz.cri.gns.fred.hibernate.LogTable();
+    }
+
+    private Session retrieveSession() {
+        try {
+            return provider.currentSession();
+        } catch (StorageAccessException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private static final String LAB_SECTION_LONG_NAME_FORMAT =
+        " concat(concat(section.lab.name, '-'), section.code) ";
+
+    @Override
+    public List<String> getLabSectionLongNames() {
+        try {
+            Query query = retrieveSession().createQuery("select "
+                    +LAB_SECTION_LONG_NAME_FORMAT
+                    +" FROM LabSection section ORDER BY section.name, section.lab.name");
+            return (List<String>)query.list();
+        } catch (HibernateException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public LabSection findLabSectionByLongName(String name) {
+        try {
+            Query query = retrieveSession().createQuery("FROM LabSection AS section WHERE "
+                            +LAB_SECTION_LONG_NAME_FORMAT+"=:name");
+            query.setString("name", name);
+            return (LabSection) query.uniqueResult();
+        } catch (HibernateException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

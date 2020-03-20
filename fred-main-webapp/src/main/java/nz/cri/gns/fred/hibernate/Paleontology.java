@@ -2,7 +2,10 @@ package nz.cri.gns.fred.hibernate;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nz.cri.gns.fred.model.LabSection;
 import nz.cri.gns.fred.model.PaleontologyListEntry;
@@ -13,9 +16,12 @@ import nz.cri.gns.fred.model.Stage;
 import nz.cri.gns.fred.util.FREDUtil;
 import nz.cri.gns.fred.util.RecordUtil;
 
-/** @author Hibernate CodeGenerator */
+/**
+ * @author Hibernate CodeGenerator
+ */
 public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleontology {
-
+    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.hibernate.Paleontology");
+    
     private static final long serialVersionUID = 20050818L;
 
     private Integer recordId;
@@ -26,9 +32,12 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
     private String collectionComments;
     private Record record;
     private LabSection labSection;
-    private Stage stage;
-    private Set<PaleontologyListEntry> palLists;
-    private Set<Person> identifiers;
+    private Stage stage = new nz.cri.gns.fred.hibernate.Stage();
+    private Set<PaleontologyListEntry> palLists = new HashSet();
+    private Set<Person> identifiers = new HashSet();
+
+    public Paleontology() {
+    }
 
     public Integer getRecordId() {
         return this.recordId;
@@ -118,41 +127,46 @@ public class Paleontology implements Serializable, nz.cri.gns.fred.model.Paleont
         this.identifiers = identifiers;
     }
 
-	public Date getDate() {
-		return getIdentificationDate();
-	}
+    public Date getDate() {
+        return getIdentificationDate();
+    }
 
-	public Set<Person> getPersons() {
-		return getIdentifiers();
-	}
+    public Set<Person> getPersons() {
+        return getIdentifiers();
+    }
 
-	public void updateKey() {
-		this.recordId = this.record.getRecordId();
-	}
+    public void updateKey() {
+        this.recordId = this.record.getRecordId();
+    }
 
-	public boolean isUnsaved() {
-		return recordId == null;
-	}
+    public boolean isUnsaved() {
+        return recordId == null;
+    }
 
-	public int compareTo(RecordDetails arg0) {
-		if (record.getSample().equals(arg0.getRecord().getSample())) {
-			Date thisDate = this.getDate();
-			Date thatDate = arg0.getDate();
-			if (FREDUtil.equals(thisDate, thatDate, true))
-				return RecordUtil.getRecordName(this).compareTo(RecordUtil.getRecordName(arg0));
-			else try {
-				return thisDate.compareTo(thatDate);
-			} catch (Exception e) {
-				if (thisDate != null)
-					return 1;
-				else
-					return -1;
-			}
-		}
-		return record.getSample().compareTo(arg0.getRecord().getSample());
-	}
+    public int compareTo(RecordDetails arg0) {
+        if (record.getSample().equals(arg0.getRecord().getSample())) {
+            Date thisDate = this.getDate();
+            Date thatDate = arg0.getDate();
+            if (FREDUtil.equals(thisDate, thatDate, true)) {
+                return RecordUtil.getRecordName(this).compareTo(RecordUtil.getRecordName(arg0));
+            } else {
+                try {
+                    return thisDate.compareTo(thatDate);
+                } catch (Exception e) {
+                    // TODO: This catches NullPointerException!
+                    log.log(Level.SEVERE, null, e);
+                    if (thisDate != null) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                }
+            }
+        }
+        return record.getSample().compareTo(arg0.getRecord().getSample());
+    }
 
-	/*public boolean equals(Object o) {
+    /*public boolean equals(Object o) {
 		return recordId != null && o instanceof Paleontology && recordId.equals(((Paleontology)o).recordId);
 	}*/
 }

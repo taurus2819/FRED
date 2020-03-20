@@ -2,6 +2,8 @@ package nz.cri.gns.fred;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +26,7 @@ import nz.cri.gns.jsp.PageState;
 import nz.cri.gns.xls.upload.XlsUploadUtils;
 
 public abstract class FREDIPSysJspPage extends IPSysJspPage {
+    private static final Logger log = Logger.getLogger("nz.cri.gns.fred.FREDIPSysJspPage");
 
     private static final long serialVersionUID = 20050818L;
     private static IpGrantedAuthority fredRights;
@@ -126,7 +129,7 @@ public abstract class FREDIPSysJspPage extends IPSysJspPage {
             try {
                 FredHibernate.get().getDAOFactory().closeSession();
             } catch (StorageAccessException e) {
-                e.printStackTrace();
+                log.log(Level.WARNING, null, e);
             }
         }
     }

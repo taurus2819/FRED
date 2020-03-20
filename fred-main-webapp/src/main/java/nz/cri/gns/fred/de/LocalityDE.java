@@ -4,15 +4,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.NamingException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.ParserConfigurationException;
 
 import nz.cri.gns.auth.domain.exception.InsufficientPrivelegesException;
 import nz.cri.gns.auth.domain.User;
@@ -39,9 +40,15 @@ import nz.cri.gns.html.Attributes;
 import nz.cri.gns.html.select.SelectBox;
 import nz.cri.gns.intranet.Template;
 import nz.cri.gns.jsp.IconnedLink;
-import nz.cri.gns.util.map.*;
+import nz.cri.gns.util.map.ChathamIslandDatum;
+import nz.cri.gns.util.map.Datum;
+import nz.cri.gns.util.map.NZGD2000;
+import nz.cri.gns.util.map.NZGD49;
+import nz.cri.gns.util.map.WGS84;
 import nz.cri.gns.util.map.Datum.MapSheetCoordinate;
+import org.xml.sax.SAXException;
 import nz.cri.gns.xss.SanitizeHttpServletRequest;
+
 
 public abstract class LocalityDE extends DETemplate implements DataEntryForm {
 
@@ -56,7 +63,6 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
     protected Feature feature;
     private Feature copyFeature;
     protected SanitizeHttpServletRequest sanitizeHttpRequest;
-
     /**
      * Temporary storage for working comments
      */
@@ -71,7 +77,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
     private boolean isAllowedSubmit = false;
 
     public LocalityDE(User user, int folderID, String featureType, DAOFactory factory, ContentProvider content) throws StorageAccessException, InsufficientPrivelegesException {
-        initialise((featureUtil = new FeatureUtil(factory)).createFeature(folderID, featureType, user), folderID, user, factory, content);
+        featureUtil = new FeatureUtil(factory);
+        Feature f = featureUtil.createFeature(folderID, featureType, user);
+        initialise(f, folderID, user, factory, content);
     }
 
     public LocalityDE(Feature feature, int folderID, User user, DAOFactory factory, ContentProvider content) throws InsufficientPrivelegesException, StorageAccessException {
@@ -83,6 +91,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
     }
 
     private String getLocalityFromRequest(HttpServletRequest request, ArrayList<String[]> error) {
+        //Also set the FRED locality - but first reject & and "
         String loc = request.getParameter("Loc");
         loc = sanitizeHttpRequest.stripAllScripts(loc);
         if (FREDUtil.isEmpty(loc)) {
@@ -358,13 +367,19 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
     public void updateFromRequest(HttpServletRequest request, DAOFactory factory, boolean addIfNew) throws DataInputException {
         reinitialise(factory);
         ArrayList<String[]> error = new ArrayList<>();
+        
+//        for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()){
+//            for (String value : entry.getValue()){
+//                System.out.println("Get Parameters = " + value);
+//            }
+//        }
 
         //FRNum (if backlog - but only update if null)
         if (FeatureUtil.isBacklogFeature(feature)) {
             try {
                 FrNumber frNumber = feature.getFrNumber();
                 if (frNumber == null) {
-                    String frNumberStr = request.getParameter("FRNumber");
+                    String frNumberStr = sanitizeHttpRequest.stripAllScripts(request.getParameter("FRNumber"));
                     //if only map sheet entered then get next available FRNumber
                     if (!frNumberStr.contains("/f")) {
                         frNumber = featureUtil.getNextAvailableFrNumber(frNumberStr);
@@ -381,8 +396,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 error.add(new String[]{"FR Number", e.getMessage()});
             } catch (StorageAccessException e) {
                 log.log(Level.SEVERE, null, e);
+                //Should never happen
             }
-            if (!FREDUtil.isEmpty(request.getParameter("YardFRNumber"))) {
+            if (!FREDUtil.isEmpty(sanitizeHttpRequest.stripAllScripts(request.getParameter("YardFRNumber")))) {
                 try {
                     feature.setYardFrNumber(featureUtil.getYardFrNumberByString(sanitizeHttpRequest.stripAllScripts(request.getParameter("YardFRNumber")), true));
                 } catch (DataInputException | StorageAccessException e) {
@@ -397,7 +413,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         feature.setFeatureName(sanitizeHttpRequest.stripAllScripts(request.getParameter("FeatName")));
 
         //Registration area
-        String registrationAreaId = request.getParameter("RegAreaId");
+        String registrationAreaId = sanitizeHttpRequest.stripAllScripts(request.getParameter("RegAreaId"));
         if (feature.getRegistrationArea() == null || !feature.getRegistrationArea().getRegAreaId().toString().equals(registrationAreaId)) {
             if (registrationAreaId.equals("-")) {
                 feature.setRegistrationArea(null);
@@ -414,138 +430,60 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         //Recollection and working comments
         feature.getAudit().setWorkingComments(FeatureUtil.combineWorkingComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("Recoll")), sanitizeHttpRequest.stripAllScripts(request.getParameter("WorkComm"))));
 
-        //Site
-        datum = DatumFactory.createDatum(request.getParameter("CoordType"));
-        coord = null;
-        String east = request.getParameter("East");
-        String north = request.getParameter("North");
-        if (east != null && !east.equals("") && north != null && !north.equals("")) {
-            try {
-                if (datum.isMapSheetSystem()) {
-                    int precision = east.length();
-                    if (north.length() != precision) {
-                        error.add(new String[]{"Coordinate", "Truncated coordinates different lengths"});
-                    } else if ((precision > 0 && precision < 3) || precision > 4) {
-                        error.add(new String[]{"Coordinate", "Length of truncated coordinates must be 3 or 4"});
-                    } else {
-                        coord = (Datum.Coordinate) datum.preferredCoordinate().getConstructor(new Class[]{double.class, double.class, String.class, int.class}).newInstance(new Object[]{new Double(north), new Double(east), request.getParameter("MapSheet"), precision});
-                    }
-                } else {
-                    coord = (Datum.Coordinate) datum.preferredCoordinate().getConstructor(new Class[]{double.class, double.class}).newInstance(new Object[]{new Double(north), new Double(east)});
-                }
-            } catch (NumberFormatException e) {
-                error.add(new String[]{"Coordinate", "Non numeric coordinate entered"});
-            } catch (IllegalArgumentException e) {
-            } catch (SecurityException e) {
-            } catch (InstantiationException e) {
-            } catch (IllegalAccessException e) {
-            } catch (InvocationTargetException e) {
-            } catch (NoSuchMethodException e) {
-            }
-        }
-
         //locality
         String locality = getLocalityFromRequest(request, error);
+        // always use FRED user contributed locality and site details
+        feature.setLocality(locality);
+
+        // Site
+        Float accuracy = null;
+        if (request.getParameter("Accuracy").length() > 0) {
+            accuracy = Float.parseFloat(request.getParameter("Accuracy"));
+        }
+
+        site = SiteUtil.findOrMakeSiteInstance(
+                error,
+                feature.getFeatureName(),
+                feature.getOrigSystemId(),
+                feature.getOrigCoord(),
+                sanitizeHttpRequest.stripAllScripts(request.getParameter("CoordType")),
+                sanitizeHttpRequest.stripAllScripts(request.getParameter("East")),
+                sanitizeHttpRequest.stripAllScripts(request.getParameter("North")),
+                sanitizeHttpRequest.stripAllScripts(request.getParameter("Loc")),
+                sanitizeHttpRequest.stripAllScripts(request.getParameter("Country")),
+                Integer.parseInt(request.getParameter("LocMethodID")),
+                accuracy,
+                sanitizeHttpRequest.stripAllScripts(request.getParameter("MapSheet")),
+                user
+        );
+
+
+        if (null!=site && null==feature.getOrigSystemId()) {
+            feature.setOrigSystemId(site.getOriginalId());
+        }
+        if (null!=site && null==feature.getOrigCoord()) {
+            feature.setOrigCoord(site.getOriginalCoordinates());
+        }
+
+        //set Map Year
         try {
-            if (coord != null) {
-                if (!datum.coordinateAcceptable(coord)) {
-                    error.add(new String[]{"Coordinate", "Coordinates not of correct type"});
-                }
-
-                // try to re-use any existing site details.
-                // take 1- try the well name
-                if (site == null) {
-                    site = SiteUtil.getSite(feature.getFeatureName());
-                }
-                // take 2 try the given coords
-                if (site == null && datum.coordinateAcceptable(coord)) {
-                    site = SiteUtil.getSite(datum, coord);
-                }
-
-                if (site != null) {
-                    //add coord metadata from existing site but only if a drillhole
-                    try {
-                        if (feature.getFeatureId() == null) {
-                            feature.setOrigSystemId(site.getOriginalId());
-                            feature.setOrigCoord(site.getOriginalCoordinates());
-                        } else {
-                            // allow user to override
-                            feature.setOrigSystemId(datum.getDatabaseId());
-                            feature.setOrigCoord(datum.getStringFor(coord));
-                        }
-                        // always use FRED user contributed locality and site details
-                        feature.setLocality(locality);
-                        if (feature.getOrigCoord() != site.getOriginalCoordinates()) {
-                            site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
-                            site.setLatLong(datum.convertToNZGD49(coord));
-                        }
-                    } catch (InvalidCoordinateException e) {
-                        error.add(new String[] {"Coordinate", "Coordinate ranges are invalid."});
-                    }
-
-                    //TODO reuse site_name as feature_name?? see JES
-                } else {
-                    site = new SiteRecord();
-
-                    try {
-                        site.setOriginal(datum.getDatabaseId(), datum.getStringFor(coord));
-                        site.setLatLong(datum.convertToNZGD49(coord));
-                        //Also set the FRED copied SITE fields
-                        feature.setOrigSystemId(datum.getDatabaseId());
-                        feature.setOrigCoord(datum.getStringFor(coord));
-                    } catch (InvalidCoordinateException e) {
-                        error.add(new String[]{"Coordinate", "Invalid coordinates specified. Ensure you enter the correct number of digits for the selected coordinate system"});
-                    }
-
-                    site.setDirections(request.getParameter("Loc"));
-                    site.setCountry(request.getParameter("Country"));
-                    site.setOwner(user.getId().intValue());
-                    feature.setLocality(locality);
-                }
-
-                try {
-                    site.setMethod(Integer.parseInt(request.getParameter("LocMethodID")));
-                } catch (NumberFormatException e) {
-                    //method is null (-1) by default
-                }
-                if (sanitizeHttpRequest.stripAllScripts(request.getParameter("Accuracy")).length() > 0) {
-                    try {
-                        site.setAccuracy(Float.parseFloat(sanitizeHttpRequest.stripAllScripts(request.getParameter("Accuracy"))));
-                    } catch (NumberFormatException e) {
-                        error.add(new String[]{"Accuracy", "Invalid value"});
-                        // site accuracy is null (-1) by default
-                    }
-                }
-
+            if (sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear")) != null && !sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear")).equals("")) {
+                feature.setMapYear(Integer.parseInt(sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear"))));
             } else {
-                site = null;
-                feature.setOrigSystemId(null);
-                feature.setOrigCoord(null);
+                feature.setMapYear(null);
             }
+        } catch (NumberFormatException e) {
+            error.add(new String[]{"Map Year", "Map Year not numeric"});
+        }
 
-            //set Map Year
-            try {
-                if (sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear")) != null && !sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear")).equals("")) {
-                    feature.setMapYear(Integer.parseInt(sanitizeHttpRequest.stripAllScripts(request.getParameter("MapYear"))));
-                } else {
-                    feature.setMapYear(null);
-                }
-            } catch (NumberFormatException e) {
-                error.add(new String[]{"Map Year", "Map Year not numeric"});
-            }
+        feature.setCoordComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("CoordComm")));
+        feature.setComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("LocComm")));
 
-            feature.setCoordComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("CoordComm")));
-            feature.setComments(sanitizeHttpRequest.stripAllScripts(request.getParameter("LocComm")));
+        editComments = sanitizeHttpRequest.sanitizer(request.getParameter("EditComm"));
+        editComments = sanitizeHttpRequest.stripAllScripts(editComments);
 
-            editComments = sanitizeHttpRequest.sanitizer(request.getParameter("EditComm"));
-            editComments = sanitizeHttpRequest.stripAllScripts(editComments);
-
-            if (error.size() > 0) {
-                throw new DataInputException(error);
-            }
-        } catch (IllegalArgumentException iae) {
-            log.log(Level.SEVERE, null, iae);
-            throw new DataInputException("There was an issue with the Locality.", iae.getMessage());
+        if (error.size() > 0) {
+            throw new DataInputException(error);
         }
     }
 
@@ -561,8 +499,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                     getFromDatabase(copyFeature);
                     copyFeature = null;
                 }
-            } catch (Exception e) {
-                log.log(Level.WARNING, null, e);
+            } catch (InsufficientPrivelegesException | StorageAccessException e) {
             }
         }
 
@@ -576,8 +513,9 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
         if (site != null) {
             site.key = null;
             try {
+                // SiteUtil.getSite() will find an existing site, or insert a new one if not found.
                 site = SiteUtil.getSite(site);
-            } catch (Exception e) {
+            } catch (IOException | SQLException | NamingException | ParserConfigurationException | SAXException e) {
                 log.log(Level.SEVERE, null, e);
                 throw new StorageAccessException(e);
             }
@@ -592,7 +530,7 @@ public abstract class LocalityDE extends DETemplate implements DataEntryForm {
                 // feature incomplete
                 SiteUtil siteUtil = new SiteUtil(factory);
                 feature.setSiteView(siteUtil.getSiteView(feature.getSiteId()));
-            } catch (Exception ex) {
+            } catch (StorageAccessException ex) {
                 log.log(Level.SEVERE, null, ex);
             }
         } else {
