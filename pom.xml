@@ -248,7 +248,6 @@
     <modules>
         <module>fred-main-webapp</module>
         <module>fred-redirect-webapp</module>
-        <module>fred-integration-tests</module>
     </modules>
 	
     <profiles>

@@ -161,7 +161,7 @@
         <dependency>
             <groupId>nz.cri.gns</groupId>
             <artifactId>fred</artifactId>            
-            <version>3.2.24.136</version>
+            <version>3.2.33.155</version>
             <classifier>classes</classifier>
             <scope>test</scope>
             <type>jar</type>
