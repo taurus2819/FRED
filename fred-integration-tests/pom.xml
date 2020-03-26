@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>nz.cri.gns.fred</groupId>
+        <artifactId>fred-top</artifactId>
+        <version>3.2.33.155</version>
+    </parent>
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>nz.cri.gns.fred</groupId>
     <artifactId>fred-integration</artifactId>
-    <version>3.2.15.107</version>
     <packaging>jar</packaging>
     <name>FRED Integration Tests</name>
     
@@ -151,20 +156,21 @@
             <version>1.4.189</version>
             <scope>test</scope>
         </dependency>
-        
+
+        <dependency>
+            <groupId>nz.cri.gns</groupId>
+            <artifactId>fred</artifactId>
+            <version>${project.version}</version>
+            <classifier>classes</classifier>
+            <type>jar</type>
+            <scope>test</scope>
+        </dependency>
+
+
         <dependency>
             <groupId>nz.cri.gns</groupId>
             <artifactId>munginator</artifactId>
             <version>0.1</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>nz.cri.gns</groupId>
-            <artifactId>fred</artifactId>            
-            <version>3.2.33.155</version>
-            <classifier>classes</classifier>
-            <scope>test</scope>
-            <type>jar</type>
         </dependency>
         
         <dependency>
