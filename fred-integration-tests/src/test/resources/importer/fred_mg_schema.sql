@@ -670,7 +670,7 @@ VALUES (MG_IMPORT_SS_TYPE_ID_SEQ.NEXTVAL, 'FRED_PALEO', 'FRED Paleontological An
 insert into MG_IMPORT_SHEET_TYPE (ID, CODE,  NAME, MG_TABLE, ROW_DATA_START, MG_IMPORT_SPREADSHEET_TYPE) 
 values (mg_import_s_type_id_seq.nextval, 'PALEO', 'Paleo', (SELECT ID FROM MG_TABLE WHERE CODE='SAMPLE'), 1, (SELECT ID FROM MG_IMPORT_SPREADSHEET_TYPE WHERE CODE='FRED_PALEO'));
 
-INSERT
+/*INSERT
 INTO MG_IMPORT_COLUMN_TYPE
     (
         ID,
@@ -708,7 +708,7 @@ INTO MG_IMPORT_COLUMN_TYPE
         1,
         3,
         'Taxon'
-    );
+    );*/
     
 alter table registration_area add disp_order number(4) default 1;
 insert into mg_column (id, mg_table, mg_column_type, code, order_by_rank) values (mg_column_id_seq.nextval, (select id from mg_table where code='REGISTRATION_AREA'), 1, 'DISP_ORDER', 1);
