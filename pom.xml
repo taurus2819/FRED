@@ -367,7 +367,8 @@
             </build>
             <properties>
                 <sonar.jacoco.reportPath>${basedir}/../code-coverage/jacoco.exec</sonar.jacoco.reportPath>
-                <sonar.jacoco.jar>${basedir}/lib/jacocoagent.jar</sonar.jacoco.jar>
+<!--                <sonar.jacoco.jar>${basedir}/lib/jacocoagent.jar</sonar.jacoco.jar>-->
+                <sonar.jacoco.jar>/data2/jenkins/jobs/FRED/workspace/fred-main-webapp/lib/jacocoagent.jar</sonar.jacoco.jar>
                 <sonar.phase>test</sonar.phase>
                 <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
                 <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
