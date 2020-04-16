@@ -32,6 +32,20 @@
     .x-form-item {
         display: none;    
     }
+    .olControlScaleLine {
+    background: white;
+    padding: 5px;
+
+    /* IE 8 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=85)";
+
+    /* Netscape */
+    -moz-opacity: 0.85;
+
+    /* Good browsers */
+    opacity: 0.70;
+}
+
 </style>
 
         <script type="text/javascript">
@@ -65,8 +79,8 @@
                 map = new OpenLayers.Map("map", {
                 controls: [
                     new OpenLayers.Control.Navigation(),
-                                        new OpenLayers.Control.PanZoomBar({position: new OpenLayers.Pixel(2, 15)}),
-                                        new OpenLayers.Control.ScaleLine({position: new OpenLayers.Pixel(630, 450)}),
+                    new OpenLayers.Control.PanZoomBar({position: new OpenLayers.Pixel(2, 15)}),
+                    new OpenLayers.Control.ScaleLine({position: new OpenLayers.Pixel(450)}),
                     new OpenLayers.Control.MousePosition({prefix:"Longitude: ",separator:", Latitude: "}),
                     new OpenLayers.Control.LayerSwitcher({ascending: false}),
                     new OpenLayers.Control.KeyboardDefaults()
@@ -359,7 +373,7 @@
         <div id="loading">
             <table border="0" cellpadding="3" cellspacing="2" width="900">
                 <tr>
-                    <td><div id="map" style="width: 720px; height: 500px"></div></td>
+                    <td><div id="map" style="width: 100%; height: 550px"></div></td>
                 </tr>
             </table>
         </div>
