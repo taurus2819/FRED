@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>nz.cri.gns.fred</groupId>
     <artifactId>fred-top</artifactId>
-    <version>3.2.34.185</version>
+    <version>3.2.35.1</version>
     <packaging>pom</packaging>
     <name>Fossil Record Electronic Database</name>
     <url>http://fred.org.nz</url>
@@ -247,7 +247,6 @@
     
     <modules>
         <module>fred-main-webapp</module>
-        <module>fred-redirect-webapp</module>
         <module>fred-integration-tests</module>
     </modules>
 	

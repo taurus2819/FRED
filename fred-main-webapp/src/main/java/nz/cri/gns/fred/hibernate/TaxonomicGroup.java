@@ -13,6 +13,8 @@ public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
     private Set palLists;
     private Set<FrUserView> panelists;
     private Set<Taxon> taxonomicLookups;
+    private nz.cri.gns.fred.model.TaxonomicGroup parent;
+    private Set<nz.cri.gns.fred.model.TaxonomicGroup> children;
 
     public Integer getGroupId() {
         return this.groupId;
@@ -54,32 +56,50 @@ public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
         this.taxonomicLookups = taxonomicLookups;
     }
 
-	public int compareTo(nz.cri.gns.fred.model.TaxonomicGroup arg0) {
-		return groupId.compareTo(arg0.getGroupId());
-	}
+    @Override
+    public nz.cri.gns.fred.model.TaxonomicGroup getParent() {
+        return this.parent;
+    }
 
-	@Override
-	public String toString() {
-		return name;
-	}
-	
-	public String getUniqueIdentifier() {
-		return String.valueOf(groupId);
-	}
+    @Override
+    public void setParent(nz.cri.gns.fred.model.TaxonomicGroup parent) {
+        this.parent = parent;
+    }
+    
+    public void setChildren(Set<nz.cri.gns.fred.model.TaxonomicGroup> children) {
+        this.children = children;
+    }
 
-	public String getDisplayName() {
-		return name;
-	}
+    public Set<nz.cri.gns.fred.model.TaxonomicGroup> getChildren() {
+        return this.children;
+    }
+    
+    public int compareTo(nz.cri.gns.fred.model.TaxonomicGroup arg0) {
+            return groupId.compareTo(arg0.getGroupId());
+    }
 
-	@Override
-	public int hashCode() {
-		return name.hashCode();
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof nz.cri.gns.fred.model.TaxonomicGroup))
-			return false;
-		return groupId != null && groupId.equals(((nz.cri.gns.fred.model.TaxonomicGroup)o).getGroupId());
-	}
+    @Override
+    public String toString() {
+            return name;
+    }
+
+    public String getUniqueIdentifier() {
+            return String.valueOf(groupId);
+    }
+
+    public String getDisplayName() {
+            return name;
+    }
+
+    @Override
+    public int hashCode() {
+            return name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+            if (!(o instanceof nz.cri.gns.fred.model.TaxonomicGroup))
+                    return false;
+            return groupId != null && groupId.equals(((nz.cri.gns.fred.model.TaxonomicGroup)o).getGroupId());
+    }
 }
