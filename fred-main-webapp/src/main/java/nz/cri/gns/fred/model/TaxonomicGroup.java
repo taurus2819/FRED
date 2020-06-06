@@ -17,4 +17,5 @@ public interface TaxonomicGroup extends Comparable<TaxonomicGroup>, NameableAndI
     public void setParent(TaxonomicGroup parent);
     public Set<TaxonomicGroup> getChildren();
     public void setChildren(Set<TaxonomicGroup> children);
+    public Set<TaxonomicGroup> getAllDescendants();
 }

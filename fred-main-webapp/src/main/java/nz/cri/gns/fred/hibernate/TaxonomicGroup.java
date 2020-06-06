@@ -1,10 +1,12 @@
 package nz.cri.gns.fred.hibernate;
 
+import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 import nz.cri.gns.fred.model.Taxon;
 import nz.cri.gns.fred.model.FrUserView;
 
-public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
+public class TaxonomicGroup implements Serializable, nz.cri.gns.fred.model.TaxonomicGroup {
 
     private static final long serialVersionUID = 20050818L;
 
@@ -72,6 +74,17 @@ public class TaxonomicGroup implements nz.cri.gns.fred.model.TaxonomicGroup {
 
     public Set<nz.cri.gns.fred.model.TaxonomicGroup> getChildren() {
         return this.children;
+    }
+    
+    public Set<nz.cri.gns.fred.model.TaxonomicGroup> getAllDescendants()    {
+        Set<nz.cri.gns.fred.model.TaxonomicGroup> descendants = new HashSet<>();
+        for(nz.cri.gns.fred.model.TaxonomicGroup child : this.children) {
+            descendants.add(child);
+            if(child.getChildren() != null) {
+                descendants.addAll(child.getAllDescendants());
+            }
+        }
+        return descendants;
     }
     
     public int compareTo(nz.cri.gns.fred.model.TaxonomicGroup arg0) {
