@@ -33,6 +33,14 @@
         length="32"
     />
     
+    <property
+        name="orderNumber"
+        type="java.lang.Integer"
+        column="ORDER_NUMBER"
+        not-null="false"
+        length="32"
+    />
+    
     <many-to-one 
         name="parent" 
         class="nz.cri.gns.fred.hibernate.TaxonomicGroup" 

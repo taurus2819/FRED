@@ -17,6 +17,7 @@ public class TaxonomicGroup implements Serializable, nz.cri.gns.fred.model.Taxon
     private Set<Taxon> taxonomicLookups;
     private nz.cri.gns.fred.model.TaxonomicGroup parent;
     private Set<nz.cri.gns.fred.model.TaxonomicGroup> children;
+    private Integer orderNumber;
 
     public Integer getGroupId() {
         return this.groupId;
@@ -86,9 +87,22 @@ public class TaxonomicGroup implements Serializable, nz.cri.gns.fred.model.Taxon
         }
         return descendants;
     }
+
+    public Integer getOrderNumber() {
+        
+        if(orderNumber == null) {
+            return Integer.MAX_VALUE;   //last in order
+        } else  {
+            return this.orderNumber;
+        }
+    }
+
+    public void setOrderNumber(Integer orderNumber) {
+        this.orderNumber = orderNumber;
+    }
     
     public int compareTo(nz.cri.gns.fred.model.TaxonomicGroup arg0) {
-            return groupId.compareTo(arg0.getGroupId());
+            return getOrderNumber().compareTo(arg0.getOrderNumber());
     }
 
     @Override

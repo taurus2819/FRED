@@ -7,6 +7,8 @@ import nz.cri.gns.core.NameableAndIdentifiable;
 public interface TaxonomicGroup extends Comparable<TaxonomicGroup>, NameableAndIdentifiable {
     public String getName();
     public void setName(String name);
+    public Integer getOrderNumber();
+    public void setOrderNumber(Integer orderNumber);
     public Integer getGroupId();
     public void setGroupId(Integer groupId);
     public Set<FrUserView> getPanelists();
