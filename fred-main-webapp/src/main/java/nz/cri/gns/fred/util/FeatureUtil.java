@@ -885,8 +885,10 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
                 Integer endSerialNum = new Integer(frNumStr.substring(frNumStr.indexOf("-") + 1));
                 return fredDAO.getList("FROM FrNumber AS f WHERE f.mapSheet = ? AND f.serialNumber BETWEEN ? AND ?", FrNumber.class, frNumBits[0], new Integer(frNumBits[1]), endSerialNum);
             }
-
+ 
             //single
+            frNumStr = sanitiseFredNumberString(frNumStr);
+
             List<FrNumber> frNumbers = new Vector<FrNumber>();
             FrNumber frNum = getMetricFrNumberByString(frNumStr, false);
             if (frNum != null) {
@@ -950,7 +952,25 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
         }
         return frNumber;
     }
-
+    
+    private String sanitiseFredNumberString(String origFrNumStr)   {
+        String frNumStr = origFrNumStr;
+        
+        if(!frNumStr.contains("/f")) {
+            if(frNumStr.contains("/F"))  {
+                frNumStr = origFrNumStr.replace("/F", "/f");
+            } else if(frNumStr.contains("/")) {
+                frNumStr = origFrNumStr.replace("/", "/f");
+            } else if(frNumStr.indexOf("f") > 1) {
+                frNumStr = origFrNumStr.replace("f", "/f");
+            } else if(frNumStr.indexOf("F") > 1) {
+                frNumStr = origFrNumStr.replace("F", "/f");
+            }
+        }
+        
+        return frNumStr;
+    }
+   
     /**
      * returns array containing 0. Map Sheet 1. Serial Number (with leading
      * zeros) 2. Recollection Number
@@ -958,6 +978,8 @@ public class FeatureUtil extends ModelUtil implements AuditedUtil {
      * @throws DataInputException
      */
     public String[] parseFrNumber(String frNumStr) throws DataInputException {
+        
+        frNumStr = sanitiseFredNumberString(frNumStr);
         if (frNumStr != null && frNumStr.indexOf("/f") > 0) {
             String recollectionNumber;
             Integer serialNumber;
