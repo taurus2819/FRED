@@ -30,6 +30,7 @@
         %><%@page import="java.net.URLEncoder"
         %><%@page import="java.io.PrintWriter"
         %><%@page import="java.util.List"
+        %><%@page import="java.util.Set"
         %><%@page import="java.util.Arrays"
         %><%@page import="java.util.Vector"
         %><%@page import="java.util.logging.Logger"
@@ -676,6 +677,25 @@
                     %><tr><td>&nbsp;</td></tr><%
                             }
                         }
+
+
+    //Consensus age 
+    for (nz.cri.gns.fred.model.SquirrelAgeView ageView : sample.getSquirrelAge()) {
+        if (true) { //check if this needs to be protected
+            %>
+            <tr class="midColour">
+                <th colspan="2">
+                    Consensus Age&nbsp;&nbsp;&nbsp;
+                    <!--a href="#" target="_blank">
+                    <img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print" /-->
+                </th>
+            </tr>
+            <tr class="lightColour"><td class="heading">Consensus Stage (wide)</td><td><%=ageView.getWideBaseAge()%> - <%=ageView.getWideTopAge()%> Ma</td></tr>
+            <tr class="lightColour"><td class="heading">Consensus Stage (narrow)</td><td><%=ageView.getNarrowBaseAge()%> - <%=ageView.getNarrowTopAge()%> Ma</td></tr>
+            <%
+        }
+    }
+    %><tr><td>&nbsp;</td></tr><%
 
     //Paleontology
     boolean hasPalRecords = false;
