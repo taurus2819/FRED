@@ -681,7 +681,7 @@
 
     //Consensus age 
     for (nz.cri.gns.fred.model.SquirrelAgeView ageView : sample.getSquirrelAge()) {
-        if (true) { //check if this needs to be protected
+        if (ageView.isDeterminedValue()) { 
             %>
             <tr class="midColour">
                 <th colspan="2">
@@ -692,10 +692,10 @@
             </tr>
             <tr class="lightColour"><td class="heading">Consensus Stage (wide)</td><td><%=ageView.getWideBaseAge()%> - <%=ageView.getWideTopAge()%> Ma</td></tr>
             <tr class="lightColour"><td class="heading">Consensus Stage (narrow)</td><td><%=ageView.getNarrowBaseAge()%> - <%=ageView.getNarrowTopAge()%> Ma</td></tr>
+            <tr><td>&nbsp;</td></tr>
             <%
         }
     }
-    %><tr><td>&nbsp;</td></tr><%
 
     //Paleontology
     boolean hasPalRecords = false;
