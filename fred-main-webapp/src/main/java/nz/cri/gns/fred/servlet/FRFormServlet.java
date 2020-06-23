@@ -519,19 +519,39 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
 			PDFUtil.addCells(table, new String[] {"Inferred Environment", sample.getDepositionEnv()}, bodyFonts);
 			PDFUtil.addCells(table, new String[] {"Nature of Rock Unit", sample.getRockNature()}, bodyFonts);
 			document.add(table);
+                        
+                        //Consensus age
+                        for (nz.cri.gns.fred.model.SquirrelAgeView ageView : sample.getSquirrelAge()) {
+                            if (ageView.isDeterminedValue()) { 
+                                table = new PdfPTable(2);
+                                table.setTotalWidth(bodyTableWidth);
+                                table.setLockedWidth(true);
+                                table.setWidths(bodyTableColWidths);
+                                table.setSpacingAfter(3 * MM_TO_PT);
+                            
+                                PDFUtil.addCell(table, "Consensus Age", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
+                                PDFUtil.addCells(table, new String[] {"Consensus Stage (wide)", String.format("%s - %s Ma", ageView.getWideBaseAge(), ageView.getWideTopAge() )}, bodyFonts);
+                                PDFUtil.addCells(table, new String[] {"Consensus Stage (narrow)", String.format("%s - %s Ma", ageView.getNarrowBaseAge(), ageView.getNarrowTopAge() )}, bodyFonts);
+                                
+                                document.add(table);
+                            }    
+                        }
+                           
 			
 			//Correspondence
-			table = new PdfPTable(2);
-			table.setTotalWidth(bodyTableWidth);
-			table.setLockedWidth(true);
-			table.setWidths(bodyTableColWidths);
-			
-			PDFUtil.addCells(table, new String[] {"Correspondence", sample.getCorrespondence()}, new Font[] {fonts[2], fonts[0]});
-			
-			if (!FREDUtil.isEmpty(sample.getMetaCats()))
-				PDFUtil.addCells(table, new Object[] {"Attached Images", "Images have been attached to this sample and can be viewed online"}, bodyFonts);
-			
-			document.add(table);
+                        if(!FREDUtil.isEmpty(sample.getMetaCats()) || (sample.getCorrespondence() != null && !sample.getCorrespondence().isEmpty() ))    {
+                            table = new PdfPTable(2);
+                            table.setTotalWidth(bodyTableWidth);
+                            table.setLockedWidth(true);
+                            table.setWidths(bodyTableColWidths);
+
+                            PDFUtil.addCells(table, new String[] {"Correspondence", sample.getCorrespondence()}, new Font[] {fonts[2], fonts[0]});
+
+                            if (!FREDUtil.isEmpty(sample.getMetaCats()))
+                                    PDFUtil.addCells(table, new Object[] {"Attached Images", "Images have been attached to this sample and can be viewed online"}, bodyFonts);
+
+                            document.add(table);
+                        }
 		}
 	}
 	
