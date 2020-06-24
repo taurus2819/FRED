@@ -530,8 +530,8 @@ public class FRFormServlet extends HttpServlet implements PdfPageEvent {
                                 table.setSpacingAfter(3 * MM_TO_PT);
                             
                                 PDFUtil.addCell(table, "Consensus Age", fonts[2], PdfPCell.ALIGN_LEFT, 2);			
-                                PDFUtil.addCells(table, new String[] {"Consensus Stage (wide)", String.format("%s - %s Ma", ageView.getWideBaseAge(), ageView.getWideTopAge() )}, bodyFonts);
-                                PDFUtil.addCells(table, new String[] {"Consensus Stage (narrow)", String.format("%s - %s Ma", ageView.getNarrowBaseAge(), ageView.getNarrowTopAge() )}, bodyFonts);
+                                PDFUtil.addCells(table, new String[] {"Consensus Age (wide)", String.format("%s - %s Ma", ageView.getWideBaseAge(), ageView.getWideTopAge() )}, bodyFonts);
+                                PDFUtil.addCells(table, new String[] {"Consensus Age (narrow)", String.format("%s - %s Ma", ageView.getNarrowBaseAge(), ageView.getNarrowTopAge() )}, bodyFonts);
                                 
                                 document.add(table);
                             }    

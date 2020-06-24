@@ -690,8 +690,8 @@
                     <img src="images/pdf_icon.gif" width="20" height="20" border="0" alt="Print" title="Print" /-->
                 </th>
             </tr>
-            <tr class="lightColour"><td class="heading">Consensus Stage (wide)</td><td><%=ageView.getWideBaseAge()%> - <%=ageView.getWideTopAge()%> Ma</td></tr>
-            <tr class="lightColour"><td class="heading">Consensus Stage (narrow)</td><td><%=ageView.getNarrowBaseAge()%> - <%=ageView.getNarrowTopAge()%> Ma</td></tr>
+            <tr class="lightColour"><td class="heading">Consensus Age (wide)</td><td><%=ageView.getWideBaseAge()%> - <%=ageView.getWideTopAge()%> Ma</td></tr>
+            <tr class="lightColour"><td class="heading">Consensus Age (narrow)</td><td><%=ageView.getNarrowBaseAge()%> - <%=ageView.getNarrowTopAge()%> Ma</td></tr>
             <tr><td>&nbsp;</td></tr>
             <%
         }
