@@ -20,4 +20,6 @@ public interface SquirrelAgeView extends Comparable<SquirrelAgeView> {
     public Double getWideTopAge();
 
     public void setWideTopAge(Double wideTopAge);
+    
+    public boolean isDeterminedValue();
 }

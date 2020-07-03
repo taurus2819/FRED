@@ -8,6 +8,9 @@ public class SquirrelAgeView implements Serializable, nz.cri.gns.fred.model.Squi
     private Double narrowTopAge;
     private Double wideBaseAge;
     private Double wideTopAge;
+    
+    public static final Double NON_DETERMINED_BASE_AGE = 999.9;
+    public static final Double NON_DETERMINED_TOP_AGE = 0.0;
 
     @Override
     public int compareTo(nz.cri.gns.fred.model.SquirrelAgeView o) {
@@ -55,6 +58,17 @@ public class SquirrelAgeView implements Serializable, nz.cri.gns.fred.model.Squi
     public void setWideTopAge(Double wideTopAge) {
         this.wideTopAge = wideTopAge;
     }
-    
-    
+
+    @Override
+    public boolean isDeterminedValue() {
+        if(NON_DETERMINED_BASE_AGE.equals(narrowBaseAge) 
+            && NON_DETERMINED_BASE_AGE.equals(wideBaseAge)
+            && NON_DETERMINED_TOP_AGE.equals(narrowTopAge)
+            && NON_DETERMINED_TOP_AGE.equals(wideTopAge)
+        )   {
+            return false;
+        } else  {
+            return true;
+        }
+    }
 }

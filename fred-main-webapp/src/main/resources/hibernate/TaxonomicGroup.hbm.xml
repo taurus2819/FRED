@@ -32,7 +32,36 @@
         not-null="true"
         length="32"
     />
-
+    
+    <property
+        name="orderNumber"
+        type="java.lang.Integer"
+        column="ORDER_NUMBER"
+        not-null="false"
+        length="32"
+    />
+    
+    <many-to-one 
+        name="parent" 
+        class="nz.cri.gns.fred.hibernate.TaxonomicGroup" 
+        column="PARENT_ID"
+    />
+    
+    <!-- Self-Association -->
+    <set
+        name="children"
+        lazy="true"
+        inverse="true"
+        cascade="none"
+    >
+        <key>
+            <column name="PARENT_ID" />
+        </key>
+        <one-to-many 
+            class="nz.cri.gns.fred.hibernate.TaxonomicGroup"
+        />
+    </set>
+        
     <!-- Associations -->
   
     <!-- bi-directional one-to-many association to PalList -->
